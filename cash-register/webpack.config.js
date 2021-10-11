@@ -28,7 +28,7 @@ module.exports = {
         name: "cashRegister",
         filename: "remoteEntry.js",
         exposes: {
-          './CashRegisterModule': './src/app/app.module.ts',
+          './CashRegisterModule': './src/app/home/home.module.ts',
         },     
         
         // For hosts (please adjust)
@@ -47,6 +47,31 @@ module.exports = {
         })
         
     }),
+    new ModuleFederationPlugin({
+      
+      // For remotes (please adjust)
+      name: "cashRegisterHome",
+      filename: "home.js",
+      exposes: {
+        './CashRegisterHome': './src/app/home/home.component.ts',
+      },     
+      
+      // For hosts (please adjust)
+      // remotes: {
+      //     "mfe1": "mfe1@http://localhost:3000/remoteEntry.js",
+
+      // },
+
+      shared: share({
+        "@angular/core": { singleton: true, requiredVersion: 'auto' }, 
+        "@angular/common": { singleton: true, requiredVersion: 'auto' }, 
+        "@angular/common/http": { singleton: true, requiredVersion: 'auto' }, 
+        "@angular/router": { singleton: true, requiredVersion: 'auto' },
+
+        ...sharedMappings.getDescriptors()
+      })
+      
+  }),
     sharedMappings.getPlugin()
   ],
 };

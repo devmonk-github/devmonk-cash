@@ -1,1 +1,10 @@
-<h5>Cash register home page</h5>
+<nb-layout>
+    <nb-layout-header>
+        <h5>Cash register home page</h5>
+    </nb-layout-header>
+    <nb-layout-header>
+        <button nbButton status="success" routerLink="./edit">Edit</button>
+        <button nbButton class="ml-2" status="success" routerLink="../till">Cash register</button>
+        <button nbButton class="ml-2" status="success" (click)="openModal()">Open modal</button>
+    </nb-layout-header>
+</nb-layout>
