@@ -1,14 +1,14 @@
-<nb-card class="modal-card">
-    <nb-card-header class="flex">
-        <h3>Dialog tittle</h3>
-        <a class="cancel ml-auto mt-3" (click)="close()">
-            X
-        </a>
-    </nb-card-header>
-    <nb-card-body>
-        <h5> Dialog body </h5>
-    </nb-card-body>
-    <nb-card-footer class="flex">
-        <button nbButton status="basic" class="cancel ml-auto" (click)="close()">Cancel</button>
-    </nb-card-footer>
-</nb-card>
+<div class="card shadow-sm">
+  <div class="card-header">
+    <h3 class="card-title">Dialog Title</h3>
+    <div class="card-toolbar">
+      <button class="btn btn-sm btn-light" (click)="close()">Close</button>
+    </div>
+  </div>
+  <div class="card-body">
+      <h5>Dialog body</h5>
+  </div>
+  <div class="card-footer">
+    <button class="btn btn-md btn-primary" (click)="close()">Cancel</button>
+  </div>
+</div>

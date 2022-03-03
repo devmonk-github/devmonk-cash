@@ -3,7 +3,6 @@ import { BrowserModule } from '@angular/platform-browser';
 
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
-import {NbThemeModule} from '@nebular/theme';
 import {TranslateModule} from "@ngx-translate/core";
 
 @NgModule({
@@ -13,7 +12,6 @@ import {TranslateModule} from "@ngx-translate/core";
   imports: [
     BrowserModule,
     AppRoutingModule,
-    NbThemeModule.forRoot(),
     TranslateModule.forRoot()
   ],
   providers: [],
