@@ -42,6 +42,7 @@ module.exports = {
           "@angular/common": { singleton: true, requiredVersion: 'auto' },
           "@angular/common/http": { singleton: true, requiredVersion: 'auto' },
           "@angular/router": { singleton: true, requiredVersion: 'auto' },
+          "@ngx-translate/core": { singleton: true, requiredVersion: 'auto' },
 
           ...sharedMappings.getDescriptors()
         })
