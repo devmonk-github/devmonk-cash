@@ -1,13 +1,9 @@
-<nb-layout>
-    <nb-layout-header>
-        <h5>{{title}}</h5>
-    </nb-layout-header>
-    <nb-layout-header>
-        <button nbButton status="success" routerLink="./edit">Edit</button>
-        <button nbButton class="ml-2" status="success" routerLink="../till">Cash register</button>
-        <button nbButton class="ml-2" status="success" (click)="openModal()">Open modal</button>
-    </nb-layout-header>
-    <nb-layout-column>
-        <b *ngIf="localData">{{ localData | json}}</b>
-    </nb-layout-column>
-</nb-layout>
+<div class="container">
+  <div class="row">
+    <button status="success" routerLink="./edit">Edit</button>
+    <button class="ml-2" status="success" routerLink="../till">Cash register</button>
+    <button class="ml-2" status="success" (click)="openModal()">Open modal</button>
+
+    <b *ngIf="localData">{{ localData | json}}</b>
+  </div>
+</div>

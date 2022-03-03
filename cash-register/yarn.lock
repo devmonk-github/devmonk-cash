@@ -245,6 +245,13 @@
   dependencies:
     tslib "^2.1.0"
 
+"@angular/elements@12.0.5":
+  version "12.0.5"
+  resolved "https://registry.yarnpkg.com/@angular/elements/-/elements-12.0.5.tgz#b80de7483e475b25205bf1ac560846521cdda5a7"
+  integrity sha512-qggth2uWF3qvC1L3nXl8r/0uP6tkk12YZgV1IvbrROaOvu1+5ILRDCZx6pj97RYDcItxwhMP0i7jFlbp5oBc2A==
+  dependencies:
+    tslib "^2.1.0"
+
 "@angular/forms@~12.0.4":
   version "12.0.5"
   resolved "https://registry.yarnpkg.com/@angular/forms/-/forms-12.0.5.tgz#17e888667d644b03f4d67928f47bbf227fc6b4ee"
@@ -1235,6 +1242,11 @@
   resolved "https://registry.yarnpkg.com/@fortawesome/fontawesome-common-types/-/fontawesome-common-types-0.2.36.tgz#b44e52db3b6b20523e0c57ef8c42d315532cb903"
   integrity sha512-a/7BiSgobHAgBWeN7N0w+lAhInrGxksn13uK7231n2m8EDPE3BMCl9NZLTGrj9ZXfCmC6LM0QLqXidIizVQ6yg==
 
+"@fortawesome/fontawesome-free@^6.0.0":
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/@fortawesome/fontawesome-free/-/fontawesome-free-6.0.0.tgz#6f3bd8e42997c7d536a1246877ed8bcd4f005a54"
+  integrity sha512-6LB4PYBST1Rx40klypw1SmSDArjFOcfBf2LeX9Zg5EKJT2eXiyiJq+CyBYKeXyK0sXS2FsCJWSPr/luyhuvh0Q==
+
 "@fortawesome/fontawesome-svg-core@^1.2.34":
   version "1.2.36"
   resolved "https://registry.yarnpkg.com/@fortawesome/fontawesome-svg-core/-/fontawesome-svg-core-1.2.36.tgz#4f2ea6f778298e0c47c6524ce2e7fd58eb6930e3"
@@ -1302,6 +1314,13 @@
   integrity sha512-yoKK6qhEm1iWnniz50xzOBqa3U1iUrjZs+SpLOXRZFonpwObz8j4zraR231K4uV4kXcX40qorYk9iOf+ljG4JQ==
   dependencies:
     enhanced-resolve "5.7.0"
+
+"@ngx-translate/core@^14.0.0":
+  version "14.0.0"
+  resolved "https://registry.yarnpkg.com/@ngx-translate/core/-/core-14.0.0.tgz#af421d0e1a28376843f0fed375cd2fae7630a5ff"
+  integrity sha512-UevdwNCXMRCdJv//0kC8h2eSfmi02r29xeE8E9gJ1Al4D4jEJ7eiLPdjslTMc21oJNGguqqWeEVjf64SFtvw2w==
+  dependencies:
+    tslib "^2.3.0"
 
 "@nodelib/fs.scandir@2.1.5":
   version "2.1.5"
@@ -3076,6 +3095,11 @@ dns-txt@^2.0.2:
   integrity sha1-uR2Ab10nGI5Ks+fRB9iBocxGQrY=
   dependencies:
     buffer-indexof "^1.0.0"
+
+document-register-element@^1.7.2:
+  version "1.14.10"
+  resolved "https://registry.yarnpkg.com/document-register-element/-/document-register-element-1.14.10.tgz#a7bd025e6b73bd827fec2d8e90aba755e99387f5"
+  integrity sha512-w5UA37hEIrs+9pruo2yR5UD13c4UHDlkqqjt4qurnp7QsBI9b1IOi8WXUim+aCqKBsENX3Z/cso7XMOuwJH1Yw==
 
 dom-serialize@^2.2.1:
   version "2.2.1"
@@ -7556,7 +7580,7 @@ tslib@^1.10.0, tslib@^1.9.0:
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-1.14.1.tgz#cf2d38bdc34a134bcaf1091c41f6619e2f672d00"
   integrity sha512-Xni35NKzjgMrwevysHTCArtLDpPvye8zV/0E4EyYn43P7/7qvQwPh9BGkHewbMulVntbigmcT7rdX3BNo9wRJg==
 
-tslib@^2.0.0, tslib@^2.1.0:
+tslib@^2.0.0, tslib@^2.1.0, tslib@^2.3.0:
   version "2.3.1"
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.3.1.tgz#e8a335add5ceae51aa261d32a490158ef042ef01"
   integrity sha512-77EbyPPpMz+FRFRuAFlWMtmgUWGe9UOG2Z25NqCwiIjRhOf5iKGuzSe5P2w1laq+FkRy4p+PCuVkJSGkzTEKVw==

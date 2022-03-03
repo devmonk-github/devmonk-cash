@@ -15,7 +15,7 @@ module.exports = {
   },
   optimization: {
     runtimeChunk: false
-  },   
+  },
   resolve: {
     alias: {
       ...sharedMappings.getAliases(),
@@ -23,14 +23,14 @@ module.exports = {
   },
   plugins: [
     new ModuleFederationPlugin({
-      
+
         // For remotes (please adjust)
         name: "cashRegister",
         filename: "remoteEntry.js",
         exposes: {
-          './CashRegisterModule': './src/app/home/home.module.ts',
-        },     
-        
+          './CashRegisterModule': './src/app/till/till.module.ts',
+        },
+
         // For hosts (please adjust)
         // remotes: {
         //     "mfe1": "mfe1@http://localhost:3000/remoteEntry.js",
@@ -38,24 +38,24 @@ module.exports = {
         // },
 
         shared: share({
-          "@angular/core": { singleton: true, requiredVersion: 'auto' }, 
-          "@angular/common": { singleton: true, requiredVersion: 'auto' }, 
-          "@angular/common/http": { singleton: true, requiredVersion: 'auto' }, 
+          "@angular/core": { singleton: true, requiredVersion: 'auto' },
+          "@angular/common": { singleton: true, requiredVersion: 'auto' },
+          "@angular/common/http": { singleton: true, requiredVersion: 'auto' },
           "@angular/router": { singleton: true, requiredVersion: 'auto' },
 
           ...sharedMappings.getDescriptors()
         })
-        
+
     }),
     new ModuleFederationPlugin({
-      
+
       // For remotes (please adjust)
       name: "till",
       filename: "till.js",
       exposes: {
         './tillModule': './src/app/till/till.module.ts',
-      },     
-      
+      },
+
       // For hosts (please adjust)
       // remotes: {
       //     "mfe1": "mfe1@http://localhost:3000/remoteEntry.js",
@@ -63,14 +63,14 @@ module.exports = {
       // },
 
       shared: share({
-        "@angular/core": { singleton: true, requiredVersion: 'auto' }, 
-        "@angular/common": { singleton: true, requiredVersion: 'auto' }, 
-        "@angular/common/http": { singleton: true, requiredVersion: 'auto' }, 
+        "@angular/core": { singleton: true, requiredVersion: 'auto' },
+        "@angular/common": { singleton: true, requiredVersion: 'auto' },
+        "@angular/common/http": { singleton: true, requiredVersion: 'auto' },
         "@angular/router": { singleton: true, requiredVersion: 'auto' },
 
         ...sharedMappings.getDescriptors()
       })
-      
+
   }),
     sharedMappings.getPlugin()
   ],

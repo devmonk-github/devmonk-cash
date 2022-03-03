@@ -4,7 +4,8 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import {NbThemeModule} from '@nebular/theme';
-import { DialogsComponent } from './dialogs/dialogs.component';
+import {TranslateModule} from "@ngx-translate/core";
+
 @NgModule({
   declarations: [
     AppComponent
@@ -13,8 +14,9 @@ import { DialogsComponent } from './dialogs/dialogs.component';
     BrowserModule,
     AppRoutingModule,
     NbThemeModule.forRoot(),
+    TranslateModule.forRoot()
   ],
   providers: [],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {}
