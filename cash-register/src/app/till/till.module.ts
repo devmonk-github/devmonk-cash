@@ -7,6 +7,9 @@ import {FaIconLibrary, FontAwesomeModule} from "@fortawesome/angular-fontawesome
 import {fas} from "@fortawesome/free-solid-svg-icons";
 import {far} from "@fortawesome/free-regular-svg-icons";
 import {TranslateModule} from "@ngx-translate/core";
+import {DropdownModule} from "primeng/dropdown";
+import {FormsModule} from "@angular/forms";
+import {ButtonModule} from "primeng/button";
 @NgModule({
   declarations: [
     TillComponent
@@ -15,13 +18,20 @@ import {TranslateModule} from "@ngx-translate/core";
     CommonModule,
     TillRoutingModule,
     FontAwesomeModule,
-    TranslateModule
+    TranslateModule,
+    FormsModule,
+    //PrimeNG
+    DropdownModule,
+    ButtonModule,
+
   ],
   exports: [
     TillComponent,
     TillRoutingModule,
     FontAwesomeModule,
-    TranslateModule
+    TranslateModule,
+    //PrimeNG
+    DropdownModule
   ],
   bootstrap: [
     TillComponent
