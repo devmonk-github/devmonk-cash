@@ -8,13 +8,13 @@ import {Transaction} from "./models/transaction.model";
 })
 export class TillComponent implements OnInit, OnChanges {
 
-  //Dummy data
+  //Dummy data'
   parkedTransactions: Transaction[] = [
-    new Transaction(1, 1, 1, '2022030301',  'shoppurchase', 'concept', 1, 1),
-    new Transaction(1, 1, 1, '2022030302',  'shoppurchase', 'concept', 1, 1),
-    new Transaction(1, 1, 1, '2022030303',  'shoppurchase', 'concept', 1, 1),
-    new Transaction(1, 1, 1, '2022030304',  'shoppurchase', 'concept', 1, 1),
-    new Transaction(1, 1, 1, '2022030305',  'shoppurchase', 'concept', 1, 1),
+    new Transaction('1', '1', '1', '2022030301',  'shoppurchase', 'concept', '1', '1'),
+    new Transaction('1', '1', '1', '2022030302',  'shoppurchase', 'concept', '1', '1'),
+    new Transaction('1', '1', '1', '2022030303',  'shoppurchase', 'concept', '1', '1'),
+    new Transaction('1', '1', '1', '2022030304',  'shoppurchase', 'concept', '1', '1'),
+    new Transaction('1', '1', '1', '2022030305',  'shoppurchase', 'concept', '1', '1'),
   ]
 
   constructor() { }

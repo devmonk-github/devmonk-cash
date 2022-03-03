@@ -1,6 +1,6 @@
 import {ExtraService} from "./extra-service.model";
 import {EdiProduct} from "./edi-product.model";
-import {ArticleGroupProperty, Property} from "./property.model";
+import {Property} from "./property.model";
 import {Payment} from "./payment.model";
 import {BusinessProductMetadata} from "./business-product-metadata.model";
 
@@ -53,7 +53,7 @@ export class TransactionItem {
     public oBusinessProductMetaData: BusinessProductMetadata,
     public eStatus: string,
     public iDeviceId: string,
-    public iEmployeeId: string
+    public iEmployeeId: string,
     //Optional here, since we don't know the transaction id when we create one
     public iTransactionId? : string,
 

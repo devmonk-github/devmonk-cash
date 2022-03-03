@@ -1,6 +1,7 @@
 import {TransactionItem} from "./transaction-item.model";
 
 export class Transaction {
+  // TODO: Check which properties should be optional
   constructor(
     public _id: string,
     public iBusinessPartnerId: string,
