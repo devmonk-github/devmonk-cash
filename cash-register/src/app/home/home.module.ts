@@ -4,7 +4,6 @@ import { CommonModule } from '@angular/common';
 import { HomeRoutingModule } from './home-routing.module';
 import { HomeComponent } from './home.component';
 import { EditComponent } from './edit/edit.component';
-import { NbButtonModule, NbDialogService, NbStatusService, NbDialogModule, NbThemeModule, NbLayoutModule, NbCardModule } from '@nebular/theme';
 import { DialogsComponent } from '../dialogs/dialogs.component';
 
 
@@ -17,22 +16,10 @@ import { DialogsComponent } from '../dialogs/dialogs.component';
   imports: [
     CommonModule,
     HomeRoutingModule,
-    NbButtonModule,
-    NbThemeModule.forRoot({name: 'default'}),
-    NbLayoutModule,
-    NbDialogModule.forChild({
-      hasBackdrop: true, closeOnEsc: false, closeOnBackdropClick: false
-    }),
-    NbCardModule
   ],
   exports:[
     HomeComponent,
-    HomeRoutingModule,
-    NbButtonModule,
-    NbThemeModule,
-    NbLayoutModule,
-    NbDialogModule,
-    NbCardModule
+    HomeRoutingModule
   ],
   providers: [
   ],
@@ -43,7 +30,6 @@ import { DialogsComponent } from '../dialogs/dialogs.component';
 export class HomeModule {
 
   constructor(private componentFactoryResolver: ComponentFactoryResolver) {
-    console.log('lazy home loaded: 🔥');
   }
 
   public resolveComponent(): ComponentFactory<HomeComponent> {
