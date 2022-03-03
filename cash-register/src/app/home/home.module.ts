@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { ComponentFactory, ComponentFactoryResolver, ComponentRef, NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { HomeRoutingModule } from './home-routing.module';
@@ -35,6 +35,22 @@ import { DialogsComponent } from '../dialogs/dialogs.component';
     NbCardModule
   ],
   providers: [
+  ],
+  bootstrap: [
+    HomeComponent
   ]
 })
-export class HomeModule { }
+export class HomeModule {
+
+  constructor(private componentFactoryResolver: ComponentFactoryResolver) {
+    console.log('lazy home loaded: 🔥');
+  }
+
+  public resolveComponent(): ComponentFactory<HomeComponent> {
+    return this.componentFactoryResolver.resolveComponentFactory(HomeComponent);
+  }
+
+  public componentReference(){
+    return HomeComponent;
+  }
+}

@@ -50,10 +50,10 @@ module.exports = {
     new ModuleFederationPlugin({
       
       // For remotes (please adjust)
-      name: "cashRegisterHome",
-      filename: "home.js",
+      name: "till",
+      filename: "till.js",
       exposes: {
-        './CashRegisterHome': './src/app/home/home.component.ts',
+        './tillModule': './src/app/till/till.module.ts',
       },     
       
       // For hosts (please adjust)
