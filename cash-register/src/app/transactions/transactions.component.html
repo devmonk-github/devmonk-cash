@@ -1,0 +1,63 @@
+<div class="container">
+    <div class="row">
+      <h2>TRANSACTIONS</h2>
+      <div class="col-md-6">
+        <!-- <p-inputSwitch [(ngModel)]="option"></p-inputSwitch> -->
+        <!-- <br>
+        <br> -->
+        <!-- <p-dropdown [options]="cities" [(ngModel)]="selectedCity" optionLabel="name"></p-dropdown> -->
+        <!-- <br> -->
+        <!-- <p>Selected city: {{selectedCity | json}}</p> -->
+        <!-- <p>Selected city: {{selectedCity | json}}</p> -->
+  
+        <!-- <button class="btn btn-md btn-primary" (click)="openChat()">Open the chat!</button> -->
+        <!-- <button class="btn btn-md btn-warning" (click)="closeChat()">Close the chat!</button> -->
+  
+        <pre>
+          <!-- {{widgetLog | json}} -->
+        </pre>
+      </div>
+      <div class="col-md-6">
+        <h1 *ngIf="option">Option is on!</h1>
+      </div>
+    </div>
+    <div>
+      <!-- <input type="text" nbInput class="w-80" [(ngModel)]="requestParams.searchValue" (keyup.enter)="loadTransaction()"> -->
+    </div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Date</th>
+                <th scope="col">Transaction no.</th>
+                <th scope="col">Receipt number</th>
+                <th scope="col">Customer</th>
+                <th scope="col">Method</th>
+                <th scope="col">Total</th>
+                <th scope="col">Type</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let transaction of transactions, let i = index;">  
+              <td scope="row">{{transaction.dCreatedDate}}</td>
+              <td>{{transaction.sNumber}}</td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td>{{transaction.sTotal || 0}}</td>
+              <td>{{transaction.eType}}</td>
+            </tr>
+        </tbody>
+    </table>
+    <!-- <div class="row py-4 mb-16" align="center">
+      <pagination-controls
+          [hidden] = "transactions.length == 0"
+          (pageChange)="pageChanged($event)"
+          (pageBoundsCorrection)="pageChanged($event)"
+          [maxSize]="setPaginateSize"
+          [previousLabel]="'PREVIOUS' | translate"
+          [nextLabel]="'NEXT' | translate"
+          screenReaderPaginationLabel="Pagination"
+          [screenReaderPageLabel]="'PAGE' | translate">
+      </pagination-controls>
+  </div> -->
+  

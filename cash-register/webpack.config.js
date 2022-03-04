@@ -29,6 +29,7 @@ module.exports = {
         filename: "remoteEntry.js",
         exposes: {
           './CashRegisterModule': './src/app/till/till.module.ts',
+          './TransactionModule': './src/app/transactions/transactions.module.ts'
         },
 
         // For hosts (please adjust)

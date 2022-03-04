@@ -10,6 +10,10 @@ const routes: Routes = [
     path : 'till',
     loadChildren : () => import('./till/till.module').then(module => module.TillModule)
   },
+  {
+    path : 'transactions',
+    loadChildren : () => import('./transactions/transactions.module').then(module => module.TransactionsModule)
+  },
   { path: '', redirectTo: 'home', pathMatch: 'full' }
 ];
 
