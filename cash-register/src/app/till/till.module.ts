@@ -10,6 +10,8 @@ import {TranslateModule} from "@ngx-translate/core";
 import {DropdownModule} from "primeng/dropdown";
 import {FormsModule} from "@angular/forms";
 import {ButtonModule} from "primeng/button";
+import {InputTextModule} from "primeng/inputtext";
+
 @NgModule({
   declarations: [
     TillComponent
@@ -23,7 +25,7 @@ import {ButtonModule} from "primeng/button";
     //PrimeNG
     DropdownModule,
     ButtonModule,
-
+    InputTextModule
   ],
   exports: [
     TillComponent,
@@ -31,7 +33,9 @@ import {ButtonModule} from "primeng/button";
     FontAwesomeModule,
     TranslateModule,
     //PrimeNG
-    DropdownModule
+    DropdownModule,
+    ButtonModule,
+    InputTextModule
   ],
   bootstrap: [
     TillComponent

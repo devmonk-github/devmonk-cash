@@ -10,7 +10,7 @@
       </div>
       <div class="d-flex flex-row flex-row-fluid">
 
-        <div class="col-10">
+        <div class="col-4">
           <div class="p-inputgroup">
             <p-dropdown class="p-inputtext-lg"
               [options]="parkedTransactions"
@@ -21,7 +21,9 @@
               optionLabel="sNumber"
               [filter]="false">
             </p-dropdown>
-            <button pButton class="btn btn-primary p-button-lg">Park</button>
+            <button pButton class="btn btn-primary p-button-lg">{{ "PARK" | translate}}</button>
+            <button pButton class="btn btn-primary p-button-lg" icon="fa-solid fa-xmark" *ngIf="selectedTransaction"></button>
+            <button pButton class="btn btn-primary p-button-lg" icon="fa-solid fa-trash" *ngIf="selectedTransaction"></button>
           </div>
 
           </div>
