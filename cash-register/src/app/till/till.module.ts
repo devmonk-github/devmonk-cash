@@ -11,6 +11,7 @@ import {DropdownModule} from "primeng/dropdown";
 import {FormsModule} from "@angular/forms";
 import {ButtonModule} from "primeng/button";
 import {InputTextModule} from "primeng/inputtext";
+import {ToolbarModule} from "primeng/toolbar";
 
 @NgModule({
   declarations: [
@@ -25,7 +26,8 @@ import {InputTextModule} from "primeng/inputtext";
     //PrimeNG
     DropdownModule,
     ButtonModule,
-    InputTextModule
+    InputTextModule,
+    ToolbarModule
   ],
   exports: [
     TillComponent,
@@ -35,7 +37,8 @@ import {InputTextModule} from "primeng/inputtext";
     //PrimeNG
     DropdownModule,
     ButtonModule,
-    InputTextModule
+    InputTextModule,
+    ToolbarModule
   ],
   bootstrap: [
     TillComponent
