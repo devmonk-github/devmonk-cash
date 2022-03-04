@@ -19,11 +19,12 @@
               [autoDisplayFirst]="false"
               [(ngModel)]="selectedTransaction"
               optionLabel="sNumber"
-              [filter]="false">
+              [filter]="true" [showClear]="true"
+            >
             </p-dropdown>
             <button pButton class="btn btn-primary p-button-lg">{{ "PARK" | translate}}</button>
-            <button pButton class="btn btn-primary p-button-lg" icon="fa-solid fa-xmark" *ngIf="selectedTransaction"></button>
-            <button pButton class="btn btn-primary p-button-lg" icon="fa-solid fa-trash" *ngIf="selectedTransaction"></button>
+<!--            <button pButton class="btn btn-primary p-button-lg" icon="fa fa-xmark" *ngIf="selectedTransaction"></button>-->
+<!--            <button pButton class="btn btn-primary p-button-lg" icon="fa fa-trash" *ngIf="selectedTransaction"></button>-->
           </div>
 
           </div>
