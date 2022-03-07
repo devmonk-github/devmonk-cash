@@ -3,7 +3,11 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: false
+  production: false,
+  apiBasePath: 'http://localhost',
+  // apiBasePathProduction: 'http://54.246.32.179',
+  apiURL: 'http://localhost:3000',
+  oldPlatformUrl: `http://localhost:3000/`, // https://kassa.prismanote.com,
 };
 
 /*

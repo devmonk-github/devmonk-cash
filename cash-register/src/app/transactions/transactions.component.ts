@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpResponse } from "@angular/common/http";
-// import { ApiService } from 'src/app/shared/service/api.service';
+import { ApiService } from '../shared/service/api.service';
 // import {FreshChatService} from "../../shared/service/fresh-chat.service";
 // import {Employee} from "../../shared/models/employee.model";
 
@@ -31,8 +30,7 @@ export class TransactionsComponent implements OnInit {
   };
 
   constructor(
-    private httpClient: HttpClient,
-    // private apiService: ApiService,
+    private apiService: ApiService
     // private chatService: FreshChatService
     ) { }
 
@@ -51,11 +49,11 @@ export class TransactionsComponent implements OnInit {
   loadTransaction(){
     this.transactions = [];
     this.requestParams.iBusinessId = this.businessDetails._id
-    // this.apiService.postNew('cashregistry', '/api/v1/transaction/list', this.requestParams).subscribe((result: any) => {
-    //   if (result && result.data && result.data.length && result.data[0] && result.data[0].result && result.data[0].result.length) {
-    //     this.transactions = result.data[0].result;
-    //   }
-    // }, (error) => {})
+    this.apiService.postNew('cashregistry', '/api/v1/transaction/list', this.requestParams).subscribe((result: any) => {
+      if (result && result.data && result.data.length && result.data[0] && result.data[0].result && result.data[0].result.length) {
+        this.transactions = result.data[0].result;
+      }
+    }, (error) => {})
   }
 
   openChat(): void {
