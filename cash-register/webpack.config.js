@@ -56,6 +56,7 @@ module.exports = {
       filename: "till.js",
       exposes: {
         './tillModule': './src/app/till/till.module.ts',
+        '/TransactionsModule': './src/app/transactions/transactions.module.ts'
       },
 
       // For hosts (please adjust)

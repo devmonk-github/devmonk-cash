@@ -48,7 +48,6 @@ export class ApiService {
 
   //  Function for set headers
   setAPIHeaders() {
-    console.log('---- setAPIHeaders! ', localStorage.getItem('authorization'));
     if (localStorage.getItem('authorization') && localStorage.getItem('authorization')?.trim() != '') {
       this.defaultHeaders['Authorization'] = localStorage.getItem('authorization');
     }
@@ -167,6 +166,7 @@ export class ApiService {
   }
 
   getNew(apiType: string, url: string, header?: any): Observable<HttpResponse<any>> {
+    this.setAPIHeaders();
     let finalUrl = this.getApiBaseUrl(apiType) + url;
     let finalHeaders = header && Object.keys(header).length > 0 ? header : this.defaultHeaders;
     let httpHeaders = {
@@ -190,6 +190,7 @@ export class ApiService {
   }
 
   putNew(apiType: string, url: string, data: any, header?: any): Observable<HttpResponse<any>> {
+    this.setAPIHeaders();
     let finalUrl = this.getApiBaseUrl(apiType) + url;
     let finalHeaders = header && Object.keys(header).length > 0 ? header : this.defaultHeaders;
     let httpHeaders = {
@@ -200,6 +201,7 @@ export class ApiService {
   }
 
   deleteNew(apiType: string, url: string, header?: any): Observable<HttpResponse<any>> {
+    this.setAPIHeaders();
     let finalUrl = this.getApiBaseUrl(apiType) + url;
     let finalHeaders = header && Object.keys(header).length > 0 ? header : this.defaultHeaders;
     let httpHeaders = {

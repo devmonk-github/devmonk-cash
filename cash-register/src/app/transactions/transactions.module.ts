@@ -11,6 +11,7 @@ import { TransactionsComponent } from './transactions.component';
   ],
   imports: [
     TransactionsRoutingModule,
+    CommonModule
     // SharedModule
   ]
 })
