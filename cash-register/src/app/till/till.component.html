@@ -1,110 +1,118 @@
-<div class="container till-container">
+<div class="container">
   <div class="row">
-    <div class="d-flex flex-row flex-column-fluid flex-center justify-content-between till-padding">
-        <div class="d-flex flex-row-auto h-150px flex-center">
-            <button *ngIf="!customer" class="btn btn-lg btn-outline btn-outline-dashed btn-outline-default me-5 h-100px w-100px flex-center"
-                    (click)="addCustomer()">
-              <fa-icon icon="user-plus" class="fa-lg"></fa-icon>
-              <h4 class="fs-6 mt-3 text-gray-600">{{"CUSTOMER" | translate}}</h4>
-            </button>
-            <div *ngIf="customer" class="card shadow-sm">
-              <div class="card-body till-card-body">
-                <button type="button" class="btn btn-sm btn-light" style="float:right" (click)="removeCustomer()">
-                  <fa-icon icon="times-circle"></fa-icon>
-                </button>
-                <p>
-                  {{customer.number}}
-                  <br>
-                  {{customer.name}}
-                  <br>
-                  {{customer.address.street}} {{customer.address.number}}
-                  <br>
-                  {{customer.address.zip}} {{customer.address.city}}
-                  <br>
-                  {{customer.email}}
-                </p>
-              </div>
-            </div>
-        </div>
-      <div class="d-flex">
-            <div class="input-group input-group-sm mb-5">
-              <button class="btn btn-sm btn-secondary">{{ selectedTransaction ? "SAVE" : "PARK" | translate}}</button>
-              <div class="form-floating">
-                <select name="parkedTransactions" id="parkedTransactions" class="form-select" [(ngModel)]="selectedTransaction">
-                  <option [ngValue]="null"></option>
-                  <option *ngFor="let transaction of parkedTransactions" [ngValue]="transaction">{{transaction.sNumber}}</option>
-                </select>
-                <label for="parkedTransactions">{{"PARKED_TRANSACTIONS" | translate}}</label>
-              </div>
-
-              <button class="btn btn-secondary" (click)="clearTransaction()" *ngIf="selectedTransaction">
-                <fa-icon icon="times-circle"></fa-icon>
-              </button>
-              <button class="btn btn-secondary" *ngIf="selectedTransaction">
-                <fa-icon icon="trash-alt"></fa-icon>
-              </button>
-            </div>
-      </div>
-    </div>
-  </div>
-  <div class="row">
-    <div class="card shadow-sm till-table-card">
-      <div class="card-body card-scroll till-card-body">
-        <div class="table-responsive">
-          <table class="table table-striped">
-            <thead>
-            <tr class="fw-bolder fs-6 text-gray-800">
-              <th>{{ "QUANTITY" | translate}}</th>
-              <th>{{ "DESCRIPTION" | translate}}</th>
-              <th>{{ "PRICE" | translate}}</th>
-              <th>{{ "DISCOUNT" | translate}}</th>
-              <th>{{ "TAX" | translate}}</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr *ngFor="let item of transactionItems">
-              <td>
-                <div class="position-relative w-md-100px" data-kt-dialer="true" data-kt-dialer-min="0" data-kt-dialer-step="1" data-kt-dialer-prefix="€" data-kt-dialer-decimals="2">
-                  <button class="btn btn-icon btn-active-color-gray-700 position-absolute translate-middle-y top-50 start-0" data-kt-dialer="decrease">
-                    <fa-icon icon="minus"></fa-icon>
-                  </button>
-                  <input type="text" class="form-control form-control-solid border-0 ps-12" data-kt-dialer-control="input" placeholder="{{'QUANTITY' | translate}}" name="quantity" [(ngModel)]="item.quantity">
-                  <button class="btn btn-icon btn-active-color-gray-700 position-absolute translate-middle-y top-50 end-0" data-kt-dialer="increase">
-                    <fa-icon icon="plus"></fa-icon>
-                  </button>
-                </div>
-              </td>
-              <td>{{item.name}}</td>
-              <td>{{item.price}}</td>
-              <td>{{item.discount}}</td>
-              <td>{{item.tax}}</td>
-            </tr>
-            </tbody>
-            <tfoot>
-            <tr>
-              <td>{{getTotals('quantity')}}</td>
-              <td>&nbsp;</td>
-              <td>{{getTotals('price')}}</td>
-              <td>{{getTotals('discount')}}</td>
-              <td>&nbsp;</td>
-            </tr>
-            </tfoot>
-          </table>
+    <div class="col-md-9 col-xs-12 column-auto till-body">
+    <div class="row">
+      <div class="card shadow-sm till-table-card">
+        <div class="card-body card-scroll till-card-body">
+          <div class="table-responsive">
+            <table class="table table-striped">
+              <thead>
+              <tr class="fw-bolder fs-6 text-gray-800">
+                <th>{{ "QUANTITY" | translate}}</th>
+                <th>{{ "DESCRIPTION" | translate}}</th>
+                <th>{{ "PRICE" | translate}}</th>
+                <th>{{ "DISCOUNT" | translate}}</th>
+                <th>{{ "TAX" | translate}}</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr *ngFor="let item of transactionItems">
+                <td>
+                  <div class="position-relative w-md-100px" data-kt-dialer="true" data-kt-dialer-min="0"
+                       data-kt-dialer-step="1" data-kt-dialer-prefix="€" data-kt-dialer-decimals="2">
+                    <button
+                      class="btn btn-icon btn-active-color-gray-700 position-absolute translate-middle-y top-50 start-0"
+                      data-kt-dialer="decrease">
+                      <fa-icon icon="minus"></fa-icon>
+                    </button>
+                    <input type="number" class="form-control border-0 ps-12" data-kt-dialer-control="input"
+                           placeholder="{{'QUANTITY' | translate}}" name="quantity" [(ngModel)]="item.quantity">
+                    <button
+                      class="btn btn-icon btn-active-color-gray-700 position-absolute translate-middle-y top-50 end-0"
+                      data-kt-dialer="increase">
+                      <fa-icon icon="plus"></fa-icon>
+                    </button>
+                  </div>
+                </td>
+                <td>{{item.name}}</td>
+                <td>{{item.quantity * item.price | currency: '€'}}</td>
+                <td>{{item.discount}}</td>
+                <td>{{item.tax}}</td>
+              </tr>
+              </tbody>
+              <tfoot>
+              <tr>
+                <td>{{getTotals('quantity')}}</td>
+                <td>&nbsp;</td>
+                <td>{{getTotals('price') | currency: '€'}}</td>
+                <td>{{getTotals('discount')}}</td>
+                <td>&nbsp;</td>
+              </tr>
+              </tfoot>
+            </table>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-  <div class="row till-padding">
-    <div class="col-8 px-0">
-      <div class="input-group">
+    <div class="row">
+      <div class="input-group till-padding">
         <input type="text" class="form-control" placeholder="Search...">
         <button class="btn btn-secondary">{{ "TRANSACTION" | translate}}</button>
         <button class="btn btn-secondary">{{ "TEXT_LINE" | translate}}</button>
         <button class="btn btn-secondary">{{ "EMPTY_LINE" | translate}}</button>
       </div>
-      <button *ngFor="let button of quickButtons" class="btn btn-bg-secondary w-100px h-100px till-quick-button" (click)="addItemToTransaction(button)">{{button.name}}</button>
+      <button *ngFor="let button of quickButtons" class="btn btn-bg-secondary w-100px h-100px till-quick-button"
+              (click)="addItemToTransaction(button)">{{button.name}}</button>
     </div>
-    <div class="col-4">
+    </div>
+    <div class="col-md-3 col-xs-12">
+      <button *ngIf="!customer"
+              class="btn btn-lg btn-outline btn-outline-dashed btn-outline-default me-5 h-100px w-100px flex-center"
+              (click)="addCustomer()">
+        <fa-icon icon="user-plus" class="fa-lg"></fa-icon>
+        <h4 class="fs-6 mt-3 text-gray-600">{{"CUSTOMER" | translate}}</h4>
+      </button>
+      <div *ngIf="customer" class="card shadow-sm">
+        <div class="card-body till-card-body">
+          <button type="button" class="btn btn-sm btn-light" style="float:right" (click)="removeCustomer()">
+            <fa-icon icon="times-circle"></fa-icon>
+          </button>
+          <p>
+            {{customer.number}}
+            <br>
+            {{customer.name}}
+            <br>
+            {{customer.address.street}} {{customer.address.number}}
+            <br>
+            {{customer.address.zip}} {{customer.address.city}}
+            <br>
+            {{customer.email}}
+          </p>
+        </div>
+      </div>
+
+      <div class="form-floating till-padding">
+        <select name="parkedTransactions" id="parkedTransactions" class="form-select"
+                [(ngModel)]="selectedTransaction">
+          <option [ngValue]="null"></option>
+          <option *ngFor="let transaction of parkedTransactions"
+                  [ngValue]="transaction">{{transaction.sNumber}}</option>
+        </select>
+        <label for="parkedTransactions">{{"PARKED_TRANSACTIONS" | translate}}</label>
+      </div>
+
+      <div class="input-group input-group-sm mb-5 till-padding">
+        <button class="btn btn-secondary">{{ selectedTransaction ? "SAVE" : "PARK" | translate}}</button>
+
+
+        <button class="btn btn-secondary" (click)="clearTransaction()" *ngIf="selectedTransaction">
+          <fa-icon icon="times-circle"></fa-icon>
+        </button>
+        <button class="btn btn-secondary" *ngIf="selectedTransaction">
+          <fa-icon icon="trash-alt"></fa-icon>
+        </button>
+      </div>
+
       <div class="input-group till-padding" *ngFor="let payment of payMethods">
         <input type="text" class="form-control" placeholder="{{'AMOUNT' | translate}}">
         <button class="btn btn-primary w-150px">{{payment | translate}}</button>
@@ -112,6 +120,6 @@
       <button class="btn btn-primary till-save-button">{{ "SAVE" | translate}}</button>
     </div>
   </div>
-
 </div>
+
 
