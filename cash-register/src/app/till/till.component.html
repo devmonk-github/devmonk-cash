@@ -1,6 +1,6 @@
 <div class="container till-container">
   <div class="row">
-    <div class="d-flex flex-row flex-column-fluid flex-center justify-content-between till-row-padding">
+    <div class="d-flex flex-row flex-column-fluid flex-center justify-content-between till-padding">
         <div class="d-flex flex-row-auto h-150px flex-center">
             <button *ngIf="!customer" class="btn btn-lg btn-outline btn-outline-dashed btn-outline-default me-5 h-100px w-100px flex-center"
                     (click)="addCustomer()">
@@ -54,58 +54,64 @@
           <table class="table table-striped">
             <thead>
             <tr class="fw-bolder fs-6 text-gray-800">
-              <th>Aantal</th>
-              <th>Description</th>
-              <th>Price</th>
-              <th>Discount</th>
-              <th>Tax</th>
+              <th>{{ "QUANTITY" | translate}}</th>
+              <th>{{ "DESCRIPTION" | translate}}</th>
+              <th>{{ "PRICE" | translate}}</th>
+              <th>{{ "DISCOUNT" | translate}}</th>
+              <th>{{ "TAX" | translate}}</th>
             </tr>
             </thead>
             <tbody>
-            <tr>
-              <td>1</td>
-              <td>Test</td>
-              <td>12</td>
-              <td>0</td>
-              <td>21%</td>
-            </tr>
-            <tr>
-              <td>1</td>
-              <td>Test</td>
-              <td>12</td>
-              <td>0</td>
-              <td>21%</td>
-            </tr>
-            <tr>
-              <td>1</td>
-              <td>Test</td>
-              <td>12</td>
-              <td>0</td>
-              <td>21%</td>
-            </tr>
-            <tr>
-              <td>1</td>
-              <td>Test</td>
-              <td>12</td>
-              <td>0</td>
-              <td>21%</td>
+            <tr *ngFor="let item of transactionItems">
+              <td>
+                <div class="position-relative w-md-100px" data-kt-dialer="true" data-kt-dialer-min="0" data-kt-dialer-step="1" data-kt-dialer-prefix="€" data-kt-dialer-decimals="2">
+                  <button class="btn btn-icon btn-active-color-gray-700 position-absolute translate-middle-y top-50 start-0" data-kt-dialer="decrease">
+                    <fa-icon icon="minus"></fa-icon>
+                  </button>
+                  <input type="text" class="form-control form-control-solid border-0 ps-12" data-kt-dialer-control="input" placeholder="{{'QUANTITY' | translate}}" name="quantity" [(ngModel)]="item.quantity">
+                  <button class="btn btn-icon btn-active-color-gray-700 position-absolute translate-middle-y top-50 end-0" data-kt-dialer="increase">
+                    <fa-icon icon="plus"></fa-icon>
+                  </button>
+                </div>
+              </td>
+              <td>{{item.name}}</td>
+              <td>{{item.price}}</td>
+              <td>{{item.discount}}</td>
+              <td>{{item.tax}}</td>
             </tr>
             </tbody>
             <tfoot>
             <tr>
-              <td>3</td>
-              <td></td>
-              <td>45</td>
-              <td>4</td>
-              <td>44</td>
+              <td>{{getTotals('quantity')}}</td>
+              <td>&nbsp;</td>
+              <td>{{getTotals('price')}}</td>
+              <td>{{getTotals('discount')}}</td>
+              <td>&nbsp;</td>
             </tr>
             </tfoot>
           </table>
         </div>
       </div>
-
     </div>
-
   </div>
+  <div class="row till-padding">
+    <div class="col-8 px-0">
+      <div class="input-group">
+        <input type="text" class="form-control" placeholder="Search...">
+        <button class="btn btn-secondary">{{ "TRANSACTION" | translate}}</button>
+        <button class="btn btn-secondary">{{ "TEXT_LINE" | translate}}</button>
+        <button class="btn btn-secondary">{{ "EMPTY_LINE" | translate}}</button>
+      </div>
+      <button *ngFor="let button of quickButtons" class="btn btn-bg-secondary w-100px h-100px till-quick-button" (click)="addItemToTransaction(button)">{{button.name}}</button>
+    </div>
+    <div class="col-4">
+      <div class="input-group till-padding" *ngFor="let payment of payMethods">
+        <input type="text" class="form-control" placeholder="{{'AMOUNT' | translate}}">
+        <button class="btn btn-primary w-150px">{{payment | translate}}</button>
+      </div>
+      <button class="btn btn-primary till-save-button">{{ "SAVE" | translate}}</button>
+    </div>
+  </div>
+
 </div>
 
