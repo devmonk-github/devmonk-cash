@@ -1,26 +1,21 @@
-<div class="container">
+<div class="container till-container">
   <div class="row">
-    <div class="d-flex flex-row flex-column-fluid flex-center">
-        <div class="d-flex flex-row-auto mw-100">
-            <button *ngIf="!customer" class="btn btn-lg btn-outline btn-outline-dashed btn-outline-default me-5"
+    <div class="d-flex flex-row flex-column-fluid flex-center justify-content-between till-row-padding">
+        <div class="d-flex flex-row-auto h-150px flex-center">
+            <button *ngIf="!customer" class="btn btn-lg btn-outline btn-outline-dashed btn-outline-default me-5 h-100px w-100px flex-center"
                     (click)="addCustomer()">
               <fa-icon icon="user-plus" class="fa-lg"></fa-icon>
               <h4 class="fs-6 mt-3 text-gray-600">{{"CUSTOMER" | translate}}</h4>
             </button>
             <div *ngIf="customer" class="card shadow-sm">
-              <div class="card-header">
-                <h3 class="card-title p-0 m-0">
-                  {{ "CUSTOMER" | translate}}
-                </h3>
-                <div class="card-toolbar">
-                  <button type="button" class="btn btn-sm btn-light" (click)="removeCustomer()">
-                    {{ "REMOVE" | translate}}
-                  </button>
-                </div>
-              </div>
-              <div class="card-body">
+              <div class="card-body till-card-body">
+                <button type="button" class="btn btn-sm btn-light" style="float:right" (click)="removeCustomer()">
+                  <fa-icon icon="times-circle"></fa-icon>
+                </button>
                 <p>
-                  ({{customer.number}}) {{customer.name}}
+                  {{customer.number}}
+                  <br>
+                  {{customer.name}}
                   <br>
                   {{customer.address.street}} {{customer.address.number}}
                   <br>
@@ -31,9 +26,9 @@
               </div>
             </div>
         </div>
-      <div class="d-flex flex-row flex-column-fluid mw-100">
-            <div class="input-group mb-5">
-              <button class="btn btn-primary">{{ selectedTransaction ? "SAVE" : "PARK" | translate}}</button>
+      <div class="d-flex">
+            <div class="input-group input-group-sm mb-5">
+              <button class="btn btn-sm btn-secondary">{{ selectedTransaction ? "SAVE" : "PARK" | translate}}</button>
               <div class="form-floating">
                 <select name="parkedTransactions" id="parkedTransactions" class="form-select" [(ngModel)]="selectedTransaction">
                   <option [ngValue]="null"></option>
@@ -42,15 +37,75 @@
                 <label for="parkedTransactions">{{"PARKED_TRANSACTIONS" | translate}}</label>
               </div>
 
-              <button class="btn btn-primary" (click)="clearTransaction()" *ngIf="selectedTransaction">
+              <button class="btn btn-secondary" (click)="clearTransaction()" *ngIf="selectedTransaction">
                 <fa-icon icon="times-circle"></fa-icon>
               </button>
-              <button class="btn btn-primary" *ngIf="selectedTransaction">
+              <button class="btn btn-secondary" *ngIf="selectedTransaction">
                 <fa-icon icon="trash-alt"></fa-icon>
               </button>
             </div>
       </div>
     </div>
+  </div>
+  <div class="row">
+    <div class="card shadow-sm till-table-card">
+      <div class="card-body card-scroll till-card-body">
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <thead>
+            <tr class="fw-bolder fs-6 text-gray-800">
+              <th>Aantal</th>
+              <th>Description</th>
+              <th>Price</th>
+              <th>Discount</th>
+              <th>Tax</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+              <td>1</td>
+              <td>Test</td>
+              <td>12</td>
+              <td>0</td>
+              <td>21%</td>
+            </tr>
+            <tr>
+              <td>1</td>
+              <td>Test</td>
+              <td>12</td>
+              <td>0</td>
+              <td>21%</td>
+            </tr>
+            <tr>
+              <td>1</td>
+              <td>Test</td>
+              <td>12</td>
+              <td>0</td>
+              <td>21%</td>
+            </tr>
+            <tr>
+              <td>1</td>
+              <td>Test</td>
+              <td>12</td>
+              <td>0</td>
+              <td>21%</td>
+            </tr>
+            </tbody>
+            <tfoot>
+            <tr>
+              <td>3</td>
+              <td></td>
+              <td>45</td>
+              <td>4</td>
+              <td>44</td>
+            </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
   </div>
 </div>
 
