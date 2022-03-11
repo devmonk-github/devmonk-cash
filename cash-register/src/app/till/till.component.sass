@@ -13,12 +13,15 @@
     margin: 0
   table
     margin: 0
-    td,th
+    td:first-child, th:first-child
       padding-left: 15px
+      color: blue
 
 .till-quick-button
   margin-top: 5px
   margin-right: 5px
+  word-break: break-all
+  padding: 2px !important
 
 .till-save-button
   width: 100%
@@ -27,14 +30,22 @@
 .till-payment-option
   margin-top: 10px
 
-input::-webkit-outer-spin-button,
-input::-webkit-inner-spin-button
-  -webkit-appearance: none
-  margin: 0
-
-input[type=number]
-  -moz-appearance: textfield
-
 .till-option-row
   button
+    padding: 2px
     margin-right: 5px
+    text-align: center
+    p
+      //font-size: 12px !important
+      font-weight: normal !important
+      word-break: break-all
+
+.till-item-table-row
+  padding: 0
+  display: contents
+  color: red !important
+  margin: 0
+
+  td:first-child,th
+    padding-left: 15px !important
+    color: blue

@@ -1,5 +1,5 @@
-import {Component, Input, OnInit, ViewEncapsulation} from '@angular/core';
-import {faMinus, faPlus} from '@fortawesome/free-solid-svg-icons'
+import {Component, EventEmitter, HostListener, Input, OnInit, Output, ViewEncapsulation} from '@angular/core';
+import {faMinus, faPlus, faTimesCircle} from '@fortawesome/free-solid-svg-icons'
 
 @Component({
   selector: '[till-product]',
@@ -9,12 +9,20 @@ import {faMinus, faPlus} from '@fortawesome/free-solid-svg-icons'
 })
 export class ProductComponent implements OnInit {
   @Input() item: any
+  @Output() itemChanged = new EventEmitter<any>();
 
   faPlus = faPlus
   faMinus = faMinus
+  faTimesCircle = faTimesCircle
+
+
   constructor() { }
 
   ngOnInit(): void {
+
   }
 
+  deleteItem(): void {
+    this.itemChanged.emit('delete')
+  }
 }

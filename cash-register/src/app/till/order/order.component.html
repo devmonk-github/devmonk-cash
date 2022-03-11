@@ -1,5 +1,38 @@
-<td>{{item.quantity}}</td>
-<td>{{item.name}}</td>
-<td>{{item.price}}</td>
-<td>{{item.discount}}</td>
-<td>{{item.tax}}</td>
+<tr class="till-order-row click-listen">
+    <td>{{item.quantity}}</td>
+    <td>{{item.name}}</td>
+    <td>{{item.price | currency: '€'}}</td>
+    <td>{{item.discount}}</td>
+    <td>
+      {{item.tax}}
+      <fa-icon [icon]="faTimesCircle" class="pull-right" (click)="deleteItem()"></fa-icon>
+    </td>
+</tr>
+  <tr *ngIf="open">
+    <td>
+      <label for="description">{{ "DESCRIPTION" | translate}}</label>
+      <textarea class="form-control" id="description" name="description" placeholder="{{ 'DESCRIPTION' | translate}}" lines="10" [(ngModel)]="item.description"></textarea>
+    </td>
+    <td>
+      <label for="price">{{ "PRICE" | translate}}</label>
+      <input type="number" name="price" class="form-control" [(ngModel)]="item.price" id="price">
+    </td>
+    <td>
+      <label for="bagNumber">{{ "BAG_NUMBER" | translate}}</label>
+      <input type="text" name="bagNumber" id="bagNumber" [(ngModel)]="item.bagNumber" class="form-control">
+    </td>
+    <td>
+      <label for="tax">{{ "TAX" | translate}}</label>
+      <select name="tax" id="tax" [(ngModel)]="item.tax" class="form-control">
+        <option value="21">21</option>
+        <option value="9">9</option>
+        <option value="0">0</option>
+      </select>
+    </td>
+    <td>
+      {{ "BRAND" | translate}}: ----
+      <br>
+      {{ "COMPANY" | translate}}: ----
+    </td>
+  </tr>
+

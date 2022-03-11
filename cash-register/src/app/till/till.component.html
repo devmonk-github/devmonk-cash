@@ -2,37 +2,37 @@
   <div class="row">
     <div class="col-md-9 col-xs-12 column-auto till-body">
       <div class="row till-option-row">
-        <button class="btn btn-outline btn-outline-dashed btn-outline-default btn-lg btn-outline-primary h-100px w-100px flex-center" (click)="addItem('product')">
-          <fa-icon [icon]="faBoxesStacked" class="fa-lg"></fa-icon>
-          <h4 class="fs-6 mt-3 text-gray-600">{{"STOCK" | translate}}</h4>
+        <button class="btn btn-outline btn-outline-dashed btn-outline-primary btn-active-light-primary h-75px w-75px" (click)="addItem('product')">
+          <fa-icon [icon]="faBoxesStacked"></fa-icon>
+          <p class="fs-6 mt-3 text-gray-600">{{"STOCK" | translate}}</p>
         </button>
-        <button  class="btn btn-outline btn-outline-dashed btn-outline-default btn-lg btn-outline-primary h-100px w-100px flex-center" (click)="addItem('order')">
-          <fa-icon [icon]="faTruck" class="fa-lg"></fa-icon>
-          <h4 class="fs-6 mt-3 text-gray-600">{{"ORDER" | translate}}</h4>
+        <button  class="btn btn-outline btn-outline-dashed btn-outline-primary btn-active-light-primary h-75px w-75px" (click)="addItem('order')">
+          <fa-icon [icon]="faTruck"  ></fa-icon>
+          <p class="fs-6 mt-3 text-gray-600">{{"ORDER" | translate}}</p>
         </button>
-        <button  class="btn btn-outline btn-outline-dashed btn-outline-default btn-lg btn-outline-primary h-100px w-100px flex-center" (click)="addItem('repair')">
-          <fa-icon [icon]="faScrewdriverWrench" class="fa-lg"></fa-icon>
-          <h4 class="fs-6 mt-3 text-gray-600">{{"REPAIR" | translate}}</h4>
+        <button  class="btn btn-outline btn-outline-dashed btn-outline-primary btn-active-light-primary h-75px w-75px" (click)="addItem('repair')">
+          <fa-icon [icon]="faScrewdriverWrench"  ></fa-icon>
+          <p class="fs-6 mt-3 text-gray-600">{{"REPAIR" | translate}}</p>
         </button>
-        <button  class="btn btn-outline btn-outline-dashed btn-outline-default btn-lg btn-outline-primary h-100px w-100px flex-center" (click)="addItem('gift-sell')">
-          <fa-icon [icon]="faGifts" class="fa-lg"></fa-icon>
-          <h4 class="fs-6 mt-3 text-gray-600">{{"GIFT" | translate}}</h4>
+        <button  class="btn btn-outline btn-outline-dashed btn-outline-primary btn-active-light-primary h-75px w-75px" (click)="addItem('gift-sell')">
+          <fa-icon [icon]="faGifts"  ></fa-icon>
+          <p class="fs-6 mt-3 text-gray-600">{{"GIFT" | translate}}</p>
         </button>
-        <button  class="btn btn-outline btn-outline-dashed btn-outline-default btn-lg btn-outline-primary h-100px w-100px flex-center" (click)="addItem('gold-purchase')">
-          <fa-icon [icon]="faRing" class="fa-lg"></fa-icon>
-          <h4 class="fs-6 mt-3 text-gray-600">{{"GOLD_PURCHASE" | translate}}</h4>
+        <button  class="btn btn-outline btn-outline-dashed btn-outline-primary btn-active-light-primary h-75px w-75px" (click)="addItem('gold-purchase')">
+          <fa-icon [icon]="faRing"  ></fa-icon>
+          <p class="fs-6 mt-3 text-gray-600">{{"GOLD_PURCHASE" | translate}}</p>
         </button>
-        <button  class="btn btn-outline btn-outline-dashed btn-outline-default btn-lg btn-outline-primary h-100px w-100px flex-center" (click)="addItem('gold-sell')">
-          <fa-icon [icon]="faCoins" class="fa-lg"></fa-icon>
-          <h4 class="fs-6 mt-3 text-gray-600">{{"GOLD_SELL" | translate}}</h4>
+        <button  class="btn btn-outline btn-outline-dashed btn-outline-primary btn-active-light-primary h-75px w-75px" (click)="addItem('gold-sell')">
+          <fa-icon [icon]="faCoins"  ></fa-icon>
+          <p class="fs-6 mt-3 text-gray-600">{{"GOLD_SELL" | translate}}</p>
         </button>
-        <button  class="btn btn-outline btn-outline-dashed btn-outline-default btn-lg btn-outline-primary h-100px w-100px flex-center">
-          <fa-icon [icon]="faCalculator" class="fa-lg"></fa-icon>
-          <h4 class="fs-6 mt-3 text-gray-600">{{"OFFER" | translate}}</h4>
+        <button  class="btn btn-outline btn-outline-dashed btn-outline-primary btn-active-light-primary h-75px w-75px">
+          <fa-icon [icon]="faCalculator"  ></fa-icon>
+          <p class="fs-6 mt-3 text-gray-600">{{"OFFER" | translate}}</p>
         </button>
-        <button  class="btn btn-outline btn-outline-dashed btn-outline-default btn-lg btn-outline-primary h-100px w-100px flex-center">
-          <fa-icon [icon]="faLockOpen" class="fa-lg"></fa-icon>
-          <h4 class="fs-6 mt-3 text-gray-600">{{"OPEN_DRAWER" | translate}}</h4>
+        <button  class="btn btn-outline btn-outline-dashed btn-outline-primary btn-active-light-primary h-75px w-75px">
+          <fa-icon [icon]="faArrowRightFromBracket"  ></fa-icon>
+          <p class="fs-6 mt-3 text-gray-600">{{"OPEN_DRAWER" | translate}}</p>
         </button>
       </div>
       <div class="row till-padding">
@@ -50,9 +50,10 @@
                 </tr>
                 </thead>
                 <tbody>
-                  <ng-container *ngFor="let item of transactionItems">
-                    <tr *ngIf="item.type === 'product'" [item]="item" till-product></tr>
-                    <tr *ngIf="item.type === 'order'" [item]="item" till-order></tr>
+                  <ng-container *ngFor="let item of transactionItems; let i = index">
+                    <div till-order *ngIf="item.type=== 'order'" [item]="item" class="till-item-table-row" (itemChanged)="itemChanged($event, i)"></div>
+                    <tr *ngIf="item.type === 'product'" [item]="item" till-product (itemChanged)="itemChanged($event, i)"></tr>
+<!--                    <tr *ngIf="item.type === 'order'" [item]="item" till-order></tr>-->
                     <tr *ngIf="item.type === 'repair'" [item]="item" till-repair></tr>
                     <tr *ngIf="item.type === 'gift-sell'" [item]="item" till-gift></tr>
                     <tr *ngIf="item.type === 'gold-purchase'" [item]="item" till-goldpurchase></tr>
@@ -83,8 +84,8 @@
             <fa-icon [icon]="faTimesCircle"></fa-icon>
           </button>
         </div>
-        <button *ngFor="let button of quickButtons" class="btn btn-bg-secondary w-100px h-100px till-quick-button"
-                (click)="addItemToTransaction(button)">{{button.name}} ({{button.price | currency: '€'}})</button>
+        <button *ngFor="let button of quickButtons" class="btn btn-bg-secondary w-75px h-75px till-quick-button"
+                (click)="addItemToTransaction(button)">{{button.name}} <br> ({{button.price | currency: '€'}})</button>
       </div>
     </div>
     <div class="col-md-3 col-xs-12">

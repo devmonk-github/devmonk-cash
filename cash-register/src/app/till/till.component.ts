@@ -3,7 +3,7 @@ import {Transaction} from "./models/transaction.model";
 import {TransactionItem} from "./models/transaction-item.model";
 import {faScrewdriverWrench, faTruck, faBoxesStacked, faGifts,
   faMinus, faPlus, faUserPlus, faTimesCircle, faTrashAlt, faRing,
-  faCoins, faCalculator, faLockOpen
+  faCoins, faCalculator, faArrowRightFromBracket
 } from "@fortawesome/free-solid-svg-icons";
 import {TranslateService} from "@ngx-translate/core";
 
@@ -25,7 +25,7 @@ export class TillComponent implements OnInit, OnChanges {
   faRing = faRing
   faCoins = faCoins
   faCalculator = faCalculator
-  faLockOpen = faLockOpen
+  faArrowRightFromBracket = faArrowRightFromBracket
   //Dummy data'
   parkedTransactions: Transaction[] = [
     new Transaction('1', '1', '1', '2022030301',  'shoppurchase', 'concept', '1', '1'),
@@ -90,6 +90,7 @@ export class TillComponent implements OnInit, OnChanges {
     article.discount = 0;
     article.tax = 21;
     article.type = 'product'
+    article.description = ''
 
     this.transactionItems.push(article)
   }
@@ -138,7 +139,8 @@ export class TillComponent implements OnInit, OnChanges {
       quantity: this.randNumber(1, 10),
       price: this.randNumber(5, 200),
       discount: 0,
-      tax: 21
+      tax: 21,
+      description: ''
     })
   }
 
@@ -146,4 +148,12 @@ export class TillComponent implements OnInit, OnChanges {
     this.transactionItems = []
   }
 
+  itemChanged(item: any, index: number): void {
+    if(item === 'delete') {
+      this.transactionItems.splice(index, 1);
+    } else {
+      this.transactionItems[index] = item
+    }
+
+  }
 }

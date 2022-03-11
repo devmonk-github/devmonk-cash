@@ -19,5 +19,8 @@
 <td>{{item.name}} - {{item.type}}</td>
 <td>{{item.quantity * item.price | currency: '€'}}</td>
 <td>{{item.discount}}</td>
-<td>{{item.tax}}</td>
+<td>
+  {{item.tax}}
+  <fa-icon [icon]="faTimesCircle" class="pull-right" (click)="deleteItem()"></fa-icon>
+</td>
 
