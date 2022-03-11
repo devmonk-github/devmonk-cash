@@ -2,27 +2,27 @@
   <div class="row">
     <div class="col-md-9 col-xs-12 column-auto till-body">
       <div class="row till-option-row">
-        <button class="btn btn-outline btn-outline-dashed btn-outline-default btn-lg btn-outline-primary h-100px w-100px flex-center">
+        <button class="btn btn-outline btn-outline-dashed btn-outline-default btn-lg btn-outline-primary h-100px w-100px flex-center" (click)="addItem('product')">
           <fa-icon [icon]="faBoxesStacked" class="fa-lg"></fa-icon>
           <h4 class="fs-6 mt-3 text-gray-600">{{"STOCK" | translate}}</h4>
         </button>
-        <button  class="btn btn-outline btn-outline-dashed btn-outline-default btn-lg btn-outline-primary h-100px w-100px flex-center">
+        <button  class="btn btn-outline btn-outline-dashed btn-outline-default btn-lg btn-outline-primary h-100px w-100px flex-center" (click)="addItem('order')">
           <fa-icon [icon]="faTruck" class="fa-lg"></fa-icon>
           <h4 class="fs-6 mt-3 text-gray-600">{{"ORDER" | translate}}</h4>
         </button>
-        <button  class="btn btn-outline btn-outline-dashed btn-outline-default btn-lg btn-outline-primary h-100px w-100px flex-center">
+        <button  class="btn btn-outline btn-outline-dashed btn-outline-default btn-lg btn-outline-primary h-100px w-100px flex-center" (click)="addItem('repair')">
           <fa-icon [icon]="faScrewdriverWrench" class="fa-lg"></fa-icon>
           <h4 class="fs-6 mt-3 text-gray-600">{{"REPAIR" | translate}}</h4>
         </button>
-        <button  class="btn btn-outline btn-outline-dashed btn-outline-default btn-lg btn-outline-primary h-100px w-100px flex-center">
+        <button  class="btn btn-outline btn-outline-dashed btn-outline-default btn-lg btn-outline-primary h-100px w-100px flex-center" (click)="addItem('gift-sell')">
           <fa-icon [icon]="faGifts" class="fa-lg"></fa-icon>
           <h4 class="fs-6 mt-3 text-gray-600">{{"GIFT" | translate}}</h4>
         </button>
-        <button  class="btn btn-outline btn-outline-dashed btn-outline-default btn-lg btn-outline-primary h-100px w-100px flex-center">
+        <button  class="btn btn-outline btn-outline-dashed btn-outline-default btn-lg btn-outline-primary h-100px w-100px flex-center" (click)="addItem('gold-purchase')">
           <fa-icon [icon]="faRing" class="fa-lg"></fa-icon>
           <h4 class="fs-6 mt-3 text-gray-600">{{"GOLD_PURCHASE" | translate}}</h4>
         </button>
-        <button  class="btn btn-outline btn-outline-dashed btn-outline-default btn-lg btn-outline-primary h-100px w-100px flex-center">
+        <button  class="btn btn-outline btn-outline-dashed btn-outline-default btn-lg btn-outline-primary h-100px w-100px flex-center" (click)="addItem('gold-sell')">
           <fa-icon [icon]="faCoins" class="fa-lg"></fa-icon>
           <h4 class="fs-6 mt-3 text-gray-600">{{"GOLD_SELL" | translate}}</h4>
         </button>
@@ -50,29 +50,14 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr *ngFor="let item of transactionItems">
-                  <td>
-                    <div class="position-relative w-md-100px" data-kt-dialer="true" data-kt-dialer-min="0"
-                         data-kt-dialer-step="1" data-kt-dialer-prefix="€" data-kt-dialer-decimals="2">
-                      <button
-                        class="btn btn-icon btn-active-color-gray-700 position-absolute translate-middle-y top-50 start-0"
-                        data-kt-dialer="decrease">
-                        <fa-icon [icon]="faMinus"></fa-icon>
-                      </button>
-                      <input type="number" class="form-control border-0 ps-12" data-kt-dialer-control="input"
-                             placeholder="{{'QUANTITY' | translate}}" name="quantity" [(ngModel)]="item.quantity">
-                      <button
-                        class="btn btn-icon btn-active-color-gray-700 position-absolute translate-middle-y top-50 end-0"
-                        data-kt-dialer="increase">
-                        <fa-icon [icon]="faPlus"></fa-icon>
-                      </button>
-                    </div>
-                  </td>
-                  <td>{{item.name}}</td>
-                  <td>{{item.quantity * item.price | currency: '€'}}</td>
-                  <td>{{item.discount}}</td>
-                  <td>{{item.tax}}</td>
-                </tr>
+                  <ng-container *ngFor="let item of transactionItems">
+                    <tr *ngIf="item.type === 'product'" [item]="item" till-product></tr>
+                    <tr *ngIf="item.type === 'order'" [item]="item" till-order></tr>
+                    <tr *ngIf="item.type === 'repair'" [item]="item" till-repair></tr>
+                    <tr *ngIf="item.type === 'gift-sell'" [item]="item" till-gift></tr>
+                    <tr *ngIf="item.type === 'gold-purchase'" [item]="item" till-goldpurchase></tr>
+                    <tr *ngIf="item.type === 'gold-sell'" [item]="item" till-goldsell></tr>
+                  </ng-container>
                 </tbody>
                 <tfoot>
                 <tr>
@@ -94,9 +79,12 @@
           <button class="btn btn-secondary">{{ "TRANSACTION" | translate}}</button>
           <button class="btn btn-secondary">{{ "TEXT_LINE" | translate}}</button>
           <button class="btn btn-secondary">{{ "EMPTY_LINE" | translate}}</button>
+          <button class="btn btn-secondary" (click)="cancelItems()">
+            <fa-icon [icon]="faTimesCircle"></fa-icon>
+          </button>
         </div>
         <button *ngFor="let button of quickButtons" class="btn btn-bg-secondary w-100px h-100px till-quick-button"
-                (click)="addItemToTransaction(button)">{{button.name}}</button>
+                (click)="addItemToTransaction(button)">{{button.name}} ({{button.price | currency: '€'}})</button>
       </div>
     </div>
     <div class="col-md-3 col-xs-12">

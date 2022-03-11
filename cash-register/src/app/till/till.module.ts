@@ -10,10 +10,24 @@ import {FormsModule} from "@angular/forms";
 import {ButtonModule} from "primeng/button";
 import {InputTextModule} from "primeng/inputtext";
 import {ToolbarModule} from "primeng/toolbar";
+import { OrderComponent } from './order/order.component';
+import { RepairComponent } from './repair/repair.component';
+import { GiftComponent } from './gift/gift.component';
+import { GoldPurchaseComponent } from './gold-purchase/gold-purchase.component';
+import { GoldSellComponent } from './gold-sell/gold-sell.component';
+import { OfferComponent } from './offer/offer.component';
+import { ProductComponent } from './product/product.component';
 
 @NgModule({
   declarations: [
-    TillComponent
+    TillComponent,
+    OrderComponent,
+    RepairComponent,
+    GiftComponent,
+    GoldPurchaseComponent,
+    GoldSellComponent,
+    OfferComponent,
+    ProductComponent
   ],
   imports: [
     CommonModule,

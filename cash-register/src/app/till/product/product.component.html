@@ -1,0 +1,23 @@
+
+<td>
+  <div class="position-relative w-md-100px" data-kt-dialer="true" data-kt-dialer-min="0"
+       data-kt-dialer-step="1" data-kt-dialer-prefix="€" data-kt-dialer-decimals="2">
+    <button
+      class="btn btn-icon btn-active-color-gray-700 position-absolute translate-middle-y top-50 start-0"
+      data-kt-dialer="decrease">
+      <fa-icon [icon]="faMinus"></fa-icon>
+    </button>
+    <input type="number" class="form-control border-0 ps-12" data-kt-dialer-control="input"
+           placeholder="{{'QUANTITY' | translate}}" name="quantity" [(ngModel)]="item.quantity">
+    <button
+      class="btn btn-icon btn-active-color-gray-700 position-absolute translate-middle-y top-50 end-0"
+      data-kt-dialer="increase">
+      <fa-icon [icon]="faPlus"></fa-icon>
+    </button>
+  </div>
+</td>
+<td>{{item.name}} - {{item.type}}</td>
+<td>{{item.quantity * item.price | currency: '€'}}</td>
+<td>{{item.discount}}</td>
+<td>{{item.tax}}</td>
+
