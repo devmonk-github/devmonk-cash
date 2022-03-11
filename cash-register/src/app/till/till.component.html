@@ -2,21 +2,37 @@
   <div class="row">
     <div class="col-md-9 col-xs-12 column-auto till-body">
       <div class="row till-option-row">
-        <button class="btn btn-lg btn-secondary h-100px w-100px flex-center">
+        <button class="btn btn-outline btn-outline-dashed btn-outline-default btn-lg btn-outline-primary h-100px w-100px flex-center">
           <fa-icon [icon]="faBoxesStacked" class="fa-lg"></fa-icon>
-          <h4 class="fs-6 mt-3 text-gray-600">{{"SHOP_PURCHASE" | translate}}</h4>
+          <h4 class="fs-6 mt-3 text-gray-600">{{"STOCK" | translate}}</h4>
         </button>
-        <button  class="btn btn-lg btn-secondary h-100px w-100px flex-center">
+        <button  class="btn btn-outline btn-outline-dashed btn-outline-default btn-lg btn-outline-primary h-100px w-100px flex-center">
           <fa-icon [icon]="faTruck" class="fa-lg"></fa-icon>
           <h4 class="fs-6 mt-3 text-gray-600">{{"ORDER" | translate}}</h4>
         </button>
-        <button  class="btn btn-lg btn-secondary h-100px w-100px flex-center">
+        <button  class="btn btn-outline btn-outline-dashed btn-outline-default btn-lg btn-outline-primary h-100px w-100px flex-center">
           <fa-icon [icon]="faScrewdriverWrench" class="fa-lg"></fa-icon>
           <h4 class="fs-6 mt-3 text-gray-600">{{"REPAIR" | translate}}</h4>
         </button>
-        <button  class="btn btn-lg btn-secondary h-100px w-100px flex-center">
+        <button  class="btn btn-outline btn-outline-dashed btn-outline-default btn-lg btn-outline-primary h-100px w-100px flex-center">
           <fa-icon [icon]="faGifts" class="fa-lg"></fa-icon>
-          <h4 class="fs-6 mt-3 text-gray-600">{{"GIFTCARD" | translate}}</h4>
+          <h4 class="fs-6 mt-3 text-gray-600">{{"GIFT" | translate}}</h4>
+        </button>
+        <button  class="btn btn-outline btn-outline-dashed btn-outline-default btn-lg btn-outline-primary h-100px w-100px flex-center">
+          <fa-icon [icon]="faRing" class="fa-lg"></fa-icon>
+          <h4 class="fs-6 mt-3 text-gray-600">{{"GOLD_PURCHASE" | translate}}</h4>
+        </button>
+        <button  class="btn btn-outline btn-outline-dashed btn-outline-default btn-lg btn-outline-primary h-100px w-100px flex-center">
+          <fa-icon [icon]="faCoins" class="fa-lg"></fa-icon>
+          <h4 class="fs-6 mt-3 text-gray-600">{{"GOLD_SELL" | translate}}</h4>
+        </button>
+        <button  class="btn btn-outline btn-outline-dashed btn-outline-default btn-lg btn-outline-primary h-100px w-100px flex-center">
+          <fa-icon [icon]="faCalculator" class="fa-lg"></fa-icon>
+          <h4 class="fs-6 mt-3 text-gray-600">{{"OFFER" | translate}}</h4>
+        </button>
+        <button  class="btn btn-outline btn-outline-dashed btn-outline-default btn-lg btn-outline-primary h-100px w-100px flex-center">
+          <fa-icon [icon]="faLockOpen" class="fa-lg"></fa-icon>
+          <h4 class="fs-6 mt-3 text-gray-600">{{"OPEN_DRAWER" | translate}}</h4>
         </button>
       </div>
       <div class="row till-padding">
@@ -85,7 +101,7 @@
     </div>
     <div class="col-md-3 col-xs-12">
       <button *ngIf="!customer"
-              class="btn btn-lg btn-outline btn-outline-dashed btn-outline-default me-5 h-100px w-100px flex-center"
+              class="btn btn-lg btn-outline btn-outline-dashed btn-outline-default btn-outline-dashed btn-outline-default me-5 h-100px w-100px flex-center"
               (click)="addCustomer()">
         <fa-icon [icon]="faUserPlus" class="fa-lg"></fa-icon>
         <h4 class="fs-6 mt-3 text-gray-600">{{"CUSTOMER" | translate}}</h4>

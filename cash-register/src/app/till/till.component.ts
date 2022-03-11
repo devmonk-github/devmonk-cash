@@ -1,7 +1,10 @@
 import {Component, OnChanges, OnInit, SimpleChanges} from '@angular/core';
 import {Transaction} from "./models/transaction.model";
 import {TransactionItem} from "./models/transaction-item.model";
-import {faScrewdriverWrench, faTruck, faBoxesStacked, faGifts, faMinus, faPlus, faUserPlus, faTimesCircle, faTrashAlt} from "@fortawesome/free-solid-svg-icons";
+import {faScrewdriverWrench, faTruck, faBoxesStacked, faGifts,
+  faMinus, faPlus, faUserPlus, faTimesCircle, faTrashAlt, faRing,
+  faCoins, faCalculator, faLockOpen
+} from "@fortawesome/free-solid-svg-icons";
 
 @Component({
   selector: 'app-till',
@@ -18,6 +21,10 @@ export class TillComponent implements OnInit, OnChanges {
   faUserPlus = faUserPlus
   faTimesCircle = faTimesCircle
   faTrashAlt = faTrashAlt
+  faRing = faRing
+  faCoins = faCoins
+  faCalculator = faCalculator
+  faLockOpen = faLockOpen
   //Dummy data'
   parkedTransactions: Transaction[] = [
     new Transaction('1', '1', '1', '2022030301',  'shoppurchase', 'concept', '1', '1'),
