@@ -14,10 +14,10 @@ const routes: Routes = [
     path : 'transactions',
     loadChildren : () => import('./transactions/transactions.module').then(module => module.TransactionsModule)
   },
-  // {
-  //   path: 'statistics',
-  //   loadChildren: () => import(`./statistics/statistics.module`).then(module => module.StatisticsModule)
-  // },
+  {
+    path: 'statistics',
+    loadChildren: () => import(`./statistics/statistics.module`).then(module => module.StatisticsModule)
+  },
   { path: '', redirectTo: 'home', pathMatch: 'full' }
 ];
 
