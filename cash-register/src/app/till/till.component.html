@@ -91,7 +91,7 @@
     <div class="col-md-3 col-xs-12">
       <button *ngIf="!customer"
               class="btn btn-lg btn-outline btn-outline-dashed btn-outline-default btn-outline-dashed btn-outline-default me-5 h-100px w-100px flex-center"
-              (click)="addCustomer()">
+              (click)="openCustomerDialog()">
         <fa-icon [icon]="faUserPlus" class="fa-lg"></fa-icon>
         <h4 class="fs-6 mt-3 text-gray-600">{{"CUSTOMER" | translate}}</h4>
       </button>

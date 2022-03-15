@@ -1,0 +1,19 @@
+<div class="card shadow-sm">
+  <div class="card-header">
+    <h3 class="card-title">{{ "CUSTOMER" | translate}}</h3>
+    <div class="card-toolbar">
+      <button type="button" class="btn btn-sm btn-light" (click)="close(true)">
+        <fa-icon [icon]="faTimes"></fa-icon>
+      </button>
+    </div>
+  </div>
+  <div class="card-body card-scroll">
+    <button class="btn btn-primary" type="button" (click)="setCustomer()">Klik maar</button>
+    <span *ngIf="loading" class="spinner-border align-middle"></span>
+    <p *ngIf="loading">"Er worden nu klanten gezocht zeg maar...."</p>
+    <pre>{{customer | json}}</pre>
+  </div>
+  <div class="card-footer">
+    <button class="btn btn-secondary" type="button" (click)="save()">Opslaan maar</button>
+  </div>
+</div>

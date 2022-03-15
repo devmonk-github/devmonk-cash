@@ -6,6 +6,8 @@ import {faScrewdriverWrench, faTruck, faBoxesStacked, faGifts,
   faCoins, faCalculator, faArrowRightFromBracket
 } from "@fortawesome/free-solid-svg-icons";
 import {TranslateService} from "@ngx-translate/core";
+import {DialogService} from '../shared/service/dialog'
+import {CustomerDialogComponent} from "../shared/components/customer-dialog/customer-dialog.component";
 
 @Component({
   selector: 'app-till',
@@ -50,8 +52,9 @@ export class TillComponent implements OnInit, OnChanges {
     {name: 'Leren band', price: this.randNumber(1, 50)},
     {name: 'Postzegels', price: this.randNumber(1, 50)},
     {name: 'Tassen', price: this.randNumber(1, 50)},
-
   ]
+
+  customer: any
 
   /**
    * Temp function to generate random numbers for demo till
@@ -73,8 +76,8 @@ export class TillComponent implements OnInit, OnChanges {
   ]
 
   selectedTransaction = null;
-  customer: any;
-  constructor(private translateService: TranslateService) { }
+
+  constructor(private translateService: TranslateService, private dialogService: DialogService) { }
 
 
   ngOnChanges(changes: SimpleChanges) {
@@ -154,6 +157,16 @@ export class TillComponent implements OnInit, OnChanges {
     } else {
       this.transactionItems[index] = item
     }
+  }
+
+  openCustomerDialog(): void {
+    this.dialogService.openModal(CustomerDialogComponent, {context: {customer: this.customer}})
+      .instance.close.subscribe( (data) => {
+        if(data.customer) {
+          this.customer = data.customer
+        }
+    })
+
 
   }
 }
