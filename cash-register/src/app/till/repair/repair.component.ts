@@ -1,4 +1,5 @@
-import {Component, Input, OnInit, ViewEncapsulation} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output, ViewEncapsulation} from '@angular/core';
+import {faTimes, faPlus, faMinus, faM} from "@fortawesome/free-solid-svg-icons";
 
 @Component({
   selector: '[till-repair]',
@@ -8,9 +9,19 @@ import {Component, Input, OnInit, ViewEncapsulation} from '@angular/core';
 })
 export class RepairComponent implements OnInit {
   @Input() item: any
+  @Output() itemChanged = new EventEmitter<any>();
+
+  faTimes = faTimes
+  faPlus = faPlus
+  faMinus = faMinus
+
   constructor() { }
 
   ngOnInit(): void {
+  }
+
+  deleteItem(): void {
+    this.itemChanged.emit('delete')
   }
 
 }
