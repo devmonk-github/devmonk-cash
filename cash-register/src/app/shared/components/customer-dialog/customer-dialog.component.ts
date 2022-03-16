@@ -96,7 +96,7 @@ export class CustomerDialogComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  close(flag: boolean): void {
+  close(): void {
     this.dialogRef.close.emit({action: false})
   }
 

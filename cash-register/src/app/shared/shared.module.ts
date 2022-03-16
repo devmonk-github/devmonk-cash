@@ -7,7 +7,7 @@ import {TranslateModule} from "@ngx-translate/core";
 
 @NgModule({
   declarations: [
-    CustomerDialogComponent
+    CustomerDialogComponent,
   ],
   imports: [
     CommonModule,

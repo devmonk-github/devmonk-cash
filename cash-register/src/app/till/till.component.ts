@@ -145,7 +145,8 @@ export class TillComponent implements OnInit, OnChanges {
       price: this.randNumber(5, 200),
       discount: 0,
       tax: 21,
-      description: ''
+      description: '',
+      open: true
     })
   }
 
@@ -168,7 +169,16 @@ export class TillComponent implements OnInit, OnChanges {
           this.customer = data.customer
         }
     })
+  }
 
-
+  openRow(index: number, event: any): void {
+    console.log('event.srcElement.className', event.srcElement.className )
+    console.log('event.srcElement', event.srcElement)
+    if(event && event.srcElement &&
+      event.srcElement.className.indexOf('till-item-table-row') >= 0 ||
+      (event.srcElement.parentElement && event.srcElement.parentElement.className.indexOf('till-item-table-row') >= 0)
+    ) {
+      this.transactionItems[index].open = !this.transactionItems[index].open
+    }
   }
 }

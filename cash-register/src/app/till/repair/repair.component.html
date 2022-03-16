@@ -1,5 +1,14 @@
+<tr class="till-order-row">
 <td>{{item.quantity}}</td>
 <td>{{item.name}}</td>
 <td>{{item.price}}</td>
 <td>{{item.discount}}</td>
 <td>{{item.tax}}</td>
+</tr>
+<tr *ngIf="item.open">
+  <td colspan="5">
+    <p>REPARATIE</p>
+    <textarea lines="5"></textarea>
+  </td>
+</tr>
+
