@@ -2,7 +2,7 @@ import {Component, OnChanges, OnInit, SimpleChanges} from '@angular/core';
 import {Transaction} from "./models/transaction.model";
 import {TransactionItem} from "./models/transaction-item.model";
 import {faScrewdriverWrench, faTruck, faBoxesStacked, faGifts,
-  faMinus, faPlus, faUserPlus, faTimesCircle, faTrashAlt, faRing,
+  faMinus, faPlus, faUserPlus, faUser, faTimes, faTimesCircle, faTrashAlt, faRing,
   faCoins, faCalculator, faArrowRightFromBracket
 } from "@fortawesome/free-solid-svg-icons";
 import {TranslateService} from "@ngx-translate/core";
@@ -21,7 +21,9 @@ export class TillComponent implements OnInit, OnChanges {
   faGifts = faGifts
   faMinus = faMinus
   faPlus = faPlus
+  faUser = faUser
   faUserPlus = faUserPlus
+  faTimes = faTimes
   faTimesCircle = faTimesCircle
   faTrashAlt = faTrashAlt
   faRing = faRing

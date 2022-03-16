@@ -1,5 +1,5 @@
 import {Component, EventEmitter, HostListener, Input, OnInit, Output, ViewEncapsulation} from '@angular/core';
-import {faMinus, faPlus, faTimesCircle} from '@fortawesome/free-solid-svg-icons'
+import {faMinus, faPlus, faTimes} from '@fortawesome/free-solid-svg-icons'
 
 @Component({
   selector: '[till-product]',
@@ -13,7 +13,7 @@ export class ProductComponent implements OnInit {
 
   faPlus = faPlus
   faMinus = faMinus
-  faTimesCircle = faTimesCircle
+  faTimes = faTimes
 
 
   constructor() { }
