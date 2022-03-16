@@ -1,6 +1,5 @@
-import {Component, OnChanges, OnInit, SimpleChanges} from '@angular/core';
+import {Component, OnChanges, OnInit} from '@angular/core';
 import {Transaction} from "./models/transaction.model";
-import {TransactionItem} from "./models/transaction-item.model";
 import {faScrewdriverWrench, faTruck, faBoxesStacked, faGifts,
   faMinus, faPlus, faUserPlus, faUser, faTimes, faTimesCircle, faTrashAlt, faRing,
   faCoins, faCalculator, faArrowRightFromBracket
@@ -8,6 +7,8 @@ import {faScrewdriverWrench, faTruck, faBoxesStacked, faGifts,
 import {TranslateService} from "@ngx-translate/core";
 import {DialogService} from '../shared/service/dialog'
 import {CustomerDialogComponent} from "../shared/components/customer-dialog/customer-dialog.component";
+import {GenerateGiftcardComponent} from "./dialogs/generate-giftcard/generate-giftcard.component";
+import {TaxService} from "../shared/service/tax.service";
 
 @Component({
   selector: 'app-till',
@@ -30,7 +31,13 @@ export class TillComponent implements OnInit, OnChanges {
   faCoins = faCoins
   faCalculator = faCalculator
   faArrowRightFromBracket = faArrowRightFromBracket
-  //Dummy data'
+
+  taxes: any[] = []
+  transactionItems: any[] = []
+  selectedTransaction = null;
+  customer: any
+
+  // Dummy data
   parkedTransactions: Transaction[] = [
     new Transaction('1', '1', '1', '2022030301',  'shoppurchase', 'concept', '1', '1'),
     new Transaction('2', '1', '1', '2022030302',  'shoppurchase', 'concept', '1', '1'),
@@ -55,8 +62,14 @@ export class TillComponent implements OnInit, OnChanges {
     {name: 'Postzegels', price: this.randNumber(1, 50)},
     {name: 'Tassen', price: this.randNumber(1, 50)},
   ]
+  payMethods = [
+    "GIFTCARD",
+    "CASH",
+    "CARD",
+    "BANK"
+  ]
+  // End dummy data
 
-  customer: any
 
   /**
    * Temp function to generate random numbers for demo till
@@ -67,26 +80,12 @@ export class TillComponent implements OnInit, OnChanges {
     return Math.floor(Math.random() * (max - min +1) + min);
   }
 
-  payMethods = [
-    "GIFTCARD",
-    "CASH",
-    "CARD",
-    "BANK"
-  ]
+  constructor(private translateService: TranslateService, private dialogService: DialogService, private taxService: TaxService) { }
 
-  transactionItems: any[] = [
-  ]
-
-  selectedTransaction = null;
-
-  constructor(private translateService: TranslateService, private dialogService: DialogService) { }
-
-
-  ngOnChanges(changes: SimpleChanges) {
-
-  }
+  ngOnChanges() {}
 
   ngOnInit(): void {
+    this.taxes = this.taxService.getTaxRates()
   }
 
   addItemToTransaction(item: any): void {
@@ -96,7 +95,6 @@ export class TillComponent implements OnInit, OnChanges {
     article.tax = 21;
     article.type = 'product'
     article.description = ''
-
     this.transactionItems.push(article)
   }
 
@@ -104,20 +102,6 @@ export class TillComponent implements OnInit, OnChanges {
     this.selectedTransaction = null
   }
 
-  addCustomer(): void {
-    this.customer = {
-      number: '45663',
-      counter: false,
-      name: 'Christy van Woudenberg',
-      email: 'CristyvanWoudenberg@armyspy.com',
-      address: {
-        street: 'Slatuinenweg',
-        number: 24,
-        zip: '1057 KB',
-        city: 'Amsterdam'
-      }
-    }
-  }
   removeCustomer(): void {
     this.customer = null
   }
@@ -131,13 +115,14 @@ export class TillComponent implements OnInit, OnChanges {
 
       result += type === 'price' ? i.quantity * i.price : i[type]
     })
-
     return result
   }
 
-
-
   addItem(type: string): void {
+    if(type === 'gift-sell') {
+      this.openGenerateGiftcardDialog()
+      return
+    }
     this.transactionItems.push({
       name: this.translateService.instant(type.toUpperCase()),
       type: type,
@@ -171,14 +156,23 @@ export class TillComponent implements OnInit, OnChanges {
     })
   }
 
-  openRow(index: number, event: any): void {
-    console.log('event.srcElement.className', event.srcElement.className )
-    console.log('event.srcElement', event.srcElement)
-    if(event && event.srcElement &&
-      event.srcElement.className.indexOf('till-item-table-row') >= 0 ||
-      (event.srcElement.parentElement && event.srcElement.parentElement.className.indexOf('till-item-table-row') >= 0)
-    ) {
-      this.transactionItems[index].open = !this.transactionItems[index].open
-    }
+  openGenerateGiftcardDialog(): void {
+    this.dialogService.openModal(GenerateGiftcardComponent, {})
+      .instance.close.subscribe( (data) => {
+        if(data.action) {
+          this.transactionItems.push({
+            name: this.translateService.instant("GIFTCARD_SELL"),
+            type: "giftcard-sell",
+            quantity: 1,
+            price: data.card.value,
+            discount: 0,
+            tax: data.card.tax,
+            giftcardNumber: data.card.number,
+            taxHandling: data.card.taxHandling,
+            description: '',
+            open: true
+          })
+        }
+    })
   }
 }

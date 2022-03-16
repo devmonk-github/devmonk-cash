@@ -9,6 +9,7 @@ import {faTimes, faPlus, faMinus, faM} from "@fortawesome/free-solid-svg-icons";
 })
 export class RepairComponent implements OnInit {
   @Input() item: any
+  @Input() taxes: any
   @Output() itemChanged = new EventEmitter<any>();
 
   faTimes = faTimes

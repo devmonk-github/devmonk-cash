@@ -1,9 +1,10 @@
 import {DialogService} from "./service/dialog";
 import {ComponentFactoryResolver, ModuleWithProviders, NgModule} from "@angular/core";
-import { CustomerDialogComponent } from './components/customer-dialog/customer-dialog.component';
+import {CustomerDialogComponent } from './components/customer-dialog/customer-dialog.component';
 import {CommonModule} from "@angular/common";
 import {FontAwesomeModule} from "@fortawesome/angular-fontawesome";
 import {TranslateModule} from "@ngx-translate/core";
+import {FormsModule} from "@angular/forms";
 
 @NgModule({
   declarations: [
@@ -12,7 +13,8 @@ import {TranslateModule} from "@ngx-translate/core";
   imports: [
     CommonModule,
     FontAwesomeModule,
-    TranslateModule
+    TranslateModule,
+    FormsModule
   ],
   exports: []
 })

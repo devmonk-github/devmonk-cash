@@ -1,5 +1,55 @@
-<td>{{item.quantity}}</td>
-<td>{{item.name}}</td>
-<td>{{item.price}}</td>
-<td>{{item.discount}}</td>
-<td>{{item.tax}}</td>
+<div class="accordion-item">
+  <h2 class="accordion-header">
+    <button class="accordion-button fs-4 fw-bold" type="button" data-bs-toggle="collapse"
+            data-bs-target="#kt_accordion_1_body_1" aria-expanded="true" aria-controls="kt_accordion_1_body_1">
+      <section class="d-flex product-row mb-3 align-items-center">
+        <div class="w-90px">1</div>
+        <div class="w-300px">{{item.name}} - {{item.giftcardNumber}}</div>
+        <div class="w-125px ps-2">{{item.price | currency: '€'}}</div>
+        <div class="w-100px ps-2"></div>
+        <div class="w-125px ps-2">{{item.tax}}%</div>
+      </section>
+    </button>
+  </h2>
+  <div id="kt_accordion_1_body_1" class="accordion-collapse collapse show" aria-labelledby="kt_accordion_1_header_1"
+       data-bs-parent="#kt_accordion_1">
+    <div class="accordion-body">
+      <section class="d-flex product-row mb-3 align-items-center">
+        <div class="w-90px">&nbsp;</div>
+        <div class="w-300px">
+          <div class="form-floating mb-7">
+            <input type="text" class="form-control" name="number" id="number" [(ngModel)]="item.giftcardNumber">
+            <label for="number">{{ "GIFTCARD_NUMBER" | translate}}</label>
+          </div>
+        </div>
+
+
+          <div class="w-300px">
+            <div class="form-floating mb-7">
+              <input type="text" class="form-control" name="number" id="value" [(ngModel)]="item.price">
+              <label for="number">{{ "VALUE" | translate}}</label>
+            </div>
+          </div>
+          <div class="w-100px ps-2"></div>
+          <div class="w-125px ps-2">
+            <div class="form-floating till-padding">
+              <select name="taxRate" id="taxRate" class="form-select"
+                      [(ngModel)]="item.tax">
+                <option *ngFor="let rate of taxes"
+                        [ngValue]="rate.rate">{{rate.name}}</option>
+              </select>
+              <label for="taxRate">{{"TAX" | translate}}</label>
+            </div>
+          </div>
+          <div class="w-100px">
+            <button class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary w-30px h-30px"
+                    (click)="deleteItem()">
+      <span class="svg-icon svg-icon-1qx me-0">
+        <fa-icon [icon]="faTimes"></fa-icon>
+      </span>
+            </button>
+          </div>
+      </section>
+    </div>
+  </div>
+</div>
