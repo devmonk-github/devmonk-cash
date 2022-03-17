@@ -6,7 +6,7 @@ import { TillComponent } from './till.component';
 import {FontAwesomeModule} from "@fortawesome/angular-fontawesome";
 import {TranslateModule} from "@ngx-translate/core";
 import {DropdownModule} from "primeng/dropdown";
-import {FormsModule} from "@angular/forms";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {ButtonModule} from "primeng/button";
 import {InputTextModule} from "primeng/inputtext";
 import {ToolbarModule} from "primeng/toolbar";
@@ -17,6 +17,8 @@ import { GoldPurchaseComponent } from './gold-purchase/gold-purchase.component';
 import { GoldSellComponent } from './gold-sell/gold-sell.component';
 import { OfferComponent } from './offer/offer.component';
 import { ProductComponent } from './product/product.component';
+import {AccordionDirective} from "../shared/directives/accordion.directive";
+import {GenerateGiftcardComponent} from "./dialogs/generate-giftcard/generate-giftcard.component";
 
 @NgModule({
   declarations: [
@@ -27,7 +29,9 @@ import { ProductComponent } from './product/product.component';
     GoldPurchaseComponent,
     GoldSellComponent,
     OfferComponent,
-    ProductComponent
+    ProductComponent,
+    AccordionDirective,
+    GenerateGiftcardComponent
   ],
   imports: [
     CommonModule,
@@ -35,6 +39,7 @@ import { ProductComponent } from './product/product.component';
     FontAwesomeModule,
     TranslateModule,
     FormsModule,
+    ReactiveFormsModule,
     //PrimeNG
     DropdownModule,
     ButtonModule,
@@ -46,6 +51,7 @@ import { ProductComponent } from './product/product.component';
     TillRoutingModule,
     FontAwesomeModule,
     TranslateModule,
+    FormsModule,
     //PrimeNG
     DropdownModule,
     ButtonModule,

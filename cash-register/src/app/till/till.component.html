@@ -1,106 +1,234 @@
 <div class="container">
   <div class="row">
-    <div class="col-md-9 col-xs-12 column-auto till-body">
-      <div class="row till-option-row">
-        <button class="btn btn-outline btn-outline-dashed btn-outline-primary btn-active-light-primary h-75px w-75px" (click)="addItem('product')">
-          <fa-icon [icon]="faBoxesStacked"></fa-icon>
-          <p class="fs-6 mt-3 text-gray-600">{{"STOCK" | translate}}</p>
-        </button>
-        <button  class="btn btn-outline btn-outline-dashed btn-outline-primary btn-active-light-primary h-75px w-75px" (click)="addItem('order')">
-          <fa-icon [icon]="faTruck"  ></fa-icon>
-          <p class="fs-6 mt-3 text-gray-600">{{"ORDER" | translate}}</p>
-        </button>
-        <button  class="btn btn-outline btn-outline-dashed btn-outline-primary btn-active-light-primary h-75px w-75px" (click)="addItem('repair')">
-          <fa-icon [icon]="faScrewdriverWrench"  ></fa-icon>
-          <p class="fs-6 mt-3 text-gray-600">{{"REPAIR" | translate}}</p>
-        </button>
-        <button  class="btn btn-outline btn-outline-dashed btn-outline-primary btn-active-light-primary h-75px w-75px" (click)="addItem('gift-sell')">
-          <fa-icon [icon]="faGifts"  ></fa-icon>
-          <p class="fs-6 mt-3 text-gray-600">{{"GIFT" | translate}}</p>
-        </button>
-        <button  class="btn btn-outline btn-outline-dashed btn-outline-primary btn-active-light-primary h-75px w-75px" (click)="addItem('gold-purchase')">
-          <fa-icon [icon]="faRing"  ></fa-icon>
-          <p class="fs-6 mt-3 text-gray-600">{{"GOLD_PURCHASE" | translate}}</p>
-        </button>
-        <button  class="btn btn-outline btn-outline-dashed btn-outline-primary btn-active-light-primary h-75px w-75px" (click)="addItem('gold-sell')">
-          <fa-icon [icon]="faCoins"  ></fa-icon>
-          <p class="fs-6 mt-3 text-gray-600">{{"GOLD_SELL" | translate}}</p>
-        </button>
-        <button  class="btn btn-outline btn-outline-dashed btn-outline-primary btn-active-light-primary h-75px w-75px">
-          <fa-icon [icon]="faCalculator"  ></fa-icon>
-          <p class="fs-6 mt-3 text-gray-600">{{"OFFER" | translate}}</p>
-        </button>
-        <button  class="btn btn-outline btn-outline-dashed btn-outline-primary btn-active-light-primary h-75px w-75px">
-          <fa-icon [icon]="faArrowRightFromBracket"  ></fa-icon>
-          <p class="fs-6 mt-3 text-gray-600">{{"OPEN_DRAWER" | translate}}</p>
-        </button>
-      </div>
-      <div class="row till-padding">
-        <div class="card shadow-sm till-table-card">
-          <div class="card-body card-scroll till-card-body">
-            <div class="table-responsive">
-              <table class="table table-striped">
-                <thead>
-                <tr class="fw-bolder fs-6 text-gray-800">
-                  <th>{{ "QUANTITY" | translate}}</th>
-                  <th>{{ "DESCRIPTION" | translate}}</th>
-                  <th>{{ "PRICE" | translate}}</th>
-                  <th>{{ "DISCOUNT" | translate}}</th>
-                  <th>{{ "TAX" | translate}}</th>
-                </tr>
-                </thead>
-                <tbody>
-                  <ng-container *ngFor="let item of transactionItems; let i = index">
-                    <div till-order *ngIf="item.type=== 'order'" [item]="item" class="till-item-table-row" (itemChanged)="itemChanged($event, i)"></div>
-                    <tr *ngIf="item.type === 'product'" [item]="item" till-product (itemChanged)="itemChanged($event, i)"></tr>
-<!--                    <tr *ngIf="item.type === 'order'" [item]="item" till-order></tr>-->
-                    <tr *ngIf="item.type === 'repair'" [item]="item" till-repair></tr>
-                    <tr *ngIf="item.type === 'gift-sell'" [item]="item" till-gift></tr>
-                    <tr *ngIf="item.type === 'gold-purchase'" [item]="item" till-goldpurchase></tr>
-                    <tr *ngIf="item.type === 'gold-sell'" [item]="item" till-goldsell></tr>
-                  </ng-container>
-                </tbody>
-                <tfoot>
-                <tr>
-                  <td>{{getTotals('quantity')}}</td>
-                  <td>&nbsp;</td>
-                  <td>{{getTotals('price') | currency: '€'}}</td>
-                  <td>{{getTotals('discount')}}</td>
-                  <td>&nbsp;</td>
-                </tr>
-                </tfoot>
-              </table>
+    <div class="col-md-9 col-xs-12 column-auto till-body ps-0 pe-0">
+      <div class="d-flex justify-content-start">
+        <button class="btn d-flex bg-white rounded p-4 mb-3 me-3 text-hover-primary min-w-90px"
+                (click)="addItem('product')">
+          <div class="d-flex flex-column justify-center align-items-center flex-grow-1">
+            <div class="symbol symbol-40px mb-2">
+              <span class="symbol-label">
+                <span class="svg-icon svg-icon-1qx me-0">
+                  <fa-icon [icon]="faBoxesStacked"></fa-icon>
+                </span>
+              </span>
             </div>
+            <div class="fs-6">
+              <span class="text-gray-800fw-bold">{{"STOCK" | translate}}</span>
+            </div>
+          </div>
+        </button>
+
+        <button class="btn d-flex bg-white rounded p-4 mb-3 me-3 text-hover-primary min-w-90px"
+                (click)="addItem('order')">
+          <div class="d-flex flex-column justify-center align-items-center flex-grow-1">
+            <div class="symbol symbol-40px mb-2">
+              <span class="symbol-label">
+                <span class="svg-icon svg-icon-1qx me-0">
+                  <fa-icon [icon]="faTruck"></fa-icon>
+                </span>
+              </span>
+            </div>
+            <div class="fs-6">
+              <span class="text-gray-800fw-bold">{{"ORDER" | translate}}</span>
+            </div>
+          </div>
+        </button>
+
+        <button class="btn d-flex bg-white rounded p-4 mb-3 me-3 text-hover-primary min-w-90px"
+                (click)="addItem('repair')">
+          <div class="d-flex flex-column justify-center align-items-center flex-grow-1">
+            <div class="symbol symbol-40px mb-2">
+              <span class="symbol-label">
+                <span class="svg-icon svg-icon-1qx me-0">
+                  <fa-icon [icon]="faScrewdriverWrench"></fa-icon>
+                </span>
+              </span>
+            </div>
+            <div class="fs-6">
+              <span class="text-gray-800fw-bold">{{"REPAIR" | translate}}</span>
+            </div>
+          </div>
+        </button>
+
+        <button class="btn d-flex bg-white rounded p-4 mb-3 me-3 text-hover-primary min-w-90px"
+                (click)="addItem('gift-sell')">
+          <div class="d-flex flex-column justify-center align-items-center flex-grow-1">
+            <div class="symbol symbol-40px mb-2">
+              <span class="symbol-label">
+                <span class="svg-icon svg-icon-1qx me-0">
+                  <fa-icon [icon]="faGifts"></fa-icon>
+                </span>
+              </span>
+            </div>
+            <div class="fs-6">
+              <span class="text-gray-800fw-bold">{{"GIFT" | translate}}</span>
+            </div>
+          </div>
+        </button>
+
+        <button class="btn d-flex bg-white rounded p-4 mb-3 me-3 text-hover-primary min-w-90px"
+                (click)="addItem('gold-purchase')">
+          <div class="d-flex flex-column justify-center align-items-center flex-grow-1">
+            <div class="symbol symbol-40px mb-2">
+              <span class="symbol-label">
+                <span class="svg-icon svg-icon-1qx me-0">
+                  <fa-icon [icon]="faRing"></fa-icon>
+                </span>
+              </span>
+            </div>
+            <div class="fs-6">
+              <span class="text-gray-800fw-bold">{{"GOLD_PURCHASE" | translate}}</span>
+            </div>
+          </div>
+        </button>
+
+        <button class="btn d-flex bg-white rounded p-4 mb-3 me-3 text-hover-primary min-w-90px"
+                (click)="addItem('gold-sell')">
+          <div class="d-flex flex-column justify-center align-items-center flex-grow-1">
+            <div class="symbol symbol-40px mb-2">
+              <span class="symbol-label">
+                <span class="svg-icon svg-icon-1qx me-0">
+                  <fa-icon [icon]="faCoins"></fa-icon>
+                </span>
+              </span>
+            </div>
+            <div class="fs-6">
+              <span class="text-gray-800fw-bold">{{"GOLD_SELL" | translate}}</span>
+            </div>
+          </div>
+        </button>
+
+        <button class="btn d-flex bg-white rounded p-4 mb-3 me-3 text-hover-primary min-w-90px">
+          <div class="d-flex flex-column justify-center align-items-center flex-grow-1">
+            <div class="symbol symbol-40px mb-2">
+              <span class="symbol-label">
+                <span class="svg-icon svg-icon-1qx me-0">
+                  <fa-icon [icon]="faCalculator"></fa-icon>
+                </span>
+              </span>
+            </div>
+            <div class="fs-6">
+              <span class="text-gray-800fw-bold">{{"OFFER" | translate}}</span>
+            </div>
+          </div>
+        </button>
+        <!-- <button class="btn d-flex bg-white rounded p-4 mb-3 me-3 text-hover-primary">
+          <div class="d-flex flex-column justify-center align-items-center flex-grow-1">
+            <div class="symbol symbol-40px mb-2">
+              <span class="symbol-label">
+                <span class="svg-icon svg-icon-1qx me-0">
+                  <fa-icon [icon]="faArrowRightFromBracket"></fa-icon>
+                </span>
+              </span>
+            </div>
+            <div class="fs-6">
+              <span class="text-gray-800fw-bold">{{"OPEN_DRAWER" | translate}}</span>
+            </div>
+          </div>
+        </button> -->
+      </div>
+
+      <div class="card">
+        <div id="till-items-header" class="card-header p-4 lh-1 justify-content-start">
+          <div class="d-flex w-100 fw-bold text-gray-800 align-items-center">
+            <span class="w-90px">{{ "QUANTITY" | translate}}</span>
+            <span class="w-300px ps-2">{{ "DESCRIPTION" | translate}}</span>
+            <span class="w-125px ps-2">{{ "PRICE" | translate}}</span>
+            <span class="w-100px ps-2">{{ "DISCOUNT" | translate}}</span>
+            <span class="w-125px ps-2">{{ "TAX" | translate}}</span>
+            <span class="w-100px">{{ "ACTIONS" | translate}}</span>
+          </div>
+        </div>
+        <div class="card-body p-3">
+          <div class="accordion" id="kt_accordion_1" [itemLength]="transactionItems.length">
+            <ng-container *ngFor="let item of transactionItems; let i = index">
+              <div class="accordion-item" till-product *ngIf="item.type=== 'product'" [item]="item" [taxes]="taxes"
+                   (itemChanged)="itemChanged($event, i)"></div>
+              <div class="accordion-item" till-order *ngIf="item.type=== 'order'" [item]="item" [taxes]="taxes"
+                   (itemChanged)="itemChanged($event, i)"></div>
+              <div class="accordion-item" till-repair *ngIf="item.type=== 'repair'" [item]="item" [taxes]="taxes"
+                   (itemChanged)="itemChanged($event, i)"></div>
+              <div class="accordion-item" till-gift *ngIf="item.type=== 'giftcard-sell'" [item]="item" [taxes]="taxes"
+                   (itemChanged)="itemChanged($event, i)"></div>
+            </ng-container>
+            <section class="d-flex product-row mb-3 align-items-center">
+              <div class="w-90px">{{getTotals('quantity')}}</div>
+              <div class="w-300px">&nbsp;</div>
+              <div class="w-125px ps-2">{{getTotals('price') | currency: '€'}}</div>
+              <div class="w-100px ps-2">{{getTotals('discount')}}</div>
+              <div class="w-125px ps-2">&nbsp;</div>
+            </section>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="form-group till-padding">
+            <div class="input-group">
+              <input type="text" class="form-control" placeholder="Search...">
+              <button class="btn btn-secondary">{{ "TRANSACTION" | translate}}</button>
+              <button class="btn btn-secondary">{{ "TEXT_LINE" | translate}}</button>
+              <button class="btn btn-secondary">{{ "EMPTY_LINE" | translate}}</button>
+              <button class="btn btn-secondary" (click)="cancelItems()">
+                <fa-icon [icon]="faTimesCircle"></fa-icon>
+              </button>
+            </div>
+          </div>
+          <div class="bg-white p-3">
+            <ul id="quick-buttons" class="nav nav-pills nav-pills-custom mb-3">
+              <li class="nav-item mb-3 me-3" *ngFor="let button of quickButtons">
+                <button
+                  class="nav-link d-flex justify-content-center flex-column flex-center overflow-hidden active w-85px h-85px py-4"
+                  (click)="addItemToTransaction(button)">
+                  <h4 class="nav-text text-gray-800 fw-bold fs-6 lh-1 text-center mb-0">{{button.name}}</h4>
+                  <span class="text-gray-600">{{button.price | currency: '€'}}</span>
+                  <!-- todo: color per quick button <span class="bullet-custom position-absolute bottom-0 w-100 h-4px bg-primary"></span> -->
+                </button>
+              </li>
+            </ul>
           </div>
         </div>
       </div>
-      <div class="row">
-        <div class="input-group till-padding">
-          <input type="text" class="form-control" placeholder="Search...">
-          <button class="btn btn-secondary">{{ "TRANSACTION" | translate}}</button>
-          <button class="btn btn-secondary">{{ "TEXT_LINE" | translate}}</button>
-          <button class="btn btn-secondary">{{ "EMPTY_LINE" | translate}}</button>
-          <button class="btn btn-secondary" (click)="cancelItems()">
-            <fa-icon [icon]="faTimesCircle"></fa-icon>
-          </button>
-        </div>
-        <button *ngFor="let button of quickButtons" class="btn btn-bg-secondary w-75px h-75px till-quick-button"
-                (click)="addItemToTransaction(button)">{{button.name}} <br> ({{button.price | currency: '€'}})</button>
-      </div>
     </div>
     <div class="col-md-3 col-xs-12">
-      <button *ngIf="!customer"
-              class="btn btn-lg btn-outline btn-outline-dashed btn-outline-default btn-outline-dashed btn-outline-default me-5 h-100px w-100px flex-center"
+      <button *ngIf="!customer" class="btn d-flex bg-white rounded p-5 mb-3 text-hover-primary w-100"
               (click)="openCustomerDialog()">
-        <fa-icon [icon]="faUserPlus" class="fa-lg"></fa-icon>
-        <h4 class="fs-6 mt-3 text-gray-600">{{"CUSTOMER" | translate}}</h4>
+        <div class="d-flex justify-center align-items-center flex-grow-1">
+          <div class="symbol symbol-40px me-2">
+            <span class="symbol-label">
+              <span class="svg-icon svg-icon-2qx me-0">
+                <fa-icon [icon]="faUserPlus"></fa-icon>
+              </span>
+            </span>
+          </div>
+          <div class="fs-5 ms-4">
+            <span class="text-gray-800 fw-bold">{{"CUSTOMER" | translate}}</span>
+          </div>
+        </div>
       </button>
-      <div *ngIf="customer" class="card shadow-sm">
-        <div class="card-body till-card-body">
-          <button type="button" class="btn btn-sm btn-light" style="float:right" (click)="removeCustomer()">
-            <fa-icon [icon]="faTimesCircle"></fa-icon>
+
+      <div *ngIf="customer" class="d-flex flex-column bg-white rounded p-5 mb-3 w-100">
+        <div class="d-flex justify-content-between align-items-center">
+          <div class="d-flex justify-center align-items-center flex-grow-1">
+            <div class="symbol symbol-40px me-2">
+              <span class="symbol-label">
+                <span class="svg-icon svg-icon-1qx me-0">
+                  <fa-icon [icon]="faUser"></fa-icon>
+                </span>
+              </span>
+            </div>
+            <div class="fs-5 ms-4">
+              <span class="text-gray-800 fw-bold">{{"CUSTOMER" | translate}}</span>
+            </div>
+          </div>
+          <button class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary w-30px h-30px"
+                  (click)="removeCustomer()">
+            <span class="svg-icon svg-icon-1qx me-0">
+              <fa-icon [icon]="faTimes"></fa-icon>
+            </span>
           </button>
-          <p>
+        </div>
+        <div>
+          <p class="mt-5 mb-0 text-gray-800">
             {{customer.number}}
             <br>
             {{customer.name}}
@@ -126,8 +254,6 @@
 
       <div class="input-group input-group-sm mb-5 till-padding">
         <button class="btn btn-secondary">{{ selectedTransaction ? "SAVE" : "PARK" | translate}}</button>
-
-
         <button class="btn btn-secondary" (click)="clearTransaction()" *ngIf="selectedTransaction">
           <fa-icon [icon]="faTimesCircle"></fa-icon>
         </button>
@@ -141,6 +267,20 @@
         <button class="btn btn-primary w-150px">{{payment | translate}}</button>
       </div>
       <button class="btn btn-primary till-save-button">{{ "SAVE" | translate}}</button>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-9 col-xs-12">
+
+
+      <div class="card">
+        <div class="card-body p-3">
+
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+
     </div>
   </div>
 </div>
