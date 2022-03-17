@@ -75,7 +75,7 @@
     </div>
   </div>
 
-  <div class="card" *ngIf="sDisplayMethod != 'revenuePerBusinessPartner'">
+  <div class="card overflow-y-auto" *ngIf="sDisplayMethod == 'revenuePerBusinessPartner'">
     <p> revenuePerBusinessPartner </p>
     <div class="card-body">
       <div class="table-responsive" *ngFor="let oStatistic of aStatistic; let statisticIndex = index">
@@ -243,7 +243,7 @@
       <div class="table-responsive" *ngFor="let oStatistic of aStatistic; let i = index">
         <table class="table table-row-bordered table-row-gray-300 gy-5 gs-5 mb-0 text-gray-600 fw-bold border"
           *ngFor="let oRevenueByProperty of oStatistic.individual; let articleGroupIndex = index">
-          <!-- start of articlegroup -->
+          <!-- start of article-group -->
           <thead class="bg-gray-100">
             <tr class="fw-bold fs-6 text-gray-800">
               <th scope="col">{{oRevenueByProperty.category}}</th>
@@ -254,17 +254,6 @@
               <th scope="col" class="w-150px">{{oRevenueByProperty.margin}}</th>
             </tr>
           </thead>
-          <!-- <tbody class="p-2"
-            *ngFor="let oRevenueByProperty of oArticleGroup.revenueByProperty; let revenuePropertyIndex = index">
-            <tr>
-              <td class="ps-9">{{oRevenueByProperty.category}}</td>
-              <td>{{oRevenueByProperty.quantity}}</td>
-              <td>{{oRevenueByProperty.totalRevenue}}</td>
-              <td>{{oRevenueByProperty.totalPurchaseAmount}}</td>
-              <td>{{oRevenueByProperty.profit}}</td>
-              <td>{{oRevenueByProperty.margin}}</td>
-            </tr>
-          </tbody> -->
         </table>
 
       </div>
