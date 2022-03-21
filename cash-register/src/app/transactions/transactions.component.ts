@@ -1,9 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { faLongArrowAltDown, faLongArrowAltUp, faMinusCircle, faPlus, faPlusCircle, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { ApiService } from '../shared/service/api.service';
+import { DialogService } from '../shared/service/dialog';
 import { MenuComponent } from '../shared/_layout/components/common';
 // import {FreshChatService} from "../../shared/service/fresh-chat.service";
 // import {Employee} from "../../shared/models/employee.model";
+
+import { TransactionDetailsComponent } from './components/transaction-details/transaction-details.component';
 
 @Component({
   selector: 'app-transactions',
@@ -58,7 +61,8 @@ export class TransactionsComponent implements OnInit {
 
 
   constructor(
-    private apiService: ApiService
+    private apiService: ApiService,
+    private dialogService: DialogService
     // private chatService: FreshChatService
     ) { }
 
@@ -127,5 +131,11 @@ export class TransactionsComponent implements OnInit {
     this.requestParams.skip = (page -1) * parseInt(this.paginationConfig.itemsPerPage);
     this.loadTransaction();
     this.paginationConfig.currentPage = page;
+  }
+
+  // Function for show transaction details
+  showTransaction(transactionId : string){
+    this.dialogService.openModal(TransactionDetailsComponent, { context: { transactionId : transactionId }, cssClass: 'w-fullscreen'}).instance.close.subscribe(
+      partner =>{ });
   }
 }

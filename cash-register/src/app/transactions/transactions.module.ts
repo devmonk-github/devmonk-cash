@@ -4,12 +4,15 @@ import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { TransactionsRoutingModule } from './transactions-routing.module';
 import { NgxPaginationModule } from 'ngx-pagination';
 // import { SharedModule } from '../../shared/shared.module';
+import { DialogService } from '../shared/service/dialog';
 
 import { TransactionsComponent } from './transactions.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { TransactionDetailsComponent } from './components/transaction-details/transaction-details.component';
 @NgModule({
   declarations: [
-    TransactionsComponent
+    TransactionsComponent,
+    TransactionDetailsComponent
   ],
   imports: [
     TransactionsRoutingModule,
@@ -19,6 +22,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
     ReactiveFormsModule,
     FormsModule
     // SharedModule
-  ]
+  ],
+  providers: [ DialogService ]
 })
 export class TransactionsModule { }

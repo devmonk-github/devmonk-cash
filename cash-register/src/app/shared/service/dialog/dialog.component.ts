@@ -10,12 +10,11 @@ import {
   ViewContainerRef,
   ComponentFactoryResolver,
   Injector,
-  Compiler,
-  NgModuleRef,
+  Compiler
 } from '@angular/core';
 
 @Component({
-  selector: 'app-custom-dialog',
+  selector: 'app-dialog',
   templateUrl: './dialog.component.html'
 })
 export class DialogComponent implements OnInit, AfterViewInit, OnDestroy {
@@ -30,12 +29,13 @@ export class DialogComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input() cssClass: any;
 
   @ViewChild('dialogContainer', { read: ViewContainerRef }) container!: ViewContainerRef;
+  @ViewChild('dialog', { read: ViewContainerRef }) dialog!: ViewContainerRef;
   componentRef : any;
   ngOnInit(): void {
   }
 
   ngAfterViewInit(): void {
-    import('../../shared.module').then(({ SharedModule }) => {
+    import('src/app/shared/shared.module').then(({SharedModule}) => {
       this.compiler.compileModuleAsync(SharedModule).then(moduleFactory => {
         const moduleRef: any = moduleFactory.create(this.injector);
         const componentFactory = moduleRef.instance.resolveComponent(this.template);
@@ -44,6 +44,9 @@ export class DialogComponent implements OnInit, AfterViewInit, OnDestroy {
           Object.keys(this.context).forEach(key => {
             this.componentRef.instance[key] = this.context[key];
           });
+        }
+        if(this.cssClass){
+          this.dialog.element.nativeElement.className += " " +  this.cssClass;
         }
       })
     })

@@ -1,0 +1,14 @@
+<div class="card shadow-sm">
+    <div class="card-header mt-5">
+        <h3>Transaction Details</h3>
+        <a class="cancel ml-auto" (click)="close()">
+            <fa-icon [icon]="faTimes"></fa-icon>
+        </a>
+    </div>
+    <div class="card-body">
+        Transaction Details for id : {{transactionId}}.
+    </div>
+    <div class="card-footer">
+        <button class="btn btn-secondary cancel ml-auto" (click)="close()">{{"TEXT_CANCEL"}}</button>
+    </div>
+</div>
