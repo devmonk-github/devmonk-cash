@@ -120,8 +120,7 @@ export class TillComponent implements OnInit, OnChanges {
 
   addItem(type: string): void {
     if(type === 'gift-sell') {
-      this.openGenerateGiftcardDialog()
-      return
+      type = 'giftcard-sell'
     }
     this.transactionItems.push({
       name: this.translateService.instant(type.toUpperCase()),
@@ -131,7 +130,9 @@ export class TillComponent implements OnInit, OnChanges {
       discount: 0,
       tax: 21,
       description: '',
-      open: true
+      open: true,
+      ...(type === 'giftcard-sell') && {giftcardNumber: Date.now()},
+      ...(type === 'giftcard-sell') && {taxHandling: 'true'},
     })
   }
 

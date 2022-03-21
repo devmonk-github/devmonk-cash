@@ -17,17 +17,35 @@
       <section class="d-flex product-row mb-3 align-items-center">
         <div class="w-90px">&nbsp;</div>
         <div class="w-300px">
-          <div class="form-floating mb-7">
-            <input type="text" class="form-control" name="number" id="number" [(ngModel)]="item.giftcardNumber">
-            <label for="number">{{ "GIFTCARD_NUMBER" | translate}}</label>
+          <div class="input-group b-5">
+<!--            <div class="form-floating mb-7">-->
+              <input type="text" class="form-control" name="number" id="number" [(ngModel)]="item.giftcardNumber" (blur)="checkNumber()">
+              <span class="input-group-text">
+                <fa-icon [icon]="numberIcon" [ngClass]="checkingNumber ? 'fa-spin': ''"></fa-icon>
+              </span>
+<!--              <label for="number">{{ "GIFTCARD_NUMBER" | translate}}</label>-->
+<!--            </div>-->
           </div>
-        </div>
 
+        </div>
 
           <div class="w-300px">
             <div class="form-floating mb-7">
               <input type="text" class="form-control" name="number" id="value" [(ngModel)]="item.price">
               <label for="number">{{ "VALUE" | translate}}</label>
+            </div>
+            <p>{{ "VAT_HANDLING" | translate}}</p>
+            <div class="form-check form-check-custom form-check-solid">
+              <input class="form-check-input" type="radio" [(ngModel)]="item.taxHandling" value="true" id="vatPaid1"/>
+              <label class="form-check-label" for="vatPaid1">
+                {{ "PAY_TAXES_WHEN_CREATE" | translate}}
+              </label>
+            </div>
+            <div class="form-check form-check-custom form-check-solid">
+              <input class="form-check-input" type="radio" [(ngModel)]="item.taxHandling" value="false" id="vatPaid2"/>
+              <label class="form-check-label" for="vatPaid2">
+                {{ "PAY_TAXES_WHEN_REDEEM" | translate}}
+              </label>
             </div>
           </div>
           <div class="w-100px ps-2"></div>

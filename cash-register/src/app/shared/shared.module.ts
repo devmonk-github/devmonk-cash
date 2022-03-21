@@ -5,10 +5,12 @@ import {CommonModule} from "@angular/common";
 import {FontAwesomeModule} from "@fortawesome/angular-fontawesome";
 import {TranslateModule} from "@ngx-translate/core";
 import {FormsModule} from "@angular/forms";
+import { DialerComponent } from './components/dialer/dialer.component';
 
 @NgModule({
   declarations: [
     CustomerDialogComponent,
+    DialerComponent,
   ],
   imports: [
     CommonModule,
@@ -16,7 +18,9 @@ import {FormsModule} from "@angular/forms";
     TranslateModule,
     FormsModule
   ],
-  exports: []
+    exports: [
+        DialerComponent
+    ]
 })
 
 export class SharedModule {

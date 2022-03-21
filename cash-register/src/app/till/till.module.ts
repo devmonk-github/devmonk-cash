@@ -19,6 +19,7 @@ import { OfferComponent } from './offer/offer.component';
 import { ProductComponent } from './product/product.component';
 import {AccordionDirective} from "../shared/directives/accordion.directive";
 import {GenerateGiftcardComponent} from "./dialogs/generate-giftcard/generate-giftcard.component";
+import {SharedModule} from "../shared/shared.module";
 
 @NgModule({
   declarations: [
@@ -33,19 +34,20 @@ import {GenerateGiftcardComponent} from "./dialogs/generate-giftcard/generate-gi
     AccordionDirective,
     GenerateGiftcardComponent
   ],
-  imports: [
-    CommonModule,
-    TillRoutingModule,
-    FontAwesomeModule,
-    TranslateModule,
-    FormsModule,
-    ReactiveFormsModule,
-    //PrimeNG
-    DropdownModule,
-    ButtonModule,
-    InputTextModule,
-    ToolbarModule
-  ],
+    imports: [
+        CommonModule,
+        TillRoutingModule,
+        FontAwesomeModule,
+        TranslateModule,
+        FormsModule,
+        ReactiveFormsModule,
+        //PrimeNG
+        DropdownModule,
+        ButtonModule,
+        InputTextModule,
+        ToolbarModule,
+        SharedModule
+    ],
   exports: [
     TillComponent,
     TillRoutingModule,
