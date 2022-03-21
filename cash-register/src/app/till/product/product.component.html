@@ -5,7 +5,7 @@
       <div class="w-90px">{{item.quantity}}</div>
       <div class="w-300px">{{item.name}}</div>
       <div class="w-125px ps-2">{{item.price | currency: '€'}}</div>
-      <div class="w-100px ps-2">{{item.discount}}</div>
+      <div class="w-100px ps-2">{{getDiscount()}}</div>
       <div class="w-125px ps-2">{{item.tax}}%</div>
     </section>
 
@@ -18,9 +18,29 @@
       <div class="w-90px">
         <app-dialer [(quantity)]="item.quantity" ></app-dialer>
       </div>
-      <div class="w-300px ps-2">{{item.name}} - {{item.type}}</div>
-      <div class="w-125px ps-2">{{item.quantity * item.price | currency: '€'}}</div>
-      <div class="w-100px ps-2">{{item.discount}}</div>
+      <div class="w-300px ps-2">
+        <div class="form-floating">
+          <input type="text" class="form-control" name="articleName" id="articleName" [(ngModel)]="item.name">
+          <label for="articleName">{{ "NAME" | translate}}</label>
+        </div>
+        <p>{{item.articleNumber}}</p>
+        <textarea class="form-control" name="description"
+                  placeholder="{{ 'DESCRIPTION' | translate}}" lines="10" [(ngModel)]="item.description"></textarea>
+
+      </div>
+      <div class="w-125px ps-2">
+        <div class="form-floating">
+          <input type="text" class="form-control" name="price" id="price" [(ngModel)]="item.price">
+          <label for="price">{{ "PRICE" | translate}}</label>
+        </div>
+        <p>{{ "TOTAL_PRICE" | translate}}: {{item.quantity * item.price | currency: '€'}} </p>
+
+
+      </div>
+      <div class="w-100px ps-2">
+        {{getDiscount()}}
+        <button class="btn btn-secondary" type="button" (click)="openDiscountDialog()">{{ "ADD_DISCOUNT" | translate}}</button>
+      </div>
       <div class="w-125px ps-2">{{item.tax}}%</div>
       <div class="w-100px">
         <button class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary w-30px h-30px"

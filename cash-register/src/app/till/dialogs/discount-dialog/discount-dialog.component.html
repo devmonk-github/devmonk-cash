@@ -1,0 +1,52 @@
+<div class="card shadow-sm">
+    <div class="card-header">
+        <h3 class="card-title">{{ "SET_DISCOUNT_FOR" | translate}} {{item.name}}</h3>
+        <div class="card-toolbar">
+            <button type="button" class="btn btn-sm btn-light" (click)="close()">
+                <fa-icon [icon]="faTimes"></fa-icon>
+            </button>
+        </div>
+    </div>
+    <div class="card-body card-scroll">
+      <div class="input-group mb-5">
+        <button class="btn btn-secondary" type="button" (click)="switchMode('fixed')">{{ "FIXED_PRICE" | translate}}</button>
+        <button class="btn btn-secondary" type="button" (click)="switchMode('percent')">{{ "PERCENT" | translate}}</button>
+      </div>
+
+      <div data-kt-buttons="true">
+        <ng-container *ngFor="let discount of discounts">
+          <label class="btn btn-outline btn-outline-dashed d-flex flex-stack text-start p-6 mb-5" [ngClass]="discount.disabled ? 'opacity-50':''">
+            <div class="d-flex align-items-center me-2">
+              <div class="form-check form-check-custom form-check-solid form-check-primary me-6">
+                <input class="form-check-input" type="radio" name="discount" [disabled]="discount.disabled" [value]="discount.amount" [(ngModel)]="selectedDiscount"/>
+              </div>
+              <div class="flex-grow-1">
+                <h2 class="d-flex align-items-center fs-3 fw-bolder flex-wrap">
+                  <div *ngIf="mode === 'fixed'; then fixed else percent"></div>
+
+                  <ng-template #fixed>{{discount.amount | currency: '€' }}</ng-template>
+                  <ng-template #percent>{{discount.amount}}%</ng-template>
+
+                </h2>
+                <div class="fw-bold opacity-50" *ngIf="discount.disabled">
+                  {{ "DISCOUNT_IS_HIGHER_THAN_ITEM_PRICE" | translate}}
+                </div>
+              </div>
+            </div>
+            <div class="ms-5" *ngIf="discount.disabled === false">
+              <span class="mb-2">&euro;</span>
+              <span class="fs-2x fw-bolder">
+                {{discount.price}}
+            </span>
+              <span class="fs-7 opacity-50">/
+                <span data-kt-element="period">{{ "PER_UNIT" | translate}}</span>
+            </span>
+            </div>
+          </label>
+        </ng-container>
+      </div>
+    </div>
+    <div class="card-footer">
+        <button class="btn btn-secondary" type="button" (click)="save()">{{ "SAVE" | translate}}</button>
+    </div>
+</div>

@@ -1,13 +1,12 @@
 import {Component, OnChanges, OnInit} from '@angular/core';
 import {Transaction} from "./models/transaction.model";
 import {faScrewdriverWrench, faTruck, faBoxesStacked, faGifts,
-  faMinus, faPlus, faUserPlus, faUser, faTimes, faTimesCircle, faTrashAlt, faRing,
+  faUserPlus, faUser, faTimes, faTimesCircle, faTrashAlt, faRing,
   faCoins, faCalculator, faArrowRightFromBracket
 } from "@fortawesome/free-solid-svg-icons";
 import {TranslateService} from "@ngx-translate/core";
 import {DialogService} from '../shared/service/dialog'
 import {CustomerDialogComponent} from "../shared/components/customer-dialog/customer-dialog.component";
-import {GenerateGiftcardComponent} from "./dialogs/generate-giftcard/generate-giftcard.component";
 import {TaxService} from "../shared/service/tax.service";
 
 @Component({
@@ -20,8 +19,6 @@ export class TillComponent implements OnInit, OnChanges {
   faTruck = faTruck
   faBoxesStacked = faBoxesStacked
   faGifts = faGifts
-  faMinus = faMinus
-  faPlus = faPlus
   faUser = faUser
   faUserPlus = faUserPlus
   faTimes = faTimes
@@ -157,23 +154,4 @@ export class TillComponent implements OnInit, OnChanges {
     })
   }
 
-  openGenerateGiftcardDialog(): void {
-    this.dialogService.openModal(GenerateGiftcardComponent, {})
-      .instance.close.subscribe( (data) => {
-        if(data.action) {
-          this.transactionItems.push({
-            name: this.translateService.instant("GIFTCARD_SELL"),
-            type: "giftcard-sell",
-            quantity: 1,
-            price: data.card.value,
-            discount: 0,
-            tax: data.card.tax,
-            giftcardNumber: data.card.number,
-            taxHandling: data.card.taxHandling,
-            description: '',
-            open: true
-          })
-        }
-    })
-  }
 }

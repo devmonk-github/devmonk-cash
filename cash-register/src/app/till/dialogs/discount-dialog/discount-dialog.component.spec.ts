@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { GenerateGiftcardComponent } from './generate-giftcard.component';
+import { DiscountDialogComponent } from './discount-dialog.component';
 
-describe('GenerateGiftcardComponent', () => {
-  let component: GenerateGiftcardComponent;
-  let fixture: ComponentFixture<GenerateGiftcardComponent>;
+describe('DiscountDialogComponent', () => {
+  let component: DiscountDialogComponent;
+  let fixture: ComponentFixture<DiscountDialogComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ GenerateGiftcardComponent ]
+      declarations: [ DiscountDialogComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(GenerateGiftcardComponent);
+    fixture = TestBed.createComponent(DiscountDialogComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
