@@ -52,6 +52,23 @@ export class TransactionsComponent implements OnInit {
     {key : 'PREPAYMENT'},
     {key : 'MARK_CONFIRMED'},
   ];
+  iBusinessId: any = '';
+  employees: Array<any> = [];
+
+  // Advance search fields 
+
+  filterDates: any = {
+    endDate: new Date(new Date().setHours(23, 59, 59)),
+    startDate: new Date(new Date().setHours(0, 0, 0))
+  }
+  paymentMethods: Array<any> = [ 'All', 'Cash', 'Credit', 'Card', 'Gift-Card'];
+  transactionTypes: Array<any> = [ 'All', 'Refund', 'Repair', 'Gold-purchase', 'Gold-sale'];
+  transactionStatus: string = 'all';
+  invoiceStatus: string = 'all';
+  importStatus: string = 'all';
+  methodValue: string = 'All';
+  transactionValue: string = 'All';
+  employee: any = {};
 
   tableHeaders: Array<any> = [
     { key: 'Date', selected: true, sort: 'asc'},
@@ -74,6 +91,8 @@ export class TransactionsComponent implements OnInit {
     this.businessDetails._id = localStorage.getItem("currentBusiness");
     this.userType = localStorage.getItem("type");
     this.loadTransaction();
+    this.iBusinessId = localStorage.getItem('currentBusiness');
+    this.listEmployee();
     // this.chatService.widgetClosed.subscribe( () => {
     //   this.widgetLog.push('closed');
     // });
@@ -86,6 +105,13 @@ export class TransactionsComponent implements OnInit {
     this.transactions = [];
     this.requestParams.iBusinessId = this.businessDetails._id;
     this.requestParams.type = 'transaction';
+    this.requestParams.filterDates = this.filterDates;
+    this.requestParams.transactionStatus = this.transactionStatus;
+    this.requestParams.invoiceStatus = this.invoiceStatus;
+    this.requestParams.importStatus = this.importStatus;
+    this.requestParams.methodValue = this.methodValue;
+    this.requestParams.transactionValue = this.transactionValue;
+    this.requestParams.employee = this.employee;
     this.showLoader = true;
     this.apiService.postNew('cashregistry', '/api/v1/transaction/list', this.requestParams).subscribe((result: any) => {
       if (result && result.data && result.data.length && result.data[0] && result.data[0].result && result.data[0].result.length) {
@@ -97,6 +123,16 @@ export class TransactionsComponent implements OnInit {
       this.showLoader = false;
     }, (error) => {
       this.showLoader = false;
+    })
+  }
+
+  listEmployee() {
+    const oBody = { iBusinessId: this.iBusinessId }
+    this.apiService.postNew('auth', '/api/v1/employee/list', oBody).subscribe((result: any) => {
+      if (result?.data?.length) {
+        this.employees = result.data[0].result;
+      }
+    }, (error) => {
     })
   }
 

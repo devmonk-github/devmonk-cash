@@ -35,11 +35,11 @@
               <div class="row g-8">
                 <div class="col-lg-6">
                   <label class="fs-6 form-label fw-bolder text-dark">Min. Date</label>
-                  <input type="date" class="form-control form-control form-control-solid" name="minDate" />
+                  <input type="date" class="form-control form-control form-control-solid" name="startDate" [(ngModel)]="filterDates.startDate"/>
                 </div>
                 <div class="col-lg-6">
                   <label class="fs-6 form-label fw-bolder text-dark">Max. Date</label>
-                  <input type="date" class="form-control form-control form-control-solid" name="maxDate" />
+                  <input type="date" class="form-control form-control form-control-solid" name="endDate" [(ngModel)]="filterDates.endDate"/>
                 </div>
               </div>
             </div>
@@ -52,9 +52,8 @@
                 <div class="col-lg-4">
                   <label class="fs-6 form-label fw-bolder text-dark">Payment methods</label>
                   <!--begin::Select-->
-                  <ng-select class="form-control form-control-solid p-0" [clearable]="false">
-                    <ng-option value="1">Test 1</ng-option>
-                    <ng-option value="2">Test 2</ng-option>
+                  <ng-select class="form-control form-control-solid p-0" [(ngModel)]="methodValue" [clearable]="false">
+                    <ng-option *ngFor="let method of paymentMethods" [value]="method" >{{method}}</ng-option>
                   </ng-select>
                   <!--end::Select-->
                 </div>
@@ -63,9 +62,8 @@
                 <div class="col-lg-4">
                   <label class="fs-6 form-label fw-bolder text-dark">Transaction type</label>
                   <!--begin::Select-->
-                  <ng-select class="form-control form-control-solid p-0" [clearable]="false">
-                    <ng-option value="1">Test 1</ng-option>
-                    <ng-option value="2">Test 2</ng-option>
+                  <ng-select class="form-control form-control-solid p-0" [(ngModel)]="transactionValue" [clearable]="false">
+                    <ng-option *ngFor="let type of transactionTypes" [value]="type">{{type}}</ng-option>
                   </ng-select>
                   <!--end::Select-->
                 </div>
@@ -77,19 +75,19 @@
                   <div class="nav-group nav-group-fluid">
                     <!--begin::Option-->
                     <label>
-                      <input type="radio" class="btn-check" name="status" value="statusAll" checked="checked" />
+                      <input type="radio" class="btn-check" name="status" value="all" [(ngModel)]="transactionStatus" checked="checked" />
                       <span class="btn btn-sm btn-color-muted btn-active btn-active-primary fw-bolder px-4">All</span>
                     </label>
                     <!--end::Option-->
                     <!--begin::Option-->
                     <label>
-                      <input type="radio" class="btn-check" name="status" value="statusNew" />
+                      <input type="radio" class="btn-check" name="status" value="new" [(ngModel)]="transactionStatus"/>
                       <span class="btn btn-sm btn-color-muted btn-active btn-active-primary fw-bolder px-4">New</span>
                     </label>
                     <!--end::Option-->
                     <!--begin::Option-->
                     <label>
-                      <input type="radio" class="btn-check" name="status" value="statusCompleted" />
+                      <input type="radio" class="btn-check" name="status" value="completed" [(ngModel)]="transactionStatus"/>
                       <span class="btn btn-sm btn-color-muted btn-active btn-active-primary fw-bolder px-4">Completed</span>
                     </label>
                     <!--end::Option-->
@@ -116,19 +114,19 @@
                   <div class="nav-group nav-group-fluid">
                     <!--begin::Option-->
                     <label>
-                      <input type="radio" class="btn-check" name="invoice" value="invoiceAll" checked="checked" />
+                      <input type="radio" class="btn-check" name="invoice" value="all" [(ngModel)]="invoiceStatus" checked="checked" />
                       <span class="btn btn-sm btn-color-muted btn-active btn-active-primary fw-bolder px-4">All</span>
                     </label>
                     <!--end::Option-->
                     <!--begin::Option-->
                     <label>
-                      <input type="radio" class="btn-check" name="invoice" value="invoiced" />
+                      <input type="radio" class="btn-check" name="invoice" value="invoiced" [(ngModel)]="invoiceStatus"/>
                       <span class="btn btn-sm btn-color-muted btn-active btn-active-primary fw-bolder px-4">Invoiced</span>
                     </label>
                     <!--end::Option-->
                     <!--begin::Option-->
                     <label>
-                      <input type="radio" class="btn-check" name="invoice" value="uninvoice" />
+                      <input type="radio" class="btn-check" name="invoice" value="uninvoiced" [(ngModel)]="invoiceStatus"/>
                       <span class="btn btn-sm btn-color-muted btn-active btn-active-primary fw-bolder px-4">Uninvoiced</span>
                     </label>
                     <!--end::Option-->
@@ -143,19 +141,19 @@
                   <div class="nav-group nav-group-fluid">
                     <!--begin::Option-->
                     <label>
-                      <input type="radio" class="btn-check" name="import" value="importAll" checked="checked" />
+                      <input type="radio" class="btn-check" name="import" value="all" [(ngModel)]="importStatus" checked="checked" />
                       <span class="btn btn-sm btn-color-muted btn-active btn-active-primary fw-bolder px-4">All</span>
                     </label>
                     <!--end::Option-->
                     <!--begin::Option-->
                     <label>
-                      <input type="radio" class="btn-check" name="import" value="imported"/>
+                      <input type="radio" class="btn-check" name="import" value="imported" [(ngModel)]="importStatus"/>
                       <span class="btn btn-sm btn-color-muted btn-active btn-active-primary fw-bolder px-4">Imported</span>
                     </label>
                     <!--end::Option-->
                     <!--begin::Option-->
                     <label>
-                      <input type="radio" class="btn-check" name="import" value="unimported"/>
+                      <input type="radio" class="btn-check" name="import" value="unimported" [(ngModel)]="importStatus"/>
                       <span class="btn btn-sm btn-color-muted btn-active btn-active-primary fw-bolder px-4">Unimported</span>
                     </label>
                     <!--end::Option-->
@@ -175,9 +173,8 @@
                 <div class="col-lg-4">
                   <label class="fs-6 form-label fw-bolder text-dark">Employees</label>
                   <!--begin::Select-->
-                  <ng-select class="form-control form-control-solid p-0" [clearable]="false">
-                    <ng-option value="1">Test 1</ng-option>
-                    <ng-option value="2">Test 2</ng-option>
+                  <ng-select class="form-control form-control-solid p-0" [clearable]="false" [(ngModel)]="employee">
+                    <ng-option *ngFor="let employee of employees" [value]="employee">{{employee.sFirstName}} {{employee.sLastName}}</ng-option>>
                   </ng-select>
                   <!--end::Select-->
                 </div>
