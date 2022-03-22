@@ -13,7 +13,13 @@ export class DialogService {
     // Create element
     const popup = document.createElement('popup-component');
 
-    document.getElementsByClassName("main-container")[0].appendChild(popup);
+    let className = 'main-container'
+    if( document.getElementsByClassName("container") && document.getElementsByClassName("container")[0]) {
+      // Running the cash register as separate app will have a different container
+      className = 'container'
+    }
+    document.getElementsByClassName(className)[0].appendChild(popup);
+
     // Create the component and wire it up with the element
     const factory = this.componentFactoryResolver.resolveComponentFactory(DialogComponent);
     const dialogComponentRef = factory.create(this.injector, [], popup);
