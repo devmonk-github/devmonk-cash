@@ -231,8 +231,8 @@
           <tr *ngFor="let transaction of transactions | paginate: paginationConfig, let i = index;">  
             <td scope="row">{{transaction.dCreatedDate | date: 'longDate'}}</td>
             <td>{{transaction.sNumber}}</td>
-            <td></td>
-            <td></td>
+            <td>{{transaction.oReceipt.sNumber}}</td>
+            <td>{{transaction.oCustomer.sFirstName}} {{transaction.oCustomer.sLastName}}</td>
             <td></td>
             <td>{{transaction.sTotal || 0}}</td>
             <td>{{transaction.eType}}</td>
@@ -271,6 +271,10 @@
           </tr>
         </tbody>
       </table>
+      <div class="d-flex">
+        <h5 *ngIf='!transactions.length && !showLoader' style="text-align: center;"> No data found!</h5>
+        <div *ngIf="showLoader" class="spinner-border mx-auto"></div>
+      </div>
 
       <div class="row">
         <div class="col-sm-12 col-md-3 d-flex align-items-center justify-content-center justify-content-md-start">

@@ -30,7 +30,11 @@ export class TransactionsComponent implements OnInit {
   transactions: Array<any> = [];
   businessDetails: any = {};
   userType: any = {};
-  requestParams: any = {};
+  requestParams: any = {
+    sortBy: { key: 'Date', selected: true, sort: 'asc' },
+    sortOrder: 'asc'
+  };
+  showLoader: Boolean = false;
   widgetLog: string[] = [];
   pageCounts: Array<number> = [ 10, 25, 50, 100]
   pageCount: number = 10;
@@ -50,10 +54,10 @@ export class TransactionsComponent implements OnInit {
   ];
 
   tableHeaders: Array<any> = [
-    { key: 'Date', selected: false, sort: ''},
+    { key: 'Date', selected: true, sort: 'asc'},
     { key: 'Transaction no.', selected: false, sort: ''},
     { key: 'Receipt number', selected: false, sort: ''},
-    { key: 'Customer', disabled:true},
+    { key: 'Customer', selected: false, sort: ''},
     { key: 'Method', disabled:true},
     { key: 'Total', disabled:true},
     { key: 'Type', disabled:true}
@@ -80,7 +84,9 @@ export class TransactionsComponent implements OnInit {
 
   loadTransaction(){
     this.transactions = [];
-    this.requestParams.iBusinessId = this.businessDetails._id
+    this.requestParams.iBusinessId = this.businessDetails._id;
+    this.requestParams.type = 'transaction';
+    this.showLoader = true;
     this.apiService.postNew('cashregistry', '/api/v1/transaction/list', this.requestParams).subscribe((result: any) => {
       if (result && result.data && result.data.length && result.data[0] && result.data[0].result && result.data[0].result.length) {
         this.transactions = result.data[0].result;
@@ -88,7 +94,10 @@ export class TransactionsComponent implements OnInit {
           MenuComponent.bootstrap();
         }, 1000);
       }
-    }, (error) => {})
+      this.showLoader = false;
+    }, (error) => {
+      this.showLoader = false;
+    })
   }
 
   openChat(): void {
@@ -108,6 +117,7 @@ export class TransactionsComponent implements OnInit {
   setSortOption(sortHeader : any){
     if(sortHeader.selected){
       sortHeader.sort = sortHeader.sort == 'asc' ? 'desc' : 'asc';
+      this.sortAndLoadTransactions(sortHeader)
     } else {
       this.tableHeaders = this.tableHeaders.map( (th : any) =>{
         if(sortHeader.key == th.key){
@@ -118,7 +128,19 @@ export class TransactionsComponent implements OnInit {
         }
         return th;
       })
+      this.sortAndLoadTransactions(sortHeader)
     }
+  }
+
+  sortAndLoadTransactions(sortHeader: any){
+    let sortBy = 'dCreatedDate';
+    if(sortHeader.key == 'Date')  sortBy = 'dCreatedDate';
+    if(sortHeader.key == 'Transaction no.')  sortBy = 'sNumber';
+    if(sortHeader.key == 'Receipt number')  sortBy = 'oReceipt.sNumber';
+    if(sortHeader.key == 'Customer')  sortBy = 'oCustomer.sFirstName';
+    this.requestParams.sortBy = sortBy;
+    this.requestParams.sortOrder = sortHeader.sort;
+    this.loadTransaction();
   }
 
   // Function for update item's per page
