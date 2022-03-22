@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { TransactionsRoutingModule } from './transactions-routing.module';
 import { NgxPaginationModule } from 'ngx-pagination';
+import { NgSelectModule } from '@ng-select/ng-select';
 // import { SharedModule } from '../../shared/shared.module';
 import { DialogService } from '../shared/service/dialog';
 
@@ -20,7 +21,8 @@ import { TransactionDetailsComponent } from './components/transaction-details/tr
     NgxPaginationModule,
     CommonModule,
     ReactiveFormsModule,
-    FormsModule
+    FormsModule,
+    NgSelectModule
     // SharedModule
   ],
   providers: [ DialogService ]

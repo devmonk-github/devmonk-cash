@@ -52,9 +52,10 @@
                 <div class="col-lg-4">
                   <label class="fs-6 form-label fw-bolder text-dark">Payment methods</label>
                   <!--begin::Select-->
-                  <select class="form-select form-select-solid">
-                    <option value=""></option>
-                  </select>
+                  <ng-select class="form-control form-control-solid p-0" [clearable]="false">
+                    <ng-option value="1">Test 1</ng-option>
+                    <ng-option value="2">Test 2</ng-option>
+                  </ng-select>
                   <!--end::Select-->
                 </div>
                 <!--end::Col-->
@@ -62,9 +63,10 @@
                 <div class="col-lg-4">
                   <label class="fs-6 form-label fw-bolder text-dark">Transaction type</label>
                   <!--begin::Select-->
-                  <select class="form-select form-select-solid">
-                    <option value=""></option>
-                  </select>
+                  <ng-select class="form-control form-control-solid p-0" [clearable]="false">
+                    <ng-option value="1">Test 1</ng-option>
+                    <ng-option value="2">Test 2</ng-option>
+                  </ng-select>
                   <!--end::Select-->
                 </div>
                 <!--end::Col-->
@@ -75,19 +77,19 @@
                   <div class="nav-group nav-group-fluid">
                     <!--begin::Option-->
                     <label>
-                      <input type="radio" class="btn-check" name="type" value="has" checked="checked" />
+                      <input type="radio" class="btn-check" name="status" value="statusAll" checked="checked" />
                       <span class="btn btn-sm btn-color-muted btn-active btn-active-primary fw-bolder px-4">All</span>
                     </label>
                     <!--end::Option-->
                     <!--begin::Option-->
                     <label>
-                      <input type="radio" class="btn-check" name="type" value="users" />
+                      <input type="radio" class="btn-check" name="status" value="statusNew" />
                       <span class="btn btn-sm btn-color-muted btn-active btn-active-primary fw-bolder px-4">New</span>
                     </label>
                     <!--end::Option-->
                     <!--begin::Option-->
                     <label>
-                      <input type="radio" class="btn-check" name="type" value="orders" />
+                      <input type="radio" class="btn-check" name="status" value="statusCompleted" />
                       <span class="btn btn-sm btn-color-muted btn-active btn-active-primary fw-bolder px-4">Completed</span>
                     </label>
                     <!--end::Option-->
@@ -104,23 +106,61 @@
           <!--begin::Row-->
           <div class="row g-4">
             <!--begin::Col-->
-            <div class="col-xxl-4">
+            <div class="col-xxl-6">
               <!--begin::Row-->
               <div class="row g-4">
                 <!--begin::Col-->
                 <div class="col-lg-6">
-                  <div class="form-check form-switch form-check-custom form-check-solid mt-8">
-                    <input class="form-check-input" type="checkbox" value="" id="flexSwitchChecked" checked="checked" />
-                    <label class="form-check-label" for="flexSwitchChecked">Invoice</label>
+                  <label class="fs-6 form-label fw-bolder text-dark">Invoice status</label>
+                  <!--begin::Radio group-->
+                  <div class="nav-group nav-group-fluid">
+                    <!--begin::Option-->
+                    <label>
+                      <input type="radio" class="btn-check" name="invoice" value="invoiceAll" checked="checked" />
+                      <span class="btn btn-sm btn-color-muted btn-active btn-active-primary fw-bolder px-4">All</span>
+                    </label>
+                    <!--end::Option-->
+                    <!--begin::Option-->
+                    <label>
+                      <input type="radio" class="btn-check" name="invoice" value="invoiced" />
+                      <span class="btn btn-sm btn-color-muted btn-active btn-active-primary fw-bolder px-4">Invoiced</span>
+                    </label>
+                    <!--end::Option-->
+                    <!--begin::Option-->
+                    <label>
+                      <input type="radio" class="btn-check" name="invoice" value="uninvoice" />
+                      <span class="btn btn-sm btn-color-muted btn-active btn-active-primary fw-bolder px-4">Uninvoiced</span>
+                    </label>
+                    <!--end::Option-->
                   </div>
+                  <!--end::Radio group-->
                 </div>
                 <!--end::Col-->
                 <!--begin::Col-->
                 <div class="col-lg-6">
-                  <div class="form-check form-switch form-check-custom form-check-solid mt-8">
-                    <input class="form-check-input" type="checkbox" value="" id="flexSwitchChecked" checked="checked" />
-                    <label class="form-check-label" for="flexSwitchChecked">Imported</label>
+                  <label class="fs-6 form-label fw-bolder text-dark">Import status</label>
+                  <!--begin::Radio group-->
+                  <div class="nav-group nav-group-fluid">
+                    <!--begin::Option-->
+                    <label>
+                      <input type="radio" class="btn-check" name="import" value="importAll" checked="checked" />
+                      <span class="btn btn-sm btn-color-muted btn-active btn-active-primary fw-bolder px-4">All</span>
+                    </label>
+                    <!--end::Option-->
+                    <!--begin::Option-->
+                    <label>
+                      <input type="radio" class="btn-check" name="import" value="imported"/>
+                      <span class="btn btn-sm btn-color-muted btn-active btn-active-primary fw-bolder px-4">Imported</span>
+                    </label>
+                    <!--end::Option-->
+                    <!--begin::Option-->
+                    <label>
+                      <input type="radio" class="btn-check" name="import" value="unimported"/>
+                      <span class="btn btn-sm btn-color-muted btn-active btn-active-primary fw-bolder px-4">Unimported</span>
+                    </label>
+                    <!--end::Option-->
                   </div>
+                  <!--end::Radio group-->
                 </div>
                 <!--end::Col-->
               </div>
@@ -128,16 +168,17 @@
             </div>
             <!--end::Col-->
             <!--begin::Col-->
-            <div class="col-xxl-8">
+            <div class="col-xxl-6">
               <!--begin::Row-->
               <div class="row g-2">
                 <!--begin::Col-->
                 <div class="col-lg-4">
                   <label class="fs-6 form-label fw-bolder text-dark">Employees</label>
                   <!--begin::Select-->
-                  <select class="form-select form-select-solid">
-                    <option value=""></option>
-                  </select>
+                  <ng-select class="form-control form-control-solid p-0" [clearable]="false">
+                    <ng-option value="1">Test 1</ng-option>
+                    <ng-option value="2">Test 2</ng-option>
+                  </ng-select>
                   <!--end::Select-->
                 </div>
                 <!--end::Col-->
@@ -145,9 +186,12 @@
                 <div class="col-lg-4">
                   <label class="fs-6 form-label fw-bolder text-dark">Devices</label>
                   <!--begin::Select-->
-                  <select class="form-select form-select-solid">
-                    <option value=""></option>
-                  </select>
+                  <ng-select class="form-control form-control-solid p-0" [multiple]="true" [clearable]="false">
+                    <ng-option value="1">Test 1</ng-option>
+                    <ng-option value="2">Test 2</ng-option>
+                    <ng-option value="3">Test 3</ng-option>
+                    <ng-option value="4">Test 4</ng-option>
+                  </ng-select>
                   <!--end::Select-->
                 </div>
                 <!--end::Col-->
@@ -155,9 +199,10 @@
                 <div class="col-lg-4">
                   <label class="fs-6 form-label fw-bolder text-dark">Locations</label>
                   <!--begin::Select-->
-                  <select class="form-select form-select-solid">
-                    <option value=""></option>
-                  </select>
+                  <ng-select class="form-control form-control-solid p-0" [clearable]="false">
+                    <ng-option value="1">Test 1</ng-option>
+                    <ng-option value="2">Test 2</ng-option>
+                  </ng-select>
                   <!--end::Select-->
                 </div>
                 <!--end::Col-->
