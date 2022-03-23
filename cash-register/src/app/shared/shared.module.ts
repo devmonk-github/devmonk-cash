@@ -6,11 +6,13 @@ import {FontAwesomeModule} from "@fortawesome/angular-fontawesome";
 import {TranslateModule} from "@ngx-translate/core";
 import {FormsModule} from "@angular/forms";
 import { DialerComponent } from './components/dialer/dialer.component';
+import { AlertComponent } from './components/alert/alert.component';
 
 @NgModule({
   declarations: [
     CustomerDialogComponent,
     DialerComponent,
+    AlertComponent,
   ],
   imports: [
     CommonModule,
@@ -18,9 +20,10 @@ import { DialerComponent } from './components/dialer/dialer.component';
     TranslateModule,
     FormsModule
   ],
-    exports: [
-        DialerComponent
-    ],
+  exports: [
+    DialerComponent,
+    AlertComponent
+  ],
   providers: [ CurrencyPipe]
 })
 
@@ -28,7 +31,7 @@ export class SharedModule {
   static forRoot(): ModuleWithProviders<SharedModule> {
     return {
       ngModule: SharedModule,
-      providers: [DialogService]
+      providers: [DialogService, CurrencyPipe]
     }
   }
   constructor(private componentFactoryResolver: ComponentFactoryResolver) {
