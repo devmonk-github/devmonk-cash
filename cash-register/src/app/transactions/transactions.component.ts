@@ -53,7 +53,6 @@ export class TransactionsComponent implements OnInit {
     {key : 'MARK_CONFIRMED'},
   ];
   iBusinessId: any = '';
-  employees: Array<any> = [];
 
   // Advance search fields 
 
@@ -68,7 +67,8 @@ export class TransactionsComponent implements OnInit {
   importStatus: string = 'all';
   methodValue: string = 'All';
   transactionValue: string = 'All';
-  employee: any = {};
+  employee: any = { sFirstName: 'All' };
+  employees: Array<any> =  [this.employee];
 
   tableHeaders: Array<any> = [
     { key: 'Date', selected: true, sort: 'asc'},
@@ -111,7 +111,8 @@ export class TransactionsComponent implements OnInit {
     this.requestParams.importStatus = this.importStatus;
     this.requestParams.methodValue = this.methodValue;
     this.requestParams.transactionValue = this.transactionValue;
-    this.requestParams.employee = this.employee;
+    this.requestParams.iEmployeeId = this.employee && this.employee._id ? this.employee._id : '';
+    this.requestParams.iDeviceId = undefined // we need to work on this once devides are available.
     this.showLoader = true;
     this.apiService.postNew('cashregistry', '/api/v1/transaction/list', this.requestParams).subscribe((result: any) => {
       if (result && result.data && result.data.length && result.data[0] && result.data[0].result && result.data[0].result.length) {
@@ -130,7 +131,7 @@ export class TransactionsComponent implements OnInit {
     const oBody = { iBusinessId: this.iBusinessId }
     this.apiService.postNew('auth', '/api/v1/employee/list', oBody).subscribe((result: any) => {
       if (result?.data?.length) {
-        this.employees = result.data[0].result;
+        this.employees = this.employees.concat(result.data[0].result);
       }
     }, (error) => {
     })
