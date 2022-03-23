@@ -8,7 +8,7 @@ import { ApiService } from '../shared/service/api.service';
 })
 
 export class StatisticsComponent implements OnInit {
-  iBusinessId: string = '';
+  iBusinessId: any = '';
   aStatistic: any = [];
   sDisplayMethod: string = 'revenuePerBusinessPartner';
   aDisplayMethod: any = [
@@ -41,7 +41,7 @@ export class StatisticsComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.iBusinessId = localStorage.getItem('currentBusiness') || '6182a52f1949ab0a59ff4e7b';
+    this.iBusinessId = localStorage.getItem('currentBusiness');
     this.fetchStatistics(this.sDisplayMethod);
   }
 
