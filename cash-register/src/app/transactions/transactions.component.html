@@ -8,7 +8,7 @@
           <!--begin::Svg Icon | path: icons/duotune/general/gen021.svg-->
           <fa-icon [icon]="faSearch" class="text-gray-500 position-absolute top-50 translate-middle ms-6"></fa-icon>
           <!--end::Svg Icon-->
-          <input type="text" class="form-control form-control-solid ps-10" name="search" value="" placeholder="Search" />
+          <input type="text" class="form-control form-control-solid ps-10" (keyup.enter)="loadTransaction()" [(ngModel)]="requestParams.searchValue" name="search" value="" placeholder="Search" />
         </div>
         <!--end::Input group-->
         <!--begin:Action-->

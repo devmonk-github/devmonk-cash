@@ -31,6 +31,7 @@ export class TransactionsComponent implements OnInit {
   businessDetails: any = {};
   userType: any = {};
   requestParams: any = {
+    searchValue: '',
     sortBy: { key: 'Date', selected: true, sort: 'asc' },
     sortOrder: 'asc'
   };
@@ -58,7 +59,7 @@ export class TransactionsComponent implements OnInit {
 
   filterDates: any = {
     endDate: new Date(new Date().setHours(23, 59, 59)),
-    startDate: new Date(new Date().setHours(0, 0, 0))
+    startDate: new Date('01-01-2015'),
   }
   paymentMethods: Array<any> = [ 'All', 'Cash', 'Credit', 'Card', 'Gift-Card'];
   transactionTypes: Array<any> = [ 'All', 'Refund', 'Repair', 'Gold-purchase', 'Gold-sale'];
