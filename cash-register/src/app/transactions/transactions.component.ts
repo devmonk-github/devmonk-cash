@@ -115,7 +115,7 @@ export class TransactionsComponent implements OnInit {
     this.requestParams.iEmployeeId = this.employee && this.employee._id ? this.employee._id : '';
     this.requestParams.iDeviceId = undefined // we need to work on this once devides are available.
     this.showLoader = true;
-    this.apiService.postNew('cashregistry', '/api/v1/transaction/list', this.requestParams).subscribe((result: any) => {
+    this.apiService.postNew('cashregistry', '/api/v1/transaction/cashRegister', this.requestParams).subscribe((result: any) => {
       if (result && result.data && result.data.length && result.data[0] && result.data[0].result && result.data[0].result.length) {
         this.transactions = result.data[0].result;
         setTimeout(()=>{
