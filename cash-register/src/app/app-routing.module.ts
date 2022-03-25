@@ -18,6 +18,10 @@ const routes: Routes = [
     path: 'statistics',
     loadChildren: () => import(`./statistics/statistics.module`).then(module => module.StatisticsModule)
   },
+  {
+    path: 'services',
+    loadChildren: () => import('./services/services.module').then(module => module.ServicesModule)
+  },
   { path: '', redirectTo: 'home', pathMatch: 'full' }
 ];
 
