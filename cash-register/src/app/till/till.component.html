@@ -128,19 +128,19 @@
         </button> -->
       </div>
 
-      <div class="card">
-        <div id="till-items-header" class="card-header p-4 lh-1 justify-content-start">
-          <div class="d-flex w-100 fw-bold text-gray-800 align-items-center">
+      <div class="card card-flush mb-4">
+        <div id="till-items-header" class="card-header p-3 lh-1 justify-content-start min-h-0">
+          <div class="d-flex w-100 fw-bold text-gray-600 align-items-center">
             <span class="w-90px">{{ "QUANTITY" | translate}}</span>
-            <span class="w-300px ps-2">{{ "DESCRIPTION" | translate}}</span>
-            <span class="w-125px ps-2">{{ "PRICE" | translate}}</span>
-            <span class="w-100px ps-2">{{ "DISCOUNT" | translate}}</span>
-            <span class="w-125px ps-2">{{ "TAX" | translate}}</span>
-            <span class="w-100px">{{ "ACTIONS" | translate}}</span>
+            <span class="w-300px">{{ "DESCRIPTION" | translate}}</span>
+            <span class="w-125px">{{ "PRICE" | translate}}</span>
+            <span class="w-100px">{{ "DISCOUNT" | translate}}</span>
+            <span class="w-125px">{{ "TAX" | translate}}</span>
+            <span class="w-100px">{{ "TOTAL" | translate}}</span>
           </div>
         </div>
-        <div class="card-body p-3">
-          <div class="accordion" id="kt_accordion_1" [itemLength]="transactionItems.length">
+        <div class="card-body p-0">
+          <div class="accordion" id="till-items-accordion" [itemLength]="transactionItems.length">
             <ng-container *ngFor="let item of transactionItems; let i = index">
               <div class="accordion-item" till-product *ngIf="item.type=== 'product'" [item]="item" [taxes]="taxes"
                    (itemChanged)="itemChanged($event, i)"></div>
@@ -156,12 +156,14 @@
               <div class="w-300px">&nbsp;</div>
               <div class="w-125px ps-2">{{getTotals('price') | currency: '€'}}</div>
               <div class="w-100px ps-2">{{getTotals('discount')}}</div>
-              <div class="w-125px ps-2">&nbsp;</div>
+              <div class="w-125px ps-2"><mark>total price here</mark></div>
             </section>
           </div>
         </div>
+      </div>
 
-        <div class="row">
+      <div class="card card-flush">
+        <div class="card-body px-3 py-4">
           <div class="form-group till-padding">
             <div class="input-group">
               <input type="text" class="form-control" placeholder="Search...">
@@ -267,20 +269,6 @@
         <button class="btn btn-primary w-150px">{{payment | translate}}</button>
       </div>
       <button class="btn btn-primary till-save-button">{{ "SAVE" | translate}}</button>
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-md-9 col-xs-12">
-
-
-      <div class="card">
-        <div class="card-body p-3">
-
-        </div>
-      </div>
-    </div>
-    <div class="col-md-3">
-
     </div>
   </div>
 </div>

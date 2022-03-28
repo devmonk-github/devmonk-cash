@@ -1,50 +1,39 @@
-<h2 class="accordion-header">
-  <button class="accordion-button fs-4 fw-bold" type="button" data-bs-toggle="collapse"
-          data-bs-target="#kt_accordion_1_body_1" aria-expanded="true" aria-controls="kt_accordion_1_body_1">
-    <section class="d-flex product-row mb-3 align-items-center">
+<h2 class="accordion-header rounded-0">
+  <button class="accordion-button fw-bold p-4 rounded-0" type="button" data-bs-toggle="collapse" data-bs-target="#kt_accordion_1_body_1" aria-expanded="true" aria-controls="kt_accordion_1_body_1">
+    <section class="d-flex product-row align-items-center">
       <div class="w-90px">{{item.quantity}}</div>
       <div class="w-300px">{{item.name}}</div>
-      <div class="w-125px ps-2">{{item.price | currency: '€'}}</div>
-      <div class="w-100px ps-2">{{getDiscount()}}</div>
-      <div class="w-125px ps-2">{{item.tax}}%</div>
+      <div class="w-125px">{{item.price | currency: '€'}}</div>
+      <div class="w-100px">{{getDiscount()}}</div>
+      <div class="w-125px">{{item.tax}}%</div>
     </section>
-
   </button>
 </h2>
-<div id="kt_accordion_1_body_1" class="accordion-collapse collapse show" aria-labelledby="kt_accordion_1_header_1"
+<div id="kt_accordion_1_body_1" class="accordion-collapse collapse show rounded-0" aria-labelledby="kt_accordion_1_header_1"
      data-bs-parent="#kt_accordion_1">
-  <div class="accordion-body">
-    <section class="d-flex product-row mb-3 align-items-center">
+  <div class="accordion-body px-3 py-4">
+    <section class="d-flex product-row">
       <div class="w-90px">
         <app-dialer [(quantity)]="item.quantity" ></app-dialer>
       </div>
-      <div class="w-300px ps-2">
-        <div class="form-floating">
-          <input type="text" class="form-control" name="articleName" id="articleName" [(ngModel)]="item.name">
-          <label for="articleName">{{ "NAME" | translate}}</label>
-        </div>
+      <div class="w-300px">
         <p>{{item.articleNumber}}</p>
-        <textarea class="form-control" name="description"
-                  placeholder="{{ 'DESCRIPTION' | translate}}" lines="10" [(ngModel)]="item.description"></textarea>
-
-      </div>
-      <div class="w-125px ps-2">
-        <div class="form-floating">
-          <input type="text" class="form-control" name="price" id="price" [(ngModel)]="item.price">
-          <label for="price">{{ "PRICE" | translate}}</label>
+        <div class="mb-2">
+          <input type="text" class="form-control form-control-sm" name="articleName" placeholder="{{ 'NAME' | translate}}" id="articleName" [(ngModel)]="item.name">
         </div>
-        <p>{{ "TOTAL_PRICE" | translate}}: {{item.quantity * item.price | currency: '€'}} </p>
-
-
+        <textarea class="form-control form-control-sm" name="description" placeholder="{{ 'DESCRIPTION' | translate}}" lines="10" [(ngModel)]="item.description"></textarea>
       </div>
-      <div class="w-100px ps-2">
+      <div class="w-125px">
+        <input type="text" class="form-control" name="price" placeholder="{{ 'PRICE' | translate}}" id="price" [(ngModel)]="item.price">
+        <p>{{ "TOTAL_PRICE" | translate}}: {{item.quantity * item.price | currency: '€'}}</p>
+      </div>
+      <div class="w-100px">
         {{getDiscount()}}
         <button class="btn btn-secondary" type="button" (click)="openDiscountDialog()">{{ "ADD_DISCOUNT" | translate}}</button>
       </div>
-      <div class="w-125px ps-2">{{item.tax}}%</div>
+      <div class="w-125px">{{item.tax}}%</div>
       <div class="w-100px">
-        <button class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary w-30px h-30px"
-                (click)="deleteItem()">
+        <button class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary w-30px h-30px" (click)="deleteItem()">
       <span class="svg-icon svg-icon-1qx me-0">
         <fa-icon [icon]="faTimes"></fa-icon>
       </span>

@@ -109,7 +109,6 @@ export class TillComponent implements OnInit, OnChanges {
     }
     let result = 0
     this.transactionItems.forEach( (i) => {
-
       result += type === 'price' ? i.quantity * i.price : i[type]
     })
     return result
