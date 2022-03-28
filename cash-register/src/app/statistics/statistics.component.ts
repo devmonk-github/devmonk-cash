@@ -50,7 +50,6 @@ export class StatisticsComponent implements OnInit {
     this.apiService.getNew('cashregistry', `/api/v1/statistics/get/?iBusinessId=${this.iBusinessId}&displayMethod=${sDisplayMethod}`).subscribe((result: any) => {
       console.log('fetchStatistics response: ', result);
       if (result?.data) {
-        console.log('result: ', result.data);
         this.aStatistic = result.data;
       }
     }, (error) => {
