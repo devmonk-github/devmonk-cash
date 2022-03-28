@@ -11,6 +11,10 @@ const routes: Routes = [
     loadChildren : () => import('./till/till.module').then(module => module.TillModule)
   },
   {
+    path : 'till-settings',
+    loadChildren : () => import('./till-settings/till-settings.module').then(module => module.TillSettingsModule)
+  },
+  {
     path : 'transactions',
     loadChildren : () => import('./transactions/transactions.module').then(module => module.TransactionsModule)
   },
