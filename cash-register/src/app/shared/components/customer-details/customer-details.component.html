@@ -1,0 +1,238 @@
+<div class="card shadow-sm">
+    <div class="card-header" style="margin-top: 20px;">
+         <h4 *ngIf="mode == 'create'">NEW CUSTOMER</h4>
+         <h4 *ngIf="mode == 'details'">CUSTOMER DETAILS</h4>
+         <div>
+            <button type="button" class="btn btn-sm btn-light" (click)="close(false)">
+                <fa-icon [icon]="faTimes"></fa-icon>
+            </button>
+         </div>
+         <!-- <a class="cancel ml-auto" (click)="close(false)">A
+            <fa-icon icon="times">bgfb</fa-icon>
+            </a> -->
+    </div>
+    <div class="card-body pt-0 row input-group">
+        <div class="col-md-3">
+            <div><label>Salutation</label></div>
+            <div class="form-control p-0">
+                <ng-select  [(ngModel)]="customer.sSalutation" [clearable]="false">
+                    <ng-option *ngFor="let salutation of salutations" [value]="salutation">{{salutation}}</ng-option>
+                </ng-select>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div><label>First name</label></div>
+            <div><input class="form-control" placeholder="First name" [(ngModel)]="customer.sFirstName"/></div>
+        </div>
+        <div class="col-md-3">
+            <div><label>Insert</label></div>
+            <div><input class="form-control" placeholder="Insert" [(ngModel)]="customer.sPrefix"/></div>
+        </div>
+        <div class="col-md-3">
+            <div><label>Last name</label></div>
+            <div><input class="form-control" placeholder="Last name" [(ngModel)]="customer.sLastName"/></div>
+        </div>
+    </div>
+    <div class="card-body pt-0 row input-group">
+        <div class="col-md-12">
+            <button class="btn btn-primary" (click)="editProfile = !editProfile">update profile</button>
+        </div>
+    </div>
+    <div *ngIf="mode == 'create' || (mode == 'details' && editProfile)" class="card-body pt-0 row input-group">
+        <div class="col-md-8">
+            <div class="row col-md-12">
+                <div><label>Mail</label></div>
+                <div><input class="form-control" [(ngModel)]="customer.sEmail"/></div>
+            </div>
+            <div class="row">
+                <div class="col-md-3">
+                    <div>
+                            <label class="form-check form-switch form-check-custom form-check-solid">
+                                <input class="form-check-input" type="checkbox" [(ngModel)]="customer.bNewsletter"/>
+                                <span class="form-check-label fw-bold">Newsletter</span>
+                            </label>
+                    </div>
+                </div>
+            </div>
+            <div class="row col-md-12">
+                <div><label>Note</label></div>
+                <div><input class="form-control" [(ngModel)]="customer.note"/></div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    <div><label>Date of Birth</label></div>
+                    <div class="input-group date" id="kt_datetimepicker_7_1" data-target-input="nearest">
+                        <input type="date" class="form-control datetimepicker-input" [ngModel]="customer.dDateOfBirth | date:'yyyy-MM-dd'" (ngModelChange)="customer.dDateOfBirth = $event"/>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div><label>Identity document</label></div>
+                    <div>
+                        <ng-select  [(ngModel)]="customer.oIdentity.documentName" [clearable]="false">
+                            <ng-option *ngFor="let type of documentTypes" [value]="type">{{type}}</ng-option>
+                        </ng-select>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div><label>Document number</label></div>
+                    <div><input class="form-control" [(ngModel)]="customer.oIdentity.documentNumber"/></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="row">
+                <div><label>Phone number</label></div>
+                <div><input class="form-control" [(ngModel)]="customer.oPhone.sLandLine"/></div>
+            </div>
+            <div class="row">
+                <div><label>Mobile</label></div>
+                <div><input class="form-control" [(ngModel)]="customer.oPhone.sMobile"/></div>
+                <div class="d-flex">
+                    <input type="checkbox" id="bWhatsApp" class="form-check" [(ngModel)]="customer.oPhone.bWhatsApp"> 
+                    <label class="tsd-widget" class="margin-left" for="bWhatsApp">Use for whatsapp</label>
+                </div>
+            </div>
+            <div class="row">
+                <div><label>Gender</label></div>
+                <div>
+                    <div class="row g-9" data-kt-buttons="true" data-kt-buttons-target="[data-kt-button]">
+                        <div class="col-md-4 col-lg-12 col-xxl-4">
+                            <label
+                                class="btn btn-outline btn-outline-dashed btn-outline-default active d-flex text-start p-3"
+                                data-kt-button="true" [ngClass]="{'active': customer.sGender == 'male'}">
+                                <span
+                                    class="form-check form-check-custom form-check-solid form-check-sm align-items-start mt-1">
+                                    <input class="form-check-input" type="radio" name="eGender" value="male"
+                                        [(ngModel)]="customer.sGender" />
+                                </span>
+                                <span class="ms-5">
+                                    <span class="fs-6 fw-bolder mb-1 d-block">{{"MALE" | translate}}</span>
+                                </span>
+                            </label>
+                        </div>
+                        <div class="col-md-4 col-lg-12 col-xxl-4">
+                            <label
+                                class="btn btn-outline btn-outline-dashed btn-outline-default d-flex text-start p-3"
+                                data-kt-button="true" [ngClass]="{'active': customer.sGender == 'female'}">
+                                <span
+                                    class="form-check form-check-custom form-check-solid form-check-sm align-items-start mt-1">
+                                    <input class="form-check-input" type="radio" name="eGender" value="female"
+                                        [(ngModel)]="customer.sGender" />
+                                </span>
+                                <span class="ms-5">
+                                    <span class="fs-6 fw-bolder mb-1 d-block">{{"FEMALE" | translate}}</span>
+                                </span>
+                            </label>
+                        </div>
+                        <div class="col-md-4 col-lg-12 col-xxl-4">
+                            <label
+                                class="btn btn-outline btn-outline-dashed btn-outline-default d-flex text-start p-3"
+                                data-kt-button="true" [ngClass]="{'active': customer.sGender == 'other'}">
+                                <span
+                                    class="form-check form-check-custom form-check-solid form-check-sm align-items-start mt-1">
+                                    <input class="form-check-input" type="radio" name="eGender" value="other"
+                                        [(ngModel)]="customer.sGender" />
+                                </span>
+                                <span class="ms-5">
+                                    <span class="fs-6 fw-bolder mb-1 d-block">{{"OTHER" | translate}}</span>
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div *ngIf="mode == 'create' || (mode == 'details' && editProfile)" class="card-body pt-0 row input-group">
+        <div class="col-md-6 row">
+            <div><label>Invoice address</label></div>
+            <div>
+                <div class="row col-md-12">
+                    <div><label>Country</label></div>
+                    <div>
+                        <!-- <country-list id="country" [country]="customer.oInvoiceAddress.country" (countryChanged)="customer.invoiceAddress.country = $event" name="country"></country-list> -->
+                    </div>                </div>
+                <div class="row col-md-12">
+                    <div><label>Zip code</label></div>
+                    <div><input class="form-control" [(ngModel)]="customer.oInvoiceAddress.postalCode"/></div>
+                </div>
+                <div class="row">
+                    <div class="col-md-8">
+                        <div><label>House number</label></div>
+                        <div><input class="form-control" [(ngModel)]="customer.oInvoiceAddress.houseNumber"/></div>
+                    </div>
+                    <div class="col-md-4">
+                        <div><label>addition</label></div>
+                        <div><input class="form-control" [(ngModel)]="customer.oInvoiceAddress.addition"/></div>
+                    </div>
+                </div>
+                <div class="row col-md-12">
+                    <div><label>Street</label></div>
+                    <div><input class="form-control" [(ngModel)]="customer.oInvoiceAddress.street"/></div>
+                </div>
+                <div class="row col-md-12">
+                    <div><label>City</label></div>
+                    <div><input class="form-control" [(ngModel)]="customer.oInvoiceAddress.city"/></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 row">
+            <div><label>Shipping address</label></div>
+            <div>
+                <div class="row col-md-12">
+                    <div><label>Country</label></div>
+                    <div>
+                        <!-- <country-list id="country" [country]="customer.oShippingAddress.country" (countryChanged)="customer.shippingAddress.country = $event" name="country"></country-list> -->
+                    </div>
+                </div>
+                <div class="row col-md-12">
+                    <div><label>Zip code</label></div>
+                    <div><input class="form-control" [(ngModel)]="customer.oShippingAddress.postalCode"/></div>
+                </div>
+                <div class="row">
+                    <div class="col-md-8">
+                        <div><label>House number</label></div>
+                        <div><input class="form-control" [(ngModel)]="customer.oShippingAddress.houseNumber"/></div>
+                    </div>
+                    <div class="col-md-4">
+                        <div><label>addition</label></div>
+                        <div><input class="form-control" [(ngModel)]="customer.oShippingAddress.addition"/></div>
+                    </div>
+                </div>
+                <div class="row col-md-12">
+                    <div><label>Street</label></div>
+                    <div><input class="form-control" [(ngModel)]="customer.oShippingAddress.street"/></div>
+                </div>
+                <div class="row col-md-12">
+                    <div><label>City</label></div>
+                    <div><input class="form-control" [(ngModel)]="customer.oShippingAddress.city"/></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div *ngIf="mode == 'create' || (mode == 'details' && editProfile)" class="card-body pt-0 row input-group">
+        <div class="col-md-6">
+            <div><label>Company name</label></div>
+            <div><input class="form-control" placeholder="Company name" [(ngModel)]="customer.sCompanyName"/></div>
+        </div>
+        <div class="col-md-6">
+            <div><label>Payment term in days</label></div>
+            <div><input class="form-control" placeholder="Payment term in days" [(ngModel)]="customer.nPaymentTermDays"/></div>
+        </div>
+    </div>
+    <div *ngIf="mode == 'create' || (mode == 'details' && editProfile)" class="card-body pt-0 row">
+        <div class="col-md-6">
+            <div><label>VAT number</label></div>
+            <div><input class="form-control" placeholder="VAT number" [(ngModel)]="customer.sVatNumber"/></div>
+        </div>
+        <div class="col-md-6">
+            <div><label>CoC number</label></div>
+            <div><input class="form-control" placeholder="CoC number" [(ngModel)]="customer.sCocNumber"/></div>
+        </div>
+    </div>
+    <div *ngIf="mode == 'create' || (mode == 'details' && editProfile)" class="card-body pt-0 row">
+        <div class="col-md-12">
+            <button class="btn btn-primary" (click)="EditOrCreateCustomer()">Submit</button>
+        </div>
+    </div>
+</div>

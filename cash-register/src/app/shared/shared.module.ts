@@ -7,22 +7,27 @@ import {TranslateModule} from "@ngx-translate/core";
 import {FormsModule} from "@angular/forms";
 import { DialerComponent } from './components/dialer/dialer.component';
 import { AlertComponent } from './components/alert/alert.component';
+import { CustomerDetailsComponent } from "./components/customer-details/customer-details.component";
+import { NgSelectModule } from "@ng-select/ng-select";
 
 @NgModule({
   declarations: [
     CustomerDialogComponent,
     DialerComponent,
     AlertComponent,
+    CustomerDetailsComponent
   ],
   imports: [
     CommonModule,
     FontAwesomeModule,
     TranslateModule,
-    FormsModule
+    FormsModule,
+    NgSelectModule
   ],
   exports: [
     DialerComponent,
-    AlertComponent
+    AlertComponent,
+    CustomerDialogComponent
   ],
   providers: [ CurrencyPipe]
 })

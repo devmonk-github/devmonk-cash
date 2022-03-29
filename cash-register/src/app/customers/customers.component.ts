@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-// import { cDialogService } from '../dialogs/custom-dialog';
+import { DialogService } from '../shared/service/dialog';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import { ApiService } from '../shared/service/api.service';
 import { PaginatePipe } from 'ngx-pagination';
 import {TranslateService} from "@ngx-translate/core";
-// import { CustomerDetailsComponent } from "../dialogs/customer-details/customer-details.component";
+import { CustomerDetailsComponent } from '../shared/components/customer-details/customer-details.component';
 // import { result } from 'lodash';
 
 // interface FSEntry {
@@ -60,8 +60,8 @@ export class CustomersComponent implements OnInit {
     private apiService: ApiService,
     // private dataSourceBuilder: NbTreeGridDataSourceBuilder<FSEntry>,
     private paginationPipe : PaginatePipe,
-    private translateService: TranslateService
-    // private dialogService: cDialogService
+    private translateService: TranslateService,
+    private dialogService: DialogService
   ) {
 
     // this.commonService.onUserDetailChange().subscribe((userDetails)=>{
@@ -82,8 +82,7 @@ export class CustomersComponent implements OnInit {
   }
 
   createCustomer() {
-    // this.dialogService.openModal(CustomerDetailsComponent, { cssClass:"modal-xl", context: { mode: 'create' } }).instance.close.subscribe(
-    //   result =>{ });
+    this.dialogService.openModal(CustomerDetailsComponent, { cssClass:"modal-xl", context: { mode: 'create' } }).instance.close.subscribe(result =>{ });
   }
 
   changeItemsPerPage(pageCount: any){
@@ -186,8 +185,8 @@ export class CustomersComponent implements OnInit {
   }
 
   openCustomer(customer:any) {
-    // this.dialogService.openModal(CustomerDetailsComponent, { cssClass:"modal-xl", context: { customer: customer, mode: 'details' } }).instance.close.subscribe(
-    //   result =>{ this.getCustomers(); });
+    this.dialogService.openModal(CustomerDetailsComponent, { cssClass:"modal-xl", context: { customer: customer, mode: 'details' } }).instance.close.subscribe(
+      result =>{ this.getCustomers(); });
   }
 
   // Function for handle page change
