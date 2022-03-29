@@ -162,7 +162,9 @@ export class ApiService {
         return basePath += ':3004';
       case 'oldplatform':
         return oldplatform += ':3000';
-    }
+      case 'customer':
+        return basePath += ':3006';
+    } 
   }
 
   getNew(apiType: string, url: string, header?: any): Observable<HttpResponse<any>> {

@@ -32,7 +32,8 @@ module.exports = {
           './CashRegisterSettingsModule': './src/app/till-settings/till-settings.module.ts',
           './TransactionModule': './src/app/transactions/transactions.module.ts',
           './StatisticModule': './src/app/statistics/statistics.module.ts',
-          './ServiceModule': './src/app/services/services.module.ts'
+          './ServiceModule': './src/app/services/services.module.ts',
+          './CustomerModule': './src/app/customers/customers.module.ts'
         },
 
         // For hosts (please adjust)
@@ -60,6 +61,7 @@ module.exports = {
       exposes: {
         './tillModule': './src/app/till/till.module.ts',
         '/TransactionsModule': './src/app/transactions/transactions.module.ts',
+        '/CustomersModule': './src/app/customers/customers.module.ts',
         '/StatisticsModule': './src/app/statistics/statistics.module.ts',
         '/ServicesModule': './src/app/services/services.module.ts',
       },
