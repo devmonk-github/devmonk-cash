@@ -12,6 +12,7 @@ import { NgxPaginationModule } from 'ngx-pagination';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser'
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 @NgModule({
   declarations: [
@@ -25,7 +26,8 @@ import { BrowserModule } from '@angular/platform-browser'
     NgSelectModule,
     ReactiveFormsModule,
     FormsModule,
-    BrowserModule
+    BrowserModule,
+    FontAwesomeModule
   ],
   providers: [
     PaginatePipe
