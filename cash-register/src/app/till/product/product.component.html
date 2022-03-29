@@ -1,5 +1,5 @@
 <h2 class="accordion-header rounded-0">
-  <button class="accordion-button fw-bold p-4 rounded-0" type="button" data-bs-toggle="collapse" data-bs-target="#kt_accordion_1_body_1" aria-expanded="true" aria-controls="kt_accordion_1_body_1">
+  <button class="accordion-button fw-bold px-3 py-4 rounded-0" type="button" data-bs-toggle="collapse" data-bs-target="#kt_accordion_1_body_1" aria-expanded="true" aria-controls="kt_accordion_1_body_1">
     <section class="d-flex product-row align-items-center">
       <div class="w-90px">{{item.quantity}}</div>
       <div class="w-300px">{{item.name}}</div>
@@ -13,29 +13,44 @@
      data-bs-parent="#kt_accordion_1">
   <div class="accordion-body px-3 py-4">
     <section class="d-flex product-row">
-      <div class="w-90px">
+      <div class="w-90px pe-2">
         <app-dialer [(quantity)]="item.quantity" ></app-dialer>
       </div>
-      <div class="w-300px">
-        <p>{{item.articleNumber}}</p>
-        <div class="mb-2">
-          <input type="text" class="form-control form-control-sm" name="articleName" placeholder="{{ 'NAME' | translate}}" id="articleName" [(ngModel)]="item.name">
+      <div class="w-300px pe-2">
+      
+        <div class="mb-1">
+          <input type="text" class="form-control" name="articleName" placeholder="{{ 'NAME' | translate}}" id="articleName" [(ngModel)]="item.name">
         </div>
-        <textarea class="form-control form-control-sm" name="description" placeholder="{{ 'DESCRIPTION' | translate}}" lines="10" [(ngModel)]="item.description"></textarea>
+        <span class="fs-7 w-100 d-block text-gray-600 mb-1">{{item.articleNumber}}</span>
+        <textarea class="form-control" name="description" placeholder="{{ 'DESCRIPTION' | translate}}" lines="10" [(ngModel)]="item.description"></textarea>
       </div>
-      <div class="w-125px">
+      <div class="w-125px pe-2">
         <input type="text" class="form-control" name="price" placeholder="{{ 'PRICE' | translate}}" id="price" [(ngModel)]="item.price">
         <p>{{ "TOTAL_PRICE" | translate}}: {{item.quantity * item.price | currency: '€'}}</p>
       </div>
-      <div class="w-100px">
-        {{getDiscount()}}
-        <button class="btn btn-secondary" type="button" (click)="openDiscountDialog()">{{ "ADD_DISCOUNT" | translate}}</button>
+      <div class="w-100px pe-2">
+        <button class="btn btn-icon btn-secondary w-35px h-35px" (click)="openDiscountDialog()">
+          <span class="svg-icon svg-icon-1qx me-0">
+            <i class="fas fa-percent"></i>
+          </span>
+        </button>
+        <!-- <button class="btn btn-secondary" type="button" >{{ "ADD_DISCOUNT" | translate}}</button> -->
       </div>
-      <div class="w-125px">{{item.tax}}%</div>
+      <div class="w-125px pe-2">
+
+        <select name="tax" id="" class="form-control">
+          <option value="0">0%</option>
+          <option value="9">9%</option>
+          <option value="21">21%</option>
+        </select>
+
+        {{item.tax}}%
+      
+      </div>
       <div class="w-100px">
-        <button class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary w-30px h-30px" (click)="deleteItem()">
+        <button class="btn btn-icon btn-secondary w-35px h-35px" (click)="deleteItem()">
       <span class="svg-icon svg-icon-1qx me-0">
-        <fa-icon [icon]="faTimes"></fa-icon>
+        <i class="fas fa-times"></i>
       </span>
         </button>
       </div>

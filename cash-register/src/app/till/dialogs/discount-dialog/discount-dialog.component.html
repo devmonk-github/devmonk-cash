@@ -1,9 +1,9 @@
 <div class="card shadow-sm">
-  <div class="card-header">
+  <div class="card-header p-4 px-5">
     <h3 class="card-title">{{ "SET_DISCOUNT_FOR" | translate}} {{item.name}}</h3>
-    <div class="card-toolbar">
-      <button type="button" class="btn btn-sm btn-light" (click)="close()">
-        <fa-icon [icon]="faTimes"></fa-icon>
+    <div class="card-toolbar m-0">
+      <button type="button" class="btn btn-icon btn-secondary w-35px h-35px" (click)="close()">
+        <i class="fa fa-times"></i>
       </button>
     </div>
   </div>
@@ -68,6 +68,7 @@
             </span>
         </div>
       </label>
+      <mark>todo: @niek: it's possible to add an empty discount</mark>
       <h1 class="text-center">{{ "TOTAL_PRICE" | translate}}: {{getTotalPrice()}}</h1>
     </div>
   </div>
