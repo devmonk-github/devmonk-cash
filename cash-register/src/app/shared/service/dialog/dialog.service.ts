@@ -6,12 +6,19 @@ import { DialogComponent } from './dialog.component';
 export class DialogService {
   private componentSubscriber!: Subject<string>;
   constructor(private injector: Injector,
-              private applicationRef: ApplicationRef,
-              private componentFactoryResolver: ComponentFactoryResolver) {}
+    private applicationRef: ApplicationRef,
+    private componentFactoryResolver: ComponentFactoryResolver) {}
 
   openModal(templateRef: any, userConfig: any) {
     // Create element
     const popup = document.createElement('popup-component');
+
+    let className = 'main-container'
+    if( document.getElementsByClassName("container") && document.getElementsByClassName("container")[0]) {
+      // Running the cash register as separate app will have a different container
+      className = 'container'
+    }
+    document.getElementsByClassName(className)[0].appendChild(popup);
 
     // Create the component and wire it up with the element
     const factory = this.componentFactoryResolver.resolveComponentFactory(DialogComponent);

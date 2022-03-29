@@ -29,8 +29,10 @@ module.exports = {
         filename: "remoteEntry.js",
         exposes: {
           './CashRegisterModule': './src/app/till/till.module.ts',
+          './CashRegisterSettingsModule': './src/app/till-settings/till-settings.module.ts',
           './TransactionModule': './src/app/transactions/transactions.module.ts',
           './StatisticModule': './src/app/statistics/statistics.module.ts',
+          './ServiceModule': './src/app/services/services.module.ts'
         },
 
         // For hosts (please adjust)
@@ -59,6 +61,7 @@ module.exports = {
         './tillModule': './src/app/till/till.module.ts',
         '/TransactionsModule': './src/app/transactions/transactions.module.ts',
         '/StatisticsModule': './src/app/statistics/statistics.module.ts',
+        '/ServicesModule': './src/app/services/services.module.ts',
       },
 
       // For hosts (please adjust)

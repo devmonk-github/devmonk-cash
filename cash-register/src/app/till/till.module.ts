@@ -18,7 +18,8 @@ import { GoldSellComponent } from './gold-sell/gold-sell.component';
 import { OfferComponent } from './offer/offer.component';
 import { ProductComponent } from './product/product.component';
 import {AccordionDirective} from "../shared/directives/accordion.directive";
-import {GenerateGiftcardComponent} from "./dialogs/generate-giftcard/generate-giftcard.component";
+import {SharedModule} from "../shared/shared.module";
+import { DiscountDialogComponent } from './dialogs/discount-dialog/discount-dialog.component';
 
 @NgModule({
   declarations: [
@@ -31,21 +32,22 @@ import {GenerateGiftcardComponent} from "./dialogs/generate-giftcard/generate-gi
     OfferComponent,
     ProductComponent,
     AccordionDirective,
-    GenerateGiftcardComponent
+    DiscountDialogComponent
   ],
-  imports: [
-    CommonModule,
-    TillRoutingModule,
-    FontAwesomeModule,
-    TranslateModule,
-    FormsModule,
-    ReactiveFormsModule,
-    //PrimeNG
-    DropdownModule,
-    ButtonModule,
-    InputTextModule,
-    ToolbarModule
-  ],
+    imports: [
+        CommonModule,
+        TillRoutingModule,
+        FontAwesomeModule,
+        TranslateModule,
+        FormsModule,
+        ReactiveFormsModule,
+        //PrimeNG
+        DropdownModule,
+        ButtonModule,
+        InputTextModule,
+        ToolbarModule,
+        SharedModule
+    ],
   exports: [
     TillComponent,
     TillRoutingModule,

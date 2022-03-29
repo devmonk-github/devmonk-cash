@@ -8,7 +8,7 @@ import { ApiService } from '../shared/service/api.service';
 })
 
 export class StatisticsComponent implements OnInit {
-  iBusinessId: string = '';
+  iBusinessId: any = '';
   aStatistic: any = [];
   sDisplayMethod: string = 'revenuePerBusinessPartner';
   aDisplayMethod: any = [

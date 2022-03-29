@@ -1,5 +1,8 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {faMinus, faPlus, faTimes} from '@fortawesome/free-solid-svg-icons'
+import {faTimes} from '@fortawesome/free-solid-svg-icons'
+import {DialogService} from "../../shared/service/dialog";
+import {DiscountDialogComponent} from "../dialogs/discount-dialog/discount-dialog.component";
+import {PriceService} from "../../shared/service/price.service";
 
 @Component({
   selector: '[till-product]',
@@ -11,15 +14,27 @@ export class ProductComponent implements OnInit {
   @Input() taxes: any
   @Output() itemChanged = new EventEmitter<any>();
 
-  faPlus = faPlus
-  faMinus = faMinus
   faTimes = faTimes
 
-  constructor() { }
+  constructor(private dialogService: DialogService, private priceService: PriceService) { }
 
-  ngOnInit(): void { }
+  ngOnInit(): void {
+    this.item.articleNumber = '0001234567'
+  }
 
   deleteItem(): void {
     this.itemChanged.emit('delete')
+  }
+
+  getDiscount(): any {
+    return this.priceService.getDiscount(this.item.discount)
+  }
+
+  openDiscountDialog(): void {
+    this.dialogService.openModal(DiscountDialogComponent, {context: {item: this.item}})
+      .instance.close.subscribe( (data) => {
+        console.log('discountdialog ', data)
+
+    })
   }
 }

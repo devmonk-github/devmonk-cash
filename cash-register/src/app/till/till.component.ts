@@ -1,13 +1,12 @@
 import {Component, OnChanges, OnInit} from '@angular/core';
 import {Transaction} from "./models/transaction.model";
 import {faScrewdriverWrench, faTruck, faBoxesStacked, faGifts,
-  faMinus, faPlus, faUserPlus, faUser, faTimes, faTimesCircle, faTrashAlt, faRing,
+  faUserPlus, faUser, faTimes, faTimesCircle, faTrashAlt, faRing,
   faCoins, faCalculator, faArrowRightFromBracket
 } from "@fortawesome/free-solid-svg-icons";
 import {TranslateService} from "@ngx-translate/core";
 import {DialogService} from '../shared/service/dialog'
 import {CustomerDialogComponent} from "../shared/components/customer-dialog/customer-dialog.component";
-import {GenerateGiftcardComponent} from "./dialogs/generate-giftcard/generate-giftcard.component";
 import {TaxService} from "../shared/service/tax.service";
 
 @Component({
@@ -20,8 +19,6 @@ export class TillComponent implements OnInit, OnChanges {
   faTruck = faTruck
   faBoxesStacked = faBoxesStacked
   faGifts = faGifts
-  faMinus = faMinus
-  faPlus = faPlus
   faUser = faUser
   faUserPlus = faUserPlus
   faTimes = faTimes
@@ -46,21 +43,21 @@ export class TillComponent implements OnInit, OnChanges {
     new Transaction('5', '1', '1', '2022030305',  'shoppurchase', 'concept', '1', '1'),
   ]
   quickButtons: any[] = [
-    {name: 'Waterdicht', price: this.randNumber(1, 50)},
-    {name: 'Batterij', price: this.randNumber(1, 50)},
-    {name: 'Band verstellen', price: this.randNumber(1, 50)},
+    {name: 'Waterdicht', price: this.randNumber(5, 30)},
+    {name: 'Batterij', price: this.randNumber(5, 30)},
+    {name: 'Band verstellen', price: this.randNumber(5, 20)},
     {name: 'Oude cadeaubon', price: this.randNumber(1, 50)},
     {name: 'Schiet oorbel', price: this.randNumber(1, 50)},
     {name: 'Reparatie', price: this.randNumber(1, 50)},
-    {name: 'IXXI', price: this.randNumber(1, 50)},
-    {name: 'KARMA', price: this.randNumber(1, 50)},
-    {name: 'BUDDHA', price: this.randNumber(1, 50)},
-    {name: 'P1500', price: this.randNumber(1, 50)},
-    {name: 'Diversen', price: this.randNumber(1, 50)},
-    {name: 'Stalen band', price: this.randNumber(1, 50)},
-    {name: 'Leren band', price: this.randNumber(1, 50)},
-    {name: 'Postzegels', price: this.randNumber(1, 50)},
-    {name: 'Tassen', price: this.randNumber(1, 50)},
+    {name: 'IXXI', price: this.randNumber(50, 100)},
+    {name: 'KARMA', price: this.randNumber(50, 100)},
+    {name: 'BUDDHA', price: this.randNumber(50, 100)},
+    {name: 'P1500', price: this.randNumber(100, 150)},
+    {name: 'Diversen', price: this.randNumber(30, 150)},
+    {name: 'Stalen band', price: this.randNumber(25, 50)},
+    {name: 'Leren band', price: this.randNumber(20, 45)},
+    {name: 'Postzegels', price: this.randNumber(1, 10)},
+    {name: 'Tassen', price: this.randNumber(50, 200)},
   ]
   payMethods = [
     "GIFTCARD",
@@ -112,7 +109,6 @@ export class TillComponent implements OnInit, OnChanges {
     }
     let result = 0
     this.transactionItems.forEach( (i) => {
-
       result += type === 'price' ? i.quantity * i.price : i[type]
     })
     return result
@@ -120,8 +116,7 @@ export class TillComponent implements OnInit, OnChanges {
 
   addItem(type: string): void {
     if(type === 'gift-sell') {
-      this.openGenerateGiftcardDialog()
-      return
+      type = 'giftcard-sell'
     }
     this.transactionItems.push({
       name: this.translateService.instant(type.toUpperCase()),
@@ -131,7 +126,9 @@ export class TillComponent implements OnInit, OnChanges {
       discount: 0,
       tax: 21,
       description: '',
-      open: true
+      open: true,
+      ...(type === 'giftcard-sell') && {giftcardNumber: Date.now()},
+      ...(type === 'giftcard-sell') && {taxHandling: 'true'},
     })
   }
 
@@ -156,23 +153,4 @@ export class TillComponent implements OnInit, OnChanges {
     })
   }
 
-  openGenerateGiftcardDialog(): void {
-    this.dialogService.openModal(GenerateGiftcardComponent, {})
-      .instance.close.subscribe( (data) => {
-        if(data.action) {
-          this.transactionItems.push({
-            name: this.translateService.instant("GIFTCARD_SELL"),
-            type: "giftcard-sell",
-            quantity: 1,
-            price: data.card.value,
-            discount: 0,
-            tax: data.card.tax,
-            giftcardNumber: data.card.number,
-            taxHandling: data.card.taxHandling,
-            description: '',
-            open: true
-          })
-        }
-    })
-  }
 }
