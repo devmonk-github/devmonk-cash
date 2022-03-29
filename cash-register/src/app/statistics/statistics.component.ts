@@ -41,66 +41,20 @@ export class StatisticsComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.iBusinessId = localStorage.getItem('currentBusiness') || '6182a52f1949ab0a59ff4e7b';
+    this.iBusinessId = localStorage.getItem('currentBusiness') || '';
     this.fetchStatistics(this.sDisplayMethod);
   }
 
   fetchStatistics(sDisplayMethod: string) {
-    console.log('fetchStatistics: ', sDisplayMethod);
     this.apiService.getNew('cashregistry', `/api/v1/statistics/get/?iBusinessId=${this.iBusinessId}&displayMethod=${sDisplayMethod}`).subscribe((result: any) => {
-      console.log('fetchStatistics response: ', result);
-      if (result?.data) {
-        console.log('result: ', result.data);
-        this.aStatistic = result.data;
-      }
+      if (result?.data) this.aStatistic = result.data;
     }, (error) => {
       console.log('error: ', error);
     })
   }
 
-  setSupplier() {
-
-  }
-
-  manipulateTheData() {
-    const oStatistic = this.aStatistic[0];
-    const aSupplier = [];
-    // for (let indIndex = 0; indIndex < oStatistic.individual.length; indIndex++) {
-    // const individual = oStatistic.individual[indIndex];
-    // console.log('Individual', indIndex, individual);
-    let flags: any = [];
-    let output = [];
-    for (let i = 0; i < oStatistic.individual.length; i++) {
-      if (flags[oStatistic.individual[i]._id]) {
-        const articleGroupIndex = aSupplier.findIndex((doc: any) => {
-          // console.log('doc: ', doc, doc?._id?.toString(), oStatistic.individual[i]._id);
-          return doc?._id?.toString() === oStatistic.individual[i]._id.toString();
-          // doc?._id?.toString() === flags[oStatistic.individual[i]._id]?.toString()
-        });
-        console.log('here: ', articleGroupIndex, aSupplier[articleGroupIndex]);
-
-      } else {
-        aSupplier.push(oStatistic.individual[i]);
-      };
-      flags[oStatistic.individual[i]._id] = true;
-      output.push(oStatistic.individual[i]._id);
-    }
-
-    // const arrayUniqueByKey = [...new Map(oStatistic.individual.map((item: any) => [item['_id'], item])).values()];
-    console.log('arrayUniqueByKey: ', aSupplier);
-    // for (let articleGroupIndex = 0; articleGroupIndex < individual.articleGroups.length; articleGroupIndex++) {
-    //   const articleGroup = individual.articleGroups[articleGroupIndex];
-    //   console.log('articleGroup', articleGroupIndex, articleGroup);
-    //   for (let propertyIndex = 0; propertyIndex < articleGroup.revenueByProperty.length; propertyIndex++) {
-    //     console.log('property', propertyIndex, articleGroup.revenueByProperty[propertyIndex]);
-    //   }
-    // }
-    // }
-  }
-
   changeDisplayMethod(event: any) {
     const sDisplayMethod = event?.target?.value;
-    console.log('sDisplayMethod: ', sDisplayMethod, this.sDisplayMethod);
     if (sDisplayMethod == 'revenuePerBusinessPartner') this.fetchStatistics('revenuePerBusinessPartner');
     else if (sDisplayMethod == 'revenuePerArticleGroupAndProperty') this.fetchStatistics('revenuePerArticleGroupAndProperty');
     else if (sDisplayMethod == 'revenuePerSupplierAndArticleGroup') this.fetchStatistics('revenuePerBusinessPartner');

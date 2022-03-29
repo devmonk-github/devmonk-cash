@@ -16,7 +16,6 @@ export class HomeComponent implements OnInit, OnChanges {
 
 
   ngOnChanges(changes?: SimpleChanges): void {
-    // console.log(changes);
   }
 
   ngOnInit(): void {

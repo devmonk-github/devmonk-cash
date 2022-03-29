@@ -1,6 +1,6 @@
-<div class="container">
+<div class="container" *ngIf="aStatistic.length">
   <div>
-    <div class="row">
+    <div class="row" *ngIf="aStatistic[0].overall.length">
       <div class="col-md-4">
         <span class="">{{ 'QUANTITY' | translate}}</span>
         <h3 class="text-black">{{aStatistic[0].overall[0].quantity}}</h3>
@@ -17,10 +17,10 @@
       </div>
     </div>
   </div>
-  <pre>{{aStatistic[0].overall | json}}</pre>
+  <!-- <pre>{{aStatistic[0].overall | json}}</pre> -->
   <hr>
 
-  <div>
+  <!-- <div>
     <div class="table-responsive" *ngFor="let oStatistic of aStatistic; let statisticIndex = index">
       <p>Vat Rate Table</p>
       <table
@@ -68,12 +68,8 @@
           </tr>
         </tbody>
       </table>
-      <!--end of supplier -->
-
-      <!-- start of supplier ...-->
-
     </div>
-  </div>
+  </div> -->
 
   <div class="card overflow-y-auto" *ngIf="sDisplayMethod == 'revenuePerBusinessPartner'">
     <p> revenuePerBusinessPartner </p>
@@ -138,10 +134,6 @@
             </tr>
           </tbody>
         </table>
-        <!--end of supplier -->
-
-        <!-- start of supplier ...-->
-
       </div>
     </div>
   </div>
@@ -284,13 +276,12 @@
     </div>
   </div>
 
-  <div class="card">
+  <!-- <div class="card">
     <p>Table No 6 Payment Method(will always show)</p>
     <div class="card-body">
       <div class="table-responsive" *ngFor="let oStatistic of aStatistic; let i = index">
         <table class="table table-row-bordered table-row-gray-300 gy-5 gs-5 mb-0 text-gray-600 fw-bold border"
           *ngFor="let oArticleGroup of oStatistic.individual; let articleGroupIndex = index">
-          <!-- start of articlegroup -->
           <thead class="bg-gray-100">
             <tr class="fw-bold fs-6 text-gray-800">
               <th scope="col" class="w-150px">{{oArticleGroup.method}}</th>
@@ -301,12 +292,11 @@
               <th scope="col" class="w-150px">{{oArticleGroup.margin}}</th>
             </tr>
           </thead>
-          <!-- start of articlegroup -->
         </table>
 
       </div>
     </div>
-  </div>
+  </div> -->
 
-  <pre>{{aStatistic | json}}</pre>
+  <!-- <pre>{{aStatistic | json}}</pre> -->
 </div>
