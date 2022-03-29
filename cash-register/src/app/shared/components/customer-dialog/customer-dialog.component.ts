@@ -1,6 +1,6 @@
 import {Component, Input, OnInit, ViewContainerRef} from '@angular/core';
 import {DialogComponent} from "../../service/dialog";
-import {faTimes} from "@fortawesome/free-solid-svg-icons";
+import {faTimes, faSearch} from "@fortawesome/free-solid-svg-icons";
 
 @Component({
   selector: 'app-customer-dialog',
@@ -12,7 +12,11 @@ export class CustomerDialogComponent implements OnInit {
   dialogRef: DialogComponent
 
   faTimes = faTimes
+  faSearch = faSearch
   loading = false
+  requestParams: any = {
+    searchValue: ''
+  }
   fakeCustomer: any = {
     number: '45663',
     counter: false,

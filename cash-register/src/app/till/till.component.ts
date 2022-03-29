@@ -145,7 +145,7 @@ export class TillComponent implements OnInit, OnChanges {
   }
 
   openCustomerDialog(): void {
-    this.dialogService.openModal(CustomerDialogComponent, {context: {customer: this.customer}})
+    this.dialogService.openModal(CustomerDialogComponent, { cssClass:"modal-xl", context: {customer: this.customer}})
       .instance.close.subscribe( (data) => {
         if(data.customer) {
           this.customer = data.customer
