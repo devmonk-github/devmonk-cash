@@ -8,6 +8,7 @@ import {TranslateService} from "@ngx-translate/core";
 import {DialogService} from '../shared/service/dialog'
 import {CustomerDialogComponent} from "../shared/components/customer-dialog/customer-dialog.component";
 import {TaxService} from "../shared/service/tax.service";
+import { ApiService } from '../shared/service/api.service';
 
 @Component({
   selector: 'app-till',
@@ -59,12 +60,12 @@ export class TillComponent implements OnInit, OnChanges {
     {name: 'Postzegels', price: this.randNumber(1, 10)},
     {name: 'Tassen', price: this.randNumber(50, 200)},
   ]
-  payMethods = [
-    "GIFTCARD",
-    "CASH",
-    "CARD",
-    "BANK"
-  ]
+  payMethods: Array<any> = [];
+  business: any = {}
+  payMethodsLoading: boolean = false;
+  requestParams: any = {
+    iBusinessId: ''
+  }
   // End dummy data
 
 
@@ -77,12 +78,32 @@ export class TillComponent implements OnInit, OnChanges {
     return Math.floor(Math.random() * (max - min +1) + min);
   }
 
-  constructor(private translateService: TranslateService, private dialogService: DialogService, private taxService: TaxService) { }
+  constructor(
+    private translateService: TranslateService, 
+    private dialogService: DialogService, 
+    private taxService: TaxService,
+    private apiService: ApiService
+    ) { }
 
   ngOnChanges() {}
 
   ngOnInit(): void {
+    this.business._id = localStorage.getItem("currentBusiness");
+    this.requestParams.iBusinessId = this.business._id;
     this.taxes = this.taxService.getTaxRates()
+    this.getPaymentMethods()
+  }
+
+  getPaymentMethods(){
+    this.payMethodsLoading = true;
+    this.apiService.getNew('cashregistry', '/api/v1/payment-methods/' + this.requestParams.iBusinessId).subscribe((result: any) => {
+      if (result && result.data && result.data.length) {
+        this.payMethods = result.data;
+      }
+      this.payMethodsLoading = false;
+    }, (error) => {
+      this.payMethodsLoading = false;
+    })
   }
 
   addItemToTransaction(item: any): void {
