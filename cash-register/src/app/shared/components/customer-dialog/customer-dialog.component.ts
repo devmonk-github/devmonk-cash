@@ -199,7 +199,14 @@ export class CustomerDialogComponent implements OnInit {
   }
   
   AddCustomer(){
-    this.dialogService.openModal(CustomerDetailsComponent, { cssClass:"modal-xl", context: { mode: 'create' } }).instance.close.subscribe(result =>{ 
+    this.dialogService.openModal(CustomerDetailsComponent, { cssClass:"modal-xl", context: { mode: 'create' } }).instance.close.subscribe(async (result) =>{ 
+      let customer =  result.customer;
+      customer['NAME'] =  await this.makeCustomerName(customer);
+      customer['SHIPPING_ADDRESS'] = this.makeCustomerAddress(customer.oShippingAddress, false);
+      customer['INVOICE_ADDRESS'] = this.makeCustomerAddress(customer.oInvoiceAddress, false);
+      customer['EMAIL'] = customer.sEmail;
+      customer['PHONE'] = (customer.oPhone && customer.oPhone.sLandLine ? customer.oPhone.sLandLine : '') + (customer.oPhone && customer.oPhone.sLandLine && customer.oPhone.sMobile ? ' / ' : '') + (customer.oPhone && customer.oPhone.sMobile ? customer.oPhone.sMobile : '')
+      this.close({action: false, customer: customer });
     });
   }
 
@@ -209,8 +216,8 @@ export class CustomerDialogComponent implements OnInit {
     });
   }
 
-  close(): void {
-    this.dialogRef.close.emit({action: false})
+  close(data: any): void {
+    this.dialogRef.close.emit(data)
   }
 
   randNumber(min: number, max: number): number {

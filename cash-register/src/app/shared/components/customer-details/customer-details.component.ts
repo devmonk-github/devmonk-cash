@@ -86,7 +86,7 @@ export class CustomerDetailsComponent implements OnInit {
     if(this.mode == 'create'){
       this.apiService.postNew('customer', '/api/v1/customer/create', this.customer).subscribe(
         (result : any) => {
-          this.close(false);
+          this.close({ action: false, customer: this.customer });
          },
         (error: any) => {
           console.log(error)
@@ -96,7 +96,7 @@ export class CustomerDetailsComponent implements OnInit {
     if(this.mode == 'details'){
       this.apiService.putNew('customer', '/api/v1/customer/update/' + this.requestParams.iBusinessId + '/' + this.customer._id, this.customer).subscribe(
         (result : any) => { 
-          this.close(false);
+          this.close({ action: false });
         },
         (error: any) => {
           console.log(error)
@@ -105,7 +105,7 @@ export class CustomerDetailsComponent implements OnInit {
     }
   }
 
-  close(flag: Boolean) {
-    this.dialogRef.close.emit({ action: false });
+  close(data: any) {
+    this.dialogRef.close.emit(data);
   }
 }
