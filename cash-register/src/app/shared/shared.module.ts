@@ -9,13 +9,15 @@ import { DialerComponent } from './components/dialer/dialer.component';
 import { AlertComponent } from './components/alert/alert.component';
 import { CustomerDetailsComponent } from "./components/customer-details/customer-details.component";
 import { NgSelectModule } from "@ng-select/ng-select";
+import { CountryListComponent } from "./components/country-list/country-list.component";
 
 @NgModule({
   declarations: [
     CustomerDialogComponent,
     DialerComponent,
     AlertComponent,
-    CustomerDetailsComponent
+    CustomerDetailsComponent,
+    CountryListComponent
   ],
   imports: [
     CommonModule,
@@ -27,7 +29,8 @@ import { NgSelectModule } from "@ng-select/ng-select";
   exports: [
     DialerComponent,
     AlertComponent,
-    CustomerDialogComponent
+    CustomerDialogComponent,
+    CountryListComponent
   ],
   providers: [ CurrencyPipe]
 })

@@ -32,7 +32,7 @@ export class CustomersComponent implements OnInit {
   pageNumber: number = 1;
   setPaginateSize: number = 12;
   paginationConfig: any = {
-    itemsPerPage: 1, 
+    itemsPerPage: 10, 
     currentPage: 1, 
     totalItems: 0
   };

@@ -29,8 +29,8 @@
             <div><input class="form-control" placeholder="Insert" [(ngModel)]="customer.sPrefix"/></div>
         </div>
         <div class="col-md-3">
-            <div><label>Last name</label></div>
-            <div><input class="form-control" placeholder="Last name" [(ngModel)]="customer.sLastName"/></div>
+            <div><label class="required">Last name</label></div>
+            <div><input class="form-control" placeholder="Last name" [(ngModel)]="customer.sLastName" required/></div>
         </div>
     </div>
     <div class="card-body pt-0 row input-group">
@@ -148,9 +148,9 @@
             <div><label>Invoice address</label></div>
             <div>
                 <div class="row col-md-12">
-                    <div><label>Country</label></div>
+                    <div><label class="required">Country</label></div>
                     <div>
-                        <!-- <country-list id="country" [country]="customer.oInvoiceAddress.country" (countryChanged)="customer.invoiceAddress.country = $event" name="country"></country-list> -->
+                        <country-list id="country" [country]="customer.oInvoiceAddress.country" [(ngModel)]="customer.oInvoiceAddress.country" (countryChanged)="customer.invoiceAddress.country = $event" name="country"></country-list>
                     </div>                </div>
                 <div class="row col-md-12">
                     <div><label>Zip code</label></div>
@@ -180,9 +180,9 @@
             <div><label>Shipping address</label></div>
             <div>
                 <div class="row col-md-12">
-                    <div><label>Country</label></div>
+                    <div><label class="required">Country</label></div>
                     <div>
-                        <!-- <country-list id="country" [country]="customer.oShippingAddress.country" (countryChanged)="customer.shippingAddress.country = $event" name="country"></country-list> -->
+                        <country-list id="country" [country]="customer.oShippingAddress.country" [(ngModel)]="customer.oShippingAddress.country" (countryChanged)="customer.shippingAddress.country = $event" name="country"></country-list>
                     </div>
                 </div>
                 <div class="row col-md-12">
