@@ -54,6 +54,28 @@ export class TillSettingsComponent implements OnInit {
     this.getPaymentMethods();
   }
 
+  updateLedgerNumber(method: any){
+    const createArticle = {
+      iBusinessId: this.requestParams.iBusinessId,
+      iPaymentMethodId: method._id,
+      nNumber: method.sLedgerNumber
+    };
+
+    this.apiService.postNew('bookkeeping', '/api/v1/ledger', createArticle).subscribe(
+      (result : any) => {      
+      }
+    )
+  }
+
+  getLedgerNumber(methodId: any, index: number){
+      this.apiService.getNew('bookkeeping', '/api/v1/ledger//payment-method/' + methodId + '?iBusinessId=' + this.requestParams.iBusinessId).subscribe(
+      (result : any) => { 
+        if(result && result.nNumber) { this.payMethods[index].sLedgerNumber = result.nNumber; }  
+      }
+    )
+  }
+
+  
   createPaymentMethod() {
     this.dialogService.openModal(CustomPaymentMethodComponent, { cssClass:"", context: { mode: 'create' } }).instance.close.subscribe(result =>{ 
       this.getPaymentMethods();
@@ -70,6 +92,7 @@ export class TillSettingsComponent implements OnInit {
     this.apiService.getNew('cashregistry', '/api/v1/payment-methods/' + this.requestParams.iBusinessId + '?type=custom').subscribe((result: any) => {
       if (result && result.data && result.data.length) {
         this.payMethods = result.data;
+        for(let i = 0; i < this.payMethods.length; i++){ this.getLedgerNumber(this.payMethods[i]._id, i) }
       }
       this.payMethodsLoading = false;
     }, (error) => {

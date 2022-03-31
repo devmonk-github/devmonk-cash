@@ -1,19 +1,18 @@
 <div class="card mb-5 mb-xl-10 d-flex">
   <div class="card-header row">
     <div class="card-title">
-      <div class="col-md-9 ">
+      <div class="col-md-9">
         <span>{{ 'CASH_REGISTER' | translate}}</span>
       </div>
       <div class="col-md-3 row card-title">
         <div class="col-md-10"><span>Book Keeping mode:</span></div>
         <div class="col-md-2">
           <label class="form-check form-switch form-check-custom form-check-solid">
-            <input type="checkbox" class="form-check-input" [(ngModel)]="bookKeepingMode" (click)="bookKeepingMode = !bookKeepingMode"> 
+            <input type="checkbox" class="form-check-input" [(ngModel)]="bookKeepingMode" (click)="bookKeepingMode = !bookKeepingMode">
           </label>
         </div>
       </div>
     </div>
-    
   </div>
   <div class="card-body p-9">
     <div class="card-title fw-bold row">
@@ -30,8 +29,11 @@
               <tbody class="fw-bold"> 
                   <tr *ngFor="let method of payMethods">
                     <div class="row">
-                      <div class="col-md-11" (click)="viewDetails(method)">
-                        <label>{{method.sName}}</label>
+                      <div class="col-md-8" (click)="viewDetails(method)">
+                        <label (click)="viewDetails(method)">{{method.sName}}</label>
+                      </div>
+                      <div class="col-md-3">
+                        <input type="number" *ngIf="bookKeepingMode" class="form-control" [(ngModel)]="method.sLedgerNumber" class="form-control" (focusout)="updateLedgerNumber(method)"/>
                       </div>
                       <div class="col-md-1 text-gray-500" (click)="deleteMethod(method)">
                           <fa-icon [icon]="faTrash"></fa-icon>
