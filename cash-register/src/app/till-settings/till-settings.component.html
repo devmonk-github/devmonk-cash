@@ -1,10 +1,30 @@
 <div class="card mb-5 mb-xl-10">
-    <div class="card-header">
-      <div class="card-title">
-        <span>{{ 'CASH_REGISTER' | translate}}</span>
-      </div>
-    </div>
-    <div class="card-body p-9">
-        
+  <div class="card-header">
+    <div class="card-title">
+      <span>{{ 'CASH_REGISTER' | translate}}</span>
     </div>
   </div>
+  <div class="card-body p-9">
+    <div class="card-title fw-bold row">
+      <div class="col-md-9">
+        <span>Custom payment methods :</span>
+      </div>
+      <div class="col-md-3">
+        <button class="btn btn-secondary" (click)="createPaymentMethod()">Create method</button>
+      </div>
+    </div>
+    <div class="dataTables_wrapper dt-bootstrap4 no-footer">
+      <div class="table-responsive">
+          <table class="table align-middle table-row-dashed fs-6 gy-5 dataTable no-footer">
+              <tbody class="fw-bold"> 
+                  <tr *ngFor="let method of payMethods" (click)="viewDetails(method)">
+                    <div>
+                      <label>{{method.sName}}</label>
+                    </div>
+                  </tr>
+              </tbody>
+          </table>
+      </div>
+    </div>  
+  </div>
+</div>

@@ -17,7 +17,6 @@ import { GoldPurchaseComponent } from './gold-purchase/gold-purchase.component';
 import { GoldSellComponent } from './gold-sell/gold-sell.component';
 import { OfferComponent } from './offer/offer.component';
 import { ProductComponent } from './product/product.component';
-import {AccordionDirective} from "../shared/directives/accordion.directive";
 import {SharedModule} from "../shared/shared.module";
 import { DiscountDialogComponent } from './dialogs/discount-dialog/discount-dialog.component';
 
@@ -31,7 +30,6 @@ import { DiscountDialogComponent } from './dialogs/discount-dialog/discount-dial
     GoldSellComponent,
     OfferComponent,
     ProductComponent,
-    AccordionDirective,
     DiscountDialogComponent
   ],
     imports: [

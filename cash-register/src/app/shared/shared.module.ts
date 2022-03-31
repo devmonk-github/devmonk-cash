@@ -10,6 +10,8 @@ import { AlertComponent } from './components/alert/alert.component';
 import { CustomerDetailsComponent } from "./components/customer-details/customer-details.component";
 import { NgSelectModule } from "@ng-select/ng-select";
 import { CountryListComponent } from "./components/country-list/country-list.component";
+import { AccordionDirective } from "./directives/accordion.directive";
+import { CustomPaymentMethodComponent } from './components/custom-payment-method/custom-payment-method.component';
 
 @NgModule({
   declarations: [
@@ -17,7 +19,9 @@ import { CountryListComponent } from "./components/country-list/country-list.com
     DialerComponent,
     AlertComponent,
     CustomerDetailsComponent,
-    CountryListComponent
+    CountryListComponent,
+    AccordionDirective,
+    CustomPaymentMethodComponent
   ],
   imports: [
     CommonModule,
@@ -30,7 +34,8 @@ import { CountryListComponent } from "./components/country-list/country-list.com
     DialerComponent,
     AlertComponent,
     CustomerDialogComponent,
-    CountryListComponent
+    CountryListComponent,
+    AccordionDirective
   ],
   providers: [ CurrencyPipe]
 })
