@@ -133,6 +133,7 @@ export class DiscountDialogComponent implements OnInit {
   resetDiscount(): void {
     this.selectedDiscount = 0;
     this.discount = 0
+    this.customDiscount = 0
     this.item.discount = {
       value: 0,
       percent: false
@@ -157,10 +158,8 @@ export class DiscountDialogComponent implements OnInit {
   }
 
   setCustomDiscount(): void {
-    //if (this.selectedDiscount !== 'custom') {
-      this.resetDiscount()
-      this.selectedDiscount = 'custom'
-    //}
+    this.resetDiscount()
+    this.selectedDiscount = 'custom'
   }
 
   enterCustomDiscount(): void {

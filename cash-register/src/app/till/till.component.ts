@@ -9,6 +9,7 @@ import {DialogService} from '../shared/service/dialog'
 import {CustomerDialogComponent} from "../shared/components/customer-dialog/customer-dialog.component";
 import {TaxService} from "../shared/service/tax.service";
 import { ApiService } from '../shared/service/api.service';
+import {ConfirmationDialogComponent} from "../shared/components/confirmation-dialog/confirmation-dialog.component";
 
 @Component({
   selector: 'app-till',
@@ -79,8 +80,8 @@ export class TillComponent implements OnInit, OnChanges {
   }
 
   constructor(
-    private translateService: TranslateService, 
-    private dialogService: DialogService, 
+    private translateService: TranslateService,
+    private dialogService: DialogService,
     private taxService: TaxService,
     private apiService: ApiService
     ) { }
@@ -154,7 +155,26 @@ export class TillComponent implements OnInit, OnChanges {
   }
 
   cancelItems(): void {
-    this.transactionItems = []
+    if(this.transactionItems.length > 0 ) {
+      const buttons = [
+        {text: "YES", value: true, status: 'success', class: 'btn-primary ml-auto mr-2'},
+        {text: "NO", value: false, class: 'btn-warning'}
+      ]
+      this.dialogService.openModal(ConfirmationDialogComponent, {
+        context: {
+          header: 'CLEAR_TRANSACTION',
+          bodyText: 'ARE_YOU_SURE_TO_CLEAR_THIS_TRANSACTION',
+          buttonDetails: buttons
+        }
+      })
+        .instance.close.subscribe(
+        result => {
+          if (result) {
+            this.transactionItems = []
+          }
+        }
+      )
+    }
   }
 
   itemChanged(item: any, index: number): void {
@@ -173,5 +193,6 @@ export class TillComponent implements OnInit, OnChanges {
         }
     })
   }
+
 
 }

@@ -12,6 +12,7 @@ import { NgSelectModule } from "@ng-select/ng-select";
 import { CountryListComponent } from "./components/country-list/country-list.component";
 import { AccordionDirective } from "./directives/accordion.directive";
 import { CustomPaymentMethodComponent } from './components/custom-payment-method/custom-payment-method.component';
+import { ConfirmationDialogComponent } from './components/confirmation-dialog/confirmation-dialog.component';
 
 @NgModule({
   declarations: [
@@ -21,7 +22,8 @@ import { CustomPaymentMethodComponent } from './components/custom-payment-method
     CustomerDetailsComponent,
     CountryListComponent,
     AccordionDirective,
-    CustomPaymentMethodComponent
+    CustomPaymentMethodComponent,
+    ConfirmationDialogComponent
   ],
   imports: [
     CommonModule,
