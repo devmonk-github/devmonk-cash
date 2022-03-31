@@ -18,8 +18,9 @@ export class CustomPaymentMethodComponent implements OnInit {
     sName: '',
     bStockReduction: false,
     bInvoice : false,
-    bAssignSavingPoints : false,
+    // bAssignSavingPoints : false,
     bAssignSavingPointsLastPayment : true,
+    sLedgerNumber: ''
   }
 
   constructor(
