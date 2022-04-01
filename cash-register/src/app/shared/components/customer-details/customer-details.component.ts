@@ -33,7 +33,7 @@ export class CustomerDetailsComponent implements OnInit {
       bWhatsApp: true
     },
     note: '',
-    dDateOfBirth: new Date('01-01-2000'),
+    dDateOfBirth: '',
     oIdentity: {
       documentName: '',
       documentNumber: '',
@@ -41,7 +41,7 @@ export class CustomerDetailsComponent implements OnInit {
     sGender: 'male',
     oInvoiceAddress: {
       country: 'Netherlands',
-      countryCode: '',
+      countryCode: 'NL',
       state: '',
       postalCode: '',
       houseNumber: '',
@@ -52,7 +52,7 @@ export class CustomerDetailsComponent implements OnInit {
     },
     oShippingAddress: {
       country: 'Netherlands',
-      countryCode: '',
+      countryCode: 'NL',
       state: '',
       postalCode: '',
       houseNumber: '',
@@ -81,12 +81,17 @@ export class CustomerDetailsComponent implements OnInit {
     this.requestParams.iBusinessId = localStorage.getItem('currentBusiness')
   }
 
+  customerCountryChanged(type: string, event: any){
+    this.customer[type].countryCode = event.key;
+    this.customer[type].country = event.value;
+  }
+
   EditOrCreateCustomer(){
     this.customer.iBusinessId = this.requestParams.iBusinessId;
     if(this.mode == 'create'){
       this.apiService.postNew('customer', '/api/v1/customer/create', this.customer).subscribe(
         (result : any) => {
-          this.close({ action: false, customer: this.customer });
+          this.close({ action: true, customer: this.customer });
          },
         (error: any) => {
           console.log(error)
@@ -96,7 +101,7 @@ export class CustomerDetailsComponent implements OnInit {
     if(this.mode == 'details'){
       this.apiService.putNew('customer', '/api/v1/customer/update/' + this.requestParams.iBusinessId + '/' + this.customer._id, this.customer).subscribe(
         (result : any) => { 
-          this.close({ action: false });
+          this.close({ action: true });
         },
         (error: any) => {
           console.log(error)

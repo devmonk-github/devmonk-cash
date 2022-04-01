@@ -14,11 +14,12 @@ import countryList from '../../../../assets/json/list.json'
 })
 export class CountryListComponent implements OnInit {
 
-  @Input() public country = '';
+  @Input() public country = 'NL';
   @Output() countryChanged = new EventEmitter<string>();
+  @Output() customerCountryChanged = new EventEmitter<string>();
 
   private countryListByLang: any;
-  value: any;
+  value: any = 'Netherlands';
   filteredOptions$: Array<any> = [];
   inputFormControl: FormControl = new FormControl();
   focusValue = false;
@@ -79,6 +80,7 @@ export class CountryListComponent implements OnInit {
     if (event) {
       this.country = event.key;
       this.value = event.value;
+      this.customerCountryChanged.emit(event);
       this.countryChanged.emit(this.country);
       this.filteredOptions$ = this.filter('');
     }

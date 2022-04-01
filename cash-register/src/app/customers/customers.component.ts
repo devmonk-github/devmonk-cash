@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChildren, ElementRef, QueryList } from '@angular/core';
 import { DialogService } from '../shared/service/dialog';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import { ApiService } from '../shared/service/api.service';
@@ -55,6 +55,8 @@ export class CustomersComponent implements OnInit {
       oDynamic : {}
     }
   };
+
+  @ViewChildren('inputElement') inputElement!: QueryList<ElementRef>;
  
   constructor(
     private apiService: ApiService,
@@ -74,6 +76,10 @@ export class CustomersComponent implements OnInit {
     // })
   }
 
+  ngAfterViewInit(): void {
+    this.inputElement.first.nativeElement.focus();
+  }
+
   ngOnInit(): void {
     this.business._id = localStorage.getItem("currentBusiness");
     this.requestParams.iBusinessId = this.business._id;
@@ -82,7 +88,8 @@ export class CustomersComponent implements OnInit {
   }
 
   createCustomer() {
-    this.dialogService.openModal(CustomerDetailsComponent, { cssClass:"modal-xl", context: { mode: 'create' } }).instance.close.subscribe(result =>{ });
+    this.dialogService.openModal(CustomerDetailsComponent, { cssClass:"modal-xl", context: { mode: 'create' } }).instance.close.subscribe(result =>{ 
+      if(result && result.action && result.action == true) this.getCustomers() });
   }
 
   changeItemsPerPage(pageCount: any){
@@ -186,7 +193,7 @@ export class CustomersComponent implements OnInit {
 
   openCustomer(customer:any) {
     this.dialogService.openModal(CustomerDetailsComponent, { cssClass:"modal-xl", context: { customer: customer, mode: 'details' } }).instance.close.subscribe(
-      result =>{ this.getCustomers(); });
+      result =>{ if(result && result.action && result.action == true) this.getCustomers(); });
   }
 
   // Function for handle page change
