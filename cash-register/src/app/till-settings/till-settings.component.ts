@@ -16,9 +16,18 @@ export class TillSettingsComponent implements OnInit {
   payMethodsLoading: boolean = false;
   payMethods: Array<any> = [];
   bookKeepingMode: boolean = false;
+  bookKeepings: Array<any> = [];
+  searchValue: string = '';
   requestParams: any = {
     iBusinessId: ''
   }
+  overviewColumns = [
+    { key:'', name:'action'}, 
+    { key:'sDescription', name:'DESCRIPTION'}, 
+    { key:'nNumber', name:'LEDGER_NUMBER'},
+  ];
+  articleGroupList!: Array<any>;
+  loading: boolean = false;
 
   constructor(
     private apiService: ApiService,
@@ -54,6 +63,21 @@ export class TillSettingsComponent implements OnInit {
     this.getPaymentMethods();
   }
 
+  getGeneralLedgerNumber(){
+    this.bookKeepings = [];
+    this.loading = true;
+    this.apiService.getNew('bookkeeping', '/api/v1/ledger/?iBusinessId=' + this.requestParams.iBusinessId + '&sType=general&searchValue=' + this.searchValue).subscribe(
+      (result : any) => {
+        if(result && result.length) this.bookKeepings = result;
+        this.loading = false;
+      }),
+      (error: any) => {
+        this.bookKeepings = [];
+        this.loading = false;
+        console.log(error)
+      }
+  }
+
   updateLedgerNumber(method: any){
     const createArticle = {
       iBusinessId: this.requestParams.iBusinessId,
@@ -68,7 +92,7 @@ export class TillSettingsComponent implements OnInit {
   }
 
   getLedgerNumber(methodId: any, index: number){
-      this.apiService.getNew('bookkeeping', '/api/v1/ledger//payment-method/' + methodId + '?iBusinessId=' + this.requestParams.iBusinessId).subscribe(
+      this.apiService.getNew('bookkeeping', '/api/v1/ledger/payment-method/' + methodId + '?iBusinessId=' + this.requestParams.iBusinessId).subscribe(
       (result : any) => { 
         if(result && result.nNumber) { this.payMethods[index].sLedgerNumber = result.nNumber; }  
       }
