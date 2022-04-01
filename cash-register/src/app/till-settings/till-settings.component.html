@@ -4,15 +4,19 @@
       <div class="col-md-9">
         <span>{{ 'CASH_REGISTER' | translate}}</span>
       </div>
-      <div class="col-md-3 row card-title">
-        <div class="col-md-10"><span>Book Keeping mode:</span></div>
-        <div class="col-md-2">
-          <label class="form-check form-switch form-check-custom form-check-solid">
-            <input type="checkbox" class="form-check-input" [(ngModel)]="bookKeepingMode" (click)="bookKeepingMode = !bookKeepingMode; getGeneralLedgerNumber()">
-          </label>
-        </div>
-      </div>
     </div>
+  </div>
+  <div class="card-body row">
+    <!-- <div class="col-md-3 row"> -->
+      <div class="col-md-2">
+        <label class="form-check form-switch form-check-custom form-check-solid">Book Keeping mode:</label>
+      </div>
+      <div class="col-md-1">
+        <label class="form-check form-switch form-check-custom form-check-solid">
+          <input type="checkbox" class="form-check-input" [(ngModel)]="bookKeepingMode" (click)="bookKeepingMode = !bookKeepingMode; updateBookkeepingSetting(bookKeepingMode)">
+        </label>
+      </div>
+    <!-- </div> -->
   </div>
   <div class="card-body p-9">
     <div class="card-title fw-bold row">
@@ -93,7 +97,7 @@
       </thead>
       <tbody>
         <tr *ngFor="let column of bookKeepings; let i = index" class="border border-green-100 p-4">
-          <td>
+          <!-- <td>
             <span>
               <button class="btn table-btn-padding">
                   <fa-icon icon="trash"></fa-icon>
@@ -105,11 +109,11 @@
                   <fa-icon icon="link"></fa-icon>
               </button>
             </span>
-          </td>
-          <td>
+          </td> -->
+          <td class="border border-green-100 p-4">
             <span>{{column.sDescription}}</span>
           </td>
-          <td>
+          <td class="border border-green-100 p-4">
             <span>{{column.nNumber}}</span>
           </td>
       </tbody>

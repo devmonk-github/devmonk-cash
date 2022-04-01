@@ -22,7 +22,7 @@ export class TillSettingsComponent implements OnInit {
     iBusinessId: ''
   }
   overviewColumns = [
-    { key:'', name:'action'}, 
+    // { key:'', name:'action'}, 
     { key:'sDescription', name:'DESCRIPTION'}, 
     { key:'nNumber', name:'LEDGER_NUMBER'},
   ];
@@ -61,6 +61,7 @@ export class TillSettingsComponent implements OnInit {
   ngOnInit(): void {
     this.requestParams.iBusinessId = localStorage.getItem('currentBusiness');
     this.getPaymentMethods();
+    this.getBookkeepingSetting();
   }
 
   getGeneralLedgerNumber(){
@@ -78,6 +79,46 @@ export class TillSettingsComponent implements OnInit {
       }
   }
 
+  // createBookkeepingSetting(){
+  //   const data = {
+  //     iBusinessId: this.requestParams.iBusinessId,
+  //     bBookkeeping: true
+  //   };
+
+  //   this.apiService.postNew('bookkeeping', '/api/v1/bookkeeping-setting/create', data).subscribe(
+  //     (result : any) => {      
+  //     },
+  //     (error: any) =>{
+  //     }
+  //   )
+  // }
+
+  updateBookkeepingSetting(bBookkeeping: boolean){
+    const data = {
+      iBusinessId: this.requestParams.iBusinessId,
+      bBookkeeping
+    };
+    this.apiService.postNew('bookkeeping', '/api/v1/bookkeeping-setting/update', data).subscribe(
+      (result : any) => {      
+      },
+      (error: any) =>{
+      }
+    )
+  }
+
+  getBookkeepingSetting(){
+    this.apiService.getNew('bookkeeping', '/api/v1/bookkeeping-setting/list/'+ this.requestParams.iBusinessId).subscribe(
+      (result : any) => {    
+        if(result && result.data && result.data.bBookkeeping) {
+          this.bookKeepingMode = result.data.bBookkeeping; 
+          this.getGeneralLedgerNumber();
+        }
+      },
+      (error: any) =>{
+      }
+    )
+  }
+
   updateLedgerNumber(method: any){
     const createArticle = {
       iBusinessId: this.requestParams.iBusinessId,
@@ -87,6 +128,8 @@ export class TillSettingsComponent implements OnInit {
 
     this.apiService.postNew('bookkeeping', '/api/v1/ledger', createArticle).subscribe(
       (result : any) => {      
+      },
+      (error: any) =>{
       }
     )
   }
