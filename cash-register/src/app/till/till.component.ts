@@ -1,6 +1,7 @@
 import {Component, OnChanges, OnInit} from '@angular/core';
 import {Transaction} from "./models/transaction.model";
-import {faScrewdriverWrench, faTruck, faBoxesStacked, faGifts,
+import {
+  faScrewdriverWrench, faTruck, faBoxesStacked, faGifts,
   faUserPlus, faUser, faTimes, faTimesCircle, faTrashAlt, faRing,
   faCoins, faCalculator, faArrowRightFromBracket
 } from "@fortawesome/free-solid-svg-icons";
@@ -8,8 +9,9 @@ import {TranslateService} from "@ngx-translate/core";
 import {DialogService} from '../shared/service/dialog'
 import {CustomerDialogComponent} from "../shared/components/customer-dialog/customer-dialog.component";
 import {TaxService} from "../shared/service/tax.service";
-import { ApiService } from '../shared/service/api.service';
+import {ApiService} from '../shared/service/api.service';
 import {ConfirmationDialogComponent} from "../shared/components/confirmation-dialog/confirmation-dialog.component";
+import * as _ from 'lodash';
 
 @Component({
   selector: 'app-till',
@@ -38,11 +40,11 @@ export class TillComponent implements OnInit, OnChanges {
 
   // Dummy data
   parkedTransactions: Transaction[] = [
-    new Transaction('1', '1', '1', '2022030301',  'shoppurchase', 'concept', '1', '1'),
-    new Transaction('2', '1', '1', '2022030302',  'shoppurchase', 'concept', '1', '1'),
-    new Transaction('3', '1', '1', '2022030303',  'shoppurchase', 'concept', '1', '1'),
-    new Transaction('4', '1', '1', '2022030304',  'shoppurchase', 'concept', '1', '1'),
-    new Transaction('5', '1', '1', '2022030305',  'shoppurchase', 'concept', '1', '1'),
+    new Transaction('1', '1', '1', '2022030301', 'shoppurchase', 'concept', '1', '1'),
+    new Transaction('2', '1', '1', '2022030302', 'shoppurchase', 'concept', '1', '1'),
+    new Transaction('3', '1', '1', '2022030303', 'shoppurchase', 'concept', '1', '1'),
+    new Transaction('4', '1', '1', '2022030304', 'shoppurchase', 'concept', '1', '1'),
+    new Transaction('5', '1', '1', '2022030305', 'shoppurchase', 'concept', '1', '1'),
   ]
   quickButtons: any[] = [
     {name: 'Waterdicht', price: this.randNumber(5, 30)},
@@ -67,6 +69,7 @@ export class TillComponent implements OnInit, OnChanges {
   requestParams: any = {
     iBusinessId: ''
   }
+
   // End dummy data
 
 
@@ -76,7 +79,7 @@ export class TillComponent implements OnInit, OnChanges {
    * @param max - max number to generate
    */
   randNumber(min: number, max: number): number {
-    return Math.floor(Math.random() * (max - min +1) + min);
+    return Math.floor(Math.random() * (max - min + 1) + min);
   }
 
   constructor(
@@ -84,9 +87,11 @@ export class TillComponent implements OnInit, OnChanges {
     private dialogService: DialogService,
     private taxService: TaxService,
     private apiService: ApiService
-    ) { }
+  ) {
+  }
 
-  ngOnChanges() {}
+  ngOnChanges() {
+  }
 
   ngOnInit(): void {
     this.business._id = localStorage.getItem("currentBusiness");
@@ -95,7 +100,7 @@ export class TillComponent implements OnInit, OnChanges {
     this.getPaymentMethods()
   }
 
-  getPaymentMethods(){
+  getPaymentMethods() {
     this.payMethodsLoading = true;
     this.apiService.getNew('cashregistry', '/api/v1/payment-methods/' + this.requestParams.iBusinessId).subscribe((result: any) => {
       if (result && result.data && result.data.length) {
@@ -126,18 +131,18 @@ export class TillComponent implements OnInit, OnChanges {
   }
 
   getTotals(type: string): number {
-    if(!type) {
+    if (!type) {
       return 0
     }
     let result = 0
-    this.transactionItems.forEach( (i) => {
+    this.transactionItems.forEach((i) => {
       result += type === 'price' ? i.quantity * i.price : i[type]
     })
     return result
   }
 
   addItem(type: string): void {
-    if(type === 'gift-sell') {
+    if (type === 'gift-sell') {
       type = 'giftcard-sell'
     }
     this.transactionItems.push({
@@ -155,7 +160,7 @@ export class TillComponent implements OnInit, OnChanges {
   }
 
   cancelItems(): void {
-    if(this.transactionItems.length > 0 ) {
+    if (this.transactionItems.length > 0) {
       const buttons = [
         {text: "YES", value: true, status: 'success', class: 'btn-primary ml-auto mr-2'},
         {text: "NO", value: false, class: 'btn-warning'}
@@ -178,7 +183,7 @@ export class TillComponent implements OnInit, OnChanges {
   }
 
   itemChanged(item: any, index: number): void {
-    if(item === 'delete') {
+    if (item === 'delete') {
       this.transactionItems.splice(index, 1);
     } else {
       this.transactionItems[index] = item
@@ -186,18 +191,50 @@ export class TillComponent implements OnInit, OnChanges {
   }
 
   openCustomerDialog(): void {
-    this.dialogService.openModal(CustomerDialogComponent, { cssClass:"modal-xl", context: {customer: this.customer}})
-      .instance.close.subscribe( (data) => {
-        if(data.customer) {
-          this.customer = data.customer
-        }
+    this.dialogService.openModal(CustomerDialogComponent, {cssClass: "modal-xl", context: {customer: this.customer}})
+      .instance.close.subscribe((data) => {
+      if (data.customer) {
+        this.customer = data.customer
+      }
     })
+  }
+
+
+  getUsedPayMethods(total: boolean): any {
+    if(total) {
+      return _.sumBy(this.payMethods, 'amount')
+    }
+    return this.payMethods.filter( p => p.amount && p.amount > 0)
+  }
+
+
+  createTransaction(): void {
+    const transaction = {
+      items: this.transactionItems,
+      total: this.getTotals('price'),
+      ...(this.customer) && {customer: this.customer},
+      payMethods: this.getUsedPayMethods(false)
+    }
+    const body = {
+      iBusinessId: this.business._id,
+      transaction
+    };
+
+    console.log('body', body)
+
+    this.apiService.postNew('cashregistry', '/api/v1/till/transaction', body)
+      .subscribe(data => {
+        console.log(data);
+      }, err => {
+        console.log(err);
+
+      });
   }
 
   createPayment(payMethods: any) {
 
     console.log('I am creating payments');
-    
+
     // WIP: creating booking on successful payment
     // const payments = {
     //   iTransactionId: '6245c31dbcf85b6ff4b2aad0',
@@ -212,18 +249,25 @@ export class TillComponent implements OnInit, OnChanges {
     //   this.createBookings(data.data);
     // }, err => {
     //   console.log(err);
-      
+
     // });
   }
 
   // add bookings
   createBookings(payments: any) {
-    const tPayment = [{_id:"6246a8ca55b10780a44a88fa", iTransactionId:"6243232f82aefdaba2e77f30",
-    iBusinessId:"6182a52f1949ab0a59ff4e7b", nAmount:100, iPaymentMethodId:"6243ff1a0ab1c8da110423f6",
-    dCreatedDate:"2022-04-01T07:24:58.345Z", dUpdatedDate:"2022-04-01T07:24:58.345Z"}, {
-    _id:"6246a8ca55b10780a44a88fb", iTransactionId:"6243232f82aefdaba2e77f30", iBusinessId:"6182a52f1949ab0a59ff4e7b",
-    nAmount:150, iPaymentMethodId:"6243ff1a0ab1c8da110423f4", dCreatedDate:"2022-04-01T07:24:58.347Z",
-    dUpdatedDate:"2022-04-01T07:24:58.347Z"}]
+    const tPayment = [{
+      _id: "6246a8ca55b10780a44a88fa", iTransactionId: "6243232f82aefdaba2e77f30",
+      iBusinessId: "6182a52f1949ab0a59ff4e7b", nAmount: 100, iPaymentMethodId: "6243ff1a0ab1c8da110423f6",
+      dCreatedDate: "2022-04-01T07:24:58.345Z", dUpdatedDate: "2022-04-01T07:24:58.345Z"
+    }, {
+      _id: "6246a8ca55b10780a44a88fb",
+      iTransactionId: "6243232f82aefdaba2e77f30",
+      iBusinessId: "6182a52f1949ab0a59ff4e7b",
+      nAmount: 150,
+      iPaymentMethodId: "6243ff1a0ab1c8da110423f4",
+      dCreatedDate: "2022-04-01T07:24:58.347Z",
+      dUpdatedDate: "2022-04-01T07:24:58.347Z"
+    }]
     const body = {
       iBusinessId: this.business._id,
       iTransactionId: '6243232f82aefdaba2e77f30',
@@ -233,11 +277,11 @@ export class TillComponent implements OnInit, OnChanges {
 
     // create payaments
     this.apiService.postNew('bookkeeping', '/api/v1/bookkeeping/booking-for-payments', body)
-    .subscribe( data => {
-      console.log(data);
-    }, err => {
-      console.log(err);
-      
-    });
+      .subscribe(data => {
+        console.log(data);
+      }, err => {
+        console.log(err);
+
+      });
   }
 }
