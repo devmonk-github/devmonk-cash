@@ -15,6 +15,10 @@ const routes: Routes = [
     loadChildren : () => import('./till-settings/till-settings.module').then(module => module.TillSettingsModule)
   },
   {
+    path : 'print-settings',
+    loadChildren : () => import('./print-settings/print-settings.module').then(module => module.PrintSettingsModule)
+  },
+  {
     path : 'transactions',
     loadChildren : () => import('./transactions/transactions.module').then(module => module.TransactionsModule)
   },
