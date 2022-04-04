@@ -160,6 +160,8 @@ export class ApiService {
         return basePath += ':3002';
       case 'cashregistry':
         return basePath += ':3004';
+      case 'bookkeeping':
+        return basePath += ':3007';
       case 'oldplatform':
         return oldplatform += ':3000';
       case 'customer':

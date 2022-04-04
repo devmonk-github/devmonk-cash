@@ -174,4 +174,50 @@ export class TillComponent implements OnInit, OnChanges {
     })
   }
 
+  createPayment(payMethods: any) {
+
+    console.log('I am creating payments');
+    
+    // WIP: creating booking on successful payment
+    // const payments = {
+    //   iTransactionId: '6245c31dbcf85b6ff4b2aad0',
+    //   iBusinessId: this.business._id,
+    //   payMethods
+    // };
+
+    // // create payaments
+    // this.apiService.postNew('cashregistry', '/api/v1/payments', payments)
+    // .subscribe( (data: any) => {
+    //   console.log(data);
+    //   this.createBookings(data.data);
+    // }, err => {
+    //   console.log(err);
+      
+    // });
+  }
+
+  // add bookings
+  createBookings(payments: any) {
+    const tPayment = [{_id:"6246a8ca55b10780a44a88fa", iTransactionId:"6243232f82aefdaba2e77f30",
+    iBusinessId:"6182a52f1949ab0a59ff4e7b", nAmount:100, iPaymentMethodId:"6243ff1a0ab1c8da110423f6",
+    dCreatedDate:"2022-04-01T07:24:58.345Z", dUpdatedDate:"2022-04-01T07:24:58.345Z"}, {
+    _id:"6246a8ca55b10780a44a88fb", iTransactionId:"6243232f82aefdaba2e77f30", iBusinessId:"6182a52f1949ab0a59ff4e7b",
+    nAmount:150, iPaymentMethodId:"6243ff1a0ab1c8da110423f4", dCreatedDate:"2022-04-01T07:24:58.347Z",
+    dUpdatedDate:"2022-04-01T07:24:58.347Z"}]
+    const body = {
+      iBusinessId: this.business._id,
+      iTransactionId: '6243232f82aefdaba2e77f30',
+      sTransactionNumber: '20222-226',
+      tPayment
+    };
+
+    // create payaments
+    this.apiService.postNew('bookkeeping', '/api/v1/bookkeeping/booking-for-payments', body)
+    .subscribe( data => {
+      console.log(data);
+    }, err => {
+      console.log(err);
+      
+    });
+  }
 }
