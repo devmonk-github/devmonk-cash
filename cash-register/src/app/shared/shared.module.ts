@@ -13,6 +13,8 @@ import { CountryListComponent } from "./components/country-list/country-list.com
 import { AccordionDirective } from "./directives/accordion.directive";
 import { CustomPaymentMethodComponent } from './components/custom-payment-method/custom-payment-method.component';
 import { ConfirmationDialogComponent } from './components/confirmation-dialog/confirmation-dialog.component';
+import { ImageUploadComponent } from './components/image-upload/image-upload.component';
+import {WebcamModule} from 'ngx-webcam';
 
 @NgModule({
   declarations: [
@@ -23,14 +25,16 @@ import { ConfirmationDialogComponent } from './components/confirmation-dialog/co
     CountryListComponent,
     AccordionDirective,
     CustomPaymentMethodComponent,
-    ConfirmationDialogComponent
+    ConfirmationDialogComponent,
+    ImageUploadComponent
   ],
   imports: [
     CommonModule,
     FontAwesomeModule,
     TranslateModule,
     FormsModule,
-    NgSelectModule
+    NgSelectModule,
+    WebcamModule
   ],
   exports: [
     DialerComponent,
