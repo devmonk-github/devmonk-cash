@@ -11,6 +11,7 @@ import {CustomerDialogComponent} from "../shared/components/customer-dialog/cust
 import {TaxService} from "../shared/service/tax.service";
 import {ApiService} from '../shared/service/api.service';
 import {ConfirmationDialogComponent} from "../shared/components/confirmation-dialog/confirmation-dialog.component";
+import { ImageUploadComponent } from '../shared/components/image-upload/image-upload.component';
 import * as _ from 'lodash';
 
 @Component({
@@ -100,7 +101,14 @@ export class TillComponent implements OnInit, OnChanges {
     this.getPaymentMethods()
   }
 
-  getPaymentMethods() {
+  openImageModal(){
+    console.log('--- openImageModal');
+    this.dialogService.openModal(ImageUploadComponent, { cssClass:"modal-xl", context: { mode: 'create' } }).instance.close.subscribe(result =>{
+
+    });
+  }
+
+  getPaymentMethods(){
     this.payMethodsLoading = true;
     this.apiService.getNew('cashregistry', '/api/v1/payment-methods/' + this.requestParams.iBusinessId).subscribe((result: any) => {
       if (result && result.data && result.data.length) {
