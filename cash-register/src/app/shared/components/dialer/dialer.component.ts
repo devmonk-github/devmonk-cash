@@ -1,31 +1,58 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {faPlus, faMinus} from "@fortawesome/free-solid-svg-icons";
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  SimpleChanges
+} from '@angular/core';
+import {faMinus, faPlus} from "@fortawesome/free-solid-svg-icons";
 
 @Component({
   selector: 'app-dialer',
   templateUrl: './dialer.component.html',
-  styleUrls: ['./dialer.component.sass']
+  styleUrls: ['./dialer.component.sass'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class DialerComponent implements OnInit {
+export class DialerComponent implements OnChanges, OnInit {
 
-  @Input() quantity : number = 0
+  @Input()
+  set quantity(value: number) {
+    console.log('value', value)
+    this.qty = value
+  }
+  get quantity() {
+    return this.qty
+  }
   @Output() quantityChange = new EventEmitter<number>()
 
   faPlus = faPlus
   faMinus = faMinus
+  qty = 0
 
   constructor() { }
 
-  ngOnInit(): void {
+  ngOnChanges(changes:SimpleChanges): void {
+    console.log('changes', changes)
+  }
+  ngOnInit() {
+    // this.qty = JSON.parse(JSON.stringify(this.quantity))
   }
 
   increase(): void {
-    this.quantity++
-    this.quantityChange.emit(this.quantity)
+    this.qty++
+    this.quantityChange.emit(this.qty)
   }
 
   decrease(): void {
-    this.quantity--
-    this.quantityChange.emit(this.quantity)
+    this.qty--
+    this.quantityChange.emit(this.qty)
+  }
+
+  change(oldValue: any, newValue: any): void {
+    console.log('oldValue', oldValue)
+    console.log('newValue', newValue)
   }
 }

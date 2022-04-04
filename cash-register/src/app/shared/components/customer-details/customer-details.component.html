@@ -150,7 +150,7 @@
                 <div class="row col-md-12">
                     <div><label class="required">Country</label></div>
                     <div>
-                        <country-list id="country" [country]="customer.oInvoiceAddress.country" [(ngModel)]="customer.oInvoiceAddress.country" (countryChanged)="customer.invoiceAddress.country = $event" name="country"></country-list>
+                        <country-list id="country" [country]="customer.oInvoiceAddress.country" [(ngModel)]="customer.oInvoiceAddress.country" (customerCountryChanged)="customerCountryChanged('oInvoiceAddress', $event)" name="country"></country-list>
                     </div>                </div>
                 <div class="row col-md-12">
                     <div><label>Zip code</label></div>
@@ -182,7 +182,7 @@
                 <div class="row col-md-12">
                     <div><label class="required">Country</label></div>
                     <div>
-                        <country-list id="country" [country]="customer.oShippingAddress.country" [(ngModel)]="customer.oShippingAddress.country" (countryChanged)="customer.shippingAddress.country = $event" name="country"></country-list>
+                        <country-list id="country" [country]="customer.oShippingAddress.country" [(ngModel)]="customer.oShippingAddress.countryCode" (customerCountryChanged)="customerCountryChanged('oShippingAddress', $event)" name="country"></country-list>
                     </div>
                 </div>
                 <div class="row col-md-12">

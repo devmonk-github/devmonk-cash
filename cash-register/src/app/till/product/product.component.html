@@ -17,7 +17,7 @@
         <app-dialer [(quantity)]="item.quantity" ></app-dialer>
       </div>
       <div class="w-300px pe-2">
-      
+
         <div class="mb-1">
           <input type="text" class="form-control" name="articleName" placeholder="{{ 'NAME' | translate}}" id="articleName" [(ngModel)]="item.name">
         </div>
@@ -35,17 +35,6 @@
           </span>
         </button>
         <!-- <button class="btn btn-secondary" type="button" >{{ "ADD_DISCOUNT" | translate}}</button> -->
-      </div>
-      <div class="w-125px pe-2">
-
-        <select name="tax" id="" class="form-control">
-          <option value="0">0%</option>
-          <option value="9">9%</option>
-          <option value="21">21%</option>
-        </select>
-
-        {{item.tax}}%
-      
       </div>
       <div class="w-100px">
         <button class="btn btn-icon btn-secondary w-35px h-35px" (click)="deleteItem()">

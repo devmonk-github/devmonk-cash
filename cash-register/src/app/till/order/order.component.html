@@ -35,11 +35,11 @@
         <input type="number" name="discount" class="form-control" [(ngModel)]="item.discount">
       </div>
       <div class="w-125px ps-2">
-        <label for="tax">{{ "TAX" | translate}}</label>
-        <select name="tax" id="tax" [(ngModel)]="item.tax" class="form-control">
-          <option value="21">21</option>
-          <option value="9">9</option>
-          <option value="0">0</option>
+        <label for="taxRate">{{ "TAX" | translate}}</label>
+        <select name="taxRate" id="taxRate" class="form-select"
+                [(ngModel)]="item.tax">
+          <option *ngFor="let rate of taxes"
+                  [ngValue]="rate.rate">{{rate.name}}</option>
         </select>
         {{ "BRAND" | translate}}: ----
         <br>

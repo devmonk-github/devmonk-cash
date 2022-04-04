@@ -1,4 +1,4 @@
-import {Component, Input, OnInit, ViewContainerRef} from '@angular/core';
+import {Component, Input, OnInit, ViewContainerRef, ViewChildren, QueryList, ElementRef } from '@angular/core';
 import {DialogComponent} from "../../service/dialog";
 import {faTimes, faSearch} from "@fortawesome/free-solid-svg-icons";
 import { DialogService } from '../../service/dialog';
@@ -102,6 +102,8 @@ export class CustomerDialogComponent implements OnInit {
     }
   ]
 
+  @ViewChildren('inputElement') inputElement!: QueryList<ElementRef>;
+
   constructor(
     private viewContainer: ViewContainerRef,
     private dialogService: DialogService,
@@ -109,6 +111,10 @@ export class CustomerDialogComponent implements OnInit {
     private translateService: TranslateService) {
     const _injector = this.viewContainer.parentInjector
     this.dialogRef = _injector.get<DialogComponent>(DialogComponent);
+  }
+
+  ngAfterViewInit(): void {
+    this.inputElement.first.nativeElement.focus();
   }
 
   ngOnInit(): void {

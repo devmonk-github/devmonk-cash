@@ -8,7 +8,7 @@
     <div class="card-body">
         <diV class="row">
             <div class="col-md-4">
-                <label class="form-label form-control-solid">Name :</label>
+                <label class="form-label form-control-solid">Name:</label>
             </div>
             <div class="col-md-8">
                 <input class="form-control" (value)="customMethod.sName" [(ngModel)]="customMethod.sName"/>
@@ -52,6 +52,14 @@
                 <label class="form-check form-switch form-check-custom form-check-solid">
                     <input type="checkbox" class="form-check-input" [(ngModel)]="customMethod.bAssignSavingPointsLastPayment"> 
                 </label>
+            </div>
+        </diV>
+        <diV class="row">
+            <div class="col-md-4">
+                <label class="form-label form-control-solid">Ledger Number:</label>
+            </div>
+            <div class="col-md-8">
+                <input class="form-control" (value)="customMethod.sLedgerNumber" [(ngModel)]="customMethod.sLedgerNumber"/>
             </div>
         </diV>
     </div>
