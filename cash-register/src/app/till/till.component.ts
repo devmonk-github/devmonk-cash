@@ -213,23 +213,25 @@ export class TillComponent implements OnInit, OnChanges {
 
 
   getUsedPayMethods(total: boolean): any {
-    if (total) {
-      return _.sumBy(this.payMethods, 'amount')
+    if(!this.payMethods) {
+      return 0
     }
-    return this.payMethods.filter(p => p.amount && p.amount > 0)
+    if (total) {
+      return _.sumBy(this.payMethods, 'amount') || 0
+    }
+    return this.payMethods.filter(p => p.amount && p.amount > 0) || 0
   }
 
 
   createTransaction(): void {
-    const transaction = {
-      items: this.transactionItems,
-      total: this.getTotals('price'),
-      ...(this.customer) && { customer: this.customer },
-      payMethods: this.getUsedPayMethods(false)
-    }
     const body = {
       iBusinessId: this.business._id,
-      transaction
+      aTransactionItems: this.transactionItems,
+      nTotal: this.getTotals('price'),
+      ...(this.customer) && { oCustomer: this.customer },
+      oReceipt: {
+        aPayments: this.getUsedPayMethods(false)
+      }
     };
 
     console.log('body', body)
