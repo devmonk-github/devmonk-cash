@@ -23,8 +23,8 @@
                     (initError)="handleInitError($event)">
             </webcam>
             <br/>
-            <button class="actionBtn" (click)="triggerSnapshot();">Take A Snapshot</button>
-            <button class="actionBtn" (click)="toggleWebcam(!showWebcam);">Toggle Webcam</button>
+            <button class="actionBtn" (click)="triggerSnapshot();">Capture</button>
+            <button class="actionBtn" (click)="toggleWebcam(!showWebcam);">Turn off camera</button>
             <br/>
           </div>
         </div>
@@ -33,6 +33,8 @@
           <h2>Nice one!</h2>
           <img [src]="webcamImage.imageAsDataUrl"/>
         </div>
+
+        <button class="btn btn-primary" (click)="submit()" type="submit">Submit</button>
         
         <h4 *ngIf="errors.length > 0">Messages:</h4>
         <ul *ngFor="let error of errors">

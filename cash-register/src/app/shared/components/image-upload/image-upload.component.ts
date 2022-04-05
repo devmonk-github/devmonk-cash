@@ -29,7 +29,7 @@ export class ImageUploadComponent implements OnInit {
     file: new FormControl('', [Validators.required]),
     fileSource: new FormControl('', [Validators.required])
   });
-  file: any = '';
+  file: any = undefined;
   public videoOptions: MediaTrackConstraints = {
     // width: {ideal: 1024},
     // height: {ideal: 576}
@@ -65,15 +65,40 @@ export class ImageUploadComponent implements OnInit {
   }
      
   onFileChange(event:any) {
+    console.log('On change : ', event.target.files);
     this.file = undefined;
     if (event.target.files.length > 0) {
+      console.log('-- inside here!');
       this.file = event.target.files[0];      
     }
   }
+
+  randomString(length: number) {
+    var randomChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    var result = '';
+    for ( var i = 0; i < length; i++ ) {
+        result += randomChars.charAt(Math.floor(Math.random() * randomChars.length));
+    }
+    return result;
+}
      
   submit(){
+    console.log(' we are here!!');
+
+    let name = this.randomString(20);
+
+    if(this.showWebcam && !this.showUpload){ 
+      console.log(' Upload camera image!'); 
+      console.log(this.webcamImage._imageAsDataUrl);
+      var content = this.webcamImage._imageAsDataUrl;
+      var blob = new Blob([content], { type: "text/xml" });
+      this.file = blob;
+    }
+    if(!this.showWebcam && this.showUpload){ console.log(' Upload selected image!'); }
+
+    console.log(this.file);
     const formData = new FormData();
-    formData.append('file', this.file, 'name');
+    formData.append('file', this.file, name);
     this.file = undefined;
     this.apiService.fileUpload('core', '/api/v1/file-uploads/' + this.requestParams.iBusinessId, formData).subscribe(
       (result : any) =>{
