@@ -1,17 +1,17 @@
-import {Component, OnChanges, OnInit} from '@angular/core';
-import {Transaction} from "./models/transaction.model";
+import { Component, OnChanges, OnInit } from '@angular/core';
 import {
   faScrewdriverWrench, faTruck, faBoxesStacked, faGifts,
   faUserPlus, faUser, faTimes, faTimesCircle, faTrashAlt, faRing,
   faCoins, faCalculator, faArrowRightFromBracket
 } from "@fortawesome/free-solid-svg-icons";
-import {TranslateService} from "@ngx-translate/core";
-import {DialogService} from '../shared/service/dialog'
-import {CustomerDialogComponent} from "../shared/components/customer-dialog/customer-dialog.component";
-import {TaxService} from "../shared/service/tax.service";
-import {ApiService} from '../shared/service/api.service';
-import {ConfirmationDialogComponent} from "../shared/components/confirmation-dialog/confirmation-dialog.component";
+import { TranslateService } from "@ngx-translate/core";
+import { DialogService } from '../shared/service/dialog'
+import { CustomerDialogComponent } from "../shared/components/customer-dialog/customer-dialog.component";
+import { TaxService } from "../shared/service/tax.service";
+import { ApiService } from '../shared/service/api.service';
+import { ConfirmationDialogComponent } from "../shared/components/confirmation-dialog/confirmation-dialog.component";
 import { ImageUploadComponent } from '../shared/components/image-upload/image-upload.component';
+import { Transaction } from "./models/transaction.model";
 import * as _ from 'lodash';
 
 @Component({
@@ -38,7 +38,11 @@ export class TillComponent implements OnInit, OnChanges {
   transactionItems: any[] = []
   selectedTransaction = null;
   customer: any
-
+  searchkeyword: any;
+  shopProducts: any;
+  businessId!: string;
+  supplierId!: string;
+  isStockSelected = true;
   // Dummy data
   parkedTransactions: Transaction[] = [
     new Transaction('1', '1', '1', '2022030301', 'shoppurchase', 'concept', '1', '1'),
@@ -48,21 +52,21 @@ export class TillComponent implements OnInit, OnChanges {
     new Transaction('5', '1', '1', '2022030305', 'shoppurchase', 'concept', '1', '1'),
   ]
   quickButtons: any[] = [
-    {name: 'Waterdicht', price: this.randNumber(5, 30)},
-    {name: 'Batterij', price: this.randNumber(5, 30)},
-    {name: 'Band verstellen', price: this.randNumber(5, 20)},
-    {name: 'Oude cadeaubon', price: this.randNumber(1, 50)},
-    {name: 'Schiet oorbel', price: this.randNumber(1, 50)},
-    {name: 'Reparatie', price: this.randNumber(1, 50)},
-    {name: 'IXXI', price: this.randNumber(50, 100)},
-    {name: 'KARMA', price: this.randNumber(50, 100)},
-    {name: 'BUDDHA', price: this.randNumber(50, 100)},
-    {name: 'P1500', price: this.randNumber(100, 150)},
-    {name: 'Diversen', price: this.randNumber(30, 150)},
-    {name: 'Stalen band', price: this.randNumber(25, 50)},
-    {name: 'Leren band', price: this.randNumber(20, 45)},
-    {name: 'Postzegels', price: this.randNumber(1, 10)},
-    {name: 'Tassen', price: this.randNumber(50, 200)},
+    { name: 'Waterdicht', price: this.randNumber(5, 30) },
+    { name: 'Batterij', price: this.randNumber(5, 30) },
+    { name: 'Band verstellen', price: this.randNumber(5, 20) },
+    { name: 'Oude cadeaubon', price: this.randNumber(1, 50) },
+    { name: 'Schiet oorbel', price: this.randNumber(1, 50) },
+    { name: 'Reparatie', price: this.randNumber(1, 50) },
+    { name: 'IXXI', price: this.randNumber(50, 100) },
+    { name: 'KARMA', price: this.randNumber(50, 100) },
+    { name: 'BUDDHA', price: this.randNumber(50, 100) },
+    { name: 'P1500', price: this.randNumber(100, 150) },
+    { name: 'Diversen', price: this.randNumber(30, 150) },
+    { name: 'Stalen band', price: this.randNumber(25, 50) },
+    { name: 'Leren band', price: this.randNumber(20, 45) },
+    { name: 'Postzegels', price: this.randNumber(1, 10) },
+    { name: 'Tassen', price: this.randNumber(50, 200) },
   ]
   payMethods: Array<any> = [];
   business: any = {}
@@ -101,14 +105,14 @@ export class TillComponent implements OnInit, OnChanges {
     this.getPaymentMethods()
   }
 
-  openImageModal(){
+  openImageModal() {
     console.log('--- openImageModal');
-    this.dialogService.openModal(ImageUploadComponent, { cssClass:"modal-xl", context: { mode: 'create' } }).instance.close.subscribe(result =>{
+    this.dialogService.openModal(ImageUploadComponent, { cssClass: "modal-xl", context: { mode: 'create' } }).instance.close.subscribe(result => {
 
     });
   }
 
-  getPaymentMethods(){
+  getPaymentMethods() {
     this.payMethodsLoading = true;
     this.apiService.getNew('cashregistry', '/api/v1/payment-methods/' + this.requestParams.iBusinessId).subscribe((result: any) => {
       if (result && result.data && result.data.length) {
@@ -162,16 +166,16 @@ export class TillComponent implements OnInit, OnChanges {
       tax: 21,
       description: '',
       open: true,
-      ...(type === 'giftcard-sell') && {giftcardNumber: Date.now()},
-      ...(type === 'giftcard-sell') && {taxHandling: 'true'},
+      ...(type === 'giftcard-sell') && { giftcardNumber: Date.now() },
+      ...(type === 'giftcard-sell') && { taxHandling: 'true' },
     })
   }
 
   cancelItems(): void {
     if (this.transactionItems.length > 0) {
       const buttons = [
-        {text: "YES", value: true, status: 'success', class: 'btn-primary ml-auto mr-2'},
-        {text: "NO", value: false, class: 'btn-warning'}
+        { text: "YES", value: true, status: 'success', class: 'btn-primary ml-auto mr-2' },
+        { text: "NO", value: false, class: 'btn-warning' }
       ]
       this.dialogService.openModal(ConfirmationDialogComponent, {
         context: {
@@ -181,12 +185,12 @@ export class TillComponent implements OnInit, OnChanges {
         }
       })
         .instance.close.subscribe(
-        result => {
-          if (result) {
-            this.transactionItems = []
+          result => {
+            if (result) {
+              this.transactionItems = []
+            }
           }
-        }
-      )
+        )
     }
   }
 
@@ -199,20 +203,20 @@ export class TillComponent implements OnInit, OnChanges {
   }
 
   openCustomerDialog(): void {
-    this.dialogService.openModal(CustomerDialogComponent, {cssClass: "modal-xl", context: {customer: this.customer}})
+    this.dialogService.openModal(CustomerDialogComponent, { cssClass: "modal-xl", context: { customer: this.customer } })
       .instance.close.subscribe((data) => {
-      if (data.customer) {
-        this.customer = data.customer
-      }
-    })
+        if (data.customer) {
+          this.customer = data.customer
+        }
+      })
   }
 
 
   getUsedPayMethods(total: boolean): any {
-    if(total) {
+    if (total) {
       return _.sumBy(this.payMethods, 'amount')
     }
-    return this.payMethods.filter( p => p.amount && p.amount > 0)
+    return this.payMethods.filter(p => p.amount && p.amount > 0)
   }
 
 
@@ -220,7 +224,7 @@ export class TillComponent implements OnInit, OnChanges {
     const transaction = {
       items: this.transactionItems,
       total: this.getTotals('price'),
-      ...(this.customer) && {customer: this.customer},
+      ...(this.customer) && { customer: this.customer },
       payMethods: this.getUsedPayMethods(false)
     }
     const body = {
@@ -291,5 +295,120 @@ export class TillComponent implements OnInit, OnChanges {
         console.log(err);
 
       });
+  }
+
+  // search() {
+  //   console.log(this.searchkeyword);
+
+  // }
+  /* Search API for finding the  common-brands products */
+  /* Search API for finding the  common-brands products */
+  listShopProducts(searchValue: string | undefined, isFromEAN: boolean | false) {
+    let data = {
+      "iBusinessId": this.business._id,
+      "skip": 0,
+      "limit": 10,
+      "sortBy": "",
+      "sortOrder": "",
+      "searchValue": searchValue,
+      "aProjection": [
+        'oName',
+        'sEan',
+        'nVatRate',
+        'sProductNumber',
+        'nPriceIncludesVat',
+        'bDiscountOnPercentage',
+        'nDiscount',
+        'sLabelDescription',
+        'aImage',
+        'sArticleNumber'
+      ],
+      "oFilterBy": {
+        "oStatic": {},
+        "oDynamic": {}
+      }
+    }
+    this.apiService.postNew('core', '/api/v1/business/products/list', data).subscribe((result: any) => {
+      // this.isLoading = false;
+      if (result && result.data && result.data.length) {
+        const response = result.data[0];
+        this.shopProducts = response.result;
+      }
+    }, (error) => {
+      // this.isLoading = false;
+    });
+  }
+
+  listCommonBrandProducts(searchValue: string | undefined, isFromEAN: boolean | false) {
+    try {
+      let data = {
+        "iBusinessId": this.business._id,
+        "skip": 0,
+        "limit": 10,
+        "sortBy": "",
+        "sortOrder": "",
+        "searchValue": searchValue,
+        "aProjection": [
+          'oName',
+          'sEan',
+          'nVatRate',
+          'sProductNumber',
+          'nPriceIncludesVat',
+          'bDiscountOnPercentage',
+          'nDiscount',
+          'sLabelDescription',
+          'aImage',
+          'sArticleNumber'
+        ],
+        "oFilterBy": {
+          "oStatic": {},
+          "oDynamic": {}
+        }
+      };
+      console.log(data);
+      this.apiService.postNew('core', '/api/v1/products/commonbrand/list', data).subscribe((result: any) => {
+        // this.isLoading = false;
+        if (result && result.data && result.data.length) {
+          const response = result.data[0];
+          this.shopProducts = response.result;
+        }
+      }, (error) => {
+        // this.isLoading = false;
+      })
+    } catch (e) {
+      // this.isLoading = false;
+    }
+  }
+
+  // Add selected product into purchase order
+  onSelectProduct(product: any, isFrom: string, isFor: string) {
+
+    console.log(product);
+    this.transactionItems.push({
+      name: product.oName ? product.oName['en'] : 'No name',
+      type: this.isStockSelected ? 'product' : 'order',
+      quantity: 1,
+      price: product.nPriceIncludesVat,
+      discount: product.nDiscount || 0,
+      tax: product.nVatRate || 0,
+      description: product.sLabelDescription,
+      open: true,
+    });
+    // this.selectedProduct.emit({ product: product, isFrom: isFrom, isFor: isFor });
+    // this.searchByProductNumber = "";
+    // this.searchByProductEAN = "";
+    // this.commonBrandProducts = [];
+    // this.shopProducts = [];
+    // this.toggleSearchResult.emit(false);
+  }
+
+  search() {
+    // if (searchValue && searchValue.length > 2) {
+    //   this.isLoading = true;
+    if (this.isStockSelected) {
+      this.listShopProducts(this.searchkeyword, false);
+    } else {
+      this.listCommonBrandProducts(this.searchkeyword, false); // Searching for the products of common brand
+    }
   }
 }

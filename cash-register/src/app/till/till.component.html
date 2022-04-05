@@ -3,7 +3,7 @@
     <div class="col-md-9 col-xs-12 column-auto till-body ps-0 pe-0">
       <div class="d-flex justify-content-start">
         <button class="btn d-flex bg-white rounded p-4 mb-3 me-3 text-hover-primary min-w-90px"
-                (click)="addItem('product')">
+          (click)="addItem('product'); isStockSelected = true">
           <div class="d-flex flex-column justify-center align-items-center flex-grow-1">
             <div class="symbol symbol-40px mb-2">
               <span class="symbol-label">
@@ -19,7 +19,7 @@
         </button>
 
         <button class="btn d-flex bg-white rounded p-4 mb-3 me-3 text-hover-primary min-w-90px"
-                (click)="addItem('order')">
+          (click)="addItem('order'); isStockSelected = false">
           <div class="d-flex flex-column justify-center align-items-center flex-grow-1">
             <div class="symbol symbol-40px mb-2">
               <span class="symbol-label">
@@ -35,7 +35,7 @@
         </button>
 
         <button class="btn d-flex bg-white rounded p-4 mb-3 me-3 text-hover-primary min-w-90px"
-                (click)="addItem('repair')">
+          (click)="addItem('repair')">
           <div class="d-flex flex-column justify-center align-items-center flex-grow-1">
             <div class="symbol symbol-40px mb-2">
               <span class="symbol-label">
@@ -51,7 +51,7 @@
         </button>
 
         <button class="btn d-flex bg-white rounded p-4 mb-3 me-3 text-hover-primary min-w-90px"
-                (click)="addItem('gift-sell')">
+          (click)="addItem('gift-sell')">
           <div class="d-flex flex-column justify-center align-items-center flex-grow-1">
             <div class="symbol symbol-40px mb-2">
               <span class="symbol-label">
@@ -67,7 +67,7 @@
         </button>
 
         <button class="btn d-flex bg-white rounded p-4 mb-3 me-3 text-hover-primary min-w-90px"
-                (click)="addItem('gold-purchase')">
+          (click)="addItem('gold-purchase')">
           <div class="d-flex flex-column justify-center align-items-center flex-grow-1">
             <div class="symbol symbol-40px mb-2">
               <span class="symbol-label">
@@ -83,7 +83,7 @@
         </button>
 
         <button class="btn d-flex bg-white rounded p-4 mb-3 me-3 text-hover-primary min-w-90px"
-                (click)="addItem('gold-sell')">
+          (click)="addItem('gold-sell')">
           <div class="d-flex flex-column justify-center align-items-center flex-grow-1">
             <div class="symbol symbol-40px mb-2">
               <span class="symbol-label">
@@ -112,7 +112,8 @@
             </div>
           </div>
         </button>
-        <button class="btn d-flex bg-white rounded p-4 mb-3 me-3 text-hover-primary min-w-90px" (click)="openImageModal()">
+        <button class="btn d-flex bg-white rounded p-4 mb-3 me-3 text-hover-primary min-w-90px"
+          (click)="openImageModal()">
           <div class="d-flex flex-column justify-center align-items-center flex-grow-1">
             <div class="symbol symbol-40px mb-2">
               <span class="symbol-label">
@@ -157,15 +158,16 @@
           <div class="accordion" id="till-items-accordion" [itemLength]="transactionItems.length">
             <ng-container *ngFor="let item of transactionItems; let i = index">
               <div class="accordion-item" till-product *ngIf="item.type=== 'product'" [item]="item" [taxes]="taxes"
-                   (itemChanged)="itemChanged($event, i)"></div>
+                (itemChanged)="itemChanged($event, i)"></div>
               <div class="accordion-item" till-order *ngIf="item.type=== 'order'" [item]="item" [taxes]="taxes"
-                   (itemChanged)="itemChanged($event, i)"></div>
+                (itemChanged)="itemChanged($event, i)"></div>
               <div class="accordion-item" till-repair *ngIf="item.type=== 'repair'" [item]="item" [taxes]="taxes"
-                   (itemChanged)="itemChanged($event, i)"></div>
+                (itemChanged)="itemChanged($event, i)"></div>
               <div class="accordion-item" till-gift *ngIf="item.type=== 'giftcard-sell'" [item]="item" [taxes]="taxes"
-                   (itemChanged)="itemChanged($event, i)"></div>
+                (itemChanged)="itemChanged($event, i)"></div>
             </ng-container>
-            <section class="d-flex product-row p-3 text-gray-600 align-items-center" *ngIf="getTotals('quantity') !== 0">
+            <section class="d-flex product-row p-3 text-gray-600 align-items-center"
+              *ngIf="getTotals('quantity') !== 0">
               <div class="w-90px">{{getTotals('quantity')}}</div>
               <div class="w-300px">&nbsp;</div>
               <div class="w-125px">{{getTotals('price') | currency: '€'}}</div>
@@ -181,13 +183,47 @@
           <div class="till-padding">
 
             <div class="d-flex">
-              <input type="text" class="form-control me-3" placeholder="Search...">
+              <input type="text" class="form-control me-3" placeholder="Search..." [(ngModel)]="searchkeyword"
+                (keyup.enter)="search()">
               <button class="btn btn-secondary me-3">{{ "TRANSACTION" | translate}}</button>
               <button class="btn btn-secondary me-3">{{ "TEXT_LINE" | translate}}</button>
               <button class="btn btn-secondary me-3">{{ "EMPTY_LINE" | translate}}</button>
-              <button class="btn btn-icon btn-secondary w-85px" (click)="cancelItems()" [disabled]="transactionItems.length === 0">
+              <button class="btn btn-icon btn-secondary w-85px" (click)="cancelItems()"
+                [disabled]="transactionItems.length === 0">
                 <i class="fa fa-trash"></i>
               </button>
+            </div>
+          </div>
+          <div class="row" *ngIf="shopProducts && shopProducts.length > 0">
+            <div class="col-md-6 cursor-pointer" *ngFor="let product of shopProducts"
+              (mouseenter)="product['showOption'] = true" (mouseleave)="product['showOption'] = false">
+              <div class="d-flex">
+                <div class="w-50 p-4">
+                  <img src="{{product.aImage[0]? product.aImage[0]: '../assets/images/no-photo-available.jpg' }}"
+                    class="w-auto h-xxl-100px">
+                </div>
+                <div class="w-50 px-2">
+                  <label class="business-bg-color rounded-full px-2 py-1 text-white text-sm">Business product</label>
+                  <span>
+                    <fa-icon icon="copy" aria-label="copy-article-number" class="ml-4"></fa-icon>
+                  </span>
+                  <p class="block mt-2">{{ product.oName? product.oName['en'] : 'No name' }}</p>
+                  <p class="mt-2">{{ product.sEan }}</p>
+                  <p class="mt-2">{{ product.sProductNumber }}</p>
+                </div>
+              </div>
+              <div class="absolute hover-product-option" *ngIf="product['showOption']">
+                <div class="d-flex">
+                  <button class="btn btn-secondary w-50 mr-2 p-0"
+                    (click)="onSelectProduct(product, 'business', 'same-article')">
+                    Add this article
+                  </button>
+                  <!-- <button class="btn btn-secondary w-50 p-0"
+                    (click)="onSelectProduct(product, 'business', 'other-article')">
+                    Use other article number
+                  </button> -->
+                </div>
+              </div>
             </div>
           </div>
           <div class="bg-white py-3">
@@ -207,7 +243,8 @@
       </div>
     </div>
     <div class="col-md-3 col-xs-12">
-      <button *ngIf="!customer" class="btn d-flex bg-white rounded p-5 mb-3 text-hover-primary w-100" (click)="openCustomerDialog()">
+      <button *ngIf="!customer" class="btn d-flex bg-white rounded p-5 mb-3 text-hover-primary w-100"
+        (click)="openCustomerDialog()">
         <div class="d-flex justify-center align-items-center flex-grow-1">
           <div class="symbol symbol-40px me-2">
             <span class="symbol-label">
@@ -258,11 +295,10 @@
       </div>
 
       <div class="form-floating till-padding">
-        <select name="parkedTransactions" id="parkedTransactions" class="form-select"
-                [(ngModel)]="selectedTransaction">
+        <select name="parkedTransactions" id="parkedTransactions" class="form-select" [(ngModel)]="selectedTransaction">
           <option [ngValue]="null"></option>
-          <option *ngFor="let transaction of parkedTransactions"
-                  [ngValue]="transaction">{{transaction.sNumber}}</option>
+          <option *ngFor="let transaction of parkedTransactions" [ngValue]="transaction">{{transaction.sNumber}}
+          </option>
         </select>
         <label for="parkedTransactions">{{"PARKED_TRANSACTIONS" | translate}}</label>
       </div>
@@ -285,10 +321,8 @@
         <h5 *ngIf='!payMethods.length && !payMethodsLoading'> No payment method found!</h5>
         <div *ngIf="payMethodsLoading" class="spinner-border mx-auto"></div>
       </div>
-      <h1>{{ "CHANGE" | translate}}: {{getUsedPayMethods(true) - getTotals('price') | currency: '€'}}</h1>
-      <button class="btn btn-primary till-save-button" (click)="createTransaction()">{{ "SAVE" | translate}}</button>
+      <button class="btn btn-primary till-save-button" (click)="createBookings(payMethods)">{{ "SAVE" |
+        translate}}</button>
     </div>
   </div>
 </div>
-
-
