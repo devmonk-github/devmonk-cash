@@ -321,8 +321,8 @@
         <h5 *ngIf='!payMethods.length && !payMethodsLoading'> No payment method found!</h5>
         <div *ngIf="payMethodsLoading" class="spinner-border mx-auto"></div>
       </div>
-      <button class="btn btn-primary till-save-button" (click)="createBookings(payMethods)">{{ "SAVE" |
-        translate}}</button>
+      <h1>{{ "CHANGE" | translate}}: {{getUsedPayMethods(true) - getTotals('price') | currency: '€'}}</h1>
+      <button class="btn btn-primary till-save-button" (click)="createTransaction()">{{ "SAVE" | translate}}</button>
     </div>
   </div>
 </div>
