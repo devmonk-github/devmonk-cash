@@ -120,10 +120,10 @@ export class ImageUploadComponent implements OnInit {
   }
 
   close(data: any) {
-    this.dialogRef.close.emit(data);
     this.toggleWebcam(false);
-    this.cameraWasSwitched(this.deviceId);
-    this.nextWebcamObservable;
+    setTimeout(() => {
+      this.dialogRef.close.emit(data);
+    }, 100);
   }
 
   public triggerSnapshot(): void {
@@ -161,5 +161,4 @@ export class ImageUploadComponent implements OnInit {
   public get nextWebcamObservable(): Observable<boolean|string> {
     return this.nextWebcam.asObservable();
   }
-
 }
