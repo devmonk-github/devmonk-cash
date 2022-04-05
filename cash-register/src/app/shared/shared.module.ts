@@ -4,7 +4,7 @@ import {CustomerDialogComponent } from './components/customer-dialog/customer-di
 import {CommonModule, CurrencyPipe} from "@angular/common";
 import {FontAwesomeModule} from "@fortawesome/angular-fontawesome";
 import {TranslateModule} from "@ngx-translate/core";
-import {FormsModule} from "@angular/forms";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import { DialerComponent } from './components/dialer/dialer.component';
 import { AlertComponent } from './components/alert/alert.component';
 import { CustomerDetailsComponent } from "./components/customer-details/customer-details.component";
@@ -34,7 +34,8 @@ import {WebcamModule} from 'ngx-webcam';
     TranslateModule,
     FormsModule,
     NgSelectModule,
-    WebcamModule
+    WebcamModule,
+    ReactiveFormsModule
   ],
   exports: [
     DialerComponent,

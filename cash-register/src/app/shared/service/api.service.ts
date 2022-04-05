@@ -195,6 +195,17 @@ export class ApiService {
     return this.httpClient.post<any>(finalUrl, data, httpHeaders);
   }
 
+  fileUpload(apiType: string, url: string, data: any, header?: any): Observable<HttpResponse<any>> {
+    this.setAPIHeaders();
+    let finalUrl = this.getApiBaseUrl(apiType) + url;
+    let finalHeaders = header && Object.keys(header).length > 0 ? header : this.defaultHeaders;
+    delete finalHeaders['Content-Type'];
+    let httpHeaders = {
+      headers: new HttpHeaders(finalHeaders),
+    }
+    return this.httpClient.post<any>(finalUrl, data, httpHeaders);
+  }
+
   putNew(apiType: string, url: string, data: any, header?: any): Observable<HttpResponse<any>> {
     this.setAPIHeaders();
     let finalUrl = this.getApiBaseUrl(apiType) + url;
