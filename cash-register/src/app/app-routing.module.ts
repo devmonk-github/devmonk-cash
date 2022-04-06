@@ -19,6 +19,10 @@ const routes: Routes = [
     loadChildren : () => import('./print-settings/print-settings.module').then(module => module.PrintSettingsModule)
   },
   {
+    path : 'workstations',
+    loadChildren : () => import('./workstation/workstation.module').then(module => module.WorkstationModule)
+  },
+  {
     path : 'transactions',
     loadChildren : () => import('./transactions/transactions.module').then(module => module.TransactionsModule)
   },

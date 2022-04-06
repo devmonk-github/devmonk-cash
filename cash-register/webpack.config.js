@@ -31,6 +31,7 @@ module.exports = {
           './CashRegisterModule': './src/app/till/till.module.ts',
           './CashRegisterSettingsModule': './src/app/till-settings/till-settings.module.ts',
           './PrintSettingsModule': './src/app/print-settings/print-settings.module.ts',
+          './WorkstationModule': './src/app/workstation/workstation.module.ts',
           './TransactionModule': './src/app/transactions/transactions.module.ts',
           './StatisticModule': './src/app/statistics/statistics.module.ts',
           './ServiceModule': './src/app/services/services.module.ts',

@@ -1,0 +1,42 @@
+<div class="card mb-5 mb-xl-10 d-flex">
+    <div class="card-header row">
+        <div class="card-title">
+            <div class="col-md-11">
+                <span>{{'WORKSTATIONS'}}</span>
+            </div>
+            <div class="col-md-1">
+                <span>
+                    <button *ngIf="!addNew" class="btn btn-primary"  (click)="addNew = !addNew">New</button>
+                </span>
+            </div>
+        </div>
+        <div *ngIf="addNew" class="card-body">
+            <div class="row">
+                <div class="col-md-6 padding-top-10">
+                    <input class="form-control" placeholder="Name" [(ngModel)]="workstation.sName"/>
+                </div>
+                <div class="col-md-6 padding-top-10">
+                    <input class="form-control" placeholder="Description" [(ngModel)]="workstation.sDescription"/>
+                </div>
+                <div class="row col-md-2 padding-top-10 d-flex">
+                    <button class="btn btn-primary" (click)="createWorkstation()">Create</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6" *ngFor="let workstation of workstations">
+        <div class="card  mb-5 mb-xl-10 d-flex">
+            <div class="card-header">
+                <div class="card-title">
+                    {{workstation.sName}}
+                </div>
+            </div>
+            <div class="card-body">
+                {{workstation.sDescription}}
+            </div>
+        </div>
+    </div>
+</div>
