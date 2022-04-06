@@ -98,6 +98,7 @@ export class TillSettingsComponent implements OnInit {
       iBusinessId: this.requestParams.iBusinessId,
       bBookkeeping
     };
+    if(bBookkeeping) this.getGeneralLedgerNumber();
     this.apiService.postNew('bookkeeping', '/api/v1/bookkeeping-setting/update', data).subscribe(
       (result : any) => {      
       },
