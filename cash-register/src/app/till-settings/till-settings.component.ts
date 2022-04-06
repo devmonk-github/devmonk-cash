@@ -135,6 +135,20 @@ export class TillSettingsComponent implements OnInit {
     )
   }
 
+  updateGeneralLedgerNumber(data: any){
+    const Obj = {
+      iBusinessId: this.requestParams.iBusinessId,
+      _id: data._id,
+      nNumber: data.nNumber
+    };
+    this.apiService.putNew('bookkeeping', '/api/v1/ledger', Obj).subscribe(
+      (result : any) => {      
+      },
+      (error: any) =>{
+      }
+    )
+  }
+
   getLedgerNumber(methodId: any, index: number){
       this.apiService.getNew('bookkeeping', '/api/v1/ledger/payment-method/' + methodId + '?iBusinessId=' + this.requestParams.iBusinessId).subscribe(
       (result : any) => { 

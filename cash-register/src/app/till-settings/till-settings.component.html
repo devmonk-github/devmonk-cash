@@ -97,24 +97,11 @@
       </thead>
       <tbody>
         <tr *ngFor="let column of bookKeepings; let i = index" class="border border-green-100 p-4">
-          <!-- <td>
-            <span>
-              <button class="btn table-btn-padding">
-                  <fa-icon icon="trash"></fa-icon>
-              </button>
-              <button class="btn ms-1 table-btn-padding" [routerLink]="">
-                  <fa-icon icon="pencil-alt"></fa-icon>
-              </button>
-              <button class="btn ms-1 table-btn-padding">
-                  <fa-icon icon="link"></fa-icon>
-              </button>
-            </span>
-          </td> -->
           <td class="border border-green-100 p-4">
             <span>{{column.sDescription}}</span>
           </td>
           <td class="border border-green-100 p-4">
-            <span>{{column.nNumber}}</span>
+            <input type="number" *ngIf="bookKeepingMode" class="form-control" [(ngModel)]="column.nNumber" class="form-control" (focusout)="updateGeneralLedgerNumber(column)"/>
           </td>
       </tbody>
     </table>
