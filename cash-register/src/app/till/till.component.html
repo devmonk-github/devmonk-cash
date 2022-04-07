@@ -197,31 +197,36 @@
           <div class="row" *ngIf="shopProducts && shopProducts.length > 0">
             <div class="col-md-6 cursor-pointer" *ngFor="let product of shopProducts"
               (mouseenter)="product['showOption'] = true" (mouseleave)="product['showOption'] = false">
-              <div class="d-flex">
-                <div class="w-50 p-4">
-                  <img src="{{product.aImage[0]? product.aImage[0]: '../assets/images/no-photo-available.jpg' }}"
-                    class="w-auto h-xxl-100px">
-                </div>
-                <div class="w-50 px-2">
-                  <label class="business-bg-color rounded-full px-2 py-1 text-white text-sm">Business product</label>
-                  <span>
-                    <fa-icon icon="copy" aria-label="copy-article-number" class="ml-4"></fa-icon>
-                  </span>
-                  <p class="block mt-2">{{ product.oName? product.oName['en'] : 'No name' }}</p>
-                  <p class="mt-2">{{ product.sEan }}</p>
-                  <p class="mt-2">{{ product.sProductNumber }}</p>
-                </div>
-              </div>
-              <div class="absolute hover-product-option" *ngIf="product['showOption']">
-                <div class="d-flex">
-                  <button class="btn btn-secondary w-50 mr-2 p-0"
-                    (click)="onSelectProduct(product, 'business', 'same-article')">
-                    Add this article
-                  </button>
-                  <!-- <button class="btn btn-secondary w-50 p-0"
-                    (click)="onSelectProduct(product, 'business', 'other-article')">
-                    Use other article number
-                  </button> -->
+              <div class="card m-1 shadow-sm">
+                <div class="card-body">
+                  <div class="d-flex">
+                    <div class="w-50 p-2">
+                      <img src="{{product.aImage[0]? product.aImage[0]: '../assets/images/no-photo-available.jpg' }}"
+                        class="w-auto h-xxl-100px">
+                    </div>
+                    <div class="w-50 px-2">
+                      <label class="business-bg-color rounded-full px-2 py-1 text-white text-sm">Business
+                        product</label>
+                      <span>
+                        <fa-icon icon="copy" aria-label="copy-article-number" class="ml-4"></fa-icon>
+                      </span>
+                      <p class="block mt-2">{{ product.oName? product.oName['en'] : 'No name' }}</p>
+                      <p class="mt-2">{{ product.sEan }}</p>
+                      <p class="mt-2">{{ product.sProductNumber }}</p>
+                    </div>
+                  </div>
+                  <div class="absolute hover-product-option mt-n6" *ngIf="product['showOption']">
+                    <div class="d-flex">
+                      <button class="btn btn-secondary w-50 mr-2 p-0"
+                        (click)="onSelectProduct(product, 'business', 'same-article')">
+                        Add this article
+                      </button>
+                      <!-- <button class="btn btn-secondary w-50 p-0"
+                        (click)="onSelectProduct(product, 'business', 'other-article')">
+                        Use other article number
+                      </button> -->
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
