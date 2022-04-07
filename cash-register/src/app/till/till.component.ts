@@ -70,6 +70,7 @@ export class TillComponent implements OnInit, OnChanges {
   ]
   payMethods: Array<any> = [];
   business: any = {}
+  locationId: string = ''
   payMethodsLoading: boolean = false;
   requestParams: any = {
     iBusinessId: ''
@@ -100,6 +101,7 @@ export class TillComponent implements OnInit, OnChanges {
 
   ngOnInit(): void {
     this.business._id = localStorage.getItem("currentBusiness");
+    this.locationId = localStorage.getItem("currentLocation") || '';
     this.requestParams.iBusinessId = this.business._id;
     this.taxes = this.taxService.getTaxRates()
     this.getPaymentMethods()
@@ -226,12 +228,18 @@ export class TillComponent implements OnInit, OnChanges {
   createTransaction(): void {
     const body = {
       iBusinessId: this.business._id,
+      iLocationId: this.locationId,
       aTransactionItems: this.transactionItems,
       nTotal: this.getTotals('price'),
-      ...(this.customer) && { oCustomer: this.customer },
+      ...(this.customer) && { oCustomer: {
+        _id: this.customer._id,
+        sFirstName: this.customer.firstName,
+        sLastName: this.customer.lastName
+      }},
       oReceipt: {
         aPayments: this.getUsedPayMethods(false)
       }
+
     };
 
     console.log('body', body)
