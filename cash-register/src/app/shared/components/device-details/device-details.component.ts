@@ -1,4 +1,5 @@
 import { Component, OnInit, ViewContainerRef } from '@angular/core';
+import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { ApiService } from '../../service/api.service';
 import { DialogComponent } from '../../service/dialog';
 
@@ -10,6 +11,13 @@ import { DialogComponent } from '../../service/dialog';
 export class DeviceDetailsComponent implements OnInit {
 
   dialogRef: DialogComponent;
+  faTimes = faTimes
+  device: any = {
+    sName: '',
+    sDescription: ''
+  }
+  business: any = {}
+  mode: string = '';
 
   constructor(
     private viewContainerRef: ViewContainerRef,
@@ -20,7 +28,35 @@ export class DeviceDetailsComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    console.log('---- DeviceDetailsComponent! ')
+    this.business._id = localStorage.getItem('currentBusiness')
+  }
+
+  close(data: any){
+    this.dialogRef.close.emit(data);
+  }
+
+  editDevice(){
+    this.device.iBusinessId = this.business._id;
+    this.apiService.putNew('cashregistry', '/api/v1/devices/update', this.device).subscribe(
+      (result : any) => {
+        this.close({ action: true, device: this.device });
+       },
+      (error: any) => {
+        console.log(error)
+      }
+    );
+  }
+
+  addNewDevice(){
+    this.device.iBusinessId = this.business._id;
+    this.apiService.postNew('cashregistry', '/api/v1/devices/create', this.device).subscribe(
+      (result : any) => {
+        this.close({ action: true, device: this.device });
+       },
+      (error: any) => {
+        console.log(error)
+      }
+    );
   }
 
 }
