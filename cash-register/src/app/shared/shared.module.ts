@@ -15,6 +15,7 @@ import { CustomPaymentMethodComponent } from './components/custom-payment-method
 import { ConfirmationDialogComponent } from './components/confirmation-dialog/confirmation-dialog.component';
 import { ImageUploadComponent } from './components/image-upload/image-upload.component';
 import {WebcamModule} from 'ngx-webcam';
+import { DeviceDetailsComponent } from './components/device-details/device-details.component';
 
 @NgModule({
   declarations: [
@@ -26,7 +27,8 @@ import {WebcamModule} from 'ngx-webcam';
     AccordionDirective,
     CustomPaymentMethodComponent,
     ConfirmationDialogComponent,
-    ImageUploadComponent
+    ImageUploadComponent,
+    DeviceDetailsComponent
   ],
   imports: [
     CommonModule,
