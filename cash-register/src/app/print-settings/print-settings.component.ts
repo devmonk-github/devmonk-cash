@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { faRefresh, faPencilAlt } from '@fortawesome/free-solid-svg-icons';
+import { PrintSettingsDetailsComponent } from '../shared/components/print-settings-details/print-settings-details.component';
+import { DialogService } from '../shared/service/dialog';
 
 @Component({
   selector: 'app-print-settings',
@@ -34,9 +36,15 @@ export class PrintSettingsComponent implements OnInit {
     'Transaction receipt'
   ]
 
-  constructor() { }
+  constructor(
+    private dialogService: DialogService
+  ) { }
 
   ngOnInit(): void {
+  }
+
+  createPrintSettings() {
+    this.dialogService.openModal(PrintSettingsDetailsComponent, { cssClass:"modal-xl", context: { mode: 'create' } }).instance.close.subscribe(result =>{ });
   }
 
   trackByFun(index: any, item: any) {
