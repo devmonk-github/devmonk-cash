@@ -1,8 +1,11 @@
 <div class="card mb-5 mb-xl-10 d-flex" data-kt-scroll-section="print-settings">
   <div class="card-header row">
     <div class="card-title">
-      <div class="col-md-9">
+      <div class="col-md-11">
         <span>{{ 'PRINT_SETTINGS' | translate}}</span>
+      </div>
+      <div class="col-md-1">
+        <button class="btn btn-primary">New</button>
       </div>
     </div>
     <div class="card-body">
@@ -19,7 +22,7 @@
           </span> 
         </div>
         <div>
-          <button class="btn btn-primary" type="submit" status="success">
+          <button class="btn btn-primary btn-sm" type="submit" status="success">
             <fa-icon [icon]="faRefresh"></fa-icon>
             <span> &nbsp; {{"LOAD_SETTINGS" | translate}}</span>
           </button>
