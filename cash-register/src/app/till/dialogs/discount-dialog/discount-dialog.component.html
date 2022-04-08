@@ -15,6 +15,8 @@
               (click)="switchMode('percent')">{{ "PERCENT" | translate}}</button>
     </div>
 
+    <h2 class="text-center" *ngIf="showCurrentDiscount">{{ "CURRENT_DISCOUNT_PER_ITEM" | translate}}: {{currentDiscount}}</h2>
+
     <div data-kt-buttons="true">
       <ng-container *ngFor="let discount of discounts">
         <label class="btn btn-outline btn-outline-dashed d-flex flex-stack text-start p-4 mb-2"
@@ -55,7 +57,7 @@
           <div class="flex-grow-1 flex-row-fluid">
             {{ "CUSTOM_DISCOUNT" | translate}}
             <input type="text" class="form-control mb-3" [(ngModel)]="customDiscount" (ngModelChange)="enterCustomDiscount()" [disabled]="selectedDiscount !== 'custom'">
-            <app-alert [alert]="{title: '', message: discountTooHigh}" type="danger" *ngIf="showDiscountAlert"></app-alert>
+            <app-alert [alert]="{title: '', message: alertMessage}" type="danger" *ngIf="showDiscountAlert"></app-alert>
           </div>
         </div>
         <div class="ms-5" *ngIf="mode === 'percent'">
@@ -68,11 +70,12 @@
             </span>
         </div>
       </label>
-      <mark>todo: @niek: it's possible to add an empty discount</mark>
       <h1 class="text-center">{{ "TOTAL_PRICE" | translate}}: {{getTotalPrice()}}</h1>
     </div>
   </div>
   <div class="card-footer">
     <button class="btn btn-secondary" type="button" (click)="save()" [disabled]="showDiscountAlert">{{ "SAVE" | translate}}</button>
+    <button class="btn btn-danger" type="button" (click)="removeDiscount()" *ngIf="showCurrentDiscount">{{ "REMOVE_DISCOUNT" | translate}}</button>
+
   </div>
 </div>

@@ -4,8 +4,9 @@
       <div class="w-90px">{{item.quantity}}</div>
       <div class="w-300px">{{item.name}}</div>
       <div class="w-125px">{{item.price | currency: '€'}}</div>
-      <div class="w-100px">{{getDiscount()}}</div>
+      <div class="w-100px">{{getTotalDiscount(item)}}</div>
       <div class="w-125px">{{item.tax}}%</div>
+      <div class="w-100px">{{getTotalPrice(item)}}</div>
     </section>
   </button>
 </h2>
@@ -26,7 +27,6 @@
       </div>
       <div class="w-125px pe-2">
         <input type="text" class="form-control" name="price" placeholder="{{ 'PRICE' | translate}}" id="price" [(ngModel)]="item.price">
-        <p>{{ "TOTAL_PRICE" | translate}}: {{item.quantity * item.price | currency: '€'}}</p>
       </div>
       <div class="w-100px pe-2">
         <button class="btn btn-icon btn-secondary w-35px h-35px" (click)="openDiscountDialog()">
