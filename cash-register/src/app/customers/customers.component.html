@@ -23,8 +23,8 @@
                     </tr>
                 </thead>
                 <tbody class="fw-bold text-gray-600"> 
-                    <tr *ngFor='let customer of customers | paginate: paginationConfig' (click)="openCustomer(customer)">
-                        <td *ngFor="let column of allColumns" class="">{{customer[column]}}</td>
+                    <tr *ngFor='let customer of customers | paginate: paginationConfig' class="bg-hover-secondary" (click)="openCustomer(customer)">
+                        <td *ngFor="let column of allColumns">{{customer[column]}}</td>
                     </tr>
                 </tbody>
             </table>

@@ -159,8 +159,9 @@ export class TillSettingsComponent implements OnInit {
 
   
   createPaymentMethod() {
-    this.dialogService.openModal(CustomPaymentMethodComponent, { cssClass:"", context: { mode: 'create' } }).instance.close.subscribe(result =>{ 
-      this.getPaymentMethods();
+    console.log('----- createPaymentMethod!');
+    this.dialogService.openModal(CustomPaymentMethodComponent, { cssClass:"", context: { mode: 'create' } }).instance.close.subscribe(result =>{
+      if(result.action) this.getPaymentMethods();
     });
   }
 
@@ -183,8 +184,9 @@ export class TillSettingsComponent implements OnInit {
   }
 
   viewDetails(method: any){
+    console.log('----- viewDetails!');
     this.dialogService.openModal(CustomPaymentMethodComponent, { cssClass:"", context: { mode: 'details', customMethod: method } }).instance.close.subscribe(result =>{ 
-      this.getPaymentMethods();
+      if(result.action) this.getPaymentMethods();
     });
   }
 }

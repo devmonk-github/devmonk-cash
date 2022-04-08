@@ -1,22 +1,26 @@
 <div class="card">
     <div class="card-header row" style="margin-top: 20px;">
         <div class="col-md-10">
-            <h4>Create payment method</h4>
+            <h4 *ngIf="mode == 'create'">{{ 'CREATE_PAYMENT_METHOD' | translate}}</h4>
+            <h4 *ngIf="mode == 'details'">{{ 'UPDATE_PAYMENT_METHOD' | translate}}</h4>
         </div>
         <div class="col-md-2"></div>
     </div>
     <div class="card-body">
         <diV class="row">
             <div class="col-md-4">
-                <label class="form-label form-control-solid">Name:</label>
+                <label class="form-label form-control-solid">{{ 'NAME' | translate }}:</label>
             </div>
             <div class="col-md-8">
-                <input class="form-control" (value)="customMethod.sName" [(ngModel)]="customMethod.sName"/>
+                <input class="form-control form-control-solid" [readonly]="customMethod.bIsDefaultPaymentMethod" (value)="customMethod.sName" [(ngModel)]="customMethod.sName"/>
+                <span *ngIf="customMethod.bIsDefaultPaymentMethod"> 
+                    <label class="required"></label>{{ 'YOU_CANNOT_UPDATE_NAME_OF_THE_DEFAULT_PAYMENT_METHOD' | translate }}
+                </span>
             </div>
         </diV>
         <diV class="row">
             <div class="col-md-4">
-                <label class="form-label">Stock reduction :</label>
+                <label class="form-label">{{ 'STOCK_REDUCTION' | translate}}</label>
             </div>
             <div class="col-md-8">
                 <label class="form-check form-switch form-check-custom form-check-solid">
@@ -26,7 +30,7 @@
         </diV>
         <diV class="row">
             <div class="col-md-4">
-                <label class="form-label">Invoice:</label>
+                <label class="form-label">{{ 'INVOICE' | translate}}</label>
             </div>
             <div class="col-md-8">
                 <label class="form-check form-switch form-check-custom form-check-solid">
@@ -46,7 +50,7 @@
         </diV> -->
         <diV class="row">
             <div class="col-md-4">
-                <label class="form-label">Assign saving points last payment:</label>
+                <label class="form-label">{{ 'ASSIGN_SAVING_POINTS_LAST_PAYMENT' | translate }}</label>
             </div>
             <div class="col-md-8">
                 <label class="form-check form-switch form-check-custom form-check-solid">
@@ -54,22 +58,22 @@
                 </label>
             </div>
         </diV>
-        <diV class="row">
+        <!-- <diV class="row">
             <div class="col-md-4">
                 <label class="form-label form-control-solid">Ledger Number:</label>
             </div>
             <div class="col-md-8">
-                <input class="form-control" (value)="customMethod.sLedgerNumber" [(ngModel)]="customMethod.sLedgerNumber"/>
+                <input type="number" class="form-control form-control-solid" (value)="customMethod.sLedgerNumber" [(ngModel)]="customMethod.sLedgerNumber" (focusout)="updateLedgerNumber(customMethod)"/>
             </div>
-        </diV>
+        </diV> -->
     </div>
     <div class="card-footer row">
         <div class="col-md-10">
-            <button *ngIf="mode == 'create'" class="btn btn-primary" (click)="create()">Create</button>
-            <button *ngIf="mode == 'details'" class="btn btn-primary" (click)="update()">Submit</button>
+            <button *ngIf="mode == 'create'" class="btn btn-primary" (click)="create()">{{ 'CREATE' | translate }}</button>
+            <button *ngIf="mode == 'details'" class="btn btn-primary" (click)="update()">{{ 'SUBMIT' | translate }}</button>
         </div>
         <div class="col-md-2">
-            <button class="btn btn-secondary" (click)="close()">Close</button>
+            <button class="btn btn-secondary" (click)="close()">{{ 'CLOSE' | translate }}</button>
         </div>
     </div>
 </div>

@@ -32,13 +32,14 @@ export class CustomPaymentMethodComponent implements OnInit {
    }
 
   ngOnInit(): void {
+    console.log(this.mode);
     this.requestParams.iBusinessId = localStorage.getItem('currentBusiness')
   }
 
   update(){
     this.customMethod.iBusinessId = this.requestParams.iBusinessId;
-    this.apiService.postNew('cashregistry', '/api/v1/payment-methods/update', this.customMethod).subscribe((result: any) => {
-      this.dialogRef.close.emit({ action: false })
+    this.apiService.putNew('cashregistry', '/api/v1/payment-methods/update', this.customMethod).subscribe((result: any) => {
+      this.dialogRef.close.emit({ action: true })
     }, (error) => {
     })
   }
@@ -46,7 +47,7 @@ export class CustomPaymentMethodComponent implements OnInit {
   create(){
     this.customMethod.iBusinessId = this.requestParams.iBusinessId;
     this.apiService.postNew('cashregistry', '/api/v1/payment-methods/create', this.customMethod).subscribe((result: any) => {
-      this.dialogRef.close.emit({ action: false })
+      this.dialogRef.close.emit({ action: true })
     }, (error) => {
     })
   }
