@@ -70,6 +70,10 @@ export class TransactionsComponent implements OnInit {
   transactionValue: string = 'All';
   employee: any = { sFirstName: 'All' };
   employees: Array<any> =  [this.employee];
+  workstations: Array<any> = [];
+  selectedWorkstations: Array<any> = [];
+  locations: Array<any> = [];
+  selectedLocations: Array<any> = [];
 
   tableHeaders: Array<any> = [
     { key: 'Date', selected: true, sort: 'asc'},
@@ -94,6 +98,8 @@ export class TransactionsComponent implements OnInit {
     this.loadTransaction();
     this.iBusinessId = localStorage.getItem('currentBusiness');
     this.listEmployee();
+    this.getWorkstations();
+    this.getLocations();
     // this.chatService.widgetClosed.subscribe( () => {
     //   this.widgetLog.push('closed');
     // });
@@ -114,6 +120,8 @@ export class TransactionsComponent implements OnInit {
     this.requestParams.transactionValue = this.transactionValue;
     this.requestParams.iEmployeeId = this.employee && this.employee._id ? this.employee._id : '';
     this.requestParams.iDeviceId = undefined // we need to work on this once devides are available.
+    this.requestParams.workstations = this.selectedWorkstations;
+    this.requestParams.locations = this.selectedLocations;
     this.showLoader = true;
     this.apiService.postNew('cashregistry', '/api/v1/transaction/cashRegister', this.requestParams).subscribe((result: any) => {
       if (result && result.data && result.data.length && result.data[0] && result.data[0].result && result.data[0].result.length) {
@@ -126,6 +134,30 @@ export class TransactionsComponent implements OnInit {
     }, (error) => {
       this.showLoader = false;
     })
+  }
+
+  getLocations(){
+    this.apiService.postNew('core', `/api/v1/business/${this.iBusinessId}/list-location`, {}).subscribe(
+      (result: any) => {
+        if (result.message == 'success') {
+          this.locations = result.data.aLocation;
+        }
+      }),
+      (error: any) => {
+        console.error(error)
+      }
+  }
+  
+  getWorkstations(){
+    this.apiService.getNew('cashregistry', '/api/v1/workstations/list/' + this.businessDetails._id).subscribe(
+      (result : any) => {
+       if(result && result.data){
+        this.workstations = result.data;
+       }
+      }),
+      (error: any) => {
+        console.error(error)
+      }
   }
 
   listEmployee() {
