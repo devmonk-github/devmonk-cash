@@ -26,15 +26,24 @@ export class ProductComponent implements OnInit {
     this.itemChanged.emit('delete')
   }
 
-  getDiscount(): any {
-    return this.priceService.getDiscount(this.item.discount)
+  getDiscount(item: any): string {
+    return this.priceService.getDiscount(item.discount)
+  }
+
+  getTotalDiscount(item: any): string {
+    return this.priceService.getDiscountValue(item);
+  }
+
+  getTotalPrice(item: any): string {
+    return this.priceService.getArticlePrice(item)
   }
 
   openDiscountDialog(): void {
-    this.dialogService.openModal(DiscountDialogComponent, {context: {item: this.item}})
+    this.dialogService.openModal(DiscountDialogComponent, {context: {item: JSON.parse(JSON.stringify(this.item))}})
       .instance.close.subscribe( (data) => {
-        console.log('discountdialog ', data)
-
+        if(data.item && data.item.discount) {
+          this.item.discount = data.item.discount
+        }
     })
   }
 }
