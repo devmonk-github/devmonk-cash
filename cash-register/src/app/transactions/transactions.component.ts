@@ -64,7 +64,7 @@ export class TransactionsComponent implements OnInit {
   }
   paymentMethods: Array<any> = [ 'All', 'Cash', 'Credit', 'Card', 'Gift-Card'];
   transactionTypes: Array<any> = [ 'All', 'Refund', 'Repair', 'Gold-purchase', 'Gold-sale'];
-  transactionStatus: string = 'all';
+  transactionStatuses: Array<any> = [ 'ALL', 'EXPECTED_PAYMENTS', 'NEW', 'CANCELLED', 'FAILED', 'EXPIRED', 'COMPLETED', 'REFUNDED' ];
   invoiceStatus: string = 'all';
   importStatus: string = 'all';
   methodValue: string = 'All';
@@ -73,6 +73,7 @@ export class TransactionsComponent implements OnInit {
   employees: Array<any> =  [this.employee];
   workstations: Array<any> = [];
   selectedWorkstations: Array<any> = [];
+  selectedTransactionStatuses: Array<any> = [];
   locations: Array<any> = [];
   selectedLocations: Array<any> = [];
 
@@ -119,7 +120,7 @@ export class TransactionsComponent implements OnInit {
     this.requestParams.iBusinessId = this.businessDetails._id;
     this.requestParams.type = 'transaction';
     this.requestParams.filterDates = this.filterDates;
-    this.requestParams.transactionStatus = this.transactionStatus;
+    this.requestParams.transactionStatus = this.transactionStatuses;
     this.requestParams.invoiceStatus = this.invoiceStatus;
     this.requestParams.importStatus = this.importStatus;
     this.requestParams.methodValue = this.methodValue;

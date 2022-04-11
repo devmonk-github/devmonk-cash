@@ -71,28 +71,23 @@
                 <!--begin::Col-->
                 <div class="col-lg-4">
                   <label class="fs-6 form-label fw-bolder text-dark">{{ 'TRANSACTION_STATUS' | translate }}</label>
-                  <!--begin::Radio group-->
-                  <div class="nav-group nav-group-fluid">
-                    <!--begin::Option-->
+                  <ng-select class="form-control form-control-solid p-0"  [multiple]="true" [(ngModel)]="selectedTransactionStatuses" [clearable]="false">
+                    <ng-option *ngFor="let status of transactionStatuses" [value]="status">{{status}}</ng-option>
+                  </ng-select>
+                  <!-- <div class="nav-group nav-group-fluid">
                     <label>
                       <input type="radio" class="btn-check" name="status" value="all" [(ngModel)]="transactionStatus" checked="checked" />
                       <span class="btn btn-sm btn-color-muted btn-active btn-active-primary fw-bolder px-4">{{ 'ALL' | translate }}</span>
                     </label>
-                    <!--end::Option-->
-                    <!--begin::Option-->
                     <label>
                       <input type="radio" class="btn-check" name="status" value="new" [(ngModel)]="transactionStatus"/>
                       <span class="btn btn-sm btn-color-muted btn-active btn-active-primary fw-bolder px-4">{{ 'NEW' | translate }}</span>
                     </label>
-                    <!--end::Option-->
-                    <!--begin::Option-->
                     <label>
                       <input type="radio" class="btn-check" name="status" value="completed" [(ngModel)]="transactionStatus"/>
                       <span class="btn btn-sm btn-color-muted btn-active btn-active-primary fw-bolder px-4">{{ 'COMPLETED' | translate }}</span>
                     </label>
-                    <!--end::Option-->
-                  </div>
-                  <!--end::Radio group-->
+                  </div> -->
                 </div>
                 <!--end::Col-->
               </div>
