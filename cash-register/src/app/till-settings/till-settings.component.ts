@@ -110,8 +110,8 @@ export class TillSettingsComponent implements OnInit {
   getBookkeepingSetting(){
     this.apiService.getNew('bookkeeping', '/api/v1/bookkeeping-setting/list/'+ this.requestParams.iBusinessId).subscribe(
       (result : any) => {    
-        if(result && result.data && result.data.bBookkeeping) {
-          this.bookKeepingMode = result.data.bBookkeeping; 
+        if(result && result.bBookkeeping) {
+          this.bookKeepingMode = result.bBookkeeping; 
           this.getGeneralLedgerNumber();
         }
       },
