@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { faLongArrowAltDown, faLongArrowAltUp, faMinusCircle, faPlus, faPlusCircle, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { ApiService } from '../shared/service/api.service';
 import { DialogService } from '../shared/service/dialog';
@@ -88,7 +89,8 @@ export class TransactionsComponent implements OnInit {
 
   constructor(
     private apiService: ApiService,
-    private dialogService: DialogService
+    private dialogService: DialogService,
+    private router: Router
     // private chatService: FreshChatService
     ) { }
 
@@ -106,6 +108,10 @@ export class TransactionsComponent implements OnInit {
     // this.chatService.widgetOpened.subscribe( () => {
     //   this.widgetLog.push('openend');
     // });
+  }
+
+  goToCashRegister(){
+    this.router.navigate(['/business/till']);
   }
 
   loadTransaction(){
