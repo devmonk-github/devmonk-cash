@@ -13,6 +13,7 @@ import { ConfirmationDialogComponent } from "../shared/components/confirmation-d
 import { ImageUploadComponent } from '../shared/components/image-upload/image-upload.component';
 import { Transaction } from "./models/transaction.model";
 import * as _ from 'lodash';
+import {TransactionItem} from "./models/transaction-item.model";
 
 @Component({
   selector: 'app-till',
@@ -25,7 +26,6 @@ export class TillComponent implements OnInit, OnChanges {
   faBoxesStacked = faBoxesStacked
   faGifts = faGifts
   faUser = faUser
-  faUserPlus = faUserPlus
   faTimes = faTimes
   faTimesCircle = faTimesCircle
   faTrashAlt = faTrashAlt
@@ -33,23 +33,25 @@ export class TillComponent implements OnInit, OnChanges {
   faCoins = faCoins
   faCalculator = faCalculator
   faArrowRightFromBracket = faArrowRightFromBracket
-
   taxes: any[] = []
   transactionItems: any[] = []
   selectedTransaction = null;
   customer: any
-  searchkeyword: any;
+  searchKeyword: any;
   shopProducts: any;
   businessId!: string;
   supplierId!: string;
   isStockSelected = true;
+  payMethods: Array<any> = [];
+  business: any = {}
+  locationId: string = ''
+  payMethodsLoading: boolean = false;
+  requestParams: any = {
+    iBusinessId: ''
+  }
+
   // Dummy data
   parkedTransactions: Transaction[] = [
-    new Transaction('1', '1', '1', '2022030301', 'shoppurchase', 'concept', '1', '1'),
-    new Transaction('2', '1', '1', '2022030302', 'shoppurchase', 'concept', '1', '1'),
-    new Transaction('3', '1', '1', '2022030303', 'shoppurchase', 'concept', '1', '1'),
-    new Transaction('4', '1', '1', '2022030304', 'shoppurchase', 'concept', '1', '1'),
-    new Transaction('5', '1', '1', '2022030305', 'shoppurchase', 'concept', '1', '1'),
   ]
   quickButtons: any[] = [
     { name: 'Waterdicht', price: this.randNumber(5, 30) },
@@ -68,16 +70,7 @@ export class TillComponent implements OnInit, OnChanges {
     { name: 'Postzegels', price: this.randNumber(1, 10) },
     { name: 'Tassen', price: this.randNumber(50, 200) },
   ]
-  payMethods: Array<any> = [];
-  business: any = {}
-  locationId: string = ''
-  payMethodsLoading: boolean = false;
-  requestParams: any = {
-    iBusinessId: ''
-  }
-
   // End dummy data
-
 
   /**
    * Temp function to generate random numbers for demo till
@@ -107,10 +100,21 @@ export class TillComponent implements OnInit, OnChanges {
     this.getPaymentMethods()
   }
 
-  openImageModal() {
-    console.log('--- openImageModal');
-    this.dialogService.openModal(ImageUploadComponent, { cssClass: "modal-xl", context: { mode: 'create' } }).instance.close.subscribe(result => {
+  getValueFromLocalStorage(key: string): any {
+    if (key === 'currentEmployee') {
+     const value = localStorage.getItem('currentEmployee');
+     if (value) {
+       return JSON.parse(value)
+     } else {
+       return ''
+     }
+    } else {
+      return localStorage.getItem(key) || "";
+    }
+  }
 
+  openImageModal() {
+    this.dialogService.openModal(ImageUploadComponent, { cssClass: "modal-xl", context: { mode: 'create' } }).instance.close.subscribe(result => {
     });
   }
 
@@ -213,7 +217,6 @@ export class TillComponent implements OnInit, OnChanges {
       })
   }
 
-
   getUsedPayMethods(total: boolean): any {
     if(!this.payMethods) {
       return 0
@@ -224,22 +227,85 @@ export class TillComponent implements OnInit, OnChanges {
     return this.payMethods.filter(p => p.amount && p.amount > 0) || 0
   }
 
-
   createTransaction(): void {
-    const body = {
-      iBusinessId: this.business._id,
-      iLocationId: this.locationId,
-      aTransactionItems: this.transactionItems,
-      nTotal: this.getTotals('price'),
-      ...(this.customer) && { oCustomer: {
-        _id: this.customer._id,
-        sFirstName: this.customer.firstName,
-        sLastName: this.customer.lastName
-      }},
-      oReceipt: {
-        aPayments: this.getUsedPayMethods(false)
-      }
+    const transactionItems = this.transactionItems.map( (i) => {
+      return new TransactionItem(
+        i.name,
+        i.comment,
+        i.productNumber,
+        i.price,
+        0, // TODO
+        0, // TODO
+        null,
+        i.tax,
+        i.quantity,
+        null,
+        null,
+        i._id,
+        i.ean,
+        i.articleNumber,
+        i.images,
+        0, // TODO
+        null,
+        null,
+        null, // TODO: Needed in till??
+        this.getValueFromLocalStorage('currentBusiness'),
+        null, // TODO
+        null,
+        null,
+        false, // TODO
+        false, // TODO
+        "CATEGORY", // TODO
+        null, // TODO
+        null, // TODO
+        null, //TODO
+        i.quantity, // TODO
+        i.total,
+        i.total, // TODO?
+        0, //TODO
+        i.discount.value > 0,
+        i.discount.percent,
+        i.discount.value,
+        0, // TODO
+        null,
+        null,
+        null, // TODO
+        null, // TODO
+        null, //TODO
+        null, //TODO
+        null,
+        'y',
+        this.getValueFromLocalStorage('currentWorkstation'),
+        this.getValueFromLocalStorage('currentEmployee')._id,
+        null,
+        {
+          eTransactionType: 'cash-registery', // TODO
+          bRefund: false, // TODO,
+          eKind: 'regular', // TODO
+          bDiscount: i.discount.value > 0
+        }
+      )
+    })
 
+    const transaction = new Transaction(
+      null,
+      null,
+      this.getValueFromLocalStorage('currentBusiness'),
+      null,
+      'cash-registry',
+      'y',
+      this.getValueFromLocalStorage('currentWorkstation'),
+      this.getValueFromLocalStorage('currentEmployee')._id,
+      this.getValueFromLocalStorage('currentWorkstation'),
+      null )
+
+
+    const body = {
+      iBusinessId: this.getValueFromLocalStorage('currentBusiness'),
+      iLocationId: this.getValueFromLocalStorage('currentLocation'),
+      transactionItems: transactionItems,
+      transaction: transaction,
+      payments: this.getUsedPayMethods(false)
     };
 
     console.log('body', body)
@@ -253,65 +319,6 @@ export class TillComponent implements OnInit, OnChanges {
       });
   }
 
-  createPayment(payMethods: any) {
-
-    console.log('I am creating payments');
-
-    // WIP: creating booking on successful payment
-    // const payments = {
-    //   iTransactionId: '6245c31dbcf85b6ff4b2aad0',
-    //   iBusinessId: this.business._id,
-    //   payMethods
-    // };
-
-    // // create payaments
-    // this.apiService.postNew('cashregistry', '/api/v1/payments', payments)
-    // .subscribe( (data: any) => {
-    //   console.log(data);
-    //   this.createBookings(data.data);
-    // }, err => {
-    //   console.log(err);
-
-    // });
-  }
-
-  // add bookings
-  createBookings(payments: any) {
-    const tPayment = [{
-      _id: "6246a8ca55b10780a44a88fa", iTransactionId: "6243232f82aefdaba2e77f30",
-      iBusinessId: "6182a52f1949ab0a59ff4e7b", nAmount: 100, iPaymentMethodId: "6243ff1a0ab1c8da110423f6",
-      dCreatedDate: "2022-04-01T07:24:58.345Z", dUpdatedDate: "2022-04-01T07:24:58.345Z"
-    }, {
-      _id: "6246a8ca55b10780a44a88fb",
-      iTransactionId: "6243232f82aefdaba2e77f30",
-      iBusinessId: "6182a52f1949ab0a59ff4e7b",
-      nAmount: 150,
-      iPaymentMethodId: "6243ff1a0ab1c8da110423f4",
-      dCreatedDate: "2022-04-01T07:24:58.347Z",
-      dUpdatedDate: "2022-04-01T07:24:58.347Z"
-    }]
-    const body = {
-      iBusinessId: this.business._id,
-      iTransactionId: '6243232f82aefdaba2e77f30',
-      sTransactionNumber: '20222-226',
-      tPayment
-    };
-
-    // create payaments
-    this.apiService.postNew('bookkeeping', '/api/v1/bookkeeping/booking-for-payments', body)
-      .subscribe(data => {
-        console.log(data);
-      }, err => {
-        console.log(err);
-
-      });
-  }
-
-  // search() {
-  //   console.log(this.searchkeyword);
-
-  // }
-  /* Search API for finding the  common-brands products */
   /* Search API for finding the  common-brands products */
   listShopProducts(searchValue: string | undefined, isFromEAN: boolean | false) {
     let data = {
@@ -392,7 +399,6 @@ export class TillComponent implements OnInit, OnChanges {
 
   // Add selected product into purchase order
   onSelectProduct(product: any, isFrom: string, isFor: string) {
-
     console.log(product);
     this.transactionItems.push({
       name: product.oName ? product.oName['en'] : 'No name',
@@ -416,9 +422,9 @@ export class TillComponent implements OnInit, OnChanges {
     // if (searchValue && searchValue.length > 2) {
     //   this.isLoading = true;
     if (this.isStockSelected) {
-      this.listShopProducts(this.searchkeyword, false);
+      this.listShopProducts(this.searchKeyword, false);
     } else {
-      this.listCommonBrandProducts(this.searchkeyword, false); // Searching for the products of common brand
+      this.listCommonBrandProducts(this.searchKeyword, false); // Searching for the products of common brand
     }
   }
 }

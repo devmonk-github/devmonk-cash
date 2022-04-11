@@ -42,6 +42,7 @@ export class ProductComponent implements OnInit {
     this.dialogService.openModal(DiscountDialogComponent, {context: {item: JSON.parse(JSON.stringify(this.item))}})
       .instance.close.subscribe( (data) => {
         if(data.item && data.item.discount) {
+          console.log('discount dialog closed', data.item)
           this.item.discount = data.item.discount
         }
     })
