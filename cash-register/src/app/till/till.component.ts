@@ -212,6 +212,7 @@ export class TillComponent implements OnInit, OnChanges {
     this.dialogService.openModal(CustomerDialogComponent, { cssClass: "modal-xl", context: { customer: this.customer } })
       .instance.close.subscribe((data) => {
         if (data.customer) {
+          console.log('customer!', data.customer)
           this.customer = data.customer
         }
       })
@@ -277,9 +278,10 @@ export class TillComponent implements OnInit, OnChanges {
         'y',
         this.getValueFromLocalStorage('currentWorkstation'),
         this.getValueFromLocalStorage('currentEmployee')._id,
+        this.getValueFromLocalStorage('currentLocation'),
         null,
         {
-          eTransactionType: 'cash-registery', // TODO
+          eTransactionType: 'cash-registry', // TODO
           bRefund: false, // TODO,
           eKind: 'regular', // TODO
           bDiscount: i.discount.value > 0
@@ -292,12 +294,18 @@ export class TillComponent implements OnInit, OnChanges {
       null,
       this.getValueFromLocalStorage('currentBusiness'),
       null,
-      'cash-registry',
+      'cash-register-revenue',
       'y',
       this.getValueFromLocalStorage('currentWorkstation'),
       this.getValueFromLocalStorage('currentEmployee')._id,
-      this.getValueFromLocalStorage('currentWorkstation'),
-      null )
+      this.getValueFromLocalStorage('currentLocation'),
+      null ,
+      {
+        _id: this.customer._id,
+        sFirstName: this.customer.sFirstName,
+        sLastName: this.customer.sLastName,
+        sPrefix: this.customer.sPrefix
+      })
 
 
     const body = {
@@ -305,7 +313,7 @@ export class TillComponent implements OnInit, OnChanges {
       iLocationId: this.getValueFromLocalStorage('currentLocation'),
       transactionItems: transactionItems,
       transaction: transaction,
-      payments: this.getUsedPayMethods(false)
+      payments: this.getUsedPayMethods(false),
     };
 
     console.log('body', body)

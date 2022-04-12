@@ -12,7 +12,13 @@ export class Transaction {
     public iDeviceId: string,
     public iEmployeeId: string,
     public iLocationId: string,
-    public items: TransactionItem[] | null
+    public items: TransactionItem[] | null,
+    public oCustomer: {
+      _id: string,
+      sFirstName: string,
+      sLastName: string,
+      sPrefix: string
+    }
   ) {
   }
 }

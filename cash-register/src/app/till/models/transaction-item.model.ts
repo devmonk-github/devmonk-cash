@@ -54,6 +54,7 @@ export class TransactionItem {
     public eStatus: string,
     public iDeviceId: string,
     public iEmployeeId: string,
+    public iLocationId: string,
     //Optional here, since we don't know the transaction id when we create one
     public iTransactionId : string | null,
     public oType: {
