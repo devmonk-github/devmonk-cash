@@ -14,6 +14,7 @@ import { ImageUploadComponent } from '../shared/components/image-upload/image-up
 import { Transaction } from "./models/transaction.model";
 import * as _ from 'lodash';
 import {TransactionItem} from "./models/transaction-item.model";
+import {ToastService} from "../shared/components/toast";
 
 @Component({
   selector: 'app-till',
@@ -21,6 +22,7 @@ import {TransactionItem} from "./models/transaction-item.model";
   styleUrls: ['./till.component.sass']
 })
 export class TillComponent implements OnInit, OnChanges {
+  // icons
   faScrewdriverWrench = faScrewdriverWrench
   faTruck = faTruck
   faBoxesStacked = faBoxesStacked
@@ -33,10 +35,11 @@ export class TillComponent implements OnInit, OnChanges {
   faCoins = faCoins
   faCalculator = faCalculator
   faArrowRightFromBracket = faArrowRightFromBracket
+
   taxes: any[] = []
   transactionItems: any[] = []
   selectedTransaction = null;
-  customer: any
+  customer: any = null;
   searchKeyword: any;
   shopProducts: any;
   businessId!: string;
@@ -85,7 +88,8 @@ export class TillComponent implements OnInit, OnChanges {
     private translateService: TranslateService,
     private dialogService: DialogService,
     private taxService: TaxService,
-    private apiService: ApiService
+    private apiService: ApiService,
+    private toastrService: ToastService
   ) {
   }
 
@@ -282,12 +286,14 @@ export class TillComponent implements OnInit, OnChanges {
         null,
         {
           eTransactionType: 'cash-registry', // TODO
-          bRefund: false, // TODO,
+          bRefund: i.discount.quantity < 0 || i.price < 0,
           eKind: 'regular', // TODO
           bDiscount: i.discount.value > 0
         }
       )
     })
+
+
 
     const transaction = new Transaction(
       null,
@@ -300,13 +306,16 @@ export class TillComponent implements OnInit, OnChanges {
       this.getValueFromLocalStorage('currentEmployee')._id,
       this.getValueFromLocalStorage('currentLocation'),
       null ,
-      {
+    )
+
+    if(this.customer && this.customer._id) {
+      transaction.oCustomer = {
         _id: this.customer._id,
         sFirstName: this.customer.sFirstName,
         sLastName: this.customer.sLastName,
         sPrefix: this.customer.sPrefix
-      })
-
+      }
+    }
 
     const body = {
       iBusinessId: this.getValueFromLocalStorage('currentBusiness'),
@@ -321,8 +330,10 @@ export class TillComponent implements OnInit, OnChanges {
     this.apiService.postNew('cashregistry', '/api/v1/till/transaction', body)
       .subscribe(data => {
         console.log(data);
+        this.toastrService.show({type: 'success', text: 'Transactie gemaakt!'})
       }, err => {
         console.log(err);
+        this.toastrService.show({type: 'danger', text: err.message})
 
       });
   }

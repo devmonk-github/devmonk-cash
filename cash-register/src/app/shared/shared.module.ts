@@ -17,6 +17,7 @@ import { ImageUploadComponent } from './components/image-upload/image-upload.com
 import {WebcamModule} from 'ngx-webcam';
 import { DeviceDetailsComponent } from './components/device-details/device-details.component';
 import { PrintSettingsDetailsComponent } from './components/print-settings-details/print-settings-details.component';
+import {ToastModule} from "./components/toast";
 
 @NgModule({
   declarations: [
@@ -39,14 +40,16 @@ import { PrintSettingsDetailsComponent } from './components/print-settings-detai
     FormsModule,
     NgSelectModule,
     WebcamModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    ToastModule.forRoot()
   ],
   exports: [
     DialerComponent,
     AlertComponent,
     CustomerDialogComponent,
     CountryListComponent,
-    AccordionDirective
+    AccordionDirective,
+    ToastModule
   ],
   providers: [ CurrencyPipe]
 })

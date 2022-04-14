@@ -13,7 +13,7 @@ export class Transaction {
     public iEmployeeId: string,
     public iLocationId: string,
     public items: TransactionItem[] | null,
-    public oCustomer: {
+    public oCustomer?: {
       _id: string,
       sFirstName: string,
       sLastName: string,
