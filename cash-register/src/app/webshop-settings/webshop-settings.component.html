@@ -1,0 +1,153 @@
+<div class="card mb-6 mb-xl-10 d-flex" data-kt-scroll-section="characteristics">
+    <div class="card-header row">
+        <div class="card-title">
+            <div class="col-md-12">
+            <span>{{ 'CHARACTERISTICS' | translate}}</span>
+            </div>
+        </div>
+    </div>
+    <div class="card-body p-9">
+        <div class="row mb-6">
+            <div class="col-md-1">
+                <div class="form-check form-check-solid form-switch fv-row">
+                    <input type="checkbox"class="form-check-input w-45px h-30px" [disabled]="false" />
+                </div>
+            </div>
+            <div class="col-md-11">
+                <label class="fw-bold fs-6">{{ 'WEBSHOP_IS_ACTIVE' | translate}}</label>
+            </div>
+        </div>
+        <div class="row mb-6">
+            <div class="col-md-1">
+                <div class="form-check form-check-solid form-switch fv-row">
+                    <input type="checkbox"class="form-check-input w-45px h-30px" [disabled]="false" />
+                </div>
+            </div>
+            <div class="col-md-11">
+                <label class="fw-bold fs-6">{{ 'SEND_PRODUCTS_TO_CONSUMER' | translate}}</label>
+            </div>
+        </div>
+        <div class="row mb-6">
+            <div class="col-md-1">
+                <div class="form-check form-check-solid form-switch fv-row">
+                    <input type="checkbox"class="form-check-input w-45px h-30px" [disabled]="false" />
+                </div>
+            </div>
+            <div class="col-md-11">
+                <label class="fw-bold fs-6">{{ 'TURN_OFF-RESERVATION' | translate}}</label>
+            </div>
+        </div>
+        <div class="row mb-6">
+            <div class="col-md-1">
+                <div class="form-check form-check-solid form-switch fv-row">
+                    <input type="checkbox"class="form-check-input w-45px h-30px" [disabled]="false" />
+                </div>
+            </div>
+            <div class="col-md-11">
+                <label class="fw-bold fs-6">{{ 'SHOW_ONLY_STOCK_PRODUCTS_RECOMMENDED' | translate}}</label>
+            </div>
+        </div>
+        <div class="row mb-6">
+            <div class="col-md-1">
+                <div class="form-check form-check-solid form-switch fv-row">
+                    <input type="checkbox"class="form-check-input w-45px h-30px" [disabled]="false" />
+                </div>
+            </div>
+            <div class="col-md-11">
+                <label class="fw-bold fs-6">{{ 'ASK_FOR_THE_FINGER_SIZE_FOR_WATCHES_WITH_A_STEEL_STRAP' | translate}}</label>
+            </div>
+        </div>
+        <div class="row mb-6">
+            <div class="col-md-1">
+                <div class="form-check form-check-solid form-switch fv-row">
+                    <input type="checkbox"class="form-check-input w-45px h-30px" [disabled]="false" />
+                </div>
+            </div>
+            <div class="col-md-11">
+                <label class="fw-bold fs-6">{{ 'ASK_FOR_THE_FINGER_SIZE_FOR_RINGS_MADE_OF_REAL_GOLD_OR_SILVER' | translate}}</label>
+            </div>
+        </div>
+        <div class="row mb-6">
+            <div class="col-md-1">
+                <div class="form-check form-check-solid form-switch fv-row">
+                    <input type="checkbox"class="form-check-input w-45px h-30px" [disabled]="false" />
+                </div>
+            </div>
+            <div class="col-md-11">
+                <label class="fw-bold fs-6">{{ 'DO_NOT_SHOW_MY_PURCHASE_PRICE_IN_THE_SUPPLIER_CATALOG_ON_THIS_DEVICE_SHOW-RECOMMENDED_RETAIL_PRICES_ONLY' | translate}}</label>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card mb-6 mb-xl-10 d-flex" data-kt-scroll-section="shipping_cost">
+    <div class="card-header row">
+        <div class="card-title">
+            <div class="col-md-12">
+            <span>{{ 'SHIPPING_COST' | translate}}</span>
+            </div>
+        </div>
+    </div>
+    <div class="card-body p-9">
+        <form name="labelForm" class="row">
+            <div class="col-md-4">
+                <label for="labelName" class="form-label">{{"DOMESTIC" | translate}}</label>
+                <input type="number" class="form-control" fullWidth id="labelName" required="true" name="labelName">
+            </div>
+            <div class="col-md-4">
+                <label for="labelName" class="form-label">{{"EUROPE" | translate}}</label>
+                <input type="number" class="form-control" fullWidth id="labelName" required="true" name="labelName">
+            </div>
+            <div class="col-md-4">
+                <label for="labelName" class="form-label">{{"WORLDWIDE" | translate}}</label>
+                <input type="number" class="form-control" fullWidth id="labelName" required="true" name="labelName">
+            </div>
+            <label class="form-label form-control-solid mt-6">{{'FREE_SHIPPING_FROM'}}</label>
+            <div class="col-md-4">
+                <label for="labelName" class="form-label">{{"DOMESTIC" | translate}}</label>
+                <input type="number" class="form-control" fullWidth id="labelName" required="true" name="labelName">
+            </div>
+            <div class="col-md-4">
+                <label for="labelName" class="form-label">{{"EUROPE" | translate}}</label>
+                <input type="number" class="form-control" fullWidth id="labelName" required="true" name="labelName">
+            </div>
+            <div class="col-md-4">
+                <label for="labelName" class="form-label">{{"WORLDWIDE" | translate}}</label>
+                <input type="number" class="form-control" fullWidth id="labelName" required="true" name="labelName">
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card mb-6 mb-xl-10 d-flex" data-kt-scroll-section="other_delivery_method">
+    <div class="card-header row">
+        <div class="card-title">
+            <div class="col-md-12">
+            <span>{{ 'OTHER_DELIVERY_METHOD' | translate}}</span>
+            </div>
+        </div>
+    </div>
+    <div class="card-body p-9">
+        <div class="row">
+            <div class="col-md-5">
+                <select name="profile" class="form-select w-100" id="profile" [(ngModel)]="method">
+                    <option *ngFor="let method of deliveryMethods" [value]="method">{{method | translate }}</option>
+                </select>
+            </div>
+        </div>
+        <form name="labelForm" class="row mt-6">
+            <div class="col-md-4">
+                <label for="labelName" class="form-label">{{"DOMESTIC" | translate}}</label>
+                <input type="number" class="form-control" fullWidth id="labelName" required="true" name="labelName">
+            </div>
+            <div class="col-md-4">
+                <label for="labelName" class="form-label">{{"EUROPE" | translate}}</label>
+                <input type="number" class="form-control" fullWidth id="labelName" required="true" name="labelName">
+            </div>
+            <div class="col-md-4">
+                <label for="labelName" class="form-label">{{"WORLDWIDE" | translate}}</label>
+                <input type="number" class="form-control" fullWidth id="labelName" required="true" name="labelName">
+            </div>
+        </form>
+    </div>
+</div>
