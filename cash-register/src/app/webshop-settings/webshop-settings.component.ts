@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { faPlus } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-webshop-settings',
@@ -7,12 +8,15 @@ import { Component, OnInit } from '@angular/core';
 })
 export class WebshopSettingsComponent implements OnInit {
 
+  faPlus = faPlus;
+  
   deliveryMethods: Array<any> = [
     'FAST_SHIPPING_EXPRESS',
     'REGISTERED_SHIPPING',
     'DELIVERY_NEARBY'
   ];
   method: String = '';
+  paymentProvider: String = 'PayNL';
   
   constructor() { }
 
@@ -20,4 +24,5 @@ export class WebshopSettingsComponent implements OnInit {
     console.log('-- we are here!!')
   }
 
+  changeProvider(value: String){}
 }
