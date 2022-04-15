@@ -1,0 +1,15 @@
+<div class="container">
+  <div class="row">
+    <div class="col-md-6">
+      <h1>Template</h1>
+      <textarea [(ngModel)]="templateString" class="form-control" rows="20"></textarea>
+    </div>
+    <div class="col-md-6">
+      <h1>Data</h1>
+      <textarea [(ngModel)]="dataString" class="form-control" rows="20"></textarea>
+    </div>
+    <div class="col-md-12">
+      <button class="btn btn-primary" type="button" (click)="generatePDF()">Generate</button>
+    </div>
+  </div>
+</div>
