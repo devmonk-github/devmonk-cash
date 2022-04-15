@@ -10,23 +10,14 @@ export class HomeComponent implements OnInit, OnChanges {
   title = 'Cash register home page';
   localData : any;
   @Output() checkUpdate : EventEmitter<any> = new EventEmitter();
-  constructor(
-    private router: Router,
-  ) { }
+
+  constructor() { }
 
 
   ngOnChanges(changes?: SimpleChanges): void {
   }
 
   ngOnInit(): void {
-  }
-
-  redirectToPage(page : any){
-    this.router.navigate(['/'+ page]);
-  }
-
-  openModal(){
-    this.checkUpdate.emit("Modal opened");
   }
 
 

@@ -6,18 +6,22 @@ import { AppRoutingModule } from './app-routing.module';
 import {TranslateModule} from "@ngx-translate/core";
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 import { HttpClientModule } from '@angular/common/http';
+import { PrintComponent } from './print/print.component';
+import {FormsModule} from "@angular/forms";
 
 @NgModule({
   declarations: [
     AppComponent,
+    PrintComponent,
   ],
-  imports: [
-    BrowserModule,
-    HttpClientModule,
-    BrowserAnimationsModule,
-    AppRoutingModule,
-    TranslateModule.forRoot()
-  ],
+    imports: [
+        BrowserModule,
+        HttpClientModule,
+        BrowserAnimationsModule,
+        AppRoutingModule,
+        TranslateModule.forRoot(),
+        FormsModule
+    ],
   providers: [],
   bootstrap: [AppComponent]
 })

@@ -3,14 +3,11 @@ import { CommonModule } from '@angular/common';
 
 import { HomeRoutingModule } from './home-routing.module';
 import { HomeComponent } from './home.component';
-import { EditComponent } from './edit/edit.component';
 
 
 @NgModule({
   declarations: [
-    HomeComponent,
-    EditComponent,
-  ],
+    HomeComponent,],
   imports: [
     CommonModule,
     HomeRoutingModule,
