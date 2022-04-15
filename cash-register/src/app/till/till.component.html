@@ -147,11 +147,12 @@
         <div id="till-items-header" class="card-header p-3 lh-1 justify-content-start min-h-0">
           <div class="d-flex w-100 fw-bold text-gray-600 align-items-center">
             <span class="w-90px">{{ "QUANTITY" | translate}}</span>
-            <span class="w-300px">{{ "DESCRIPTION" | translate}}</span>
-            <span class="w-125px">{{ "PRICE" | translate}}</span>
+            <span class="w-275px">{{ "DESCRIPTION" | translate}}</span>
+            <span class="w-100px">{{ "PRICE" | translate}}</span>
             <span class="w-100px">{{ "DISCOUNT" | translate}}</span>
-            <span class="w-125px">{{ "TAX" | translate}}</span>
+            <span class="w-100px">{{ "TAX" | translate}}</span>
             <span class="w-100px">{{ "TOTAL" | translate}}</span>
+            <span class="w-90px">{{ "PREPAYMENT" | translate}}</span>
           </div>
         </div>
         <div class="card-body p-0">
@@ -319,8 +320,37 @@
       </div>
 
       <div class="input-group till-padding" *ngFor="let payment of payMethods">
-        <input type="number" class="form-control" [(ngModel)]="payment.amount" placeholder="{{'AMOUNT' | translate}}">
-        <button class="btn btn-primary w-150px">{{payment.sName | translate}}</button>
+        <input type="number" class="form-control col-5" [(ngModel)]="payment.amount"
+          placeholder="{{'AMOUNT' | translate}}">
+        <button class="btn btn-primary col-7">{{payment.sName | translate}}</button>
+      </div>
+
+      <!-- <p>Paymenttherminal connected</p> -->
+      <!-- <div class="input-group till-padding">
+        <input type="number col-6" class="form-control" [(ngModel)]="card.amount"
+          placeholder="{{'AMOUNT' | translate}}">
+        <button class="btn btn-primary col-2">{{card.sName | translate}}</button>
+        <button class="btn btn-primary col-1"> + </button>
+      </div>
+      <div class="input-group till-padding">
+        <input type="number col-6" class="form-control" [(ngModel)]="card.amount"
+          placeholder="{{'AMOUNT' | translate}}">
+        <button class="btn btn-primary col-2">{{card.sName | translate}}</button>
+        <button class="btn btn-primary col-1"> + </button>
+      </div> -->
+
+      <p>No paymenttherminal connected</p>
+      <div class="input-group till-padding" *ngFor="let card of cards">
+        <input type="number col-6" class="form-control" [(ngModel)]="card.amount"
+          placeholder="{{'AMOUNT' | translate}}">
+        <select name="parkedTransactions" id="parkedTransactions" class="col-3">
+          <option [ngValue]="null"></option>
+          <option *ngFor="let type of card.type" [ngValue]="type">{{type}}
+          </option>
+        </select>
+        <button class="btn btn-primary col-2">{{card.sName | translate}}</button>
+        <button class="btn btn-primary col-1" (click)="addNewCard()"> + </button>
+        <!-- <button class="btn btn-primary col-4">{{payment.sName | translate}}</button> -->
       </div>
       <div class="d-flex">
         <h5 *ngIf='!payMethods.length && !payMethodsLoading'> No payment method found!</h5>

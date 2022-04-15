@@ -13,8 +13,8 @@ import { ConfirmationDialogComponent } from "../shared/components/confirmation-d
 import { ImageUploadComponent } from '../shared/components/image-upload/image-upload.component';
 import { Transaction } from "./models/transaction.model";
 import * as _ from 'lodash';
-import {TransactionItem} from "./models/transaction-item.model";
-import {ToastService} from "../shared/components/toast";
+import { TransactionItem } from "./models/transaction-item.model";
+import { ToastService } from "../shared/components/toast";
 
 @Component({
   selector: 'app-till',
@@ -74,7 +74,8 @@ export class TillComponent implements OnInit, OnChanges {
     { name: 'Tassen', price: this.randNumber(50, 200) },
   ]
   // End dummy data
-
+  // type: ['Visa']
+  cards = [{ sName: 'Card', type: ['Visa', 'Meastro', 'Master Card'], amount: 0 }];
   /**
    * Temp function to generate random numbers for demo till
    * @param min - min number to generate
@@ -106,12 +107,12 @@ export class TillComponent implements OnInit, OnChanges {
 
   getValueFromLocalStorage(key: string): any {
     if (key === 'currentEmployee') {
-     const value = localStorage.getItem('currentEmployee');
-     if (value) {
-       return JSON.parse(value)
-     } else {
-       return ''
-     }
+      const value = localStorage.getItem('currentEmployee');
+      if (value) {
+        return JSON.parse(value)
+      } else {
+        return ''
+      }
     } else {
       return localStorage.getItem(key) || "";
     }
@@ -158,7 +159,7 @@ export class TillComponent implements OnInit, OnChanges {
     }
     let result = 0
     this.transactionItems.forEach((i) => {
-      result += type === 'price' ? i.quantity * i.price : i[type]
+      result += type === 'price' ? i.paymentAmount || i.quantity * i.price : i[type]
     })
     return result
   }
@@ -174,6 +175,7 @@ export class TillComponent implements OnInit, OnChanges {
       price: this.randNumber(5, 200),
       discount: 0,
       tax: 21,
+      paymentAmount: 0,
       description: '',
       open: true,
       ...(type === 'giftcard-sell') && { giftcardNumber: Date.now() },
@@ -223,7 +225,7 @@ export class TillComponent implements OnInit, OnChanges {
   }
 
   getUsedPayMethods(total: boolean): any {
-    if(!this.payMethods) {
+    if (!this.payMethods) {
       return 0
     }
     if (total) {
@@ -233,7 +235,8 @@ export class TillComponent implements OnInit, OnChanges {
   }
 
   createTransaction(): void {
-    const transactionItems = this.transactionItems.map( (i) => {
+    console.log('I am creating transactions');
+    const transactionItems = this.transactionItems.map((i) => {
       return new TransactionItem(
         i.name,
         i.comment,
@@ -267,6 +270,7 @@ export class TillComponent implements OnInit, OnChanges {
         i.quantity, // TODO
         i.total,
         i.total, // TODO?
+        i.paymentAmount,
         0, //TODO
         i.discount.value > 0,
         i.discount.percent,
@@ -287,8 +291,12 @@ export class TillComponent implements OnInit, OnChanges {
         {
           eTransactionType: 'cash-registry', // TODO
           bRefund: i.discount.quantity < 0 || i.price < 0,
+          // true (i.price * quanitity) < 0 && i.price < 0  // broken product, no call to stockcorrection
+          // true (i.price * quanitity) < 0 && quantity < 0 // broken product, +1 call to stockcorrection
+          // false (i.price * quanitity) > 0 && quantity > 0 // regular sale, -1 call to stockcorrection
           eKind: 'regular', // TODO
-          bDiscount: i.discount.value > 0
+          bDiscount: i.discount.value > 0,
+          bPrepayment: i.paymentAmount > 0 || this.getUsedPayMethods(true) - this.getTotals('price') < 0
         }
       )
     })
@@ -308,7 +316,7 @@ export class TillComponent implements OnInit, OnChanges {
       null ,
     )
 
-    if(this.customer && this.customer._id) {
+    if (this.customer && this.customer._id) {
       transaction.oCustomer = {
         _id: this.customer._id,
         sFirstName: this.customer.sFirstName,
@@ -320,20 +328,20 @@ export class TillComponent implements OnInit, OnChanges {
     const body = {
       iBusinessId: this.getValueFromLocalStorage('currentBusiness'),
       iLocationId: this.getValueFromLocalStorage('currentLocation'),
+      iDeviceId: '623b6d840ed1002890334456',
       transactionItems: transactionItems,
       transaction: transaction,
       payments: this.getUsedPayMethods(false),
     };
 
-    console.log('body', body)
 
     this.apiService.postNew('cashregistry', '/api/v1/till/transaction', body)
       .subscribe(data => {
         console.log(data);
-        this.toastrService.show({type: 'success', text: 'Transactie gemaakt!'})
+        this.toastrService.show({ type: 'success', text: 'Transactie gemaakt!' })
       }, err => {
         console.log(err);
-        this.toastrService.show({type: 'danger', text: err.message})
+        this.toastrService.show({ type: 'danger', text: err.message })
 
       });
   }
@@ -445,5 +453,10 @@ export class TillComponent implements OnInit, OnChanges {
     } else {
       this.listCommonBrandProducts(this.searchKeyword, false); // Searching for the products of common brand
     }
+  }
+
+  addNewCard() {
+    console.log('I am adding new card');
+    this.cards.push({ sName: 'Card', type: ['Visa', 'Meastro', 'Master Card'], amount: 0 });
   }
 }
