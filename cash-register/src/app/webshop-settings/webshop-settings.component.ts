@@ -17,31 +17,12 @@ export class WebshopSettingsComponent implements OnInit {
   business: any = { };
   showLoader: boolean = false;
   webShop: any = {
-    oShippingCost: {
-      domestic: 7,
-      europe: 15,
-      abroad: 30,
-    },
-    oFreeShippingFrom: {
-      domestic: 60,
-      europe: 300,
-      abroad: 402,
-    },
-    aShippingOptions: [{
-      type: {
-        type: String,
-        enum: ['ExpressShipping', 'RegisteredShipping', 'Pick-upInStore', 'Neighborhood']
-      },
-      domestic: Number,
-      europe: Number,
-      abroad: Number,
-    }],
    }
   newShipping: any = {
     type: '',
-    domestic: 60,
-    europe: 300,
-    abroad: 402,
+    domestic: 0,
+    europe: 0,
+    abroad: 0,
   }
   
   constructor(
@@ -71,20 +52,22 @@ export class WebshopSettingsComponent implements OnInit {
     this.showLoader = true;
     this.webShop.iBusinessId = this.business._id;
     this.apiService.putNew('cashregistry', '/api/v1/webShop-settings/update/' + this.business._id, this.webShop).subscribe((result: any) => {
-      if (result && result.data) {
-        console.log(result.data);
-        this.webShop = result.data;
-        console.log(this.webShop)
-      }
+      this.getWebShopSettings()
       this.showLoader = false;
     }, (error) => {
+      this.getWebShopSettings()
       this.showLoader = false;
     })
   }
 
   AddDeliveryMethod(newShipping: any){
     console.log(newShipping);
-    this.webShop.aShippingOptions.push(newShipping);
+    if(this.webShop && this.webShop.aShippingOptions){
+      this.webShop.aShippingOptions.push(newShipping);
+    }else {
+      this.webShop.aShippingOptions = [newShipping];
+    }
+    
     this.updateWebShopSettings()
   }
 
