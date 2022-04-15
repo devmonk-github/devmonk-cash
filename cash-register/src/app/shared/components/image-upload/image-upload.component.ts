@@ -6,6 +6,7 @@ import { DialogComponent } from '../../service/dialog';
 import {Subject, Observable} from 'rxjs';
 import {WebcamImage, WebcamInitError, WebcamUtil} from 'ngx-webcam'
 import { FormGroup, FormControl, Validators} from '@angular/forms';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 @Component({
   selector: 'app-image-upload',
@@ -46,7 +47,8 @@ export class ImageUploadComponent implements OnInit {
 
   constructor(
     private viewContainerRef: ViewContainerRef,
-    private apiService: ApiService
+    private apiService: ApiService,
+    private http: HttpClient
   ) { 
     const _injector = this.viewContainerRef.parentInjector;
     this.dialogRef = _injector.get<DialogComponent>(DialogComponent);
@@ -87,26 +89,97 @@ export class ImageUploadComponent implements OnInit {
 
     let name = this.randomString(20);
 
-    if(this.showWebcam && !this.showUpload){ 
-      console.log(' Upload camera image!'); 
-      console.log(this.webcamImage._imageAsDataUrl);
-      var content = this.webcamImage._imageAsDataUrl;
-      var blob = new Blob([content], { type: "text/xml" });
-      this.file = blob;
-    }
-    if(!this.showWebcam && this.showUpload){ console.log(' Upload selected image!'); }
+    // if(this.showWebcam && !this.showUpload){ 
+    //   console.log(' Upload camera image!'); 
+    //   console.log(this.webcamImage._imageAsDataUrl);
+    //   var content = this.webcamImage._imageAsDataUrl;
+    //   var blob = new Blob([content], { type: "text/xml" });
+    //   this.file = blob;
+    // }
+    // if(!this.showWebcam && this.showUpload){ console.log(' Upload selected image!'); }
+
+    
 
     console.log(this.file);
-    const formData = new FormData();
-    formData.append('file', this.file, name);
-    this.file = undefined;
-    this.apiService.fileUpload('core', '/api/v1/file-uploads/' + this.requestParams.iBusinessId, formData).subscribe(
-      (result : any) =>{
+    // console.log(new Buffer(this.file));
+    // const formData = new FormData();
+    // formData.append('file', this.file, name);
+    // this.file = undefined;
+    this.apiService.getNew('core', '/api/v1/file-uploads/' + this.requestParams.iBusinessId + '?fileName=' + name + '&fileType=.jpg',).subscribe(
+      async(result : any) =>{
+        console.log(result)
+        const data = await this.uploadFileToS3(result.data.signature, this.file, result.data.url, this.file.type);
+        console.log(data);
       },
       (err: any) =>{
         console.error(err);
       }
     )
+    // this.apiService.fileUpload('core', '/api/v1/file-uploads/' + this.requestParams.iBusinessId, formData).subscribe(
+    //   (result : any) =>{
+    //   },
+    //   (err: any) =>{
+    //     console.error(err);
+    //   }
+    // )
+  }
+
+  uploadFileToS3(signedRequest: any, file: any, url: any, type: any) {
+    const imageConfig = {
+      headers: {
+        'x-amz-acl': 'public-read',
+        'Content-Encoding': 'base64',
+        'Content-Type': type,
+        'Access-Control-Request-Method': 'PUT'
+      },
+    };
+    const fileConfig = {
+      headers: {
+        'x-amz-acl': 'public-read',
+        'Content-Encoding': 'base64',
+        'Content-Type': type,
+        charset: 'utf-8',
+        'Access-Control-Request-Method': 'PUT'
+      },
+    };
+
+    console.log(signedRequest, file)
+
+    return this.http.put(
+          signedRequest,
+          file,
+          type === 'image' ? imageConfig : fileConfig,
+          ).subscribe(
+            (result : any) =>{
+              console.log(result)
+            },
+            (err: any) =>{
+              console.error(err);
+            }
+          )
+        // .then((response: any) => {
+        //   console.log(response)
+        //   // fulfill(url);
+        // })
+        // .catch((error: any) => {
+        //   console.error(error)
+        //   // reject(error);
+        // });
+    // }
+    // return new Promise((fulfill, reject) => {
+    //   axios
+    //     .put(
+    //       signedRequest,
+    //       file.buffer,
+    //       type === 'image' ? imageConfig : fileConfig,
+    //     )
+    //     .then((response) => {
+    //       fulfill(url);
+    //     })
+    //     .catch((error) => {
+    //       reject(error);
+    //     });
+    // });
   }
 
   useCamera(){
