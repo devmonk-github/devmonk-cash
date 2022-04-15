@@ -31,6 +31,7 @@ export class ImageUploadComponent implements OnInit {
     fileSource: new FormControl('', [Validators.required])
   });
   file: any = undefined;
+  defaultHeaders: any = { 'Content-Type': 'application/json', observe: 'response' };
   public videoOptions: MediaTrackConstraints = {
     // width: {ideal: 1024},
     // height: {ideal: 576}
@@ -105,7 +106,7 @@ export class ImageUploadComponent implements OnInit {
     // const formData = new FormData();
     // formData.append('file', this.file, name);
     // this.file = undefined;
-    this.apiService.getNew('core', '/api/v1/file-uploads/' + this.requestParams.iBusinessId + '?fileName=' + name + '&fileType=.jpg',).subscribe(
+    this.apiService.getNew('core', '/api/v1/file-uploads/' + this.requestParams.iBusinessId + '?fileName=' + this.file.name + '&fileType=' + this.file.type,).subscribe(
       async(result : any) =>{
         console.log(result)
         const data = await this.uploadFileToS3(result.data.signature, this.file, result.data.url, this.file.type);
@@ -130,25 +131,39 @@ export class ImageUploadComponent implements OnInit {
         'x-amz-acl': 'public-read',
         'Content-Encoding': 'base64',
         'Content-Type': type,
-        'Access-Control-Request-Method': 'PUT'
+        'Access-Control-Request-Method': 'PUT',
+        'Access-Control-Allow-Origin': '*'
       },
     };
     const fileConfig = {
       headers: {
         'x-amz-acl': 'public-read',
-        'Content-Encoding': 'base64',
         'Content-Type': type,
         charset: 'utf-8',
-        'Access-Control-Request-Method': 'PUT'
+        'Access-Control-Request-Method': 'PUT',
+        'Access-Control-Allow-Origin': '*'
       },
     };
 
     console.log(signedRequest, file)
 
+    
+    let finalHeaders = { 
+        'x-amz-acl': 'public-read',
+        'Content-Type': type,
+        charset: 'utf-8',
+        'Access-Control-Request-Method': 'PUT',
+        'Access-Control-Allow-Origin': '*',
+         observe: 'response' };
+         
+    let httpHeaders = {
+      headers: new HttpHeaders(finalHeaders),
+    }
+
     return this.http.put(
           signedRequest,
           file,
-          type === 'image' ? imageConfig : fileConfig,
+          httpHeaders,
           ).subscribe(
             (result : any) =>{
               console.log(result)
