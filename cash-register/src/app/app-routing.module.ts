@@ -23,6 +23,10 @@ const routes: Routes = [
     loadChildren : () => import('./workstation/workstation.module').then(module => module.WorkstationModule)
   },
   {
+    path : 'webshop-settings',
+    loadChildren : () => import('./webshop-settings/webshop-settings.module').then(module => module.WebshopSettingsModule)
+  },
+  {
     path : 'devices',
     loadChildren : () => import('./device/device.module').then(module => module.DeviceModule)
   },

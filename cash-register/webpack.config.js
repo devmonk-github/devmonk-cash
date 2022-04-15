@@ -36,7 +36,8 @@ module.exports = {
           './TransactionModule': './src/app/transactions/transactions.module.ts',
           './StatisticModule': './src/app/statistics/statistics.module.ts',
           './ServiceModule': './src/app/services/services.module.ts',
-          './CustomerModule': './src/app/customers/customers.module.ts'
+          './CustomerModule': './src/app/customers/customers.module.ts',
+          './WebshopSettingsModule': './src/app/webshop-settings/webshop-settings.module.ts',
         },
 
         // For hosts (please adjust)
