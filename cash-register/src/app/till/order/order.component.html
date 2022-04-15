@@ -1,27 +1,27 @@
 <h2 class="accordion-header">
   <button class="accordion-button fs-4 fw-bold" type="button" data-bs-toggle="collapse"
-          data-bs-target="#kt_accordion_1_body_1" aria-expanded="true" aria-controls="kt_accordion_1_body_1">
+    data-bs-target="#kt_accordion_1_body_1" aria-expanded="true" aria-controls="kt_accordion_1_body_1">
     <section class="d-flex product-row align-items-center">
       <div class="w-90px">{{item.quantity}}</div>
-      <div class="w-300px">{{item.name}}</div>
-      <div class="w-125px ps-2">{{item.price | currency: '€'}}</div>
-      <div class="w-100px ps-2">{{item.discount}}</div>
-      <div class="w-125px ps-2">{{item.tax}}%</div>
+      <div class="w-275px">{{item.name}}</div>
+      <div class="w-100px">{{item.price | currency: '€'}}</div>
+      <div class="w-95px">{{item.discount}}</div>
+      <div class="w-125px">{{item.tax}}%</div>
     </section>
   </button>
 </h2>
 <div id="kt_accordion_1_body_1" class="accordion-collapse collapse show" aria-labelledby="kt_accordion_1_header_1"
-     data-bs-parent="#kt_accordion_1">
+  data-bs-parent="#kt_accordion_1">
   <div class="accordion-body px-3 py-4">
     <section class="d-flex product-row mb-3">
       <div class="w-90px">
-        <app-dialer [(quantity)]="item.quantity" ></app-dialer>
+        <app-dialer [(quantity)]="item.quantity"></app-dialer>
       </div>
       <div class="w-300px ps-2">
         <input type="text" [(ngModel)]="item.name" class="form-control">
         <label for="description">{{ "DESCRIPTION" | translate}}</label>
-        <textarea class="form-control" name="description"
-                  placeholder="{{ 'DESCRIPTION' | translate}}" lines="10" [(ngModel)]="item.description"></textarea>
+        <textarea class="form-control" name="description" placeholder="{{ 'DESCRIPTION' | translate}}" lines="10"
+          [(ngModel)]="item.description"></textarea>
       </div>
       <div class="w-125px ps-2">
         <label for="price">{{ "PRICE" | translate}}</label>
@@ -36,21 +36,18 @@
       </div>
       <div class="w-125px ps-2">
         <label for="taxRate">{{ "TAX" | translate}}</label>
-        <select name="taxRate" id="taxRate" class="form-select"
-                [(ngModel)]="item.tax">
-          <option *ngFor="let rate of taxes"
-                  [ngValue]="rate.rate">{{rate.name}}</option>
+        <select name="taxRate" id="taxRate" class="form-select" [(ngModel)]="item.tax">
+          <option *ngFor="let rate of taxes" [ngValue]="rate.rate">{{rate.name}}</option>
         </select>
         {{ "BRAND" | translate}}: ----
         <br>
         {{ "COMPANY" | translate}}: ----
       </div>
       <div class="w-100px">
-        <button class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary w-30px h-30px"
-                (click)="deleteItem()">
-      <span class="svg-icon svg-icon-1qx me-0">
-        <fa-icon [icon]="faTimes"></fa-icon>
-      </span>
+        <button class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary w-30px h-30px" (click)="deleteItem()">
+          <span class="svg-icon svg-icon-1qx me-0">
+            <fa-icon [icon]="faTimes"></fa-icon>
+          </span>
         </button>
       </div>
     </section>

@@ -1,8 +1,8 @@
-import {ExtraService} from "./extra-service.model";
-import {EdiProduct} from "./edi-product.model";
-import {Property} from "./property.model";
-import {Payment} from "./payment.model";
-import {BusinessProductMetadata} from "./business-product-metadata.model";
+import { ExtraService } from "./extra-service.model";
+import { EdiProduct } from "./edi-product.model";
+import { Property } from "./property.model";
+import { Payment } from "./payment.model";
+import { BusinessProductMetadata } from "./business-product-metadata.model";
 
 export class TransactionItem {
   constructor(
@@ -17,7 +17,7 @@ export class TransactionItem {
     public nVatRate: number,
     public nQuantity: number,
     public nReceivedQuantity: number | null,
-    public aExtraServices : [ExtraService] | null,
+    public aExtraServices: [ExtraService] | null,
     public iProductId: string,
     public sEan: string,
     public sArticleNumber: string,
@@ -28,7 +28,7 @@ export class TransactionItem {
     public iBusinessPartnerId: string | null,
     public iBusinessId: string,
     public iArticleGroupId: string | null,
-    public oArticleGroupMetaData: { aProperty: [Property]} | null,
+    public oArticleGroupMetaData: { aProperty: [Property] } | null,
     public aPayments: [Payment] | null,
     public bPayLater: boolean,
     public bDeposit: boolean,
@@ -39,6 +39,7 @@ export class TransactionItem {
     public nOriginalQuantity: number,
     public nTotal: number,
     public nOriginalTotal: number,
+    public nPaymentAmount: number,
     public nPaidLaterAmount: number,
     public bDiscount: boolean,
     public bDiscountPercent: boolean,
@@ -56,19 +57,13 @@ export class TransactionItem {
     public iEmployeeId: string,
     public iLocationId: string,
     //Optional here, since we don't know the transaction id when we create one
-    public iTransactionId : string | null,
+    public iTransactionId: string | null,
     public oType: {
       eTransactionType: string,
       bRefund: boolean,
       eKind: string,
-      bDiscount: boolean
-    }
-
-  ) {
-  }
+      bDiscount: boolean,
+      bPrepayment: boolean,
+    }) { }
 
 }
-
-
-
-
