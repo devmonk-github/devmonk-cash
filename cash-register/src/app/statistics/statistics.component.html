@@ -71,7 +71,7 @@
     </div>
   </div> -->
 
-  <div class="card overflow-y-auto" *ngIf="sDisplayMethod == 'revenuePerBusinessPartner'">
+  <div class="card overflow-y-auto" *ngIf="sDisplayMethod === 'revenuePerBusinessPartner'">
     <p> revenuePerBusinessPartner </p>
     <div class="card-body">
       <div class="table-responsive" *ngFor="let oStatistic of aStatistic; let statisticIndex = index">
@@ -138,7 +138,7 @@
     </div>
   </div>
 
-  <div class="card" *ngIf="sDisplayMethod == 'revenuePerSupplierAndArticleGroup'">
+  <div class="card" *ngIf="sDisplayMethod === 'revenuePerSupplierAndArticleGroup'">
     <p> Supplier and Article Group revenuePerArticleGroup (Article Group) </p>
     <div class="card-body">
       <div class="table-responsive" *ngFor="let oStatistic of aStatistic; let i = index">
@@ -192,7 +192,7 @@
     </div>
   </div>
 
-  <div class="card" *ngIf="sDisplayMethod == 'revenuePerArticleGroupAndProperty'">
+  <div class="card" *ngIf="sDisplayMethod === 'revenuePerArticleGroupAndProperty'">
     <p>revenuePerArticleGroupAndProperty</p>
     <div class="card-body">
       <div class="table-responsive" *ngFor="let oStatistic of aStatistic; let i = index">
@@ -228,7 +228,7 @@
     </div>
   </div>
 
-  <div class="card" *ngIf="sDisplayMethod == 'revenuePerProperty'">
+  <div class="card" *ngIf="sDisplayMethod === 'revenuePerProperty'">
     <p>Table no 1 revenuePerProperty</p>
 
     <div class="card-body">
@@ -252,7 +252,7 @@
     </div>
   </div>
 
-  <div class="card" *ngIf="sDisplayMethod == 'revenuePerArticleGroup'">
+  <div class="card" *ngIf="sDisplayMethod === 'revenuePerArticleGroup'">
     <p>Table No 5 revenuePerArticleGroup</p>
     <div class="card-body">
       <div class="table-responsive" *ngFor="let oStatistic of aStatistic; let i = index">

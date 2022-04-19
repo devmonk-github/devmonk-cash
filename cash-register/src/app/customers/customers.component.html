@@ -22,7 +22,7 @@
                         <th *ngFor="let column of allColumns" class="min-w-100px sorting" tabindex="0">{{column}}</th>
                     </tr>
                 </thead>
-                <tbody class="fw-bold text-gray-600"> 
+                <tbody class="fw-bold text-gray-600">
                     <tr *ngFor='let customer of customers | paginate: paginationConfig' class="bg-hover-secondary" (click)="openCustomer(customer)">
                         <td *ngFor="let column of allColumns">{{customer[column]}}</td>
                     </tr>
@@ -47,7 +47,7 @@
         </div>
         <div class="col-sm-12 col-md-9 d-flex align-items-center justify-content-center justify-content-md-end">
             <pagination-controls
-                [hidden] = "customers.length == 0"
+                [hidden] = "customers.length === 0"
                 (pageChange)="pageChanged($event)"
                 (pageBoundsCorrection)="pageChanged($event)"
                 [maxSize]="setPaginateSize"

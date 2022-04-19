@@ -32,8 +32,8 @@ export class CustomersComponent implements OnInit {
   pageNumber: number = 1;
   setPaginateSize: number = 12;
   paginationConfig: any = {
-    itemsPerPage: 10, 
-    currentPage: 1, 
+    itemsPerPage: 10,
+    currentPage: 1,
     totalItems: 0
   };
 
@@ -48,7 +48,7 @@ export class CustomersComponent implements OnInit {
     sortOrder : '',
     searchValue : '',
     aProjection: [ 'sSalutation', 'sFirstName', 'sPrefix', 'sLastName', 'dDateOfBirth', 'dDateOfBirth', 'nClientId', 'sGender', 'bIsEmailVerified',
-    'bCounter', 'sEmail', 'oPhone', 'oShippingAddress', 'oInvoiceAddress', 'iBusinessId', 'sComment', 'bNewsletter', 'sCompanyName', 'oPoints', 
+    'bCounter', 'sEmail', 'oPhone', 'oShippingAddress', 'oInvoiceAddress', 'iBusinessId', 'sComment', 'bNewsletter', 'sCompanyName', 'oPoints',
     'sCompanyName', 'oIdentity', 'sVatNumber', 'sCocNumber', 'nPaymentTermDays', 'nDiscount', 'bWhatsApp' ],
     oFilterBy : {
       oStatic : {},
@@ -57,7 +57,7 @@ export class CustomersComponent implements OnInit {
   };
 
   @ViewChildren('inputElement') inputElement!: QueryList<ElementRef>;
- 
+
   constructor(
     private apiService: ApiService,
     // private dataSourceBuilder: NbTreeGridDataSourceBuilder<FSEntry>,
@@ -76,10 +76,6 @@ export class CustomersComponent implements OnInit {
     // })
   }
 
-  ngAfterViewInit(): void {
-    this.inputElement.first.nativeElement.focus();
-  }
-
   ngOnInit(): void {
     this.business._id = localStorage.getItem("currentBusiness");
     this.requestParams.iBusinessId = this.business._id;
@@ -88,7 +84,7 @@ export class CustomersComponent implements OnInit {
   }
 
   createCustomer() {
-    this.dialogService.openModal(CustomerDetailsComponent, { cssClass:"modal-xl", context: { mode: 'create' } }).instance.close.subscribe(result =>{ 
+    this.dialogService.openModal(CustomerDetailsComponent, { cssClass:"modal-xl", context: { mode: 'create' } }).instance.close.subscribe(result =>{
       if(result && result.action && result.action == true) this.getCustomers() });
   }
 
@@ -105,7 +101,7 @@ export class CustomersComponent implements OnInit {
     this.apiService.postNew('customer', '/api/v1/customer/list', this.requestParams)
       .subscribe(async (result: any) => {
         this.showLoader = false;
-        
+
           if (result && result.data && result.data[0] && result.data[0].result) {
             this.paginationConfig.totalItems = result.data[0].count.totalData;
             this.customers = result.data[0].result;

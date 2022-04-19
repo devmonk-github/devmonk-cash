@@ -30,8 +30,8 @@
         </div>
         <div class="row mb-6">
             <div class="col-lg-2">
-                <button *ngIf="mode == 'create'" class="btn btn-primary" (click)="addNewDevice()">{{ 'CREATE' | translate}}</button>
-                <button *ngIf="mode == 'edit'" class="btn btn-primary" (click)="editDevice()">{{ 'UPDATE' | translate}}</button>
+                <button *ngIf="mode === 'create'" class="btn btn-primary" (click)="addNewDevice()">{{ 'CREATE' | translate}}</button>
+                <button *ngIf="mode === 'edit'" class="btn btn-primary" (click)="editDevice()">{{ 'UPDATE' | translate}}</button>
             </div>
         </div>
     </div>
