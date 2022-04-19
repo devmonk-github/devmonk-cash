@@ -91,7 +91,7 @@
       <thead>
           <tr>
               <th class="border border-green-100 p-4" *ngFor="let column of overviewColumns"> 
-                  <span *ngIf="column.name != 'action'">{{ column.name | translate }}</span>
+                  <span *ngIf="column.name !== 'action'">{{ column.name | translate }}</span>
               </th>
           </tr>
       </thead>

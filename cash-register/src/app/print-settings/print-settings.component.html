@@ -140,7 +140,7 @@
           <label for="portPrinter">{{"PORT" | translate}}</label>
           <br>
           <input type="text" class="form-control" fullWidth id="portPrinter" required="true" name="portPrinter">
-          <p class="help-block" *ngIf="device.thermalPrinter && device.thermalPrinter.brand == 'EPSON'">
+          <p class="help-block" *ngIf="device.thermalPrinter && device.thermalPrinter.brand === 'EPSON'">
             {{"PORT_8008_FOR_HTTP_AND_PORT_8043_FOR_HTTPS" | translate}}
           </p>
           <button type="submit" class="btn btn-primary custom-margin-t10">

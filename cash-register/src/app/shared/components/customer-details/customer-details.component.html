@@ -1,7 +1,7 @@
 <div class="card shadow-sm">
     <div class="card-header" style="margin-top: 20px;">
-         <h4 *ngIf="mode == 'create'">NEW CUSTOMER</h4>
-         <h4 *ngIf="mode == 'details'">CUSTOMER DETAILS</h4>
+         <h4 *ngIf="mode === 'create'">NEW CUSTOMER</h4>
+         <h4 *ngIf="mode === 'details'">CUSTOMER DETAILS</h4>
          <div>
             <button type="button" class="btn btn-sm btn-light" (click)="close(false)">
                 <fa-icon [icon]="faTimes"></fa-icon>
@@ -38,7 +38,7 @@
             <button class="btn btn-primary" (click)="editProfile = !editProfile">update profile</button>
         </div>
     </div>
-    <div *ngIf="mode == 'create' || (mode == 'details' && editProfile)" class="card-body pt-0 row input-group">
+    <div *ngIf="mode === 'create' || (mode === 'details' && editProfile)" class="card-body pt-0 row input-group">
         <div class="col-md-8">
             <div class="row col-md-12">
                 <div><label>Mail</label></div>
@@ -99,7 +99,7 @@
                         <div class="col-md-4 col-lg-12 col-xxl-4">
                             <label
                                 class="btn btn-outline btn-outline-dashed btn-outline-default active d-flex text-start p-3"
-                                data-kt-button="true" [ngClass]="{'active': customer.sGender == 'male'}">
+                                data-kt-button="true" [ngClass]="{'active': customer.sGender === 'male'}">
                                 <span
                                     class="form-check form-check-custom form-check-solid form-check-sm align-items-start mt-1">
                                     <input class="form-check-input" type="radio" name="eGender" value="male"
@@ -113,7 +113,7 @@
                         <div class="col-md-4 col-lg-12 col-xxl-4">
                             <label
                                 class="btn btn-outline btn-outline-dashed btn-outline-default d-flex text-start p-3"
-                                data-kt-button="true" [ngClass]="{'active': customer.sGender == 'female'}">
+                                data-kt-button="true" [ngClass]="{'active': customer.sGender === 'female'}">
                                 <span
                                     class="form-check form-check-custom form-check-solid form-check-sm align-items-start mt-1">
                                     <input class="form-check-input" type="radio" name="eGender" value="female"
@@ -127,7 +127,7 @@
                         <div class="col-md-4 col-lg-12 col-xxl-4">
                             <label
                                 class="btn btn-outline btn-outline-dashed btn-outline-default d-flex text-start p-3"
-                                data-kt-button="true" [ngClass]="{'active': customer.sGender == 'other'}">
+                                data-kt-button="true" [ngClass]="{'active': customer.sGender === 'other'}">
                                 <span
                                     class="form-check form-check-custom form-check-solid form-check-sm align-items-start mt-1">
                                     <input class="form-check-input" type="radio" name="eGender" value="other"
@@ -143,7 +143,7 @@
             </div>
         </div>
     </div>
-    <div *ngIf="mode == 'create' || (mode == 'details' && editProfile)" class="card-body pt-0 row input-group">
+    <div *ngIf="mode === 'create' || (mode === 'details' && editProfile)" class="card-body pt-0 row input-group">
         <div class="col-md-6 row">
             <div><label>Invoice address</label></div>
             <div>
@@ -210,7 +210,7 @@
             </div>
         </div>
     </div>
-    <div *ngIf="mode == 'create' || (mode == 'details' && editProfile)" class="card-body pt-0 row input-group">
+    <div *ngIf="mode === 'create' || (mode === 'details' && editProfile)" class="card-body pt-0 row input-group">
         <div class="col-md-6">
             <div><label>Company name</label></div>
             <div><input class="form-control" placeholder="Company name" [(ngModel)]="customer.sCompanyName"/></div>
@@ -220,7 +220,7 @@
             <div><input class="form-control" placeholder="Payment term in days" [(ngModel)]="customer.nPaymentTermDays"/></div>
         </div>
     </div>
-    <div *ngIf="mode == 'create' || (mode == 'details' && editProfile)" class="card-body pt-0 row">
+    <div *ngIf="mode === 'create' || (mode === 'details' && editProfile)" class="card-body pt-0 row">
         <div class="col-md-6">
             <div><label>VAT number</label></div>
             <div><input class="form-control" placeholder="VAT number" [(ngModel)]="customer.sVatNumber"/></div>
@@ -230,7 +230,7 @@
             <div><input class="form-control" placeholder="CoC number" [(ngModel)]="customer.sCocNumber"/></div>
         </div>
     </div>
-    <div *ngIf="mode == 'create' || (mode == 'details' && editProfile)" class="card-body pt-0 row">
+    <div *ngIf="mode === 'create' || (mode === 'details' && editProfile)" class="card-body pt-0 row">
         <div class="col-md-12">
             <button class="btn btn-primary" (click)="EditOrCreateCustomer()">Submit</button>
         </div>

@@ -63,7 +63,7 @@
                   </div>
                 </div>
               </div>
-            </div> 
+            </div>
           </div>
           <div class="row g-4">
             <div class="col-xxl-6">
@@ -135,13 +135,13 @@
           <tr class="fw-bold fs-6 text-gray-400 border-bottom-2 border-gray-200">
             <th scope="col" *ngFor="let th of tableHeaders" [ngClass]="{'fw-bolder': th.selected, 'cursor-pointer': !th.disabled, 'pe-none': th.disabled}" (click)="setSortOption(th)">
               {{ th.key }}
-              <fa-icon *ngIf="th.selected" [icon] =" th.sort == 'asc' ? faArrowDown : faArrowUp"></fa-icon>
+              <fa-icon *ngIf="th.selected" [icon] =" th.sort ==='asc' ? faArrowDown : faArrowUp"></fa-icon>
             </th>
             <th scope="col"></th>
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let transaction of transactions | paginate: paginationConfig, let i = index;">  
+          <tr *ngFor="let transaction of transactions | paginate: paginationConfig, let i = index;">
             <td scope="row">{{transaction.dCreatedDate | date: 'longDate'}}</td>
             <td>{{transaction.sNumber}}</td>
             <td>{{transaction.oReceipt.sNumber}}</td>
@@ -206,7 +206,7 @@
 <pre>
 	<code>
 
-		# User stories for repairs 
+		# User stories for repairs
 		# Work in progress!
 
 
@@ -277,7 +277,7 @@
 		As a retailer, I want to download a receipt of the repair for the customer
 		As a retailer, I want to download a receipt of the repair payment for the customer
 		As a retailer, I want to download a receipt of the repair offer for the customer
-		
+
 		As a retailer, I want to create a repair offer
 
 		As a retailer, I want to manually add a log entry

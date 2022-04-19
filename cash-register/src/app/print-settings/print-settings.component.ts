@@ -8,7 +8,7 @@ import { DialogService } from '../shared/service/dialog';
   templateUrl: './print-settings.component.html',
   styleUrls: ['./print-settings.component.sass']
 })
-export class PrintSettingsComponent implements OnInit {
+export class PrintSettingsComponent {
 
   faRefresh = faRefresh;
   faPencilAlt = faPencilAlt;
@@ -39,9 +39,6 @@ export class PrintSettingsComponent implements OnInit {
   constructor(
     private dialogService: DialogService
   ) { }
-
-  ngOnInit(): void {
-  }
 
   createPrintSettings() {
     this.dialogService.openModal(PrintSettingsDetailsComponent, { cssClass:"modal-xl", context: { mode: 'create' } }).instance.close.subscribe(result =>{ });

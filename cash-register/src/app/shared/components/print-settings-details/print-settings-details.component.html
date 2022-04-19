@@ -23,8 +23,8 @@
                     <option *ngFor="let type of types" [value]="type">{{type}}</option>
                 </select>
             </div>
-            <label *ngIf="method != 'labelDefinition'" class="col-md-2 col-form-label required fw-bold">USER</label>
-            <div *ngIf="method != 'labelDefinition'" class="col-md-4">
+            <label *ngIf="method !== 'labelDefinition'" class="col-md-2 col-form-label required fw-bold">USER</label>
+            <div *ngIf="method !== 'labelDefinition'" class="col-md-4">
                 <select class="form-select form-control form-select-solid" [(ngModel)]="user" >
                     <option *ngFor="let user of users" [value]="user">{{user}}</option>
                 </select>

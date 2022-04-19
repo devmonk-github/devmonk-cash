@@ -216,15 +216,15 @@
             </div>
         </div>
         <form name="labelForm">
-            <div *ngIf="paymentProvider == 'Mollie'" class="row col-md-4 mt-2">
+            <div *ngIf="paymentProvider === 'Mollie'" class="row col-md-4 mt-2">
                 <label for="label22" name="label22" class="form-label">{{"YOUR_MOLLIE_API_KEY" | translate}}</label>
                 <input name="input20" type="text" class="form-control" fullWidth  required="true" placeholder='{{ "YOUR_MOLLIE_API_KEY" |translate}}'>
             </div>
-            <div *ngIf="paymentProvider == 'Stripe'" class="row col-md-4 mt-2">
+            <div *ngIf="paymentProvider === 'Stripe'" class="row col-md-4 mt-2">
                 <label for="label23" name="label23" class="form-label">{{"YOUR_STRIPE_SECRET_API_KEY" | translate}}</label>
                 <input name="input21" type="text" class="form-control" fullWidth  required="true" placeholder='{{ "YOUR_STRIPE_SECRET_API_KEY" |translate}}'>
             </div>
-            <div *ngIf="paymentProvider == 'Stripe'" class="row col-md-4 mt-2">
+            <div *ngIf="paymentProvider === 'Stripe'" class="row col-md-4 mt-2">
                 <label for="label24" name="label24" class="form-label">{{"YOUR_STRIPE_ENDPOINT_SIGNATURE" | translate}}</label>
                 <input name="input22" type="text" class="form-control" fullWidth  required="true" placeholder='{{ "YOUR_STRIPE_ENDPOINT_SIGNATURE" |translate}}'>
             </div>
