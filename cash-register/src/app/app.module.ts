@@ -8,20 +8,22 @@ import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 import { HttpClientModule } from '@angular/common/http';
 import { PrintComponent } from './print/print.component';
 import {FormsModule} from "@angular/forms";
+import {NgJsonEditorModule} from "ang-jsoneditor";
 
 @NgModule({
   declarations: [
     AppComponent,
     PrintComponent,
   ],
-    imports: [
-        BrowserModule,
-        HttpClientModule,
-        BrowserAnimationsModule,
-        AppRoutingModule,
-        TranslateModule.forRoot(),
-        FormsModule
-    ],
+  imports: [
+    BrowserModule,
+    HttpClientModule,
+    BrowserAnimationsModule,
+    AppRoutingModule,
+    TranslateModule.forRoot(),
+    FormsModule,
+    NgJsonEditorModule
+  ],
   providers: [],
   bootstrap: [AppComponent]
 })

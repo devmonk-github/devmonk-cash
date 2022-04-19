@@ -1,5 +1,6 @@
 import {Component, OnInit, ViewContainerRef} from '@angular/core';
 import {PdfService} from "../shared/service/pdf.service";
+import {JsonEditorOptions, JsonEditorComponent} from "ang-jsoneditor";
 
 @Component({
   selector: 'app-print',
@@ -7,10 +8,12 @@ import {PdfService} from "../shared/service/pdf.service";
   styleUrls: ['./print.component.sass']
 })
 export class PrintComponent implements OnInit {
-  dataString: string = ""
-  templateString: string = ""
+  dataString: any
+  templateString: any
+  editorOptions: JsonEditorOptions = new JsonEditorOptions()
 
   constructor(private viewContainerRef: ViewContainerRef, private pdfService: PdfService) {
+    this.editorOptions.mode = 'view'
   }
 
 
@@ -738,13 +741,13 @@ export class PrintComponent implements OnInit {
       }
     }
 
-    this.templateString = JSON.stringify(templateString)
-    this.dataString = JSON.stringify(dataString)
+    this.templateString = templateString
+    this.dataString = dataString
   }
 
 
   generatePDF(): void {
-    this.pdfService.createPdf(this.templateString, this.dataString, this.viewContainerRef, new Date().getTime().toString())
+    this.pdfService.createPdf(JSON.stringify(this.templateString), JSON.stringify(this.dataString), this.viewContainerRef, new Date().getTime().toString())
   }
 
 }

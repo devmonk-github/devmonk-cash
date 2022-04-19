@@ -21,7 +21,7 @@ export class PdfComponent implements OnInit {
 
   setStyle(pageSize: any) {
     this.frameStyle = 'width: ' + pageSize.width + 'mm; height: ' + pageSize.height + 'mm';
-    console.log('frameStyle', this.frameStyle)
+    // console.log('frameStyle', this.frameStyle)
   }
 
 }

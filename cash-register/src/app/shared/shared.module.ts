@@ -19,6 +19,7 @@ import { DeviceDetailsComponent } from './components/device-details/device-detai
 import { PrintSettingsDetailsComponent } from './components/print-settings-details/print-settings-details.component';
 import {ToastModule} from "./components/toast";
 import { PdfComponent } from './components/pdf/pdf.component';
+import {NgJsonEditorModule} from "ang-jsoneditor";
 
 @NgModule({
   declarations: [
@@ -43,7 +44,8 @@ import { PdfComponent } from './components/pdf/pdf.component';
     NgSelectModule,
     WebcamModule,
     ReactiveFormsModule,
-    ToastModule.forRoot()
+    ToastModule.forRoot(),
+    NgJsonEditorModule
   ],
   exports: [
     DialerComponent,

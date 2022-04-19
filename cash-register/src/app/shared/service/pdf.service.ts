@@ -764,12 +764,11 @@ export class PdfService {
     let extractedVariables = this.getVariables(originalText);
     let providedData = dataSourceObject;
     let finalString = originalText;
-    let matchedDataObject: any;
+
     if(extractedVariables) {
       for (let a = 0; a < extractedVariables.length; a++) {
         let currentMatch = extractedVariables[a];
-        let conditionContext = "";
-        let maxLength = 0;
+
 
         const matchedMatch = currentMatch.match(/\[/g)
 
@@ -799,11 +798,11 @@ export class PdfService {
                 break;
               case 2:
                 layer1 = this.data[parts[0]];
-                let data = layer1[parts[1]];
+                providedData = layer1[parts[1]];
                 variableStringFiltered = parts[2];
 
-                if(!this.isDefined(data[variableStringFiltered])) {
-                  providedData = data[0];
+                if(!this.isDefined(providedData[variableStringFiltered])) {
+                  providedData = providedData[0];
                 }
                 break;
               case 3:
@@ -825,7 +824,7 @@ export class PdfService {
           let newText = '';
 
           if(this.isDefined(providedData)) {
-            Object.keys(providedData).forEach((key, index) => {
+            Object.keys(providedData).forEach( (key, index) => {
               if (key === variableStringFiltered) {
                 if (String(providedData[variableStringFiltered]).length > 0) {
                   matched = true;
@@ -833,15 +832,8 @@ export class PdfService {
 
                   if (this.isDefined(format) && format !== '') {
                     newText = this.formatContent(newText, format);
-                    return newText.replace(currentMatch, newText);;
-                  } else {
-                    return newText.replace(currentMatch, newText);
                   }
-                } else {
-                  return '';
                 }
-              } else {
-                return ''
               }
             });
           } else {
@@ -850,6 +842,7 @@ export class PdfService {
 
           if(matched) {
             finalString = finalString.replace(currentMatch, newText);
+            // console.log(finalString)
           } else {
             console.warn(finalString + " could not be matched with the provided data.", currentMatch)
             finalString = '';
@@ -872,7 +865,8 @@ export class PdfService {
         if (typeof rule[1] === 'object') {
           convertedValues = this.convertSpacingArrayToObject([0])
 
-          var containsInvalidValues = Object.keys(obj).filter(function(key,index) {
+          //var containsInvalidValues = Object.keys(rule[1]).filter(function(key,index) {
+          var containsInvalidValues = Object.keys(rule[1]).filter(function(key,index) {
             return isNaN(obj[key])
           })
           if(containsInvalidValues.length > 0) {
@@ -1029,15 +1023,15 @@ export class PdfService {
         col = this.insertElementsInCol(col, html, newContent);
       } else {
         let template = html.replace('/>', '>');
-
+        html = '';
         if (foreach !== '') {
-          html = '';
+
           dataSourceObject = this.defineDataSource(foreach);
 
           for(let d = 0; d < dataSourceObject.length; d++) {
             let entry = dataSourceObject[d];
             let extractedVariables = this.getVariables(template);
-            let htmlConcept = template;
+            let htmlConcept = '';
 
             if(extractedVariables) {
               for (let v = 0; v < extractedVariables.length; v++) {
@@ -1052,8 +1046,8 @@ export class PdfService {
 
                 if (searchFor.match(/\|/g) !== null) {
                   let stringAndFormat = searchFor.split('|');
-                  let variableStringFiltered = stringAndFormat[0];
-                  let format = stringAndFormat[1]
+                  variableStringFiltered = stringAndFormat[0];
+                  format = stringAndFormat[1]
                 }
 
                 Object.keys(entry).forEach((key, index) => {
@@ -1124,7 +1118,7 @@ export class PdfService {
 
     if (template.orientation !== 'portrait') {
       if (this.paperSize.width > this.paperSize.height) {
-        console.error('The paper height is already in landscape. Decreate the paper or change orientation to "portrait"');
+        console.error('The paper height is already in landscape. Decrease the paper or change orientation to "portrait"');
         return Promise.reject('INVALID_PAPER_SIZE');
       }
       // Flip page sizes to make it landscape
@@ -1188,14 +1182,14 @@ export class PdfService {
     const factory = this.factoryResolver.resolveComponentFactory(PdfComponent);
     const component = factory.create(viewContainerRef.parentInjector)
     component.instance.pdfString = 'TEST'
-    console.log('component', component)
+    // console.log('component', component)
     viewContainerRef.insert(component.hostView)
 
 
     setTimeout( () => {
       this.makePdf(templateString, dataString)
         .then( (htmlString: string) => {
-          console.log('PDFSTRING', htmlString)
+          // console.log('PDFSTRING', htmlString)
           //component.instance.pdfString = htmlString
           component.instance.setStyle(this.parsedPaperSize)
           component.instance.setHtmlContent(htmlString)
@@ -1216,7 +1210,7 @@ export class PdfService {
           //   pdfDoc.save("test.pdf")
           //
           // })
-          console.log('paperSize', this.paperSize)
+          // console.log('paperSize', this.paperSize)
 
           let pdfDoc = new jsPDF({
             orientation: this.orientation === 'landscape' ? 'landscape' : 'portrait', //direct passing variable it not allowed due to variabele types
