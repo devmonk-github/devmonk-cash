@@ -13,6 +13,7 @@ import { Observable } from 'rxjs';
 // Translate imports
 import * as en from '../assets/json/translations/en-translation.json';
 import * as nl from '../assets/json/translations/nl-translation.json';
+import { NgJsonEditorModule } from 'ang-jsoneditor';
 export class CustomTranslateLoader implements TranslateLoader {
   public getTranslation(lang: string): Observable<any> {
     return new Observable((observer: any) => {
@@ -26,8 +27,6 @@ export class CustomTranslateLoader implements TranslateLoader {
     });
   }
 }
-import { FormsModule } from "@angular/forms";
-import { NgJsonEditorModule } from "ang-jsoneditor";
 
 @NgModule({
   declarations: [
