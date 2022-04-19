@@ -18,6 +18,7 @@ import {WebcamModule} from 'ngx-webcam';
 import { DeviceDetailsComponent } from './components/device-details/device-details.component';
 import { PrintSettingsDetailsComponent } from './components/print-settings-details/print-settings-details.component';
 import {ToastModule} from "./components/toast";
+import { PdfComponent } from './components/pdf/pdf.component';
 
 @NgModule({
   declarations: [
@@ -31,7 +32,8 @@ import {ToastModule} from "./components/toast";
     ConfirmationDialogComponent,
     ImageUploadComponent,
     DeviceDetailsComponent,
-    PrintSettingsDetailsComponent
+    PrintSettingsDetailsComponent,
+    PdfComponent
   ],
   imports: [
     CommonModule,
