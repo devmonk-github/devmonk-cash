@@ -3,6 +3,7 @@ import {PdfComponent} from "../components/pdf/pdf.component";
 import * as moment from 'moment';
 import { jsPDF } from 'jspdf';
 import html2canvas from 'html2canvas'
+import { invert } from 'lodash';
 
 interface StaticPaperSize {
   type: string,
@@ -42,7 +43,7 @@ export class PdfService {
   private data: any = {};
   private css: string = "";
   private currency: string = "€";
-  private defaultElement: string = "div";
+  private defaultElement: string = "span";
   private fontSize: string = "10pt";
   private layout: any[] = [];
   private margins: number[] = [0];
@@ -531,15 +532,17 @@ export class PdfService {
     let createdRows = [];
     let foreachActive = false;
 
-    if (this.isDefined(currentRow.foreach)) {
+    if (this.isDefined(currentRow.forEach)) {
       foreachActive = true;
-      dataSourceObject = this.defineDataSource(currentRow.foreach);
+      dataSourceObject = this.defineDataSource(currentRow.forEach);
+
       rowsToBeCreated = dataSourceObject.length;
     }
 
     for (let r = 0; r < rowsToBeCreated; r++) {
       let finalDataSourceObject = dataSourceObject;
-      if (typeof dataSourceObject === 'number') {
+      
+      if (typeof dataSourceObject.length === 'number') {
         finalDataSourceObject = Object.values(dataSourceObject)[r];
       }
 
@@ -547,7 +550,7 @@ export class PdfService {
       let newRow = document.createElement(rowElement);
       newRow.classList.add('pnrow');
 
-      newRow.dataset.inforeach = foreachActive;
+      newRow.dataset.inForeach = foreachActive;
 
       if (this.isDefined(currentRow.section)) {
         newRow.dataset.section = String(currentRow.section);
@@ -728,24 +731,20 @@ export class PdfService {
         }
 
         let dataValue = dataSourceObject[condition];
+
         if(inverted) {
           if(dataValue === false || dataValue === 0 || dataValue === '') {
             counter++
-          } else {
-            if(dataValue) {
-              counter++
-            }
+          }
+        } else {
+          if(dataValue) {
+            counter++
           }
         }
       }
     }
 
-    if (counter === conditions.length) {
-      result = true;
-    } else {
-      result = false;
-    }
-    return result;
+    return counter === conditions.length ? true : false
   }
 
   private getVariables(text: string): RegExpMatchArray | null {
@@ -863,25 +862,25 @@ export class PdfService {
       if (rule[0] === 'padding' || rule[0] === 'margin') {
         let convertedValues;
         if (typeof rule[1] === 'object') {
-          convertedValues = this.convertSpacingArrayToObject([0])
 
-          //var containsInvalidValues = Object.keys(rule[1]).filter(function(key,index) {
-          var containsInvalidValues = Object.keys(rule[1]).filter(function(key,index) {
-            return isNaN(obj[key])
+          var containsInvalidValues = Object.values(rule[1]).filter(function(item:any,index) {
+            return isNaN(item) // || (item % 1 != 0)
           })
+
           if(containsInvalidValues.length > 0) {
-            convertedValues = this.convertSpacingArrayToObject(rule[1]);
-          } else {
             console.error('The '+ rule[0]+' array can only contain numeric values (millimeters)');
           }
+
+          convertedValues = this.convertSpacingArrayToObject(rule[1]);
+  
         } else {
           convertedValues = this.convertSpacingArrayToObject([parseInt(rule[1])]);
         }
 
-        obj.style[rule[0] + '-top'] = String(convertedValues.top) + 'mm';
-        obj.style[rule[0] + '-right'] = String(convertedValues.right) + 'mm';
-        obj.style[rule[0] + '-bottom'] = String(convertedValues.bottom) + 'mm';
-        obj.style[rule[0] + '-left'] = String(convertedValues.left) + 'mm';
+        obj.style[rule[0].toLowerCase() + '-top'] = String(convertedValues.top) + 'mm';
+        obj.style[rule[0].toLowerCase() + '-right'] = String(convertedValues.right) + 'mm';
+        obj.style[rule[0].toLowerCase() + '-bottom'] = String(convertedValues.bottom) + 'mm';
+        obj.style[rule[0].toLowerCase() + '-left'] = String(convertedValues.left) + 'mm';
       } else {
         obj.style[rule[0]] = rule[1];
       }
@@ -893,7 +892,7 @@ export class PdfService {
     for (let c = 0; c < newContent.length; c++) {
       let contentIndex = c;
       if (template.content === newContent[c][0] && elementIndex === contentIndex) {
-        const visibility = newContent[c][0];
+        const visibility = newContent[c][2];
         if (this.isDefined(visibility)) {
           if (!visibility) {
             element.style.display = 'none';
@@ -954,7 +953,7 @@ export class PdfService {
           break;
         case 2:
           layer1 = this.data[parts[0]];
-          layer2 = this.data[parts[1]];
+          layer2 = layer1[parts[1]];
           dataSourceObject = layer2[parts[2]];
           break;
         case 3:
@@ -995,7 +994,7 @@ export class PdfService {
   private createCol(i: number, nrOfCols: number, newRowWidth: number, gutterSize: string, colObject: any, dataSourceObject: any = null, currentSize: number = 12) {
     let html = (colObject.html || '');
     let element = (colObject.element || 'div');
-    let foreach = (colObject.forEach || '');
+    let forEach = (colObject.forEach || '');
     let htmlBefore = (colObject.htmlBefore || '');
     let htmlAfter = (colObject.htmlAfter || '');
 
@@ -1024,9 +1023,9 @@ export class PdfService {
       } else {
         let template = html.replace('/>', '>');
         html = '';
-        if (foreach !== '') {
+        if (forEach !== '') {
 
-          dataSourceObject = this.defineDataSource(foreach);
+          dataSourceObject = this.defineDataSource(forEach);
 
           for(let d = 0; d < dataSourceObject.length; d++) {
             let entry = dataSourceObject[d];
@@ -1139,7 +1138,7 @@ export class PdfService {
     for (let r = 0; r < rows.length; r++) {
       let row = rows[r];
 
-      if (row.dataset.inforeach === 'true') {
+      if (row.dataset.inForeach === 'true') {
         if (!foreachStarted) {
           foreachStarted = true
         }

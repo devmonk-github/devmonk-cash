@@ -24,14 +24,14 @@ export class PrintComponent implements OnInit {
       "barcodewidth":"auto",
       "currency":"€",
       "debug":false,
-      "default_element":"span",
-      "font_size":"10pt",
+      "defaultElement":"span",
+      "fontSize":"10pt",
       "margins":[5,5],
       "momentjs_dateformat":"",
       "name":"Gift Card",
       "orientation":"portrait",
-      "paper_size":"A4",
-      "pixels_per_mm":"3.76",
+      "paperSize":"A4",
+      "pixelsPerMm":"3.76",
       "rotation":"0",
       "layout":[
         {
@@ -161,9 +161,9 @@ export class PrintComponent implements OnInit {
               }
             }
           ],
-          "html_before":"",
-          "html_after":"",
-          "foreach":"receipt.details",
+          "htmlBefore":"",
+          "htmlAfter":"",
+          "forEach":"receipt.details",
           "css":{
             "padding":[0,0,5,0]
           },
@@ -213,8 +213,8 @@ export class PrintComponent implements OnInit {
             {
               "size":"6",
               "element":"table",
-              "html_before":"<tr><th>Betalingen:</th><th></th></tr>",
-              "foreach":"receipt.receipt.payments",
+              "htmlBefore":"<tr><th>Betalingen:</th><th></th></tr>",
+              "forEach":"receipt.receipt.payments",
               "html":"<tr><td>[[method]]</td><td>[[amount|money]]</td></tr>"
             },
             {
