@@ -1,0 +1,43 @@
+<div class="card shadow-sm">
+    <div class="card-header" style="margin-top: 20px;">
+        <h4>{{"TRANSACTION_DEATILS" | translate}}</h4>
+        <div>
+            <button type="button" class="btn btn-sm btn-light" (click)="close({ action: false })">
+                <fa-icon [icon]="faTimes"></fa-icon>
+            </button>
+        </div>
+    </div>
+    <div class="card-body pt-0">
+        <div class="dataTables_wrapper dt-bootstrap4 no-footer" *ngIf="transactionItems.length">
+            <div class="table-responsive">
+                <table class="table align-middle table-row-dashed fs-6 gy-5 dataTable no-footer">
+                    <thead>
+                        <tr class="text-start text-gray-400 fw-bolder fs-7 text-uppercase gs-0">
+                            <th *ngFor="let column of allColumns" class="min-w-100px sorting" tabindex="0">{{column}}
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="fw-bold text-gray-600">
+                        <tr *ngFor='let transaction of transactionItems'>
+                            <td class="">{{transaction.sProductName}}</td>
+                            <td class="">{{transaction.nPriceIncVat}}</td>
+                            <td class="">{{transaction.nQuantity}}</td>
+                            <td class="">{{transaction.nPaymentAmount}}</td>
+                            <td class="">{{transaction.oType.bPrepayment? 'True' : 'False'}}</td>
+                            <td class="">{{ transaction.dCreatedDate | date: 'short'}}</td>
+                            <td>
+                                <button *ngIf="transaction.oType.bPrepayment" class="btn btn-primary mr-3">Pay
+                                    outstanding</button>
+                                <button class="btn btn-primary">Refund</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="d-flex">
+                <h5 *ngIf='!transactionItems.length && !showLoader'> No data found!</h5>
+                <div *ngIf="showLoader" class="spinner-border mx-auto"></div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -15,13 +15,14 @@ import { Transaction } from "./models/transaction.model";
 import * as _ from 'lodash';
 import { TransactionItem } from "./models/transaction-item.model";
 import { ToastService } from "../shared/components/toast";
+import { TransactionsSearchComponent } from '../shared/components/transactions-search/transactions-search.component';
 
 @Component({
   selector: 'app-till',
   templateUrl: './till.component.html',
   styleUrls: ['./till.component.sass']
 })
-export class TillComponent implements OnInit, OnChanges {
+export class TillComponent implements OnInit {
   // icons
   faScrewdriverWrench = faScrewdriverWrench
   faTruck = faTruck
@@ -92,9 +93,6 @@ export class TillComponent implements OnInit, OnChanges {
     private apiService: ApiService,
     private toastrService: ToastService
   ) {
-  }
-
-  ngOnChanges() {
   }
 
   ngOnInit(): void {
@@ -214,6 +212,16 @@ export class TillComponent implements OnInit, OnChanges {
     }
   }
 
+  openTransactionSearchDialog(): void {
+    this.dialogService.openModal(TransactionsSearchComponent, { cssClass: "modal-xl", context: { customer: this.customer } })
+      .instance.close.subscribe((data) => {
+        if (data.customer) {
+          console.log('customer!', data.customer)
+          this.customer = data.customer
+        }
+      })
+  }
+
   openCustomerDialog(): void {
     this.dialogService.openModal(CustomerDialogComponent, { cssClass: "modal-xl", context: { customer: this.customer } })
       .instance.close.subscribe((data) => {
@@ -281,7 +289,7 @@ export class TillComponent implements OnInit, OnChanges {
         null, // TODO
         null, // TODO
         null, //TODO
-        i.total,
+        // i.total, // not needed
         i.total, // TODO?
         i.paymentAmount || i.total,
         0, //TODO

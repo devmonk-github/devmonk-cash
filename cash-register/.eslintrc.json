@@ -12,7 +12,8 @@
         "project": [
           "tsconfig.json"
         ],
-        "createDefaultProgram": true
+        "createDefaultProgram": true,
+        "tsconfigRootDir": "cash-register/"
       },
       "extends": [
         "plugin:@angular-eslint/recommended",

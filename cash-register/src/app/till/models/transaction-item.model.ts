@@ -36,6 +36,7 @@ export class TransactionItem {
     public sGiftCardNumber: string | null,
     public iParentTransactionDetailId: string | null,
     public iGiftCardTransaction: string | null,
+    // public nOriginalQuantity: number, Not needed
     public nTotal: number,
     public nOriginalTotal: number,
     public nPaymentAmount: number,
