@@ -22,6 +22,7 @@ import { PdfComponent } from './components/pdf/pdf.component';
 import { TransactionsSearchComponent } from "./components/transactions-search/transactions-search.component";
 import { TransactionItemsDetailsComponent } from "./components/transaction-items-details/transaction-items-details.component";
 // import { NgbModule } from "@ng-bootstrap/ng-bootstrap";
+import { NgJsonEditorModule } from "ang-jsoneditor";
 
 @NgModule({
   declarations: [
@@ -49,7 +50,8 @@ import { TransactionItemsDetailsComponent } from "./components/transaction-items
     WebcamModule,
     // NgbModule,
     ReactiveFormsModule,
-    ToastModule.forRoot()
+    ToastModule.forRoot(),
+    NgJsonEditorModule
   ],
   exports: [
     DialerComponent,

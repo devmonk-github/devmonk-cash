@@ -3,6 +3,7 @@ import {PdfComponent} from "../components/pdf/pdf.component";
 import * as moment from 'moment';
 import { jsPDF } from 'jspdf';
 import html2canvas from 'html2canvas'
+import { invert } from 'lodash';
 
 interface StaticPaperSize {
   type: string,
@@ -42,7 +43,7 @@ export class PdfService {
   private data: any = {};
   private css: string = "";
   private currency: string = "€";
-  private defaultElement: string = "div";
+  private defaultElement: string = "span";
   private fontSize: string = "10pt";
   private layout: any[] = [];
   private margins: number[] = [0];
@@ -531,15 +532,17 @@ export class PdfService {
     let createdRows = [];
     let foreachActive = false;
 
-    if (this.isDefined(currentRow.foreach)) {
+    if (this.isDefined(currentRow.forEach)) {
       foreachActive = true;
-      dataSourceObject = this.defineDataSource(currentRow.foreach);
+      dataSourceObject = this.defineDataSource(currentRow.forEach);
+
       rowsToBeCreated = dataSourceObject.length;
     }
 
     for (let r = 0; r < rowsToBeCreated; r++) {
       let finalDataSourceObject = dataSourceObject;
-      if (typeof dataSourceObject === 'number') {
+      
+      if (typeof dataSourceObject.length === 'number') {
         finalDataSourceObject = Object.values(dataSourceObject)[r];
       }
 
@@ -547,7 +550,7 @@ export class PdfService {
       let newRow = document.createElement(rowElement);
       newRow.classList.add('pnrow');
 
-      newRow.dataset.inforeach = foreachActive;
+      newRow.dataset.inForeach = foreachActive;
 
       if (this.isDefined(currentRow.section)) {
         newRow.dataset.section = String(currentRow.section);
@@ -728,24 +731,20 @@ export class PdfService {
         }
 
         let dataValue = dataSourceObject[condition];
+
         if(inverted) {
           if(dataValue === false || dataValue === 0 || dataValue === '') {
             counter++
-          } else {
-            if(dataValue) {
-              counter++
-            }
+          }
+        } else {
+          if(dataValue) {
+            counter++
           }
         }
       }
     }
 
-    if (counter === conditions.length) {
-      result = true;
-    } else {
-      result = false;
-    }
-    return result;
+    return counter === conditions.length ? true : false
   }
 
   private getVariables(text: string): RegExpMatchArray | null {
@@ -764,12 +763,11 @@ export class PdfService {
     let extractedVariables = this.getVariables(originalText);
     let providedData = dataSourceObject;
     let finalString = originalText;
-    let matchedDataObject: any;
+
     if(extractedVariables) {
       for (let a = 0; a < extractedVariables.length; a++) {
         let currentMatch = extractedVariables[a];
-        let conditionContext = "";
-        let maxLength = 0;
+
 
         const matchedMatch = currentMatch.match(/\[/g)
 
@@ -799,11 +797,11 @@ export class PdfService {
                 break;
               case 2:
                 layer1 = this.data[parts[0]];
-                let data = layer1[parts[1]];
+                providedData = layer1[parts[1]];
                 variableStringFiltered = parts[2];
 
-                if(!this.isDefined(data[variableStringFiltered])) {
-                  providedData = data[0];
+                if(!this.isDefined(providedData[variableStringFiltered])) {
+                  providedData = providedData[0];
                 }
                 break;
               case 3:
@@ -825,7 +823,7 @@ export class PdfService {
           let newText = '';
 
           if(this.isDefined(providedData)) {
-            Object.keys(providedData).forEach((key, index) => {
+            Object.keys(providedData).forEach( (key, index) => {
               if (key === variableStringFiltered) {
                 if (String(providedData[variableStringFiltered]).length > 0) {
                   matched = true;
@@ -833,15 +831,8 @@ export class PdfService {
 
                   if (this.isDefined(format) && format !== '') {
                     newText = this.formatContent(newText, format);
-                    return newText.replace(currentMatch, newText);;
-                  } else {
-                    return newText.replace(currentMatch, newText);
                   }
-                } else {
-                  return '';
                 }
-              } else {
-                return ''
               }
             });
           } else {
@@ -850,6 +841,7 @@ export class PdfService {
 
           if(matched) {
             finalString = finalString.replace(currentMatch, newText);
+            // console.log(finalString)
           } else {
             console.warn(finalString + " could not be matched with the provided data.", currentMatch)
             finalString = '';
@@ -870,24 +862,25 @@ export class PdfService {
       if (rule[0] === 'padding' || rule[0] === 'margin') {
         let convertedValues;
         if (typeof rule[1] === 'object') {
-          convertedValues = this.convertSpacingArrayToObject([0])
 
-          var containsInvalidValues = Object.keys(obj).filter(function(key,index) {
-            return isNaN(obj[key])
+          var containsInvalidValues = Object.values(rule[1]).filter(function(item:any,index) {
+            return isNaN(item) // || (item % 1 != 0)
           })
+
           if(containsInvalidValues.length > 0) {
-            convertedValues = this.convertSpacingArrayToObject(rule[1]);
-          } else {
             console.error('The '+ rule[0]+' array can only contain numeric values (millimeters)');
           }
+
+          convertedValues = this.convertSpacingArrayToObject(rule[1]);
+  
         } else {
           convertedValues = this.convertSpacingArrayToObject([parseInt(rule[1])]);
         }
 
-        obj.style[rule[0] + '-top'] = String(convertedValues.top) + 'mm';
-        obj.style[rule[0] + '-right'] = String(convertedValues.right) + 'mm';
-        obj.style[rule[0] + '-bottom'] = String(convertedValues.bottom) + 'mm';
-        obj.style[rule[0] + '-left'] = String(convertedValues.left) + 'mm';
+        obj.style[rule[0].toLowerCase() + '-top'] = String(convertedValues.top) + 'mm';
+        obj.style[rule[0].toLowerCase() + '-right'] = String(convertedValues.right) + 'mm';
+        obj.style[rule[0].toLowerCase() + '-bottom'] = String(convertedValues.bottom) + 'mm';
+        obj.style[rule[0].toLowerCase() + '-left'] = String(convertedValues.left) + 'mm';
       } else {
         obj.style[rule[0]] = rule[1];
       }
@@ -899,7 +892,7 @@ export class PdfService {
     for (let c = 0; c < newContent.length; c++) {
       let contentIndex = c;
       if (template.content === newContent[c][0] && elementIndex === contentIndex) {
-        const visibility = newContent[c][0];
+        const visibility = newContent[c][2];
         if (this.isDefined(visibility)) {
           if (!visibility) {
             element.style.display = 'none';
@@ -960,7 +953,7 @@ export class PdfService {
           break;
         case 2:
           layer1 = this.data[parts[0]];
-          layer2 = this.data[parts[1]];
+          layer2 = layer1[parts[1]];
           dataSourceObject = layer2[parts[2]];
           break;
         case 3:
@@ -1001,7 +994,7 @@ export class PdfService {
   private createCol(i: number, nrOfCols: number, newRowWidth: number, gutterSize: string, colObject: any, dataSourceObject: any = null, currentSize: number = 12) {
     let html = (colObject.html || '');
     let element = (colObject.element || 'div');
-    let foreach = (colObject.forEach || '');
+    let forEach = (colObject.forEach || '');
     let htmlBefore = (colObject.htmlBefore || '');
     let htmlAfter = (colObject.htmlAfter || '');
 
@@ -1029,15 +1022,15 @@ export class PdfService {
         col = this.insertElementsInCol(col, html, newContent);
       } else {
         let template = html.replace('/>', '>');
+        html = '';
+        if (forEach !== '') {
 
-        if (foreach !== '') {
-          html = '';
-          dataSourceObject = this.defineDataSource(foreach);
+          dataSourceObject = this.defineDataSource(forEach);
 
           for(let d = 0; d < dataSourceObject.length; d++) {
             let entry = dataSourceObject[d];
             let extractedVariables = this.getVariables(template);
-            let htmlConcept = template;
+            let htmlConcept = '';
 
             if(extractedVariables) {
               for (let v = 0; v < extractedVariables.length; v++) {
@@ -1052,8 +1045,8 @@ export class PdfService {
 
                 if (searchFor.match(/\|/g) !== null) {
                   let stringAndFormat = searchFor.split('|');
-                  let variableStringFiltered = stringAndFormat[0];
-                  let format = stringAndFormat[1]
+                  variableStringFiltered = stringAndFormat[0];
+                  format = stringAndFormat[1]
                 }
 
                 Object.keys(entry).forEach((key, index) => {
@@ -1124,7 +1117,7 @@ export class PdfService {
 
     if (template.orientation !== 'portrait') {
       if (this.paperSize.width > this.paperSize.height) {
-        console.error('The paper height is already in landscape. Decreate the paper or change orientation to "portrait"');
+        console.error('The paper height is already in landscape. Decrease the paper or change orientation to "portrait"');
         return Promise.reject('INVALID_PAPER_SIZE');
       }
       // Flip page sizes to make it landscape
@@ -1145,7 +1138,7 @@ export class PdfService {
     for (let r = 0; r < rows.length; r++) {
       let row = rows[r];
 
-      if (row.dataset.inforeach === 'true') {
+      if (row.dataset.inForeach === 'true') {
         if (!foreachStarted) {
           foreachStarted = true
         }
@@ -1188,14 +1181,14 @@ export class PdfService {
     const factory = this.factoryResolver.resolveComponentFactory(PdfComponent);
     const component = factory.create(viewContainerRef.parentInjector)
     component.instance.pdfString = 'TEST'
-    console.log('component', component)
+    // console.log('component', component)
     viewContainerRef.insert(component.hostView)
 
 
     setTimeout( () => {
       this.makePdf(templateString, dataString)
         .then( (htmlString: string) => {
-          console.log('PDFSTRING', htmlString)
+          // console.log('PDFSTRING', htmlString)
           //component.instance.pdfString = htmlString
           component.instance.setStyle(this.parsedPaperSize)
           component.instance.setHtmlContent(htmlString)
@@ -1216,7 +1209,7 @@ export class PdfService {
           //   pdfDoc.save("test.pdf")
           //
           // })
-          console.log('paperSize', this.paperSize)
+          // console.log('paperSize', this.paperSize)
 
           let pdfDoc = new jsPDF({
             orientation: this.orientation === 'landscape' ? 'landscape' : 'portrait', //direct passing variable it not allowed due to variabele types

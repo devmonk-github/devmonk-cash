@@ -26,6 +26,8 @@ export class CustomTranslateLoader implements TranslateLoader {
     });
   }
 }
+import { FormsModule } from "@angular/forms";
+import { NgJsonEditorModule } from "ang-jsoneditor";
 
 @NgModule({
   declarations: [
@@ -38,7 +40,8 @@ export class CustomTranslateLoader implements TranslateLoader {
     BrowserAnimationsModule,
     AppRoutingModule,
     TranslateModule.forRoot(),
-    FormsModule
+    FormsModule,
+    NgJsonEditorModule
   ],
   providers: [],
   bootstrap: [AppComponent]

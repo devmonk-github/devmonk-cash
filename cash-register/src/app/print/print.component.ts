@@ -1,5 +1,6 @@
 import {Component, OnInit, ViewContainerRef} from '@angular/core';
 import {PdfService} from "../shared/service/pdf.service";
+import {JsonEditorOptions, JsonEditorComponent} from "ang-jsoneditor";
 
 @Component({
   selector: 'app-print',
@@ -7,10 +8,12 @@ import {PdfService} from "../shared/service/pdf.service";
   styleUrls: ['./print.component.sass']
 })
 export class PrintComponent implements OnInit {
-  dataString: string = ""
-  templateString: string = ""
+  dataString: any
+  templateString: any
+  editorOptions: JsonEditorOptions = new JsonEditorOptions()
 
   constructor(private viewContainerRef: ViewContainerRef, private pdfService: PdfService) {
+    this.editorOptions.mode = 'view'
   }
 
 
@@ -21,14 +24,14 @@ export class PrintComponent implements OnInit {
       "barcodewidth":"auto",
       "currency":"€",
       "debug":false,
-      "default_element":"span",
-      "font_size":"10pt",
+      "defaultElement":"span",
+      "fontSize":"10pt",
       "margins":[5,5],
       "momentjs_dateformat":"",
       "name":"Gift Card",
       "orientation":"portrait",
-      "paper_size":"A4",
-      "pixels_per_mm":"3.76",
+      "paperSize":"A4",
+      "pixelsPerMm":"3.76",
       "rotation":"0",
       "layout":[
         {
@@ -158,9 +161,9 @@ export class PrintComponent implements OnInit {
               }
             }
           ],
-          "html_before":"",
-          "html_after":"",
-          "foreach":"receipt.details",
+          "htmlBefore":"",
+          "htmlAfter":"",
+          "forEach":"receipt.details",
           "css":{
             "padding":[0,0,5,0]
           },
@@ -210,8 +213,8 @@ export class PrintComponent implements OnInit {
             {
               "size":"6",
               "element":"table",
-              "html_before":"<tr><th>Betalingen:</th><th></th></tr>",
-              "foreach":"receipt.receipt.payments",
+              "htmlBefore":"<tr><th>Betalingen:</th><th></th></tr>",
+              "forEach":"receipt.receipt.payments",
               "html":"<tr><td>[[method]]</td><td>[[amount|money]]</td></tr>"
             },
             {
@@ -738,13 +741,13 @@ export class PrintComponent implements OnInit {
       }
     }
 
-    this.templateString = JSON.stringify(templateString)
-    this.dataString = JSON.stringify(dataString)
+    this.templateString = templateString
+    this.dataString = dataString
   }
 
 
   generatePDF(): void {
-    this.pdfService.createPdf(this.templateString, this.dataString, this.viewContainerRef, new Date().getTime().toString())
+    this.pdfService.createPdf(JSON.stringify(this.templateString), JSON.stringify(this.dataString), this.viewContainerRef, new Date().getTime().toString())
   }
 
 }
