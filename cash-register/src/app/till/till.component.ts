@@ -235,7 +235,21 @@ export class TillComponent implements OnInit, OnChanges {
   }
 
   createTransaction(): void {
-    console.log('I am creating transactions');
+    const totalPrepayment = this.transactionItems.reduce((n, { paymentAmount }) => n + paymentAmount, 0);
+    this.transactionItems.map((i) => (i.amountToBePaid = i.price * i.quantity));
+
+    let avialableAmount = this.getUsedPayMethods(true);
+    if (!totalPrepayment) {
+      this.transactionItems.forEach(tItem => {
+        if (tItem.amountToBePaid < avialableAmount) {
+          tItem.paymentAmount = tItem.amountToBePaid;
+          avialableAmount -= tItem.amountToBePaid;
+        } else {
+          tItem.paymentAmount = avialableAmount;
+          avialableAmount = 0;
+        }
+      });
+    }
     const transactionItems = this.transactionItems.map((i) => {
       return new TransactionItem(
         i.name,
@@ -267,10 +281,9 @@ export class TillComponent implements OnInit, OnChanges {
         null, // TODO
         null, // TODO
         null, //TODO
-        i.quantity, // TODO
         i.total,
         i.total, // TODO?
-        i.paymentAmount,
+        i.paymentAmount || i.total,
         0, //TODO
         i.discount.value > 0,
         i.discount.percent,
@@ -294,14 +307,12 @@ export class TillComponent implements OnInit, OnChanges {
           // true (i.price * quanitity) < 0 && i.price < 0  // broken product, no call to stockcorrection
           // true (i.price * quanitity) < 0 && quantity < 0 // broken product, +1 call to stockcorrection
           // false (i.price * quanitity) > 0 && quantity > 0 // regular sale, -1 call to stockcorrection
-          eKind: 'regular', // TODO
+          eKind: 'repair', // TODO
           bDiscount: i.discount.value > 0,
           bPrepayment: i.paymentAmount > 0 || this.getUsedPayMethods(true) - this.getTotals('price') < 0
         }
       )
-    })
-
-
+    });
 
     const transaction = new Transaction(
       null,
@@ -409,7 +420,6 @@ export class TillComponent implements OnInit, OnChanges {
           "oDynamic": {}
         }
       };
-      console.log(data);
       this.apiService.postNew('core', '/api/v1/products/commonbrand/list', data).subscribe((result: any) => {
         // this.isLoading = false;
         if (result && result.data && result.data.length) {
@@ -426,7 +436,6 @@ export class TillComponent implements OnInit, OnChanges {
 
   // Add selected product into purchase order
   onSelectProduct(product: any, isFrom: string, isFor: string) {
-    console.log(product);
     this.transactionItems.push({
       name: product.oName ? product.oName['en'] : 'No name',
       type: this.isStockSelected ? 'product' : 'order',
