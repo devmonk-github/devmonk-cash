@@ -281,7 +281,6 @@ export class TillComponent implements OnInit, OnChanges {
         null, // TODO
         null, // TODO
         null, //TODO
-        i.total,
         i.total, // TODO?
         i.paymentAmount || i.total,
         0, //TODO
