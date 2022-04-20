@@ -86,7 +86,8 @@ export class TransactionItemsDetailsComponent implements OnInit {
       'oType',
       'sArticleNumber',
       'dCreatedDate',
-      'dUpdatedDate',]
+      'dUpdatedDate',
+      'iActivityItemId']
   };
   constructor(
     private viewContainerRef: ViewContainerRef,
@@ -108,10 +109,7 @@ export class TransactionItemsDetailsComponent implements OnInit {
   }
 
   fetchTransactionItems() {
-    console.log(this.transaction);
     this.requestParams.iTransactionId = this.transaction._id;
-    console.log(this.requestParams);
-    console.log('I am fethching transaction items');
     this.apiService.postNew('cashregistry', '/api/v1/transaction/item/list', this.requestParams).subscribe((result: any) => {
       console.log(result);
       this.transactionItems = result.data[0].result;
@@ -120,7 +118,9 @@ export class TransactionItemsDetailsComponent implements OnInit {
       this.dialogRef.close.emit('data');
     });
   }
-
+  // refundOrPay(transaction: any, type: string) {
+  //   'refund'
+  // }
   close(data: any) {
     this.dialogRef.close.emit(data);
   }

@@ -17,6 +17,7 @@ export class TransactionItem {
     public nVatRate: number,
     public nQuantity: number,
     public nReceivedQuantity: number | null,
+
     public aExtraServices: [ExtraService] | null,
     public iProductId: string,
     public sEan: string,
@@ -27,6 +28,7 @@ export class TransactionItem {
     public oEdiProduct: EdiProduct | null,
     public iBusinessPartnerId: string | null,
     public iBusinessId: string,
+
     public iArticleGroupId: string | null,
     public oArticleGroupMetaData: { aProperty: [Property] } | null,
     public aPayments: [Payment] | null,
@@ -37,6 +39,7 @@ export class TransactionItem {
     public iParentTransactionDetailId: string | null,
     public iGiftCardTransaction: string | null,
     // public nOriginalQuantity: number, Not needed
+
     public nTotal: number,
     public nOriginalTotal: number,
     public nPaymentAmount: number,
@@ -47,6 +50,7 @@ export class TransactionItem {
     public nRefundAmount: number,
     public nProductSize: number | null,
     public nProductSizeFor: string | null,
+
     public dEstimatedDate: Date | null,
     public dEstimatedDateString: string | null,
     public iBrandId: string | null,
@@ -56,6 +60,7 @@ export class TransactionItem {
     public iDeviceId: string,
     public iEmployeeId: string,
     public iLocationId: string,
+
     //Optional here, since we don't know the transaction id when we create one
     public iTransactionId: string | null,
     public oType: {
@@ -64,6 +69,7 @@ export class TransactionItem {
       eKind: string,
       bDiscount: boolean,
       bPrepayment: boolean,
-    }) { }
+    },
+    public iActivityItemId: any) { }
 
 }

@@ -182,10 +182,12 @@ export class TransactionsSearchComponent implements OnInit, AfterViewInit {
   }
 
   openTransaction(transaction: any) {
-    this.dialogService.openModal(TransactionItemsDetailsComponent, { cssClass: "modal-xl", context: { transaction } }).instance.close.subscribe(result => {
-      // this.getCustomers()
-      console.log(result);
-    });
+    this.dialogService.openModal(TransactionItemsDetailsComponent, { cssClass: "modal-xl", context: { transaction } })
+      .instance.close.subscribe(result => {
+        if (result.type) {
+          this.close(result);
+        }
+      });
   }
 
   close(data: any): void {
@@ -203,8 +205,8 @@ export class TransactionsSearchComponent implements OnInit, AfterViewInit {
     this.dialogRef.close.emit({ action: false, customer: this.customer })
   }
 
-  save(): void {
-    this.dialogRef.close.emit({ action: true, customer: this.customer })
-  }
+  // save(): void {
+  //   this.dialogRef.close.emit({ action: true, customer: this.customer })
+  // }
 
 }

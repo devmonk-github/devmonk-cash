@@ -26,9 +26,11 @@
                             <td class="">{{transaction.oType.bPrepayment? 'True' : 'False'}}</td>
                             <td class="">{{ transaction.dCreatedDate | date: 'short'}}</td>
                             <td>
-                                <button *ngIf="transaction.oType.bPrepayment" class="btn btn-primary mr-3">Pay
+                                <button *ngIf="transaction.oType.bPrepayment" class="btn btn-primary mr-3"
+                                    (click)="close({transaction: transaction, type: 'pay'})">Pay
                                     outstanding</button>
-                                <button class="btn btn-primary">Refund</button>
+                                <button class="btn btn-primary"
+                                    (click)="close({transaction: transaction, type: 'refund'})">Refund</button>
                             </td>
                         </tr>
                     </tbody>
