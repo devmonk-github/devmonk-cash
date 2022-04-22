@@ -9,7 +9,6 @@ import { DialerComponent } from './components/dialer/dialer.component';
 import { AlertComponent } from './components/alert/alert.component';
 import { CustomerDetailsComponent } from "./components/customer-details/customer-details.component";
 import { NgSelectModule } from "@ng-select/ng-select";
-import { CountryListComponent } from "./components/country-list/country-list.component";
 import { AccordionDirective } from "./directives/accordion.directive";
 import { CustomPaymentMethodComponent } from './components/custom-payment-method/custom-payment-method.component';
 import { ConfirmationDialogComponent } from './components/confirmation-dialog/confirmation-dialog.component';
@@ -21,6 +20,11 @@ import { ToastModule } from "./components/toast";
 import { PdfComponent } from './components/pdf/pdf.component';
 import { TransactionsSearchComponent } from "./components/transactions-search/transactions-search.component";
 import { TransactionItemsDetailsComponent } from "./components/transaction-items-details/transaction-items-details.component";
+
+// ---------------- Common components ------------------
+import {
+  CountryListComponent, TabsComponent, TabComponent
+} from './components';
 // import { NgbModule } from "@ng-bootstrap/ng-bootstrap";
 import { NgJsonEditorModule } from "ang-jsoneditor";
 
@@ -39,7 +43,9 @@ import { NgJsonEditorModule } from "ang-jsoneditor";
     PrintSettingsDetailsComponent,
     PdfComponent,
     TransactionsSearchComponent,
-    TransactionItemsDetailsComponent
+    TransactionItemsDetailsComponent,
+    TabsComponent,
+    TabComponent
   ],
   imports: [
     CommonModule,
@@ -61,7 +67,9 @@ import { NgJsonEditorModule } from "ang-jsoneditor";
     AccordionDirective,
     ToastModule,
     TransactionsSearchComponent,
-    TransactionItemsDetailsComponent
+    TransactionItemsDetailsComponent,
+    TabsComponent,
+    TabComponent
   ],
   providers: [CurrencyPipe]
 })
