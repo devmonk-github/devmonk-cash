@@ -2,7 +2,6 @@ import { Component, Input, OnInit, ViewContainerRef, ViewChildren, QueryList, El
 import { DialogComponent } from "../../service/dialog";
 import { faTimes, faSearch } from "@fortawesome/free-solid-svg-icons";
 import { DialogService } from '../../service/dialog';
-import { CustomerDetailsComponent } from '../customer-details/customer-details.component';
 import { ApiService } from '../../service/api.service';
 import { TranslateService } from '@ngx-translate/core';
 import { TransactionItemsDetailsComponent } from '../transaction-items-details/transaction-items-details.component';
@@ -20,13 +19,13 @@ export class TransactionsSearchComponent implements OnInit, AfterViewInit {
   faSearch = faSearch
   loading = false
   showLoader = false;
-  totalData = 0;
+  totalTransactions = 0;
+  totalActivities = 0;
   business: any = {}
-  // customColumn = 'NAME';
   transactions: Array<any> = [];
+  activities: Array<any> = [];
   selectedWorkstations: Array<any> = [];
   selectedLocations: Array<any> = [];
-  allColumns = ['Transaction Number', 'Transaction Type', 'Date', 'Actions'];
   requestParams: any = {
     searchValue: '',
     limit: 5,
@@ -42,7 +41,7 @@ export class TransactionsSearchComponent implements OnInit, AfterViewInit {
     private dialogService: DialogService,
     private apiService: ApiService,
     private translateService: TranslateService) {
-    const _injector = this.viewContainer.parentInjector
+    const _injector = this.viewContainer.injector
     this.dialogRef = _injector.get<DialogComponent>(DialogComponent);
   }
 
@@ -55,67 +54,11 @@ export class TransactionsSearchComponent implements OnInit, AfterViewInit {
     this.requestParams.iBusinessId = this.business._id;
   }
 
-  makeCustomerName = async (customer: any) => {
-    if (!customer) {
-      return '';
-    }
-    let result = '';
-    if (customer.sSalutation) {
-      await this.translateService.get(customer.sSalutation.toUpperCase()).subscribe((res) => {
-        result += res + ' ';
-      });
-    }
-    if (customer.sFirstName) {
-      result += customer.sFirstName + ' ';
-    }
-    if (customer.sPrefix) {
-      result += customer.sPrefix + ' ';
-    }
-
-    if (customer.sLastName) {
-      result += customer.sLastName;
-    }
-
-    return result;
-  }
-
-  formatZip(zipcode: string) {
-    if (!zipcode) {
-      return '';
-    }
-    return zipcode.replace(/([0-9]{4})([a-z]{2})/gi, (original, group1, group2) => {
-      return group1 + ' ' + group2.toUpperCase();
-    });
-  }
-
-  makeCustomerAddress(address: any, includeCountry: boolean) {
-    if (!address) {
-      return '';
-    }
-    let result = '';
-    if (address.street) {
-      result += address.street + ' ';
-    }
-    if (address.houseNumber) {
-      result += address.houseNumber + (address.houseNumberSuffix ? '' : ' ');
-    }
-    if (address.houseNumberSuffix) {
-      result += address.houseNumberSuffix + ' ';
-    }
-    if (address.postalCode) {
-      result += this.formatZip(address.postalCode) + ' ';
-    }
-    if (address.city) {
-      result += address.city;
-    }
-    if (includeCountry && address.country) {
-      result += address.country;
-    }
-    return result;
-  }
-
   findTransactions() {
     this.transactions = [];
+    this.totalTransactions = 0;
+    this.activities = [];
+    this.totalActivities = 0;
     this.requestParams.type = 'transaction';
     // this.requestParams.searchValue = '202',
     // this.requestParams.filterDates = this.filterDates;
@@ -129,11 +72,11 @@ export class TransactionsSearchComponent implements OnInit, AfterViewInit {
     this.requestParams.workstations = this.selectedWorkstations;
     this.requestParams.locations = this.selectedLocations;
     this.showLoader = true;
-    this.apiService.postNew('cashregistry', '/api/v1/transaction/cashRegister', this.requestParams).subscribe((result: any) => {
-      if (result && result.data && result.data.length && result.data[0] && result.data[0].result && result.data[0].result.length) {
-        this.transactions = result.data[0].result;
-        this.totalData = result.data[0].count.totalData;
-      }
+    this.apiService.postNew('cashregistry', '/api/v1/transaction/search', this.requestParams).subscribe((result: any) => {
+      this.transactions = result.transactions.records;
+      this.totalTransactions = result.transactions.count;
+      this.activities = result.activities.records;
+      this.totalActivities = result.activities.count;
       this.showLoader = false;
     }, (error) => {
       this.showLoader = false;
@@ -145,44 +88,8 @@ export class TransactionsSearchComponent implements OnInit, AfterViewInit {
     return new Array(i);
   }
 
-  // findTransactions() {
-  //   // searchValue
-  //   this.showLoader = true;
-  //   this.customers = [];
-  //   this.apiService.postNew('customer', '/api/v1/customer/list', this.requestParams)
-  //     .subscribe(async (result: any) => {
-  //       this.showLoader = false;
-  //       if (result && result.data && result.data[0] && result.data[0].result) {
-  //         this.customers = result.data[0].result;
-  //         for (const customer of this.customers) {
-  //           customer['NAME'] = await this.makeCustomerName(customer);
-  //           customer['SHIPPING_ADDRESS'] = this.makeCustomerAddress(customer.oShippingAddress, false);
-  //           customer['INVOICE_ADDRESS'] = this.makeCustomerAddress(customer.oInvoiceAddress, false);
-  //           customer['EMAIL'] = customer.sEmail;
-  //           customer['PHONE'] = (customer.oPhone && customer.oPhone.sLandLine ? customer.oPhone.sLandLine : '') + (customer.oPhone && customer.oPhone.sLandLine && customer.oPhone.sMobile ? ' / ' : '') + (customer.oPhone && customer.oPhone.sMobile ? customer.oPhone.sMobile : '')
-  //         }
-  //       }
-  //     },
-  //       (error: any) => {
-  //         this.customers = [];
-  //         this.showLoader = false;
-  //       })
-  // }
-
-  AddCustomer() {
-    this.dialogService.openModal(CustomerDetailsComponent, { cssClass: "modal-xl", context: { mode: 'create' } }).instance.close.subscribe(async (result) => {
-      let customer = result.customer;
-      customer['NAME'] = await this.makeCustomerName(customer);
-      customer['SHIPPING_ADDRESS'] = this.makeCustomerAddress(customer.oShippingAddress, false);
-      customer['INVOICE_ADDRESS'] = this.makeCustomerAddress(customer.oInvoiceAddress, false);
-      customer['EMAIL'] = customer.sEmail;
-      customer['PHONE'] = (customer.oPhone && customer.oPhone.sLandLine ? customer.oPhone.sLandLine : '') + (customer.oPhone && customer.oPhone.sLandLine && customer.oPhone.sMobile ? ' / ' : '') + (customer.oPhone && customer.oPhone.sMobile ? customer.oPhone.sMobile : '')
-      this.close({ action: false, customer: customer });
-    });
-  }
-
-  openTransaction(transaction: any) {
-    this.dialogService.openModal(TransactionItemsDetailsComponent, { cssClass: "modal-xl", context: { transaction } })
+  openTransaction(transaction: any, itemType: any) {
+    this.dialogService.openModal(TransactionItemsDetailsComponent, { cssClass: "modal-xl", context: { transaction, itemType } })
       .instance.close.subscribe(result => {
         if (result.type) {
           this.close(result);
@@ -201,12 +108,6 @@ export class TransactionsSearchComponent implements OnInit, AfterViewInit {
   setCustomer(customer: any): void {
     this.loading = true
     this.customer = customer;
-
     this.dialogRef.close.emit({ action: false, customer: this.customer })
   }
-
-  // save(): void {
-  //   this.dialogRef.close.emit({ action: true, customer: this.customer })
-  // }
-
 }

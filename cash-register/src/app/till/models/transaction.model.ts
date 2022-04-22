@@ -1,10 +1,11 @@
-import {TransactionItem} from "./transaction-item.model";
+import { TransactionItem } from "./transaction-item.model";
 
 export class Transaction {
   // TODO: Check which properties should be optional
   constructor(
     public _id: string | null,
     public iBusinessPartnerId: string | null,
+    public iActivityId: string | null, // activity id added
     public iBusinessId: string,
     public sNumber: string | null,
     public eType: string,
@@ -22,4 +23,3 @@ export class Transaction {
   ) {
   }
 }
-

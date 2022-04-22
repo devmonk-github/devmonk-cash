@@ -1,6 +1,6 @@
 <div class="card shadow-sm">
     <div class="card-header" style="margin-top: 20px;">
-        <h4>{{"TRANSACTION_DEATILS" | translate}}</h4>
+        <h4>{{itemType === 'transaction'? "TRANSACTION_ITEMS" : "ACTIVITY_ITEMS" | translate}}</h4>
         <div>
             <button type="button" class="btn btn-sm btn-light" (click)="close({ action: false })">
                 <fa-icon [icon]="faTimes"></fa-icon>
@@ -12,25 +12,52 @@
             <div class="table-responsive">
                 <table class="table align-middle table-row-dashed fs-6 gy-5 dataTable no-footer">
                     <thead>
-                        <tr class="text-start text-gray-400 fw-bolder fs-7 text-uppercase gs-0">
-                            <th *ngFor="let column of allColumns" class="min-w-100px sorting" tabindex="0">{{column}}
+                        <tr class="text-start text-gray-400 fw-bolder fs-7 text-uppercase gs-0"
+                            *ngIf="itemType === 'transaction'">
+                            <th *ngFor="let column of transactionColumns" class="min-w-100px sorting" tabindex="0">
+                                {{column}}
+                            </th>
+                        </tr>
+                        <tr class="text-start text-gray-400 fw-bolder fs-7 text-uppercase gs-0"
+                            *ngIf="itemType === 'activity'">
+                            <th *ngFor="let column of activityColumns" class="min-w-100px sorting" tabindex="0">
+                                {{column}}
                             </th>
                         </tr>
                     </thead>
-                    <tbody class="fw-bold text-gray-600">
-                        <tr *ngFor='let transaction of transactionItems'>
-                            <td class="">{{transaction.sProductName}}</td>
-                            <td class="">{{transaction.nPriceIncVat}}</td>
-                            <td class="">{{transaction.nQuantity}}</td>
-                            <td class="">{{transaction.nPaymentAmount}}</td>
-                            <td class="">{{transaction.oType.bPrepayment? 'True' : 'False'}}</td>
-                            <td class="">{{ transaction.dCreatedDate | date: 'short'}}</td>
+                    <tbody class="fw-bold text-gray-600" *ngIf="itemType === 'transaction'">
+                        <tr *ngFor='let transactionItem of transactionItems'>
+                            <td class="">{{transactionItem.sProductName}}</td>
+                            <td class="">{{transactionItem.nPriceIncVat}}</td>
+                            <td class="">{{transactionItem.nQuantity}}</td>
+                            <td class="">{{transactionItem.nPaymentAmount}}</td>
+                            <td class="">{{transactionItem.oType.bPrepayment? 'True' : 'False'}}</td>
+                            <td class="">{{ transactionItem.dCreatedDate | date: 'short'}}</td>
                             <td>
-                                <button *ngIf="transaction.oType.bPrepayment" class="btn btn-primary mr-3"
-                                    (click)="close({transaction: transaction, type: 'pay'})">Pay
-                                    outstanding</button>
+                                <button *ngIf="transactionItem.nTotalAmount > transactionItem.nPaidAmount"
+                                    class="btn btn-primary mr-3"
+                                    (click)="close({ transactionItem: transactionItem, type: 'pay', transaction: transaction })">Rest
+                                    payment</button>
                                 <button class="btn btn-primary"
-                                    (click)="close({transaction: transaction, type: 'refund'})">Refund</button>
+                                    (click)="close({ transactionItem: transactionItem, type: 'refund', transaction: transaction })">Refund</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tbody class="fw-bold text-gray-600" *ngIf="itemType === 'activity'">
+                        <tr *ngFor='let transactionItem of transactionItems'>
+                            <td class="">{{transactionItem.sNumber}}</td>
+                            <td class="">{{transactionItem.nTotalAmount}}</td>
+                            <td class="">{{transactionItem.nPaidAmount}}</td>
+                            <td class="">{{transactionItem.nTotalAmount > transactionItem.nPaidAmount ? 'True' :
+                                'False'}}</td>
+                            <td class="">{{ transactionItem.dCreatedDate | date: 'short'}}</td>
+                            <td>
+                                <button *ngIf="transactionItem.nTotalAmount > transactionItem.nPaidAmount"
+                                    class="btn btn-primary mr-3"
+                                    (click)="close({ transactionItem: transactionItem, type: 'pay', transaction: transaction })">Rest
+                                    payment</button>
+                                <button class="btn btn-primary"
+                                    (click)="close({ transactionItem: transactionItem, type: 'refund', transaction: transaction })">Refund</button>
                             </td>
                         </tr>
                     </tbody>

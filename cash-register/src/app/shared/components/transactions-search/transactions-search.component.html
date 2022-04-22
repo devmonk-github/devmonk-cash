@@ -17,73 +17,98 @@
         </div>
         <button type="submit" (click)="findTransactions()" class="btn btn-primary me-5">Search</button>
     </div>
-    <div class="card-body pt-0" *ngIf="transactions.length">
-        <div class="dataTables_wrapper dt-bootstrap4 no-footer">
-            <div class="table-responsive">
-                <table class="table align-middle table-row-dashed fs-6 gy-5 dataTable no-footer">
-                    <thead>
-                        <tr class="text-start text-gray-400 fw-bolder fs-7 text-uppercase gs-0">
-                            <th *ngFor="let column of allColumns" class="min-w-100px sorting" tabindex="0">{{column}}
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody class="fw-bold text-gray-600">
-                        <tr *ngFor='let transaction of transactions'>
-                            <td class="">{{transaction.sNumber}}</td>
-                            <td class="">{{transaction.eType}}</td>
-                            <td class="">{{ transaction.dCreatedDate | date: 'short'}}</td>
-                            <td>
-                                <!-- <button class="btn btn-primary mr-3" (click)="setCustomer(transaction)">Select</button> -->
-                                <button class="btn btn-primary" (click)="openTransaction(transaction)">Open</button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            <div class="d-flex">
-                <h5 *ngIf='!transactions.length && !showLoader'> No data found!</h5>
-                <div *ngIf="showLoader" class="spinner-border mx-auto"></div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-sm-12 col-md-5 d-flex align-items-center justify-content-center justify-content-md-start">
-                <div class="dataTables_length" id="kt_ecommerce_sales_table_length">
-                    <label>
-                        <select name="kt_ecommerce_sales_table_length" aria-controls="kt_ecommerce_sales_table"
-                            class="form-select form-select-sm form-select-solid" [(ngModel)]="requestParams.limit">
-                            <option value="5">5</option>
-                            <option value="10">10</option>
-                            <option value="25">25</option>
-                            <option value="50">50</option>
-                        </select>
-                    </label>
+    <div class="card-body pt-0">
+        <app-pn-tabs class="tab-content">
+            <app-pn-tab tabTitle="{{ 'TRANSACTIONS' | translate}}">
+                <div class="dataTables_wrapper dt-bootstrap4 no-footer">
+                    <div class="table-responsive">
+                        <table class="table align-middle table-row-dashed fs-6 gy-5 dataTable no-footer">
+                            <thead>
+                                <tr class="text-start text-gray-400 fw-bolder fs-7 text-uppercase gs-0">
+                                    <th class="min-w-100px sorting" tabindex="0">Transaction Number</th>
+                                    <th class="min-w-100px sorting" tabindex="0">Date</th>
+                                    <th class="min-w-100px sorting" tabindex="0">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="fw-bold text-gray-600">
+                                <tr *ngFor='let transaction of transactions'>
+                                    <td class="">{{transaction.sNumber}}</td>
+                                    <td class="">{{ transaction.dCreatedDate | date: 'short'}}</td>
+                                    <td>
+                                        <button class="btn btn-primary"
+                                            (click)="openTransaction(transaction, 'transaction')">Open</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="d-flex">
+                        <h5 *ngIf='!transactions.length && !showLoader'> No data found!</h5>
+                        <div *ngIf="showLoader" class="spinner-border mx-auto"></div>
+                    </div>
+                </div>
+            </app-pn-tab>
+            <app-pn-tab tabTitle="{{ 'ACTIVITIES' | translate}}">
+                <div class="dataTables_wrapper dt-bootstrap4 no-footer">
+                    <div class="table-responsive">
+                        <table class="table align-middle table-row-dashed fs-6 gy-5 dataTable no-footer">
+                            <thead>
+                                <tr class="text-start text-gray-400 fw-bolder fs-7 text-uppercase gs-0">
+                                    <th class="min-w-100px sorting" tabindex="0">Activity Number</th>
+                                    <th class="min-w-100px sorting" tabindex="0">Date</th>
+                                    <th class="min-w-100px sorting" tabindex="0">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="fw-bold text-gray-600">
+                                <tr *ngFor='let transaction of activities'>
+                                    <td class="">{{transaction.sNumber}}</td>
+                                    <td class="">{{ transaction.dCreatedDate | date: 'short'}}</td>
+                                    <td>
+                                        <button class="btn btn-primary"
+                                            (click)="openTransaction(transaction, 'activity')">Open</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="d-flex">
+                        <h5 *ngIf='!transactions.length && !showLoader'> No data found!</h5>
+                        <div *ngIf="showLoader" class="spinner-border mx-auto"></div>
+                    </div>
+                </div>
+            </app-pn-tab>
+
+            <div class="row">
+                <div
+                    class="col-sm-12 col-md-5 d-flex align-items-center justify-content-center justify-content-md-start">
+                    <div class="dataTables_length" id="kt_ecommerce_sales_table_length">
+                        <label>
+                            <select name="kt_ecommerce_sales_table_length" aria-controls="kt_ecommerce_sales_table"
+                                class="form-select form-select-sm form-select-solid" [(ngModel)]="requestParams.limit">
+                                <option value="5">5</option>
+                                <option value="10">10</option>
+                                <option value="25">25</option>
+                                <option value="50">50</option>
+                            </select>
+                        </label>
+                    </div>
+                </div>
+                <div class="col-sm-12 col-md-7 d-flex align-items-center justify-content-center justify-content-md-end">
+                    <div class="dataTables_paginate paging_simple_numbers" id="kt_ecommerce_sales_table_paginate">
+                        <ul class="pagination">
+                            <li class="paginate_button page-item previous disabled"><a href="#" data-dt-idx="0"
+                                    tabindex="0" class="page-link"> <i class="previous"></i></a></li>
+                            <li class="paginate_button page-item active"
+                                *ngFor="let in of counter(totalTransactions) ;let i = index"><a href="#"
+                                    class="page-link">{{i+1}}</a>
+                            </li>
+                            <li class="paginate_button page-item next"><a href="#" class="page-link"><i
+                                        class="next"></i></a>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </div>
-            <!-- <ngb-pagination [collectionSize]="120" [(page)]="page" [maxSize]="5" [rotate]="true" [ellipses]="false"
-                [boundaryLinks]="true"></ngb-pagination> -->
-            <div class="col-sm-12 col-md-7 d-flex align-items-center justify-content-center justify-content-md-end">
-                <div class="dataTables_paginate paging_simple_numbers" id="kt_ecommerce_sales_table_paginate">
-                    <ul class="pagination">
-                        <li class="paginate_button page-item previous disabled"><a href="#" data-dt-idx="0" tabindex="0"
-                                class="page-link"> <i class="previous"></i></a></li>
-                        <li class="paginate_button page-item active"
-                            *ngFor="let in of counter(totalData) ;let i = index"><a href="#"
-                                class="page-link">{{i+1}}</a>
-                        </li>
-                        <li class="paginate_button page-item next"><a href="#" class="page-link"><i
-                                    class="next"></i></a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </div>
+        </app-pn-tabs>
     </div>
-    <!-- <div class="card-footer row">
-        <div class="col-md-11">
-            <button type="button" class="btn btn-secondary" (click)="AddCustomer()">Add customer</button>
-        </div>
-        <div class="col-md-1">
-            <button type="button" class="btn btn-secondary" (click)="close({ action: false })">Close</button>
-        </div>
-    </div> -->
 </div>

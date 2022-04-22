@@ -13,63 +13,14 @@ export class TransactionItemsDetailsComponent implements OnInit {
 
   dialogRef: DialogComponent;
   transaction: any;
-  salutations: Array<any> = ['Mr', 'Mrs', 'Mr/Mrs', 'Family', 'Firm']
-  gender: Array<any> = ['Male', 'Female', "Other"]
-  documentTypes: Array<any> = ['Driving license', 'Passport', 'Identity card', 'Alien document'];
   mode: string = '';
   showLoader = false;
-  allColumns = ['Product Name', 'Price', 'Quantity', 'Payment Amount', 'Is Prepayment', 'Created On'];
+  transactionColumns = ['Product Name', 'Price', 'Quantity', 'Payment Amount', 'Is Prepayment', 'Created On', 'Actions'];
+  activityColumns = ['Activity item number', 'Total amount', 'Paid amount', 'Is Prepayment', 'Created On', 'Actions'];
   transactionItems: Array<any> = [];
-  editProfile: boolean = false;
   faTimes = faTimes;
-  customer: any = {
-    bNewsletter: true,
-    sSalutation: 'Mr',
-    sEmail: '',
-    sFirstName: '',
-    sPrefix: '',
-    sLastName: '',
-    oPhone: {
-      sCountryCode: '',
-      sMobile: '',
-      sLandLine: '',
-      sFax: '',
-      bWhatsApp: true
-    },
-    note: '',
-    dDateOfBirth: '',
-    oIdentity: {
-      documentName: '',
-      documentNumber: '',
-    },
-    sGender: 'male',
-    oInvoiceAddress: {
-      country: 'Netherlands',
-      countryCode: 'NL',
-      state: '',
-      postalCode: '',
-      houseNumber: '',
-      houseNumberSuffix: '',
-      addition: '',
-      street: '',
-      city: ''
-    },
-    oShippingAddress: {
-      country: 'Netherlands',
-      countryCode: 'NL',
-      state: '',
-      postalCode: '',
-      houseNumber: '',
-      houseNumberSuffix: '',
-      addition: '',
-      street: '',
-      city: ''
-    },
-    sCompanyName: '',
-    sVatNumber: '',
-    sCocNumber: '',
-    nPaymentTermDays: ''
-  }
+  itemType = 'transaction';
+
   requestParams: any = {
     iBusinessId: "",
     aProjection: ['_id',
@@ -98,29 +49,28 @@ export class TransactionItemsDetailsComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.itemType = this.dialogRef.context.itemType;
     this.transaction = this.dialogRef.context.transaction;
     this.requestParams.iBusinessId = localStorage.getItem('currentBusiness');
     this.fetchTransactionItems();
   }
 
-  customerCountryChanged(type: string, event: any) {
-    this.customer[type].countryCode = event.key;
-    this.customer[type].country = event.value;
-  }
-
   fetchTransactionItems() {
     this.requestParams.iTransactionId = this.transaction._id;
-    this.apiService.postNew('cashregistry', '/api/v1/transaction/item/list', this.requestParams).subscribe((result: any) => {
-      console.log(result);
+    let url = `/api/v1/transaction/item/transaction-items`;
+
+    if (this.itemType === 'activity') {
+      delete this.requestParams.iTransactionId;
+      url = `/api/v1/activities/items/${this.transaction._id}`;
+    };
+    this.apiService.postNew('cashregistry', url, this.requestParams).subscribe((result: any) => {
       this.transactionItems = result.data[0].result;
     }, (error) => {
       alert(error.error.message);
       this.dialogRef.close.emit('data');
     });
   }
-  // refundOrPay(transaction: any, type: string) {
-  //   'refund'
-  // }
+
   close(data: any) {
     this.dialogRef.close.emit(data);
   }

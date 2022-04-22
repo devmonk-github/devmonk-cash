@@ -45,6 +45,7 @@ export class TillComponent implements OnInit {
   shopProducts: any;
   businessId!: string;
   supplierId!: string;
+  iActivityId!: string;
   isStockSelected = true;
   payMethods: Array<any> = [];
   business: any = {}
@@ -216,36 +217,28 @@ export class TillComponent implements OnInit {
     this.dialogService.openModal(TransactionsSearchComponent, { cssClass: "modal-xl", context: { customer: this.customer } })
       .instance.close.subscribe((data) => {
         if (data.type) {
-          let paymentAmount = data.transaction.nQuantity * data.transaction.nPriceIncVat - data.transaction.nPaymentAmount;
-          if (data.type === 'refund') {
-            paymentAmount *= -1;
+          const { transactionItem, type, transaction } = data;
+          let paymentAmount = transactionItem.nQuantity * transactionItem.nPriceIncVat - transactionItem.nPaidAmount;
+          if (type === 'refund') {
+            paymentAmount = -1 * transactionItem.nPaidAmount;
           };
-          // this.fetchTransactionItemDetails(data.transaction);
           this.transactionItems.push({
-            name: data.transaction.sProductName,
-            iActivityItemId: data.transaction.iActivityItemId,
-            prePaidAmount: data.transaction.nPaymentAmount,
-            type: data.transaction.oType.eKind,
-            quantity: data.transaction.nQuantity,
-            price: data.transaction.nPriceIncVat,
+            name: transactionItem.sProductName,
+            iActivityItemId: transactionItem.iActivityItemId,
+            prePaidAmount: transactionItem.nPaymentAmount,
+            type: transactionItem.oType.eKind,
+            quantity: transactionItem.nQuantity,
+            price: transactionItem.nPriceIncVat,
             discount: 0,
-            tax: data.transaction.nVatRate,
+            tax: transactionItem.nVatRate,
             paymentAmount,
             description: '',
             open: true,
-          })
+          });
+          this.iActivityId = transaction.iActivityId || transaction._id;
         }
       })
   }
-
-  // fetchTransactionItemDetails(transaction: any) {
-  //   this.apiService.getNew('cashregistry', `/api/v1/transaction/item/${transaction._id}`).subscribe((result: any) => {
-  //     console.log(result);
-  //     // this.transactionItems = result.data[0].result;
-  //   }, (error) => {
-  //     alert(error.error.message);
-  //   });
-  // }
 
   openCustomerDialog(): void {
     this.dialogService.openModal(CustomerDialogComponent, { cssClass: "modal-xl", context: { customer: this.customer } })
@@ -267,21 +260,21 @@ export class TillComponent implements OnInit {
   }
 
   createTransaction(): void {
-    const totalPrepayment = this.transactionItems.reduce((n, { paymentAmount }) => n + paymentAmount, 0);
-    this.transactionItems.map((i) => (i.amountToBePaid = i.price * i.quantity - i.prePaidAmount || 0));
+    // const totalPrepayment = this.transactionItems.reduce((n, { paymentAmount }) => n + paymentAmount, 0);
+    this.transactionItems.map((i) => (i.amountToBePaid = i.price * i.quantity - (i.prePaidAmount || 0)));
 
     let avialableAmount = this.getUsedPayMethods(true);
-    if (!totalPrepayment) {
-      this.transactionItems.forEach(tItem => {
-        if (tItem.amountToBePaid < avialableAmount) {
-          tItem.paymentAmount = tItem.amountToBePaid;
-          avialableAmount -= tItem.amountToBePaid;
-        } else {
-          tItem.paymentAmount = avialableAmount;
-          avialableAmount = 0;
-        }
-      });
-    }
+    // if (!totalPrepayment) {
+    this.transactionItems.forEach(tItem => {
+      if (tItem.amountToBePaid < avialableAmount) {
+        tItem.paymentAmount = tItem.amountToBePaid;
+        avialableAmount -= tItem.amountToBePaid;
+      } else {
+        tItem.paymentAmount = avialableAmount;
+        avialableAmount = 0;
+      }
+    });
+    // }
     const transactionItems = this.transactionItems.map((i) => {
       return new TransactionItem(
         i.name,
@@ -354,6 +347,7 @@ export class TillComponent implements OnInit {
     const transaction = new Transaction(
       null,
       null,
+      this.iActivityId,
       this.getValueFromLocalStorage('currentBusiness'),
       null,
       'cash-register-revenue',
@@ -381,7 +375,6 @@ export class TillComponent implements OnInit {
       transaction: transaction,
       payments: this.getUsedPayMethods(false),
     };
-
     this.apiService.postNew('cashregistry', '/api/v1/till/transaction', body)
       .subscribe(data => {
         console.log(data);
