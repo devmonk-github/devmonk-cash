@@ -1,7 +1,9 @@
-import {Component, EventEmitter, Input, OnInit, Output, ViewEncapsulation} from '@angular/core';
-import {faTimes, faPlus, faMinus} from '@fortawesome/free-solid-svg-icons'
+import { Component, EventEmitter, Input, OnInit, Output, ViewEncapsulation } from '@angular/core';
+import { faTimes, faPlus, faMinus } from '@fortawesome/free-solid-svg-icons'
+import { PriceService } from 'src/app/shared/service/price.service';
 
 @Component({
+  // eslint-disable-next-line @angular-eslint/component-selector
   selector: '[till-order]',
   templateUrl: './order.component.html',
   encapsulation: ViewEncapsulation.None
@@ -15,12 +17,22 @@ export class OrderComponent implements OnInit {
   faPlus = faPlus
   faMinus = faMinus
 
-  constructor() { }
+  constructor(private priceService: PriceService) { }
 
-  ngOnInit(): void {}
+  ngOnInit(): void { }
 
   deleteItem(): void {
     this.itemChanged.emit('delete')
   }
+  getDiscount(item: any): string {
+    return this.priceService.getDiscount(item.discount)
+  }
 
+  getTotalDiscount(item: any): string {
+    return this.priceService.getDiscountValue(item);
+  }
+
+  getTotalPrice(item: any): string {
+    return this.priceService.getArticlePrice(item)
+  }
 }

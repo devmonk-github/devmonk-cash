@@ -5,10 +5,10 @@
       <div class="w-90px">{{item.quantity}}</div>
       <div class="w-275px">{{item.name}}</div>
       <div class="w-100px">{{item.price | currency: '€'}}</div>
-      <div class="w-95px">{{item.discount}}</div>
-      <div class="w-125px">{{item.tax}}%</div>
-      <div class="w-100px">{{item.quantity * item.price}}</div>
-      <div class="w-85px">{{item.paymentAmount}}</div>
+      <div class="w-95px">{{item.discount | currency: '€'}}</div>
+      <div class="w-100px">{{item.tax}}%</div>
+      <div class="w-100px">{{item.quantity * item.price | currency: '€'}}</div>
+      <div class="w-85px">{{item.paymentAmount | currency: '€'}}</div>
     </section>
   </button>
 </h2>
@@ -20,6 +20,7 @@
         <app-dialer [(quantity)]="item.quantity"></app-dialer>
       </div>
       <div class="w-300px ps-2">
+        <label for="description">{{ "Name" | translate}}</label>
         <input type="text" [(ngModel)]="item.name" class="form-control">
         <label for="description">{{ "DESCRIPTION" | translate}}</label>
         <textarea class="form-control" name="description" placeholder="{{ 'DESCRIPTION' | translate}}" lines="10"
@@ -27,16 +28,17 @@
       </div>
       <div class="w-125px ps-2">
         <label for="price">{{ "PRICE" | translate}}</label>
-        <input type="number" name="price" class="form-control" [(ngModel)]="item.price">
+        <input type="number" step="any" name="price" class="form-control" [(ngModel)]="item.price">
         <label for="bagNumber">{{ "BAG_NUMBER" | translate}}</label>
         <input type="text" name="bagNumber" id="bagNumber" [(ngModel)]="item.bagNumber" class="form-control">
       </div>
 
       <div class="w-100px ps-2">
         <label for="discount">{{ "DISCOUNT" | translate}}</label>
-        <input type="number" name="discount" class="form-control" [(ngModel)]="item.discount">
+        <input type="number" step="any" name="discount" class="form-control" [(ngModel)]="item.discount">
         <label for="bagNumber">{{ "PREPAYMENT" | translate}}</label>
-        <input type="number" name="bagNumber" id="bagNumber" [(ngModel)]="item.paymentAmount" class="form-control">
+        <input type="number" step="any" name="bagNumber" id="bagNumber" (keyup)="updatePayments()"
+          [(ngModel)]="item.paymentAmount" class="form-control" [disabled]="item.isExclude">
       </div>
       <div class="w-125px ps-2">
         <label for="taxRate">{{ "TAX" | translate}}</label>
@@ -47,12 +49,22 @@
         <br>
         {{ "COMPANY" | translate}}: ----
       </div>
-      <div class="w-100px">
-        <button class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary w-30px h-30px" (click)="deleteItem()">
-          <span class="svg-icon svg-icon-1qx me-0">
-            <fa-icon [icon]="faTimes"></fa-icon>
-          </span>
-        </button>
+      <div class="row">
+        <div class="col-10">
+          <label for="taxRate">{{ "EXCLUDE_ITEM" | translate}}</label>
+          <label class="form-check form-switch form-check-custom form-check-solid">
+            <input type="checkbox" class="form-check-input" [(ngModel)]="item.isExclude">
+          </label>
+        </div>
+
+        <div class="col-2">
+          <button class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary w-30px h-30px float-end"
+            (click)="deleteItem()">
+            <span class="svg-icon svg-icon-1qx me-0">
+              <fa-icon [icon]="faTimes"></fa-icon>
+            </span>
+          </button>
+        </div>
       </div>
     </section>
   </div>

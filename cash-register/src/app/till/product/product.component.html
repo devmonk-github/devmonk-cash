@@ -1,14 +1,28 @@
-<h2 class="accordion-header rounded-0">
+<!-- <h2 class="accordion-header rounded-0">
   <button class="accordion-button fw-bold px-3 py-4 rounded-0" type="button" data-bs-toggle="collapse"
     data-bs-target="#kt_accordion_1_body_1" aria-expanded="true" aria-controls="kt_accordion_1_body_1">
     <section class="d-flex product-row align-items-center">
       <div class="w-90px">{{item.quantity}}</div>
       <div class="w-275px">{{item.name}}</div>
       <div class="w-100px">{{item.price | currency: '€'}}</div>
-      <div class="w-95px">{{getTotalDiscount(item)}}</div>
+      <div class="w-95px">{{getTotalDiscount(item) | currency: '€'}}</div>
       <div class="w-125px">{{item.tax}}%</div>
       <div class="w-100px">{{getTotalPrice(item)}}</div>
       <div class="w-85px">{{item.bPrepayment}}</div>
+    </section>
+  </button>
+</h2> -->
+<h2 class="accordion-header">
+  <button class="accordion-button fs-4 fw-bold" type="button" data-bs-toggle="collapse"
+    data-bs-target="#kt_accordion_1_body_1" aria-expanded="true" aria-controls="kt_accordion_1_body_1">
+    <section class="d-flex product-row align-items-center">
+      <div class="w-90px">{{item.quantity}}</div>
+      <div class="w-275px">{{item.name}}</div>
+      <div class="w-100px">{{item.price | currency: '€'}}</div>
+      <div class="w-95px">{{getTotalDiscount(item) | currency: '€'}}</div>
+      <div class="w-100px">{{item.tax}}%</div>
+      <div class="w-100px">{{getTotalPrice(item)}}</div>
+      <div class="w-85px">{{item.paymentAmount | currency: '€'}}</div>
     </section>
   </button>
 </h2>
@@ -32,6 +46,9 @@
       <div class="w-125px pe-2">
         <input type="text" class="form-control" name="price" placeholder="{{ 'PRICE' | translate}}" id="price"
           [(ngModel)]="item.price">
+        <label for="bagNumber">{{ "PREPAYMENT" | translate}}</label>
+        <input type="number" name="bagNumber" id="bagNumber" [(ngModel)]="item.paymentAmount" class="form-control">
+
       </div>
       <div class="w-100px pe-2">
         <button class="btn btn-icon btn-secondary w-35px h-35px" (click)="openDiscountDialog()">

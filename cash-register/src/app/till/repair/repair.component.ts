@@ -1,7 +1,8 @@
-import {Component, EventEmitter, Input, OnInit, Output, ViewEncapsulation} from '@angular/core';
-import {faTimes, faPlus, faMinus, faM} from "@fortawesome/free-solid-svg-icons";
+import { Component, EventEmitter, Input, OnInit, Output, ViewEncapsulation } from '@angular/core';
+import { faTimes, faPlus, faMinus, faM } from "@fortawesome/free-solid-svg-icons";
 
 @Component({
+  // eslint-disable-next-line @angular-eslint/component-selector
   selector: '[till-repair]',
   templateUrl: './repair.component.html',
   styleUrls: ['./repair.component.sass'],
@@ -21,6 +22,9 @@ export class RepairComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  updatePayments(): void {
+    this.itemChanged.emit('update');
+  }
   deleteItem(): void {
     this.itemChanged.emit('delete')
   }

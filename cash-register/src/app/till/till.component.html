@@ -322,7 +322,7 @@
 
       <div class="input-group till-padding" *ngFor="let payment of payMethods">
         <input type="number" class="form-control col-5" [(ngModel)]="payment.amount"
-          placeholder="{{'AMOUNT' | translate}}">
+          placeholder="{{'AMOUNT' | translate}}" (keyup)="changeInPayment()">
         <button class="btn btn-primary col-7">{{payment.sName | translate}}</button>
       </div>
 
@@ -340,7 +340,7 @@
         <button class="btn btn-primary col-1"> + </button>
       </div> -->
 
-      <p>No paymenttherminal connected</p>
+      <!-- <p>No paymenttherminal connected</p>
       <div class="input-group till-padding" *ngFor="let card of cards">
         <input type="number col-6" class="form-control" [(ngModel)]="card.amount"
           placeholder="{{'AMOUNT' | translate}}">
@@ -351,13 +351,14 @@
         </select>
         <button class="btn btn-primary col-2">{{card.sName | translate}}</button>
         <button class="btn btn-primary col-1" (click)="addNewCard()"> + </button>
-        <!-- <button class="btn btn-primary col-4">{{payment.sName | translate}}</button> -->
-      </div>
+      </div> -->
       <div class="d-flex">
         <h5 *ngIf='!payMethods.length && !payMethodsLoading'> No payment method found!</h5>
         <div *ngIf="payMethodsLoading" class="spinner-border mx-auto"></div>
       </div>
       <h1>{{ "CHANGE" | translate}}: {{getUsedPayMethods(true) - getTotals('price') | currency: '€'}}</h1>
+
+      <h4>{{ "PREPAYMENT" | translate}}: {{totalPrepayment() | currency: '€'}}</h4>
       <button class="btn btn-primary till-save-button" (click)="createTransaction()">{{ "SAVE" | translate}}</button>
     </div>
   </div>

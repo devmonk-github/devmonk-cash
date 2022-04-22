@@ -16,6 +16,8 @@ import * as _ from 'lodash';
 import { TransactionItem } from "./models/transaction-item.model";
 import { ToastService } from "../shared/components/toast";
 import { TransactionsSearchComponent } from '../shared/components/transactions-search/transactions-search.component';
+import { PaymentDistributionService } from '../shared/service/payment-distribution.service';
+import { result } from 'lodash';
 
 @Component({
   selector: 'app-till',
@@ -77,7 +79,7 @@ export class TillComponent implements OnInit {
   ]
   // End dummy data
   // type: ['Visa']
-  cards = [{ sName: 'Card', type: ['Visa', 'Meastro', 'Master Card'], amount: 0 }];
+  // cards = [{ sName: 'Card', type: ['Visa', 'Meastro', 'Master Card'], amount: 0 }];
   /**
    * Temp function to generate random numbers for demo till
    * @param min - min number to generate
@@ -91,6 +93,7 @@ export class TillComponent implements OnInit {
     private translateService: TranslateService,
     private dialogService: DialogService,
     private taxService: TaxService,
+    private paymentDistributeService: PaymentDistributionService,
     private apiService: ApiService,
     private toastrService: ToastService
   ) {
@@ -136,7 +139,7 @@ export class TillComponent implements OnInit {
 
   addItemToTransaction(item: any): void {
     let article = item
-    article.quantity = this.randNumber(1, 10);
+    article.quantity = 1;
     article.discount = 0;
     article.tax = 21;
     article.type = 'product'
@@ -158,19 +161,35 @@ export class TillComponent implements OnInit {
     }
     let result = 0
     this.transactionItems.forEach((i) => {
-      result += type === 'price' ? i.paymentAmount || i.quantity * i.price : i[type]
-    })
+      if (!i.isExclude) {
+        result += type === 'price' ? i.quantity * i.price : i[type]
+      } else {
+        i.paymentAmount = 0;
+      }
+    });
     return result
   }
 
+  totalPrepayment() {
+    let result = 0
+    this.transactionItems.forEach((i) => {
+      if (!i.isExclude) {
+        result += i.paymentAmount;
+      }
+    });
+    return result;
+  }
   addItem(type: string): void {
     if (type === 'gift-sell') {
       type = 'giftcard-sell'
     }
     this.transactionItems.push({
+      isExclude: type === 'repair' ? true : false,
+      manualUpdate: false,
+      index: this.transactionItems.length,
       name: this.translateService.instant(type.toUpperCase()),
-      type: type,
-      quantity: this.randNumber(1, 10),
+      type,
+      quantity: 1,
       price: this.randNumber(5, 200),
       discount: 0,
       tax: 21,
@@ -208,6 +227,9 @@ export class TillComponent implements OnInit {
   itemChanged(item: any, index: number): void {
     if (item === 'delete') {
       this.transactionItems.splice(index, 1);
+    } else if (item === 'update') {
+      let availableAmount = this.getUsedPayMethods(true);
+      this.paymentDistributeService.updateAmount(this.transactionItems, availableAmount, index);
     } else {
       this.transactionItems[index] = item
     }
@@ -217,6 +239,7 @@ export class TillComponent implements OnInit {
     this.dialogService.openModal(TransactionsSearchComponent, { cssClass: "modal-xl", context: { customer: this.customer } })
       .instance.close.subscribe((data) => {
         if (data.type) {
+          this.clearAll();
           const { transactionItem, type, transaction } = data;
           let paymentAmount = transactionItem.nQuantity * transactionItem.nPriceIncVat - transactionItem.nPaidAmount;
           if (type === 'refund') {
@@ -259,22 +282,20 @@ export class TillComponent implements OnInit {
     return this.payMethods.filter(p => p.amount && p.amount > 0) || 0
   }
 
+  changeInPayment() {
+    let availableAmount = this.getUsedPayMethods(true);
+    this.paymentDistributeService.distributeAmount(this.transactionItems, availableAmount);
+  }
+
+  clearAll() {
+    this.transactionItems = [];
+
+  }
   createTransaction(): void {
     // const totalPrepayment = this.transactionItems.reduce((n, { paymentAmount }) => n + paymentAmount, 0);
-    this.transactionItems.map((i) => (i.amountToBePaid = i.price * i.quantity - (i.prePaidAmount || 0)));
+    let availableAmount = this.getUsedPayMethods(true);
+    this.paymentDistributeService.distributeAmount(this.transactionItems, availableAmount);
 
-    let avialableAmount = this.getUsedPayMethods(true);
-    // if (!totalPrepayment) {
-    this.transactionItems.forEach(tItem => {
-      if (tItem.amountToBePaid < avialableAmount) {
-        tItem.paymentAmount = tItem.amountToBePaid;
-        avialableAmount -= tItem.amountToBePaid;
-      } else {
-        tItem.paymentAmount = avialableAmount;
-        avialableAmount = 0;
-      }
-    });
-    // }
     const transactionItems = this.transactionItems.map((i) => {
       return new TransactionItem(
         i.name,
@@ -475,12 +496,6 @@ export class TillComponent implements OnInit {
       description: product.sLabelDescription,
       open: true,
     });
-    // this.selectedProduct.emit({ product: product, isFrom: isFrom, isFor: isFor });
-    // this.searchByProductNumber = "";
-    // this.searchByProductEAN = "";
-    // this.commonBrandProducts = [];
-    // this.shopProducts = [];
-    // this.toggleSearchResult.emit(false);
   }
 
   search() {
@@ -493,7 +508,7 @@ export class TillComponent implements OnInit {
     }
   }
 
-  addNewCard() {
-    this.cards.push({ sName: 'Card', type: ['Visa', 'Meastro', 'Master Card'], amount: 0 });
-  }
+  // addNewCard() {
+  //   this.cards.push({ sName: 'Card', type: ['Visa', 'Meastro', 'Master Card'], amount: 0 });
+  // }
 }

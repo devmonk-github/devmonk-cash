@@ -5,8 +5,11 @@
       <div class="w-90px">{{item.quantity}}</div>
       <div class="w-275px">{{item.name}}</div>
       <div class="w-100px">{{item.price | currency: '€'}}</div>
-      <div class="w-95px">{{item.discount}}</div>
-      <div class="w-125px">{{item.tax}}%</div>
+      <div class="w-95px">{{item.discount | currency: '€'}}</div>
+      <div class="w-100px">{{item.tax}}%</div>
+
+      <div class="w-100px">{{getTotalPrice(item)}}</div>
+      <div class="w-85px">{{item.paymentAmount | currency: '€'}}</div>
     </section>
   </button>
 </h2>
@@ -33,6 +36,9 @@
       <div class="w-100px ps-2">
         <label for="discount">{{ "DISCOUNT" | translate}}</label>
         <input type="number" name="discount" class="form-control" [(ngModel)]="item.discount">
+        <label for="bagNumber">{{ "PREPAYMENT" | translate}}</label>
+        <input type="number" name="bagNumber" id="bagNumber" [(ngModel)]="item.paymentAmount" class="form-control">
+
       </div>
       <div class="w-125px ps-2">
         <label for="taxRate">{{ "TAX" | translate}}</label>

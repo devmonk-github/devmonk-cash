@@ -1,10 +1,11 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {faTimes} from '@fortawesome/free-solid-svg-icons'
-import {DialogService} from "../../shared/service/dialog";
-import {DiscountDialogComponent} from "../dialogs/discount-dialog/discount-dialog.component";
-import {PriceService} from "../../shared/service/price.service";
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { faTimes } from '@fortawesome/free-solid-svg-icons'
+import { DialogService } from "../../shared/service/dialog";
+import { DiscountDialogComponent } from "../dialogs/discount-dialog/discount-dialog.component";
+import { PriceService } from "../../shared/service/price.service";
 
 @Component({
+  // eslint-disable-next-line @angular-eslint/component-selector
   selector: '[till-product]',
   templateUrl: './product.component.html',
   styleUrls: ['./product.component.sass'],
@@ -27,7 +28,7 @@ export class ProductComponent implements OnInit {
   }
 
   getDiscount(item: any): string {
-    return this.priceService.getDiscount(item.discount)
+    return this.priceService.getDiscount(item.discount || 0);
   }
 
   getTotalDiscount(item: any): string {
@@ -39,12 +40,12 @@ export class ProductComponent implements OnInit {
   }
 
   openDiscountDialog(): void {
-    this.dialogService.openModal(DiscountDialogComponent, {context: {item: JSON.parse(JSON.stringify(this.item))}})
-      .instance.close.subscribe( (data) => {
-        if(data.item && data.item.discount) {
+    this.dialogService.openModal(DiscountDialogComponent, { context: { item: JSON.parse(JSON.stringify(this.item)) } })
+      .instance.close.subscribe((data) => {
+        if (data.item && data.item.discount) {
           console.log('discount dialog closed', data.item)
           this.item.discount = data.item.discount
         }
-    })
+      })
   }
 }
