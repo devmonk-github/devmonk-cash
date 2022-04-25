@@ -17,6 +17,7 @@ export class CustomerDetailsComponent implements OnInit {
   documentTypes: Array<any> = [ 'Driving license', 'Passport', 'Identity card', 'Alien document'];
   mode: string = '';
   editProfile: boolean = false;
+  showStatistics: boolean = false;
   faTimes = faTimes;
   customer: any = {
     bNewsletter: true,
