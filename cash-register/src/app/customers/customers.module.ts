@@ -13,10 +13,15 @@ import { NgSelectModule } from '@ng-select/ng-select';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser'
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { CustomerImportComponent } from './customer-import/customer-import.component';
+import { FileImportComponent } from './file-import/file-import.component';
 
 @NgModule({
   declarations: [
-    CustomersComponent
+    CustomersComponent,
+    CustomerImportComponent,
+    FileImportComponent
+    
   ],
   imports: [
     CustomersRoutingModule,
