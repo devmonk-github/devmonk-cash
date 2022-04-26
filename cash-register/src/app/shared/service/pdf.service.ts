@@ -4,6 +4,9 @@ import * as moment from 'moment';
 import { jsPDF } from 'jspdf';
 import html2canvas from 'html2canvas'
 import { invert } from 'lodash';
+import {HttpClient, HttpHeaders} from "@angular/common/http";
+import {StringService} from "./string.service";
+import {FileSaverService} from "ngx-filesaver";
 
 interface StaticPaperSize {
   type: string,
@@ -88,7 +91,11 @@ export class PdfService {
     type: 'A4'
   }
 
-  constructor(private factoryResolver: ComponentFactoryResolver) {}
+  constructor(
+    private factoryResolver: ComponentFactoryResolver,
+    private httpClient: HttpClient,
+    private stringService: StringService,
+    private fileSaver: FileSaverService) {}
 
   private addRowToPageWrap(page: any, row: any) {
     let wrapper = page.getElementsByClassName('wrapper')[0];
@@ -342,7 +349,6 @@ export class PdfService {
   }
 
   private createPageBody(content: string, paperSize: PaperSize): string {
-
     return '<body class="'+ paperSize.type+` `+this.orientation+' debug-'+this.debug+' rotate-'+this.rotation+'" >'+content+'</body>'
   }
 
@@ -541,7 +547,7 @@ export class PdfService {
 
     for (let r = 0; r < rowsToBeCreated; r++) {
       let finalDataSourceObject = dataSourceObject;
-      
+
       if (typeof dataSourceObject.length === 'number') {
         finalDataSourceObject = Object.values(dataSourceObject)[r];
       }
@@ -759,7 +765,6 @@ export class PdfService {
     if (!this.isDefined(originalText)) {
       return;
     }
-
     let extractedVariables = this.getVariables(originalText);
     let providedData = dataSourceObject;
     let finalString = originalText;
@@ -841,7 +846,6 @@ export class PdfService {
 
           if(matched) {
             finalString = finalString.replace(currentMatch, newText);
-            // console.log(finalString)
           } else {
             console.warn(finalString + " could not be matched with the provided data.", currentMatch)
             finalString = '';
@@ -872,7 +876,7 @@ export class PdfService {
           }
 
           convertedValues = this.convertSpacingArrayToObject(rule[1]);
-  
+
         } else {
           convertedValues = this.convertSpacingArrayToObject([parseInt(rule[1])]);
         }
@@ -1108,9 +1112,6 @@ export class PdfService {
     const template = JSON.parse(templateString);
     const dataObject = JSON.parse(dataString);
 
-    console.log('template', template)
-    console.log('dataObject', dataObject)
-
     this.setProperties(template, dataObject);
     this.paperSize = this.definePaperSize(this.paperSize, this.margins);
     this.parsedPaperSize = this.paperSize;
@@ -1181,64 +1182,58 @@ export class PdfService {
     const factory = this.factoryResolver.resolveComponentFactory(PdfComponent);
     const component = factory.create(viewContainerRef.parentInjector)
     component.instance.pdfString = 'TEST'
-    // console.log('component', component)
     viewContainerRef.insert(component.hostView)
 
-
+    //Set a small timeout to let the component generate and make sure that it will exist
     setTimeout( () => {
       this.makePdf(templateString, dataString)
         .then( (htmlString: string) => {
-          // console.log('PDFSTRING', htmlString)
-          //component.instance.pdfString = htmlString
           component.instance.setStyle(this.parsedPaperSize)
           component.instance.setHtmlContent(htmlString)
 
+          let headers: any = {
+            'Content-Type': 'application/pdf',
+          }
+          if (localStorage.getItem('authorization') && localStorage.getItem('authorization')?.trim() != '') {
+            headers['Authorization'] = localStorage.getItem('authorization');
+          }
 
-          // html2canvas(component.location.nativeElement).then( (canvas) => {
-          //   const imgData = canvas.toDataURL("image/jpg")
-          //   const pdfDoc = new jsPDF({
-          //     orientation: this.orientation === 'landscape' ? 'landscape' : 'portrait', //direct passing variable it not allowed due to variabele types
-          //     unit: 'mm',
-          //     format: [this.parsedPaperSize.width, this.parsedPaperSize.height]
-          //   })
-          //   const imageProps = pdfDoc.getImageProperties(imgData);
-          //   const pdfw = pdfDoc.internal.pageSize.getWidth();
-          //   const pdfh = (imageProps.height * pdfw) / imageProps.width;
-          //   pdfDoc.addImage(imgData, 'PNG', 0,0, pdfw, pdfh)
-          //
-          //   pdfDoc.save("test.pdf")
-          //
-          // })
-          // console.log('paperSize', this.paperSize)
+          if (localStorage.getItem('org') && localStorage.getItem('org')?.trim() != '') {
+            let details: any = localStorage.getItem('org');
+            let organization = JSON.parse(details);
+            headers['db'] = organization.sName
+          }
 
-          let pdfDoc = new jsPDF({
-            orientation: this.orientation === 'landscape' ? 'landscape' : 'portrait', //direct passing variable it not allowed due to variabele types
-            unit: 'mm',
-            format: [this.parsedPaperSize.width, this.parsedPaperSize.height]
-          }).html(htmlString)
-          // pdfDoc.html(htmlString)
-          // pdfDoc.setProperties({
-          //   title: fileName,
-          //   author: 'PrismaNote Software',
-          //   creator: 'PrismaNote Software'
-          // })
-
-          pdfDoc.save(fileName + '.pdf')
-            .then( () => {
-
-            })
-            .catch((e) => {
-              console.error('PDF Error', e)
-            })
-
-
+          try {
+            const encodedString = this.stringService.b2a(htmlString.replace(/€/gi, '+euro+'))
+            this.httpClient
+              .post('https://uzkiljt7h5.execute-api.eu-west-1.amazonaws.com/development/pdf',
+                {
+                  fileName: fileName,
+                  width: this.parsedPaperSize.width,
+                  height: this.parsedPaperSize.height,
+                  orientation: this.orientation,
+                  html: encodedString
+                },
+              {
+                headers: headers,
+                responseType: 'blob'
+              })
+              .subscribe(
+                (result: any) => {
+                  this.fileSaver.save( (<any>result), fileName+'.pdf')
+                },
+                (error: any) => {
+                  console.error('ERROR', error)
+                }
+              )
+          }catch (e) {
+            console.error('Error sending http request', e)
+          }
         })
         .catch( (e) => {
           console.error(e)
         })
-
-
     }, 1000)
-
   }
 }

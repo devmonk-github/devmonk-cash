@@ -31,6 +31,7 @@ import {
 } from './components';
 // import { NgbModule } from "@ng-bootstrap/ng-bootstrap";
 import { NgJsonEditorModule } from "ang-jsoneditor";
+import {FileSaverModule} from "ngx-filesaver";
 
 @NgModule({
   declarations: [
@@ -62,7 +63,8 @@ import { NgJsonEditorModule } from "ang-jsoneditor";
     // NgbModule,
     ReactiveFormsModule,
     ToastModule.forRoot(),
-    NgJsonEditorModule
+    NgJsonEditorModule,
+    FileSaverModule
   ],
   exports: [
     DialerComponent,
