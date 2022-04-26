@@ -8,7 +8,7 @@ import { PriceService } from 'src/app/shared/service/price.service';
   templateUrl: './order.component.html',
   encapsulation: ViewEncapsulation.None
 })
-export class OrderComponent implements OnInit {
+export class OrderComponent {
   @Input() item: any
   @Input() taxes: any
   @Output() itemChanged = new EventEmitter<any>();
@@ -16,16 +16,28 @@ export class OrderComponent implements OnInit {
   faTimes = faTimes
   faPlus = faPlus
   faMinus = faMinus
-
+  typeArray = ['regular', 'broken', 'return'];
   constructor(private priceService: PriceService) { }
-
-  ngOnInit(): void { }
 
   deleteItem(): void {
     this.itemChanged.emit('delete')
   }
   getDiscount(item: any): string {
     return this.priceService.getDiscount(item.discount)
+  }
+
+  getColorCode(item: any): string {
+    const { eTransactionItemType } = item;
+    switch (eTransactionItemType) {
+      case 'regular':
+        return '#4ab69c';
+      case 'broken':
+        return '#f0e959';
+      case 'return':
+        return '#f7422e';
+      default:
+        return '#4ab69c';
+    }
   }
 
   getTotalDiscount(item: any): string {

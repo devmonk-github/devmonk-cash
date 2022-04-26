@@ -7,7 +7,8 @@
       <div class="w-100px">{{item.price | currency: '€'}}</div>
       <div class="w-95px">{{item.discount | currency: '€'}}</div>
       <div class="w-100px">{{item.tax}}%</div>
-      <div class="w-100px">{{item.quantity * item.price | currency: '€'}}</div>
+      <div class="w-100px">{{getTotalPrice(item)}}
+      </div>
       <div class="w-85px">{{item.paymentAmount | currency: '€'}}</div>
     </section>
   </button>

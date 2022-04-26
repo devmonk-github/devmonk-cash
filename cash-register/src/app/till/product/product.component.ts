@@ -16,6 +16,7 @@ export class ProductComponent implements OnInit {
   @Output() itemChanged = new EventEmitter<any>();
 
   faTimes = faTimes
+  typeArray = ['regular', 'broken', 'return'];
 
   constructor(private dialogService: DialogService, private priceService: PriceService) { }
 
@@ -37,6 +38,20 @@ export class ProductComponent implements OnInit {
 
   getTotalPrice(item: any): string {
     return this.priceService.getArticlePrice(item)
+  }
+
+  getColorCode(item: any): string {
+    const { eTransactionItemType } = item;
+    switch (eTransactionItemType) {
+      case 'regular':
+        return '#4ab69c';
+      case 'broken':
+        return '#f0e959';
+      case 'return':
+        return '#f7422e';
+      default:
+        return '#4ab69c';
+    }
   }
 
   openDiscountDialog(): void {

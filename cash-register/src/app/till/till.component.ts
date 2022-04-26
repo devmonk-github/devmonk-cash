@@ -162,7 +162,12 @@ export class TillComponent implements OnInit {
     let result = 0
     this.transactionItems.forEach((i) => {
       if (!i.isExclude) {
-        result += type === 'price' ? i.quantity * i.price : i[type]
+        if (i.tType === 'refund') {
+          result -= i.prePaidAmount;
+        } else {
+          result += i.quantity * i.price - (i.prePaidAmount || 0);
+          // result += type === 'price' ? i.quantity * i.price - i.prePaidAmount || 0 : i[type]
+        }
       } else {
         i.paymentAmount = 0;
       }
@@ -185,6 +190,7 @@ export class TillComponent implements OnInit {
     }
     this.transactionItems.push({
       isExclude: type === 'repair' ? true : false,
+      eTransactionItemType: 'regular',
       manualUpdate: false,
       index: this.transactionItems.length,
       name: this.translateService.instant(type.toUpperCase()),
@@ -238,29 +244,44 @@ export class TillComponent implements OnInit {
   openTransactionSearchDialog(): void {
     this.dialogService.openModal(TransactionsSearchComponent, { cssClass: "modal-xl", context: { customer: this.customer } })
       .instance.close.subscribe((data) => {
-        if (data.type) {
+        if (data.transaction) {
           this.clearAll();
-          const { transactionItem, type, transaction } = data;
-          let paymentAmount = transactionItem.nQuantity * transactionItem.nPriceIncVat - transactionItem.nPaidAmount;
-          if (type === 'refund') {
-            paymentAmount = -1 * transactionItem.nPaidAmount;
-          };
-          this.transactionItems.push({
-            name: transactionItem.sProductName,
-            iActivityItemId: transactionItem.iActivityItemId,
-            prePaidAmount: transactionItem.nPaymentAmount,
-            type: transactionItem.oType.eKind,
-            quantity: transactionItem.nQuantity,
-            price: transactionItem.nPriceIncVat,
-            discount: 0,
-            tax: transactionItem.nVatRate,
-            paymentAmount,
-            description: '',
-            open: true,
+          const { transactionItems, transaction } = data;
+          // render all transaction items
+          transactionItems.forEach((transactionItem: any) => {
+            if (transactionItem.isSelected) {
+              const { tType } = transactionItem;
+              let paymentAmount = transactionItem.nQuantity * transactionItem.nPriceIncVat - transactionItem.nPaidAmount;
+              if (tType === 'refund') {
+                paymentAmount = -1 * transactionItem.nPaidAmount;
+                transactionItem.oType.bRefund = true;
+              } else if (tType === 'revert') {
+                paymentAmount = transactionItem.nPaidAmount;
+                transactionItem.oType.bRefund = false;
+              };
+              this.transactionItems.push({
+                name: transactionItem.sProductName,
+                iActivityItemId: transactionItem.iActivityItemId,
+                nRefundAmount: transactionItem.nPaidAmount,
+                prePaidAmount: transactionItem.nPaymentAmount,
+                type: transactionItem.oType.eKind,
+                eTransactionItemType: 'regular',
+                tType,
+                oType: transactionItem.oType,
+                quantity: transactionItem.nQuantity,
+                price: transactionItem.nPriceIncVat,
+                discount: 0,
+                tax: transactionItem.nVatRate,
+                paymentAmount,
+                description: '',
+                open: true,
+              });
+            }
           });
           this.iActivityId = transaction.iActivityId || transaction._id;
         }
-      })
+        this.changeInPayment();
+      });
   }
 
   openCustomerDialog(): void {
@@ -279,7 +300,7 @@ export class TillComponent implements OnInit {
     if (total) {
       return _.sumBy(this.payMethods, 'amount') || 0
     }
-    return this.payMethods.filter(p => p.amount && p.amount > 0) || 0
+    return this.payMethods.filter(p => p.amount && p.amount !== 0) || 0
   }
 
   changeInPayment() {
@@ -291,11 +312,9 @@ export class TillComponent implements OnInit {
     this.transactionItems = [];
 
   }
-  createTransaction(): void {
-    // const totalPrepayment = this.transactionItems.reduce((n, { paymentAmount }) => n + paymentAmount, 0);
-    let availableAmount = this.getUsedPayMethods(true);
-    this.paymentDistributeService.distributeAmount(this.transactionItems, availableAmount);
 
+  // nRefundAmount needs to be added
+  createTransaction(): void {
     const transactionItems = this.transactionItems.map((i) => {
       return new TransactionItem(
         i.name,
@@ -337,7 +356,8 @@ export class TillComponent implements OnInit {
         i.discount.value > 0,
         i.discount.percent,
         i.discount.value,
-        0, // TODO
+        i.nRefundAmount,
+
         null,
         null,
 
@@ -354,7 +374,7 @@ export class TillComponent implements OnInit {
         null,
         {
           eTransactionType: 'cash-registry', // TODO
-          bRefund: i.discount.quantity < 0 || i.price < 0,
+          bRefund: i.oType?.bRefund || i.discount.quantity < 0 || i.price < 0,
           // true (i.price * quanitity) < 0 && i.price < 0  // broken product, no call to stockcorrection
           // true (i.price * quanitity) < 0 && quantity < 0 // broken product, +1 call to stockcorrection
           // false (i.price * quanitity) > 0 && quantity > 0 // regular sale, -1 call to stockcorrection
@@ -396,14 +416,13 @@ export class TillComponent implements OnInit {
       transaction: transaction,
       payments: this.getUsedPayMethods(false),
     };
+
     this.apiService.postNew('cashregistry', '/api/v1/till/transaction', body)
       .subscribe(data => {
-        console.log(data);
         this.toastrService.show({ type: 'success', text: 'Transactie gemaakt!' })
       }, err => {
         console.log(err);
-        this.toastrService.show({ type: 'danger', text: err.message })
-
+        this.toastrService.show({ type: 'danger', text: err.message });
       });
   }
 
