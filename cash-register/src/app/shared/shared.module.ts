@@ -1,14 +1,15 @@
-import { DialogService } from "./service/dialog";
 import { ComponentFactoryResolver, ModuleWithProviders, NgModule } from "@angular/core";
-import { CustomerDialogComponent } from './components/customer-dialog/customer-dialog.component';
 import { CommonModule, CurrencyPipe } from "@angular/common";
-import { FontAwesomeModule } from "@fortawesome/angular-fontawesome";
 import { TranslateModule, TranslateService } from "@ngx-translate/core";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
+import { FontAwesomeModule } from "@fortawesome/angular-fontawesome";
+import { NgSelectModule } from "@ng-select/ng-select";
+
+import { DialogService } from "./service/dialog";
+import { CustomerDialogComponent } from './components/customer-dialog/customer-dialog.component';
 import { DialerComponent } from './components/dialer/dialer.component';
 import { AlertComponent } from './components/alert/alert.component';
 import { CustomerDetailsComponent } from "./components/customer-details/customer-details.component";
-import { NgSelectModule } from "@ng-select/ng-select";
 import { AccordionDirective } from "./directives/accordion.directive";
 import { CustomPaymentMethodComponent } from './components/custom-payment-method/custom-payment-method.component';
 import { ConfirmationDialogComponent } from './components/confirmation-dialog/confirmation-dialog.component';
@@ -20,6 +21,9 @@ import { ToastModule } from "./components/toast";
 import { PdfComponent } from './components/pdf/pdf.component';
 import { TransactionsSearchComponent } from "./components/transactions-search/transactions-search.component";
 import { TransactionItemsDetailsComponent } from "./components/transaction-items-details/transaction-items-details.component";
+
+// ---------------- Material -----------------------
+import { MaterialModule } from './material.module';  // common material design module
 
 // ---------------- Common components ------------------
 import {
@@ -55,6 +59,7 @@ import {FileSaverModule} from "ngx-filesaver";
     FormsModule,
     NgSelectModule,
     WebcamModule,
+    MaterialModule,
     // NgbModule,
     ReactiveFormsModule,
     ToastModule.forRoot(),
@@ -68,6 +73,7 @@ import {FileSaverModule} from "ngx-filesaver";
     CountryListComponent,
     AccordionDirective,
     ToastModule,
+    MaterialModule,
     TransactionsSearchComponent,
     TransactionItemsDetailsComponent,
     TabsComponent,

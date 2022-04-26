@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output, ViewEncapsulation } from '@angular/core';
 import { faTimes, faPlus, faMinus, faM } from "@fortawesome/free-solid-svg-icons";
+import { PriceService } from 'src/app/shared/service/price.service';
 
 @Component({
   // eslint-disable-next-line @angular-eslint/component-selector
@@ -8,7 +9,7 @@ import { faTimes, faPlus, faMinus, faM } from "@fortawesome/free-solid-svg-icons
   styleUrls: ['./repair.component.sass'],
   encapsulation: ViewEncapsulation.None
 })
-export class RepairComponent implements OnInit {
+export class RepairComponent {
   @Input() item: any
   @Input() taxes: any
   @Output() itemChanged = new EventEmitter<any>();
@@ -17,10 +18,9 @@ export class RepairComponent implements OnInit {
   faPlus = faPlus
   faMinus = faMinus
 
-  constructor() { }
+  typeArray = ['regular', 'broken', 'return'];
 
-  ngOnInit(): void {
-  }
+  constructor(private priceService: PriceService) { }
 
   updatePayments(): void {
     this.itemChanged.emit('update');
@@ -29,4 +29,8 @@ export class RepairComponent implements OnInit {
     this.itemChanged.emit('delete')
   }
 
+
+  getTotalPrice(item: any): void {
+    return this.priceService.calculateItemPrice(item)
+  }
 }

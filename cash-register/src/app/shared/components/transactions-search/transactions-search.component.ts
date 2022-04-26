@@ -91,13 +91,14 @@ export class TransactionsSearchComponent implements OnInit, AfterViewInit {
   openTransaction(transaction: any, itemType: any) {
     this.dialogService.openModal(TransactionItemsDetailsComponent, { cssClass: "modal-xl", context: { transaction, itemType } })
       .instance.close.subscribe(result => {
-        if (result.type) {
+        if (result.transaction) {
           this.close(result);
         }
       });
   }
 
   close(data: any): void {
+    console.log(data);
     this.dialogRef.close.emit(data)
   }
 

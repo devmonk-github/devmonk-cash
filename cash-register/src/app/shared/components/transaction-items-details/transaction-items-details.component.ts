@@ -3,7 +3,6 @@ import { DialogComponent } from '../../service/dialog';
 import { ViewContainerRef } from '@angular/core';
 import { ApiService } from 'src/app/shared/service/api.service';
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
-
 @Component({
   selector: 'app-transaction-items-details',
   templateUrl: './transaction-items-details.component.html',
@@ -11,6 +10,7 @@ import { faTimes } from "@fortawesome/free-solid-svg-icons";
 })
 export class TransactionItemsDetailsComponent implements OnInit {
 
+  $element = HTMLInputElement
   dialogRef: DialogComponent;
   transaction: any;
   mode: string = '';
@@ -20,6 +20,8 @@ export class TransactionItemsDetailsComponent implements OnInit {
   transactionItems: Array<any> = [];
   faTimes = faTimes;
   itemType = 'transaction';
+
+  status = true;
 
   requestParams: any = {
     iBusinessId: "",
@@ -53,6 +55,8 @@ export class TransactionItemsDetailsComponent implements OnInit {
     this.transaction = this.dialogRef.context.transaction;
     this.requestParams.iBusinessId = localStorage.getItem('currentBusiness');
     this.fetchTransactionItems();
+
+
   }
 
   fetchTransactionItems() {
@@ -65,10 +69,23 @@ export class TransactionItemsDetailsComponent implements OnInit {
     };
     this.apiService.postNew('cashregistry', url, this.requestParams).subscribe((result: any) => {
       this.transactionItems = result.data[0].result;
+      this.transactionItems = this.transactionItems.map(v => ({ ...v, isSelected: false }));
+      this.transactionItems.forEach(transactionItem => {
+        if (transactionItem.nPaidAmount < transactionItem.nTotalAmount) {
+          transactionItem.tType = 'pay';
+        } else {
+          transactionItem.tType = 'refund';
+        }
+      });
+
     }, (error) => {
       alert(error.error.message);
       this.dialogRef.close.emit('data');
     });
+  }
+
+  selectAll($event: any) {
+    this.transactionItems = this.transactionItems.map(v => ({ ...v, isSelected: $event.checked }));
   }
 
   close(data: any) {

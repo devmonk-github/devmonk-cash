@@ -17,6 +17,16 @@ export class PaymentDistributionService {
 
   distributeAmount(transactionItems: any[], availableAmount: any): any[] {
     transactionItems.map((i: any) => (i.amountToBePaid = i.price * i.quantity - (i.prePaidAmount || 0)));
+    transactionItems.forEach(tItem => {
+      if (tItem.paymentAmount > tItem.amountToBePaid) {
+        tItem.paymentAmount = tItem.amountToBePaid;
+      }
+    });
+    transactionItems.forEach(tItem => {
+      if (tItem.tType && tItem.tType === 'refund') {
+        availableAmount += tItem.prePaidAmount;
+      }
+    });
     const setAmount = transactionItems.filter(item => item.isExclude);
     setAmount.map(i => (i.paymentAmount = 0));
 
@@ -35,6 +45,16 @@ export class PaymentDistributionService {
   }
 
   updateAmount(transactionItems: any[], availableAmount: any, index: number): any[] {
+    transactionItems.forEach(tItem => {
+      if (tItem.paymentAmount > tItem.amountToBePaid) {
+        tItem.paymentAmount = tItem.amountToBePaid;
+      }
+    });
+    transactionItems.forEach(tItem => {
+      if (tItem.tType && tItem.tType === 'refund') {
+        availableAmount += tItem.prePaidAmount;
+      }
+    });
     transactionItems[index].manualUpdate = true;
     const arrNotToUpdate = transactionItems.filter(item => item.manualUpdate && !item.isExclude);
     const assignedAmountToManual = arrNotToUpdate.reduce((n, { paymentAmount }) => n + paymentAmount, 0);
