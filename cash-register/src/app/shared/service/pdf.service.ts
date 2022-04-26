@@ -1175,22 +1175,16 @@ export class PdfService {
   }
 
   createPdf(templateString: string, dataString: string, viewContainerRef: ViewContainerRef, fileName: string): void {
-    // Remove eventually existing component
-    viewContainerRef.detach()
 
-    // Step 2: Create element in DOM to generate correct styling
-    const factory = this.factoryResolver.resolveComponentFactory(PdfComponent);
-    const component = factory.create(viewContainerRef.parentInjector)
-    component.instance.pdfString = 'TEST'
-    viewContainerRef.insert(component.hostView)
+    let pdfGenerator = document.createElement('div')
+    pdfGenerator.style.display = 'none'
+    pdfGenerator.id = 'pdfGenerator'
+    document.body.appendChild(pdfGenerator)
 
     //Set a small timeout to let the component generate and make sure that it will exist
     setTimeout( () => {
       this.makePdf(templateString, dataString)
         .then( (htmlString: string) => {
-          component.instance.setStyle(this.parsedPaperSize)
-          component.instance.setHtmlContent(htmlString)
-
           let headers: any = {
             'Content-Type': 'application/pdf',
           }
@@ -1222,6 +1216,10 @@ export class PdfService {
               .subscribe(
                 (result: any) => {
                   this.fileSaver.save( (<any>result), fileName+'.pdf')
+                  let div = document.getElementById('pdfGenerator')
+                  if (div) {
+                    div.parentNode?.removeChild(div);
+                  }
                 },
                 (error: any) => {
                   console.error('ERROR', error)

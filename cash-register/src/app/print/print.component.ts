@@ -38,7 +38,7 @@ export class PrintComponent implements OnInit {
           "row":[
             {
               "size":"6",
-              "html":"<img src=\"img/logo-demojuwelier.png\" />"
+              "html":"<img src=\"https://lirp.cdn-website.com/2568326e/dms3rep/multi/opt/Juwelier-Bos-208w.png\" />"
             },
             {
               "size":"6",
