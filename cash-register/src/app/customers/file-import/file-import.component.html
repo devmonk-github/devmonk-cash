@@ -22,7 +22,6 @@
             <ng-template let-i="index" let-file="file" let-control="control" #item>
                 <div class="overlay flex" >
                     <span class="csv-file-name">
-                        {{ console(file) }}
                         <span class="delete-button ml-4" (click)="control.removeFile(file)">
                             <fa-icon icon="times"></fa-icon>
                         </span>

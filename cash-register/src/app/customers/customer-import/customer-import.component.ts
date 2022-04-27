@@ -23,9 +23,7 @@ export class CustomerImportComponent implements OnInit {
     private apiService: ApiService
   ) { }
 
-  ngOnInit(): void {
-    console.log('--- app-customer-import!');
-  }
+  ngOnInit(): void { }
 
   ngAfterContentInit(): void {
     StepperComponent.bootstrap();
@@ -35,12 +33,12 @@ export class CustomerImportComponent implements OnInit {
   }
 
   public moveToStep( step: any){
-    console.log(' moveToStep ', step);
     if(step == 'next'){
       this.stepperInstatnce.goNext();
     } else if(step == 'previous'){
       this.stepperInstatnce.goPrev();
     } else if( step == 'import'){
+      this.importCustomer()
       this.stepperInstatnce.goNext();
     }
   }

@@ -26,7 +26,7 @@
                 </h3>
             </div>
         </div>
-        <div class="stepper-item mx-2 my-4" data-kt-stepper-element="nav">
+        <!-- <div class="stepper-item mx-2 my-4" data-kt-stepper-element="nav">
             <div class="stepper-line w-40px"></div>
             <div class="stepper-icon w-40px h-40px">
                 <i class="stepper-check fas fa-check"></i>
@@ -37,12 +37,12 @@
                     Indicate VAT
                 </h3>
             </div>
-        </div>
+        </div> -->
         <div class="stepper-item mx-2 my-4" data-kt-stepper-element="nav">
             <div class="stepper-line w-40px"></div>
             <div class="stepper-icon w-40px h-40px">
                 <i class="stepper-check fas fa-check"></i>
-                <span class="stepper-number">4</span>
+                <span class="stepper-number">3</span>
             </div>
             <div class="stepper-label">
                 <h3 class="stepper-title">
@@ -59,9 +59,9 @@
             <div class="flex-column" data-kt-stepper-element="content">
                 <app-customer-details-import [parsedCustomerData]="parsedCustomerData" [(customerDetailsForm)]="customerDetailsForm" [(updateTemplateForm)]="updateTemplateForm" (moveToStep)="moveToStep($event)"></app-customer-details-import>
             </div>
-            <div class="flex-column" data-kt-stepper-element="content">
-                <!-- <import-indicate-product-vat [parsedCustomerData]="parsedCustomerData" [(customerDetails)]="customerDetailsForm" (moveToStep)="moveToStep($event)"></import-indicate-product-vat> -->
-            </div>
+            <!-- <div class="flex-column" data-kt-stepper-element="content">
+                <import-indicate-product-vat [parsedCustomerData]="parsedCustomerData" [(customerDetails)]="customerDetailsForm" (moveToStep)="moveToStep($event)"></import-indicate-product-vat>
+            </div> -->
             <div class="flex-column" data-kt-stepper-element="content">
                 <div class="flex">
                     <h4 *ngIf="importInprogress">{{"PROCESSING_YOUR_FILE" | translate}}</h4>

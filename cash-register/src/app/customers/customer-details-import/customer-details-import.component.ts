@@ -43,9 +43,7 @@ export class CustomerDetailsImportComponent implements OnInit, OnChanges {
   constructor(
     private apiService: ApiService,
     private toasterService: ToastService
-  ) {
-    console.log('-- constructor!');
-   }
+  ) { }
 
   ngOnInit(): void {
 
@@ -53,10 +51,6 @@ export class CustomerDetailsImportComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    console.log('----!!!');
-    console.log(this.customerDetailsForm)
-    console.log(this.updateTemplateForm)
-    console.log(this.parsedCustomerData)
     if (this.parsedCustomerData && this.parsedCustomerData.length > 0) {
       this.headerOptions = Object.keys(this.parsedCustomerData[0]);
       this.customerDetailsForm = {};
@@ -76,7 +70,6 @@ export class CustomerDetailsImportComponent implements OnInit, OnChanges {
 
     this.apiService.postNew('core', '/api/v1/properties/list', filter).subscribe((result: any) => {
       if (result && result.data && result.data.length > 0) {
-        console.log(result);
         this.allFields['all'] = result.data[0].aOptions;
         if (isResetAttributes) {
           this.customerDetailsForm = {};
@@ -121,7 +114,6 @@ export class CustomerDetailsImportComponent implements OnInit, OnChanges {
     if (Object.keys(this.customerDetailsForm).length != this.headerOptions.length) {
       this.toasterService.show({ type: 'danger', text: 'You have not set some of the attributes exist in file.' });
     }
-    console
     this.updateTemplateFormChange.emit(this.updateTemplateForm);
     this.customerDetailsFormChange.emit(this.customerDetailsForm);
     this.moveToStep.emit(step);

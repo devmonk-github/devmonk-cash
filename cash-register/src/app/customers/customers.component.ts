@@ -113,8 +113,6 @@ export class CustomersComponent implements OnInit {
               customer['PHONE'] = (customer.oPhone && customer.oPhone.sLandLine ? customer.oPhone.sLandLine : '') + (customer.oPhone && customer.oPhone.sLandLine && customer.oPhone.sMobile ? ' / ' : '') + (customer.oPhone && customer.oPhone.sMobile ? customer.oPhone.sMobile : '')
             }
           }
-
-          console.log(this.customers);
       },
       (error : any) =>{
         this.customers = [];

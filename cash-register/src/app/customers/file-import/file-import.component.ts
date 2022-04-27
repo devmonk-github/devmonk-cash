@@ -39,14 +39,10 @@ export class FileImportComponent implements OnInit, OnDestroy {
   );
 
   ngOnInit(): void {
-    console.log('----- ngOnInit!');
-    console.log(this.parsedCustomerData);
     this.subscription = this.control.valueChanges.subscribe((values: Array<File>) => {
-      console.log(values);
       if(values && values.length > 0){
         this.csvParser.parse(values[0], { header: true, delimiter: this.delimiter})
           .pipe().subscribe((result: any) => {
-            console.log(result);
             this.parsedCustomerData = result;
             this.parsedCustomerDataChange.emit(this.parsedCustomerData);
           }, (error: NgxCSVParserError) => {
@@ -62,23 +58,16 @@ export class FileImportComponent implements OnInit, OnDestroy {
   }
 
   public ngOnDestroy(): void {
-    console.log('--- ngOnDestroy!!');
     this.subscription.unsubscribe();
   }
 
   // Function for go to next step
   nextStep(step: string){
-    console.log('--- nextStep!!');
     this.moveToStep.emit(step);
   }
 
   // Function for validate file import
   validateImport() : boolean{
     return this.delimiter.trim() == '' || this.parsedCustomerData.length == 0;
-  }
-
-  console(event : any){
-    console.log(event);
-    return 'test';
   }
 }
