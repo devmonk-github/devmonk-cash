@@ -16,8 +16,8 @@ export class FileImportComponent implements OnInit, OnDestroy {
   stepperIndex: any = 0;
   importForm: any;
 
-  @Input() parsedProductData!: Array<any>;
-  @Output() parsedProductDataChange: EventEmitter<Array<any>> = new EventEmitter<Array<any>>();
+  @Input() parsedCustomerData!: Array<any>;
+  @Output() parsedCustomerDataChange: EventEmitter<Array<any>> = new EventEmitter<Array<any>>();
   @Output() moveToStep: EventEmitter<any> = new EventEmitter();
 
   constructor(
@@ -40,23 +40,23 @@ export class FileImportComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     console.log('----- ngOnInit!');
-    console.log(this.parsedProductData);
+    console.log(this.parsedCustomerData);
     this.subscription = this.control.valueChanges.subscribe((values: Array<File>) => {
       console.log(values);
       if(values && values.length > 0){
         this.csvParser.parse(values[0], { header: true, delimiter: this.delimiter})
           .pipe().subscribe((result: any) => {
             console.log(result);
-            this.parsedProductData = result;
-            this.parsedProductDataChange.emit(this.parsedProductData);
+            this.parsedCustomerData = result;
+            this.parsedCustomerDataChange.emit(this.parsedCustomerData);
           }, (error: NgxCSVParserError) => {
             this.toasterService.show({ type: 'danger', text: 'Upload csv file'});
-            this.parsedProductData = [];
-            this.parsedProductDataChange.emit(this.parsedProductData);
+            this.parsedCustomerData = [];
+            this.parsedCustomerDataChange.emit(this.parsedCustomerData);
           });
       } else {
-        this.parsedProductData = [];
-        this.parsedProductDataChange.emit(this.parsedProductData);
+        this.parsedCustomerData = [];
+        this.parsedCustomerDataChange.emit(this.parsedCustomerData);
       }  
     });
   }
@@ -74,7 +74,7 @@ export class FileImportComponent implements OnInit, OnDestroy {
 
   // Function for validate file import
   validateImport() : boolean{
-    return this.delimiter.trim() == '' || this.parsedProductData.length == 0;
+    return this.delimiter.trim() == '' || this.parsedCustomerData.length == 0;
   }
 
   console(event : any){

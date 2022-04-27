@@ -10,8 +10,8 @@ import { StepperComponent } from 'src/app/shared/_layout/components/common';
 export class CustomerImportComponent implements OnInit {
 
   stepperIndex: any = 0;
-  parsedProductData: Array<any> =[];
-  productDetailsForm: any;
+  parsedCustomerData: Array<any> =[];
+  customerDetailsForm: any;
   updateTemplateForm: any;
   importInprogress: boolean = false;
   businessDetails: any ={};
@@ -45,22 +45,22 @@ export class CustomerImportComponent implements OnInit {
     }
   }
 
-  importProduct() {
-    console.log(' importProduct ');
+  importCustomer() {
+    console.log(' importCustomer ');
     this.importInprogress = true;
-    let productData: any = {
+    let data: any = {
       iBusinessId: this.businessDetails._id,
       oTemplate: this.importService.processImportProduct({ product: this.updateTemplateForm }),
-      aProduct: this.parsedProductData,
+      aProduct: this.parsedCustomerData,
       sDefaultLanguage: localStorage.getItem('language') || 'n;'
     };
 
-    this.parsedProductData.forEach((product, index) => {
-      let brand = this.productDetailsForm.updatedBrand.filter((brand: any) => brand.foundName == product[this.productDetailsForm['Brand']]);
-      productData.aProduct[index]["iBusinessBrandId"] = brand.length > 0 && brand[0].selected._id && brand[0].selected._id ? brand[0].selected._id : '';
+    this.parsedCustomerData.forEach((customer, index) => {
+      let brand = this.customerDetailsForm.updatedBrand.filter((brand: any) => brand.foundName == customer[this.customerDetailsForm['Brand']]);
+      data.aProduct[index]["iBusinessBrandId"] = brand.length > 0 && brand[0].selected._id && brand[0].selected._id ? brand[0].selected._id : '';
     });
 
-    this.apiService.postNew('core', '/api/v1/general/import/products', productData).subscribe((result: any) => {
+    this.apiService.postNew('core', '/api/v1/general/import/products', data).subscribe((result: any) => {
       this.importInprogress = false;
     });
   }

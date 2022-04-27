@@ -10,11 +10,11 @@ import { ApiService } from 'src/app/shared/service/api.service';
 export class CustomerDetailsImportComponent implements OnInit, OnChanges {
 
  
-  @Input() productDetailsForm: any;
-  @Output() productDetailsFormChange: EventEmitter<any> = new EventEmitter();
+  @Input() customerDetailsForm: any;
+  @Output() customerDetailsFormChange: EventEmitter<any> = new EventEmitter();
   @Input() updateTemplateForm: any;
   @Output() updateTemplateFormChange: EventEmitter<any> = new EventEmitter();
-  @Input() parsedProductData: any;
+  @Input() parsedCustomerData: any;
   @Output() moveToStep: EventEmitter<any> = new EventEmitter();
 
   headerOptions: Array<any> = [];
@@ -49,17 +49,17 @@ export class CustomerDetailsImportComponent implements OnInit, OnChanges {
 
   ngOnInit(): void {
 
-    // if (this.productDetailsForm?.isTransaction) this.getDynamicFields(false); // FOR TESTING AND DYNAMIC DATA(TRANSACTION)
+    // if (this.customerDetailsForm?.isTransaction) this.getDynamicFields(false); // FOR TESTING AND DYNAMIC DATA(TRANSACTION)
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     console.log('----!!!');
-    console.log(this.productDetailsForm)
+    console.log(this.customerDetailsForm)
     console.log(this.updateTemplateForm)
-    console.log(this.parsedProductData)
-    if (this.parsedProductData && this.parsedProductData.length > 0) {
-      this.headerOptions = Object.keys(this.parsedProductData[0]);
-      this.productDetailsForm = {};
+    console.log(this.parsedCustomerData)
+    if (this.parsedCustomerData && this.parsedCustomerData.length > 0) {
+      this.headerOptions = Object.keys(this.parsedCustomerData[0]);
+      this.customerDetailsForm = {};
       this.updateTemplateForm = {};
       this.headerOptions.filter((option: any) => this.updateTemplateForm[option] = 'do-nothing');
       this.getDynamicFields(false);
@@ -79,12 +79,12 @@ export class CustomerDetailsImportComponent implements OnInit, OnChanges {
         console.log(result);
         this.allFields['all'] = result.data[0].aOptions;
         if (isResetAttributes) {
-          this.productDetailsForm = {};
+          this.customerDetailsForm = {};
           this.updateTemplateForm = {};
         }
         this.allFields['all'].filter((field: any) => {
           if (this.headerOptions.indexOf(field.sKey) > -1) {
-            this.productDetailsForm[field.sKey] = field.sKey;
+            this.customerDetailsForm[field.sKey] = field.sKey;
           }
         });
       }
@@ -96,10 +96,6 @@ export class CustomerDetailsImportComponent implements OnInit, OnChanges {
 
   filteredFieldOptions(optionFor: string, index: string): Array<string> {
     let uniqueList = [];
-    // let overwriteForFields = this.productDetailForm.get('overwriteForFields')?.value;
-    // let ifUndefinedForFields = this.productDetailForm.get('ifUndefinedForFields')?.value;
-    // let appendForFields = this.productDetailForm.get('appendForFields')?.value;
-    // let doNothingForFields = this.productDetailForm.get('doNothingForFields')?.value;
     switch (optionFor) {
       case 'DO_NOTHING':
         uniqueList = this.allFields[index].filter((o: any) => this.overwriteForFields.indexOf(o) === -1 && this.ifUndefinedForFields.indexOf(o) === -1 && this.appendForFields.indexOf(o) === -1);
@@ -122,18 +118,18 @@ export class CustomerDetailsImportComponent implements OnInit, OnChanges {
   // Function for go to step(next / previous)
   gotoStep(step: string) {
     console.log('gotoStep ', step);
-    if (Object.keys(this.productDetailsForm).length != this.headerOptions.length) {
+    if (Object.keys(this.customerDetailsForm).length != this.headerOptions.length) {
       this.toasterService.show({ type: 'danger', text: 'You have not set some of the attributes exist in file.' });
     }
     console
     this.updateTemplateFormChange.emit(this.updateTemplateForm);
-    this.productDetailsFormChange.emit(this.productDetailsForm);
+    this.customerDetailsFormChange.emit(this.customerDetailsForm);
     this.moveToStep.emit(step);
   }
 
-  // Function for validate product detail header linking
-  validateProductHeaderLink(): boolean {
-    return Object.keys(this.productDetailsForm).length == 0;
+  // Function for validate customer detail header linking
+  validateCustomerHeaderLink(): boolean {
+    return Object.keys(this.customerDetailsForm).length == 0;
   }
 
 }

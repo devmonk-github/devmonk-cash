@@ -54,18 +54,18 @@
     <form class="form mx-auto" novalidate="novalidate" id="kt_stepper_example_basic_form">
         <div class="mb-5">
             <div class="flex-column current" data-kt-stepper-element="content">
-                <import-file-import [(parsedProductData)]="parsedProductData" (moveToStep)="moveToStep($event)"></import-file-import>
+                <import-file-import [(parsedCustomerData)]="parsedCustomerData" (moveToStep)="moveToStep($event)"></import-file-import>
             </div>
             <div class="flex-column" data-kt-stepper-element="content">
-                <app-customer-details-import [parsedProductData]="parsedProductData" [(productDetailsForm)]="productDetailsForm" [(updateTemplateForm)]="updateTemplateForm" (moveToStep)="moveToStep($event)"></app-customer-details-import>
+                <app-customer-details-import [parsedCustomerData]="parsedCustomerData" [(customerDetailsForm)]="customerDetailsForm" [(updateTemplateForm)]="updateTemplateForm" (moveToStep)="moveToStep($event)"></app-customer-details-import>
             </div>
             <div class="flex-column" data-kt-stepper-element="content">
-                <!-- <import-indicate-product-vat [parsedProductData]="parsedProductData" [(productDetails)]="productDetailsForm" (moveToStep)="moveToStep($event)"></import-indicate-product-vat> -->
+                <!-- <import-indicate-product-vat [parsedCustomerData]="parsedCustomerData" [(customerDetails)]="customerDetailsForm" (moveToStep)="moveToStep($event)"></import-indicate-product-vat> -->
             </div>
             <div class="flex-column" data-kt-stepper-element="content">
                 <div class="flex">
                     <h4 *ngIf="importInprogress">{{"PROCESSING_YOUR_FILE" | translate}}</h4>
-                    <h4 *ngIf="!importInprogress">{{"IMPORT_PRODUCT_STATUS" | translate}}</h4>
+                    <h4 *ngIf="!importInprogress">{{"IMPORT_CUSTOMER_STATUS" | translate}}</h4>
                     <br>
                     <button class="btn btn-primary" (click)="moveToStep('previous')">
                         {{"BACK" | translate}}
