@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, Output, EventEmitter, SimpleChanges } from '@angular/core';
+import { Component, Input, OnInit, Output, EventEmitter, SimpleChanges, OnChanges } from '@angular/core';
 import { ToastService } from 'src/app/shared/components/toast';
 import { ApiService } from 'src/app/shared/service/api.service';
 
@@ -7,7 +7,7 @@ import { ApiService } from 'src/app/shared/service/api.service';
   templateUrl: './customer-details-import.component.html',
   styleUrls: ['./customer-details-import.component.sass']
 })
-export class CustomerDetailsImportComponent implements OnInit {
+export class CustomerDetailsImportComponent implements OnInit, OnChanges {
 
  
   @Input() productDetailsForm: any;
@@ -43,13 +43,20 @@ export class CustomerDetailsImportComponent implements OnInit {
   constructor(
     private apiService: ApiService,
     private toasterService: ToastService
-  ) { }
+  ) {
+    console.log('-- constructor!');
+   }
 
   ngOnInit(): void {
+
     // if (this.productDetailsForm?.isTransaction) this.getDynamicFields(false); // FOR TESTING AND DYNAMIC DATA(TRANSACTION)
   }
 
   ngOnChanges(changes: SimpleChanges): void {
+    console.log('----!!!');
+    console.log(this.productDetailsForm)
+    console.log(this.updateTemplateForm)
+    console.log(this.parsedProductData)
     if (this.parsedProductData && this.parsedProductData.length > 0) {
       this.headerOptions = Object.keys(this.parsedProductData[0]);
       this.productDetailsForm = {};
@@ -63,12 +70,13 @@ export class CustomerDetailsImportComponent implements OnInit {
   getDynamicFields(isResetAttributes: boolean) {
     let filter = {
       oFilterBy: {
-        "sName": "import product details"
+        "sName": "import customer details"
       }
     };
 
     this.apiService.postNew('core', '/api/v1/properties/list', filter).subscribe((result: any) => {
       if (result && result.data && result.data.length > 0) {
+        console.log(result);
         this.allFields['all'] = result.data[0].aOptions;
         if (isResetAttributes) {
           this.productDetailsForm = {};
@@ -113,9 +121,11 @@ export class CustomerDetailsImportComponent implements OnInit {
 
   // Function for go to step(next / previous)
   gotoStep(step: string) {
+    console.log('gotoStep ', step);
     if (Object.keys(this.productDetailsForm).length != this.headerOptions.length) {
       this.toasterService.show({ type: 'danger', text: 'You have not set some of the attributes exist in file.' });
     }
+    console
     this.updateTemplateFormChange.emit(this.updateTemplateForm);
     this.productDetailsFormChange.emit(this.productDetailsForm);
     this.moveToStep.emit(step);

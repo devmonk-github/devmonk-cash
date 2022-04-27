@@ -42,9 +42,11 @@ export class FileImportComponent implements OnInit, OnDestroy {
     console.log('----- ngOnInit!');
     console.log(this.parsedProductData);
     this.subscription = this.control.valueChanges.subscribe((values: Array<File>) => {
+      console.log(values);
       if(values && values.length > 0){
         this.csvParser.parse(values[0], { header: true, delimiter: this.delimiter})
           .pipe().subscribe((result: any) => {
+            console.log(result);
             this.parsedProductData = result;
             this.parsedProductDataChange.emit(this.parsedProductData);
           }, (error: NgxCSVParserError) => {
