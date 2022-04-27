@@ -15,12 +15,16 @@ import { BrowserModule } from '@angular/platform-browser'
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { CustomerImportComponent } from './customer-import/customer-import.component';
 import { FileImportComponent } from './file-import/file-import.component';
+import { FileUploadModule } from '@iplab/ngx-file-upload';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { CustomerDetailsImportComponent } from './customer-details-import/customer-details-import.component';
 
 @NgModule({
   declarations: [
     CustomersComponent,
     CustomerImportComponent,
-    FileImportComponent
+    FileImportComponent,
+    CustomerDetailsImportComponent
     
   ],
   imports: [
@@ -32,7 +36,9 @@ import { FileImportComponent } from './file-import/file-import.component';
     ReactiveFormsModule,
     FormsModule,
     BrowserModule,
-    FontAwesomeModule
+    FontAwesomeModule,
+    FileUploadModule,
+    BrowserAnimationsModule
   ],
   providers: [
     PaginatePipe

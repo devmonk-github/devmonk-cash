@@ -1,9 +1,9 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { FileUploadControl, FileUploadValidators } from '@iplab/ngx-file-upload';
-// import { NbToastrService, NbToastrConfig } from '@nebular/theme';
 import { NgxCsvParser, NgxCSVParserError } from 'ngx-csv-parser';
 import { BehaviorSubject, Subscription } from 'rxjs';
+import { ToastService } from 'src/app/shared/components/toast';
 
 @Component({
   selector: 'import-file-import',
@@ -22,7 +22,7 @@ export class FileImportComponent implements OnInit, OnDestroy {
 
   constructor(
     private csvParser: NgxCsvParser,
-    // private toasterService : NbToastrService
+    private toasterService : ToastService
   ) { }
 
   
@@ -39,6 +39,8 @@ export class FileImportComponent implements OnInit, OnDestroy {
   );
 
   ngOnInit(): void {
+    console.log('----- ngOnInit!');
+    console.log(this.parsedProductData);
     this.subscription = this.control.valueChanges.subscribe((values: Array<File>) => {
       if(values && values.length > 0){
         this.csvParser.parse(values[0], { header: true, delimiter: this.delimiter})
@@ -46,7 +48,7 @@ export class FileImportComponent implements OnInit, OnDestroy {
             this.parsedProductData = result;
             this.parsedProductDataChange.emit(this.parsedProductData);
           }, (error: NgxCSVParserError) => {
-            // this.toasterService.danger('Upload csv file');
+            this.toasterService.show({ type: 'danger', text: 'Upload csv file'});
             this.parsedProductData = [];
             this.parsedProductDataChange.emit(this.parsedProductData);
           });
@@ -58,16 +60,23 @@ export class FileImportComponent implements OnInit, OnDestroy {
   }
 
   public ngOnDestroy(): void {
+    console.log('--- ngOnDestroy!!');
     this.subscription.unsubscribe();
   }
 
   // Function for go to next step
   nextStep(step: string){
+    console.log('--- nextStep!!');
     this.moveToStep.emit(step);
   }
 
   // Function for validate file import
   validateImport() : boolean{
     return this.delimiter.trim() == '' || this.parsedProductData.length == 0;
+  }
+
+  console(event : any){
+    console.log(event);
+    return 'test';
   }
 }
