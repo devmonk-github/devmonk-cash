@@ -1438,6 +1438,13 @@
   resolved "https://registry.yarnpkg.com/@humanwhocodes/object-schema/-/object-schema-1.2.1.tgz#b520529ec21d8e5945a1851dfd1c32e94e39ff45"
   integrity sha512-ZnQMnLV4e7hDlUvw8H+U8ASL02SS2Gn6+9Ac3wGGLIe7+je2AeAOxPY+izIPJDfFDb7eDjev0Us8MO1iFRN8hA==
 
+"@iplab/ngx-file-upload@^4.0.1":
+  version "4.0.1"
+  resolved "https://registry.yarnpkg.com/@iplab/ngx-file-upload/-/ngx-file-upload-4.0.1.tgz#c91337838d0297080c9a0b11d93ad6858f378d60"
+  integrity sha512-25ofdHCCsDb9sUWRmlvoTl6QG7zHDqDnF9UoN9A5eetC/dnfSd4xoMlNA1kakeJTduF6XQDAndcPWistMihJ+w==
+  dependencies:
+    tslib "^2.3.0"
+
 "@istanbuljs/schema@^0.1.2":
   version "0.1.3"
   resolved "https://registry.yarnpkg.com/@istanbuljs/schema/-/schema-0.1.3.tgz#e45e384e4b8ec16bce2fd903af78450f6bf7ec98"
@@ -6005,6 +6012,13 @@ ngx-build-plus@^12.2.0:
   dependencies:
     "@schematics/angular" "^12.0.0"
     webpack-merge "^5.0.0"
+
+ngx-csv-parser@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/ngx-csv-parser/-/ngx-csv-parser-1.1.1.tgz#389d4991c649b5339e3a6f032de53f24fdf4468e"
+  integrity sha512-LTPcRTq/7De+baocN4kpAZnvp5pDd/7pjCE1KoeJZQiOZTrCBzDSpfJv6ZVmH8FDLHy4SZZCWN71K0nvNLjiLA==
+  dependencies:
+    tslib "^2.0.0"
 
 ngx-filesaver@^13.0.0:
   version "13.0.0"

@@ -13,10 +13,19 @@ import { NgSelectModule } from '@ng-select/ng-select';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser'
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { CustomerImportComponent } from './customer-import/customer-import.component';
+import { FileImportComponent } from './file-import/file-import.component';
+import { FileUploadModule } from '@iplab/ngx-file-upload';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { CustomerDetailsImportComponent } from './customer-details-import/customer-details-import.component';
 
 @NgModule({
   declarations: [
-    CustomersComponent
+    CustomersComponent,
+    CustomerImportComponent,
+    FileImportComponent,
+    CustomerDetailsImportComponent
+    
   ],
   imports: [
     CustomersRoutingModule,
@@ -27,7 +36,9 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
     ReactiveFormsModule,
     FormsModule,
     BrowserModule,
-    FontAwesomeModule
+    FontAwesomeModule,
+    FileUploadModule,
+    BrowserAnimationsModule
   ],
   providers: [
     PaginatePipe
