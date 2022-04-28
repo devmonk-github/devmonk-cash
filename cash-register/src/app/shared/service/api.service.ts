@@ -160,9 +160,15 @@ export class ApiService {
         return basePath += ':3002';
       case 'cashregistry':
         return basePath += ':3004';
+      case 'bookkeeping':
+        return basePath += ':3007';
       case 'oldplatform':
         return oldplatform += ':3000';
-    }
+      case 'bookkeeping':
+        return basePath += ':3007';
+      case 'customer':
+        return basePath += ':3006';
+    } 
   }
 
   getNew(apiType: string, url: string, header?: any): Observable<HttpResponse<any>> {
@@ -183,6 +189,17 @@ export class ApiService {
     this.setAPIHeaders();
     let finalUrl = this.getApiBaseUrl(apiType) + url;
     let finalHeaders = header && Object.keys(header).length > 0 ? header : this.defaultHeaders;
+    let httpHeaders = {
+      headers: new HttpHeaders(finalHeaders),
+    }
+    return this.httpClient.post<any>(finalUrl, data, httpHeaders);
+  }
+
+  fileUpload(apiType: string, url: string, data: any, header?: any): Observable<HttpResponse<any>> {
+    this.setAPIHeaders();
+    let finalUrl = this.getApiBaseUrl(apiType) + url;
+    let finalHeaders = header && Object.keys(header).length > 0 ? header : this.defaultHeaders;
+    delete finalHeaders['Content-Type'];
     let httpHeaders = {
       headers: new HttpHeaders(finalHeaders),
     }

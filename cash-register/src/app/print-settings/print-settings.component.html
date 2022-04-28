@@ -1,0 +1,204 @@
+<div class="card mb-5 mb-xl-10 d-flex" data-kt-scroll-section="print-settings">
+  <div class="card-header row">
+    <div class="card-title">
+      <div class="col-md-11">
+        <span>{{ 'PRINT_SETTINGS' | translate}}</span>
+      </div>
+      <div class="col-md-1">
+        <button class="btn btn-primary" (click)="createPrintSettings()">New</button>
+      </div>
+    </div>
+    <div class="card-body">
+        <p>
+          {{"INSTALL_A_HELP_PROGRAM_TO_SET_YOUR_PRINTERS" | translate}} &nbsp;
+          <a href="https://prismanote.atlassian.net/rest/servicedesk/knowledgebase/latest/articles/view/1114964123#Printersinstellen-Automatischafdrukken" target="_blank">
+              <strong>{{"CLICK_HERE_FOR_INSTRUCTIONS" | translate}}</strong>
+          </a>
+        </p>
+        <div>
+          <span>
+              {{"CLICK_TO_LOAD_PRINT_SETTINGS_1" | translate}} '{{"LOAD_SETTINGS" | translate}}' {{"CLICK_TO_LOAD_PRINT_SETTINGS_2" | translate}}
+              <strong> &nbsp; {{device.name}}</strong>
+          </span> 
+        </div>
+        <div>
+          <button class="btn btn-primary btn-sm" type="submit" status="success">
+            <fa-icon [icon]="faRefresh"></fa-icon>
+            <span> &nbsp; {{"LOAD_SETTINGS" | translate}}</span>
+          </button>
+        </div>
+      </div>
+    </div>
+</div>
+
+<div class="card mb-5 mb-xl-10 d-flex" data-kt-scroll-section="print-settings-letter-paper">
+  <div class="card-header row">
+    <div class="card-title">
+      {{"PRINT_SETTINGS_LETTERPAPER" | translate}}
+    </div>
+    <div class="card-body no-padding">
+      <div class="">
+          <div *ngFor="let format of pageFormats; trackBy: trackByFun">
+              {{ format }}
+              <button class="btn ms-1 table-btn-padding" type="submit">
+                <fa-icon [icon]="faPencilAlt"></fa-icon>
+              </button>
+          </div>
+      </div>
+  </div>
+  </div>
+</div>
+
+<div class="card mb-5 mb-xl-10 d-flex" data-kt-scroll-section="label-definition">
+  <div class="card-header row">
+    <div class="card-title">
+       {{"LABEL" | translate}} {{"DEFINITIONS" | translate}}
+    </div>
+    <div class="card-body">
+      <div *ngIf="!newLabel">
+          <form name="labelForm" class="row">
+              <div class="col-md-6">
+                  <label for="labelName" class="form-label">{{"NAME" | translate}}</label>
+                  <input type="text" class="form-control" fullWidth id="labelName" required="true" name="labelName">
+              </div>
+              <div class="col-md-6">
+                  <label for="labelLayout" class="form-label">{{"LAYOUT" | translate}}</label>
+                  <select class="form-select" id="labelLayout" required="true" name="layout">
+                      <option *ngFor="let layout of layouts" [value]="layout">{{ layout }}</option>
+                  </select>
+              </div>
+              <div class="col-md-12">
+                  <p class="help-block">{{"CHANGE_EXTRA_SETTINGS_AFTER_SAVING" | translate}}</p>
+                  <button status="success" type="submit" class="btn btn-primary custom-margin-t10">
+                      {{ 'ADD' | translate}}
+                  </button>
+              </div>
+          </form>
+      </div>
+      <div *ngIf="newLabel">
+          <p>{{"CONTACT_SUPPORT_IF_YOU_NEED_CHANGES_TO_YOUR_LABELS" | translate}}</p>
+          <label for="labelPrinter" class="form-label">
+              {{"LABELPRINTER" | translate}}
+              <span class="label-info">{{"SETTINGS_FOR_DEVICE" | translate}}: {{device.name}}</span>
+          </label>
+          <select class="form-select" id="labelPrinter" required="true" name="layout">
+              <option *ngFor="let p of printers" [value]="p">{{ p }}</option>
+          </select>
+          <br>
+          <button type="submit" class="btn btn-primary custom-margin-t10">
+              {{ 'SAVE' | translate}}
+          </button>
+      </div>
+      <div *ngIf="!newLabel">
+        <div *ngFor="let label of oldLabelList; trackBy: trackByFun">
+            {{ label }}
+            <button type="submit" class="btn ms-1 table-btn-padding">
+              <fa-icon [icon]="faPencilAlt"></fa-icon>
+            </button>
+        </div>
+      </div>
+      <div *ngIf="newLabel">
+        <div *ngFor="let label of newLabelList; trackBy: trackByFun">
+            {{ label }}
+            <button type="submit" class="btn ms-1 table-btn-padding">
+              <fa-icon [icon]="faPencilAlt"></fa-icon>
+            </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card mb-5 mb-xl-10 d-flex" data-kt-scroll-section="thermal-printer">
+  <div class="card-header row">
+    <div class="card-title">
+        {{"THERMAL_PRINTER" | translate}}
+    </div>
+    <div class="card-body">
+      <span class="label label-info"> {{"SETTINGS_FOR_DEVICE" | translate}}: {{device.name}} </span>
+      <br>
+      <div *ngIf="!newPrinter" class="custom-margin-t10">
+        <form name="thermalPrinterForm">
+          <!-- <nb-toggle class="toggle-btn" name='printerEnable' id="printerEnable" labelPosition="right">{{"ENABLE" | translate}}</nb-toggle>  -->
+          <diV class="row">
+            <div class="col-md-4">
+                <label class="form-label">{{"ENABLE" | translate}}</label>
+            </div>
+            <div class="col-md-8">
+              <label class="form-check form-switch form-check-custom form-check-solid">
+                <input type="checkbox" class="form-check-input"> 
+              </label>
+            </div>
+          </diV>
+          <br>
+          <label for="deviceIdPrinter">{{"DEVICE_ID" | translate}}</label>
+          <br>
+          <input type="text" class="form-control" fullWidth id="deviceIdPrinter" required="true" name="deviceIdPrinter">
+          <label for="ipPrinter">{{"IP_ADDRESS" | translate}}</label>
+          <br>
+          <input type="text" class="form-control" fullWidth id="ipPrinter" required="true" name="ipPrinter">
+          <label for="portPrinter">{{"PORT" | translate}}</label>
+          <br>
+          <input type="text" class="form-control" fullWidth id="portPrinter" required="true" name="portPrinter">
+          <p class="help-block" *ngIf="device.thermalPrinter && device.thermalPrinter.brand === 'EPSON'">
+            {{"PORT_8008_FOR_HTTP_AND_PORT_8043_FOR_HTTPS" | translate}}
+          </p>
+          <button type="submit" class="btn btn-primary custom-margin-t10">
+            {{"SAVE" | translate}}
+          </button>
+        </form>
+      </div>
+      <div *ngIf="newPrinter"  class="custom-margin-t10">
+        <form name="thermalPrinterForm">
+            <!-- <nb-toggle class="toggle-btn" name='printerEnable' id="printerEnable" labelPosition="right">{{"ENABLE" | translate}}</nb-toggle> -->
+            <diV class="row">
+              <div class="col-md-4">
+                  <label class="form-label">{{"ENABLE" | translate}}</label>
+              </div>
+              <div class="col-md-8">
+                  <label class="form-check form-switch form-check-custom form-check-solid">
+                      <input type="checkbox" class="form-check-input"> 
+                  </label>
+              </div>
+            </diV>
+            <br>
+            <label for="thermalPrinterName">{{"PRINTER_NAME" | translate}} </label>
+            <br>
+            <select class="form-select" id="thermalPrinterName" required="true" name="thermalPrinterName">
+              <option *ngFor="let p of printers" [value]="p">{{ p }}</option>
+            </select>
+            <!-- <nb-toggle class="toggle-btn" name='starSyntax' id="starSyntax" labelPosition="right">{{"USE_STAR_SYNTAX" | translate}}</nb-toggle> -->
+            <diV class="row">
+              <div class="col-md-4">
+                <label class="form-label">{{"USE_STAR_SYNTAX" | translate}}</label>
+              </div>
+              <div class="col-md-8">
+                <label class="form-check form-switch form-check-custom form-check-solid">
+                  <input type="checkbox" class="form-check-input"> 
+                </label>
+              </div>
+            </diV>
+            <label for="drawerPort">{{"DRAWER_CONNECTION" | translate}}</label>
+            <select class="form-select" id="drawerPort" required="true" name="drawerPort">
+              <option value=""></option>
+              <option value="PIN2">Pin 2</option>
+              <option value="PIN5">Pin 5</option>
+            </select>
+            <br>
+            <button type="submit" class="btn btn-primary custom-margin-t10">
+              {{"MEASURE_RECEIPT" | translate}}
+            </button>
+            <p class="help-block">{{"PRINT_THE_MEASURE_RECEIPT_AND_FOLLOW_THE_PRINTED_INSTRUCTIONS" | translate}}</p>
+            <label for="line_n">{{"LINELENGTH_NORMAL" | translate}}</label>
+            <input type="text" id="line_n" name="line_n" class="form-control" fullWidth>
+            <br>
+            <label for="line_l">{{"LINELENGTH_LARGE" | translate}}</label>
+            <input type="text" id="line_l" name="line_l" class="form-control" fullWidth>
+            <button type="submit" class="btn btn-primary custom-margin-t10">
+              {{"SAVE" | translate}}
+            </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,6 +1,10 @@
-import {Component, Input, OnInit, ViewContainerRef} from '@angular/core';
+import {Component, Input, OnInit, ViewContainerRef, ViewChildren, QueryList, ElementRef } from '@angular/core';
 import {DialogComponent} from "../../service/dialog";
-import {faTimes} from "@fortawesome/free-solid-svg-icons";
+import {faTimes, faSearch} from "@fortawesome/free-solid-svg-icons";
+import { DialogService } from '../../service/dialog';
+import { CustomerDetailsComponent } from '../customer-details/customer-details.component';
+import { ApiService } from '../../service/api.service';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-customer-dialog',
@@ -12,7 +16,17 @@ export class CustomerDialogComponent implements OnInit {
   dialogRef: DialogComponent
 
   faTimes = faTimes
+  faSearch = faSearch
   loading = false
+  showLoader = false;
+  customers: Array<any> = [];
+  business: any = {}
+  customColumn = 'NAME';
+  defaultColumns = [ 'PHONE', 'EMAIL', 'SHIPPING_ADDRESS', 'INVOICE_ADDRESS'];
+  allColumns = [ this.customColumn, ...this.defaultColumns ];
+  requestParams: any = {
+    searchValue: ''
+  }
   fakeCustomer: any = {
     number: '45663',
     counter: false,
@@ -88,29 +102,139 @@ export class CustomerDialogComponent implements OnInit {
     }
   ]
 
-  constructor(private viewContainer: ViewContainerRef) {
+  @ViewChildren('inputElement') inputElement!: QueryList<ElementRef>;
+
+  constructor(
+    private viewContainer: ViewContainerRef,
+    private dialogService: DialogService,
+    private apiService: ApiService,
+    private translateService: TranslateService) {
     const _injector = this.viewContainer.parentInjector
     this.dialogRef = _injector.get<DialogComponent>(DialogComponent);
   }
 
-  ngOnInit(): void {
+  ngAfterViewInit(): void {
+    this.inputElement.first.nativeElement.focus();
   }
 
-  close(): void {
-    this.dialogRef.close.emit({action: false})
+  ngOnInit(): void {
+    this.business._id = localStorage.getItem("currentBusiness");
+    this.requestParams.iBusinessId = this.business._id;
+  }
+
+  makeCustomerName = async (customer: any) => {
+    if (!customer) {
+      return '';
+    }
+    let result = '';
+    if (customer.sSalutation) {
+      await this.translateService.get(customer.sSalutation.toUpperCase()).subscribe( (res) => {
+        result += res + ' ';
+      });
+    }
+    if (customer.sFirstName) {
+      result += customer.sFirstName + ' ';
+    }
+    if (customer.sPrefix) {
+      result += customer.sPrefix + ' ';
+    }
+
+    if (customer.sLastName) {
+      result += customer.sLastName;
+    }
+
+    return result;
+  }
+
+  formatZip(zipcode: string) {
+    if (!zipcode) {
+      return '';
+    }
+    return zipcode.replace(/([0-9]{4})([a-z]{2})/gi, (original, group1, group2) => {
+      return group1 + ' ' + group2.toUpperCase();
+    });
+  }
+
+  makeCustomerAddress(address: any, includeCountry: boolean) {
+    if (!address) {
+      return '';
+    }
+    let result = '';
+    if (address.street) {
+      result += address.street + ' ';
+    }
+    if (address.houseNumber) {
+      result += address.houseNumber + (address.houseNumberSuffix ? '' : ' ');
+    }
+    if (address.houseNumberSuffix) {
+      result += address.houseNumberSuffix + ' ';
+    }
+    if (address.postalCode) {
+      result += this.formatZip(address.postalCode) + ' ';
+    }
+    if (address.city) {
+      result += address.city;
+    }
+    if (includeCountry && address.country) {
+      result += address.country;
+    }
+    return result;
+  }
+
+  getCustomers() {
+    this.showLoader = true;
+    this.customers = [];
+    this.apiService.postNew('customer', '/api/v1/customer/list', this.requestParams)
+      .subscribe(async (result: any) => {
+        this.showLoader = false;
+          if (result && result.data && result.data[0] && result.data[0].result) {
+            this.customers = result.data[0].result;
+            for(const customer of this.customers){
+              customer['NAME'] = await this.makeCustomerName(customer);
+              customer['SHIPPING_ADDRESS'] = this.makeCustomerAddress(customer.oShippingAddress, false);
+              customer['INVOICE_ADDRESS'] = this.makeCustomerAddress(customer.oInvoiceAddress, false);
+              customer['EMAIL'] = customer.sEmail;
+              customer['PHONE'] = (customer.oPhone && customer.oPhone.sLandLine ? customer.oPhone.sLandLine : '') + (customer.oPhone && customer.oPhone.sLandLine && customer.oPhone.sMobile ? ' / ' : '') + (customer.oPhone && customer.oPhone.sMobile ? customer.oPhone.sMobile : '')
+            }
+          }
+      },
+      (error : any) =>{
+        this.customers = [];
+        this.showLoader = false;
+      })
+  }
+  
+  AddCustomer(){
+    this.dialogService.openModal(CustomerDetailsComponent, { cssClass:"modal-xl", context: { mode: 'create' } }).instance.close.subscribe(async (result) =>{ 
+      let customer =  result.customer;
+      customer['NAME'] =  await this.makeCustomerName(customer);
+      customer['SHIPPING_ADDRESS'] = this.makeCustomerAddress(customer.oShippingAddress, false);
+      customer['INVOICE_ADDRESS'] = this.makeCustomerAddress(customer.oInvoiceAddress, false);
+      customer['EMAIL'] = customer.sEmail;
+      customer['PHONE'] = (customer.oPhone && customer.oPhone.sLandLine ? customer.oPhone.sLandLine : '') + (customer.oPhone && customer.oPhone.sLandLine && customer.oPhone.sMobile ? ' / ' : '') + (customer.oPhone && customer.oPhone.sMobile ? customer.oPhone.sMobile : '')
+      this.close({action: false, customer: customer });
+    });
+  }
+
+  editCustomer(customer: any){
+    this.dialogService.openModal(CustomerDetailsComponent, { cssClass:"modal-xl", context: { mode: 'details', customer: customer, editProfile: true } }).instance.close.subscribe(result =>{
+       this.getCustomers()
+    });
+  }
+
+  close(data: any): void {
+    this.dialogRef.close.emit(data)
   }
 
   randNumber(min: number, max: number): number {
     return Math.floor(Math.random() * (max - min +1) + min);
   }
 
-  setCustomer(): void {
+  setCustomer(customer: any): void {
     this.loading = true
-    setTimeout( () => {
-      this.customer = this.fakeCustomers[this.randNumber(0, this.fakeCustomers.length -1)]
-      this.loading = false
-    }, 1500)
+    this.customer = customer;
 
+    this.dialogRef.close.emit({ action: false, customer: this.customer })
   }
 
   save(): void {

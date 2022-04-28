@@ -16,7 +16,11 @@ export class DiscountDialogComponent implements OnInit {
   mode: string = 'fixed';
   customDiscount: number = 0
   discountTooHigh: string = ""
+  discountIsTooLow: string = ""
+  alertMessage: string = ""
   showDiscountAlert: boolean = false
+  showCurrentDiscount: boolean = false
+  currentDiscount: string = ""
   customDiscountValuePercent: number = 0
 
   selectedDiscount: any;
@@ -72,6 +76,7 @@ export class DiscountDialogComponent implements OnInit {
   ) {
     const _injector = this.viewContainer.parentInjector
     this.dialogRef = _injector.get<DialogComponent>(DialogComponent)
+
   }
 
   close(): void {
@@ -89,9 +94,19 @@ export class DiscountDialogComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.showCurrentDiscount = this.item.discount && this.item.discount.value > 0
+    this.currentDiscount = this.priceService.getDiscount(this.item.discount)
+
     this.calculatePrices()
     this.switchMode('fixed')
     this.discountTooHigh = this.stringService.translate("DISCOUNT_TOO_HIGH")
+    this.discountIsTooLow = this.stringService.translate("DISCOUNT_IS_ZERO_OR_LOWER")
+
+  }
+
+  showAlert(message: string): void {
+    this.showDiscountAlert = true
+    this.alertMessage = message
   }
 
   switchMode(mode: string): void {
@@ -133,6 +148,7 @@ export class DiscountDialogComponent implements OnInit {
   resetDiscount(): void {
     this.selectedDiscount = 0;
     this.discount = 0
+    this.customDiscount = 0
     this.item.discount = {
       value: 0,
       percent: false
@@ -146,6 +162,11 @@ export class DiscountDialogComponent implements OnInit {
       this.customDiscount = 0
     }
 
+    if(this.discount <= 0) {
+      this.showAlert(this.discountIsTooLow);
+      return
+    }
+
     this.item.discount = {
       value: this.discount,
       percent: this.mode === 'percent'
@@ -157,10 +178,8 @@ export class DiscountDialogComponent implements OnInit {
   }
 
   setCustomDiscount(): void {
-    //if (this.selectedDiscount !== 'custom') {
-      this.resetDiscount()
-      this.selectedDiscount = 'custom'
-    //}
+    this.resetDiscount()
+    this.selectedDiscount = 'custom'
   }
 
   enterCustomDiscount(): void {
@@ -170,7 +189,7 @@ export class DiscountDialogComponent implements OnInit {
     if(
       (this.mode === 'fixed' && this.discount > this.item.price) ||
       (this.mode === 'percent' && this.discount > 100) ) {
-      this.showDiscountAlert = true
+      this.showAlert(this.discountTooHigh);
       return
     }
 
@@ -178,6 +197,11 @@ export class DiscountDialogComponent implements OnInit {
     if(this.mode === 'percent') {
       this.customDiscountValuePercent = this.calculateDiscountPrice()
     }
+  }
+
+  removeDiscount(): void {
+    this.resetDiscount();
+    this.save()
   }
 
 }

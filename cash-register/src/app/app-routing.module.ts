@@ -15,6 +15,22 @@ const routes: Routes = [
     loadChildren : () => import('./till-settings/till-settings.module').then(module => module.TillSettingsModule)
   },
   {
+    path : 'print-settings',
+    loadChildren : () => import('./print-settings/print-settings.module').then(module => module.PrintSettingsModule)
+  },
+  {
+    path : 'workstations',
+    loadChildren : () => import('./workstation/workstation.module').then(module => module.WorkstationModule)
+  },
+  {
+    path : 'webshop-settings',
+    loadChildren : () => import('./webshop-settings/webshop-settings.module').then(module => module.WebshopSettingsModule)
+  },
+  {
+    path : 'devices',
+    loadChildren : () => import('./device/device.module').then(module => module.DeviceModule)
+  },
+  {
     path : 'transactions',
     loadChildren : () => import('./transactions/transactions.module').then(module => module.TransactionsModule)
   },
@@ -25,6 +41,10 @@ const routes: Routes = [
   {
     path: 'services',
     loadChildren: () => import('./services/services.module').then(module => module.ServicesModule)
+  },
+  {
+    path: 'customers',
+    loadChildren: () => import('./customers/customers.module').then(module => module.CustomersModule)
   },
   { path: '', redirectTo: 'home', pathMatch: 'full' }
 ];

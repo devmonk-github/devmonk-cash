@@ -6,6 +6,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { NgxPaginationModule } from 'ngx-pagination';
+import { TranslateModule } from '@ngx-translate/core';
 
 @NgModule({
   declarations: [
@@ -18,7 +19,8 @@ import { NgxPaginationModule } from 'ngx-pagination';
     ReactiveFormsModule,
     FormsModule,
     NgSelectModule,
-    NgxPaginationModule
+    NgxPaginationModule,
+    TranslateModule
   ]
 })
 export class ServicesModule { }

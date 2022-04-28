@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { EditComponent } from './edit/edit.component';
 import { HomeComponent } from './home.component';
+import {PrintComponent} from "../print/print.component";
 
 const routes: Routes = [
   {
@@ -9,9 +9,10 @@ const routes: Routes = [
     component : HomeComponent
   },
   {
-    path : 'edit',
-    component : EditComponent
+    path: 'print',
+    component: PrintComponent
   }
+
 ];
 
 @NgModule({

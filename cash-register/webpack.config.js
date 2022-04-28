@@ -30,9 +30,14 @@ module.exports = {
       exposes: {
         './CashRegisterModule': './src/app/till/till.module.ts',
         './CashRegisterSettingsModule': './src/app/till-settings/till-settings.module.ts',
+        './PrintSettingsModule': './src/app/print-settings/print-settings.module.ts',
+        './WorkstationModule': './src/app/workstation/workstation.module.ts',
+        './DeviceModule': './src/app/device/device.module.ts',
         './TransactionModule': './src/app/transactions/transactions.module.ts',
         './StatisticModule': './src/app/statistics/statistics.module.ts',
-        './ServiceModule': './src/app/services/services.module.ts'
+        './ServiceModule': './src/app/services/services.module.ts',
+        './CustomerModule': './src/app/customers/customers.module.ts',
+        './WebshopSettingsModule': './src/app/webshop-settings/webshop-settings.module.ts',
       },
 
       shared: share({
@@ -54,6 +59,7 @@ module.exports = {
       exposes: {
         './tillModule': './src/app/till/till.module.ts',
         '/TransactionsModule': './src/app/transactions/transactions.module.ts',
+        '/CustomersModule': './src/app/customers/customers.module.ts',
         '/StatisticsModule': './src/app/statistics/statistics.module.ts',
         '/ServicesModule': './src/app/services/services.module.ts',
       },

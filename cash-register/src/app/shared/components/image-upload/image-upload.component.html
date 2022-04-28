@@ -1,0 +1,57 @@
+<div class="card shadow-sm">
+    <div class="card-header" style="margin-top: 20px;">
+         <h4>{{ 'IMAGE_UPDATE' | translate}}</h4>
+         <div mat-dialog-actions>
+            <button mat-dialog-close type="button" class="btn btn-sm btn-light" (click)="close(false)">
+                <fa-icon [icon]="faTimes"></fa-icon>
+            </button>
+         </div>
+    </div>
+    <div class="card-body pt-0 row input-group">
+      <div>
+        <button class="btn btn-secondary" (click)="useCamera()">Use camera/webcam</button>
+        <button class="btn btn-secondary" (click)="useUpload()">Upload file</button>
+      </div>
+      <div class="col-md-12" *ngIf="showWebcam && !showUpload">
+        <div style="text-align:center">
+          <div>
+            <webcam [height]="500" [width]="500" [trigger]="triggerObservable" (imageCapture)="handleImage($event)"
+                    [allowCameraSwitch]="allowCameraSwitch" [switchCamera]="nextWebcamObservable"
+                    [videoOptions]="videoOptions"
+                    [imageQuality]="1"
+                    (cameraSwitched)="cameraWasSwitched($event)"
+                    (initError)="handleInitError($event)">
+            </webcam>
+            <br/>
+            <button class="actionBtn" (click)="triggerSnapshot()">Capture</button>
+            <button class="actionBtn" (click)="toggleWebcam(!showWebcam)">Turn off camera</button>
+            <br/>
+          </div>
+        </div>
+            
+        <div class="snapshot" *ngIf="webcamImage">
+          <h2>Nice one!</h2>
+          <img [src]="webcamImage.imageAsDataUrl"/>
+        </div>
+
+        <button class="btn btn-primary" (click)="submit()" type="submit">Submit</button>
+        
+        <h4 *ngIf="errors.length > 0">Messages:</h4>
+        <ul *ngFor="let error of errors">
+          <li>{{error | json}}</li>
+        </ul>
+      </div>
+      <div  *ngIf="!showWebcam && showUpload" class="col-md-12" class="form">
+        <form [formGroup]="myForm" (ngSubmit)="submit()">
+          <div class="form-group">
+            <label class="form-label" >Name</label>
+            <input formControlName="file" id="file" type="file" class="form-control" (change)="onFileChange($event)">
+            <div *ngIf="f.file.touched && f.file.invalid" class="alert alert-danger">
+                <div *ngIf="f.file.errors?.required">File is required.</div>
+            </div>
+            <button class="btn btn-primary" type="submit">Submit</button>
+          </div>
+        </form>
+      </div>
+    </div>
+</div>

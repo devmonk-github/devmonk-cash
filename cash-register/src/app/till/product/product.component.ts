@@ -1,10 +1,11 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {faTimes} from '@fortawesome/free-solid-svg-icons'
-import {DialogService} from "../../shared/service/dialog";
-import {DiscountDialogComponent} from "../dialogs/discount-dialog/discount-dialog.component";
-import {PriceService} from "../../shared/service/price.service";
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { faTimes } from '@fortawesome/free-solid-svg-icons'
+import { DialogService } from "../../shared/service/dialog";
+import { DiscountDialogComponent } from "../dialogs/discount-dialog/discount-dialog.component";
+import { PriceService } from "../../shared/service/price.service";
 
 @Component({
+  // eslint-disable-next-line @angular-eslint/component-selector
   selector: '[till-product]',
   templateUrl: './product.component.html',
   styleUrls: ['./product.component.sass'],
@@ -15,6 +16,7 @@ export class ProductComponent implements OnInit {
   @Output() itemChanged = new EventEmitter<any>();
 
   faTimes = faTimes
+  typeArray = ['regular', 'broken', 'return'];
 
   constructor(private dialogService: DialogService, private priceService: PriceService) { }
 
@@ -26,15 +28,39 @@ export class ProductComponent implements OnInit {
     this.itemChanged.emit('delete')
   }
 
-  getDiscount(): any {
-    return this.priceService.getDiscount(this.item.discount)
+  getDiscount(item: any): string {
+    return this.priceService.getDiscount(item.discount || 0);
+  }
+
+  getTotalDiscount(item: any): string {
+    return this.priceService.getDiscountValue(item);
+  }
+
+  getTotalPrice(item: any): string {
+    return this.priceService.getArticlePrice(item)
+  }
+
+  getColorCode(item: any): string {
+    const { eTransactionItemType } = item;
+    switch (eTransactionItemType) {
+      case 'regular':
+        return '#4ab69c';
+      case 'broken':
+        return '#f0e959';
+      case 'return':
+        return '#f7422e';
+      default:
+        return '#4ab69c';
+    }
   }
 
   openDiscountDialog(): void {
-    this.dialogService.openModal(DiscountDialogComponent, {context: {item: this.item}})
-      .instance.close.subscribe( (data) => {
-        console.log('discountdialog ', data)
-
-    })
+    this.dialogService.openModal(DiscountDialogComponent, { context: { item: JSON.parse(JSON.stringify(this.item)) } })
+      .instance.close.subscribe((data) => {
+        if (data.item && data.item.discount) {
+          console.log('discount dialog closed', data.item)
+          this.item.discount = data.item.discount
+        }
+      })
   }
 }

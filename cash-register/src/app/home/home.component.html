@@ -1,13 +1,13 @@
 <div class="container">
   <div class="row">
       <div class="col-md-6">
-        <button class="btn btn-md btn-primary" routerLink="./edit">Edit</button>
-        <br>
         <button class="btn btn-md btn-primary" routerLink="/till">Cash Register</button>
         <br>
-        <button class="btn btn-md btn-primary" (click)="openModal()">Open modal</button>
         <br>
         <button class="btn btn-md btn-primary" routerLink="/statistics">Statistics</button>
+        <br>
+        <br>
+        <button class="btn btn-md btn-primary" routerLink="print">Print</button>
         <b *ngIf="localData">{{ localData | json}}</b>
       </div>
   </div>
