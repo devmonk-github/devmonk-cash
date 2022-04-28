@@ -41,7 +41,7 @@ export class TillComponent implements OnInit {
 
   taxes: any[] = []
   transactionItems: any[] = []
-  selectedTransaction = null;
+  selectedTransaction: any = null;
   customer: any = null;
   searchKeyword: any;
   shopProducts: any;
@@ -58,7 +58,7 @@ export class TillComponent implements OnInit {
   }
 
   // Dummy data
-  parkedTransactions: Transaction[] = [
+  parkedTransactions: any[] = [
   ]
   quickButtons: any[] = [
     { name: 'Waterdicht', price: this.randNumber(5, 30) },
@@ -104,7 +104,8 @@ export class TillComponent implements OnInit {
     this.locationId = localStorage.getItem("currentLocation") || '';
     this.requestParams.iBusinessId = this.business._id;
     this.taxes = this.taxService.getTaxRates()
-    this.getPaymentMethods()
+    this.getPaymentMethods();
+    this.getParkedTransactions();
   }
 
   getValueFromLocalStorage(key: string): any {
@@ -413,15 +414,17 @@ export class TillComponent implements OnInit {
       iLocationId: this.getValueFromLocalStorage('currentLocation'),
       iDeviceId: '623b6d840ed1002890334456',
       transactionItems: transactionItems,
-      transaction: transaction,
+      oTransaction: transaction,
       payments: this.getUsedPayMethods(false),
     };
 
     this.apiService.postNew('cashregistry', '/api/v1/till/transaction', body)
       .subscribe(data => {
-        this.toastrService.show({ type: 'success', text: 'Transactie gemaakt!' })
+        this.toastrService.show({ type: 'success', text: 'Transactie gemaakt!' });
+        if (this.selectedTransaction) {
+          this.deleteParkedTransaction();
+        }
       }, err => {
-        console.log(err);
         this.toastrService.show({ type: 'danger', text: err.message });
       });
   }
@@ -527,7 +530,85 @@ export class TillComponent implements OnInit {
     }
   }
 
-  // addNewCard() {
-  //   this.cards.push({ sName: 'Card', type: ['Visa', 'Meastro', 'Master Card'], amount: 0 });
-  // }
+  getParkedTransactionBody(): Object {
+    const body = {
+      aTaxes: this.taxes,
+      aTransactionItems: this.transactionItems,
+      oCustomer: this.customer,
+      searchKeyword: this.searchKeyword,
+      shopProducts: this.shopProducts,
+      iBusinessId: this.businessId,
+      iSupplierId: this.supplierId,
+      iActivityId: this.iActivityId,
+      bIsStockSelected: this.isStockSelected,
+      aPayMethods: this.payMethods,
+      oBusiness: this.business,
+      iLocationId: this.locationId,
+      oRequestParams: this.requestParams,
+    };
+    return body;
+  }
+  park(): void {
+    this.apiService.postNew('cashregistry', `/api/v1/park?iBusinessId=${this.getValueFromLocalStorage('currentBusiness')}`, this.getParkedTransactionBody())
+      .subscribe(data => {
+        this.toastrService.show({ type: 'success', text: 'Transaction parked!' })
+      }, err => {
+        this.toastrService.show({ type: 'danger', text: err.message });
+      });
+    this.clearAll();
+  }
+
+  getParkedTransactions() {
+    this.apiService.getNew('cashregistry', `/api/v1/park?iBusinessId=${this.getValueFromLocalStorage('currentBusiness')}`)
+      .subscribe((data: any) => {
+        this.parkedTransactions = data;
+      }, err => {
+        this.toastrService.show({ type: 'danger', text: err.message });
+      });
+  }
+
+  fetchParkedTransactionInfo() {
+    this.apiService.getNew('cashregistry', `/api/v1/park/${this.selectedTransaction._id}?iBusinessId=${this.getValueFromLocalStorage('currentBusiness')}`)
+      .subscribe((transactionInfo: any) => {
+        this.taxes = transactionInfo.aTaxes;
+        this.transactionItems = transactionInfo.aTransactionItems;
+        this.customer = transactionInfo.oCustomer;
+        this.searchKeyword = transactionInfo.searchKeyword;
+        this.shopProducts = transactionInfo.shopProducts;
+        this.businessId = transactionInfo.iBusinessId;
+        this.supplierId = transactionInfo.iSupplierId;
+        this.iActivityId = transactionInfo.iActivityId;
+        this.isStockSelected = transactionInfo.bIsStockSelected;
+        this.payMethods = transactionInfo.aPayMethods;
+        this.business = transactionInfo.oBusiness;
+        this.locationId = transactionInfo.iLocationId;
+        this.requestParams = transactionInfo.oRequestParams;
+      }, err => {
+        this.toastrService.show({ type: 'danger', text: err.message });
+      });
+  }
+
+  updateParkedTransaction() {
+    this.apiService.putNew('cashregistry', `/api/v1/park/${this.selectedTransaction._id}?iBusinessId=${this.getValueFromLocalStorage('currentBusiness')}`, this.getParkedTransactionBody())
+      .subscribe((data: any) => {
+        this.toastrService.show({ type: 'success', text: data.message });
+      }, err => {
+        this.toastrService.show({ type: 'danger', text: err.message });
+      });
+  }
+
+  deleteParkedTransaction() {
+    let vm = this;
+    this.apiService.deleteNew('cashregistry', `/api/v1/park/${this.selectedTransaction._id}?iBusinessId=${this.getValueFromLocalStorage('currentBusiness')}`)
+      .subscribe((data: any) => {
+        this.toastrService.show({ type: 'success', text: data.message });
+        this.parkedTransactions = this.parkedTransactions.filter(function (item) {
+          return item._id !== vm.selectedTransaction._id;
+        });
+
+        vm.clearAll();
+      }, err => {
+        this.toastrService.show({ type: 'danger', text: err.message });
+      });
+  }
 }

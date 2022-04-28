@@ -302,20 +302,24 @@
       </div>
 
       <div class="form-floating till-padding">
-        <select name="parkedTransactions" id="parkedTransactions" class="form-select" [(ngModel)]="selectedTransaction">
+        <select name="parkedTransactions" id="parkedTransactions" class="form-select" [(ngModel)]="selectedTransaction"
+          (ngModelChange)="fetchParkedTransactionInfo()">
           <option [ngValue]="null"></option>
           <option *ngFor="let transaction of parkedTransactions" [ngValue]="transaction">{{transaction.sNumber}}
+            ({{transaction.dUpdatedDate | date: 'short'}})
           </option>
         </select>
         <label for="parkedTransactions">{{"PARKED_TRANSACTIONS" | translate}}</label>
       </div>
 
       <div class="input-group input-group-sm mb-5 till-padding">
-        <button class="btn btn-secondary">{{ selectedTransaction ? "SAVE" : "PARK" | translate}}</button>
+        <button class="btn btn-secondary" (click)="selectedTransaction ? updateParkedTransaction(): park()">{{
+          selectedTransaction ? "SAVE" : "PARK" |
+          translate}}</button>
         <button class="btn btn-secondary" (click)="clearTransaction()" *ngIf="selectedTransaction">
           <fa-icon [icon]="faTimesCircle"></fa-icon>
         </button>
-        <button class="btn btn-secondary" *ngIf="selectedTransaction">
+        <button class="btn btn-secondary" *ngIf="selectedTransaction" (click)="deleteParkedTransaction()">
           <fa-icon [icon]="faTrashAlt"></fa-icon>
         </button>
       </div>
@@ -359,7 +363,8 @@
       <h1>{{ "CHANGE" | translate}}: {{getUsedPayMethods(true) - getTotals('price') | currency: '€'}}</h1>
 
       <h4>{{ "PREPAYMENT" | translate}}: {{totalPrepayment() | currency: '€'}}</h4>
-      <button class="btn btn-primary till-save-button" (click)="createTransaction()">{{ "SAVE" | translate}}</button>
+      <button class="btn btn-primary till-save-button" (click)="createTransaction()">{{ "SAVE" |
+        translate}}</button>
     </div>
   </div>
 </div>
