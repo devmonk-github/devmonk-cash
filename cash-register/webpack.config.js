@@ -24,32 +24,26 @@ module.exports = {
   plugins: [
     new ModuleFederationPlugin({
 
-        // For remotes (please adjust)
-        name: "cashRegister",
-        filename: "remoteEntry.js",
-        exposes: {
-          './CashRegisterModule': './src/app/till/till.module.ts',
-          './CashRegisterSettingsModule': './src/app/till-settings/till-settings.module.ts',
-          './TransactionModule': './src/app/transactions/transactions.module.ts',
-          './StatisticModule': './src/app/statistics/statistics.module.ts',
-          './ServiceModule': './src/app/services/services.module.ts'
-        },
+      // For remotes (please adjust)
+      name: "cashRegister",
+      filename: "remoteEntry.js",
+      exposes: {
+        './CashRegisterModule': './src/app/till/till.module.ts',
+        './CashRegisterSettingsModule': './src/app/till-settings/till-settings.module.ts',
+        './TransactionModule': './src/app/transactions/transactions.module.ts',
+        './StatisticModule': './src/app/statistics/statistics.module.ts',
+        './ServiceModule': './src/app/services/services.module.ts'
+      },
 
-        // For hosts (please adjust)
-        // remotes: {
-        //     "mfe1": "mfe1@http://localhost:3000/remoteEntry.js",
+      shared: share({
+        "@angular/core": { singleton: true, requiredVersion: 'auto' },
+        "@angular/common": { singleton: true, requiredVersion: 'auto' },
+        "@angular/common/http": { singleton: true, requiredVersion: 'auto' },
+        "@angular/router": { singleton: true, requiredVersion: 'auto' },
+        "@ngx-translate/core": { singleton: true, requiredVersion: 'auto' },
 
-        // },
-
-        shared: share({
-          "@angular/core": { singleton: true, requiredVersion: 'auto' },
-          "@angular/common": { singleton: true, requiredVersion: 'auto' },
-          "@angular/common/http": { singleton: true, requiredVersion: 'auto' },
-          "@angular/router": { singleton: true, requiredVersion: 'auto' },
-          "@ngx-translate/core": { singleton: true, requiredVersion: 'auto' },
-
-          ...sharedMappings.getDescriptors()
-        })
+        ...sharedMappings.getDescriptors()
+      })
 
     }),
     new ModuleFederationPlugin({
@@ -64,12 +58,6 @@ module.exports = {
         '/ServicesModule': './src/app/services/services.module.ts',
       },
 
-      // For hosts (please adjust)
-      // remotes: {
-      //     "mfe1": "mfe1@http://localhost:3000/remoteEntry.js",
-
-      // },
-
       shared: share({
         "@angular/core": { singleton: true, requiredVersion: 'auto' },
         "@angular/common": { singleton: true, requiredVersion: 'auto' },
@@ -79,7 +67,7 @@ module.exports = {
         ...sharedMappings.getDescriptors()
       })
 
-  }),
+    }),
     sharedMappings.getPlugin()
   ],
 };
