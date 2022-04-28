@@ -1,6 +1,7 @@
 import { Component, Input, OnInit, Output, EventEmitter, SimpleChanges, OnChanges } from '@angular/core';
 import { ToastService } from 'src/app/shared/components/toast';
 import { ApiService } from 'src/app/shared/service/api.service';
+import { faTimes, faSync } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-customer-details-import',
@@ -16,6 +17,9 @@ export class CustomerDetailsImportComponent implements OnInit, OnChanges {
   @Output() updateTemplateFormChange: EventEmitter<any> = new EventEmitter();
   @Input() parsedCustomerData: any;
   @Output() moveToStep: EventEmitter<any> = new EventEmitter();
+
+  faTimes = faTimes;
+  faSync = faSync;
 
   headerOptions: Array<any> = [];
 

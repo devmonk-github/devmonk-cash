@@ -23,7 +23,9 @@ export class CustomerImportComponent implements OnInit {
     private apiService: ApiService
   ) { }
 
-  ngOnInit(): void { }
+  ngOnInit(): void { 
+    this.businessDetails._id = localStorage.getItem('currentBusiness')
+  }
 
   ngAfterContentInit(): void {
     StepperComponent.bootstrap();
@@ -48,18 +50,16 @@ export class CustomerImportComponent implements OnInit {
     this.importInprogress = true;
     let data: any = {
       iBusinessId: this.businessDetails._id,
-      oTemplate: this.importService.processImportProduct({ product: this.updateTemplateForm }),
-      aProduct: this.parsedCustomerData,
+      oTemplate: this.importService.processImportCustomer({ customer: this.updateTemplateForm }),
+      aCustomer: this.parsedCustomerData,
       sDefaultLanguage: localStorage.getItem('language') || 'n;'
     };
 
-    this.parsedCustomerData.forEach((customer, index) => {
-      let brand = this.customerDetailsForm.updatedBrand.filter((brand: any) => brand.foundName == customer[this.customerDetailsForm['Brand']]);
-      data.aProduct[index]["iBusinessBrandId"] = brand.length > 0 && brand[0].selected._id && brand[0].selected._id ? brand[0].selected._id : '';
-    });
 
-    this.apiService.postNew('core', '/api/v1/general/import/products', data).subscribe((result: any) => {
+    this.apiService.postNew('customer', '/api/v1/customer/import', data).subscribe((result: any) => {
       this.importInprogress = false;
+    },(error) => {
+      console.log(error);
     });
   }
 
