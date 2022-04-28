@@ -1,6 +1,6 @@
-import {Component, OnInit, ViewContainerRef} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {PdfService} from "../shared/service/pdf.service";
-import {JsonEditorOptions, JsonEditorComponent} from "ang-jsoneditor";
+import {JsonEditorOptions} from "ang-jsoneditor";
 
 @Component({
   selector: 'app-print',
@@ -11,8 +11,9 @@ export class PrintComponent implements OnInit {
   dataString: any
   templateString: any
   editorOptions: JsonEditorOptions = new JsonEditorOptions()
+  pdfGenerating: boolean = false
 
-  constructor(private viewContainerRef: ViewContainerRef, private pdfService: PdfService) {
+  constructor(private pdfService: PdfService) {
     this.editorOptions.mode = 'view'
   }
 
@@ -747,7 +748,15 @@ export class PrintComponent implements OnInit {
 
 
   generatePDF(): void {
-    this.pdfService.createPdf(JSON.stringify(this.templateString), JSON.stringify(this.dataString), this.viewContainerRef, new Date().getTime().toString())
+    this.pdfGenerating = true
+    this.pdfService.createPdf(JSON.stringify(this.templateString), JSON.stringify(this.dataString),new Date().getTime().toString())
+      .then( () => {
+        this.pdfGenerating = false
+      })
+      .catch( (e) => {
+        this.pdfGenerating = false
+        console.error('err', e)
+      })
   }
 
 }
