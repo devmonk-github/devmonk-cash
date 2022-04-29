@@ -45,6 +45,7 @@ export class TillComponent implements OnInit {
   customer: any = null;
   searchKeyword: any;
   shopProducts: any;
+  commonProducts: any;
   businessId!: string;
   supplierId!: string;
   iActivityId!: string;
@@ -506,7 +507,7 @@ export class TillComponent implements OnInit {
         // this.isLoading = false;
         if (result && result.data && result.data.length) {
           const response = result.data[0];
-          this.shopProducts = response.result;
+          this.commonProducts = response.result;
         }
       }, (error) => {
         // this.isLoading = false;
@@ -523,7 +524,7 @@ export class TillComponent implements OnInit {
       eTransactionItemType: 'regular',
       type: this.eKind,
       quantity: 1,
-      price: product.nPriceIncludesVat,
+      price: product.nPriceIncludesVat || 0,
       paymentAmount: 0,
       discount: product.nDiscount || 0,
       tax: product.nVatRate || 0,
@@ -535,11 +536,12 @@ export class TillComponent implements OnInit {
   }
 
   search() {
+    this.shopProducts = [];
+    this.commonProducts = [];
     // if (searchValue && searchValue.length > 2) {
     //   this.isLoading = true;
-    if (this.isStockSelected) {
-      this.listShopProducts(this.searchKeyword, false);
-    } else {
+    this.listShopProducts(this.searchKeyword, false);
+    if (!this.isStockSelected) {
       this.listCommonBrandProducts(this.searchKeyword, false); // Searching for the products of common brand
     }
   }
