@@ -4,6 +4,7 @@ import { FileUploadControl, FileUploadValidators } from '@iplab/ngx-file-upload'
 import { NgxCsvParser, NgxCSVParserError } from 'ngx-csv-parser';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { ToastService } from 'src/app/shared/components/toast';
+import { faTimes } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'import-file-import',
@@ -19,6 +20,8 @@ export class FileImportComponent implements OnInit, OnDestroy {
   @Input() parsedCustomerData!: Array<any>;
   @Output() parsedCustomerDataChange: EventEmitter<Array<any>> = new EventEmitter<Array<any>>();
   @Output() moveToStep: EventEmitter<any> = new EventEmitter();
+
+  faTimes = faTimes;
 
   constructor(
     private csvParser: NgxCsvParser,

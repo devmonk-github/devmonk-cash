@@ -1,10 +1,6 @@
-import {ComponentFactoryResolver, Injectable, ViewContainerRef} from '@angular/core';
-import {PdfComponent} from "../components/pdf/pdf.component";
+import {ComponentFactoryResolver, Injectable} from '@angular/core';
 import * as moment from 'moment';
-import { jsPDF } from 'jspdf';
-import html2canvas from 'html2canvas'
-import { invert } from 'lodash';
-import {HttpClient, HttpHeaders} from "@angular/common/http";
+import {HttpClient, HttpErrorResponse} from "@angular/common/http";
 import {StringService} from "./string.service";
 import {FileSaverService} from "ngx-filesaver";
 
@@ -95,7 +91,8 @@ export class PdfService {
     private factoryResolver: ComponentFactoryResolver,
     private httpClient: HttpClient,
     private stringService: StringService,
-    private fileSaver: FileSaverService) {}
+    private fileSaver: FileSaverService) {
+  }
 
   private addRowToPageWrap(page: any, row: any) {
     let wrapper = page.getElementsByClassName('wrapper')[0];
@@ -114,7 +111,7 @@ export class PdfService {
 
   private isValidJson(json: string): boolean {
     try {
-      if(json) {
+      if (json) {
         JSON.parse(json)
         return true
       } else {
@@ -141,20 +138,20 @@ export class PdfService {
     return rows;
   }
 
-  private calcNewProductTotal(price: number, quantity: number, discountPercent: number, discountValue: number): number {
-    if (discountPercent && discountValue) {
-      return (price * (100 / (100 - discountValue))) * quantity;
-    } else if (!discountPercent && discountValue) {
-      return (price + discountValue) * quantity;
-    } else {
-      return price * quantity
-    }
-  }
+  // private calcNewProductTotal(price: number, quantity: number, discountPercent: number, discountValue: number): number {
+  //   if (discountPercent && discountValue) {
+  //     return (price * (100 / (100 - discountValue))) * quantity;
+  //   } else if (!discountPercent && discountValue) {
+  //     return (price + discountValue) * quantity;
+  //   } else {
+  //     return price * quantity
+  //   }
+  // }
 
   private createRandomString(len: number = 5): string {
     let text = "";
     const possible = 'abcdefghijklmnopqrstuvwxyz0123456789';
-    for (var i = 0; i < len; i++) {
+    for (let i = 0; i < len; i++) {
       text += possible.charAt(Math.floor(Math.random() * possible.length));
     }
     return text;
@@ -164,20 +161,14 @@ export class PdfService {
     switch (type) {
       case 'money':
         return this.convertStringToMoney(val);
-        break;
       case 'moneyplus':
         return this.currency + ' ' + this.convertStringToMoney(val);
-        break;
       case 'barcode':
         return this.convertValueToBarcode(val);
-        break;
       case 'date':
         return moment(val).format(this.dateFormat);
-        break;
-
       default:
         return val;
-        break;
     }
   }
 
@@ -195,8 +186,8 @@ export class PdfService {
       val = String(val);
       let parts = val.split('.');
 
-      if(parts[1].length === 1) {
-        val = val+'0';
+      if (parts[1].length === 1) {
+        val = val + '0';
       }
       return val.replace('.', ',')
     }
@@ -310,7 +301,7 @@ export class PdfService {
 		}
 
 		body {
-			font: `+this.fontSize+` "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+			font: ` + this.fontSize + ` "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
 		}
 
 		h1,h2,h3,h4,h5 {
@@ -345,11 +336,11 @@ export class PdfService {
 	    	box-shadow:inset 0px 0px 0px 1px #f00;
 	    }
 
-		`+this.css;
+		` + this.css;
   }
 
   private createPageBody(content: string, paperSize: PaperSize): string {
-    return '<body class="'+ paperSize.type+` `+this.orientation+' debug-'+this.debug+' rotate-'+this.rotation+'" >'+content+'</body>'
+    return '<body class="' + paperSize.type + ` ` + this.orientation + ' debug-' + this.debug + ' rotate-' + this.rotation + '" >' + content + '</body>'
   }
 
   private htmlPageEnd(): string {
@@ -367,7 +358,7 @@ export class PdfService {
     let html = '';
     let pdfBody = '';
 
-    for (let p = 0; p < pages.length; p++ ) {
+    for (let p = 0; p < pages.length; p++) {
       if (this.isDefined(pages[p].childNodes[0].childNodes[0])) {
         pdfBody += pages[p].outerHTML;
       }
@@ -385,8 +376,8 @@ export class PdfService {
 		<!DOCTYPE html><html lang="en">
 		<head>
 			<meta charset="utf-8">
-			<title>`+title+`</title>
-			<style>`+this.htmlDefaultStyling()+`</style>`;
+			<title>` + title + `</title>
+			<style>` + this.htmlDefaultStyling() + `</style>`;
 
     if (paperSize.type === 'custom-papersize') {
       html += '<style>' + this.htmlCustomPaperSize(paperSize) + '</style>';
@@ -399,12 +390,12 @@ export class PdfService {
 
   private htmlCustomPaperSize(paperSize: PaperSize): string {
     return `
-			body.custom-papersize               .sheet { width: `+paperSize.width+`mm; height: `+paperSize.height+`mm }
-			body.custom-papersize.landscape     .sheet { width: `+paperSize.height+`mm; height: `+paperSize.width+`mm }
+			body.custom-papersize               .sheet { width: ` + paperSize.width + `mm; height: ` + paperSize.height + `mm }
+			body.custom-papersize.landscape     .sheet { width: ` + paperSize.height + `mm; height: ` + paperSize.width + `mm }
 
 			@media print {
-				body.custom-papersize.landscape { width: `+paperSize.height+`mm }
-				body.custom-papersize           { width: `+paperSize.width+`mm }
+				body.custom-papersize.landscape { width: ` + paperSize.height + `mm }
+				body.custom-papersize           { width: ` + paperSize.width + `mm }
 			}
 		`;
   }
@@ -416,7 +407,7 @@ export class PdfService {
       left: 0,
       right: 0
     }
-    switch(margins.length) {
+    switch (margins.length) {
       case 0:
         break;
       case 1:
@@ -452,8 +443,8 @@ export class PdfService {
 
   private definePaperSize(paperSize: string | PaperSize, margins: number[]): PaperSize {
     let definedPaperSize: any
-    if(typeof paperSize === 'string') {
-      definedPaperSize = this.staticPaperSize.find( (size) => {
+    if (typeof paperSize === 'string') {
+      definedPaperSize = this.staticPaperSize.find((size) => {
         return size.type === paperSize
       })
     } else if (typeof paperSize === 'object') {
@@ -468,12 +459,12 @@ export class PdfService {
         totalVerticalMargin = (definedMargins.top + definedMargins.bottom);
       }
 
-      if ( (pageWidth - totalHorizontalMargin) < 100) {
-        console.error("Paper size is too low, we changed it from " + (pageWidth-totalHorizontalMargin) + ' to ' + (100+totalHorizontalMargin))
+      if ((pageWidth - totalHorizontalMargin) < 100) {
+        console.error("Paper size is too low, we changed it from " + (pageWidth - totalHorizontalMargin) + ' to ' + (100 + totalHorizontalMargin))
         pageWidth = 100
       }
 
-      if( (pageHeight - totalVerticalMargin) < 100) {
+      if ((pageHeight - totalVerticalMargin) < 100) {
         console.error("Paper height is too low, we changed it from " + (pageHeight) + " to 100");
         pageHeight = 100
       }
@@ -595,14 +586,14 @@ export class PdfService {
         }
       }
 
-      if(currentRow.htmlAfter) {
+      if (currentRow.htmlAfter) {
         newRow.appendChild(this.convertHtmlToElement(String(currentRow.htmlAfter)));
       }
 
       createdRows.push(newRow);
     }
 
-    if(currentRow.container) {
+    if (currentRow.container) {
       const container = document.createElement(currentRow.container)
       for (let r = 0; r < createdRows.length; r++) {
         const row = createdRows[r];
@@ -637,7 +628,7 @@ export class PdfService {
     let previousSection = "";
     let sectionRemainingSpace = 0;
 
-    for(let r = 0; r < this.layout.length; r++) {
+    for (let r = 0; r < this.layout.length; r++) {
       const currentRow = this.layout[r];
 
       currentSection = currentRow.section;
@@ -722,35 +713,35 @@ export class PdfService {
     return rows;
   }
 
-  private checkConditions(conditions: any, dataSourceObject: any): boolean{
-    let counter =0;
+  private checkConditions(conditions: any, dataSourceObject: any): boolean {
+    let counter = 0;
     let inverted = false;
     let result = false;
 
-    if(typeof conditions === 'object') {
-      for(let c = 0; c < conditions.length; c++) {
+    if (typeof conditions === 'object') {
+      for (let c = 0; c < conditions.length; c++) {
         let condition = conditions[c];
 
-        if(condition.indexOf('!') > -1) {
+        if (condition.indexOf('!') > -1) {
           inverted = true;
           condition = condition.replace('!', '')
         }
 
         let dataValue = dataSourceObject[condition];
 
-        if(inverted) {
-          if(dataValue === false || dataValue === 0 || dataValue === '') {
+        if (inverted) {
+          if (dataValue === false || dataValue === 0 || dataValue === '') {
             counter++
           }
         } else {
-          if(dataValue) {
+          if (dataValue) {
             counter++
           }
         }
       }
     }
 
-    return counter === conditions.length ? true : false
+    return counter === conditions.length
   }
 
   private getVariables(text: string): RegExpMatchArray | null {
@@ -769,20 +760,20 @@ export class PdfService {
     let providedData = dataSourceObject;
     let finalString = originalText;
 
-    if(extractedVariables) {
+    if (extractedVariables) {
       for (let a = 0; a < extractedVariables.length; a++) {
         let currentMatch = extractedVariables[a];
 
 
         const matchedMatch = currentMatch.match(/\[/g)
 
-        if(matchedMatch && matchedMatch.length === 2) {
+        if (matchedMatch && matchedMatch.length === 2) {
           let currentMatchClean = this.removeBrackets(currentMatch);
 
           let variableStringFiltered = currentMatchClean
           let format = '';
 
-          if(currentMatchClean.match(/\|/g) !== null) {
+          if (currentMatchClean.match(/\|/g) !== null) {
             let stringAndFormat = currentMatchClean.split('|');
             variableStringFiltered = stringAndFormat[0];
             format = stringAndFormat[1];
@@ -805,7 +796,7 @@ export class PdfService {
                 providedData = layer1[parts[1]];
                 variableStringFiltered = parts[2];
 
-                if(!this.isDefined(providedData[variableStringFiltered])) {
+                if (!this.isDefined(providedData[variableStringFiltered])) {
                   providedData = providedData[0];
                 }
                 break;
@@ -827,8 +818,8 @@ export class PdfService {
           let matched = false;
           let newText = '';
 
-          if(this.isDefined(providedData)) {
-            Object.keys(providedData).forEach( (key, index) => {
+          if (this.isDefined(providedData)) {
+            Object.keys(providedData).forEach((key, index) => {
               if (key === variableStringFiltered) {
                 if (String(providedData[variableStringFiltered]).length > 0) {
                   matched = true;
@@ -844,7 +835,7 @@ export class PdfService {
             console.warn('No match found for', currentMatch)
           }
 
-          if(matched) {
+          if (matched) {
             finalString = finalString.replace(currentMatch, newText);
           } else {
             console.warn(finalString + " could not be matched with the provided data.", currentMatch)
@@ -860,19 +851,19 @@ export class PdfService {
 
   private applyCss(obj: any, css: string): any {
     let extractedCss = Object.entries(css);
-    for(let r = 0; r < extractedCss.length; r++) {
+    for (let r = 0; r < extractedCss.length; r++) {
       const rule = extractedCss[r];
 
       if (rule[0] === 'padding' || rule[0] === 'margin') {
         let convertedValues;
         if (typeof rule[1] === 'object') {
 
-          var containsInvalidValues = Object.values(rule[1]).filter(function(item:any,index) {
+          let containsInvalidValues = Object.values(rule[1]).filter(function (item: any, index) {
             return isNaN(item) // || (item % 1 != 0)
           })
 
-          if(containsInvalidValues.length > 0) {
-            console.error('The '+ rule[0]+' array can only contain numeric values (millimeters)');
+          if (containsInvalidValues.length > 0) {
+            console.error('The ' + rule[0] + ' array can only contain numeric values (millimeters)');
           }
 
           convertedValues = this.convertSpacingArrayToObject(rule[1]);
@@ -894,8 +885,7 @@ export class PdfService {
 
   private defineVisibility(elementIndex: number, element: any, template: any, newContent: any): any {
     for (let c = 0; c < newContent.length; c++) {
-      let contentIndex = c;
-      if (template.content === newContent[c][0] && elementIndex === contentIndex) {
+      if (template.content === newContent[c][0] && elementIndex === c) {
         const visibility = newContent[c][2];
         if (this.isDefined(visibility)) {
           if (!visibility) {
@@ -944,7 +934,7 @@ export class PdfService {
   private defineDataSource(key: string): any {
     let dataSourceObject = key;
 
-    if(dataSourceObject.match(/\./g)) {
+    if (dataSourceObject.match(/\./g)) {
       const filterMatches = dataSourceObject.match(/\./g)
       let nrOfLevels = filterMatches ? filterMatches.length : 0;
       let parts = dataSourceObject.split('.');
@@ -983,8 +973,8 @@ export class PdfService {
 
   private calcRowWidth(printableAreaWidth: any, currentSize: any, gutter: any) {
     let newRowWidth;
-    if(currentSize < 12 && currentSize > 1) {
-      newRowWidth= printableAreaWidth-gutter;
+    if (currentSize < 12 && currentSize > 1) {
+      newRowWidth = printableAreaWidth - gutter;
     } else {
       newRowWidth = printableAreaWidth;
     }
@@ -1007,7 +997,7 @@ export class PdfService {
 
     if (html.length > 0) {
       if (typeof html[0] === 'object') {
-        for( let e = 0; e < html.length; e++) {
+        for (let e = 0; e < html.length; e++) {
           html[e].content = html[e].content.replace('/>', '>');
 
           if (this.isDefined(html[e].if)) {
@@ -1031,12 +1021,12 @@ export class PdfService {
 
           dataSourceObject = this.defineDataSource(forEach);
 
-          for(let d = 0; d < dataSourceObject.length; d++) {
+          for (let d = 0; d < dataSourceObject.length; d++) {
             let entry = dataSourceObject[d];
             let extractedVariables = this.getVariables(template);
             let htmlConcept = '';
 
-            if(extractedVariables) {
+            if (extractedVariables) {
               for (let v = 0; v < extractedVariables.length; v++) {
                 let matched = false;
                 let oldText = extractedVariables[v];
@@ -1053,7 +1043,7 @@ export class PdfService {
                   format = stringAndFormat[1]
                 }
 
-                Object.keys(entry).forEach((key, index) => {
+                Object.keys(entry).forEach((key) => {
                   if (key === variableStringFiltered) {
                     if (String(entry[variableStringFiltered]).length > 0) {
                       matched = true;
@@ -1085,7 +1075,7 @@ export class PdfService {
 
     let thisColWidth = this.calcColumnWidth(currentSize, newRowWidth);
 
-    if( (i+1) < nrOfCols) {
+    if ((i + 1) < nrOfCols) {
       col.style.marginRight = gutterSize + 'mm';
     }
 
@@ -1147,7 +1137,7 @@ export class PdfService {
         foreachStarted = false
       }
 
-      let nextRow = rows[r+1];
+      let nextRow = rows[r + 1];
       if (this.isDefined(nextRow)) {
         if (foreachStarted && nextRow.outerHTML.indexOf('in-foreach') < 1) {
           if (row.pageNumber < this.totalPageCount) {
@@ -1174,34 +1164,28 @@ export class PdfService {
     return Promise.resolve(this.convertPagesToHtml(pages, this.paperSize));
   }
 
-  createPdf(templateString: string, dataString: string, viewContainerRef: ViewContainerRef, fileName: string): void {
-
-    let pdfGenerator = document.createElement('div')
-    pdfGenerator.style.display = 'none'
-    pdfGenerator.id = 'pdfGenerator'
-    document.body.appendChild(pdfGenerator)
-
+  private generate(templateString: string, dataString: string, fileName: string, ) {
     //Set a small timeout to let the component generate and make sure that it will exist
-    setTimeout( () => {
-      this.makePdf(templateString, dataString)
-        .then( (htmlString: string) => {
-          let headers: any = {
-            'Content-Type': 'application/pdf',
-          }
-          if (localStorage.getItem('authorization') && localStorage.getItem('authorization')?.trim() != '') {
-            headers['Authorization'] = localStorage.getItem('authorization');
-          }
+    return new Promise( (resolve, reject) => {
+      setTimeout(() => {
+        this.makePdf(templateString, dataString)
+          .then((htmlString: string) => {
+            let headers: any = {
+              'Content-Type': 'application/pdf',
+            }
+            if (localStorage.getItem('authorization') && localStorage.getItem('authorization')?.trim() != '') {
+              headers['Authorization'] = localStorage.getItem('authorization');
+            }
+            if (localStorage.getItem('org') && localStorage.getItem('org')?.trim() != '') {
+              let details: any = localStorage.getItem('org');
+              let organization = JSON.parse(details);
+              headers['db'] = organization.sName
+            }
 
-          if (localStorage.getItem('org') && localStorage.getItem('org')?.trim() != '') {
-            let details: any = localStorage.getItem('org');
-            let organization = JSON.parse(details);
-            headers['db'] = organization.sName
-          }
-
-          try {
             const encodedString = this.stringService.b2a(htmlString.replace(/€/gi, '+euro+'))
-            this.httpClient
-              .post('https://uzkiljt7h5.execute-api.eu-west-1.amazonaws.com/development/pdf',
+            return this.httpClient
+              .post(
+                'https://uzkiljt7h5.execute-api.eu-west-1.amazonaws.com/development/pdf',
                 {
                   fileName: fileName,
                   width: this.parsedPaperSize.width,
@@ -1209,29 +1193,38 @@ export class PdfService {
                   orientation: this.orientation,
                   html: encodedString
                 },
-              {
-                headers: headers,
-                responseType: 'blob'
-              })
+                {
+                  headers: headers,
+                  responseType: 'blob'
+                })
               .subscribe(
                 (result: any) => {
-                  this.fileSaver.save( (<any>result), fileName+'.pdf')
-                  let div = document.getElementById('pdfGenerator')
-                  if (div) {
-                    div.parentNode?.removeChild(div);
-                  }
+                  this.fileSaver.save((<any>result), fileName + '.pdf')
+                  return resolve('success')
                 },
-                (error: any) => {
+                (error: HttpErrorResponse) => {
                   console.error('ERROR', error)
+                  return reject(error.message)
                 }
               )
-          }catch (e) {
-            console.error('Error sending http request', e)
-          }
-        })
-        .catch( (e) => {
-          console.error(e)
-        })
-    }, 1000)
+
+          })
+          .catch((e: Error) => {
+            console.error(e)
+            return reject(e.message)
+          })
+      }, 250)
+    })
+  }
+
+  createPdf(templateString: string, dataString: string, fileName: string): Promise<any> {
+    let pdfGenerator = document.createElement('div')
+    pdfGenerator.style.display = 'none'
+    pdfGenerator.id = 'pdfGenerator'
+    document.body.appendChild(pdfGenerator)
+
+
+
+    return this.generate(templateString, dataString, fileName)
   }
 }
