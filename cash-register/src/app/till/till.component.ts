@@ -163,18 +163,35 @@ export class TillComponent implements OnInit {
       return 0
     }
     let result = 0
-    this.transactionItems.forEach((i) => {
-      if (!i.isExclude) {
-        if (i.tType === 'refund') {
-          result -= i.prePaidAmount;
-        } else {
-          result += i.quantity * i.price - (i.prePaidAmount || 0);
-          // result += type === 'price' ? i.quantity * i.price - i.prePaidAmount || 0 : i[type]
-        }
-      } else {
-        i.paymentAmount = 0;
-      }
-    });
+    switch (type) {
+      case 'price':
+        this.transactionItems.forEach((i) => {
+          if (!i.isExclude) {
+            if (i.tType === 'refund') {
+              result -= i.prePaidAmount;
+            } else {
+              result += i.quantity * i.price - (i.prePaidAmount || 0);
+              // result += type === 'price' ? i.quantity * i.price - i.prePaidAmount || 0 : i[type]
+            }
+          } else {
+            i.paymentAmount = 0;
+          }
+        });
+        break;
+      case 'quantity':
+        this.transactionItems.forEach((i) => {
+          result += i.quantity;
+        });
+        break;
+      case 'discount':
+        this.transactionItems.forEach((i) => {
+          result += i.discount;
+        });
+        break;
+      default:
+        result = 0;
+        break;
+    }
     return result
   }
 
@@ -323,7 +340,10 @@ export class TillComponent implements OnInit {
 
   clearAll() {
     this.transactionItems = [];
-
+    this.shopProducts = [];
+    this.commonProducts = [];
+    this.searchKeyword = '';
+    this.selectedTransaction = null;
   }
 
   // nRefundAmount needs to be added
@@ -564,8 +584,8 @@ export class TillComponent implements OnInit {
       aTaxes: this.taxes,
       aTransactionItems: this.transactionItems,
       oCustomer: this.customer,
-      searchKeyword: this.searchKeyword,
-      shopProducts: this.shopProducts,
+      // searchKeyword: this.searchKeyword,
+      // shopProducts: this.shopProducts,
       iBusinessId: this.businessId,
       iSupplierId: this.supplierId,
       iActivityId: this.iActivityId,
@@ -602,8 +622,8 @@ export class TillComponent implements OnInit {
         this.taxes = transactionInfo.aTaxes;
         this.transactionItems = transactionInfo.aTransactionItems;
         this.customer = transactionInfo.oCustomer;
-        this.searchKeyword = transactionInfo.searchKeyword;
-        this.shopProducts = transactionInfo.shopProducts;
+        // this.searchKeyword = transactionInfo.searchKeyword;
+        // this.shopProducts = transactionInfo.shopProducts;
         this.businessId = transactionInfo.iBusinessId;
         this.supplierId = transactionInfo.iSupplierId;
         this.iActivityId = transactionInfo.iActivityId;
