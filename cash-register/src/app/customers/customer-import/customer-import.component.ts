@@ -10,11 +10,11 @@ import { StepperComponent } from 'src/app/shared/_layout/components/common';
 export class CustomerImportComponent implements OnInit {
 
   stepperIndex: any = 0;
-  parsedCustomerData: Array<any> =[];
+  parsedCustomerData: Array<any> = [];
   customerDetailsForm: any;
   updateTemplateForm: any;
   importInprogress: boolean = false;
-  businessDetails: any ={};
+  businessDetails: any = {};
   stepperInstatnce: any;
   @ViewChild('stepperContainer', { read: ViewContainerRef }) stepperContainer!: ViewContainerRef;
 
@@ -23,30 +23,29 @@ export class CustomerImportComponent implements OnInit {
     private apiService: ApiService
   ) { }
 
-  ngOnInit(): void { 
+  ngOnInit(): void {
     this.businessDetails._id = localStorage.getItem('currentBusiness')
   }
 
   ngAfterContentInit(): void {
     StepperComponent.bootstrap();
-    setTimeout(()=>{
+    setTimeout(() => {
       this.stepperInstatnce = StepperComponent.getInstance(this.stepperContainer.element.nativeElement);
     }, 200);
   }
 
-  public moveToStep( step: any){
-    if(step == 'next'){
+  public moveToStep(step: any) {
+    if (step == 'next') {
       this.stepperInstatnce.goNext();
-    } else if(step == 'previous'){
+    } else if (step == 'previous') {
       this.stepperInstatnce.goPrev();
-    } else if( step == 'import'){
+    } else if (step == 'import') {
       this.importCustomer()
       this.stepperInstatnce.goNext();
     }
   }
 
   importCustomer() {
-    console.log(' importCustomer ');
     this.importInprogress = true;
     let data: any = {
       iBusinessId: this.businessDetails._id,
@@ -58,7 +57,7 @@ export class CustomerImportComponent implements OnInit {
 
     this.apiService.postNew('customer', '/api/v1/customer/import', data).subscribe((result: any) => {
       this.importInprogress = false;
-    },(error) => {
+    }, (error) => {
       console.log(error);
     });
   }

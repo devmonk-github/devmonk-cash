@@ -10,7 +10,7 @@ import { faTimes, faSync } from '@fortawesome/free-solid-svg-icons';
 })
 export class CustomerDetailsImportComponent implements OnInit, OnChanges {
 
- 
+
   @Input() customerDetailsForm: any;
   @Output() customerDetailsFormChange: EventEmitter<any> = new EventEmitter();
   @Input() updateTemplateForm: any;
@@ -114,7 +114,6 @@ export class CustomerDetailsImportComponent implements OnInit, OnChanges {
 
   // Function for go to step(next / previous)
   gotoStep(step: string) {
-    console.log('gotoStep ', step);
     if (Object.keys(this.customerDetailsForm).length != this.headerOptions.length) {
       this.toasterService.show({ type: 'danger', text: 'You have not set some of the attributes exist in file.' });
     }
