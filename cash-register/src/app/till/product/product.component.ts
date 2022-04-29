@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { faTimes } from '@fortawesome/free-solid-svg-icons'
+import { faTimes, faArrowDown, faArrowUp, faMinus } from '@fortawesome/free-solid-svg-icons'
 import { DialogService } from "../../shared/service/dialog";
 import { DiscountDialogComponent } from "../dialogs/discount-dialog/discount-dialog.component";
 import { PriceService } from "../../shared/service/price.service";
@@ -15,8 +15,10 @@ export class ProductComponent implements OnInit {
   @Input() taxes: any
   @Output() itemChanged = new EventEmitter<any>();
 
-  faTimes = faTimes
-  typeArray = ['regular', 'broken', 'return'];
+  faMinus = faMinus;
+  faArrowDown = faArrowDown;
+  faArrowUp = faArrowUp;
+  typeArray = ['regular', 'return'];
 
   constructor(private dialogService: DialogService, private priceService: PriceService) { }
 
@@ -38,6 +40,15 @@ export class ProductComponent implements OnInit {
 
   getTotalPrice(item: any): string {
     return this.priceService.getArticlePrice(item)
+  }
+
+  changeInbrokenAmount(item: any) {
+    if (item.nBrokenProduct < 0) {
+      item.nBrokenProduct = 0;
+    }
+    if (item.quantity < item.nBrokenProduct) {
+      item.nBrokenProduct = item.quantity;
+    }
   }
 
   getColorCode(item: any): string {

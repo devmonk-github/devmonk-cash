@@ -1,9 +1,10 @@
+<!-- addItem('regular');  -->
 <div class="container">
   <div class="row">
     <div class="col-md-9 col-xs-12 column-auto till-body ps-0 pe-0">
       <div class="d-flex justify-content-start">
-        <button class="btn d-flex bg-white rounded p-4 mb-3 me-3 text-hover-primary min-w-90px"
-          (click)="addItem('product'); isStockSelected = true">
+        <button class="btn d-flex bg-white rounded p-4 mb-3 me-3 min-w-90px"
+          [ngClass]="{'btn-color-primary': eKind === 'regular' }" (click)="eKind = 'regular'; isStockSelected = true">
           <div class="d-flex flex-column justify-center align-items-center flex-grow-1">
             <div class="symbol symbol-40px mb-2">
               <span class="symbol-label">
@@ -18,8 +19,8 @@
           </div>
         </button>
 
-        <button class="btn d-flex bg-white rounded p-4 mb-3 me-3 text-hover-primary min-w-90px"
-          (click)="addItem('order'); isStockSelected = false">
+        <button class="btn d-flex bg-white rounded p-4 mb-3 me-3 min-w-90px"
+          [ngClass]="{'btn-color-primary': eKind === 'order' }" (click)="eKind = 'order'; isStockSelected = false">
           <div class="d-flex flex-column justify-center align-items-center flex-grow-1">
             <div class="symbol symbol-40px mb-2">
               <span class="symbol-label">
@@ -34,8 +35,8 @@
           </div>
         </button>
 
-        <button class="btn d-flex bg-white rounded p-4 mb-3 me-3 text-hover-primary min-w-90px"
-          (click)="addItem('repair')">
+        <button class="btn d-flex bg-white rounded p-4 mb-3 me-3 min-w-90px"
+          [ngClass]="{'btn-color-primary': eKind === 'repair' }" (click)="eKind = 'repair'; addItem('repair')">
           <div class="d-flex flex-column justify-center align-items-center flex-grow-1">
             <div class="symbol symbol-40px mb-2">
               <span class="symbol-label">
@@ -127,20 +128,6 @@
             </div>
           </div>
         </button>
-        <!-- <button class="btn d-flex bg-white rounded p-4 mb-3 me-3 text-hover-primary">
-          <div class="d-flex flex-column justify-center align-items-center flex-grow-1">
-            <div class="symbol symbol-40px mb-2">
-              <span class="symbol-label">
-                <span class="svg-icon svg-icon-1qx me-0">
-                  <fa-icon [icon]="faArrowRightFromBracket"></fa-icon>
-                </span>
-              </span>
-            </div>
-            <div class="fs-6">
-              <span class="text-gray-800fw-bold">{{"OPEN_DRAWER" | translate}}</span>
-            </div>
-          </div>
-        </button> -->
       </div>
 
       <div class="card card-flush mb-4">
@@ -152,20 +139,33 @@
             <span class="w-100px">{{ "DISCOUNT" | translate}}</span>
             <span class="w-100px">{{ "TAX" | translate}}</span>
             <span class="w-100px">{{ "TOTAL" | translate}}</span>
-            <span class="w-90px">{{ "PREPAYMENT" | translate}}</span>
+            <span class="w-80px">{{ "PREPAYMENT" | translate}}</span>
           </div>
         </div>
         <div class="card-body p-0">
           <div class="accordion" id="till-items-accordion" [itemLength]="transactionItems.length">
             <ng-container *ngFor="let item of transactionItems; let i = index">
-              <div class="accordion-item" till-product *ngIf="item.type=== 'product'" [item]="item" [taxes]="taxes"
-                (itemChanged)="itemChanged($event, i)"></div>
-              <div class="accordion-item" till-order *ngIf="item.type=== 'order'" [item]="item" [taxes]="taxes"
-                (itemChanged)="itemChanged($event, i)"></div>
-              <div class="accordion-item" till-repair *ngIf="item.type=== 'repair'" [item]="item" [taxes]="taxes"
-                (itemChanged)="itemChanged($event, i)"></div>
-              <div class="accordion-item" till-gift *ngIf="item.type=== 'giftcard-sell'" [item]="item" [taxes]="taxes"
-                (itemChanged)="itemChanged($event, i)"></div>
+              <div style="display:inline-table;">
+                <div class="accordion-item d-table-cell" till-product *ngIf="item.type=== 'regular'" [item]="item"
+                  [taxes]="taxes" (itemChanged)="itemChanged($event, i)"></div>
+                <div class="accordion-item d-table-cell" till-order *ngIf="item.type=== 'order'" [item]="item"
+                  [taxes]="taxes" (itemChanged)="itemChanged($event, i)"></div>
+                <div class="accordion-item d-table-cell" till-repair *ngIf="item.type=== 'repair'" [item]="item"
+                  [taxes]="taxes" (itemChanged)="itemChanged($event, i)"></div>
+
+                <div class="accordion-item d-table-cell w-100" till-gift *ngIf="item.type=== 'giftcard-sell'"
+                  [item]="item" [taxes]="taxes" (itemChanged)="itemChanged($event, i)"></div>
+                <div class="accordion-item d-table-cell w-100" till-other *ngIf="item.type=== 'empty-line'"
+                  [item]="item" [taxes]="taxes" (itemChanged)="itemChanged($event, i)"></div>
+                <div class="d-table-cell">
+                  <button class="btn btn-sm btn-icon btn-active-color-primary w-30px h-30px"
+                    (click)="itemChanged('delete', i)">
+                    <span class="svg-icon svg-icon-1qx me-0">
+                      <fa-icon [icon]="faTimes"></fa-icon>
+                    </span>
+                  </button>
+                </div>
+              </div>
             </ng-container>
             <section class="d-flex product-row p-3 text-gray-600 align-items-center"
               *ngIf="getTotals('quantity') !== 0">
@@ -175,6 +175,7 @@
               <div class="w-100px">{{getTotals('discount')}}</div>
               <div class="w-125px"></div>
             </section>
+
           </div>
         </div>
       </div>
@@ -185,10 +186,11 @@
 
             <div class="d-flex">
               <input type="text" class="form-control me-3" placeholder="Search..." [(ngModel)]="searchKeyword"
+                (ngModelChange)="searchKeyword? shopProducts = shopProducts: shopProducts = []"
                 (keyup.enter)="search()">
               <button class="btn btn-secondary me-3" (click)="openTransactionSearchDialog()">{{ "TRANSACTION" |
                 translate}}</button>
-              <button class="btn btn-secondary me-3">{{ "TEXT_LINE" | translate}}</button>
+              <button class="btn btn-secondary me-3" (click)="addNewLine()">{{ "TEXT_LINE" | translate}}</button>
               <button class="btn btn-secondary me-3">{{ "EMPTY_LINE" | translate}}</button>
               <button class="btn btn-icon btn-secondary w-85px" (click)="cancelItems()"
                 [disabled]="transactionItems.length === 0">

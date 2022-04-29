@@ -1,3 +1,5 @@
+<!-- <div class="row">
+  <div class="col-11"> -->
 <h2 class="accordion-header">
   <button class="accordion-button fs-4 fw-bold" type="button" data-bs-toggle="collapse"
     data-bs-target="#kt_accordion_1_body_1" aria-expanded="true" aria-controls="kt_accordion_1_body_1">
@@ -8,13 +10,19 @@
         </svg>{{item.quantity}}</div>
       <div class="w-275px">{{item.name}}</div>
       <div class="w-100px">{{item.price | currency: '€'}}</div>
-      <div class="w-95px">{{getTotalDiscount(item) | currency: '€'}}</div>
+      <div class="w-95px">{{getTotalDiscount(item)}}</div>
+      <!-- <div class="w-95px">{{item.discount | currency: '€'}}</div> -->
       <div class="w-100px">{{item.tax}}%</div>
       <div class="w-100px">{{getTotalPrice(item)}}</div>
-      <div class="w-85px">{{item.paymentAmount | currency: '€'}}</div>
+      <div class="w-75px">{{item.paymentAmount | currency: '€'}}</div>
     </section>
   </button>
 </h2>
+<!-- </div>
+  <div class="col-1">
+    <h5>2</h5>
+  </div>
+</div> -->
 <div id="kt_accordion_1_body_1" class="accordion-collapse collapse show rounded-0"
   aria-labelledby="kt_accordion_1_header_1" data-bs-parent="#kt_accordion_1">
   <div class="accordion-body px-3 py-4">
@@ -26,16 +34,10 @@
             <option *ngFor="let type of typeArray" [ngValue]="type">{{type}}</option>
           </select>
         </div>
-        <div class="d-flex">
-          <span *ngIf="item.eTransactionItemType === 'return'">Stock -
-            <i class="fa-solid fa-arrow-up"></i>
-          </span>
-          <span *ngIf="item.eTransactionItemType === 'regular'">Stock -
-            <i class="fa-solid fa-arrow-down"></i>
-          </span>
-          <span *ngIf="item.eTransactionItemType === 'broken'">Stock -
-            <i class="fa-solid fa-minus"></i>
-          </span>
+        <div class="d-flex mt-3" *ngIf="item.eTransactionItemType === 'return'">
+          <span class="fs-7 w-100 d-block text-gray-600 mb-1">Broken:</span>
+          <input type="number" name="bagNumber" id="bagNumber" [(ngModel)]="item.nBrokenProduct" class="form-control"
+            (change)="changeInbrokenAmount(item)">
         </div>
       </div>
       <div class="w-300px pe-2">

@@ -1,72 +1,84 @@
 <div class="accordion-item">
   <h2 class="accordion-header">
     <button class="accordion-button fs-4 fw-bold" type="button" data-bs-toggle="collapse"
-            data-bs-target="#kt_accordion_1_body_1" aria-expanded="true" aria-controls="kt_accordion_1_body_1">
+      data-bs-target="#kt_accordion_1_body_1" aria-expanded="true" aria-controls="kt_accordion_1_body_1">
       <section class="d-flex product-row mb-3 align-items-center">
         <div class="w-90px">1</div>
-        <div class="w-300px">{{item.name}} - {{item.giftcardNumber}}</div>
-        <div class="w-125px ps-2">{{item.price | currency: '€'}}</div>
-        <div class="w-100px ps-2"></div>
-        <div class="w-125px ps-2">{{item.tax}}%</div>
+        <div class="w-275px">{{item.name}} - {{item.giftcardNumber}}</div>
+        <div class="w-100px">{{item.price | currency: '€'}}</div>
+        <div class="w-95px"></div>
+        <div class="w-100px">{{item.tax}}%</div>
+        <div class="w-100px"></div>
+        <div class="w-75px"></div>
       </section>
+      <!-- 
+      <section class="d-flex product-row align-items-center">
+        <div class="w-90px">{{item.quantity}}</div>
+        <div class="w-275px">{{item.name}}</div>
+        <div class="w-100px">{{item.price | currency: '€'}}</div>
+        <div class="w-95px">{{item.discount | currency: '€'}}</div>
+        <div class="w-100px">{{item.tax}}%</div>
+        <div class="w-100px">{{getTotalPrice(item)}}
+        </div>
+        <div class="w-75px">{{item.paymentAmount | currency: '€'}}</div>
+      </section> -->
     </button>
   </h2>
   <div id="kt_accordion_1_body_1" class="accordion-collapse collapse show" aria-labelledby="kt_accordion_1_header_1"
-       data-bs-parent="#kt_accordion_1">
+    data-bs-parent="#kt_accordion_1">
     <div class="accordion-body px-3 py-4">
       <section class="d-flex product-row mb-3 align-items-center">
         <div class="w-90px">&nbsp;</div>
         <div class="w-300px">
           <div class="input-group b-5">
-<!--            <div class="form-floating mb-7">-->
-              <input type="text" class="form-control" name="number" id="number" [(ngModel)]="item.giftcardNumber" (blur)="checkNumber()">
-              <span class="input-group-text">
-                <fa-icon [icon]="numberIcon" [ngClass]="checkingNumber ? 'fa-spin': ''"></fa-icon>
-              </span>
-<!--              <label for="number">{{ "GIFTCARD_NUMBER" | translate}}</label>-->
-<!--            </div>-->
+            <!--            <div class="form-floating mb-7">-->
+            <input type="text" class="form-control" name="number" id="number" [(ngModel)]="item.giftcardNumber"
+              (blur)="checkNumber()">
+            <span class="input-group-text">
+              <fa-icon [icon]="numberIcon" [ngClass]="checkingNumber ? 'fa-spin': ''"></fa-icon>
+            </span>
+            <!--              <label for="number">{{ "GIFTCARD_NUMBER" | translate}}</label>-->
+            <!--            </div>-->
           </div>
 
         </div>
 
-          <div class="w-300px">
-            <div class="form-floating mb-7">
-              <input type="text" class="form-control" name="number" id="value" [(ngModel)]="item.price">
-              <label for="number">{{ "VALUE" | translate}}</label>
-            </div>
-            <p>{{ "VAT_HANDLING" | translate}}</p>
-            <div class="form-check form-check-custom form-check-solid">
-              <input class="form-check-input" type="radio" [(ngModel)]="item.taxHandling" value="true" id="vatPaid1"/>
-              <label class="form-check-label" for="vatPaid1">
-                {{ "PAY_TAXES_WHEN_CREATE" | translate}}
-              </label>
-            </div>
-            <div class="form-check form-check-custom form-check-solid">
-              <input class="form-check-input" type="radio" [(ngModel)]="item.taxHandling" value="false" id="vatPaid2"/>
-              <label class="form-check-label" for="vatPaid2">
-                {{ "PAY_TAXES_WHEN_REDEEM" | translate}}
-              </label>
-            </div>
+        <div class="w-300px">
+          <div class="form-floating mb-7">
+            <input type="text" class="form-control" name="number" id="value" [(ngModel)]="item.price">
+            <label for="number">{{ "VALUE" | translate}}</label>
           </div>
-          <div class="w-100px ps-2"></div>
-          <div class="w-125px ps-2">
-            <div class="form-floating till-padding">
-              <select name="taxRate" id="taxRate" class="form-select"
-                      [(ngModel)]="item.tax">
-                <option *ngFor="let rate of taxes"
-                        [ngValue]="rate.rate">{{rate.name}}</option>
-              </select>
-              <label for="taxRate">{{"TAX" | translate}}</label>
-            </div>
+          <p>{{ "VAT_HANDLING" | translate}}</p>
+          <div class="form-check form-check-custom form-check-solid">
+            <input class="form-check-input" type="radio" [(ngModel)]="item.taxHandling" value="true" id="vatPaid1" />
+            <label class="form-check-label" for="vatPaid1">
+              {{ "PAY_TAXES_WHEN_CREATE" | translate}}
+            </label>
           </div>
-          <div class="w-100px">
-            <button class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary w-30px h-30px"
-                    (click)="deleteItem()">
-      <span class="svg-icon svg-icon-1qx me-0">
-        <fa-icon [icon]="faTimes"></fa-icon>
-      </span>
-            </button>
+          <div class="form-check form-check-custom form-check-solid">
+            <input class="form-check-input" type="radio" [(ngModel)]="item.taxHandling" value="false" id="vatPaid2" />
+            <label class="form-check-label" for="vatPaid2">
+              {{ "PAY_TAXES_WHEN_REDEEM" | translate}}
+            </label>
           </div>
+        </div>
+        <div class="w-100px ps-2"></div>
+        <div class="w-125px ps-2">
+          <div class="form-floating till-padding">
+            <select name="taxRate" id="taxRate" class="form-select" [(ngModel)]="item.tax">
+              <option *ngFor="let rate of taxes" [ngValue]="rate.rate">{{rate.name}}</option>
+            </select>
+            <label for="taxRate">{{"TAX" | translate}}</label>
+          </div>
+        </div>
+        <div class="w-100px">
+          <button class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary w-30px h-30px"
+            (click)="deleteItem()">
+            <span class="svg-icon svg-icon-1qx me-0">
+              <fa-icon [icon]="faTimes"></fa-icon>
+            </span>
+          </button>
+        </div>
       </section>
     </div>
   </div>

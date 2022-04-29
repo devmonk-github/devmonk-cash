@@ -3,13 +3,13 @@ import { CommonModule } from '@angular/common';
 
 import { TillRoutingModule } from './till-routing.module';
 import { TillComponent } from './till.component';
-import {FontAwesomeModule} from "@fortawesome/angular-fontawesome";
-import {TranslateModule} from "@ngx-translate/core";
-import {DropdownModule} from "primeng/dropdown";
-import {FormsModule, ReactiveFormsModule} from "@angular/forms";
-import {ButtonModule} from "primeng/button";
-import {InputTextModule} from "primeng/inputtext";
-import {ToolbarModule} from "primeng/toolbar";
+import { FontAwesomeModule } from "@fortawesome/angular-fontawesome";
+import { TranslateModule } from "@ngx-translate/core";
+import { DropdownModule } from "primeng/dropdown";
+import { FormsModule, ReactiveFormsModule } from "@angular/forms";
+import { ButtonModule } from "primeng/button";
+import { InputTextModule } from "primeng/inputtext";
+import { ToolbarModule } from "primeng/toolbar";
 import { OrderComponent } from './order/order.component';
 import { RepairComponent } from './repair/repair.component';
 import { GiftComponent } from './gift/gift.component';
@@ -17,8 +17,9 @@ import { GoldPurchaseComponent } from './gold-purchase/gold-purchase.component';
 import { GoldSellComponent } from './gold-sell/gold-sell.component';
 import { OfferComponent } from './offer/offer.component';
 import { ProductComponent } from './product/product.component';
-import {SharedModule} from "../shared/shared.module";
+import { SharedModule } from "../shared/shared.module";
 import { DiscountDialogComponent } from './dialogs/discount-dialog/discount-dialog.component';
+import { OtherComponent } from './other/other.component';
 
 @NgModule({
   declarations: [
@@ -30,22 +31,23 @@ import { DiscountDialogComponent } from './dialogs/discount-dialog/discount-dial
     GoldSellComponent,
     OfferComponent,
     ProductComponent,
-    DiscountDialogComponent
+    DiscountDialogComponent,
+    OtherComponent
   ],
-    imports: [
-        CommonModule,
-        TillRoutingModule,
-        FontAwesomeModule,
-        TranslateModule,
-        FormsModule,
-        ReactiveFormsModule,
-        //PrimeNG
-        DropdownModule,
-        ButtonModule,
-        InputTextModule,
-        ToolbarModule,
-        SharedModule
-    ],
+  imports: [
+    CommonModule,
+    TillRoutingModule,
+    FontAwesomeModule,
+    TranslateModule,
+    FormsModule,
+    ReactiveFormsModule,
+    //PrimeNG
+    DropdownModule,
+    ButtonModule,
+    InputTextModule,
+    ToolbarModule,
+    SharedModule
+  ],
   exports: [
     TillComponent,
     TillRoutingModule,
@@ -71,7 +73,7 @@ export class TillModule {
     return this.componentFactoryResolver.resolveComponentFactory(TillComponent);
   }
 
-  public componentReference(){
+  public componentReference() {
     return TillComponent;
   }
 }

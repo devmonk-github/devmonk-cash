@@ -57,6 +57,7 @@ export class TillComponent implements OnInit {
     iBusinessId: ''
   }
 
+  eKind: string = 'regular';
   // Dummy data
   parkedTransactions: any[] = [
   ]
@@ -189,6 +190,14 @@ export class TillComponent implements OnInit {
     if (type === 'gift-sell') {
       type = 'giftcard-sell'
     }
+    // 'regular',
+    // 'giftcard',
+    // 'giftcard-redeem-single-purpose',
+    // 'empty-line',
+    // 'repair',
+    // 'order',
+    // 'gold-purchase',
+    // 'gold-sell'
     this.transactionItems.push({
       isExclude: type === 'repair' ? true : false,
       eTransactionItemType: 'regular',
@@ -197,6 +206,7 @@ export class TillComponent implements OnInit {
       name: this.translateService.instant(type.toUpperCase()),
       type,
       quantity: 1,
+      nBrokenProduct: 0,
       price: this.randNumber(5, 200),
       discount: 0,
       tax: 21,
@@ -267,6 +277,7 @@ export class TillComponent implements OnInit {
                 prePaidAmount: transactionItem.nPaymentAmount,
                 type: transactionItem.oType.eKind,
                 eTransactionItemType: 'regular',
+                nBrokenProduct: 0,
                 tType,
                 oType: transactionItem.oType,
                 quantity: transactionItem.nQuantity,
@@ -340,7 +351,7 @@ export class TillComponent implements OnInit {
         null, // TODO: Needed in till??
         this.getValueFromLocalStorage('currentBusiness'),
 
-        null, // TODO
+        i.iArticleGroupId, // TODO
         null,
         null,
         false, // TODO
@@ -365,7 +376,7 @@ export class TillComponent implements OnInit {
         null, // TODO
         null, // TODO
         null, //TODO
-        null, //TODO
+        i.iBusinessProductId, //TODO business productId
         null,
         'y',
         this.getValueFromLocalStorage('currentWorkstation'),
@@ -376,10 +387,8 @@ export class TillComponent implements OnInit {
         {
           eTransactionType: 'cash-registry', // TODO
           bRefund: i.oType?.bRefund || i.discount.quantity < 0 || i.price < 0,
-          // true (i.price * quanitity) < 0 && i.price < 0  // broken product, no call to stockcorrection
-          // true (i.price * quanitity) < 0 && quantity < 0 // broken product, +1 call to stockcorrection
-          // false (i.price * quanitity) > 0 && quantity > 0 // regular sale, -1 call to stockcorrection
-          eKind: 'repair', // TODO
+          nStockCorrection: i.eTransactionItemType === 'regular' ? i.quantity : i.quantity - i.nBrokenProduct,
+          eKind: i.type, // TODO // repair
           bDiscount: i.discount.value > 0,
           bPrepayment: (i.paymentAmount > 0 || this.getUsedPayMethods(true) - this.getTotals('price') < 0) && (i.paymentAmount !== i.amountToBePaid)
         },
@@ -448,7 +457,8 @@ export class TillComponent implements OnInit {
         'nDiscount',
         'sLabelDescription',
         'aImage',
-        'sArticleNumber'
+        'sArticleNumber',
+        'iArticleGroupId',
       ],
       "oFilterBy": {
         "oStatic": {},
@@ -510,12 +520,16 @@ export class TillComponent implements OnInit {
   onSelectProduct(product: any, isFrom: string, isFor: string) {
     this.transactionItems.push({
       name: product.oName ? product.oName['en'] : 'No name',
-      type: this.isStockSelected ? 'product' : 'order',
+      eTransactionItemType: 'regular',
+      type: this.eKind,
       quantity: 1,
       price: product.nPriceIncludesVat,
+      paymentAmount: 0,
       discount: product.nDiscount || 0,
       tax: product.nVatRate || 0,
       description: product.sLabelDescription,
+      iArticleGroupId: product.iArticleGroupId,
+      iBusinessProductId: product.iBusinessProductId,
       open: true,
     });
   }
@@ -528,6 +542,19 @@ export class TillComponent implements OnInit {
     } else {
       this.listCommonBrandProducts(this.searchKeyword, false); // Searching for the products of common brand
     }
+  }
+
+  addNewLine() {
+    this.transactionItems.push({
+      name: '',
+      type: 'empty-line',
+      quantity: 1,
+      price: 0,
+      discount: 0,
+      tax: 0,
+      description: '',
+      open: true,
+    });
   }
 
   getParkedTransactionBody(): Object {

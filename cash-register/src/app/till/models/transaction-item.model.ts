@@ -66,6 +66,7 @@ export class TransactionItem {
     public oType: {
       eTransactionType: string,
       bRefund: boolean,
+      nStockCorrection: number,
       eKind: string,
       bDiscount: boolean,
       bPrepayment: boolean,
