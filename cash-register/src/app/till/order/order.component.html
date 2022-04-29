@@ -26,16 +26,10 @@
             <option *ngFor="let type of typeArray" [ngValue]="type">{{type}}</option>
           </select>
         </div>
-        <div class="d-flex">
-          <span *ngIf="item.eTransactionItemType === 'return'">Stock -
-            <i class="fa-solid fa-arrow-up"></i>
-          </span>
-          <span *ngIf="item.eTransactionItemType === 'regular'">Stock -
-            <i class="fa-solid fa-arrow-down"></i>
-          </span>
-          <span *ngIf="item.eTransactionItemType === 'broken'">Stock -
-            <i class="fa-solid fa-minus"></i>
-          </span>
+        <div class="d-flex mt-3" *ngIf="item.eTransactionItemType === 'return'">
+          <span class="fs-7 w-100 d-block text-gray-600 mb-1">Broken:</span>
+          <input type="number" name="bagNumber" id="bagNumber" [(ngModel)]="item.nBrokenProduct" class="form-control"
+            (change)="changeInbrokenAmount(item)">
         </div>
       </div>
       <div class="w-300px ps-2">

@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output, ViewEncapsulation } from '@angular/core';
-import { faTimes, faPlus, faMinus } from '@fortawesome/free-solid-svg-icons'
+import { faTimes, faPlus, faMinus, faArrowDown, faArrowUp } from '@fortawesome/free-solid-svg-icons'
 import { PriceService } from 'src/app/shared/service/price.service';
 
 @Component({
@@ -16,7 +16,9 @@ export class OrderComponent {
   faTimes = faTimes
   faPlus = faPlus
   faMinus = faMinus
-  typeArray = ['regular', 'broken', 'return'];
+  faArrowDown = faArrowDown;
+  faArrowUp = faArrowUp;
+  typeArray = ['regular', 'return'];
   constructor(private priceService: PriceService) { }
 
   deleteItem(): void {
@@ -37,6 +39,15 @@ export class OrderComponent {
         return '#f7422e';
       default:
         return '#4ab69c';
+    }
+  }
+
+  changeInbrokenAmount(item: any) {
+    if (item.nBrokenProduct < 0) {
+      item.nBrokenProduct = 0;
+    }
+    if (item.quantity < item.nBrokenProduct) {
+      item.nBrokenProduct = item.quantity;
     }
   }
 
