@@ -8,7 +8,7 @@ import {
   Output,
   SimpleChanges
 } from '@angular/core';
-import {faMinus, faPlus} from "@fortawesome/free-solid-svg-icons";
+import { faMinus, faPlus } from "@fortawesome/free-solid-svg-icons";
 
 @Component({
   selector: 'app-dialer',
@@ -20,7 +20,6 @@ export class DialerComponent implements OnChanges, OnInit {
 
   @Input()
   set quantity(value: number) {
-    console.log('value', value)
     this.qty = value
   }
   get quantity() {
@@ -34,8 +33,7 @@ export class DialerComponent implements OnChanges, OnInit {
 
   constructor() { }
 
-  ngOnChanges(changes:SimpleChanges): void {
-    console.log('changes', changes)
+  ngOnChanges(changes: SimpleChanges): void {
   }
   ngOnInit() {
     // this.qty = JSON.parse(JSON.stringify(this.quantity))
@@ -43,7 +41,7 @@ export class DialerComponent implements OnChanges, OnInit {
 
   increase(): void {
     this.qty++
-    if(this.qty === 0) {
+    if (this.qty === 0) {
       this.qty = 1;
     }
     this.quantityChange.emit(this.qty)
@@ -51,14 +49,12 @@ export class DialerComponent implements OnChanges, OnInit {
 
   decrease(): void {
     this.qty--
-    if(this.qty === 0) {
+    if (this.qty === 0) {
       this.qty = -1;
     }
     this.quantityChange.emit(this.qty)
   }
 
   change(oldValue: any, newValue: any): void {
-    console.log('oldValue', oldValue)
-    console.log('newValue', newValue)
   }
 }

@@ -17,9 +17,9 @@ export class CustomPaymentMethodComponent implements OnInit {
   customMethod: any = {
     sName: '',
     bStockReduction: false,
-    bInvoice : false,
+    bInvoice: false,
     // bAssignSavingPoints : false,
-    bAssignSavingPointsLastPayment : true,
+    bAssignSavingPointsLastPayment: true,
     sLedgerNumber: ''
   }
 
@@ -29,14 +29,13 @@ export class CustomPaymentMethodComponent implements OnInit {
   ) {
     const _injector = this.viewContainer.parentInjector;
     this.dialogRef = _injector.get<DialogComponent>(DialogComponent);
-   }
+  }
 
   ngOnInit(): void {
-    console.log(this.mode);
     this.requestParams.iBusinessId = localStorage.getItem('currentBusiness')
   }
 
-  update(){
+  update() {
     this.customMethod.iBusinessId = this.requestParams.iBusinessId;
     this.apiService.putNew('cashregistry', '/api/v1/payment-methods/update', this.customMethod).subscribe((result: any) => {
       this.dialogRef.close.emit({ action: true })
@@ -44,7 +43,7 @@ export class CustomPaymentMethodComponent implements OnInit {
     })
   }
 
-  create(){
+  create() {
     this.customMethod.iBusinessId = this.requestParams.iBusinessId;
     this.apiService.postNew('cashregistry', '/api/v1/payment-methods/create', this.customMethod).subscribe((result: any) => {
       this.dialogRef.close.emit({ action: true })
@@ -52,7 +51,7 @@ export class CustomPaymentMethodComponent implements OnInit {
     })
   }
 
-  close(){
+  close() {
     this.dialogRef.close.emit({ action: false })
   }
 }
