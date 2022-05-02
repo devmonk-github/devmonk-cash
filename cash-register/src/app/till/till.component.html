@@ -1,6 +1,7 @@
 <!-- addItem('regular');  -->
+
 <div class="container">
-  <div class="row">
+  <div class="row content" [ngClass]="{'opacity-25': parkedTransactionLoading }">
     <div class="col-md-9 col-xs-12 column-auto till-body ps-0 pe-0">
       <div class="d-flex justify-content-start">
         <button class="btn d-flex bg-white rounded p-4 mb-3 me-3 min-w-90px"
@@ -406,4 +407,6 @@
         translate}}</button>
     </div>
   </div>
+
+  <div class="spinner-border mx-auto overlay" *ngIf="parkedTransactionLoading"></div>
 </div>

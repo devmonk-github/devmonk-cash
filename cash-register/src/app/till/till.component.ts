@@ -1,4 +1,4 @@
-import { Component, OnChanges, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import {
   faScrewdriverWrench, faTruck, faBoxesStacked, faGifts,
   faUserPlus, faUser, faTimes, faTimesCircle, faTrashAlt, faRing,
@@ -17,12 +17,11 @@ import { TransactionItem } from "./models/transaction-item.model";
 import { ToastService } from "../shared/components/toast";
 import { TransactionsSearchComponent } from '../shared/components/transactions-search/transactions-search.component';
 import { PaymentDistributionService } from '../shared/service/payment-distribution.service';
-import { result } from 'lodash';
 
 @Component({
   selector: 'app-till',
   templateUrl: './till.component.html',
-  styleUrls: ['./till.component.sass']
+  styleUrls: ['./till.component.scss']
 })
 export class TillComponent implements OnInit {
   // icons
@@ -57,7 +56,7 @@ export class TillComponent implements OnInit {
   requestParams: any = {
     iBusinessId: ''
   }
-
+  parkedTransactionLoading = false;
   eKind: string = 'regular';
   // Dummy data
   parkedTransactions: any[] = [
@@ -617,6 +616,7 @@ export class TillComponent implements OnInit {
   }
 
   fetchParkedTransactionInfo() {
+    this.parkedTransactionLoading = true;
     this.apiService.getNew('cashregistry', `/api/v1/park/${this.selectedTransaction._id}?iBusinessId=${this.getValueFromLocalStorage('currentBusiness')}`)
       .subscribe((transactionInfo: any) => {
         this.taxes = transactionInfo.aTaxes;
@@ -632,8 +632,10 @@ export class TillComponent implements OnInit {
         this.business = transactionInfo.oBusiness;
         this.locationId = transactionInfo.iLocationId;
         this.requestParams = transactionInfo.oRequestParams;
+        this.parkedTransactionLoading = false;
       }, err => {
         this.toastrService.show({ type: 'danger', text: err.message });
+        this.parkedTransactionLoading = false;
       });
   }
 
