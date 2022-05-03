@@ -114,4 +114,20 @@ export class ImportService {
 
         return oPocessObject;
     }
+
+    processImportTransaction(data: any) {
+        const { transaction } = data;
+        const processTransaction = {
+            sCreatedBy: transaction?.['createdBy'] ? transaction['createdBy'] : "overwrite",
+            oCustomer: transaction?.['customer'] ? transaction['customer'] : "overwrite",
+            dCreatedDate: transaction?.['dateCreated'] ? transaction['dateCreated'] : "overwrite",
+            aDetails: transaction?.['details'] ? transaction['details'] : "overwrite",
+            bHas_sold_products: transaction?.['has_sold_products'] ? transaction['has_sold_products'] : "overwrite",
+            sNumber: transaction?.['number'] ? transaction['number'] : "overwrite",
+            sReceiptNumber: transaction?.['receiptNumber'] ? transaction['receiptNumber'] : "overwrite",
+            nTransactionTotal: transaction?.['transactionTotal'] ? transaction['transactionTotal'] : "overwrite",
+            eType: transaction?.['type'] ? transaction['type'] : "overwrite"
+        }
+        return processTransaction;
+    }
 }

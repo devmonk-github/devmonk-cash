@@ -85,7 +85,7 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
       (error: any) => {
         this.bookKeepings = [];
         this.loading = false;
-        console.log(error)
+        console.error(error)
       }
   }
 

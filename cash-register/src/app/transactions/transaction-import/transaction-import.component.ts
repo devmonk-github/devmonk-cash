@@ -3,15 +3,15 @@ import { ApiService } from 'src/app/shared/service/api.service';
 import { ImportService } from 'src/app/shared/service/import.service';
 import { StepperComponent } from 'src/app/shared/_layout/components/common';
 @Component({
-  selector: 'app-customer-import',
-  templateUrl: './customer-import.component.html',
-  styleUrls: ['./customer-import.component.sass']
+  selector: 'app-transaction-import',
+  templateUrl: './transaction-import.component.html',
+  styleUrls: ['./transaction-import.component.sass']
 })
-export class CustomerImportComponent implements OnInit {
+export class TransactionImportComponent implements OnInit {
 
   stepperIndex: any = 0;
-  parsedCustomerData: Array<any> = [];
-  customerDetailsForm: any;
+  parsedTransactionData: Array<any> = [];
+  transactionDetailsForm: any;
   updateTemplateForm: any;
   importInprogress: boolean = false;
   businessDetails: any = {};
@@ -40,26 +40,24 @@ export class CustomerImportComponent implements OnInit {
     } else if (step == 'previous') {
       this.stepperInstatnce.goPrev();
     } else if (step == 'import') {
-      this.importCustomer()
+      this.importTransaction()
       this.stepperInstatnce.goNext();
     }
   }
 
-  importCustomer() {
+  importTransaction() {
     this.importInprogress = true;
     let data: any = {
       iBusinessId: this.businessDetails._id,
-      oTemplate: this.importService.processImportCustomer({ customer: this.updateTemplateForm }),
-      aCustomer: this.parsedCustomerData,
+      oTemplate: this.importService.processImportTransaction({ transaction: this.updateTemplateForm }),
+      aTransaction: this.parsedTransactionData,
       sDefaultLanguage: localStorage.getItem('language') || 'n;'
     };
 
-
-    this.apiService.postNew('customer', '/api/v1/customer/import', data).subscribe((result: any) => {
+    this.apiService.postNew('cashregistry', '/api/v1/transaction/import', data).subscribe((result: any) => {
       this.importInprogress = false;
     }, (error) => {
       console.error(error);
     });
   }
-
 }

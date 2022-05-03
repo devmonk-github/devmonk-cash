@@ -56,7 +56,7 @@ export class PrintSettingsDetailsComponent implements OnInit {
         this.close({ action: true });
        },
       (error: any) => {
-        console.log(error)
+        console.error(error)
       }
     );
   }

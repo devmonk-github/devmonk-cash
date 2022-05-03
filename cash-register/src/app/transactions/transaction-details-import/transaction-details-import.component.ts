@@ -4,18 +4,18 @@ import { ApiService } from 'src/app/shared/service/api.service';
 import { faTimes, faSync } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
-  selector: 'app-customer-details-import',
-  templateUrl: './customer-details-import.component.html',
-  styleUrls: ['./customer-details-import.component.sass']
+  selector: 'app-transaction-details-import',
+  templateUrl: './transaction-details-import.component.html',
+  styleUrls: ['./transaction-details-import.component.sass']
 })
-export class CustomerDetailsImportComponent implements OnInit, OnChanges {
+export class TransactionDetailsImportComponent implements OnInit, OnChanges {
 
 
-  @Input() customerDetailsForm: any;
-  @Output() customerDetailsFormChange: EventEmitter<any> = new EventEmitter();
+  @Input() transactionDetailsForm: any;
+  @Output() transactionDetailsFormChange: EventEmitter<any> = new EventEmitter();
   @Input() updateTemplateForm: any;
   @Output() updateTemplateFormChange: EventEmitter<any> = new EventEmitter();
-  @Input() parsedCustomerData: any;
+  @Input() parsedTransactionData: any;
   @Output() moveToStep: EventEmitter<any> = new EventEmitter();
 
   faTimes = faTimes;
@@ -51,15 +51,15 @@ export class CustomerDetailsImportComponent implements OnInit, OnChanges {
 
   ngOnInit(): void {
 
-    // if (this.customerDetailsForm?.isTransaction) this.getDynamicFields(false); // FOR TESTING AND DYNAMIC DATA(TRANSACTION)
+    // if (this.transactionDetailsForm?.isTransaction) this.getDynamicFields(false); // FOR TESTING AND DYNAMIC DATA(TRANSACTION)
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (this.parsedCustomerData && this.parsedCustomerData.length > 0) {
-      this.headerOptions = Object.keys(this.parsedCustomerData[0]);
-      this.customerDetailsForm = {};
+    if (this.parsedTransactionData && this.parsedTransactionData.length > 0) {
+      this.headerOptions = Object.keys(this.parsedTransactionData[0]);
+      this.transactionDetailsForm = {};
       this.updateTemplateForm = {};
-      this.headerOptions.filter((option: any) => this.updateTemplateForm[option] = 'do-nothing');
+      this.headerOptions.filter((option: any) => this.updateTemplateForm[option] = 'overwrite');
       this.getDynamicFields(false);
     }
   }
@@ -68,7 +68,7 @@ export class CustomerDetailsImportComponent implements OnInit, OnChanges {
   getDynamicFields(isResetAttributes: boolean) {
     let filter = {
       oFilterBy: {
-        "sName": "import customer details"
+        "sName": "import transaction details"
       }
     };
 
@@ -76,12 +76,12 @@ export class CustomerDetailsImportComponent implements OnInit, OnChanges {
       if (result && result.data && result.data.length > 0) {
         this.allFields['all'] = result.data[0].aOptions;
         if (isResetAttributes) {
-          this.customerDetailsForm = {};
+          this.transactionDetailsForm = {};
           this.updateTemplateForm = {};
         }
         this.allFields['all'].filter((field: any) => {
           if (this.headerOptions.indexOf(field.sKey) > -1) {
-            this.customerDetailsForm[field.sKey] = field.sKey;
+            this.transactionDetailsForm[field.sKey] = field.sKey;
           }
         });
       }
@@ -114,17 +114,17 @@ export class CustomerDetailsImportComponent implements OnInit, OnChanges {
 
   // Function for go to step(next / previous)
   gotoStep(step: string) {
-    if (Object.keys(this.customerDetailsForm).length != this.headerOptions.length) {
+    if (Object.keys(this.transactionDetailsForm).length != this.headerOptions.length) {
       this.toasterService.show({ type: 'danger', text: 'You have not set some of the attributes exist in file.' });
     }
     this.updateTemplateFormChange.emit(this.updateTemplateForm);
-    this.customerDetailsFormChange.emit(this.customerDetailsForm);
+    this.transactionDetailsFormChange.emit(this.transactionDetailsForm);
     this.moveToStep.emit(step);
   }
 
   // Function for validate customer detail header linking
-  validateCustomerHeaderLink(): boolean {
-    return Object.keys(this.customerDetailsForm).length == 0;
+  validateTransactionHeaderLink(): boolean {
+    return Object.keys(this.transactionDetailsForm).length == 0;
   }
 
 }

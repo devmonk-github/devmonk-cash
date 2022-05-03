@@ -5,7 +5,7 @@ import { CustomerImportComponent } from './customer-import/customer-import.compo
 
 const routes: Routes = [
   { path: '', component: CustomersComponent, pathMatch: 'full'},
-  { path: 'import', component: CustomerImportComponent }
+  { path: 'import', loadChildren: ()=> import("./customer-import/customer-import.module").then(module=> module.CustomerImportModule)}
 ];
 
 @NgModule({

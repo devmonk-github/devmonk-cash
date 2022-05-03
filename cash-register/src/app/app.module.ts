@@ -4,7 +4,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import { TranslateLoader, TranslateModule } from "@ngx-translate/core";
-import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
+// import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { HttpClientModule } from '@angular/common/http';
 import { PrintComponent } from './print/print.component';
 import { FormsModule } from "@angular/forms";
@@ -36,7 +36,7 @@ export class CustomTranslateLoader implements TranslateLoader {
   imports: [
     BrowserModule,
     HttpClientModule,
-    BrowserAnimationsModule,
+    // BrowserAnimationsModule,
     AppRoutingModule,
     TranslateModule.forRoot(),
     FormsModule,
