@@ -18,38 +18,32 @@
     </div>
     <h4>{{ 'TRANSACTION_DETAILS' | translate}}</h4>
     <div class="row mb-4">
-        <div class="col-md-2 no-padding-left">
+        <div class="col-md-3 no-padding-left">
             <h5>Found columns(CSV headers)</h5>
         </div>
-        <div class="col-md-3 no-padding-left">
+        <div class="col-md-4 no-padding-left">
             <h5>Attribute to set</h5>
         </div>
-        <div class="col-md-7 no-padding-right">
+        <!-- <div class="col-md-7 no-padding-right">
             <h5>Update Template</h5>
-        </div>
+        </div> -->
     </div>
     <div class="row mb-4" *ngFor="let option of headerOptions">
-        <div class="col-md-2 no-padding-left">
+        <div class="col-md-3 no-padding-left">
             {{option}}
         </div>
-        <div class="col-md-3 no-padding-left">
+        <div class="col-md-4 no-padding-left">
             <select class="form-select" id="transaction-attributes" [(ngModel)]="transactionDetailsForm[option]">
                 <option *ngFor="let option of allFields.all" [value]="option.sKey">{{ option.value | translate}}</option>
             </select>
         </div>
-        <div class="col-md-7 no-padding-left flex">
+        <!-- <div class="col-md-7 no-padding-left flex">
             <select class="form-select w-75" id="transaction-update-template" [(ngModel)]="updateTemplateForm[option]">
                 <option value="do-nothing">{{ "DO_NOTHING" | translate }}</option>
                 <option value="overwrite">{{ "OVERWRITE" | translate }}</option>
                 <option value="add-if-undefined">{{ "ADD_IF_UNDEFINED" | translate }}</option>
                 <option value="append">{{ "APPEND" | translate }}</option>
             </select>
-            <!-- <nb-radio-group class="flex" [(ngModel)]="updateTemplateForm[option]">
-                <nb-radio class="mr-4" value="do-nothing">{{ "DO_NOTHING" | translate }}</nb-radio>
-                <nb-radio class="mr-4" value="overwrite">{{ "OVERWRITE" | translate }}</nb-radio>
-                <nb-radio class="mr-4" value="add-if-undefined">{{ "ADD_IF_UNDEFINED" | translate }}</nb-radio>
-                <nb-radio class="mr-4" value="append">{{ "APPEND" | translate }}</nb-radio>
-            </nb-radio-group> -->
-        </div>
+        </div> -->
     </div>
 </div>

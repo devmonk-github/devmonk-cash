@@ -86,7 +86,7 @@ export class CustomerDetailsImportComponent implements OnInit, OnChanges {
         });
       }
     }, error => {
-      console.log("error :", error);
+      console.error("error :", error);
     })
   }
 

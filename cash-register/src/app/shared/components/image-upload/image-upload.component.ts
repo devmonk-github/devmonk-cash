@@ -93,7 +93,6 @@ export class ImageUploadComponent implements OnInit {
     if (!this.showWebcam && this.showUpload) { console.log(' Upload selected image!'); }
     this.file.name = this.randomString(20)
 
-    console.log(this.file)
     this.apiService.getNew('core', '/api/v1/file-uploads/' + this.requestParams.iBusinessId + '?fileName=' + this.file.name + '&fileType=' + this.file.type,).subscribe(
       async (result: any) => {
         await this.uploadFileToS3(result.data.signature, this.file, result.data.url, this.file.type);

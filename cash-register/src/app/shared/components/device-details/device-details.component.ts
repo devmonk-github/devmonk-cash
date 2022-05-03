@@ -42,7 +42,7 @@ export class DeviceDetailsComponent implements OnInit {
         this.close({ action: true, device: this.device });
        },
       (error: any) => {
-        console.log(error)
+        console.error(error)
       }
     );
   }
@@ -54,7 +54,7 @@ export class DeviceDetailsComponent implements OnInit {
         this.close({ action: true, device: this.device });
        },
       (error: any) => {
-        console.log(error)
+        console.error(error)
       }
     );
   }

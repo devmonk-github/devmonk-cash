@@ -44,15 +44,15 @@ export class TransactionFileImportComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.subscription = this.control.valueChanges.subscribe((values: Array<File>) => {
       if(values && values.length > 0){
-        this.csvParser.parse(values[0], { header: true, delimiter: this.delimiter})
-          .pipe().subscribe((result: any) => {
-            this.parsedTransactionData = result;
-            this.parsedTransactionDataChange.emit(this.parsedTransactionData);
-          }, (error: NgxCSVParserError) => {
-            this.toasterService.show({ type: 'danger', text: 'Upload csv file'});
-            this.parsedTransactionData = [];
-            this.parsedTransactionDataChange.emit(this.parsedTransactionData);
-          });
+        let reader : any = new FileReader();
+        let data : Array<any> = [];
+        let self = this;
+        reader.onload = function(){
+          data = JSON.parse(reader.result);
+          self.parsedTransactionData = [data[0]];
+          self.parsedTransactionDataChange.emit(self.parsedTransactionData);
+        }
+        reader.readAsText(values[0])
       } else {
         this.parsedTransactionData = [];
         this.parsedTransactionDataChange.emit(this.parsedTransactionData);

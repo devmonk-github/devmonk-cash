@@ -59,7 +59,7 @@ export class TransactionDetailsImportComponent implements OnInit, OnChanges {
       this.headerOptions = Object.keys(this.parsedTransactionData[0]);
       this.transactionDetailsForm = {};
       this.updateTemplateForm = {};
-      this.headerOptions.filter((option: any) => this.updateTemplateForm[option] = 'do-nothing');
+      this.headerOptions.filter((option: any) => this.updateTemplateForm[option] = 'overwrite');
       this.getDynamicFields(false);
     }
   }
@@ -86,7 +86,7 @@ export class TransactionDetailsImportComponent implements OnInit, OnChanges {
         });
       }
     }, error => {
-      console.log("error :", error);
+      console.error("error :", error);
     })
   }
 

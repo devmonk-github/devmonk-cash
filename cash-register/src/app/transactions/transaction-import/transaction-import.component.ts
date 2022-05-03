@@ -40,26 +40,24 @@ export class TransactionImportComponent implements OnInit {
     } else if (step == 'previous') {
       this.stepperInstatnce.goPrev();
     } else if (step == 'import') {
-      // this.importCustomer()
+      this.importTransaction()
       this.stepperInstatnce.goNext();
     }
   }
 
-  // importCustomer() {
-  //   this.importInprogress = true;
-  //   let data: any = {
-  //     iBusinessId: this.businessDetails._id,
-  //     oTemplate: this.importService.processImportCustomer({ customer: this.updateTemplateForm }),
-  //     aCustomer: this.parsedCustomerData,
-  //     sDefaultLanguage: localStorage.getItem('language') || 'n;'
-  //   };
+  importTransaction() {
+    this.importInprogress = true;
+    let data: any = {
+      iBusinessId: this.businessDetails._id,
+      oTemplate: this.importService.processImportTransaction({ transaction: this.updateTemplateForm }),
+      aTransaction: this.parsedTransactionData,
+      sDefaultLanguage: localStorage.getItem('language') || 'n;'
+    };
 
-
-  //   this.apiService.postNew('customer', '/api/v1/customer/import', data).subscribe((result: any) => {
-  //     this.importInprogress = false;
-  //   }, (error) => {
-  //     console.log(error);
-  //   });
-  // }
-
+    this.apiService.postNew('cashregistry', '/api/v1/transaction/import', data).subscribe((result: any) => {
+      this.importInprogress = false;
+    }, (error) => {
+      console.error(error);
+    });
+  }
 }

@@ -95,7 +95,7 @@ export class CustomerDetailsComponent implements OnInit {
           this.close({ action: true, customer: this.customer });
          },
         (error: any) => {
-          console.log(error)
+          console.error(error)
         }
       );
     }
@@ -105,7 +105,7 @@ export class CustomerDetailsComponent implements OnInit {
           this.close({ action: true });
         },
         (error: any) => {
-          console.log(error)
+          console.error(error)
         }
       );
     }

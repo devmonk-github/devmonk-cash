@@ -58,7 +58,7 @@ export class CustomerImportComponent implements OnInit {
     this.apiService.postNew('customer', '/api/v1/customer/import', data).subscribe((result: any) => {
       this.importInprogress = false;
     }, (error) => {
-      console.log(error);
+      console.error(error);
     });
   }
 

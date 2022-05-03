@@ -57,7 +57,6 @@ export class WebshopSettingsComponent implements OnInit {
   }
 
   AddDeliveryMethod(newShipping: any) {
-    console.log(newShipping);
     if (this.webShop && this.webShop.aShippingOptions) {
       this.webShop.aShippingOptions.push(newShipping);
     } else {
