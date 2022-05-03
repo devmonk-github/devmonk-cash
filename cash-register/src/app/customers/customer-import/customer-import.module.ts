@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CustomerImportComponent } from './customer-import.component';
 import { FileUploadModule } from '@iplab/ngx-file-upload';
-import { BrowserAnimationsModule   } from '@angular/platform-browser/animations';
+// import { BrowserAnimationsModule   } from '@angular/platform-browser/animations';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FileImportComponent } from '../file-import/file-import.component';
@@ -27,7 +27,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
     TranslateModule,
     FormsModule,
     FileUploadModule,
-    BrowserAnimationsModule,
+    // BrowserAnimationsModule,
     FontAwesomeModule
   ]
 })
