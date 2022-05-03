@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import {
   faScrewdriverWrench, faTruck, faBoxesStacked, faGifts,
   faUserPlus, faUser, faTimes, faTimesCircle, faTrashAlt, faRing,
-  faCoins, faCalculator, faArrowRightFromBracket
+  faCoins, faCalculator, faArrowRightFromBracket, faSpinner
 } from "@fortawesome/free-solid-svg-icons";
 import { TranslateService } from "@ngx-translate/core";
 import { DialogService } from '../shared/service/dialog'
@@ -37,7 +37,7 @@ export class TillComponent implements OnInit {
   faCoins = faCoins
   faCalculator = faCalculator
   faArrowRightFromBracket = faArrowRightFromBracket
-
+  faSpinner = faSpinner;
   taxes: any[] = []
   transactionItems: any[] = []
   selectedTransaction: any = null;
@@ -77,7 +77,9 @@ export class TillComponent implements OnInit {
     { name: 'Leren band', price: this.randNumber(20, 45) },
     { name: 'Postzegels', price: this.randNumber(1, 10) },
     { name: 'Tassen', price: this.randNumber(50, 200) },
-  ]
+  ];
+
+  saveInProgress = false;
   // End dummy data
   // type: ['Visa']
   // cards = [{ sName: 'Card', type: ['Visa', 'Meastro', 'Master Card'], amount: 0 }];
@@ -204,8 +206,8 @@ export class TillComponent implements OnInit {
     return result;
   }
   addItem(type: string): void {
-    if (type === 'gift-sell') {
-      type = 'giftcard-sell'
+    if (type === 'giftcard') {
+      type = 'giftcard'
     }
     // 'regular',
     // 'giftcard',
@@ -230,8 +232,10 @@ export class TillComponent implements OnInit {
       paymentAmount: 0,
       description: '',
       open: true,
-      ...(type === 'giftcard-sell') && { giftcardNumber: Date.now() },
-      ...(type === 'giftcard-sell') && { taxHandling: 'true' },
+      iBusinessId: this.getValueFromLocalStorage('currentBusiness'),
+      ...(type === 'giftcard') && { sGiftCardNumber: Date.now() },
+      ...(type === 'giftcard') && { taxHandling: 'true' },
+      ...(type === 'giftcard') && { isGiftCardNumberValid: false },
     })
   }
 
@@ -259,14 +263,47 @@ export class TillComponent implements OnInit {
   }
 
   itemChanged(item: any, index: number): void {
-    if (item === 'delete') {
-      this.transactionItems.splice(index, 1);
-    } else if (item === 'update') {
-      let availableAmount = this.getUsedPayMethods(true);
-      this.paymentDistributeService.updateAmount(this.transactionItems, availableAmount, index);
-    } else {
-      this.transactionItems[index] = item
+    switch (item) {
+      case 'delete':
+        this.transactionItems.splice(index, 1);
+        break;
+      case 'update':
+        let availableAmount = this.getUsedPayMethods(true);
+        this.paymentDistributeService.updateAmount(this.transactionItems, availableAmount, index);
+        break;
+      case 'duplicate':
+        const tItem = Object.create(this.transactionItems[index]);
+        tItem.sGiftCardNumber = Date.now();
+        this.transactionItems.push(tItem);
+        break;
+      default:
+        this.transactionItems[index] = item
+        break;
     }
+  }
+
+  createGiftCard(item: any, index: number): void {
+    const body = {
+      iBusinessId: this.getValueFromLocalStorage('currentBusiness'),
+      iLocationId: this.getValueFromLocalStorage('currentLocation'),
+      iCustomerId: '6182a52f1949ab0a59ff4e7b',
+      sGiftCardNumber: this.transactionItems[index].sGiftCardNumber,
+      eType: '',
+      nPriceIncVat: this.transactionItems[index].price,
+      nVatRate: this.transactionItems[index].tax,
+      nQuantity: this.transactionItems[index].quantity,
+      nPaidAmount: 0,
+      sProductName: this.transactionItems[index].name,
+      iActivityId: this.iActivityId,
+    };
+    this.apiService.postNew('cashregistry', '/api/v1/till/gift-card', body)
+      .subscribe((data: any) => {
+        this.iActivityId = data.iActivityId;
+        this.transactionItems[index].iActivityItemId = data._id;
+        this.toastrService.show({ type: 'success', text: 'Giftcard created!' });
+      }, err => {
+        this.toastrService.show({ type: 'danger', text: err.message });
+      });
   }
 
   openTransactionSearchDialog(): void {
@@ -291,12 +328,14 @@ export class TillComponent implements OnInit {
                 name: transactionItem.sProductName,
                 iActivityItemId: transactionItem.iActivityItemId,
                 nRefundAmount: transactionItem.nPaidAmount,
-                prePaidAmount: transactionItem.nPaymentAmount,
-                type: transactionItem.oType.eKind,
+                prePaidAmount: tType === 'refund' ? transactionItem.nPaidAmount : transactionItem.nPaymentAmount,
+                type: transactionItem.sGiftCardNumber ? 'giftcard' : transactionItem.oType.eKind,
                 eTransactionItemType: 'regular',
                 nBrokenProduct: 0,
                 tType,
                 oType: transactionItem.oType,
+                nonEditable: transactionItem.sGiftCardNumber ? true : false,
+                sGiftCardNumber: transactionItem.sGiftCardNumber,
                 quantity: transactionItem.nQuantity,
                 price: transactionItem.nPriceIncVat,
                 discount: 0,
@@ -347,6 +386,10 @@ export class TillComponent implements OnInit {
 
   // nRefundAmount needs to be added
   createTransaction(): void {
+    if (this.transactionItems.length < 1) {
+      return;
+    }
+    this.saveInProgress = true;
     const transactionItems = this.transactionItems.map((i) => {
       return new TransactionItem(
         i.name,
@@ -377,7 +420,7 @@ export class TillComponent implements OnInit {
         false, // TODO
         false, // TODO
         "CATEGORY", // TODO
-        null, // TODO
+        i.sGiftCardNumber, // TODO sGiftCardNumber
         null, // TODO
         null, //TODO
 
@@ -452,9 +495,12 @@ export class TillComponent implements OnInit {
         this.toastrService.show({ type: 'success', text: 'Transactie gemaakt!' });
         if (this.selectedTransaction) {
           this.deleteParkedTransaction();
-        }
+        };
+        this.saveInProgress = false;
+        this.clearAll();
       }, err => {
         this.toastrService.show({ type: 'danger', text: err.message });
+        this.saveInProgress = false;
       });
   }
 

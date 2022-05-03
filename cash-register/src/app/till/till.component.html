@@ -55,7 +55,7 @@
         </button>
 
         <button class="btn d-flex bg-white rounded p-4 mb-3 me-3 text-hover-primary min-w-90px"
-          (click)="addItem('gift-sell')">
+          [ngClass]="{'btn-color-primary': eKind === 'giftcard' }" (click)="eKind = 'giftcard'; addItem('giftcard')">
           <div class="d-flex flex-column justify-center align-items-center flex-grow-1">
             <div class="symbol symbol-40px mb-2">
               <span class="symbol-label">
@@ -156,8 +156,10 @@
                 <div class="accordion-item d-table-cell" till-repair *ngIf="item.type=== 'repair'" [item]="item"
                   [taxes]="taxes" (itemChanged)="itemChanged($event, i)"></div>
 
-                <div class="accordion-item d-table-cell w-100" till-gift *ngIf="item.type=== 'giftcard-sell'"
-                  [item]="item" [taxes]="taxes" (itemChanged)="itemChanged($event, i)"></div>
+                <div class="accordion-item d-table-cell w-100" till-gift *ngIf="item.type=== 'giftcard'" [item]="item"
+                  [transactionItems]="transactionItems" [taxes]="taxes" (itemChanged)="itemChanged($event, i)"
+                  (createGiftCard)="createGiftCard($event, i)">
+                </div>
                 <div class="accordion-item d-table-cell w-100" till-other *ngIf="item.type=== 'empty-line'"
                   [item]="item" [taxes]="taxes" (itemChanged)="itemChanged($event, i)"></div>
                 <div class="d-table-cell">
@@ -403,8 +405,14 @@
       <h1>{{ "CHANGE" | translate}}: {{getUsedPayMethods(true) - getTotals('price') | currency: '€'}}</h1>
 
       <h4>{{ "PREPAYMENT" | translate}}: {{totalPrepayment() | currency: '€'}}</h4>
-      <button class="btn btn-primary till-save-button" (click)="createTransaction()">{{ "SAVE" |
-        translate}}</button>
+      <button class="btn btn-primary till-save-button" (click)="createTransaction()" [disabled]="saveInProgress">
+        <span class="d-flex" *ngIf="saveInProgress">
+          <fa-icon [icon]="faSpinner" class="fa-spin"></fa-icon>
+        </span>
+        <span *ngIf="!saveInProgress">
+          {{ "SAVE" | translate}}
+        </span>
+      </button>
     </div>
   </div>
 

@@ -3,49 +3,47 @@
     <button class="accordion-button fs-4 fw-bold" type="button" data-bs-toggle="collapse"
       data-bs-target="#kt_accordion_1_body_1" aria-expanded="true" aria-controls="kt_accordion_1_body_1">
       <section class="d-flex product-row mb-3 align-items-center">
-        <div class="w-90px">1</div>
-        <div class="w-275px">{{item.name}} - {{item.giftcardNumber}}</div>
+        <div class="w-90px">{{item.quantity}}</div>
+        <div class="w-275px">{{item.name}} - {{item.sGiftCardNumber}}</div>
         <div class="w-100px">{{item.price | currency: '€'}}</div>
         <div class="w-95px"></div>
         <div class="w-100px">{{item.tax}}%</div>
-        <div class="w-100px"></div>
+        <div class="w-100px">{{item.price | currency: '€'}}</div>
         <div class="w-75px"></div>
       </section>
-      <!-- 
-      <section class="d-flex product-row align-items-center">
-        <div class="w-90px">{{item.quantity}}</div>
-        <div class="w-275px">{{item.name}}</div>
-        <div class="w-100px">{{item.price | currency: '€'}}</div>
-        <div class="w-95px">{{item.discount | currency: '€'}}</div>
-        <div class="w-100px">{{item.tax}}%</div>
-        <div class="w-100px">{{getTotalPrice(item)}}
-        </div>
-        <div class="w-75px">{{item.paymentAmount | currency: '€'}}</div>
-      </section> -->
     </button>
   </h2>
   <div id="kt_accordion_1_body_1" class="accordion-collapse collapse show" aria-labelledby="kt_accordion_1_header_1"
     data-bs-parent="#kt_accordion_1">
     <div class="accordion-body px-3 py-4">
-      <section class="d-flex product-row mb-3 align-items-center">
-        <div class="w-90px">&nbsp;</div>
-        <div class="w-300px">
+      <section class="d-flex product-row mb-3 row">
+        <div class="col-2">
+          <button class="btn btn-bg-light btn-active-color-primary mb-2 w-100" (click)="create()"
+            [disabled]="!item.nonEditable && numberIcon === faBan">
+            Print <fa-icon [icon]="faPrint"></fa-icon>
+          </button>
+          <button class="btn btn-bg-light btn-active-color-primary" (click)="duplicate()">Duplicate <fa-icon
+              [icon]="faClone">
+            </fa-icon>
+          </button>
+        </div>
+        <div class="col-3">
           <div class="input-group b-5">
-            <!--            <div class="form-floating mb-7">-->
-            <input type="text" class="form-control" name="number" id="number" [(ngModel)]="item.giftcardNumber"
-              (blur)="checkNumber()">
+            <input type="text" class="form-control" name="number" id="number" [(ngModel)]="item.sGiftCardNumber"
+              (blur)="checkNumber()" [disabled]="item.nonEditable">
             <span class="input-group-text">
               <fa-icon [icon]="numberIcon" [ngClass]="checkingNumber ? 'fa-spin': ''"></fa-icon>
             </span>
-            <!--              <label for="number">{{ "GIFTCARD_NUMBER" | translate}}</label>-->
-            <!--            </div>-->
+            <span class="text-danger" *ngIf="!item.nonEditable && numberIcon === faBan">
+              Please enter valid giftcard number.
+            </span>
           </div>
-
         </div>
 
-        <div class="w-300px">
+        <div class="col-3">
           <div class="form-floating mb-7">
-            <input type="text" class="form-control" name="number" id="value" [(ngModel)]="item.price">
+            <input type="number" class="form-control" name="number" id="value" [(ngModel)]="item.price"
+              [disabled]="item.nonEditable">
             <label for="number">{{ "VALUE" | translate}}</label>
           </div>
           <p>{{ "VAT_HANDLING" | translate}}</p>
@@ -62,8 +60,7 @@
             </label>
           </div>
         </div>
-        <div class="w-100px ps-2"></div>
-        <div class="w-125px ps-2">
+        <div class="col-3">
           <div class="form-floating till-padding">
             <select name="taxRate" id="taxRate" class="form-select" [(ngModel)]="item.tax">
               <option *ngFor="let rate of taxes" [ngValue]="rate.rate">{{rate.name}}</option>
@@ -71,13 +68,13 @@
             <label for="taxRate">{{"TAX" | translate}}</label>
           </div>
         </div>
-        <div class="w-100px">
-          <button class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary w-30px h-30px"
-            (click)="deleteItem()">
+        <div class="col-1">
+          <!-- <button class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary w-30px h-30px" (click)="create()"
+            [disabled]="!item.nonEditable && numberIcon === faBan">
             <span class="svg-icon svg-icon-1qx me-0">
-              <fa-icon [icon]="faTimes"></fa-icon>
+              <fa-icon [icon]="faPrint"></fa-icon>
             </span>
-          </button>
+          </button> -->
         </div>
       </section>
     </div>
