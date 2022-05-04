@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import {
   faScrewdriverWrench, faTruck, faBoxesStacked, faGifts,
   faUserPlus, faUser, faTimes, faTimesCircle, faTrashAlt, faRing,
-  faCoins, faCalculator, faArrowRightFromBracket, faSpinner
+  faCoins, faCalculator, faArrowRightFromBracket, faSpinner, faSearch
 } from "@fortawesome/free-solid-svg-icons";
 import { TranslateService } from "@ngx-translate/core";
 import { DialogService } from '../shared/service/dialog'
@@ -38,6 +38,7 @@ export class TillComponent implements OnInit {
   faCalculator = faCalculator
   faArrowRightFromBracket = faArrowRightFromBracket
   faSpinner = faSpinner;
+  faSearch = faSearch;
   taxes: any[] = []
   transactionItems: any[] = []
   selectedTransaction: any = null;
@@ -436,15 +437,16 @@ export class TillComponent implements OnInit {
         null,
         null,
 
-        null, // TODO
+        i.dEstimatedDate, // estimated date
         null, // TODO
         null, //TODO
-        i.iBusinessProductId, //TODO business productId
+        i.iBusinessProductId,
         null,
         'y',
         this.getValueFromLocalStorage('currentWorkstation'),
         this.getValueFromLocalStorage('currentEmployee')._id,
         this.getValueFromLocalStorage('currentLocation'),
+        i.sBagNumber,
 
         null,
         {
@@ -595,7 +597,7 @@ export class TillComponent implements OnInit {
       tax: product.nVatRate || 0,
       description: product.sLabelDescription,
       iArticleGroupId: product.iArticleGroupId,
-      iBusinessProductId: product.iBusinessProductId,
+      iBusinessProductId: product._id,
       open: true,
     });
   }

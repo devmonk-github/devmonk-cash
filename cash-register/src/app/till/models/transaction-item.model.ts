@@ -60,6 +60,7 @@ export class TransactionItem {
     public iDeviceId: string,
     public iEmployeeId: string,
     public iLocationId: string,
+    public sBagNumber: string,
 
     //Optional here, since we don't know the transaction id when we create one
     public iTransactionId: string | null,

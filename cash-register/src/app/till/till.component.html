@@ -193,8 +193,10 @@
               <input type="text" class="form-control me-3" placeholder="Search..." [(ngModel)]="searchKeyword"
                 (ngModelChange)="searchKeyword? shopProducts = shopProducts: shopProducts = []"
                 (keyup.enter)="search()">
-              <button class="btn btn-secondary me-3" (click)="openTransactionSearchDialog()">{{ "TRANSACTION" |
-                translate}}</button>
+              <button class="btn btn-secondary me-3 d-flex" (click)="openTransactionSearchDialog()">
+                <fa-icon [icon]="faSearch"></fa-icon> {{ "TRANSACTION" |
+                translate}}
+              </button>
               <button class="btn btn-secondary me-3" (click)="addNewLine()">{{ "TEXT_LINE" | translate}}</button>
               <button class="btn btn-secondary me-3">{{ "EMPTY_LINE" | translate}}</button>
               <button class="btn btn-icon btn-secondary w-85px" (click)="cancelItems()"
