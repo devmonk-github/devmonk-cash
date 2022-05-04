@@ -15,6 +15,7 @@ export class TransactionImportComponent implements OnInit {
   updateTemplateForm: any;
   importInprogress: boolean = false;
   businessDetails: any = {};
+  location: any = {};
   stepperInstatnce: any;
   @ViewChild('stepperContainer', { read: ViewContainerRef }) stepperContainer!: ViewContainerRef;
 
@@ -24,7 +25,8 @@ export class TransactionImportComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.businessDetails._id = localStorage.getItem('currentBusiness')
+    this.businessDetails._id = localStorage.getItem('currentBusiness'),
+    this.location._id = localStorage.getItem('currentLocation')
   }
 
   ngAfterContentInit(): void {
@@ -49,6 +51,7 @@ export class TransactionImportComponent implements OnInit {
     this.importInprogress = true;
     let data: any = {
       iBusinessId: this.businessDetails._id,
+      iLocationId: this.location._id,
       oTemplate: this.importService.processImportTransaction({ transaction: this.updateTemplateForm }),
       aTransaction: this.parsedTransactionData,
       sDefaultLanguage: localStorage.getItem('language') || 'n;'
