@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewContainerRef } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import { ApiService } from '../../service/api.service';
 import { DialogComponent } from '../../service/dialog';
@@ -7,6 +7,7 @@ import { Subject, Observable } from 'rxjs';
 import { WebcamImage, WebcamInitError, WebcamUtil } from 'ngx-webcam'
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-image-upload',
@@ -14,10 +15,9 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
   styleUrls: ['./image-upload.component.sass']
 })
 export class ImageUploadComponent implements OnInit {
-
   faTimes = faTimes;
   dialogRef: DialogComponent;
-  public showWebcam = false;
+  public showWebcam = true;
   public showUpload = false;
   public allowCameraSwitch = true;
   public multipleWebcamsAvailable = false;
@@ -49,7 +49,8 @@ export class ImageUploadComponent implements OnInit {
   constructor(
     private viewContainerRef: ViewContainerRef,
     private apiService: ApiService,
-    private http: HttpClient
+    private http: HttpClient,
+    private sanitizer: DomSanitizer
   ) {
     const _injector = this.viewContainerRef.parentInjector;
     this.dialogRef = _injector.get<DialogComponent>(DialogComponent);
@@ -67,32 +68,45 @@ export class ImageUploadComponent implements OnInit {
     return this.myForm.controls;
   }
 
+  sanitizeImageUrl(imageUrl: string): SafeUrl {
+    return this.sanitizer.bypassSecurityTrustUrl(imageUrl);
+  }
+
   onFileChange(event: any) {
     this.file = undefined;
     if (event.target.files.length > 0) {
       this.file = event.target.files[0];
+      this.webcamImage = URL.createObjectURL(event.target.files[0]);
     }
+    console.log(this.webcamImage);
   }
 
-  randomString(length: number) {
+  randomString(fileName: string, length: number) {
     var randomChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     var result = '';
     for (var i = 0; i < length; i++) {
       result += randomChars.charAt(Math.floor(Math.random() * randomChars.length));
     }
-    return result;
+    fileName = fileName ? fileName.replace(/\s/g, '_') : '';
+    return `${fileName}_${result}`;
   }
 
   submit() {
-    if (!this.showWebcam && this.showUpload) { console.log(' Upload selected image!'); }
-    if (this.showWebcam && !this.showUpload) {
+    console.log(this.showWebcam);
+    // if (!this.showWebcam && this.showUpload) { console.log(' Upload selected image!'); }
+    if (this.showWebcam) {
       var content = this.webcamImage;
-      // var blob = new Blob([content], { type: "text/xml" });
-      this.file = content;
+      const arr = this.webcamImage.imageAsDataUrl.split(",");
+      const bstr = atob(arr[1]);
+      let n = bstr.length;
+      const u8arr = new Uint8Array(n);
+      while (n--) {
+        u8arr[n] = bstr.charCodeAt(n);
+      }
+      this.file = new File([u8arr], this.randomString('Webcam_Capture', 4), { type: content._mimeType })
     }
+    this.file = new File([this.file], this.randomString(this.file.name, 4), { type: this.file.type });
     if (!this.showWebcam && this.showUpload) { console.log(' Upload selected image!'); }
-    this.file.name = this.randomString(20)
-
     this.apiService.getNew('core', '/api/v1/file-uploads/' + this.requestParams.iBusinessId + '?fileName=' + this.file.name + '&fileType=' + this.file.type,).subscribe(
       async (result: any) => {
         await this.uploadFileToS3(result.data.signature, this.file, result.data.url, this.file.type);
@@ -118,29 +132,32 @@ export class ImageUploadComponent implements OnInit {
       headers: new HttpHeaders(finalHeaders),
     }
 
-    return this.http.put(
+    this.http.put(
       signedRequest,
       file,
       httpHeaders,
     ).subscribe(
       (result: any) => {
         this.file = undefined;
+        this.close({ url });
       },
       (err: any) => {
-        console.error(err);
         this.file = undefined;
       }
     )
   }
 
   useCamera() {
-    if (!this.showWebcam && this.showUpload) this.showUpload = false;
-    this.showWebcam = !this.showWebcam;
+    // if (!this.showWebcam && this.showUpload) this.showUpload = false;
+    // this.showWebcam = !this.showWebcam;
+    this.showUpload = false;
+    this.showWebcam = true;
   }
 
   useUpload() {
-    if (this.showWebcam && !this.showUpload) this.showWebcam = false;
-    this.showUpload = !this.showUpload;
+    // if (this.showWebcam && !this.showUpload) this.showWebcam = false;
+    this.showWebcam = false;
+    this.showUpload = true;
   }
 
   close(data: any) {

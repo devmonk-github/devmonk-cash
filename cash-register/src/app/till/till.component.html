@@ -116,21 +116,6 @@
             </div>
           </div>
         </button>
-        <button class="btn d-flex bg-white rounded p-4 mb-3 me-3 text-hover-primary min-w-90px"
-          (click)="openImageModal()">
-          <div class="d-flex flex-column justify-center align-items-center flex-grow-1">
-            <div class="symbol symbol-40px mb-2">
-              <span class="symbol-label">
-                <span class="svg-icon svg-icon-1qx me-0">
-                  <fa-icon [icon]="faUser"></fa-icon>
-                </span>
-              </span>
-            </div>
-            <div class="fs-6">
-              <span class="text-gray-800fw-bold">{{"IMAGE_MODAL" | translate}}</span>
-            </div>
-          </div>
-        </button>
       </div>
 
       <div class="card card-flush mb-4">
@@ -203,6 +188,18 @@
                 [disabled]="transactionItems.length === 0">
                 <i class="fa fa-trash"></i>
               </button>
+            </div>
+            <div class="d-flex create-order p-5" *ngIf="searchKeyword && eKind === 'order'">
+              <fa-icon [icon]="faTimes" class="topright cursor-pointer"></fa-icon>
+              <div>
+                <span class="text-danger">Use 'Enter' to search</span>
+                <div class="cursor-pointer mt-2" (click)="addOrder()">
+                  <h4>{{searchKeyword}}</h4>
+                  <span>
+                    Use this entry(no stock product).
+                  </span>
+                </div>
+              </div>
             </div>
           </div>
           <div class="row" *ngIf="shopProducts && shopProducts.length > 0">

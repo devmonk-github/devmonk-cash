@@ -3,18 +3,17 @@ import {
   faScrewdriverWrench, faTruck, faBoxesStacked, faGifts,
   faUserPlus, faUser, faTimes, faTimesCircle, faTrashAlt, faRing,
   faCoins, faCalculator, faArrowRightFromBracket, faSpinner, faSearch
-} from "@fortawesome/free-solid-svg-icons";
-import { TranslateService } from "@ngx-translate/core";
+} from '@fortawesome/free-solid-svg-icons';
+import { TranslateService } from '@ngx-translate/core';
 import { DialogService } from '../shared/service/dialog'
-import { CustomerDialogComponent } from "../shared/components/customer-dialog/customer-dialog.component";
-import { TaxService } from "../shared/service/tax.service";
+import { CustomerDialogComponent } from '../shared/components/customer-dialog/customer-dialog.component';
+import { TaxService } from '../shared/service/tax.service';
 import { ApiService } from '../shared/service/api.service';
-import { ConfirmationDialogComponent } from "../shared/components/confirmation-dialog/confirmation-dialog.component";
-import { ImageUploadComponent } from '../shared/components/image-upload/image-upload.component';
-import { Transaction } from "./models/transaction.model";
+import { ConfirmationDialogComponent } from '../shared/components/confirmation-dialog/confirmation-dialog.component';
+import { Transaction } from './models/transaction.model';
 import * as _ from 'lodash';
-import { TransactionItem } from "./models/transaction-item.model";
-import { ToastService } from "../shared/components/toast";
+import { TransactionItem } from './models/transaction-item.model';
+import { ToastService } from '../shared/components/toast';
 import { TransactionsSearchComponent } from '../shared/components/transactions-search/transactions-search.component';
 import { PaymentDistributionService } from '../shared/service/payment-distribution.service';
 
@@ -104,8 +103,8 @@ export class TillComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.business._id = localStorage.getItem("currentBusiness");
-    this.locationId = localStorage.getItem("currentLocation") || '';
+    this.business._id = localStorage.getItem('currentBusiness');
+    this.locationId = localStorage.getItem('currentLocation') || '';
     this.requestParams.iBusinessId = this.business._id;
     this.taxes = this.taxService.getTaxRates()
     this.getPaymentMethods();
@@ -121,14 +120,14 @@ export class TillComponent implements OnInit {
         return ''
       }
     } else {
-      return localStorage.getItem(key) || "";
+      return localStorage.getItem(key) || '';
     }
   }
 
-  openImageModal() {
-    this.dialogService.openModal(ImageUploadComponent, { cssClass: "modal-xl", context: { mode: 'create' } }).instance.close.subscribe(result => {
-    });
-  }
+  // openImageModal() {
+  //   this.dialogService.openModal(ImageUploadComponent, { cssClass: 'modal-xl', context: { mode: 'create' } }).instance.close.subscribe(result => {
+  //   });
+  // }
 
   getPaymentMethods() {
     this.payMethodsLoading = true;
@@ -150,6 +149,65 @@ export class TillComponent implements OnInit {
     article.type = 'product'
     article.description = ''
     this.transactionItems.push(article)
+  }
+
+  createArticleGroup(index: number) {
+    let data = {
+      iBusinessId: this.getValueFromLocalStorage('currentBusiness'),
+      oName: { nl: 'Ordered products (not categorised)', en: 'Ordered products (not categorised)', de: 'Ordered products (not categorised)', fr: 'Ordered products (not categorised)' },
+      bShowInOverview: false,
+      bShowOnWebsite: false,
+      bInventory: false,
+      aProperty: []
+    };
+
+    this.apiService.postNew('core', '/api/v1/business/article-group/create/for/order', data).subscribe(
+      (result: any) => {
+        this.transactionItems[index].iArticleGroupId = result.data._id;
+
+      }
+    )
+  }
+  checkArticleGroups(index: number) {
+    let data = {
+      skip: 0,
+      limit: 1,
+      searchValue: 'Ordered products',
+      oFilterBy: {
+      },
+      iBusinessId: this.getValueFromLocalStorage('currentBusiness')
+    };
+    this.apiService.postNew('core', '/api/v1/business/article-group/list', data).subscribe(
+      (result: any) => {
+        if (1 > result.data.length) {
+          this.createArticleGroup(index);
+        } else {
+          this.transactionItems[index].iArticleGroupId = result.data[0].result[0]._id;
+        }
+      }
+    )
+  }
+  addOrder(): void {
+    this.transactionItems.push({
+      eTransactionItemType: 'regular',
+      manualUpdate: false,
+      index: this.transactionItems.length,
+      name: this.searchKeyword,
+      type: 'order',
+      aImage: [],
+      quantity: 1,
+      nBrokenProduct: 0,
+      price: 0,
+      discount: 0,
+      tax: 21,
+      paymentAmount: 0,
+      description: '',
+      open: true,
+    });
+
+    this.checkArticleGroups(this.transactionItems.length - 1);
+
+    this.searchKeyword = '';
   }
 
   clearTransaction(): void {
@@ -225,6 +283,7 @@ export class TillComponent implements OnInit {
       index: this.transactionItems.length,
       name: this.translateService.instant(type.toUpperCase()),
       type,
+      aImage: [],
       quantity: 1,
       nBrokenProduct: 0,
       price: this.randNumber(5, 200),
@@ -243,8 +302,8 @@ export class TillComponent implements OnInit {
   cancelItems(): void {
     if (this.transactionItems.length > 0) {
       const buttons = [
-        { text: "YES", value: true, status: 'success', class: 'btn-primary ml-auto mr-2' },
-        { text: "NO", value: false, class: 'btn-warning' }
+        { text: 'YES', value: true, status: 'success', class: 'btn-primary ml-auto mr-2' },
+        { text: 'NO', value: false, class: 'btn-warning' }
       ]
       this.dialogService.openModal(ConfirmationDialogComponent, {
         context: {
@@ -308,7 +367,7 @@ export class TillComponent implements OnInit {
   }
 
   openTransactionSearchDialog(): void {
-    this.dialogService.openModal(TransactionsSearchComponent, { cssClass: "modal-xl", context: { customer: this.customer } })
+    this.dialogService.openModal(TransactionsSearchComponent, { cssClass: 'modal-xl', context: { customer: this.customer } })
       .instance.close.subscribe((data) => {
         if (data.transaction) {
           this.clearAll();
@@ -335,6 +394,7 @@ export class TillComponent implements OnInit {
                 nBrokenProduct: 0,
                 tType,
                 oType: transactionItem.oType,
+                aImage: transactionItem.aImage,
                 nonEditable: transactionItem.sGiftCardNumber ? true : false,
                 sGiftCardNumber: transactionItem.sGiftCardNumber,
                 quantity: transactionItem.nQuantity,
@@ -354,7 +414,7 @@ export class TillComponent implements OnInit {
   }
 
   openCustomerDialog(): void {
-    this.dialogService.openModal(CustomerDialogComponent, { cssClass: "modal-xl", context: { customer: this.customer } })
+    this.dialogService.openModal(CustomerDialogComponent, { cssClass: 'modal-xl', context: { customer: this.customer } })
       .instance.close.subscribe((data) => {
         if (data.customer) {
           this.customer = data.customer
@@ -408,7 +468,7 @@ export class TillComponent implements OnInit {
         i._id,
         i.ean,
         i.articleNumber,
-        i.images,
+        i.aImage,
         0, // TODO
         null,
         null,
@@ -420,7 +480,7 @@ export class TillComponent implements OnInit {
         null,
         false, // TODO
         false, // TODO
-        "CATEGORY", // TODO
+        'CATEGORY', // TODO
         i.sGiftCardNumber, // TODO sGiftCardNumber
         null, // TODO
         null, //TODO
@@ -509,13 +569,13 @@ export class TillComponent implements OnInit {
   /* Search API for finding the  common-brands products */
   listShopProducts(searchValue: string | undefined, isFromEAN: boolean | false) {
     let data = {
-      "iBusinessId": this.business._id,
-      "skip": 0,
-      "limit": 10,
-      "sortBy": "",
-      "sortOrder": "",
-      "searchValue": searchValue,
-      "aProjection": [
+      iBusinessId: this.business._id,
+      skip: 0,
+      limit: 10,
+      sortBy: '',
+      sortOrder: '',
+      searchValue: searchValue,
+      aProjection: [
         'oName',
         'sEan',
         'nVatRate',
@@ -528,9 +588,9 @@ export class TillComponent implements OnInit {
         'sArticleNumber',
         'iArticleGroupId',
       ],
-      "oFilterBy": {
-        "oStatic": {},
-        "oDynamic": {}
+      oFilterBy: {
+        oStatic: {},
+        oDynamic: {}
       }
     }
     this.apiService.postNew('core', '/api/v1/business/products/list', data).subscribe((result: any) => {
@@ -547,13 +607,13 @@ export class TillComponent implements OnInit {
   listCommonBrandProducts(searchValue: string | undefined, isFromEAN: boolean | false) {
     try {
       let data = {
-        "iBusinessId": this.business._id,
-        "skip": 0,
-        "limit": 10,
-        "sortBy": "",
-        "sortOrder": "",
-        "searchValue": searchValue,
-        "aProjection": [
+        iBusinessId: this.business._id,
+        skip: 0,
+        limit: 10,
+        sortBy: '',
+        sortOrder: '',
+        searchValue: searchValue,
+        aProjection: [
           'oName',
           'sEan',
           'nVatRate',
@@ -565,9 +625,9 @@ export class TillComponent implements OnInit {
           'aImage',
           'sArticleNumber'
         ],
-        "oFilterBy": {
-          "oStatic": {},
-          "oDynamic": {}
+        oFilterBy: {
+          oStatic: {},
+          oDynamic: {}
         }
       };
       this.apiService.postNew('core', '/api/v1/products/commonbrand/list', data).subscribe((result: any) => {
