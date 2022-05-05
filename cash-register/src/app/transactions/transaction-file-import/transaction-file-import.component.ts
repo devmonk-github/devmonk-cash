@@ -49,7 +49,7 @@ export class TransactionFileImportComponent implements OnInit, OnDestroy {
         let self = this;
         reader.onload = function(){
           data = JSON.parse(reader.result);
-          self.parsedTransactionData = [data[0]];
+          self.parsedTransactionData = data;
           self.parsedTransactionDataChange.emit(self.parsedTransactionData);
         }
         reader.readAsText(values[0])

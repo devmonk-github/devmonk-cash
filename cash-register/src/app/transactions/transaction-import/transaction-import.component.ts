@@ -52,7 +52,7 @@ export class TransactionImportComponent implements OnInit {
     let data: any = {
       iBusinessId: this.businessDetails._id,
       iLocationId: this.location._id,
-      oTemplate: this.importService.processImportTransaction({ transaction: this.updateTemplateForm }),
+      // oTemplate: this.importService.processImportTransaction({ transaction: this.updateTemplateForm }), // Can be used in future if required.
       aTransaction: this.parsedTransactionData,
       sDefaultLanguage: localStorage.getItem('language') || 'n;'
     };
