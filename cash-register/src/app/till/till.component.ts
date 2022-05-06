@@ -151,42 +151,6 @@ export class TillComponent implements OnInit {
     this.transactionItems.push(article)
   }
 
-  createArticleGroup(index: number) {
-    let data = {
-      iBusinessId: this.getValueFromLocalStorage('currentBusiness'),
-      oName: { nl: 'Ordered products (not categorised)', en: 'Ordered products (not categorised)', de: 'Ordered products (not categorised)', fr: 'Ordered products (not categorised)' },
-      bShowInOverview: false,
-      bShowOnWebsite: false,
-      bInventory: false,
-      aProperty: []
-    };
-
-    this.apiService.postNew('core', '/api/v1/business/article-group/create/for/order', data).subscribe(
-      (result: any) => {
-        this.transactionItems[index].iArticleGroupId = result.data._id;
-
-      }
-    )
-  }
-  checkArticleGroups(index: number) {
-    let data = {
-      skip: 0,
-      limit: 1,
-      searchValue: 'Ordered products',
-      oFilterBy: {
-      },
-      iBusinessId: this.getValueFromLocalStorage('currentBusiness')
-    };
-    this.apiService.postNew('core', '/api/v1/business/article-group/list', data).subscribe(
-      (result: any) => {
-        if (1 > result.data.length) {
-          this.createArticleGroup(index);
-        } else {
-          this.transactionItems[index].iArticleGroupId = result.data[0].result[0]._id;
-        }
-      }
-    )
-  }
   addOrder(): void {
     this.transactionItems.push({
       eTransactionItemType: 'regular',
@@ -204,9 +168,6 @@ export class TillComponent implements OnInit {
       description: '',
       open: true,
     });
-
-    this.checkArticleGroups(this.transactionItems.length - 1);
-
     this.searchKeyword = '';
   }
 
@@ -472,7 +433,7 @@ export class TillComponent implements OnInit {
         0, // TODO
         null,
         null,
-        null, // TODO: Needed in till??
+        i.iBusinessPartnerId, // TODO: Needed in till??
         this.getValueFromLocalStorage('currentBusiness'),
 
         i.iArticleGroupId, // TODO
@@ -507,6 +468,7 @@ export class TillComponent implements OnInit {
         this.getValueFromLocalStorage('currentEmployee')._id,
         this.getValueFromLocalStorage('currentLocation'),
         i.sBagNumber,
+        null, // repairer id
 
         null,
         {
