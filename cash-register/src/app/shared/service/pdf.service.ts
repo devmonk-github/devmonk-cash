@@ -1223,8 +1223,6 @@ export class PdfService {
     pdfGenerator.id = 'pdfGenerator'
     document.body.appendChild(pdfGenerator)
 
-
-
     return this.generate(templateString, dataString, fileName)
   }
 }
