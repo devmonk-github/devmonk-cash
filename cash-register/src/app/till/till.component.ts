@@ -4,18 +4,18 @@ import {
   faUserPlus, faUser, faTimes, faTimesCircle, faTrashAlt, faRing,
   faCoins, faCalculator, faArrowRightFromBracket, faSpinner, faSearch
 } from '@fortawesome/free-solid-svg-icons';
+import * as _ from 'lodash';
+
 import { TranslateService } from '@ngx-translate/core';
 import { DialogService } from '../shared/service/dialog'
 import { CustomerDialogComponent } from '../shared/components/customer-dialog/customer-dialog.component';
 import { TaxService } from '../shared/service/tax.service';
 import { ApiService } from '../shared/service/api.service';
 import { ConfirmationDialogComponent } from '../shared/components/confirmation-dialog/confirmation-dialog.component';
-import { Transaction } from './models/transaction.model';
-import * as _ from 'lodash';
-import { TransactionItem } from './models/transaction-item.model';
 import { ToastService } from '../shared/components/toast';
 import { TransactionsSearchComponent } from '../shared/components/transactions-search/transactions-search.component';
 import { PaymentDistributionService } from '../shared/service/payment-distribution.service';
+import { TillService } from '../shared/service/till.service';
 
 @Component({
   selector: 'app-till',
@@ -83,11 +83,6 @@ export class TillComponent implements OnInit {
   // End dummy data
   // type: ['Visa']
   // cards = [{ sName: 'Card', type: ['Visa', 'Meastro', 'Master Card'], amount: 0 }];
-  /**
-   * Temp function to generate random numbers for demo till
-   * @param min - min number to generate
-   * @param max - max number to generate
-   */
   randNumber(min: number, max: number): number {
     return Math.floor(Math.random() * (max - min + 1) + min);
   }
@@ -98,7 +93,8 @@ export class TillComponent implements OnInit {
     private taxService: TaxService,
     private paymentDistributeService: PaymentDistributionService,
     private apiService: ApiService,
-    private toastrService: ToastService
+    private toastrService: ToastService,
+    private tillService: TillService,
   ) {
   }
 
@@ -123,11 +119,6 @@ export class TillComponent implements OnInit {
       return localStorage.getItem(key) || '';
     }
   }
-
-  // openImageModal() {
-  //   this.dialogService.openModal(ImageUploadComponent, { cssClass: 'modal-xl', context: { mode: 'create' } }).instance.close.subscribe(result => {
-  //   });
-  // }
 
   getPaymentMethods() {
     this.payMethodsLoading = true;
@@ -165,6 +156,7 @@ export class TillComponent implements OnInit {
       discount: 0,
       tax: 21,
       paymentAmount: 0,
+      oArticleGroupMetaData: { aProperty: [] },
       description: '',
       open: true,
     });
@@ -200,14 +192,10 @@ export class TillComponent implements OnInit {
         });
         break;
       case 'quantity':
-        this.transactionItems.forEach((i) => {
-          result += i.quantity;
-        });
+        result = _.sumBy(this.transactionItems, 'quantity') || 0
         break;
       case 'discount':
-        this.transactionItems.forEach((i) => {
-          result += i.discount;
-        });
+        result = _.sumBy(this.transactionItems, 'discount') || 0
         break;
       default:
         result = 0;
@@ -229,14 +217,6 @@ export class TillComponent implements OnInit {
     if (type === 'giftcard') {
       type = 'giftcard'
     }
-    // 'regular',
-    // 'giftcard',
-    // 'giftcard-redeem-single-purpose',
-    // 'empty-line',
-    // 'repair',
-    // 'order',
-    // 'gold-purchase',
-    // 'gold-sell'
     this.transactionItems.push({
       isExclude: type === 'repair' ? true : false,
       eTransactionItemType: 'regular',
@@ -333,41 +313,7 @@ export class TillComponent implements OnInit {
         if (data.transaction) {
           this.clearAll();
           const { transactionItems, transaction } = data;
-          // render all transaction items
-          transactionItems.forEach((transactionItem: any) => {
-            if (transactionItem.isSelected) {
-              const { tType } = transactionItem;
-              let paymentAmount = transactionItem.nQuantity * transactionItem.nPriceIncVat - transactionItem.nPaidAmount;
-              if (tType === 'refund') {
-                paymentAmount = -1 * transactionItem.nPaidAmount;
-                transactionItem.oType.bRefund = true;
-              } else if (tType === 'revert') {
-                paymentAmount = transactionItem.nPaidAmount;
-                transactionItem.oType.bRefund = false;
-              };
-              this.transactionItems.push({
-                name: transactionItem.sProductName,
-                iActivityItemId: transactionItem.iActivityItemId,
-                nRefundAmount: transactionItem.nPaidAmount,
-                prePaidAmount: tType === 'refund' ? transactionItem.nPaidAmount : transactionItem.nPaymentAmount,
-                type: transactionItem.sGiftCardNumber ? 'giftcard' : transactionItem.oType.eKind,
-                eTransactionItemType: 'regular',
-                nBrokenProduct: 0,
-                tType,
-                oType: transactionItem.oType,
-                aImage: transactionItem.aImage,
-                nonEditable: transactionItem.sGiftCardNumber ? true : false,
-                sGiftCardNumber: transactionItem.sGiftCardNumber,
-                quantity: transactionItem.nQuantity,
-                price: transactionItem.nPriceIncVat,
-                discount: 0,
-                tax: transactionItem.nVatRate,
-                paymentAmount,
-                description: '',
-                open: true,
-              });
-            }
-          });
+          this.transactionItems = transactionItems;
           this.iActivityId = transaction.iActivityId || transaction._id;
         }
         this.changeInPayment();
@@ -388,7 +334,7 @@ export class TillComponent implements OnInit {
       return 0
     }
     if (total) {
-      return _.sumBy(this.payMethods, 'amount') || 0
+      return _.sumBy(this.payMethods, 'amount') || 0;
     }
     return this.payMethods.filter(p => p.amount && p.amount !== 0) || 0
   }
@@ -404,6 +350,7 @@ export class TillComponent implements OnInit {
     this.commonProducts = [];
     this.searchKeyword = '';
     this.selectedTransaction = null;
+    this.payMethods.map(o => o.amount = null);
   }
 
   // nRefundAmount needs to be added
@@ -412,108 +359,17 @@ export class TillComponent implements OnInit {
       return;
     }
     this.saveInProgress = true;
-    const transactionItems = this.transactionItems.map((i) => {
-      return new TransactionItem(
-        i.name,
-        i.comment,
-        i.productNumber,
-        i.price,
-        0, // TODO
-        0, // TODO
-        null,
-        i.tax,
-        i.quantity,
-        null,
-
-        null,
-        i._id,
-        i.ean,
-        i.articleNumber,
-        i.aImage,
-        0, // TODO
-        null,
-        null,
-        i.iBusinessPartnerId, // TODO: Needed in till??
-        this.getValueFromLocalStorage('currentBusiness'),
-
-        i.iArticleGroupId, // TODO
-        null,
-        null,
-        false, // TODO
-        false, // TODO
-        'CATEGORY', // TODO
-        i.sGiftCardNumber, // TODO sGiftCardNumber
-        null, // TODO
-        null, //TODO
-
-        i.total, // TODO?
-        i.total,
-        i.paymentAmount || i.total,
-        0, // TODO
-        i.discount.value > 0,
-        i.discount.percent,
-        i.discount.value,
-        i.nRefundAmount,
-
-        null,
-        null,
-
-        i.dEstimatedDate, // estimated date
-        null, // TODO
-        null, //TODO
-        i.iBusinessProductId,
-        null,
-        'y',
-        this.getValueFromLocalStorage('currentWorkstation'),
-        this.getValueFromLocalStorage('currentEmployee')._id,
-        this.getValueFromLocalStorage('currentLocation'),
-        i.sBagNumber,
-        null, // repairer id
-
-        null,
-        {
-          eTransactionType: 'cash-registry', // TODO
-          bRefund: i.oType?.bRefund || i.discount.quantity < 0 || i.price < 0,
-          nStockCorrection: i.eTransactionItemType === 'regular' ? i.quantity : i.quantity - i.nBrokenProduct,
-          eKind: i.type, // TODO // repair
-          bDiscount: i.discount.value > 0,
-          bPrepayment: (i.paymentAmount > 0 || this.getUsedPayMethods(true) - this.getTotals('price') < 0) && (i.paymentAmount !== i.amountToBePaid)
-        },
-        i.iActivityItemId
-      )
-    });
-    const transaction = new Transaction(
-      null,
-      null,
-      this.iActivityId,
-      this.getValueFromLocalStorage('currentBusiness'),
-      null,
-      'cash-register-revenue',
-      'y',
-      this.getValueFromLocalStorage('currentWorkstation'),
-      this.getValueFromLocalStorage('currentEmployee')._id,
-      this.getValueFromLocalStorage('currentLocation'),
-      null ,
-    )
-
+    const body = this.tillService.createTransactionBody(this.transactionItems);
+    body.oTransaction.iActivityId = this.iActivityId;
     if (this.customer && this.customer._id) {
-      transaction.oCustomer = {
+      body.oTransaction.oCustomer = {
         _id: this.customer._id,
         sFirstName: this.customer.sFirstName,
         sLastName: this.customer.sLastName,
         sPrefix: this.customer.sPrefix
       }
     }
-
-    const body = {
-      iBusinessId: this.getValueFromLocalStorage('currentBusiness'),
-      iLocationId: this.getValueFromLocalStorage('currentLocation'),
-      iDeviceId: '623b6d840ed1002890334456',
-      transactionItems: transactionItems,
-      oTransaction: transaction,
-      payments: this.getUsedPayMethods(false),
-    };
-
+    body.payments = this.getUsedPayMethods(false);
     this.apiService.postNew('cashregistry', '/api/v1/till/transaction', body)
       .subscribe(data => {
         this.toastrService.show({ type: 'success', text: 'Transactie gemaakt!' });
@@ -547,6 +403,7 @@ export class TillComponent implements OnInit {
         'nDiscount',
         'sLabelDescription',
         'aImage',
+        'aProperty',
         'sArticleNumber',
         'iArticleGroupId',
       ],
@@ -583,6 +440,7 @@ export class TillComponent implements OnInit {
           'nPriceIncludesVat',
           'bDiscountOnPercentage',
           'nDiscount',
+          'aProperty',
           'sLabelDescription',
           'aImage',
           'sArticleNumber'
@@ -619,6 +477,7 @@ export class TillComponent implements OnInit {
       tax: product.nVatRate || 0,
       description: product.sLabelDescription,
       iArticleGroupId: product.iArticleGroupId,
+      oArticleGroupMetaData: { aProperty: product.aProperty || [] },
       iBusinessProductId: product._id,
       open: true,
     });
