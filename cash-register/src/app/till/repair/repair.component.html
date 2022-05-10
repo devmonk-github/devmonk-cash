@@ -26,24 +26,21 @@
         <label for="description">{{ "DESCRIPTION" | translate}}</label>
         <textarea class="form-control" name="description" placeholder="{{ 'DESCRIPTION' | translate}}" lines="10"
           [(ngModel)]="item.description"></textarea>
+        <label for="bagNumber">{{ "BAG_NUMBER" | translate}}</label>
+        <input type="text" name="bagNumber" id="bagNumber" [(ngModel)]="item.sBagNumber" class="form-control">
       </div>
       <div class="col-2">
         <label for="price">{{ "PRICE" | translate}}</label>
         <input type="number" step="any" name="price" class="form-control" [(ngModel)]="item.price">
-        <label for="bagNumber">{{ "BAG_NUMBER" | translate}}</label>
-        <input type="text" name="bagNumber" id="bagNumber" [(ngModel)]="item.sBagNumber" class="form-control">
-        <button class="btn btn-bg-light btn-active-color-primary mt-2" (click)="openImageModal()"> Photos
-          <fa-icon [icon]="faUpload"></fa-icon>
-        </button>
-      </div>
-      <div class="col-2">
         <label for="discount">{{ "DISCOUNT" | translate}}</label>
         <input type="number" step="any" name="discount" class="form-control" [(ngModel)]="item.discount">
         <label for="bagNumber">{{ "PREPAYMENT" | translate}}</label>
         <input type="number" step="any" name="bagNumber" id="bagNumber" (keyup)="updatePayments()"
           [(ngModel)]="item.paymentAmount" class="form-control" [disabled]="item.isExclude">
+
       </div>
       <div class="col-2">
+
         <label for="taxRate">{{ "TAX" | translate}}</label>
         <select name="taxRate" id="taxRate" class="form-select" [(ngModel)]="item.tax">
           <option *ngFor="let rate of taxes" [ngValue]="rate.rate">{{rate.name}}</option>
@@ -51,18 +48,11 @@
         <label for="bagNumber" class="work-break">{{ "ESTIMATED_DATE_READY" | translate}}</label>
         <input type="date" class="form-control datetimepicker-input" [ngModel]="item.dEstimatedDate"
           (ngModelChange)="item.dEstimatedDate = $event;" />
-        <!-- <input type="date" class="form-control datetimepicker-input" placeholder="Start date" [ngModel]="filterDates.startDate | date:'yyyy-MM-dd'" (ngModelChange)="filterDates.startDate = $event"/> -->
-
-        <!-- {{ "BRAND" | translate}}: ----
-        <br>
-        {{ "COMPANY" | translate}}: ---- -->
+        <button class="btn btn-bg-light btn-active-color-primary mt-2" (click)="openImageModal()"> Photos
+          <fa-icon [icon]="faUpload"></fa-icon>
+        </button>
       </div>
       <div class="col-2">
-        <label for="taxRate">{{ "EXCLUDE_ITEM" | translate}}</label>
-        <label class="form-check form-switch form-check-custom form-check-solid">
-          <input type="checkbox" class="form-check-input" [(ngModel)]="item.isExclude">
-        </label>
-
         <label for="employee">{{ "REPAIRER" | translate}}</label>
         <ng-select *ngIf="!employee" [(ngModel)]="employee" (search)="searchEmployees($event.term)"
           class="form-control form-control-solid p-0 w-100 custom" placeholder="Search employee" [minTermLength]="2"
@@ -81,7 +71,7 @@
         <ng-select *ngIf="!supplier" [(ngModel)]="supplier" (search)="searchSuppliers($event.term)"
           class="form-control form-control-solid p-0 w-100 custom" placeholder="Search repairer" [minTermLength]="2"
           [clearable]="false" [isOpen]="supplierOptions.length > 0"
-          (change)="supplier = $event.sName; item.iRepairerId = $event._id; supplierOptions = []">
+          (change)="supplier = $event.sName; item.iSupplierId = $event._id; supplierOptions = []">
           <ng-option *ngFor="let option of supplierOptions" [value]="option">{{option.sName ||
             'Unknown'}}</ng-option>
         </ng-select>
@@ -105,6 +95,27 @@
             &nbsp;<i class="close fas fa-times cursor-pointer"></i>
           </div>
         </div>
+      </div>
+      <div class="col-2">
+        <label for="taxRate">{{ "EXCLUDE_ITEM" | translate}}</label>
+        <label class="form-check form-switch form-check-custom form-check-solid">
+          <input type="checkbox" class="form-check-input" [(ngModel)]="item.isExclude">
+        </label>
+
+        <label>{{ "PROPERTIES" | translate}}</label>
+        <div class="d-flex" *ngFor="let property of item.oArticleGroupMetaData.aProperty; let pIndex = index">
+          <!-- <div class="w-50 align-middle lh-xxl">
+            {{pIndex + 1}}
+          </div> -->
+          <div class="w-100" *ngIf="propertyOptions[property.iPropertyId]?.length > 0">
+            <ng-select class="form-control p-0 w-100" [(ngModel)]="selectedProperties[property.iPropertyId]"
+              (change)="setPropertyOption(property, pIndex)" [clearable]="false">
+              <ng-option *ngFor="let option of propertyOptions[property.iPropertyId]" [value]="option.sCode">{{
+                option.sName }}</ng-option>
+            </ng-select>
+          </div>
+        </div>
+
       </div>
     </section>
     <div class="d-flex">

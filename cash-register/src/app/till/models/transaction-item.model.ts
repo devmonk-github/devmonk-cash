@@ -61,7 +61,7 @@ export class TransactionItem {
     public iEmployeeId: string,
     public iLocationId: string,
     public sBagNumber: string,
-    public iRepairerId: any,
+    public iSupplierId: any,
     //Optional here, since we don't know the transaction id when we create one
     public iTransactionId: string | null,
     public oType: {

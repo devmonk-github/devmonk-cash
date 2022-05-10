@@ -23,11 +23,11 @@ export class CreateArticleGroupService {
     return this.apiService.postNew('core', '/api/v1/business/article-group/create/for/order', data).pipe(retry(1), catchError(this.processError));
   }
 
-  checkArticleGroups(): Observable<any> {
+  checkArticleGroups(searchValue: string): Observable<any> {
     let data = {
       skip: 0,
       limit: 1,
-      searchValue: 'Ordered products',
+      searchValue,
       oFilterBy: {
       },
       iBusinessId: localStorage.getItem('currentBusiness'),

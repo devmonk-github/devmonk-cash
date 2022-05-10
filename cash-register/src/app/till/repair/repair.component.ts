@@ -1,6 +1,8 @@
 import { Component, EventEmitter, Input, OnInit, Output, ViewEncapsulation } from '@angular/core';
 import { faTimes, faPlus, faMinus, faUpload } from "@fortawesome/free-solid-svg-icons";
+import { ToastService } from 'src/app/shared/components/toast';
 import { ApiService } from 'src/app/shared/service/api.service';
+import { CreateArticleGroupService } from 'src/app/shared/service/create-article-groups.service';
 import { DialogService } from 'src/app/shared/service/dialog';
 import { PriceService } from 'src/app/shared/service/price.service';
 import { ImageUploadComponent } from '../../shared/components/image-upload/image-upload.component';
@@ -30,6 +32,8 @@ export class RepairComponent implements OnInit {
   filteredBrands: Array<any> = [];
   brandsList: Array<any> = [];
   typeArray = ['regular', 'broken', 'return'];
+  propertyOptions: Array<any> = [];
+  selectedProperties: Array<any> = [];
   showDeleteBtn: boolean = false;
 
   repairer: any = null;
@@ -37,11 +41,18 @@ export class RepairComponent implements OnInit {
   supplier: any;
   constructor(private priceService: PriceService,
     private apiService: ApiService,
-    private dialogService: DialogService) { }
+    private dialogService: DialogService,
+    private toastrService: ToastService,
+    private createArticleGroupService: CreateArticleGroupService) { }
 
   ngOnInit(): void {
     this.listSuppliers();
     this.listEmployees();
+    this.getBusinessBrands();
+    this.checkArticleGroups();
+    // this.fetchInternalBusinessPartner();
+    this.getProperties();
+    this.listSuppliers();
     this.getBusinessBrands();
   }
   updatePayments(): void {
@@ -58,16 +69,44 @@ export class RepairComponent implements OnInit {
     let url = '/api/v1/employee/list';
     this.apiService.postNew('auth', url, oBody).subscribe((result: any) => {
       if (result && result.data && result.data.length) {
-        const response = result.data[0];
-        this.employeesList = response.result;
+        this.employeesList = result.data[0].result;
         this.employeesList.map(o => o.sName = `${o.sFirstName} ${o.sLastName}`);
         if (this.item.iEmployeeId) {
-          const tempsupp = this.employeesList.find(o => o._id === this.item.iRepairerId);
+          const tempsupp = this.employeesList.find(o => o._id === this.item.iSupplierId);
           this.employee = tempsupp.sName;
         }
       }
     }, (error) => {
     });
+  }
+
+  checkArticleGroups() {
+    this.createArticleGroupService.checkArticleGroups('Repair')
+      .subscribe((res: any) => {
+        if (1 > res.data.length) {
+          this.createArticleGroup();
+        } else {
+          this.item.iArticleGroupId = res.data[0].result[0]._id;
+        }
+      }, err => {
+        this.toastrService.show({ type: 'danger', text: err.message });
+      });
+  }
+
+  createArticleGroup() {
+    this.createArticleGroupService.createArticleGroup({ name: 'Repair' })
+      .subscribe((res: any) => {
+        this.item.iArticleGroupId = res.data._id;
+      },
+        err => {
+          this.toastrService.show({ type: 'danger', text: err.message });
+        });
+  }
+
+  constisEqualsJson(obj1: any, obj2: any) {
+    const keys1 = Object.keys(obj1);
+    const keys2 = Object.keys(obj2);
+    return keys1.length === keys2.length && Object.keys(obj1).every(key => obj1[key] == obj2[key]);
   }
 
   listSuppliers() {
@@ -77,10 +116,9 @@ export class RepairComponent implements OnInit {
     let url = '/api/v1/business/partners/supplierList';
     this.apiService.postNew('core', url, oBody).subscribe((result: any) => {
       if (result && result.data && result.data.length) {
-        const response = result.data[0];
-        this.suppliersList = response.result;
-        if (this.item.iRepairerId) {
-          const tempsupp = this.suppliersList.find(o => o._id === this.item.iRepairerId);
+        this.suppliersList = result.data[0].result;
+        if (this.item.iSupplierId) {
+          const tempsupp = this.suppliersList.find(o => o._id === this.item.iSupplierId);
           this.supplier = tempsupp.sName;
         }
       }
@@ -101,6 +139,68 @@ export class RepairComponent implements OnInit {
         }
       }
     })
+  }
+
+  getProperties() {
+    this.selectedProperties = [];
+    let data = {
+      skip: 0,
+      limit: 100,
+      sortBy: '',
+      sortOrder: '',
+      searchValue: '',
+      oFilterBy: {
+        bRequiredForArticleGroup: true
+      },
+      iBusinessId: localStorage.getItem('currentBusiness'),
+    };
+
+    const aProperty: any = [];
+    this.apiService.postNew('core', '/api/v1/properties/list', data).subscribe(
+      (result: any) => {
+        if (result.data && result.data.length > 0) {
+          result.data.map((property: any) => {
+            if (typeof (this.propertyOptions[property._id]) == 'undefined') {
+              this.propertyOptions[property._id] = [];
+              property.aOptions.map((option: any) => {
+                if (option?.sCode?.trim() != '') {
+                  let opt: any = {
+                    iPropertyId: property._id,
+                    sPropertyName: property.sName,
+                    oProperty: {
+                    },
+                    sCode: option.sCode,
+                    sName: option.sKey
+                  };
+                  opt.oProperty[option.sKey] = option.value;
+                  this.propertyOptions[property._id].push(opt);
+                  const proprtyIndex = aProperty.findIndex((prop: any) => prop.iPropertyId == property._id);
+                  if (proprtyIndex === -1) {
+                    aProperty.push(opt);
+                  }
+                }
+              });
+            }
+          });
+
+          if (this.item.oArticleGroupMetaData.aProperty.length === 0) {
+            this.item.oArticleGroupMetaData.aProperty = aProperty
+          };
+          const data = this.item.oArticleGroupMetaData.aProperty.filter(
+            (set => (a: any) => true === set.has(a.iPropertyId))(new Set(aProperty.map((b: any) => b.iPropertyId)))
+          );
+
+          data.forEach((element: any) => {
+            const toReplace = this.propertyOptions[element.iPropertyId].find((o: any) => this.constisEqualsJson(o.oProperty, element.oProperty));
+            if (toReplace) {
+              element = toReplace;
+              this.selectedProperties[toReplace.iPropertyId] = toReplace.sCode;
+            }
+          });
+          this.item.oArticleGroupMetaData.aProperty = data;
+        }
+      }
+    );
   }
 
   // Function for search suppliers
@@ -129,13 +229,16 @@ export class RepairComponent implements OnInit {
       });
     }
   }
-  // Function for select supplier
-  // onSelectBusinessPartner(supplier: any) {
-  //   if (supplier._id) {
-  //     this.repairer = supplier.sName;
-  //     this.supplierOptions = [];
-  //   }
-  // }
+
+  // Function for set dynamic property option
+  setPropertyOption(property: any, index: number) {
+    if (this.propertyOptions[property.iPropertyId]?.length > 0) {
+      let option = this.propertyOptions[property.iPropertyId].filter((opt: any) => opt.sCode == this.selectedProperties[property.iPropertyId]);
+      if (option?.length > 0) {
+        this.item.oArticleGroupMetaData.aProperty[index] = option[0];
+      }
+    }
+  }
 
   openImageModal() {
     this.dialogService.openModal(ImageUploadComponent, { cssClass: "modal-m", context: { mode: 'create' } })
@@ -155,7 +258,6 @@ export class RepairComponent implements OnInit {
   }
 
   removeImage(index: number): void {
-    console.log(index);
     this.item.aImage.splice(index, 1);
   }
 }

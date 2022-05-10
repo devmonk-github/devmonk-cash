@@ -224,6 +224,7 @@ export class TillComponent implements OnInit {
       index: this.transactionItems.length,
       name: this.translateService.instant(type.toUpperCase()),
       type,
+      oArticleGroupMetaData: { aProperty: [] },
       aImage: [],
       quantity: 1,
       nBrokenProduct: 0,
@@ -406,6 +407,7 @@ export class TillComponent implements OnInit {
         'aProperty',
         'sArticleNumber',
         'iArticleGroupId',
+        'iBusinessPartnerId'
       ],
       oFilterBy: {
         oStatic: {},
@@ -443,7 +445,8 @@ export class TillComponent implements OnInit {
           'aProperty',
           'sLabelDescription',
           'aImage',
-          'sArticleNumber'
+          'sArticleNumber',
+          'iBusinessPartnerId'
         ],
         oFilterBy: {
           oStatic: {},
@@ -479,6 +482,9 @@ export class TillComponent implements OnInit {
       iArticleGroupId: product.iArticleGroupId,
       oArticleGroupMetaData: { aProperty: product.aProperty || [] },
       iBusinessProductId: product._id,
+      iSupplierId: product.iBusinessPartnerId,
+      aImage: product.aImage,
+      isExclude: false,
       open: true,
     });
   }

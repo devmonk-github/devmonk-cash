@@ -105,7 +105,7 @@ export class TillService {
         i.iEmployeeId || this.getValueFromLocalStorage('currentEmployee')._id,
         this.getValueFromLocalStorage('currentLocation'),
         i.sBagNumber,
-        i.iRepairerId, // repairer id
+        i.iSupplierId, // repairer id
 
         null,
         {
