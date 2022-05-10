@@ -1,8 +1,10 @@
 import { Component, EventEmitter, Input, OnInit, Output, ViewEncapsulation } from '@angular/core';
-import { faTimes, faPlus, faMinus, faArrowDown, faArrowUp } from '@fortawesome/free-solid-svg-icons'
+import { faTimes, faPlus, faMinus, faArrowDown, faArrowUp, faUpload } from '@fortawesome/free-solid-svg-icons'
+import { ImageUploadComponent } from 'src/app/shared/components/image-upload/image-upload.component';
 import { ToastService } from 'src/app/shared/components/toast';
 import { ApiService } from 'src/app/shared/service/api.service';
 import { CreateArticleGroupService } from 'src/app/shared/service/create-article-groups.service';
+import { DialogService } from 'src/app/shared/service/dialog';
 import { PriceService } from 'src/app/shared/service/price.service';
 
 @Component({
@@ -21,6 +23,7 @@ export class OrderComponent implements OnInit {
   faMinus = faMinus
   faArrowDown = faArrowDown;
   faArrowUp = faArrowUp;
+  faUpload = faUpload;
   typeArray = ['regular', 'return'];
   propertyOptions: Array<any> = [];
   selectedProperties: Array<any> = [];
@@ -40,12 +43,14 @@ export class OrderComponent implements OnInit {
   supplier: any;
   supplierOptions: Array<any> = [];
   suppliersList: Array<any> = [];
+  showDeleteBtn: boolean = false;
   aProperty: any = [];
   constructor(
     private priceService: PriceService,
     private apiService: ApiService,
     private createArticleGroupService: CreateArticleGroupService,
-    private toastrService: ToastService) { }
+    private toastrService: ToastService,
+    private dialogService: DialogService) { }
 
   ngOnInit(): void {
     this.checkArticleGroups();
@@ -144,8 +149,6 @@ export class OrderComponent implements OnInit {
   constisEqualsJson(obj1: any, obj2: any) {
     const keys1 = Object.keys(obj1);
     const keys2 = Object.keys(obj2);
-
-    //return true when the two json has same length and all the properties has same value key by key
     return keys1.length === keys2.length && Object.keys(obj1).every(key => obj1[key] == obj2[key]);
   }
 
@@ -211,6 +214,13 @@ export class OrderComponent implements OnInit {
     );
   }
 
+  openImageModal() {
+    this.dialogService.openModal(ImageUploadComponent, { cssClass: "modal-m", context: { mode: 'create' } })
+      .instance.close.subscribe(result => {
+        if (result.url)
+          this.item.aImage.push(result.url);
+      });
+  }
   // Function for search suppliers
   searchSuppliers(searchStr: string) {
     if (searchStr && searchStr.length > 2) {
@@ -229,8 +239,8 @@ export class OrderComponent implements OnInit {
       if (result && result.data && result.data.length) {
         const response = result.data[0];
         this.suppliersList = response.result;
-        if (this.item.iRepairerId) {
-          const tempsupp = this.suppliersList.find(o => o._id === this.item.iRepairerId);
+        if (this.item.iSupplierId) {
+          const tempsupp = this.suppliersList.find(o => o._id === this.item.iSupplierId);
           this.supplier = tempsupp.sName;
         }
       }
@@ -262,7 +272,7 @@ export class OrderComponent implements OnInit {
     }
   }
   checkArticleGroups() {
-    this.createArticleGroupService.checkArticleGroups()
+    this.createArticleGroupService.checkArticleGroups('Ordered products')
       .subscribe((res: any) => {
         if (1 > res.data.length) {
           this.createArticleGroup();
@@ -299,5 +309,9 @@ export class OrderComponent implements OnInit {
 
   getTotalPrice(item: any): string {
     return this.priceService.getArticlePrice(item)
+  }
+
+  removeImage(index: number): void {
+    this.item.aImage.splice(index, 1);
   }
 }
