@@ -1197,7 +1197,7 @@ export class PdfService {
                   print: print,
                   businessId: businessId,
                   transactionId: transactionId,
-                  format: this.parsedPaperSize.type
+                  format: this.parsedPaperSize.type,
                 },
                 {
                   headers: headers,

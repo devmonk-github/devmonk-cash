@@ -758,7 +758,8 @@ export class PrintComponent implements OnInit {
       printData = {
         computerId: this.computerId,
         printerId: this.printerId,
-        title: filename
+        title: filename,
+        quantity: 1
       }
     }
     const transactionId = this.transactionId
