@@ -360,7 +360,7 @@ export class TillComponent implements OnInit {
       return;
     }
     this.saveInProgress = true;
-    const body = this.tillService.createTransactionBody(this.transactionItems);
+    const body = this.tillService.createTransactionBody(this.transactionItems, this.payMethods);
     body.oTransaction.iActivityId = this.iActivityId;
     if (this.customer && this.customer._id) {
       body.oTransaction.oCustomer = {
@@ -370,7 +370,9 @@ export class TillComponent implements OnInit {
         sPrefix: this.customer.sPrefix
       }
     }
-    body.payments = this.getUsedPayMethods(false);
+    // console.log(body);
+    // body.payments = this.getUsedPayMethods(false);
+    // return;
     this.apiService.postNew('cashregistry', '/api/v1/till/transaction', body)
       .subscribe(data => {
         this.toastrService.show({ type: 'success', text: 'Transactie gemaakt!' });
