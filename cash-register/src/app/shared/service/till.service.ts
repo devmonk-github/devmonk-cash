@@ -4,7 +4,7 @@ import { catchError, retry } from 'rxjs/operators';
 import { TransactionItem } from 'src/app/till/models/transaction-item.model';
 import { Transaction } from 'src/app/till/models/transaction.model';
 import { ApiService } from './api.service';
-
+import * as _ from 'lodash';
 @Injectable({
   providedIn: 'root'
 })
@@ -12,6 +12,49 @@ export class TillService {
 
   constructor(private apiService: ApiService) { }
 
+
+  getUsedPayMethods(total: boolean, payMethods: any): any {
+    if (!payMethods) {
+      return 0
+    }
+    if (total) {
+      return _.sumBy(payMethods, 'amount') || 0;
+    }
+    return payMethods.filter((p: any) => p.amount && p.amount !== 0) || 0
+  }
+
+  getTotals(type: string, transactionItems: any): number {
+    if (!type) {
+      return 0
+    }
+    let result = 0
+    switch (type) {
+      case 'price':
+        transactionItems.forEach((i: any) => {
+          if (!i.isExclude) {
+            if (i.tType === 'refund') {
+              result -= i.prePaidAmount;
+            } else {
+              result += i.quantity * i.price - (i.prePaidAmount || 0);
+              // result += type === 'price' ? i.quantity * i.price - i.prePaidAmount || 0 : i[type]
+            }
+          } else {
+            i.paymentAmount = 0;
+          }
+        });
+        break;
+      case 'quantity':
+        result = _.sumBy(transactionItems, 'quantity') || 0
+        break;
+      case 'discount':
+        result = _.sumBy(transactionItems, 'discount') || 0
+        break;
+      default:
+        result = 0;
+        break;
+    }
+    return result
+  }
 
   getValueFromLocalStorage(key: string): any {
     if (key === 'currentEmployee') {
@@ -26,7 +69,7 @@ export class TillService {
     }
   }
 
-  createTransactionBody(transactionItems: any): any {
+  createTransactionBody(transactionItems: any, payMethods: any): any {
     const transaction = new Transaction(
       null,
       null,
@@ -47,7 +90,7 @@ export class TillService {
       iDeviceId: this.getValueFromLocalStorage('currentLocation'),
       transactionItems: transactionItems,
       oTransaction: transaction,
-      payments: 0,
+      payments: this.getUsedPayMethods(false, payMethods),
     };
     body.transactionItems = transactionItems.map((i: any) => {
       return new TransactionItem(
@@ -114,17 +157,13 @@ export class TillService {
           nStockCorrection: i.eTransactionItemType === 'regular' ? i.quantity : i.quantity - i.nBrokenProduct,
           eKind: i.type, // TODO // repair
           bDiscount: i.discount.value > 0,
-          bPrepayment: i.paymentAmount > 0 && (i.paymentAmount !== i.amountToBePaid)
+          bPrepayment: (i.paymentAmount > 0 || this.getUsedPayMethods(true, payMethods) - this.getTotals('price', transactionItems) < 0) && (i.paymentAmount !== i.amountToBePaid),
         },
         i.iActivityItemId
       )
     });
-
-
     return body;
   }
-
-  // bPrepayment: (i.paymentAmount > 0 || this.getUsedPayMethods(true) - this.getTotals('price') < 0) && (i.paymentAmount !== i.amountToBePaid)
 
   checkArticleGroups(): Observable<any> {
     let data = {
