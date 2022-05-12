@@ -39,12 +39,11 @@ export class TransactionsComponent implements OnInit {
   showLoader: Boolean = false;
   widgetLog: string[] = [];
   pageCounts: Array<number> = [ 10, 25, 50, 100]
-  pageCount: number = 10;
   pageNumber: number = 1;
-  setPaginateSize: number = 1;
+  setPaginateSize: number = 12;
   paginationConfig: any = {
-    itemsPerPage: '10', 
-    currentPage: 1, 
+    itemsPerPage: 10,
+    currentPage: 1,
     totalItems: 0
   };
   showAdvanceSearch = false;
@@ -130,6 +129,7 @@ export class TransactionsComponent implements OnInit {
     this.requestParams.workstations = this.selectedWorkstations;
     this.requestParams.locations = this.selectedLocations;
     this.showLoader = true;
+    this.requestParams.eTransactionType = 'cash-register-revenue';
     this.apiService.postNew('cashregistry', '/api/v1/transaction/cashRegister', this.requestParams).subscribe((result: any) => {
       if (result && result.data && result.data.length && result.data[0] && result.data[0].result && result.data[0].result.length) {
         this.transactions = result.data[0].result;
