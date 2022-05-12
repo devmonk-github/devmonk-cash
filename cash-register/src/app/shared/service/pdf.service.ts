@@ -1164,7 +1164,7 @@ export class PdfService {
     return Promise.resolve(this.convertPagesToHtml(pages, this.paperSize));
   }
 
-  private generate(templateString: string, dataString: string, fileName: string, ) {
+  private generate(templateString: string, dataString: string, fileName: string, print: boolean, printData: any, businessId: string | null, transactionId: string | null) {
     //Set a small timeout to let the component generate and make sure that it will exist
     return new Promise( (resolve, reject) => {
       setTimeout(() => {
@@ -1183,6 +1183,7 @@ export class PdfService {
             }
 
             const encodedString = this.stringService.b2a(htmlString.replace(/€/gi, '+euro+'))
+
             return this.httpClient
               .post(
                 'https://uzkiljt7h5.execute-api.eu-west-1.amazonaws.com/development/pdf',
@@ -1191,7 +1192,12 @@ export class PdfService {
                   width: this.parsedPaperSize.width,
                   height: this.parsedPaperSize.height,
                   orientation: this.orientation,
-                  html: encodedString
+                  html: encodedString,
+                  printOptions: printData,
+                  print: print,
+                  businessId: businessId,
+                  transactionId: transactionId,
+                  format: this.parsedPaperSize.type,
                 },
                 {
                   headers: headers,
@@ -1217,12 +1223,12 @@ export class PdfService {
     })
   }
 
-  createPdf(templateString: string, dataString: string, fileName: string): Promise<any> {
+  createPdf(templateString: string, dataString: string, fileName: string, print: boolean, printData: any, businessId: string | null, transactionId: string | null): Promise<any> {
     let pdfGenerator = document.createElement('div')
     pdfGenerator.style.display = 'none'
     pdfGenerator.id = 'pdfGenerator'
     document.body.appendChild(pdfGenerator)
 
-    return this.generate(templateString, dataString, fileName)
+    return this.generate(templateString, dataString, fileName, print, printData, businessId, transactionId)
   }
 }

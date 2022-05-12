@@ -14,7 +14,9 @@
 <!--      <textarea [(ngModel)]="dataString" class="form-control" rows="20"></textarea>-->
     </div>
     <div class="col-md-12">
-      <button class="btn btn-primary" type="button" (click)="generatePDF()">Generate <span class="spinner-border spinner-border-sm align-middle ms-2" *ngIf="pdfGenerating"></span></button>
+      <p>ComputerId: {{computerId}} | PrinterId: {{printerId}}</p>
+      <button class="btn btn-primary" type="button" (click)="generatePDF(false)">Download <span class="spinner-border spinner-border-sm align-middle ms-2" *ngIf="pdfGenerating"></span></button>
+      <button class="btn btn-primary" type="button" (click)="generatePDF(true)">Print <span class="spinner-border spinner-border-sm align-middle ms-2" *ngIf="pdfGenerating"></span></button>
     </div>
   </div>
 </div>

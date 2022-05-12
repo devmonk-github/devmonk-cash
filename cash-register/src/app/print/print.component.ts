@@ -12,6 +12,9 @@ export class PrintComponent implements OnInit {
   templateString: any
   editorOptions: JsonEditorOptions = new JsonEditorOptions()
   pdfGenerating: boolean = false
+  computerId: string = '395432'
+  printerId: string = '70801333'
+  transactionId: string = '5c2f276e86a7527e67a45e9d'
 
   constructor(private pdfService: PdfService) {
     this.editorOptions.mode = 'view'
@@ -747,9 +750,21 @@ export class PrintComponent implements OnInit {
   }
 
 
-  generatePDF(): void {
+  generatePDF(print: boolean): void {
     this.pdfGenerating = true
-    this.pdfService.createPdf(JSON.stringify(this.templateString), JSON.stringify(this.dataString),new Date().getTime().toString())
+    const filename = new Date().getTime().toString()
+    let printData = null
+    if (print) {
+      printData = {
+        computerId: this.computerId,
+        printerId: this.printerId,
+        title: filename,
+        quantity: 1
+      }
+    }
+    const transactionId = this.transactionId
+    const businessId = localStorage.getItem('currentBusiness')
+    this.pdfService.createPdf(JSON.stringify(this.templateString), JSON.stringify(this.dataString), filename, print, printData, businessId, transactionId)
       .then( () => {
         this.pdfGenerating = false
       })

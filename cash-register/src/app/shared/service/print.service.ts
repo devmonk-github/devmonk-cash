@@ -69,12 +69,14 @@ export class PrintService {
    * @param {String} printer
    * @param {String} computer
    * @param {Number} qty
+   * @param {String|null} transactionId
    * @param {Object|null} options
    */
-  printPDF(businessId: string, doc: string, printer: string, computer: string, qty: number, options: any|null) {
+  printPDF(businessId: string, doc: string, printer: string, computer: string, qty: number, transactionId: string | null, options: any | null) {
     return new Promise( (onSuccess, onError) => {
       this.apiService.postNew('cashregistry', '/api/v1/printnode/', {
-        id: businessId,
+        iBusinessId: businessId,
+        transactionId: transactionId,
         contentType: 'pdf_base64',
         content: doc,
         printerId: printer,
