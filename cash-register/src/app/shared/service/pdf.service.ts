@@ -1,8 +1,8 @@
-import {ComponentFactoryResolver, Injectable} from '@angular/core';
+import { ComponentFactoryResolver, Injectable } from '@angular/core';
 import * as moment from 'moment';
-import {HttpClient, HttpErrorResponse} from "@angular/common/http";
-import {StringService} from "./string.service";
-import {FileSaverService} from "ngx-filesaver";
+import { HttpClient, HttpErrorResponse } from "@angular/common/http";
+import { StringService } from "./string.service";
+import { FileSaverService } from "ngx-filesaver";
 
 interface StaticPaperSize {
   type: string,
@@ -1166,7 +1166,7 @@ export class PdfService {
 
   private generate(templateString: string, dataString: string, fileName: string, print: boolean, printData: any, businessId: string | null, transactionId: string | null) {
     //Set a small timeout to let the component generate and make sure that it will exist
-    return new Promise( (resolve, reject) => {
+    return new Promise((resolve, reject) => {
       setTimeout(() => {
         this.makePdf(templateString, dataString)
           .then((htmlString: string) => {
@@ -1230,5 +1230,9 @@ export class PdfService {
     document.body.appendChild(pdfGenerator)
 
     return this.generate(templateString, dataString, fileName, print, printData, businessId, transactionId)
+  }
+
+  logService(details: string) {
+    console.log('Log service called: ' + details);
   }
 }
