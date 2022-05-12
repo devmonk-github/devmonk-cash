@@ -63,6 +63,7 @@ export class TransactionItem {
     public sBagNumber: string,
     public iSupplierId: any,
     //Optional here, since we don't know the transaction id when we create one
+    public iLastTransactionItemId: string | null,
     public iTransactionId: string | null,
     public oType: {
       eTransactionType: string,

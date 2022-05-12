@@ -108,6 +108,7 @@ export class TransactionsSearchComponent implements OnInit, AfterViewInit {
                 name: transactionItem.sProductName,
                 iActivityItemId: transactionItem.iActivityItemId,
                 nRefundAmount: transactionItem.nPaidAmount,
+                iLastTransactionItemId: transactionItem.iTransactionItemId,
                 prePaidAmount: tType === 'refund' ? transactionItem.nPaidAmount : transactionItem.nPaymentAmount,
                 type: transactionItem.sGiftCardNumber ? 'giftcard' : transactionItem.oType.eKind,
                 eTransactionItemType: 'regular',

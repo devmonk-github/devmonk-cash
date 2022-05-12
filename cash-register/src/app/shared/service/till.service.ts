@@ -150,6 +150,7 @@ export class TillService {
         i.sBagNumber,
         i.iSupplierId, // repairer id
 
+        i.iLastTransactionItemId,
         null,
         {
           eTransactionType: 'cash-registry', // TODO
