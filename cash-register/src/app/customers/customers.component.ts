@@ -158,23 +158,23 @@ export class CustomersComponent implements OnInit {
       return '';
     }
     let result = '';
-    if (address.street) {
-      result += address.street + ' ';
+    if (address.sStreet) {
+      result += address.sStreet + ' ';
     }
-    if (address.houseNumber) {
-      result += address.houseNumber + (address.houseNumberSuffix ? '' : ' ');
+    if (address.sHouseNumber) {
+      result += address.sHouseNumber + (address.sHouseNumberSuffix ? '' : ' ');
     }
-    if (address.houseNumberSuffix) {
-      result += address.houseNumberSuffix + ' ';
+    if (address.sHouseNumberSuffix) {
+      result += address.sHouseNumberSuffix + ' ';
     }
-    if (address.postalCode) {
-      result += this.formatZip(address.postalCode) + ' ';
+    if (address.sPostalCode) {
+      result += this.formatZip(address.sPostalCode) + ' ';
     }
-    if (address.city) {
-      result += address.city;
+    if (address.sCity) {
+      result += address.sCity;
     }
-    if (includeCountry && address.country) {
-      result += address.country;
+    if (includeCountry && address.sCountry) {
+      result += address.sCountry;
     }
     return result;
   }

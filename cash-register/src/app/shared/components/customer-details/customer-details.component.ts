@@ -41,26 +41,26 @@ export class CustomerDetailsComponent implements OnInit {
     },
     sGender: 'male',
     oInvoiceAddress: {
-      country: 'Netherlands',
-      countryCode: 'NL',
-      state: '',
-      postalCode: '',
-      houseNumber: '',
-      houseNumberSuffix: '',
-      addition: '',
-      street: '',
-      city: ''
+      sCountry: 'Netherlands',
+      sCountryCode: 'NL',
+      sState: '',
+      sPostalCode: '',
+      sHouseNumber: '',
+      sHouseNumberSuffix: '',
+      sAddition: '',
+      sStreet: '',
+      sCity: ''
     },
     oShippingAddress: {
-      country: 'Netherlands',
-      countryCode: 'NL',
-      state: '',
-      postalCode: '',
-      houseNumber: '',
-      houseNumberSuffix: '',
-      addition: '',
-      street: '',
-      city: ''
+      sCountry: 'Netherlands',
+      sCountryCode: 'NL',
+      sState: '',
+      sPostalCode: '',
+      sHouseNumber: '',
+      sHouseNumberSuffix: '',
+      sAddition: '',
+      sStreet: '',
+      sCity: ''
     },
     sCompanyName: '',
     sVatNumber: '',
@@ -95,7 +95,7 @@ export class CustomerDetailsComponent implements OnInit {
           this.close({ action: true, customer: this.customer });
          },
         (error: any) => {
-          console.log(error)
+          console.error(error)
         }
       );
     }
@@ -105,7 +105,7 @@ export class CustomerDetailsComponent implements OnInit {
           this.close({ action: true });
         },
         (error: any) => {
-          console.log(error)
+          console.error(error)
         }
       );
     }

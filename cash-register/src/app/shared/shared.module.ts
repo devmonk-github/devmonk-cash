@@ -31,7 +31,7 @@ import {
 } from './components';
 // import { NgbModule } from "@ng-bootstrap/ng-bootstrap";
 import { NgJsonEditorModule } from "ang-jsoneditor";
-import {FileSaverModule} from "ngx-filesaver";
+import { FileSaverModule } from "ngx-filesaver";
 
 @NgModule({
   declarations: [
@@ -73,6 +73,7 @@ import {FileSaverModule} from "ngx-filesaver";
     CountryListComponent,
     AccordionDirective,
     ToastModule,
+    NgSelectModule,
     MaterialModule,
     TransactionsSearchComponent,
     TransactionItemsDetailsComponent,

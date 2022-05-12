@@ -91,7 +91,48 @@ export class TransactionsSearchComponent implements OnInit, AfterViewInit {
   openTransaction(transaction: any, itemType: any) {
     this.dialogService.openModal(TransactionItemsDetailsComponent, { cssClass: "modal-xl", context: { transaction, itemType } })
       .instance.close.subscribe(result => {
+        const transactionItems: any = [];
         if (result.transaction) {
+          result.transactionItems.forEach((transactionItem: any) => {
+            if (transactionItem.isSelected) {
+              const { tType } = transactionItem;
+              let paymentAmount = transactionItem.nQuantity * transactionItem.nPriceIncVat - transactionItem.nPaidAmount;
+              if (tType === 'refund') {
+                paymentAmount = -1 * transactionItem.nPaidAmount;
+                transactionItem.oType.bRefund = true;
+              } else if (tType === 'revert') {
+                paymentAmount = transactionItem.nPaidAmount;
+                transactionItem.oType.bRefund = false;
+              };
+              transactionItems.push({
+                name: transactionItem.sProductName,
+                iActivityItemId: transactionItem.iActivityItemId,
+                nRefundAmount: transactionItem.nPaidAmount,
+                iLastTransactionItemId: transactionItem.iTransactionItemId,
+                prePaidAmount: tType === 'refund' ? transactionItem.nPaidAmount : transactionItem.nPaymentAmount,
+                type: transactionItem.sGiftCardNumber ? 'giftcard' : transactionItem.oType.eKind,
+                eTransactionItemType: 'regular',
+                nBrokenProduct: 0,
+                tType,
+                oType: transactionItem.oType,
+                aImage: transactionItem.aImage,
+                nonEditable: transactionItem.sGiftCardNumber ? true : false,
+                sGiftCardNumber: transactionItem.sGiftCardNumber,
+                quantity: transactionItem.nQuantity,
+                price: transactionItem.nPriceIncVat,
+                iRepairerId: transactionItem.iRepairerId,
+                oArticleGroupMetaData: transactionItem.oArticleGroupMetaData,
+                iEmployeeId: transactionItem.iEmployeeId,
+                iBrandId: transactionItem.iBrandId,
+                discount: 0,
+                tax: transactionItem.nVatRate,
+                paymentAmount,
+                description: '',
+                open: true,
+              });
+            }
+          });
+          result.transactionItems = transactionItems;
           this.close(result);
         }
       });

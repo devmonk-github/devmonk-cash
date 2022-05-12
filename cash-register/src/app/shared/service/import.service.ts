@@ -39,6 +39,20 @@ export class ImportService {
                 sCountry: customer?.['Country'] ? customer['Country'] : "do-nothing",
             },
 
+            oInvoiceAddress: {
+                attn: {
+                    sSalutation: customer?.['Salutation'] ? customer['Salutation'] : "do-nothing",
+                    sFirstName: customer?.['Firstname'] ? customer['Firstname'] : "do-nothing",
+                    sLastName: customer?.['Surname'] ? customer['Surname'] : "do-nothing",
+                },
+                sStreet: customer?.['Street'] ? customer['Street'] : "do-nothing",
+                sHouseNumber: customer?.['House number'] ? customer['House number'] : "do-nothing",
+                sHouseNumberSuffix: customer?.['House number addition'] ? customer['House number addition'] : "do-nothing",
+                sPostalCode: customer?.['Zip code'] ? customer['Zip code'] : "do-nothing",
+                sCity: customer?.['City'] ? customer['City'] : "do-nothing",
+                sCountry: customer?.['Country'] ? customer['Country'] : "do-nothing",
+            },
+
             sComment: customer?.['Comment'] ? customer['Comment'] : "do-nothing",
             nMatchingCode: customer?.['Customer number'] ? customer['Customer number'] : "do-nothing",
             bNewsletter: customer?.['Newsletter'] ? customer['Newsletter'] : "do-nothing"
@@ -99,5 +113,21 @@ export class ImportService {
         }
 
         return oPocessObject;
+    }
+
+    processImportTransaction(data: any) {
+        const { transaction } = data;
+        const processTransaction = {
+            sCreatedBy: transaction?.['createdBy'] ? transaction['createdBy'] : "overwrite",
+            oCustomer: transaction?.['customer'] ? transaction['customer'] : "overwrite",
+            dCreatedDate: transaction?.['dateCreated'] ? transaction['dateCreated'] : "overwrite",
+            aDetails: transaction?.['details'] ? transaction['details'] : "overwrite",
+            bHas_sold_products: transaction?.['has_sold_products'] ? transaction['has_sold_products'] : "overwrite",
+            sNumber: transaction?.['number'] ? transaction['number'] : "overwrite",
+            sReceiptNumber: transaction?.['receiptNumber'] ? transaction['receiptNumber'] : "overwrite",
+            nTransactionTotal: transaction?.['transactionTotal'] ? transaction['transactionTotal'] : "overwrite",
+            eType: transaction?.['type'] ? transaction['type'] : "overwrite"
+        }
+        return processTransaction;
     }
 }

@@ -1,34 +1,32 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { CustomerImportComponent } from './customer-import.component';
+import { TransactionImportComponent } from './transaction-import.component';
 import { FileUploadModule } from '@iplab/ngx-file-upload';
-// import { BrowserAnimationsModule   } from '@angular/platform-browser/animations';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { FileImportComponent } from '../file-import/file-import.component';
-import { CustomerDetailsImportComponent } from '../customer-details-import/customer-details-import.component';
-import { CustomerImportRoutingModule } from './customer-import-routing.module';
 import { NgxPaginationModule } from 'ngx-pagination';
 import { TranslateModule } from '@ngx-translate/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { TransactionDetailsImportComponent } from '../transaction-details-import/transaction-details-import.component';
+import { TransactionFileImportComponent } from '../transaction-file-import/transaction-file-import.component';
+import { TransactionImportRoutingModule } from './transaction-import-routing.module';
 
 @NgModule({
   declarations: [
-    CustomerImportComponent,
-    FileImportComponent,
-    CustomerDetailsImportComponent
+    TransactionImportComponent,
+    TransactionFileImportComponent,
+    TransactionDetailsImportComponent
   ],
   imports: [
     CommonModule,
     SharedModule,
-    CustomerImportRoutingModule,
+    TransactionImportRoutingModule,
     ReactiveFormsModule,
     NgxPaginationModule,
     TranslateModule,
     FormsModule,
     FileUploadModule,
-    // BrowserAnimationsModule,
     FontAwesomeModule
   ]
 })
-export class CustomerImportModule { }
+export class TransactionImportModule { }

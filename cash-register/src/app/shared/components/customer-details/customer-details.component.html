@@ -277,28 +277,28 @@ customer.sCocNumber -->
                         </div>
                         <div class="row mb-3">
                             <div class="col-md-7">
-                                <input class="form-control" placeholder="{{'STREET' | translate}}" [(ngModel)]="customer.oInvoiceAddress.street"/>
+                                <input class="form-control" placeholder="{{'STREET' | translate}}" [(ngModel)]="customer.oInvoiceAddress.sStreet"/>
                             </div>
 
                             <div class="col-md-3">
-                                <input class="form-control" placeholder="{{'HOUSE_NUMBER' | translate}}" [(ngModel)]="customer.oInvoiceAddress.houseNumber"/>
+                                <input class="form-control" placeholder="{{'HOUSE_NUMBER' | translate}}" [(ngModel)]="customer.oInvoiceAddress.sHouseNumber"/>
                             </div>
                             <div class="col-md-2">
-                                <input class="form-control" placeholder="{{'HOUSE_NUMBER_SUFFIX' | translate}}" [(ngModel)]="customer.oInvoiceAddress.addition"/>
+                                <input class="form-control" placeholder="{{'HOUSE_NUMBER_SUFFIX' | translate}}" [(ngModel)]="customer.oInvoiceAddress.sAddition"/>
                             </div>
                         </div>
                         <div class="row mb-3">
                             <div class="col-md-4">
-                                <input class="form-control" placeholder="{{'PSOTAL_CODE' | translate}}" [(ngModel)]="customer.oInvoiceAddress.postalCode"/>
+                                <input class="form-control" placeholder="{{'PSOTAL_CODE' | translate}}" [(ngModel)]="customer.oInvoiceAddress.sPostalCode"/>
                             </div>
                             <div class="col-md-8">
-                                <input class="form-control" placeholder="{{'CITY' | translate}}" [(ngModel)]="customer.oInvoiceAddress.city"/>
+                                <input class="form-control" placeholder="{{'CITY' | translate}}" [(ngModel)]="customer.oInvoiceAddress.sCity"/>
                             </div>
                         </div>
                         <div class="row mb-3">
                             <div>
                                 <label class="required" for="country">{{'COUNTRY' | translate}}</label>
-                                <country-list id="country" [country]="customer.oInvoiceAddress.country" [(ngModel)]="customer.oInvoiceAddress.country" (customerCountryChanged)="customerCountryChanged('oInvoiceAddress', $event)" name="country"></country-list>
+                                <country-list id="country" [country]="customer.oInvoiceAddress.country" [(ngModel)]="customer.oInvoiceAddress.sCountry" (customerCountryChanged)="customerCountryChanged('oInvoiceAddress', $event)" name="country"></country-list>
                             </div>
                         </div>
 
@@ -308,28 +308,28 @@ customer.sCocNumber -->
                     
                         <div class="row mb-3">
                             <div class="col-md-7">
-                                <input class="form-control" placeholder="{{'STREET' | translate}}" [(ngModel)]="customer.oShippingAddress.street"/>
+                                <input class="form-control" placeholder="{{'STREET' | translate}}" [(ngModel)]="customer.oShippingAddress.sStreet"/>
                             </div>
 
                             <div class="col-md-3">
-                                <input class="form-control" placeholder="{{'HOUSE_NUMBER' | translate}}" [(ngModel)]="customer.oShippingAddress.houseNumber"/>
+                                <input class="form-control" placeholder="{{'HOUSE_NUMBER' | translate}}" [(ngModel)]="customer.oShippingAddress.sHouseNumber"/>
                             </div>
                             <div class="col-md-2">
-                                <input class="form-control" placeholder="{{'HOUSE_NUMBER_SUFFIX' | translate}}" [(ngModel)]="customer.oShippingAddress.addition"/>
+                                <input class="form-control" placeholder="{{'HOUSE_NUMBER_SUFFIX' | translate}}" [(ngModel)]="customer.oShippingAddress.sAddition"/>
                             </div>
                         </div>
                         <div class="row mb-3">
                             <div class="col-md-4">
-                                <input class="form-control" placeholder="{{'POSTAL_CODE' | translate}}" [(ngModel)]="customer.oShippingAddress.postalCode"/>
+                                <input class="form-control" placeholder="{{'POSTAL_CODE' | translate}}" [(ngModel)]="customer.oShippingAddress.sPostalCode"/>
                             </div>
                             <div class="col-md-8">
-                                <input class="form-control" placeholder="{{'CITY' | translate}}" [(ngModel)]="customer.oShippingAddress.city"/>
+                                <input class="form-control" placeholder="{{'CITY' | translate}}" [(ngModel)]="customer.oShippingAddress.sCity"/>
                             </div>
                         </div>
                         <div class="row mb-3">
                             <div>
                                 <label class="required" for="s_country">{{'COUNTRY' | translate}}</label>
-                                <country-list id="s_country" [country]="customer.oShippingAddress.country" [(ngModel)]="customer.oShippingAddress.country" (customerCountryChanged)="customerCountryChanged('oInvoiceAddress', $event)" name="country"></country-list>
+                                <country-list id="s_country" [country]="customer.oShippingAddress.sCountry" [(ngModel)]="customer.oShippingAddress.sCountry" (customerCountryChanged)="customerCountryChanged('oInvoiceAddress', $event)" name="country"></country-list>
                             </div>
                         </div>
 

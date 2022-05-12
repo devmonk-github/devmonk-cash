@@ -1,0 +1,29 @@
+#till-items-accordion .accordion-item,
+.accordion-item .accordion-button {
+	border-radius: 0 !important;
+	border-left: 0 !important;
+	border-right: 0 !important;
+}
+
+.container {
+	display: grid;
+}
+
+.content,
+.overlay {
+	grid-area: 1 / 1;
+}
+
+.create-order {
+	position: relative;
+	border: 1px solid #EFF2F5;
+	border-radius: 10px;
+	margin-top: 10px;
+
+	.topright {
+		position: absolute;
+		top: 8px;
+		right: 16px;
+		font-size: 18px;
+	}
+}

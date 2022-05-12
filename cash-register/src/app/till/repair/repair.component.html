@@ -16,57 +16,140 @@
 <div id="kt_accordion_1_body_1" class="accordion-collapse collapse show" aria-labelledby="kt_accordion_1_header_1"
   data-bs-parent="#kt_accordion_1">
   <div class="accordion-body px-3 py-4">
-    <section class="d-flex product-row mb-3">
-      <div class="w-90px">
+    <section class="d-flex product-row mb-3 row">
+      <div class="col-1">
         <app-dialer [(quantity)]="item.quantity"></app-dialer>
       </div>
-      <div class="w-300px ps-2">
+      <div class="col-3">
         <label for="description">{{ "Name" | translate}}</label>
         <input type="text" [(ngModel)]="item.name" class="form-control">
         <label for="description">{{ "DESCRIPTION" | translate}}</label>
         <textarea class="form-control" name="description" placeholder="{{ 'DESCRIPTION' | translate}}" lines="10"
           [(ngModel)]="item.description"></textarea>
+        <label for="bagNumber">{{ "BAG_NUMBER" | translate}}</label>
+        <input type="text" name="bagNumber" id="bagNumber" [(ngModel)]="item.sBagNumber" class="form-control">
       </div>
-      <div class="w-125px ps-2">
+      <div class="col-2">
         <label for="price">{{ "PRICE" | translate}}</label>
         <input type="number" step="any" name="price" class="form-control" [(ngModel)]="item.price">
-        <label for="bagNumber">{{ "BAG_NUMBER" | translate}}</label>
-        <input type="text" name="bagNumber" id="bagNumber" [(ngModel)]="item.bagNumber" class="form-control">
-      </div>
-
-      <div class="w-100px ps-2">
         <label for="discount">{{ "DISCOUNT" | translate}}</label>
         <input type="number" step="any" name="discount" class="form-control" [(ngModel)]="item.discount">
         <label for="bagNumber">{{ "PREPAYMENT" | translate}}</label>
         <input type="number" step="any" name="bagNumber" id="bagNumber" (keyup)="updatePayments()"
           [(ngModel)]="item.paymentAmount" class="form-control" [disabled]="item.isExclude">
+
       </div>
-      <div class="w-125px ps-2">
+      <div class="col-2">
+
         <label for="taxRate">{{ "TAX" | translate}}</label>
         <select name="taxRate" id="taxRate" class="form-select" [(ngModel)]="item.tax">
           <option *ngFor="let rate of taxes" [ngValue]="rate.rate">{{rate.name}}</option>
         </select>
-        {{ "BRAND" | translate}}: ----
-        <br>
-        {{ "COMPANY" | translate}}: ----
+        <label for="bagNumber" class="work-break">{{ "ESTIMATED_DATE_READY" | translate}}</label>
+        <input type="date" class="form-control datetimepicker-input" [ngModel]="item.dEstimatedDate"
+          (ngModelChange)="item.dEstimatedDate = $event;" />
+        <button class="btn btn-bg-light btn-active-color-primary mt-2" (click)="openImageModal()"> Photos
+          <fa-icon [icon]="faUpload"></fa-icon>
+        </button>
       </div>
-      <div class="row">
-        <div class="col-10">
-          <label for="taxRate">{{ "EXCLUDE_ITEM" | translate}}</label>
-          <label class="form-check form-switch form-check-custom form-check-solid">
-            <input type="checkbox" class="form-check-input" [(ngModel)]="item.isExclude">
-          </label>
+      <div class="col-2">
+        <label for="employee">{{ "REPAIRER" | translate}}</label>
+        <ng-select *ngIf="!employee" [(ngModel)]="employee" (search)="searchEmployees($event.term)"
+          class="form-control form-control-solid p-0 w-100 custom" placeholder="Search employee" [minTermLength]="2"
+          [clearable]="false" [isOpen]="filteredEmployees.length > 0"
+          (change)="employee = $event.sName; item.iEmployeeId = $event._id; filteredEmployees = [] ">
+          <ng-option *ngFor="let option of filteredEmployees" [value]="option">{{option.sName ||
+            'Unknown'}}</ng-option>
+        </ng-select>
+        <div class="chip d-flex" *ngIf="employee">
+          {{employee}}
+          <div (click)="employee=null">
+            &nbsp;<i class="close fas fa-times cursor-pointer"></i>
+          </div>
+        </div>
+        <label for="supplier">{{ "OR" | translate}}</label>
+        <ng-select *ngIf="!supplier" [(ngModel)]="supplier" (search)="searchSuppliers($event.term)"
+          class="form-control form-control-solid p-0 w-100 custom" placeholder="Search repairer" [minTermLength]="2"
+          [clearable]="false" [isOpen]="supplierOptions.length > 0"
+          (change)="supplier = $event.sName; item.iSupplierId = $event._id; supplierOptions = []">
+          <ng-option *ngFor="let option of supplierOptions" [value]="option">{{option.sName ||
+            'Unknown'}}</ng-option>
+        </ng-select>
+        <div class="chip d-flex" *ngIf="supplier">
+          {{supplier}}
+          <div (click)="supplier=null">
+            &nbsp;<i class="close fas fa-times cursor-pointer"></i>
+          </div>
+        </div>
+        <label for="brand">{{ "BRAND" | translate}}</label>
+        <ng-select *ngIf="!brand" [(ngModel)]="brand" (search)="searchBrands($event.term)"
+          class="form-control form-control-solid p-0 w-100 custom" placeholder="Search brand" [minTermLength]="2"
+          [clearable]="false" [isOpen]="filteredBrands.length > 0"
+          (change)="brand = $event.sName; item.iBrandId = $event._id; filteredBrands = []">
+          <ng-option *ngFor="let option of filteredBrands" [value]="option">{{option.sName ||
+            'Unknown'}}</ng-option>
+        </ng-select>
+        <div class="chip d-flex" *ngIf="brand">
+          {{brand}}
+          <div (click)="brand=null">
+            &nbsp;<i class="close fas fa-times cursor-pointer"></i>
+          </div>
+        </div>
+      </div>
+      <div class="col-2">
+        <label for="taxRate">{{ "EXCLUDE_ITEM" | translate}}</label>
+        <label class="form-check form-switch form-check-custom form-check-solid">
+          <input type="checkbox" class="form-check-input" [(ngModel)]="item.isExclude">
+        </label>
+
+        <label>{{ "PROPERTIES" | translate}}</label>
+        <div class="d-flex" *ngFor="let property of item.oArticleGroupMetaData.aProperty; let pIndex = index">
+          <!-- <div class="w-50 align-middle lh-xxl">
+            {{pIndex + 1}}
+          </div> -->
+          <div class="w-100" *ngIf="propertyOptions[property.iPropertyId]?.length > 0">
+            <ng-select class="form-control p-0 w-100" [(ngModel)]="selectedProperties[property.iPropertyId]"
+              (change)="setPropertyOption(property, pIndex)" [clearable]="false">
+              <ng-option *ngFor="let option of propertyOptions[property.iPropertyId]" [value]="option.sCode">{{
+                option.sName }}</ng-option>
+            </ng-select>
+          </div>
         </div>
 
-        <div class="col-2">
-          <button class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary w-30px h-30px float-end"
-            (click)="deleteItem()">
-            <span class="svg-icon svg-icon-1qx me-0">
-              <fa-icon [icon]="faTimes"></fa-icon>
-            </span>
-          </button>
-        </div>
       </div>
     </section>
+    <div class="d-flex">
+      <div class="p-2" *ngFor="let image of item.aImage; let i = index" (mouseover)="showDeleteBtn = true"
+        (mouseout)="showDeleteBtn = false">
+        <div class="image-input" data-kt-image-input="true"
+          style="background-image: url('assets/media/svg/avatars/blank.svg')">
+          <div class="image-input-wrapper w-125px h-125px"
+            style="background-image: url(assets/media/avatars/300-1.jpg)">
+            <img src={{image}} width="125px" height="125px">
+          </div>
+
+          <div>
+            <button class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow"
+              data-kt-image-input-action="remove" data-bs-toggle="tooltip" title="Remove image"
+              (click)="removeImage(i)">
+              <i class="bi bi-x fs-2" (click)="removeImage(i)"></i>
+            </button>
+          </div>
+
+        </div>
+        <!-- <div class="mt-5">
+                      <button *ngIf="i != 0"
+                          class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow"
+                          (click)="moveImage('left', i)" [disabled]="!isEditable">
+                          <i class="fa-solid fa-arrow-left"></i>
+                      </button>
+                      <button *ngIf="i != (productDetails.aImage.length - 1)"
+                          class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow"
+                          (click)="moveImage('right', i)" [disabled]="!isEditable">
+                          <i class="fa-solid fa-arrow-right"></i>
+                      </button>
+                  </div> -->
+      </div>
+    </div>
   </div>
 </div>
