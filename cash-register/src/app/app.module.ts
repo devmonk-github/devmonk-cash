@@ -14,6 +14,8 @@ import { Observable } from 'rxjs';
 import * as en from '../assets/json/translations/en-translation.json';
 import * as nl from '../assets/json/translations/nl-translation.json';
 import { NgJsonEditorModule } from 'ang-jsoneditor';
+import { SharedServiceModule } from './shared/shared-service.module';
+import { BarcodeComponent } from './barcode/barcode.component';
 export class CustomTranslateLoader implements TranslateLoader {
   public getTranslation(lang: string): Observable<any> {
     return new Observable((observer: any) => {
@@ -32,6 +34,7 @@ export class CustomTranslateLoader implements TranslateLoader {
   declarations: [
     AppComponent,
     PrintComponent,
+    BarcodeComponent,
   ],
   imports: [
     BrowserModule,
@@ -40,7 +43,8 @@ export class CustomTranslateLoader implements TranslateLoader {
     AppRoutingModule,
     TranslateModule.forRoot(),
     FormsModule,
-    NgJsonEditorModule
+    NgJsonEditorModule,
+    SharedServiceModule
   ],
   providers: [],
   bootstrap: [AppComponent]
