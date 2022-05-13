@@ -144,8 +144,8 @@
           <tr *ngFor="let transaction of transactions | paginate: paginationConfig, let i = index;">
             <td scope="row">{{transaction.dCreatedDate | date: 'longDate'}}</td>
             <td>{{transaction.sNumber}}</td>
-            <td>{{transaction.oReceipt.sNumber}}</td>
-            <td>{{transaction.oCustomer.sFirstName}} {{transaction.oCustomer.sLastName}}</td>
+            <td>{{transaction?.oReceipt?.sNumber}}</td>
+            <td>{{transaction?.oCustomer?.sFirstName}} {{transaction?.oCustomer?.sLastName}}</td>
             <td></td>
             <td>{{transaction.sTotal || 0}}</td>
             <td>{{transaction.eType}}</td>
