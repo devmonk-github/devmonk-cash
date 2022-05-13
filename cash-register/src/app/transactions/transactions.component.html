@@ -219,9 +219,8 @@
           <tr *ngFor="let transaction of transactions | paginate: paginationConfig, let i = index;">
             <td scope="row">{{transaction.dCreatedDate | date: 'longDate'}}</td>
             <td>{{transaction.sNumber}}</td>
-            <td>{{transaction.oReceipt.sNumber}}</td>
-            <td>{{transaction.oCustomer.sFirstName}} {{transaction.oCustomer.sLastName}}</td>
-            <td></td>
+            <td>{{transaction?.oReceipt?.sNumber}}</td>
+            <td>{{transaction?.oCustomer?.sFirstName || ''}} {{transaction?.oCustomer?.sLastName || ''}}</td>
             <td>{{transaction.sTotal || 0}}</td>
             <td>{{transaction.eType}}</td>
             <td>
@@ -268,21 +267,22 @@
         <div class="col-sm-12 col-md-3 d-flex align-items-center justify-content-center justify-content-md-start">
             <div class="dataTables_length" id="kt_ecommerce_sales_table_length">
                 <label>
-                    <select class="form-select form-select-sm form-select-solid"  [(ngModel)]="pageCount" (change)="changeItemsPerPage(pageCount)">
+                    <select name="kt_ecommerce_sales_table_length" aria-controls="kt_ecommerce_sales_table" class="form-select form-select-sm form-select-solid"  [(ngModel)]="requestParams.limit" (change)="changeItemsPerPage(requestParams.limit)">
                         <option *ngFor="let pageNum of pageCounts" [value]="pageNum">{{ pageNum }}</option>
                     </select>
                 </label>
             </div>
         </div>
-        <div class="col-sm-12 col-md-9 d-flex align-items-center justify-content-center justify-content-md-end" *ngIf="transactions.length < pageCount">
-            <pagination-controls
+        <div class="col-sm-12 col-md-9 d-flex align-items-center justify-content-center justify-content-md-end">
+           <pagination-controls
+                [hidden] = "transactions.length === 0"
                 (pageChange)="pageChanged($event)"
                 (pageBoundsCorrection)="pageChanged($event)"
                 [maxSize]="setPaginateSize"
-                [previousLabel]="'PREVIOUS'"
-                [nextLabel]="'NEXT'"
+                [previousLabel]="'PREVIOUS' | translate"
+                [nextLabel]="'NEXT' | translate"
                 screenReaderPaginationLabel="Pagination"
-                [screenReaderPageLabel]="'PAGE'">
+                [screenReaderPageLabel]="'PAGE' | translate">
             </pagination-controls>
         </div>
     </div>

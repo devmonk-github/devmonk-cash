@@ -38,6 +38,7 @@ module.exports = {
         './ServiceModule': './src/app/services/services.module.ts',
         './CustomerModule': './src/app/customers/customers.module.ts',
         './WebshopSettingsModule': './src/app/webshop-settings/webshop-settings.module.ts',
+        './SharedServiceModule': './src/app/shared/shared-service.module.ts'
       },
 
       shared: share({
