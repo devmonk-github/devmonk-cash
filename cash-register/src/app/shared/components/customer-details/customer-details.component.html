@@ -12,66 +12,6 @@
     <div class="card-body">
         <h2 class="fw-bolder mb-0">
             <span>{{ customer.sSalutation }} {{ customer.sFirstname }} {{ customer.sLastName }}</span>
-<!-- 'PHONE_MOBILE'
-'PHONE_LANDLINE'
-'USE_FOR_WHATSAPP'
-'RECEIVE_NEWSLETTER'
-'MORE_DETAILS'
-'GENDER'
-"MALE"
-"FEMALE"
-"OTHER"
-'INVOICE_ADDRESS'
-'COPY_TO_SHIPPING_ADDRESS'
-'STREET'
-'HOUSE_NUMBER'
-'HOUSE_NUMBER_SUFFIX'
-'PSOTAL_CODE'
-'CITY'
-'COUNTRY'
-'SHIPPING_ADDRESS'
-'STREET'
-'HOUSE_NUMBER'
-'HOUSE_NUMBER_SUFFIX'
-'POSTAL_CODE'
-'CITY'
-'COUNTRY'
-'NOTES'
-'DATE_OF_BIRTH'
-'DOCUMENT_NAME'
-'DOCUMENT_NUMBER'
-'COMPANY_DETAILS'
-'COMPANY_NAME'
-'PAYMENT_TERM_IN_DAYS'
-'VAT_NUMBER'
-'COC_NUMBER' -->
-
-<!-- 
-customer.sFirstName
-customer.sPrefix
-customer.oPhone.sMobile
-customer.oPhone.sLandLine
-customer.oPhone.bWhatsApp
-customer.bNewsletter
-customer.sGender
-customer.oInvoiceAddress.street
-customer.oInvoiceAddress.houseNumber
-customer.oInvoiceAddress.addition
-customer.oInvoiceAddress.postalCode
-customer.oInvoiceAddress.city
-customer.oInvoiceAddress.country"
-customer.oShippingAddress.street
-customer.oShippingAddress.houseNumber
-customer.oShippingAddress.addition
-customer.oShippingAddress.postalCode
-customer.oShippingAddress.city
-customer.oShippingAddress.country
-customer.oIdentity.documentName
-customer.oIdentity.documentNumber
-customer.sCompanyName
-customer.nPaymentTermDays
-customer.sVatNumber
-customer.sCocNumber -->
         </h2>
         <p *ngIf="customer.note" class="text-gray-800 text-italic">{{customer.note}}</p>
         <div class="d-flex flex-wrap py-5">
