@@ -32,6 +32,7 @@ import {
 // import { NgbModule } from "@ng-bootstrap/ng-bootstrap";
 import { NgJsonEditorModule } from "ang-jsoneditor";
 import { FileSaverModule } from "ngx-filesaver";
+import { ActivityDetailsComponent } from "./components/activity-details/activity-details.component";
 
 @NgModule({
   declarations: [
@@ -49,6 +50,7 @@ import { FileSaverModule } from "ngx-filesaver";
     PdfComponent,
     TransactionsSearchComponent,
     TransactionItemsDetailsComponent,
+    ActivityDetailsComponent,
     TabsComponent,
     TabComponent
   ],
@@ -77,6 +79,7 @@ import { FileSaverModule } from "ngx-filesaver";
     MaterialModule,
     TransactionsSearchComponent,
     TransactionItemsDetailsComponent,
+    ActivityDetailsComponent,
     TabsComponent,
     TabComponent
   ],

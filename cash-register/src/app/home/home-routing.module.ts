@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { HomeComponent } from './home.component';
 import {PrintComponent} from "../print/print.component";
+import {BarcodeComponent} from "../barcode/barcode.component";
 
 const routes: Routes = [
   {
@@ -11,6 +12,9 @@ const routes: Routes = [
   {
     path: 'print',
     component: PrintComponent
+  }, {
+    path: 'barcode',
+    component: BarcodeComponent
   }
 
 ];

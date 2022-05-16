@@ -10,9 +10,10 @@ export class CreateArticleGroupService {
 
   constructor(private apiService: ApiService) { }
 
-  createArticleGroup(articleData: { name: string }): Observable<any> {
+  createArticleGroup(articleData: { name: string, sCategory: string, sSubCategory: string }): Observable<any> {
     const { name } = articleData;
     let data = {
+      ...articleData,
       iBusinessId: localStorage.getItem('currentBusiness'),
       oName: { nl: name, en: name, de: name, fr: name },
       bShowInOverview: false,
@@ -20,7 +21,9 @@ export class CreateArticleGroupService {
       bInventory: false,
       aProperty: []
     };
-    return this.apiService.postNew('core', '/api/v1/business/article-group/create/for/order', data).pipe(retry(1), catchError(this.processError));
+    console.log(data);
+    return this.apiService.postNew('core', '/api/v1/business/article-group/general', data).pipe(retry(1));
+    // return this.apiService.postNew('core', '/api/v1/business/article-group/general', data).pipe(retry(1), catchError(this.processError));
   }
 
   checkArticleGroups(searchValue: string): Observable<any> {
@@ -36,8 +39,12 @@ export class CreateArticleGroupService {
   }
 
   processError(err: any) {
+    console.log(err);
+    console.log(err.error.message);
+
     let message = '';
     if (err.error instanceof ErrorEvent) {
+      console.log(err.error);
       message = err.error.message;
     } else {
       message = `Error Code: ${err.status}\nMessage: ${err.message}`;

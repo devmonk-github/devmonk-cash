@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { TransactionsRoutingModule } from './transactions-routing.module';
-import { NgxPaginationModule } from 'ngx-pagination';
+import { NgxPaginationModule, PaginatePipe } from 'ngx-pagination';
 import { NgSelectModule } from '@ng-select/ng-select';
 // import { SharedModule } from '../../shared/shared.module';
 import { DialogService } from '../shared/service/dialog';
@@ -28,6 +28,9 @@ import { TranslateModule } from '@ngx-translate/core';
     TranslateModule
     // SharedModule
   ],
-  providers: [ DialogService ]
+  providers: [ 
+    DialogService,
+    PaginatePipe
+   ]
 })
 export class TransactionsModule { }

@@ -68,7 +68,7 @@ export class TransactionItemsDetailsComponent implements OnInit {
       url = `/api/v1/activities/items/${this.transaction._id}`;
     };
     this.apiService.postNew('cashregistry', url, this.requestParams).subscribe((result: any) => {
-      this.transactionItems = result.data[0].result;
+      this.transactionItems = result.data;
       this.transactionItems = this.transactionItems.map(v => ({ ...v, isSelected: false }));
       this.transactionItems.forEach(transactionItem => {
         if (transactionItem.nPaidAmount < transactionItem.nTotalAmount) {
