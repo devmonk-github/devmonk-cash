@@ -50,7 +50,6 @@ export class RepairComponent implements OnInit {
     this.listEmployees();
     this.getBusinessBrands();
     this.checkArticleGroups();
-    // this.fetchInternalBusinessPartner();
     this.getProperties();
     this.listSuppliers();
     this.getBusinessBrands();

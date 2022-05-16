@@ -54,7 +54,6 @@ export class OrderComponent implements OnInit {
 
   ngOnInit(): void {
     this.checkArticleGroups();
-    this.fetchInternalBusinessPartner();
     this.getProperties();
     this.listSuppliers();
     this.getBusinessBrands();
@@ -78,62 +77,6 @@ export class OrderComponent implements OnInit {
       default:
         return '#4ab69c';
     }
-  }
-
-  fetchInternalBusinessPartner() {
-    let data = {
-      skip: 0,
-      limit: 500,
-      sortBy: '',
-      sortOrder: '',
-      searchValue: '',
-      oFilterBy: {
-        bInternal: true,
-      },
-      iBusinessId: localStorage.getItem('currentBusiness'),
-    }
-    this.apiService.postNew('core', '/api/v1/business/partners/supplierList', data).subscribe((result: any) => {
-      if (result && result.data && result.data.length > 0) {
-        const supplier = result.data[0].result;
-        this.item.iBusinessPartnerId = supplier[0]._id;
-      } else {
-        this.createInternalBusinessPartners();
-      }
-    });
-  }
-
-  createInternalBusinessPartners() {
-    const businessId = localStorage.getItem('currentBusiness')
-    this.apiService.getNew('core', '/api/v1/business/' + businessId)
-      .subscribe(
-        (result: any) => {
-          const { data } = result;
-          const order = {
-            iBusinessId: localStorage.getItem('currentBusiness'), // creator of the internal businessPartner
-            iSupplierId: localStorage.getItem('currentBusiness'), // creator of the internal businessPartner
-            iClientGroupId: null,
-            sEmail: data.sEmail, // business.sEmail
-            sName: `${data.sName} internal supplier`, // business.sName + ' internal supplier',
-            sWebsite: data.sWebsite, // business.website
-            oPhone: data.oPhone,
-            oAddress: data.oAddress,
-            nPurchaseMargin: 2,
-            bPreFillCompanySettings: false,
-            aBankDetail: data.aBankDetail,
-            aProperty: data.aProperty,
-            aRetailerComments: [],
-            eFirm: 'private',
-            eAccess: 'n',
-            eType: 'supplier',
-            bInternal: true,
-          }
-          this.apiService.postNew('core', `/api/v1/business/partners`, order)
-            .subscribe(
-              (result: any) => {
-                this.item.iBusinessPartnerId = result.data._id;
-              }
-            )
-        });
   }
 
   createArticleGroup() {
