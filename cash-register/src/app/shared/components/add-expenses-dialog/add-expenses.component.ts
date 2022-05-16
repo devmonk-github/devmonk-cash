@@ -29,7 +29,7 @@ export class AddExpensesComponent implements OnInit {
   focusValue = false;
   name: any;
   submitted = false;
-  ledgerDescriptions = ['drinks', 'food', 'cleaning costs', 'office supplies', 'promotional material', 'shipping costs', 'car costs'];
+  ledgerDescriptions = ['drinks', 'food', 'cleaning costs', 'office supplies', 'promotional material', 'shipping costs', 'car costs', 'Add money to cash register', 'Lost money/money difference'];
   selectedArticleGroup: any;
   allArticleGroups: any = [];
   constructor(
@@ -68,7 +68,6 @@ export class AddExpensesComponent implements OnInit {
     this.selectedArticleGroup = null;
     const expenseType = this.expenseForm.value.expenseType;
     this.selectedArticleGroup = this.allArticleGroups.find((o: any) => o.sSubCategory === this.expenseForm.value.expenseType);
-    console.log(this.selectedArticleGroup);
     if (!this.selectedArticleGroup) {
       this.createArticleGroup(expenseType);
     }
@@ -147,13 +146,12 @@ export class AddExpensesComponent implements OnInit {
         bDiscount: false,
       },
     }
-    console.log(transactionItem);
     this.apiService.postNew('cashregistry', '/api/v1/till/add-expenses', transactionItem)
       .subscribe((res: any) => {
         this.toastrService.show({ type: 'success', text: res.message });
         this.close(res);
       }, err => {
-        console.log(err);
-      })
+        this.toastrService.show({ type: 'danger', text: err.message });
+      });
   }
 }
