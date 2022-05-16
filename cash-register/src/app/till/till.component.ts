@@ -16,7 +16,7 @@ import { ToastService } from '../shared/components/toast';
 import { TransactionsSearchComponent } from '../shared/components/transactions-search/transactions-search.component';
 import { PaymentDistributionService } from '../shared/service/payment-distribution.service';
 import { TillService } from '../shared/service/till.service';
-import { AddExpensesComponent } from '../shared/components/add-expenses-dialog/add-expenses.component';
+// import { AddExpensesComponent } from '../shared/components/add-expenses-dialog/add-expenses.component';
 
 @Component({
   selector: 'app-till',
@@ -603,12 +603,12 @@ export class TillComponent implements OnInit {
   }
 
   openExpenses() {
-    this.dialogService.openModal(AddExpensesComponent, { cssClass: 'modal-m', context: {} })
-      .instance.close.subscribe(result => {
-        console.log('I am closing this modal');
-        console.log(result);
-        // if (result.url)
-        // this.item.aImage.push(result.url);
-      });
+    // this.dialogService.openModal(AddExpensesComponent, { cssClass: 'modal-m', context: {} })
+    //   .instance.close.subscribe(result => {
+    //     console.log('I am closing this modal');
+    //     console.log(result);
+    //     // if (result.url)
+    //     // this.item.aImage.push(result.url);
+    //   });
   }
 }
