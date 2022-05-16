@@ -233,8 +233,8 @@ export class TransactionsComponent implements OnInit {
   }
 
   // Function for show transaction details
-  showTransaction(transactionId : string){
-    this.dialogService.openModal(TransactionDetailsComponent, { context: { transactionId : transactionId }, cssClass: 'w-fullscreen'}).instance.close.subscribe(
+  showTransaction(transaction: any){
+    this.dialogService.openModal(TransactionDetailsComponent, { cssClass:"modal-xl", context: { transaction : transaction }}).instance.close.subscribe(
       partner =>{ });
   }
 }

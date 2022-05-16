@@ -219,14 +219,14 @@
           <tr *ngFor="let transaction of transactions | paginate: paginationConfig, let i = index;">
             <td scope="row">{{transaction.dCreatedDate | date: 'longDate'}}</td>
             <td>{{transaction.sNumber}}</td>
-            <td>{{transaction?.oReceipt?.sNumber}}</td>
+            <td>{{transaction.sReceiptNumber}}</td>
             <td>{{transaction?.oCustomer?.sFirstName || ''}} {{transaction?.oCustomer?.sLastName || ''}}</td>
             <td>{{transaction.sTotal || 0}}</td>
             <td>{{transaction.eType}}</td>
             <td>
               <div class="btn-group me-4">
                 <!--begin::Submit-->
-                <span class="btn btn-primary fs-bold px-6" (click)="showTransaction(transaction._id)">
+                <span class="btn btn-primary fs-bold px-6" (click)="showTransaction(transaction)">
                     <span class="indicator-label">{{ "VIEW" | translate }}</span>
                 </span>
                 <!--end::Submit-->

@@ -1,12 +1,84 @@
 <div class="card shadow-sm">
     <div class="card-header mt-5">
         <h3>Transaction Details</h3>
-        <a class="cancel ml-auto" (click)="close()">
+        <button type="button" class="btn btn-sm btn-secondary" (click)="close()">
             <fa-icon [icon]="faTimes"></fa-icon>
-        </a>
+        </button>
     </div>
-    <div class="card-body">
-        Transaction Details for id : {{transactionId}}.
+    <div class="card-body row">
+        <div class="col-md-4">
+            <h2 class="fw-bolder mb-4">
+                <span>{{ "CUSTOMER" | translate }}</span>
+            </h2>
+            <div class="row fw-bold gy-1">
+                <div class="col-md-4">
+                    <div class="mt-2 text-muted">{{'FIRST_NAME' | translate}}</div>
+                    <div class="mt-2 text-muted">{{'LAST_NAME' | translate}}</div>
+                </div>
+                <div class="col-md-8">
+                    <div class="text-gray-800 mt-2">{{ transaction.oCustomer.sFirstName }}</div>
+                    <div class="text-gray-800 mt-2">{{ transaction.oCustomer.sLastName }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-8">
+            <h2 class="fw-bolder mb-4">
+                <span>{{ "TRANSACTION_OVERVIEW" | translate }}</span>
+            </h2>
+            <div class="row fw-bold gy-1">
+                <div class="col-md-4">
+                    <div class="mt-2 text-muted">{{'RECEIPT_NUMBER' | translate}}</div>
+                    <div class="mt-2 text-muted">{{'DATE_TIME' | translate}}</div>
+                    <div class="mt-2 text-muted">{{'PAY_METHOD' | translate}}</div>
+                    <div class="mt-2 text-muted">{{'CHANGE' | translate}}</div>
+                    <div class="mt-2 text-muted">{{'REFUNDED' | translate}}</div>
+                    <div class="mt-2 text-muted">{{'ASSISTED_BY' | translate}}</div>
+                </div>
+                <div class="col-md-8">
+                    <div class="text-gray-800 mt-2">{{ transaction.sInvoiceNumber }}</div>
+                    <div class="text-gray-800 mt-2">{{ transaction.dCreatedDate | date: 'longDate' }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card-body row">
+        <div class="col-md-12">
+            <h2 class="fw-bolder mb-4">
+                <span>{{ "ITEMS" | translate }}</span>
+            </h2>
+            <div class="row fw-bold gy-1 d-flex flex-wrap py-5">
+                <div class="flex-equal me-5">
+                    <table class="table table-hover table-rounded table-striped border gy-7 gs-7">
+                        <thead>
+                            <tr class="fw-bold fs-6 text-gray-400">
+                                <td class="text-muted">{{'IMAGE' | translate}}</td>
+                                <td class="text-muted">{{'PRODUCT' | translate}}</td>
+                                <td class="text-muted">{{'PRICE' | translate}}</td>
+                                <td class="text-muted">{{'QUANTITY' | translate}}</td>
+                                <td class="text-muted">{{'DISCOUNT_PER_ITEM' | translate}}</td>
+                                <td class="text-muted">{{'TAX' | translate}}</td>
+                                <td class="text-muted">{{'TOTAL_PRICE' | translate}}</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let item of transaction.aTransactionItems">
+                              <td></td>
+                              <td>{{item.sProductName}}</td>
+                              <td>{{item.nPurchasePrice}}</td>
+                              <td>{{item.nQuantity}}</td>
+                              <td>0</td>
+                              <td>{{item.nVatRate || 0}}</td>
+                              <td>{{item.nPriceIncVat || 0}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="d-flex">
+                <h5 *ngIf='!transaction?.aTransactionItems?.length && !loading' style="text-align: center;">{{ 'NO_DATA_FOUND' | translate }}</h5>
+                <div *ngIf="loading" class="spinner-border mx-auto"></div>
+            </div>
+        </div>
     </div>
     <div class="card-footer">
         <button class="btn btn-secondary cancel ml-auto" (click)="close()">{{"TEXT_CANCEL"}}</button>
