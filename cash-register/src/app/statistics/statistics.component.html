@@ -17,59 +17,7 @@
       </div>
     </div>
   </div>
-  <!-- <pre>{{aStatistic[0].overall | json}}</pre> -->
   <hr>
-
-  <!-- <div>
-    <div class="table-responsive" *ngFor="let oStatistic of aStatistic; let statisticIndex = index">
-      <p>Vat Rate Table</p>
-      <table
-        class="table table-rounded border border-gray-300 table-row-bordered table-row-gray-300 gy-5 gs-5 text-gray-600"
-        *ngFor="let oSupplier of oStatistic.individual; let supplierIndex = index">
-        <thead>
-          <tr>
-            <th><span class="">{{ 'SUPPLIER' | translate}}</span>
-              <h3 class="text-black">{{oSupplier.businessPartnerName}}</h3>
-            </th>
-            <th class="w-150px"><span class="">{{"QUANTITY" | translate}}</span>
-              <h4 class="text-black">{{oSupplier.quantity}}</h4>
-            </th>
-            <th class="w-150px"><span class="">{{"PRICE_WITH_VAT" | translate}}</span>
-              <h4 class="text-black">{{oSupplier.totalRevenue}}</h4>
-            </th>
-            <th class="w-150px"><span class="">{{"PURCHASE_PRICE" | translate}}</span>
-              <h4 class="text-black">{{oSupplier.totalPurchaseAmount}}</h4>
-            </th>
-            <th class="w-150px"><span class="">{{"GROSS_PROFIT" | translate}}</span>
-              <h4 class="text-black">{{oSupplier.profit}}</h4>
-            </th>
-            <th class="w-150px"><span class="">{{"MARGIN" | translate}}</span>
-              <h4 class="text-black">{{oSupplier.margin}}</h4>
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td colspan="6" class="p-2">
-              <table class="table table-row-bordered table-row-gray-300 gy-5 gs-5 mb-0 text-gray-600 fw-bold border"
-                *ngFor="let oArticleGroup of oSupplier.articleGroups; let articleGroupIndex = index">
-                <thead class="bg-gray-100">
-                  <tr class="fw-bold fs-6 text-gray-800">
-                    <th scope="col">{{oArticleGroup.name}}</th>
-                    <th scope="col" class="w-150px">{{oArticleGroup.quantity}}</th>
-                    <th scope="col" class="w-150px">{{oArticleGroup.totalRevenue}}</th>
-                    <th scope="col" class="w-150px">{{oArticleGroup.totalPurchaseAmount}}</th>
-                    <th scope="col" class="w-150px">{{oArticleGroup.profit}}</th>
-                    <th scope="col" class="w-150px">{{oArticleGroup.margin}}</th>
-                  </tr>
-                </thead>
-              </table>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div> -->
 
   <div class="card overflow-y-auto" *ngIf="sDisplayMethod === 'revenuePerBusinessPartner'">
     <p> revenuePerBusinessPartner </p>
@@ -211,7 +159,7 @@
           </thead>
           <tbody class="p-2"
             *ngFor="let oRevenueByProperty of oArticleGroup.revenueByProperty; let revenuePropertyIndex = index">
-            <!--start of dyamic property -->
+            <!--start of Dynamic property -->
             <tr>
               <td class="ps-9">{{oRevenueByProperty.category}}</td>
               <td>{{oRevenueByProperty.quantity}}</td>
@@ -276,27 +224,4 @@
     </div>
   </div>
 
-  <!-- <div class="card">
-    <p>Table No 6 Payment Method(will always show)</p>
-    <div class="card-body">
-      <div class="table-responsive" *ngFor="let oStatistic of aStatistic; let i = index">
-        <table class="table table-row-bordered table-row-gray-300 gy-5 gs-5 mb-0 text-gray-600 fw-bold border"
-          *ngFor="let oArticleGroup of oStatistic.individual; let articleGroupIndex = index">
-          <thead class="bg-gray-100">
-            <tr class="fw-bold fs-6 text-gray-800">
-              <th scope="col" class="w-150px">{{oArticleGroup.method}}</th>
-              <th scope="col">{{oArticleGroup._id}}</th>
-              <th scope="col" class="w-150px">{{oArticleGroup.quantity}}</th>
-              <th scope="col" class="w-150px">{{oArticleGroup.total}}</th>
-              <th scope="col" class="w-150px">{{oArticleGroup.profit}}</th>
-              <th scope="col" class="w-150px">{{oArticleGroup.margin}}</th>
-            </tr>
-          </thead>
-        </table>
-
-      </div>
-    </div>
-  </div> -->
-
-  <!-- <pre>{{aStatistic | json}}</pre> -->
 </div>
