@@ -1,0 +1,39 @@
+<div class="card shadow-sm">
+    <div class="card-header" style="margin-top: 20px;">
+        <h4>{{ 'ADD_EXPENSES' | translate}}</h4>
+        <div mat-dialog-actions>
+            <button mat-dialog-close type="button" class="btn btn-sm btn-light" (click)="close(false)">
+                <fa-icon [icon]="faTimes"></fa-icon>
+            </button>
+        </div>
+    </div>
+    <div>
+        <form [formGroup]="expenseForm" (ngSubmit)="submit(); submitted = true">
+            <div class="card-body">
+                <label for="amount">{{ "AMOUNT" | translate}}</label>
+                <input type="number" name="amount" id="amount" class="form-control" formControlName="amount">
+                <div *ngIf="submitted && f.amount.errors">
+                    <span class="text-danger">Amount should be greater than €1.</span>
+                </div>
+                <label for="ledgerDescription">{{ "LEDGER_NUMBER_DESCRIPTION" | translate}}</label>
+                <select name="ledgerDescription" id="ledgerDescription" class="form-select"
+                    formControlName="expenseType" (change)="assignArticleGroup()">
+                    <option *ngFor="let option of ledgerDescriptions" [ngValue]="option">{{option| titlecase}}
+                    </option>
+                </select>
+                <div *ngIf="submitted && f.expenseType.errors">
+                    <span class="text-danger">{{ "LEDGER_NUMBER_DESCRIPTION" | translate}} required.</span>
+                </div>
+                <label for="description">{{ "DESCRIPTION" | translate}}</label>
+                <textarea class="form-control" name="description" placeholder="{{ 'DESCRIPTION' | translate}}"
+                    lines="10" formControlName="description"></textarea>
+                <div *ngIf="submitted && f.description.errors">
+                    <span class="text-danger">Description is required.</span>
+                </div>
+            </div>
+            <div class="card-footer">
+                <button class="btn btn-primary" type="submit" [disabled]="allArticleGroups.length === 0">Submit</button>
+            </div>
+        </form>
+    </div>
+</div>

@@ -99,6 +99,8 @@ export class RepairComponent implements OnInit {
     this.createArticleGroupService.createArticleGroup({ name: 'Repair', sCategory: 'Repair', sSubCategory: 'Repair' })
       .subscribe((res: any) => {
         this.item.iArticleGroupId = res.data._id;
+        this.item.oArticleGroupMetaData.sCategory = res.data.sCategory;
+        this.item.oArticleGroupMetaData.sSubCategory = res.data.sSubCategory;
       },
         err => {
           this.toastrService.show({ type: 'danger', text: err.message });

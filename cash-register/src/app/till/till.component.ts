@@ -372,9 +372,7 @@ export class TillComponent implements OnInit {
         sPrefix: this.customer.sPrefix
       }
     }
-    // console.log(body);
-    // body.payments = this.getUsedPayMethods(false);
-    // return;
+
     this.apiService.postNew('cashregistry', '/api/v1/till/transaction', body)
       .subscribe(data => {
         this.toastrService.show({ type: 'success', text: 'Transactie gemaakt!' });

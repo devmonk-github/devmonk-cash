@@ -140,6 +140,8 @@ export class OrderComponent implements OnInit {
     this.createArticleGroupService.createArticleGroup({ name: 'Ordered products', sCategory: 'Ordered products', sSubCategory: 'Ordered products' })
       .subscribe((res: any) => {
         this.item.iArticleGroupId = res.data._id;
+        this.item.oArticleGroupMetaData.sCategory = res.data.sCategory;
+        this.item.oArticleGroupMetaData.sSubCategory = res.data.sSubCategory;
       },
         err => {
           this.toastrService.show({ type: 'danger', text: err.message });
