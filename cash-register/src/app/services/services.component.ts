@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { faLongArrowAltDown, faLongArrowAltUp, faMinusCircle, faPlus, faPlusCircle, faSearch } from '@fortawesome/free-solid-svg-icons';
-import { ActivityDetailsComponent } from '../shared/components/activity-details/activity-details.component';
+import { ActivityDetailsComponent } from '../shared/components/activity-details-dialog/activity-details.component';
 import { ApiService } from '../shared/service/api.service';
 import { DialogService } from '../shared/service/dialog';
 import { MenuComponent } from '../shared/_layout/components/common';

@@ -32,7 +32,8 @@ import {
 // import { NgbModule } from "@ng-bootstrap/ng-bootstrap";
 import { NgJsonEditorModule } from "ang-jsoneditor";
 import { FileSaverModule } from "ngx-filesaver";
-import { ActivityDetailsComponent } from "./components/activity-details/activity-details.component";
+import { ActivityDetailsComponent } from "./components/activity-details-dialog/activity-details.component";
+import { AddExpensesComponent } from "./components/add-expenses-dialog/add-expenses.component";
 
 @NgModule({
   declarations: [
@@ -51,6 +52,7 @@ import { ActivityDetailsComponent } from "./components/activity-details/activity
     TransactionsSearchComponent,
     TransactionItemsDetailsComponent,
     ActivityDetailsComponent,
+    AddExpensesComponent,
     TabsComponent,
     TabComponent
   ],
@@ -80,6 +82,7 @@ import { ActivityDetailsComponent } from "./components/activity-details/activity
     TransactionsSearchComponent,
     TransactionItemsDetailsComponent,
     ActivityDetailsComponent,
+    AddExpensesComponent,
     TabsComponent,
     TabComponent
   ],

@@ -52,7 +52,7 @@ export class ActivityDetailsComponent implements OnInit {
     private viewContainerRef: ViewContainerRef,
     private apiService: ApiService,
   ) {
-    const _injector = this.viewContainerRef.parentInjector;
+    const _injector = this.viewContainerRef.injector;
     this.dialogRef = _injector.get<DialogComponent>(DialogComponent);
   }
 
