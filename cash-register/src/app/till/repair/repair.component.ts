@@ -87,6 +87,8 @@ export class RepairComponent implements OnInit {
           this.createArticleGroup();
         } else {
           this.item.iArticleGroupId = res.data[0].result[0]._id;
+          this.item.oArticleGroupMetaData.sCategory = res.data[0].result[0].sCategory;
+          this.item.oArticleGroupMetaData.sSubCategory = res.data[0].result[0].sSubCategory;
         }
       }, err => {
         this.toastrService.show({ type: 'danger', text: err.message });
@@ -94,7 +96,7 @@ export class RepairComponent implements OnInit {
   }
 
   createArticleGroup() {
-    this.createArticleGroupService.createArticleGroup({ name: 'Repair' })
+    this.createArticleGroupService.createArticleGroup({ name: 'Repair', sCategory: 'Repair', sSubCategory: 'Repair' })
       .subscribe((res: any) => {
         this.item.iArticleGroupId = res.data._id;
       },

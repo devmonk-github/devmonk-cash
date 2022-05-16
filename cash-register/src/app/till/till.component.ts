@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import {
   faScrewdriverWrench, faTruck, faBoxesStacked, faGifts,
   faUserPlus, faUser, faTimes, faTimesCircle, faTrashAlt, faRing,
-  faCoins, faCalculator, faArrowRightFromBracket, faSpinner, faSearch
+  faCoins, faCalculator, faArrowRightFromBracket, faSpinner, faSearch, faMoneyBill
 } from '@fortawesome/free-solid-svg-icons';
 import * as _ from 'lodash';
 
@@ -16,6 +16,7 @@ import { ToastService } from '../shared/components/toast';
 import { TransactionsSearchComponent } from '../shared/components/transactions-search/transactions-search.component';
 import { PaymentDistributionService } from '../shared/service/payment-distribution.service';
 import { TillService } from '../shared/service/till.service';
+import { AddExpensesComponent } from '../shared/components/add-expenses-dialog/add-expenses.component';
 
 @Component({
   selector: 'app-till',
@@ -24,22 +25,23 @@ import { TillService } from '../shared/service/till.service';
 })
 export class TillComponent implements OnInit {
   // icons
-  faScrewdriverWrench = faScrewdriverWrench
-  faTruck = faTruck
-  faBoxesStacked = faBoxesStacked
-  faGifts = faGifts
-  faUser = faUser
-  faTimes = faTimes
-  faTimesCircle = faTimesCircle
-  faTrashAlt = faTrashAlt
-  faRing = faRing
-  faCoins = faCoins
-  faCalculator = faCalculator
-  faArrowRightFromBracket = faArrowRightFromBracket
+  faScrewdriverWrench = faScrewdriverWrench;
+  faTruck = faTruck;
+  faBoxesStacked = faBoxesStacked;
+  faGifts = faGifts;
+  faUser = faUser;
+  faTimes = faTimes;
+  faTimesCircle = faTimesCircle;
+  faTrashAlt = faTrashAlt;
+  faRing = faRing;
+  faCoins = faCoins;
+  faCalculator = faCalculator;
+  faMoneyBill = faMoneyBill;
+  faArrowRightFromBracket = faArrowRightFromBracket;
   faSpinner = faSpinner;
   faSearch = faSearch;
-  taxes: any[] = []
-  transactionItems: any[] = []
+  taxes: any[] = [];
+  transactionItems: any[] = [];
   selectedTransaction: any = null;
   customer: any = null;
   searchKeyword: any;
@@ -156,7 +158,7 @@ export class TillComponent implements OnInit {
       discount: 0,
       tax: 21,
       paymentAmount: 0,
-      oArticleGroupMetaData: { aProperty: [] },
+      oArticleGroupMetaData: { aProperty: [], sCategory: '', sSubCategory: '' },
       description: '',
       open: true,
     });
@@ -224,7 +226,7 @@ export class TillComponent implements OnInit {
       index: this.transactionItems.length,
       name: this.translateService.instant(type.toUpperCase()),
       type,
-      oArticleGroupMetaData: { aProperty: [] },
+      oArticleGroupMetaData: { aProperty: [], sCategory: '', sSubCategory: '' },
       aImage: [],
       quantity: 1,
       nBrokenProduct: 0,
@@ -482,7 +484,7 @@ export class TillComponent implements OnInit {
       tax: product.nVatRate || 0,
       description: product.sLabelDescription,
       iArticleGroupId: product.iArticleGroupId,
-      oArticleGroupMetaData: { aProperty: product.aProperty || [] },
+      oArticleGroupMetaData: { aProperty: product.aProperty || [], sCategory: '', sSubCategory: '' },
       iBusinessProductId: product._id,
       iSupplierId: product.iBusinessPartnerId,
       aImage: product.aImage,
@@ -597,6 +599,16 @@ export class TillComponent implements OnInit {
         vm.clearAll();
       }, err => {
         this.toastrService.show({ type: 'danger', text: err.message });
+      });
+  }
+
+  openExpenses() {
+    this.dialogService.openModal(AddExpensesComponent, { cssClass: 'modal-m', context: {} })
+      .instance.close.subscribe(result => {
+        console.log('I am closing this modal');
+        console.log(result);
+        // if (result.url)
+        // this.item.aImage.push(result.url);
       });
   }
 }
