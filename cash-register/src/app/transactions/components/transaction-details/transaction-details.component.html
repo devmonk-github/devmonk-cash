@@ -7,45 +7,106 @@
     </div>
     <div class="card-body row">
         <div class="col-md-4">
-            <h2 class="fw-bolder mb-4">
+            <h3 class="fw-bolder mb-4">
                 <span>{{ "CUSTOMER" | translate }}</span>
-            </h2>
+            </h3>
             <div class="row fw-bold gy-1">
-                <div class="col-md-4">
-                    <div class="mt-2 text-muted">{{'FIRST_NAME' | translate}}</div>
-                    <div class="mt-2 text-muted">{{'LAST_NAME' | translate}}</div>
+                <div class="col-md-12">
+                    <div class="text-gray-900 mt-2">{{ transaction.oCustomer.sFirstName }} {{ transaction?.oCustomer?.sPrefix}} {{ transaction.oCustomer.sLastName }} </div>
                 </div>
-                <div class="col-md-8">
-                    <div class="text-gray-800 mt-2">{{ transaction.oCustomer.sFirstName }}</div>
-                    <div class="text-gray-800 mt-2">{{ transaction.oCustomer.sLastName }}</div>
+                <div class="col-md-6">
+                    <div class="mt-2 text-muted">Invoice Address</div>
+                    <div class="text-gray-800 mt-2">
+                        <span> {{ transaction?.oCustomer?.oInvoiceAddress?.sStreet }} {{ transaction?.oCustomer?.oInvoiceAddress?.sHouseNumber }} </span>
+                        <span> {{ transaction?.oCustomer?.oInvoiceAddress?.sPostalCode }} {{ transaction?.oCustomer?.oInvoiceAddress?.sCity }} </span>
+                        <span> {{ transaction?.oCustomer?.oInvoiceAddress?.sCountry }}</span>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mt-2 text-muted">Shipping Address</div>
+                    <div class="text-gray-800 mt-2">
+                        <span> {{ transaction?.oCustomer?.oShippingAddress?.sStreet }} {{ transaction?.oCustomer?.oShippingAddress?.sHouseNumber }} </span>
+                        <span> {{ transaction?.oCustomer?.oShippingAddress?.sPostalCode }} {{ transaction?.oCustomer?.oShippingAddress?.sCity }} </span>
+                        <span> {{ transaction?.oCustomer?.oShippingAddress?.sCountry }}</span>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="text-gray-800 mt-2">{{ transaction?.oCustomer?.sEmail }}</div>
+                    <div class="text-gray-800 mt-2">{{ transaction?.oCustomer?.oPhone?.sMobile }} &nbsp; &nbsp; {{ transaction?.oCustomer?.oPhone?.sLandLine }}</div>
                 </div>
             </div>
         </div>
-        <div class="col-md-8">
-            <h2 class="fw-bolder mb-4">
+        <div class="col-md-8 row">
+            <h3 class="fw-bolder mb-4">
                 <span>{{ "TRANSACTION_OVERVIEW" | translate }}</span>
-            </h2>
-            <div class="row fw-bold gy-1">
-                <div class="col-md-4">
-                    <div class="mt-2 text-muted">{{'RECEIPT_NUMBER' | translate}}</div>
-                    <div class="mt-2 text-muted">{{'DATE_TIME' | translate}}</div>
-                    <div class="mt-2 text-muted">{{'PAY_METHOD' | translate}}</div>
-                    <div class="mt-2 text-muted">{{'CHANGE' | translate}}</div>
-                    <div class="mt-2 text-muted">{{'REFUNDED' | translate}}</div>
-                    <div class="mt-2 text-muted">{{'ASSISTED_BY' | translate}}</div>
-                </div>
+            </h3>
+            <div class="col-md-8 row fw-bold gy-1">
+                <label class="col-md-4 mt-2 text-muted">{{"RECEIPT_NUMBER" | translate}}</label>
                 <div class="col-md-8">
-                    <div class="text-gray-800 mt-2">{{ transaction.sInvoiceNumber }}</div>
-                    <div class="text-gray-800 mt-2">{{ transaction.dCreatedDate | date: 'longDate' }}</div>
+                    <div class="text-gray-800 mt-2">{{ transaction.sInvoiceNumber || '' }}</div>
                 </div>
+                <label class="col-md-4 mt-2 text-muted">{{"DATE_TIME" | translate}}</label>
+                <div class="col-md-8">
+                    <div class="text-gray-800 mt-2">{{ transaction.dCreatedDate | date: 'longDate' || '' }}</div>
+                </div>
+                <label class="col-md-4 mt-2 text-muted">{{"PAY_METHOD" | translate}}</label>
+                <div class="col-md-8">
+                    <div class="text-gray-800 mt-2">{{ transaction.sInvoiceNumber || '' }}</div>
+                </div>
+                <label class="col-md-4 mt-2 text-muted">{{"CHANGE" | translate}}</label>
+                <div class="col-md-8">
+                    <div class="text-gray-800 mt-2">{{ transaction.sInvoiceNumber || '' }}</div>
+                </div>
+                <label class="col-md-4 mt-2 text-muted">{{"REFUNDED" | translate}}</label>
+                <div class="col-md-8">
+                    <div class="text-gray-800 mt-2">{{ transaction.sInvoiceNumber || '' }}</div>
+                </div>
+                <label class="col-md-4 mt-2 text-muted">{{"ASSISTED_BY" | translate}}</label>
+                <div class="col-md-8">
+                    <div class="text-gray-800 mt-2">{{ transaction.sInvoiceNumber || '' }}</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <button class="btn btn-sm btn-secondary w-100 d-flex">
+                    <fa-icon [icon]="faFileInvoice"></fa-icon>
+                    <label class="mx-auto">General Invoice</label> 
+                </button>
+                <button class="btn btn-sm btn-secondary w-100 d-flex">
+                    <fa-icon [icon]="faDownload"></fa-icon>
+                    <label class="mx-auto">Download with VAT</label>
+                </button>
+                <button class="btn btn-sm btn-secondary w-100 d-flex">
+                    <fa-icon [icon]="faDownload"></fa-icon>
+                    <label class="mx-auto">Download without VAT</label>
+                </button>
+                <button class="btn btn-sm btn-secondary w-100 d-flex">
+                    <fa-icon [icon]="faReceipt"></fa-icon>
+                    <label class="mx-auto">Thermal receipt</label>
+                </button>
+                <button class="btn btn-sm btn-secondary w-100 d-flex">
+                    <fa-icon [icon]="faAt"></fa-icon>
+                    <label class="mx-auto">Mail</label>
+                </button>
+                <button class="btn btn-sm btn-secondary w-100 d-flex">
+                    <fa-icon [icon]="faUndoAlt"></fa-icon>
+                    <label class="mx-auto">Refund</label>
+                </button>
+                <button class="btn btn-sm btn-secondary w-100 d-flex">
+                    <fa-icon [icon]="faClipboard"></fa-icon>
+                    <label class="mx-auto">View log</label>
+                </button>
+                <button class="btn btn-sm btn-secondary w-100 d-flex">
+                    <fa-icon [icon]="faTrashAlt"></fa-icon>
+                    <label class="mx-auto">Delete</label>
+                </button>
             </div>
         </div>
     </div>
     <div class="card-body row">
         <div class="col-md-12">
-            <h2 class="fw-bolder mb-4">
+            <h3 class="fw-bolder mb-3">
                 <span>{{ "ITEMS" | translate }}</span>
-            </h2>
+            </h3>
             <div class="row fw-bold gy-1 d-flex flex-wrap py-5">
                 <div class="flex-equal me-5">
                     <table class="table table-hover table-rounded table-striped border gy-7 gs-7">
@@ -62,7 +123,9 @@
                         </thead>
                         <tbody>
                             <tr *ngFor="let item of transaction.aTransactionItems">
-                              <td></td>
+                              <td>
+                                <img src="{{ item.aImage[0] || imagePlaceHolder}}" (error)="item.aImage[0]=imagePlaceHolder" class="product_image">
+                              </td>
                               <td>{{item.sProductName}}</td>
                               <td>{{item.nPurchasePrice}}</td>
                               <td>{{item.nQuantity}}</td>

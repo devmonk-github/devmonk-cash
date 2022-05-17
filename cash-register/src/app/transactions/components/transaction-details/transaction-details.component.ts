@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewContainerRef } from '@angular/core';
-import { faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faTimes, faSync, faFileInvoice, faDownload, faReceipt, faAt, faUndoAlt, faClipboard, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import { ApiService } from 'src/app/shared/service/api.service';
 import { DialogComponent } from 'src/app/shared/service/dialog';
 
@@ -12,9 +12,20 @@ export class TransactionDetailsComponent implements OnInit {
 
   dialogRef: DialogComponent;
   faTimes = faTimes;
+  faSync = faSync;
+  faFileInvoice = faFileInvoice;
+  faDownload = faDownload;
+  faReceipt = faReceipt;
+  faAt = faAt;
+  faUndoAlt = faUndoAlt;
+  faClipboard = faClipboard;
+  faTrashAlt = faTrashAlt;
   transaction: any = { };
   iBusinessId: string = '';
   loading: boolean = true;
+  customerLoading: boolean = true;
+  customer: any = { };
+  imagePlaceHolder: string = '../../../../assets/images/no-photo.svg';
 
   constructor(
     private viewContainerRef: ViewContainerRef,
