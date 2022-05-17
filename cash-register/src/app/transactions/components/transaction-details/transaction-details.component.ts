@@ -48,6 +48,7 @@ export class TransactionDetailsComponent implements OnInit {
     if (!sNumber) return;
     this.loading = true;
     this.apiService.postNew('cashregistry', '/api/v1/transaction/detail/' + sNumber, { iBusinessId: this.iBusinessId }).subscribe((result: any) => {
+      if(!result?.data?.oCustomer) result.data.oCustomer = this.transaction.oCustomer;
       this.transaction = result.data;
       this.loading = false;
     }, (error) => {
