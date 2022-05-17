@@ -1,0 +1,69 @@
+<div class="card shadow-sm">
+    <div class="card-header" style="margin-top: 20px;">
+        <h4>{{ 'CARD_PAYMENTS' | translate}}</h4>
+        <div mat-dialog-actions>
+            <button mat-dialog-close type="button" class="btn btn-sm btn-light" (click)="close(false)">
+                <fa-icon [icon]="faTimes"></fa-icon>
+            </button>
+        </div>
+    </div>
+    <div class="card-body">
+        <app-pn-tabs class="tab-content">
+            <app-pn-tab tabTitle="{{ 'EXTERNAL_GIFTCARDS' | translate}}">
+                <div class="dataTables_wrapper dt-bootstrap4 no-footer">
+                    <div class="row">
+                        <div class="col-6">
+                            Card number:
+                        </div>
+                        <div class="col-4">
+                            <input name="" class="form-control" type="text">
+                        </div>
+                        <div class="col-2">
+                            <button class="btn btn-primary w-100">Fetch</button>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6">
+                            Value to be used
+                        </div>
+                        <div class="col-6">
+                            <input name="" class="form-control" type="text">
+                        </div>
+                    </div>
+                </div>
+            </app-pn-tab>
+            <app-pn-tab tabTitle="{{ 'CUSTOM_GIFTCARDS' | translate}}">
+                <div class="dataTables_wrapper dt-bootstrap4 no-footer">
+                    <div class="row">
+                        <div class="col-6">
+                            Card number:
+                        </div>
+                        <div class="col-4">
+                            <input name="" class="form-control" type="text">
+                        </div>
+                        <div class="col-2">
+                            <button class="btn btn-primary w-100">Fetch</button>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6">
+                            Value to be used
+                        </div>
+                        <div class="col-6">
+                            <input name="" class="form-control" type="text">
+                        </div>
+                    </div>
+                </div>
+            </app-pn-tab>
+            <app-pn-tab tabTitle="{{ 'LOYALTY_POINTS' | translate}}">
+                <div class="dataTables_wrapper dt-bootstrap4 no-footer">
+                    <div class="table-responsive">
+                    </div>
+                </div>
+            </app-pn-tab>
+        </app-pn-tabs>
+    </div>
+    <div class="card-footer">
+        <button class="btn btn-primary" type="submit" [disabled]="allArticleGroups.length === 0">Submit</button>
+    </div>
+</div>

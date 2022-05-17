@@ -192,7 +192,7 @@
 
             <div class="d-flex">
               <input type="text" class="form-control me-3" placeholder="Search..." [(ngModel)]="searchKeyword"
-                (ngModelChange)="search(); searchKeyword? shopProducts = shopProducts: shopProducts = []"
+                (ngModelChange)="searchKeyword? shopProducts = shopProducts: shopProducts = []"
                 (keyup.enter)="search()">
               <button class="btn btn-secondary me-3 d-flex" (click)="openTransactionSearchDialog()">
                 <fa-icon [icon]="faSearch"></fa-icon> {{ "TRANSACTION" |
@@ -383,10 +383,15 @@
 
       <div class="input-group till-padding" *ngFor="let payment of payMethods">
         <input type="number" class="form-control col-5" [(ngModel)]="payment.amount"
-          placeholder="{{'AMOUNT' | translate}}" (keyup)="changeInPayment()">
+          placeholder="{{'AMOUNT' | translate}}" (ngModelChange)="changeInPayment()">
         <button class="btn btn-primary col-7">{{payment.sName | translate}}</button>
       </div>
-
+      <div class="input-group till-padding mt-2">
+        <button class="btn btn-primary w-100" (click)="openMorePaymentMethodModal()">MORE...</button>
+      </div>
+      <div class="input-group till-padding mt-2">
+        <button class="btn btn-primary w-100" (click)="openCardsModal()">REEDIMING GIFTCARD</button>
+      </div>
       <!-- <p>Paymenttherminal connected</p> -->
       <!-- <div class="input-group till-padding">
         <input type="number col-6" class="form-control" [(ngModel)]="card.amount"
