@@ -34,6 +34,8 @@ import { NgJsonEditorModule } from "ang-jsoneditor";
 import { FileSaverModule } from "ngx-filesaver";
 import { ActivityDetailsComponent } from "./components/activity-details-dialog/activity-details.component";
 import { AddExpensesComponent } from "./components/add-expenses-dialog/add-expenses.component";
+import { CardsComponent } from "./components/cards-dialog/cards-dialog.component";
+import { MorePaymentsDialogComponent } from "./components/more-payments-dialog/more-payments-dialog.component";
 
 @NgModule({
   declarations: [
@@ -53,6 +55,8 @@ import { AddExpensesComponent } from "./components/add-expenses-dialog/add-expen
     TransactionItemsDetailsComponent,
     ActivityDetailsComponent,
     AddExpensesComponent,
+    CardsComponent,
+    MorePaymentsDialogComponent,
     TabsComponent,
     TabComponent
   ],
@@ -83,6 +87,8 @@ import { AddExpensesComponent } from "./components/add-expenses-dialog/add-expen
     TransactionItemsDetailsComponent,
     ActivityDetailsComponent,
     AddExpensesComponent,
+    CardsComponent,
+    MorePaymentsDialogComponent,
     TabsComponent,
     TabComponent
   ],

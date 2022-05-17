@@ -52,7 +52,8 @@
                             <td class="">{{transactionItem.nPriceIncVat}}</td>
                             <td class="">{{transactionItem.nQuantity}}</td>
                             <td class="">{{transactionItem.nPaymentAmount}}</td>
-                            <td class="">{{transactionItem.oType.bPrepayment? 'True' : 'False'}}</td>
+                            <td class="">{{transactionItem.nTotalAmount > transactionItem.nPaidAmount ? 'True' :
+                                'False'}}</td>
                             <td class="">{{ transactionItem.dCreatedDate | date: 'short'}}</td>
                             <td>
                                 <div class="row mb-4">

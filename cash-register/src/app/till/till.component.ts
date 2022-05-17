@@ -17,6 +17,8 @@ import { TransactionsSearchComponent } from '../shared/components/transactions-s
 import { PaymentDistributionService } from '../shared/service/payment-distribution.service';
 import { TillService } from '../shared/service/till.service';
 import { AddExpensesComponent } from '../shared/components/add-expenses-dialog/add-expenses.component';
+import { CardsComponent } from '../shared/components/cards-dialog/cards-dialog.component';
+import { MorePaymentsDialogComponent } from '../shared/components/more-payments-dialog/more-payments-dialog.component';
 
 @Component({
   selector: 'app-till',
@@ -52,6 +54,7 @@ export class TillComponent implements OnInit {
   iActivityId!: string;
   isStockSelected = true;
   payMethods: Array<any> = [];
+  allPaymentMethod: Array<any> = [];
   business: any = {}
   locationId: string = ''
   payMethodsLoading: boolean = false;
@@ -124,9 +127,16 @@ export class TillComponent implements OnInit {
 
   getPaymentMethods() {
     this.payMethodsLoading = true;
+    this.payMethods = [];
+    const methodsToDisplay = ['maestro', 'mastercard', 'visa', 'cash', 'bankpayment'];
     this.apiService.getNew('cashregistry', '/api/v1/payment-methods/' + this.requestParams.iBusinessId).subscribe((result: any) => {
       if (result && result.data && result.data.length) {
-        this.payMethods = result.data;
+        this.allPaymentMethod = result.data;
+        result.data.forEach((element: any) => {
+          if (methodsToDisplay.includes(element.sName.toLowerCase())) {
+            this.payMethods.push(_.clone(element));
+          }
+        });
       }
       this.payMethodsLoading = false;
     }, (error) => {
@@ -372,7 +382,6 @@ export class TillComponent implements OnInit {
         sPrefix: this.customer.sPrefix
       }
     }
-
     this.apiService.postNew('cashregistry', '/api/v1/till/transaction', body)
       .subscribe(data => {
         this.toastrService.show({ type: 'success', text: 'Transactie gemaakt!' });
@@ -604,6 +613,22 @@ export class TillComponent implements OnInit {
     this.dialogService.openModal(AddExpensesComponent, { cssClass: 'modal-m', context: {} })
       .instance.close.subscribe(result => {
         console.log(result);
+      });
+  }
+
+  openCardsModal() {
+    this.dialogService.openModal(CardsComponent, { cssClass: 'modal-lg', context: {} })
+      .instance.close.subscribe(result => {
+        console.log(result);
+      });
+  }
+
+  openMorePaymentMethodModal() {
+    this.dialogService.openModal(MorePaymentsDialogComponent, { cssClass: 'modal-lg', context: this.allPaymentMethod })
+      .instance.close.subscribe(result => {
+        if (result) {
+          this.payMethods.push(result);
+        }
       });
   }
 }
