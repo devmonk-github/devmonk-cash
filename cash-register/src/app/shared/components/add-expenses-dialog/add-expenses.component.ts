@@ -32,18 +32,23 @@ export class AddExpensesComponent implements OnInit {
   ledgerDescriptions = ['drinks', 'food', 'cleaning costs', 'office supplies', 'promotional material', 'shipping costs', 'car costs', 'Add money to cash register', 'Lost money/money difference'];
   selectedArticleGroup: any;
   allArticleGroups: any = [];
+  currentEmployeeId: any;
   constructor(
     private viewContainerRef: ViewContainerRef,
     private apiService: ApiService,
     private toastrService: ToastService,
     private createArticleGroupService: CreateArticleGroupService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
   ) {
     const _injector = this.viewContainerRef.injector;;
     this.dialogRef = _injector.get<DialogComponent>(DialogComponent);
   }
 
   ngOnInit() {
+    const value = localStorage.getItem('currentEmployee');
+    if (value) {
+      this.currentEmployeeId = JSON.parse(value)._id;
+    }
     this.getArticleGroup();
     this.expenseForm = this.fb.group({
       amount: new FormControl('', [Validators.required, Validators.min(1)]),
@@ -136,7 +141,7 @@ export class AddExpensesComponent implements OnInit {
       nOriginalTotal: amount,
       nPaymentAmount: amount,
       iDeviceId: localStorage.getItem('currentLocation'),
-      iEmployeeId: localStorage.getItem('currentEmployee'),
+      iEmployeeId: this.currentEmployeeId,
       iLocationId: localStorage.getItem('currentLocation'),
 
       oType: {
