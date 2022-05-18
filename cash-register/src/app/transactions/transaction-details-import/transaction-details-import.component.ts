@@ -20,6 +20,8 @@ export class TransactionDetailsImportComponent implements OnInit, OnChanges {
 
   faTimes = faTimes;
   faSync = faSync;
+  iBusinessId: string = '';
+  iLocationId: string = '';
 
   headerOptions: Array<any> = [];
 
@@ -50,7 +52,8 @@ export class TransactionDetailsImportComponent implements OnInit, OnChanges {
   ) { }
 
   ngOnInit(): void {
-
+    this.iBusinessId = localStorage.getItem("currentBusiness") || '';
+    this.iLocationId = localStorage.getItem('currentLocation') || '';
     // if (this.transactionDetailsForm?.isTransaction) this.getDynamicFields(false); // FOR TESTING AND DYNAMIC DATA(TRANSACTION)
   }
 
@@ -69,7 +72,9 @@ export class TransactionDetailsImportComponent implements OnInit, OnChanges {
     let filter = {
       oFilterBy: {
         "sName": "import transaction details"
-      }
+      },
+      "iBusinessId": this.iBusinessId,
+      "iLocationId": this.iLocationId
     };
 
     this.apiService.postNew('core', '/api/v1/properties/list', filter).subscribe((result: any) => {
