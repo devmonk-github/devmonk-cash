@@ -1,7 +1,9 @@
 /* eslint-disable @angular-eslint/component-selector */
 import { Component, EventEmitter, Input, OnInit, Output, ViewEncapsulation } from '@angular/core';
 import { faTimes, faPlus, faMinus, faCheck, faSpinner, faPrint, faBan, faClone } from "@fortawesome/free-solid-svg-icons";
+import { ToastService } from 'src/app/shared/components/toast';
 import { ApiService } from 'src/app/shared/service/api.service';
+import { CreateArticleGroupService } from 'src/app/shared/service/create-article-groups.service';
 // import { TaxService } from "../../shared/service/tax.service";
 
 @Component({
@@ -24,10 +26,14 @@ export class GiftComponent implements OnInit {
   faBan = faBan;
   faClone = faClone;
   checkingNumber: boolean = false
-  constructor(private apiService: ApiService) { }
+  constructor(
+    private apiService: ApiService,
+    private toastrService: ToastService,
+    private createArticleGroupService: CreateArticleGroupService) { }
 
   ngOnInit(): void {
     this.checkNumber();
+    this.checkArticleGroups();
   }
 
   deleteItem(): void {
@@ -56,6 +62,33 @@ export class GiftComponent implements OnInit {
       }, err => {
         this.checkingNumber = false;
       });
+  }
+
+  checkArticleGroups() {
+    this.createArticleGroupService.checkArticleGroups('Giftcard')
+      .subscribe((res: any) => {
+        if (1 > res.data.length) {
+          this.createArticleGroup();
+        } else {
+          this.item.iArticleGroupId = res.data[0].result[0]._id;
+          this.item.oArticleGroupMetaData.sCategory = res.data[0].result[0].sCategory;
+          this.item.oArticleGroupMetaData.sSubCategory = res.data[0].result[0].sSubCategory;
+        }
+      }, err => {
+        this.toastrService.show({ type: 'danger', text: err.message });
+      });
+  }
+
+  createArticleGroup() {
+    this.createArticleGroupService.createArticleGroup({ name: 'Giftcard', sCategory: 'Giftcard', sSubCategory: 'Repair' })
+      .subscribe((res: any) => {
+        this.item.iArticleGroupId = res.data._id;
+        this.item.oArticleGroupMetaData.sCategory = res.data.sCategory;
+        this.item.oArticleGroupMetaData.sSubCategory = res.data.sSubCategory;
+      },
+        err => {
+          this.toastrService.show({ type: 'danger', text: err.message });
+        });
   }
 
   create(): void {

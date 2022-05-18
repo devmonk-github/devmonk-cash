@@ -20,11 +20,7 @@ export class AddExpensesComponent implements OnInit {
   @Output() customerCountryChanged = new EventEmitter<string>();
 
   dialogRef: DialogComponent;
-
-  private countryListByLang: any;
-  value: any = 'Netherlands';
   faTimes = faTimes;
-  filteredOptions$: Array<any> = [];
   expenseForm: any;
   focusValue = false;
   name: any;
@@ -59,16 +55,6 @@ export class AddExpensesComponent implements OnInit {
 
   get f() { return this.expenseForm.controls };
 
-  private filter(value: string): { key: '', value: '' }[] {
-    const filterValue = value.toLowerCase();
-    const filteredList = this.countryListByLang.filter((optionValue: any) => optionValue.value.toLowerCase().includes(filterValue));
-    return filteredList;
-  }
-
-  onModelChange(value: string) {
-    this.filteredOptions$ = this.filter(value);
-  }
-
   assignArticleGroup() {
     this.selectedArticleGroup = null;
     const expenseType = this.expenseForm.value.expenseType;
@@ -101,16 +87,6 @@ export class AddExpensesComponent implements OnInit {
         (err: any) => {
           this.toastrService.show({ type: 'danger', text: err.message });
         });
-  }
-
-  changeSelected(event: any) {
-    if (event) {
-      this.country = event.key;
-      this.value = event.value;
-      this.customerCountryChanged.emit(event);
-      this.countryChanged.emit(this.country);
-      this.filteredOptions$ = this.filter('');
-    }
   }
 
   close(data: any) {

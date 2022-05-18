@@ -55,6 +55,7 @@ export class TillComponent implements OnInit {
   isStockSelected = true;
   payMethods: Array<any> = [];
   allPaymentMethod: Array<any> = [];
+  appliedGiftCards: Array<any> = [];
   business: any = {}
   locationId: string = ''
   payMethodsLoading: boolean = false;
@@ -337,7 +338,8 @@ export class TillComponent implements OnInit {
     this.dialogService.openModal(CustomerDialogComponent, { cssClass: 'modal-xl', context: { customer: this.customer } })
       .instance.close.subscribe((data) => {
         if (data.customer) {
-          this.customer = data.customer
+          this.customer = data.customer;
+          console.log(this.customer);
         }
       })
   }
@@ -347,7 +349,7 @@ export class TillComponent implements OnInit {
       return 0
     }
     if (total) {
-      return _.sumBy(this.payMethods, 'amount') || 0;
+      return (_.sumBy(this.appliedGiftCards, 'nAmount') || 0) + (_.sumBy(this.payMethods, 'amount') || 0);
     }
     return this.payMethods.filter(p => p.amount && p.amount !== 0) || 0
   }
@@ -371,8 +373,14 @@ export class TillComponent implements OnInit {
     if (this.transactionItems.length < 1) {
       return;
     }
+    const giftCardPayment = this.allPaymentMethod.find((o) => o.sName === 'Giftcards');
     this.saveInProgress = true;
     const body = this.tillService.createTransactionBody(this.transactionItems, this.payMethods);
+    if (giftCardPayment) {
+      giftCardPayment.amount = _.sumBy(this.appliedGiftCards, 'nAmount');
+      body.payments.push(giftCardPayment);
+      body.giftCards = this.appliedGiftCards;
+    }
     body.oTransaction.iActivityId = this.iActivityId;
     if (this.customer && this.customer._id) {
       body.oTransaction.oCustomer = {
@@ -382,6 +390,7 @@ export class TillComponent implements OnInit {
         sPrefix: this.customer.sPrefix
       }
     }
+    console.log(body);
     this.apiService.postNew('cashregistry', '/api/v1/till/transaction', body)
       .subscribe(data => {
         this.toastrService.show({ type: 'success', text: 'Transactie gemaakt!' });
@@ -617,11 +626,13 @@ export class TillComponent implements OnInit {
   }
 
   openCardsModal() {
-    this.dialogService.openModal(CardsComponent, { cssClass: 'modal-lg', context: {} })
+    this.dialogService.openModal(CardsComponent, { cssClass: 'modal-lg', context: { customer: this.customer } })
       .instance.close.subscribe(result => {
-        console.log(result);
+        this.appliedGiftCards.push(result);
+        this.changeInPayment();
       });
   }
+
 
   openMorePaymentMethodModal() {
     this.dialogService.openModal(MorePaymentsDialogComponent, { cssClass: 'modal-lg', context: this.allPaymentMethod })
@@ -630,5 +641,10 @@ export class TillComponent implements OnInit {
           this.payMethods.push(result);
         }
       });
+  }
+
+  removeGift(index: any) {
+    console.log(index);
+    this.appliedGiftCards.splice(index, 1);
   }
 }

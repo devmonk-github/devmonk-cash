@@ -387,10 +387,32 @@
         <button class="btn btn-primary col-7">{{payment.sName | translate}}</button>
       </div>
       <div class="input-group till-padding mt-2">
-        <button class="btn btn-primary w-100" (click)="openMorePaymentMethodModal()">MORE...</button>
+        <button class="btn btn-primary w-100" (click)="openMorePaymentMethodModal()">{{"MORE" | translate}}...</button>
       </div>
       <div class="input-group till-padding mt-2">
-        <button class="btn btn-primary w-100" (click)="openCardsModal()">REEDIMING GIFTCARD</button>
+        <button class="btn btn-primary w-100" (click)="openCardsModal()">{{"REDEEM_GIFTCARD" | translate}}</button>
+      </div>
+      <div class="mt-2" *ngIf="appliedGiftCards.length">
+        <div class="chip d-flex" *ngFor="let giftcard of appliedGiftCards; index as i">
+          {{giftcard.sGiftCardNumber}}, {{giftcard.nAmount | currency: '€'}}
+          <div (click)="removeGift(i)">
+            &nbsp;<i class="close fas fa-times cursor-pointer"></i>
+          </div>
+        </div>
+        <!-- <table class="table">
+          <thead>
+            <tr>
+              <th>Card</th>
+              <th>Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let giftcard of appliedGiftCards">
+              <td>{{giftcard.sGiftCardNumber}}</td>
+              <td>{{giftcard.nAmount | currency: '€'}}</td>
+            </tr>
+          </tbody>
+        </table> -->
       </div>
       <!-- <p>Paymenttherminal connected</p> -->
       <!-- <div class="input-group till-padding">

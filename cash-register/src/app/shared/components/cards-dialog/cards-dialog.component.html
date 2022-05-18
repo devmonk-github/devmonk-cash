@@ -36,34 +36,70 @@
                 <div class="dataTables_wrapper dt-bootstrap4 no-footer">
                     <div class="row">
                         <div class="col-6">
-                            Card number:
+                            {{"CARDNUMBER"| translate}}:
                         </div>
                         <div class="col-4">
-                            <input name="" class="form-control" type="text">
+                            <input name="sGiftCardNumber" class="form-control" type="text" [(ngModel)]="sGiftCardNumber"
+                                #searchgift>
+                            <label for="sGiftCardNumber">{{"USE_YOUR_BARCODE_SCANNER_TO_SCAN_THIS" | translate}}</label>
                         </div>
                         <div class="col-2">
-                            <button class="btn btn-primary w-100">Fetch</button>
+                            <button class="btn btn-primary w-100" (click)="fetchGiftCard(sGiftCardNumber)"
+                                [disabled]="fetchInProgress">
+                                <span class="d-flex" *ngIf="fetchInProgress">
+                                    <fa-icon [icon]="faSpinner" class="fa-spin"></fa-icon>
+                                </span>
+                                <span *ngIf="!fetchInProgress">
+                                    {{ "FETCH" | translate}}
+                                </span></button>
                         </div>
+                        <span *ngIf="giftCardDetails">Available balance: {{giftCardDetails?.nPaidAmount}}</span>
                     </div>
                     <div class="row">
                         <div class="col-6">
-                            Value to be used
+                            {{"AMOUNT_TO_USE" | translate}}
                         </div>
                         <div class="col-6">
-                            <input name="" class="form-control" type="text">
+                            <input name="" class="form-control" type="number"
+                                [disabled]="!giftCardDetails || 1 > giftCardDetails?.nPaidAmount" [(ngModel)]="nAmount">
+                            <span *ngIf="nAmount > giftCardDetails?.nPaidAmount"
+                                class="text-danger">{{"AMOUNT_ENTERED_IS_HIGHER_THAN_AVAILABLE_BALANCE" |
+                                translate}}.</span>
                         </div>
+                        <!-- <div class="col-2">
+                            <button class="btn btn-primary w-100" (click)="useThisCard(giftCardDetails)"
+                                [disabled]="!giftCardDetails || 1 > giftCardDetails?.nPaidAmount">
+                                {{ "USE" | translate}}</button>
+                        </div> -->
                     </div>
                 </div>
             </app-pn-tab>
             <app-pn-tab tabTitle="{{ 'LOYALTY_POINTS' | translate}}">
                 <div class="dataTables_wrapper dt-bootstrap4 no-footer">
-                    <div class="table-responsive">
+                    <div class="row" *ngIf="!customer">
+                        {{"COUNTER_CUSTOMER_SELECTED" | translate}}
+                    </div>
+                    <div class="row" *ngIf="customer">
+                        <div class="col-3">
+                            <span>{{"POINTS_SPENDABLE"| translate}}: {{customer.oPoints.spendable}}</span>
+                        </div>
+                        <div class="col-5">
+                            <input name="" class="form-control" type="number" [(ngModel)]="nAmount">
+                        </div>
+                        <div class="col-2">
+                            <button class="btn btn-primary" type="submit">{{"REDEEM" | translate}}</button>
+                        </div>
+                        <div class="col-2">
+                            <button class="btn btn-primary" type="submit">{{"ALL_POINTS" | translate}}</button>
+                        </div>
                     </div>
                 </div>
             </app-pn-tab>
         </app-pn-tabs>
     </div>
     <div class="card-footer">
-        <button class="btn btn-primary" type="submit" [disabled]="allArticleGroups.length === 0">Submit</button>
+        <button class="btn btn-warning" type="button">{{"CANCEL" | translate }}</button>
+        <button class="btn btn-primary" type="submit" [disabled]="!giftCardDetails || 1 > giftCardDetails?.nPaidAmount"
+            (click)="submit()">{{"USE" | translate}}</button>
     </div>
 </div>
