@@ -110,6 +110,23 @@ export class TransactionsComponent implements OnInit {
     // });
   }
 
+  toolTipData(item: any){
+    var itemList = [] 
+    var returnArr = [];
+    if(item.oCustomer && (item.oCustomer.sFirstName || item.oCustomer.sLastName)) {
+      returnArr.push(item.oCustomer.sFirstName + ' ' + item.oCustomer.sLastName)
+    }
+
+    if(item.aTransactionItems && item.aTransactionItems.length > 0) {
+      for (var i = 0; i < item.aTransactionItems.length; i++) {
+        itemList.push(item.aTransactionItems[i].sProductName)
+        returnArr.push('- '+item.aTransactionItems[i].sProductName +' | €'+ (item.aTransactionItems[i].nPriceIncVat || 0))
+      }
+    }
+    // return returnArr;
+    return returnArr.join("<br>")
+  }
+
   goToCashRegister(){
     this.router.navigate(['/business/till']);
   }
