@@ -33,8 +33,8 @@ export class TransactionsComponent implements OnInit {
   userType: any = {};
   requestParams: any = {
     searchValue: '',
-    sortBy: { key: 'Date', selected: true, sort: 'asc' },
-    sortOrder: 'asc'
+    sortBy: { key: 'Date', selected: true, sort: 'desc' },
+    sortOrder: 'desc'
   };
   showLoader: Boolean = false;
   widgetLog: string[] = [];
@@ -77,7 +77,7 @@ export class TransactionsComponent implements OnInit {
   selectedLocations: Array<any> = [];
 
   tableHeaders: Array<any> = [
-    { key: 'Date', selected: true, sort: 'asc'},
+    { key: 'Date', selected: true, sort: 'desc'},
     { key: 'Transaction no.', selected: false, sort: ''},
     { key: 'Receipt number', selected: false, sort: ''},
     { key: 'Customer', selected: false, sort: ''},
@@ -131,8 +131,9 @@ export class TransactionsComponent implements OnInit {
     this.showLoader = true;
     this.requestParams.eTransactionType = 'cash-register-revenue';
     this.apiService.postNew('cashregistry', '/api/v1/transaction/cashRegister', this.requestParams).subscribe((result: any) => {
-      if (result && result.data && result.data.length && result.data[0] && result.data[0].result && result.data[0].result.length) {
-        this.transactions = result.data[0].result;
+      if (result && result.data && result.data && result.data.result && result.data.result.length) {
+        this.transactions = result.data.result;
+        this.paginationConfig.totalItems = result.data.totalCount;
         setTimeout(()=>{
           MenuComponent.bootstrap();
         }, 1000);
