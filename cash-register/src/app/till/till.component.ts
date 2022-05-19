@@ -19,6 +19,7 @@ import { TillService } from '../shared/service/till.service';
 import { AddExpensesComponent } from '../shared/components/add-expenses-dialog/add-expenses.component';
 import { CardsComponent } from '../shared/components/cards-dialog/cards-dialog.component';
 import { MorePaymentsDialogComponent } from '../shared/components/more-payments-dialog/more-payments-dialog.component';
+import {BarcodeService} from "../shared/service/barcode.service";
 
 @Component({
   selector: 'app-till',
@@ -101,6 +102,7 @@ export class TillComponent implements OnInit {
     private apiService: ApiService,
     private toastrService: ToastService,
     private tillService: TillService,
+    private barcodeService: BarcodeService
   ) {
   }
 
@@ -111,6 +113,9 @@ export class TillComponent implements OnInit {
     this.taxes = this.taxService.getTaxRates()
     this.getPaymentMethods();
     this.getParkedTransactions();
+    this.barcodeService.barcodeScanned.subscribe( (barcode: string) => {
+      this.toastrService.show({ type: 'success', text: 'Barcode detected: ' + barcode })
+    })
   }
 
   getValueFromLocalStorage(key: string): any {
