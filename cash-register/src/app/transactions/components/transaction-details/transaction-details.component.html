@@ -36,7 +36,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-8 row">
+        <div class="col-md-8 row" *ngIf="eType != 'WEBORDERS'">
             <h3 class="fw-bolder mb-4">
                 <span>{{ "TRANSACTION_OVERVIEW" | translate }}</span>
             </h3>

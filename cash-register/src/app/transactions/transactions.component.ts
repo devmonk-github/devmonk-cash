@@ -1,11 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, NavigationEnd, ActivatedRoute } from '@angular/router';
 import { faLongArrowAltDown, faLongArrowAltUp, faMinusCircle, faPlus, faPlusCircle, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { ApiService } from '../shared/service/api.service';
 import { DialogService } from '../shared/service/dialog';
 import { MenuComponent } from '../shared/_layout/components/common';
 // import {FreshChatService} from "../../shared/service/fresh-chat.service";
 // import {Employee} from "../../shared/models/employee.model";
+import { filter, map } from "rxjs/operators";
 
 import { TransactionDetailsComponent } from './components/transaction-details/transaction-details.component';
 
@@ -75,6 +76,7 @@ export class TransactionsComponent implements OnInit {
   selectedTransactionStatuses: Array<any> = [];
   locations: Array<any> = [];
   selectedLocations: Array<any> = [];
+  title: String = 'WEBORDERS'; // Need to change it. WIP.
 
   tableHeaders: Array<any> = [
     { key: 'Date', selected: true, sort: 'desc'},
@@ -95,6 +97,31 @@ export class TransactionsComponent implements OnInit {
     ) { }
 
   ngOnInit(): void {
+    this.router.events
+    .pipe(
+      filter((event) => event instanceof NavigationEnd),
+      map(() => {
+        let route: ActivatedRoute = this.router.routerState.root;
+        let routeTitle = '';
+        while (route!.firstChild) {
+          route = route.firstChild;
+        }
+        if (route.snapshot.data.title) {
+          routeTitle = route!.snapshot.data.title;
+        }
+        return routeTitle;
+      })
+    )
+    .subscribe((title: string) => {
+      if (title) {
+        this.title = title;
+        // title = this.translateService.instant(title);
+        // this.titleService.setTitle(`PrismaNote |  ${title}`);
+      } else {
+        // this.titleService.setTitle(`PrismaNote`);
+      }
+    });
+
     this.businessDetails._id = localStorage.getItem("currentBusiness");
     this.userType = localStorage.getItem("type");
     this.loadTransaction();
@@ -146,7 +173,11 @@ export class TransactionsComponent implements OnInit {
     this.requestParams.workstations = this.selectedWorkstations;
     this.requestParams.locations = this.selectedLocations;
     this.showLoader = true;
-    this.requestParams.eTransactionType = 'cash-register-revenue';
+    if(this.title == "WEBORDERS"){
+      this.requestParams.eTransactionType = 'webshop-revenue';
+    } else {
+      this.requestParams.eTransactionType = 'cash-register-revenue';
+    }
     this.apiService.postNew('cashregistry', '/api/v1/transaction/cashRegister', this.requestParams).subscribe((result: any) => {
       if (result && result.data && result.data && result.data.result && result.data.result.length) {
         this.transactions = result.data.result;
@@ -252,7 +283,7 @@ export class TransactionsComponent implements OnInit {
 
   // Function for show transaction details
   showTransaction(transaction: any){
-    this.dialogService.openModal(TransactionDetailsComponent, { cssClass:"modal-xl", context: { transaction : transaction }}).instance.close.subscribe(
+    this.dialogService.openModal(TransactionDetailsComponent, { cssClass:"modal-xl", context: { transaction : transaction, eType: this.title }}).instance.close.subscribe(
       partner =>{ });
   }
 }
