@@ -36,7 +36,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-8 row" *ngIf="eType != 'WEBORDERS'">
+        <div class="col-md-8 row" *ngIf="eType == 'cash-register-revenue'">
             <h3 class="fw-bolder mb-4">
                 <span>{{ "TRANSACTION_OVERVIEW" | translate }}</span>
             </h3>
@@ -101,6 +101,42 @@
                 <button class="btn btn-sm btn-secondary w-100 d-flex">
                     <fa-icon [icon]="faTrashAlt"></fa-icon>
                     <label class="mx-auto">Delete</label>
+                </button>
+            </div>
+        </div>
+        <div class="col-md-8 row" *ngIf="eType == 'webshop-revenue'">
+            <h3 class="fw-bolder mb-4">
+                <span>{{ "OVERVIEW" | translate }}</span>
+            </h3>
+            <div class="col-md-8 row fw-bold gy-1">
+                <div class="col-md-12 mt-20">
+                    <ng-select placeholder="Order status">
+                        <ng-option>Status one</ng-option>
+                        <ng-option>Status two</ng-option>
+                        <ng-option>Status three</ng-option>
+                        <ng-option>Status four</ng-option>
+                    </ng-select>
+                </div>
+                <label class="col-md-4 mt-5 text-muted">{{"SHIPPING_METHOD" | translate}} : </label>
+                <div class="col-md-8 mt-5">
+                    <div class="text-gray-800">Completed</div>
+                </div>
+                <button class="btn btn-sm btn-primary w-100 d-flex mt-5">
+                    <label class="mx-auto">Track and trace the order</label>
+                </button>
+            </div>
+            <div class="col-md-4">
+                <button class="btn btn-sm btn-secondary w-100 d-flex">
+                    <fa-icon [icon]="faDownload"></fa-icon>
+                    <label class="mx-auto">Receipt</label>
+                </button>
+                <button class="btn btn-sm btn-secondary w-100 d-flex">
+                    <fa-icon [icon]="faReceipt"></fa-icon>
+                    <label class="mx-auto">Print thermal</label>
+                </button>
+                <button class="btn btn-sm btn-secondary w-100 d-flex">
+                    <!-- <fa-icon [icon]="faAt"></fa-icon> -->
+                    <label class="mx-auto">Exchange</label>
                 </button>
             </div>
         </div>

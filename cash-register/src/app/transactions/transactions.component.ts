@@ -4,9 +4,6 @@ import { faLongArrowAltDown, faLongArrowAltUp, faMinusCircle, faPlus, faPlusCirc
 import { ApiService } from '../shared/service/api.service';
 import { DialogService } from '../shared/service/dialog';
 import { MenuComponent } from '../shared/_layout/components/common';
-// import {FreshChatService} from "../../shared/service/fresh-chat.service";
-// import {Employee} from "../../shared/models/employee.model";
-import { filter, map } from "rxjs/operators";
 
 import { TransactionDetailsComponent } from './components/transaction-details/transaction-details.component';
 
@@ -76,7 +73,7 @@ export class TransactionsComponent implements OnInit {
   selectedTransactionStatuses: Array<any> = [];
   locations: Array<any> = [];
   selectedLocations: Array<any> = [];
-  title: String = 'WEBORDERS'; // Need to change it. WIP.
+  eType: string = '';
 
   tableHeaders: Array<any> = [
     { key: 'Date', selected: true, sort: 'desc'},
@@ -92,35 +89,12 @@ export class TransactionsComponent implements OnInit {
   constructor(
     private apiService: ApiService,
     private dialogService: DialogService,
-    private router: Router
-    // private chatService: FreshChatService
+    private routes: Router
     ) { }
 
-  ngOnInit(): void {
-    this.router.events
-    .pipe(
-      filter((event) => event instanceof NavigationEnd),
-      map(() => {
-        let route: ActivatedRoute = this.router.routerState.root;
-        let routeTitle = '';
-        while (route!.firstChild) {
-          route = route.firstChild;
-        }
-        if (route.snapshot.data.title) {
-          routeTitle = route!.snapshot.data.title;
-        }
-        return routeTitle;
-      })
-    )
-    .subscribe((title: string) => {
-      if (title) {
-        this.title = title;
-        // title = this.translateService.instant(title);
-        // this.titleService.setTitle(`PrismaNote |  ${title}`);
-      } else {
-        // this.titleService.setTitle(`PrismaNote`);
-      }
-    });
+  async ngOnInit() {
+    if (this.routes.url.includes('/business/web-orders')) this.eType = 'webshop-revenue';
+    else this.eType = 'cash-register-revenue';
 
     this.businessDetails._id = localStorage.getItem("currentBusiness");
     this.userType = localStorage.getItem("type");
@@ -129,12 +103,6 @@ export class TransactionsComponent implements OnInit {
     this.listEmployee();
     this.getWorkstations();
     this.getLocations();
-    // this.chatService.widgetClosed.subscribe( () => {
-    //   this.widgetLog.push('closed');
-    // });
-    // this.chatService.widgetOpened.subscribe( () => {
-    //   this.widgetLog.push('openend');
-    // });
   }
 
   toolTipData(item: any){
@@ -155,7 +123,7 @@ export class TransactionsComponent implements OnInit {
   }
 
   goToCashRegister(){
-    this.router.navigate(['/business/till']);
+    this.routes.navigate(['/business/till']);
   }
 
   loadTransaction(){
@@ -173,11 +141,7 @@ export class TransactionsComponent implements OnInit {
     this.requestParams.workstations = this.selectedWorkstations;
     this.requestParams.locations = this.selectedLocations;
     this.showLoader = true;
-    if(this.title == "WEBORDERS"){
-      this.requestParams.eTransactionType = 'webshop-revenue';
-    } else {
-      this.requestParams.eTransactionType = 'cash-register-revenue';
-    }
+    this.requestParams.eTransactionType = this.eType;
     this.apiService.postNew('cashregistry', '/api/v1/transaction/cashRegister', this.requestParams).subscribe((result: any) => {
       if (result && result.data && result.data && result.data.result && result.data.result.length) {
         this.transactions = result.data.result;
@@ -283,7 +247,7 @@ export class TransactionsComponent implements OnInit {
 
   // Function for show transaction details
   showTransaction(transaction: any){
-    this.dialogService.openModal(TransactionDetailsComponent, { cssClass:"modal-xl", context: { transaction : transaction, eType: this.title }}).instance.close.subscribe(
+    this.dialogService.openModal(TransactionDetailsComponent, { cssClass:"modal-xl", context: { transaction : transaction, eType: this.eType }}).instance.close.subscribe(
       partner =>{ });
   }
 }
