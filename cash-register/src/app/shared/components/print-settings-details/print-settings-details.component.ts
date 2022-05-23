@@ -25,6 +25,10 @@ export class PrintSettingsDetailsComponent implements OnInit {
   business: any = {};
   location: any = {};
   workstation: any = {};
+  computers: Array<any> = [];
+  printers: Array<any> = [];
+  printerId: number | undefined;
+  computerId: number | undefined;
 
   constructor(
     private viewContainerRef: ViewContainerRef,
@@ -39,6 +43,7 @@ export class PrintSettingsDetailsComponent implements OnInit {
 
   ngOnInit(): void {
     this.initialSetup();
+    this.getComputers();
   }
 
   createPrintSetting(){
@@ -48,12 +53,38 @@ export class PrintSettingsDetailsComponent implements OnInit {
       iWorkstationId: this.workstation._id,
       sMethod: this.method,
       sType: this.type,
-      sUser: this.user
+      sUser: this.user,
+      nComputerId: this.computerId,
+      nPrinterId: this.printerId
     }
 
     this.apiService.postNew('cashregistry', '/api/v1/print-settings/create', data).subscribe(
       (result : any) => {
         this.close({ action: true });
+       },
+      (error: any) => {
+        console.error(error)
+      }
+    );
+  }
+
+  getComputers(){
+    this.apiService.getNew('cashregistry', '/api/v1/printnode/computers?iBusinessId=' + this.business._id).subscribe(
+      (result : any) => {
+        this.computers = result || [];
+       },
+      (error: any) => {
+        console.error(error)
+      }
+    );
+  }
+
+
+  getPrinters(){
+    if(!this.computerId) return;
+    this.apiService.getNew('cashregistry', '/api/v1/printnode/printers?iBusinessId=' + this.business._id+ '&deviceId=' + this.computerId).subscribe(
+      (result : any) => {
+        this.printers = result;
        },
       (error: any) => {
         console.error(error)

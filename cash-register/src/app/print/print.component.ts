@@ -1,6 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {PdfService} from "../shared/service/pdf.service";
 import {JsonEditorOptions} from "ang-jsoneditor";
+import { ApiService } from '../shared/service/api.service';
 
 @Component({
   selector: 'app-print',
@@ -12,16 +13,27 @@ export class PrintComponent implements OnInit {
   templateString: any
   editorOptions: JsonEditorOptions = new JsonEditorOptions()
   pdfGenerating: boolean = false
-  computerId: string = '395432'
-  printerId: string = '70801333'
-  transactionId: string = '5c2f276e86a7527e67a45e9d'
 
-  constructor(private pdfService: PdfService) {
+  computerId: number | undefined;
+  printerId: number | undefined;
+  transactionId: string = '5c2f276e86a7527e67a45e9d'
+  business: any = {};
+  location: any = {};
+  workstation: any = {};
+
+  constructor(
+    private pdfService: PdfService,
+    private apiService: ApiService) {
     this.editorOptions.mode = 'view'
   }
 
 
   ngOnInit() {
+    this.business._id = '6182a52f1949ab0a59ff4e7b'
+    this.location._id = localStorage.getItem('currentLocation')
+    this.workstation._id = '623b6d840ed1002890334456'
+    this.getPrintSetting();
+
     const templateString = {
       "barcodeheight":"10",
       "barcodetext":false,
@@ -747,6 +759,18 @@ export class PrintComponent implements OnInit {
 
     this.templateString = templateString
     this.dataString = dataString
+  }
+
+  getPrintSetting(){
+    this.apiService.getNew('cashregistry', '/api/v1/print-settings/' + '6182a52f1949ab0a59ff4e7b' + '/' + '624c98415e537564184e5614').subscribe(
+      (result : any) => {
+        this.computerId = result?.data?.nComputerId;
+        this.printerId = result?.data?.nPrinterId;
+       },
+      (error: any) => {
+        console.error(error)
+      }
+    );
   }
 
 

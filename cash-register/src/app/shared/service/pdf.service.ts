@@ -1195,7 +1195,7 @@ export class PdfService {
                   html: encodedString,
                   printOptions: printData,
                   print: print,
-                  businessId: businessId,
+                  businessId: '6182a52f1949ab0a59ff4e7b',
                   transactionId: transactionId,
                   format: this.parsedPaperSize.type,
                 },

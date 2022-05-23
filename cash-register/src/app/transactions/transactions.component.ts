@@ -1,11 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, NavigationEnd, ActivatedRoute } from '@angular/router';
 import { faLongArrowAltDown, faLongArrowAltUp, faMinusCircle, faPlus, faPlusCircle, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { ApiService } from '../shared/service/api.service';
 import { DialogService } from '../shared/service/dialog';
 import { MenuComponent } from '../shared/_layout/components/common';
-// import {FreshChatService} from "../../shared/service/fresh-chat.service";
-// import {Employee} from "../../shared/models/employee.model";
 
 import { TransactionDetailsComponent } from './components/transaction-details/transaction-details.component';
 
@@ -33,8 +31,8 @@ export class TransactionsComponent implements OnInit {
   userType: any = {};
   requestParams: any = {
     searchValue: '',
-    sortBy: { key: 'Date', selected: true, sort: 'asc' },
-    sortOrder: 'asc'
+    sortBy: { key: 'Date', selected: true, sort: 'desc' },
+    sortOrder: 'desc'
   };
   showLoader: Boolean = false;
   widgetLog: string[] = [];
@@ -75,9 +73,10 @@ export class TransactionsComponent implements OnInit {
   selectedTransactionStatuses: Array<any> = [];
   locations: Array<any> = [];
   selectedLocations: Array<any> = [];
+  eType: string = '';
 
   tableHeaders: Array<any> = [
-    { key: 'Date', selected: true, sort: 'asc'},
+    { key: 'Date', selected: true, sort: 'desc'},
     { key: 'Transaction no.', selected: false, sort: ''},
     { key: 'Receipt number', selected: false, sort: ''},
     { key: 'Customer', selected: false, sort: ''},
@@ -90,11 +89,13 @@ export class TransactionsComponent implements OnInit {
   constructor(
     private apiService: ApiService,
     private dialogService: DialogService,
-    private router: Router
-    // private chatService: FreshChatService
+    private routes: Router
     ) { }
 
-  ngOnInit(): void {
+  async ngOnInit() {
+    if (this.routes.url.includes('/business/web-orders')) this.eType = 'webshop-revenue';
+    else this.eType = 'cash-register-revenue';
+
     this.businessDetails._id = localStorage.getItem("currentBusiness");
     this.userType = localStorage.getItem("type");
     this.loadTransaction();
@@ -102,16 +103,27 @@ export class TransactionsComponent implements OnInit {
     this.listEmployee();
     this.getWorkstations();
     this.getLocations();
-    // this.chatService.widgetClosed.subscribe( () => {
-    //   this.widgetLog.push('closed');
-    // });
-    // this.chatService.widgetOpened.subscribe( () => {
-    //   this.widgetLog.push('openend');
-    // });
+  }
+
+  toolTipData(item: any){
+    var itemList = [] 
+    var returnArr = [];
+    if(item.oCustomer && (item.oCustomer.sFirstName || item.oCustomer.sLastName)) {
+      returnArr.push(item.oCustomer.sFirstName + ' ' + item.oCustomer.sLastName)
+    }
+
+    if(item.aTransactionItems && item.aTransactionItems.length > 0) {
+      for (var i = 0; i < item.aTransactionItems.length; i++) {
+        itemList.push(item.aTransactionItems[i].sProductName)
+        returnArr.push('- '+item.aTransactionItems[i].sProductName +' | €'+ (item.aTransactionItems[i].nPriceIncVat || 0))
+      }
+    }
+    // return returnArr;
+    return returnArr.join("<br>")
   }
 
   goToCashRegister(){
-    this.router.navigate(['/business/till']);
+    this.routes.navigate(['/business/till']);
   }
 
   loadTransaction(){
@@ -129,10 +141,11 @@ export class TransactionsComponent implements OnInit {
     this.requestParams.workstations = this.selectedWorkstations;
     this.requestParams.locations = this.selectedLocations;
     this.showLoader = true;
-    this.requestParams.eTransactionType = 'cash-register-revenue';
+    this.requestParams.eTransactionType = this.eType;
     this.apiService.postNew('cashregistry', '/api/v1/transaction/cashRegister', this.requestParams).subscribe((result: any) => {
-      if (result && result.data && result.data.length && result.data[0] && result.data[0].result && result.data[0].result.length) {
-        this.transactions = result.data[0].result;
+      if (result && result.data && result.data && result.data.result && result.data.result.length) {
+        this.transactions = result.data.result;
+        this.paginationConfig.totalItems = result.data.totalCount;
         setTimeout(()=>{
           MenuComponent.bootstrap();
         }, 1000);
@@ -234,7 +247,7 @@ export class TransactionsComponent implements OnInit {
 
   // Function for show transaction details
   showTransaction(transaction: any){
-    this.dialogService.openModal(TransactionDetailsComponent, { cssClass:"modal-xl", context: { transaction : transaction }}).instance.close.subscribe(
+    this.dialogService.openModal(TransactionDetailsComponent, { cssClass:"modal-xl", context: { transaction : transaction, eType: this.eType }}).instance.close.subscribe(
       partner =>{ });
   }
 }

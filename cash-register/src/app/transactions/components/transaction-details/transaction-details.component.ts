@@ -26,6 +26,7 @@ export class TransactionDetailsComponent implements OnInit {
   customerLoading: boolean = true;
   customer: any = { };
   imagePlaceHolder: string = '../../../../assets/images/no-photo.svg';
+  eType: string = '';
 
   constructor(
     private viewContainerRef: ViewContainerRef,

@@ -34,6 +34,7 @@ module.exports = {
         './WorkstationModule': './src/app/workstation/workstation.module.ts',
         './DeviceModule': './src/app/device/device.module.ts',
         './TransactionModule': './src/app/transactions/transactions.module.ts',
+        './WebOrderModule': './src/app/web-orders/web-orders.module.ts',
         './StatisticModule': './src/app/statistics/statistics.module.ts',
         './ServiceModule': './src/app/services/services.module.ts',
         './CustomerModule': './src/app/customers/customers.module.ts',
@@ -60,6 +61,7 @@ module.exports = {
       exposes: {
         './tillModule': './src/app/till/till.module.ts',
         '/TransactionsModule': './src/app/transactions/transactions.module.ts',
+        '/WebOrdersModule': './src/app/web-orders/web-orders.module.ts',
         '/CustomersModule': './src/app/customers/customers.module.ts',
         '/StatisticsModule': './src/app/statistics/statistics.module.ts',
         '/ServicesModule': './src/app/services/services.module.ts',
