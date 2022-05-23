@@ -20,7 +20,7 @@ export class TillService {
     if (total) {
       return _.sumBy(payMethods, 'amount') || 0;
     }
-    return payMethods.filter((p: any) => p.amount && p.amount !== 0) || 0
+    return payMethods.filter((p: any) => p.amount !== 0 || p.nExpectedAmount !== 0) || 0
   }
 
   getTotals(type: string, transactionItems: any): number {

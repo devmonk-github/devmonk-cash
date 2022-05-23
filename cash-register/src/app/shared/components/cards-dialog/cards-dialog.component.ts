@@ -13,7 +13,7 @@ import { ToastService } from '../toast';
   templateUrl: './cards-dialog.component.html',
   styleUrls: ['./cards-dialog.component.scss']
 })
-export class CardsComponent implements OnInit, AfterViewInit, OnDestroy {
+export class CardsComponent implements OnInit, AfterViewInit {
   @ViewChild('searchgift') input!: ElementRef;
 
   dialogRef: DialogComponent;
@@ -37,11 +37,8 @@ export class CardsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnInit() {
-    console.log('oninit');
     this.customer = this.dialogRef.context.customer;
     this.iBusinessId = localStorage.getItem('currentBusiness');
-    console.log(this.customer);
-    // this.fetchGiftCard();
   }
 
   ngAfterViewInit(): void {
@@ -52,7 +49,6 @@ export class CardsComponent implements OnInit, AfterViewInit, OnDestroy {
       debounceTime(500)
     )
       .subscribe((value) => {
-        console.log('value is', value);
         this.fetchGiftCard(value);
       });
   }
@@ -74,7 +70,7 @@ export class CardsComponent implements OnInit, AfterViewInit, OnDestroy {
       this.fetchInProgress = false;
     }, (error) => {
       alert(error.error.message);
-      this.dialogRef.close.emit('data');
+      this.dialogRef.close.emit(false);
       this.fetchInProgress = false;
     });
   }
@@ -86,13 +82,7 @@ export class CardsComponent implements OnInit, AfterViewInit, OnDestroy {
   //   console.log(this.appliedGiftCards)
   // }
   submit() {
-    console.log(this.giftCardDetails, this.nAmount);
     this.giftCardDetails['nAmount'] = this.nAmount;
     this.close(this.giftCardDetails);
-  }
-
-  ngOnDestroy(): void {
-
-    // this.keyup$.unsubscribe();
   }
 }

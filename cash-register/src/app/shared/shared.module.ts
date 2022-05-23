@@ -36,10 +36,12 @@ import { ActivityDetailsComponent } from "./components/activity-details-dialog/a
 import { AddExpensesComponent } from "./components/add-expenses-dialog/add-expenses.component";
 import { CardsComponent } from "./components/cards-dialog/cards-dialog.component";
 import { MorePaymentsDialogComponent } from "./components/more-payments-dialog/more-payments-dialog.component";
+import { TerminalDialogComponent } from "./components/terminal-dialog/terminal-dialog.component";
 
 @NgModule({
   declarations: [
     CustomerDialogComponent,
+    TerminalDialogComponent,
     DialerComponent,
     AlertComponent,
     CustomerDetailsComponent,
@@ -78,6 +80,7 @@ import { MorePaymentsDialogComponent } from "./components/more-payments-dialog/m
     DialerComponent,
     AlertComponent,
     CustomerDialogComponent,
+    TerminalDialogComponent,
     CountryListComponent,
     AccordionDirective,
     ToastModule,
