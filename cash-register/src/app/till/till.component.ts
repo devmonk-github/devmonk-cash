@@ -19,7 +19,9 @@ import { TillService } from '../shared/service/till.service';
 import { AddExpensesComponent } from '../shared/components/add-expenses-dialog/add-expenses.component';
 import { CardsComponent } from '../shared/components/cards-dialog/cards-dialog.component';
 import { MorePaymentsDialogComponent } from '../shared/components/more-payments-dialog/more-payments-dialog.component';
-import {BarcodeService} from "../shared/service/barcode.service";
+import { BarcodeService } from "../shared/service/barcode.service";
+import { TerminalService } from '../shared/service/terminal.service';
+import { TerminalDialogComponent } from '../shared/components/terminal-dialog/terminal-dialog.component';
 
 @Component({
   selector: 'app-till',
@@ -68,6 +70,8 @@ export class TillComponent implements OnInit {
   // Dummy data
   parkedTransactions: any[] = [
   ]
+  terminals: Array<any> = [];
+
   quickButtons: any[] = [
     { name: 'Waterdicht', price: this.randNumber(5, 30) },
     { name: 'Batterij', price: this.randNumber(5, 30) },
@@ -102,7 +106,8 @@ export class TillComponent implements OnInit {
     private apiService: ApiService,
     private toastrService: ToastService,
     private tillService: TillService,
-    private barcodeService: BarcodeService
+    private barcodeService: BarcodeService,
+    private terminalService: TerminalService,
   ) {
   }
 
@@ -113,7 +118,7 @@ export class TillComponent implements OnInit {
     this.taxes = this.taxService.getTaxRates()
     this.getPaymentMethods();
     this.getParkedTransactions();
-    this.barcodeService.barcodeScanned.subscribe( (barcode: string) => {
+    this.barcodeService.barcodeScanned.subscribe((barcode: string) => {
       this.toastrService.show({ type: 'success', text: 'Barcode detected: ' + barcode })
     })
   }
@@ -134,7 +139,7 @@ export class TillComponent implements OnInit {
   getPaymentMethods() {
     this.payMethodsLoading = true;
     this.payMethods = [];
-    const methodsToDisplay = ['maestro', 'mastercard', 'visa', 'cash', 'bankpayment'];
+    const methodsToDisplay = ['card', 'cash', 'bankpayment', 'maestro', 'mastercard', 'visa'];
     this.apiService.getNew('cashregistry', '/api/v1/payment-methods/' + this.requestParams.iBusinessId).subscribe((result: any) => {
       if (result && result.data && result.data.length) {
         this.allPaymentMethod = result.data;
@@ -143,6 +148,7 @@ export class TillComponent implements OnInit {
             this.payMethods.push(_.clone(element));
           }
         });
+        // this.fetchTerminals();
       }
       this.payMethodsLoading = false;
     }, (error) => {
@@ -373,6 +379,22 @@ export class TillComponent implements OnInit {
     this.payMethods.map(o => o.amount = null);
   }
 
+
+  startTerminalPayment() {
+    this.dialogService.openModal(TerminalDialogComponent, { cssClass: 'modal-lg', context: { payments: this.payMethods } })
+      .instance.close.subscribe((data) => {
+        if (data) {
+          data.forEach((pay: any) => {
+            if (pay.sName === 'Card' && pay.status !== 'SUCCESS') {
+              pay.nExpectedAmount = pay.amount;
+              pay.amount = 0;
+            }
+          });
+        }
+        console.log(data);
+      })
+
+  }
   // nRefundAmount needs to be added
   createTransaction(): void {
     if (this.transactionItems.length < 1) {
@@ -380,34 +402,48 @@ export class TillComponent implements OnInit {
     }
     const giftCardPayment = this.allPaymentMethod.find((o) => o.sName === 'Giftcards');
     this.saveInProgress = true;
-    const body = this.tillService.createTransactionBody(this.transactionItems, this.payMethods);
-    if (giftCardPayment) {
-      giftCardPayment.amount = _.sumBy(this.appliedGiftCards, 'nAmount');
-      body.payments.push(giftCardPayment);
-      body.giftCards = this.appliedGiftCards;
-    }
-    body.oTransaction.iActivityId = this.iActivityId;
-    if (this.customer && this.customer._id) {
-      body.oTransaction.oCustomer = {
-        _id: this.customer._id,
-        sFirstName: this.customer.sFirstName,
-        sLastName: this.customer.sLastName,
-        sPrefix: this.customer.sPrefix
-      }
-    }
-    console.log(body);
-    this.apiService.postNew('cashregistry', '/api/v1/till/transaction', body)
-      .subscribe(data => {
-        this.toastrService.show({ type: 'success', text: 'Transactie gemaakt!' });
-        if (this.selectedTransaction) {
-          this.deleteParkedTransaction();
+
+    // this.startTerminalPayment();
+    this.dialogService.openModal(TerminalDialogComponent, { cssClass: 'modal-lg', context: { payments: this.payMethods } })
+      .instance.close.subscribe((payMethods) => {
+        if (payMethods) {
+          payMethods.forEach((pay: any) => {
+            if (pay.sName === 'Card' && pay.status !== 'SUCCESS') {
+              pay.nExpectedAmount = pay.amount;
+              pay.amount = 0;
+            }
+          });
         };
-        this.saveInProgress = false;
-        this.clearAll();
-      }, err => {
-        this.toastrService.show({ type: 'danger', text: err.message });
-        this.saveInProgress = false;
-      });
+        this.changeInPayment();
+        console.log(payMethods);
+        const body = this.tillService.createTransactionBody(this.transactionItems, payMethods);
+        if (giftCardPayment && this.appliedGiftCards.length > 0) {
+          giftCardPayment.amount = _.sumBy(this.appliedGiftCards, 'nAmount');
+          body.payments.push(giftCardPayment);
+          body.giftCards = this.appliedGiftCards;
+        }
+        body.oTransaction.iActivityId = this.iActivityId;
+        if (this.customer && this.customer._id) {
+          body.oTransaction.oCustomer = {
+            _id: this.customer._id,
+            sFirstName: this.customer.sFirstName,
+            sLastName: this.customer.sLastName,
+            sPrefix: this.customer.sPrefix
+          }
+        }
+        this.apiService.postNew('cashregistry', '/api/v1/till/transaction', body)
+          .subscribe(data => {
+            this.toastrService.show({ type: 'success', text: 'Transactie gemaakt!' });
+            if (this.selectedTransaction) {
+              this.deleteParkedTransaction();
+            };
+            this.saveInProgress = false;
+            this.clearAll();
+          }, err => {
+            this.toastrService.show({ type: 'danger', text: err.message });
+            this.saveInProgress = false;
+          });
+      })
   }
 
   /* Search API for finding the  common-brands products */
@@ -633,17 +669,19 @@ export class TillComponent implements OnInit {
   openCardsModal() {
     this.dialogService.openModal(CardsComponent, { cssClass: 'modal-lg', context: { customer: this.customer } })
       .instance.close.subscribe(result => {
-        this.appliedGiftCards.push(result);
-        this.changeInPayment();
+        if (result) {
+          this.appliedGiftCards.push(result);
+          this.changeInPayment();
+        }
       });
   }
 
 
   openMorePaymentMethodModal() {
-    this.dialogService.openModal(MorePaymentsDialogComponent, { cssClass: 'modal-lg', context: this.allPaymentMethod })
+    this.dialogService.openModal(MorePaymentsDialogComponent, { cssClass: 'modal-l', context: this.allPaymentMethod })
       .instance.close.subscribe(result => {
         if (result) {
-          this.payMethods.push(result);
+          this.payMethods.push(_.clone(result));
         }
       });
   }
@@ -651,5 +689,24 @@ export class TillComponent implements OnInit {
   removeGift(index: any) {
     console.log(index);
     this.appliedGiftCards.splice(index, 1);
+  }
+
+  fetchTerminals() {
+    let cardPayments = ['card'];
+    this.terminalService.getTerminals()
+      .subscribe((res) => {
+        this.terminals = res;
+        console.log(this.terminals)
+        if (1 > this.terminals.length) {
+          cardPayments = ['maestro', 'mastercard', 'visa'];
+        }
+        this.allPaymentMethod.forEach((element: any) => {
+          if (cardPayments.includes(element.sName.toLowerCase())) {
+            this.payMethods.push(_.clone(element));
+          }
+        });
+      }, err => {
+        this.toastrService.show({ type: 'danger', text: err.message });
+      });
   }
 }
