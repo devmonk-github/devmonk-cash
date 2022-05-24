@@ -2,7 +2,7 @@
     <div class="card-header" style="margin-top: 20px;">
         <h4>{{"PIN_TRANSACTION" | translate}}</h4>
         <div *ngIf="!ifCardSuccess">
-            <button type="button" class="btn btn-sm btn-light" (click)="close({ action: false })"
+            <button type="button" class="btn btn-sm btn-light" (click)="close(false)"
                 [disabled]="restartPaymentTimer > 0 && 46 > restartPaymentTimer">
                 <fa-icon [icon]="faTimes"></fa-icon>
             </button>
@@ -97,7 +97,7 @@
     <div class="card-footer">
         <div class="btn-holder">
             <button type="button" class="btn btn-secondary" *ngIf="!ifCardSuccess"
-                [disabled]="restartPaymentTimer > 0 && 46 > restartPaymentTimer">Cancel</button>
+                [disabled]="restartPaymentTimer > 0 && 46 > restartPaymentTimer" (click)="close(false)">Cancel</button>
             <button type="button" class="btn btn-primary" (click)="continue()"
                 [disabled]="restartPaymentTimer > 0 && 46 > restartPaymentTimer">Continue</button>
         </div>

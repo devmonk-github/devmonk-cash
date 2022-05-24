@@ -408,10 +408,17 @@ export class TillComponent implements OnInit {
 
     const giftCardPayment = this.allPaymentMethod.find((o) => o.sName === 'Giftcards');
     this.saveInProgress = true;
-
+    const paymentAmount = _.sumBy(this.payMethods, 'amount') || 0;
+    if (_.sumBy(this.transactionItems, 'paymentAmount') > (_.sumBy(this.payMethods, 'amount') || 0)) {
+      this.toastrService.show({ type: 'danger', text: 'The amount required does not match the amount entered.' });
+      this.saveInProgress = false;
+      return;
+    }
     this.dialogService.openModal(TerminalDialogComponent, { cssClass: 'modal-lg', context: { payments: this.payMethods } })
       .instance.close.subscribe((payMethods) => {
-        if (payMethods) {
+        if (!payMethods) {
+          this.saveInProgress = false;
+        } else {
           payMethods.forEach((pay: any) => {
             if (pay.sName === 'Card' && pay.status !== 'SUCCESS') {
               pay.nExpectedAmount = pay.amount;
@@ -420,6 +427,8 @@ export class TillComponent implements OnInit {
           });
         };
         this.changeInPayment();
+        // console.log(body);
+
         const body = this.tillService.createTransactionBody(this.transactionItems, payMethods);
         if (giftCardPayment && this.appliedGiftCards.length > 0) {
           giftCardPayment.amount = _.sumBy(this.appliedGiftCards, 'nAmount');
@@ -436,19 +445,23 @@ export class TillComponent implements OnInit {
           }
         }
 
-        this.apiService.postNew('cashregistry', '/api/v1/till/transaction', body)
-          .subscribe((data: any) => {
-            this.toastrService.show({ type: 'success', text: data.message });
-            if (this.selectedTransaction) {
-              this.deleteParkedTransaction();
-            };
-            this.saveInProgress = false;
-            this.clearAll();
-          }, err => {
-            this.toastrService.show({ type: 'danger', text: err.message });
-            this.saveInProgress = false;
-          });
-      })
+        console.log('I am all good');
+
+        this.saveInProgress = false;
+        // fetched parked transactions
+        // this.apiService.postNew('cashregistry', '/api/v1/till/transaction', body)
+        //   .subscribe((data: any) => {
+        //     this.toastrService.show({ type: 'success', text: data.message });
+        //     if (this.selectedTransaction) {
+        //       this.deleteParkedTransaction();
+        //     };
+        //     this.saveInProgress = false;
+        //     this.clearAll();
+        //   }, err => {
+        //     this.toastrService.show({ type: 'danger', text: err.message });
+        //     this.saveInProgress = false;
+        //   });
+      });
   }
 
   /* Search API for finding the  common-brands products */
