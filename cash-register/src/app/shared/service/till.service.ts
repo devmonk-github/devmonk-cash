@@ -160,7 +160,8 @@ export class TillService {
           bDiscount: i.discount.value > 0,
           bPrepayment: (i.paymentAmount > 0 || this.getUsedPayMethods(true, payMethods) - this.getTotals('price', transactionItems) < 0) && (i.paymentAmount !== i.amountToBePaid),
         },
-        i.iActivityItemId
+        i.iActivityItemId,
+        i.goldFor,
       )
     });
     return body;

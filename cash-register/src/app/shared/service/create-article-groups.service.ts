@@ -29,7 +29,7 @@ export class CreateArticleGroupService {
   checkArticleGroups(searchValue: string): Observable<any> {
     let data = {
       skip: 0,
-      limit: 1,
+      limit: 20,
       searchValue,
       oFilterBy: {
       },

@@ -46,8 +46,8 @@ export class TerminalDialogComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.cardPayments = this.dialogRef.context.payments.filter((o: any) => o.sName.toLowerCase() === 'card' && o.amount > 0);
-    this.otherPayments = this.dialogRef.context.payments.filter((o: any) => o.sName.toLowerCase() !== 'card' && o.amount > 0);
+    this.cardPayments = this.dialogRef.context.payments.filter((o: any) => o.sName.toLowerCase() === 'card' && o.amount);
+    this.otherPayments = this.dialogRef.context.payments.filter((o: any) => o.sName.toLowerCase() !== 'card' && o.amount);
     this.totalAmount = _.sumBy(this.dialogRef.context.payments, 'amount');
     this.cardPayments.map((o: any) => { o.status = 'PROCEED'; o.remark = 'NOT_PAID'; o.sCardName = ''; o.oPayNL = { sTransactionId: '', sTransactionStatus: '', sTicketHash: '' }; return o; });
     // if (this.cardPayments.length > 0) {

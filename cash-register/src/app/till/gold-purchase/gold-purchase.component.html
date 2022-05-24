@@ -1,5 +1,63 @@
-<td>{{item.quantity}}</td>
-<td>{{item.name}}</td>
-<td>{{item.price}}</td>
-<td>{{item.discount}}</td>
-<td>{{item.tax}}</td>
+<h2 class="accordion-header">
+    <button class="accordion-button fs-4 fw-bold" type="button" data-bs-toggle="collapse"
+        data-bs-target="#kt_accordion_1_body_1" aria-expanded="true" aria-controls="kt_accordion_1_body_1">
+        <section class="d-flex product-row align-items-center">
+            <div class="w-275px">{{item.name}}</div>
+            <div class="w-100px">{{item.price | currency: '€'}}</div>
+            <div class="w-95px">{{item.discount | currency: '€'}}</div>
+            <div class="w-100px">{{item.tax}}%</div>
+            <div class="w-100px">{{getTotalPrice(item)}}</div>
+            <div class="w-75px">{{item.paymentAmount | currency: '€'}}</div>
+        </section>
+    </button>
+</h2>
+<div id="kt_accordion_1_body_1" class="accordion-collapse collapse show" aria-labelledby="kt_accordion_1_header_1"
+    data-bs-parent="#kt_accordion_1">
+    <div class="accordion-body px-3 py-4">
+        <section class="d-flex product-row mb-3 row">
+            <div class="col-1">
+                <h3>1</h3>
+                <!-- <app-dialer [(quantity)]="item.quantity"></app-dialer> -->
+            </div>
+            <div class="col-3">
+                <input type="text" [(ngModel)]="item.name" class="form-control">
+                <label for="description">{{ "DESCRIPTION" | translate}}</label>
+                <textarea class="form-control" name="description" placeholder="{{ 'DESCRIPTION' | translate}}"
+                    lines="10" [(ngModel)]="item.description"></textarea>
+                <!-- <label for="bagNumber">{{ "BAG_NUMBER" | translate}}</label>
+                <input type="text" name="bagNumber" id="bagNumber" [(ngModel)]="item.bagNumber" class="form-control"> -->
+            </div>
+            <div class="col-2">
+                <label for="price">{{ "PRICE" | translate}}</label>
+                <input type="number" name="price" class="form-control" [(ngModel)]="item.price">
+                <label for="discount">{{ "DISCOUNT" | translate}}</label>
+                <input type="number" name="discount" class="form-control" [(ngModel)]="item.discount">
+            </div>
+
+            <div class="col-2">
+                <label for="price">{{ "QUANTITY/GRAM" | translate}}</label>
+                <input type="number" name="price" class="form-control" [(ngModel)]="item.quantity">
+                <!-- <label for="paymentAmount">{{ "PREPAYMENT" | translate}}</label>
+                <input type="number" name="paymentAmount" id="paymentAmount" [(ngModel)]="item.paymentAmount"
+                    class="form-control"> -->
+
+            </div>
+            <div class="col-2">
+                <label for="goldFor">{{ "GOLD_FOR" | translate}}</label>
+                <select #goldForSelectElem name="goldFor" id="goldFor" class="form-select"
+                    (change)="assignArticleGroup(goldForSelectElem.value);">
+                    <option *ngFor="let use of goldFor" [value]="use.name" [selected]="use.name === item.goldFor.name">
+                        {{use.name |
+                        titlecase}}</option>
+                </select>
+                <!-- <label for="supplier">{{ "SUPPLIER" | translate}}</label>
+                <label for="brand">{{ "BRAND" | translate}}</label> -->
+            </div>
+
+            <div class="col-2">
+                <!-- <label for="taxRate">{{ "EXCLUDE_ITEM" | translate}}</label>
+                <label>{{ "PROPERTIES" | translate}}</label> -->
+            </div>
+        </section>
+    </div>
+</div>

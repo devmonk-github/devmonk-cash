@@ -73,6 +73,7 @@ export class TransactionItem {
       bDiscount: boolean,
       bPrepayment: boolean,
     },
-    public iActivityItemId: any) { }
+    public iActivityItemId: any,
+    public oGoldFor: any) { }
 
 }

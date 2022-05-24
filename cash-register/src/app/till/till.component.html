@@ -1,12 +1,11 @@
-<!-- addItem('regular');  -->
-
 <div class="container">
   <div class="row content" [ngClass]="{'opacity-25': parkedTransactionLoading }">
     <div class="col-md-9 col-xs-12 column-auto till-body ps-0 pe-0">
       <div class="d-flex justify-content-start">
         <button class="btn d-flex bg-white rounded p-4 mb-3 me-3 min-w-90px"
           [ngClass]="{'btn-color-primary': eKind === 'regular' }"
-          (click)="shopProducts = []; commonProducts = []; eKind = 'regular'; isStockSelected = true">
+          (click)="shopProducts = []; commonProducts = []; eKind = 'regular'; isStockSelected = true"
+          [disabled]="isGoldForPayments">
           <div class="d-flex flex-column justify-center align-items-center flex-grow-1">
             <div class="symbol symbol-40px mb-2">
               <span class="symbol-label">
@@ -71,7 +70,7 @@
         </button>
 
         <button class="btn d-flex bg-white rounded p-4 mb-3 me-3 text-hover-primary min-w-90px"
-          (click)="addItem('gold-purchase')">
+          (click)="eKind = 'gold-purchase'; addItem('gold-purchase')">
           <div class="d-flex flex-column justify-center align-items-center flex-grow-1">
             <div class="symbol symbol-40px mb-2">
               <span class="symbol-label">
@@ -156,11 +155,12 @@
                   [taxes]="taxes" (itemChanged)="itemChanged($event, i)"></div>
                 <div class="accordion-item d-table-cell" till-repair *ngIf="item.type=== 'repair'" [item]="item"
                   [taxes]="taxes" (itemChanged)="itemChanged($event, i)"></div>
-
                 <div class="accordion-item d-table-cell w-100" till-gift *ngIf="item.type=== 'giftcard'" [item]="item"
                   [transactionItems]="transactionItems" [taxes]="taxes" (itemChanged)="itemChanged($event, i)"
                   (createGiftCard)="createGiftCard($event, i)">
                 </div>
+                <div class="accordion-item d-table-cell w-100" till-goldpurchase *ngIf="item.type === 'gold-purchase'"
+                  [item]="item" (itemChanged)="itemChanged($event, i)"></div>
                 <div class="accordion-item d-table-cell w-100" till-other *ngIf="item.type=== 'empty-line'"
                   [item]="item" [taxes]="taxes" (itemChanged)="itemChanged($event, i)"></div>
                 <div class="d-table-cell">
@@ -181,7 +181,6 @@
               <div class="w-100px">{{getTotals('discount')}}</div>
               <div class="w-125px"></div>
             </section>
-
           </div>
         </div>
       </div>
@@ -189,7 +188,6 @@
       <div class="card card-flush">
         <div class="card-body p-3">
           <div class="till-padding">
-
             <div class="d-flex">
               <input type="text" class="form-control me-3" placeholder="Search..." [(ngModel)]="searchKeyword"
                 (ngModelChange)="searchKeyword? shopProducts = shopProducts: shopProducts = []"
@@ -245,10 +243,6 @@
                         (click)="onSelectProduct(product, 'business', 'same-article')">
                         Add this article
                       </button>
-                      <!-- <button class="btn btn-secondary w-50 p-0"
-                        (click)="onSelectProduct(product, 'business', 'other-article')">
-                        Use other article number
-                      </button> -->
                     </div>
                   </div>
                 </div>
@@ -399,47 +393,7 @@
             &nbsp;<i class="close fas fa-times cursor-pointer"></i>
           </div>
         </div>
-        <!-- <table class="table">
-          <thead>
-            <tr>
-              <th>Card</th>
-              <th>Amount</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let giftcard of appliedGiftCards">
-              <td>{{giftcard.sGiftCardNumber}}</td>
-              <td>{{giftcard.nAmount | currency: '€'}}</td>
-            </tr>
-          </tbody>
-        </table> -->
       </div>
-      <!-- <p>Paymenttherminal connected</p> -->
-      <!-- <div class="input-group till-padding">
-        <input type="number col-6" class="form-control" [(ngModel)]="card.amount"
-          placeholder="{{'AMOUNT' | translate}}">
-        <button class="btn btn-primary col-2">{{card.sName | translate}}</button>
-        <button class="btn btn-primary col-1"> + </button>
-      </div>
-      <div class="input-group till-padding">
-        <input type="number col-6" class="form-control" [(ngModel)]="card.amount"
-          placeholder="{{'AMOUNT' | translate}}">
-        <button class="btn btn-primary col-2">{{card.sName | translate}}</button>
-        <button class="btn btn-primary col-1"> + </button>
-      </div> -->
-
-      <!-- <p>No paymenttherminal connected</p>
-      <div class="input-group till-padding" *ngFor="let card of cards">
-        <input type="number col-6" class="form-control" [(ngModel)]="card.amount"
-          placeholder="{{'AMOUNT' | translate}}">
-        <select name="parkedTransactions" id="parkedTransactions" class="col-3">
-          <option [ngValue]="null"></option>
-          <option *ngFor="let type of card.type" [ngValue]="type">{{type}}
-          </option>
-        </select>
-        <button class="btn btn-primary col-2">{{card.sName | translate}}</button>
-        <button class="btn btn-primary col-1" (click)="addNewCard()"> + </button>
-      </div> -->
       <div class="d-flex">
         <h5 *ngIf='!payMethods.length && !payMethodsLoading'> No payment method found!</h5>
         <div *ngIf="payMethodsLoading" class="spinner-border mx-auto"></div>

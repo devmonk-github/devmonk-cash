@@ -45,8 +45,8 @@ export class TillComponent implements OnInit {
   faArrowRightFromBracket = faArrowRightFromBracket;
   faSpinner = faSpinner;
   faSearch = faSearch;
-  taxes: any[] = [];
-  transactionItems: any[] = [];
+  taxes: Array<any> = [];
+  transactionItems: Array<any> = [];
   selectedTransaction: any = null;
   customer: any = null;
   searchKeyword: any;
@@ -59,20 +59,16 @@ export class TillComponent implements OnInit {
   payMethods: Array<any> = [];
   allPaymentMethod: Array<any> = [];
   appliedGiftCards: Array<any> = [];
-  business: any = {}
-  locationId: string = ''
+  business: any = {};
+  locationId: string = '';
   payMethodsLoading: boolean = false;
-  requestParams: any = {
-    iBusinessId: ''
-  }
+  isGoldForPayments = false;
+  requestParams: any = { iBusinessId: '' };
   parkedTransactionLoading = false;
   eKind: string = 'regular';
-  // Dummy data
-  parkedTransactions: any[] = [
-  ]
+  parkedTransactions: Array<any> = [];
   terminals: Array<any> = [];
-
-  quickButtons: any[] = [
+  quickButtons: Array<any> = [
     { name: 'Waterdicht', price: this.randNumber(5, 30) },
     { name: 'Batterij', price: this.randNumber(5, 30) },
     { name: 'Band verstellen', price: this.randNumber(5, 20) },
@@ -89,11 +85,7 @@ export class TillComponent implements OnInit {
     { name: 'Postzegels', price: this.randNumber(1, 10) },
     { name: 'Tassen', price: this.randNumber(50, 200) },
   ];
-
   saveInProgress = false;
-  // End dummy data
-  // type: ['Visa']
-  // cards = [{ sName: 'Card', type: ['Visa', 'Meastro', 'Master Card'], amount: 0 }];
   randNumber(min: number, max: number): number {
     return Math.floor(Math.random() * (max - min + 1) + min);
   }
@@ -148,7 +140,6 @@ export class TillComponent implements OnInit {
             this.payMethods.push(_.clone(element));
           }
         });
-        // this.fetchTerminals();
       }
       this.payMethodsLoading = false;
     }, (error) => {
@@ -207,7 +198,9 @@ export class TillComponent implements OnInit {
             if (i.tType === 'refund') {
               result -= i.prePaidAmount;
             } else {
-              result += i.quantity * i.price - (i.prePaidAmount || 0);
+              i.nTotal = i.quantity * i.price;
+              i.nTotal = i.type === 'gold-purchase' ? -1 * i.nTotal : i.nTotal;
+              result += i.nTotal - (i.prePaidAmount || 0);
               // result += type === 'price' ? i.quantity * i.price - i.prePaidAmount || 0 : i[type]
             }
           } else {
@@ -238,13 +231,11 @@ export class TillComponent implements OnInit {
     return result;
   }
   addItem(type: string): void {
-    if (type === 'giftcard') {
-      type = 'giftcard'
-    }
+    const price = this.randNumber(5, 200);
     this.transactionItems.push({
       isExclude: type === 'repair' ? true : false,
       eTransactionItemType: 'regular',
-      manualUpdate: false,
+      manualUpdate: type === 'gold-purchase',
       index: this.transactionItems.length,
       name: this.translateService.instant(type.toUpperCase()),
       type,
@@ -252,17 +243,19 @@ export class TillComponent implements OnInit {
       aImage: [],
       quantity: 1,
       nBrokenProduct: 0,
-      price: this.randNumber(5, 200),
+      price,
+      nTotal: type === 'gold-purchase' ? -1 * price : price,
       discount: 0,
       tax: 21,
-      paymentAmount: 0,
+      paymentAmount: type === 'gold-purchase' ? -1 * price : 0,
       description: '',
       open: true,
       iBusinessId: this.getValueFromLocalStorage('currentBusiness'),
       ...(type === 'giftcard') && { sGiftCardNumber: Date.now() },
       ...(type === 'giftcard') && { taxHandling: 'true' },
       ...(type === 'giftcard') && { isGiftCardNumberValid: false },
-    })
+      ...(type === 'gold-purchase') && { goldFor: { name: 'stock', type: 'goods' } }
+    });
   }
 
   cancelItems(): void {
@@ -350,7 +343,6 @@ export class TillComponent implements OnInit {
       .instance.close.subscribe((data) => {
         if (data.customer) {
           this.customer = data.customer;
-          console.log(this.customer);
         }
       })
   }
@@ -391,19 +383,32 @@ export class TillComponent implements OnInit {
             }
           });
         }
-        console.log(data);
       })
 
   }
   // nRefundAmount needs to be added
+  checkUseForGold() {
+    let isGoldForPayment = true;
+    const goldTransactionPayments = this.transactionItems.filter(o => o.goldFor?.name === 'cash' || o.goldFor?.name === 'bankpayment');
+    goldTransactionPayments.forEach(element => {
+      const paymentMethod = this.payMethods.findIndex(o => o.sName.toLowerCase() === element.goldFor.name && o.amount === element.nTotal);
+      if (paymentMethod < 0) {
+        isGoldForPayment = false;
+        this.toastrService.show({ type: 'danger', text: `The amount paid for '${element.goldFor.name}' does not match.` });
+      }
+    });
+    return isGoldForPayment;
+  }
+
   createTransaction(): void {
-    if (this.transactionItems.length < 1) {
+    const isGoldForCash = this.checkUseForGold();
+    if (this.transactionItems.length < 1 || !isGoldForCash) {
       return;
     }
+
     const giftCardPayment = this.allPaymentMethod.find((o) => o.sName === 'Giftcards');
     this.saveInProgress = true;
 
-    // this.startTerminalPayment();
     this.dialogService.openModal(TerminalDialogComponent, { cssClass: 'modal-lg', context: { payments: this.payMethods } })
       .instance.close.subscribe((payMethods) => {
         if (payMethods) {
@@ -415,7 +420,6 @@ export class TillComponent implements OnInit {
           });
         };
         this.changeInPayment();
-        console.log(payMethods);
         const body = this.tillService.createTransactionBody(this.transactionItems, payMethods);
         if (giftCardPayment && this.appliedGiftCards.length > 0) {
           giftCardPayment.amount = _.sumBy(this.appliedGiftCards, 'nAmount');
@@ -431,9 +435,10 @@ export class TillComponent implements OnInit {
             sPrefix: this.customer.sPrefix
           }
         }
+
         this.apiService.postNew('cashregistry', '/api/v1/till/transaction', body)
-          .subscribe(data => {
-            this.toastrService.show({ type: 'success', text: 'Transactie gemaakt!' });
+          .subscribe((data: any) => {
+            this.toastrService.show({ type: 'success', text: data.message });
             if (this.selectedTransaction) {
               this.deleteParkedTransaction();
             };
@@ -687,7 +692,6 @@ export class TillComponent implements OnInit {
   }
 
   removeGift(index: any) {
-    console.log(index);
     this.appliedGiftCards.splice(index, 1);
   }
 
@@ -696,7 +700,6 @@ export class TillComponent implements OnInit {
     this.terminalService.getTerminals()
       .subscribe((res) => {
         this.terminals = res;
-        console.log(this.terminals)
         if (1 > this.terminals.length) {
           cardPayments = ['maestro', 'mastercard', 'visa'];
         }

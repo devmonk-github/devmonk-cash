@@ -39,10 +39,12 @@ export class PaymentDistributionService {
     const assignedAmountToManual = arrNotToUpdate.reduce((n, { paymentAmount }) => n + paymentAmount, 0);
     availableAmount -= assignedAmountToManual;
 
-    const totalAmountToBePaid = arrToUpdate.reduce((n, { amountToBePaid }) => n + amountToBePaid, 0);
-    arrToUpdate.map(i => (i.paymentAmount = this.roundToXDigits(i.amountToBePaid * availableAmount / Math.abs(totalAmountToBePaid))));
-    const assignedAmount = arrToUpdate.reduce((n, { paymentAmount }) => n + paymentAmount, 0);
-    arrToUpdate[arrToUpdate.length - 1].paymentAmount += (availableAmount - assignedAmount);
+    if (arrToUpdate.length > 0) {
+      const totalAmountToBePaid = arrToUpdate.reduce((n, { amountToBePaid }) => n + amountToBePaid, 0);
+      arrToUpdate.map(i => (i.paymentAmount = this.roundToXDigits(i.amountToBePaid * availableAmount / Math.abs(totalAmountToBePaid))));
+      const assignedAmount = arrToUpdate.reduce((n, { paymentAmount }) => n + paymentAmount, 0);
+      arrToUpdate[arrToUpdate.length - 1].paymentAmount += (availableAmount - assignedAmount);
+    }
     return transactionItems;
   }
 
