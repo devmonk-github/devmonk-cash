@@ -24,34 +24,29 @@
                 <label for="description">{{ "DESCRIPTION" | translate}}</label>
                 <textarea class="form-control" name="description" placeholder="{{ 'DESCRIPTION' | translate}}"
                     lines="10" [(ngModel)]="item.description"></textarea>
-                <!-- <label for="bagNumber">{{ "BAG_NUMBER" | translate}}</label>
-                <input type="text" name="bagNumber" id="bagNumber" [(ngModel)]="item.bagNumber" class="form-control"> -->
             </div>
             <div class="col-2">
                 <label for="price">{{ "PRICE" | translate}}</label>
-                <input type="number" name="price" class="form-control" [(ngModel)]="item.price">
+                <input type="number" name="price" class="form-control"
+                    (keyup)="item.price < 1 ? item.price = 1: item.price" [(ngModel)]="item.price"
+                    (change)="changeTotalAmount()">
                 <label for="discount">{{ "DISCOUNT" | translate}}</label>
-                <input type="number" name="discount" class="form-control" [(ngModel)]="item.discount">
+                <input type="number" name="discount" class="form-control"
+                    (keyup)="item.discount < 0 ? item.discount = 0: item.discount" [(ngModel)]="item.discount">
             </div>
 
             <div class="col-2">
                 <label for="price">{{ "QUANTITY/GRAM" | translate}}</label>
-                <input type="number" name="price" class="form-control" [(ngModel)]="item.quantity">
-                <!-- <label for="paymentAmount">{{ "PREPAYMENT" | translate}}</label>
-                <input type="number" name="paymentAmount" id="paymentAmount" [(ngModel)]="item.paymentAmount"
-                    class="form-control"> -->
-
+                <input type="number" name="price" class="form-control" [(ngModel)]="item.quantity"
+                    (keyup)="item.quantity < 1 ? item.quantity = 1: item.quantity" (change)="changeTotalAmount()">
             </div>
             <div class="col-2">
                 <label for="goldFor">{{ "GOLD_FOR" | translate}}</label>
                 <select #goldForSelectElem name="goldFor" id="goldFor" class="form-select"
                     (change)="assignArticleGroup(goldForSelectElem.value);">
                     <option *ngFor="let use of goldFor" [value]="use.name" [selected]="use.name === item.goldFor.name">
-                        {{use.name |
-                        titlecase}}</option>
+                        {{use.name | titlecase}}</option>
                 </select>
-                <!-- <label for="supplier">{{ "SUPPLIER" | translate}}</label>
-                <label for="brand">{{ "BRAND" | translate}}</label> -->
             </div>
 
             <div class="col-2">

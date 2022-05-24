@@ -371,7 +371,6 @@ export class TillComponent implements OnInit {
     this.payMethods.map(o => o.amount = null);
   }
 
-
   startTerminalPayment() {
     this.dialogService.openModal(TerminalDialogComponent, { cssClass: 'modal-lg', context: { payments: this.payMethods } })
       .instance.close.subscribe((data) => {
@@ -427,8 +426,6 @@ export class TillComponent implements OnInit {
           });
         };
         this.changeInPayment();
-        // console.log(body);
-
         const body = this.tillService.createTransactionBody(this.transactionItems, payMethods);
         if (giftCardPayment && this.appliedGiftCards.length > 0) {
           giftCardPayment.amount = _.sumBy(this.appliedGiftCards, 'nAmount');
@@ -444,23 +441,18 @@ export class TillComponent implements OnInit {
             sPrefix: this.customer.sPrefix
           }
         }
-
-        console.log('I am all good');
-
-        this.saveInProgress = false;
-        // fetched parked transactions
-        // this.apiService.postNew('cashregistry', '/api/v1/till/transaction', body)
-        //   .subscribe((data: any) => {
-        //     this.toastrService.show({ type: 'success', text: data.message });
-        //     if (this.selectedTransaction) {
-        //       this.deleteParkedTransaction();
-        //     };
-        //     this.saveInProgress = false;
-        //     this.clearAll();
-        //   }, err => {
-        //     this.toastrService.show({ type: 'danger', text: err.message });
-        //     this.saveInProgress = false;
-        //   });
+        this.apiService.postNew('cashregistry', '/api/v1/till/transaction', body)
+          .subscribe((data: any) => {
+            this.toastrService.show({ type: 'success', text: data.message });
+            if (this.selectedTransaction) {
+              this.deleteParkedTransaction();
+            };
+            this.saveInProgress = false;
+            this.clearAll();
+          }, err => {
+            this.toastrService.show({ type: 'danger', text: err.message });
+            this.saveInProgress = false;
+          });
       });
   }
 

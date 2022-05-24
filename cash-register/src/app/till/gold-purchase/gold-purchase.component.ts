@@ -150,4 +150,7 @@ export class GoldPurchaseComponent implements OnInit {
   removeImage(index: number): void {
     this.item.aImage.splice(index, 1);
   }
+  changeTotalAmount() {
+    this.item.paymentAmount = -1 * this.item.quantity * this.item.price;
+  }
 }
