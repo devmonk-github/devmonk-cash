@@ -261,4 +261,8 @@ export class OrderComponent implements OnInit {
   removeImage(index: number): void {
     this.item.aImage.splice(index, 1);
   }
+
+  updatePayments(): void {
+    this.itemChanged.emit('update');
+  }
 }

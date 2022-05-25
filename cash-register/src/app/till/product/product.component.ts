@@ -74,4 +74,8 @@ export class ProductComponent implements OnInit {
         }
       })
   }
+
+  updatePayments(): void {
+    this.itemChanged.emit('update');
+  }
 }

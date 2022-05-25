@@ -1,6 +1,6 @@
 <div class="card shadow-sm">
     <div class="card-header" style="margin-top: 20px;">
-        <h4>{{"PIN_TRANSACTION" | translate}}</h4>
+        <h4>{{"CHECKOUT" | translate}}</h4>
         <div *ngIf="!ifCardSuccess">
             <button type="button" class="btn btn-sm btn-light" (click)="close(false)"
                 [disabled]="restartPaymentTimer > 0 && 46 > restartPaymentTimer">
@@ -77,8 +77,12 @@
             </tbody>
             <tfoot>
                 <tr>
+                    <td> {{"CHANGE" | translate}}</td>
+                    <td> {{ -changeAmount | currency: '€' }}</td>
+                </tr>
+                <tr>
                     <td> {{"TOTAL" | translate}}</td>
-                    <td> {{ totalAmount | currency: '€' }}</td>
+                    <td> {{ totalAmount - changeAmount | currency: '€' }}</td>
                 </tr>
             </tfoot>
         </table>
@@ -97,9 +101,10 @@
     <div class="card-footer">
         <div class="btn-holder">
             <button type="button" class="btn btn-secondary" *ngIf="!ifCardSuccess"
-                [disabled]="restartPaymentTimer > 0 && 46 > restartPaymentTimer" (click)="close(false)">Cancel</button>
+                [disabled]="restartPaymentTimer > 0 && 46 > restartPaymentTimer" (click)="close(false)">{{"CANCEL" |
+                translate}}</button>
             <button type="button" class="btn btn-primary" (click)="continue()"
-                [disabled]="restartPaymentTimer > 0 && 46 > restartPaymentTimer">Continue</button>
+                [disabled]="restartPaymentTimer > 0 && 46 > restartPaymentTimer">{{"PROCEED" | translate}}</button>
         </div>
     </div>
 </div>

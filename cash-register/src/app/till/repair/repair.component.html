@@ -31,7 +31,8 @@
       </div>
       <div class="col-2">
         <label for="price">{{ "PRICE" | translate}}</label>
-        <input type="number" step="any" name="price" class="form-control" [(ngModel)]="item.price">
+        <input type="number" step="any" name="price" class="form-control" (change)="updatePayments()"
+          [(ngModel)]="item.price">
         <label for="discount">{{ "DISCOUNT" | translate}}</label>
         <input type="number" step="any" name="discount" class="form-control" [(ngModel)]="item.discount">
         <label for="bagNumber">{{ "PREPAYMENT" | translate}}</label>

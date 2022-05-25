@@ -288,7 +288,9 @@ export class TillComponent implements OnInit {
         break;
       case 'update':
         let availableAmount = this.getUsedPayMethods(true);
-        this.paymentDistributeService.updateAmount(this.transactionItems, availableAmount, index);
+        this.paymentDistributeService.distributeAmount(this.transactionItems, availableAmount);
+
+        // this.paymentDistributeService.updateAmount(this.transactionItems, availableAmount, index);
         break;
       case 'duplicate':
         const tItem = Object.create(this.transactionItems[index]);
@@ -407,13 +409,13 @@ export class TillComponent implements OnInit {
 
     const giftCardPayment = this.allPaymentMethod.find((o) => o.sName === 'Giftcards');
     this.saveInProgress = true;
-    const paymentAmount = _.sumBy(this.payMethods, 'amount') || 0;
     if (_.sumBy(this.transactionItems, 'paymentAmount') > (_.sumBy(this.payMethods, 'amount') || 0)) {
       this.toastrService.show({ type: 'danger', text: 'The amount required does not match the amount entered.' });
       this.saveInProgress = false;
       return;
     }
-    this.dialogService.openModal(TerminalDialogComponent, { cssClass: 'modal-lg', context: { payments: this.payMethods } })
+    const changeAmount = this.getUsedPayMethods(true) - this.getTotals('price')
+    this.dialogService.openModal(TerminalDialogComponent, { cssClass: 'modal-lg', context: { payments: this.payMethods, changeAmount } })
       .instance.close.subscribe((payMethods) => {
         if (!payMethods) {
           this.saveInProgress = false;
@@ -424,35 +426,35 @@ export class TillComponent implements OnInit {
               pay.amount = 0;
             }
           });
-        };
-        this.changeInPayment();
-        const body = this.tillService.createTransactionBody(this.transactionItems, payMethods);
-        if (giftCardPayment && this.appliedGiftCards.length > 0) {
-          giftCardPayment.amount = _.sumBy(this.appliedGiftCards, 'nAmount');
-          body.payments.push(giftCardPayment);
-          body.giftCards = this.appliedGiftCards;
-        }
-        body.oTransaction.iActivityId = this.iActivityId;
-        if (this.customer && this.customer._id) {
-          body.oTransaction.oCustomer = {
-            _id: this.customer._id,
-            sFirstName: this.customer.sFirstName,
-            sLastName: this.customer.sLastName,
-            sPrefix: this.customer.sPrefix
+          this.changeInPayment();
+          const body = this.tillService.createTransactionBody(this.transactionItems, payMethods);
+          if (giftCardPayment && this.appliedGiftCards.length > 0) {
+            giftCardPayment.amount = _.sumBy(this.appliedGiftCards, 'nAmount');
+            body.payments.push(giftCardPayment);
+            body.giftCards = this.appliedGiftCards;
           }
+          body.oTransaction.iActivityId = this.iActivityId;
+          if (this.customer && this.customer._id) {
+            body.oTransaction.oCustomer = {
+              _id: this.customer._id,
+              sFirstName: this.customer.sFirstName,
+              sLastName: this.customer.sLastName,
+              sPrefix: this.customer.sPrefix
+            }
+          }
+          this.apiService.postNew('cashregistry', '/api/v1/till/transaction', body)
+            .subscribe((data: any) => {
+              this.toastrService.show({ type: 'success', text: data.message });
+              if (this.selectedTransaction) {
+                this.deleteParkedTransaction();
+              };
+              this.saveInProgress = false;
+              this.clearAll();
+            }, err => {
+              this.toastrService.show({ type: 'danger', text: err.message });
+              this.saveInProgress = false;
+            });
         }
-        this.apiService.postNew('cashregistry', '/api/v1/till/transaction', body)
-          .subscribe((data: any) => {
-            this.toastrService.show({ type: 'success', text: data.message });
-            if (this.selectedTransaction) {
-              this.deleteParkedTransaction();
-            };
-            this.saveInProgress = false;
-            this.clearAll();
-          }, err => {
-            this.toastrService.show({ type: 'danger', text: err.message });
-            this.saveInProgress = false;
-          });
       });
   }
 
