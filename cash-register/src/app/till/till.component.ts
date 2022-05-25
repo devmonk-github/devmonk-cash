@@ -426,7 +426,7 @@ export class TillComponent implements OnInit {
               pay.amount = 0;
             }
           });
-          this.changeInPayment();
+          // this.changeInPayment();
           const body = this.tillService.createTransactionBody(this.transactionItems, payMethods);
           if (giftCardPayment && this.appliedGiftCards.length > 0) {
             giftCardPayment.amount = _.sumBy(this.appliedGiftCards, 'nAmount');
