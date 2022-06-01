@@ -7,6 +7,7 @@ import * as _ from 'lodash';
 import { ApiService } from '../../service/api.service';
 import { DialogComponent } from '../../service/dialog';
 import { ToastService } from '../toast';
+import { TerminalService } from '../../service/terminal.service';
 
 @Component({
   selector: 'app-cards-dialog',
@@ -15,6 +16,7 @@ import { ToastService } from '../toast';
 })
 export class CardsComponent implements OnInit, AfterViewInit {
   @ViewChild('searchgift') input!: ElementRef;
+  @ViewChild('searchExternalGift') serachExternal!: ElementRef;
 
   dialogRef: DialogComponent;
   faTimes = faTimes;
@@ -25,12 +27,16 @@ export class CardsComponent implements OnInit, AfterViewInit {
   giftCardDetails: any;
   fetchInProgress = false;
   appliedGiftCards: Array<any> = [];
+  externalGiftCardDetails: any = {};
   nAmount = 0;
   customer: any;
+  pincode: any;
+  giftCardInfo = { sGiftCardNumber: '', pincode: '', nAmount: 0, profileIconUrl: '', type: 'custom' };
   // elem ref
   constructor(
     private viewContainerRef: ViewContainerRef,
-    private apiService: ApiService
+    private apiService: ApiService,
+    private terminalService: TerminalService,
   ) {
     const _injector = this.viewContainerRef.injector;;
     this.dialogRef = _injector.get<DialogComponent>(DialogComponent);
@@ -43,7 +49,9 @@ export class CardsComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit(): void {
     // wait .5s between keyups to emit current value
-    const keyup$ = fromEvent(this.input.nativeElement, 'keyup')
+    const keyup$ = fromEvent(this.input.nativeElement, 'keyup');
+    const searchExternalGift$ = fromEvent(this.serachExternal.nativeElement, 'keyup');
+
     keyup$.pipe(
       map((i: any) => i.currentTarget.value),
       debounceTime(500)
@@ -51,8 +59,16 @@ export class CardsComponent implements OnInit, AfterViewInit {
       .subscribe((value) => {
         this.fetchGiftCard(value);
       });
+    searchExternalGift$.pipe(
+      map((i: any) => i.currentTarget.value),
+      debounceTime(500)
+    )
+      .subscribe((value) => {
+        this.fetchExternalGiftCard(value);
+      });
   }
   close(data: any) {
+    console.log(data);
     this.dialogRef.close.emit(data);
   }
 
@@ -75,6 +91,24 @@ export class CardsComponent implements OnInit, AfterViewInit {
     });
   }
 
+  fetchExternalGiftCard(sGiftCardNumber: string) {
+    console.log('I am here fetchExternalGiftCard');
+    if (4 > sGiftCardNumber.length) {
+      return;
+    }
+    // this.fetchInProgress = true;
+    console.log('I am in fetch extenal gift card');
+    this.terminalService.getGiftCardInformation({ sGiftCardNumber, pincode: this.pincode })
+      .subscribe(res => {
+        this.externalGiftCardDetails = res;
+
+        console.log(this.externalGiftCardDetails);
+      }, (error) => {
+        alert(error.error.message);
+        this.dialogRef.close.emit(false);
+        this.fetchInProgress = false;
+      });
+  }
   // useThisCard(card: any) {
 
   //   console.log(card);
@@ -82,7 +116,17 @@ export class CardsComponent implements OnInit, AfterViewInit {
   //   console.log(this.appliedGiftCards)
   // }
   submit() {
-    this.giftCardDetails['nAmount'] = this.nAmount;
-    this.close(this.giftCardDetails);
+    console.log('hello this is me');
+    console.log(this.externalGiftCardDetails);
+    console.log(this.nAmount);
+    console.log(this.sGiftCardNumber, this.pincode);
+    // this.giftCardDetails['sGiftCardNumber'] = this.sGiftCardNumber;
+    // this.giftCardDetails['nAmount'] = this.nAmount;
+    this.giftCardInfo.sGiftCardNumber = this.sGiftCardNumber;
+    this.giftCardInfo.nAmount = this.nAmount;
+    this.giftCardInfo.pincode = this.pincode;
+    this.giftCardInfo.profileIconUrl = this.externalGiftCardDetails.profileIconUrl;
+    this.giftCardInfo.type = this.externalGiftCardDetails.type;
+    this.close(this.giftCardInfo);
   }
 }

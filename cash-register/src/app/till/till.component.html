@@ -389,6 +389,9 @@
       <div class="mt-2" *ngIf="appliedGiftCards.length">
         <div class="chip d-flex" *ngFor="let giftcard of appliedGiftCards; index as i">
           {{giftcard.sGiftCardNumber}}, {{giftcard.nAmount | currency: '€'}}
+          <div>
+            <img src="https://static.pay.nl/payment_profiles/100x100/1714.png" alt="" height="20px" width="20px">
+          </div>
           <div (click)="removeGift(i)">
             &nbsp;<i class="close fas fa-times cursor-pointer"></i>
           </div>

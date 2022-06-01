@@ -408,8 +408,11 @@ export class TillComponent implements OnInit {
     }
 
     const giftCardPayment = this.allPaymentMethod.find((o) => o.sName === 'Giftcards');
+    const giftcardAmount = _.sumBy(this.appliedGiftCards, 'nAmount');
+    const totalAmountPaid = giftcardAmount + _.sumBy(this.payMethods, 'amount');
+
     this.saveInProgress = true;
-    if (_.sumBy(this.transactionItems, 'paymentAmount') > (_.sumBy(this.payMethods, 'amount') || 0)) {
+    if (_.sumBy(this.transactionItems, 'paymentAmount') > totalAmountPaid || 0) {
       this.toastrService.show({ type: 'danger', text: 'The amount required does not match the amount entered.' });
       this.saveInProgress = false;
       return;
@@ -429,8 +432,14 @@ export class TillComponent implements OnInit {
           // this.changeInPayment();
           const body = this.tillService.createTransactionBody(this.transactionItems, payMethods);
           if (giftCardPayment && this.appliedGiftCards.length > 0) {
-            giftCardPayment.amount = _.sumBy(this.appliedGiftCards, 'nAmount');
-            body.payments.push(giftCardPayment);
+            this.appliedGiftCards.forEach(element => {
+              const cardPaymethod = _.clone(giftCardPayment);
+              cardPaymethod.amount = element.nAmount;
+              cardPaymethod.sGiftCardNumber = element.sGiftCardNumber;
+              cardPaymethod.type = element.type;
+              body.payments.push(cardPaymethod);
+            });
+            // giftCardPayment.amount = _.sumBy(this.appliedGiftCards, 'nAmount');
             body.giftCards = this.appliedGiftCards;
           }
           body.oTransaction.iActivityId = this.iActivityId;
@@ -681,6 +690,7 @@ export class TillComponent implements OnInit {
   openCardsModal() {
     this.dialogService.openModal(CardsComponent, { cssClass: 'modal-lg', context: { customer: this.customer } })
       .instance.close.subscribe(result => {
+        console.log(result);
         if (result) {
           this.appliedGiftCards.push(result);
           this.changeInPayment();
