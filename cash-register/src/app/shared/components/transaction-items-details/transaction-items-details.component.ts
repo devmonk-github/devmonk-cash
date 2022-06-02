@@ -80,7 +80,7 @@ export class TransactionItemsDetailsComponent implements OnInit {
 
     }, (error) => {
       alert(error.error.message);
-      this.dialogRef.close.emit('data');
+      this.dialogRef.close.emit(false);
     });
   }
 

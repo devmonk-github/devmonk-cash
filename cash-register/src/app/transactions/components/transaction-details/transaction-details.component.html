@@ -97,7 +97,8 @@
                     <fa-icon [icon]="faAt"></fa-icon>
                     <label class="mx-auto">Mail</label>
                 </button>
-                <button class="btn btn-sm btn-secondary w-100 d-flex">
+                <button class="btn btn-sm btn-secondary w-100 d-flex"
+                    (click)="openTransaction(transaction, 'transaction')">
                     <fa-icon [icon]="faUndoAlt"></fa-icon>
                     <label class="mx-auto">Refund</label>
                 </button>

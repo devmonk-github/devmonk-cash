@@ -112,7 +112,21 @@ export class TillComponent implements OnInit {
     this.getParkedTransactions();
     this.barcodeService.barcodeScanned.subscribe((barcode: string) => {
       this.toastrService.show({ type: 'success', text: 'Barcode detected: ' + barcode })
-    })
+    });
+    this.loadTransaction();
+  }
+
+  loadTransaction() {
+    let fromTransactionPage: any = localStorage.getItem('fromTransactionPage');
+    if (fromTransactionPage) {
+      fromTransactionPage = JSON.parse(fromTransactionPage);
+      this.clearAll();
+      const { transactionItems, transaction } = fromTransactionPage;
+      this.transactionItems = transactionItems;
+      this.iActivityId = transaction.iActivityId || transaction._id;
+      this.changeInPayment();
+      localStorage.removeItem('fromTransactionPage')
+    }
   }
 
   getValueFromLocalStorage(key: string): any {

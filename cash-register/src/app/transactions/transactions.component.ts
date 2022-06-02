@@ -14,16 +14,16 @@ import { TransactionDetailsComponent } from './components/transaction-details/tr
 })
 export class TransactionsComponent implements OnInit {
   option: boolean = true;
-  faSearch= faSearch;
+  faSearch = faSearch;
   faIncrease = faPlusCircle;
   faDecrease = faMinusCircle;
   faArrowUp = faLongArrowAltUp;
   faArrowDown = faLongArrowAltDown;
   cities = [
-    {name: 'Amsterdam', code: 'AMS'},
-    {name: 'Bruxelles', code: 'BRU'},
-    {name: 'Paris', code: 'PAR'},
-    {name: 'Instanbul', code: 'INS'}
+    { name: 'Amsterdam', code: 'AMS' },
+    { name: 'Bruxelles', code: 'BRU' },
+    { name: 'Paris', code: 'PAR' },
+    { name: 'Instanbul', code: 'INS' }
   ];
   selectedCity: string = '';
   transactions: Array<any> = [];
@@ -36,7 +36,7 @@ export class TransactionsComponent implements OnInit {
   };
   showLoader: Boolean = false;
   widgetLog: string[] = [];
-  pageCounts: Array<number> = [ 10, 25, 50, 100]
+  pageCounts: Array<number> = [10, 25, 50, 100]
   pageNumber: number = 1;
   setPaginateSize: number = 12;
   paginationConfig: any = {
@@ -46,10 +46,10 @@ export class TransactionsComponent implements OnInit {
   };
   showAdvanceSearch = false;
   transactionMenu = [
-    {key : 'REST_PAYMENT'},
-    {key : 'REFUND/REVERT'},
-    {key : 'PREPAYMENT'},
-    {key : 'MARK_CONFIRMED'},
+    { key: 'REST_PAYMENT' },
+    { key: 'REFUND/REVERT' },
+    { key: 'PREPAYMENT' },
+    { key: 'MARK_CONFIRMED' },
   ];
   iBusinessId: any = '';
 
@@ -59,15 +59,15 @@ export class TransactionsComponent implements OnInit {
     endDate: new Date(new Date().setHours(23, 59, 59)),
     startDate: new Date('01-01-2015'),
   }
-  paymentMethods: Array<any> = [ 'All', 'Cash', 'Credit', 'Card', 'Gift-Card'];
-  transactionTypes: Array<any> = [ 'All', 'Refund', 'Repair', 'Gold-purchase', 'Gold-sale'];
-  transactionStatuses: Array<any> = [ 'ALL', 'EXPECTED_PAYMENTS', 'NEW', 'CANCELLED', 'FAILED', 'EXPIRED', 'COMPLETED', 'REFUNDED' ];
+  paymentMethods: Array<any> = ['All', 'Cash', 'Credit', 'Card', 'Gift-Card'];
+  transactionTypes: Array<any> = ['All', 'Refund', 'Repair', 'Gold-purchase', 'Gold-sale'];
+  transactionStatuses: Array<any> = ['ALL', 'EXPECTED_PAYMENTS', 'NEW', 'CANCELLED', 'FAILED', 'EXPIRED', 'COMPLETED', 'REFUNDED'];
   invoiceStatus: string = 'all';
   importStatus: string = 'all';
   methodValue: string = 'All';
   transactionValue: string = 'All';
   employee: any = { sFirstName: 'All' };
-  employees: Array<any> =  [this.employee];
+  employees: Array<any> = [this.employee];
   workstations: Array<any> = [];
   selectedWorkstations: Array<any> = [];
   selectedTransactionStatuses: Array<any> = [];
@@ -76,13 +76,13 @@ export class TransactionsComponent implements OnInit {
   eType: string = '';
 
   tableHeaders: Array<any> = [
-    { key: 'Date', selected: true, sort: 'desc'},
-    { key: 'Transaction no.', selected: false, sort: ''},
-    { key: 'Receipt number', selected: false, sort: ''},
-    { key: 'Customer', selected: false, sort: ''},
-    { key: 'Method', disabled:true},
-    { key: 'Total', disabled:true},
-    { key: 'Type', disabled:true}
+    { key: 'Date', selected: true, sort: 'desc' },
+    { key: 'Transaction no.', selected: false, sort: '' },
+    { key: 'Receipt number', selected: false, sort: '' },
+    { key: 'Customer', selected: false, sort: '' },
+    { key: 'Method', disabled: true },
+    { key: 'Total', disabled: true },
+    { key: 'Type', disabled: true }
   ]
 
 
@@ -90,7 +90,7 @@ export class TransactionsComponent implements OnInit {
     private apiService: ApiService,
     private dialogService: DialogService,
     private routes: Router
-    ) { }
+  ) { }
 
   async ngOnInit() {
     if (this.routes.url.includes('/business/web-orders')) this.eType = 'webshop-revenue';
@@ -105,28 +105,28 @@ export class TransactionsComponent implements OnInit {
     this.getLocations();
   }
 
-  toolTipData(item: any){
-    var itemList = [] 
+  toolTipData(item: any) {
+    var itemList = []
     var returnArr = [];
-    if(item.oCustomer && (item.oCustomer.sFirstName || item.oCustomer.sLastName)) {
+    if (item.oCustomer && (item.oCustomer.sFirstName || item.oCustomer.sLastName)) {
       returnArr.push(item.oCustomer.sFirstName + ' ' + item.oCustomer.sLastName)
     }
 
-    if(item.aTransactionItems && item.aTransactionItems.length > 0) {
+    if (item.aTransactionItems && item.aTransactionItems.length > 0) {
       for (var i = 0; i < item.aTransactionItems.length; i++) {
         itemList.push(item.aTransactionItems[i].sProductName)
-        returnArr.push('- '+item.aTransactionItems[i].sProductName +' | €'+ (item.aTransactionItems[i].nPriceIncVat || 0))
+        returnArr.push('- ' + item.aTransactionItems[i].sProductName + ' | €' + (item.aTransactionItems[i].nPriceIncVat || 0))
       }
     }
     // return returnArr;
     return returnArr.join("<br>")
   }
 
-  goToCashRegister(){
+  goToCashRegister() {
     this.routes.navigate(['/business/till']);
   }
 
-  loadTransaction(){
+  loadTransaction() {
     this.transactions = [];
     this.requestParams.iBusinessId = this.businessDetails._id;
     this.requestParams.type = 'transaction';
@@ -146,7 +146,7 @@ export class TransactionsComponent implements OnInit {
       if (result && result.data && result.data && result.data.result && result.data.result.length) {
         this.transactions = result.data.result;
         this.paginationConfig.totalItems = result.data.totalCount;
-        setTimeout(()=>{
+        setTimeout(() => {
           MenuComponent.bootstrap();
         }, 1000);
       }
@@ -156,7 +156,7 @@ export class TransactionsComponent implements OnInit {
     })
   }
 
-  getLocations(){
+  getLocations() {
     this.apiService.postNew('core', `/api/v1/business/${this.iBusinessId}/list-location`, {}).subscribe(
       (result: any) => {
         if (result.message == 'success') {
@@ -167,13 +167,13 @@ export class TransactionsComponent implements OnInit {
         console.error(error)
       }
   }
-  
-  getWorkstations(){
+
+  getWorkstations() {
     this.apiService.getNew('cashregistry', '/api/v1/workstations/list/' + this.businessDetails._id).subscribe(
-      (result : any) => {
-       if(result && result.data){
-        this.workstations = result.data;
-       }
+      (result: any) => {
+        if (result && result.data) {
+          this.workstations = result.data;
+        }
       }),
       (error: any) => {
         console.error(error)
@@ -199,21 +199,21 @@ export class TransactionsComponent implements OnInit {
   }
 
   // Function for handle event of transaction menu
-  clickMenuOpt(key: string, transactionId: string){
+  clickMenuOpt(key: string, transactionId: string) {
 
   }
 
   //  Function for set sort option on transaction table
-  setSortOption(sortHeader : any){
-    if(sortHeader.selected){
+  setSortOption(sortHeader: any) {
+    if (sortHeader.selected) {
       sortHeader.sort = sortHeader.sort == 'asc' ? 'desc' : 'asc';
       this.sortAndLoadTransactions(sortHeader)
     } else {
-      this.tableHeaders = this.tableHeaders.map( (th : any) =>{
-        if(sortHeader.key == th.key){
+      this.tableHeaders = this.tableHeaders.map((th: any) => {
+        if (sortHeader.key == th.key) {
           th.selected = true;
           th.sort = 'asc';
-        }else{
+        } else {
           th.selected = false;
         }
         return th;
@@ -222,32 +222,36 @@ export class TransactionsComponent implements OnInit {
     }
   }
 
-  sortAndLoadTransactions(sortHeader: any){
+  sortAndLoadTransactions(sortHeader: any) {
     let sortBy = 'dCreatedDate';
-    if(sortHeader.key == 'Date')  sortBy = 'dCreatedDate';
-    if(sortHeader.key == 'Transaction no.')  sortBy = 'sNumber';
-    if(sortHeader.key == 'Receipt number')  sortBy = 'oReceipt.sNumber';
-    if(sortHeader.key == 'Customer')  sortBy = 'oCustomer.sFirstName';
+    if (sortHeader.key == 'Date') sortBy = 'dCreatedDate';
+    if (sortHeader.key == 'Transaction no.') sortBy = 'sNumber';
+    if (sortHeader.key == 'Receipt number') sortBy = 'oReceipt.sNumber';
+    if (sortHeader.key == 'Customer') sortBy = 'oCustomer.sFirstName';
     this.requestParams.sortBy = sortBy;
     this.requestParams.sortOrder = sortHeader.sort;
     this.loadTransaction();
   }
 
   // Function for update item's per page
-  changeItemsPerPage(pageCount: any){
+  changeItemsPerPage(pageCount: any) {
     this.paginationConfig.itemsPerPage = pageCount;
   }
 
   // Function for trigger event after page changes
-  pageChanged(page:any){
-    this.requestParams.skip = (page -1) * parseInt(this.paginationConfig.itemsPerPage);
+  pageChanged(page: any) {
+    this.requestParams.skip = (page - 1) * parseInt(this.paginationConfig.itemsPerPage);
     this.loadTransaction();
     this.paginationConfig.currentPage = page;
   }
 
   // Function for show transaction details
-  showTransaction(transaction: any){
-    this.dialogService.openModal(TransactionDetailsComponent, { cssClass:"modal-xl", context: { transaction : transaction, eType: this.eType }}).instance.close.subscribe(
-      partner =>{ });
+  showTransaction(transaction: any) {
+    this.dialogService.openModal(TransactionDetailsComponent, { cssClass: "modal-xl", context: { transaction: transaction, eType: this.eType } })
+      .instance.close.subscribe(
+        res => {
+          console.log(res);
+          this.routes.navigate(['business/till']);
+        });
   }
 }
