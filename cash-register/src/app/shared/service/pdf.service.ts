@@ -562,7 +562,7 @@ export class PdfService {
         let colsize = col.size;
         let gutterSize = this.calcColumnGutter(colsize, gutter);
         let newRowWidth = this.calcRowWidth(printableArea.width, colsize, gutterSize);
-        let newCol = this.createCol(i, cols.length, newRowWidth, gutter, col, finalDataSourceObject);
+        let newCol = this.createCol(i, cols.length, newRowWidth, gutter, col, finalDataSourceObject,colsize);
 
         if (this.isDefined(col.css)) {
           newCol = this.applyCss(newCol, col.css);
@@ -647,7 +647,7 @@ export class PdfService {
       rowCounter++
 
       const cols = currentRow['row'];
-      const gutterSize = 2;
+      const gutterSize = 1;
       let totalRowHeight = 0;
 
       let newRows = this.createRows(cols, currentRow, printableArea, gutterSize);
@@ -968,7 +968,7 @@ export class PdfService {
 
   private calcColumnWidth(size: number, rowWidth: number): number {
     size = (size === null || size > 12 || size === undefined) ? 12 : size;
-    return (size * (rowWidth / 12)) * 0.996;
+    return (size * (rowWidth / 12)) * 0.990;
   }
 
   private calcRowWidth(printableAreaWidth: any, currentSize: any, gutter: any) {
