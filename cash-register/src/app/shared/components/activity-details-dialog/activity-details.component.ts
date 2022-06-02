@@ -79,7 +79,7 @@ export class ActivityDetailsComponent implements OnInit {
   fetchTransactionItems() {
     let url = `/api/v1/activities/items/${this.activity._id}`;
     this.apiService.postNew('cashregistry', url, this.requestParams).subscribe((result: any) => {
-      this.activityItems = result.data;
+      this.activityItems = result.data[0].result;;
     }, (error) => {
       alert(error.error.message);
       this.dialogRef.close.emit('data');
