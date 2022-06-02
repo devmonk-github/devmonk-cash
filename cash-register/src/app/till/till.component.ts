@@ -371,6 +371,7 @@ export class TillComponent implements OnInit {
     this.searchKeyword = '';
     this.selectedTransaction = null;
     this.payMethods.map(o => o.amount = null);
+    this.appliedGiftCards = [];
   }
 
   startTerminalPayment() {
@@ -385,7 +386,6 @@ export class TillComponent implements OnInit {
           });
         }
       })
-
   }
   // nRefundAmount needs to be added
   checkUseForGold() {
@@ -489,7 +489,8 @@ export class TillComponent implements OnInit {
         'aProperty',
         'sArticleNumber',
         'iArticleGroupId',
-        'iBusinessPartnerId'
+        'iBusinessPartnerId',
+        'iBusinessBrandId',
       ],
       oFilterBy: {
         oStatic: {},
@@ -528,7 +529,8 @@ export class TillComponent implements OnInit {
           'sLabelDescription',
           'aImage',
           'sArticleNumber',
-          'iBusinessPartnerId'
+          'iBusinessPartnerId',
+          'iBusinessBrandId'
         ],
         oFilterBy: {
           oStatic: {},
@@ -551,6 +553,7 @@ export class TillComponent implements OnInit {
 
   // Add selected product into purchase order
   onSelectProduct(product: any, isFrom: string, isFor: string) {
+    console.log(product);
     this.transactionItems.push({
       name: product.oName ? product.oName['en'] : 'No name',
       eTransactionItemType: 'regular',
@@ -560,9 +563,12 @@ export class TillComponent implements OnInit {
       paymentAmount: 0,
       discount: product.nDiscount || 0,
       tax: product.nVatRate || 0,
+      sProductNumber: product.sProductNumber,
+      sArticleNumber: product.sArticleNumber,
       description: product.sLabelDescription,
       iArticleGroupId: product.iArticleGroupId,
       oArticleGroupMetaData: { aProperty: product.aProperty || [], sCategory: '', sSubCategory: '' },
+      iBusinessBrandId: product.iBusinessBrandId,
       iBusinessProductId: product._id,
       iSupplierId: product.iBusinessPartnerId,
       aImage: product.aImage,

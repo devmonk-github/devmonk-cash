@@ -10,7 +10,7 @@ import { PriceService } from "../../shared/service/price.service";
   templateUrl: './product.component.html',
   styleUrls: ['./product.component.sass'],
 })
-export class ProductComponent implements OnInit {
+export class ProductComponent {
   @Input() item: any
   @Input() taxes: any
   @Output() itemChanged = new EventEmitter<any>();
@@ -22,9 +22,9 @@ export class ProductComponent implements OnInit {
 
   constructor(private dialogService: DialogService, private priceService: PriceService) { }
 
-  ngOnInit(): void {
-    this.item.articleNumber = '0001234567'
-  }
+  // ngOnInit(): void {
+  //   // this.item.sArticleNumber = '0001234567'
+  // }
 
   deleteItem(): void {
     this.itemChanged.emit('delete')

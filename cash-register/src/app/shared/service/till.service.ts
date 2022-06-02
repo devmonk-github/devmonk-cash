@@ -96,7 +96,7 @@ export class TillService {
       return new TransactionItem(
         i.name,
         i.comment,
-        i.productNumber,
+        i.sProductNumber,
         i.price,
         0, // TODO
         0, // TODO
@@ -108,7 +108,7 @@ export class TillService {
         null,
         i._id,
         i.ean,
-        i.articleNumber,
+        i.sArticleNumber,
         i.aImage,
         0, // TODO
         null,
@@ -140,7 +140,7 @@ export class TillService {
 
         i.dEstimatedDate, // estimated date
         null, // TODO
-        i.iBrandId,
+        i.iBusinessBrandId,
         i.iBusinessProductId,
         null,
         'y',

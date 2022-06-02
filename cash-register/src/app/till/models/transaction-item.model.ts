@@ -53,7 +53,7 @@ export class TransactionItem {
 
     public dEstimatedDate: Date | null,
     public dEstimatedDateString: string | null,
-    public iBrandId: string | null,
+    public iBusinessBrandId: string | null,
     public iBusinessProductId: string | null,
     public oBusinessProductMetaData: BusinessProductMetadata | null,
     public eStatus: string,
