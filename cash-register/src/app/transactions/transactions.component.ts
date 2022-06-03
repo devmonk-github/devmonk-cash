@@ -250,8 +250,7 @@ export class TransactionsComponent implements OnInit {
     this.dialogService.openModal(TransactionDetailsComponent, { cssClass: "modal-xl", context: { transaction: transaction, eType: this.eType } })
       .instance.close.subscribe(
         res => {
-          console.log(res);
-          this.routes.navigate(['business/till']);
+          if (res) this.routes.navigate(['business/till']);
         });
   }
 }

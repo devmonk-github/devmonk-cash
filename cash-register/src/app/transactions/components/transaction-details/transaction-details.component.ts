@@ -43,8 +43,8 @@ export class TransactionDetailsComponent implements OnInit {
     this.fetchTransaction(this.transaction.sNumber)
   }
 
-  close() {
-    this.dialogRef.close.emit();
+  close(value: boolean) {
+    this.dialogRef.close.emit(value);
   }
 
   fetchTransaction(sNumber: any) {
@@ -63,9 +63,7 @@ export class TransactionDetailsComponent implements OnInit {
   openTransaction(transaction: any, itemType: any) {
     this.dialogService.openModal(TransactionItemsDetailsComponent, { cssClass: "modal-xl", context: { transaction, itemType } })
       .instance.close.subscribe(result => {
-        console.log('I am being called after the closing of modal');
         const transactionItems: any = [];
-        console.log(result);
         if (result.transaction) {
           result.transactionItems.forEach((transactionItem: any) => {
             if (transactionItem.isSelected) {
@@ -108,8 +106,9 @@ export class TransactionDetailsComponent implements OnInit {
           });
           result.transactionItems = transactionItems;
           localStorage.setItem('fromTransactionPage', JSON.stringify(result));
+          localStorage.setItem('recentUrl', '/business/transactions');
           setTimeout(() => {
-            this.close();
+            this.close(true);
           }, 100);
         }
       });
