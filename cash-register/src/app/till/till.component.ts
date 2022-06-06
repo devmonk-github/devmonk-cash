@@ -422,15 +422,15 @@ export class TillComponent implements OnInit {
     }
 
     const giftCardPayment = this.allPaymentMethod.find((o) => o.sName === 'Giftcards');
-    const giftcardAmount = _.sumBy(this.appliedGiftCards, 'nAmount');
-    const totalAmountPaid = giftcardAmount + _.sumBy(this.payMethods, 'amount');
+    // const giftcardAmount = _.sumBy(this.appliedGiftCards, 'nAmount');
+    // const totalAmountPaid = giftcardAmount + _.sumBy(this.payMethods, 'amount');
 
     this.saveInProgress = true;
-    if (_.sumBy(this.transactionItems, 'paymentAmount') > totalAmountPaid || 0) {
-      this.toastrService.show({ type: 'danger', text: 'The amount required does not match the amount entered.' });
-      this.saveInProgress = false;
-      return;
-    }
+    // if (_.sumBy(this.transactionItems, 'paymentAmount') > totalAmountPaid || 0) {
+    //   this.toastrService.show({ type: 'danger', text: 'The amount required does not match the amount entered.' });
+    //   this.saveInProgress = false;
+    //   return;
+    // }
     const changeAmount = this.getUsedPayMethods(true) - this.getTotals('price')
     this.dialogService.openModal(TerminalDialogComponent, { cssClass: 'modal-lg', context: { payments: this.payMethods, changeAmount } })
       .instance.close.subscribe((payMethods) => {
