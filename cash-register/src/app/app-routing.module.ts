@@ -3,40 +3,44 @@ import { RouterModule, Routes } from '@angular/router';
 
 const routes: Routes = [
   {
-    path : 'home',
-    loadChildren : () => import('./home/home.module').then(module => module.HomeModule)
+    path: 'home',
+    loadChildren: () => import('./home/home.module').then(module => module.HomeModule)
   },
   {
-    path : 'till',
-    loadChildren : () => import('./till/till.module').then(module => module.TillModule)
+    path: 'till',
+    loadChildren: () => import('./till/till.module').then(module => module.TillModule)
   },
   {
-    path : 'till-settings',
-    loadChildren : () => import('./till-settings/till-settings.module').then(module => module.TillSettingsModule)
+    path: 'till-settings',
+    loadChildren: () => import('./till-settings/till-settings.module').then(module => module.TillSettingsModule)
   },
   {
-    path : 'print-settings',
-    loadChildren : () => import('./print-settings/print-settings.module').then(module => module.PrintSettingsModule)
+    path: 'print-settings',
+    loadChildren: () => import('./print-settings/print-settings.module').then(module => module.PrintSettingsModule)
   },
   {
-    path : 'workstations',
-    loadChildren : () => import('./workstation/workstation.module').then(module => module.WorkstationModule)
+    path: 'workstations',
+    loadChildren: () => import('./workstation/workstation.module').then(module => module.WorkstationModule)
   },
   {
-    path : 'webshop-settings',
-    loadChildren : () => import('./webshop-settings/webshop-settings.module').then(module => module.WebshopSettingsModule)
+    path: '/saving-points',
+    loadChildren: () => import('./saving-points/saving-points.module').then(module => module.SavingPointsModule)
   },
   {
-    path : 'devices',
-    loadChildren : () => import('./device/device.module').then(module => module.DeviceModule)
+    path: 'webshop-settings',
+    loadChildren: () => import('./webshop-settings/webshop-settings.module').then(module => module.WebshopSettingsModule)
   },
   {
-    path : 'transactions',
-    loadChildren : () => import('./transactions/transactions.module').then(module => module.TransactionsModule)
+    path: 'devices',
+    loadChildren: () => import('./device/device.module').then(module => module.DeviceModule)
   },
   {
-    path : 'web-orders',
-    loadChildren : () => import('./web-orders/web-orders.module').then(module => module.WebOrdersModule)
+    path: 'transactions',
+    loadChildren: () => import('./transactions/transactions.module').then(module => module.TransactionsModule)
+  },
+  {
+    path: 'web-orders',
+    loadChildren: () => import('./web-orders/web-orders.module').then(module => module.WebOrdersModule)
   },
   {
     path: 'statistics',
