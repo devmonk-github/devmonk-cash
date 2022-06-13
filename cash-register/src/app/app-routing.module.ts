@@ -23,7 +23,7 @@ const routes: Routes = [
     loadChildren: () => import('./workstation/workstation.module').then(module => module.WorkstationModule)
   },
   {
-    path: '/saving-points',
+    path: 'saving-points',
     loadChildren: () => import('./saving-points/saving-points.module').then(module => module.SavingPointsModule)
   },
   {
