@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {PdfService} from "../shared/service/pdf.service";
 import {JsonEditorOptions} from "ang-jsoneditor";
 import { ApiService } from '../shared/service/api.service';
-import { TranslateService } from '@ngx-translate/core';
+import {TranslateService} from "@ngx-translate/core";
 
 @Component({
   selector: 'app-print',
@@ -22,7 +22,7 @@ export class PrintComponent implements OnInit {
   location: any = {};
   workstation: any = {};
   translationsResults: any = [];
-  translationsKey: Array<string> = ['ART_NUMBER', 'QUANTITY', 'DESCRIPTION', 'DISCOUNT', 'AMOUNT'];
+  translationsKey: Array<string> = ['NO_START_NUMBER_REQ', 'ART_NUMBER', 'QUANTITY', 'DESCRIPTION', 'DISCOUNT', 'AMOUNT'];
 
   constructor(
     private pdfService: PdfService,
@@ -37,7 +37,17 @@ export class PrintComponent implements OnInit {
     this.location._id = localStorage.getItem('currentLocation')
     this.workstation._id = '623b6d840ed1002890334456'
     this.getPrintSetting();
+
+    this.translateService.get('NO_START_NUMBER_REQ').subscribe( (res) => {
+      console.log(res);
+    });
+
+    this.translateService.get('CASH_REGISTER').subscribe( (res) => {
+      console.log(res);
+    });
+
     this.translateService.get(this.translationsKey).subscribe((result) => {
+      console.log(result);
       this.translationsResults = result;
     });
 
