@@ -744,6 +744,30 @@ export class PdfService {
     return counter === conditions.length
   }
 
+  private getTranslatableVariables(templateString: string): string {
+
+  
+    //This function should return an array of translates variables, extracted from the template.
+    //translation variables have this format: [[DISCOUNT|translate]]
+
+    //1. check if the json is valid with this.isValidJson(templateString)
+    //2. find all the variable fields in the template: templateString.match(/\[\[(.*?)]]/ig)
+    //3. remove the results that don't have the "|translate" pipe
+    //4. call the translations service for each translatable variable
+    //5. return an object with the original key and the translation, like this:
+
+    /**
+     *  {
+     *    "DISCOUNT":"Korting",
+     *    "QUANTITY":"Aantal",
+     *    ...
+     *  }
+     * 
+     */
+  
+    return String(templateString)
+  }
+
   private getVariables(text: string): RegExpMatchArray | null {
     return text.match(/\[\[(.*?)]]/ig) || null
   }
@@ -998,7 +1022,7 @@ export class PdfService {
     if (html.length > 0) {
       if (typeof html[0] === 'object') {
         for (let e = 0; e < html.length; e++) {
-          html[e].content = html[e].content.replace('/>', '>');
+          html[e].content = typeof html[e].content !== 'undefined' ? html[e].content.replace('/>', '>') : "";
 
           if (this.isDefined(html[e].if)) {
             newContent.push([
@@ -1099,6 +1123,8 @@ export class PdfService {
       return Promise.reject('DATA_NOT_VALID');
     }
 
+    //1. Create an object with all the translations used in the template
+    const translations = this.getTranslatableVariables(templateString)
     const template = JSON.parse(templateString);
     const dataObject = JSON.parse(dataString);
 
@@ -1183,6 +1209,9 @@ export class PdfService {
             }
 
             const encodedString = this.stringService.b2a(htmlString.replace(/€/gi, '+euro+'))
+
+            //uncomment this line if you want to debug the previous code without actually generating a pdf
+            //return resolve('success') 
 
             return this.httpClient
               .post(
