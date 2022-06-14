@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {PdfService} from "../shared/service/pdf.service";
 import {JsonEditorOptions} from "ang-jsoneditor";
 import { ApiService } from '../shared/service/api.service';
+import {TranslateService} from "@ngx-translate/core";
 
 @Component({
   selector: 'app-print',
@@ -20,10 +21,13 @@ export class PrintComponent implements OnInit {
   business: any = {};
   location: any = {};
   workstation: any = {};
+  translationsResults: any = [];
+  translationsKey: Array<string> = ['NO_START_NUMBER_REQ', 'ART_NUMBER', 'QUANTITY', 'DESCRIPTION', 'DISCOUNT', 'AMOUNT'];
 
   constructor(
     private pdfService: PdfService,
-    private apiService: ApiService) {
+    private apiService: ApiService,
+    private translateService: TranslateService) {
     this.editorOptions.mode = 'view'
   }
 
@@ -33,6 +37,139 @@ export class PrintComponent implements OnInit {
     this.location._id = localStorage.getItem('currentLocation')
     this.workstation._id = '623b6d840ed1002890334456'
     this.getPrintSetting();
+
+    this.translateService.get('NO_START_NUMBER_REQ').subscribe( (res) => {
+      console.log(res);
+    });
+
+    this.translateService.get('CASH_REGISTER').subscribe( (res) => {
+      console.log(res);
+    });
+
+    this.translateService.get(this.translationsKey).subscribe((result) => {
+      console.log(result);
+      this.translationsResults = result;
+    });
+
+    const dataString = {
+      "_id": "62a1f98405adcc35b88ed713",
+      "aTransactionItemType": [
+        "regular"
+      ],
+      "eStatus": "y",
+      "bImported": false,
+      "bInvoiced": false,
+      "iBusinessId": "6182a52f1949ab0a59ff4e7b",
+      "iLocationId": "623b6d840ed1002890334456",
+      "iBusinessPartnerId": null,
+      "iDeviceId": "623b6d840ed1002890334456",
+      "eType": "cash-register-revenue",
+      "sNumber": "T0279-090622-1545",
+      "oCustomer": {
+        "oPhone": {
+          "bWhatsApp": true,
+          "sCountryCode": "+91",
+          "sMobile": "9970149807",
+          "sLandLine": "9970149807",
+          "sFax": ""
+        },
+        "oInvoiceAddress": {
+          "sStreet": "middlewerg",
+          "sHouseNumber": "9a",
+          "sPostalCode": "442001",
+          "sCity": "Asperen"
+        },
+        "oPoints": {
+          "spendable": 0,
+          "history": []
+        },
+        "oIdentity": {
+          "documentName": "Passport",
+          "documentNumber": "324788353"
+        },
+        "bIsEmailVerified": false,
+        "bCounter": false,
+        "sEmail": "Jolmerekeren02@gmail.com",
+        "bNewsletter": true,
+        "_id": "62420be55777d556346a9484",
+        "iBusinessId": "6182a52f1949ab0a59ff4e7b",
+        "sSalutation": "Mr",
+        "sFirstName": "Jolmer",
+        "sPrefix": "Van",
+        "sLastName": "Ekeren2",
+        "dDateOfBirth": "1999-12-31T23:00:00.000Z",
+        "sGender": "male",
+        "sCompanyName": "Prisma note",
+        "dCreatedDate": "2022-03-28T19:26:29.523Z"
+      },
+      "sReceiptNumber": "0000562",
+      "sInvoiceNumber": "0000562",
+      "aPayments": [
+        {
+          "_id": "6243ff1a0ab1c8da110423f4",
+          "sMethod": "cash"
+        },
+        {
+          "_id": "6243ff1a0ab1c8da110423f4",
+          "sMethod": "cash"
+        }
+      ],
+      "iActivityId": "62a1f98405adcc35b88ed714",
+      "dCreatedDate": "2022-06-09T13:45:40.775Z",
+      "dUpdatedDate": "2022-06-09T13:45:40.775Z",
+      "aTransactionItems": [
+        {
+          "_id": "62a1f98405adcc35b88ed717",
+          "nQuantity": 1,
+          "nAppliedStock": 0,
+          "aImage": [
+            "https://prismanote.s3.amazonaws.com/products/prisma-p1700-heren-horloge-edelstaal-rekband-ljpg.JPG"
+          ],
+          "eStatus": "y",
+          "sProductName": "Prisma P.1700 gents watch all stainless steel 10 ATM",
+          "sProductNumber": "P1700",
+          "nPriceIncVat": 69,
+          "nPurchasePrice": 100,
+          "nVatRate": 0,
+          "nReceivedQuantity": null,
+          "sArticleNumber": "000069725",
+          "iBusinessProductId": "627abbb74a2a1175a06bc0bc",
+          "iTransactionId": "62a1f98405adcc35b88ed713"
+        }
+      ],
+      "oEmployee": {
+        "sName":"Erik"
+      },
+      "oBusiness": {
+        "sName": "RichRabbit New 1",
+        "sEmail": "neworg@neworg.com",
+        "oPhone": {
+          "bWhatsApp": true,
+          "sCountryCode": "+91",
+          "sMobile": "123123123",
+          "sLandLine": "1123123323",
+          "sFax": ""
+        },
+        "oAddress": {
+          "attn": {
+              "salution": "Hon",
+              "firstName": "Jolmer",
+              "lastNamePrefix": "Van",
+              "lastName": "Ekeren"
+          },
+          "street": "Middleweg",
+          "houseNumber": "8",
+          "houseNumberSuffix": "B",
+          "postalCode": "1456G",
+          "city": "Asperen",
+          "country": "Holland",
+          "countryCode": "41",
+          "state": "Utrech"
+        }
+      }
+    }
+
+    this.dataString = dataString;
 
     const templateString = {
       "barcodeheight":"10",
@@ -59,10 +196,10 @@ export class PrintComponent implements OnInit {
             {
               "size":4,
               "html":[
-                {"element":"span","content":"[[oBusiness.sName]]"},
+                {"element":"span","content": this.dataString?.oBusiness?.sName },
                 {"element":"span","content":"<make function to combine address into single variable!!>"},
-                {"element":"span","content":"[[oBusiness.sEmail]]"},
-                {"element":"span","content":"[[oBusiness.oPhone.sMobile]] [[oBusiness.oPhone.sLandline]]"}
+                {"element":"span","content": this.dataString?.oBusiness?.sEmail },
+                {"element":"span","content": this.dataString?.oBusiness?.oPhone?.sMobile + this.dataString?.oBusiness?.oPhone?.sLandline }
               ],
               "css":{
                 "text-align":"right"
@@ -90,7 +227,7 @@ export class PrintComponent implements OnInit {
             {
               "size":"12",
               "float":"left",
-              "html":"Datum: [[dCreatedDate]]<br/>Bonnummer: [[sReceiptNumber]]"
+              "html":"Datum: [[dCreatedDate]]<br/>Bonnummer: " + this.dataString?.sReceiptNumber
             }
           ],
           "css":{
@@ -103,7 +240,7 @@ export class PrintComponent implements OnInit {
             {
               "size":"12",
               "float":"left",
-              "html":"[[CREATED_BY|translate]] [[oEmployee.sName]]"
+              "html": this.translationsResults.CREATED_BY + ' ' + this.dataString?.oEmployee?.sName
             }
           ],
           "css":{
@@ -113,11 +250,11 @@ export class PrintComponent implements OnInit {
         },
         {
           "row":[
-            {"size":2, "html":"[[ART_NUMBER|translate]]"},
-            {"size":1, "html":"[[QUANTITY|translate]]"},
-            {"size":3, "html":"[[DESCRIPTION|translate]]"},
-            {"size":2, "html":"[[DISCOUNT|translate]]"},
-            {"size":2, "html":"[[AMOUNT|translate]]", "css":{"text-align":"right"}}
+            {"size":2, "html": this.translationsResults.ART_NUMBER },
+            {"size":1, "html": this.translationsResults.QUANTITY },
+            {"size":3, "html": this.translationsResults.DESCRIPTION },
+            {"size":2, "html": this.translationsResults.DISCOUNT },
+            {"size":2, "html": this.translationsResults.AMOUNT , "css":{"text-align":"right"}}
           ],
           "css":{
             "font-weight":"bold",
@@ -149,7 +286,7 @@ export class PrintComponent implements OnInit {
               "html":[
                 {
                   "element":"span",
-                  "content":"[[sProductNumber]]"
+                  "content": this.dataString?.sProductNumber
                 }
               ]
             },
@@ -158,7 +295,7 @@ export class PrintComponent implements OnInit {
               "html":[
                 {
                   "element":"span",
-                  "content":"[[nQuantity]]"
+                  "content": this.dataString?.nQuantity
                 }
               ]
             },
@@ -167,7 +304,7 @@ export class PrintComponent implements OnInit {
               "html":[
                 {
                   "element":"span",
-                  "content":"[[sProductName]]",
+                  "content": this.dataString?.sProductName,
                   "css":{
                     "margin":[0,0,1,0]
                   }
@@ -298,124 +435,6 @@ export class PrintComponent implements OnInit {
       ]
     }
 
-    const dataString = {
-        "_id": "62a1f98405adcc35b88ed713",
-        "aTransactionItemType": [
-          "regular"
-        ],
-        "eStatus": "y",
-        "bImported": false,
-        "bInvoiced": false,
-        "iBusinessId": "6182a52f1949ab0a59ff4e7b",
-        "iLocationId": "623b6d840ed1002890334456",
-        "iBusinessPartnerId": null,
-        "iDeviceId": "623b6d840ed1002890334456",
-        "eType": "cash-register-revenue",
-        "sNumber": "T0279-090622-1545",
-        "oCustomer": {
-          "oPhone": {
-            "bWhatsApp": true,
-            "sCountryCode": "+91",
-            "sMobile": "9970149807",
-            "sLandLine": "9970149807",
-            "sFax": ""
-          },
-          "oInvoiceAddress": {
-            "sStreet": "middlewerg",
-            "sHouseNumber": "9a",
-            "sPostalCode": "442001",
-            "sCity": "Asperen"
-          },
-          "oPoints": {
-            "spendable": 0,
-            "history": []
-          },
-          "oIdentity": {
-            "documentName": "Passport",
-            "documentNumber": "324788353"
-          },
-          "bIsEmailVerified": false,
-          "bCounter": false,
-          "sEmail": "Jolmerekeren02@gmail.com",
-          "bNewsletter": true,
-          "_id": "62420be55777d556346a9484",
-          "iBusinessId": "6182a52f1949ab0a59ff4e7b",
-          "sSalutation": "Mr",
-          "sFirstName": "Jolmer",
-          "sPrefix": "Van",
-          "sLastName": "Ekeren2",
-          "dDateOfBirth": "1999-12-31T23:00:00.000Z",
-          "sGender": "male",
-          "sCompanyName": "Prisma note",
-          "dCreatedDate": "2022-03-28T19:26:29.523Z"
-        },
-        "sReceiptNumber": "0000562",
-        "sInvoiceNumber": "0000562",
-        "aPayments": [
-          {
-            "_id": "6243ff1a0ab1c8da110423f4",
-            "sMethod": "cash"
-          },
-          {
-            "_id": "6243ff1a0ab1c8da110423f4",
-            "sMethod": "cash"
-          }
-        ],
-        "iActivityId": "62a1f98405adcc35b88ed714",
-        "dCreatedDate": "2022-06-09T13:45:40.775Z",
-        "dUpdatedDate": "2022-06-09T13:45:40.775Z",
-        "aTransactionItems": [
-          {
-            "_id": "62a1f98405adcc35b88ed717",
-            "nQuantity": 1,
-            "nAppliedStock": 0,
-            "aImage": [
-              "https://prismanote.s3.amazonaws.com/products/prisma-p1700-heren-horloge-edelstaal-rekband-ljpg.JPG"
-            ],
-            "eStatus": "y",
-            "sProductName": "Prisma P.1700 gents watch all stainless steel 10 ATM",
-            "sProductNumber": "P1700",
-            "nPriceIncVat": 69,
-            "nPurchasePrice": 100,
-            "nVatRate": 0,
-            "nReceivedQuantity": null,
-            "sArticleNumber": "000069725",
-            "iBusinessProductId": "627abbb74a2a1175a06bc0bc",
-            "iTransactionId": "62a1f98405adcc35b88ed713"
-          }
-        ],
-        "oEmployee": {
-          "sName":"Erik"
-        },
-        "oBusiness": {
-          "sName": "RichRabbit New 1",
-          "sEmail": "neworg@neworg.com",
-          "oPhone": {
-            "bWhatsApp": true,
-            "sCountryCode": "+91",
-            "sMobile": "123123123",
-            "sLandLine": "1123123323",
-            "sFax": ""
-          },
-          "oAddress": {
-            "attn": {
-                "salution": "Hon",
-                "firstName": "Jolmer",
-                "lastNamePrefix": "Van",
-                "lastName": "Ekeren"
-            },
-            "street": "Middleweg",
-            "houseNumber": "8",
-            "houseNumberSuffix": "B",
-            "postalCode": "1456G",
-            "city": "Asperen",
-            "country": "Holland",
-            "countryCode": "41",
-            "state": "Utrech"
-          }
-        }
-    }
-  
     const dataStringOld = {
       "receipt":{
         "concept" : false,
@@ -896,7 +915,6 @@ export class PrintComponent implements OnInit {
     }
 
     this.templateString = templateString
-    this.dataString = dataString
   }
 
   getPrintSetting(){
