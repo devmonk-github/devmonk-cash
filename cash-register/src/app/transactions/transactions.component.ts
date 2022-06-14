@@ -31,7 +31,7 @@ export class TransactionsComponent implements OnInit {
   userType: any = {};
   requestParams: any = {
     searchValue: '',
-    sortBy: { key: 'Date', selected: true, sort: 'desc' },
+    sortBy: 'dCreatedDate',
     sortOrder: 'desc'
   };
   showLoader: Boolean = false;
