@@ -9,7 +9,7 @@
             </button>
         </div>
     </div>
-    <div class="card-body">
+    <div *ngIf="mode === 'details'" class="card-body">
         <h2 class="fw-bolder mb-0">
             <span>{{ customer.sSalutation }} {{ customer.sFirstname }} {{ customer.sLastName }}</span>
         </h2>
@@ -50,7 +50,7 @@
                     </tr>
                 </table>
             </div>
-            <div class="flex-equal">
+            <!-- <div class="flex-equal">
                 <table class="table table-flush fw-bold gy-1">
                     <tr>
                         <td class="text-muted min-w-125px w-125px">Lorem</td>
@@ -81,7 +81,7 @@
                         <td class="text-gray-800">Ipsum</td>
                     </tr>
                 </table>
-            </div>
+            </div> -->
         </div>
         <div class="row my-3">
             <div class="d-flex flex-row-fluid justify-content-end gap-5">
