@@ -26,7 +26,7 @@ module.exports = {
 
       // For remotes (please adjust)
       name: "cashRegister",
-      filename: "remoteEntry.js",
+      filename: "cash-register.js",
       exposes: {
         './CashRegisterModule': './src/app/till/till.module.ts',
         './CashRegisterSettingsModule': './src/app/till-settings/till-settings.module.ts',
