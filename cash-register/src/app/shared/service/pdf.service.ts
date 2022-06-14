@@ -158,6 +158,12 @@ export class PdfService {
   }
 
   private formatContent(val: any, type: string): any {
+
+    //1. make a 'global' array of translations used in the receipts.
+    //2. translate all the keywords in the language that the user has selected.
+    //3. make sure the array is available in this function
+    //4. add an option below to replace the keyword with the translation
+
     switch (type) {
       case 'money':
         return this.convertStringToMoney(val);
@@ -744,30 +750,6 @@ export class PdfService {
     return counter === conditions.length
   }
 
-  private getTranslatableVariables(templateString: string): string {
-
-  
-    //This function should return an array of translates variables, extracted from the template.
-    //translation variables have this format: [[DISCOUNT|translate]]
-
-    //1. check if the json is valid with this.isValidJson(templateString)
-    //2. find all the variable fields in the template: templateString.match(/\[\[(.*?)]]/ig)
-    //3. remove the results that don't have the "|translate" pipe
-    //4. call the translations service for each translatable variable
-    //5. return an object with the original key and the translation, like this:
-
-    /**
-     *  {
-     *    "DISCOUNT":"Korting",
-     *    "QUANTITY":"Aantal",
-     *    ...
-     *  }
-     * 
-     */
-  
-    return String(templateString)
-  }
-
   private getVariables(text: string): RegExpMatchArray | null {
     return text.match(/\[\[(.*?)]]/ig) || null
   }
@@ -1123,8 +1105,6 @@ export class PdfService {
       return Promise.reject('DATA_NOT_VALID');
     }
 
-    //1. Create an object with all the translations used in the template
-    const translations = this.getTranslatableVariables(templateString)
     const template = JSON.parse(templateString);
     const dataObject = JSON.parse(dataString);
 

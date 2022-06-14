@@ -196,10 +196,12 @@ export class PrintComponent implements OnInit {
             {
               "size":4,
               "html":[
-                {"element":"span","content": this.dataString?.oBusiness?.sName },
-                {"element":"span","content":"<make function to combine address into single variable!!>"},
-                {"element":"span","content": this.dataString?.oBusiness?.sEmail },
-                {"element":"span","content": this.dataString?.oBusiness?.oPhone?.sMobile + this.dataString?.oBusiness?.oPhone?.sLandline }
+                {"element":"span","content": "[[oBusiness.sName]]" },
+                {"element":"span","content": "[[oBusiness.sEmail]]" },
+                {"element":"span","content": "[[oBusiness.oPhone.sMobile]]" },
+                {"element":"span","content": "[[oBusiness.oPhone.sLandline]]" },
+                {"element":"span","content":"<make function to combine address into single variable!!>"}
+
               ],
               "css":{
                 "text-align":"right"
@@ -227,7 +229,7 @@ export class PrintComponent implements OnInit {
             {
               "size":"12",
               "float":"left",
-              "html":"Datum: [[dCreatedDate]]<br/>Bonnummer: " + this.dataString?.sReceiptNumber
+              "html":"Datum: [[dCreatedDate]]<br/>Bonnummer: [[sReceiptNumber]]"
             }
           ],
           "css":{
@@ -240,7 +242,7 @@ export class PrintComponent implements OnInit {
             {
               "size":"12",
               "float":"left",
-              "html": this.translationsResults.CREATED_BY + ' ' + this.dataString?.oEmployee?.sName
+              "html": "[[CREATED_BY|translate]] [[oEmployee.sName]]"
             }
           ],
           "css":{
@@ -250,11 +252,11 @@ export class PrintComponent implements OnInit {
         },
         {
           "row":[
-            {"size":2, "html": this.translationsResults.ART_NUMBER },
-            {"size":1, "html": this.translationsResults.QUANTITY },
-            {"size":3, "html": this.translationsResults.DESCRIPTION },
-            {"size":2, "html": this.translationsResults.DISCOUNT },
-            {"size":2, "html": this.translationsResults.AMOUNT , "css":{"text-align":"right"}}
+            {"size":2, "html": "[[ART_NUMBER|translate]]"},
+            {"size":1, "html": "[[QUANTITY|translate]]"},
+            {"size":3, "html": "[[DESCRIPTION|translate]]"},
+            {"size":2, "html": "[[DISCOUNT|translate]]"},
+            {"size":2, "html": "[[AMOUNT|translate]]", "css":{"text-align":"right"}}
           ],
           "css":{
             "font-weight":"bold",
@@ -286,7 +288,7 @@ export class PrintComponent implements OnInit {
               "html":[
                 {
                   "element":"span",
-                  "content": this.dataString?.sProductNumber
+                  "content": "[[sProductNumber]]"
                 }
               ]
             },
@@ -295,7 +297,7 @@ export class PrintComponent implements OnInit {
               "html":[
                 {
                   "element":"span",
-                  "content": this.dataString?.nQuantity
+                  "content": "[[nQuantity]]"
                 }
               ]
             },
@@ -304,7 +306,7 @@ export class PrintComponent implements OnInit {
               "html":[
                 {
                   "element":"span",
-                  "content": this.dataString?.sProductName,
+                  "content": "[[sProductName]]",
                   "css":{
                     "margin":[0,0,1,0]
                   }
