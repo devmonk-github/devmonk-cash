@@ -123,9 +123,10 @@ export class TillComponent implements OnInit {
       this.clearAll();
       const { transactionItems, transaction } = fromTransactionPage;
       this.transactionItems = transactionItems;
+      console.log(transactionItems);
       this.iActivityId = transaction.iActivityId || transaction._id;
       this.changeInPayment();
-      localStorage.removeItem('fromTransactionPage')
+      // localStorage.removeItem('fromTransactionPage')
     }
   }
 

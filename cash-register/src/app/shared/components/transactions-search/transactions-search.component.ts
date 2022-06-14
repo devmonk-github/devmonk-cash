@@ -98,7 +98,8 @@ export class TransactionsSearchComponent implements OnInit, AfterViewInit {
               const { tType } = transactionItem;
               let paymentAmount = transactionItem.nQuantity * transactionItem.nPriceIncVat - transactionItem.nPaidAmount;
               if (tType === 'refund') {
-                paymentAmount = -1 * transactionItem.nPaidAmount;
+                // paymentAmount = -1 * transactionItem.nPaidAmount;
+                paymentAmount = 0;
                 transactionItem.oType.bRefund = true;
               } else if (tType === 'revert') {
                 paymentAmount = transactionItem.nPaidAmount;

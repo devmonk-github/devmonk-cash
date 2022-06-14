@@ -133,7 +133,7 @@ export class TillService {
         i.discount.value > 0,
         i.discount.percent,
         i.discount.value,
-        i.nRefundAmount,
+        i.total - i.paymentAmount, // i.nRefundAmount,
 
         null,
         null,
