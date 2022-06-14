@@ -74,13 +74,16 @@ export class ServicesComponent implements OnInit {
   selectedLocations: Array<any> = [];
 
   tableHeaders: Array<any> = [
-    { key: 'Date', selected: true, sort: 'asc' },
     { key: 'Activity No.', selected: false, sort: '' },
-    // { key: 'Receipt number', selected: false, sort: '' },
-    // { key: 'Customer', selected: false, sort: '' },
-    // { key: 'Method', disabled: true },
+    { key: 'Repair number', selected: false, sort: '' },
+    { key: 'Type', disabled: true },
+    { key: 'Intake date', selected: true, sort: 'asc' },
+    { key: 'End date', selected: false, sort: 'asc' },
+    { key: 'Status', selected: false, sort: '' },
+    { key: 'Supplier/Repairer', selected: false, sort: '' },
+    { key: 'Partner supplier status', selected: false, sort: '' },
+    { key: 'Customer', selected: false, sort: '' },
     { key: 'Actions' },
-    // { key: 'Type', disabled: true }
   ]
 
   constructor(
