@@ -168,7 +168,7 @@
         <tr *ngFor="let activity of activities | paginate: paginationConfig, let i = index;">
           <td>{{activity?.sNumber}}</td>
           <td>{{activity?.sReceiptNumber}}</td>
-          <td>{{activity?.eType}}</td>
+          <td>{{getTypes(activity.activityitems)}}</td>
           <td scope="row">{{activity?.dCreatedDate | date: 'yyyy-MM-dd HH:mm'}}</td>
           <td scope="row">{{activity?.dPickedUp | date: 'yyyy-MM-dd HH:mm'}}</td>
           <td>{{activity?.eRepairStatus}}</td>
@@ -220,12 +220,17 @@
           </label>
         </div>
       </div>
-      <div class="col-sm-12 col-md-9 d-flex align-items-center justify-content-center justify-content-md-end"
-        *ngIf="activities.length < pageCount">
-        <pagination-controls (pageChange)="pageChanged($event)" (pageBoundsCorrection)="pageChanged($event)"
-          [maxSize]="setPaginateSize" [previousLabel]="'PREVIOUS'" [nextLabel]="'NEXT'"
-          screenReaderPaginationLabel="Pagination" [screenReaderPageLabel]="'PAGE'">
-        </pagination-controls>
+      <div class="col-sm-12 col-md-9 d-flex align-items-center justify-content-center justify-content-md-end">
+        <pagination-controls
+             [hidden] = "activities.length === 0"
+             (pageChange)="pageChanged($event)"
+             (pageBoundsCorrection)="pageChanged($event)"
+             [maxSize]="setPaginateSize"
+             [previousLabel]="'PREVIOUS' | translate"
+             [nextLabel]="'NEXT' | translate"
+             screenReaderPaginationLabel="Pagination"
+             [screenReaderPageLabel]="'PAGE' | translate">
+         </pagination-controls>
       </div>
     </div>
   </div>
