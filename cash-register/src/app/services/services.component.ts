@@ -72,6 +72,7 @@ export class ServicesComponent implements OnInit {
   selectedWorkstations: Array<any> = [];
   locations: Array<any> = [];
   selectedLocations: Array<any> = [];
+  iLocationId: String | null | undefined;
 
   tableHeaders: Array<any> = [
     { key: 'Activity No.', selected: false, sort: '' },
@@ -93,6 +94,7 @@ export class ServicesComponent implements OnInit {
 
   ngOnInit(): void {
     this.businessDetails._id = localStorage.getItem('currentBusiness');
+    this.iLocationId = localStorage.getItem('currentLocation');
     this.userType = localStorage.getItem('type');
     this.loadTransaction();
     this.iBusinessId = localStorage.getItem('currentBusiness');
@@ -211,6 +213,7 @@ export class ServicesComponent implements OnInit {
     this.requestParams.skip = this.requestParams.skip || 0;
     this.requestParams.limit = this.paginationConfig.itemsPerPage || 50;
     this.requestParams.importStatus = this.importStatus;
+    if(this.iLocationId) this.requestParams.iLocationId = this.iLocationId;
     this.showLoader = true;
     this.apiService.postNew('cashregistry', '/api/v1/activities', this.requestParams).subscribe((result: any) => {
       this.activities = result.data;
