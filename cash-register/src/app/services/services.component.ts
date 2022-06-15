@@ -75,14 +75,14 @@ export class ServicesComponent implements OnInit {
 
   tableHeaders: Array<any> = [
     { key: 'Activity No.', selected: false, sort: '' },
-    { key: 'Repair number', selected: false, sort: '' },
+    { key: 'Repair number', disabled: true },
     { key: 'Type', disabled: true },
     { key: 'Intake date', selected: true, sort: 'asc' },
     { key: 'End date', selected: false, sort: 'asc' },
-    { key: 'Status', selected: false, sort: '' },
-    { key: 'Supplier/Repairer', selected: false, sort: '' },
-    { key: 'Partner supplier status', selected: false, sort: '' },
-    { key: 'Customer', selected: false, sort: '' },
+    { key: 'Status', disabled: true },
+    { key: 'Supplier/Repairer', disabled: true },
+    { key: 'Partner supplier status', disabled: true },
+    { key: 'Customer', disabled: true },
     { key: 'Actions' },
   ]
 
@@ -104,6 +104,19 @@ export class ServicesComponent implements OnInit {
   // Function for handle event of transaction menu
   clickMenuOpt(key: string, transactionId: string) {
 
+  }
+
+  getTypes(arr: any){
+    let str = '';
+    if(arr && arr.length){
+      for(let i = 0; i < arr.length; i++){
+        if(arr[i]?.oArticleGroupMetaData?.sCategory){
+          if(!str){ str += (arr[i]?.oArticleGroupMetaData?.sCategory) }
+          else { str += (', ' + arr[i]?.oArticleGroupMetaData?.sCategory) }
+        } 
+      }
+    }
+    return str;
   }
 
   getLocations() {
@@ -133,6 +146,7 @@ export class ServicesComponent implements OnInit {
   // Function for update item's per page
   changeItemsPerPage(pageCount: any) {
     this.paginationConfig.itemsPerPage = pageCount;
+    this.loadTransaction();
   }
 
   // Function for trigger event after page changes
@@ -164,10 +178,9 @@ export class ServicesComponent implements OnInit {
 
   sortAndLoadTransactions(sortHeader: any) {
     let sortBy = 'dCreatedDate';
-    if (sortHeader.key == 'Date') sortBy = 'dCreatedDate';
-    if (sortHeader.key == 'Transaction no.') sortBy = 'sNumber';
-    if (sortHeader.key == 'Receipt number') sortBy = 'oReceipt.sNumber';
-    if (sortHeader.key == 'Customer') sortBy = 'oCustomer.sFirstName';
+    if (sortHeader.key == 'End date') sortBy = 'dPickedUp';
+    if (sortHeader.key == 'Intake date') sortBy = 'dCreatedDate';
+    if (sortHeader.key == 'Activity No.') sortBy = 'sNumber';
     this.requestParams.sortBy = sortBy;
     this.requestParams.sortOrder = sortHeader.sort;
     this.loadTransaction();
@@ -195,12 +208,14 @@ export class ServicesComponent implements OnInit {
   loadTransaction() {
     this.activities = [];
     this.requestParams.iBusinessId = this.businessDetails._id;
-    this.requestParams.skip = 0;
-    this.requestParams.limit = 50;
+    this.requestParams.skip = this.requestParams.skip || 0;
+    this.requestParams.limit = this.paginationConfig.itemsPerPage || 50;
     this.requestParams.importStatus = this.importStatus;
     this.showLoader = true;
     this.apiService.postNew('cashregistry', '/api/v1/activities', this.requestParams).subscribe((result: any) => {
       this.activities = result.data;
+      this.paginationConfig.totalItems = result.count;
+      this.getCustomers();
       setTimeout(() => {
         MenuComponent.bootstrap();
       }, 1000);
@@ -210,4 +225,33 @@ export class ServicesComponent implements OnInit {
     })
   }
 
+  getCustomers(){
+    const arr = [];
+    for(let i = 0; i < this.activities.length; i++){
+      if(this.activities[i].iCustomerId && arr.indexOf(this.activities[i].iCustomerId) < 0 ) arr.push(this.activities[i].iCustomerId);
+    }
+
+    const body = {
+      iBusinessId: this.iBusinessId,
+      arr: arr,
+    }
+
+    this.apiService.postNew('customer', '/api/v1/customer/list', body)
+      .subscribe(async (result: any) => {
+        const customers = result.data[0].result || [];
+        for(let i = 0; i < this.activities.length; i++){
+          for(let j = 0; j < customers.length; j++){
+            if(this.activities[i]?.iCustomerId?.toString() == customers[j]?._id?.toString()){
+              this.activities[i].oCustomer = {
+                sFirstName: customers[j].sFirstName,
+                sPrefix: customers[j].sPrefix,
+                sLastName: customers[j].sLastName
+              }
+            }
+          }
+        }
+      },
+      (error) => {
+      })
+  }
 }
