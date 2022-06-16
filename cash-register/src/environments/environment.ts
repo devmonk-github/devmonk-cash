@@ -4,8 +4,12 @@
 
 export const environment = {
   production: false,
-  apiBasePath: 'http://localhost',
-  // apiBasePathProduction: 'http://54.246.32.179',
+  CORE_URL: 'http://localhost:3002',
+  CASH_URL: 'http://localhost:3004',
+  AUTH_URL: 'http://localhost:3005',
+  CUSTOMER_URL: 'http://localhost:3006',
+  BOOKKEEPING_URL: 'http://localhost:3007',
+  BACKUP_URL: 'http://localhost:3008',
   apiURL: 'http://localhost:3000',
   oldPlatformUrl: `http://localhost:3000/`, // https://kassa.prismanote.com,
 };

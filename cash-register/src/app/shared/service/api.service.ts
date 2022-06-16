@@ -151,24 +151,23 @@ export class ApiService {
   }
 
   getApiBaseUrl(apiType: string): any {
-    let basePath = environment.apiBasePath;
     let oldplatform = environment.oldPlatformUrl;
     switch (apiType) {
       case 'auth':
-        return basePath += ':3005';
+        return environment.AUTH_URL;
       case 'core':
-        return basePath += ':3002';
+        return environment.CORE_URL;
       case 'cashregistry':
-        return basePath += ':3004';
+        return environment.CASH_URL;
+      case 'customer':
+        return environment.CUSTOMER_URL;
       case 'bookkeeping':
-        return basePath += ':3007';
+        return environment.BOOKKEEPING_URL;
+      case 'backup':
+        return environment.BACKUP_URL;
       case 'oldplatform':
         return oldplatform += ':3000';
-      case 'bookkeeping':
-        return basePath += ':3007';
-      case 'customer':
-        return basePath += ':3006';
-    } 
+    }
   }
 
   getNew(apiType: string, url: string, header?: any): Observable<HttpResponse<any>> {
