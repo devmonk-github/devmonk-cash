@@ -163,6 +163,9 @@
                   [item]="item" (itemChanged)="itemChanged($event, i)"></div>
                 <div class="accordion-item d-table-cell w-100" till-other *ngIf="item.type=== 'empty-line'"
                   [item]="item" [taxes]="taxes" (itemChanged)="itemChanged($event, i)"></div>
+                <div class="accordion-item d-table-cell w-100" till-loyalti-points-discount
+                  *ngIf="item.type=== 'loyalti-points-discount'" [item]="item" [taxes]="taxes"
+                  (itemChanged)="itemChanged($event, i)"></div>
                 <div class="d-table-cell">
                   <button class="btn btn-sm btn-icon btn-active-color-primary w-30px h-30px"
                     (click)="itemChanged('delete', i)">
@@ -197,7 +200,7 @@
                 translate}}
               </button>
               <button class="btn btn-secondary me-3" (click)="addNewLine()">{{ "TEXT_LINE" | translate}}</button>
-              <button class="btn btn-secondary me-3">{{ "EMPTY_LINE" | translate}}</button>
+              <button class="btn btn-secondary me-3" (click)="addNewLine()">{{ "EMPTY_LINE" | translate}}</button>
               <button class="btn btn-icon btn-secondary w-85px" (click)="cancelItems()"
                 [disabled]="transactionItems.length === 0">
                 <i class="fa fa-trash"></i>
