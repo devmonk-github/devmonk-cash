@@ -605,7 +605,7 @@ export class TillComponent implements OnInit {
   addNewLine() {
     this.transactionItems.push({
       name: '',
-      type: 'empty-line',
+      type: 'loyalti-points-discount',
       quantity: 1,
       price: 0,
       discount: 0,
@@ -613,6 +613,16 @@ export class TillComponent implements OnInit {
       description: '',
       open: true,
     });
+    // this.transactionItems.push({
+    //   name: '',
+    //   type: 'empty-line',
+    //   quantity: 1,
+    //   price: 0,
+    //   discount: 0,
+    //   tax: 0,
+    //   description: '',
+    //   open: true,
+    // });
   }
 
   getParkedTransactionBody(): Object {
@@ -710,10 +720,15 @@ export class TillComponent implements OnInit {
   openCardsModal() {
     this.dialogService.openModal(CardsComponent, { cssClass: 'modal-lg', context: { customer: this.customer } })
       .instance.close.subscribe(result => {
-        console.log(result);
+        // console.log(result);
         if (result) {
-          this.appliedGiftCards.push(result);
-          this.changeInPayment();
+          if (result.giftCardInfo.nAmount > 0) {
+            this.appliedGiftCards.push(result.giftCardInfo);
+            this.changeInPayment();
+          }
+          if (result.redeemedLoyaltiPoints && result.redeemedLoyaltiPoints > 0) {
+            this.addReedemedPoints(result.redeemedLoyaltiPoints);
+          }
         }
       });
   }
@@ -748,5 +763,18 @@ export class TillComponent implements OnInit {
       }, err => {
         this.toastrService.show({ type: 'danger', text: err.message });
       });
+  }
+  addReedemedPoints(redeemedLoyaltiPoints: number) {
+    this.transactionItems.push({
+      name: '',
+      type: 'loyalti-points-discount',
+      quantity: 1,
+      redeemedLoyaltiPoints,
+      price: 0,
+      discount: 0,
+      tax: 0,
+      description: '',
+      open: true,
+    });
   }
 }
