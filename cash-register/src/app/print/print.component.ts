@@ -22,7 +22,7 @@ export class PrintComponent implements OnInit {
   location: any = {};
   workstation: any = {};
   translationsResults: any = [];
-  translationsKey: Array<string> = ['NO_START_NUMBER_REQ', 'ART_NUMBER', 'QUANTITY', 'DESCRIPTION', 'DISCOUNT', 'AMOUNT'];
+  translationsKey: Array<string> = ['CREATED_BY', 'ART_NUMBER', 'QUANTITY', 'DESCRIPTION', 'DISCOUNT', 'AMOUNT'];
 
   constructor(
     private pdfService: PdfService,
@@ -38,18 +38,19 @@ export class PrintComponent implements OnInit {
     this.workstation._id = '623b6d840ed1002890334456'
     this.getPrintSetting();
 
-    this.translateService.get('NO_START_NUMBER_REQ').subscribe( (res) => {
-      console.log(res);
-    });
-
-    this.translateService.get('CASH_REGISTER').subscribe( (res) => {
-      console.log(res);
-    });
-
     this.translateService.get(this.translationsKey).subscribe((result) => {
       console.log(result);
       this.translationsResults = result;
     });
+
+    const transactionObj = {
+      "__CREATED_BY": this.translationsResults.CREATED_BY + ' : ',
+      "__ART_NUMBER": this.translationsResults.ART_NUMBER + ' : ',
+      "__QUANTITY": this.translationsResults.QUANTITY + ' : ',
+      "__DESCRIPTION": this.translationsResults.DESCRIPTION + ' : ',
+      "__DISCOUNT": this.translationsResults.DISCOUNT + ' : ',
+      "__AMOUNT": this.translationsResults.AMOUNT + ' : ',
+    };
 
     const dataString = {
       "_id": "62a1f98405adcc35b88ed713",
@@ -169,7 +170,7 @@ export class PrintComponent implements OnInit {
       }
     }
 
-    this.dataString = dataString;
+    this.dataString = { ...dataString, ...transactionObj };
 
     const templateString = {
       "barcodeheight":"10",
@@ -242,7 +243,7 @@ export class PrintComponent implements OnInit {
             {
               "size":"12",
               "float":"left",
-              "html": "[[CREATED_BY|translate]] [[oEmployee.sName]]"
+              "html": "[[__CREATED_BY]] [[oEmployee.sName]]"
             }
           ],
           "css":{
@@ -252,11 +253,11 @@ export class PrintComponent implements OnInit {
         },
         {
           "row":[
-            {"size":2, "html": "[[ART_NUMBER|translate]]"},
-            {"size":1, "html": "[[QUANTITY|translate]]"},
-            {"size":3, "html": "[[DESCRIPTION|translate]]"},
-            {"size":2, "html": "[[DISCOUNT|translate]]"},
-            {"size":2, "html": "[[AMOUNT|translate]]", "css":{"text-align":"right"}}
+            {"size":2, "html": "[[__ART_NUMBER]]"},
+            {"size":1, "html": "[[__QUANTITY]]"},
+            {"size":3, "html": "[[__DESCRIPTION]]"},
+            {"size":2, "html": "[[__DISCOUNT]]"},
+            {"size":2, "html": "[[__AMOUNT]]", "css":{"text-align":"right"}}
           ],
           "css":{
             "font-weight":"bold",
