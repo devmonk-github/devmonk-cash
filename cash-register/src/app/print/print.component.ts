@@ -43,13 +43,13 @@ export class PrintComponent implements OnInit {
       this.translationsResults = result;
     });
 
-    const transactionObj = {
-      "__CREATED_BY": this.translationsResults.CREATED_BY + ' : ',
-      "__ART_NUMBER": this.translationsResults.ART_NUMBER + ' : ',
-      "__QUANTITY": this.translationsResults.QUANTITY + ' : ',
-      "__DESCRIPTION": this.translationsResults.DESCRIPTION + ' : ',
-      "__DISCOUNT": this.translationsResults.DISCOUNT + ' : ',
-      "__AMOUNT": this.translationsResults.AMOUNT + ' : ',
+    const translationsObj = {
+      "__CREATED_BY": this.translationsResults.CREATED_BY,
+      "__ART_NUMBER": this.translationsResults.ART_NUMBER,
+      "__QUANTITY": this.translationsResults.QUANTITY,
+      "__DESCRIPTION": this.translationsResults.DESCRIPTION,
+      "__DISCOUNT": this.translationsResults.DISCOUNT,
+      "__AMOUNT": this.translationsResults.AMOUNT
     };
 
     const dataString = {
@@ -170,7 +170,7 @@ export class PrintComponent implements OnInit {
       }
     }
 
-    this.dataString = { ...dataString, ...transactionObj };
+    this.dataString = { ...dataString, ...translationsObj };
 
     const templateString = {
       "barcodeheight":"10",
