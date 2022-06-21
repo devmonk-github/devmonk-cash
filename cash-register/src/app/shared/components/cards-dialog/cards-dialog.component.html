@@ -117,17 +117,17 @@
                     </div>
                 </div>
             </app-pn-tab>
-            <app-pn-tab tabTitle="{{ 'LOYALTY_POINTS' | translate}}" (click)="nAmount = 0" #loyaltiPointElem>
+            <app-pn-tab tabTitle="{{ 'LOYALTY_POINTS' | translate}}" (click)="nAmount = 0" #loyaltyPointElem>
                 <div class="dataTables_wrapper dt-bootstrap4 no-footer">
                     <div class="row" *ngIf="!customer">
                         {{"COUNTER_CUSTOMER_SELECTED" | translate}}
                     </div>
                     <div class="row" *ngIf="customer">
                         <div class="col-6">
-                            <span>{{"POINTS_SPENDABLE"| translate}}: {{loyaltiPoints}}</span>
+                            <span>{{"POINTS_SPENDABLE"| translate}}: {{loyaltyPoints}}</span>
                         </div>
                         <div class="col-6">
-                            <input name="" class="form-control" type="number" [(ngModel)]="redeemedLoyaltiPoints">
+                            <input name="" class="form-control" type="number" [(ngModel)]="redeemedLoyaltyPoints">
                         </div>
                         <!-- <div class="col-2">
                             <button class="btn btn-primary" type="submit">{{"REDEEM" | translate}}</button>

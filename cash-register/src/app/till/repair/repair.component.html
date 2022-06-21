@@ -5,7 +5,7 @@
       <div class="w-90px">{{item.quantity}}</div>
       <div class="w-275px">{{item.name}}</div>
       <div class="w-100px">{{item.price | currency: '€'}}</div>
-      <div class="w-95px">{{item.discount | currency: '€'}}</div>
+      <div class="w-95px">{{item.nDiscount | currency: '€'}}</div>
       <div class="w-100px">{{item.tax}}%</div>
       <div class="w-100px">{{getTotalPrice(item)}}
       </div>
@@ -34,7 +34,7 @@
         <input type="number" step="any" name="price" class="form-control" (change)="updatePayments()"
           [(ngModel)]="item.price">
         <label for="discount">{{ "DISCOUNT" | translate}}</label>
-        <input type="number" step="any" name="discount" class="form-control" [(ngModel)]="item.discount">
+        <input type="number" step="any" name="discount" class="form-control" [(ngModel)]="item.nDiscount">
         <label for="bagNumber">{{ "PREPAYMENT" | translate}}</label>
         <input type="number" step="any" name="bagNumber" id="bagNumber" (keyup)="updatePayments()"
           [(ngModel)]="item.paymentAmount" class="form-control" [disabled]="item.isExclude">
