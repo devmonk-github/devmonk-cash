@@ -124,7 +124,7 @@ export class TransactionsSearchComponent implements OnInit, AfterViewInit {
                 oArticleGroupMetaData: transactionItem.oArticleGroupMetaData,
                 iEmployeeId: transactionItem.iEmployeeId,
                 iBrandId: transactionItem.iBrandId,
-                discount: 0,
+                nDiscount: transactionItem.nDiscount || 0,
                 tax: transactionItem.nVatRate,
                 paymentAmount,
                 description: '',
