@@ -449,10 +449,38 @@ export class PdfService {
 
   private definePaperSize(paperSize: string | PaperSize, margins: number[]): PaperSize {
     let definedPaperSize: any
+
     if (typeof paperSize === 'string') {
-      definedPaperSize = this.staticPaperSize.find((size) => {
-        return size.type === paperSize
-      })
+
+      if(this.orientation === 'portrait' || this.orientation === 'landscape') {
+
+        definedPaperSize = this.staticPaperSize.find((size) => {
+          return size.type === paperSize
+        })
+
+        if (this.orientation === 'landscape') {
+            let definedPaperSizeOldWidth = definedPaperSize.width
+            definedPaperSize.width = definedPaperSize.height
+            definedPaperSize.height = definedPaperSizeOldWidth
+        }
+
+      } else {
+        console.error('Invalid paper orientation! Choose portrait or landscape"');
+      }
+
+      
+
+      
+      // if (template.orientation !== 'portrait') {
+      //   if (this.paperSize.width > this.paperSize.height) {
+      //     console.error('The paper height is already in landscape. Decrease the paper or change orientation to "portrait"');
+      //     return Promise.reject('INVALID_PAPER_SIZE');
+      //   }
+      //   // Flip page sizes to make it landscape
+      //   this.paperSize.height = this.paperSize.width;
+      //   this.paperSize.width = this.paperSize.height;
+      // }
+
     } else if (typeof paperSize === 'object') {
       let pageWidth = paperSize.width
       let pageHeight = paperSize.height
@@ -1112,16 +1140,6 @@ export class PdfService {
     this.paperSize = this.definePaperSize(this.paperSize, this.margins);
     this.parsedPaperSize = this.paperSize;
 
-    if (template.orientation !== 'portrait') {
-      if (this.paperSize.width > this.paperSize.height) {
-        console.error('The paper height is already in landscape. Decrease the paper or change orientation to "portrait"');
-        return Promise.reject('INVALID_PAPER_SIZE');
-      }
-      // Flip page sizes to make it landscape
-      this.paperSize.height = this.paperSize.width;
-      this.paperSize.width = this.paperSize.height;
-    }
-
     let margins = this.convertSpacingArrayToObject(this.margins);
     let rows = this.createRowsFromLayout(this.paperSize);
 
@@ -1190,7 +1208,7 @@ export class PdfService {
 
             const encodedString = this.stringService.b2a(htmlString.replace(/€/gi, '+euro+'))
 
-            //uncomment this line if you want to debug the previous code without actually generating a pdf
+            //uncomment the line below if you want to debug the previous code without actually generating a pdf
             //return resolve('success') 
 
             return this.httpClient
