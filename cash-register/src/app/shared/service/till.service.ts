@@ -47,7 +47,7 @@ export class TillService {
         result = _.sumBy(transactionItems, 'quantity') || 0
         break;
       case 'discount':
-        result = _.sumBy(transactionItems, 'discount') || 0
+        result = _.sumBy(transactionItems, 'nDiscount') || 0
         break;
       default:
         result = 0;
@@ -130,9 +130,9 @@ export class TillService {
         i.total,
         i.paymentAmount || i.total,
         0, // TODO
-        i.discount.value > 0,
-        i.discount.percent,
-        i.discount.value,
+        i.nDiscount.value > 0,
+        i.nDiscount.percent,
+        i.nDiscount.value,
         i.nRefundAmount,
 
         null,
@@ -154,14 +154,15 @@ export class TillService {
         null,
         {
           eTransactionType: 'cash-registry', // TODO
-          bRefund: i.oType?.bRefund || i.discount.quantity < 0 || i.price < 0,
+          bRefund: i.oType?.bRefund || i.nDiscount.quantity < 0 || i.price < 0,
           nStockCorrection: i.eTransactionItemType === 'regular' ? i.quantity : i.quantity - i.nBrokenProduct,
           eKind: i.type, // TODO // repair
-          bDiscount: i.discount.value > 0,
+          bDiscount: i.nDiscount > 0,
           bPrepayment: (i.paymentAmount > 0 || this.getUsedPayMethods(true, payMethods) - this.getTotals('price', transactionItems) < 0) && (i.paymentAmount !== i.amountToBePaid),
         },
         i.iActivityItemId,
         i.goldFor,
+        i.nDiscount,
       )
     });
     return body;

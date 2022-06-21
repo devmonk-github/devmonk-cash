@@ -17,7 +17,7 @@ import { TerminalService } from '../../service/terminal.service';
 export class CardsComponent implements OnInit, AfterViewInit {
   @ViewChild('searchgift') input!: ElementRef;
   @ViewChild('searchExternalGift') serachExternal!: ElementRef;
-  @ViewChild('loyaltiPointElem') loyaltiPointElem!: ElementRef;
+  @ViewChild('loyaltyPointElem') loyaltyPointElem!: ElementRef;
   // @ViewChild('myDiv') myDiv: ElementRef<HTMLElement>;
 
   dialogRef: DialogComponent;
@@ -31,8 +31,8 @@ export class CardsComponent implements OnInit, AfterViewInit {
   appliedGiftCards: Array<any> = [];
   externalGiftCardDetails: any = {};
   nAmount = 0;
-  loyaltiPoints = 0;
-  redeemedLoyaltiPoints = 0;
+  loyaltyPoints = 0;
+  redeemedLoyaltyPoints = 0;
   customer: any;
   pincode: any;
   giftCardInfo = { sGiftCardNumber: '', pincode: '', nAmount: 0, profileIconUrl: '', type: 'custom' };
@@ -49,7 +49,7 @@ export class CardsComponent implements OnInit, AfterViewInit {
   ngOnInit() {
     this.customer = this.dialogRef.context.customer;
     this.iBusinessId = localStorage.getItem('currentBusiness');
-    this.fetchLoyaltiPoints();
+    this.fetchLoyaltyPoints();
   }
 
   ngAfterViewInit(): void {
@@ -119,10 +119,10 @@ export class CardsComponent implements OnInit, AfterViewInit {
   //   console.log(this.appliedGiftCards)
   // }
 
-  fetchLoyaltiPoints() {
+  fetchLoyaltyPoints() {
     if (this.customer) {
       this.apiService.getNew('cashregistry', `/api/v1/points-settings/points?iBusinessId=${this.iBusinessId}&iCustomerId=${this.customer._id}`).subscribe((result: any) => {
-        this.loyaltiPoints = result;
+        this.loyaltyPoints = result;
       });
     }
   }
@@ -133,6 +133,6 @@ export class CardsComponent implements OnInit, AfterViewInit {
     this.giftCardInfo.pincode = this.pincode;
     this.giftCardInfo.profileIconUrl = this.externalGiftCardDetails.profileIconUrl;
     this.giftCardInfo.type = this.externalGiftCardDetails.type;
-    this.close({ giftCardInfo: this.giftCardInfo, redeemedLoyaltiPoints: this.redeemedLoyaltiPoints });
+    this.close({ giftCardInfo: this.giftCardInfo, redeemedLoyaltyPoints: this.redeemedLoyaltyPoints });
   }
 }

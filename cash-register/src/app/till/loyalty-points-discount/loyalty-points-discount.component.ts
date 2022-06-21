@@ -4,11 +4,11 @@ import { PriceService } from 'src/app/shared/service/price.service';
 
 @Component({
   // eslint-disable-next-line @angular-eslint/component-selector
-  selector: '[till-loyalti-points-discount]',
-  templateUrl: './loyalti-points-discount.component.html',
+  selector: '[till-loyalty-points-discount]',
+  templateUrl: './loyalty-points-discount.component.html',
   encapsulation: ViewEncapsulation.None
 })
-export class LoyaltiPointsDiscountComponent {
+export class LoyaltyPointsDiscountComponent {
   @Input() item: any
   @Input() taxes: any
   @Output() itemChanged = new EventEmitter<any>();
@@ -23,7 +23,7 @@ export class LoyaltiPointsDiscountComponent {
     this.itemChanged.emit('delete')
   }
   getDiscount(item: any): string {
-    return this.priceService.getDiscount(item.discount)
+    return this.priceService.getDiscount(item.nDiscount)
   }
 
   getColorCode(item: any): string {

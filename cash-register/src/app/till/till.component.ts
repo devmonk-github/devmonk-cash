@@ -59,6 +59,7 @@ export class TillComponent implements OnInit {
   payMethods: Array<any> = [];
   allPaymentMethod: Array<any> = [];
   appliedGiftCards: Array<any> = [];
+  redeemedLoyaltyPoints: number = 0;
   business: any = {};
   locationId: string = '';
   payMethodsLoading: boolean = false;
@@ -84,6 +85,22 @@ export class TillComponent implements OnInit {
     { name: 'Leren band', price: this.randNumber(20, 45) },
     { name: 'Postzegels', price: this.randNumber(1, 10) },
     { name: 'Tassen', price: this.randNumber(50, 200) },
+  ];
+  aProjection: Array<any> = [
+    'oName',
+    'sEan',
+    'nVatRate',
+    'sProductNumber',
+    'nPriceIncludesVat',
+    'bDiscountOnPercentage',
+    'nDiscount',
+    'sLabelDescription',
+    'aImage',
+    'aProperty',
+    'sArticleNumber',
+    'iArticleGroupId',
+    'iBusinessPartnerId',
+    'iBusinessBrandId',
   ];
   saveInProgress = false;
   randNumber(min: number, max: number): number {
@@ -123,9 +140,10 @@ export class TillComponent implements OnInit {
       this.clearAll();
       const { transactionItems, transaction } = fromTransactionPage;
       this.transactionItems = transactionItems;
+      console.log(transactionItems);
       this.iActivityId = transaction.iActivityId || transaction._id;
       this.changeInPayment();
-      localStorage.removeItem('fromTransactionPage')
+      // localStorage.removeItem('fromTransactionPage')
     }
   }
 
@@ -164,7 +182,7 @@ export class TillComponent implements OnInit {
   addItemToTransaction(item: any): void {
     let article = item
     article.quantity = 1;
-    article.discount = 0;
+    article.nDiscount = 0;
     article.tax = 21;
     article.type = 'product'
     article.description = ''
@@ -182,7 +200,7 @@ export class TillComponent implements OnInit {
       quantity: 1,
       nBrokenProduct: 0,
       price: 0,
-      discount: 0,
+      nDiscount: 0,
       tax: 21,
       paymentAmount: 0,
       oArticleGroupMetaData: { aProperty: [], sCategory: '', sSubCategory: '' },
@@ -212,7 +230,7 @@ export class TillComponent implements OnInit {
             if (i.tType === 'refund') {
               result -= i.prePaidAmount;
             } else {
-              i.nTotal = i.quantity * i.price;
+              i.nTotal = i.quantity * i.price - i.nDiscount;
               i.nTotal = i.type === 'gold-purchase' ? -1 * i.nTotal : i.nTotal;
               result += i.nTotal - (i.prePaidAmount || 0);
               // result += type === 'price' ? i.quantity * i.price - i.prePaidAmount || 0 : i[type]
@@ -226,7 +244,7 @@ export class TillComponent implements OnInit {
         result = _.sumBy(this.transactionItems, 'quantity') || 0
         break;
       case 'discount':
-        result = _.sumBy(this.transactionItems, 'discount') || 0
+        result = _.sumBy(this.transactionItems, 'nDiscount') || 0
         break;
       default:
         result = 0;
@@ -259,7 +277,7 @@ export class TillComponent implements OnInit {
       nBrokenProduct: 0,
       price,
       nTotal: type === 'gold-purchase' ? -1 * price : price,
-      discount: 0,
+      nDiscount: 0,
       tax: 21,
       paymentAmount: type === 'gold-purchase' ? -1 * price : 0,
       description: '',
@@ -368,7 +386,7 @@ export class TillComponent implements OnInit {
       return 0
     }
     if (total) {
-      return (_.sumBy(this.appliedGiftCards, 'nAmount') || 0) + (_.sumBy(this.payMethods, 'amount') || 0);
+      return (_.sumBy(this.appliedGiftCards, 'nAmount') || 0) + (_.sumBy(this.payMethods, 'amount') || 0) + this.redeemedLoyaltyPoints;
     }
     return this.payMethods.filter(p => p.amount && p.amount !== 0) || 0
   }
@@ -464,7 +482,8 @@ export class TillComponent implements OnInit {
               sLastName: this.customer.sLastName,
               sPrefix: this.customer.sPrefix
             }
-          }
+          };
+          body.redeemedLoyaltyPoints = this.redeemedLoyaltyPoints;
           this.apiService.postNew('cashregistry', '/api/v1/till/transaction', body)
             .subscribe((data: any) => {
               this.toastrService.show({ type: 'success', text: data.message });
@@ -490,22 +509,7 @@ export class TillComponent implements OnInit {
       sortBy: '',
       sortOrder: '',
       searchValue: searchValue,
-      aProjection: [
-        'oName',
-        'sEan',
-        'nVatRate',
-        'sProductNumber',
-        'nPriceIncludesVat',
-        'bDiscountOnPercentage',
-        'nDiscount',
-        'sLabelDescription',
-        'aImage',
-        'aProperty',
-        'sArticleNumber',
-        'iArticleGroupId',
-        'iBusinessPartnerId',
-        'iBusinessBrandId',
-      ],
+      aProjection: this.aProjection,
       oFilterBy: {
         oStatic: {},
         oDynamic: {}
@@ -531,21 +535,7 @@ export class TillComponent implements OnInit {
         sortBy: '',
         sortOrder: '',
         searchValue: searchValue,
-        aProjection: [
-          'oName',
-          'sEan',
-          'nVatRate',
-          'sProductNumber',
-          'nPriceIncludesVat',
-          'bDiscountOnPercentage',
-          'nDiscount',
-          'aProperty',
-          'sLabelDescription',
-          'aImage',
-          'sArticleNumber',
-          'iBusinessPartnerId',
-          'iBusinessBrandId'
-        ],
+        aProjection: this.aProjection,
         oFilterBy: {
           oStatic: {},
           oDynamic: {}
@@ -575,7 +565,7 @@ export class TillComponent implements OnInit {
       quantity: 1,
       price: product.nPriceIncludesVat || 0,
       paymentAmount: 0,
-      discount: product.nDiscount || 0,
+      nDiscount: product.nDiscount || 0,
       tax: product.nVatRate || 0,
       sProductNumber: product.sProductNumber,
       sArticleNumber: product.sArticleNumber,
@@ -605,10 +595,10 @@ export class TillComponent implements OnInit {
   addNewLine() {
     this.transactionItems.push({
       name: '',
-      type: 'loyalti-points-discount',
+      type: 'loyalty-points-discount',
       quantity: 1,
       price: 0,
-      discount: 0,
+      nDiscount: 0,
       tax: 0,
       description: '',
       open: true,
@@ -720,14 +710,14 @@ export class TillComponent implements OnInit {
   openCardsModal() {
     this.dialogService.openModal(CardsComponent, { cssClass: 'modal-lg', context: { customer: this.customer } })
       .instance.close.subscribe(result => {
-        // console.log(result);
+        console.log(result);
         if (result) {
           if (result.giftCardInfo.nAmount > 0) {
             this.appliedGiftCards.push(result.giftCardInfo);
             this.changeInPayment();
           }
-          if (result.redeemedLoyaltiPoints && result.redeemedLoyaltiPoints > 0) {
-            this.addReedemedPoints(result.redeemedLoyaltiPoints);
+          if (result.redeemedLoyaltyPoints && result.redeemedLoyaltyPoints > 0) {
+            this.addReedemedPoints(result.redeemedLoyaltyPoints);
           }
         }
       });
@@ -764,17 +754,19 @@ export class TillComponent implements OnInit {
         this.toastrService.show({ type: 'danger', text: err.message });
       });
   }
-  addReedemedPoints(redeemedLoyaltiPoints: number) {
+  addReedemedPoints(redeemedLoyaltyPoints: number) {
     this.transactionItems.push({
       name: '',
-      type: 'loyalti-points-discount',
+      type: 'loyalty-points-discount',
       quantity: 1,
-      redeemedLoyaltiPoints,
+      redeemedLoyaltyPoints,
       price: 0,
-      discount: 0,
+      nDiscount: 0,
       tax: 0,
       description: '',
       open: true,
     });
+    this.redeemedLoyaltyPoints = redeemedLoyaltyPoints;
+    // ../assets/images/no-photo-available.jpg
   }
 }

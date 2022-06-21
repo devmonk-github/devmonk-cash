@@ -31,7 +31,7 @@ export class ProductComponent {
   }
 
   getDiscount(item: any): string {
-    return this.priceService.getDiscount(item.discount || 0);
+    return this.priceService.getDiscount(item.nDiscount || 0);
   }
 
   getTotalDiscount(item: any): string {
@@ -68,9 +68,9 @@ export class ProductComponent {
   openDiscountDialog(): void {
     this.dialogService.openModal(DiscountDialogComponent, { context: { item: JSON.parse(JSON.stringify(this.item)) } })
       .instance.close.subscribe((data) => {
-        if (data.item && data.item.discount) {
+        if (data.item && data.item.nDiscount) {
           console.log('discount dialog closed', data.item)
-          this.item.discount = data.item.discount
+          this.item.nDiscount = data.item.nDiscount
         }
       })
   }

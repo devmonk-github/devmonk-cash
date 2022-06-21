@@ -23,7 +23,7 @@ export class OtherComponent {
     this.itemChanged.emit('delete')
   }
   getDiscount(item: any): string {
-    return this.priceService.getDiscount(item.discount)
+    return this.priceService.getDiscount(item.nDiscount)
   }
 
   getColorCode(item: any): string {

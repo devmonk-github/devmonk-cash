@@ -41,6 +41,7 @@ export class GiftComponent implements OnInit {
   }
 
   checkNumber(): void {
+    console.log(this.item);
     this.item.isGiftCardNumberValid = false;
     const checkAvailabilty = this.transactionItems.find((o: any) => String(o.sGiftCardNumber) === String(this.item.sGiftCardNumber) && o.index !== this.item.index);
     if (this.item.sGiftCardNumber.toString().length < 4 || checkAvailabilty) {
