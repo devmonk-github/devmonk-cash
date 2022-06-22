@@ -757,7 +757,7 @@ export class TillComponent implements OnInit {
   }
   addReedemedPoints(redeemedLoyaltyPoints: number) {
     this.transactionItems.push({
-      name: '',
+      name: 'Loyalty Points',
       type: 'loyalty-points-discount',
       quantity: 1,
       redeemedLoyaltyPoints,

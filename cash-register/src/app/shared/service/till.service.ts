@@ -163,6 +163,8 @@ export class TillService {
         i.iActivityItemId,
         i.goldFor,
         i.nDiscount,
+
+        i.redeemedLoyaltyPoints,
       )
     });
     return body;
