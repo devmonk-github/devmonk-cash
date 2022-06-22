@@ -827,7 +827,7 @@ export class PdfService {
                 break;
               case 2:
                 layer1 = this.data[parts[0]];
-                providedData = layer1[parts[1]];
+                if(layer1) providedData = layer1[parts[1]];
                 variableStringFiltered = parts[2];
 
                 if (!this.isDefined(providedData[variableStringFiltered])) {
@@ -836,8 +836,8 @@ export class PdfService {
                 break;
               case 3:
                 layer1 = this.data[parts[0]];
-                layer2 = layer1[parts[2]];
-                providedData = layer2[parts[2]];
+                if(layer1) layer2 = layer1[parts[2]];
+                if(layer2) providedData = layer2[parts[2]];
                 variableStringFiltered = parts[3];
                 break;
               default:
