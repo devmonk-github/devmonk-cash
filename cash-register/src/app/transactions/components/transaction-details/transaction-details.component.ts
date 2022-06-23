@@ -33,6 +33,7 @@ export class TransactionDetailsComponent implements OnInit {
   printerId: number | undefined;
   transactionId: string = '5c2f276e86a7527e67a45e9d'
   pdfGenerating: Boolean = false;
+  downloadWithVATLoading: Boolean = false;
   templateString = {
     "barcodeheight":"10",
     "barcodetext":false,
@@ -73,7 +74,7 @@ export class TransactionDetailsComponent implements OnInit {
             "size":"4",
             "html":[
               {"element":"span", "content":"(iban)"},{"element":"br","content":""},
-              {"element":"span", "content":"(invoiceNumber)"},{"element":"br"},
+              {"element":"span", "content":"[[sInvoiceNumber]]"},{"element":"br"},
               {"element":"span", "content":"(coc number)"}
             ],
             "css":{
@@ -324,28 +325,50 @@ export class TransactionDetailsComponent implements OnInit {
     this.generatePDF(false);
   }
 
-  generatePDF(print: boolean): void {
-    this.pdfGenerating = true
-    const filename = new Date().getTime().toString()
-    let printData = null
-    if (print) {
-      printData = {
-        computerId: this.computerId,
-        printerId: this.printerId,
-        title: filename,
-        quantity: 1
-      }
+  createTemplate(){
+    const body = {
+      iBusinessId: this.iBusinessId,
+      iLocationId: localStorage.getItem('currentLocation'),
+      sName: 'Sample',
+      eType: this.transaction.eType,
+      template: this.templateString
     }
-    const transactionId = this.transaction._id;
-    const businessId = localStorage.getItem('currentBusiness')
-    this.pdfService.createPdf(JSON.stringify(this.templateString), JSON.stringify(this.transaction), filename, print, printData, businessId, transactionId)
-      .then( () => {
-        this.pdfGenerating = false
-      })
-      .catch((e: any) => {
-        this.pdfGenerating = false
-        console.error('err', e)
-      })
+
+    this.apiService.postNew('cashregistry', '/api/v1/pdf/templates/create', body).subscribe((result: any) => {
+    }, (error) => {
+      this.loading = false;
+      console.log('printing error', error);
+    })
+  }
+
+  generatePDF(print: boolean): void {
+    const sName = 'Sample', eType = this.transaction.eType;
+    this.downloadWithVATLoading = true;
+    this.apiService.getNew('cashregistry', '/api/v1/pdf/templates/' + this.iBusinessId + '?sName=' + sName + '&eType=' + eType).subscribe(
+      (result: any) => {
+        const filename = new Date().getTime().toString()
+        let printData = null
+        if (print) {
+          printData = {
+            computerId: this.computerId,
+            printerId: this.printerId,
+            title: filename,
+            quantity: 1
+          }
+        }
+
+        this.pdfService.createPdf(JSON.stringify(result.data), JSON.stringify(this.transaction), filename, print, printData, this.iBusinessId, this.transaction?._id)
+          .then( () => {
+            this.downloadWithVATLoading = false;
+          })
+          .catch((e: any) => {
+            this.downloadWithVATLoading = false;
+            console.error('err', e)
+          })
+    }, (error) => {
+      this.downloadWithVATLoading = false;
+      console.log('printing error', error);
+    })
   }
 
   fetchTransaction(sNumber: any) {
