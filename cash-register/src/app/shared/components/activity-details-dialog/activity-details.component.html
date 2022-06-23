@@ -58,7 +58,7 @@
             <div class="col-9">
                 <h4>Activities</h4>
                 <div class="accordion" id="kt_accordion_1">
-                    <div class="accordion-item" *ngFor="let activity of activityItems">
+                    <div class="accordion-item" *ngFor="let activity of activityItems; index as index">
                         <h2 class="accordion-header">
                             <button class="accordion-button fs-4 fw-bold collapsed" type="button"
                                 data-bs-toggle="collapse" #accordionBtn>
@@ -133,7 +133,7 @@
                                     </div>
                                     <div class="col-3">
                                         <div class="btn-group me-4 w-100">
-                                            <span class="btn btn-primary fs-bold px-6">
+                                            <span class="btn btn-primary fs-bold px-6" (click)="downloadCustomerReceipt(index)">
                                                 <fa-icon [icon]="faUser"></fa-icon>
                                                 <span class="indicator-label">{{ "CUSTOMER_RECEIPT"}}</span>
                                             </span>
