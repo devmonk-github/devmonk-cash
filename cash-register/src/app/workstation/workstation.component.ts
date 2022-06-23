@@ -21,6 +21,7 @@ export class WorkstationComponent implements OnInit {
   loading: boolean = false;
   workstations: Array<any> = [];
   settings: Array<any> = [];
+  iLocationId: string = '';
 
   downloadOptions = [
     {
@@ -41,6 +42,7 @@ export class WorkstationComponent implements OnInit {
   ngOnInit(): void {
     // MenuComponent.reinitialization();
     this.business._id = localStorage.getItem('currentBusiness');
+    this.iLocationId = localStorage.getItem('currentLocation') || '';
     this.getWorkstations();
   }
 
@@ -92,6 +94,7 @@ export class WorkstationComponent implements OnInit {
 
   createWorkstation(){
     this.workstation.iBusinessId = this.business._id;
+    this.workstation.iLocationId = this.iLocationId;
     this.loading = true;
     this.addNew = false;
     this.apiService.postNew('cashregistry', '/api/v1/workstations/create', this.workstation).subscribe(
