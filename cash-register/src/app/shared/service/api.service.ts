@@ -155,6 +155,8 @@ export class ApiService {
     switch (apiType) {
       case 'auth':
         return environment.AUTH_URL;
+      case 'organization':
+        return environment.ORGANIZATION_URL;
       case 'core':
         return environment.CORE_URL;
       case 'cashregistry':
@@ -163,6 +165,8 @@ export class ApiService {
         return environment.CUSTOMER_URL;
       case 'bookkeeping':
         return environment.BOOKKEEPING_URL;
+      case 'website-builder':
+        return environment.WEBSITE_URL;
       case 'backup':
         return environment.BACKUP_URL;
       case 'oldplatform':
