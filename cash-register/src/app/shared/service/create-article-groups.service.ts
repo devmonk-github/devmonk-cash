@@ -21,7 +21,6 @@ export class CreateArticleGroupService {
       bInventory: false,
       aProperty: []
     };
-    console.log(data);
     return this.apiService.postNew('core', '/api/v1/business/article-group/general', data).pipe(retry(1));
     // return this.apiService.postNew('core', '/api/v1/business/article-group/general', data).pipe(retry(1), catchError(this.processError));
   }
