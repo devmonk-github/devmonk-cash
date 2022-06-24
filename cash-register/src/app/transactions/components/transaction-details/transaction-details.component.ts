@@ -325,6 +325,10 @@ export class TransactionDetailsComponent implements OnInit {
     this.generatePDF(false);
   }
 
+  downloadWebOrder(){
+    this.generatePDF(false);
+  }
+
   createTemplate(){
     const body = {
       iBusinessId: this.iBusinessId,
