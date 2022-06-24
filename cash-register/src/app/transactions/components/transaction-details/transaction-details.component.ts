@@ -357,7 +357,7 @@ export class TransactionDetailsComponent implements OnInit {
           }
         }
 
-        this.pdfService.createPdf(JSON.stringify(result.data), JSON.stringify(this.transaction), filename, print, printData, this.iBusinessId, this.transaction?._id)
+        this.pdfService.createPdf(JSON.stringify(result.data), this.transaction, filename, print, printData, this.iBusinessId, this.transaction?._id)
           .then( () => {
             this.downloadWithVATLoading = false;
           })

@@ -3,6 +3,7 @@ import * as moment from 'moment';
 import { HttpClient, HttpErrorResponse } from "@angular/common/http";
 import { StringService } from "./string.service";
 import { FileSaverService } from "ngx-filesaver";
+import { TranslateService } from '@ngx-translate/core';
 
 interface StaticPaperSize {
   type: string,
@@ -91,6 +92,7 @@ export class PdfService {
     private factoryResolver: ComponentFactoryResolver,
     private httpClient: HttpClient,
     private stringService: StringService,
+    private translateService: TranslateService,
     private fileSaver: FileSaverService) {
   }
 
@@ -1250,13 +1252,35 @@ export class PdfService {
     })
   }
 
-  createPdf(templateString: string, dataString: string, fileName: string, print: boolean, printData: any, businessId: string | null, transactionId: string | null): Promise<any> {
+  getTranslations(){
+    let translationsResults: any = [];
+    let translationsKey: Array<string> = ['CREATED_BY', 'ART_NUMBER', 'QUANTITY', 'DESCRIPTION', 'DISCOUNT', 'AMOUNT'];
+   
+    this.translateService.get(translationsKey).subscribe((result) => {
+      translationsResults = result;
+    });
+  
+    const translationsObj = {
+      "__CREATED_BY": translationsResults.CREATED_BY,
+      "__ART_NUMBER": translationsResults.ART_NUMBER,
+      "__QUANTITY": translationsResults.QUANTITY,
+      "__DESCRIPTION": translationsResults.DESCRIPTION,
+      "__DISCOUNT": translationsResults.DISCOUNT,
+      "__AMOUNT": translationsResults.AMOUNT
+    };
+
+    return translationsObj;
+  }
+
+  async createPdf(templateString: string, dataString: any, fileName: string, print: boolean, printData: any, businessId: string | null, transactionId: string | null): Promise<any> {
+    const transactions = await this.getTranslations();
+    const data = { ...dataString, ...transactions }
     let pdfGenerator = document.createElement('div')
     pdfGenerator.style.display = 'none'
     pdfGenerator.id = 'pdfGenerator'
     document.body.appendChild(pdfGenerator)
 
-    return this.generate(templateString, dataString, fileName, print, printData, businessId, transactionId)
+    return this.generate(templateString, JSON.stringify(data), fileName, print, printData, businessId, transactionId)
   }
 
   logService(details: string) {

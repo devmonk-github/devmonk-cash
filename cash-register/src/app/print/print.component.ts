@@ -468,7 +468,7 @@ export class PrintComponent implements OnInit {
     }
     const transactionId = this.transactionId
     const businessId = localStorage.getItem('currentBusiness')
-    this.pdfService.createPdf(JSON.stringify(this.templateString), JSON.stringify(this.dataString), filename, print, printData, businessId, transactionId)
+    this.pdfService.createPdf(JSON.stringify(this.templateString), this.dataString, filename, print, printData, businessId, transactionId)
       .then( () => {
         this.pdfGenerating = false
       })

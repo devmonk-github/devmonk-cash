@@ -86,7 +86,7 @@ export class ActivityDetailsComponent implements OnInit {
         //   }
         // }
 
-        this.pdfService.createPdf(JSON.stringify(template), JSON.stringify(data), filename, print, printData, this.iBusinessId, this.activity?._id)
+        this.pdfService.createPdf(JSON.stringify(template), data, filename, print, printData, this.iBusinessId, this.activity?._id)
           .then( () => {
             this.customerReceiptDownloading = false;
           })
