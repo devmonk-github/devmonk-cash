@@ -1,5 +1,7 @@
 <div class="container">
   <div class="row content" [ngClass]="{'opacity-25': parkedTransactionLoading }">
+    <button class="btn btn-primary col-2" (click)="openDayState()">{{ "OPEN_DAYSTATE" | translate}}</button> &nbsp;
+    <button class="btn btn-primary col-2" (click)="closeDayState()">{{ "CLOSE_DAYSTATE" | translate}}</button>
     <div class="col-md-9 col-xs-12 column-auto till-body ps-0 pe-0">
       <div class="d-flex justify-content-start">
         <button class="btn d-flex bg-white rounded p-4 mb-3 me-3 min-w-90px"
