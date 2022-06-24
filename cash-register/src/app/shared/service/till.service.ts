@@ -69,7 +69,17 @@ export class TillService {
     }
   }
 
-  createTransactionBody(transactionItems: any, payMethods: any): any {
+  getUniqueId(parts: number): string {
+    const stringArr = [];
+    for (let i = 0; i < parts; i++) {
+      // tslint:disable-next-line:no-bitwise
+      const S4 = (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
+      stringArr.push(S4);
+    }
+    return stringArr.join('-');
+  }
+
+  createTransactionBody(transactionItems: any, payMethods: any, discountArticleGroup: any): any {
     const transaction = new Transaction(
       null,
       null,
@@ -166,6 +176,20 @@ export class TillService {
 
         i.redeemedLoyaltyPoints,
       )
+    });
+    body.transactionItems.map((i: any) => {
+      if (i.nDiscount && i.nDiscount > 0) {
+        i.nPaymentAmount += i.nDiscount;
+        i.uniqueIdentifier = this.getUniqueId(4);
+        const tItem1 = JSON.parse(JSON.stringify(i));
+        tItem1.iArticleGroupId = discountArticleGroup._id;
+        tItem1.oArticleGroupMetaData.sCategory = discountArticleGroup.sCategory;
+        tItem1.oArticleGroupMetaData.sSubCategory = discountArticleGroup.sSubCategory;
+        tItem1.oType.eTransactionType = 'cash-registry';
+        tItem1.oType.eKind = 'discount';
+        tItem1.nPaymentAmount = -1 * tItem1.nDiscount;
+        body.transactionItems.push(tItem1);
+      }
     });
     return body;
   }
