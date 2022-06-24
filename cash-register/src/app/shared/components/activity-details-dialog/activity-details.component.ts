@@ -3,6 +3,7 @@ import { DialogComponent } from '../../service/dialog';
 import { ViewContainerRef } from '@angular/core';
 import { ApiService } from 'src/app/shared/service/api.service';
 import { faTimes, faMessage, faEnvelope, faEnvelopeSquare, faUser, faReceipt, faEuro } from "@fortawesome/free-solid-svg-icons";
+import { PdfService } from '../../service/pdf.service';
 @Component({
   selector: 'app-activity-details',
   templateUrl: './activity-details.component.html',
@@ -28,6 +29,7 @@ export class ActivityDetailsComponent implements OnInit {
   printOptions = ['Portrait', 'Landscape'];
   itemType = 'transaction';
   status = true;
+  customerReceiptDownloading: Boolean = false;
   iBusinessId = localStorage.getItem('currentBusiness');
   requestParams: any = {
     iBusinessId: this.iBusinessId,
@@ -51,6 +53,7 @@ export class ActivityDetailsComponent implements OnInit {
   constructor(
     private viewContainerRef: ViewContainerRef,
     private apiService: ApiService,
+    private pdfService: PdfService
   ) {
     const _injector = this.viewContainerRef.injector;
     this.dialogRef = _injector.get<DialogComponent>(DialogComponent);
@@ -62,6 +65,39 @@ export class ActivityDetailsComponent implements OnInit {
     this.fetchTransactionItems();
     // this.itemType = this.dialogRef.context.itemType;
     // this.transaction = this.dialogRef.context.transaction;
+  }
+
+  downloadCustomerReceipt(index: number){
+    const data = this.activity.activityitems[index];
+    const sName = 'Sample', eType = 'completed';
+    this.customerReceiptDownloading = true;
+    this.apiService.getNew('cashregistry', '/api/v1/pdf/templates/' + this.iBusinessId + '?sName=' + sName + '&eType=' + eType).subscribe(
+      (result: any) => {
+        const template = result.data;
+        const filename = new Date().getTime().toString()
+        let printData = null
+        let print = false;
+        // if (print) {
+        //   printData = {
+        //     computerId: this.computerId,
+        //     printerId: this.printerId,
+        //     title: filename,
+        //     quantity: 1
+        //   }
+        // }
+
+        this.pdfService.createPdf(JSON.stringify(template), data, filename, print, printData, this.iBusinessId, this.activity?._id)
+          .then( () => {
+            this.customerReceiptDownloading = false;
+          })
+          .catch((e: any) => {
+            this.customerReceiptDownloading = false;
+            console.error('err', e)
+          })
+    }, (error) => {
+      this.customerReceiptDownloading = false;
+      console.log('printing error', error);
+    })
   }
 
   fetchCustomer(customerId: any) {

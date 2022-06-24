@@ -165,6 +165,9 @@
                   [item]="item" (itemChanged)="itemChanged($event, i)"></div>
                 <div class="accordion-item d-table-cell w-100" till-other *ngIf="item.type=== 'empty-line'"
                   [item]="item" [taxes]="taxes" (itemChanged)="itemChanged($event, i)"></div>
+                <div class="accordion-item d-table-cell w-100" till-loyalty-points-discount
+                  *ngIf="item.type=== 'loyalty-points-discount'" [item]="item" [taxes]="taxes"
+                  (itemChanged)="itemChanged($event, i)"></div>
                 <div class="d-table-cell">
                   <button class="btn btn-sm btn-icon btn-active-color-primary w-30px h-30px"
                     (click)="itemChanged('delete', i)">
@@ -199,7 +202,7 @@
                 translate}}
               </button>
               <button class="btn btn-secondary me-3" (click)="addNewLine()">{{ "TEXT_LINE" | translate}}</button>
-              <button class="btn btn-secondary me-3">{{ "EMPTY_LINE" | translate}}</button>
+              <button class="btn btn-secondary me-3" (click)="addNewLine()">{{ "EMPTY_LINE" | translate}}</button>
               <button class="btn btn-icon btn-secondary w-85px" (click)="cancelItems()"
                 [disabled]="transactionItems.length === 0">
                 <i class="fa fa-trash"></i>
@@ -388,13 +391,20 @@
       <div class="input-group till-padding mt-2">
         <button class="btn btn-primary w-100" (click)="openCardsModal()">{{"REDEEM_GIFTCARD" | translate}}</button>
       </div>
-      <div class="mt-2" *ngIf="appliedGiftCards.length">
+      <div class="mt-2" *ngIf="appliedGiftCards.length || redeemedLoyaltyPoints > 0">
         <div class="chip d-flex" *ngFor="let giftcard of appliedGiftCards; index as i">
           {{giftcard.sGiftCardNumber}}, {{giftcard.nAmount | currency: '€'}}
           <div *ngIf="giftcard.profileIconUrl">
-            <img src="{{giftcard.profileIconUrl}}" alt="" height="20px" width="20px">
+            <img class="ml-1" src="{{giftcard.profileIconUrl}}" alt="" height="20px" width="20px">
           </div>
           <div (click)="removeGift(i)">
+            &nbsp;<i class="close fas fa-times cursor-pointer"></i>
+          </div>
+        </div>
+        <div class="chip d-flex">
+          {{ "LOYALTY_POINTS" | translate }}, {{redeemedLoyaltyPoints | currency: '€'}}
+          <img class="ml-1" src="../assets/images/loyalty_points.png" alt="" height="20px" width="20px">
+          <div (click)="redeemedLoyaltyPoints = 0">
             &nbsp;<i class="close fas fa-times cursor-pointer"></i>
           </div>
         </div>

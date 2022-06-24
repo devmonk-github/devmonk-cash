@@ -3,6 +3,7 @@ import { faTimes, faSync, faFileInvoice, faDownload, faReceipt, faAt, faUndoAlt,
 import { TransactionItemsDetailsComponent } from 'src/app/shared/components/transaction-items-details/transaction-items-details.component';
 import { ApiService } from 'src/app/shared/service/api.service';
 import { DialogComponent, DialogService } from 'src/app/shared/service/dialog';
+import { PdfService } from 'src/app/shared/service/pdf.service';
 
 @Component({
   selector: 'app-transaction-details',
@@ -28,11 +29,283 @@ export class TransactionDetailsComponent implements OnInit {
   customer: any = {};
   imagePlaceHolder: string = '../../../../assets/images/no-photo.svg';
   eType: string = '';
+  computerId: number | undefined;
+  printerId: number | undefined;
+  transactionId: string = '5c2f276e86a7527e67a45e9d'
+  pdfGenerating: Boolean = false;
+  downloadWithVATLoading: Boolean = false;
+  templateString = {
+    "barcodeheight":"10",
+    "barcodetext":false,
+    "barcodewidth":"auto",
+    "currency":"€",
+    "debug":false,
+    "defaultElement":"span",
+    "fontSize":"10px",
+    "margins":[5,5],
+    "momentjs_dateformat":"",
+    "name":"Transaction with VAT",
+    "orientation":"landscape",
+    "paperSize":"A5",
+    "pixelsPerMm":"3.76",
+    "rotation":"0",
+    "layout":[
+      {
+        "row":[
+          {
+            "size":"4",
+            "html":"<img src=\"https://lirp.cdn-website.com/2568326e/dms3rep/multi/opt/Juwelier-Bos-208w.png\" />"
+          },
+          {
+            "size":4,
+            "html":[
+              {"element":"span","content": "[[oBusiness.sName]]" },
+              {"element":"span","content": "[[oBusiness.sEmail]]" },
+              {"element":"span","content": "[[oBusiness.oPhone.sMobile]]" },
+              {"element":"span","content": "[[oBusiness.oPhone.sLandline]]" },
+              {"element":"span","content":"<make function to combine address into single variable!!>"}
+
+            ],
+            "css":{
+              "text-align":"right"
+            }
+          },
+          {
+            "size":"4",
+            "html":[
+              {"element":"span", "content":"(iban)"},{"element":"br","content":""},
+              {"element":"span", "content":"[[sInvoiceNumber]]"},{"element":"br"},
+              {"element":"span", "content":"(coc number)"}
+            ],
+            "css":{
+              "text-align":"right"
+            }        
+          }
+        ],
+        "css" :{
+          "padding":[0,0,5,0]
+        },
+        "section":"meta"
+      },
+      {
+        "row":[
+          {
+            "size":"12",
+            "float":"left",
+            "html":"Datum: [[dCreatedDate]]<br/>Bonnummer: [[sReceiptNumber]]"
+          }
+        ],
+        "css":{
+          "padding":[0,0,5,0]
+        },
+        "section":"meta"
+      },
+      {
+        "row":[
+          {
+            "size":"12",
+            "float":"left",
+            "html": "[[__CREATED_BY]] [[oEmployee.sName]]"
+          }
+        ],
+        "css":{
+          "padding":[0,0,5,0]
+        },
+        "section":"meta"
+      },
+      {
+        "row":[
+          {"size":2, "html": "[[__ART_NUMBER]]"},
+          {"size":1, "html": "[[__QUANTITY]]"},
+          {"size":3, "html": "[[__DESCRIPTION]]"},
+          {"size":2, "html": "[[__DISCOUNT]]"},
+          {"size":2, "html": "[[__AMOUNT]]", "css":{"text-align":"right"}}
+        ],
+        "css":{
+          "font-weight":"bold",
+          "margin-bottom":"2mm"
+        }
+      },
+      {
+        "row":[
+          {
+            "size":"6",
+            "element":"table",
+            "htmlBefore":"<tr><th>Betalingen:</th><th></th></tr>",
+            "forEach":"aTransactionItems",
+            "html":"<tr><td>[[sMethod]]</td><td>(amount)</td></tr>"
+          },
+          {
+            "size":"6"
+          }
+        ],
+        "css":{
+          "padding":[3,0,0,0]
+        },
+        "section":"payment"
+      },
+      {
+        "row":[
+          {
+            "size":2,
+            "html":[
+              {
+                "element":"span",
+                "content": "[[sProductNumber]]"
+              }
+            ]
+          },
+          {
+            "size":1,
+            "html":[
+              {
+                "element":"span",
+                "content": "[[nQuantity]]"
+              }
+            ]
+          },
+          {
+            "size":"5",
+            "html":[
+              {
+                "element":"span",
+                "content": "[[sProductName]]",
+                "css":{
+                  "margin":[0,0,1,0]
+                }
+              }
+            ]
+          },
+          {
+            "size":2,
+            "html":[
+              {
+                "element":"p",
+                "content":"€ [[nPriceIncVat|money]]"
+              }
+            ]
+          },
+          {
+            "size":2,
+            "html":[
+              {
+                "element":"p",
+                "content":"€ [[nPriceIncVat|money]]"
+              }
+            ],
+            "css":{
+              "text-align":"right"
+            }
+          }
+        ],
+        "htmlBefore":"",
+        "htmlAfter":"",
+        "forEach":"aTransactionItems",
+        "section":"products",
+        "css":{
+          "margin-bottom":"2mm"
+        }
+      },
+      {
+        "row":[
+          {
+            "size":"12",
+            "html":"<hr/>"
+          }
+        ],
+        "section":"payment"
+      },
+      {
+        "row":[
+          {
+            "size":"6",
+            "html":[
+              {
+                "element":"h3",
+                "content":"Totaal"
+              }
+            ]
+          },
+          {
+            "size":"6",
+            "html":[
+              {
+                "element":"h3",
+                "content":"€ (total of transaction)",
+                "css":{
+                  "text-align":"right"
+                }
+              }
+            ]
+          }
+        ],
+        "css":{
+          "padding":[2,0,0,0],
+          "flex":"1"
+        },
+        "section":"payment"
+      },
+      {
+        "row":[
+          {
+            "size":"6",
+            "element":"table",
+            "htmlBefore":"<tr><th>Betalingen:</th><th></th></tr>",
+            "forEach":"aPayments",
+            "html":"<tr><td>[[sMethod]]</td><td>(amount)</td></tr>"
+          },
+          {
+            "size":"6"
+          }
+        ],
+        "css":{
+          "padding":[3,0,0,0]
+        },
+        "section":"payment"
+      },
+      {
+        "row":[
+          {
+            "size":"12",
+            "html":"<small><table><tr><td>TODO!</td><td>Ex. BTW</td><td>BTW</td><td>Totaal</td></tr><tr><td>0% BTW</td><td>€ 75,00</td><td>€ 0,00</td><td>€ 75,00</td></tr></table></small>"
+          }
+        ],
+        "css":{
+          "padding":[3,0,0,0]
+        },
+        "section":"payment"
+      },
+      {
+        "row":[
+          {
+            "size":"12",
+            "html":"Spaarpunten! TODO!"
+          }
+        ],
+        "css":{
+          "padding":[3,0,0,0]
+        }
+      },
+      {
+        "row":[
+          {
+            "size":"12",
+            "html":"Ruilen binnen 8 dagen op vertoon van deze bon.<br/>Dank voor uw bezoek."
+          }
+        ],
+        "css":{
+          "padding":[3,0,0,0]
+        }
+      }
+    ]
+  }
+
 
   constructor(
     private viewContainerRef: ViewContainerRef,
     private apiService: ApiService,
-    private dialogService: DialogService
+    private dialogService: DialogService,
+    private pdfService: PdfService
   ) {
     const _injector = this.viewContainerRef.parentInjector;
     this.dialogRef = _injector.get<DialogComponent>(DialogComponent);
@@ -41,10 +314,65 @@ export class TransactionDetailsComponent implements OnInit {
   ngOnInit(): void {
     this.iBusinessId = localStorage.getItem("currentBusiness") || '';
     this.fetchTransaction(this.transaction.sNumber)
+    this.getPrintSetting();
   }
 
   close(value: boolean) {
     this.dialogRef.close.emit(value);
+  }
+
+  downloadWithVAT(){
+    this.generatePDF(false);
+  }
+
+  downloadWebOrder(){
+    this.generatePDF(false);
+  }
+
+  createTemplate(){
+    const body = {
+      iBusinessId: this.iBusinessId,
+      iLocationId: localStorage.getItem('currentLocation'),
+      sName: 'Sample',
+      eType: this.transaction.eType,
+      template: this.templateString
+    }
+
+    this.apiService.postNew('cashregistry', '/api/v1/pdf/templates/create', body).subscribe((result: any) => {
+    }, (error) => {
+      this.loading = false;
+      console.log('printing error', error);
+    })
+  }
+
+  generatePDF(print: boolean): void {
+    const sName = 'Sample', eType = this.transaction.eType;
+    this.downloadWithVATLoading = true;
+    this.apiService.getNew('cashregistry', '/api/v1/pdf/templates/' + this.iBusinessId + '?sName=' + sName + '&eType=' + eType).subscribe(
+      (result: any) => {
+        const filename = new Date().getTime().toString()
+        let printData = null
+        if (print) {
+          printData = {
+            computerId: this.computerId,
+            printerId: this.printerId,
+            title: filename,
+            quantity: 1
+          }
+        }
+
+        this.pdfService.createPdf(JSON.stringify(result.data), this.transaction, filename, print, printData, this.iBusinessId, this.transaction?._id)
+          .then( () => {
+            this.downloadWithVATLoading = false;
+          })
+          .catch((e: any) => {
+            this.downloadWithVATLoading = false;
+            console.error('err', e)
+          })
+    }, (error) => {
+      this.downloadWithVATLoading = false;
+      console.log('printing error', error);
+    })
   }
 
   fetchTransaction(sNumber: any) {
@@ -112,5 +440,17 @@ export class TransactionDetailsComponent implements OnInit {
           }, 100);
         }
       });
+  }
+
+  getPrintSetting(){
+    this.apiService.getNew('cashregistry', '/api/v1/print-settings/' + '6182a52f1949ab0a59ff4e7b' + '/' + '624c98415e537564184e5614').subscribe(
+      (result : any) => {
+        this.computerId = result?.data?.nComputerId;
+        this.printerId = result?.data?.nPrinterId;
+       },
+      (error: any) => {
+        console.error(error)
+      }
+    );
   }
 }

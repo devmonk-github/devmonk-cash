@@ -17,6 +17,8 @@ import { TerminalService } from '../../service/terminal.service';
 export class CardsComponent implements OnInit, AfterViewInit {
   @ViewChild('searchgift') input!: ElementRef;
   @ViewChild('searchExternalGift') serachExternal!: ElementRef;
+  @ViewChild('loyaltyPointElem') loyaltyPointElem!: ElementRef;
+  // @ViewChild('myDiv') myDiv: ElementRef<HTMLElement>;
 
   dialogRef: DialogComponent;
   faTimes = faTimes;
@@ -29,6 +31,8 @@ export class CardsComponent implements OnInit, AfterViewInit {
   appliedGiftCards: Array<any> = [];
   externalGiftCardDetails: any = {};
   nAmount = 0;
+  loyaltyPoints = 0;
+  redeemedLoyaltyPoints = 0;
   customer: any;
   pincode: any;
   giftCardInfo = { sGiftCardNumber: '', pincode: '', nAmount: 0, profileIconUrl: '', type: 'custom' };
@@ -45,13 +49,13 @@ export class CardsComponent implements OnInit, AfterViewInit {
   ngOnInit() {
     this.customer = this.dialogRef.context.customer;
     this.iBusinessId = localStorage.getItem('currentBusiness');
+    this.fetchLoyaltyPoints();
   }
 
   ngAfterViewInit(): void {
     // wait .5s between keyups to emit current value
     const keyup$ = fromEvent(this.input.nativeElement, 'keyup');
     const searchExternalGift$ = fromEvent(this.serachExternal.nativeElement, 'keyup');
-
     keyup$.pipe(
       map((i: any) => i.currentTarget.value),
       debounceTime(500)
@@ -68,7 +72,6 @@ export class CardsComponent implements OnInit, AfterViewInit {
       });
   }
   close(data: any) {
-    console.log(data);
     this.dialogRef.close.emit(data);
   }
 
@@ -115,18 +118,21 @@ export class CardsComponent implements OnInit, AfterViewInit {
   //   this.appliedGiftCards.push(card);
   //   console.log(this.appliedGiftCards)
   // }
+
+  fetchLoyaltyPoints() {
+    if (this.customer) {
+      this.apiService.getNew('cashregistry', `/api/v1/points-settings/points?iBusinessId=${this.iBusinessId}&iCustomerId=${this.customer._id}`).subscribe((result: any) => {
+        this.loyaltyPoints = result;
+      });
+    }
+  }
+
   submit() {
-    console.log('hello this is me');
-    console.log(this.externalGiftCardDetails);
-    console.log(this.nAmount);
-    console.log(this.sGiftCardNumber, this.pincode);
-    // this.giftCardDetails['sGiftCardNumber'] = this.sGiftCardNumber;
-    // this.giftCardDetails['nAmount'] = this.nAmount;
     this.giftCardInfo.sGiftCardNumber = this.sGiftCardNumber;
     this.giftCardInfo.nAmount = this.nAmount;
     this.giftCardInfo.pincode = this.pincode;
     this.giftCardInfo.profileIconUrl = this.externalGiftCardDetails.profileIconUrl;
     this.giftCardInfo.type = this.externalGiftCardDetails.type;
-    this.close(this.giftCardInfo);
+    this.close({ giftCardInfo: this.giftCardInfo, redeemedLoyaltyPoints: this.redeemedLoyaltyPoints });
   }
 }

@@ -81,8 +81,9 @@
                     <fa-icon [icon]="faFileInvoice"></fa-icon>
                     <label class="mx-auto">General Invoice</label>
                 </button>
-                <button class="btn btn-sm btn-secondary w-100 d-flex">
-                    <fa-icon [icon]="faDownload"></fa-icon>
+                <button class="btn btn-sm btn-secondary w-100 d-flex" (click)="downloadWithVAT()">
+                    <fa-icon [hidden]="downloadWithVATLoading" [icon]="faDownload"></fa-icon>
+                    <i class="fa fa-spinner fa-spin" *ngIf="downloadWithVATLoading" [hidden]="!downloadWithVATLoading" style="font-size:15px;"></i>
                     <label class="mx-auto">Download with VAT</label>
                 </button>
                 <button class="btn btn-sm btn-secondary w-100 d-flex">
@@ -145,6 +146,10 @@
                 <button class="btn btn-sm btn-secondary w-100 d-flex">
                     <!-- <fa-icon [icon]="faAt"></fa-icon> -->
                     <label class="mx-auto">Exchange</label>
+                </button>
+                <button class="btn btn-sm btn-secondary w-100 d-flex" (click)="downloadWebOrder()">
+                    <fa-icon [icon]="faDownload"></fa-icon>
+                    <label class="mx-auto">Download pdf</label>
                 </button>
             </div>
         </div>

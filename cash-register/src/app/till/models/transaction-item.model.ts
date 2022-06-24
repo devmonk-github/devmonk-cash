@@ -74,6 +74,8 @@ export class TransactionItem {
       bPrepayment: boolean,
     },
     public iActivityItemId: any,
-    public oGoldFor: any) { }
+    public oGoldFor: any,
+    public nDiscount: number,
+    public nRedeemedLoyaltyPoints: number) { }
 
 }

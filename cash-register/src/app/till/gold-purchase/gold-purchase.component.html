@@ -4,7 +4,7 @@
         <section class="d-flex product-row align-items-center">
             <div class="w-275px">{{item.name}}</div>
             <div class="w-100px">{{item.price | currency: '€'}}</div>
-            <div class="w-95px">{{item.discount | currency: '€'}}</div>
+            <div class="w-95px">{{item.nDiscount | currency: '€'}}</div>
             <div class="w-100px">{{item.tax}}%</div>
             <div class="w-100px">{{getTotalPrice(item)}}</div>
             <div class="w-75px">{{item.paymentAmount | currency: '€'}}</div>
@@ -32,7 +32,7 @@
                     (change)="changeTotalAmount()">
                 <label for="discount">{{ "DISCOUNT" | translate}}</label>
                 <input type="number" name="discount" class="form-control"
-                    (keyup)="item.discount < 0 ? item.discount = 0: item.discount" [(ngModel)]="item.discount">
+                    (keyup)="item.nDiscount < 0 ? item.nDiscount = 0: item.nDiscount" [(ngModel)]="item.nDiscount">
             </div>
 
             <div class="col-2">

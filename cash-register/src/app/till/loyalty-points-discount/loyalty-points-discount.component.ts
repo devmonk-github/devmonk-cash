@@ -4,11 +4,11 @@ import { PriceService } from 'src/app/shared/service/price.service';
 
 @Component({
   // eslint-disable-next-line @angular-eslint/component-selector
-  selector: '[till-other]',
-  templateUrl: './other.component.html',
+  selector: '[till-loyalty-points-discount]',
+  templateUrl: './loyalty-points-discount.component.html',
   encapsulation: ViewEncapsulation.None
 })
-export class OtherComponent {
+export class LoyaltyPointsDiscountComponent {
   @Input() item: any
   @Input() taxes: any
   @Output() itemChanged = new EventEmitter<any>();

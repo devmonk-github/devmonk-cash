@@ -9,7 +9,7 @@
     </div>
     <div class="card-body">
         <app-pn-tabs class="tab-content">
-            <app-pn-tab tabTitle="{{ 'EXTERNAL_GIFTCARDS' | translate}}" (click)="nAmount = 0">
+            <app-pn-tab tabTitle="{{ 'EXTERNAL_GIFTCARDS' | translate}}" (click)="nAmount = 0" #externalGiftcards>
                 <div class="dataTables_wrapper dt-bootstrap4 no-footer">
                     <!-- <img *ngIf="externalGiftCardDetails?.profileIconUrl" style="height: 35px; width: 35px;"
                         [src]="externalGiftCardDetails?.profileIconUrl" alt=""> -->
@@ -117,24 +117,24 @@
                     </div>
                 </div>
             </app-pn-tab>
-            <app-pn-tab tabTitle="{{ 'LOYALTY_POINTS' | translate}}" (click)="nAmount = 0">
+            <app-pn-tab tabTitle="{{ 'LOYALTY_POINTS' | translate}}" (click)="nAmount = 0" #loyaltyPointElem>
                 <div class="dataTables_wrapper dt-bootstrap4 no-footer">
                     <div class="row" *ngIf="!customer">
                         {{"COUNTER_CUSTOMER_SELECTED" | translate}}
                     </div>
                     <div class="row" *ngIf="customer">
-                        <div class="col-3">
-                            <span>{{"POINTS_SPENDABLE"| translate}}: {{customer.oPoints.spendable}}</span>
+                        <div class="col-6">
+                            <span>{{"POINTS_SPENDABLE"| translate}}: {{loyaltyPoints}}</span>
                         </div>
-                        <div class="col-5">
-                            <input name="" class="form-control" type="number" [(ngModel)]="nAmount">
+                        <div class="col-6">
+                            <input name="" class="form-control" type="number" [(ngModel)]="redeemedLoyaltyPoints">
                         </div>
-                        <div class="col-2">
+                        <!-- <div class="col-2">
                             <button class="btn btn-primary" type="submit">{{"REDEEM" | translate}}</button>
                         </div>
                         <div class="col-2">
                             <button class="btn btn-primary" type="submit">{{"ALL_POINTS" | translate}}</button>
-                        </div>
+                        </div> -->
                     </div>
                 </div>
             </app-pn-tab>

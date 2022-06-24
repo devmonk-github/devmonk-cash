@@ -10,6 +10,9 @@ export const environment = {
   CUSTOMER_URL: 'http://localhost:3006',
   BOOKKEEPING_URL: 'http://localhost:3007',
   BACKUP_URL: 'http://localhost:3008',
+  ORGANIZATION_URL: 'http://localhost:3001',
+  WEBSITE_URL: 'http://localhost:3010',
+  apiBasePath: 'http://localhost',
   apiURL: 'http://localhost:3000',
   oldPlatformUrl: `http://localhost:3000/`, // https://kassa.prismanote.com,
 };

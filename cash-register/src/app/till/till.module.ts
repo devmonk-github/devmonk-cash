@@ -20,6 +20,7 @@ import { ProductComponent } from './product/product.component';
 import { SharedModule } from "../shared/shared.module";
 import { DiscountDialogComponent } from './dialogs/discount-dialog/discount-dialog.component';
 import { OtherComponent } from './other/other.component';
+import { LoyaltyPointsDiscountComponent } from './loyalty-points-discount/loyalty-points-discount.component';
 
 @NgModule({
   declarations: [
@@ -32,7 +33,8 @@ import { OtherComponent } from './other/other.component';
     OfferComponent,
     ProductComponent,
     DiscountDialogComponent,
-    OtherComponent
+    OtherComponent,
+    LoyaltyPointsDiscountComponent
   ],
   imports: [
     CommonModule,

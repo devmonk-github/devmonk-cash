@@ -3,6 +3,7 @@ import * as moment from 'moment';
 import { HttpClient, HttpErrorResponse } from "@angular/common/http";
 import { StringService } from "./string.service";
 import { FileSaverService } from "ngx-filesaver";
+import { TranslateService } from '@ngx-translate/core';
 
 interface StaticPaperSize {
   type: string,
@@ -91,6 +92,7 @@ export class PdfService {
     private factoryResolver: ComponentFactoryResolver,
     private httpClient: HttpClient,
     private stringService: StringService,
+    private translateService: TranslateService,
     private fileSaver: FileSaverService) {
   }
 
@@ -449,10 +451,38 @@ export class PdfService {
 
   private definePaperSize(paperSize: string | PaperSize, margins: number[]): PaperSize {
     let definedPaperSize: any
+
     if (typeof paperSize === 'string') {
-      definedPaperSize = this.staticPaperSize.find((size) => {
-        return size.type === paperSize
-      })
+
+      if(this.orientation === 'portrait' || this.orientation === 'landscape') {
+
+        definedPaperSize = this.staticPaperSize.find((size) => {
+          return size.type === paperSize
+        })
+
+        if (this.orientation === 'landscape') {
+            let definedPaperSizeOldWidth = definedPaperSize.width
+            definedPaperSize.width = definedPaperSize.height
+            definedPaperSize.height = definedPaperSizeOldWidth
+        }
+
+      } else {
+        console.error('Invalid paper orientation! Choose portrait or landscape"');
+      }
+
+      
+
+      
+      // if (template.orientation !== 'portrait') {
+      //   if (this.paperSize.width > this.paperSize.height) {
+      //     console.error('The paper height is already in landscape. Decrease the paper or change orientation to "portrait"');
+      //     return Promise.reject('INVALID_PAPER_SIZE');
+      //   }
+      //   // Flip page sizes to make it landscape
+      //   this.paperSize.height = this.paperSize.width;
+      //   this.paperSize.width = this.paperSize.height;
+      // }
+
     } else if (typeof paperSize === 'object') {
       let pageWidth = paperSize.width
       let pageHeight = paperSize.height
@@ -799,7 +829,7 @@ export class PdfService {
                 break;
               case 2:
                 layer1 = this.data[parts[0]];
-                providedData = layer1[parts[1]];
+                if(layer1) providedData = layer1[parts[1]];
                 variableStringFiltered = parts[2];
 
                 if (!this.isDefined(providedData[variableStringFiltered])) {
@@ -808,8 +838,8 @@ export class PdfService {
                 break;
               case 3:
                 layer1 = this.data[parts[0]];
-                layer2 = layer1[parts[2]];
-                providedData = layer2[parts[2]];
+                if(layer1) layer2 = layer1[parts[2]];
+                if(layer2) providedData = layer2[parts[2]];
                 variableStringFiltered = parts[3];
                 break;
               default:
@@ -1112,16 +1142,6 @@ export class PdfService {
     this.paperSize = this.definePaperSize(this.paperSize, this.margins);
     this.parsedPaperSize = this.paperSize;
 
-    if (template.orientation !== 'portrait') {
-      if (this.paperSize.width > this.paperSize.height) {
-        console.error('The paper height is already in landscape. Decrease the paper or change orientation to "portrait"');
-        return Promise.reject('INVALID_PAPER_SIZE');
-      }
-      // Flip page sizes to make it landscape
-      this.paperSize.height = this.paperSize.width;
-      this.paperSize.width = this.paperSize.height;
-    }
-
     let margins = this.convertSpacingArrayToObject(this.margins);
     let rows = this.createRowsFromLayout(this.paperSize);
 
@@ -1190,7 +1210,7 @@ export class PdfService {
 
             const encodedString = this.stringService.b2a(htmlString.replace(/€/gi, '+euro+'))
 
-            //uncomment this line if you want to debug the previous code without actually generating a pdf
+            //uncomment the line below if you want to debug the previous code without actually generating a pdf
             //return resolve('success') 
 
             return this.httpClient
@@ -1232,13 +1252,35 @@ export class PdfService {
     })
   }
 
-  createPdf(templateString: string, dataString: string, fileName: string, print: boolean, printData: any, businessId: string | null, transactionId: string | null): Promise<any> {
+  getTranslations(){
+    let translationsResults: any = [];
+    let translationsKey: Array<string> = ['CREATED_BY', 'ART_NUMBER', 'QUANTITY', 'DESCRIPTION', 'DISCOUNT', 'AMOUNT'];
+   
+    this.translateService.get(translationsKey).subscribe((result) => {
+      translationsResults = result;
+    });
+  
+    const translationsObj = {
+      "__CREATED_BY": translationsResults.CREATED_BY,
+      "__ART_NUMBER": translationsResults.ART_NUMBER,
+      "__QUANTITY": translationsResults.QUANTITY,
+      "__DESCRIPTION": translationsResults.DESCRIPTION,
+      "__DISCOUNT": translationsResults.DISCOUNT,
+      "__AMOUNT": translationsResults.AMOUNT
+    };
+
+    return translationsObj;
+  }
+
+  async createPdf(templateString: string, dataString: any, fileName: string, print: boolean, printData: any, businessId: string | null, transactionId: string | null): Promise<any> {
+    const transactions = await this.getTranslations();
+    const data = { ...dataString, ...transactions }
     let pdfGenerator = document.createElement('div')
     pdfGenerator.style.display = 'none'
     pdfGenerator.id = 'pdfGenerator'
     document.body.appendChild(pdfGenerator)
 
-    return this.generate(templateString, dataString, fileName, print, printData, businessId, transactionId)
+    return this.generate(templateString, JSON.stringify(data), fileName, print, printData, businessId, transactionId)
   }
 
   logService(details: string) {

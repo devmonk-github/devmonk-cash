@@ -8,7 +8,7 @@
         </svg>{{item.quantity}}</div>
       <div class="w-275px">{{item.name}}</div>
       <div class="w-100px">{{item.price | currency: '€'}}</div>
-      <div class="w-95px">{{item.discount | currency: '€'}}</div>
+      <div class="w-95px">{{item.nDiscount | currency: '€'}}</div>
       <div class="w-100px">{{item.tax}}%</div>
       <div class="w-100px">{{getTotalPrice(item)}}</div>
       <div class="w-75px">{{item.paymentAmount | currency: '€'}}</div>
@@ -44,7 +44,7 @@
         <label for="price">{{ "PRICE" | translate}}</label>
         <input type="number" (change)="updatePayments()" name="price" class="form-control" [(ngModel)]="item.price">
         <label for="discount">{{ "DISCOUNT" | translate}}</label>
-        <input type="number" name="discount" class="form-control" [(ngModel)]="item.discount">
+        <input type="number" name="discount" class="form-control" [(ngModel)]="item.nDiscount">
         <label for="bagNumber">{{ "PREPAYMENT" | translate}}</label>
         <input type="number" name="bagNumber" id="bagNumber" [(ngModel)]="item.paymentAmount" class="form-control">
       </div>
