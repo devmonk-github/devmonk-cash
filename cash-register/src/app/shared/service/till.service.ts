@@ -79,7 +79,7 @@ export class TillService {
     return stringArr.join('-');
   }
 
-  createTransactionBody(transactionItems: any, payMethods: any, discountArticleGroup: any): any {
+  createTransactionBody(transactionItems: any, payMethods: any, discountArticleGroup: any, redeemedLoyaltyPoints: number): any {
     const transaction = new Transaction(
       null,
       null,
@@ -163,7 +163,7 @@ export class TillService {
         i.iLastTransactionItemId,
         null,
         {
-          eTransactionType: 'cash-registry', // TODO
+          eTransactionType: i.eTransactionType || 'cash-registry', // TODO
           bRefund: i.oType?.bRefund || i.nDiscount.quantity < 0 || i.price < 0,
           nStockCorrection: i.eTransactionItemType === 'regular' ? i.quantity : i.quantity - i.nBrokenProduct,
           eKind: i.type, // TODO // repair
@@ -177,10 +177,11 @@ export class TillService {
         i.redeemedLoyaltyPoints,
       )
     });
+    const originalTItemsLength = length = body.transactionItems.filter((i: any) => i.oType.eKind !== 'loyalty-points').length;
     body.transactionItems.map((i: any) => {
+      i.uniqueIdentifier = this.getUniqueId(4);
       if (i.nDiscount && i.nDiscount > 0) {
         i.nPaymentAmount += i.nDiscount;
-        i.uniqueIdentifier = this.getUniqueId(4);
         const tItem1 = JSON.parse(JSON.stringify(i));
         tItem1.iArticleGroupId = discountArticleGroup._id;
         tItem1.oArticleGroupMetaData.sCategory = discountArticleGroup.sCategory;
@@ -191,6 +192,23 @@ export class TillService {
         body.transactionItems.push(tItem1);
       }
     });
+    if (redeemedLoyaltyPoints && redeemedLoyaltyPoints > 0) {
+      redeemedLoyaltyPoints
+      body.transactionItems.map((i: any) => {
+        if (i.oType.eKind !== 'discount' && i.oType.eKind !== 'loyalty-points' && redeemedLoyaltyPoints > 0) {
+          const nDiscount = Math.floor(redeemedLoyaltyPoints / originalTItemsLength);
+          redeemedLoyaltyPoints = redeemedLoyaltyPoints % originalTItemsLength;
+          const tItem1 = JSON.parse(JSON.stringify(i));
+          tItem1.iArticleGroupId = discountArticleGroup._id;
+          tItem1.oArticleGroupMetaData.sCategory = discountArticleGroup.sCategory;
+          tItem1.oArticleGroupMetaData.sSubCategory = discountArticleGroup.sSubCategory;
+          tItem1.oType.eTransactionType = 'cash-registry';
+          tItem1.oType.eKind = 'loyalty-points-discount';
+          tItem1.nPaymentAmount = -1 * nDiscount;
+          body.transactionItems.push(tItem1);
+        }
+      });
+    }
     return body;
   }
 

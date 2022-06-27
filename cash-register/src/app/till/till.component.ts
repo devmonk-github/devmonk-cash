@@ -145,7 +145,6 @@ export class TillComponent implements OnInit {
       this.clearAll();
       const { transactionItems, transaction } = fromTransactionPage;
       this.transactionItems = transactionItems;
-      console.log(transactionItems);
       this.iActivityId = transaction.iActivityId || transaction._id;
       this.changeInPayment();
       // localStorage.removeItem('fromTransactionPage')
@@ -460,7 +459,7 @@ export class TillComponent implements OnInit {
             }
           });
           // this.changeInPayment();
-          const body = this.tillService.createTransactionBody(this.transactionItems, payMethods, this.discountArticleGroup);
+          const body = this.tillService.createTransactionBody(this.transactionItems, payMethods, this.discountArticleGroup, this.redeemedLoyaltyPoints);
           if (giftCardPayment && this.appliedGiftCards.length > 0) {
             this.appliedGiftCards.forEach(element => {
               const cardPaymethod = _.clone(giftCardPayment);
@@ -482,6 +481,7 @@ export class TillComponent implements OnInit {
             }
           };
           body.redeemedLoyaltyPoints = this.redeemedLoyaltyPoints;
+          console.log(body);
           this.apiService.postNew('cashregistry', '/api/v1/till/transaction', body)
             .subscribe((data: any) => {
               this.toastrService.show({ type: 'success', text: data.message });
@@ -708,7 +708,6 @@ export class TillComponent implements OnInit {
   openCardsModal() {
     this.dialogService.openModal(CardsComponent, { cssClass: 'modal-lg', context: { customer: this.customer } })
       .instance.close.subscribe(result => {
-        console.log(result);
         if (result) {
           if (result.giftCardInfo.nAmount > 0) {
             this.appliedGiftCards.push(result.giftCardInfo);
@@ -755,7 +754,8 @@ export class TillComponent implements OnInit {
   addReedemedPoints(redeemedLoyaltyPoints: number) {
     this.transactionItems.push({
       name: 'Loyalty Points',
-      type: 'loyalty-points-discount',
+      type: 'loyalty-points',
+      eTransactionType: 'loyalty-points',
       quantity: 1,
       redeemedLoyaltyPoints,
       price: 0,
