@@ -169,6 +169,8 @@ export class ApiService {
         return environment.WEBSITE_URL;
       case 'backup':
         return environment.BACKUP_URL;
+      case 'log':
+        return environment.LOG_URL;
       case 'oldplatform':
         return oldplatform += ':3000';
     }

@@ -6,6 +6,9 @@ export const environment = {
   CUSTOMER_URL: 'https://customer.e-orderportal.com',
   BOOKKEEPING_URL: 'https://bookkeeping.e-orderportal.com',
   BACKUP_URL: 'https://backup.e-orderportal.com',
+  WEBSITE_URL: 'https://website.e-orderportal.com',
+  ORGANIZATION_URL: 'https://organization.e-orderportal.com',
+  LOG_URL: 'https://log.e-orderportal.com',
   apiURL: 'http://prismanote.com',
   oldPlatformUrl: 'https://kassa.prismanote.com',
 };
