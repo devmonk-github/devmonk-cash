@@ -11,6 +11,7 @@ export const environment = {
   BOOKKEEPING_URL: 'http://localhost:3007',
   BACKUP_URL: 'http://localhost:3008',
   ORGANIZATION_URL: 'http://localhost:3001',
+  LOG_URL: 'http://localhost:3003',
   WEBSITE_URL: 'http://localhost:3010',
   apiBasePath: 'http://localhost',
   apiURL: 'http://localhost:3000',

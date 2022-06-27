@@ -8,9 +8,7 @@ export const environment = {
   WEBSITE_URL: 'https://website.e-orderportal.com',
   BACKUP_URL: 'https://backup.e-orderportal.com',
   ORGANIZATION_URL: 'https://organization.e-orderportal.com',
-  apiBasePath: 'e-orderportal.com',
-  apiURL: 'http://localhost:3000',
-  encryptionKey: '2e35f242a46d67eeb74aabc37d5e5d05',
-  oldPlatformUrl: `https://kassa.prismanote.com`,
-  indexedDBName: 'prismaNote'
+  LOG_URL: 'https://log.e-orderportal.com',
+  apiURL: 'http://prismanote.com',
+  oldPlatformUrl: 'https://kassa.prismanote.com',
 };

@@ -22,6 +22,7 @@ import { MorePaymentsDialogComponent } from '../shared/components/more-payments-
 import { BarcodeService } from "../shared/service/barcode.service";
 import { TerminalService } from '../shared/service/terminal.service';
 import { TerminalDialogComponent } from '../shared/components/terminal-dialog/terminal-dialog.component';
+import { CreateArticleGroupService } from '../shared/service/create-article-groups.service';
 
 @Component({
   selector: 'app-till',
@@ -102,6 +103,7 @@ export class TillComponent implements OnInit {
     'iBusinessPartnerId',
     'iBusinessBrandId',
   ];
+  discountArticleGroup: any = {};
   saveInProgress = false;
   randNumber(min: number, max: number): number {
     return Math.floor(Math.random() * (max - min + 1) + min);
@@ -117,6 +119,7 @@ export class TillComponent implements OnInit {
     private tillService: TillService,
     private barcodeService: BarcodeService,
     private terminalService: TerminalService,
+    private createArticleGroupService: CreateArticleGroupService,
   ) {
   }
 
@@ -131,6 +134,8 @@ export class TillComponent implements OnInit {
       this.toastrService.show({ type: 'success', text: 'Barcode detected: ' + barcode })
     });
     this.loadTransaction();
+
+    this.checkArticleGroups();
   }
 
   loadTransaction() {
@@ -140,7 +145,6 @@ export class TillComponent implements OnInit {
       this.clearAll();
       const { transactionItems, transaction } = fromTransactionPage;
       this.transactionItems = transactionItems;
-      console.log(transactionItems);
       this.iActivityId = transaction.iActivityId || transaction._id;
       this.changeInPayment();
       // localStorage.removeItem('fromTransactionPage')
@@ -441,15 +445,7 @@ export class TillComponent implements OnInit {
     }
 
     const giftCardPayment = this.allPaymentMethod.find((o) => o.sName === 'Giftcards');
-    // const giftcardAmount = _.sumBy(this.appliedGiftCards, 'nAmount');
-    // const totalAmountPaid = giftcardAmount + _.sumBy(this.payMethods, 'amount');
-
     this.saveInProgress = true;
-    // if (_.sumBy(this.transactionItems, 'paymentAmount') > totalAmountPaid || 0) {
-    //   this.toastrService.show({ type: 'danger', text: 'The amount required does not match the amount entered.' });
-    //   this.saveInProgress = false;
-    //   return;
-    // }
     const changeAmount = this.getUsedPayMethods(true) - this.getTotals('price')
     this.dialogService.openModal(TerminalDialogComponent, { cssClass: 'modal-lg', context: { payments: this.payMethods, changeAmount } })
       .instance.close.subscribe((payMethods) => {
@@ -463,7 +459,7 @@ export class TillComponent implements OnInit {
             }
           });
           // this.changeInPayment();
-          const body = this.tillService.createTransactionBody(this.transactionItems, payMethods);
+          const body = this.tillService.createTransactionBody(this.transactionItems, payMethods, this.discountArticleGroup, this.redeemedLoyaltyPoints);
           if (giftCardPayment && this.appliedGiftCards.length > 0) {
             this.appliedGiftCards.forEach(element => {
               const cardPaymethod = _.clone(giftCardPayment);
@@ -485,6 +481,7 @@ export class TillComponent implements OnInit {
             }
           };
           body.redeemedLoyaltyPoints = this.redeemedLoyaltyPoints;
+          console.log(body);
           this.apiService.postNew('cashregistry', '/api/v1/till/transaction', body)
             .subscribe((data: any) => {
               this.toastrService.show({ type: 'success', text: data.message });
@@ -711,7 +708,6 @@ export class TillComponent implements OnInit {
   openCardsModal() {
     this.dialogService.openModal(CardsComponent, { cssClass: 'modal-lg', context: { customer: this.customer } })
       .instance.close.subscribe(result => {
-        console.log(result);
         if (result) {
           if (result.giftCardInfo.nAmount > 0) {
             this.appliedGiftCards.push(result.giftCardInfo);
@@ -759,13 +755,15 @@ export class TillComponent implements OnInit {
   addReedemedPoints(redeemedLoyaltyPoints: number) {
     this.transactionItems.push({
       name: 'Loyalty Points',
-      type: 'loyalty-points-discount',
+      type: 'loyalty-points',
+      eTransactionType: 'loyalty-points',
       quantity: 1,
       redeemedLoyaltyPoints,
       price: 0,
       nDiscount: 0,
       tax: 0,
       description: '',
+      oArticleGroupMetaData: { aProperty: [], sCategory: '', sSubCategory: '' },
       open: true,
     });
     this.redeemedLoyaltyPoints = redeemedLoyaltyPoints;
@@ -794,5 +792,28 @@ export class TillComponent implements OnInit {
     }, (error) => {
       this.toastrService.show({ type: 'warning', text: `Day-state is not closed` });
     })
+  }
+
+  checkArticleGroups() {
+    this.createArticleGroupService.checkArticleGroups('Discount')
+      .subscribe((res: any) => {
+        if (1 > res.data.length) {
+          this.createArticleGroup();
+        } else {
+          this.discountArticleGroup = res.data[0].result[0];
+        }
+      }, err => {
+        this.toastrService.show({ type: 'danger', text: err.message });
+      });
+  }
+
+  createArticleGroup() {
+    this.createArticleGroupService.createArticleGroup({ name: 'Discount', sCategory: 'Discount', sSubCategory: 'Discount' })
+      .subscribe((res: any) => {
+        this.discountArticleGroup = res.data[0].result[0];
+      },
+        err => {
+          this.toastrService.show({ type: 'danger', text: err.message });
+        });
   }
 }
