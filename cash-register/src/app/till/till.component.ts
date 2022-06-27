@@ -751,6 +751,7 @@ export class TillComponent implements OnInit {
         this.toastrService.show({ type: 'danger', text: err.message });
       });
   }
+
   addReedemedPoints(redeemedLoyaltyPoints: number) {
     this.transactionItems.push({
       name: 'Loyalty Points',
@@ -767,6 +768,30 @@ export class TillComponent implements OnInit {
     });
     this.redeemedLoyaltyPoints = redeemedLoyaltyPoints;
     // ../assets/images/no-photo-available.jpg
+  }
+
+  openDayState() {
+    const oBody = {
+      iBusinessId: this.business._id,
+      iLocationId: this.locationId
+    }
+    this.apiService.postNew('cashregistry', `/api/v1/statistics/open/day-state`, oBody).subscribe((result: any) => {
+      this.toastrService.show({ type: 'success', text: `Day-state is open now` });
+    }, (error) => {
+      this.toastrService.show({ type: 'warning', text: `Day-state is not open` });
+    })
+  }
+
+  closeDayState() {
+    const oBody = {
+      iBusinessId: this.business._id,
+      iLocationId: this.locationId
+    }
+    this.apiService.postNew('cashregistry', `/api/v1/statistics/close/day-state`, oBody).subscribe((result: any) => {
+      this.toastrService.show({ type: 'success', text: `Day-state is close now` });
+    }, (error) => {
+      this.toastrService.show({ type: 'warning', text: `Day-state is not closed` });
+    })
   }
 
   checkArticleGroups() {
