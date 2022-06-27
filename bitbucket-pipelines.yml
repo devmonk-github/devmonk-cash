@@ -10,7 +10,7 @@ pipelines:
           script:
             - cd cash-register
             - yarn install
-            - npm install -g @angular/cli
+            - npm install -g @angular/cli@12.0.5
             - ng build --configuration production
           artifacts:
             - cash-register/dist/cash-register/**
