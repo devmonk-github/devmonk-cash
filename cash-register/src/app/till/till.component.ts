@@ -593,7 +593,7 @@ export class TillComponent implements OnInit {
   addNewLine() {
     this.transactionItems.push({
       name: '',
-      type: 'loyalty-points-discount',
+      type: 'empty-line',
       quantity: 1,
       price: 0,
       nDiscount: 0,
@@ -601,16 +601,6 @@ export class TillComponent implements OnInit {
       description: '',
       open: true,
     });
-    // this.transactionItems.push({
-    //   name: '',
-    //   type: 'empty-line',
-    //   quantity: 1,
-    //   price: 0,
-    //   discount: 0,
-    //   tax: 0,
-    //   description: '',
-    //   open: true,
-    // });
   }
 
   getParkedTransactionBody(): Object {
