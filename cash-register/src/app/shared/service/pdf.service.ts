@@ -1253,21 +1253,14 @@ export class PdfService {
   }
 
   getTranslations(){
-    let translationsResults: any = [];
+    let translationsObj: any = {};
     let translationsKey: Array<string> = ['CREATED_BY', 'ART_NUMBER', 'QUANTITY', 'DESCRIPTION', 'DISCOUNT', 'AMOUNT'];
-   
+
     this.translateService.get(translationsKey).subscribe((result) => {
-      translationsResults = result;
+       Object.entries(result).forEach((translation: any) => {
+        translationsObj[ String("__"+translation[0]) ] = translation[1]
+      })
     });
-  
-    const translationsObj = {
-      "__CREATED_BY": translationsResults.CREATED_BY,
-      "__ART_NUMBER": translationsResults.ART_NUMBER,
-      "__QUANTITY": translationsResults.QUANTITY,
-      "__DESCRIPTION": translationsResults.DESCRIPTION,
-      "__DISCOUNT": translationsResults.DISCOUNT,
-      "__AMOUNT": translationsResults.AMOUNT
-    };
 
     return translationsObj;
   }
