@@ -43,10 +43,10 @@
       <div class="col-2">
         <label for="price">{{ "PRICE" | translate}}</label>
         <input type="number" (change)="updatePayments()" name="price" class="form-control" [(ngModel)]="item.price"
-          [disabled]="item.oType.bRefund">
+          [disabled]="item.oType?.bRefund">
         <label for="discount">{{ "DISCOUNT" | translate}}</label>
         <input type="number" name="discount" class="form-control" [(ngModel)]="item.nDiscount"
-          [disabled]="item.oType.bRefund">
+          [disabled]="item.oType?.bRefund">
         <label for="bagNumber">{{ "PREPAYMENT" | translate}}</label>
         <input type="number" name="bagNumber" id="bagNumber" [(ngModel)]="item.paymentAmount" class="form-control">
       </div>
