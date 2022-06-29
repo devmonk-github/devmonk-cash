@@ -67,7 +67,7 @@ export class ActivityDetailsComponent implements OnInit {
     // this.transaction = this.dialogRef.context.transaction;
   }
 
-  downloadCustomerReceipt(index: number){
+  downloadCustomerReceipt(index: number) {
     const data = this.activity.activityitems[index];
     const sName = 'Sample', eType = 'completed';
     this.customerReceiptDownloading = true;
@@ -87,17 +87,16 @@ export class ActivityDetailsComponent implements OnInit {
         // }
 
         this.pdfService.createPdf(JSON.stringify(template), data, filename, print, printData, this.iBusinessId, this.activity?._id)
-          .then( () => {
+          .then(() => {
             this.customerReceiptDownloading = false;
           })
           .catch((e: any) => {
             this.customerReceiptDownloading = false;
             console.error('err', e)
           })
-    }, (error) => {
-      this.customerReceiptDownloading = false;
-      console.log('printing error', error);
-    })
+      }, (error) => {
+        this.customerReceiptDownloading = false;
+      })
   }
 
   fetchCustomer(customerId: any) {

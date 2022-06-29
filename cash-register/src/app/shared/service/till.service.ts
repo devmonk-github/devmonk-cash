@@ -175,21 +175,36 @@ export class TillService {
         i.nDiscount,
 
         i.redeemedLoyaltyPoints,
+        i.uniqueIdentifier || this.getUniqueId(4),
       )
     });
     const originalTItemsLength = length = body.transactionItems.filter((i: any) => i.oType.eKind !== 'loyalty-points').length;
     body.transactionItems.map((i: any) => {
-      i.uniqueIdentifier = this.getUniqueId(4);
-      if (i.nDiscount && i.nDiscount > 0) {
-        i.nPaymentAmount += i.nDiscount;
-        const tItem1 = JSON.parse(JSON.stringify(i));
-        tItem1.iArticleGroupId = discountArticleGroup._id;
-        tItem1.oArticleGroupMetaData.sCategory = discountArticleGroup.sCategory;
-        tItem1.oArticleGroupMetaData.sSubCategory = discountArticleGroup.sSubCategory;
-        tItem1.oType.eTransactionType = 'cash-registry';
-        tItem1.oType.eKind = 'discount';
-        tItem1.nPaymentAmount = -1 * tItem1.nDiscount;
-        body.transactionItems.push(tItem1);
+      let discountRecords: any = localStorage.getItem('discountRecords');
+      if (discountRecords) {
+        discountRecords = JSON.parse(discountRecords);
+      }
+      if (i.oType.bRefund && (i.nPriceIncVat - i.nDiscount + i.nPaymentAmount) === 0) {
+        const records = discountRecords.filter((o: any) => o.uniqueIdentifier === i.uniqueIdentifier);
+        records.forEach((record: any) => {
+          i.nPaymentAmount += record.nPaymentAmount;
+          record.nPaymentAmount = -1 * record.nPaymentAmount;
+          record.nPaidAmount = -1 * record.nPaidAmount;
+          body.transactionItems.push(record);
+        });
+        localStorage.removeItem('discountRecords');
+      } else {
+        if (i.nDiscount && i.nDiscount > 0 && !i.oType.bRefund) {
+          i.nPaymentAmount += i.nDiscount;
+          const tItem1 = JSON.parse(JSON.stringify(i));
+          tItem1.iArticleGroupId = discountArticleGroup._id;
+          tItem1.oArticleGroupMetaData.sCategory = discountArticleGroup.sCategory;
+          tItem1.oArticleGroupMetaData.sSubCategory = discountArticleGroup.sSubCategory;
+          tItem1.oType.eTransactionType = 'cash-registry';
+          tItem1.oType.eKind = 'discount';
+          tItem1.nPaymentAmount = -1 * tItem1.nDiscount;
+          body.transactionItems.push(tItem1);
+        }
       }
     });
     if (redeemedLoyaltyPoints && redeemedLoyaltyPoints > 0) {

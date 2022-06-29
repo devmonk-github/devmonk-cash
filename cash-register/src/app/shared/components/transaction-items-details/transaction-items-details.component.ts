@@ -3,6 +3,7 @@ import { DialogComponent } from '../../service/dialog';
 import { ViewContainerRef } from '@angular/core';
 import { ApiService } from 'src/app/shared/service/api.service';
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
+import * as _ from 'lodash';
 @Component({
   selector: 'app-transaction-items-details',
   templateUrl: './transaction-items-details.component.html',
@@ -70,6 +71,13 @@ export class TransactionItemsDetailsComponent implements OnInit {
     };
     this.apiService.postNew('cashregistry', url, this.requestParams).subscribe((result: any) => {
       this.transactionItems = result.data[0].result;
+      const discountRecords = this.transactionItems.filter(o => o.oType.eKind === 'discount');
+      this.transactionItems = this.transactionItems.filter(o => o.oType.eKind !== 'discount');
+      this.transactionItems.forEach(element => {
+        const elementDiscount = discountRecords.filter(o => o.uniqueIdentifier === element.uniqueIdentifier);
+        element.nPaymentAmount += _.sumBy(elementDiscount, 'nPaymentAmount');
+        element.nPaidAmount += _.sumBy(elementDiscount, 'nPaymentAmount');
+      });
       this.transactionItems = this.transactionItems.map(v => ({ ...v, isSelected: false }));
       this.transactionItems.forEach(transactionItem => {
         if (transactionItem.nPaidAmount < transactionItem.nTotalAmount) {
@@ -78,6 +86,9 @@ export class TransactionItemsDetailsComponent implements OnInit {
           transactionItem.tType = 'refund';
         }
       });
+      if (discountRecords.length > 0) {
+        localStorage.setItem('discountRecords', JSON.stringify(discountRecords));
+      }
 
     }, (error) => {
       alert(error.error.message);

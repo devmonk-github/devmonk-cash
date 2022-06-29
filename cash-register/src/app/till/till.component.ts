@@ -481,7 +481,6 @@ export class TillComponent implements OnInit {
             }
           };
           body.redeemedLoyaltyPoints = this.redeemedLoyaltyPoints;
-          console.log(body);
           this.apiService.postNew('cashregistry', '/api/v1/till/transaction', body)
             .subscribe((data: any) => {
               this.toastrService.show({ type: 'success', text: data.message });
