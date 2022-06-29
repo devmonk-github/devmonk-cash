@@ -32,10 +32,10 @@
       <div class="col-2">
         <label for="price">{{ "PRICE" | translate}}</label>
         <input type="number" step="any" name="price" class="form-control" (change)="updatePayments()"
-          [(ngModel)]="item.price" [disabled]="item.oType.bRefund">
+          [(ngModel)]="item.price" [disabled]="item.oType?.bRefund">
         <label for="discount">{{ "DISCOUNT" | translate}}</label>
         <input type="number" step="any" name="discount" class="form-control" [(ngModel)]="item.nDiscount"
-          [disabled]="item.oType.bRefund">
+          [disabled]="item.oType?.bRefund">
         <label for="bagNumber">{{ "PREPAYMENT" | translate}}</label>
         <input type="number" step="any" name="bagNumber" id="bagNumber" (keyup)="updatePayments()"
           [(ngModel)]="item.paymentAmount" class="form-control" [disabled]="item.isExclude">
