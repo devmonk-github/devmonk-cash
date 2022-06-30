@@ -83,7 +83,8 @@
                 </button>
                 <button class="btn btn-sm btn-secondary w-100 d-flex" (click)="downloadWithVAT()">
                     <fa-icon [hidden]="downloadWithVATLoading" [icon]="faDownload"></fa-icon>
-                    <i class="fa fa-spinner fa-spin" *ngIf="downloadWithVATLoading" [hidden]="!downloadWithVATLoading" style="font-size:15px;"></i>
+                    <i class="fa fa-spinner fa-spin" *ngIf="downloadWithVATLoading" [hidden]="!downloadWithVATLoading"
+                        style="font-size:15px;"></i>
                     <label class="mx-auto">Download with VAT</label>
                 </button>
                 <button class="btn btn-sm btn-secondary w-100 d-flex">
@@ -179,7 +180,26 @@
                                     <img src="{{ item.aImage[0] || imagePlaceHolder}}"
                                         (error)="item.aImage[0]=imagePlaceHolder" class="product_image">
                                 </td>
-                                <td>{{item.sProductName}}</td>
+                                <td>
+                                    <div>
+                                        {{item.sProductName}}
+                                    </div>
+                                    <br>
+                                    <div *ngIf="item?.aProductVariant?.length > 0">
+                                        <div *ngFor="let variant of item.aProductVariant" class="d-flex">
+                                            <div class="w-25">
+                                                {{ variant.sVariantBase }}
+                                            </div> :
+                                            <div class="w-50 px-2">
+                                                <span *ngIf="variant.sVariantBase !== 'color'"> {{ variant.value }}
+                                                </span>
+                                                <span *ngIf="variant.sVariantBase === 'color'"
+                                                    [style.background]="variant.value"
+                                                    class="px-2 border border-gray-600"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
                                 <td>{{item.nPurchasePrice}}</td>
                                 <td>{{item.nQuantity}}</td>
                                 <td>0</td>
