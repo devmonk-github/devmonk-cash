@@ -51,7 +51,7 @@
       </div>
       <div class="w-125px pe-2">
         <input type="text" class="form-control" name="price" (change)="updatePayments()"
-          placeholder="{{ 'PRICE' | translate}}" id="price" [(ngModel)]="item.price" [disabled]="item.oType.bRefund">
+          placeholder="{{ 'PRICE' | translate}}" id="price" [(ngModel)]="item.price" [disabled]="item.oType?.bRefund">
         <label for="bagNumber">{{ "PREPAYMENT" | translate}}</label>
         <input type="number" name="bagNumber" id="bagNumber" [(ngModel)]="item.paymentAmount" class="form-control">
 
