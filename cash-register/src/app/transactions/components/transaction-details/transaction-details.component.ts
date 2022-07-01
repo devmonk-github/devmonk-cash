@@ -34,6 +34,7 @@ export class TransactionDetailsComponent implements OnInit {
   transactionId: string = '5c2f276e86a7527e67a45e9d'
   pdfGenerating: Boolean = false;
   downloadWithVATLoading: Boolean = false;
+  businessDetails: any = {};
   templateString = {
     "barcodeheight":"10",
     "barcodetext":false,
@@ -313,8 +314,17 @@ export class TransactionDetailsComponent implements OnInit {
 
   ngOnInit(): void {
     this.iBusinessId = localStorage.getItem("currentBusiness") || '';
+    this.fetchBusinessDetails();
     this.fetchTransaction(this.transaction.sNumber)
     this.getPrintSetting();
+  }
+
+  fetchBusinessDetails() {
+    this.apiService.getNew('core', '/api/v1/business/' + this.iBusinessId)
+    .subscribe(
+      (result : any) => {
+        this.businessDetails = result.data;
+    })
   }
 
   close(value: boolean) {
@@ -348,6 +358,7 @@ export class TransactionDetailsComponent implements OnInit {
   generatePDF(print: boolean): void {
     const sName = 'Sample', eType = this.transaction.eType;
     this.downloadWithVATLoading = true;
+    this.transaction.businessDetails = this.businessDetails;
     this.apiService.getNew('cashregistry', '/api/v1/pdf/templates/' + this.iBusinessId + '?sName=' + sName + '&eType=' + eType).subscribe(
       (result: any) => {
         const filename = new Date().getTime().toString()
