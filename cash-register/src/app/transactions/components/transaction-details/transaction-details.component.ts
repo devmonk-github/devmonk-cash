@@ -24,6 +24,7 @@ export class TransactionDetailsComponent implements OnInit {
   faTrashAlt = faTrashAlt;
   transaction: any = {};
   iBusinessId: string = '';
+  iLocationId: string = '';
   loading: boolean = true;
   customerLoading: boolean = true;
   customer: any = {};
@@ -314,6 +315,7 @@ export class TransactionDetailsComponent implements OnInit {
 
   ngOnInit(): void {
     this.iBusinessId = localStorage.getItem("currentBusiness") || '';
+    this.iLocationId = localStorage.getItem("currentLocation") || '';
     this.fetchBusinessDetails();
     this.fetchTransaction(this.transaction.sNumber)
     this.getPrintSetting();
@@ -359,6 +361,11 @@ export class TransactionDetailsComponent implements OnInit {
     const sName = 'Sample', eType = this.transaction.eType;
     this.downloadWithVATLoading = true;
     this.transaction.businessDetails = this.businessDetails;
+    for(let i = 0; i < this.businessDetails?.aLocation.length; i++){
+      if(this.businessDetails.aLocation[i]?._id.toString() == this.iLocationId.toString()){
+        this.transaction.currentLocation = this.businessDetails.aLocation[i];
+      }
+    }
     this.apiService.getNew('cashregistry', '/api/v1/pdf/templates/' + this.iBusinessId + '?sName=' + sName + '&eType=' + eType).subscribe(
       (result: any) => {
         const filename = new Date().getTime().toString()
