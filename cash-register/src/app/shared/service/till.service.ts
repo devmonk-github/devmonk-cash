@@ -180,6 +180,7 @@ export class TillService {
       )
     });
     const originalTItemsLength = length = body.transactionItems.filter((i: any) => i.oType.eKind !== 'loyalty-points').length;
+    // console.log(originalTItemsLength);
     body.transactionItems.map((i: any) => {
       let discountRecords: any = localStorage.getItem('discountRecords');
       if (discountRecords) {
@@ -213,12 +214,18 @@ export class TillService {
       }
     });
     localStorage.removeItem('discountRecords');
+    // console.log(originalTItemsLength);
     if (redeemedLoyaltyPoints && redeemedLoyaltyPoints > 0) {
-      redeemedLoyaltyPoints
+      // redeemedLoyaltyPoints
+      let nDiscount = Math.round(redeemedLoyaltyPoints / originalTItemsLength);
       body.transactionItems.map((i: any) => {
-        if (i.oType.eKind !== 'discount' && i.oType.eKind !== 'loyalty-points' && redeemedLoyaltyPoints > 0) {
-          const nDiscount = Math.floor(redeemedLoyaltyPoints / originalTItemsLength);
-          redeemedLoyaltyPoints = redeemedLoyaltyPoints % originalTItemsLength;
+        if (i.oType.eKind !== 'discount' && i.oType.eKind !== 'loyalty-points' && nDiscount > 0) {
+          if (nDiscount > redeemedLoyaltyPoints) {
+            nDiscount = redeemedLoyaltyPoints;
+            redeemedLoyaltyPoints = 0;
+          } else {
+            redeemedLoyaltyPoints = redeemedLoyaltyPoints - nDiscount;
+          }
           const tItem1 = JSON.parse(JSON.stringify(i));
           tItem1.iArticleGroupId = discountArticleGroup._id;
           tItem1.oArticleGroupMetaData.sCategory = discountArticleGroup.sCategory;
@@ -229,6 +236,12 @@ export class TillService {
           tItem1.nRedeemedLoyaltyPoints = nDiscount;
           body.transactionItems.push(tItem1);
           i.nDiscount += nDiscount;
+          // if (nDiscount > redeemedLoyaltyPoints) {
+          //   nDiscount = redeemedLoyaltyPoints;
+          //   redeemedLoyaltyPoints = 0;
+          // } else {
+          //   redeemedLoyaltyPoints = redeemedLoyaltyPoints - nDiscount;
+          // }
         }
       });
     }

@@ -458,7 +458,7 @@ export class TillComponent implements OnInit {
               pay.amount = 0;
             }
           });
-          // this.changeInPayment();
+          payMethods = payMethods.filter((o: any) => o.amount !== 0);
           const body = this.tillService.createTransactionBody(this.transactionItems, payMethods, this.discountArticleGroup, this.redeemedLoyaltyPoints);
           if (giftCardPayment && this.appliedGiftCards.length > 0) {
             this.appliedGiftCards.forEach(element => {
@@ -480,7 +480,8 @@ export class TillComponent implements OnInit {
               sPrefix: this.customer.sPrefix
             }
           };
-          // body.redeemedLoyaltyPoints = this.redeemedLoyaltyPoints;
+          // console.log(body);
+          // // body.redeemedLoyaltyPoints = this.redeemedLoyaltyPoints;
           this.apiService.postNew('cashregistry', '/api/v1/till/transaction', body)
             .subscribe((data: any) => {
               this.toastrService.show({ type: 'success', text: data.message });
@@ -554,7 +555,6 @@ export class TillComponent implements OnInit {
 
   // Add selected product into purchase order
   onSelectProduct(product: any, isFrom: string, isFor: string) {
-    console.log(product);
     this.transactionItems.push({
       name: product.oName ? product.oName['en'] : 'No name',
       eTransactionItemType: 'regular',
@@ -690,7 +690,7 @@ export class TillComponent implements OnInit {
   openExpenses() {
     this.dialogService.openModal(AddExpensesComponent, { cssClass: 'modal-m', context: {} })
       .instance.close.subscribe(result => {
-        console.log(result);
+        // console.log(result);
       });
   }
 
