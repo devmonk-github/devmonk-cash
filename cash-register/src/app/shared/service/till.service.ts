@@ -198,7 +198,6 @@ export class TillService {
             body.redeemedLoyaltyPoints += record.nRedeemedLoyaltyPoints;
           }
         });
-        localStorage.removeItem('discountRecords');
       } else {
         if (i.nDiscount && i.nDiscount > 0 && !i.oType.bRefund) {
           i.nPaymentAmount += i.nDiscount;
@@ -213,6 +212,7 @@ export class TillService {
         }
       }
     });
+    localStorage.removeItem('discountRecords');
     if (redeemedLoyaltyPoints && redeemedLoyaltyPoints > 0) {
       redeemedLoyaltyPoints
       body.transactionItems.map((i: any) => {
@@ -254,7 +254,6 @@ export class TillService {
     } else {
       message = `Error Code: ${err.status}\nMessage: ${err.message}`;
     }
-    console.log(message);
     return throwError(() => {
       message;
     });
