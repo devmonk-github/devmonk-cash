@@ -480,7 +480,7 @@ export class TillComponent implements OnInit {
               sPrefix: this.customer.sPrefix
             }
           };
-          body.redeemedLoyaltyPoints = this.redeemedLoyaltyPoints;
+          // body.redeemedLoyaltyPoints = this.redeemedLoyaltyPoints;
           this.apiService.postNew('cashregistry', '/api/v1/till/transaction', body)
             .subscribe((data: any) => {
               this.toastrService.show({ type: 'success', text: data.message });

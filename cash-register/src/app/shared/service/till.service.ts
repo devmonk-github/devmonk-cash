@@ -101,6 +101,7 @@ export class TillService {
       transactionItems: transactionItems,
       oTransaction: transaction,
       payments: this.getUsedPayMethods(false, payMethods),
+      redeemedLoyaltyPoints,
     };
     body.transactionItems = transactionItems.map((i: any) => {
       return new TransactionItem(
@@ -190,7 +191,12 @@ export class TillService {
           i.nPaymentAmount += record.nPaymentAmount;
           record.nPaymentAmount = -1 * record.nPaymentAmount;
           record.nPaidAmount = -1 * record.nPaidAmount;
+          record.oType.bRefund = true;
+          record.nRedeemedLoyaltyPoints = -1 * record.nRedeemedLoyaltyPoints;
           body.transactionItems.push(record);
+          if (i.oType.eKind = 'loyalty-points-discount') {
+            body.redeemedLoyaltyPoints += record.nRedeemedLoyaltyPoints;
+          }
         });
         localStorage.removeItem('discountRecords');
       } else {
@@ -220,7 +226,9 @@ export class TillService {
           tItem1.oType.eTransactionType = 'cash-registry';
           tItem1.oType.eKind = 'loyalty-points-discount';
           tItem1.nPaymentAmount = -1 * nDiscount;
+          tItem1.nRedeemedLoyaltyPoints = nDiscount;
           body.transactionItems.push(tItem1);
+          i.nDiscount += nDiscount;
         }
       });
     }
