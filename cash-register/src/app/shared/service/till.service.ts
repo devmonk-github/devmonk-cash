@@ -180,7 +180,6 @@ export class TillService {
       )
     });
     const originalTItemsLength = length = body.transactionItems.filter((i: any) => i.oType.eKind !== 'loyalty-points').length;
-    // console.log(originalTItemsLength);
     body.transactionItems.map((i: any) => {
       let discountRecords: any = localStorage.getItem('discountRecords');
       if (discountRecords) {
@@ -195,7 +194,7 @@ export class TillService {
           record.oType.bRefund = true;
           record.nRedeemedLoyaltyPoints = -1 * record.nRedeemedLoyaltyPoints;
           body.transactionItems.push(record);
-          if (i.oType.eKind = 'loyalty-points-discount') {
+          if (i.oType.eKind === 'loyalty-points-discount') {
             body.redeemedLoyaltyPoints += record.nRedeemedLoyaltyPoints;
           }
         });
@@ -214,12 +213,9 @@ export class TillService {
       }
     });
     localStorage.removeItem('discountRecords');
-    // console.log(originalTItemsLength);
     if (redeemedLoyaltyPoints && redeemedLoyaltyPoints > 0) {
-      // redeemedLoyaltyPoints
       let nDiscount = Math.round(redeemedLoyaltyPoints / originalTItemsLength);
       const reedemedTItem = body.transactionItems.find((o: any) => o.oType.eTransactionType === "loyalty-points");
-      console.log(reedemedTItem);
       body.transactionItems.map((i: any) => {
         if (i.oType.eKind !== 'discount' && i.oType.eKind !== 'loyalty-points' && nDiscount > 0) {
           if (nDiscount > redeemedLoyaltyPoints) {
