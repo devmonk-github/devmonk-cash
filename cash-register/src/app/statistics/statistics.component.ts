@@ -46,7 +46,15 @@ export class StatisticsComponent implements OnInit {
   }
 
   fetchStatistics(sDisplayMethod: string) {
-    this.apiService.getNew('cashregistry', `/api/v1/statistics/get/?iBusinessId=${this.iBusinessId}&displayMethod=${sDisplayMethod}`).subscribe((result: any) => {
+    const oBody = {
+      iBusinessId: this.iBusinessId,
+      oFilter: {
+        sDisplayMethod: sDisplayMethod,
+        dStartDate: '',
+        dEndDate: ''
+      },
+    }
+    this.apiService.postNew('cashregistry', `/api/v1/statistics/get`, oBody).subscribe((result: any) => {
       if (result?.data) this.aStatistic = result.data;
     }, (error) => {
       console.log('error: ', error);
