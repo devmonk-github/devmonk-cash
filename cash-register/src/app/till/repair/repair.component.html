@@ -5,9 +5,11 @@
       <div class="w-90px">{{item.quantity}}</div>
       <div class="w-275px">{{item.name}}</div>
       <div class="w-100px">{{item.price | currency: '€'}}</div>
-      <div class="w-95px">{{item.nDiscount | currency: '€'}}</div>
+      <div class="w-95px">{{item.nDiscount * item.quantity | currency: '€'}}</div>
       <div class="w-100px">{{item.tax}}%</div>
-      <div class="w-100px">{{getTotalPrice(item)}}
+      <!-- <div class="w-100px">{{getTotalPrice(item)}}
+      </div> -->
+      <div class="w-100px">{{(item.price - item.nDiscount) * item.quantity | currency: '€' }}
       </div>
       <div class="w-75px">{{item.paymentAmount | currency: '€'}}</div>
     </section>
