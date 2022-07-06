@@ -37,6 +37,7 @@ import { AddExpensesComponent } from "./components/add-expenses-dialog/add-expen
 import { CardsComponent } from "./components/cards-dialog/cards-dialog.component";
 import { MorePaymentsDialogComponent } from "./components/more-payments-dialog/more-payments-dialog.component";
 import { TerminalDialogComponent } from "./components/terminal-dialog/terminal-dialog.component";
+import { AddFavouritesComponent } from "./components/add-favourites/favourites.component";
 
 @NgModule({
   declarations: [
@@ -49,6 +50,7 @@ import { TerminalDialogComponent } from "./components/terminal-dialog/terminal-d
     AccordionDirective,
     CustomPaymentMethodComponent,
     ConfirmationDialogComponent,
+    AddFavouritesComponent,
     ImageUploadComponent,
     DeviceDetailsComponent,
     PrintSettingsDetailsComponent,
