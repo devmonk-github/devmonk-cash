@@ -418,6 +418,8 @@ export class TillComponent implements OnInit {
     this.payMethods.map(o => o.amount = null);
     this.appliedGiftCards = [];
     this.redeemedLoyaltyPoints = 0;
+    this.iActivityId = '';
+
   }
 
   startTerminalPayment() {
