@@ -23,7 +23,6 @@ import { BarcodeService } from "../shared/service/barcode.service";
 import { TerminalService } from '../shared/service/terminal.service';
 import { TerminalDialogComponent } from '../shared/components/terminal-dialog/terminal-dialog.component';
 import { CreateArticleGroupService } from '../shared/service/create-article-groups.service';
-
 @Component({
   selector: 'app-till',
   templateUrl: './till.component.html',
@@ -70,23 +69,25 @@ export class TillComponent implements OnInit {
   eKind: string = 'regular';
   parkedTransactions: Array<any> = [];
   terminals: Array<any> = [];
-  quickButtons: Array<any> = [
-    { name: 'Waterdicht', price: this.randNumber(5, 30) },
-    { name: 'Batterij', price: this.randNumber(5, 30) },
-    { name: 'Band verstellen', price: this.randNumber(5, 20) },
-    { name: 'Oude cadeaubon', price: this.randNumber(1, 50) },
-    { name: 'Schiet oorbel', price: this.randNumber(1, 50) },
-    { name: 'Reparatie', price: this.randNumber(1, 50) },
-    { name: 'IXXI', price: this.randNumber(50, 100) },
-    { name: 'KARMA', price: this.randNumber(50, 100) },
-    { name: 'BUDDHA', price: this.randNumber(50, 100) },
-    { name: 'P1500', price: this.randNumber(100, 150) },
-    { name: 'Diversen', price: this.randNumber(30, 150) },
-    { name: 'Stalen band', price: this.randNumber(25, 50) },
-    { name: 'Leren band', price: this.randNumber(20, 45) },
-    { name: 'Postzegels', price: this.randNumber(1, 10) },
-    { name: 'Tassen', price: this.randNumber(50, 200) },
-  ];
+  quickButtons: Array<any> = [];
+  quickButtonsLoading: boolean = false;
+  // quickButtons: Array<any> = [
+  //   { name: 'Waterdicht', price: this.randNumber(5, 30) },
+  //   { name: 'Batterij', price: this.randNumber(5, 30) },
+  //   { name: 'Band verstellen', price: this.randNumber(5, 20) },
+  //   { name: 'Oude cadeaubon', price: this.randNumber(1, 50) },
+  //   { name: 'Schiet oorbel', price: this.randNumber(1, 50) },
+  //   { name: 'Reparatie', price: this.randNumber(1, 50) },
+  //   { name: 'IXXI', price: this.randNumber(50, 100) },
+  //   { name: 'KARMA', price: this.randNumber(50, 100) },
+  //   { name: 'BUDDHA', price: this.randNumber(50, 100) },
+  //   { name: 'P1500', price: this.randNumber(100, 150) },
+  //   { name: 'Diversen', price: this.randNumber(30, 150) },
+  //   { name: 'Stalen band', price: this.randNumber(25, 50) },
+  //   { name: 'Leren band', price: this.randNumber(20, 45) },
+  //   { name: 'Postzegels', price: this.randNumber(1, 10) },
+  //   { name: 'Tassen', price: this.randNumber(50, 200) },
+  // ];
   aProjection: Array<any> = [
     'oName',
     'sEan',
@@ -136,6 +137,9 @@ export class TillComponent implements OnInit {
     this.loadTransaction();
 
     this.checkArticleGroups();
+
+    this.fetchQuickButtons()
+
   }
 
   loadTransaction() {
@@ -804,5 +808,23 @@ export class TillComponent implements OnInit {
         err => {
           this.toastrService.show({ type: 'danger', text: err.message });
         });
+  }
+
+  fetchQuickButtons() {
+    this.quickButtonsLoading = true;
+    try {
+      this.apiService.getNew('cashregistry', '/api/v1/quick-buttons/' + this.requestParams.iBusinessId).subscribe((result: any) => {
+        // console.log('fetchQuickButtons', result);
+
+        this.quickButtonsLoading = false;
+        if (result?.length) {
+          this.quickButtons = result;
+        }
+      }, (error) => {
+        this.quickButtonsLoading = false;
+      })
+    } catch (e) {
+      this.quickButtonsLoading = false;
+    }
   }
 }

@@ -1,4 +1,4 @@
-<div class="card mb-5 mb-xl-10 d-flex">
+<div class="card mb-5 mb-xl-10 d-flex" data-kt-scroll-section="cash-settings">
   <div class="card-header row">
     <div class="card-title">
       <div class="col-md-9">
@@ -42,7 +42,7 @@
     </div>
   </div>
 
-  <div class="card-body p-9">
+  <div class="card-body p-9 border-bottom" data-kt-scroll-section="payment-methods">
     <div class="card-title fw-bold row">
       <div class="col-md-10">
         <span class="fw-bold">
@@ -94,6 +94,46 @@
       <h5 *ngIf='!payMethods.length && !payMethodsLoading'>{{ 'NO_DATA_FOUND' | translate}}</h5>
       <div *ngIf="payMethodsLoading" class="spinner-border mx-auto"></div>
     </div>
+  </div>
+  <div class="card-body" data-kt-scroll-section="quick-buttons">
+    <div class="card-title fw-bold row">
+      <div class="col-md-10">
+        <span class="fw-bold">
+          <h3>{{ 'Quick Buttons' | translate}}</h3>
+        </span>
+      </div>
+      <div class="col-md-1">
+        <button class="btn btn-primary float-end" (click)="saveFavourites()">{{ 'SAVE' | translate}}</button>
+      </div>
+      <div class="col-md-1">
+        <button class="btn btn-primary float-end" (click)="createFavourite()">{{ 'NEW' | translate}}</button>
+      </div>
+    </div>
+    <div class="">
+      <div *ngIf="quickButtonsLoading" class="spinner-border mx-auto"></div>
+      <h5 *ngIf='!quickButtons.length && !quickButtonsLoading'>{{ 'NO_DATA_FOUND' | translate}}</h5>
+      <ul *ngIf="quickButtons.length && !quickButtonsLoading" class="list-group">
+        <li class="list-group-item" *ngFor="let button of quickButtons; let i = index">
+
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <span class="d-flex justify-content-start align-items-center my-3">
+                <h4 class="text-gray-800 fw-bold fs-6 lh-1 text-center mb-0">{{button.sName}}</h4>
+                <span class="text-gray-600 mx-3"> ({{button.nPrice | currency: '€'}})</span>
+                <!-- todo: color per quick button <span class="bullet-custom position-absolute bottom-0 w-100 h-4px bg-primary"></span> -->
+              </span>
+            </div>
+            <div>
+              <button class="btn p-3 hover" (click)="shiftQuickButton('up', i)"><i class="fa fa-arrow-up"
+                  aria-hidden="true"></i></button>
+              <button class="btn p-3 hover" (click)="shiftQuickButton('down', i)"><i class="fa fa-arrow-down"
+                  aria-hidden="true"></i></button>
+            </div>
+          </div>
+        </li>
+      </ul>
+    </div>
+
   </div>
 </div>
 <div class="card" *ngIf="bookKeepingMode">

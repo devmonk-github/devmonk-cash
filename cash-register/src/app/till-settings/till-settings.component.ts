@@ -1,10 +1,11 @@
+import { AddFavouritesComponent } from './../shared/components/add-favourites/favourites.component';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ApiService } from '../shared/service/api.service';
 import { DialogService } from '../shared/service/dialog';
 import { CustomPaymentMethodComponent } from '../shared/components/custom-payment-method/custom-payment-method.component';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { ConfirmationDialogComponent } from '../shared/components/confirmation-dialog/confirmation-dialog.component';
-
+import { ToastService } from '../shared/components/toast';
 @Component({
   selector: 'app-till-settings',
   templateUrl: './till-settings.component.html',
@@ -29,10 +30,13 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
   ];
   articleGroupList!: Array<any>;
   loading: boolean = false;
+  quickButtons: Array<any> = [];
+  quickButtonsLoading: boolean = false;
 
   constructor(
     private apiService: ApiService,
-    private dialogService: DialogService
+    private dialogService: DialogService,
+    private toastService: ToastService,
   ) { }
 
   ngOnInit(): void {
@@ -40,6 +44,7 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
     this.getPaymentMethods();
     this.getBookkeepingSetting();
     this.getSettings();
+    this.fetchQuickButtons();
   }
 
   deleteMethod(method: any) {
@@ -216,5 +221,52 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
   }
   ngOnDestroy(): void {
     console.log('destroy called');
+  }
+
+  createFavourite() {
+    this.dialogService.openModal(AddFavouritesComponent, { context: { mode: 'create' }, cssClass: "modal-lg", hasBackdrop: true, closeOnBackdropClick: true, closeOnEsc: true }).instance.close.subscribe(result => {
+      this.toastService.show({ type: 'success', text: `New Quick Button added successfully` });
+      this.fetchQuickButtons();
+    });
+  }
+
+  fetchQuickButtons() {
+    this.quickButtonsLoading = true;
+    try {
+      this.apiService.getNew('cashregistry', '/api/v1/quick-buttons/' + this.requestParams.iBusinessId).subscribe((result: any) => {
+        // console.log('fetchQuickButtons', result);
+        this.quickButtonsLoading = false;
+        if (result?.length) this.quickButtons = result;
+      }, (error) => {
+        this.quickButtonsLoading = false;
+      })
+    } catch (e) {
+      this.quickButtonsLoading = false;
+    }
+  }
+
+  shiftQuickButton(type: string, index: number) {
+    if (type == 'up') {
+      if (this.quickButtons[index - 1])
+        [this.quickButtons[index - 1], this.quickButtons[index]] = [this.quickButtons[index], this.quickButtons[index - 1]]
+
+    } else {
+      if (this.quickButtons[index + 1])
+        [this.quickButtons[index + 1], this.quickButtons[index]] = [this.quickButtons[index], this.quickButtons[index + 1]]
+    }
+  }
+
+  saveFavourites() {
+    this.quickButtonsLoading = true;
+    try {
+      this.apiService.putNew('cashregistry', '/api/v1/quick-buttons/update/' + this.requestParams.iBusinessId, this.quickButtons).subscribe((result: any) => {
+        this.quickButtonsLoading = false;
+        this.toastService.show({ type: 'success', text: `Quick Buttons order saved successfully` });
+      }, (error) => {
+        this.quickButtonsLoading = false;
+      })
+    } catch (e) {
+      this.quickButtonsLoading = false;
+    }
   }
 }
