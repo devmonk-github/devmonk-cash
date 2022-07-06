@@ -47,8 +47,12 @@
         <input type="number" (change)="updatePayments()" name="price" class="form-control" [(ngModel)]="item.price"
           [disabled]="item.oType?.bRefund">
         <label for="discount">{{ "DISCOUNT" | translate}}</label>
-        <input type="number" name="discount" class="form-control" [(ngModel)]="item.nDiscount"
-          [disabled]="item.oType?.bRefund">
+        <input *ngIf="!item.oType.bRefund" type="number" step="any" name="discount" class="form-control"
+          [(ngModel)]="item.nDiscount">
+        <input *ngIf="item.oType.bRefund" type="number" step="any" name="discount" class="form-control"
+          [value]="item.nDiscount - (item.nRedeemedLoyaltyPoints || 0)" disabled>
+        <label for="discount" *ngIf="item.oType.bRefund">{{ "LOYALTY_POINTS" | translate}}:
+          {{item.nRedeemedLoyaltyPoints}}</label>
         <label for="bagNumber">{{ "PREPAYMENT" | translate}}</label>
         <input type="number" name="bagNumber" id="bagNumber" [(ngModel)]="item.paymentAmount" class="form-control">
       </div>

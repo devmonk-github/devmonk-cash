@@ -76,6 +76,13 @@ export class TransactionItemsDetailsComponent implements OnInit {
       this.transactionItems = this.transactionItems.filter(o => o.oType.eKind !== 'discount' && o.oType.eKind !== 'loyalty-points' && o.oType.eKind !== 'loyalty-points-discount');
       this.transactionItems.forEach(element => {
         const elementDiscount = discountRecords.filter(o => o.uniqueIdentifier === element.uniqueIdentifier);
+        let nRedeemedLoyaltyPoints = 0;
+        elementDiscount.forEach(dElement => {
+          if (dElement.oType.eKind === 'loyalty-points-discount') {
+            nRedeemedLoyaltyPoints += dElement.nRedeemedLoyaltyPoints || 0;
+          }
+        });
+        element.nRedeemedLoyaltyPoints = nRedeemedLoyaltyPoints;
         element.nPaymentAmount += _.sumBy(elementDiscount, 'nPaymentAmount');
         element.nPaidAmount += _.sumBy(elementDiscount, 'nPaymentAmount');
       });

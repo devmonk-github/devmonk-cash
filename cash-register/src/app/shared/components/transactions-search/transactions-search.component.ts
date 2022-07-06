@@ -124,6 +124,7 @@ export class TransactionsSearchComponent implements OnInit, AfterViewInit {
                 price: transactionItem.nPriceIncVat,
                 iRepairerId: transactionItem.iRepairerId,
                 oArticleGroupMetaData: transactionItem.oArticleGroupMetaData,
+                nRedeemedLoyaltyPoints: transactionItem.nRedeemedLoyaltyPoints,
                 iEmployeeId: transactionItem.iEmployeeId,
                 iBrandId: transactionItem.iBrandId,
                 nDiscount: transactionItem.nDiscount || 0,
@@ -141,7 +142,6 @@ export class TransactionsSearchComponent implements OnInit, AfterViewInit {
   }
 
   close(data: any): void {
-    console.log(data);
     this.dialogRef.close.emit(data)
   }
 

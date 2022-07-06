@@ -49,7 +49,7 @@ export class TerminalDialogComponent implements OnInit {
   ngOnInit(): void {
     this.cardPayments = this.dialogRef.context.payments.filter((o: any) => o.sName.toLowerCase() === 'card' && o.amount);
     this.otherPayments = this.dialogRef.context.payments.filter((o: any) => o.sName.toLowerCase() !== 'card' && o.amount);
-    this.changeAmount = this.dialogRef.context.changeAmount;
+    this.changeAmount = this.dialogRef.context.changeAmount < 0 ? 0 : this.dialogRef.context.changeAmount;
     this.totalAmount = _.sumBy(this.dialogRef.context.payments, 'amount');
     this.cardPayments.map((o: any) => { o.status = 'PROCEED'; o.remark = 'NOT_PAID'; o.sCardName = ''; o.oPayNL = { sTransactionId: '', sTransactionStatus: '', sTicketHash: '' }; return o; });
     // if (this.cardPayments.length > 0) {
@@ -89,7 +89,6 @@ export class TerminalDialogComponent implements OnInit {
     this.statusMessage = 'PAYMENT_WAITING_ON_CUSTOMER';
     this.terminalService.startTerminalPayment(this.amount)
       .subscribe((res) => {
-        console.log(res);
         paymentInfo.paymentReference = res.paymentReference;
         this.checkTerminalStatus(res.terminalStatusUrl);
       }, err => {
@@ -112,7 +111,6 @@ export class TerminalDialogComponent implements OnInit {
     setTimeout(() => {
       this.httpClient.get(url)
         .subscribe((res: any) => {
-          console.log(res);
           if (res.status === 'start') {
             this.checkTerminalStatus(url);
           }
@@ -144,9 +142,9 @@ export class TerminalDialogComponent implements OnInit {
 
   continue() {
     const paymentsToreturn = this.cardPayments.concat(this.otherPayments);
-    if ((this.totalAmount - this.changeAmount) > 0) {
+    if ((this.totalAmount - this.dialogRef.context.changeAmount) > 0) {
       const cashPaymentMethod = _.clone(this.dialogRef.context.payments.find((o: any) => o.sName.toLowerCase() === 'cash'));
-      cashPaymentMethod.amount = -this.changeAmount;
+      cashPaymentMethod.amount = -this.dialogRef.context.changeAmount;
       paymentsToreturn.push(cashPaymentMethod);
     }
     this.close(this.cardPayments.concat(paymentsToreturn));
