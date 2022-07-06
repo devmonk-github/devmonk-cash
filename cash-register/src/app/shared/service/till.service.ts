@@ -200,14 +200,14 @@ export class TillService {
         });
       } else {
         if (i.nDiscount && i.nDiscount > 0 && !i.oType.bRefund) {
-          i.nPaymentAmount += i.nDiscount;
+          i.nPaymentAmount += i.nDiscount * i.nQuantity;
           const tItem1 = JSON.parse(JSON.stringify(i));
           tItem1.iArticleGroupId = discountArticleGroup._id;
           tItem1.oArticleGroupMetaData.sCategory = discountArticleGroup.sCategory;
           tItem1.oArticleGroupMetaData.sSubCategory = discountArticleGroup.sSubCategory;
           tItem1.oType.eTransactionType = 'cash-registry';
           tItem1.oType.eKind = 'discount';
-          tItem1.nPaymentAmount = -1 * tItem1.nDiscount;
+          tItem1.nPaymentAmount = -1 * tItem1.nDiscount * i.nQuantity;
           body.transactionItems.push(tItem1);
         }
       }

@@ -238,7 +238,7 @@ export class TillComponent implements OnInit {
             if (i.tType === 'refund') {
               result -= i.prePaidAmount;
             } else {
-              i.nTotal = i.quantity * i.price - i.nDiscount;
+              i.nTotal = i.quantity * (i.price - i.nDiscount);
               i.nTotal = i.type === 'gold-purchase' ? -1 * i.nTotal : i.nTotal;
               result += i.nTotal - (i.prePaidAmount || 0);
               // result += type === 'price' ? i.quantity * i.price - i.prePaidAmount || 0 : i[type]
@@ -252,7 +252,12 @@ export class TillComponent implements OnInit {
         result = _.sumBy(this.transactionItems, 'quantity') || 0
         break;
       case 'discount':
-        result = _.sumBy(this.transactionItems, 'nDiscount') || 0
+        let sum = 0;
+        this.transactionItems.forEach(element => {
+          sum += element.quantity * element.nDiscount;
+        });
+        console.log(sum);
+        result = sum;
         break;
       default:
         result = 0;

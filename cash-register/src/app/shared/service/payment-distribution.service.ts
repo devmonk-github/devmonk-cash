@@ -18,7 +18,7 @@ export class PaymentDistributionService {
   distributeAmount(transactionItems: any[], availableAmount: any): any[] {
     transactionItems.map((i: any) => {
       console.log(i);
-      i.amountToBePaid = i.price * i.quantity - (i.prePaidAmount || 0) - (i.nDiscount || 0);
+      i.amountToBePaid = i.price * i.quantity - (i.prePaidAmount || 0) - (i.nDiscount * i.quantity || 0);
       if (i.tType && i.tType === 'refund') {
         // availableAmount += i.prePaidAmount;
         // if (i.amountToBePaid === 0) {
@@ -55,7 +55,6 @@ export class PaymentDistributionService {
   }
 
   updateAmount(transactionItems: any[], availableAmount: any, index: number): any[] {
-    console.log('Update calling');
     transactionItems.map((i: any) => {
       // i.amountToBePaid = i.price * i.quantity - (i.prePaidAmount || 0);
       if (i.tType && i.tType === 'refund') {
