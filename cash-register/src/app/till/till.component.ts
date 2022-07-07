@@ -191,7 +191,7 @@ export class TillComponent implements OnInit {
     let article = item
     article.quantity = 1;
     article.nDiscount = 0;
-    article.oType = { bRefund: false };
+    article.oType = { bRefund: false, bDiscount: false, bPrepayment: false };
     article.tax = 21;
     article.type = 'product'
     article.description = '';
@@ -204,7 +204,7 @@ export class TillComponent implements OnInit {
       manualUpdate: false,
       index: this.transactionItems.length,
       name: this.searchKeyword,
-      oType: { bRefund: false },
+      oType: { bRefund: false, bDiscount: false, bPrepayment: false },
       type: 'order',
       aImage: [],
       quantity: 1,
@@ -285,7 +285,7 @@ export class TillComponent implements OnInit {
       index: this.transactionItems.length,
       name: this.translateService.instant(type.toUpperCase()),
       type,
-      oType: { bRefund: false },
+      oType: { bRefund: false, bDiscount: false, bPrepayment: false },
       oArticleGroupMetaData: { aProperty: [], sCategory: '', sSubCategory: '' },
       aImage: [],
       quantity: 1,
@@ -576,7 +576,7 @@ export class TillComponent implements OnInit {
       quantity: 1,
       price: product.nPriceIncludesVat || 0,
       paymentAmount: 0,
-      oType: { bRefund: false },
+      oType: { bRefund: false, bDiscount: false, bPrepayment: false },
       nDiscount: product.nDiscount || 0,
       tax: product.nVatRate || 0,
       sProductNumber: product.sProductNumber,
