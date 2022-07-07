@@ -1,8 +1,8 @@
-import {Component, Input, OnInit, ViewContainerRef} from '@angular/core';
-import {DialogComponent} from "../../../shared/service/dialog";
-import {faTimes, faTriangleExclamation} from "@fortawesome/free-solid-svg-icons";
-import {PriceService} from "../../../shared/service/price.service";
-import {StringService} from "../../../shared/service/string.service";
+import { Component, Input, OnInit, ViewContainerRef } from '@angular/core';
+import { DialogComponent } from "../../../shared/service/dialog";
+import { faTimes, faTriangleExclamation } from "@fortawesome/free-solid-svg-icons";
+import { PriceService } from "../../../shared/service/price.service";
+import { StringService } from "../../../shared/service/string.service";
 
 @Component({
   selector: 'app-discount-dialog',
@@ -80,7 +80,7 @@ export class DiscountDialogComponent implements OnInit {
   }
 
   close(): void {
-    this.dialogRef.close.emit({action: false})
+    this.dialogRef.close.emit({ action: false })
   }
 
   save(): void {
@@ -88,9 +88,9 @@ export class DiscountDialogComponent implements OnInit {
       percent: this.mode === 'percent',
       itemPrice: this.calculateDiscountPrice(),
       value: this.discount
-    }
-
-    this.dialogRef.close.emit({action: true, item: this.item})
+    };
+    this.item.nDiscount = this.discount;
+    this.dialogRef.close.emit({ action: true, item: this.item })
   }
 
   ngOnInit(): void {
@@ -162,7 +162,7 @@ export class DiscountDialogComponent implements OnInit {
       this.customDiscount = 0
     }
 
-    if(this.discount <= 0) {
+    if (this.discount <= 0) {
       this.showAlert(this.discountIsTooLow);
       return
     }
@@ -186,15 +186,15 @@ export class DiscountDialogComponent implements OnInit {
     this.discount = Number(this.customDiscount)
     this.showDiscountAlert = false
 
-    if(
+    if (
       (this.mode === 'fixed' && this.discount > this.item.price) ||
-      (this.mode === 'percent' && this.discount > 100) ) {
+      (this.mode === 'percent' && this.discount > 100)) {
       this.showAlert(this.discountTooHigh);
       return
     }
 
     this.setDiscount()
-    if(this.mode === 'percent') {
+    if (this.mode === 'percent') {
       this.customDiscountValuePercent = this.calculateDiscountPrice()
     }
   }

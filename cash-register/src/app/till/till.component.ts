@@ -197,16 +197,6 @@ export class TillComponent implements OnInit {
           this.fetchingProductDetails = false;
         }
       });
-
-
-    // let article = item
-    // article.quantity = 1;
-    // article.nDiscount = 0;
-    // article.oType = { bRefund: false };
-    // article.tax = 21;
-    // article.type = 'product'
-    // article.description = ''
-    // this.transactionItems.push(article)
   }
 
   addOrder(): void {
@@ -215,7 +205,7 @@ export class TillComponent implements OnInit {
       manualUpdate: false,
       index: this.transactionItems.length,
       name: this.searchKeyword,
-      oType: { bRefund: false },
+      oType: { bRefund: false, bDiscount: false, bPrepayment: false },
       type: 'order',
       aImage: [],
       quantity: 1,
@@ -296,7 +286,7 @@ export class TillComponent implements OnInit {
       index: this.transactionItems.length,
       name: this.translateService.instant(type.toUpperCase()),
       type,
-      oType: { bRefund: false },
+      oType: { bRefund: false, bDiscount: false, bPrepayment: false },
       oArticleGroupMetaData: { aProperty: [], sCategory: '', sSubCategory: '' },
       aImage: [],
       quantity: 1,
@@ -504,8 +494,9 @@ export class TillComponent implements OnInit {
               sPrefix: this.customer.sPrefix
             }
           };
+
           // console.log(body);
-          // // body.redeemedLoyaltyPoints = this.redeemedLoyaltyPoints;
+
           this.apiService.postNew('cashregistry', '/api/v1/till/transaction', body)
             .subscribe((data: any) => {
               this.toastrService.show({ type: 'success', text: data.message });
@@ -586,7 +577,7 @@ export class TillComponent implements OnInit {
       quantity: 1,
       price: product.nPriceIncludesVat || 0,
       paymentAmount: 0,
-      oType: { bRefund: false },
+      oType: { bRefund: false, bDiscount: false, bPrepayment: false },
       nDiscount: product.nDiscount || 0,
       tax: product.nVatRate || 0,
       sProductNumber: product.sProductNumber,

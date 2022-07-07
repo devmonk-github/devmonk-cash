@@ -185,7 +185,7 @@ export class TillService {
       if (discountRecords) {
         discountRecords = JSON.parse(discountRecords);
       }
-      if (i.oType.bRefund && (i.nPriceIncVat - i.nDiscount + i.nPaymentAmount) === 0) {
+      if (i.oType.bRefund && (i.nPriceIncVat - i.nDiscount + i.nPaymentAmount) === 0 && i.nDiscount !== 0) {
         const records = discountRecords.filter((o: any) => o.uniqueIdentifier === i.uniqueIdentifier);
         records.forEach((record: any) => {
           i.nPaymentAmount += record.nPaymentAmount;
@@ -199,7 +199,7 @@ export class TillService {
           }
         });
       } else {
-        if (i.nDiscount && i.nDiscount > 0 && !i.oType.bRefund) {
+        if (i.nDiscount && i.nDiscount > 0 && !i.oType.bRefund && !i.oType.bPrepayment) {
           i.nPaymentAmount += i.nDiscount * i.nQuantity;
           const tItem1 = JSON.parse(JSON.stringify(i));
           tItem1.iArticleGroupId = discountArticleGroup._id;
