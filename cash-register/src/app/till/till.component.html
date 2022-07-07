@@ -292,13 +292,18 @@
           <div class="bg-white py-3">
             <ul *ngIf="quickButtons.length" id="quick-buttons" class="nav nav-pills nav-pills-custom mb-3">
               <li class="nav-item mb-3 me-3" *ngFor="let button of quickButtons">
-                <button
-                  class="nav-link d-flex justify-content-center flex-column flex-center overflow-hidden active w-85px h-85px py-4"
-                  (click)="addItemToTransaction(button)">
-                  <h4 class="nav-text text-gray-800 fw-bold fs-6 lh-1 text-center mb-2">{{button.sName}}</h4>
-                  <span class="text-gray-600">{{button.nPrice | currency: '€'}}</span>
-                  <!-- todo: color per quick button <span class="bullet-custom position-absolute bottom-0 w-100 h-4px bg-primary"></span> -->
-                </button>
+                <div>
+                  <div>
+                    <div *ngIf="fetchingProductDetails" class="spinner-border mx-auto"></div>
+                  </div>
+                  <button
+                    class="nav-link d-flex justify-content-center flex-column flex-center overflow-hidden active w-85px h-85px py-4"
+                    (click)="addItemToTransaction(button)">
+                    <h4 class="nav-text text-gray-800 fw-bold fs-6 lh-1 text-center mb-2">{{button.sName}}</h4>
+                    <span class="text-gray-600">{{button.nPrice | currency: '€'}}</span>
+                    <!-- todo: color per quick button <span class="bullet-custom position-absolute bottom-0 w-100 h-4px bg-primary"></span> -->
+                  </button>
+                </div>
               </li>
             </ul>
             <div>

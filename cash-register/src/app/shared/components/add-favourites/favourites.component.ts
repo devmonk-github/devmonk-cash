@@ -127,12 +127,11 @@ export class AddFavouritesComponent implements OnInit {
   onSelectProduct(product: any, isFrom: string, isFor: string) {
     console.log('selected product', product);
     this.shopProducts = null;
-    this.newSelectedProduct.name = product?.oName?.nl || product?.oName?.en || '';
-    this.newSelectedProduct.price = product?.nPriceIncludesVat || 0;
-    if (product?.aImage[0])
-      this.newSelectedProduct.image = product?.aImage[0];
-    else if (product?.aImage[1])
-      this.newSelectedProduct.image = product?.aImage[1];
+
+    this.newSelectedProduct.sName = product.oName ? product.oName['en'] : 'No name';
+    this.newSelectedProduct.nPrice = product.nPriceIncludesVat || 0;
+    this.newSelectedProduct.iBusinessProductId = product._id;
+    this.newSelectedProduct.aImage = product.aImage;
   }
 
 
@@ -146,8 +145,7 @@ export class AddFavouritesComponent implements OnInit {
       let data = {
         iBusinessId: this.business._id,
         iLocationId: localStorage.getItem('currentLocation') || '',
-        sName: this.newSelectedProduct.name,
-        nPrice: this.newSelectedProduct.price
+        oQuickButton: this.newSelectedProduct
       };
       this.apiService.postNew('cashregistry', '/api/v1/quick-buttons/create', data).subscribe((result: any) => {
         if (result.message == 'success')

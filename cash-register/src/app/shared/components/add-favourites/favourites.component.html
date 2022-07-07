@@ -79,24 +79,24 @@
                 </div>
             </div>
         </div>
-        <div class="row my-5">
+        <div class="row my-5" *ngIf="newSelectedProduct">
             <div class="col-md-6">
                 <div class="d-flex flex-column">
                     <h4>Image</h4>
-                    <img src="{{newSelectedProduct.image? newSelectedProduct.image: '../../../../../../assets/images/no-photo-available.jpg' }}"
-                        class="w-auto h-xxl-100px">
+                    <img src="{{ newSelectedProduct.aImage && newSelectedProduct?.aImage[0] ? newSelectedProduct?.aImage[0] : '../../../../../../assets/images/no-photo-available.jpg' }}"
+                        class="w-50">
                 </div>
             </div>
             <div class="col-md-6">
                 <div class="row mb-5">
                     <label>Product Name</label>
                     <input type="text" class="form-control" placeholder="Enter name (alias)"
-                        [(ngModel)]="newSelectedProduct.name">
+                        [(ngModel)]="newSelectedProduct.sName">
                 </div>
                 <div class="row mb-5">
                     <label>Price</label>
                     <input type="text" class="form-control" placeholder="Enter price"
-                        [(ngModel)]="newSelectedProduct.price">
+                        [(ngModel)]="newSelectedProduct.nPrice">
                 </div>
             </div>
         </div>

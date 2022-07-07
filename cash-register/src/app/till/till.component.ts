@@ -71,6 +71,7 @@ export class TillComponent implements OnInit {
   terminals: Array<any> = [];
   quickButtons: Array<any> = [];
   quickButtonsLoading: boolean = false;
+  fetchingProductDetails: boolean = false;
   // quickButtons: Array<any> = [
   //   { name: 'Waterdicht', price: this.randNumber(5, 30) },
   //   { name: 'Batterij', price: this.randNumber(5, 30) },
@@ -188,14 +189,24 @@ export class TillComponent implements OnInit {
   }
 
   addItemToTransaction(item: any): void {
-    let article = item
-    article.quantity = 1;
-    article.nDiscount = 0;
-    article.oType = { bRefund: false };
-    article.tax = 21;
-    article.type = 'product'
-    article.description = ''
-    this.transactionItems.push(article)
+    this.fetchingProductDetails = true;
+    this.apiService.getNew('core', `/api/v1/business/products/${item.iBusinessProductId}?iBusinessId=${this.business._id}`).subscribe(
+      (result: any) => {
+        if (result.message == 'success') {
+          this.onSelectProduct(result.data, 'business', 'same-article');
+          this.fetchingProductDetails = false;
+        }
+      });
+
+
+    // let article = item
+    // article.quantity = 1;
+    // article.nDiscount = 0;
+    // article.oType = { bRefund: false };
+    // article.tax = 21;
+    // article.type = 'product'
+    // article.description = ''
+    // this.transactionItems.push(article)
   }
 
   addOrder(): void {
