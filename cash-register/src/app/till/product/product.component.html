@@ -57,6 +57,9 @@
         <label for="bagNumber">{{ "PREPAYMENT" | translate}}</label>
         <input type="number" name="bagNumber" id="bagNumber" [(ngModel)]="item.paymentAmount" class="form-control">
 
+        <label *ngIf="item.nDiscount > 0" for="discount">{{ "DISCOUNT" | translate}}</label>
+        <input *ngIf="item.nDiscount > 0" type="number" step="any" name="discount" class="form-control"
+          [(ngModel)]="item.nDiscount" disabled>
       </div>
       <div class="w-100px pe-2">
         <button class="btn btn-icon btn-secondary w-35px h-35px" (click)="openDiscountDialog()">

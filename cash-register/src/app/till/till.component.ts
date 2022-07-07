@@ -194,7 +194,7 @@ export class TillComponent implements OnInit {
     article.oType = { bRefund: false };
     article.tax = 21;
     article.type = 'product'
-    article.description = ''
+    article.description = '';
     this.transactionItems.push(article)
   }
 
@@ -493,8 +493,9 @@ export class TillComponent implements OnInit {
               sPrefix: this.customer.sPrefix
             }
           };
+
           // console.log(body);
-          // // body.redeemedLoyaltyPoints = this.redeemedLoyaltyPoints;
+
           this.apiService.postNew('cashregistry', '/api/v1/till/transaction', body)
             .subscribe((data: any) => {
               this.toastrService.show({ type: 'success', text: data.message });

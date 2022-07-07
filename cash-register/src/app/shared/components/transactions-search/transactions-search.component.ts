@@ -125,6 +125,7 @@ export class TransactionsSearchComponent implements OnInit, AfterViewInit {
                 iRepairerId: transactionItem.iRepairerId,
                 oArticleGroupMetaData: transactionItem.oArticleGroupMetaData,
                 nRedeemedLoyaltyPoints: transactionItem.nRedeemedLoyaltyPoints,
+                iArticleGroupId: transactionItem.iArticleGroupId,
                 iEmployeeId: transactionItem.iEmployeeId,
                 iBrandId: transactionItem.iBrandId,
                 nDiscount: transactionItem.nDiscount || 0,
