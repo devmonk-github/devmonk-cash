@@ -51,7 +51,7 @@
         <textarea class="form-control" name="description" placeholder="{{ 'DESCRIPTION' | translate}}" lines="10"
           [(ngModel)]="item.description"></textarea>
       </div>
-      <div class="w-125px pe-2">
+      <div class="w-175px pe-2">
         <input type="text" class="form-control" name="price" (change)="updatePayments()"
           placeholder="{{ 'PRICE' | translate}}" id="price" [(ngModel)]="item.price" [disabled]="item.oType?.bRefund">
         <label for="bagNumber">{{ "PREPAYMENT" | translate}}</label>
@@ -59,7 +59,9 @@
 
         <label *ngIf="item.nDiscount > 0" for="discount">{{ "DISCOUNT" | translate}}</label>
         <input *ngIf="item.nDiscount > 0" type="number" step="any" name="discount" class="form-control"
-          [(ngModel)]="item.nDiscount" disabled>
+          [value]="item.nDiscount - (item.nRedeemedLoyaltyPoints || 0)" disabled>
+        <label for="discount" *ngIf="item.oType.bRefund">{{ "LOYALTY_POINTS" | translate}}:
+          {{item.nRedeemedLoyaltyPoints}}</label>
       </div>
       <div class="w-100px pe-2">
         <button class="btn btn-icon btn-secondary w-35px h-35px" (click)="openDiscountDialog()">
@@ -69,13 +71,13 @@
         </button>
         <!-- <button class="btn btn-secondary" type="button" >{{ "ADD_DISCOUNT" | translate}}</button> -->
       </div>
-      <div class="w-100px">
+      <!-- <div class="w-100px">
         <button class="btn btn-icon btn-secondary w-35px h-35px" (click)="deleteItem()">
           <span class="svg-icon svg-icon-1qx me-0">
             <i class="fas fa-times"></i>
           </span>
         </button>
-      </div>
+      </div> -->
     </section>
   </div>
 </div>
