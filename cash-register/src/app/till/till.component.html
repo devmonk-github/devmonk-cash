@@ -1,7 +1,25 @@
+<div class="overlay-full d-flex flex-column justify-content-center align-items-center" *ngIf="bIsNotOpened">
+  <h1>There is no open cash state found !</h1>
+  <button class="btn btn-white" (click)="openDayState()">Open Cash Register</button>
+</div>
 <div class="container">
+
   <div class="row content" [ngClass]="{'opacity-25': parkedTransactionLoading }">
-    <button class="btn btn-primary col-2" (click)="openDayState()">{{ "OPEN_DAYSTATE" | translate}}</button> &nbsp;
-    <button class="btn btn-primary col-2" (click)="closeDayState()">{{ "CLOSE_DAYSTATE" | translate}}</button>
+    <div class="col-12">
+      <div class="row">
+        <div class="col-8">
+          <div class="alert alert-warning" *ngIf="bIsDayNotClosed">
+            <p class="mb-0" style="font-size: 1.2rem;font-weight: bold;margin-left:1.3rem">
+              <span style="margin-right:1rem; font-weight:bolder">!</span>
+              The previous day is not closed yet ({{ dOpenDate | date }}).
+            </p>
+            <button class="btn btn-hover" (click)="closeDayState()">{{ "CLOSE_DAYSTATE" | translate}}</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
     <div class="col-md-9 col-xs-12 column-auto till-body ps-0 pe-0">
       <div class="d-flex justify-content-start">
         <button class="btn d-flex bg-white rounded p-4 mb-3 me-3 min-w-90px"

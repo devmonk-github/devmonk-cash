@@ -23,6 +23,7 @@ import { BarcodeService } from "../shared/service/barcode.service";
 import { TerminalService } from '../shared/service/terminal.service';
 import { TerminalDialogComponent } from '../shared/components/terminal-dialog/terminal-dialog.component';
 import { CreateArticleGroupService } from '../shared/service/create-article-groups.service';
+import { Router } from '@angular/router';
 @Component({
   selector: 'app-till',
   templateUrl: './till.component.html',
@@ -72,23 +73,10 @@ export class TillComponent implements OnInit {
   quickButtons: Array<any> = [];
   quickButtonsLoading: boolean = false;
   fetchingProductDetails: boolean = false;
-  // quickButtons: Array<any> = [
-  //   { name: 'Waterdicht', price: this.randNumber(5, 30) },
-  //   { name: 'Batterij', price: this.randNumber(5, 30) },
-  //   { name: 'Band verstellen', price: this.randNumber(5, 20) },
-  //   { name: 'Oude cadeaubon', price: this.randNumber(1, 50) },
-  //   { name: 'Schiet oorbel', price: this.randNumber(1, 50) },
-  //   { name: 'Reparatie', price: this.randNumber(1, 50) },
-  //   { name: 'IXXI', price: this.randNumber(50, 100) },
-  //   { name: 'KARMA', price: this.randNumber(50, 100) },
-  //   { name: 'BUDDHA', price: this.randNumber(50, 100) },
-  //   { name: 'P1500', price: this.randNumber(100, 150) },
-  //   { name: 'Diversen', price: this.randNumber(30, 150) },
-  //   { name: 'Stalen band', price: this.randNumber(25, 50) },
-  //   { name: 'Leren band', price: this.randNumber(20, 45) },
-  //   { name: 'Postzegels', price: this.randNumber(1, 10) },
-  //   { name: 'Tassen', price: this.randNumber(50, 200) },
-  // ];
+  bIsDayNotClosed: boolean = false;
+  bIsNotOpened: boolean = false;
+  dOpenDate: any = '';
+
   aProjection: Array<any> = [
     'oName',
     'sEan',
@@ -122,14 +110,18 @@ export class TillComponent implements OnInit {
     private barcodeService: BarcodeService,
     private terminalService: TerminalService,
     private createArticleGroupService: CreateArticleGroupService,
+    private router: Router,
   ) {
   }
 
   ngOnInit(): void {
     this.business._id = localStorage.getItem('currentBusiness');
     this.locationId = localStorage.getItem('currentLocation') || '';
+
+    this.checkDayState();
+
     this.requestParams.iBusinessId = this.business._id;
-    this.taxes = this.taxService.getTaxRates()
+    this.taxes = this.taxService.getTaxRates();
     this.getPaymentMethods();
     this.getParkedTransactions();
     this.barcodeService.barcodeScanned.subscribe((barcode: string) => {
@@ -139,7 +131,7 @@ export class TillComponent implements OnInit {
 
     this.checkArticleGroups();
 
-    this.fetchQuickButtons()
+    this.fetchQuickButtons();
 
   }
 
@@ -788,15 +780,16 @@ export class TillComponent implements OnInit {
   }
 
   closeDayState() {
-    const oBody = {
-      iBusinessId: this.business._id,
-      iLocationId: this.locationId
-    }
-    this.apiService.postNew('cashregistry', `/api/v1/statistics/close/day-state`, oBody).subscribe((result: any) => {
-      this.toastrService.show({ type: 'success', text: `Day-state is close now` });
-    }, (error) => {
-      this.toastrService.show({ type: 'warning', text: `Day-state is not closed` });
-    })
+    // const oBody = {
+    //   iBusinessId: this.business._id,
+    //   iLocationId: this.locationId
+    // }
+    // this.apiService.postNew('cashregistry', `/api/v1/statistics/close/day-state`, oBody).subscribe((result: any) => {
+    //   this.toastrService.show({ type: 'success', text: `Day-state is close now` });
+    // }, (error) => {
+    //   this.toastrService.show({ type: 'warning', text: `Day-state is not closed` });
+    // })
+    this.router.navigate(['day-closure']);
   }
 
   checkArticleGroups() {
@@ -838,5 +831,22 @@ export class TillComponent implements OnInit {
     } catch (e) {
       this.quickButtonsLoading = false;
     }
+  }
+
+  checkDayState() {
+    const oBody = {
+      iBusinessId: this.business._id,
+      iLocationId: this.locationId
+    }
+    this.apiService.postNew('cashregistry', `/api/v1/statistics/day-closure/check`, oBody).subscribe((result: any) => {
+      console.log('check', result);
+      if (result.data.length) {
+        this.bIsDayNotClosed = true;
+        this.dOpenDate = result.data.dOpenDate;
+      } else this.bIsNotOpened = true;
+
+    }, (error) => {
+      this.toastrService.show({ type: 'warning', text: `Day-state is not closed` });
+    })
   }
 }
