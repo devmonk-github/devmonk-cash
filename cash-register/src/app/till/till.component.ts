@@ -73,9 +73,10 @@ export class TillComponent implements OnInit {
   quickButtons: Array<any> = [];
   quickButtonsLoading: boolean = false;
   fetchingProductDetails: boolean = false;
-  bIsDayNotClosed: boolean = false;
-  bIsNotOpened: boolean = false;
+  bIsDayStateClosed: boolean = true;
+  bIsDayStateOpened: boolean = false; // Not opened then require to open it first
   dOpenDate: any = '';
+  iDeviceId!: any;
 
   aProjection: Array<any> = [
     'oName',
@@ -118,6 +119,7 @@ export class TillComponent implements OnInit {
   ngOnInit(): void {
     this.business._id = localStorage.getItem('currentBusiness');
     this.locationId = localStorage.getItem('currentLocation') || '';
+    this.iDeviceId = localStorage.getItem('currentWorkstation');
 
     this.checkDayState();
 
@@ -488,8 +490,6 @@ export class TillComponent implements OnInit {
             }
           };
 
-          // console.log(body);
-
           this.apiService.postNew('cashregistry', '/api/v1/till/transaction', body)
             .subscribe((data: any) => {
               this.toastrService.show({ type: 'success', text: data.message });
@@ -699,7 +699,6 @@ export class TillComponent implements OnInit {
   openExpenses() {
     this.dialogService.openModal(AddExpensesComponent, { cssClass: 'modal-m', context: {} })
       .instance.close.subscribe(result => {
-        // console.log(result);
       });
   }
 
@@ -765,33 +764,21 @@ export class TillComponent implements OnInit {
       open: true,
     });
     this.redeemedLoyaltyPoints = redeemedLoyaltyPoints;
-    // ../assets/images/no-photo-available.jpg
   }
 
   openDayState() {
     const oBody = {
       iBusinessId: this.business._id,
-      iLocationId: this.locationId
+      iLocationId: this.locationId,
+      iDeviceId: this.iDeviceId
     }
     this.apiService.postNew('cashregistry', `/api/v1/statistics/open/day-state`, oBody).subscribe((result: any) => {
+      this.bIsDayStateOpened = true;
       this.toastrService.show({ type: 'success', text: `Day-state is open now` });
     }, (error) => {
       this.toastrService.show({ type: 'warning', text: `Day-state is not open` });
     })
   }
-
-  // closeDayState() {
-  //   // const oBody = {
-  //   //   iBusinessId: this.business._id,
-  //   //   iLocationId: this.locationId
-  //   // }
-  //   // this.apiService.postNew('cashregistry', `/api/v1/statistics/close/day-state`, oBody).subscribe((result: any) => {
-  //   //   this.toastrService.show({ type: 'success', text: `Day-state is close now` });
-  //   // }, (error) => {
-  //   //   this.toastrService.show({ type: 'warning', text: `Day-state is not closed` });
-  //   // })
-  //   this.router.navigate(['day-closure']);
-  // }
 
   checkArticleGroups() {
     this.createArticleGroupService.checkArticleGroups('Discount')
@@ -820,7 +807,6 @@ export class TillComponent implements OnInit {
     this.quickButtonsLoading = true;
     try {
       this.apiService.getNew('cashregistry', '/api/v1/quick-buttons/' + this.requestParams.iBusinessId).subscribe((result: any) => {
-        // console.log('fetchQuickButtons', result);
 
         this.quickButtonsLoading = false;
         if (result?.length) {
@@ -837,16 +823,24 @@ export class TillComponent implements OnInit {
   checkDayState() {
     const oBody = {
       iBusinessId: this.business._id,
-      iLocationId: this.locationId
+      iLocationId: this.locationId,
+      iDeviceId: this.iDeviceId
     }
     this.apiService.postNew('cashregistry', `/api/v1/statistics/day-closure/check`, oBody).subscribe((result: any) => {
-      console.log('check', result);
-      if (result.data.length) {
-        this.bIsDayNotClosed = true;
-        this.dOpenDate = result.data[0].dOpenDate;
-      } else this.bIsNotOpened = true;
+      if (result?.data?.bIsDayStateOpened) {
+        this.bIsDayStateOpened = true;
+        if (result?.data?.oStatisticDetail?.dOpenDate) {
+          this.dOpenDate = result?.data?.oStatisticDetail?.dOpenDate;
 
+          /* Show Close day state warning when Day-state is close from last 24hrs */
+          const nOpenTimeSecond = (new Date(this.dOpenDate).getTime());
+          const nCurrentTimeSecond = (new Date().getTime());
+          const nDifferenceInHrs = (nCurrentTimeSecond - nOpenTimeSecond) / 3600000;
+          if (nDifferenceInHrs > 24) this.bIsDayStateClosed = false;
+        }
+      }
     }, (error) => {
+      console.error('Error here: ', error);
       this.toastrService.show({ type: 'warning', text: `Day-state is not closed` });
     })
   }

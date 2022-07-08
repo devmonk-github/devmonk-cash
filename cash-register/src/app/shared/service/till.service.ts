@@ -97,7 +97,7 @@ export class TillService {
     const body = {
       iBusinessId: this.getValueFromLocalStorage('currentBusiness'),
       iLocationId: this.getValueFromLocalStorage('currentLocation'),
-      iDeviceId: this.getValueFromLocalStorage('currentLocation'),
+      iDeviceId: this.getValueFromLocalStorage('currentWorkstation'),
       transactionItems: transactionItems,
       oTransaction: transaction,
       payments: this.getUsedPayMethods(false, payMethods),
@@ -199,7 +199,7 @@ export class TillService {
           }
         });
       } else {
-        if (i.nDiscount && i.nDiscount > 0 && !i.oType.bRefund && !i.iActivityItemId) {
+        if (i.nDiscount && i.nDiscount > 0 && !i.oType.bRefund && !i.oType.bPrepayment) {
           i.nPaymentAmount += i.nDiscount * i.nQuantity;
           const tItem1 = JSON.parse(JSON.stringify(i));
           tItem1.iArticleGroupId = discountArticleGroup._id;
