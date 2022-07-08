@@ -381,39 +381,6 @@ export class TransactionDetailsComponent implements OnInit {
 
         let dataObject = this.transaction
 
-        /*
-        
-        @Shubham Please add the following in dataObject
- 
-          "oBusiness"
-              sName
-              sEmail
-              sWebsite
-              sVatnumber
-              sPvc
-              sLogoLight
-              oPhone
-              aLocation (not the array, only the details of the selected location!)
-              aBankDetail
-              oFinance
-
-          "oCustomer"
-              sSalutation
-              sFirstName
-              sPrefix
-              sLastName
-              nClientId
-              bCounter
-              sEmail
-              oPhone
-              oShippingAddress
-              oInvoiceAddress
-              oPoints.spendable
-              sImportId
-              aExtraFields
-        
-        */
-
         this.pdfService.createPdf(JSON.stringify(result.data), dataObject, filename, print, printData, this.iBusinessId, this.transaction?._id)
           .then( () => {
             this.downloadWithVATLoading = false;

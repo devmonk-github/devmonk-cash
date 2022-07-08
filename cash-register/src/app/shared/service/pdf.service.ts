@@ -125,7 +125,12 @@ export class PdfService {
   }
 
   private isDefined(obj: any): boolean {
-    return typeof obj !== 'undefined'
+    //return typeof obj !== 'undefined'
+    if(Array.isArray(obj)) {
+      return Boolean(obj.length > 0 && obj[0] !== "")
+    } else {
+      return Boolean(obj)
+    }
   }
 
   private calcSectionPage(rows: any): any {
@@ -821,26 +826,62 @@ export class PdfService {
             const filterMatches = variableStringFiltered.match(/\./g);
             let nrOfLevels = filterMatches ? filterMatches.length : 0;
             let parts = variableStringFiltered.split('.');
+            console.info('nrOfLevels',nrOfLevels)
+            console.info('variableStringFiltered',variableStringFiltered)
+            console.info('this.data',this.data)
+            
             switch (nrOfLevels) {
               case 1:
-                providedData = this.data[parts[0]];
-                variableStringFiltered = parts[1];
-
-                break;
-              case 2:
-                layer1 = this.data[parts[0]];
-                if(layer1) providedData = layer1[parts[1]];
-                variableStringFiltered = parts[2];
-
-                if (!this.isDefined(providedData[variableStringFiltered])) {
-                  providedData = providedData[0];
+                if(this.isDefined(this.data[parts[0]])) {
+                  providedData = this.data[parts[0]];
+                  variableStringFiltered = parts[1];
+                } else {
+                  providedData = '';
+                  variableStringFiltered = 'no match';
                 }
                 break;
+              case 2:
+                if(this.isDefined(this.data[parts[0]])) {
+                  layer1 = this.data[parts[0]];
+                  if(this.isDefined(layer1[parts[1]])) {
+                    providedData = layer1[parts[1]];
+                    variableStringFiltered = parts[2];
+                  } else {
+                    providedData = '';
+                    variableStringFiltered = 'no match';
+                  }
+                } else {
+                  providedData = '';
+                  variableStringFiltered = 'no match';
+                }
+
+                // if (!this.isDefined(providedData[variableStringFiltered])) {
+                //   providedData = providedData[0];
+                // }
+
+                break;
               case 3:
-                layer1 = this.data[parts[0]];
-                if(layer1) layer2 = layer1[parts[2]];
-                if(layer2) providedData = layer2[parts[2]];
-                variableStringFiltered = parts[3];
+
+                if(this.isDefined(this.data[parts[0]])) {
+                  layer1 = this.data[parts[0]];
+                  if(this.isDefined(layer1[parts[1]])) {
+                    layer2 = layer1[parts[1]]
+                    if(this.isDefined(layer2[parts[2]])) {
+                      providedData = layer2[parts[2]];
+                      variableStringFiltered = parts[3];
+                    } else {
+                      providedData = '';
+                      variableStringFiltered = 'no match';
+                    }
+                  } else {
+                    providedData = '';
+                    variableStringFiltered = 'no match';
+                  }
+                } else {
+                  providedData = '';
+                  variableStringFiltered = 'no match';
+                }
+
                 break;
               default:
                 providedData = '';
@@ -977,6 +1018,9 @@ export class PdfService {
       let layer1, layer2, layer3;
 
       switch (nrOfLevels) {
+        case 0:
+          dataSourceObject = this.data[dataSourceObject]
+          break;
         case 1:
           layer1 = this.data[parts[0]];
           dataSourceObject = layer1[parts[1]];
@@ -996,7 +1040,7 @@ export class PdfService {
           break;
       }
     } else {
-      dataSourceObject = this.data;
+      dataSourceObject = this.data[dataSourceObject];
     }
 
     return dataSourceObject;
@@ -1254,7 +1298,7 @@ export class PdfService {
 
   getTranslations(){
     let translationsObj: any = {};
-    let translationsKey: Array<string> = ['CREATED_BY', 'ART_NUMBER', 'QUANTITY', 'DESCRIPTION', 'DISCOUNT', 'AMOUNT'];
+    let translationsKey: Array<string> = ['CREATED_BY', 'ART_NUMBER', 'QUANTITY', 'DESCRIPTION', 'DISCOUNT', 'AMOUNT', 'VAT'];
 
     this.translateService.get(translationsKey).subscribe((result) => {
        Object.entries(result).forEach((translation: any) => {
