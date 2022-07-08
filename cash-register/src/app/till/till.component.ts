@@ -786,18 +786,6 @@ export class TillComponent implements OnInit {
     })
   }
 
-  closeDayState() {
-    const oBody = {
-      iBusinessId: this.business._id,
-      iLocationId: this.locationId
-    }
-    this.apiService.postNew('cashregistry', `/api/v1/statistics/close/day-state`, oBody).subscribe((result: any) => {
-      this.toastrService.show({ type: 'success', text: `Day-state is close now` });
-    }, (error) => {
-      this.toastrService.show({ type: 'warning', text: `Day-state is not closed` });
-    })
-  }
-
   checkArticleGroups() {
     this.createArticleGroupService.checkArticleGroups('Discount')
       .subscribe((res: any) => {
