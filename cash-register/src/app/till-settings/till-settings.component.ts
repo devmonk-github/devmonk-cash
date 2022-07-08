@@ -274,4 +274,18 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
     }
 
   }
+
+  removeQuickButton(button: any) {
+    console.log(button);
+    try {
+      this.apiService.deleteNew('cashregistry', `/api/v1/quick-buttons/${button._id}/${this.requestParams.iBusinessId}`).subscribe((result: any) => {
+        this.toastService.show({ type: 'success', text: `Quick button deleted successfully` });
+        this.fetchQuickButtons();
+      }, (error) => {
+
+      })
+    } catch (e) {
+
+    }
+  }
 }
