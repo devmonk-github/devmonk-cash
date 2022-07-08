@@ -11,9 +11,9 @@
           <div class="alert alert-warning" *ngIf="bIsDayNotClosed">
             <p class="mb-0" style="font-size: 1.2rem;font-weight: bold;margin-left:1.3rem">
               <span style="margin-right:1rem; font-weight:bolder">!</span>
-              The previous day is not closed yet ({{ dOpenDate | date }}).
+              The previous day is not closed yet ({{ dOpenDate | date:'medium' }}).
             </p>
-            <button class="btn btn-hover" (click)="closeDayState()">{{ "CLOSE_DAYSTATE" | translate}}</button>
+            <a class="btn btn-hover" routerLink="../day-closure">{{ "CLOSE_DAYSTATE" | translate}}</a>
           </div>
         </div>
       </div>

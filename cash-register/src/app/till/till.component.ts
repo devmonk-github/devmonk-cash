@@ -23,7 +23,7 @@ import { BarcodeService } from "../shared/service/barcode.service";
 import { TerminalService } from '../shared/service/terminal.service';
 import { TerminalDialogComponent } from '../shared/components/terminal-dialog/terminal-dialog.component';
 import { CreateArticleGroupService } from '../shared/service/create-article-groups.service';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 @Component({
   selector: 'app-till',
   templateUrl: './till.component.html',
@@ -111,6 +111,7 @@ export class TillComponent implements OnInit {
     private terminalService: TerminalService,
     private createArticleGroupService: CreateArticleGroupService,
     private router: Router,
+    private activatedRoute: ActivatedRoute
   ) {
   }
 
@@ -779,18 +780,18 @@ export class TillComponent implements OnInit {
     })
   }
 
-  closeDayState() {
-    // const oBody = {
-    //   iBusinessId: this.business._id,
-    //   iLocationId: this.locationId
-    // }
-    // this.apiService.postNew('cashregistry', `/api/v1/statistics/close/day-state`, oBody).subscribe((result: any) => {
-    //   this.toastrService.show({ type: 'success', text: `Day-state is close now` });
-    // }, (error) => {
-    //   this.toastrService.show({ type: 'warning', text: `Day-state is not closed` });
-    // })
-    this.router.navigate(['day-closure']);
-  }
+  // closeDayState() {
+  //   // const oBody = {
+  //   //   iBusinessId: this.business._id,
+  //   //   iLocationId: this.locationId
+  //   // }
+  //   // this.apiService.postNew('cashregistry', `/api/v1/statistics/close/day-state`, oBody).subscribe((result: any) => {
+  //   //   this.toastrService.show({ type: 'success', text: `Day-state is close now` });
+  //   // }, (error) => {
+  //   //   this.toastrService.show({ type: 'warning', text: `Day-state is not closed` });
+  //   // })
+  //   this.router.navigate(['day-closure']);
+  // }
 
   checkArticleGroups() {
     this.createArticleGroupService.checkArticleGroups('Discount')
@@ -842,7 +843,7 @@ export class TillComponent implements OnInit {
       console.log('check', result);
       if (result.data.length) {
         this.bIsDayNotClosed = true;
-        this.dOpenDate = result.data.dOpenDate;
+        this.dOpenDate = result.data[0].dOpenDate;
       } else this.bIsNotOpened = true;
 
     }, (error) => {
