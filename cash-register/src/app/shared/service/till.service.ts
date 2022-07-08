@@ -97,7 +97,7 @@ export class TillService {
     const body = {
       iBusinessId: this.getValueFromLocalStorage('currentBusiness'),
       iLocationId: this.getValueFromLocalStorage('currentLocation'),
-      iDeviceId: this.getValueFromLocalStorage('currentLocation'),
+      iDeviceId: this.getValueFromLocalStorage('currentWorkstation'),
       transactionItems: transactionItems,
       oTransaction: transaction,
       payments: this.getUsedPayMethods(false, payMethods),
