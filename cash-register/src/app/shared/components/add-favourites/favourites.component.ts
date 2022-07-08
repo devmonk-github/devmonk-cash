@@ -1,6 +1,7 @@
 import { Component, OnInit, ViewContainerRef } from '@angular/core';
 import { DialogComponent } from '../../service/dialog';
 import { ApiService } from '../../service/api.service';
+import { ToastService } from '../toast';
 
 @Component({
   selector: 'app-favourites',
@@ -20,6 +21,8 @@ export class AddFavouritesComponent implements OnInit {
   requestParams: any = {
     iBusinessId: ''
   }
+  searching: boolean = false;
+  creating: boolean = false;
   customMethod: any = {
     sName: '',
     bStockReduction: false,
@@ -47,7 +50,8 @@ export class AddFavouritesComponent implements OnInit {
 
   constructor(
     private viewContainer: ViewContainerRef,
-    private apiService: ApiService
+    private apiService: ApiService,
+    private toastService: ToastService,
   ) {
     const _injector = this.viewContainer.parentInjector;
     this.dialogRef = _injector.get<DialogComponent>(DialogComponent);
@@ -58,6 +62,7 @@ export class AddFavouritesComponent implements OnInit {
   }
 
   search() {
+
     this.shopProducts = [];
     this.commonProducts = [];
     // if (searchValue && searchValue.length > 2) {
@@ -83,15 +88,15 @@ export class AddFavouritesComponent implements OnInit {
         oDynamic: {}
       }
     }
+    this.searching = true;
     this.apiService.postNew('core', '/api/v1/business/products/list', data).subscribe((result: any) => {
-      // this.isLoading = false;
+      this.searching = false;
       if (result && result.data && result.data.length) {
         const response = result.data[0];
         this.shopProducts = response.result;
-        console.log('shopProducts: ', this.shopProducts);
       }
     }, (error) => {
-      // this.isLoading = false;
+
     });
   }
 
@@ -110,53 +115,61 @@ export class AddFavouritesComponent implements OnInit {
           oDynamic: {}
         }
       };
+      this.searching = true;
       this.apiService.postNew('core', '/api/v1/products/commonbrand/list', data).subscribe((result: any) => {
-        // this.isLoading = false;
+        this.searching = false;
         if (result && result.data && result.data.length) {
           const response = result.data[0];
           this.commonProducts = response.result;
         }
       }, (error) => {
-        // this.isLoading = false;
+        this.searching = false;
       })
     } catch (e) {
-      // this.isLoading = false;
+      this.searching = false;
     }
   }
 
   onSelectProduct(product: any, isFrom: string, isFor: string) {
     console.log('selected product', product);
     this.shopProducts = null;
-    this.newSelectedProduct.name = product?.oName?.nl || product?.oName?.en || '';
-    this.newSelectedProduct.price = product?.nPriceIncludesVat || 0;
-    if (product?.aImage[0])
-      this.newSelectedProduct.image = product?.aImage[0];
-    else if (product?.aImage[1])
-      this.newSelectedProduct.image = product?.aImage[1];
+
+    this.newSelectedProduct.sName = product.oName ? product.oName['en'] : 'No name';
+    this.newSelectedProduct.nPrice = product.nPriceIncludesVat || 0;
+    this.newSelectedProduct.iBusinessProductId = product._id;
+    this.newSelectedProduct.aImage = product.aImage;
   }
 
+  create(event: any) {
+    event.target.disabled = true;
+    this.creating = true;
 
-
-  update() {
-
-  }
-
-  create() {
     try {
       let data = {
         iBusinessId: this.business._id,
-        iLocationId: localStorage.getItem('currentLocation') || '',
-        sName: this.newSelectedProduct.name,
-        nPrice: this.newSelectedProduct.price
+        iLocationId: localStorage.getItem('currentLocation'),
+        oQuickButton: this.newSelectedProduct
       };
+
+      if (!data.iLocationId) {
+        this.toastService.show({ type: 'warning', text: `Please select a location` });
+        return;
+      }
+
       this.apiService.postNew('cashregistry', '/api/v1/quick-buttons/create', data).subscribe((result: any) => {
-        if (result.message == 'success')
+        if (result.message == 'success') {
+          event.target.disabled = false;
+          this.creating = false;
           this.close(true);
+          this.toastService.show({ type: 'success', text: `New Quick Button added successfully` });
+        }
       }, (error) => {
-        // this.isLoading = false;
+        event.target.disabled = false;
+        this.creating = false;
       })
     } catch (e) {
-      // this.isLoading = false;
+      event.target.disabled = false;
+      this.creating = false;
     }
   }
 

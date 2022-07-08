@@ -71,6 +71,7 @@ export class TillComponent implements OnInit {
   terminals: Array<any> = [];
   quickButtons: Array<any> = [];
   quickButtonsLoading: boolean = false;
+  fetchingProductDetails: boolean = false;
   // quickButtons: Array<any> = [
   //   { name: 'Waterdicht', price: this.randNumber(5, 30) },
   //   { name: 'Batterij', price: this.randNumber(5, 30) },
@@ -188,14 +189,14 @@ export class TillComponent implements OnInit {
   }
 
   addItemToTransaction(item: any): void {
-    let article = item
-    article.quantity = 1;
-    article.nDiscount = 0;
-    article.oType = { bRefund: false };
-    article.tax = 21;
-    article.type = 'product'
-    article.description = '';
-    this.transactionItems.push(article)
+    this.fetchingProductDetails = true;
+    this.apiService.getNew('core', `/api/v1/business/products/${item.iBusinessProductId}?iBusinessId=${this.business._id}`).subscribe(
+      (result: any) => {
+        if (result.message == 'success') {
+          this.onSelectProduct(result.data, 'business', 'same-article');
+          this.fetchingProductDetails = false;
+        }
+      });
   }
 
   addOrder(): void {
@@ -204,7 +205,7 @@ export class TillComponent implements OnInit {
       manualUpdate: false,
       index: this.transactionItems.length,
       name: this.searchKeyword,
-      oType: { bRefund: false },
+      oType: { bRefund: false, bDiscount: false, bPrepayment: false },
       type: 'order',
       aImage: [],
       quantity: 1,
@@ -285,7 +286,7 @@ export class TillComponent implements OnInit {
       index: this.transactionItems.length,
       name: this.translateService.instant(type.toUpperCase()),
       type,
-      oType: { bRefund: false },
+      oType: { bRefund: false, bDiscount: false, bPrepayment: false },
       oArticleGroupMetaData: { aProperty: [], sCategory: '', sSubCategory: '' },
       aImage: [],
       quantity: 1,
@@ -576,7 +577,7 @@ export class TillComponent implements OnInit {
       quantity: 1,
       price: product.nPriceIncludesVat || 0,
       paymentAmount: 0,
-      oType: { bRefund: false },
+      oType: { bRefund: false, bDiscount: false, bPrepayment: false },
       nDiscount: product.nDiscount || 0,
       tax: product.nVatRate || 0,
       sProductNumber: product.sProductNumber,

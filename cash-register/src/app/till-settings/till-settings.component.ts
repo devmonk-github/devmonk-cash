@@ -225,8 +225,8 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
 
   createFavourite() {
     this.dialogService.openModal(AddFavouritesComponent, { context: { mode: 'create' }, cssClass: "modal-lg", hasBackdrop: true, closeOnBackdropClick: true, closeOnEsc: true }).instance.close.subscribe(result => {
-      this.toastService.show({ type: 'success', text: `New Quick Button added successfully` });
-      this.fetchQuickButtons();
+      if (result.action)
+        this.fetchQuickButtons();
     });
   }
 
@@ -256,17 +256,22 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
     }
   }
 
-  saveFavourites() {
+  saveFavourites(event: any) {
+    event.target.disabled = true;
     this.quickButtonsLoading = true;
     try {
       this.apiService.putNew('cashregistry', '/api/v1/quick-buttons/update/' + this.requestParams.iBusinessId, this.quickButtons).subscribe((result: any) => {
-        this.quickButtonsLoading = false;
         this.toastService.show({ type: 'success', text: `Quick Buttons order saved successfully` });
+        this.quickButtonsLoading = false;
+        event.target.disabled = false;
       }, (error) => {
         this.quickButtonsLoading = false;
+        event.target.disabled = false;
       })
     } catch (e) {
       this.quickButtonsLoading = false;
+      event.target.disabled = false;
     }
+
   }
 }
