@@ -137,7 +137,7 @@ export class TransactionsComponent implements OnInit {
     this.requestParams.methodValue = this.methodValue;
     this.requestParams.transactionValue = this.transactionValue;
     this.requestParams.iEmployeeId = this.employee && this.employee._id ? this.employee._id : '';
-    this.requestParams.iDeviceId = undefined // we need to work on this once devides are available.
+    this.requestParams.iWorkstationId = undefined // we need to work on this once devides are available.
     this.requestParams.workstations = this.selectedWorkstations;
     this.requestParams.locations = this.selectedLocations;
     this.showLoader = true;

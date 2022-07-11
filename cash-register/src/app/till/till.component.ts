@@ -62,7 +62,7 @@ export class TillComponent implements OnInit {
   appliedGiftCards: Array<any> = [];
   redeemedLoyaltyPoints: number = 0;
   business: any = {};
-  locationId: string = '';
+  locationId: any = null;
   payMethodsLoading: boolean = false;
   isGoldForPayments = false;
   requestParams: any = { iBusinessId: '' };
@@ -448,8 +448,14 @@ export class TillComponent implements OnInit {
   }
 
   createTransaction(): void {
+    this.locationId = localStorage.getItem('currentLocation') || null;
     const isGoldForCash = this.checkUseForGold();
     if (this.transactionItems.length < 1 || !isGoldForCash) {
+      return;
+    }
+    if (!this.locationId) {
+      this.toastrService.show({ type: 'danger', text: 'Location is not selected' });
+      this.saveInProgress = false;
       return;
     }
 
