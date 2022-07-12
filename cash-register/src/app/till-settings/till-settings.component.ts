@@ -234,7 +234,6 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
     this.quickButtonsLoading = true;
     try {
       this.apiService.getNew('cashregistry', '/api/v1/quick-buttons/' + this.requestParams.iBusinessId).subscribe((result: any) => {
-        // console.log('fetchQuickButtons', result);
         this.quickButtonsLoading = false;
         if (result?.length) this.quickButtons = result;
       }, (error) => {

@@ -69,7 +69,6 @@ export class ProductComponent {
     this.dialogService.openModal(DiscountDialogComponent, { context: { item: JSON.parse(JSON.stringify(this.item)) } })
       .instance.close.subscribe((data) => {
         if (data.item && data.item.nDiscount) {
-          console.log('discount dialog closed', data.item)
           this.item.nDiscount = data.item.nDiscount
         }
       })
