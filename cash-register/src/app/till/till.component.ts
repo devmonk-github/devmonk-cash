@@ -118,7 +118,7 @@ export class TillComponent implements OnInit {
 
   ngOnInit(): void {
     this.business._id = localStorage.getItem('currentBusiness');
-    this.locationId = localStorage.getItem('currentLocation') || '';
+    this.locationId = localStorage.getItem('currentLocation') || null;
     this.iWorkStationId = localStorage.getItem('currentWorkstation');
 
     this.checkDayState();
