@@ -57,7 +57,7 @@ export class TransactionItem {
     public iBusinessProductId: string | null,
     public oBusinessProductMetaData: BusinessProductMetadata | null,
     public eStatus: string,
-    public iWorkstationId: string,
+    public iWorkStationId: string,
     public iEmployeeId: string,
     public iLocationId: string,
     public sBagNumber: string,
