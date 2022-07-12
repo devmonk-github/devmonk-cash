@@ -1,12 +1,10 @@
-import { Component, OnInit, Input, Output, EventEmitter, ViewContainerRef, AfterViewInit, ViewChild, ElementRef, OnDestroy } from '@angular/core';
-import { FormBuilder, FormControl, Validators } from '@angular/forms';
+import { Component, OnInit, ViewContainerRef, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
 import { fromEvent } from 'rxjs';
 import { debounceTime, map } from 'rxjs/operators';
 import { faTimes, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import * as _ from 'lodash';
 import { ApiService } from '../../service/api.service';
 import { DialogComponent } from '../../service/dialog';
-import { ToastService } from '../toast';
 import { TerminalService } from '../../service/terminal.service';
 
 @Component({
@@ -35,7 +33,7 @@ export class CardsComponent implements OnInit, AfterViewInit {
   redeemedLoyaltyPoints = 0;
   customer: any;
   pincode: any;
-  giftCardInfo = { sGiftCardNumber: '', pincode: '', nAmount: 0, profileIconUrl: '', type: 'custom' };
+  giftCardInfo = { sGiftCardNumber: '', pincode: '', nAmount: 0, profileIconUrl: '', type: 'custom', nPaidAmount: 0 };
   // elem ref
   constructor(
     private viewContainerRef: ViewContainerRef,
@@ -80,12 +78,10 @@ export class CardsComponent implements OnInit, AfterViewInit {
       return;
     }
     this.fetchInProgress = true;
-    // '1652816053496'
     const url = `/api/v1/activities/giftcard?iBusinessId=${this.iBusinessId}&sGiftCardNumber=${sGiftCardNumber}`;
     this.apiService.getNew('cashregistry', url).subscribe((result: any) => {
-      console.log(result);
       this.giftCardDetails = result;
-
+      this.giftCardInfo.nPaidAmount = result.nPaidAmount;
       this.fetchInProgress = false;
     }, (error) => {
       alert(error.error.message);
@@ -95,17 +91,13 @@ export class CardsComponent implements OnInit, AfterViewInit {
   }
 
   fetchExternalGiftCard(sGiftCardNumber: string) {
-    console.log('I am here fetchExternalGiftCard');
     if (4 > sGiftCardNumber.length) {
       return;
     }
     // this.fetchInProgress = true;
-    console.log('I am in fetch extenal gift card');
     this.terminalService.getGiftCardInformation({ sGiftCardNumber, pincode: this.pincode })
       .subscribe(res => {
         this.externalGiftCardDetails = res;
-
-        console.log(this.externalGiftCardDetails);
       }, (error) => {
         alert(error.error.message);
         this.dialogRef.close.emit(false);
@@ -132,7 +124,7 @@ export class CardsComponent implements OnInit, AfterViewInit {
     this.giftCardInfo.nAmount = this.nAmount;
     this.giftCardInfo.pincode = this.pincode;
     this.giftCardInfo.profileIconUrl = this.externalGiftCardDetails.profileIconUrl;
-    this.giftCardInfo.type = this.externalGiftCardDetails.type;
+    this.giftCardInfo.type = this.externalGiftCardDetails.type ? this.externalGiftCardDetails.type : 'custom';
     this.close({ giftCardInfo: this.giftCardInfo, redeemedLoyaltyPoints: this.redeemedLoyaltyPoints });
   }
 }
