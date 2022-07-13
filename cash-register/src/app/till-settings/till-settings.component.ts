@@ -1,3 +1,4 @@
+import { Subscription } from 'rxjs';
 import { AddFavouritesComponent } from './../shared/components/add-favourites/favourites.component';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ApiService } from '../shared/service/api.service';
@@ -32,6 +33,22 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
   loading: boolean = false;
   quickButtons: Array<any> = [];
   quickButtonsLoading: boolean = false;
+  deleteMethodModalSub !: Subscription;
+  getSettingsSubscription !: Subscription;
+  getLedgerSubscription !: Subscription;
+  geBookkeepingUpdateSubscription !: Subscription;
+  geBookkeepingListSubscription !: Subscription;
+  updateLedgerSubscription !: Subscription;
+  updateGeneralLedgerSubscription !: Subscription;
+  getLedgerNumberSubscription !: Subscription;
+  createPaymentModalSub !: Subscription;
+  getPaymentMethodsSubscription !: Subscription;
+  viewDetailsModalSub !: Subscription;
+  updateSettingsSubscription !: Subscription;
+  createFavouriteModalSub !: Subscription;
+  fetchQuickButtonsSubscription !: Subscription;
+  saveFavouritesSubscription !: Subscription;
+  removeQuickButtonSubscription !: Subscription;
 
   constructor(
     private apiService: ApiService,
@@ -52,7 +69,7 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
       { text: "YES", value: true, status: 'success', class: 'btn-primary ml-auto mr-2' },
       { text: "NO", value: false, class: 'btn-warning' }
     ]
-    this.dialogService.openModal(ConfirmationDialogComponent, {
+    this.deleteMethodModalSub = this.dialogService.openModal(ConfirmationDialogComponent, {
       context: {
         header: 'DELETE_PAYMENT_METHOD',
         bodyText: 'ARE_YOU_SURE_TO_DELETE_THIS_PAYMENT_METHOD?',
@@ -72,7 +89,7 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
   }
 
   getSettings() {
-    this.apiService.getNew('cashregistry', '/api/v1/settings/' + this.requestParams.iBusinessId).subscribe((result: any) => {
+    this.getSettingsSubscription = this.apiService.getNew('cashregistry', '/api/v1/settings/' + this.requestParams.iBusinessId).subscribe((result: any) => {
       this.settings = result;
     }, (error) => {
       console.log(error);
@@ -82,7 +99,7 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
   getGeneralLedgerNumber() {
     this.bookKeepings = [];
     this.loading = true;
-    this.apiService.getNew('bookkeeping', '/api/v1/ledger/?iBusinessId=' + this.requestParams.iBusinessId + '&sType=general&searchValue=' + this.searchValue).subscribe(
+    this.getLedgerSubscription = this.apiService.getNew('bookkeeping', '/api/v1/ledger/?iBusinessId=' + this.requestParams.iBusinessId + '&sType=general&searchValue=' + this.searchValue).subscribe(
       (result: any) => {
         if (result && result.length) this.bookKeepings = result;
         this.loading = false;
@@ -114,7 +131,7 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
       bBookkeeping
     };
     if (bBookkeeping) this.getGeneralLedgerNumber();
-    this.apiService.postNew('bookkeeping', '/api/v1/bookkeeping-setting/update', data).subscribe(
+    this.geBookkeepingUpdateSubscription = this.apiService.postNew('bookkeeping', '/api/v1/bookkeeping-setting/update', data).subscribe(
       (result: any) => {
       },
       (error: any) => {
@@ -123,7 +140,7 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
   }
 
   getBookkeepingSetting() {
-    this.apiService.getNew('bookkeeping', '/api/v1/bookkeeping-setting/list/' + this.requestParams.iBusinessId).subscribe(
+    this.geBookkeepingListSubscription = this.apiService.getNew('bookkeeping', '/api/v1/bookkeeping-setting/list/' + this.requestParams.iBusinessId).subscribe(
       (result: any) => {
         if (result && result.bBookkeeping) {
           this.bookKeepingMode = result.bBookkeeping;
@@ -142,7 +159,7 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
       nNumber: method.sLedgerNumber
     };
 
-    this.apiService.postNew('bookkeeping', '/api/v1/ledger', createArticle).subscribe(
+    this.updateLedgerSubscription = this.apiService.postNew('bookkeeping', '/api/v1/ledger', createArticle).subscribe(
       (result: any) => {
       },
       (error: any) => {
@@ -156,7 +173,7 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
       _id: data._id,
       nNumber: data.nNumber
     };
-    this.apiService.putNew('bookkeeping', '/api/v1/ledger', Obj).subscribe(
+    this.updateGeneralLedgerSubscription = this.apiService.putNew('bookkeeping', '/api/v1/ledger', Obj).subscribe(
       (result: any) => {
       },
       (error: any) => {
@@ -165,7 +182,7 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
   }
 
   getLedgerNumber(methodId: any, index: number) {
-    this.apiService.getNew('bookkeeping', '/api/v1/ledger/payment-method/' + methodId + '?iBusinessId=' + this.requestParams.iBusinessId).subscribe(
+    this.getLedgerNumberSubscription = this.apiService.getNew('bookkeeping', '/api/v1/ledger/payment-method/' + methodId + '?iBusinessId=' + this.requestParams.iBusinessId).subscribe(
       (result: any) => {
         if (result && result.nNumber) { this.payMethods[index].sLedgerNumber = result.nNumber; }
       }
@@ -174,7 +191,7 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
 
 
   createPaymentMethod() {
-    this.dialogService.openModal(CustomPaymentMethodComponent, { cssClass: "", context: { mode: 'create' } }).instance.close.subscribe(result => {
+    this.createPaymentModalSub = this.dialogService.openModal(CustomPaymentMethodComponent, { cssClass: "", context: { mode: 'create' } }).instance.close.subscribe(result => {
       if (result.action) this.getPaymentMethods();
     });
   }
@@ -186,7 +203,7 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
   getPaymentMethods() {
     this.payMethodsLoading = true;
     this.payMethods = []
-    this.apiService.getNew('cashregistry', '/api/v1/payment-methods/' + this.requestParams.iBusinessId + '?type=custom').subscribe((result: any) => {
+    this.getPaymentMethodsSubscription = this.apiService.getNew('cashregistry', '/api/v1/payment-methods/' + this.requestParams.iBusinessId + '?type=custom').subscribe((result: any) => {
       if (result && result.data && result.data.length) {
         this.payMethods = result.data;
         for (let i = 0; i < this.payMethods.length; i++) { this.getLedgerNumber(this.payMethods[i]._id, i) }
@@ -198,7 +215,7 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
   }
 
   viewDetails(method: any) {
-    this.dialogService.openModal(CustomPaymentMethodComponent, { cssClass: "", context: { mode: 'details', customMethod: method } }).instance.close.subscribe(result => {
+    this.viewDetailsModalSub = this.dialogService.openModal(CustomPaymentMethodComponent, { cssClass: "", context: { mode: 'details', customMethod: method } }).instance.close.subscribe(result => {
       if (result.action) this.getPaymentMethods();
     });
   }
@@ -210,7 +227,7 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
   updateSettings(): void {
     const { nLastInvoiceNumber, nLastReceiptNumber } = this.settings;
     const body = { nLastInvoiceNumber, nLastReceiptNumber };
-    this.apiService.putNew('cashregistry', '/api/v1/settings/update/' + this.requestParams.iBusinessId, body)
+    this.updateSettingsSubscription = this.apiService.putNew('cashregistry', '/api/v1/settings/update/' + this.requestParams.iBusinessId, body)
       .subscribe((result: any) => {
         console.log(result);
         // this.getWebShopSettings()
@@ -219,12 +236,10 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
         console.log(error);
       })
   }
-  ngOnDestroy(): void {
-    console.log('destroy called');
-  }
+
 
   createFavourite() {
-    this.dialogService.openModal(AddFavouritesComponent, { context: { mode: 'create' }, cssClass: "modal-lg", hasBackdrop: true, closeOnBackdropClick: true, closeOnEsc: true }).instance.close.subscribe(result => {
+    this.createFavouriteModalSub = this.dialogService.openModal(AddFavouritesComponent, { context: { mode: 'create' }, cssClass: "modal-lg", hasBackdrop: true, closeOnBackdropClick: true, closeOnEsc: true }).instance.close.subscribe(result => {
       if (result.action)
         this.fetchQuickButtons();
     });
@@ -233,7 +248,7 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
   fetchQuickButtons() {
     this.quickButtonsLoading = true;
     try {
-      this.apiService.getNew('cashregistry', '/api/v1/quick-buttons/' + this.requestParams.iBusinessId).subscribe((result: any) => {
+      this.fetchQuickButtonsSubscription = this.apiService.getNew('cashregistry', '/api/v1/quick-buttons/' + this.requestParams.iBusinessId).subscribe((result: any) => {
         this.quickButtonsLoading = false;
         if (result?.length) this.quickButtons = result;
       }, (error) => {
@@ -259,7 +274,7 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
     event.target.disabled = true;
     this.quickButtonsLoading = true;
     try {
-      this.apiService.putNew('cashregistry', '/api/v1/quick-buttons/update/' + this.requestParams.iBusinessId, this.quickButtons).subscribe((result: any) => {
+      this.saveFavouritesSubscription = this.apiService.putNew('cashregistry', '/api/v1/quick-buttons/update/' + this.requestParams.iBusinessId, this.quickButtons).subscribe((result: any) => {
         this.toastService.show({ type: 'success', text: `Quick Buttons order saved successfully` });
         this.quickButtonsLoading = false;
         event.target.disabled = false;
@@ -277,7 +292,7 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
   removeQuickButton(button: any) {
     console.log(button);
     try {
-      this.apiService.deleteNew('cashregistry', `/api/v1/quick-buttons/${button._id}/${this.requestParams.iBusinessId}`).subscribe((result: any) => {
+      this.removeQuickButtonSubscription = this.apiService.deleteNew('cashregistry', `/api/v1/quick-buttons/${button._id}/${this.requestParams.iBusinessId}`).subscribe((result: any) => {
         this.toastService.show({ type: 'success', text: `Quick button deleted successfully` });
         this.fetchQuickButtons();
       }, (error) => {
@@ -286,5 +301,24 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
     } catch (e) {
 
     }
+  }
+
+  ngOnDestroy(): void {
+    this.deleteMethodModalSub.unsubscribe();
+    this.getSettingsSubscription.unsubscribe();
+    this.getLedgerSubscription.unsubscribe();
+    this.geBookkeepingUpdateSubscription.unsubscribe();
+    this.geBookkeepingListSubscription.unsubscribe();
+    this.updateLedgerSubscription.unsubscribe();
+    this.updateGeneralLedgerSubscription.unsubscribe();
+    this.getLedgerNumberSubscription.unsubscribe();
+    this.createPaymentModalSub.unsubscribe();
+    this.getPaymentMethodsSubscription.unsubscribe();
+    this.viewDetailsModalSub.unsubscribe();
+    this.updateSettingsSubscription.unsubscribe();
+    this.createFavouriteModalSub.unsubscribe();
+    this.fetchQuickButtonsSubscription.unsubscribe();
+    this.saveFavouritesSubscription.unsubscribe();
+    this.removeQuickButtonSubscription.unsubscribe();
   }
 }
