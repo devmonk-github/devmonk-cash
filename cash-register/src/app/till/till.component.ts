@@ -76,7 +76,7 @@ export class TillComponent implements OnInit {
   bIsDayStateClosed: boolean = true;
   bIsDayStateOpened: boolean = false; // Not opened then require to open it first
   dOpenDate: any = '';
-  iWorkStationId!: any;
+  iWorkstationId!: any;
 
   aProjection: Array<any> = [
     'oName',
@@ -119,7 +119,7 @@ export class TillComponent implements OnInit {
   ngOnInit(): void {
     this.business._id = localStorage.getItem('currentBusiness');
     this.locationId = localStorage.getItem('currentLocation') || '';
-    this.iWorkStationId = localStorage.getItem('currentWorkstation');
+    this.iWorkstationId = localStorage.getItem('currentWorkstation');
 
     this.checkDayState();
 
@@ -776,7 +776,7 @@ export class TillComponent implements OnInit {
     const oBody = {
       iBusinessId: this.business._id,
       iLocationId: this.locationId,
-      iWorkStationId: this.iWorkStationId
+      iWorkstationId: this.iWorkstationId
     }
     this.apiService.postNew('cashregistry', `/api/v1/statistics/open/day-state`, oBody).subscribe((result: any) => {
       this.bIsDayStateOpened = true;
@@ -830,7 +830,7 @@ export class TillComponent implements OnInit {
     const oBody = {
       iBusinessId: this.business._id,
       iLocationId: this.locationId,
-      iWorkStationId: this.iWorkStationId
+      iWorkstationId: this.iWorkstationId
     }
     this.apiService.postNew('cashregistry', `/api/v1/statistics/day-closure/check`, oBody).subscribe((result: any) => {
       if (result?.data?.bIsDayStateOpened) {

@@ -50,7 +50,7 @@ export class PrintSettingsDetailsComponent implements OnInit {
     let data = {
       iBusinessId: this.business._id,
       iLocationId: this.location._id,
-      iWorkStationId: this.workstation._id,
+      iWorkstationId: this.workstation._id,
       sMethod: this.method,
       sType: this.type,
       sUser: this.user,

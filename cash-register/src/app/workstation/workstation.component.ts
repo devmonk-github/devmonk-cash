@@ -59,8 +59,8 @@ export class WorkstationComponent implements OnInit {
     }
   }
 
-  getWorkstationSettings(iWorkStationId: any, i: number){
-    this.apiService.getNew('cashregistry', '/api/v1/workstation-settings/list/'+ this.business._id + '/' + iWorkStationId).subscribe(
+  getWorkstationSettings(iWorkstationId: any, i: number){
+    this.apiService.getNew('cashregistry', '/api/v1/workstation-settings/list/'+ this.business._id + '/' + iWorkstationId).subscribe(
       (result : any) => {
         this.settings = result.data;
         this.workstations[i].settings = this.settings;
@@ -75,7 +75,7 @@ export class WorkstationComponent implements OnInit {
     const data = {
       iBusinessId: this.business._id,
       iLocationId: localStorage.getItem('currentLocation'),
-      iWorkStationId: workstation._id,
+      iWorkstationId: workstation._id,
       iDeviceId: '624e98bd8f532d15180f2d75'
     }
     this.workstation.iBusinessId = this.business._id;

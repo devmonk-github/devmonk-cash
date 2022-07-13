@@ -10,7 +10,7 @@ export class Transaction {
     public sNumber: string | null,
     public eType: string,
     public eStatus: string,
-    public iWorkStationId: string,
+    public iWorkstationId: string,
     public iEmployeeId: string,
     public iLocationId: string,
     public items: TransactionItem[] | null,
