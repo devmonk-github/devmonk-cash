@@ -118,7 +118,7 @@ export class TillComponent implements OnInit {
 
   ngOnInit(): void {
     this.business._id = localStorage.getItem('currentBusiness');
-    this.locationId = localStorage.getItem('currentLocation') || '';
+    this.locationId = localStorage.getItem('currentLocation') || null;
     this.iWorkstationId = localStorage.getItem('currentWorkstation');
 
     this.checkDayState();
@@ -838,7 +838,7 @@ export class TillComponent implements OnInit {
         if (result?.data?.oStatisticDetail?.dOpenDate) {
           this.dOpenDate = result?.data?.oStatisticDetail?.dOpenDate;
 
-          
+
 
           /* Show Close day state warning when Day-state is close from last 24hrs */
           const nOpenTimeSecond = (new Date(this.dOpenDate).getTime());
