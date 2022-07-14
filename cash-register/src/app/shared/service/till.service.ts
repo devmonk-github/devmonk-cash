@@ -199,7 +199,7 @@ export class TillService {
           }
         });
       } else {
-        if (i.nDiscount && i.nDiscount > 0 && !i.oType.bRefund && !i.oType.bPrepayment && !i.iActivityItemId) {
+        if (i.nDiscount && i.nDiscount > 0 && !i.oType.bRefund && !i.iActivityItemId) {
           i.nPaymentAmount += i.nDiscount * i.nQuantity;
           const tItem1 = JSON.parse(JSON.stringify(i));
           tItem1.iArticleGroupId = discountArticleGroup._id;
