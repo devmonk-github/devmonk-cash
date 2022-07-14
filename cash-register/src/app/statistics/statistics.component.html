@@ -3,11 +3,11 @@
     <div class="row" *ngIf="aStatistic[0].overall.length">
       <div class="col-md-4">
         <span class="">{{ 'QUANTITY' | translate}}</span>
-        <h3 class="text-black">{{aStatistic[0].overall[0].quantity}}</h3>
+        <h3 class="text-black">{{aStatistic[0].overall[0].nQuantity}}</h3>
       </div>
       <div class="col-md-4">
         <span class="">{{ 'TOTAL' | translate}}</span>
-        <h3 class="text-black">{{aStatistic[0].overall[0].total}}</h3>
+        <h3 class="text-black">{{aStatistic[0].overall[0].nTotal}}</h3>
       </div>
       <div class="col-md-4">
         <select class="form-select" id="product-attributes" [(ngModel)]="sDisplayMethod"
@@ -29,51 +29,51 @@
           <thead>
             <tr>
               <th><span class="">{{ 'SUPPLIER' | translate}}</span>
-                <h3 class="text-black">{{oSupplier.businessPartnerName}}</h3>
+                <h3 class="text-black">{{oSupplier.sBusinessPartnerName}}</h3>
               </th>
               <th class="w-150px"><span class="">{{"QUANTITY" | translate}}</span>
-                <h4 class="text-black">{{oSupplier.quantity}}</h4>
+                <h4 class="text-black">{{oSupplier.nQuantity}}</h4>
               </th>
               <th class="w-150px"><span class="">{{"PRICE_WITH_VAT" | translate}}</span>
-                <h4 class="text-black">{{oSupplier.totalRevenue}}</h4>
+                <h4 class="text-black">{{oSupplier.nTotalRevenue}}</h4>
               </th>
               <th class="w-150px"><span class="">{{"PURCHASE_PRICE" | translate}}</span>
-                <h4 class="text-black">{{oSupplier.totalPurchaseAmount}}</h4>
+                <h4 class="text-black">{{oSupplier.nTotalPurchaseAmount}}</h4>
               </th>
               <th class="w-150px"><span class="">{{"GROSS_PROFIT" | translate}}</span>
-                <h4 class="text-black">{{oSupplier.profit}}</h4>
+                <h4 class="text-black">{{oSupplier.nProfit}}</h4>
               </th>
               <th class="w-150px"><span class="">{{"MARGIN" | translate}}</span>
-                <h4 class="text-black">{{oSupplier.margin}}</h4>
+                <h4 class="text-black">{{oSupplier.nMargin}}</h4>
               </th>
             </tr>
           </thead>
           <tbody>
-            <tr>
+            <tr *ngIf="oSupplier.aArticleGroups?.length">
               <td colspan="6" class="p-2">
                 <table class="table table-row-bordered table-row-gray-300 gy-5 gs-5 mb-0 text-gray-600 fw-bold border"
-                  *ngFor="let oArticleGroup of oSupplier.articleGroups; let articleGroupIndex = index">
-                  <!-- start of articlegroup -->
+                  *ngFor="let oArticleGroup of oSupplier.aArticleGroups; let articleGroupIndex = index">
+                  <!-- start of article-group -->
                   <thead class="bg-gray-100">
                     <tr class="fw-bold fs-6 text-gray-800">
-                      <th scope="col">{{oArticleGroup.name}}</th>
-                      <th scope="col" class="w-150px">{{oArticleGroup.quantity}}</th>
-                      <th scope="col" class="w-150px">{{oArticleGroup.totalRevenue}}</th>
-                      <th scope="col" class="w-150px">{{oArticleGroup.totalPurchaseAmount}}</th>
-                      <th scope="col" class="w-150px">{{oArticleGroup.profit}}</th>
-                      <th scope="col" class="w-150px">{{oArticleGroup.margin}}</th>
+                      <th scope="col">{{oArticleGroup.sName}}</th>
+                      <th scope="col" class="w-150px">{{oArticleGroup.nQuantity}}</th>
+                      <th scope="col" class="w-150px">{{oArticleGroup.nTotalRevenue}}</th>
+                      <th scope="col" class="w-150px">{{oArticleGroup.nTotalPurchaseAmount}}</th>
+                      <th scope="col" class="w-150px">{{oArticleGroup.nProfit}}</th>
+                      <th scope="col" class="w-150px">{{oArticleGroup.nMargin}}</th>
                     </tr>
                   </thead>
                   <tbody class="p-2"
-                    *ngFor="let oRevenueByProperty of oArticleGroup.revenueByProperty; let revenuePropertyIndex = index">
-                    <!--start of dyamic property -->
+                    *ngFor="let oRevenueByProperty of oArticleGroup.aRevenueByProperty; let revenuePropertyIndex = index">
+                    <!--start of dynamic property -->
                     <tr>
-                      <td class="ps-9">{{oRevenueByProperty.category}}</td>
-                      <td>{{oRevenueByProperty.quantity}}</td>
-                      <td>{{oRevenueByProperty.totalRevenue}}</td>
-                      <td>{{oRevenueByProperty.totalPurchaseAmount}}</td>
-                      <td>{{oRevenueByProperty.profit}}</td>
-                      <td>{{oRevenueByProperty.margin}}</td>
+                      <td class="ps-9">{{oRevenueByProperty.sCategory}}</td>
+                      <td>{{oRevenueByProperty.nQuantity}}</td>
+                      <td>{{oRevenueByProperty.nTotalRevenue}}</td>
+                      <td>{{oRevenueByProperty.nTotalPurchaseAmount}}</td>
+                      <td>{{oRevenueByProperty.nProfit}}</td>
+                      <td>{{oRevenueByProperty.nMargin}}</td>
                     </tr>
                   </tbody>
                   <!-- start of articlegroup -->
@@ -96,39 +96,39 @@
           <thead>
             <tr>
               <th><span class="">{{ 'SUPPLIER' | translate}}</span>
-                <h3 class="text-black">{{oSupplier.businessPartnerName}}</h3>
+                <h3 class="text-black">{{oSupplier.sBusinessPartnerName}}</h3>
               </th>
               <th class="w-150px"><span class="">{{"QUANTITY" | translate}}</span>
-                <h4 class="text-black">{{oSupplier.quantity}}</h4>
+                <h4 class="text-black">{{oSupplier.nQuantity}}</h4>
               </th>
               <th class="w-150px"><span class="">{{"PRICE_WITH_VAT" | translate}}</span>
-                <h4 class="text-black">{{oSupplier.totalRevenue}}</h4>
+                <h4 class="text-black">{{oSupplier.nTotalRevenue}}</h4>
               </th>
               <th class="w-150px"><span class="">{{"PURCHASE_PRICE" | translate}}</span>
-                <h4 class="text-black">{{oSupplier.totalPurchaseAmount}}</h4>
+                <h4 class="text-black">{{oSupplier.nTotalPurchaseAmount}}</h4>
               </th>
               <th class="w-150px"><span class="">{{"GROSS_PROFIT" | translate}}</span>
-                <h4 class="text-black">{{oSupplier.profit}}</h4>
+                <h4 class="text-black">{{oSupplier.nProfit}}</h4>
               </th>
               <th class="w-150px"><span class="">{{"MARGIN" | translate}}</span>
-                <h4 class="text-black">{{oSupplier.margin}}</h4>
+                <h4 class="text-black">{{oSupplier.nMargin}}</h4>
               </th>
             </tr>
           </thead>
 
           <tbody>
-            <tr>
+            <tr *ngIf="oSupplier.aArticleGroups?.length">
               <td colspan="6" class="p-2">
                 <table class="table table-row-bordered table-row-gray-300 gy-5 gs-5 mb-0 text-gray-600 fw-bold border"
-                  *ngFor="let oArticleGroup of oSupplier.articleGroups; let articleGroupIndex = index">
+                  *ngFor="let oArticleGroup of oSupplier.aArticleGroups; let articleGroupIndex = index">
                   <thead class="bg-gray-100">
                     <tr class="fw-bold fs-6 text-gray-800">
-                      <th scope="col">{{oArticleGroup.name}}</th>
-                      <th scope="col" class="w-150px">{{oArticleGroup.quantity}}</th>
-                      <th scope="col" class="w-150px">{{oArticleGroup.totalRevenue}}</th>
-                      <th scope="col" class="w-150px">{{oArticleGroup.totalPurchaseAmount}}</th>
-                      <th scope="col" class="w-150px">{{oArticleGroup.profit}}</th>
-                      <th scope="col" class="w-150px">{{oArticleGroup.margin}}</th>
+                      <th scope="col">{{oArticleGroup.sName}}</th>
+                      <th scope="col" class="w-150px">{{oArticleGroup.nQuantity}}</th>
+                      <th scope="col" class="w-150px">{{oArticleGroup.nTotalRevenue}}</th>
+                      <th scope="col" class="w-150px">{{oArticleGroup.nTotalPurchaseAmount}}</th>
+                      <th scope="col" class="w-150px">{{oArticleGroup.nProfit}}</th>
+                      <th scope="col" class="w-150px">{{oArticleGroup.nMargin}}</th>
                     </tr>
                   </thead>
                 </table>
@@ -150,23 +150,23 @@
           <thead class="bg-gray-100">
             <tr class="fw-bold fs-6 text-gray-800">
               <th scope="col">{{oArticleGroup._id}}</th>
-              <th scope="col" class="w-150px">{{oArticleGroup.quantity}}</th>
-              <th scope="col" class="w-150px">{{oArticleGroup.totalRevenue}}</th>
-              <th scope="col" class="w-150px">{{oArticleGroup.totalPurchaseAmount}}</th>
-              <th scope="col" class="w-150px">{{oArticleGroup.profit}}</th>
-              <th scope="col" class="w-150px">{{oArticleGroup.margin}}</th>
+              <th scope="col" class="w-150px">{{oArticleGroup.nQuantity}}</th>
+              <th scope="col" class="w-150px">{{oArticleGroup.nTotalRevenue}}</th>
+              <th scope="col" class="w-150px">{{oArticleGroup.nTotalPurchaseAmount}}</th>
+              <th scope="col" class="w-150px">{{oArticleGroup.nProfit}}</th>
+              <th scope="col" class="w-150px">{{oArticleGroup.nMargin}}</th>
             </tr>
           </thead>
           <tbody class="p-2"
-            *ngFor="let oRevenueByProperty of oArticleGroup.revenueByProperty; let revenuePropertyIndex = index">
+            *ngFor="let oRevenueByProperty of oArticleGroup.aRevenueByProperty; let revenuePropertyIndex = index">
             <!--start of Dynamic property -->
             <tr>
-              <td class="ps-9">{{oRevenueByProperty.category}}</td>
-              <td>{{oRevenueByProperty.quantity}}</td>
-              <td>{{oRevenueByProperty.totalRevenue}}</td>
-              <td>{{oRevenueByProperty.totalPurchaseAmount}}</td>
-              <td>{{oRevenueByProperty.profit}}</td>
-              <td>{{oRevenueByProperty.margin}}</td>
+              <td class="ps-9">{{oRevenueByProperty.sCategory}}</td>
+              <td>{{oRevenueByProperty.nQuantity}}</td>
+              <td>{{oRevenueByProperty.nTotalRevenue}}</td>
+              <td>{{oRevenueByProperty.nTotalPurchaseAmount}}</td>
+              <td>{{oRevenueByProperty.nProfit}}</td>
+              <td>{{oRevenueByProperty.nMargin}}</td>
             </tr>
           </tbody>
           <!-- start of articlegroup -->
@@ -186,12 +186,12 @@
           <!-- start of article-group -->
           <thead class="bg-gray-100">
             <tr class="fw-bold fs-6 text-gray-800">
-              <th scope="col">{{oRevenueByProperty.category}}</th>
-              <th scope="col" class="w-150px">{{oRevenueByProperty.propertyName}}</th>
-              <th scope="col" class="w-150px">{{oRevenueByProperty.totalRevenue}}</th>
-              <th scope="col" class="w-150px">{{oRevenueByProperty.totalPurchaseAmount}}</th>
-              <th scope="col" class="w-150px">{{oRevenueByProperty.profit}}</th>
-              <th scope="col" class="w-150px">{{oRevenueByProperty.margin}}</th>
+              <th scope="col">{{oRevenueByProperty.sCategory}}</th>
+              <th scope="col" class="w-150px">{{oRevenueByProperty.nPropertyName}}</th>
+              <th scope="col" class="w-150px">{{oRevenueByProperty.nTotalRevenue}}</th>
+              <th scope="col" class="w-150px">{{oRevenueByProperty.nTotalPurchaseAmount}}</th>
+              <th scope="col" class="w-150px">{{oRevenueByProperty.nProfit}}</th>
+              <th scope="col" class="w-150px">{{oRevenueByProperty.nMargin}}</th>
             </tr>
           </thead>
         </table>
@@ -210,11 +210,11 @@
           <thead class="bg-gray-100">
             <tr class="fw-bold fs-6 text-gray-800">
               <th scope="col">{{oArticleGroup._id}}</th>
-              <th scope="col" class="w-150px">{{oArticleGroup.quantity}}</th>
-              <th scope="col" class="w-150px">{{oArticleGroup.totalRevenue}}</th>
-              <th scope="col" class="w-150px">{{oArticleGroup.totalPurchaseAmount}}</th>
-              <th scope="col" class="w-150px">{{oArticleGroup.profit}}</th>
-              <th scope="col" class="w-150px">{{oArticleGroup.margin}}</th>
+              <th scope="col" class="w-150px">{{oArticleGroup.nQuantity}}</th>
+              <th scope="col" class="w-150px">{{oArticleGroup.nTotalRevenue}}</th>
+              <th scope="col" class="w-150px">{{oArticleGroup.nTotalPurchaseAmount}}</th>
+              <th scope="col" class="w-150px">{{oArticleGroup.nProfit}}</th>
+              <th scope="col" class="w-150px">{{oArticleGroup.nMargin}}</th>
             </tr>
           </thead>
           <!-- start of articlegroup -->
