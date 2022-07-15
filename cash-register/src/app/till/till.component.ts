@@ -89,6 +89,7 @@ export class TillComponent implements OnInit {
     'sLabelDescription',
     'aImage',
     'aProperty',
+    'aLocation',
     'sArticleNumber',
     'iArticleGroupId',
     'iBusinessPartnerId',
@@ -569,12 +570,13 @@ export class TillComponent implements OnInit {
 
   // Add selected product into purchase order
   onSelectProduct(product: any, isFrom: string, isFor: string) {
+    const price = product.aLocation.find((o: any) => o._id === this.locationId);
     this.transactionItems.push({
       name: product.oName ? product.oName['en'] : 'No name',
       eTransactionItemType: 'regular',
       type: this.eKind,
       quantity: 1,
-      price: product.nPriceIncludesVat || 0,
+      price: price ? price.nPriceIncludesVat : 0,
       paymentAmount: 0,
       oType: { bRefund: false, bDiscount: false, bPrepayment: false },
       nDiscount: product.nDiscount || 0,

@@ -40,6 +40,7 @@ export class AddFavouritesComponent implements OnInit {
     'bDiscountOnPercentage',
     'nDiscount',
     'sLabelDescription',
+    'aLocation',
     'aImage',
     'aProperty',
     'sArticleNumber',
