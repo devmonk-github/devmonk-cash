@@ -93,6 +93,10 @@ export class TransactionItemsDetailsComponent implements OnInit {
         } else {
           transactionItem.tType = 'refund';
         }
+        if (transactionItem.oType.bRefund) {
+          // to do partial refund
+          transactionItem.tType = 'refunded';
+        }
       });
       if (discountRecords.length > 0) {
         localStorage.setItem('discountRecords', JSON.stringify(discountRecords));
@@ -109,6 +113,12 @@ export class TransactionItemsDetailsComponent implements OnInit {
 
   selectAll($event: any) {
     this.transactionItems = this.transactionItems.map(v => ({ ...v, isSelected: $event.checked }));
+    this.transactionItems.forEach(element => {
+      if (element.tType === 'refunded') {
+        element.isSelected = false;
+      }
+    });
+    // transactionItem.tType = 'refunded'
   }
 
   close(data: any) {
