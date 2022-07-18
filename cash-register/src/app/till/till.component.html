@@ -381,9 +381,9 @@
             <br>
             {{customer.NAME}}
             <br>
-            {{customer.oShippingAddress.street}} {{customer.oShippingAddress.number}}
+            {{customer.oShippingAddress?.street}} {{customer.oShippingAddress?.number}}
             <br>
-            {{customer.oShippingAddress.zip}} {{customer.oShippingAddress.city}}
+            {{customer.oShippingAddress?.zip}} {{customer.oShippingAddress?.city}}
             <br>
             {{customer.sEmail}}
           </p>
