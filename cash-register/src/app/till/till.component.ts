@@ -24,6 +24,7 @@ import { TerminalService } from '../shared/service/terminal.service';
 import { TerminalDialogComponent } from '../shared/components/terminal-dialog/terminal-dialog.component';
 import { CreateArticleGroupService } from '../shared/service/create-article-groups.service';
 import { Router, ActivatedRoute } from '@angular/router';
+import { CustomerStructureService } from '../shared/service/customer-structure.service';
 @Component({
   selector: 'app-till',
   templateUrl: './till.component.html',
@@ -113,8 +114,7 @@ export class TillComponent implements OnInit {
     private barcodeService: BarcodeService,
     private terminalService: TerminalService,
     private createArticleGroupService: CreateArticleGroupService,
-    private router: Router,
-    private activatedRoute: ActivatedRoute
+    private customerStructureService: CustomerStructureService
   ) {
   }
 
@@ -148,6 +148,9 @@ export class TillComponent implements OnInit {
       const { transactionItems, transaction } = fromTransactionPage;
       this.transactionItems = transactionItems;
       this.iActivityId = transaction.iActivityId || transaction._id;
+      if (transaction.iCustomerId) {
+        this.fetchCustomer(transaction.iCustomerId);
+      }
       this.changeInPayment();
       // localStorage.removeItem('fromTransactionPage')
     }
@@ -382,6 +385,9 @@ export class TillComponent implements OnInit {
           const { transactionItems, transaction } = data;
           this.transactionItems = transactionItems;
           this.iActivityId = transaction.iActivityId || transaction._id;
+          if (transaction.iCustomerId) {
+            this.fetchCustomer(transaction.iCustomerId);
+          }
         }
         this.changeInPayment();
       });
@@ -396,6 +402,23 @@ export class TillComponent implements OnInit {
       })
   }
 
+  fetchCustomer(customerId: any) {
+    this.apiService.getNew('customer', `/api/v1/customer/${customerId}?iBusinessId=${this.business._id}`).subscribe(
+      (result: any) => {
+        const customer = result;
+        customer['NAME'] = this.customerStructureService.makeCustomerName(customer);
+        customer['SHIPPING_ADDRESS'] = this.customerStructureService.makeCustomerAddress(customer.oShippingAddress, false);
+        customer['INVOICE_ADDRESS'] = this.customerStructureService.makeCustomerAddress(customer.oInvoiceAddress, false);
+        customer['EMAIL'] = customer.sEmail;
+        customer['PHONE'] = (customer.oPhone && customer.oPhone.sLandLine ? customer.oPhone.sLandLine : '') + (customer.oPhone && customer.oPhone.sLandLine && customer.oPhone.sMobile ? ' / ' : '') + (customer.oPhone && customer.oPhone.sMobile ? customer.oPhone.sMobile : '');
+        this.customer = customer;
+        // this.close({ action: true });
+      },
+      (error: any) => {
+        console.error(error);
+      }
+    );
+  }
   getUsedPayMethods(total: boolean): any {
     if (!this.payMethods) {
       return 0
@@ -410,10 +433,14 @@ export class TillComponent implements OnInit {
     let availableAmount = this.getUsedPayMethods(true);
     this.paymentDistributeService.distributeAmount(this.transactionItems, availableAmount);
     this.allPaymentMethod = this.allPaymentMethod.map((v: any) => ({ ...v, isDisabled: true }));
-    this.payMethods = this.payMethods.map((v: any) => ({ ...v, isDisabled: true }));
+    this.payMethods.forEach(element => {
+      element.isDisabled = true;
+    });
     const paidAmount = _.sumBy(this.payMethods, 'amount') || 0;
     if (paidAmount === 0) {
-      this.payMethods = this.payMethods.map((v: any) => ({ ...v, isDisabled: false }));
+      this.payMethods.forEach(element => {
+        element.isDisabled = false;
+      });
     }
   }
 
@@ -498,6 +525,7 @@ export class TillComponent implements OnInit {
           }
           body.oTransaction.iActivityId = this.iActivityId;
           if (this.customer && this.customer._id) {
+            body.oTransaction.iCustomerId = this.customer._id;
             body.oTransaction.oCustomer = {
               _id: this.customer._id,
               sFirstName: this.customer.sFirstName,

@@ -3,8 +3,8 @@ import { DialogService } from '../shared/service/dialog';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import { ApiService } from '../shared/service/api.service';
 import { PaginatePipe } from 'ngx-pagination';
-import {TranslateService} from "@ngx-translate/core";
 import { CustomerDetailsComponent } from '../shared/components/customer-details/customer-details.component';
+import { CustomerStructureService } from '../shared/service/customer-structure.service';
 // import { result } from 'lodash';
 
 // interface FSEntry {
@@ -22,13 +22,13 @@ import { CustomerDetailsComponent } from '../shared/components/customer-details/
 })
 export class CustomersComponent implements OnInit {
 
-  faSearch= faSearch;
+  faSearch = faSearch;
 
   business: any = {}
   customers: Array<any> = [];  //make it empty later
   showLoader: boolean = false;
 
-  pageCounts: Array<number> = [ 10, 25, 50, 100]
+  pageCounts: Array<number> = [10, 25, 50, 100]
   pageNumber: number = 1;
   setPaginateSize: number = 12;
   paginationConfig: any = {
@@ -38,21 +38,21 @@ export class CustomersComponent implements OnInit {
   };
 
   customColumn = 'NAME';
-  defaultColumns = [ 'PHONE', 'EMAIL', 'SHIPPING_ADDRESS', 'INVOICE_ADDRESS' ];
-  allColumns = [ this.customColumn, ...this.defaultColumns ];
-  requestParams : any = {
+  defaultColumns = ['PHONE', 'EMAIL', 'SHIPPING_ADDRESS', 'INVOICE_ADDRESS'];
+  allColumns = [this.customColumn, ...this.defaultColumns];
+  requestParams: any = {
     iBusinessId: "",
-    skip : 0,
-    limit : 10,
-    sortBy : '',
-    sortOrder : '',
-    searchValue : '',
-    aProjection: [ 'sSalutation', 'sFirstName', 'sPrefix', 'sLastName', 'dDateOfBirth', 'dDateOfBirth', 'nClientId', 'sGender', 'bIsEmailVerified',
-    'bCounter', 'sEmail', 'oPhone', 'oShippingAddress', 'oInvoiceAddress', 'iBusinessId', 'sComment', 'bNewsletter', 'sCompanyName', 'oPoints',
-    'sCompanyName', 'oIdentity', 'sVatNumber', 'sCocNumber', 'nPaymentTermDays', 'nDiscount', 'bWhatsApp' ],
-    oFilterBy : {
-      oStatic : {},
-      oDynamic : {}
+    skip: 0,
+    limit: 10,
+    sortBy: '',
+    sortOrder: '',
+    searchValue: '',
+    aProjection: ['sSalutation', 'sFirstName', 'sPrefix', 'sLastName', 'dDateOfBirth', 'dDateOfBirth', 'nClientId', 'sGender', 'bIsEmailVerified',
+      'bCounter', 'sEmail', 'oPhone', 'oShippingAddress', 'oInvoiceAddress', 'iBusinessId', 'sComment', 'bNewsletter', 'sCompanyName', 'oPoints',
+      'sCompanyName', 'oIdentity', 'sVatNumber', 'sCocNumber', 'nPaymentTermDays', 'nDiscount', 'bWhatsApp'],
+    oFilterBy: {
+      oStatic: {},
+      oDynamic: {}
     }
   };
 
@@ -61,19 +61,10 @@ export class CustomersComponent implements OnInit {
   constructor(
     private apiService: ApiService,
     // private dataSourceBuilder: NbTreeGridDataSourceBuilder<FSEntry>,
-    private paginationPipe : PaginatePipe,
-    private translateService: TranslateService,
-    private dialogService: DialogService
+    private paginationPipe: PaginatePipe,
+    private dialogService: DialogService,
+    private customerStructureService: CustomerStructureService
   ) {
-
-    // this.commonService.onUserDetailChange().subscribe((userDetails)=>{
-    //   if(userDetails.user){
-    //     this.business = userDetails.shop
-    //     if(this.business && this.business._id){
-    //       this.getCustomers()
-    //     }
-    //   }
-    // })
   }
 
   ngOnInit(): void {
@@ -84,13 +75,14 @@ export class CustomersComponent implements OnInit {
   }
 
   createCustomer() {
-    this.dialogService.openModal(CustomerDetailsComponent, { cssClass:"modal-xl", context: { mode: 'create' } }).instance.close.subscribe(result =>{
-      if(result && result.action && result.action == true) this.getCustomers() });
+    this.dialogService.openModal(CustomerDetailsComponent, { cssClass: "modal-xl", context: { mode: 'create' } }).instance.close.subscribe(result => {
+      if (result && result.action && result.action == true) this.getCustomers()
+    });
   }
 
-  changeItemsPerPage(pageCount: any){
+  changeItemsPerPage(pageCount: any) {
     this.paginationConfig.itemsPerPage = pageCount;
-    this.requestParams.skip = this.paginationConfig.itemsPerPage * ( this.paginationConfig.currentPage - 1);
+    this.requestParams.skip = this.paginationConfig.itemsPerPage * (this.paginationConfig.currentPage - 1);
     this.requestParams.limit = this.paginationConfig.itemsPerPage;
     this.getCustomers()
   }
@@ -102,98 +94,39 @@ export class CustomersComponent implements OnInit {
       .subscribe(async (result: any) => {
         this.showLoader = false;
 
-          if (result && result.data && result.data[0] && result.data[0].result) {
-            this.paginationConfig.totalItems = result.data[0].count.totalData;
-            this.customers = result.data[0].result;
-            for(const customer of this.customers){
-              customer['NAME'] = await this.makeCustomerName(customer);
-              customer['SHIPPING_ADDRESS'] = this.makeCustomerAddress(customer.oShippingAddress, false);
-              customer['INVOICE_ADDRESS'] = this.makeCustomerAddress(customer.oInvoiceAddress, false);
-              customer['EMAIL'] = customer.sEmail;
-              customer['PHONE'] = (customer.oPhone && customer.oPhone.sLandLine ? customer.oPhone.sLandLine : '') + (customer.oPhone && customer.oPhone.sLandLine && customer.oPhone.sMobile ? ' / ' : '') + (customer.oPhone && customer.oPhone.sMobile ? customer.oPhone.sMobile : '')
-            }
+        if (result && result.data && result.data[0] && result.data[0].result) {
+          this.paginationConfig.totalItems = result.data[0].count.totalData;
+          this.customers = result.data[0].result;
+          for (const customer of this.customers) {
+            customer['NAME'] = this.customerStructureService.makeCustomerName(customer);
+            customer['SHIPPING_ADDRESS'] = this.customerStructureService.makeCustomerAddress(customer.oShippingAddress, false);
+            customer['INVOICE_ADDRESS'] = this.customerStructureService.makeCustomerAddress(customer.oInvoiceAddress, false);
+            customer['EMAIL'] = customer.sEmail;
+            customer['PHONE'] = (customer.oPhone && customer.oPhone.sLandLine ? customer.oPhone.sLandLine : '') + (customer.oPhone && customer.oPhone.sLandLine && customer.oPhone.sMobile ? ' / ' : '') + (customer.oPhone && customer.oPhone.sMobile ? customer.oPhone.sMobile : '')
           }
+        }
       },
-      (error : any) =>{
-        this.customers = [];
-        this.showLoader = false;
-      })
-  }
-
-  makeCustomerName = async (customer: any) => {
-    if (!customer) {
-      return '';
-    }
-    let result = '';
-    if (customer.sSalutation) {
-      await this.translateService.get(customer.sSalutation.toUpperCase()).subscribe( (res) => {
-        result += res + ' ';
-      });
-    }
-    if (customer.sFirstName) {
-      result += customer.sFirstName + ' ';
-    }
-    if (customer.sPrefix) {
-      result += customer.sPrefix + ' ';
-    }
-
-    if (customer.sLastName) {
-      result += customer.sLastName;
-    }
-
-    return result;
-  }
-
-  formatZip(zipcode: string) {
-    if (!zipcode) {
-      return '';
-    }
-    return zipcode.replace(/([0-9]{4})([a-z]{2})/gi, (original, group1, group2) => {
-      return group1 + ' ' + group2.toUpperCase();
-    });
-  }
-
-  makeCustomerAddress(address: any, includeCountry: boolean) {
-    if (!address) {
-      return '';
-    }
-    let result = '';
-    if (address.sStreet) {
-      result += address.sStreet + ' ';
-    }
-    if (address.sHouseNumber) {
-      result += address.sHouseNumber + (address.sHouseNumberSuffix ? '' : ' ');
-    }
-    if (address.sHouseNumberSuffix) {
-      result += address.sHouseNumberSuffix + ' ';
-    }
-    if (address.sPostalCode) {
-      result += this.formatZip(address.sPostalCode) + ' ';
-    }
-    if (address.sCity) {
-      result += address.sCity;
-    }
-    if (includeCountry && address.sCountry) {
-      result += address.sCountry;
-    }
-    return result;
+        (error: any) => {
+          this.customers = [];
+          this.showLoader = false;
+        })
   }
 
   // Function for return data to render on tree grid view
-  loadPageTableData(){
+  loadPageTableData() {
     let result = this.paginationPipe.transform(this.customers, this.paginationConfig);
     // return this.dataSourceBuilder.create(result, this.getters);
   }
 
-  openCustomer(customer:any) {
-    this.dialogService.openModal(CustomerDetailsComponent, { cssClass:"modal-xl", context: { customer: customer, mode: 'details' } }).instance.close.subscribe(
-      result =>{ if(result && result.action && result.action == true) this.getCustomers(); });
+  openCustomer(customer: any) {
+    this.dialogService.openModal(CustomerDetailsComponent, { cssClass: "modal-xl", context: { customer: customer, mode: 'details' } }).instance.close.subscribe(
+      result => { if (result && result.action && result.action == true) this.getCustomers(); });
   }
 
   // Function for handle page change
-  pageChanged(page:any){
+  pageChanged(page: any) {
     this.paginationConfig.currentPage = page;
-    this.requestParams.skip = this.paginationConfig.itemsPerPage * ( page - 1);
+    this.requestParams.skip = this.paginationConfig.itemsPerPage * (page - 1);
     this.requestParams.limit = this.paginationConfig.itemsPerPage;
     this.getCustomers()
   }
