@@ -54,6 +54,10 @@ const routes: Routes = [
     path: 'customers',
     loadChildren: () => import('./customers/customers.module').then(module => module.CustomersModule)
   },
+  {
+    path: 'transactions-audit',
+    loadChildren: () => import('./transaction-audit/transaction-audit.module').then(module => module.TransactionAuditModule)
+  },
   { path: '', redirectTo: 'home', pathMatch: 'full' }
 ];
 
