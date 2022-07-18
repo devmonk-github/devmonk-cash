@@ -413,10 +413,11 @@
         </button>
       </div>
 
-      <div class="input-group till-padding" *ngFor="let payment of payMethods">
+      <div class="input-group till-padding" *ngFor="let payment of payMethods; index as i">
         <input type="number" class="form-control col-5" [(ngModel)]="payment.amount"
           placeholder="{{'AMOUNT' | translate}}" (ngModelChange)="changeInPayment()">
-        <button class="btn btn-primary col-7">{{payment.sName | translate}}</button>
+        <button class="btn btn-primary col-7" [disabled]="payment.isDisabled"
+          (click)="assignAllAmount(i)">{{payment.sName | translate}}</button>
       </div>
       <div class="input-group till-padding mt-2">
         <button class="btn btn-primary w-100" (click)="openMorePaymentMethodModal()">{{"MORE" | translate}}...</button>

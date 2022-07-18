@@ -171,8 +171,8 @@ export class TillComponent implements OnInit {
     const methodsToDisplay = ['card', 'cash', 'bankpayment', 'maestro', 'mastercard', 'visa'];
     this.apiService.getNew('cashregistry', '/api/v1/payment-methods/' + this.requestParams.iBusinessId).subscribe((result: any) => {
       if (result && result.data && result.data.length) {
-        this.allPaymentMethod = result.data;
-        result.data.forEach((element: any) => {
+        this.allPaymentMethod = result.data.map((v: any) => ({ ...v, isDisabled: false }));
+        this.allPaymentMethod.forEach((element: any) => {
           if (methodsToDisplay.includes(element.sName.toLowerCase())) {
             this.payMethods.push(_.clone(element));
           }
@@ -406,6 +406,12 @@ export class TillComponent implements OnInit {
   changeInPayment() {
     let availableAmount = this.getUsedPayMethods(true);
     this.paymentDistributeService.distributeAmount(this.transactionItems, availableAmount);
+    this.allPaymentMethod = this.allPaymentMethod.map((v: any) => ({ ...v, isDisabled: true }));
+    this.payMethods = this.payMethods.map((v: any) => ({ ...v, isDisabled: true }));
+    const paidAmount = _.sumBy(this.payMethods, 'amount') || 0;
+    if (paidAmount === 0) {
+      this.payMethods = this.payMethods.map((v: any) => ({ ...v, isDisabled: false }));
+    }
   }
 
   clearAll() {
@@ -853,5 +859,10 @@ export class TillComponent implements OnInit {
       console.error('Error here: ', error);
       this.toastrService.show({ type: 'warning', text: `Day-state is not closed` });
     })
+  }
+
+  assignAllAmount(index: number) {
+    this.payMethods[index].amount = this.getTotals('price');
+    this.changeInPayment();
   }
 }
