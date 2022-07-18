@@ -73,6 +73,7 @@ export class TillComponent implements OnInit {
   quickButtons: Array<any> = [];
   quickButtonsLoading: boolean = false;
   fetchingProductDetails: boolean = false;
+  bSearchingProduct: boolean = false;
   bIsDayStateClosed: boolean = true;
   bIsDayStateOpened: boolean = false; // Not opened then require to open it first
   dOpenDate: any = '';
@@ -323,6 +324,8 @@ export class TillComponent implements OnInit {
           }
         )
     }
+
+    this.resetSearch();
   }
 
   itemChanged(item: any, index: number): void {
@@ -534,14 +537,15 @@ export class TillComponent implements OnInit {
         oDynamic: {}
       }
     }
+    this.bSearchingProduct = true;
     this.apiService.postNew('core', '/api/v1/business/products/list', data).subscribe((result: any) => {
-      // this.isLoading = false;
+      this.bSearchingProduct = false;
       if (result && result.data && result.data.length) {
         const response = result.data[0];
         this.shopProducts = response.result;
       }
     }, (error) => {
-      // this.isLoading = false;
+      this.bSearchingProduct = false;
     });
   }
 
@@ -560,14 +564,15 @@ export class TillComponent implements OnInit {
           oDynamic: {}
         }
       };
+      this.bSearchingProduct = true;
       this.apiService.postNew('core', '/api/v1/products/commonbrand/list', data).subscribe((result: any) => {
-        // this.isLoading = false;
+        this.bSearchingProduct = false;
         if (result && result.data && result.data.length) {
           const response = result.data[0];
           this.commonProducts = response.result;
         }
       }, (error) => {
-        // this.isLoading = false;
+        this.bSearchingProduct = false;
       })
     } catch (e) {
       // this.isLoading = false;
@@ -599,6 +604,13 @@ export class TillComponent implements OnInit {
       isExclude: false,
       open: true,
     });
+    this.resetSearch();
+  }
+
+  resetSearch() {
+    this.searchKeyword = '';
+    this.shopProducts = [];
+    this.commonProducts = [];
   }
 
   search() {
