@@ -1,6 +1,9 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { ApiService } from 'src/app/shared/service/api.service';
+import { PdfService } from 'src/app/shared/service/pdf2.service';
+import * as _moment from 'moment';
+const moment = (_moment as any).default ? (_moment as any).default : _moment;
 
 @Component({
   selector: 'app-transaction-audit-ui',
@@ -26,7 +29,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
   aEmployee: any = [];
 
   statisticsData$: any;
-  businessDetails = {};
+  businessDetails: any = {};
   statistics: any;
   optionMenu = 'cash-registry';
   filterDates = {
@@ -50,7 +53,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
   propertyListSubscription !: Subscription;
   workstationListSubscription !: Subscription;
   employeeListSubscription !: Subscription;
-  constructor(private apiService: ApiService,) {
+  constructor(private apiService: ApiService, private pdf: PdfService) {
     this.iBusinessId = localStorage.getItem('currentBusiness') || '';
     this.iLocationId = localStorage.getItem('currentLocation') || '';
     const _oUser = localStorage.getItem('currentUser');
@@ -86,6 +89,8 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
   ]
 
   ngOnInit(): void {
+    this.businessDetails._id = localStorage.getItem("currentBusiness");
+    this.fetchBusinessDetails();
     this.printingDate();
     this.fetchBusinessLocation();
     this.getProperties();
@@ -285,6 +290,171 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
     }, (error) => {
     })
   }
+  fetchBusinessDetails() {
+    this.apiService.getNew('core', '/api/v1/business/' + this.businessDetails._id)
+      .subscribe(
+        (result: any) => {
+          this.businessDetails = result.data;
+        })
+  }
+
+  exportToPDF() {
+    var header: Array<any> = [
+      'SUPPLIER',
+      'Quantity',
+      'Price incl VAT',
+      'Purchase price',
+      'Gross profit',
+      'Margin'
+    ];
+
+    const sName = this.businessDetails.sName;
+
+    let date = Date.now();
+    date = moment(date).format('DD-MM-yyyy');
+
+    var headerList: Array<any> = [];
+    header.forEach((singleHeader: any) => {
+      headerList.push({ text: singleHeader, bold: true })
+    })
+
+    let bodyData: Array<any> = [];
+    let subData: Array<any> = [];
+    let arr: Array<any> = [];
+
+    console.log('this.aStatistic', this.aStatistic);
+
+    this.aStatistic[0].individual.forEach((el: any) => {
+      var obj: any = {};
+      obj['sBusinessPartnerName'] = el.sBusinessPartnerName;
+      obj['nQuantity'] = el.nQuantity;
+      obj['nTotalRevenue'] = el.nTotalRevenue;
+      obj['nTotalPurchaseAmount'] = el.nTotalPurchaseAmount;
+      obj['nProfit'] = el.nProfit;
+      obj['nMargin'] = el.nMargin;
+      obj['aArticleGroups'] = el.aArticleGroups.map((article: any) => {
+        let data = {
+          sName: article.sName,
+          nQuantity: article.nQuantity,
+          nTotalRevenue: article.nTotalRevenue,
+          nTotalPurchaseAmount: article.nTotalPurchaseAmount,
+          nProfit: article.nProfit,
+          nMargin: article.nMargin
+        };
+        return data;
+      }) || [];
+
+      arr.push(obj);
+    });
+
+    arr.forEach((singleRecord: any) => {
+      // console.log('singleRecord', singleRecord);
+      bodyData.push([
+        singleRecord.sBusinessPartnerName,
+        singleRecord.nQuantity,
+        singleRecord.nTotalRevenue,
+        singleRecord.nTotalPurchaseAmount,
+        singleRecord.nProfit,
+        singleRecord.nMargin,
+      ]);
+      singleRecord.aArticleGroups.forEach((articleGroup: any) => {
+        // console.log('articleGroup', articleGroup);
+        bodyData.push(Object.values(articleGroup));
+      });
+      // bodyData.push({ 
+      //   singleRecord.sBusinessPartnerName,
+      //   singleRecord.nQuantity,
+      //   singleRecord.sBusinessPartnerName,
+      //   singleRecord.nTotalRevenue,
+      //   singleRecord.sBusinessPartnerName,
+      //   singleRecord.sBusinessPartnerName,
+      // });
+    })
+
+    console.log('arr', arr);
+    console.log('bodydata', bodyData);
+    let columnWidths = [150, '*', '*', '*', '*', '*'];
+    var content = [
+      { text: date, style: 'dateStyle' },
+      { text: 'Transaction Audit Report', style: 'header' },
+      { text: sName, style: 'businessName' },
+      { canvas: [{ type: 'line', x1: 0, y1: 0, x2: 575, y2: 0, lineWidth: 1 }], margin: [0, 0, 20, 0], style: 'afterLine' },
+      {
+        style: 'tableExample',
+        table: {
+          headerRows: 1,
+          widths: columnWidths,
+          // widths: ['auto', 'auto', 'auto', 'auto', 'auto', 'auto'],
+          body: [headerList]
+        },
+        layout: {
+          hLineStyle: function () {
+            return { dash: { length: 0.001, space: 40 * 20 } };
+          },
+          vLineStyle: function () {
+            return { dash: { length: 0.001, space: 40 * 20 } };
+          },
+        }
+      },
+      { canvas: [{ type: 'line', x1: 0, y1: 0, x2: 575, y2: 0, lineWidth: 1 }], margin: [0, 0, 20, 0], style: 'afterLine' },
+      {
+        style: 'tableExample',
+        table: {
+          headerRows: 1,
+          // widths: ['auto', 'auto', 'auto', 'auto', 'auto', 'auto'],
+          widths: columnWidths,
+          body: bodyData
+        },
+        layout: {
+          hLineStyle: function () {
+            return { dash: { length: 0.001, space: 40 * 20 } };
+          },
+          vLineStyle: function () {
+            return { dash: { length: 0.001, space: 40 * 20 } };
+          },
+        }
+      },
+    ];
+
+    var styles =
+    {
+      dateStyle: {
+        alignment: 'right',
+        fontSize: 9,
+        margin: [0, 0, 0, 0]
+      },
+      tableExample: {
+        border: 0,
+        fontSize: 9,
+      },
+      tableExample2: {
+        fontSize: 8,
+      },
+      supplierName: {
+        alignment: 'right',
+        fontSize: 12,
+        margin: [0, -10, 0, 10]
+      },
+      header: {
+        fontSize: 15,
+        bold: false,
+        margin: [0, 10, 20, 20]
+      },
+      businessName: {
+        fontSize: 12
+      },
+      afterLine: {
+        margin: [0, 0, 0, 10]
+      },
+      afterLastLine: {
+        margin: [0, 20, 0, 20]
+      },
+    };
+    this.pdf.getPdfData(styles, content, 'portrait', 'A4', sName + '-' + 'Audit')
+    // console.log('after getPdfData');
+
+
+  }
 
   ngOnDestroy(): void {
     this.listBusinessSubscription.unsubscribe();
@@ -294,7 +464,5 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
     this.propertyListSubscription.unsubscribe();
     this.workstationListSubscription.unsubscribe();
     this.employeeListSubscription.unsubscribe();
-
-
   }
 }
