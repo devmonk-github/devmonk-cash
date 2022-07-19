@@ -81,11 +81,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
     {
       sKey: 'revenuePerArticleGroup', // Use the revenuePerArticleGroupAndProperty and remove the Dynamic Property
       sValue: 'Article Group',
-    },
-    {
-      sKey: 'paymentMethods',
-      sValue: 'Payment Method',
-    },
+    }
   ]
 
   ngOnInit(): void {

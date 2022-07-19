@@ -44,7 +44,8 @@
                             <td>
                                 <label class="form-check form-check-custom form-check-solid me-9">
                                     <input class="form-check-input" type="checkbox" id="kt_roles_select_all"
-                                        [(ngModel)]="transactionItem.isSelected" disabled />
+                                        [(ngModel)]="transactionItem.isSelected"
+                                        [disabled]="transactionItem.bIsRefunded" />
                                     <!-- <span class="form-check-label" for="kt_roles_select_all"></span> -->
                                 </label>
                             </td>
@@ -56,7 +57,24 @@
                                 'False'}}</td>
                             <td class="">{{ transactionItem.dCreatedDate | date: 'short'}}</td>
                             <td>
-                                <div class="row mb-4">
+                                <div class="btn-group btn-toggle"
+                                    [ngClass]="{'cursor-not-allowed': transactionItem.bIsRefunded }">
+                                    <button class="btn btn-lg btn-default"
+                                        *ngIf="transactionItem.nPaidAmount < transactionItem.nPriceIncVat * transactionItem.nQuantity"
+                                        (click)="transactionItem.tType = 'pay'"
+                                        [ngClass]="transactionItem.tType === 'pay'? 'btn-primary active': ''"
+                                        [disabled]="transactionItem.bIsRefunded">Rest
+                                        payment</button>
+                                    <button class="btn btn-lg btn-default btn-primary active"
+                                        *ngIf="transactionItem.nPaidAmount === transactionItem.nPriceIncVat * transactionItem.nQuantity"
+                                        [disabled]="transactionItem.bIsRefunded">Refund</button>
+                                    <button class="btn btn-lg"
+                                        *ngIf="transactionItem.nPaidAmount < transactionItem.nPriceIncVat * transactionItem.nQuantity"
+                                        (click)="transactionItem.tType = 'refund'"
+                                        [ngClass]="transactionItem.tType === 'refund'? 'btn-primary active': ''"
+                                        [disabled]="transactionItem.bIsRefunded">Refund</button>
+                                </div>
+                                <!-- <div class="row mb-4">
                                     <div class="btn-group btn-toggle">
                                         <button class="btn btn-lg btn-default"
                                             *ngIf="transactionItem.nPaymentAmount < transactionItem.nTotalAmount"
@@ -72,7 +90,7 @@
                                             (click)="transactionItem.tType = 'pay'"
                                             [ngClass]="transactionItem.tType === 'refund'? 'btn-primary active': ''">Refund</button>
                                     </div>
-                                </div>
+                                </div> -->
                             </td>
                         </tr>
                     </tbody>
@@ -82,7 +100,7 @@
                                 <label class="form-check form-check-custom form-check-solid me-9">
                                     <input class="form-check-input" type="checkbox" id="kt_roles_select_all"
                                         [(ngModel)]="transactionItem.isSelected"
-                                        [disabled]="transactionItem.tType === 'refunded'" />
+                                        [disabled]="transactionItem.bIsRefunded" />
                                     <!-- <span class="form-check-label" for="kt_roles_select_all">Select all</span> -->
                                 </label>
                             </td>
@@ -94,21 +112,21 @@
                             <td class="">{{ transactionItem.dCreatedDate | date: 'short'}}</td>
                             <td>
                                 <div class="btn-group btn-toggle"
-                                    [ngClass]="{'cursor-not-allowed': transactionItem.tType === 'refunded' }">
+                                    [ngClass]="{'cursor-not-allowed': transactionItem.bIsRefunded }">
                                     <button class="btn btn-lg btn-default"
                                         *ngIf="transactionItem.nPaidAmount < transactionItem.nPriceIncVat * transactionItem.nQuantity"
                                         (click)="transactionItem.tType = 'pay'"
                                         [ngClass]="transactionItem.tType === 'pay'? 'btn-primary active': ''"
-                                        [disabled]="transactionItem.tType === 'refunded'">Rest
+                                        [disabled]="transactionItem.bIsRefunded">Rest
                                         payment</button>
                                     <button class="btn btn-lg btn-default btn-primary active"
                                         *ngIf="transactionItem.nPaidAmount === transactionItem.nPriceIncVat * transactionItem.nQuantity"
-                                        [disabled]="transactionItem.tType === 'refunded'">Refund</button>
+                                        [disabled]="transactionItem.bIsRefunded">Refund</button>
                                     <button class="btn btn-lg"
                                         *ngIf="transactionItem.nPaidAmount < transactionItem.nPriceIncVat * transactionItem.nQuantity"
                                         (click)="transactionItem.tType = 'refund'"
                                         [ngClass]="transactionItem.tType === 'refund'? 'btn-primary active': ''"
-                                        [disabled]="transactionItem.tType === 'refunded'">Refund</button>
+                                        [disabled]="transactionItem.bIsRefunded">Refund</button>
                                 </div>
                             </td>
                         </tr>

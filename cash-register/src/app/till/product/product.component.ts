@@ -52,7 +52,11 @@ export class ProductComponent {
   }
 
   getColorCode(item: any): string {
+    console.log(item);
     const { eTransactionItemType } = item;
+    if (item.tType === 'refund') {
+      return '#f7422e';
+    }
     switch (eTransactionItemType) {
       case 'regular':
         return '#4ab69c';

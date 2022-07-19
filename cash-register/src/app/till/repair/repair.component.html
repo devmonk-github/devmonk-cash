@@ -2,13 +2,15 @@
   <button class="accordion-button fs-4 fw-bold" type="button" data-bs-toggle="collapse"
     data-bs-target="#kt_accordion_1_body_1" aria-expanded="true" aria-controls="kt_accordion_1_body_1">
     <section class="d-flex product-row align-items-center">
-      <div class="w-90px">{{item.quantity}}</div>
+      <div *ngIf="!item.tType || item.tType !== 'refund'" class="w-90px">{{item.quantity}}</div>
+      <div *ngIf="item.tType === 'refund'" class="w-90px"><svg width="15" height="15" class="m-1">
+          <rect width="15" height="15" style="fill:#f7422e; stroke-width:1;stroke:rgb(0,0,0)" />
+          Sorry, your browser does not support inline SVG.
+        </svg>{{item.quantity}}</div>
       <div class="w-275px">{{item.name}}</div>
       <div class="w-100px">{{item.price | currency: '€'}}</div>
       <div class="w-95px">{{item.nDiscount * item.quantity | currency: '€'}}</div>
       <div class="w-100px">{{item.tax}}%</div>
-      <!-- <div class="w-100px">{{getTotalPrice(item)}}
-      </div> -->
       <div class="w-100px">{{(item.price - item.nDiscount) * item.quantity | currency: '€' }}
       </div>
       <div class="w-75px">{{item.paymentAmount | currency: '€'}}</div>
@@ -34,7 +36,7 @@
       <div class="col-2">
         <label for="price">{{ "PRICE" | translate}}</label>
         <input type="number" step="any" name="price" class="form-control" (change)="updatePayments()"
-          [(ngModel)]="item.price" [disabled]="item.oType?.bRefund">
+          [(ngModel)]="item.price" [disabled]="item.oType?.bRefund || item.tType === 'pay'">
         <label for="discount">{{ "DISCOUNT" | translate}}</label>
         <input *ngIf="!item.oType.bRefund && !item.oType.bDiscount && !item.oType.bPrepayment" type="number" step="any"
           name="discount" class="form-control" [(ngModel)]="item.nDiscount">
@@ -143,20 +145,7 @@
               <i class="bi bi-x fs-2" (click)="removeImage(i)"></i>
             </button>
           </div>
-
         </div>
-        <!-- <div class="mt-5">
-                      <button *ngIf="i != 0"
-                          class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow"
-                          (click)="moveImage('left', i)" [disabled]="!isEditable">
-                          <i class="fa-solid fa-arrow-left"></i>
-                      </button>
-                      <button *ngIf="i != (productDetails.aImage.length - 1)"
-                          class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow"
-                          (click)="moveImage('right', i)" [disabled]="!isEditable">
-                          <i class="fa-solid fa-arrow-right"></i>
-                      </button>
-                  </div> -->
       </div>
     </div>
   </div>

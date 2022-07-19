@@ -64,11 +64,6 @@
                 </div>
                 <div class="col-md-3">
                     <label class="fs-6 form-label fw-bolder text-dark">{{'LOCATION' | translate}}</label>
-                    <!--<ng-select class="form-control form-control-solid p-0" [(ngModel)]="aSelectedLocation" [clearable]="false">
-                        <ng-option *ngFor="let oLocation of aLocation" [value]="oLocation">{{oLocation.sName}}
-                        </ng-option>
-                    </ng-select> -->
-
                     <div class="w-100" *ngIf="aLocation?.length">
                         <ng-select [multiple]="true" [items]="aLocation" [(ngModel)]="aSelectedLocation"
                             name="iLocationId" bindValue="_id" bindLabel="sName" placeholder="Select" required
@@ -108,8 +103,6 @@
             </div>
             <div class="row">
                 <div class="mt-5">
-                    <!-- <label class="fs-6 form-label fw-bolder text-dark">{{'APPLY_FILTER' | translate}}</label> -->
-                    <!-- <br> -->
                     <button type="button" class="btn btn-primary" data-kt-roles-modal-action="submit"
                         (click)="fetchStatistics()">
                         <span class="indicator-label">{{ "APPLY_FILTER" | translate}}</span>
@@ -134,13 +127,13 @@
         </div>
     </div>
 
-    <div *ngIf="aStatistic.length">
+    <div *ngIf="aStatistic?.length">
 
         <!-- LOAD DATA -BEGINS -->
         <div class="container">
 
             <div>
-                <div class="row" *ngIf="aStatistic[0].overall.length">
+                <div class="row" *ngIf="aStatistic[0]?.overall?.length">
                     <div class="col-md-4">
                         <span class="">{{ 'QUANTITY' | translate}}</span>
                         <h3 class="text-black">{{aStatistic[0].overall[0].nQuantity}}</h3>
@@ -388,147 +381,200 @@
                     </div>
                 </div>
             </div>
-            <!-- <div class="row" *ngIf="aStatistic[0].overall.length">
-                    <div class="col-md-4">
-                        <span class="">{{ 'QUANTITY' | translate}}</span>
-                        <h3 class="text-black">{{aStatistic[0].overall[0].nQuantity}}</h3>
-                    </div>
-                    <div class="col-md-4">
-                        <span class="">{{ 'TOTAL' | translate}}</span>
-                        <h3 class="text-black">{{aStatistic[0].overall[0].nTotal}}</h3>
-                    </div>
-                </div> -->
+            <<<<<<< HEAD <!-- <div class="row" *ngIf="aStatistic[0].overall.length">
+                <div class="col-md-4">
+                    <span class="">{{ 'QUANTITY' | translate}}</span>
+                    <h3 class="text-black">{{aStatistic[0].overall[0].nQuantity}}</h3>
+                </div>
+                <div class="col-md-4">
+                    <span class="">{{ 'TOTAL' | translate}}</span>
+                    <h3 class="text-black">{{aStatistic[0].overall[0].nTotal}}</h3>
+                </div>
+        </div> -->
 
-        </div>
-        <!-- LOAD DATA -END -->
-    </div>
+        =======
 
-    <!-- STATISTICS CODE END -->
+        <div class="card" *ngIf="sDisplayMethod === 'revenuePerProperty'">
+            <p> {{ 'REVENUE_PER_PROPERTY' | translate}} </p>
 
-    <!-- Tushar's code START -->
-    <div class="card-body pt-0">
-        <div class="dataTables_wrapper dt-bootstrap4 no-footer">
-            <div class="table-responsive">
-                <table class="table align-middle table-row-dashed fs-6 gy-5 dataTable no-footer">
-                    <thead>
-                        <tr class="text-start text-gray-400 fw-bolder fs-7 text-uppercase gs-0">
-                            <th class="min-w-100px sorting" tabindex="0">{{ "STATISTICS_OVERALL" | translate}}</th>
-                            <th class="min-w-100px sorting" tabindex="0">{{ "STATISTICS_VALUE" | translate}} </th>
-                            <th class="min-w-100px sorting" tabindex="0">{{ "BOOKKEEPING_VALUE" | translate }}</th>
-                        </tr>
-                    </thead>
-                    <tbody class="fw-bold text-gray-600">
-                        <tr class="even">
-                            <td>
-                                <span>Total Revenue</span>
-                            </td>
-                            <td>
-                            </td>
-                            <td>
-                            </td>
-                        </tr>
-                        <tr class="even">
-                            <td>
-                                <span>Quantity</span>
-                            </td>
-                            <td>
-                            </td>
-                            <td>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+            <div class="card-body">
+                <div class="table-responsive" *ngFor="let oStatistic of aStatistic; let i = index">
+                    <table
+                        class="table table-row-bordered table-row-gray-300 gy-5 gs-5 mb-0 text-gray-600 fw-bold border"
+                        *ngFor="let oRevenueByProperty of oStatistic.individual; let articleGroupIndex = index">
+                        <!-- start of article-group -->
+                        <thead class="bg-gray-100">
+                            <tr class="fw-bold fs-6 text-gray-800">
+                                <th scope="col">{{oRevenueByProperty?.aCategory?.length ?
+                                    oRevenueByProperty.aCategory.join(' | ') : '-'}}</th>
+                                <th scope="col" class="w-150px">{{oRevenueByProperty.sPropertyName}}</th>
+                                <th scope="col" class="w-150px">{{oRevenueByProperty.nTotalRevenue}}</th>
+                                <th scope="col" class="w-150px">{{oRevenueByProperty.nTotalPurchaseAmount}}</th>
+                                <th scope="col" class="w-150px">{{oRevenueByProperty.nProfit}}</th>
+                                <th scope="col" class="w-150px">{{oRevenueByProperty.nMargin}}</th>
+                            </tr>
+                        </thead>
+                    </table>
 
-                <hr>
-                <h4>Transactions</h4>
-                <table class="table table-green align-middle table-row-dashed fs-6 gy-5 dataTable no-footer">
-                    <thead style="position: sticky;">
-                        <tr class="text-start text-gray-400 fw-bolder fs-7 text-uppercase gs-0">
-                            <th class="min-w-100px sorting" tabindex="0">{{ "BOOKING_DATE" | translate}}</th>
-                            <th class="min-w-100px sorting" tabindex="0">{{ "LEDGER_NUMBER" | translate}} </th>
-                            <th class="min-w-100px sorting" tabindex="0">{{ "CREDIT" | translate}} </th>
-                            <th class="min-w-100px sorting" tabindex="0">{{ "DEBIT" | translate }}</th>
-                        </tr>
-                    </thead>
-                    <tbody class="fw-bold text-gray-600">
-                        <tr class="even" *ngFor="let booking of bookingRecords">
-                            <td>
-                                <span>{{booking.dCreatedDate | date: 'medium'}}</span>
-                            </td>
-                            <td>
-                                <span>{{booking.nLedgerNumber}}</span>
-                            </td>
-                            <td>
-                                <span>{{ booking.eType === 'credit' ? (booking.nValue | number:'2.1-5'): '-'}}</span>
-                            </td>
-                            <td>
-                                <span>{{booking.eType === 'debit' ? (booking.nValue | number:'2.1-5'): '-' }}</span>
-                            </td>
-                        </tr>
-                    </tbody>
-                    <tfoot style="position: sticky;">
-                        <tr class="even">
-                            <td>
-                                <span>Total</span>
-                            </td>
-                            <td>
-                                <span>-</span>
-                            </td>
-                            <td>
-                                <span>{{creditAmount}}</span>
-                            </td>
-                            <td>
-                                <span>{{debitAmount}}</span>
-                            </td>
-                        </tr>
-                    </tfoot>
-                </table>
-                <hr>
-                <h4>Payments</h4>
-                <table class="table table-green align-middle table-row-dashed fs-6 gy-5 dataTable no-footer">
-                    <thead style="position: sticky;">
-                        <tr class="text-start text-gray-400 fw-bolder fs-7 text-uppercase gs-0">
-                            <th class="min-w-100px sorting" tabindex="0">{{ "BOOKING_DATE" | translate}}</th>
-                            <th class="min-w-100px sorting" tabindex="0">{{ "LEDGER_NUMBER" | translate}} </th>
-                            <th class="min-w-100px sorting" tabindex="0">{{ "CREDIT" | translate}} </th>
-                            <th class="min-w-100px sorting" tabindex="0">{{ "DEBIT" | translate }}</th>
-                        </tr>
-                    </thead>
-                    <tbody class="fw-bold text-gray-600">
-                        <tr class="even" *ngFor="let booking of paymentRecords">
-                            <td>
-                                <span>{{booking.dCreatedDate | date: 'medium'}}</span>
-                            </td>
-                            <td>
-                                <span>{{booking.nLedgerNumber}}</span>
-                            </td>
-                            <td>
-                                <span>{{ booking.eType === 'credit' ? (booking.nValue | number:'2.1-5'): '-'}}</span>
-                            </td>
-                            <td>
-                                <span>{{booking.eType === 'debit' ? (booking.nValue | number:'2.1-5'): '-' }}</span>
-                            </td>
-                        </tr>
-                    </tbody>
-                    <tfoot style="position: sticky;">
-                        <tr class="even">
-                            <td>
-                                <span>Total</span>
-                            </td>
-                            <td>
-                                <span>-</span>
-                            </td>
-                            <td>
-                                <span>{{paymentCreditAmount}}</span>
-                            </td>
-                            <td>
-                                <span>{{paymentDebitAmount}}</span>
-                            </td>
-                        </tr>
-                    </tfoot>
-                </table>
+                </div>
             </div>
         </div>
+
+        <div class="card" *ngIf="sDisplayMethod === 'revenuePerArticleGroup'">
+            <p> {{ 'REVENUE_PER_ARTICLE_GROUP' | translate}} </p>
+            <div class="card-body">
+                <div class="table-responsive" *ngFor="let oStatistic of aStatistic; let i = index">
+                    <table
+                        class="table table-row-bordered table-row-gray-300 gy-5 gs-5 mb-0 text-gray-600 fw-bold border"
+                        *ngFor="let oArticleGroup of oStatistic.individual; let articleGroupIndex = index">
+                        <!-- start of articlegroup -->
+                        <thead class="bg-gray-100">
+                            <tr class="fw-bold fs-6 text-gray-800">
+                                <th scope="col">{{oArticleGroup.sName}}</th>
+                                <th scope="col" class="w-150px">{{oArticleGroup.nQuantity}}</th>
+                                <th scope="col" class="w-150px">{{oArticleGroup.nTotalRevenue}}</th>
+                                <th scope="col" class="w-150px">{{oArticleGroup.nTotalPurchaseAmount}}</th>
+                                <th scope="col" class="w-150px">{{oArticleGroup.nProfit}}</th>
+                                <th scope="col" class="w-150px">{{oArticleGroup.nMargin}}</th>
+                            </tr>
+                        </thead>
+                        <!-- end of articlegroup -->
+                    </table>
+
+                </div>
+            </div>
+        </div>
+        >>>>>>> 58258b69bc88b5976d49caed4316ebd2f3a1b545
     </div>
-    <!-- Tushar's code END -->
+    <!-- LOAD DATA -END -->
+</div>
+
+<!-- STATISTICS CODE END -->
+
+<!-- Tushar's code START -->
+<div class="card-body pt-0">
+    <div class="dataTables_wrapper dt-bootstrap4 no-footer">
+        <div class="table-responsive">
+            <table class="table align-middle table-row-dashed fs-6 gy-5 dataTable no-footer">
+                <thead>
+                    <tr class="text-start text-gray-400 fw-bolder fs-7 text-uppercase gs-0">
+                        <th class="min-w-100px sorting" tabindex="0">{{ "STATISTICS_OVERALL" | translate}}</th>
+                        <th class="min-w-100px sorting" tabindex="0">{{ "STATISTICS_VALUE" | translate}} </th>
+                        <th class="min-w-100px sorting" tabindex="0">{{ "BOOKKEEPING_VALUE" | translate }}</th>
+                    </tr>
+                </thead>
+                <tbody class="fw-bold text-gray-600">
+                    <tr class="even">
+                        <td>
+                            <span>Total Revenue</span>
+                        </td>
+                        <td>
+                        </td>
+                        <td>
+                        </td>
+                    </tr>
+                    <tr class="even">
+                        <td>
+                            <span>Quantity</span>
+                        </td>
+                        <td>
+                        </td>
+                        <td>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <hr>
+            <h4>Transactions</h4>
+            <table class="table table-green align-middle table-row-dashed fs-6 gy-5 dataTable no-footer">
+                <thead style="position: sticky;">
+                    <tr class="text-start text-gray-400 fw-bolder fs-7 text-uppercase gs-0">
+                        <th class="min-w-100px sorting" tabindex="0">{{ "BOOKING_DATE" | translate}}</th>
+                        <th class="min-w-100px sorting" tabindex="0">{{ "LEDGER_NUMBER" | translate}} </th>
+                        <th class="min-w-100px sorting" tabindex="0">{{ "CREDIT" | translate}} </th>
+                        <th class="min-w-100px sorting" tabindex="0">{{ "DEBIT" | translate }}</th>
+                    </tr>
+                </thead>
+                <tbody class="fw-bold text-gray-600">
+                    <tr class="even" *ngFor="let booking of bookingRecords">
+                        <td>
+                            <span>{{booking.dCreatedDate | date: 'medium'}}</span>
+                        </td>
+                        <td>
+                            <span>{{booking.nLedgerNumber}}</span>
+                        </td>
+                        <td>
+                            <span>{{ booking.eType === 'credit' ? (booking.nValue | number:'2.1-5'): '-'}}</span>
+                        </td>
+                        <td>
+                            <span>{{booking.eType === 'debit' ? (booking.nValue | number:'2.1-5'): '-' }}</span>
+                        </td>
+                    </tr>
+                </tbody>
+                <tfoot style="position: sticky;">
+                    <tr class="even">
+                        <td>
+                            <span>Total</span>
+                        </td>
+                        <td>
+                            <span>-</span>
+                        </td>
+                        <td>
+                            <span>{{creditAmount}}</span>
+                        </td>
+                        <td>
+                            <span>{{debitAmount}}</span>
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+            <hr>
+            <h4>Payments</h4>
+            <table class="table table-green align-middle table-row-dashed fs-6 gy-5 dataTable no-footer">
+                <thead style="position: sticky;">
+                    <tr class="text-start text-gray-400 fw-bolder fs-7 text-uppercase gs-0">
+                        <th class="min-w-100px sorting" tabindex="0">{{ "BOOKING_DATE" | translate}}</th>
+                        <th class="min-w-100px sorting" tabindex="0">{{ "LEDGER_NUMBER" | translate}} </th>
+                        <th class="min-w-100px sorting" tabindex="0">{{ "CREDIT" | translate}} </th>
+                        <th class="min-w-100px sorting" tabindex="0">{{ "DEBIT" | translate }}</th>
+                    </tr>
+                </thead>
+                <tbody class="fw-bold text-gray-600">
+                    <tr class="even" *ngFor="let booking of paymentRecords">
+                        <td>
+                            <span>{{booking.dCreatedDate | date: 'medium'}}</span>
+                        </td>
+                        <td>
+                            <span>{{booking.nLedgerNumber}}</span>
+                        </td>
+                        <td>
+                            <span>{{ booking.eType === 'credit' ? (booking.nValue | number:'2.1-5'): '-'}}</span>
+                        </td>
+                        <td>
+                            <span>{{booking.eType === 'debit' ? (booking.nValue | number:'2.1-5'): '-' }}</span>
+                        </td>
+                    </tr>
+                </tbody>
+                <tfoot style="position: sticky;">
+                    <tr class="even">
+                        <td>
+                            <span>Total</span>
+                        </td>
+                        <td>
+                            <span>-</span>
+                        </td>
+                        <td>
+                            <span>{{paymentCreditAmount}}</span>
+                        </td>
+                        <td>
+                            <span>{{paymentDebitAmount}}</span>
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+</div>
+<!-- Tushar's code END -->
 </div>
