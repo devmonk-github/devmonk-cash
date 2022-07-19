@@ -53,7 +53,8 @@
       </div>
       <div class="w-175px pe-2">
         <input type="text" class="form-control" name="price" (change)="updatePayments()"
-          placeholder="{{ 'PRICE' | translate}}" id="price" [(ngModel)]="item.price" [disabled]="item.oType?.bRefund">
+          placeholder="{{ 'PRICE' | translate}}" id="price" [(ngModel)]="item.price"
+          [disabled]="item.oType?.bRefund || item.tType === 'pay'">
         <label for="bagNumber">{{ "PREPAYMENT" | translate}}</label>
         <input type="number" name="bagNumber" id="bagNumber" [(ngModel)]="item.paymentAmount" class="form-control">
 
@@ -64,7 +65,8 @@
           {{item.nRedeemedLoyaltyPoints}}</label>
       </div>
       <div class="w-100px pe-2">
-        <button class="btn btn-icon btn-secondary w-35px h-35px" (click)="openDiscountDialog()">
+        <button class="btn btn-icon btn-secondary w-35px h-35px" (click)="openDiscountDialog()"
+          [disabled]="item.oType?.bRefund || item.tType === 'pay'">
           <span class="svg-icon svg-icon-1qx me-0">
             <i class="fas fa-percent"></i>
           </span>

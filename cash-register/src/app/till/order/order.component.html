@@ -45,7 +45,7 @@
       <div class="col-2">
         <label for="price">{{ "PRICE" | translate}}</label>
         <input type="number" (change)="updatePayments()" name="price" class="form-control" [(ngModel)]="item.price"
-          [disabled]="item.oType?.bRefund">
+          [disabled]="item.oType?.bRefund || item.tType === 'pay'">
         <label for="discount">{{ "DISCOUNT" | translate}}</label>
         <input *ngIf="!item.oType.bRefund && !item.oType.bDiscount && !item.oType.bPrepayment" type="number" step="any"
           name="discount" class="form-control" [(ngModel)]="item.nDiscount">

@@ -114,11 +114,10 @@ export class TransactionItemsDetailsComponent implements OnInit {
   selectAll($event: any) {
     this.transactionItems = this.transactionItems.map(v => ({ ...v, isSelected: $event.checked }));
     this.transactionItems.forEach(element => {
-      if (element.tType === 'refunded') {
+      if (element.bIsRefunded) {
         element.isSelected = false;
       }
     });
-    // transactionItem.tType = 'refunded'
   }
 
   close(data: any) {
