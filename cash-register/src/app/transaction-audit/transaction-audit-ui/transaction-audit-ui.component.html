@@ -64,11 +64,6 @@
                 </div>
                 <div class="col-md-3">
                     <label class="fs-6 form-label fw-bolder text-dark">{{'LOCATION' | translate}}</label>
-                    <!--<ng-select class="form-control form-control-solid p-0" [(ngModel)]="aSelectedLocation" [clearable]="false">
-                        <ng-option *ngFor="let oLocation of aLocation" [value]="oLocation">{{oLocation.sName}}
-                        </ng-option>
-                    </ng-select> -->
-
                     <div class="w-100" *ngIf="aLocation?.length">
                         <ng-select [multiple]="true" [items]="aLocation" [(ngModel)]="aSelectedLocation"
                             name="iLocationId" bindValue="_id" bindLabel="sName" placeholder="Select" required
@@ -108,8 +103,6 @@
             </div>
             <div class="row">
                 <div class="mt-5">
-                    <!-- <label class="fs-6 form-label fw-bolder text-dark">{{'APPLY_FILTER' | translate}}</label> -->
-                    <!-- <br> -->
                     <button type="button" class="btn btn-primary" data-kt-roles-modal-action="submit"
                         (click)="fetchStatistics()">
                         <span class="indicator-label">{{ "APPLY_FILTER" | translate}}</span>
@@ -134,12 +127,12 @@
         </div>
     </div>
 
-    <div *ngIf="aStatistic.length">
+    <div *ngIf="aStatistic?.length">
 
         <!-- LOAD DATA -BEGINS -->
         <div class="container">
             <div>
-                <div class="row" *ngIf="aStatistic[0].overall.length">
+                <div class="row" *ngIf="aStatistic[0]?.overall?.length">
                     <div class="col-md-4">
                         <span class="">{{ 'QUANTITY' | translate}}</span>
                         <h3 class="text-black">{{aStatistic[0].overall[0].nQuantity}}</h3>
@@ -296,25 +289,25 @@
                             <!-- start of articlegroup -->
                             <thead class="bg-gray-100">
                                 <tr class="fw-bold fs-6 text-gray-800">
-                                    <th scope="col">{{oArticleGroup.sName}}</th>
-                                    <th scope="col" class="w-150px">{{oArticleGroup.nQuantity}}</th>
-                                    <th scope="col" class="w-150px">{{oArticleGroup.nTotalRevenue}}</th>
-                                    <th scope="col" class="w-150px">{{oArticleGroup.nTotalPurchaseAmount}}</th>
-                                    <th scope="col" class="w-150px">{{oArticleGroup.nProfit}}</th>
-                                    <th scope="col" class="w-150px">{{oArticleGroup.nMargin}}</th>
+                                    <th scope="col">{{oArticleGroup?.sName}}</th>
+                                    <th scope="col" class="w-150px">{{oArticleGroup?.nQuantity}}</th>
+                                    <th scope="col" class="w-150px">{{oArticleGroup?.nTotalRevenue}}</th>
+                                    <th scope="col" class="w-150px">{{oArticleGroup?.nTotalPurchaseAmount}}</th>
+                                    <th scope="col" class="w-150px">{{oArticleGroup?.nProfit}}</th>
+                                    <th scope="col" class="w-150px">{{oArticleGroup?.nMargin}}</th>
                                 </tr>
                             </thead>
-                            <ng-container *ngIf="oArticleGroup.aRevenueByProperty.length">
+                            <ng-container *ngIf="oArticleGroup?.aRevenueByProperty?.length">
                                 <tbody class="p-2"
                                     *ngFor="let oRevenueByProperty of oArticleGroup.aRevenueByProperty; let revenuePropertyIndex = index">
                                     <!--start of dyamic property -->
                                     <tr>
-                                        <td class="ps-9">{{oRevenueByProperty.aCategory.join(' | ')}}</td>
-                                        <td>{{oRevenueByProperty.nQuantity}}</td>
-                                        <td>{{oRevenueByProperty.nTotalRevenue}}</td>
-                                        <td>{{oRevenueByProperty.nTotalPurchaseAmount}}</td>
-                                        <td>{{oRevenueByProperty.nProfit}}</td>
-                                        <td>{{oRevenueByProperty.nMargin}}</td>
+                                        <td class="ps-9">{{oRevenueByProperty?.aCategory.join(' | ')}}</td>
+                                        <td>{{oRevenueByProperty?.nQuantity}}</td>
+                                        <td>{{oRevenueByProperty?.nTotalRevenue}}</td>
+                                        <td>{{oRevenueByProperty?.nTotalPurchaseAmount}}</td>
+                                        <td>{{oRevenueByProperty?.nProfit}}</td>
+                                        <td>{{oRevenueByProperty?.nMargin}}</td>
                                     </tr>
                                 </tbody>
                             </ng-container>
@@ -374,18 +367,6 @@
                     </div>
                 </div>
             </div>
-
-            <!-- <div class="row" *ngIf="aStatistic[0].overall.length">
-                    <div class="col-md-4">
-                        <span class="">{{ 'QUANTITY' | translate}}</span>
-                        <h3 class="text-black">{{aStatistic[0].overall[0].nQuantity}}</h3>
-                    </div>
-                    <div class="col-md-4">
-                        <span class="">{{ 'TOTAL' | translate}}</span>
-                        <h3 class="text-black">{{aStatistic[0].overall[0].nTotal}}</h3>
-                    </div>
-                </div> -->
-
         </div>
         <!-- LOAD DATA -END -->
     </div>
