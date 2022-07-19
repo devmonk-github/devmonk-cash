@@ -1009,17 +1009,17 @@ export class PdfService {
   }
 
   private defineDataSource(key: string): any {
-    let dataSourceObject = key;
 
-    if (dataSourceObject.match(/\./g)) {
-      const filterMatches = dataSourceObject.match(/\./g)
-      let nrOfLevels = filterMatches ? filterMatches.length : 0;
-      let parts = dataSourceObject.split('.');
-      let layer1, layer2, layer3;
+    let layer1, layer2, layer3
+    let dataSourceObject: string | never[] = [];
 
-      switch (nrOfLevels) {
+    if (key.match(/\./g)) {
+
+      let parts = key.split('.');
+
+      switch (parts.length) {
         case 0:
-          dataSourceObject = this.data[dataSourceObject]
+          dataSourceObject = this.data[key]
           break;
         case 1:
           layer1 = this.data[parts[0]];
@@ -1040,7 +1040,12 @@ export class PdfService {
           break;
       }
     } else {
-      dataSourceObject = this.data[dataSourceObject];
+      if(this.data[key] !== undefined) {
+        dataSourceObject = this.data[key];
+      } else {
+        dataSourceObject = [];
+        console.error('The provided key "'+key+'" does not exist in the data')
+      }
     }
 
     return dataSourceObject;
