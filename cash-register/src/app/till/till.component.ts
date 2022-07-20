@@ -302,7 +302,7 @@ export class TillComponent implements OnInit {
       ...(type === 'giftcard') && { sGiftCardNumber: Date.now() },
       ...(type === 'giftcard') && { taxHandling: 'true' },
       ...(type === 'giftcard') && { isGiftCardNumberValid: false },
-      ...(type === 'gold-purchase') && { goldFor: { name: 'stock', type: 'goods' } }
+      ...(type === 'gold-purchase') && { oGoldFor: { name: 'stock', type: 'goods' } }
     });
   }
 
@@ -433,14 +433,10 @@ export class TillComponent implements OnInit {
     let availableAmount = this.getUsedPayMethods(true);
     this.paymentDistributeService.distributeAmount(this.transactionItems, availableAmount);
     this.allPaymentMethod = this.allPaymentMethod.map((v: any) => ({ ...v, isDisabled: true }));
-    this.payMethods.forEach(element => {
-      element.isDisabled = true;
-    });
+    this.payMethods.map(o => o.isDisabled = true);
     const paidAmount = _.sumBy(this.payMethods, 'amount') || 0;
     if (paidAmount === 0) {
-      this.payMethods.forEach(element => {
-        element.isDisabled = false;
-      });
+      this.payMethods.map(o => o.isDisabled = false);
     }
   }
 
@@ -450,11 +446,10 @@ export class TillComponent implements OnInit {
     this.commonProducts = [];
     this.searchKeyword = '';
     this.selectedTransaction = null;
-    this.payMethods.map(o => o.amount = null);
+    this.payMethods.map(o => { o.amount = null, o.isDisabled = false });
     this.appliedGiftCards = [];
     this.redeemedLoyaltyPoints = 0;
     this.iActivityId = '';
-
   }
 
   startTerminalPayment() {
@@ -473,12 +468,12 @@ export class TillComponent implements OnInit {
   // nRefundAmount needs to be added
   checkUseForGold() {
     let isGoldForPayment = true;
-    const goldTransactionPayments = this.transactionItems.filter(o => o.goldFor?.name === 'cash' || o.goldFor?.name === 'bankpayment');
+    const goldTransactionPayments = this.transactionItems.filter(o => o.oGoldFor?.name === 'cash' || o.oGoldFor?.name === 'bankpayment');
     goldTransactionPayments.forEach(element => {
-      const paymentMethod = this.payMethods.findIndex(o => o.sName.toLowerCase() === element.goldFor.name && o.amount === element.nTotal);
+      const paymentMethod = this.payMethods.findIndex(o => o.sName.toLowerCase() === element.oGoldFor.name && o.amount === element.nTotal);
       if (paymentMethod < 0) {
         isGoldForPayment = false;
-        this.toastrService.show({ type: 'danger', text: `The amount paid for '${element.goldFor.name}' does not match.` });
+        this.toastrService.show({ type: 'danger', text: `The amount paid for '${element.oGoldFor.name}' does not match.` });
       }
     });
     return isGoldForPayment;

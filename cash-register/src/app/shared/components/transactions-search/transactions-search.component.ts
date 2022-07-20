@@ -130,6 +130,7 @@ export class TransactionsSearchComponent implements OnInit, AfterViewInit {
                 iBrandId: transactionItem.iBrandId,
                 nDiscount: transactionItem.nDiscount || 0,
                 tax: transactionItem.nVatRate,
+                oGoldFor: transactionItem.oGoldFor,
                 paymentAmount,
                 description: '',
                 open: true,

@@ -63,6 +63,7 @@ export class GoldPurchaseComponent implements OnInit {
     // this.getProperties();
     // this.getBusinessBrands();
     this.checkArticleGroups();
+    console.log(this.item);
   }
   deleteItem(): void {
     this.itemChanged.emit('delete')
@@ -87,8 +88,8 @@ export class GoldPurchaseComponent implements OnInit {
 
   assignArticleGroup(value: string) {
     const goldFor = this.goldFor.find(o => o.name === value);
-    this.item.goldFor = goldFor;
-    const artGroup = this.articleGroups.find((o: any) => o.sSubCategory === this.item.goldFor.name);
+    this.item.oGoldFor = goldFor;
+    const artGroup = this.articleGroups.find((o: any) => o.sSubCategory === this.item.oGoldFor.name);
     if (!artGroup) {
       this.createArticleGroup();
     } else {
@@ -105,7 +106,7 @@ export class GoldPurchaseComponent implements OnInit {
           this.createArticleGroup();
         } else {
           this.articleGroups = res.data[0].result;
-          this.assignArticleGroup(this.item.goldFor.name);
+          this.assignArticleGroup(this.item.oGoldFor.name);
         }
       }, err => {
         this.toastrService.show({ type: 'danger', text: err.message });
@@ -113,7 +114,7 @@ export class GoldPurchaseComponent implements OnInit {
   }
 
   createArticleGroup() {
-    this.createArticleGroupService.createArticleGroup({ name: 'Gold purchase', sCategory: 'Gold purchase', sSubCategory: this.item.goldFor.name })
+    this.createArticleGroupService.createArticleGroup({ name: 'Gold purchase', sCategory: 'Gold purchase', sSubCategory: this.item.oGoldFor.name })
       .subscribe((res: any) => {
         this.item.iArticleGroupId = res.data._id;
         this.item.oArticleGroupMetaData.sCategory = res.data.sCategory;
