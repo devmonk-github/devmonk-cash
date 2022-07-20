@@ -55,7 +55,7 @@ export class StatisticsComponent implements OnInit {
       },
     }
     this.apiService.postNew('cashregistry', `/api/v1/statistics/get`, oBody).subscribe((result: any) => {
-      if (result?.data) this.aStatistic = result.data;
+      if (result?.data?.aStatistic?.length) this.aStatistic = result.data.aStatistic;
     }, (error) => {
       console.log('error: ', error);
     })

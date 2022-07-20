@@ -90,7 +90,7 @@
                     </ng-select>
                 </div>
             </div>
-            <div class="row mb-5">
+            <div class="row mb-5" *ngIf="IsDynamicState">
                 <div class="col-md-3">
                     <label class="fs-6 form-label fw-bolder text-dark">{{'EMPLOYEE' | translate}}</label>
                     <ng-select class="form-control form-control-solid p-0" [(ngModel)]="selectedEmployee"
@@ -311,7 +311,7 @@
                                     </tr>
                                 </tbody>
                             </ng-container>
-                            <!-- start of articlegroup -->
+                            <!-- start of articleGroup -->
                         </table>
 
                     </div>
@@ -372,6 +372,36 @@
     </div>
 
     <!-- STATISTICS CODE END -->
+
+    <!-- PAYMENT START -->
+    <div class="card">
+        <div class="container">
+            <strong> {{ 'PAYMENT_METHODS' | translate}} </strong>
+            <p *ngIf="!aPaymentMethods?.length">{{ 'PAYMENT_METHODS_NOT_FOUND' | translate}}</p>
+            <div *ngIf="aPaymentMethods?.length">
+                <div class="card-body">
+
+                    <table class="table table-row-bordered table-row-gray-300 gy-5 gs-5 mb-0 text-gray-600 fw-bold border">
+                        <thead class="bg-gray-100">
+                            <tr class="fw-bold fs-6 text-gray-800">
+                                <th scope="col">{{ 'METHOD' | translate}}</th>
+                                <th scope="col" class="w-150px">{{ 'TOTAL_AMOUNT' | translate}}</th>
+                                <th scope="col" class="w-150px">{{ 'QUANTITY' | translate}}</th>
+                            </tr>
+                        </thead>
+                        <tbody class="p-2" *ngFor="let oPayment of aPaymentMethods; let i = index">
+                            <tr>
+                                <td class="ps-9">{{oPayment.sMethod}}</td>
+                                <td>{{oPayment.nAmount}}</td>
+                                <td>{{oPayment.nQuantity}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- PAYMENT END -->
 
     <!-- Tushar's code START -->
     <div class="card-body pt-0">
