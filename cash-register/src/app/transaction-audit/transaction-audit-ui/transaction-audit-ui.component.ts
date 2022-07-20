@@ -4,6 +4,7 @@ import { Subscription } from 'rxjs';
 import { ApiService } from 'src/app/shared/service/api.service';
 import { PdfService } from 'src/app/shared/service/pdf2.service';
 import * as _moment from 'moment';
+import { right } from '@popperjs/core';
 const moment = (_moment as any).default ? (_moment as any).default : _moment;
 
 @Component({
@@ -378,14 +379,64 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
     };
     let sDisplayMethod = this.aDisplayMethod[this.aDisplayMethod.findIndex((el: any) => el.sKey == this.sDisplayMethod)].sValue;
     let sType = this.aOptionMenu[this.aOptionMenu.findIndex((el: any) => el.sKey == this.optionMenu)].sValue;
+    let dataType = this.IsDynamicState ? 'Dynamic Data' : 'Static Data';
+
+
+    // get selected locaions
+    let sLocations = '';
+    let aLocations: any = [];
+    if (this.aSelectedLocation?.length > 0) {
+      this.aSelectedLocation.forEach((el: any) => {
+        aLocations.push(this.aLocation.filter((location: any) => location._id == el).map((location: any) => location.sName));
+      });
+      sLocations = aLocations.join(', ');
+    } else {
+      sLocations = this.aLocation.map((location: any) => location.sName).join(", ");
+    }
+
+    //get selected workstations
+    let sWorkstation = '';
+    if (this.selectedWorkStation) {
+      sWorkstation = this.aWorkStation.find((el: any) => el._id == this.selectedWorkStation._id).sName;
+    } else {
+      sWorkstation = this.aWorkStation.map((el: any) => el.sName).join(", ");
+    }
+
+    let dataFromTo = '(From : ' +
+      moment(this.filterDates.startDate).format('DD-MM-yyyy hh:mm A') +
+      ' TO ' +
+      moment(this.filterDates.endDate).format('DD-MM-yyyy hh:mm A') + ')';
 
     let content: any = [
-      { text: date, style: ['dateStyle', 'normal'] },
-      { text: 'Transaction Audit Report', style: 'header' },
+      { text: date, style: ['right', 'normal'] },
+      { text: 'Transaction Audit Report', style: ['header', 'center'] },
+      { text: dataFromTo, style: ['center', 'normal'] },
       { text: this.businessDetails.sName, style: 'businessName' },
-      { text: sDisplayMethod, style: 'normal' },
-      { text: 'Type of Data: ' + this.IsDynamicState ? 'Dynamic Data' : 'Static Data', style: 'normal' },
-      { text: 'Type: ' + sType, style: 'normal' },
+      {
+        columns: [
+          { text: 'Location(s) : ', style: ['left', 'normal'], width: 100 },
+          { text: sLocations, style: ['left', 'normal'], width: 150 },
+          { width: '*', text: '' },
+          { text: 'Display Method : ', style: ['right', 'normal'], width: 100 },
+          { text: sDisplayMethod, style: ['right', 'normal'], width: 150 },
+        ],
+      },
+      {
+        columns: [
+          { text: 'Workstation(s): ', style: ['left', 'normal'], width: 100 },
+          { text: sWorkstation, style: ['left', 'normal'], width: 200 },
+          { width: '*', text: '' },
+          { text: 'Type of Data: ', style: ['right', 'normal'], width: 100 },
+          { text: dataType, style: ['right', 'normal'], width: 150 },
+        ],
+      },
+      {
+        columns: [
+          { width: '*', text: '' },
+          { text: 'Type: ', style: ['right', 'normal'], width: 100 },
+          { text: sType, style: ['right', 'normal'], width: 150 },
+        ],
+      },
       { canvas: [{ type: 'line', x1: 0, y1: 0, x2: 575, y2: 0, lineWidth: 1 }], margin: [0, 0, 20, 0], style: 'afterLine' },
       {
         style: 'headerStyle',
@@ -409,14 +460,13 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
 
     arr.forEach((singleRecord: any) => {
       // console.log('singleRecord', singleRecord);
-      let texts: any = [{ text: singleRecord.sBusinessPartnerName },
-      { text: singleRecord.nQuantity },
-      { text: singleRecord.nTotalRevenue },
-      { text: singleRecord.nTotalPurchaseAmount },
-      { text: singleRecord.nProfit },
-      { text: singleRecord.nMargin }];
+      let texts: any = [{ text: singleRecord.sBusinessPartnerName, style: 'th' },
+      { text: singleRecord.nQuantity, style: 'th' },
+      { text: singleRecord.nTotalRevenue, style: 'th' },
+      { text: singleRecord.nTotalPurchaseAmount, style: 'th' },
+      { text: singleRecord.nProfit, style: 'th' },
+      { text: singleRecord.nMargin, style: 'th' }];
       const data = {
-        style: 'th',
         table: {
           headerRows: 1,
           widths: columnWidths,
@@ -428,14 +478,15 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
       content.push(data);
       singleRecord.aArticleGroups.forEach((articleGroup: any) => {
         // console.log('articleGroup', articleGroup);
-        let texts: any = [{ text: articleGroup.sName, style: ["td", "articleGroup"] },
-        { text: articleGroup.nQuantity, style: ["td", "articleGroup"] },
-        { text: articleGroup.nTotalRevenue, style: ["td", "articleGroup"] },
-        { text: articleGroup.nTotalPurchaseAmount, style: ["td", "articleGroup"] },
-        { text: articleGroup.nProfit, style: ["td", "articleGroup"] },
-        { text: articleGroup.nMargin, style: ["td", "articleGroup"] }];
+        let texts: any = [
+          { text: articleGroup.sName, style: ['td', 'articleGroup'] },
+          { text: articleGroup.nQuantity, style: ['td', 'articleGroup'] },
+          { text: articleGroup.nTotalRevenue, style: ['td', 'articleGroup'] },
+          { text: articleGroup.nTotalPurchaseAmount, style: ['td', 'articleGroup'] },
+          { text: articleGroup.nProfit, style: ['td', 'articleGroup'] },
+          { text: articleGroup.nMargin, style: ['td', 'articleGroup'] }
+        ];
         const data = {
-          style: 'tableExample',
           table: {
             headerRows: 0,
             widths: columnWidths,
@@ -446,14 +497,16 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
         content.push(data);
 
         articleGroup.aRevenueByProperty.forEach((property: any) => {
-          let texts: any = [{ text: property.aCategory },
-          { text: property.nQuantity },
-          { text: property.nTotalRevenue },
-          { text: property.nTotalPurchaseAmount },
-          { text: property.nProfit },
-          { text: property.nMargin }];
+          let texts: any = [
+            { text: property.aCategory, style: ['td', 'property'], },
+            { text: property.nQuantity, style: ['td', 'property'], },
+            { text: property.nTotalRevenue, style: ['td', 'property'], },
+            { text: property.nTotalPurchaseAmount, style: ['td', 'property'], },
+            { text: property.nProfit, style: ['td', 'property'], },
+            { text: property.nMargin, style: ['td', 'property'], }
+          ];
           const data = {
-            style: 'td',
+            // style: ['td', 'property'],
             table: {
               // headerRows: 0,
               widths: columnWidths,
@@ -468,18 +521,16 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
 
     content.push({ canvas: [{ type: 'line', x1: 0, y1: 0, x2: 575, y2: 0, lineWidth: 1 }], margin: [0, 0, 20, 0], style: 'afterLine' });
     let texts: any = [
-      { text: 'Total' },
-      { text: this.aStatistic[0].overall[0].nQuantity },
-      { text: this.aStatistic[0].overall[0].nTotalRevenue },
-      { text: this.aStatistic[0].overall[0].nTotalPurchaseAmount },
-      { text: this.aStatistic[0].overall[0].nProfit },
-      { text: this.aStatistic[0].overall[0].nMargin }
+      { text: 'Total', style: 'th' },
+      { text: this.aStatistic[0].overall[0].nQuantity, style: 'th' },
+      { text: this.aStatistic[0].overall[0].nTotalRevenue, style: 'th' },
+      { text: this.aStatistic[0].overall[0].nTotalPurchaseAmount, style: 'th' },
+      { text: this.aStatistic[0].overall[0].nProfit, style: 'th' },
+      { text: this.aStatistic[0].overall[0].nMargin, style: 'th' }
     ];
 
     const overallData = {
-      style: 'th',
       table: {
-        // headerRows: 0,
         widths: columnWidths,
         body: [texts]
       },
@@ -491,22 +542,27 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
 
     var styles =
     {
-      dateStyle: {
+      right: {
         alignment: 'right',
+      },
+      left: {
+        alignment: 'left',
+      },
+      center: {
+        alignment: 'center',
       },
       header: {
         fontSize: 15,
         bold: false,
-        alignment: 'center',
-        margin: [0, 5, 0, 10]
+        margin: 5 //[0, 5, 0, 10]
       },
       businessName: {
         fontSize: 12,
-        margin: [0, 5, 0, 10]
+        margin: 5 //[0, 5, 0, 10]
       },
       normal: {
         fontSize: 10,
-        margin: [0, 5, 0, 5]
+        margin: 5 //[0, 5, 0, 5]
       },
       tableExample: {
         // border: 0,
@@ -516,15 +572,13 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
         fontSize: 10,
         bold: true,
         color: "#333",
-        margin: [0, 10, 0, 10]
+        margin: 10 //[0, 10, 0, 10]
       },
       supplierName: {
         alignment: 'right',
         fontSize: 12,
         margin: [0, -10, 0, 10]
       },
-
-
       afterLine: {
         margin: [0, 0, 0, 10]
       },
@@ -535,12 +589,12 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
         fontSize: 10,
         bold: true,
         // fillColor: "#e3e3e3",
-        margin: [5, 10, 0, 10]
+        margin: [5, 10]
       },
 
       td: {
         fontSize: 9,
-        margin: [5, 5, 0, 5]
+        margin: [5, 10]
       },
       articleGroup: {
         fillColor: '#F5F8FA',
