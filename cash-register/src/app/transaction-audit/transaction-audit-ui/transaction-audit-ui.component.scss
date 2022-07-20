@@ -1,0 +1,28 @@
+.counting-list {
+    column-count: 2;
+    column-gap: 3rem;
+}
+
+.currency,
+.countingTotal label {
+    font-size: 1.1rem;
+}
+
+.counting-list input,
+.countingTotal input,
+.w-30 {
+    width: 30%
+}
+
+.earnings-section div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    font-size: 1.1rem;
+    line-height: 2rem;
+}
+
+.earnings-section .bold {
+    font-weight: bold;
+}

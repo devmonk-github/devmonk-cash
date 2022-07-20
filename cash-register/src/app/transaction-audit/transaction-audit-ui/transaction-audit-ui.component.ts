@@ -85,6 +85,24 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
     }
   ];
 
+  aAmount: any = [
+    { sLabel: '500.00', nValue: 500, nQuantity: 0 },
+    { sLabel: '200.00', nValue: 200, nQuantity: 0 },
+    { sLabel: '100.00', nValue: 100, nQuantity: 0 },
+    { sLabel: '50.00', nValue: 50, nQuantity: 0 },
+    { sLabel: '20.00', nValue: 20, nQuantity: 0 },
+    { sLabel: '10.00', nValue: 10, nQuantity: 0 },
+    { sLabel: '5.00', nValue: 5, nQuantity: 0 },
+    { sLabel: '2.00', nValue: 2, nQuantity: 0 },
+    { sLabel: '1.00', nValue: 1, nQuantity: 0 },
+    { sLabel: '0.50', nValue: 0.5, nQuantity: 0 },
+    { sLabel: '0.20', nValue: 0.2, nQuantity: 0 },
+    { sLabel: '0.10', nValue: 0.1, nQuantity: 0 },
+    { sLabel: '0.05', nValue: 0.05, nQuantity: 0 },
+  ];
+  nTotalCounted: number = 0;
+  nCashInTill: number = 0;
+
   constructor(private apiService: ApiService, private pdf: PdfService, private translate: TranslateService) {
     this.iBusinessId = localStorage.getItem('currentBusiness') || '';
     this.iLocationId = localStorage.getItem('currentLocation') || '';
@@ -135,6 +153,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
     }
     this.getStatisticSubscription = this.apiService.postNew('cashregistry', `/api/v1/statistics/get`, oBody).subscribe((result: any) => {
       this.aStatistic = result?.data;
+      this.nCashInTill = this.aStatistic[0].overall[0].nTotalRevenue;
       this.bStatisticLoading = false;
     }, (error) => {
       console.log('error: ', error);
@@ -162,6 +181,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
     this.bStatisticLoading = true;
     this.statisticAuditSubscription = this.apiService.postNew('cashregistry', `/api/v1/statistics/transaction/audit`, oBody).subscribe((result: any) => {
       this.aStatistic = result.data;
+      this.nCashInTill = this.aStatistic[0].overall[0].nTotalRevenue;
       this.bStatisticLoading = false;
     }, (error) => {
       this.aStatistic = [];
@@ -322,7 +342,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
 
     let arr: Array<any> = [];
 
-    console.log('this.aStatistic', this.aStatistic);
+    // console.log('this.aStatistic', this.aStatistic);
 
     this.aStatistic[0].individual.forEach((el: any) => {
       var obj: any = {};
@@ -605,9 +625,13 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
 
     };
     this.pdf.getPdfData(styles, content, 'portrait', 'A4', this.businessDetails.sName + '-' + 'Transaction Audit Report')
-    // console.log('after getPdfData');
+  }
 
-
+  calculateTotalCounting() {
+    this.nTotalCounted = 0;
+    this.aAmount.forEach((amount: any) => {
+      this.nTotalCounted += amount.nValue * amount.nQuantity;
+    });
   }
 
   ngOnDestroy(): void {
