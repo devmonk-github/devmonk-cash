@@ -38,6 +38,7 @@ module.exports = {
         './WebOrderModule': './src/app/web-orders/web-orders.module.ts',
         './StatisticModule': './src/app/statistics/statistics.module.ts',
         './ServiceModule': './src/app/services/services.module.ts',
+        './ActivityItemsModule': './src/app/activity-items/activity-items.module.ts',
         './CustomerModule': './src/app/customers/customers.module.ts',
         './WebshopSettingsModule': './src/app/webshop-settings/webshop-settings.module.ts',
         './SharedServiceModule': './src/app/shared/shared-service.module.ts',
@@ -67,6 +68,7 @@ module.exports = {
         '/CustomersModule': './src/app/customers/customers.module.ts',
         '/StatisticsModule': './src/app/statistics/statistics.module.ts',
         '/ServicesModule': './src/app/services/services.module.ts',
+        '/ActivityItemsModule': './src/app/activity-items/activity-items.module.ts',
       },
 
       shared: share({
