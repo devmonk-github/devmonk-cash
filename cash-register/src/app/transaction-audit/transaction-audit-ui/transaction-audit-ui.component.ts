@@ -1,3 +1,4 @@
+import { TranslateService } from '@ngx-translate/core';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { ApiService } from 'src/app/shared/service/api.service';
@@ -53,13 +54,12 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
   propertyListSubscription !: Subscription;
   workstationListSubscription !: Subscription;
   employeeListSubscription !: Subscription;
-  constructor(private apiService: ApiService, private pdf: PdfService) {
-    this.iBusinessId = localStorage.getItem('currentBusiness') || '';
-    this.iLocationId = localStorage.getItem('currentLocation') || '';
-    const _oUser = localStorage.getItem('currentUser');
-    if (_oUser) this.oUser = JSON.parse(_oUser);
-  }
 
+  aOptionMenu: any = [
+    { sKey: 'purchase-order', sValue: this.translate.instant('PURCHASE_ORDER') },
+    { sKey: 'sales-order', sValue: this.translate.instant('SALES_ORDER') },
+    { sKey: 'cash-registry', sValue: this.translate.instant('CASH_REGISTER') },
+  ];
 
   aDisplayMethod: any = [
     {
@@ -82,7 +82,15 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
       sKey: 'revenuePerArticleGroup', // Use the revenuePerArticleGroupAndProperty and remove the Dynamic Property
       sValue: 'Article Group',
     }
-  ]
+  ];
+
+  constructor(private apiService: ApiService, private pdf: PdfService, private translate: TranslateService) {
+    this.iBusinessId = localStorage.getItem('currentBusiness') || '';
+    this.iLocationId = localStorage.getItem('currentLocation') || '';
+    const _oUser = localStorage.getItem('currentUser');
+    if (_oUser) this.oUser = JSON.parse(_oUser);
+  }
+
 
   ngOnInit(): void {
     this.businessDetails._id = localStorage.getItem("currentBusiness");
@@ -296,7 +304,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
 
   exportToPDF() {
     var header: Array<any> = [
-      'SUPPLIER',
+      'Supplier',
       'Quantity',
       'Price incl VAT',
       'Purchase price',
@@ -304,18 +312,13 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
       'Margin'
     ];
 
-    const sName = this.businessDetails.sName;
+    let date = moment(Date.now()).format('DD-MM-yyyy');
 
-    let date = Date.now();
-    date = moment(date).format('DD-MM-yyyy');
-
-    var headerList: Array<any> = [];
+    let headerList: Array<any> = [];
     header.forEach((singleHeader: any) => {
       headerList.push({ text: singleHeader, bold: true })
     })
 
-    let bodyData: Array<any> = [];
-    let subData: Array<any> = [];
     let arr: Array<any> = [];
 
     console.log('this.aStatistic', this.aStatistic);
@@ -335,7 +338,18 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
           nTotalRevenue: article.nTotalRevenue,
           nTotalPurchaseAmount: article.nTotalPurchaseAmount,
           nProfit: article.nProfit,
-          nMargin: article.nMargin
+          nMargin: article.nMargin,
+          aRevenueByProperty: article?.aRevenueByProperty.map((property: any) => {
+            let revenue = {
+              aCategory: property.aCategory.join(' | '),
+              nQuantity: property.nQuantity || 0,
+              nTotalRevenue: property.nTotalRevenue,
+              nTotalPurchaseAmount: property.nTotalPurchaseAmount,
+              nProfit: property.nProfit || 0,
+              nMargin: property.nMargin || 0,
+            };
+            return revenue;
+          })
         };
         return data;
       }) || [];
@@ -343,44 +357,41 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
       arr.push(obj);
     });
 
-    arr.forEach((singleRecord: any) => {
-      // console.log('singleRecord', singleRecord);
-      bodyData.push([
-        singleRecord.sBusinessPartnerName,
-        singleRecord.nQuantity,
-        singleRecord.nTotalRevenue,
-        singleRecord.nTotalPurchaseAmount,
-        singleRecord.nProfit,
-        singleRecord.nMargin,
-      ]);
-      singleRecord.aArticleGroups.forEach((articleGroup: any) => {
-        // console.log('articleGroup', articleGroup);
-        bodyData.push(Object.values(articleGroup));
-      });
-      // bodyData.push({ 
-      //   singleRecord.sBusinessPartnerName,
-      //   singleRecord.nQuantity,
-      //   singleRecord.sBusinessPartnerName,
-      //   singleRecord.nTotalRevenue,
-      //   singleRecord.sBusinessPartnerName,
-      //   singleRecord.sBusinessPartnerName,
-      // });
-    })
-
-    console.log('arr', arr);
-    console.log('bodydata', bodyData);
     let columnWidths = [150, '*', '*', '*', '*', '*'];
-    var content = [
-      { text: date, style: 'dateStyle' },
+
+    let tableLayout = {
+      hLineWidth: function (i: number, node: any) {
+        return i === 0 || i === node.table.body.length ? 0 : 0.5;
+      },
+      vLineWidth: function (i: number, node: any) {
+        return i === 0 || i === node.table.widths.length ? 0 : 0;
+      },
+      hLineColor: function (i: number, node: any) {
+        return i === 0 || i === node.table.body.length ? "#999" : "#999";
+      },
+      paddingLeft: function (i: number, node: any) {
+        return i === 0 ? 0 : 20;
+      },
+      paddingRight: function (i: number, node: any) {
+        return i === node.table.widths.length ? 20 : 0;
+      }
+    };
+    let sDisplayMethod = this.aDisplayMethod[this.aDisplayMethod.findIndex((el: any) => el.sKey == this.sDisplayMethod)].sValue;
+    let sType = this.aOptionMenu[this.aOptionMenu.findIndex((el: any) => el.sKey == this.optionMenu)].sValue;
+
+    let content: any = [
+      { text: date, style: ['dateStyle', 'normal'] },
       { text: 'Transaction Audit Report', style: 'header' },
-      { text: sName, style: 'businessName' },
+      { text: this.businessDetails.sName, style: 'businessName' },
+      { text: sDisplayMethod, style: 'normal' },
+      { text: 'Type of Data: ' + this.IsDynamicState ? 'Dynamic Data' : 'Static Data', style: 'normal' },
+      { text: 'Type: ' + sType, style: 'normal' },
       { canvas: [{ type: 'line', x1: 0, y1: 0, x2: 575, y2: 0, lineWidth: 1 }], margin: [0, 0, 20, 0], style: 'afterLine' },
       {
-        style: 'tableExample',
+        style: 'headerStyle',
         table: {
           headerRows: 1,
           widths: columnWidths,
-          // widths: ['auto', 'auto', 'auto', 'auto', 'auto', 'auto'],
           body: [headerList]
         },
         layout: {
@@ -392,61 +403,154 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
           },
         }
       },
-      { canvas: [{ type: 'line', x1: 0, y1: 0, x2: 575, y2: 0, lineWidth: 1 }], margin: [0, 0, 20, 0], style: 'afterLine' },
-      {
-        style: 'tableExample',
+      { canvas: [{ type: 'line', x1: 0, y1: 0, x2: 575, y2: 0, lineWidth: 1 }], margin: [0, 0, 20, 0], style: 'afterLine' }
+
+    ];
+
+    arr.forEach((singleRecord: any) => {
+      // console.log('singleRecord', singleRecord);
+      let texts: any = [{ text: singleRecord.sBusinessPartnerName },
+      { text: singleRecord.nQuantity },
+      { text: singleRecord.nTotalRevenue },
+      { text: singleRecord.nTotalPurchaseAmount },
+      { text: singleRecord.nProfit },
+      { text: singleRecord.nMargin }];
+      const data = {
+        style: 'th',
         table: {
           headerRows: 1,
-          // widths: ['auto', 'auto', 'auto', 'auto', 'auto', 'auto'],
           widths: columnWidths,
-          body: bodyData
+          heights: [30],
+          body: [texts]
         },
-        layout: {
-          hLineStyle: function () {
-            return { dash: { length: 0.001, space: 40 * 20 } };
+        layout: tableLayout
+      };
+      content.push(data);
+      singleRecord.aArticleGroups.forEach((articleGroup: any) => {
+        // console.log('articleGroup', articleGroup);
+        let texts: any = [{ text: articleGroup.sName, style: ["td", "articleGroup"] },
+        { text: articleGroup.nQuantity, style: ["td", "articleGroup"] },
+        { text: articleGroup.nTotalRevenue, style: ["td", "articleGroup"] },
+        { text: articleGroup.nTotalPurchaseAmount, style: ["td", "articleGroup"] },
+        { text: articleGroup.nProfit, style: ["td", "articleGroup"] },
+        { text: articleGroup.nMargin, style: ["td", "articleGroup"] }];
+        const data = {
+          style: 'tableExample',
+          table: {
+            headerRows: 0,
+            widths: columnWidths,
+            body: [texts]
           },
-          vLineStyle: function () {
-            return { dash: { length: 0.001, space: 40 * 20 } };
-          },
-        }
-      },
+          layout: tableLayout
+        };
+        content.push(data);
+
+        articleGroup.aRevenueByProperty.forEach((property: any) => {
+          let texts: any = [{ text: property.aCategory },
+          { text: property.nQuantity },
+          { text: property.nTotalRevenue },
+          { text: property.nTotalPurchaseAmount },
+          { text: property.nProfit },
+          { text: property.nMargin }];
+          const data = {
+            style: 'td',
+            table: {
+              // headerRows: 0,
+              widths: columnWidths,
+              body: [texts]
+            },
+            layout: tableLayout
+          };
+          content.push(data);
+        });
+      });
+    });
+
+    content.push({ canvas: [{ type: 'line', x1: 0, y1: 0, x2: 575, y2: 0, lineWidth: 1 }], margin: [0, 0, 20, 0], style: 'afterLine' });
+    let texts: any = [
+      { text: 'Total' },
+      { text: this.aStatistic[0].overall[0].nQuantity },
+      { text: this.aStatistic[0].overall[0].nTotalRevenue },
+      { text: this.aStatistic[0].overall[0].nTotalPurchaseAmount },
+      { text: this.aStatistic[0].overall[0].nProfit },
+      { text: this.aStatistic[0].overall[0].nMargin }
     ];
+
+    const overallData = {
+      style: 'th',
+      table: {
+        // headerRows: 0,
+        widths: columnWidths,
+        body: [texts]
+      },
+      layout: tableLayout
+    };
+    content.push(overallData);
+    content.push({ canvas: [{ type: 'line', x1: 0, y1: 0, x2: 575, y2: 0, lineWidth: 1 }], margin: [0, 0, 20, 0], style: 'afterLine' });
+
 
     var styles =
     {
       dateStyle: {
         alignment: 'right',
-        fontSize: 9,
-        margin: [0, 0, 0, 0]
+      },
+      header: {
+        fontSize: 15,
+        bold: false,
+        alignment: 'center',
+        margin: [0, 5, 0, 10]
+      },
+      businessName: {
+        fontSize: 12,
+        margin: [0, 5, 0, 10]
+      },
+      normal: {
+        fontSize: 10,
+        margin: [0, 5, 0, 5]
       },
       tableExample: {
-        border: 0,
+        // border: 0,
         fontSize: 9,
       },
-      tableExample2: {
-        fontSize: 8,
+      headerStyle: {
+        fontSize: 10,
+        bold: true,
+        color: "#333",
+        margin: [0, 10, 0, 10]
       },
       supplierName: {
         alignment: 'right',
         fontSize: 12,
         margin: [0, -10, 0, 10]
       },
-      header: {
-        fontSize: 15,
-        bold: false,
-        margin: [0, 10, 20, 20]
-      },
-      businessName: {
-        fontSize: 12
-      },
+
+
       afterLine: {
         margin: [0, 0, 0, 10]
       },
       afterLastLine: {
         margin: [0, 20, 0, 20]
       },
+      th: {
+        fontSize: 10,
+        bold: true,
+        // fillColor: "#e3e3e3",
+        margin: [5, 10, 0, 10]
+      },
+
+      td: {
+        fontSize: 9,
+        margin: [5, 5, 0, 5]
+      },
+      articleGroup: {
+        fillColor: '#F5F8FA',
+      },
+      property: {
+        // color: "#ccc",
+      },
+
     };
-    this.pdf.getPdfData(styles, content, 'portrait', 'A4', sName + '-' + 'Audit')
+    this.pdf.getPdfData(styles, content, 'portrait', 'A4', this.businessDetails.sName + '-' + 'Transaction Audit Report')
     // console.log('after getPdfData');
 
 

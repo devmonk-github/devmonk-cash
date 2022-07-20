@@ -6,9 +6,9 @@
                     <label class="fs-6 form-label fw-bolder text-dark">{{'TYPE' | translate}}</label>
                     <ng-select class="form-control form-control-solid p-0" [(ngModel)]="optionMenu" [clearable]="false"
                         (change)="onChanges(optionMenu)">
-                        <ng-option value="purchase-order">{{'PURCHASE_ORDER' | translate}} </ng-option>
-                        <ng-option value="sales-order">{{'SALES_ORDER' | translate}} </ng-option>
-                        <ng-option value="cash-registry">{{'CASH_REGISTER' | translate}} </ng-option>
+                        <ng-option [value]="option.sKey" *ngFor="let option of aOptionMenu">
+                            {{ option.sValue | translate}}
+                        </ng-option>
                     </ng-select>
                 </div>
                 <div class="col-md-3">
@@ -444,7 +444,6 @@
                     </div>
                 </div>
             </div>
-            >>>>>>> 58258b69bc88b5976d49caed4316ebd2f3a1b545
         </div>
         <!-- LOAD DATA -END -->
     </div>
