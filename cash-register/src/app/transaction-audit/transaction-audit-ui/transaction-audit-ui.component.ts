@@ -4,7 +4,6 @@ import { Subscription } from 'rxjs';
 import { ApiService } from 'src/app/shared/service/api.service';
 import { PdfService } from 'src/app/shared/service/pdf2.service';
 import * as _moment from 'moment';
-import { right } from '@popperjs/core';
 const moment = (_moment as any).default ? (_moment as any).default : _moment;
 
 @Component({
