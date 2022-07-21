@@ -1,6 +1,14 @@
-.counting-list {
-    column-count: 2;
-    column-gap: 3rem;
+.counting-list td {
+    overflow: hidden;
+}
+
+.counting-list td:hover {
+    overflow: auto
+}
+
+.counting-list tr {
+    display: flex;
+    margin-bottom: 0.5rem;
 }
 
 .currency,
@@ -8,7 +16,6 @@
     font-size: 1.1rem;
 }
 
-.counting-list input,
 .countingTotal input,
 .w-30 {
     width: 30%
