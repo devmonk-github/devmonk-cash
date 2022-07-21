@@ -1,189 +1,334 @@
-<div class="card card-flush">
-    <div class="card-header align-items-center py-5 gap-2 gap-md-5">
-        <div class="card-body">
-            <div class="row mb-5">
-                <div class="col-md-3">
-                    <label class="fs-6 form-label fw-bolder text-dark">{{'TYPE' | translate}}</label>
-                    <ng-select class="form-control form-control-solid p-0" [(ngModel)]="optionMenu" [clearable]="false"
-                        (change)="onChanges(optionMenu)">
-                        <ng-option value="purchase-order">{{'PURCHASE_ORDER' | translate}} </ng-option>
-                        <ng-option value="sales-order">{{'SALES_ORDER' | translate}} </ng-option>
-                        <ng-option value="cash-registry">{{'CASH_REGISTER' | translate}} </ng-option>
-                    </ng-select>
-                </div>
-                <div class="col-md-3">
-                    <label class="fs-6 form-label fw-bolder text-dark">{{'DISPLAY_METHOD' | translate}}</label>
-                    <ng-select class="form-control form-control-solid p-0" [(ngModel)]="sDisplayMethod"
-                        [clearable]="false">
-                        <ng-option *ngFor="let option of aDisplayMethod" [value]="option.sKey">{{ option.sValue |
-                            translate}}
-                        </ng-option>
-                    </ng-select>
-                </div>
-                <div class="col-md-3">
-                    <label class="fs-6 form-label fw-bolder text-dark">{{'SHOW_DYNAMIC_STATE' | translate}}</label>
-                    <br>
-                    <label class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20">
-                        <input class="form-check-input" type="checkbox" [(ngModel)]="IsDynamicState"
-                            name="IsDynamicState" />
-                        <span class="form-check-label"> {{ "SHOW_DYNAMIC" | translate}} </span>
-                    </label>
-                </div>
-                <div class="col-md-3">
-                    <label class="fs-6 form-label fw-bolder text-dark">{{ "PROPERTIES" | translate}}</label>
-                    <div class="d-flex" *ngFor="let property of aProperty; let pIndex = index">
-                        <div class="w-100" *ngIf="propertyOptions[property.iPropertyId]?.length">
-                            <ng-select [multiple]="true" [items]="propertyOptions[property.iPropertyId]"
-                                [(ngModel)]="selectedProperties[property.iPropertyId]" name="propertyId"
-                                bindValue="sName" bindLabel="sName" placeholder="Select"
-                                (click)="onProperties(property.iPropertyId)" required [closeOnSelect]="false">
+<div class="container">
+    <div class="row mb-5">
+        <div class="col-md-12">
+            <div class="card card-flush">
+                <div class="card-header align-items-center py-5 gap-2 gap-md-5">
+                    <div class="card-body">
+                        <div class="row mb-5">
+                            <div class="col-md-3">
+                                <label class="fs-6 form-label fw-bolder text-dark">{{'TYPE' | translate}}</label>
+                                <ng-select class="form-control form-control-solid p-0" [(ngModel)]="optionMenu"
+                                    [clearable]="false" (change)="onChanges(optionMenu)">
+                                    <ng-option [value]="option.sKey" *ngFor="let option of aOptionMenu">
+                                        {{ option.sValue | translate}}
+                                    </ng-option>
+                                </ng-select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="fs-6 form-label fw-bolder text-dark">{{'DISPLAY_METHOD' |
+                                    translate}}</label>
+                                <ng-select class="form-control form-control-solid p-0" [(ngModel)]="sDisplayMethod"
+                                    [clearable]="false">
+                                    <ng-option *ngFor="let option of aDisplayMethod" [value]="option.sKey">{{
+                                        option.sValue
+                                        |
+                                        translate}}
+                                    </ng-option>
+                                </ng-select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="fs-6 form-label fw-bolder text-dark">{{'SHOW_DYNAMIC_STATE' |
+                                    translate}}</label>
+                                <br>
+                                <label
+                                    class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20">
+                                    <input class="form-check-input" type="checkbox" [(ngModel)]="IsDynamicState"
+                                        name="IsDynamicState" />
+                                    <span class="form-check-label"> {{ "SHOW_DYNAMIC" | translate}} </span>
+                                </label>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="fs-6 form-label fw-bolder text-dark">{{ "PROPERTIES" | translate}}</label>
+                                <div class="d-flex" *ngFor="let property of aProperty; let pIndex = index">
+                                    <div class="w-100" *ngIf="propertyOptions[property.iPropertyId]?.length">
+                                        <ng-select [multiple]="true" [items]="propertyOptions[property.iPropertyId]"
+                                            [(ngModel)]="selectedProperties[property.iPropertyId]" name="propertyId"
+                                            bindValue="sName" bindLabel="sName" placeholder="Select"
+                                            (click)="onProperties(property.iPropertyId)" required
+                                            [closeOnSelect]="false">
 
-                                <ng-template ng-option-tmp let-item="item" let-item$="item$" let-index="index">
-                                    <input id="item-{{index}}" type="checkbox" name="item-{{index}}"
-                                        [ngModel]="item$.selected" />
-                                    {{item.sName}}
-                                </ng-template>
+                                            <ng-template ng-option-tmp let-item="item" let-item$="item$"
+                                                let-index="index">
+                                                <input id="item-{{index}}" type="checkbox" name="item-{{index}}"
+                                                    [ngModel]="item$.selected" />
+                                                {{item.sName}}
+                                            </ng-template>
 
-                            </ng-select>
+                                        </ng-select>
 
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-5">
+                            <div class="col-md-3">
+                                <label class="fs-6 form-label fw-bolder text-dark">{{'START_DATE' | translate}}</label>
+                                <input type="datetime-local" class="form-control form-control form-control-solid"
+                                    name="startDate" [ngModel]="filterDates.startDate"
+                                    (ngModelChange)="filterDates.startDate = $event;" />
+                            </div>
+                            <div class="col-md-3">
+                                <label class="fs-6 form-label fw-bolder text-dark">{{'END_DATE' | translate}}</label>
+                                <input type="datetime-local" class="form-control form-control form-control-solid"
+                                    name="endDate" [ngModel]="filterDates.endDate"
+                                    (ngModelChange)="filterDates.endDate = $event;" />
+                            </div>
+                            <div class="col-md-3">
+                                <label class="fs-6 form-label fw-bolder text-dark">{{'LOCATION' | translate}}</label>
+                                <div class="w-100" *ngIf="aLocation?.length">
+                                    <ng-select [multiple]="true" [items]="aLocation" [(ngModel)]="aSelectedLocation"
+                                        name="iLocationId" bindValue="_id" bindLabel="sName" placeholder="Select"
+                                        required [closeOnSelect]="false">
+
+                                        <ng-template ng-option-tmp let-item="item" let-item$="item$" let-index="index">
+                                            <input id="item-{{index}}" type="checkbox" name="item-{{index}}"
+                                                [ngModel]="item$.selected" />
+                                            {{item.sName}}
+                                        </ng-template>
+
+                                    </ng-select>
+
+                                </div>
+
+                            </div>
+                            <div class="col-md-3">
+                                <label class="fs-6 form-label fw-bolder text-dark">{{'WORK_STATION' |
+                                    translate}}</label>
+                                <ng-select class="form-control form-control-solid p-0" [(ngModel)]="selectedWorkStation"
+                                    [clearable]="false">
+                                    <ng-option *ngFor="let oWorkStation of aWorkStation" [value]="oWorkStation">
+                                        {{oWorkStation.sName}}
+                                    </ng-option>
+                                </ng-select>
+                            </div>
+                        </div>
+                        <div class="row mb-5" *ngIf="IsDynamicState">
+                            <div class="col-md-3">
+                                <label class="fs-6 form-label fw-bolder text-dark">{{'EMPLOYEE' | translate}}</label>
+                                <ng-select class="form-control form-control-solid p-0" [(ngModel)]="selectedEmployee"
+                                    [clearable]="false">
+                                    <ng-option *ngFor="let oEmployee of aEmployee" [value]="oEmployee">
+                                        {{oEmployee.sFirstName + ' ' +oEmployee.sLastName}}
+                                    </ng-option>
+                                </ng-select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="mt-5">
+                                <button type="button" class="btn btn-primary" data-kt-roles-modal-action="submit"
+                                    (click)="fetchStatistics()">
+                                    <span class="indicator-label">{{ "APPLY_FILTER" | translate}}</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div> <!-- Card body-->
+
+                </div><!-- Card header-->
+
+
+                <!-- STATISTICS CODE START -->
+
+                <div class="card card-flush" *ngIf="!aStatistic?.length">
+                    <div class="card-header align-items-center py-5 gap-2 gap-md-5">
+                        <div class="card-body">
+                            <div class="row">
+                                <p *ngIf="bStatisticLoading">{{'STATISTIC_LOADING' | translate}}</p>
+                                <p *ngIf="!bStatisticLoading">{{'NO_STATISTIC_RECORDS_FOUND' | translate}}</p>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="row mb-5">
-                <div class="col-md-3">
-                    <label class="fs-6 form-label fw-bolder text-dark">{{'START_DATE' | translate}}</label>
-                    <input type="datetime-local" class="form-control form-control form-control-solid" name="startDate"
-                        [ngModel]="filterDates.startDate" (ngModelChange)="filterDates.startDate = $event;" />
-                </div>
-                <div class="col-md-3">
-                    <label class="fs-6 form-label fw-bolder text-dark">{{'END_DATE' | translate}}</label>
-                    <input type="datetime-local" class="form-control form-control form-control-solid" name="endDate"
-                        [ngModel]="filterDates.endDate" (ngModelChange)="filterDates.endDate = $event;" />
-                </div>
-                <div class="col-md-3">
-                    <label class="fs-6 form-label fw-bolder text-dark">{{'LOCATION' | translate}}</label>
-                    <div class="w-100" *ngIf="aLocation?.length">
-                        <ng-select [multiple]="true" [items]="aLocation" [(ngModel)]="aSelectedLocation"
-                            name="iLocationId" bindValue="_id" bindLabel="sName" placeholder="Select" required
-                            [closeOnSelect]="false">
+                <div *ngIf="aStatistic?.length">
 
-                            <ng-template ng-option-tmp let-item="item" let-item$="item$" let-index="index">
-                                <input id="item-{{index}}" type="checkbox" name="item-{{index}}"
-                                    [ngModel]="item$.selected" />
-                                {{item.sName}}
-                            </ng-template>
+                    <!-- LOAD DATA -BEGINS -->
+                    <div class="container">
 
-                        </ng-select>
+                        <div>
+                            <div class="row" *ngIf="aStatistic[0]?.overall?.length">
+                                <div class="col-md-4">
+                                    <span class="">{{ 'QUANTITY' | translate}}</span>
+                                    <h3 class="text-black">{{aStatistic[0].overall[0].nQuantity}}</h3>
+                                </div>
+                                <div class="col-md-4">
+                                    <span class="">{{ 'TOTAL' | translate}}</span>
+                                    <h3 class="text-black">{{aStatistic[0].overall[0].nTotalRevenue}}</h3>
+                                </div>
+                                <div class="col-md-4">
+                                    <strong *ngIf="!IsDynamicState">{{ 'STATIC_DATA' | translate }}</strong>
+                                    <strong *ngIf="IsDynamicState">{{ 'DYNAMIC_DATA' | translate }}</strong>
+                                </div>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="d-flex justify-content-end">
+                                    <button class="btn btn-primary" (click)="exportToPDF()">{{ 'DOWNLOAD' }}</button>
+                                </div>
+                            </div>
+                        </div>
 
-                    </div>
+                        <div class="row">
 
-                </div>
-                <div class="col-md-3">
-                    <label class="fs-6 form-label fw-bolder text-dark">{{'WORK_STATION' | translate}}</label>
-                    <ng-select class="form-control form-control-solid p-0" [(ngModel)]="selectedWorkStation"
-                        [clearable]="false">
-                        <ng-option *ngFor="let oWorkStation of aWorkStation" [value]="oWorkStation">
-                            {{oWorkStation.sName}}
-                        </ng-option>
-                    </ng-select>
-                </div>
-            </div>
-            <div class="row mb-5" *ngIf="IsDynamicState">
-                <div class="col-md-3">
-                    <label class="fs-6 form-label fw-bolder text-dark">{{'EMPLOYEE' | translate}}</label>
-                    <ng-select class="form-control form-control-solid p-0" [(ngModel)]="selectedEmployee"
-                        [clearable]="false">
-                        <ng-option *ngFor="let oEmployee of aEmployee" [value]="oEmployee">
-                            {{oEmployee.sFirstName + ' ' +oEmployee.sLastName}}
-                        </ng-option>
-                    </ng-select>
-                </div>
-            </div>
-            <div class="row">
-                <div class="mt-5">
-                    <button type="button" class="btn btn-primary" data-kt-roles-modal-action="submit"
-                        (click)="fetchStatistics()">
-                        <span class="indicator-label">{{ "APPLY_FILTER" | translate}}</span>
-                    </button>
-                </div>
-            </div>
-        </div> <!-- Card body-->
+                            <div class="card overflow-y-auto" *ngIf="sDisplayMethod === 'revenuePerBusinessPartner'">
+                                <p> {{ 'REVENUE_PER_BUSINESS_PARTNER' | translate}} </p>
+                                <div class="card-body">
+                                    <div class="table-responsive"
+                                        *ngFor="let oStatistic of aStatistic; let statisticIndex = index">
+                                        <table
+                                            class="table table-rounded border border-gray-300 table-row-bordered table-row-gray-300 gy-5 gs-5 text-gray-600"
+                                            *ngFor="let oSupplier of oStatistic.individual; let supplierIndex = index">
+                                            <thead>
+                                                <tr>
+                                                    <th><span class="">{{ 'SUPPLIER' | translate}}</span>
+                                                        <h3 class="text-black">{{oSupplier.sBusinessPartnerName}}</h3>
+                                                    </th>
+                                                    <th class="w-150px"><span class="">{{"QUANTITY" | translate}}</span>
+                                                        <h4 class="text-black">{{oSupplier.nQuantity}}</h4>
+                                                    </th>
+                                                    <th class="w-150px"><span class="">{{"PRICE_WITH_VAT" |
+                                                            translate}}</span>
+                                                        <h4 class="text-black">{{oSupplier.nTotalRevenue}}</h4>
+                                                    </th>
+                                                    <th class="w-150px"><span class="">{{"PURCHASE_PRICE" |
+                                                            translate}}</span>
+                                                        <h4 class="text-black">{{oSupplier.nTotalPurchaseAmount}}</h4>
+                                                    </th>
+                                                    <th class="w-150px"><span class="">{{"GROSS_PROFIT" |
+                                                            translate}}</span>
+                                                        <h4 class="text-black">{{oSupplier.nProfit}}</h4>
+                                                    </th>
+                                                    <th class="w-150px"><span class="">{{"MARGIN" | translate}}</span>
+                                                        <h4 class="text-black">{{oSupplier.nMargin}}</h4>
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td colspan="6" class="p-2">
+                                                        <table
+                                                            class="table table-row-bordered table-row-gray-300 gy-5 gs-5 mb-0 text-gray-600 fw-bold border"
+                                                            *ngFor="let oArticleGroup of oSupplier.aArticleGroups; let articleGroupIndex = index">
+                                                            <!-- start of articlegroup -->
+                                                            <thead class="bg-gray-100">
+                                                                <tr class="fw-bold fs-6 text-gray-800">
+                                                                    <th scope="col">{{oArticleGroup.sName}}</th>
+                                                                    <th scope="col" class="w-150px">
+                                                                        {{oArticleGroup.nQuantity}}</th>
+                                                                    <th scope="col" class="w-150px">
+                                                                        {{oArticleGroup.nTotalRevenue}}
+                                                                    </th>
+                                                                    <th scope="col" class="w-150px">
+                                                                        {{oArticleGroup.nTotalPurchaseAmount}}
+                                                                    </th>
+                                                                    <th scope="col" class="w-150px">
+                                                                        {{oArticleGroup.nProfit}}</th>
+                                                                    <th scope="col" class="w-150px">
+                                                                        {{oArticleGroup.nMargin}}</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <ng-container
+                                                                *ngIf="oArticleGroup.aRevenueByProperty.length > 0">
+                                                                <tbody class="p-2"
+                                                                    *ngFor="let oRevenueByProperty of oArticleGroup.aRevenueByProperty; let revenuePropertyIndex = index">
+                                                                    <!--start of dyamic property -->
+                                                                    <tr>
+                                                                        <td class="ps-9">
+                                                                            {{oRevenueByProperty.aCategory.join(' |')}}
+                                                                        </td>
+                                                                        <td>{{oRevenueByProperty.nQuantity}}</td>
+                                                                        <td>{{oRevenueByProperty.nTotalRevenue}}</td>
+                                                                        <td>{{oRevenueByProperty.nTotalPurchaseAmount}}
+                                                                        </td>
+                                                                        <td>{{oRevenueByProperty.nProfit}}</td>
+                                                                        <td>{{oRevenueByProperty.nMargin}}</td>
+                                                                    </tr>
+                                                                </tbody>
+                                                            </ng-container>
+                                                            <!-- start of articlegroup -->
+                                                        </table>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
 
-    </div><!-- Card header-->
+                            <div class="card" *ngIf="sDisplayMethod === 'revenuePerSupplierAndArticleGroup'">
+                                <p> {{ 'REVENUE_PER_SUPPLIER_AND_ARTICLE_GROUP' | translate}} </p>
+                                <div class="card-body">
+                                    <div class="table-responsive" *ngFor="let oStatistic of aStatistic; let i = index">
+                                        <table
+                                            class="table table-rounded border border-gray-300 table-row-bordered table-row-gray-300 gy-5 gs-5 text-gray-600"
+                                            *ngFor="let oSupplier of oStatistic.individual; let supplierIndex = index">
+                                            <thead>
+                                                <tr>
+                                                    <th><span class="">{{ 'SUPPLIER' | translate}}</span>
+                                                        <h3 class="text-black">{{oSupplier.sBusinessPartnerName}}</h3>
+                                                    </th>
+                                                    <th class="w-150px"><span class="">{{"QUANTITY" | translate}}</span>
+                                                        <h4 class="text-black">{{oSupplier.nQuantity}}</h4>
+                                                    </th>
+                                                    <th class="w-150px"><span class="">{{"PRICE_WITH_VAT" |
+                                                            translate}}</span>
+                                                        <h4 class="text-black">{{oSupplier.nTotalRevenue}}</h4>
+                                                    </th>
+                                                    <th class="w-150px"><span class="">{{"PURCHASE_PRICE" |
+                                                            translate}}</span>
+                                                        <h4 class="text-black">{{oSupplier.nTotalPurchaseAmount}}</h4>
+                                                    </th>
+                                                    <th class="w-150px"><span class="">{{"GROSS_PROFIT" |
+                                                            translate}}</span>
+                                                        <h4 class="text-black">{{oSupplier.nProfit}}</h4>
+                                                    </th>
+                                                    <th class="w-150px"><span class="">{{"MARGIN" | translate}}</span>
+                                                        <h4 class="text-black">{{oSupplier.nMargin}}</h4>
+                                                    </th>
+                                                </tr>
+                                            </thead>
 
+                                            <tbody>
+                                                <tr>
+                                                    <td colspan="6" class="p-2">
+                                                        <table
+                                                            class="table table-row-bordered table-row-gray-300 gy-5 gs-5 mb-0 text-gray-600 fw-bold border"
+                                                            *ngFor="let oArticleGroup of oSupplier.aArticleGroups; let articleGroupIndex = index">
+                                                            <thead class="bg-gray-100">
+                                                                <tr class="fw-bold fs-6 text-gray-800">
+                                                                    <th scope="col">{{oArticleGroup.sName}}</th>
+                                                                    <th scope="col" class="w-150px">
+                                                                        {{oArticleGroup.nQuantity}}</th>
+                                                                    <th scope="col" class="w-150px">
+                                                                        {{oArticleGroup.nTotalRevenue}}
+                                                                    </th>
+                                                                    <th scope="col" class="w-150px">
+                                                                        {{oArticleGroup.nTotalPurchaseAmount}}
+                                                                    </th>
+                                                                    <th scope="col" class="w-150px">
+                                                                        {{oArticleGroup.nProfit}}</th>
+                                                                    <th scope="col" class="w-150px">
+                                                                        {{oArticleGroup.nMargin}}</th>
+                                                                </tr>
+                                                            </thead>
+                                                        </table>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
 
-    <!-- STATISTICS CODE START -->
-
-    <div class="card card-flush" *ngIf="!aStatistic?.length">
-        <div class="card-header align-items-center py-5 gap-2 gap-md-5">
-            <div class="card-body">
-                <div class="row">
-                    <p *ngIf="bStatisticLoading">{{'STATISTIC_LOADING' | translate}}</p>
-                    <p *ngIf="!bStatisticLoading">{{'NO_STATISTIC_RECORDS_FOUND' | translate}}</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div *ngIf="aStatistic?.length">
-
-        <!-- LOAD DATA -BEGINS -->
-        <div class="container">
-            <div>
-                <div class="row" *ngIf="aStatistic[0]?.overall?.length">
-                    <div class="col-md-4">
-                        <span class="">{{ 'QUANTITY' | translate}}</span>
-                        <h3 class="text-black">{{aStatistic[0].overall[0].nQuantity}}</h3>
-                    </div>
-                    <div class="col-md-4">
-                        <span class="">{{ 'TOTAL' | translate}}</span>
-                        <h3 class="text-black">{{aStatistic[0].overall[0].nTotalRevenue}}</h3>
-                    </div>
-                    <div class="col-md-4">
-                        <strong *ngIf="!IsDynamicState">{{ 'STATIC_DATA' | translate }}</strong>
-                        <strong *ngIf="IsDynamicState">{{ 'DYNAMIC_DATA' | translate }}</strong>
-                    </div>
-                </div>
-            </div>
-            <hr>
-
-            <div class="card overflow-y-auto" *ngIf="sDisplayMethod === 'revenuePerBusinessPartner'">
-                <p> {{ 'REVENUE_PER_BUSINESS_PARTNER' | translate}} </p>
-                <div class="card-body">
-                    <div class="table-responsive" *ngFor="let oStatistic of aStatistic; let statisticIndex = index">
-                        <table
-                            class="table table-rounded border border-gray-300 table-row-bordered table-row-gray-300 gy-5 gs-5 text-gray-600"
-                            *ngFor="let oSupplier of oStatistic.individual; let supplierIndex = index">
-                            <thead>
-                                <tr>
-                                    <th><span class="">{{ 'SUPPLIER' | translate}}</span>
-                                        <h3 class="text-black">{{oSupplier.sBusinessPartnerName}}</h3>
-                                    </th>
-                                    <th class="w-150px"><span class="">{{"QUANTITY" | translate}}</span>
-                                        <h4 class="text-black">{{oSupplier.nQuantity}}</h4>
-                                    </th>
-                                    <th class="w-150px"><span class="">{{"PRICE_WITH_VAT" | translate}}</span>
-                                        <h4 class="text-black">{{oSupplier.nTotalRevenue}}</h4>
-                                    </th>
-                                    <th class="w-150px"><span class="">{{"PURCHASE_PRICE" | translate}}</span>
-                                        <h4 class="text-black">{{oSupplier.nTotalPurchaseAmount}}</h4>
-                                    </th>
-                                    <th class="w-150px"><span class="">{{"GROSS_PROFIT" | translate}}</span>
-                                        <h4 class="text-black">{{oSupplier.nProfit}}</h4>
-                                    </th>
-                                    <th class="w-150px"><span class="">{{"MARGIN" | translate}}</span>
-                                        <h4 class="text-black">{{oSupplier.nMargin}}</h4>
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td colspan="6" class="p-2">
+                            <div class="card" *ngIf="sDisplayMethod === 'revenuePerArticleGroupAndProperty'">
+                                <p> {{ 'REVENUE_PER_ARTICLE_GROUP_AND_PROPERTY' | translate}} </p>
+                                <div class="card-body">
+                                    <div class="table-responsive" *ngFor="let oStatistic of aStatistic; let i = index">
                                         <table
                                             class="table table-row-bordered table-row-gray-300 gy-5 gs-5 mb-0 text-gray-600 fw-bold border"
-                                            *ngFor="let oArticleGroup of oSupplier.aArticleGroups; let articleGroupIndex = index">
+                                            *ngFor="let oArticleGroup of oStatistic.individual; let articleGroupIndex = index">
                                             <!-- start of articlegroup -->
                                             <thead class="bg-gray-100">
                                                 <tr class="fw-bold fs-6 text-gray-800">
@@ -197,7 +342,7 @@
                                                     <th scope="col" class="w-150px">{{oArticleGroup.nMargin}}</th>
                                                 </tr>
                                             </thead>
-                                            <ng-container *ngIf="oArticleGroup.aRevenueByProperty.length > 0">
+                                            <ng-container *ngIf="oArticleGroup.aRevenueByProperty.length">
                                                 <tbody class="p-2"
                                                     *ngFor="let oRevenueByProperty of oArticleGroup.aRevenueByProperty; let revenuePropertyIndex = index">
                                                     <!--start of dyamic property -->
@@ -214,50 +359,48 @@
                                             </ng-container>
                                             <!-- start of articlegroup -->
                                         </table>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
 
-            <div class="card" *ngIf="sDisplayMethod === 'revenuePerSupplierAndArticleGroup'">
-                <p> {{ 'REVENUE_PER_SUPPLIER_AND_ARTICLE_GROUP' | translate}} </p>
-                <div class="card-body">
-                    <div class="table-responsive" *ngFor="let oStatistic of aStatistic; let i = index">
-                        <table
-                            class="table table-rounded border border-gray-300 table-row-bordered table-row-gray-300 gy-5 gs-5 text-gray-600"
-                            *ngFor="let oSupplier of oStatistic.individual; let supplierIndex = index">
-                            <thead>
-                                <tr>
-                                    <th><span class="">{{ 'SUPPLIER' | translate}}</span>
-                                        <h3 class="text-black">{{oSupplier.sBusinessPartnerName}}</h3>
-                                    </th>
-                                    <th class="w-150px"><span class="">{{"QUANTITY" | translate}}</span>
-                                        <h4 class="text-black">{{oSupplier.nQuantity}}</h4>
-                                    </th>
-                                    <th class="w-150px"><span class="">{{"PRICE_WITH_VAT" | translate}}</span>
-                                        <h4 class="text-black">{{oSupplier.nTotalRevenue}}</h4>
-                                    </th>
-                                    <th class="w-150px"><span class="">{{"PURCHASE_PRICE" | translate}}</span>
-                                        <h4 class="text-black">{{oSupplier.nTotalPurchaseAmount}}</h4>
-                                    </th>
-                                    <th class="w-150px"><span class="">{{"GROSS_PROFIT" | translate}}</span>
-                                        <h4 class="text-black">{{oSupplier.nProfit}}</h4>
-                                    </th>
-                                    <th class="w-150px"><span class="">{{"MARGIN" | translate}}</span>
-                                        <h4 class="text-black">{{oSupplier.nMargin}}</h4>
-                                    </th>
-                                </tr>
-                            </thead>
+                                    </div>
+                                </div>
+                            </div>
 
-                            <tbody>
-                                <tr>
-                                    <td colspan="6" class="p-2">
+                            <div class="card" *ngIf="sDisplayMethod === 'revenuePerProperty'">
+                                <p> {{ 'REVENUE_PER_PROPERTY' | translate}} </p>
+
+                                <div class="card-body">
+                                    <div class="table-responsive" *ngFor="let oStatistic of aStatistic; let i = index">
                                         <table
                                             class="table table-row-bordered table-row-gray-300 gy-5 gs-5 mb-0 text-gray-600 fw-bold border"
-                                            *ngFor="let oArticleGroup of oSupplier.aArticleGroups; let articleGroupIndex = index">
+                                            *ngFor="let oRevenueByProperty of oStatistic.individual; let articleGroupIndex = index">
+                                            <!-- start of article-group -->
+                                            <thead class="bg-gray-100">
+                                                <tr class="fw-bold fs-6 text-gray-800">
+                                                    <th scope="col">{{oRevenueByProperty?.aCategory?.length ?
+                                                        oRevenueByProperty.aCategory.join(' | ') : '-'}}</th>
+                                                    <th scope="col" class="w-150px">{{oRevenueByProperty.sPropertyName}}
+                                                    </th>
+                                                    <th scope="col" class="w-150px">{{oRevenueByProperty.nTotalRevenue}}
+                                                    </th>
+                                                    <th scope="col" class="w-150px">
+                                                        {{oRevenueByProperty.nTotalPurchaseAmount}}</th>
+                                                    <th scope="col" class="w-150px">{{oRevenueByProperty.nProfit}}</th>
+                                                    <th scope="col" class="w-150px">{{oRevenueByProperty.nMargin}}</th>
+                                                </tr>
+                                            </thead>
+                                        </table>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card" *ngIf="sDisplayMethod === 'revenuePerArticleGroup'">
+                                <p> {{ 'REVENUE_PER_ARTICLE_GROUP' | translate}} </p>
+                                <div class="card-body">
+                                    <div class="table-responsive" *ngFor="let oStatistic of aStatistic; let i = index">
+                                        <table
+                                            class="table table-row-bordered table-row-gray-300 gy-5 gs-5 mb-0 text-gray-600 fw-bold border"
+                                            *ngFor="let oArticleGroup of oStatistic.individual; let articleGroupIndex = index">
+                                            <!-- start of articlegroup -->
                                             <thead class="bg-gray-100">
                                                 <tr class="fw-bold fs-6 text-gray-800">
                                                     <th scope="col">{{oArticleGroup.sName}}</th>
@@ -270,263 +413,345 @@
                                                     <th scope="col" class="w-150px">{{oArticleGroup.nMargin}}</th>
                                                 </tr>
                                             </thead>
+                                            <!-- end of articlegroup -->
                                         </table>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- <div class="row" *ngIf="aStatistic[0].overall.length">
+                <div class="col-md-4">
+                    <span class="">{{ 'QUANTITY' | translate}}</span>
+                    <h3 class="text-black">{{aStatistic[0].overall[0].nQuantity}}</h3>
+                </div>
+                <div class="col-md-4">
+                    <span class="">{{ 'TOTAL' | translate}}</span>
+                    <h3 class="text-black">{{aStatistic[0].overall[0].nTotal}}</h3>
+                </div>
+        </div> -->
+
+
+
+                        <div class="card" *ngIf="sDisplayMethod === 'revenuePerProperty'">
+                            <p> {{ 'REVENUE_PER_PROPERTY' | translate}} </p>
+
+                            <div class="card-body">
+                                <div class="table-responsive" *ngFor="let oStatistic of aStatistic; let i = index">
+                                    <table
+                                        class="table table-row-bordered table-row-gray-300 gy-5 gs-5 mb-0 text-gray-600 fw-bold border"
+                                        *ngFor="let oRevenueByProperty of oStatistic.individual; let articleGroupIndex = index">
+                                        <!-- start of article-group -->
+                                        <thead class="bg-gray-100">
+                                            <tr class="fw-bold fs-6 text-gray-800">
+                                                <th scope="col">{{oRevenueByProperty?.aCategory?.length ?
+                                                    oRevenueByProperty.aCategory.join(' | ') : '-'}}</th>
+                                                <th scope="col" class="w-150px">{{oRevenueByProperty.sPropertyName}}
+                                                </th>
+                                                <th scope="col" class="w-150px">{{oRevenueByProperty.nTotalRevenue}}
+                                                </th>
+                                                <th scope="col" class="w-150px">
+                                                    {{oRevenueByProperty.nTotalPurchaseAmount}}
+                                                </th>
+                                                <th scope="col" class="w-150px">{{oRevenueByProperty.nProfit}}</th>
+                                                <th scope="col" class="w-150px">{{oRevenueByProperty.nMargin}}</th>
+                                            </tr>
+                                        </thead>
+                                    </table>
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card" *ngIf="sDisplayMethod === 'revenuePerArticleGroup'">
+                            <p> {{ 'REVENUE_PER_ARTICLE_GROUP' | translate}} </p>
+                            <div class="card-body">
+                                <div class="table-responsive" *ngFor="let oStatistic of aStatistic; let i = index">
+                                    <table
+                                        class="table table-row-bordered table-row-gray-300 gy-5 gs-5 mb-0 text-gray-600 fw-bold border"
+                                        *ngFor="let oArticleGroup of oStatistic.individual; let articleGroupIndex = index">
+                                        <!-- start of articlegroup -->
+                                        <thead class="bg-gray-100">
+                                            <tr class="fw-bold fs-6 text-gray-800">
+                                                <th scope="col">{{oArticleGroup.sName}}</th>
+                                                <th scope="col" class="w-150px">{{oArticleGroup.nQuantity}}</th>
+                                                <th scope="col" class="w-150px">{{oArticleGroup.nTotalRevenue}}</th>
+                                                <th scope="col" class="w-150px">{{oArticleGroup.nTotalPurchaseAmount}}
+                                                </th>
+                                                <th scope="col" class="w-150px">{{oArticleGroup.nProfit}}</th>
+                                                <th scope="col" class="w-150px">{{oArticleGroup.nMargin}}</th>
+                                            </tr>
+                                        </thead>
+                                        <!-- end of articlegroup -->
+                                    </table>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- LOAD DATA -END -->
+                </div>
+                <!-- STATISTICS CODE END -->
+
+                <!-- PAYMENT START -->
+                <div class="card">
+                    <div class="container">
+                        <strong> {{ 'PAYMENT_METHODS' | translate}} </strong>
+                        <p *ngIf="!aPaymentMethods?.length">{{ 'PAYMENT_METHODS_NOT_FOUND' | translate}}</p>
+                        <div *ngIf="aPaymentMethods?.length">
+                            <div class="card-body">
+
+                                <table
+                                    class="table table-row-bordered table-row-gray-300 gy-5 gs-5 mb-0 text-gray-600 fw-bold border">
+                                    <thead class="bg-gray-100">
+                                        <tr class="fw-bold fs-6 text-gray-800">
+                                            <th scope="col">{{ 'METHOD' | translate}}</th>
+                                            <th scope="col" class="w-150px">{{ 'TOTAL_AMOUNT' | translate}}</th>
+                                            <th scope="col" class="w-150px">{{ 'QUANTITY' | translate}}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="p-2" *ngFor="let oPayment of aPaymentMethods; let i = index">
+                                        <tr>
+                                            <td class="ps-9">{{oPayment.sMethod}}</td>
+                                            <td>{{oPayment.nAmount}}</td>
+                                            <td>{{oPayment.nQuantity}}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
+                <!-- PAYMENT END -->
 
-            <div class="card" *ngIf="sDisplayMethod === 'revenuePerArticleGroupAndProperty'">
-                <p> {{ 'REVENUE_PER_ARTICLE_GROUP_AND_PROPERTY' | translate}} </p>
-                <div class="card-body">
-                    <div class="table-responsive" *ngFor="let oStatistic of aStatistic; let i = index">
-                        <table
-                            class="table table-row-bordered table-row-gray-300 gy-5 gs-5 mb-0 text-gray-600 fw-bold border"
-                            *ngFor="let oArticleGroup of oStatistic.individual; let articleGroupIndex = index">
-                            <!-- start of articlegroup -->
-                            <thead class="bg-gray-100">
-                                <tr class="fw-bold fs-6 text-gray-800">
-                                    <th scope="col">{{oArticleGroup?.sName}}</th>
-                                    <th scope="col" class="w-150px">{{oArticleGroup?.nQuantity}}</th>
-                                    <th scope="col" class="w-150px">{{oArticleGroup?.nTotalRevenue}}</th>
-                                    <th scope="col" class="w-150px">{{oArticleGroup?.nTotalPurchaseAmount}}</th>
-                                    <th scope="col" class="w-150px">{{oArticleGroup?.nProfit}}</th>
-                                    <th scope="col" class="w-150px">{{oArticleGroup?.nMargin}}</th>
-                                </tr>
-                            </thead>
-                            <ng-container *ngIf="oArticleGroup?.aRevenueByProperty?.length">
-                                <tbody class="p-2"
-                                    *ngFor="let oRevenueByProperty of oArticleGroup.aRevenueByProperty; let revenuePropertyIndex = index">
-                                    <!--start of dyamic property -->
-                                    <tr>
-                                        <td class="ps-9">{{oRevenueByProperty?.aCategory.join(' | ')}}</td>
-                                        <td>{{oRevenueByProperty?.nQuantity}}</td>
-                                        <td>{{oRevenueByProperty?.nTotalRevenue}}</td>
-                                        <td>{{oRevenueByProperty?.nTotalPurchaseAmount}}</td>
-                                        <td>{{oRevenueByProperty?.nProfit}}</td>
-                                        <td>{{oRevenueByProperty?.nMargin}}</td>
+                <!-- Tushar's code START -->
+                <div class="card-body pt-0">
+                    <div class="dataTables_wrapper dt-bootstrap4 no-footer">
+                        <div class="table-responsive">
+                            <table class="table align-middle table-row-dashed fs-6 gy-5 dataTable no-footer">
+                                <thead>
+                                    <tr class="text-start text-gray-400 fw-bolder fs-7 text-uppercase gs-0">
+                                        <th class="min-w-100px sorting" tabindex="0">{{ "STATISTICS_OVERALL" |
+                                            translate}}
+                                        </th>
+                                        <th class="min-w-100px sorting" tabindex="0">{{ "STATISTICS_VALUE" | translate}}
+                                        </th>
+                                        <th class="min-w-100px sorting" tabindex="0">{{ "BOOKKEEPING_VALUE" | translate
+                                            }}
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody class="fw-bold text-gray-600">
+                                    <tr class="even">
+                                        <td>
+                                            <span>Total Revenue</span>
+                                        </td>
+                                        <td>
+                                        </td>
+                                        <td>
+                                        </td>
+                                    </tr>
+                                    <tr class="even">
+                                        <td>
+                                            <span>Quantity</span>
+                                        </td>
+                                        <td>
+                                        </td>
+                                        <td>
+                                        </td>
                                     </tr>
                                 </tbody>
-                            </ng-container>
-                            <!-- start of articleGroup -->
-                        </table>
+                            </table>
 
+                            <hr>
+                            <h4>Transactions</h4>
+                            <table
+                                class="table table-green align-middle table-row-dashed fs-6 gy-5 dataTable no-footer">
+                                <thead style="position: sticky;">
+                                    <tr class="text-start text-gray-400 fw-bolder fs-7 text-uppercase gs-0">
+                                        <th class="min-w-100px sorting" tabindex="0">{{ "BOOKING_DATE" | translate}}
+                                        </th>
+                                        <th class="min-w-100px sorting" tabindex="0">{{ "LEDGER_NUMBER" | translate}}
+                                        </th>
+                                        <th class="min-w-100px sorting" tabindex="0">{{ "CREDIT" | translate}} </th>
+                                        <th class="min-w-100px sorting" tabindex="0">{{ "DEBIT" | translate }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="fw-bold text-gray-600">
+                                    <tr class="even" *ngFor="let booking of bookingRecords">
+                                        <td>
+                                            <span>{{booking.dCreatedDate | date: 'medium'}}</span>
+                                        </td>
+                                        <td>
+                                            <span>{{booking.nLedgerNumber}}</span>
+                                        </td>
+                                        <td>
+                                            <span>{{ booking.eType === 'credit' ? (booking.nValue | number:'2.1-5'):
+                                                '-'}}</span>
+                                        </td>
+                                        <td>
+                                            <span>{{booking.eType === 'debit' ? (booking.nValue | number:'2.1-5'): '-'
+                                                }}</span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                                <tfoot style="position: sticky;">
+                                    <tr class="even">
+                                        <td>
+                                            <span>Total</span>
+                                        </td>
+                                        <td>
+                                            <span>-</span>
+                                        </td>
+                                        <td>
+                                            <span>{{creditAmount}}</span>
+                                        </td>
+                                        <td>
+                                            <span>{{debitAmount}}</span>
+                                        </td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                            <hr>
+                            <h4>Payments</h4>
+                            <table
+                                class="table table-green align-middle table-row-dashed fs-6 gy-5 dataTable no-footer">
+                                <thead style="position: sticky;">
+                                    <tr class="text-start text-gray-400 fw-bolder fs-7 text-uppercase gs-0">
+                                        <th class="min-w-100px sorting" tabindex="0">{{ "BOOKING_DATE" | translate}}
+                                        </th>
+                                        <th class="min-w-100px sorting" tabindex="0">{{ "LEDGER_NUMBER" | translate}}
+                                        </th>
+                                        <th class="min-w-100px sorting" tabindex="0">{{ "CREDIT" | translate}} </th>
+                                        <th class="min-w-100px sorting" tabindex="0">{{ "DEBIT" | translate }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="fw-bold text-gray-600">
+                                    <tr class="even" *ngFor="let booking of paymentRecords">
+                                        <td>
+                                            <span>{{booking.dCreatedDate | date: 'medium'}}</span>
+                                        </td>
+                                        <td>
+                                            <span>{{booking.nLedgerNumber}}</span>
+                                        </td>
+                                        <td>
+                                            <span>{{ booking.eType === 'credit' ? (booking.nValue | number:'2.1-5'):
+                                                '-'}}</span>
+                                        </td>
+                                        <td>
+                                            <span>{{booking.eType === 'debit' ? (booking.nValue | number:'2.1-5'): '-'
+                                                }}</span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                                <tfoot style="position: sticky;">
+                                    <tr class="even">
+                                        <td>
+                                            <span>Total</span>
+                                        </td>
+                                        <td>
+                                            <span>-</span>
+                                        </td>
+                                        <td>
+                                            <span>{{paymentCreditAmount}}</span>
+                                        </td>
+                                        <td>
+                                            <span>{{paymentDebitAmount}}</span>
+                                        </td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
                     </div>
                 </div>
+                <!-- Tushar's code END -->
+
             </div>
-
-            <div class="card" *ngIf="sDisplayMethod === 'revenuePerProperty'">
-                <p> {{ 'REVENUE_PER_PROPERTY' | translate}} </p>
-
-                <div class="card-body">
-                    <div class="table-responsive" *ngFor="let oStatistic of aStatistic; let i = index">
-                        <table
-                            class="table table-row-bordered table-row-gray-300 gy-5 gs-5 mb-0 text-gray-600 fw-bold border"
-                            *ngFor="let oRevenueByProperty of oStatistic.individual; let articleGroupIndex = index">
-                            <!-- start of article-group -->
-                            <thead class="bg-gray-100">
-                                <tr class="fw-bold fs-6 text-gray-800">
-                                    <th scope="col">{{oRevenueByProperty?.aCategory?.length ? oRevenueByProperty.aCategory.join(' | ') : '-'}}</th>
-                                    <th scope="col" class="w-150px">{{oRevenueByProperty.sPropertyName}}</th>
-                                    <th scope="col" class="w-150px">{{oRevenueByProperty.nTotalRevenue}}</th>
-                                    <th scope="col" class="w-150px">{{oRevenueByProperty.nTotalPurchaseAmount}}</th>
-                                    <th scope="col" class="w-150px">{{oRevenueByProperty.nProfit}}</th>
-                                    <th scope="col" class="w-150px">{{oRevenueByProperty.nMargin}}</th>
-                                </tr>
-                            </thead>
-                        </table>
-
+        </div>
+    </div>
+    <div class="row">
+        <div class="card card-flush">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card-header align-items-center p-5">
+                        <div class="card-title col-md-12">
+                            <h4> Counting</h4>
+                        </div>
                     </div>
+                    <div class="card-body p-5">
+                        <div class="counting-list mb-5">
+                            <div *ngFor="let amount of aAmount">
+                                <div class="d-flex align-items-center justify-content-around mb-2">
+                                    <label class="currency">
+                                        <span>&euro;</span>
+                                        {{ amount.sLabel }}
+                                    </label>
+                                    <span> x </span>
+                                    <input type="number" class="form-control mx-1 p-2" [(ngModel)]="amount.nQuantity"
+                                        (ngModelChange)="calculateTotalCounting()">
+                                    <label class="currency">
+                                        {{ (amount.nQuantity * amount.nValue) | currency:"EUR":"symbol" }}</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="countingTotal">
+                            <div class="d-flex justify-content-start align-items-center">
+                                <label>Total Counted : </label>
+                                <input type="number" class="form-control mx-1 p-2" [(ngModel)]="nTotalCounted">
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
-            </div>
+                <div class="col-md-6">
+                    <div class="card-header align-items-center p-5">
+                        <div class="card-title col-md-12">
+                            <h4> Earnings </h4>
+                        </div>
+                    </div>
+                    <div class="card-body">
 
-            <div class="card" *ngIf="sDisplayMethod === 'revenuePerArticleGroup'">
-                <p> {{ 'REVENUE_PER_ARTICLE_GROUP' | translate}} </p>
-                <div class="card-body">
-                    <div class="table-responsive" *ngFor="let oStatistic of aStatistic; let i = index">
-                        <table
-                            class="table table-row-bordered table-row-gray-300 gy-5 gs-5 mb-0 text-gray-600 fw-bold border"
-                            *ngFor="let oArticleGroup of oStatistic.individual; let articleGroupIndex = index">
-                            <!-- start of articlegroup -->
-                            <thead class="bg-gray-100">
-                                <tr class="fw-bold fs-6 text-gray-800">
-                                    <th scope="col">{{oArticleGroup.sName}}</th>
-                                    <th scope="col" class="w-150px">{{oArticleGroup.nQuantity}}</th>
-                                    <th scope="col" class="w-150px">{{oArticleGroup.nTotalRevenue}}</th>
-                                    <th scope="col" class="w-150px">{{oArticleGroup.nTotalPurchaseAmount}}</th>
-                                    <th scope="col" class="w-150px">{{oArticleGroup.nProfit}}</th>
-                                    <th scope="col" class="w-150px">{{oArticleGroup.nMargin}}</th>
-                                </tr>
-                            </thead>
-                            <!-- end of articlegroup -->
-                        </table>
-
+                        <div class="earnings-section">
+                            <div>
+                                <label>Cash at opening day state</label>
+                                <label class="">{{ '0.00' | currency:"EUR":"symbol" }}</label>
+                            </div>
+                            <div>
+                                <label>Cash mutations</label>
+                                <label class="">{{ '0.00' | currency:"EUR":"symbol" }}</label>
+                            </div>
+                            <div>
+                                <label>Cash in Till</label>
+                                <label class="">{{ nCashInTill | currency:"EUR":"symbol" }}</label>
+                            </div>
+                            <div>
+                                <label>Cash Counted</label>
+                                <label class="bold">{{ nTotalCounted | currency:"EUR":"symbol" }} </label>
+                            </div>
+                            <div>
+                                <label>Difference in Cash</label>
+                                <label class="bold">
+                                    {{ (nCashInTill - nTotalCounted) | currency:"EUR":"symbol" }}
+                                </label>
+                            </div>
+                            <div>
+                                <label>Amount to be kept in cash register</label>
+                                <input class="form-control p-2 w-30">
+                            </div>
+                            <div>
+                                <label>Skim</label>
+                                <input class="form-control p-2 w-30">
+                            </div>
+                            <div>
+                                <label>Remaining Cash</label>
+                                <label class="bold">
+                                    {{ nTotalCounted | currency:"EUR":"symbol" }}
+                                </label>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-        <!-- LOAD DATA -END -->
     </div>
-
-    <!-- STATISTICS CODE END -->
-
-    <!-- PAYMENT START -->
-    <div class="card">
-        <div class="container">
-            <strong> {{ 'PAYMENT_METHODS' | translate}} </strong>
-            <p *ngIf="!aPaymentMethods?.length">{{ 'PAYMENT_METHODS_NOT_FOUND' | translate}}</p>
-            <div *ngIf="aPaymentMethods?.length">
-                <div class="card-body">
-
-                    <table class="table table-row-bordered table-row-gray-300 gy-5 gs-5 mb-0 text-gray-600 fw-bold border">
-                        <thead class="bg-gray-100">
-                            <tr class="fw-bold fs-6 text-gray-800">
-                                <th scope="col">{{ 'METHOD' | translate}}</th>
-                                <th scope="col" class="w-150px">{{ 'TOTAL_AMOUNT' | translate}}</th>
-                                <th scope="col" class="w-150px">{{ 'QUANTITY' | translate}}</th>
-                            </tr>
-                        </thead>
-                        <tbody class="p-2" *ngFor="let oPayment of aPaymentMethods; let i = index">
-                            <tr>
-                                <td class="ps-9">{{oPayment.sMethod}}</td>
-                                <td>{{oPayment.nAmount}}</td>
-                                <td>{{oPayment.nQuantity}}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- PAYMENT END -->
-
-    <!-- Tushar's code START -->
-    <div class="card-body pt-0">
-        <div class="dataTables_wrapper dt-bootstrap4 no-footer">
-            <div class="table-responsive">
-                <table class="table align-middle table-row-dashed fs-6 gy-5 dataTable no-footer">
-                    <thead>
-                        <tr class="text-start text-gray-400 fw-bolder fs-7 text-uppercase gs-0">
-                            <th class="min-w-100px sorting" tabindex="0">{{ "STATISTICS_OVERALL" | translate}}</th>
-                            <th class="min-w-100px sorting" tabindex="0">{{ "STATISTICS_VALUE" | translate}} </th>
-                            <th class="min-w-100px sorting" tabindex="0">{{ "BOOKKEEPING_VALUE" | translate }}</th>
-                        </tr>
-                    </thead>
-                    <tbody class="fw-bold text-gray-600">
-                        <tr class="even">
-                            <td>
-                                <span>Total Revenue</span>
-                            </td>
-                            <td>
-                            </td>
-                            <td>
-                            </td>
-                        </tr>
-                        <tr class="even">
-                            <td>
-                                <span>Quantity</span>
-                            </td>
-                            <td>
-                            </td>
-                            <td>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-
-                <hr>
-                <h4>Transactions</h4>
-                <table class="table table-green align-middle table-row-dashed fs-6 gy-5 dataTable no-footer">
-                    <thead style="position: sticky;">
-                        <tr class="text-start text-gray-400 fw-bolder fs-7 text-uppercase gs-0">
-                            <th class="min-w-100px sorting" tabindex="0">{{ "BOOKING_DATE" | translate}}</th>
-                            <th class="min-w-100px sorting" tabindex="0">{{ "LEDGER_NUMBER" | translate}} </th>
-                            <th class="min-w-100px sorting" tabindex="0">{{ "CREDIT" | translate}} </th>
-                            <th class="min-w-100px sorting" tabindex="0">{{ "DEBIT" | translate }}</th>
-                        </tr>
-                    </thead>
-                    <tbody class="fw-bold text-gray-600">
-                        <tr class="even" *ngFor="let booking of bookingRecords">
-                            <td>
-                                <span>{{booking.dCreatedDate | date: 'medium'}}</span>
-                            </td>
-                            <td>
-                                <span>{{booking.nLedgerNumber}}</span>
-                            </td>
-                            <td>
-                                <span>{{ booking.eType === 'credit' ? (booking.nValue | number:'2.1-5'): '-'}}</span>
-                            </td>
-                            <td>
-                                <span>{{booking.eType === 'debit' ? (booking.nValue | number:'2.1-5'): '-' }}</span>
-                            </td>
-                        </tr>
-                    </tbody>
-                    <tfoot style="position: sticky;">
-                        <tr class="even">
-                            <td>
-                                <span>Total</span>
-                            </td>
-                            <td>
-                                <span>-</span>
-                            </td>
-                            <td>
-                                <span>{{creditAmount}}</span>
-                            </td>
-                            <td>
-                                <span>{{debitAmount}}</span>
-                            </td>
-                        </tr>
-                    </tfoot>
-                </table>
-                <hr>
-                <h4>Payments</h4>
-                <table class="table table-green align-middle table-row-dashed fs-6 gy-5 dataTable no-footer">
-                    <thead style="position: sticky;">
-                        <tr class="text-start text-gray-400 fw-bolder fs-7 text-uppercase gs-0">
-                            <th class="min-w-100px sorting" tabindex="0">{{ "BOOKING_DATE" | translate}}</th>
-                            <th class="min-w-100px sorting" tabindex="0">{{ "LEDGER_NUMBER" | translate}} </th>
-                            <th class="min-w-100px sorting" tabindex="0">{{ "CREDIT" | translate}} </th>
-                            <th class="min-w-100px sorting" tabindex="0">{{ "DEBIT" | translate }}</th>
-                        </tr>
-                    </thead>
-                    <tbody class="fw-bold text-gray-600">
-                        <tr class="even" *ngFor="let booking of paymentRecords">
-                            <td>
-                                <span>{{booking.dCreatedDate | date: 'medium'}}</span>
-                            </td>
-                            <td>
-                                <span>{{booking.nLedgerNumber}}</span>
-                            </td>
-                            <td>
-                                <span>{{ booking.eType === 'credit' ? (booking.nValue | number:'2.1-5'): '-'}}</span>
-                            </td>
-                            <td>
-                                <span>{{booking.eType === 'debit' ? (booking.nValue | number:'2.1-5'): '-' }}</span>
-                            </td>
-                        </tr>
-                    </tbody>
-                    <tfoot style="position: sticky;">
-                        <tr class="even">
-                            <td>
-                                <span>Total</span>
-                            </td>
-                            <td>
-                                <span>-</span>
-                            </td>
-                            <td>
-                                <span>{{paymentCreditAmount}}</span>
-                            </td>
-                            <td>
-                                <span>{{paymentDebitAmount}}</span>
-                            </td>
-                        </tr>
-                    </tfoot>
-                </table>
-            </div>
-        </div>
-    </div>
-    <!-- Tushar's code END -->
 </div>

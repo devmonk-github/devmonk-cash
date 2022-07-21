@@ -172,7 +172,7 @@ export class TillService {
           bPrepayment: (i.paymentAmount > 0 || this.getUsedPayMethods(true, payMethods) - this.getTotals('price', transactionItems) < 0) && (i.paymentAmount !== i.amountToBePaid),
         },
         i.iActivityItemId,
-        i.goldFor,
+        i.oGoldFor,
         i.nDiscount,
 
         i.redeemedLoyaltyPoints,

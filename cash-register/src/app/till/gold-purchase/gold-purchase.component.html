@@ -44,9 +44,10 @@
             </div>
             <div class="col-2">
                 <label for="goldFor">{{ "GOLD_FOR" | translate}}</label>
+                {{item.oGoldFor.name}}
                 <select #goldForSelectElem name="goldFor" id="goldFor" class="form-select"
                     (change)="assignArticleGroup(goldForSelectElem.value);">
-                    <option *ngFor="let use of goldFor" [value]="use.name" [selected]="use.name === item.goldFor.name">
+                    <option *ngFor="let use of goldFor" [value]="use.name" [selected]="use.name === item.oGoldFor.name">
                         {{use.name | titlecase}}</option>
                 </select>
             </div>

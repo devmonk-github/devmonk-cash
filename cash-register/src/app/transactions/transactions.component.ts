@@ -30,6 +30,9 @@ export class TransactionsComponent implements OnInit {
   businessDetails: any = {};
   userType: any = {};
   requestParams: any = {
+    iBusinessId: "",
+    skip: 0,
+    limit: 12,
     searchValue: '',
     sortBy: 'dCreatedDate',
     sortOrder: 'desc'
@@ -236,6 +239,7 @@ export class TransactionsComponent implements OnInit {
   // Function for update item's per page
   changeItemsPerPage(pageCount: any) {
     this.paginationConfig.itemsPerPage = pageCount;
+    this.loadTransaction();
   }
 
   // Function for trigger event after page changes
