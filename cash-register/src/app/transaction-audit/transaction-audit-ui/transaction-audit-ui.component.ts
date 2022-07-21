@@ -324,7 +324,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
   }
 
   exportToPDF() {
-    var header: Array<any> = [
+    const header: Array<any> = [
       'Supplier',
       'Quantity',
       'Price incl VAT',
@@ -333,54 +333,18 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
       'Margin'
     ];
 
-    let date = moment(Date.now()).format('DD-MM-yyyy');
+    const date = moment(Date.now()).format('DD-MM-yyyy');
 
-    let headerList: Array<any> = [];
+    const headerList: Array<any> = [];
     header.forEach((singleHeader: any) => {
       headerList.push({ text: singleHeader, bold: true })
     })
 
-    let arr: Array<any> = [];
 
-    // console.log('this.aStatistic', this.aStatistic);
 
-    this.aStatistic[0].individual.forEach((el: any) => {
-      var obj: any = {};
-      obj['sBusinessPartnerName'] = el.sBusinessPartnerName;
-      obj['nQuantity'] = el.nQuantity;
-      obj['nTotalRevenue'] = el.nTotalRevenue;
-      obj['nTotalPurchaseAmount'] = el.nTotalPurchaseAmount;
-      obj['nProfit'] = el.nProfit;
-      obj['nMargin'] = el.nMargin;
-      obj['aArticleGroups'] = el.aArticleGroups.map((article: any) => {
-        let data = {
-          sName: article.sName,
-          nQuantity: article.nQuantity,
-          nTotalRevenue: article.nTotalRevenue,
-          nTotalPurchaseAmount: article.nTotalPurchaseAmount,
-          nProfit: article.nProfit,
-          nMargin: article.nMargin,
-          aRevenueByProperty: article?.aRevenueByProperty.map((property: any) => {
-            let revenue = {
-              aCategory: property.aCategory.join(' | '),
-              nQuantity: property.nQuantity || 0,
-              nTotalRevenue: property.nTotalRevenue,
-              nTotalPurchaseAmount: property.nTotalPurchaseAmount,
-              nProfit: property.nProfit || 0,
-              nMargin: property.nMargin || 0,
-            };
-            return revenue;
-          })
-        };
-        return data;
-      }) || [];
+    const columnWidths = [150, '*', '*', '*', '*', '*'];
 
-      arr.push(obj);
-    });
-
-    let columnWidths = [150, '*', '*', '*', '*', '*'];
-
-    let tableLayout = {
+    const tableLayout = {
       hLineWidth: function (i: number, node: any) {
         return i === 0 || i === node.table.body.length ? 0 : 0.5;
       },
@@ -478,89 +442,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
 
     ];
 
-    arr.forEach((singleRecord: any) => {
-      // console.log('singleRecord', singleRecord);
-      let texts: any = [{ text: singleRecord.sBusinessPartnerName, style: 'th' },
-      { text: singleRecord.nQuantity, style: 'th' },
-      { text: singleRecord.nTotalRevenue, style: 'th' },
-      { text: singleRecord.nTotalPurchaseAmount, style: 'th' },
-      { text: singleRecord.nProfit, style: 'th' },
-      { text: singleRecord.nMargin, style: 'th' }];
-      const data = {
-        table: {
-          headerRows: 1,
-          widths: columnWidths,
-          heights: [30],
-          body: [texts]
-        },
-        layout: tableLayout
-      };
-      content.push(data);
-      singleRecord.aArticleGroups.forEach((articleGroup: any) => {
-        // console.log('articleGroup', articleGroup);
-        let texts: any = [
-          { text: articleGroup.sName, style: ['td', 'articleGroup'] },
-          { text: articleGroup.nQuantity, style: ['td', 'articleGroup'] },
-          { text: articleGroup.nTotalRevenue, style: ['td', 'articleGroup'] },
-          { text: articleGroup.nTotalPurchaseAmount, style: ['td', 'articleGroup'] },
-          { text: articleGroup.nProfit, style: ['td', 'articleGroup'] },
-          { text: articleGroup.nMargin, style: ['td', 'articleGroup'] }
-        ];
-        const data = {
-          table: {
-            headerRows: 0,
-            widths: columnWidths,
-            body: [texts]
-          },
-          layout: tableLayout
-        };
-        content.push(data);
-
-        articleGroup.aRevenueByProperty.forEach((property: any) => {
-          let texts: any = [
-            { text: property.aCategory, style: ['td', 'property'], },
-            { text: property.nQuantity, style: ['td', 'property'], },
-            { text: property.nTotalRevenue, style: ['td', 'property'], },
-            { text: property.nTotalPurchaseAmount, style: ['td', 'property'], },
-            { text: property.nProfit, style: ['td', 'property'], },
-            { text: property.nMargin, style: ['td', 'property'], }
-          ];
-          const data = {
-            // style: ['td', 'property'],
-            table: {
-              // headerRows: 0,
-              widths: columnWidths,
-              body: [texts]
-            },
-            layout: tableLayout
-          };
-          content.push(data);
-        });
-      });
-    });
-
-    content.push({ canvas: [{ type: 'line', x1: 0, y1: 0, x2: 575, y2: 0, lineWidth: 1 }], margin: [0, 0, 20, 0], style: 'afterLine' });
-    let texts: any = [
-      { text: 'Total', style: 'th' },
-      { text: this.aStatistic[0].overall[0].nQuantity, style: 'th' },
-      { text: this.aStatistic[0].overall[0].nTotalRevenue, style: 'th' },
-      { text: this.aStatistic[0].overall[0].nTotalPurchaseAmount, style: 'th' },
-      { text: this.aStatistic[0].overall[0].nProfit, style: 'th' },
-      { text: this.aStatistic[0].overall[0].nMargin, style: 'th' }
-    ];
-
-    const overallData = {
-      table: {
-        widths: columnWidths,
-        body: [texts]
-      },
-      layout: tableLayout
-    };
-    content.push(overallData);
-    content.push({ canvas: [{ type: 'line', x1: 0, y1: 0, x2: 575, y2: 0, lineWidth: 1 }], margin: [0, 0, 20, 0], style: 'afterLine' });
-
-
-    var styles =
+    const styles =
     {
       right: {
         alignment: 'right',
@@ -624,7 +506,205 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
       },
 
     };
+    console.log('sDisplayMethod', this.sDisplayMethod);
+    let arr: Array<any> = [];
+
+    console.log('this.aStatistic', this.aStatistic);
+
+    this.aStatistic[0].individual.forEach((el: any) => {
+      var obj: any = {};
+      obj['sBusinessPartnerName'] = el.sBusinessPartnerName;
+      obj['nQuantity'] = el.nQuantity;
+      obj['nTotalRevenue'] = el.nTotalRevenue;
+      obj['nTotalPurchaseAmount'] = el.nTotalPurchaseAmount;
+      obj['nProfit'] = el.nProfit;
+      obj['nMargin'] = el.nMargin;
+      obj['aArticleGroups'] = el.aArticleGroups.map((article: any) => {
+        let data = {
+          sName: article.sName,
+          nQuantity: article.nQuantity,
+          nTotalRevenue: article.nTotalRevenue,
+          nTotalPurchaseAmount: article.nTotalPurchaseAmount,
+          nProfit: article.nProfit,
+          nMargin: article.nMargin,
+          aRevenueByProperty: article?.aRevenueByProperty.map((property: any) => {
+            let revenue = {
+              aCategory: property.aCategory.join(' | '),
+              nQuantity: property.nQuantity || 0,
+              nTotalRevenue: property.nTotalRevenue,
+              nTotalPurchaseAmount: property.nTotalPurchaseAmount,
+              nProfit: property.nProfit || 0,
+              nMargin: property.nMargin || 0,
+            };
+            return revenue;
+          })
+        };
+        return data;
+      }) || [];
+
+      arr.push(obj);
+    });
+
+    switch (this.sDisplayMethod) {
+      case 'revenuePerBusinessPartner':
+        this.processPdfByRevenuePerBusinessPartner(content, arr, columnWidths, tableLayout);
+        break;
+      case 'revenuePerArticleGroupAndProperty':
+        this.processPdfByRevenuePerArticleGroupAndProperty(content, arr, columnWidths, tableLayout);
+        break;
+    }
+
+    content.push({ canvas: [{ type: 'line', x1: 0, y1: 0, x2: 575, y2: 0, lineWidth: 1 }], margin: [0, 0, 20, 0], style: 'afterLine' });
+    let texts: any = [
+      { text: 'Total', style: 'th' },
+      { text: this.aStatistic[0].overall[0].nQuantity, style: 'th' },
+      { text: this.aStatistic[0].overall[0].nTotalRevenue, style: 'th' },
+      { text: this.aStatistic[0].overall[0].nTotalPurchaseAmount, style: 'th' },
+      { text: this.aStatistic[0].overall[0].nProfit, style: 'th' },
+      { text: this.aStatistic[0].overall[0].nMargin, style: 'th' }
+    ];
+
+    const overallData = {
+      table: {
+        widths: columnWidths,
+        body: [texts]
+      },
+      layout: tableLayout
+    };
+    content.push(overallData);
+    content.push({ canvas: [{ type: 'line', x1: 0, y1: 0, x2: 575, y2: 0, lineWidth: 1 }], margin: [0, 0, 20, 0], style: 'afterLine' });
+
+
+
     this.pdf.getPdfData(styles, content, 'portrait', 'A4', this.businessDetails.sName + '-' + 'Transaction Audit Report')
+  }
+  processPdfByRevenuePerBusinessPartner(content: any, arr: any, columnWidths: any, tableLayout: any) {
+    console.log('processPdfByRevenuePerBusinessPartner');
+    arr.forEach((singleRecord: any) => {
+      // console.log('singleRecord', singleRecord);
+      let texts: any = [{ text: singleRecord.sBusinessPartnerName, style: 'th' },
+      { text: singleRecord.nQuantity, style: 'th' },
+      { text: singleRecord.nTotalRevenue, style: 'th' },
+      { text: singleRecord.nTotalPurchaseAmount, style: 'th' },
+      { text: singleRecord.nProfit, style: 'th' },
+      { text: singleRecord.nMargin, style: 'th' }];
+      const data = {
+        table: {
+          headerRows: 1,
+          widths: columnWidths,
+          heights: [30],
+          body: [texts]
+        },
+        layout: tableLayout
+      };
+      content.push(data);
+      singleRecord.aArticleGroups.forEach((articleGroup: any) => {
+        // console.log('articleGroup', articleGroup);
+        let texts: any = [
+          { text: articleGroup.sName, style: ['td', 'articleGroup'] },
+          { text: articleGroup.nQuantity, style: ['td', 'articleGroup'] },
+          { text: articleGroup.nTotalRevenue, style: ['td', 'articleGroup'] },
+          { text: articleGroup.nTotalPurchaseAmount, style: ['td', 'articleGroup'] },
+          { text: articleGroup.nProfit, style: ['td', 'articleGroup'] },
+          { text: articleGroup.nMargin, style: ['td', 'articleGroup'] }
+        ];
+        const data = {
+          table: {
+            headerRows: 0,
+            widths: columnWidths,
+            body: [texts]
+          },
+          layout: tableLayout
+        };
+        content.push(data);
+
+        articleGroup.aRevenueByProperty.forEach((property: any) => {
+          let texts: any = [
+            { text: property.aCategory, style: ['td', 'property'], },
+            { text: property.nQuantity, style: ['td', 'property'], },
+            { text: property.nTotalRevenue, style: ['td', 'property'], },
+            { text: property.nTotalPurchaseAmount, style: ['td', 'property'], },
+            { text: property.nProfit, style: ['td', 'property'], },
+            { text: property.nMargin, style: ['td', 'property'], }
+          ];
+          const data = {
+            // style: ['td', 'property'],
+            table: {
+              // headerRows: 0,
+              widths: columnWidths,
+              body: [texts]
+            },
+            layout: tableLayout
+          };
+          content.push(data);
+        });
+      });
+    });
+  }
+
+  processPdfByRevenuePerArticleGroupAndProperty(content: any, arr: any, columnWidths: any, tableLayout: any) {
+    console.log('processPdfByRevenuePerArticleGroupAndProperty');
+    console.log('arr', arr)
+    arr.forEach((singleRecord: any) => {
+      console.log('singleRecord', singleRecord);
+      let texts: any = [{ text: singleRecord.sBusinessPartnerName, style: 'th' },
+      { text: singleRecord.nQuantity, style: 'th' },
+      { text: singleRecord.nTotalRevenue, style: 'th' },
+      { text: singleRecord.nTotalPurchaseAmount, style: 'th' },
+      { text: singleRecord.nProfit, style: 'th' },
+      { text: singleRecord.nMargin, style: 'th' }];
+      const data = {
+        table: {
+          headerRows: 1,
+          widths: columnWidths,
+          heights: [30],
+          body: [texts]
+        },
+        layout: tableLayout
+      };
+      content.push(data);
+      singleRecord.aArticleGroups.forEach((articleGroup: any) => {
+        // console.log('articleGroup', articleGroup);
+        let texts: any = [
+          { text: articleGroup.sName, style: ['td', 'articleGroup'] },
+          { text: articleGroup.nQuantity, style: ['td', 'articleGroup'] },
+          { text: articleGroup.nTotalRevenue, style: ['td', 'articleGroup'] },
+          { text: articleGroup.nTotalPurchaseAmount, style: ['td', 'articleGroup'] },
+          { text: articleGroup.nProfit, style: ['td', 'articleGroup'] },
+          { text: articleGroup.nMargin, style: ['td', 'articleGroup'] }
+        ];
+        const data = {
+          table: {
+            headerRows: 0,
+            widths: columnWidths,
+            body: [texts]
+          },
+          layout: tableLayout
+        };
+        content.push(data);
+
+        articleGroup.aRevenueByProperty.forEach((property: any) => {
+          let texts: any = [
+            { text: property.aCategory, style: ['td', 'property'], },
+            { text: property.nQuantity, style: ['td', 'property'], },
+            { text: property.nTotalRevenue, style: ['td', 'property'], },
+            { text: property.nTotalPurchaseAmount, style: ['td', 'property'], },
+            { text: property.nProfit, style: ['td', 'property'], },
+            { text: property.nMargin, style: ['td', 'property'], }
+          ];
+          const data = {
+            // style: ['td', 'property'],
+            table: {
+              // headerRows: 0,
+              widths: columnWidths,
+              body: [texts]
+            },
+            layout: tableLayout
+          };
+          content.push(data);
+        });
+      });
+    });
   }
 
   calculateTotalCounting() {
