@@ -29,6 +29,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
   IsDynamicState: boolean = true;
   aWorkStation: any = [];
   aEmployee: any = [];
+  aPaymentMethods: any = [];
 
   statisticsData$: any;
   businessDetails: any = {};
@@ -138,6 +139,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
   /* STATIC  */
   fetchStatisticDocument(sDisplayMethod?: string) {
     this.aStatistic = [];
+    this.aPaymentMethods = [];
     this.bStatisticLoading = true;
     const oBody = {
       iBusinessId: this.iBusinessId,
@@ -152,8 +154,11 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
       },
     }
     this.getStatisticSubscription = this.apiService.postNew('cashregistry', `/api/v1/statistics/get`, oBody).subscribe((result: any) => {
-      this.aStatistic = result?.data;
-      this.nCashInTill = this.aStatistic[0].overall[0].nTotalRevenue;
+      if (result?.data) {
+        if (result.data?.aStatistic?.length) this.aStatistic = result.data.aStatistic;
+        if (this.aStatistic?.length) this.nCashInTill = this.aStatistic[0].overall[0].nTotalRevenue;
+        if (result.data?.aPaymentMethods?.length) this.aPaymentMethods = result.data.aPaymentMethods;
+      }
       this.bStatisticLoading = false;
     }, (error) => {
       console.log('error: ', error);
@@ -164,6 +169,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
   fetchStatistics(sDisplayMethod?: string) {
     if (!this.IsDynamicState) return this.fetchStatisticDocument();
     this.aStatistic = [];
+    this.aPaymentMethods = [];
     const oBody = {
       iBusinessId: this.iBusinessId,
       oFilter: {
@@ -180,11 +186,15 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
     }
     this.bStatisticLoading = true;
     this.statisticAuditSubscription = this.apiService.postNew('cashregistry', `/api/v1/statistics/transaction/audit`, oBody).subscribe((result: any) => {
-      this.aStatistic = result.data;
-      this.nCashInTill = this.aStatistic[0].overall[0].nTotalRevenue;
+      if (result?.data) {
+        if (result.data?.oTransactionAudit?.length) this.aStatistic = result.data.oTransactionAudit;
+        if (this.aStatistic?.length) this.nCashInTill = this.aStatistic[0].overall[0].nTotalRevenue;
+        if (result.data?.aPaymentMethods?.length) this.aPaymentMethods = result.data.aPaymentMethods;
+      }
       this.bStatisticLoading = false;
     }, (error) => {
       this.aStatistic = [];
+      this.aPaymentMethods = [];
       this.bStatisticLoading = false;
     })
     this.getGreenRecords();
