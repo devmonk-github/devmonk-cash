@@ -77,6 +77,6 @@ export class TransactionItem {
     public oGoldFor: any,
     public nDiscount: number,
     public nRedeemedLoyaltyPoints: number,
-    public uniqueIdentifier: string,) { }
+    public sUniqueIdentifier: string,) { }
 
 }

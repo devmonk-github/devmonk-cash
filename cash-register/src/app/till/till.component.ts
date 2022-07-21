@@ -73,7 +73,7 @@ export class TillComponent implements OnInit {
   terminals: Array<any> = [];
   quickButtons: Array<any> = [];
   quickButtonsLoading: boolean = false;
-  fetchingProductDetails: boolean = false;
+  // fetchingProductDetails: boolean = false;
   bSearchingProduct: boolean = false;
   bIsDayStateClosed: boolean = true;
   bIsDayStateOpened: boolean = false; // Not opened then require to open it first
@@ -189,12 +189,12 @@ export class TillComponent implements OnInit {
   }
 
   addItemToTransaction(item: any): void {
-    this.fetchingProductDetails = true;
+    this.bSearchingProduct = true;
     this.apiService.getNew('core', `/api/v1/business/products/${item.iBusinessProductId}?iBusinessId=${this.business._id}`).subscribe(
       (result: any) => {
         if (result.message == 'success') {
           this.onSelectProduct(result.data, 'business', 'same-article');
-          this.fetchingProductDetails = false;
+          this.bSearchingProduct = false;
         }
       });
   }
