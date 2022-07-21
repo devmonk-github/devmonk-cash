@@ -162,7 +162,7 @@ export class RepairComponent implements OnInit {
     this.apiService.postNew('core', '/api/v1/properties/list', data).subscribe(
       (result: any) => {
         if (result.data && result.data.length > 0) {
-          result.data.map((property: any) => {
+          result.data[0].result.map((property: any) => {
             if (typeof (this.propertyOptions[property._id]) == 'undefined') {
               this.propertyOptions[property._id] = [];
               property.aOptions.map((option: any) => {
