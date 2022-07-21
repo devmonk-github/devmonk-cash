@@ -3,6 +3,7 @@
         <div class="col-md-12">
             <div class="card card-flush">
                 <div class="card-header align-items-center py-5 gap-2 gap-md-5">
+                    <!-- FILTERS -->
                     <div class="card-body">
                         <div class="row mb-5">
                             <div class="col-md-3">
@@ -431,63 +432,6 @@
                 </div>
         </div> -->
 
-
-
-                        <div class="card" *ngIf="sDisplayMethod === 'revenuePerProperty'">
-                            <p> {{ 'REVENUE_PER_PROPERTY' | translate}} </p>
-
-                            <div class="card-body">
-                                <div class="table-responsive" *ngFor="let oStatistic of aStatistic; let i = index">
-                                    <table
-                                        class="table table-row-bordered table-row-gray-300 gy-5 gs-5 mb-0 text-gray-600 fw-bold border"
-                                        *ngFor="let oRevenueByProperty of oStatistic.individual; let articleGroupIndex = index">
-                                        <!-- start of article-group -->
-                                        <thead class="bg-gray-100">
-                                            <tr class="fw-bold fs-6 text-gray-800">
-                                                <th scope="col">{{oRevenueByProperty?.aCategory?.length ?
-                                                    oRevenueByProperty.aCategory.join(' | ') : '-'}}</th>
-                                                <th scope="col" class="w-150px">{{oRevenueByProperty.sPropertyName}}
-                                                </th>
-                                                <th scope="col" class="w-150px">{{oRevenueByProperty.nTotalRevenue}}
-                                                </th>
-                                                <th scope="col" class="w-150px">
-                                                    {{oRevenueByProperty.nTotalPurchaseAmount}}
-                                                </th>
-                                                <th scope="col" class="w-150px">{{oRevenueByProperty.nProfit}}</th>
-                                                <th scope="col" class="w-150px">{{oRevenueByProperty.nMargin}}</th>
-                                            </tr>
-                                        </thead>
-                                    </table>
-
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="card" *ngIf="sDisplayMethod === 'revenuePerArticleGroup'">
-                            <p> {{ 'REVENUE_PER_ARTICLE_GROUP' | translate}} </p>
-                            <div class="card-body">
-                                <div class="table-responsive" *ngFor="let oStatistic of aStatistic; let i = index">
-                                    <table
-                                        class="table table-row-bordered table-row-gray-300 gy-5 gs-5 mb-0 text-gray-600 fw-bold border"
-                                        *ngFor="let oArticleGroup of oStatistic.individual; let articleGroupIndex = index">
-                                        <!-- start of articlegroup -->
-                                        <thead class="bg-gray-100">
-                                            <tr class="fw-bold fs-6 text-gray-800">
-                                                <th scope="col">{{oArticleGroup.sName}}</th>
-                                                <th scope="col" class="w-150px">{{oArticleGroup.nQuantity}}</th>
-                                                <th scope="col" class="w-150px">{{oArticleGroup.nTotalRevenue}}</th>
-                                                <th scope="col" class="w-150px">{{oArticleGroup.nTotalPurchaseAmount}}
-                                                </th>
-                                                <th scope="col" class="w-150px">{{oArticleGroup.nProfit}}</th>
-                                                <th scope="col" class="w-150px">{{oArticleGroup.nMargin}}</th>
-                                            </tr>
-                                        </thead>
-                                        <!-- end of articlegroup -->
-                                    </table>
-
-                                </div>
-                            </div>
-                        </div>
                     </div>
                     <!-- LOAD DATA -END -->
                 </div>
@@ -669,6 +613,7 @@
             </div>
         </div>
     </div>
+    <!-- COUNTING SECTION START -->
     <div class="row">
         <div class="card card-flush">
             <div class="row">
@@ -680,19 +625,26 @@
                     </div>
                     <div class="card-body p-5">
                         <div class="counting-list mb-5">
-                            <div *ngFor="let amount of aAmount">
-                                <div class="d-flex align-items-center justify-content-around mb-2">
-                                    <label class="currency">
-                                        <span>&euro;</span>
-                                        {{ amount.sLabel }}
-                                    </label>
-                                    <span> x </span>
-                                    <input type="number" class="form-control mx-1 p-2" [(ngModel)]="amount.nQuantity"
-                                        (ngModelChange)="calculateTotalCounting()">
-                                    <label class="currency">
-                                        {{ (amount.nQuantity * amount.nValue) | currency:"EUR":"symbol" }}</label>
-                                </div>
-                            </div>
+                            <table style="display: block;column-count: 2">
+                                <tbody>
+                                    <tr *ngFor="let amount of aAmount">
+                                        <td class="w-50">
+                                            <label class="currency">
+                                                {{ amount.sLabel | currency:"EUR":"symbol"}} x
+                                            </label>
+                                        </td>
+                                        <td class="mx-2">
+                                            <input type="number" class="form-control p-2" [(ngModel)]="amount.nQuantity"
+                                                (ngModelChange)="calculateTotalCounting()">
+                                        </td>
+                                        <td class="w-50">
+                                            <label class="currency">{{ (amount.nQuantity * amount.nValue) |
+                                                currency:"EUR":"symbol"}}</label>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
                         </div>
                         <div class="countingTotal">
                             <div class="d-flex justify-content-start align-items-center">
@@ -754,4 +706,5 @@
             </div>
         </div>
     </div>
+    <!-- COUNTING SECTION END -->
 </div>
