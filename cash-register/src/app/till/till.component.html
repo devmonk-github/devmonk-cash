@@ -312,12 +312,10 @@
 
 
           <div class="bg-white py-3">
+            <!-- <div *ngIf="bSearchingProduct" class="spinner-border mx-auto"></div> -->
             <ul *ngIf="quickButtons.length" id="quick-buttons" class="nav nav-pills nav-pills-custom mb-3">
               <li class="nav-item mb-3 me-3" *ngFor="let button of quickButtons">
                 <div>
-                  <div>
-                    <div *ngIf="fetchingProductDetails" class="spinner-border mx-auto"></div>
-                  </div>
                   <button
                     class="nav-link d-flex justify-content-center flex-column flex-center overflow-hidden active w-85px h-85px py-4"
                     (click)="addItemToTransaction(button)">

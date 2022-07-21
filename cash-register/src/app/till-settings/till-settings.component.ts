@@ -304,21 +304,21 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.deleteMethodModalSub.unsubscribe();
-    this.getSettingsSubscription.unsubscribe();
-    this.getLedgerSubscription.unsubscribe();
-    this.geBookkeepingUpdateSubscription.unsubscribe();
-    this.geBookkeepingListSubscription.unsubscribe();
-    this.updateLedgerSubscription.unsubscribe();
-    this.updateGeneralLedgerSubscription.unsubscribe();
-    this.getLedgerNumberSubscription.unsubscribe();
-    this.createPaymentModalSub.unsubscribe();
-    this.getPaymentMethodsSubscription.unsubscribe();
-    this.viewDetailsModalSub.unsubscribe();
-    this.updateSettingsSubscription.unsubscribe();
-    this.createFavouriteModalSub.unsubscribe();
-    this.fetchQuickButtonsSubscription.unsubscribe();
-    this.saveFavouritesSubscription.unsubscribe();
-    this.removeQuickButtonSubscription.unsubscribe();
+    if (this.deleteMethodModalSub) this.deleteMethodModalSub.unsubscribe();
+    if (this.getSettingsSubscription) this.getSettingsSubscription.unsubscribe();
+    if (this.getLedgerSubscription) this.getLedgerSubscription.unsubscribe();
+    if (this.geBookkeepingUpdateSubscription) this.geBookkeepingUpdateSubscription.unsubscribe();
+    if (this.geBookkeepingListSubscription) this.geBookkeepingListSubscription.unsubscribe();
+    if (this.updateLedgerSubscription) this.updateLedgerSubscription.unsubscribe();
+    if (this.updateGeneralLedgerSubscription) this.updateGeneralLedgerSubscription.unsubscribe();
+    if (this.getLedgerNumberSubscription) this.getLedgerNumberSubscription.unsubscribe();
+    if (this.createPaymentModalSub) this.createPaymentModalSub.unsubscribe();
+    if (this.getPaymentMethodsSubscription) this.getPaymentMethodsSubscription.unsubscribe();
+    if (this.viewDetailsModalSub) this.viewDetailsModalSub.unsubscribe();
+    if (this.updateSettingsSubscription) this.updateSettingsSubscription.unsubscribe();
+    if (this.createFavouriteModalSub) this.createFavouriteModalSub.unsubscribe();
+    if (this.fetchQuickButtonsSubscription) this.fetchQuickButtonsSubscription.unsubscribe();
+    if (this.saveFavouritesSubscription) this.saveFavouritesSubscription.unsubscribe();
+    if (this.removeQuickButtonSubscription) this.removeQuickButtonSubscription.unsubscribe();
   }
 }
