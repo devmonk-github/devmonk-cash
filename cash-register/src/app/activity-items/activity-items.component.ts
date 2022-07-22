@@ -22,6 +22,8 @@ export class ActivityItemsComponent implements OnInit {
   businessDetails: any = {};
   iLocationId: String | null | undefined;
   requestParams: any = {
+    endDate: new Date(new Date().setHours(23, 59, 59)),
+    startDate: new Date('01-01-2015'),
     searchValue: '',
     sortBy: { key: 'Date', selected: true, sort: 'asc' },
     sortOrder: 'asc'
@@ -39,19 +41,15 @@ export class ActivityItemsComponent implements OnInit {
   showAdvanceSearch = false;
 
   workstations: Array<any> = [];
+  selectedRepairStatuses: Array<any> = [];
   selectedWorkstations: Array<any> = [];
 
   employee: any = { sFirstName: 'All' };
   employees: Array<any> = [this.employee];
 
-  filterDates: any = {
-    endDate: new Date(new Date().setHours(23, 59, 59)),
-    startDate: new Date('01-01-2015'),
-  }
-
   paymentMethods: Array<any> = ['All', 'Cash', 'Credit', 'Card', 'Gift-Card'];
   transactionTypes: Array<any> = ['All', 'Refund', 'Repair', 'Gold-purchase', 'Gold-sale'];
-  transactionStatus: string = 'all';
+  repairStatuses: Array<any> = ['info', 'processing', 'cancelled', 'inspection', 'completed']
   invoiceStatus: string = 'all';
   importStatus: string = 'all';
   methodValue: string = 'All';
@@ -77,6 +75,9 @@ export class ActivityItemsComponent implements OnInit {
     this.businessDetails._id = localStorage.getItem('currentBusiness');
     this.iLocationId = localStorage.getItem('currentLocation');
     this.loadTransaction();
+    this.getLocations();
+    this.getWorkstations();
+    this.listEmployee();
   }
 
   loadTransaction() {
@@ -100,6 +101,40 @@ export class ActivityItemsComponent implements OnInit {
       (error: any) => {
         this.showLoader = false;
       })
+  }
+
+  listEmployee() {
+    const oBody = { iBusinessId: this.businessDetails._id }
+    this.apiService.postNew('auth', '/api/v1/employee/list', oBody).subscribe((result: any) => {
+      if (result?.data?.length) {
+        this.employees = this.employees.concat(result.data[0].result);
+      }
+    }, (error) => {
+    })
+  }
+
+  getLocations() {
+    this.apiService.postNew('core', `/api/v1/business/${this.businessDetails._id}/list-location`, {}).subscribe(
+      (result: any) => {
+        if (result.message == 'success') {
+          this.locations = result.data.aLocation;
+        }
+      }),
+      (error: any) => {
+        console.error(error)
+      }
+  }
+
+  getWorkstations() {
+    this.apiService.getNew('cashregistry', '/api/v1/workstations/list/' + this.businessDetails._id).subscribe(
+      (result: any) => {
+        if (result && result.data) {
+          this.workstations = result.data;
+        }
+      }),
+      (error: any) => {
+        console.error(error)
+      }
   }
 
    // Function for update item's per page

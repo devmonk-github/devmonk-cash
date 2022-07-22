@@ -28,101 +28,30 @@
                 <div class="col-lg-6">
                   <label class="fs-6 form-label fw-bolder text-dark">Min. Date</label>
                   <input type="date" class="form-control form-control form-control-solid" name="startDate"
-                    [ngModel]="filterDates.startDate | date:'yyyy-MM-dd'"
-                    (ngModelChange)="filterDates.startDate = $event" />
+                    [ngModel]="requestParams.startDate | date:'yyyy-MM-dd'" (ngModelChange)="requestParams.startDate = $event" />
                 </div>
                 <div class="col-lg-6">
                   <label class="fs-6 form-label fw-bolder text-dark">Max. Date</label>
                   <input type="date" class="form-control form-control form-control-solid" name="endDate"
-                    [ngModel]="filterDates.endDate | date:'yyyy-MM-dd'" (ngModelChange)="filterDates.endDate = $event" />
+                    [ngModel]="requestParams.endDate | date:'yyyy-MM-dd'" (ngModelChange)="requestParams.endDate = $event" />
                 </div>
               </div>
             </div>
             <div class="col-xxl-8">
               <div class="row g-2">
                 <div class="col-lg-4">
-                  <label class="fs-6 form-label fw-bolder text-dark">Payment methods</label>
-                  <ng-select class="form-control form-control-solid p-0" [(ngModel)]="methodValue" [clearable]="false">
-                    <ng-option *ngFor="let method of paymentMethods" [value]="method">{{method}}</ng-option>
+                  <label class="fs-6 form-label fw-bolder text-dark">Repair status</label>
+                  <ng-select class="form-control form-control-solid p-0" [multiple]="true"
+                    [(ngModel)]="selectedRepairStatuses" [clearable]="false">
+                    <ng-option *ngFor="let repairStatus of repairStatuses" [value]="repairStatus">{{repairStatus}}
+                    </ng-option>
                   </ng-select>
-                </div>
-                <div class="col-lg-4">
-                  <label class="fs-6 form-label fw-bolder text-dark">Transaction type</label>
-                  <ng-select class="form-control form-control-solid p-0" [(ngModel)]="transactionValue"
-                    [clearable]="false">
-                    <ng-option *ngFor="let type of transactionTypes" [value]="type">{{type}}</ng-option>
-                  </ng-select>
-                </div>
-                <div class="col-lg-4">
-                  <label class="fs-6 form-label fw-bolder text-dark">Transaction status</label>
-                  <div class="nav-group nav-group-fluid">
-                    <label>
-                      <input type="radio" class="btn-check" name="status" value="all" [(ngModel)]="transactionStatus"
-                        checked="checked" />
-                      <span class="btn btn-sm btn-color-muted btn-active btn-active-primary fw-bolder px-4">All</span>
-                    </label>
-                    <label>
-                      <input type="radio" class="btn-check" name="status" value="new" [(ngModel)]="transactionStatus" />
-                      <span class="btn btn-sm btn-color-muted btn-active btn-active-primary fw-bolder px-4">New</span>
-                    </label>
-                    <label>
-                      <input type="radio" class="btn-check" name="status" value="completed"
-                        [(ngModel)]="transactionStatus" />
-                      <span
-                        class="btn btn-sm btn-color-muted btn-active btn-active-primary fw-bolder px-4">Completed</span>
-                    </label>
-                  </div>
                 </div>
               </div>
-            </div>
+            <!-- </div>
           </div>
           <div class="row g-4">
-            <div class="col-xxl-6">
-              <div class="row g-4">
-                <div class="col-lg-6">
-                  <label class="fs-6 form-label fw-bolder text-dark">Invoice status</label>
-                  <div class="nav-group nav-group-fluid">
-                    <label>
-                      <input type="radio" class="btn-check" name="invoice" value="all" [(ngModel)]="invoiceStatus"
-                        checked="checked" />
-                      <span class="btn btn-sm btn-color-muted btn-active btn-active-primary fw-bolder px-4">All</span>
-                    </label>
-                    <label>
-                      <input type="radio" class="btn-check" name="invoice" value="invoiced" [(ngModel)]="invoiceStatus" />
-                      <span
-                        class="btn btn-sm btn-color-muted btn-active btn-active-primary fw-bolder px-4">Invoiced</span>
-                    </label>
-                    <label>
-                      <input type="radio" class="btn-check" name="invoice" value="uninvoiced"
-                        [(ngModel)]="invoiceStatus" />
-                      <span
-                        class="btn btn-sm btn-color-muted btn-active btn-active-primary fw-bolder px-4">Uninvoiced</span>
-                    </label>
-                  </div>
-                </div>
-                <div class="col-lg-6">
-                  <label class="fs-6 form-label fw-bolder text-dark">Import status</label>
-                  <div class="nav-group nav-group-fluid">
-                    <label>
-                      <input type="radio" class="btn-check" name="import" value="all" [(ngModel)]="importStatus"
-                        checked="checked" />
-                      <span class="btn btn-sm btn-color-muted btn-active btn-active-primary fw-bolder px-4">All</span>
-                    </label>
-                    <label>
-                      <input type="radio" class="btn-check" name="import" value="imported" [(ngModel)]="importStatus" />
-                      <span
-                        class="btn btn-sm btn-color-muted btn-active btn-active-primary fw-bolder px-4">Imported</span>
-                    </label>
-                    <label>
-                      <input type="radio" class="btn-check" name="import" value="unimported" [(ngModel)]="importStatus" />
-                      <span
-                        class="btn btn-sm btn-color-muted btn-active btn-active-primary fw-bolder px-4">Unimported</span>
-                    </label>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="col-xxl-6">
+            <div class="col-xxl-6"> -->
               <div class="row g-2">
                 <div class="col-lg-4">
                   <label class="fs-6 form-label fw-bolder text-dark">Employees</label>
