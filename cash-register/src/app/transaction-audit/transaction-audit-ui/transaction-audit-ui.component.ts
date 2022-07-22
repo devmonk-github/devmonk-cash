@@ -1,9 +1,10 @@
 import { TranslateService } from '@ngx-translate/core';
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { ApiService } from 'src/app/shared/service/api.service';
 import { PdfService } from 'src/app/shared/service/pdf2.service';
 import * as _moment from 'moment';
+import { async } from '@angular/core/testing';
 const moment = (_moment as any).default ? (_moment as any).default : _moment;
 
 @Component({
@@ -16,7 +17,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
   iLocationId: any = '';
   aLocation: any = [];
   aStatistic: any = [];
-  sDisplayMethod: string = 'revenuePerSupplierAndArticleGroup';//'revenuePerBusinessPartner';
+  sDisplayMethod: string = 'revenuePerBusinessPartner';
   oUser: any = {};
   aSelectedLocation: any;
   selectedWorkStation: any;
@@ -108,6 +109,9 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
   ];
   nTotalCounted: number = 0;
   nCashInTill: number = 0;
+  aRefundItems: any;
+  aDiscountItems: any;
+  aRepairItems: any;
 
   constructor(private apiService: ApiService, private pdf: PdfService, private translate: TranslateService) {
     this.iBusinessId = localStorage.getItem('currentBusiness') || '';
@@ -173,7 +177,6 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
 
   fetchStatistics(sDisplayMethod?: string) {
     if (!this.IsDynamicState) return this.fetchStatisticDocument();
-    console.log(this.filterDates);
     this.aStatistic = [];
     this.aPaymentMethods = [];
     const oBody = {
@@ -339,7 +342,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
         })
   }
 
-  exportToPDF() {
+  async exportToPDF() {
     const header: Array<any> = [
       'Supplier',
       'Quantity',
@@ -526,7 +529,19 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
 
     };
     console.log('sDisplayMethod', this.sDisplayMethod);
-    console.log('this.aStatistic', this.aStatistic);
+
+    const _aTransactionItems = await this.fetchTransactionItems().toPromise();
+
+    // console.log('_aTransactionItems', _aTransactionItems);
+    const aTransactionItems = _aTransactionItems?.data[0]?.result;
+
+    this.aRefundItems = aTransactionItems.filter((item: any) => item.oType.bRefund);
+    this.aDiscountItems = aTransactionItems.filter((item: any) => item.oType.bDiscount);
+    this.aRepairItems = aTransactionItems.filter((item: any) => item.oType.eKind == 'repair');
+
+
+    console.log('fetch', this.aRefundItems, this.aDiscountItems, this.aRepairItems);
+
     switch (this.sDisplayMethod) {
       case 'revenuePerBusinessPartner':
         this.processPdfByRevenuePerBusinessPartner(content, columnWidths, tableLayout);
@@ -613,7 +628,170 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
       content.push(data);
     });
 
+    this.addRefundToPdf(content)
+    this.addDiscountToPdf(content)
+    this.addRepairsToPdf(content)
+
+
     this.pdf.getPdfData(styles, content, 'portrait', 'A4', this.businessDetails.sName + '-' + 'Transaction Audit Report')
+  }
+
+  addRefundToPdf(content: any) {
+    content.push({ text: 'Refund', style: ['left', 'normal'], margin: [0, 30, 0, 10] });
+
+    const refundHeaders = [
+      'Description',
+      'Price',
+      'Tax',
+      'Total'
+    ];
+
+    const refundHeaderList: Array<any> = [];
+    refundHeaders.forEach((singleHeader: any) => {
+      refundHeaderList.push({ text: singleHeader, style: ['th', 'articleGroup', 'bold'] })
+    });
+
+    const refundHeaderData = {
+      table: {
+        widths: ['*', '*', '*', '*'],
+        body: [refundHeaderList],
+      },
+      layout: {
+        hLineWidth: function (i: any, node: any) {
+          if (i === node.table.body.length) {
+            return 0;
+          }
+          return 1;
+        },
+      }
+    };
+    content.push(refundHeaderData);
+
+    this.aRefundItems.forEach((item: any) => {
+      // console.log('item', item);
+      let itemDescription = item.nQuantity;
+      if (item.sComment) {
+        itemDescription += "x" + item.sComment;
+      } else {
+        itemDescription += ' - ';
+      }
+      let texts: any = [{ text: itemDescription, style: 'td' },
+      { text: item.nPriceIncVat, style: 'td' },
+      { text: item.nVatRate, style: 'td' },
+      { text: item.nTotal, style: 'td' }
+      ];
+      const data = {
+        table: {
+          widths: ['*', '*', '*', '*'],
+          body: [texts]
+        }
+      };
+      content.push(data);
+    });
+  }
+
+  addDiscountToPdf(content: any) {
+    content.push({ text: 'Discount(s)', style: ['left', 'normal'], margin: [0, 30, 0, 10] });
+
+    const aHeaders = [
+      'Description',
+      'Quantity',
+      'Discount',
+      'Price',
+      'Tax',
+    ];
+
+    const aHeaderList: Array<any> = [];
+    aHeaders.forEach((singleHeader: any) => {
+      aHeaderList.push({ text: singleHeader, style: ['th', 'articleGroup', 'bold'] })
+    });
+
+    const oHeaderData = {
+      table: {
+        widths: ['*', '*', '*', '*', '*'],
+        body: [aHeaderList],
+      },
+      layout: {
+        hLineWidth: function (i: any, node: any) {
+          if (i === node.table.body.length) {
+            return 0;
+          }
+          return 1;
+        },
+      }
+    };
+    content.push(oHeaderData);
+
+    this.aDiscountItems.forEach((item: any) => {
+      // console.log('item', item);
+      let itemDescription = '';
+      if (item.sComment) {
+        itemDescription = item.sComment;
+      } else {
+        itemDescription = ' - ';
+      }
+      let texts: any = [{ text: itemDescription, style: 'td' },
+      { text: item.nQuantity, style: 'td' },
+      { text: item.nDiscount, style: 'td' },
+      { text: item.nPriceIncVat, style: 'td' },
+      { text: item.nVatRate, style: 'td' },
+      ];
+      const data = {
+        table: {
+          widths: ['*', '*', '*', '*', '*'],
+          body: [texts]
+        }
+      };
+      content.push(data);
+    });
+  }
+
+  addRepairsToPdf(content: any) {
+    content.push({ text: 'Repair(s)', style: ['left', 'normal'], margin: [0, 30, 0, 10] });
+
+    const aHeaders = [
+      'Product Name',
+      'Comment',
+      'Quantity',
+      'Total',
+    ];
+
+    const aHeaderList: Array<any> = [];
+    aHeaders.forEach((singleHeader: any) => {
+      aHeaderList.push({ text: singleHeader, style: ['th', 'articleGroup', 'bold'] })
+    });
+
+    const oHeaderData = {
+      table: {
+        widths: ['*', '*', '*', '*'],
+        body: [aHeaderList],
+      },
+      layout: {
+        hLineWidth: function (i: any, node: any) {
+          if (i === node.table.body.length) {
+            return 0;
+          }
+          return 1;
+        },
+      }
+    };
+    content.push(oHeaderData);
+
+    this.aRepairItems.forEach((item: any) => {
+      // console.log('item', item);
+      let texts: any = [{ text: item.sProductName, style: 'td' },
+      { text: item.sCommentVisibleCustomer, style: 'td' },
+      { text: item.nQuantity, style: 'td' },
+      { text: item.nTotalAmount, style: 'td' },
+      ];
+      const data = {
+        table: {
+          widths: ['*', '*', '*', '*'],
+          body: [texts]
+        }
+      };
+      content.push(data);
+    });
   }
 
   processPdfByRevenuePerBusinessPartner(content: any, columnWidths: any, tableLayout: any) {
@@ -621,6 +799,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
     let arr: Array<any> = [];
 
     // console.log('this.aStatistic', this.aStatistic);
+
 
     this.aStatistic[0].individual.forEach((el: any) => {
       var obj: any = {};
@@ -715,6 +894,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
       });
       content.push({ canvas: [{ type: 'line', x1: 0, y1: 0, x2: 575, y2: 0, lineWidth: 1 }], margin: [0, 0, 20, 0], style: ['afterLine', 'separatorLine'] });
     });
+
   }
 
   processPdfByRevenuePerArticleGroupAndProperty(content: any, columnWidths: any, tableLayout: any) {
@@ -946,10 +1126,8 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
   expandArticleGroup(articleGroup: any) {
     articleGroup.bIsCollapseArticleGroup = !articleGroup.bIsCollapseArticleGroup;
     if (articleGroup.aTransactionItems) {
-      console.log('if');
       return;
     }
-    console.log('else');
     let data = {
       skip: 0,
       limit: 100,
@@ -962,7 +1140,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
         dEndDate: this.filterDates.endDate,
         iArticleGroupId: articleGroup._id
       },
-      iBusinessId: localStorage.getItem('currentBusiness'),
+      iBusinessId: this.iBusinessId
     };
     articleGroup.isLoading = true;
     this.transactionItemListSubscription = this.apiService.postNew('cashregistry', '/api/v1/transaction/item/list', data).subscribe(
@@ -972,6 +1150,19 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
           articleGroup.aTransactionItems = result.data[0].result;
         }
       });
+  }
+
+  fetchTransactionItems(): Observable<any> {
+    let data = {
+      iTransactionId: 'all',
+      oFilterBy: {
+        dStartDate: this.filterDates.startDate,
+        dEndDate: this.filterDates.endDate,
+      },
+      iBusinessId: this.iBusinessId
+    };
+
+    return this.apiService.postNew('cashregistry', '/api/v1/transaction/item/list', data);
   }
 
   ngOnDestroy(): void {
