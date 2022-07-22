@@ -26,7 +26,10 @@ export class ActivityItemsComponent implements OnInit {
     startDate: new Date('01-01-2015'),
     searchValue: '',
     sortBy: { key: 'Date', selected: true, sort: 'asc' },
-    sortOrder: 'asc'
+    sortOrder: 'asc',
+    selectedRepairStatuses: [],
+    selectedWorkstations: [],
+    employee: { sFirstName: 'All' }
   };
   activityItems: Array<any> = [];
   showLoader: Boolean = false;
@@ -41,17 +44,8 @@ export class ActivityItemsComponent implements OnInit {
   showAdvanceSearch = false;
 
   workstations: Array<any> = [];
-  selectedRepairStatuses: Array<any> = [];
-  selectedWorkstations: Array<any> = [];
-
-  employee: any = { sFirstName: 'All' };
-  employees: Array<any> = [this.employee];
-
-  paymentMethods: Array<any> = ['All', 'Cash', 'Credit', 'Card', 'Gift-Card'];
-  transactionTypes: Array<any> = ['All', 'Refund', 'Repair', 'Gold-purchase', 'Gold-sale'];
+  employees: Array<any> = [this.requestParams.employee];
   repairStatuses: Array<any> = ['info', 'processing', 'cancelled', 'inspection', 'completed']
-  invoiceStatus: string = 'all';
-  importStatus: string = 'all';
   methodValue: string = 'All';
   transactionValue: string = 'All';
 
