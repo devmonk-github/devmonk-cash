@@ -17,7 +17,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 // import { FileImportComponent } from './file-import/file-import.component';
 // import { FileUploadModule } from '@iplab/ngx-file-upload';
 // import { BrowserAnimationsModule   } from '@angular/platform-browser/animations';
-import { CustomerDetailsImportComponent } from './customer-details-import/customer-details-import.component';
+// import { CustomerDetailsImportComponent } from './customer-details-import/customer-details-import.component';
 
 @NgModule({
   declarations: [

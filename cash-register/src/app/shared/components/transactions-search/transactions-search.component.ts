@@ -116,7 +116,7 @@ export class TransactionsSearchComponent implements OnInit, AfterViewInit {
                 nBrokenProduct: 0,
                 tType,
                 oType: transactionItem.oType,
-                uniqueIdentifier: transactionItem.uniqueIdentifier,
+                sUniqueIdentifier: transactionItem.sUniqueIdentifier,
                 aImage: transactionItem.aImage,
                 nonEditable: transactionItem.sGiftCardNumber ? true : false,
                 sGiftCardNumber: transactionItem.sGiftCardNumber,
