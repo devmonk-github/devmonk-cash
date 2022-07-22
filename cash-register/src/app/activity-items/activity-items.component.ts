@@ -85,7 +85,7 @@ export class ActivityItemsComponent implements OnInit {
         this.activityItems = result.data;
         this.paginationConfig.totalItems = result.count;
         this.activityItems.forEach((obj: any, index: number) => {
-          this.fetchCustomer(obj.iCustomerId, index);
+          if(obj.iCustomerId) this.fetchCustomer(obj.iCustomerId, index);
         })
         // setTimeout(() => {
         //   MenuComponent.bootstrap();
