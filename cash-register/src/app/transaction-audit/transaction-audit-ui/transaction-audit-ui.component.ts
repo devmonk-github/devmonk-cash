@@ -16,7 +16,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
   iLocationId: any = '';
   aLocation: any = [];
   aStatistic: any = [];
-  sDisplayMethod: string = 'revenuePerBusinessPartner';
+  sDisplayMethod: string = 'revenuePerSupplierAndArticleGroup';//'revenuePerBusinessPartner';
   oUser: any = {};
   aSelectedLocation: any;
   selectedWorkStation: any;
@@ -34,9 +34,13 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
   businessDetails: any = {};
   statistics: any;
   optionMenu = 'cash-registry';
+  // filterDates = {
+  //   endDate: new Date(new Date().setHours(23, 59, 59)),
+  //   startDate: new Date(new Date().setHours(0, 0, 0))
+  // };
   filterDates = {
-    endDate: new Date(new Date().setHours(23, 59, 59)),
-    startDate: new Date(new Date().setHours(0, 0, 0))
+    "endDate": "2022-07-22T18:29:59.878Z",
+    "startDate": "2022-07-20T12:25"
   };
 
   creditAmount = 0;
@@ -44,6 +48,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
   paymentCreditAmount = 0;
   paymentDebitAmount = 0;
   bStatisticLoading: boolean = false;
+  bIsCollapseArticleGroup: boolean = false;
   stastitics = { totalRevenue: 0, quantity: 0 };
   bookkeeping = { totalAmount: 0 };
   bookingRecords: any;
@@ -55,6 +60,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
   propertyListSubscription !: Subscription;
   workstationListSubscription !: Subscription;
   employeeListSubscription !: Subscription;
+  transactionItemListSubscription !: Subscription;
 
   aOptionMenu: any = [
     { sKey: 'purchase-order', sValue: this.translate.instant('PURCHASE_ORDER') },
@@ -167,6 +173,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
 
   fetchStatistics(sDisplayMethod?: string) {
     if (!this.IsDynamicState) return this.fetchStatisticDocument();
+    console.log(this.filterDates);
     this.aStatistic = [];
     this.aPaymentMethods = [];
     const oBody = {
@@ -936,13 +943,45 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
     });
   }
 
+  expandArticleGroup(articleGroup: any) {
+    articleGroup.bIsCollapseArticleGroup = !articleGroup.bIsCollapseArticleGroup;
+    if (articleGroup.aTransactionItems) {
+      console.log('if');
+      return;
+    }
+    console.log('else');
+    let data = {
+      skip: 0,
+      limit: 100,
+      sortBy: '',
+      sortOrder: '',
+      searchValue: '',
+      iTransactionId: 'all',
+      oFilterBy: {
+        dStartDate: this.filterDates.startDate,
+        dEndDate: this.filterDates.endDate,
+        iArticleGroupId: articleGroup._id
+      },
+      iBusinessId: localStorage.getItem('currentBusiness'),
+    };
+    articleGroup.isLoading = true;
+    this.transactionItemListSubscription = this.apiService.postNew('cashregistry', '/api/v1/transaction/item/list', data).subscribe(
+      (result: any) => {
+        articleGroup.isLoading = false;
+        if (result?.data[0].result.length) {
+          articleGroup.aTransactionItems = result.data[0].result;
+        }
+      });
+  }
+
   ngOnDestroy(): void {
-    this.listBusinessSubscription.unsubscribe();
-    this.getStatisticSubscription.unsubscribe();
-    this.statisticAuditSubscription.unsubscribe();
-    this.greenRecordsSubscription.unsubscribe();
-    this.propertyListSubscription.unsubscribe();
-    this.workstationListSubscription.unsubscribe();
-    this.employeeListSubscription.unsubscribe();
+    if (this.listBusinessSubscription) this.listBusinessSubscription.unsubscribe();
+    if (this.getStatisticSubscription) this.getStatisticSubscription.unsubscribe();
+    if (this.statisticAuditSubscription) this.statisticAuditSubscription.unsubscribe();
+    if (this.greenRecordsSubscription) this.greenRecordsSubscription.unsubscribe();
+    if (this.propertyListSubscription) this.propertyListSubscription.unsubscribe();
+    if (this.workstationListSubscription) this.workstationListSubscription.unsubscribe();
+    if (this.employeeListSubscription) this.employeeListSubscription.unsubscribe();
+    if (this.transactionItemListSubscription) this.transactionItemListSubscription.unsubscribe();
   }
 }
