@@ -82,19 +82,30 @@ export class ActivityItemsComponent implements OnInit {
     this.showLoader = true;
     this.apiService.postNew('cashregistry', '/api/v1/activities/items', this.requestParams).subscribe(
       (result: any) => {
-        console.log(result);
         this.activityItems = result.data;
-        console.log(this.activityItems);
         this.paginationConfig.totalItems = result.count;
-        console.log(this.paginationConfig);
-        setTimeout(() => {
-          MenuComponent.bootstrap();
-        }, 1000);
+        this.activityItems.forEach((obj: any, index: number) => {
+          this.fetchCustomer(obj.iCustomerId, index);
+        })
+        // setTimeout(() => {
+        //   MenuComponent.bootstrap();
+        // }, 1000);
         this.showLoader = false;
       }, 
       (error: any) => {
         this.showLoader = false;
       })
+  }
+
+  fetchCustomer(customerId: any, index: number) {
+    this.apiService.getNew('customer', `/api/v1/customer/${customerId}?iBusinessId=${this.businessDetails._id}`).subscribe(
+      (result: any) => {
+        this.activityItems[index].oCustomer = { sFirstName: result?.sFirstName, sLastName: result?.sLastName, };
+      },
+      (error: any) => {
+        console.error(error)
+      }
+    );
   }
 
   listEmployee() {
