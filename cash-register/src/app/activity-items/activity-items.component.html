@@ -1,1 +1,133 @@
-<p>activity-items works!</p>
+<div class="container">
+    <div class="my-4 px-2 py-4 bg-white">
+      <div class="d-flex align-items-center">
+        <div class="position-relative w-md-400px me-md-2">
+          <fa-icon [icon]="faSearch" class="text-gray-500 position-absolute top-50 translate-middle ms-6"></fa-icon>
+          <!--end::Svg Icon-->
+          <input type="text" class="form-control form-control-solid ps-10" (keyup.enter)="loadTransaction()" name="search"
+            value="" placeholder="Search" />
+        </div>
+        <div class="d-flex align-items-center">
+          <button type="submit" class="btn btn-primary me-5" (click)="loadTransaction()">Search</button>
+          <a id="kt_horizontal_search_advanced_link" class="btn btn-link" data-toggle="collapse"
+            data-target="#kt_advanced_search_form" aria-expanded="true" aria-controls="kt_advanced_search_form"
+            (click)="showAdvanceSearch = !showAdvanceSearch">Advanced Search</a>
+        </div>
+        <div class="d-flex align-items-right ms-auto">
+          <button class="btn btn-secondary">New</button>
+          <button class="btn btn-secondary">Trash</button>
+        </div>
+      </div>
+      <div class="collapse row" id="kt_advanced_search_form" data-kt-search-minimize="on"
+        [ngClass]="{'show' : showAdvanceSearch}">
+        <div class="col-12">
+          <div class="separator separator-dashed mt-9 mb-6"></div>
+          <div class="row g-4 mb-2">
+            <div class="col-xxl-3">
+              <div class="row g-8">
+                <div class="col-lg-6">
+                  <label class="fs-6 form-label fw-bolder text-dark">Min. Date</label>
+                  <input type="date" class="form-control form-control form-control-solid" name="startDate"
+                    [ngModel]="requestParams.startDate | date:'yyyy-MM-dd'" (ngModelChange)="requestParams.startDate = $event" />
+                </div>
+                <div class="col-lg-6">
+                  <label class="fs-6 form-label fw-bolder text-dark">Max. Date</label>
+                  <input type="date" class="form-control form-control form-control-solid" name="endDate"
+                    [ngModel]="requestParams.endDate | date:'yyyy-MM-dd'" (ngModelChange)="requestParams.endDate = $event" />
+                </div>
+              </div>
+            </div>
+            <div class="col-xxl-9">
+              <div class="row g-2">
+                <div class="col-lg-3">
+                  <label class="fs-6 form-label fw-bolder text-dark">Repair status</label>
+                  <ng-select class="form-control form-control-solid p-0" [multiple]="true"
+                    [(ngModel)]="requestParams.selectedRepairStatuses" [clearable]="false">
+                    <ng-option *ngFor="let repairStatus of repairStatuses" [value]="repairStatus">{{repairStatus}}
+                    </ng-option>
+                  </ng-select>
+                </div>
+                <div class="col-lg-3">
+                  <label class="fs-6 form-label fw-bolder text-dark">Employees</label>
+                  <ng-select class="form-control form-control-solid p-0" [clearable]="false" [(ngModel)]="requestParams.employee">
+                    <ng-option *ngFor="let employeeObj of employees" [value]="employeeObj">{{employeeObj.sFirstName}}
+                      {{employeeObj.sLastName || ''}}</ng-option>>
+                  </ng-select>
+                </div>
+                <div class="col-lg-3">
+                  <label class="fs-6 form-label fw-bolder text-dark">{{ 'WORKSTATION' | translate }}</label>
+                  <ng-select class="form-control form-control-solid p-0" [multiple]="true"
+                    [(ngModel)]="requestParams.selectedWorkstations" [clearable]="false">
+                    <ng-option *ngFor="let workstation of workstations" [value]="workstation._id">{{workstation.sName}}
+                    </ng-option>
+                  </ng-select>
+                </div>
+                <div class="col-lg-3">
+                  <label class="fs-6 form-label fw-bolder text-dark">{{ 'LOCATION' | translate }}</label>
+                  <ng-select class="form-control form-control-solid p-0" [multiple]="true" [(ngModel)]="selectedLocations"
+                    [clearable]="false">
+                    <ng-option *ngFor="let location of locations" [value]="location._id">{{location.sName}}</ng-option>
+                  </ng-select>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="separator separator-dashed mt-9 mb-6"></div>
+      <table class="table table-hover table-rounded table-striped border gy-7 gs-7">
+        <thead>
+          <tr class="fw-bold fs-6 text-gray-400 border-bottom-2 border-gray-200">
+            <th scope="col" *ngFor="let th of tableHeaders"
+              [ngClass]="{'fw-bolder': th.selected, 'cursor-pointer': !th.disabled, 'pe-none': th.disabled}"
+              (click)="setSortOption(th)">
+              {{ th.key }}
+              <fa-icon *ngIf="th.selected" [icon]=" th.sort ==='asc' ? faArrowDown : faArrowUp"></fa-icon>
+            </th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let activity of activityItems | paginate: paginationConfig, let i = index;">
+            <td>{{activity?.sNumber}}</td>
+            <td>{{activity?.sReceiptNumber}}</td>
+            <td>{{activity?.oType?.eKind}}</td>
+            <td scope="row">{{activity?.dCreatedDate | date: 'yyyy-MM-dd HH:mm'}}</td>
+            <td scope="row">{{activity?.dEstimatedDate | date: 'yyyy-MM-dd HH:mm'}}</td>
+            <td>{{activity?.eRepairStatus}}</td>
+            <td>{{activity?.eType}}</td>
+            <td>{{activity?.eType}}</td>
+            <td>{{activity?.oCustomer?.sFirstName}} {{activity?.oCustomer?.sLastName}}</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="d-flex">
+        <h5 *ngIf='!activityItems.length && !showLoader' style="text-align: center;"> No data found!</h5>
+        <div *ngIf="showLoader" class="spinner-border mx-auto"></div>
+      </div>
+      <div class="row">
+        <div class="col-sm-12 col-md-3 d-flex align-items-center justify-content-center justify-content-md-start">
+            <div class="dataTables_length" id="kt_ecommerce_sales_table_length">
+                <label>
+                    <select name="kt_ecommerce_sales_table_length" aria-controls="kt_ecommerce_sales_table" class="form-select form-select-sm form-select-solid"  [(ngModel)]="requestParams.limit" (change)="changeItemsPerPage(requestParams.limit)">
+                        <option *ngFor="let pageNum of pageCounts" [value]="pageNum">{{ pageNum }}</option>
+                    </select>
+                </label>
+            </div>
+        </div>
+        <div class="col-sm-12 col-md-9 d-flex align-items-center justify-content-center justify-content-md-end">
+            <pagination-controls
+                [hidden] = "activityItems.length === 0"
+                (pageChange)="pageChanged($event)"
+                (pageBoundsCorrection)="pageChanged($event)"
+                [maxSize]="setPaginateSize"
+                [previousLabel]="'PREVIOUS' | translate"
+                [nextLabel]="'NEXT' | translate"
+                screenReaderPaginationLabel="Pagination"
+                [screenReaderPageLabel]="'PAGE' | translate">
+            </pagination-controls>
+        </div>
+    </div>
+    </div>
+</div>
+  

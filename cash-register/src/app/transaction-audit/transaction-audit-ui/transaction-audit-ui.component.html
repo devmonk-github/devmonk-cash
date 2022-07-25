@@ -118,7 +118,7 @@
                         <div class="row">
                             <div class="mt-5">
                                 <button type="button" class="btn btn-primary" data-kt-roles-modal-action="submit"
-                                    (click)="fetchStatistics()">
+                                    (click)="fetchStatistics()" [class.disabled]="bStatisticLoading">
                                     <span class="indicator-label">{{ "APPLY_FILTER" | translate}}</span>
                                 </button>
                             </div>
@@ -134,7 +134,13 @@
                     <div class="card-header align-items-center py-5 gap-2 gap-md-5">
                         <div class="card-body">
                             <div class="row">
-                                <p *ngIf="bStatisticLoading">{{'STATISTIC_LOADING' | translate}}</p>
+                                <div *ngIf="bStatisticLoading">
+                                    <div class="spinner-box h-100">
+                                        <div class="three-quarter-spinner">
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- <p *ngIf="bStatisticLoading">{{'STATISTIC_LOADING' | translate}}</p> -->
                                 <p *ngIf="!bStatisticLoading">{{'NO_STATISTIC_RECORDS_FOUND' | translate}}</p>
                             </div>
                         </div>
@@ -299,7 +305,22 @@
                                                             *ngFor="let oArticleGroup of oSupplier.aArticleGroups; let articleGroupIndex = index">
                                                             <thead class="bg-gray-100">
                                                                 <tr class="fw-bold fs-6 text-gray-800">
-                                                                    <th scope="col">{{oArticleGroup.sName}}</th>
+                                                                    <th scope="col">
+                                                                        <div
+                                                                            class="d-flex justify-content-between align-items-center">
+                                                                            {{oArticleGroup.sName}}
+                                                                            <div class="mx-5">
+                                                                                <i *ngIf="!oArticleGroup.bIsCollapseArticleGroup"
+                                                                                    class="px-sm-2 cursor-pointer bi bi-chevron-down"
+                                                                                    (click)="expandArticleGroup(oArticleGroup)">
+                                                                                </i>
+                                                                                <i *ngIf="oArticleGroup.bIsCollapseArticleGroup"
+                                                                                    class="px-sm-2 cursor-pointer bi bi-chevron-up"
+                                                                                    (click)="expandArticleGroup(oArticleGroup)"></i>
+                                                                            </div>
+                                                                        </div>
+
+                                                                    </th>
                                                                     <th scope="col" class="w-150px">
                                                                         {{oArticleGroup.nQuantity}}</th>
                                                                     <th scope="col" class="w-150px">
@@ -311,8 +332,26 @@
                                                                     <th scope="col" class="w-150px">
                                                                         {{oArticleGroup.nProfit}}</th>
                                                                     <th scope="col" class="w-150px">
-                                                                        {{oArticleGroup.nMargin}}</th>
+                                                                        {{oArticleGroup.nMargin}}
+                                                                    </th>
                                                                 </tr>
+                                                                <tr *ngIf="oArticleGroup.isLoading">
+                                                                    <td colspan="6" class="text-center">
+                                                                        <div class="spinner-border mx-auto">
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                                <ng-container
+                                                                    *ngIf="oArticleGroup.bIsCollapseArticleGroup">
+                                                                    <tr class="bg-white"
+                                                                        *ngFor="let item of oArticleGroup.aTransactionItems">
+                                                                        <td colspan="6">
+                                                                            {{item.sProductName}}
+                                                                            ({{item.sTransactionNumber}}
+                                                                            {{(item.sProductNumber) ? ' | '+
+                                                                            item.sProductNumber:''}}) </td>
+                                                                    </tr>
+                                                                </ng-container>
                                                             </thead>
                                                         </table>
                                                     </td>
