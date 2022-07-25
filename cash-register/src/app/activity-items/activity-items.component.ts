@@ -31,6 +31,7 @@ export class ActivityItemsComponent implements OnInit {
     sortOrder: 'asc',
     selectedRepairStatuses: [],
     selectedWorkstations: [],
+    selectedTypes: [],
     employee: { sFirstName: 'All' }
   };
   activityItems: Array<any> = [];
@@ -48,6 +49,19 @@ export class ActivityItemsComponent implements OnInit {
   workstations: Array<any> = [];
   employees: Array<any> = [this.requestParams.employee];
   repairStatuses: Array<any> = ['info', 'processing', 'cancelled', 'inspection', 'completed']
+  types: Array<any> = [
+    'regular',
+    'expenses',
+    'giftcard',
+    'empty-line',
+    'repair',
+    'order',
+    'gold-purchase',
+    'gold-sell',
+    'loyalty-points-discount',
+    'loyalty-points',
+    'discount',
+  ]
   methodValue: string = 'All';
   transactionValue: string = 'All';
 
