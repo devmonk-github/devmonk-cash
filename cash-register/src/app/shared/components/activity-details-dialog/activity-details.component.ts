@@ -15,6 +15,7 @@ export class ActivityDetailsComponent implements OnInit {
   dialogRef: DialogComponent;
   customer: any;
   activity: any;
+  items: Boolean | undefined;
   mode: string = '';
   showLoader = false;
   activityItems: Array<any> = [];
@@ -61,8 +62,14 @@ export class ActivityDetailsComponent implements OnInit {
 
   ngOnInit(): void {
     this.activity = this.dialogRef.context.activity;
+    this.items = this.dialogRef.context.activity;
+    if(this.items){
+      const items =  JSON.parse(JSON.stringify(this.activity));
+      this.activityItems = [items]
+    }else{
+      this.fetchTransactionItems();
+    }
     this.fetchCustomer(this.activity.iCustomerId);
-    this.fetchTransactionItems();
     // this.itemType = this.dialogRef.context.itemType;
     // this.transaction = this.dialogRef.context.transaction;
   }

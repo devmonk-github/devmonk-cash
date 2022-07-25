@@ -112,10 +112,14 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
   aRefundItems: any;
   aDiscountItems: any;
   aRepairItems: any;
+  iWorkstationId: string | null;
+  aGoldPurchases: any;
+  aGiftItems: any;
 
   constructor(private apiService: ApiService, private pdf: PdfService, private translate: TranslateService) {
     this.iBusinessId = localStorage.getItem('currentBusiness') || '';
     this.iLocationId = localStorage.getItem('currentLocation') || '';
+    this.iWorkstationId = localStorage.getItem('currentWorkstation') || '';
     const _oUser = localStorage.getItem('currentUser');
     if (_oUser) this.oUser = JSON.parse(_oUser);
   }
@@ -528,7 +532,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
       },
 
     };
-    console.log('sDisplayMethod', this.sDisplayMethod);
+    // console.log('sDisplayMethod', this.sDisplayMethod);
 
     const _aTransactionItems = await this.fetchTransactionItems().toPromise();
 
@@ -537,10 +541,17 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
 
     this.aRefundItems = aTransactionItems.filter((item: any) => item.oType.bRefund);
     this.aDiscountItems = aTransactionItems.filter((item: any) => item.oType.bDiscount);
-    this.aRepairItems = aTransactionItems.filter((item: any) => item.oType.eKind == 'repair');
 
+    const _aActivityItems = await this.fetchRepairItems().toPromise();
+    if (_aActivityItems?.data?.length) {
+      this.aRepairItems = _aActivityItems?.data.filter((item: any) => item.oType.eKind == 'repair');
+      this.aGiftItems = _aActivityItems?.data.filter((item: any) => { console.log(item.oType.eKind); return item.oType.eKind == 'giftcard' });
 
-    console.log('fetch', this.aRefundItems, this.aDiscountItems, this.aRepairItems);
+    }
+
+    const _aGoldPurchases = await this.fetchGoldPurchaseItems().toPromise();
+
+    this.aGoldPurchases = _aGoldPurchases?.data[0].result.filter((item: any) => item.oType.eKind == 'gold-purchase');
 
     switch (this.sDisplayMethod) {
       case 'revenuePerBusinessPartner':
@@ -591,14 +602,14 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
 
     const paymentHeaderList: Array<any> = [];
     paymentHeaders.forEach((singleHeader: any) => {
-      paymentHeaderList.push({ text: singleHeader, style: ['th', 'articleGroup', 'bold'] })
+      paymentHeaderList.push({ text: singleHeader, style: ['th', 'articleGroup'] })
     });
 
     const paymentHeaderData = {
       // style: 'headerStyle',
       table: {
         // headerRows: 1,
-        widths: ['*', '*', '*'],
+        widths: '*',
         body: [paymentHeaderList],
       },
       layout: {
@@ -621,16 +632,18 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
       ];
       const data = {
         table: {
-          widths: ['*', '*', '*'],
+          widths: '*',
           body: [texts]
         },
       };
       content.push(data);
     });
 
-    this.addRefundToPdf(content)
-    this.addDiscountToPdf(content)
-    this.addRepairsToPdf(content)
+    this.addRefundToPdf(content);
+    this.addDiscountToPdf(content);
+    this.addRepairsToPdf(content);
+    this.addGiftcardsToPdf(content);
+    this.addGoldPurchasesToPdf(content, tableLayout);
 
 
     this.pdf.getPdfData(styles, content, 'portrait', 'A4', this.businessDetails.sName + '-' + 'Transaction Audit Report')
@@ -653,7 +666,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
 
     const refundHeaderData = {
       table: {
-        widths: ['*', '*', '*', '*'],
+        widths: '*',
         body: [refundHeaderList],
       },
       layout: {
@@ -672,9 +685,10 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
       let itemDescription = item.nQuantity;
       if (item.sComment) {
         itemDescription += "x" + item.sComment;
-      } else {
-        itemDescription += ' - ';
       }
+      // else {
+      //   itemDescription += ' - ';
+      // }
       let texts: any = [{ text: itemDescription, style: 'td' },
       { text: item.nPriceIncVat, style: 'td' },
       { text: item.nVatRate, style: 'td' },
@@ -682,7 +696,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
       ];
       const data = {
         table: {
-          widths: ['*', '*', '*', '*'],
+          widths: '*',
           body: [texts]
         }
       };
@@ -708,7 +722,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
 
     const oHeaderData = {
       table: {
-        widths: ['*', '*', '*', '*', '*'],
+        widths: '*',
         body: [aHeaderList],
       },
       layout: {
@@ -728,7 +742,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
       if (item.sComment) {
         itemDescription = item.sComment;
       } else {
-        itemDescription = ' - ';
+        itemDescription = ' (not available) ';
       }
       let texts: any = [{ text: itemDescription, style: 'td' },
       { text: item.nQuantity, style: 'td' },
@@ -738,7 +752,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
       ];
       const data = {
         table: {
-          widths: ['*', '*', '*', '*', '*'],
+          widths: '*',
           body: [texts]
         }
       };
@@ -753,17 +767,18 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
       'Product Name',
       'Comment',
       'Quantity',
+      'Employee',
       'Total',
     ];
 
     const aHeaderList: Array<any> = [];
     aHeaders.forEach((singleHeader: any) => {
-      aHeaderList.push({ text: singleHeader, style: ['th', 'articleGroup', 'bold'] })
+      aHeaderList.push({ text: singleHeader, style: ['th', 'articleGroup'] })
     });
 
     const oHeaderData = {
       table: {
-        widths: ['*', '*', '*', '*'],
+        widths: '*',
         body: [aHeaderList],
       },
       layout: {
@@ -782,15 +797,157 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
       let texts: any = [{ text: item.sProductName, style: 'td' },
       { text: item.sCommentVisibleCustomer, style: 'td' },
       { text: item.nQuantity, style: 'td' },
+      { text: item.sEmployeeName, style: 'td' },
       { text: item.nTotalAmount, style: 'td' },
       ];
       const data = {
         table: {
-          widths: ['*', '*', '*', '*'],
+          widths: '*',
           body: [texts]
         }
       };
       content.push(data);
+    });
+  }
+
+  addGiftcardsToPdf(content: any) {
+    content.push({ text: 'Giftcard(s)', style: ['left', 'normal'], margin: [0, 30, 0, 10] });
+    console.log(this.aGiftItems);
+    const aHeaders = [
+      'Product Name',
+      'Comment',
+      'Quantity',
+      'Employee',
+      'Total',
+    ];
+
+    const aHeaderList: Array<any> = [];
+    aHeaders.forEach((singleHeader: any) => {
+      aHeaderList.push({ text: singleHeader, style: ['th', 'articleGroup'] })
+    });
+
+    const oHeaderData = {
+      table: {
+        widths: '*',
+        body: [aHeaderList],
+      },
+      layout: {
+        hLineWidth: function (i: any, node: any) {
+          if (i === node.table.body.length) {
+            return 0;
+          }
+          return 1;
+        },
+      }
+    };
+    content.push(oHeaderData);
+
+    this.aGiftItems.forEach((item: any) => {
+      // console.log('item', item);
+      let texts: any = [{ text: item.sProductName, style: 'td' },
+      { text: item.sCommentVisibleCustomer, style: 'td' },
+      { text: item.nQuantity, style: 'td' },
+      { text: item.sEmployeeName, style: 'td' },
+      { text: item.nTotalAmount, style: 'td' },
+      ];
+      const data = {
+        table: {
+          widths: '*',
+          body: [texts]
+        }
+      };
+      content.push(data);
+    });
+  }
+
+  addGoldPurchasesToPdf(content: any, tableLayout: any) {
+
+    content.push({ text: 'Gold Purchase(s)', style: ['left', 'normal'], margin: [0, 30, 0, 10] });
+    const widths = [100, 70, 50, 50, 50, 100, 80];
+    const aHeaders = [
+      'Number',
+      'Date',
+      'Quantity',
+      'Price',
+      'Total',
+      'Payment Transaction No.',
+      'Payment Type',
+    ];
+
+    const aHeaderList: any = [];
+    aHeaders.forEach((singleHeader: any) => {
+      aHeaderList.push({ text: singleHeader, style: ['th', 'articleGroup'] })
+    });
+
+    const oHeaderData = {
+      table: {
+        widths: widths,
+        body: [aHeaderList],
+      },
+      layout: {
+        hLineWidth: function (i: any, node: any) {
+          return (i === node.table.body.length) ? 0 : 1;
+        },
+      }
+
+    };
+    content.push(oHeaderData);
+
+    this.aGoldPurchases.forEach((item: any) => {
+      // console.log('item', item);
+      const date = moment(item.dCreatedDate).format('DD-MM-yyyy');
+
+
+      let texts: any = [
+        { text: item.sNumber, style: 'td' },
+        { text: date, style: 'td' },
+        { text: item.nQuantity, style: 'td' },
+        { text: item.nPriceIncVat, style: 'td' },
+        { text: item.nTotalAmount, style: 'td' },
+        { text: '', style: 'td' },
+        { text: '', style: 'td' },
+      ];
+      const data = {
+        table: {
+          widths: widths,
+          body: [texts],
+          layout: {
+            fillColor: function (i: any) {
+              return (i % 2 === 0) ? 'red' : 'green';
+              //return (rowIndex % 2 === 0) ? '#f6f8fa' : '#edeff1';
+            },
+            hLineWidth: function (i: any, node: any) {
+              return (i === node.table.body.length) ? 0 : 1;
+            },
+          }
+        }
+      };
+      content.push(data);
+      item.aTransactionItems.forEach((transaction: any) => {
+        const payments = transaction.aPayments.map((el: any) => el.sMethod).join(', ');
+        let texts: any = [
+          { text: '', style: 'td' },
+          { text: '', style: 'td' },
+          { text: '', style: 'td' },
+          { text: '', style: 'td' },
+          { text: '', style: 'td' },
+          { text: transaction.sTransactionNumber, style: 'td' },
+          { text: payments, style: 'td' },
+        ];
+        const data = {
+          table: {
+            widths: widths,
+            body: [texts],
+            layout: {
+              hLineWidth: function (i: any, node: any) {
+                return (i === node.table.body.length) ? 0 : 1;
+              },
+            }
+
+          }
+        };
+        content.push(data);
+      });
     });
   }
 
@@ -1159,10 +1316,32 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
         dStartDate: this.filterDates.startDate,
         dEndDate: this.filterDates.endDate,
       },
-      iBusinessId: this.iBusinessId
+      iBusinessId: this.iBusinessId,
+      iLocationId: this.iLocationId,
+      iWorkstationId: this.iWorkstationId,
     };
 
     return this.apiService.postNew('cashregistry', '/api/v1/transaction/item/list', data);
+  }
+
+  fetchRepairItems(): Observable<any> {
+    let data = {
+      startDate: this.filterDates.startDate,
+      endDate: this.filterDates.endDate,
+      iBusinessId: this.iBusinessId,
+      selectedWorkstations: [this.iWorkstationId]
+    };
+
+    return this.apiService.postNew('cashregistry', '/api/v1/activities/items', data);
+  }
+  fetchGoldPurchaseItems(): Observable<any> {
+    let data = {
+      startDate: this.filterDates.startDate,
+      endDate: this.filterDates.endDate,
+      iBusinessId: this.iBusinessId,
+    };
+
+    return this.apiService.postNew('cashregistry', '/api/v1/activities/gold-purchases-payments/list', data);
   }
 
   ngOnDestroy(): void {
