@@ -31,8 +31,8 @@
                         <div class="fs-6 ms-1">
                             <div class="align-items-center">
                                 {{'PHONE_MOBILE' | translate}}
-                                <span>{{customer.oPhone?.sMobile}}
-                                    <i class="fab fa-whatsapp ms-1" *ngIf="customer.oPhone.bWhatsApp"
+                                <span>{{customer?.oPhone?.sMobile}}
+                                    <i class="fab fa-whatsapp ms-1" *ngIf="customer?.oPhone?.bWhatsApp"
                                         style="color: #1CB39B;"></i>
                                 </span>
                             </div>
@@ -40,7 +40,7 @@
                         <div class="fs-6 ms-1">
                             <div class="align-items-center">
                                 {{'PHONE_LANDLINE' | translate}}
-                                <span>{{customer.oPhone?.sLandLine}}
+                                <span>{{customer?.oPhone?.sLandLine}}
                                 </span>
                             </div>
                         </div>
@@ -48,7 +48,7 @@
                         <div class="fs-6 ms-1">
                             <div class="align-items-center">
                                 {{'Advised by' | translate}}
-                                <span>{{customer.oPhone?.sLandLine}}
+                                <span>{{customer?.oPhone?.sLandLine}}
                                 </span>
                             </div>
                         </div>

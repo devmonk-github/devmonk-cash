@@ -98,6 +98,13 @@
             <td>{{activity?.eType}}</td>
             <td>{{activity?.eType}}</td>
             <td>{{activity?.oCustomer?.sFirstName}} {{activity?.oCustomer?.sLastName}}</td>
+            <td>
+              <div class="btn-group me-4">
+                <span class="btn btn-primary fs-bold px-6">
+                  <span class="indicator-label" (click)="openActivities(activity)">{{ "VIEW"}}</span>
+                </span>
+              </div>
+            </td>
           </tr>
         </tbody>
       </table>

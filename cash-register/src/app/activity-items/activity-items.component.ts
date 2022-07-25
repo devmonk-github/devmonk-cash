@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { faLongArrowAltDown, faLongArrowAltUp, faMinusCircle, faPlusCircle, faSearch } from '@fortawesome/free-solid-svg-icons';
+import { ActivityDetailsComponent } from '../shared/components/activity-details-dialog/activity-details.component';
 import { ApiService } from '../shared/service/api.service';
+import { DialogService } from '../shared/service/dialog';
 import { MenuComponent } from '../shared/_layout/components/common';
 
 @Component({
@@ -62,7 +64,8 @@ export class ActivityItemsComponent implements OnInit {
   ]
 
   constructor(
-    private apiService: ApiService
+    private apiService: ApiService,
+    private dialogService: DialogService
   ) { }
 
   ngOnInit(): void {
@@ -95,6 +98,11 @@ export class ActivityItemsComponent implements OnInit {
       (error: any) => {
         this.showLoader = false;
       })
+  }
+
+  openActivities(activity: any) {
+    this.dialogService.openModal(ActivityDetailsComponent, { cssClass: 'w-fullscreen', context: { activity, items: true } })
+      .instance.close.subscribe((result: any) => { });
   }
 
   fetchCustomer(customerId: any, index: number) {
