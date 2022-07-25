@@ -1,5 +1,10 @@
 image: node:16
 
+definitions:
+  services:
+    docker:
+      memory: 7128
+
 pipelines:
   branches:
     master:
