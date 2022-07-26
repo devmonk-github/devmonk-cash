@@ -60,10 +60,7 @@ export class GoldPurchaseComponent implements OnInit {
     private dialogService: DialogService) { }
 
   ngOnInit(): void {
-    // this.getProperties();
-    // this.getBusinessBrands();
     this.checkArticleGroups();
-    console.log(this.item);
   }
   deleteItem(): void {
     this.itemChanged.emit('delete')

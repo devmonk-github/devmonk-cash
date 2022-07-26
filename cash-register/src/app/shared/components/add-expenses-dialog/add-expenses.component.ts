@@ -80,7 +80,6 @@ export class AddExpensesComponent implements OnInit {
   async createArticleGroup(sSubCategory: string) {
     const articleBody = { name: 'Expenses', sCategory: 'expenses', sSubCategory };
     const result: any = await this.createArticleGroupService.createArticleGroup(articleBody);
-    console.log(result);
     this.allArticleGroups.push(result.data);
     this.selectedArticleGroup = result.data;
   }

@@ -101,17 +101,12 @@ export class CreateArticleGroupService {
   }
 
   processError(err: any) {
-    console.log(err);
-    console.log(err.error.message);
-
     let message = '';
     if (err.error instanceof ErrorEvent) {
-      console.log(err.error);
       message = err.error.message;
     } else {
       message = `Error Code: ${err.status}\nMessage: ${err.message}`;
     }
-    console.log(message);
     return throwError(() => {
       message;
     });
