@@ -80,16 +80,12 @@ export class GiftComponent implements OnInit {
       });
   }
 
-  createArticleGroup() {
-    this.createArticleGroupService.createArticleGroup({ name: 'Giftcard', sCategory: 'Giftcard', sSubCategory: 'Repair' })
-      .subscribe((res: any) => {
-        this.item.iArticleGroupId = res.data._id;
-        this.item.oArticleGroupMetaData.sCategory = res.data.sCategory;
-        this.item.oArticleGroupMetaData.sSubCategory = res.data.sSubCategory;
-      },
-        err => {
-          this.toastrService.show({ type: 'danger', text: err.message });
-        });
+  async createArticleGroup() {
+    const articleBody = { name: 'Giftcard', sCategory: 'Giftcard', sSubCategory: 'Repair' };
+    const result: any = await this.createArticleGroupService.createArticleGroup(articleBody);
+    this.item.iArticleGroupId = result.data._id;
+    this.item.oArticleGroupMetaData.sCategory = result.data.sCategory;
+    this.item.oArticleGroupMetaData.sSubCategory = result.data.sSubCategory;
   }
 
   create(): void {

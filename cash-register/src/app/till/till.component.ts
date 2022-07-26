@@ -73,7 +73,7 @@ export class TillComponent implements OnInit {
   terminals: Array<any> = [];
   quickButtons: Array<any> = [];
   quickButtonsLoading: boolean = false;
-  // fetchingProductDetails: boolean = false;
+  fetchingProductDetails: boolean = false;
   bSearchingProduct: boolean = false;
   bIsDayStateClosed: boolean = true;
   bIsDayStateOpened: boolean = false; // Not opened then require to open it first
@@ -189,12 +189,12 @@ export class TillComponent implements OnInit {
   }
 
   addItemToTransaction(item: any): void {
-    this.bSearchingProduct = true;
+    this.fetchingProductDetails = true;
     this.apiService.getNew('core', `/api/v1/business/products/${item.iBusinessProductId}?iBusinessId=${this.business._id}`).subscribe(
       (result: any) => {
         if (result.message == 'success') {
           this.onSelectProduct(result.data, 'business', 'same-article');
-          this.bSearchingProduct = false;
+          this.fetchingProductDetails = false;
         }
       });
   }
@@ -529,6 +529,7 @@ export class TillComponent implements OnInit {
             }
           };
 
+          // console.log(body);
           this.apiService.postNew('cashregistry', '/api/v1/till/transaction', body)
             .subscribe((data: any) => {
               this.toastrService.show({ type: 'success', text: data.message });
@@ -842,14 +843,19 @@ export class TillComponent implements OnInit {
       });
   }
 
-  createArticleGroup() {
-    this.createArticleGroupService.createArticleGroup({ name: 'Discount', sCategory: 'Discount', sSubCategory: 'Discount' })
-      .subscribe((res: any) => {
-        this.discountArticleGroup = res.data[0].result[0];
-      },
-        err => {
-          this.toastrService.show({ type: 'danger', text: err.message });
-        });
+  // createArticleGroup() {
+  // this.createArticleGroupService.createArticleGroup({ name: 'Discount', sCategory: 'Discount', sSubCategory: 'Discount' })
+  //   .subscribe((res: any) => {
+  //     this.discountArticleGroup = res.data[0].result[0];
+  //   },
+  //     err => {
+  //       this.toastrService.show({ type: 'danger', text: err.message });
+  //     });
+  // }
+  async createArticleGroup() {
+    const articleBody = { name: 'Discount', sCategory: 'Discount', sSubCategory: 'Discount' };
+    const result: any = await this.createArticleGroupService.createArticleGroup(articleBody);
+    this.discountArticleGroup = result.data;
   }
 
   fetchQuickButtons() {
