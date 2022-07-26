@@ -77,16 +77,12 @@ export class AddExpensesComponent implements OnInit {
       });
   }
 
-  createArticleGroup(sSubCategory: string) {
-    const articleBody = { name: 'Expenses', sCategory: 'expenses', sSubCategory }
-    this.createArticleGroupService.createArticleGroup(articleBody)
-      .subscribe((res: any) => {
-        this.allArticleGroups.push(res.data);
-        this.selectedArticleGroup = res.data;
-      },
-        (err: any) => {
-          this.toastrService.show({ type: 'danger', text: err.message });
-        });
+  async createArticleGroup(sSubCategory: string) {
+    const articleBody = { name: 'Expenses', sCategory: 'expenses', sSubCategory };
+    const result: any = await this.createArticleGroupService.createArticleGroup(articleBody);
+    console.log(result);
+    this.allArticleGroups.push(result.data);
+    this.selectedArticleGroup = result.data;
   }
 
   close(data: any) {
@@ -115,7 +111,7 @@ export class AddExpensesComponent implements OnInit {
 
       nTotal: amount,
       nPaymentAmount: amount,
-      iDeviceId: localStorage.getItem('currentWorkstation'),
+      iWorkstationId: localStorage.getItem('currentWorkstation'),
       iEmployeeId: this.currentEmployeeId,
       iLocationId: localStorage.getItem('currentLocation'),
 
