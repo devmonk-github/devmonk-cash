@@ -35,14 +35,14 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
   businessDetails: any = {};
   statistics: any;
   optionMenu = 'cash-registry';
-  // filterDates = {
-  //   endDate: new Date(new Date().setHours(23, 59, 59)),
-  //   startDate: new Date(new Date().setHours(0, 0, 0))
-  // };
   filterDates = {
-    "endDate": "2022-07-22T18:29:59.878Z",
-    "startDate": "2022-07-20T12:25"
+    endDate: new Date(new Date().setHours(23, 59, 59)),
+    startDate: new Date(new Date().setHours(0, 0, 0))
   };
+  // filterDates = {
+  //   "endDate": "2022-07-26T18:29:59.878Z",
+  //   "startDate": "2022-07-22T18:29:59.878Z"
+  // };
 
   creditAmount = 0;
   debitAmount = 0;
@@ -143,6 +143,10 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
     }, (error) => {
       console.log('error: ', error);
     })
+  }
+
+  displayMethodChange() {
+    this.aStatistic = [];
   }
 
   printingDate() {
@@ -542,15 +546,13 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
     this.aRefundItems = aTransactionItems.filter((item: any) => item.oType.bRefund);
     this.aDiscountItems = aTransactionItems.filter((item: any) => item.oType.bDiscount);
 
-    const _aActivityItems = await this.fetchRepairItems().toPromise();
+    const _aActivityItems = await this.fetchActivityItems().toPromise();
     if (_aActivityItems?.data?.length) {
       this.aRepairItems = _aActivityItems?.data.filter((item: any) => item.oType.eKind == 'repair');
-      this.aGiftItems = _aActivityItems?.data.filter((item: any) => { console.log(item.oType.eKind); return item.oType.eKind == 'giftcard' });
-
+      this.aGiftItems = _aActivityItems?.data.filter((item: any) => item.oType.eKind == 'giftcard');
     }
 
     const _aGoldPurchases = await this.fetchGoldPurchaseItems().toPromise();
-
     this.aGoldPurchases = _aGoldPurchases?.data[0].result.filter((item: any) => item.oType.eKind == 'gold-purchase');
 
     switch (this.sDisplayMethod) {
@@ -643,7 +645,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
     this.addDiscountToPdf(content);
     this.addRepairsToPdf(content);
     this.addGiftcardsToPdf(content);
-    this.addGoldPurchasesToPdf(content, tableLayout);
+    this.addGoldPurchasesToPdf(content);
 
 
     this.pdf.getPdfData(styles, content, 'portrait', 'A4', this.businessDetails.sName + '-' + 'Transaction Audit Report')
@@ -708,7 +710,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
     content.push({ text: 'Discount(s)', style: ['left', 'normal'], margin: [0, 30, 0, 10] });
 
     const aHeaders = [
-      'Description',
+      'Product Name',
       'Quantity',
       'Discount',
       'Price',
@@ -744,7 +746,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
       } else {
         itemDescription = ' (not available) ';
       }
-      let texts: any = [{ text: itemDescription, style: 'td' },
+      let texts: any = [{ text: item.sProductName, style: 'td' },
       { text: item.nQuantity, style: 'td' },
       { text: item.nDiscount, style: 'td' },
       { text: item.nPriceIncVat, style: 'td' },
@@ -814,7 +816,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
     content.push({ text: 'Giftcard(s)', style: ['left', 'normal'], margin: [0, 30, 0, 10] });
     console.log(this.aGiftItems);
     const aHeaders = [
-      'Product Name',
+      'Giftcard Number',
       'Comment',
       'Quantity',
       'Employee',
@@ -833,22 +835,19 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
       },
       layout: {
         hLineWidth: function (i: any, node: any) {
-          if (i === node.table.body.length) {
-            return 0;
-          }
-          return 1;
+          return (i === node.table.body.length) ? 0 : 1;
         },
       }
     };
     content.push(oHeaderData);
 
     this.aGiftItems.forEach((item: any) => {
-      // console.log('item', item);
-      let texts: any = [{ text: item.sProductName, style: 'td' },
-      { text: item.sCommentVisibleCustomer, style: 'td' },
-      { text: item.nQuantity, style: 'td' },
-      { text: item.sEmployeeName, style: 'td' },
-      { text: item.nTotalAmount, style: 'td' },
+      let texts: any = [
+        { text: item.sGiftCardNumber, style: 'td' },
+        { text: item.sCommentVisibleCustomer, style: 'td' },
+        { text: item.nQuantity, style: 'td' },
+        { text: item.sEmployeeName, style: 'td' },
+        { text: item.nTotalAmount, style: 'td' },
       ];
       const data = {
         table: {
@@ -860,7 +859,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
     });
   }
 
-  addGoldPurchasesToPdf(content: any, tableLayout: any) {
+  addGoldPurchasesToPdf(content: any) {
 
     content.push({ text: 'Gold Purchase(s)', style: ['left', 'normal'], margin: [0, 30, 0, 10] });
     const widths = [100, 70, 50, 50, 50, 100, 80];
@@ -893,57 +892,45 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
     };
     content.push(oHeaderData);
 
-    this.aGoldPurchases.forEach((item: any) => {
-      // console.log('item', item);
+    this.aGoldPurchases.forEach((item: any, index: number) => {
       const date = moment(item.dCreatedDate).format('DD-MM-yyyy');
-
-
+      let fillColor = (index % 2 === 0) ? '#ccc' : '#fff';
       let texts: any = [
-        { text: item.sNumber, style: 'td' },
-        { text: date, style: 'td' },
-        { text: item.nQuantity, style: 'td' },
-        { text: item.nPriceIncVat, style: 'td' },
-        { text: item.nTotalAmount, style: 'td' },
-        { text: '', style: 'td' },
-        { text: '', style: 'td' },
+        { text: item.sNumber, style: 'td', fillColor: fillColor },
+        { text: date, style: 'td', fillColor: fillColor },
+        { text: item.nQuantity, style: 'td', fillColor: fillColor },
+        { text: item.nPriceIncVat, style: 'td', fillColor: fillColor },
+        { text: item.nTotalAmount, style: 'td', fillColor: fillColor },
+        { text: '', style: 'td', fillColor: fillColor },
+        { text: '', style: 'td', fillColor: fillColor },
       ];
       const data = {
         table: {
           widths: widths,
-          body: [texts],
-          layout: {
-            fillColor: function (i: any) {
-              return (i % 2 === 0) ? 'red' : 'green';
-              //return (rowIndex % 2 === 0) ? '#f6f8fa' : '#edeff1';
-            },
-            hLineWidth: function (i: any, node: any) {
-              return (i === node.table.body.length) ? 0 : 1;
-            },
-          }
-        }
+          body: [texts]
+        },
       };
       content.push(data);
       item.aTransactionItems.forEach((transaction: any) => {
         const payments = transaction.aPayments.map((el: any) => el.sMethod).join(', ');
         let texts: any = [
-          { text: '', style: 'td' },
-          { text: '', style: 'td' },
-          { text: '', style: 'td' },
-          { text: '', style: 'td' },
-          { text: '', style: 'td' },
-          { text: transaction.sTransactionNumber, style: 'td' },
-          { text: payments, style: 'td' },
+          { text: '', style: 'td', fillColor: fillColor },
+          { text: '', style: 'td', fillColor: fillColor },
+          { text: '', style: 'td', fillColor: fillColor },
+          { text: '', style: 'td', fillColor: fillColor },
+          { text: '', style: 'td', fillColor: fillColor },
+          { text: transaction.sTransactionNumber, style: 'td', fillColor: fillColor },
+          { text: payments, style: 'td', fillColor: fillColor },
         ];
         const data = {
           table: {
             widths: widths,
-            body: [texts],
-            layout: {
-              hLineWidth: function (i: any, node: any) {
-                return (i === node.table.body.length) ? 0 : 1;
-              },
-            }
-
+            body: [texts]
+          },
+          layout: {
+            hLineWidth: function (i: any, node: any) {
+              return (i === node.table.body.length) ? 1 : 0;
+            },
           }
         };
         content.push(data);
@@ -1303,7 +1290,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
     this.transactionItemListSubscription = this.apiService.postNew('cashregistry', '/api/v1/transaction/item/list', data).subscribe(
       (result: any) => {
         articleGroup.isLoading = false;
-        if (result?.data[0].result.length) {
+        if (result?.data[0].result?.length) {
           articleGroup.aTransactionItems = result.data[0].result;
         }
       });
@@ -1324,7 +1311,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
     return this.apiService.postNew('cashregistry', '/api/v1/transaction/item/list', data);
   }
 
-  fetchRepairItems(): Observable<any> {
+  fetchActivityItems(): Observable<any> {
     let data = {
       startDate: this.filterDates.startDate,
       endDate: this.filterDates.endDate,
@@ -1336,8 +1323,10 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
   }
   fetchGoldPurchaseItems(): Observable<any> {
     let data = {
-      startDate: this.filterDates.startDate,
-      endDate: this.filterDates.endDate,
+      oFilterBy: {
+        startDate: this.filterDates.startDate,
+        endDate: this.filterDates.endDate,
+      },
       iBusinessId: this.iBusinessId,
     };
 
