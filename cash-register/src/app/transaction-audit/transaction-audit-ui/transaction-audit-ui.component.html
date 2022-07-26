@@ -19,7 +19,7 @@
                                 <label class="fs-6 form-label fw-bolder text-dark">{{'DISPLAY_METHOD' |
                                     translate}}</label>
                                 <ng-select class="form-control form-control-solid p-0" [(ngModel)]="sDisplayMethod"
-                                    [clearable]="false">
+                                    (ngModelChange)="displayMethodChange()" [clearable]="false">
                                     <ng-option *ngFor="let option of aDisplayMethod" [value]="option.sKey">{{
                                         option.sValue
                                         |
@@ -438,23 +438,80 @@
                                 <div class="card-body">
                                     <div class="table-responsive" *ngFor="let oStatistic of aStatistic; let i = index">
                                         <table
-                                            class="table table-row-bordered table-row-gray-300 gy-5 gs-5 mb-0 text-gray-600 fw-bold border"
-                                            *ngFor="let oArticleGroup of oStatistic.individual; let articleGroupIndex = index">
-                                            <!-- start of articlegroup -->
-                                            <thead class="bg-gray-100">
-                                                <tr class="fw-bold fs-6 text-gray-800">
-                                                    <th scope="col">{{oArticleGroup.sName}}</th>
-                                                    <th scope="col" class="w-150px">{{oArticleGroup.nQuantity}}</th>
-                                                    <th scope="col" class="w-150px">{{oArticleGroup.nTotalRevenue}}</th>
-                                                    <th scope="col" class="w-150px">
-                                                        {{oArticleGroup.nTotalPurchaseAmount}}
+                                            class="table table-rounded border border-gray-300 table-row-bordered table-row-gray-300 gy-5 gs-5 text-gray-600">
+                                            <thead>
+                                                <tr>
+                                                    <th><span class="">{{ 'ARTICLE_GROUP' | translate}}</span></th>
+                                                    <th class="w-150px"><span class="">{{ "QUANTITY" |
+                                                            translate}}</span>
                                                     </th>
-                                                    <th scope="col" class="w-150px">{{oArticleGroup.nProfit}}</th>
-                                                    <th scope="col" class="w-150px">{{oArticleGroup.nMargin}}</th>
+                                                    <th class="w-150px"><span class="">{{ "PRICE_WITH_VAT" |
+                                                            translate}}</span></th>
+                                                    <th class="w-150px"><span class="">{{ "PURCHASE_PRICE" |
+                                                            translate}}</span></th>
+                                                    <th class="w-150px"><span class="">{{ "GROSS_PROFIT" |
+                                                            translate}}</span></th>
+                                                    <th class="w-150px"><span class="">{{"MARGIN" | translate}}</span>
+                                                    </th>
                                                 </tr>
                                             </thead>
-                                            <!-- end of articlegroup -->
+                                            <tbody>
+                                                <td colspan="6">
+                                                    <table
+                                                        class="table table-row-bordered table-row-gray-300 gy-5 gs-5 mb-0 text-gray-600 fw-bold border"
+                                                        *ngFor="let oArticleGroup of oStatistic.individual; let articleGroupIndex = index">
+                                                        <!-- start of articlegroup -->
+                                                        <tbody class="bg-gray-100">
+                                                            <tr class="fw-bold fs-6 text-gray-800">
+                                                                <td>
+                                                                    <div
+                                                                        class="d-flex justify-content-between align-items-center">
+                                                                        {{oArticleGroup.sName}}
+                                                                        <div class="mx-5">
+                                                                            <i *ngIf="!oArticleGroup.bIsCollapseArticleGroup"
+                                                                                class="px-sm-2 cursor-pointer bi bi-chevron-down"
+                                                                                (click)="expandArticleGroup(oArticleGroup)">
+                                                                            </i>
+                                                                            <i *ngIf="oArticleGroup.bIsCollapseArticleGroup"
+                                                                                class="px-sm-2 cursor-pointer bi bi-chevron-up"
+                                                                                (click)="expandArticleGroup(oArticleGroup)"></i>
+                                                                        </div>
+                                                                    </div>
+
+                                                                </td>
+                                                                <td class="w-150px">{{oArticleGroup.nQuantity}}</td>
+                                                                <td class="w-150px">{{oArticleGroup.nTotalRevenue}}</td>
+                                                                <td class="w-150px">
+                                                                    {{oArticleGroup.nTotalPurchaseAmount}}</td>
+                                                                <td class="w-150px">{{oArticleGroup.nProfit}}</td>
+                                                                <td class="w-150px">{{oArticleGroup.nMargin}}</td>
+                                                            </tr>
+                                                            <tr *ngIf="oArticleGroup.isLoading">
+                                                                <td colspan="6" class="text-center">
+                                                                    <div class="spinner-border mx-auto">
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                            <ng-container *ngIf="oArticleGroup.bIsCollapseArticleGroup">
+                                                                <tr class="bg-white"
+                                                                    *ngFor="let item of oArticleGroup.aTransactionItems">
+                                                                    <td> {{item.sProductName}} | {{
+                                                                        item.sProductNumber
+                                                                        }} </td>
+                                                                    <td> {{ item.nQuantity }}</td>
+                                                                    <td> {{ item.nPriceIncVat }}</td>
+                                                                    <td> {{ item.nPurchasePrice }}</td>
+                                                                    <td></td>
+                                                                    <td></td>
+                                                                </tr>
+                                                            </ng-container>
+                                                        </tbody>
+                                                        <!-- end of articlegroup -->
+                                                    </table>
+                                                </td>
+                                            </tbody>
                                         </table>
+
 
                                     </div>
                                 </div>
