@@ -3,7 +3,8 @@ import { RouterModule, Routes } from '@angular/router';
 import { TransactionAuditComponent } from './transaction-audit.component';
 
 const routes: Routes = [
-  { path: '', component: TransactionAuditComponent, pathMatch: 'full'}
+  { path: 'view/:iStatisticId', component: TransactionAuditComponent },
+  { path: '', component: TransactionAuditComponent, pathMatch: 'full'},
 ];
 
 @NgModule({

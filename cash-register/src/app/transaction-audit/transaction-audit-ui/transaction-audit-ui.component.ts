@@ -4,7 +4,7 @@ import { Observable, Subscription } from 'rxjs';
 import { ApiService } from 'src/app/shared/service/api.service';
 import { PdfService } from 'src/app/shared/service/pdf2.service';
 import * as _moment from 'moment';
-import { async } from '@angular/core/testing';
+import { ActivatedRoute } from '@angular/router';
 const moment = (_moment as any).default ? (_moment as any).default : _moment;
 
 @Component({
@@ -15,6 +15,7 @@ const moment = (_moment as any).default ? (_moment as any).default : _moment;
 export class TransactionAuditUiComponent implements OnInit, OnDestroy {
   iBusinessId: any = '';
   iLocationId: any = '';
+  iStatisticId: any = '';
   aLocation: any = [];
   aStatistic: any = [];
   sDisplayMethod: string = 'revenuePerBusinessPartner';
@@ -35,10 +36,6 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
   businessDetails: any = {};
   statistics: any;
   optionMenu = 'cash-registry';
-  // filterDates = {
-  //   endDate: new Date(new Date().setHours(23, 59, 59)),
-  //   startDate: new Date(new Date().setHours(0, 0, 0))
-  // };
   filterDates = {
     "endDate": "2022-07-22T18:29:59.878Z",
     "startDate": "2022-07-20T12:25"
@@ -116,7 +113,12 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
   aGoldPurchases: any;
   aGiftItems: any;
 
-  constructor(private apiService: ApiService, private pdf: PdfService, private translate: TranslateService) {
+  constructor(
+    private apiService: ApiService,
+    private pdf: PdfService,
+    private translate: TranslateService,
+    private route: ActivatedRoute
+  ) {
     this.iBusinessId = localStorage.getItem('currentBusiness') || '';
     this.iLocationId = localStorage.getItem('currentLocation') || '';
     this.iWorkstationId = localStorage.getItem('currentWorkstation') || '';
@@ -126,6 +128,8 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
 
 
   ngOnInit(): void {
+    this.iStatisticId = this.route.snapshot?.params?.iStatisticId;
+    console.log('iStatisticId: ', this.iStatisticId);
     this.businessDetails._id = localStorage.getItem("currentBusiness");
     this.fetchBusinessDetails();
     this.printingDate();
@@ -156,6 +160,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
     this.bStatisticLoading = true;
     const oBody = {
       iBusinessId: this.iBusinessId,
+      iStatisticId: this.iStatisticId,
       oFilter: {
         aLocationId: this?.aSelectedLocation?.length ? this.aSelectedLocation : [],
         iWorkstationId: this.selectedWorkStation?._id,
@@ -180,6 +185,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
   }
 
   fetchStatistics(sDisplayMethod?: string) {
+    if (this.iStatisticId)  this.IsDynamicState = false;
     if (!this.IsDynamicState) return this.fetchStatisticDocument();
     this.aStatistic = [];
     this.aPaymentMethods = [];
