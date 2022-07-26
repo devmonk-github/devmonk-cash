@@ -221,14 +221,6 @@ export class TillComponent implements OnInit {
     this.searchKeyword = '';
   }
 
-  clearTransaction(): void {
-    this.selectedTransaction = null
-  }
-
-  removeCustomer(): void {
-    this.customer = null
-  }
-
   getTotals(type: string): number {
     if (!type) {
       return 0
@@ -450,6 +442,7 @@ export class TillComponent implements OnInit {
     this.appliedGiftCards = [];
     this.redeemedLoyaltyPoints = 0;
     this.iActivityId = '';
+    this.customer = null;
   }
 
   startTerminalPayment() {
