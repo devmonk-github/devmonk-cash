@@ -49,19 +49,7 @@ export class ActivityItemsComponent implements OnInit {
   workstations: Array<any> = [];
   employees: Array<any> = [this.requestParams.employee];
   repairStatuses: Array<any> = ['info', 'processing', 'cancelled', 'inspection', 'completed']
-  types: Array<any> = [
-    'regular',
-    'expenses',
-    'giftcard',
-    'empty-line',
-    'repair',
-    'order',
-    'gold-purchase',
-    'gold-sell',
-    'loyalty-points-discount',
-    'loyalty-points',
-    'discount',
-  ]
+  types: Array<any> = [ 'purchase-order-retailer', 'purchase-order-supplier', 'sales-order', 'cash-registry', 'webshop' ]
   methodValue: string = 'All';
   transactionValue: string = 'All';
 

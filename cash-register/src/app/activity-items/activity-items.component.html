@@ -103,7 +103,7 @@
           <tr *ngFor="let activity of activityItems | paginate: paginationConfig, let i = index;">
             <td>{{activity?.sNumber}}</td>
             <td>{{activity?.sReceiptNumber}}</td>
-            <td>{{activity?.oType?.eKind}}</td>
+            <td>{{activity?.oType?.eTransactionType}}</td>
             <td scope="row">{{activity?.dCreatedDate | date: 'yyyy-MM-dd HH:mm'}}</td>
             <td scope="row">{{activity?.dEstimatedDate | date: 'yyyy-MM-dd HH:mm'}}</td>
             <td>{{activity?.eRepairStatus}}</td>
