@@ -72,6 +72,18 @@
               </div>
             </div>
           </div>
+          <div class="row g-4 mb-2">
+            <div class="col-xxl-9">
+              <div class="row g-2">
+                <div class="col-lg-3">
+                  <label class="fs-6 form-label fw-bolder text-dark">Type</label>
+                  <ng-select class="form-control form-control-solid p-0" [multiple]="true" [(ngModel)]="requestParams.selectedTypes" [clearable]="false">
+                    <ng-option *ngFor="let type of types" [value]="type">{{type}}</ng-option>
+                  </ng-select>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
       <div class="separator separator-dashed mt-9 mb-6"></div>
@@ -98,6 +110,13 @@
             <td>{{activity?.eType}}</td>
             <td>{{activity?.eType}}</td>
             <td>{{activity?.oCustomer?.sFirstName}} {{activity?.oCustomer?.sLastName}}</td>
+            <td>
+              <div class="btn-group me-4">
+                <span class="btn btn-primary fs-bold px-6">
+                  <span class="indicator-label" (click)="openActivities(activity)">{{ "VIEW"}}</span>
+                </span>
+              </div>
+            </td>
           </tr>
         </tbody>
       </table>

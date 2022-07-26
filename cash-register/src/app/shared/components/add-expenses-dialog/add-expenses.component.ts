@@ -110,7 +110,6 @@ export class AddExpensesComponent implements OnInit {
       oArticleGroupMetaData,
 
       nTotal: amount,
-      // nOriginalTotal: amount,
       nPaymentAmount: amount,
       iWorkstationId: localStorage.getItem('currentWorkstation'),
       iEmployeeId: this.currentEmployeeId,

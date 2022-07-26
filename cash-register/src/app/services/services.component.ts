@@ -199,7 +199,7 @@ export class ServicesComponent implements OnInit {
   }
 
   openActivities(activity: any) {
-    this.dialogService.openModal(ActivityDetailsComponent, { cssClass: 'w-fullscreen', context: { activity } })
+    this.dialogService.openModal(ActivityDetailsComponent, { cssClass: 'w-fullscreen', context: { activity, items: false } })
       .instance.close.subscribe(result => {
         // console.log('I am closing this modal');
         // if (result.url)
