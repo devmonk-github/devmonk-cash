@@ -371,7 +371,7 @@
               <span class="text-gray-800 fw-bold">{{"CUSTOMER" | translate}}</span>
             </div>
           </div>
-          <button class="btn btn-icon btn-secondary w-35px h-35px" (click)="removeCustomer()">
+          <button class="btn btn-icon btn-secondary w-35px h-35px" (click)="customer = null">
             <span class="svg-icon svg-icon-1qx me-0">
               <i class="fa fa-times"></i>
             </span>
@@ -407,7 +407,7 @@
         <button class="btn btn-secondary" (click)="selectedTransaction ? updateParkedTransaction(): park()">{{
           selectedTransaction ? "SAVE" : "PARK" |
           translate}}</button>
-        <button class="btn btn-secondary" (click)="clearTransaction()" *ngIf="selectedTransaction">
+        <button class="btn btn-secondary" (click)="selectedTransaction = null" *ngIf="selectedTransaction">
           <fa-icon [icon]="faTimesCircle"></fa-icon>
         </button>
         <button class="btn btn-secondary" *ngIf="selectedTransaction" (click)="deleteParkedTransaction()">
