@@ -41,7 +41,7 @@ export class TransactionItem {
     // public nOriginalQuantity: number, Not needed
 
     public nTotal: number,
-    public nOriginalTotal: number,
+    // public nOriginalTotal: number,
     public nPaymentAmount: number,
     public nPaidLaterAmount: number,
     public bDiscount: boolean,
