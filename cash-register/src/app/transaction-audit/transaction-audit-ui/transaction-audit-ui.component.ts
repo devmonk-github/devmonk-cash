@@ -50,7 +50,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
   paymentCreditAmount = 0;
   paymentDebitAmount = 0;
   bStatisticLoading: boolean = false;
-  bIsCollapseArticleGroup: boolean = false;
+  bIsCollapseItem: boolean = false;
   stastitics = { totalRevenue: 0, quantity: 0 };
   bookkeeping = { totalAmount: 0 };
   bookingRecords: any;
@@ -193,7 +193,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
   }
 
   fetchStatistics(sDisplayMethod?: string) {
-    if (this.iStatisticId)  this.IsDynamicState = false;
+    if (this.iStatisticId) this.IsDynamicState = false;
     if (!this.IsDynamicState) return this.fetchStatisticDocument();
     this.aStatistic = [];
     this.aPaymentMethods = [];
@@ -563,7 +563,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
     }
 
     const _aGoldPurchases = await this.fetchGoldPurchaseItems().toPromise();
-    this.aGoldPurchases = _aGoldPurchases?.data[0].result.filter((item: any) => item.oType.eKind == 'gold-purchase');
+    this.aGoldPurchases = _aGoldPurchases?.data[0]?.result.filter((item: any) => item.oType.eKind == 'gold-purchase');
 
     switch (this.sDisplayMethod) {
       case 'revenuePerBusinessPartner':
@@ -680,40 +680,41 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
       table: {
         widths: '*',
         body: [refundHeaderList],
-      },
-      layout: {
-        hLineWidth: function (i: any, node: any) {
-          if (i === node.table.body.length) {
-            return 0;
-          }
-          return 1;
-        },
       }
     };
     content.push(refundHeaderData);
-
-    this.aRefundItems.forEach((item: any) => {
-      // console.log('item', item);
-      let itemDescription = item.nQuantity;
-      if (item.sComment) {
-        itemDescription += "x" + item.sComment;
-      }
-      // else {
-      //   itemDescription += ' - ';
-      // }
-      let texts: any = [{ text: itemDescription, style: 'td' },
-      { text: item.nPriceIncVat, style: 'td' },
-      { text: item.nVatRate, style: 'td' },
-      { text: item.nTotal, style: 'td' }
-      ];
+    if (this.aRefundItems.length) {
+      this.aRefundItems.forEach((item: any) => {
+        // console.log('item', item);
+        let itemDescription = item.nQuantity;
+        if (item.sComment) {
+          itemDescription += "x" + item.sComment;
+        }
+        // else {
+        //   itemDescription += ' - ';
+        // }
+        let texts: any = [{ text: itemDescription, style: 'td' },
+        { text: item.nPriceIncVat, style: 'td' },
+        { text: item.nVatRate, style: 'td' },
+        { text: item.nTotal, style: 'td' }
+        ];
+        const data = {
+          table: {
+            widths: '*',
+            body: [texts]
+          }
+        };
+        content.push(data);
+      });
+    } else {
       const data = {
         table: {
           widths: '*',
-          body: [texts]
+          body: [[{ text: 'No records found', colSpan: 4, alignment: 'center' }, {}, {}, {}]]
         }
       };
       content.push(data);
-    });
+    }
   }
 
   addDiscountToPdf(content: any) {
@@ -736,40 +737,37 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
       table: {
         widths: '*',
         body: [aHeaderList],
-      },
-      layout: {
-        hLineWidth: function (i: any, node: any) {
-          if (i === node.table.body.length) {
-            return 0;
-          }
-          return 1;
-        },
       }
     };
     content.push(oHeaderData);
+    if (this.aDiscountItems.length) {
+      this.aDiscountItems.forEach((item: any) => {
+        let itemDescription = (item.sComment) ? item.sComment : ' (not available) ';
 
-    this.aDiscountItems.forEach((item: any) => {
-      // console.log('item', item);
-      let itemDescription = '';
-      if (item.sComment) {
-        itemDescription = item.sComment;
-      } else {
-        itemDescription = ' (not available) ';
-      }
-      let texts: any = [{ text: item.sProductName, style: 'td' },
-      { text: item.nQuantity, style: 'td' },
-      { text: item.nDiscount, style: 'td' },
-      { text: item.nPriceIncVat, style: 'td' },
-      { text: item.nVatRate, style: 'td' },
-      ];
+        let texts: any = [
+          { text: item.sProductName, style: 'td' },
+          { text: item.nQuantity, style: 'td' },
+          { text: item.nDiscount, style: 'td' },
+          { text: item.nPriceIncVat, style: 'td' },
+          { text: item.nVatRate, style: 'td' },
+        ];
+        const data = {
+          table: {
+            widths: '*',
+            body: [texts]
+          }
+        };
+        content.push(data);
+      });
+    } else {
       const data = {
         table: {
           widths: '*',
-          body: [texts]
+          body: [[{ text: 'No records found', colSpan: 5, alignment: 'center' }, {}, {}, {}, {}]]
         }
       };
       content.push(data);
-    });
+    }
   }
 
   addRepairsToPdf(content: any) {
@@ -792,39 +790,41 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
       table: {
         widths: '*',
         body: [aHeaderList],
-      },
-      layout: {
-        hLineWidth: function (i: any, node: any) {
-          if (i === node.table.body.length) {
-            return 0;
-          }
-          return 1;
-        },
       }
     };
     content.push(oHeaderData);
-
-    this.aRepairItems.forEach((item: any) => {
-      // console.log('item', item);
-      let texts: any = [{ text: item.sProductName, style: 'td' },
-      { text: item.sCommentVisibleCustomer, style: 'td' },
-      { text: item.nQuantity, style: 'td' },
-      { text: item.sEmployeeName, style: 'td' },
-      { text: item.nTotalAmount, style: 'td' },
-      ];
+    if (this.aRepairItems.length) {
+      this.aRepairItems.forEach((item: any) => {
+        // console.log('item', item);
+        let texts: any = [
+          { text: item.sProductName, style: 'td' },
+          { text: item.sCommentVisibleCustomer, style: 'td' },
+          { text: item.nQuantity, style: 'td' },
+          { text: item.sEmployeeName, style: 'td' },
+          { text: item.nTotalAmount, style: 'td' },
+        ];
+        const data = {
+          table: {
+            widths: '*',
+            body: [texts]
+          }
+        };
+        content.push(data);
+      });
+    } else {
       const data = {
         table: {
           widths: '*',
-          body: [texts]
+          body: [[{ text: 'No records found', colSpan: 5, alignment: 'center' }, {}, {}, {}, {}]]
         }
       };
       content.push(data);
-    });
+    }
   }
 
   addGiftcardsToPdf(content: any) {
     content.push({ text: 'Giftcard(s)', style: ['left', 'normal'], margin: [0, 30, 0, 10] });
-    console.log(this.aGiftItems);
+    // console.log(this.aGiftItems);
     const aHeaders = [
       'Giftcard Number',
       'Comment',
@@ -843,30 +843,39 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
         widths: '*',
         body: [aHeaderList],
       },
-      layout: {
-        hLineWidth: function (i: any, node: any) {
-          return (i === node.table.body.length) ? 0 : 1;
-        },
-      }
+      // layout: {
+      //   hLineWidth: function (i: any, node: any) {
+      //     return (i === node.table.body.length) ? 0 : 1;
+      //   },
+      // }
     };
     content.push(oHeaderData);
-
-    this.aGiftItems.forEach((item: any) => {
-      let texts: any = [
-        { text: item.sGiftCardNumber, style: 'td' },
-        { text: item.sCommentVisibleCustomer, style: 'td' },
-        { text: item.nQuantity, style: 'td' },
-        { text: item.sEmployeeName, style: 'td' },
-        { text: item.nTotalAmount, style: 'td' },
-      ];
+    if (this.aGiftItems.length) {
+      this.aGiftItems.forEach((item: any) => {
+        let texts: any = [
+          { text: item.sGiftCardNumber, style: 'td' },
+          { text: item.sCommentVisibleCustomer, style: 'td' },
+          { text: item.nQuantity, style: 'td' },
+          { text: item.sEmployeeName, style: 'td' },
+          { text: item.nTotalAmount, style: 'td' },
+        ];
+        const data = {
+          table: {
+            widths: '*',
+            body: [texts]
+          }
+        };
+        content.push(data);
+      });
+    } else {
       const data = {
         table: {
           widths: '*',
-          body: [texts]
+          body: [[{ text: 'No records found', colSpan: 5, alignment: 'center' }, {}, {}, {}, {}]]
         }
       };
       content.push(data);
-    });
+    }
   }
 
   addGoldPurchasesToPdf(content: any) {
@@ -898,7 +907,6 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
           return (i === node.table.body.length) ? 0 : 1;
         },
       }
-
     };
     content.push(oHeaderData);
 
@@ -1277,12 +1285,13 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
     });
   }
 
-  expandArticleGroup(articleGroup: any) {
-    articleGroup.bIsCollapseArticleGroup = !articleGroup.bIsCollapseArticleGroup;
-    if (articleGroup.aTransactionItems) {
+  expandItem(item: any, iBusinessPartnerId: string = '') {
+    console.log(item, this.sDisplayMethod);
+    item.bIsCollapseItem = !item.bIsCollapseItem;
+    if (item.aTransactionItems) {
       return;
     }
-    let data = {
+    let data: any = {
       skip: 0,
       limit: 100,
       sortBy: '',
@@ -1292,16 +1301,36 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
       oFilterBy: {
         dStartDate: this.filterDates.startDate,
         dEndDate: this.filterDates.endDate,
-        iArticleGroupId: articleGroup._id
       },
       iBusinessId: this.iBusinessId
     };
-    articleGroup.isLoading = true;
+    if (
+      this.sDisplayMethod === 'revenuePerBusinessPartner' ||
+      this.sDisplayMethod === 'revenuePerSupplierAndArticleGroup' ||
+      this.sDisplayMethod === 'revenuePerArticleGroupAndProperty' ||
+      this.sDisplayMethod === 'revenuePerArticleGroup'
+    ) {
+      data.oFilterBy.iArticleGroupId = item._id;
+    }
+    if (
+      this.sDisplayMethod === 'revenuePerBusinessPartner' ||
+      this.sDisplayMethod === 'revenuePerSupplierAndArticleGroup'
+    ) {
+      data.oFilterBy.iBusinessPartnerId = iBusinessPartnerId;
+    }
+
+    if (
+      this.sDisplayMethod === 'revenuePerProperty'
+    ) {
+      data.oFilterBy.aPropertyIds = [item.aPropertyIds[1]]
+    }
+
+    item.isLoading = true;
     this.transactionItemListSubscription = this.apiService.postNew('cashregistry', '/api/v1/transaction/item/list', data).subscribe(
       (result: any) => {
-        articleGroup.isLoading = false;
-        if (result?.data[0].result?.length) {
-          articleGroup.aTransactionItems = result.data[0].result;
+        item.isLoading = false;
+        if (result?.data[0]?.result?.length) {
+          item.aTransactionItems = result.data[0].result;
         }
       });
   }
