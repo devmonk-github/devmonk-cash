@@ -40,7 +40,7 @@ export class TransactionItem {
     public iGiftCardTransaction: string | null,
     // public nOriginalQuantity: number, Not needed
 
-    public nTotal: number,
+    public nEstimatedTotal: number,
     // public nOriginalTotal: number,
     public nPaymentAmount: number,
     public nPaidLaterAmount: number,

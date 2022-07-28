@@ -211,6 +211,7 @@ export class TillComponent implements OnInit {
       quantity: 1,
       nBrokenProduct: 0,
       price: 0,
+      nPurchasePrice: 0,
       nDiscount: 0,
       tax: 21,
       paymentAmount: 0,
@@ -284,6 +285,7 @@ export class TillComponent implements OnInit {
       quantity: 1,
       nBrokenProduct: 0,
       price,
+      nPurchasePrice: price,
       nTotal: type === 'gold-purchase' ? -1 * price : price,
       nDiscount: 0,
       tax: 21,
@@ -522,19 +524,19 @@ export class TillComponent implements OnInit {
             }
           };
 
-          // console.log(body);
-          this.apiService.postNew('cashregistry', '/api/v1/till/transaction', body)
-            .subscribe((data: any) => {
-              this.toastrService.show({ type: 'success', text: data.message });
-              if (this.selectedTransaction) {
-                this.deleteParkedTransaction();
-              };
-              this.saveInProgress = false;
-              this.clearAll();
-            }, err => {
-              this.toastrService.show({ type: 'danger', text: err.message });
-              this.saveInProgress = false;
-            });
+          console.log(body);
+          // this.apiService.postNew('cashregistry', '/api/v1/till/transaction', body)
+          //   .subscribe((data: any) => {
+          //     this.toastrService.show({ type: 'success', text: data.message });
+          //     if (this.selectedTransaction) {
+          //       this.deleteParkedTransaction();
+          //     };
+          //     this.saveInProgress = false;
+          //     this.clearAll();
+          //   }, err => {
+          //     this.toastrService.show({ type: 'danger', text: err.message });
+          //     this.saveInProgress = false;
+          //   });
         }
       });
   }
@@ -605,6 +607,7 @@ export class TillComponent implements OnInit {
       type: this.eKind,
       quantity: 1,
       price: price ? price.nPriceIncludesVat : 0,
+      nPurchasePrice: price ? price.nPriceIncludesVat : 0,
       paymentAmount: 0,
       oType: { bRefund: false, bDiscount: false, bPrepayment: false },
       nDiscount: product.nDiscount || 0,
