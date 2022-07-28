@@ -874,6 +874,11 @@
                                     {{ nTotalCounted | currency:"EUR":"symbol" }}
                                 </label>
                             </div>
+                            <br>
+                            <button type="button" class="btn btn-primary" data-kt-roles-modal-action="submit"
+                                (click)="closeDayState($event)" [class.disabled]="bStatisticLoading">
+                                <span class="indicator-label">{{ "CLOSE_DAYSTATE" | translate}}</span>
+                            </button>
                         </div>
                     </div>
                 </div>
