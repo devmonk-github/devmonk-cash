@@ -524,19 +524,19 @@ export class TillComponent implements OnInit {
             }
           };
 
-          console.log(body);
-          // this.apiService.postNew('cashregistry', '/api/v1/till/transaction', body)
-          //   .subscribe((data: any) => {
-          //     this.toastrService.show({ type: 'success', text: data.message });
-          //     if (this.selectedTransaction) {
-          //       this.deleteParkedTransaction();
-          //     };
-          //     this.saveInProgress = false;
-          //     this.clearAll();
-          //   }, err => {
-          //     this.toastrService.show({ type: 'danger', text: err.message });
-          //     this.saveInProgress = false;
-          //   });
+          // console.log(body);
+          this.apiService.postNew('cashregistry', '/api/v1/till/transaction', body)
+            .subscribe((data: any) => {
+              this.toastrService.show({ type: 'success', text: data.message });
+              if (this.selectedTransaction) {
+                this.deleteParkedTransaction();
+              };
+              this.saveInProgress = false;
+              this.clearAll();
+            }, err => {
+              this.toastrService.show({ type: 'danger', text: err.message });
+              this.saveInProgress = false;
+            });
         }
       });
   }
