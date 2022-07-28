@@ -5,6 +5,7 @@ import { ApiService } from 'src/app/shared/service/api.service';
 import { PdfService } from 'src/app/shared/service/pdf2.service';
 import * as _moment from 'moment';
 import { ActivatedRoute } from '@angular/router';
+import { ToastService } from 'src/app/shared/components/toast';
 const moment = (_moment as any).default ? (_moment as any).default : _moment;
 
 @Component({
@@ -31,6 +32,8 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
   aWorkStation: any = [];
   aEmployee: any = [];
   aPaymentMethods: any = [];
+  closingDayState: boolean = false;
+  closeSubscription !: Subscription;
 
   statisticsData$: any;
   businessDetails: any = {};
@@ -121,7 +124,8 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
     private apiService: ApiService,
     private pdf: PdfService,
     private translate: TranslateService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private toastService: ToastService
   ) {
     this.iBusinessId = localStorage.getItem('currentBusiness') || '';
     this.iLocationId = localStorage.getItem('currentLocation') || '';
@@ -1370,6 +1374,26 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
     };
 
     return this.apiService.postNew('cashregistry', '/api/v1/activities/gold-purchases-payments/list', data);
+  }
+
+  closeDayState(event?: any) {
+    const oBody = {
+      iBusinessId: this.iBusinessId,
+      iLocationId: this.iLocationId,
+      iWorkstationId: this.iWorkstationId
+    }
+    this.closingDayState = true;
+    if (event) event.target.disabled = true;
+    this.closeSubscription = this.apiService.postNew('cashregistry', `/api/v1/statistics/close/day-state`, oBody).subscribe((result: any) => {
+      this.toastService.show({ type: 'success', text: `Day-state is close now` });
+      this.closingDayState = false;
+      if (event) event.target.disabled = false;
+    }, (error) => {
+      console.log('Error: ', error);
+      this.toastService.show({ type: 'warning', text: 'Something went wrong or open the day-state first' });
+      this.closingDayState = false;
+      if (event) event.target.disabled = false;
+    })
   }
 
   ngOnDestroy(): void {
