@@ -109,8 +109,8 @@ export class TillService {
         i.comment,
         i.sProductNumber,
         i.price,
-        0, // TODO
-        0, // TODO
+        i.nPurchasePrice || i.price, // TODO
+        i.price - i.nPurchasePrice, // TODO
         null,
         i.tax,
         i.quantity,
@@ -137,8 +137,8 @@ export class TillService {
         null, // TODO
         null, //TODO
 
-        i.total, // TODO?
-        i.paymentAmount || i.total,
+        i.nTotal, // TODO?
+        i.paymentAmount || 0,
         0, // TODO
         i.nDiscount.value > 0,
         i.nDiscount.percent,
@@ -176,6 +176,7 @@ export class TillService {
 
         i.redeemedLoyaltyPoints,
         i.sUniqueIdentifier || this.getUniqueId(4),
+        i.paymentAmount
       )
     });
     const originalTItemsLength = length = body.transactionItems.filter((i: any) => i.oType.eKind !== 'loyalty-points').length;

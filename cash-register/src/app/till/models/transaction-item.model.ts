@@ -40,7 +40,7 @@ export class TransactionItem {
     public iGiftCardTransaction: string | null,
     // public nOriginalQuantity: number, Not needed
 
-    public nTotal: number,
+    public nEstimatedTotal: number,
     // public nOriginalTotal: number,
     public nPaymentAmount: number,
     public nPaidLaterAmount: number,
@@ -77,6 +77,7 @@ export class TransactionItem {
     public oGoldFor: any,
     public nDiscount: number,
     public nRedeemedLoyaltyPoints: number,
-    public sUniqueIdentifier: string,) { }
+    public sUniqueIdentifier: string,
+    public nRevenueAmt: number) { }
 
 }
