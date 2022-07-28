@@ -61,7 +61,7 @@
                 <label class="fs-6 form-label fw-bolder text-dark">{{ 'PAYMENT_METHOD' | translate }}</label>
                 <!--begin::Select-->
                 <ng-select class="form-control form-control-solid p-0" [(ngModel)]="methodValue" [clearable]="false">
-                  <ng-option *ngFor="let method of paymentMethods" [value]="method">{{method}}</ng-option>
+                  <ng-option *ngFor="let method of paymentMethods" [value]="method">{{method.sName}}</ng-option>
                 </ng-select>
                 <!--end::Select-->
               </div>
