@@ -618,38 +618,44 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
     });
 
     const paymentHeaderData = {
-      // style: 'headerStyle',
       table: {
-        // headerRows: 1,
         widths: '*',
         body: [paymentHeaderList],
-      },
-      layout: {
-        hLineWidth: function (i: any, node: any) {
-          if (i === node.table.body.length) {
-            return 0;
-          }
-          return 1;
-        },
       }
     };
     content.push(paymentHeaderData);
+    this.aPaymentMethods = [];
+    if (this.aPaymentMethods.length) {
+      this.aPaymentMethods.forEach((paymentMethod: any) => {
+        let texts: any = [
+          { text: paymentMethod.sMethod, style: ['td'] },
+          { text: paymentMethod.nAmount, style: ['td'] },
+          { text: paymentMethod.nQuantity, style: ['td'] },
+        ];
+        const data = {
+          table: {
+            widths: '*',
+            body: [texts]
+          },
+        };
+        content.push(data);
+      });
+    } else {
 
-    // console.log('this.aPaymentMethods', this.aPaymentMethods);
-    this.aPaymentMethods.forEach((paymentMethod: any) => {
-      let texts: any = [
-        { text: paymentMethod.sMethod, style: ['td'] },
-        { text: paymentMethod.nAmount, style: ['td'] },
-        { text: paymentMethod.nQuantity, style: ['td'] },
-      ];
       const data = {
         table: {
           widths: '*',
-          body: [texts]
+          body: [[{ text: 'No records found', colSpan: 3, alignment: 'center' }, {}, {}]]
         },
+        layout: {
+          hLineWidth: function (i: any) {
+            return (i === 0) ? 0 : 1;
+          },
+        }
       };
       content.push(data);
-    });
+
+    }
 
     this.addRefundToPdf(content);
     this.addDiscountToPdf(content);
@@ -702,6 +708,11 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
           table: {
             widths: '*',
             body: [texts]
+          },
+          layout: {
+            hLineWidth: function (i: any) {
+              return (i === 0) ? 0 : 1;
+            },
           }
         };
         content.push(data);
@@ -711,6 +722,11 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
         table: {
           widths: '*',
           body: [[{ text: 'No records found', colSpan: 4, alignment: 'center' }, {}, {}, {}]]
+        },
+        layout: {
+          hLineWidth: function (i: any) {
+            return (i === 0) ? 0 : 1;
+          },
         }
       };
       content.push(data);
@@ -742,7 +758,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
     content.push(oHeaderData);
     if (this.aDiscountItems.length) {
       this.aDiscountItems.forEach((item: any) => {
-        let itemDescription = (item.sComment) ? item.sComment : ' (not available) ';
+        // let itemDescription = (item.sComment) ? item.sComment : ' (not available) ';
 
         let texts: any = [
           { text: item.sProductName, style: 'td' },
@@ -755,6 +771,11 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
           table: {
             widths: '*',
             body: [texts]
+          },
+          layout: {
+            hLineWidth: function (i: any) {
+              return (i === 0) ? 0 : 1;
+            },
           }
         };
         content.push(data);
@@ -764,6 +785,11 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
         table: {
           widths: '*',
           body: [[{ text: 'No records found', colSpan: 5, alignment: 'center' }, {}, {}, {}, {}]]
+        },
+        layout: {
+          hLineWidth: function (i: any) {
+            return (i === 0) ? 0 : 1;
+          },
         }
       };
       content.push(data);
@@ -807,6 +833,11 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
           table: {
             widths: '*',
             body: [texts]
+          },
+          layout: {
+            hLineWidth: function (i: any) {
+              return (i === 0) ? 0 : 1;
+            },
           }
         };
         content.push(data);
@@ -816,6 +847,11 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
         table: {
           widths: '*',
           body: [[{ text: 'No records found', colSpan: 5, alignment: 'center' }, {}, {}, {}, {}]]
+        },
+        layout: {
+          hLineWidth: function (i: any) {
+            return (i === 0) ? 0 : 1;
+          },
         }
       };
       content.push(data);
@@ -842,12 +878,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
       table: {
         widths: '*',
         body: [aHeaderList],
-      },
-      // layout: {
-      //   hLineWidth: function (i: any, node: any) {
-      //     return (i === node.table.body.length) ? 0 : 1;
-      //   },
-      // }
+      }
     };
     content.push(oHeaderData);
     if (this.aGiftItems.length) {
@@ -863,6 +894,11 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
           table: {
             widths: '*',
             body: [texts]
+          },
+          layout: {
+            hLineWidth: function (i: any) {
+              return (i === 0) ? 0 : 1;
+            },
           }
         };
         content.push(data);
@@ -872,6 +908,11 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
         table: {
           widths: '*',
           body: [[{ text: 'No records found', colSpan: 5, alignment: 'center' }, {}, {}, {}, {}]]
+        },
+        layout: {
+          hLineWidth: function (i: any) {
+            return (i === 0) ? 0 : 1;
+          },
         }
       };
       content.push(data);
@@ -881,7 +922,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
   addGoldPurchasesToPdf(content: any) {
 
     content.push({ text: 'Gold Purchase(s)', style: ['left', 'normal'], margin: [0, 30, 0, 10] });
-    const widths = [100, 70, 50, 50, 50, 100, 80];
+    const widths = [100, 70, 50, 50, 50, '*', 80];
     const aHeaders = [
       'Number',
       'Date',
@@ -901,44 +942,21 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
       table: {
         widths: widths,
         body: [aHeaderList],
-      },
-      layout: {
-        hLineWidth: function (i: any, node: any) {
-          return (i === node.table.body.length) ? 0 : 1;
-        },
       }
     };
     content.push(oHeaderData);
-
-    this.aGoldPurchases.forEach((item: any, index: number) => {
-      const date = moment(item.dCreatedDate).format('DD-MM-yyyy');
-      let fillColor = (index % 2 === 0) ? '#ccc' : '#fff';
-      let texts: any = [
-        { text: item.sNumber, style: 'td', fillColor: fillColor },
-        { text: date, style: 'td', fillColor: fillColor },
-        { text: item.nQuantity, style: 'td', fillColor: fillColor },
-        { text: item.nPriceIncVat, style: 'td', fillColor: fillColor },
-        { text: item.nTotalAmount, style: 'td', fillColor: fillColor },
-        { text: '', style: 'td', fillColor: fillColor },
-        { text: '', style: 'td', fillColor: fillColor },
-      ];
-      const data = {
-        table: {
-          widths: widths,
-          body: [texts]
-        },
-      };
-      content.push(data);
-      item.aTransactionItems.forEach((transaction: any) => {
-        const payments = transaction.aPayments.map((el: any) => el.sMethod).join(', ');
+    if (this.aGoldPurchases?.length) {
+      this.aGoldPurchases.forEach((item: any, index: number) => {
+        const date = moment(item.dCreatedDate).format('DD-MM-yyyy');
+        let fillColor = (index % 2 === 0) ? '#ccc' : '#fff';
         let texts: any = [
+          { text: item.sNumber, style: 'td', fillColor: fillColor },
+          { text: date, style: 'td', fillColor: fillColor },
+          { text: item.nQuantity, style: 'td', fillColor: fillColor },
+          { text: item.nPriceIncVat, style: 'td', fillColor: fillColor },
+          { text: item.nTotalAmount, style: 'td', fillColor: fillColor },
           { text: '', style: 'td', fillColor: fillColor },
           { text: '', style: 'td', fillColor: fillColor },
-          { text: '', style: 'td', fillColor: fillColor },
-          { text: '', style: 'td', fillColor: fillColor },
-          { text: '', style: 'td', fillColor: fillColor },
-          { text: transaction.sTransactionNumber, style: 'td', fillColor: fillColor },
-          { text: payments, style: 'td', fillColor: fillColor },
         ];
         const data = {
           table: {
@@ -946,14 +964,52 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
             body: [texts]
           },
           layout: {
-            hLineWidth: function (i: any, node: any) {
-              return (i === node.table.body.length) ? 1 : 0;
+            hLineWidth: function (i: any) {
+              return (i === 0) ? 0 : 1;
             },
           }
+
         };
         content.push(data);
+        item.aTransactionItems.forEach((transaction: any) => {
+          const payments = transaction.aPayments.map((el: any) => el.sMethod).join(', ');
+          let texts: any = [
+            { text: '', style: 'td', fillColor: fillColor },
+            { text: '', style: 'td', fillColor: fillColor },
+            { text: '', style: 'td', fillColor: fillColor },
+            { text: '', style: 'td', fillColor: fillColor },
+            { text: '', style: 'td', fillColor: fillColor },
+            { text: transaction.sTransactionNumber, style: 'td', fillColor: fillColor },
+            { text: payments, style: 'td', fillColor: fillColor },
+          ];
+          const data = {
+            table: {
+              widths: widths,
+              body: [texts]
+            },
+            layout: {
+              hLineWidth: function (i: any, node: any) {
+                return (i === 0) ? 0 : 1;
+              },
+            }
+          };
+          content.push(data);
+        });
       });
-    });
+    } else {
+      const data = {
+        table: {
+          widths: widths,
+          body: [[{ text: 'No records found', colSpan: 7, alignment: 'center' }, {}, {}, {}, {}, {}, {}]]
+        },
+        layout: {
+          hLineWidth: function (i: any) {
+            return (i === 0) ? 0 : 1;
+          },
+        }
+      };
+      content.push(data);
+    }
   }
 
   processPdfByRevenuePerBusinessPartner(content: any, columnWidths: any, tableLayout: any) {
@@ -1286,7 +1342,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
   }
 
   expandItem(item: any, iBusinessPartnerId: string = '') {
-    console.log(item, this.sDisplayMethod);
+    // console.log(item, this.sDisplayMethod);
     item.bIsCollapseItem = !item.bIsCollapseItem;
     if (item.aTransactionItems) {
       return;
@@ -1322,7 +1378,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
     if (
       this.sDisplayMethod === 'revenuePerProperty'
     ) {
-      data.oFilterBy.aPropertyIds = [item.aPropertyIds[1]]
+      data.oFilterBy.aPropertyIds = item.aPropertyIds
     }
 
     item.isLoading = true;

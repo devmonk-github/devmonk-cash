@@ -483,6 +483,11 @@
                                                                     <td></td>
                                                                     <td></td>
                                                                 </tr>
+                                                                <tr
+                                                                    *ngIf="!oRevenueByProperty?.aTransactionItems?.length && !oRevenueByProperty.isLoading">
+                                                                    <td colspan="6" class="text-center">No Records found
+                                                                    </td>
+                                                                </tr>
                                                             </ng-container>
                                                         </thead>
                                                     </table>
