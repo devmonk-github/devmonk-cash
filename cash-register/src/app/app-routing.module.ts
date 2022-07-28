@@ -62,6 +62,10 @@ const routes: Routes = [
     path: 'transactions-audit',
     loadChildren: () => import('./transaction-audit/transaction-audit.module').then(module => module.TransactionAuditModule)
   },
+  {
+    path: 'day-closure',
+    loadChildren: () => import('./day-closure/day-closure.module').then(module => module.DayClosureModule)
+  },
   { path: '', redirectTo: 'home', pathMatch: 'full' }
 ];
 

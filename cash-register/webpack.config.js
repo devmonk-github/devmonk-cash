@@ -42,7 +42,8 @@ module.exports = {
         './CustomerModule': './src/app/customers/customers.module.ts',
         './WebshopSettingsModule': './src/app/webshop-settings/webshop-settings.module.ts',
         './SharedServiceModule': './src/app/shared/shared-service.module.ts',
-        './TransactionAuditModule': './src/app/transaction-audit/transaction-audit.module.ts'
+        './TransactionAuditModule': './src/app/transaction-audit/transaction-audit.module.ts',
+        './DayClosureModule': './src/app/day-closure/day-closure.module.ts',
       },
 
       shared: share({
