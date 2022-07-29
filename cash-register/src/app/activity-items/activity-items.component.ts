@@ -15,7 +15,7 @@ export class ActivityItemsComponent implements OnInit {
   pageCounts: Array<number> = [10, 25, 50, 100]
   pageCount: number = 10;
   pageNumber: number = 1;
-  setPaginateSize: number = 1;
+  setPaginateSize: number = 10;
   paginationConfig: any = {
     itemsPerPage: '10',
     currentPage: 1,
@@ -49,19 +49,7 @@ export class ActivityItemsComponent implements OnInit {
   workstations: Array<any> = [];
   employees: Array<any> = [this.requestParams.employee];
   repairStatuses: Array<any> = ['info', 'processing', 'cancelled', 'inspection', 'completed']
-  types: Array<any> = [
-    'regular',
-    'expenses',
-    'giftcard',
-    'empty-line',
-    'repair',
-    'order',
-    'gold-purchase',
-    'gold-sell',
-    'loyalty-points-discount',
-    'loyalty-points',
-    'discount',
-  ]
+  types: Array<any> = [ 'purchase-order-retailer', 'purchase-order-supplier', 'sales-order', 'cash-registry', 'webshop' ]
   methodValue: string = 'All';
   transactionValue: string = 'All';
 

@@ -60,10 +60,7 @@ export class GoldPurchaseComponent implements OnInit {
     private dialogService: DialogService) { }
 
   ngOnInit(): void {
-    // this.getProperties();
-    // this.getBusinessBrands();
     this.checkArticleGroups();
-    console.log(this.item);
   }
   deleteItem(): void {
     this.itemChanged.emit('delete')
@@ -113,16 +110,12 @@ export class GoldPurchaseComponent implements OnInit {
       });
   }
 
-  createArticleGroup() {
-    this.createArticleGroupService.createArticleGroup({ name: 'Gold purchase', sCategory: 'Gold purchase', sSubCategory: this.item.oGoldFor.name })
-      .subscribe((res: any) => {
-        this.item.iArticleGroupId = res.data._id;
-        this.item.oArticleGroupMetaData.sCategory = res.data.sCategory;
-        this.item.oArticleGroupMetaData.sSubCategory = res.data.sSubCategory;
-      },
-        err => {
-          this.toastrService.show({ type: 'danger', text: err.message });
-        });
+  async createArticleGroup() {
+    const articleBody = { name: 'Gold purchase', sCategory: 'Gold purchase', sSubCategory: this.item.oGoldFor.name };
+    const result: any = await this.createArticleGroupService.createArticleGroup(articleBody);
+    this.item.iArticleGroupId = result.data._id;
+    this.item.oArticleGroupMetaData.sCategory = result.data.sCategory;
+    this.item.oArticleGroupMetaData.sSubCategory = result.data.sSubCategory;
   }
 
   constisEqualsJson(obj1: any, obj2: any) {

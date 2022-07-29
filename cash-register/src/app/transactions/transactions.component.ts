@@ -41,7 +41,7 @@ export class TransactionsComponent implements OnInit {
   widgetLog: string[] = [];
   pageCounts: Array<number> = [10, 25, 50, 100]
   pageNumber: number = 1;
-  setPaginateSize: number = 12;
+  setPaginateSize: number = 10;
   paginationConfig: any = {
     itemsPerPage: 10,
     currentPage: 1,
@@ -62,7 +62,7 @@ export class TransactionsComponent implements OnInit {
     endDate: new Date(new Date().setHours(23, 59, 59)),
     startDate: new Date('01-01-2015'),
   }
-  paymentMethods: Array<any> = ['All', 'Cash', 'Credit', 'Card', 'Gift-Card'];
+  paymentMethods: Array<any> = [];
   transactionTypes: Array<any> = ['All', 'Refund', 'Repair', 'Gold-purchase', 'Gold-sale'];
   transactionStatuses: Array<any> = ['ALL', 'EXPECTED_PAYMENTS', 'NEW', 'CANCELLED', 'FAILED', 'EXPIRED', 'COMPLETED', 'REFUNDED'];
   invoiceStatus: string = 'all';
@@ -97,6 +97,7 @@ export class TransactionsComponent implements OnInit {
 
   async ngOnInit() {
     if (this.routes.url.includes('/business/web-orders')) this.eType = 'webshop-revenue';
+    else if (this.routes.url.includes('/business/reservations')) this.eType = 'webshop-reservation';
     else this.eType = 'cash-register-revenue';
 
     this.businessDetails._id = localStorage.getItem("currentBusiness");
@@ -106,6 +107,19 @@ export class TransactionsComponent implements OnInit {
     this.listEmployee();
     this.getWorkstations();
     this.getLocations();
+    this.getPaymentMethods();
+  }
+
+  getPaymentMethods() {
+    this.apiService.getNew('cashregistry', '/api/v1/payment-methods/' + this.requestParams.iBusinessId).subscribe((result: any) => {
+      if (result && result.data && result.data.length) {
+        this.paymentMethods = [ { sName: 'All' }, ...result.data.map((v: any) => ({ ...v, isDisabled: false })) ]
+        this.paymentMethods.forEach((element: any) => {
+          element.sName = element.sName.toLowerCase();
+        });
+      }
+    }, (error) => {
+    })
   }
 
   toolTipData(item: any) {

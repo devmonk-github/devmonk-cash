@@ -109,8 +109,8 @@ export class TillService {
         i.comment,
         i.sProductNumber,
         i.price,
-        0, // TODO
-        0, // TODO
+        i.nPurchasePrice || i.price, // TODO
+        i.price - i.nPurchasePrice, // TODO
         null,
         i.tax,
         i.quantity,
@@ -137,9 +137,8 @@ export class TillService {
         null, // TODO
         null, //TODO
 
-        i.total, // TODO?
-        i.total,
-        i.paymentAmount || i.total,
+        i.nTotal, // TODO?
+        i.paymentAmount || 0,
         0, // TODO
         i.nDiscount.value > 0,
         i.nDiscount.percent,
@@ -177,6 +176,7 @@ export class TillService {
 
         i.redeemedLoyaltyPoints,
         i.sUniqueIdentifier || this.getUniqueId(4),
+        i.paymentAmount
       )
     });
     const originalTItemsLength = length = body.transactionItems.filter((i: any) => i.oType.eKind !== 'loyalty-points').length;
@@ -185,7 +185,8 @@ export class TillService {
       if (discountRecords) {
         discountRecords = JSON.parse(discountRecords);
       }
-      if (i.oType.bRefund && (i.nPriceIncVat - i.nDiscount + i.nPaymentAmount) === 0 && i.nDiscount !== 0) {
+      // console.log((i.nPriceIncVat - i.nDiscount + i.nPaymentAmount) === 0); // (i.nRefundAmount + i.nPaymentAmount) === 0 &&
+      if (i.oType.bRefund && i.nDiscount !== 0) {
         const records = discountRecords.filter((o: any) => o.sUniqueIdentifier === i.sUniqueIdentifier);
         records.forEach((record: any) => {
           i.nPaymentAmount += record.nPaymentAmount;

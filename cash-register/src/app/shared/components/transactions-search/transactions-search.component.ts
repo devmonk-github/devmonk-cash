@@ -121,6 +121,7 @@ export class TransactionsSearchComponent implements OnInit, AfterViewInit {
                 nonEditable: transactionItem.sGiftCardNumber ? true : false,
                 sGiftCardNumber: transactionItem.sGiftCardNumber,
                 quantity: transactionItem.nQuantity,
+                iBusinessProductId: transactionItem.iBusinessProductId,
                 price: transactionItem.nPriceIncVat,
                 iRepairerId: transactionItem.iRepairerId,
                 oArticleGroupMetaData: transactionItem.oArticleGroupMetaData,

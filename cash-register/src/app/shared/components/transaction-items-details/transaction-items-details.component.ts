@@ -57,8 +57,6 @@ export class TransactionItemsDetailsComponent implements OnInit {
     this.transaction = this.dialogRef.context.transaction;
     this.requestParams.iBusinessId = localStorage.getItem('currentBusiness');
     this.fetchTransactionItems();
-
-
   }
 
   fetchTransactionItems() {
