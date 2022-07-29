@@ -97,6 +97,7 @@ export class TransactionsComponent implements OnInit {
 
   async ngOnInit() {
     if (this.routes.url.includes('/business/web-orders')) this.eType = 'webshop-revenue';
+    else if (this.routes.url.includes('/business/reservations')) this.eType = 'webshop-reservation';
     else this.eType = 'cash-register-revenue';
 
     this.businessDetails._id = localStorage.getItem("currentBusiness");
