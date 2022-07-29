@@ -41,7 +41,7 @@ export class TransactionsComponent implements OnInit {
   widgetLog: string[] = [];
   pageCounts: Array<number> = [10, 25, 50, 100]
   pageNumber: number = 1;
-  setPaginateSize: number = 12;
+  setPaginateSize: number = 10;
   paginationConfig: any = {
     itemsPerPage: 10,
     currentPage: 1,
