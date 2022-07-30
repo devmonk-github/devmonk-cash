@@ -119,13 +119,13 @@
                             <div class="col-md-3 mt-5">
                                 <button type="button" class="btn btn-primary" data-kt-roles-modal-action="submit"
                                     (click)="fetchStatistics()" [class.disabled]="bStatisticLoading">
-                                    <span class="indicator-label">{{ "APPLY_FILTER" | translate}}</span>
+                                    <span class="indicator-label">{{ "APPLY_FILTER 123" | translate}}</span>
                                 </button>
                             </div>
 
                             <div class="col-md-3 mt-5">
-                                <button type="button" class="btn btn-primary" data-kt-roles-modal-action="submit" (click)="closeDayState($event)"
-                                    [class.disabled]="bStatisticLoading">
+                                <button type="button" class="btn btn-primary" data-kt-roles-modal-action="submit"
+                                    (click)="closeDayState($event)" [class.disabled]="bStatisticLoading">
                                     <span class="indicator-label">{{ "CLOSE_DAYSTATE" | translate}}</span>
                                 </button>
                                 <div *ngIf="closingDayState" class="spinner-border mx-auto"></div>
