@@ -8,6 +8,16 @@ sharedMappings.register(
   path.join(__dirname, 'tsconfig.json'),
   [/* mapped paths to share */]);
 
+const sharedLibrary = {
+  "@angular/core": { singleton: true, requiredVersion: 'auto' },
+  "@angular/common": { singleton: true, requiredVersion: 'auto' },
+  "@angular/common/http": { singleton: true, requiredVersion: 'auto' },
+  "@angular/router": { singleton: true, requiredVersion: 'auto' },
+  "@ngx-translate/core": { singleton: true, requiredVersion: 'auto' },
+
+  ...sharedMappings.getDescriptors()
+};
+
 module.exports = {
   output: {
     uniqueName: "cashRegister",
@@ -23,64 +33,151 @@ module.exports = {
   },
   plugins: [
     new ModuleFederationPlugin({
-
-      // For remotes (please adjust)
-      name: "cashRegister",
-      filename: "cash-register.js",
-      exposes: {
-        './CashRegisterModule': './src/app/till/till.module.ts',
-        './CashRegisterSettingsModule': './src/app/till-settings/till-settings.module.ts',
-        './PrintSettingsModule': './src/app/print-settings/print-settings.module.ts',
-        './SavingPointsModule': './src/app/saving-points/saving-points.module.ts',
-        './WorkstationModule': './src/app/workstation/workstation.module.ts',
-        './DeviceModule': './src/app/device/device.module.ts',
-        './TransactionModule': './src/app/transactions/transactions.module.ts',
-        './WebOrderModule': './src/app/web-orders/web-orders.module.ts',
-        './StatisticModule': './src/app/statistics/statistics.module.ts',
-        './ServiceModule': './src/app/services/services.module.ts',
-        './ActivityItemsModule': './src/app/activity-items/activity-items.module.ts',
-        './CustomerModule': './src/app/customers/customers.module.ts',
-        './WebshopSettingsModule': './src/app/webshop-settings/webshop-settings.module.ts',
-        './SharedServiceModule': './src/app/shared/shared-service.module.ts',
-        './TransactionAuditModule': './src/app/transaction-audit/transaction-audit.module.ts',
-        './DayClosureModule': './src/app/day-closure/day-closure.module.ts',
-      },
-
-      shared: share({
-        "@angular/core": { singleton: true, requiredVersion: 'auto' },
-        "@angular/common": { singleton: true, requiredVersion: 'auto' },
-        "@angular/common/http": { singleton: true, requiredVersion: 'auto' },
-        "@angular/router": { singleton: true, requiredVersion: 'auto' },
-        "@ngx-translate/core": { singleton: true, requiredVersion: 'auto' },
-
-        ...sharedMappings.getDescriptors()
-      })
-
-    }),
-    new ModuleFederationPlugin({
-
       // For remotes (please adjust)
       name: "till",
       filename: "till.js",
       exposes: {
-        './tillModule': './src/app/till/till.module.ts',
-        '/TransactionsModule': './src/app/transactions/transactions.module.ts',
-        '/WebOrdersModule': './src/app/web-orders/web-orders.module.ts',
-        '/CustomersModule': './src/app/customers/customers.module.ts',
-        '/StatisticsModule': './src/app/statistics/statistics.module.ts',
-        '/ServicesModule': './src/app/services/services.module.ts',
-        '/ActivityItemsModule': './src/app/activity-items/activity-items.module.ts',
+        './TillModule': './src/app/till/till.module.ts',
       },
 
-      shared: share({
-        "@angular/core": { singleton: true, requiredVersion: 'auto' },
-        "@angular/common": { singleton: true, requiredVersion: 'auto' },
-        "@angular/common/http": { singleton: true, requiredVersion: 'auto' },
-        "@angular/router": { singleton: true, requiredVersion: 'auto' },
+      shared: share(sharedLibrary)
+    }),
+    new ModuleFederationPlugin({
+      // For remotes (please adjust)
+      name: "tillSettings",
+      filename: "till-settings.js",
+      exposes: {
+        './TillSettingsModule': './src/app/till-settings/till-settings.module.ts'
+      },
 
-        ...sharedMappings.getDescriptors()
-      })
+      shared: share(sharedLibrary)
+    }),
+    new ModuleFederationPlugin({
+      // For remotes (please adjust)
+      name: "printSettings",
+      filename: "print-settings.js",
+      exposes: {
+        './PrintSettingsModule': './src/app/print-settings/print-settings.module.ts'
+      },
 
+      shared: share(sharedLibrary)
+    }),
+    new ModuleFederationPlugin({
+      // For remotes (please adjust)
+      name: "savingPoints",
+      filename: "saving-points.js",
+      exposes: {
+        './SavingPointsModule': './src/app/saving-points/saving-points.module.ts',
+      },
+      shared: share(sharedLibrary)
+    }),
+    new ModuleFederationPlugin({
+      // For remotes (please adjust)
+      name: "workStation",
+      filename: "work-station.js",
+      exposes: {
+        './WorkstationModule': './src/app/workstation/workstation.module.ts',
+      },
+      shared: share(sharedLibrary)
+    }),
+    new ModuleFederationPlugin({
+      // For remotes (please adjust)
+      name: "service",
+      filename: "service.js",
+      exposes: {
+        './ServicesModule': './src/app/services/services.module.ts'
+      },
+      shared: share(sharedLibrary)
+    }),
+    new ModuleFederationPlugin({
+      // For remotes (please adjust)
+      name: "device",
+      filename: "device.js",
+      exposes: {
+        './DeviceModule': './src/app/device/device.module.ts',
+      },
+      shared: share(sharedLibrary)
+    }),
+    new ModuleFederationPlugin({
+      // For remotes (please adjust)
+      name: "transaction",
+      filename: "transaction.js",
+      exposes: {
+        './TransactionsModule': './src/app/transactions/transactions.module.ts',
+      },
+      shared: share(sharedLibrary)
+    }),
+    new ModuleFederationPlugin({
+      // For remotes (please adjust)
+      name: "webOrder",
+      filename: "web-order.js",
+      exposes: {
+        './WebOrderModule': './src/app/web-orders/web-orders.module.ts',
+      },
+      shared: share(sharedLibrary)
+    }),
+    new ModuleFederationPlugin({
+      // For remotes (please adjust)
+      name: "statistics",
+      filename: "statistics.js",
+      exposes: {
+        './StatisticModule': './src/app/statistics/statistics.module.ts',
+      },
+      shared: share(sharedLibrary)
+    }),
+    new ModuleFederationPlugin({
+      // For remotes (please adjust)
+      name: "activityItem",
+      filename: "activity-item.js",
+      exposes: {
+        './ActivityItemsModule': './src/app/activity-items/activity-items.module.ts',
+      },
+      shared: share(sharedLibrary)
+    }),
+    new ModuleFederationPlugin({
+      // For remotes (please adjust)
+      name: "customer",
+      filename: "customer.js",
+      exposes: {
+        './CustomerModule': './src/app/customers/customers.module.ts',
+      },
+      shared: share(sharedLibrary)
+    }),
+    new ModuleFederationPlugin({
+      // For remotes (please adjust)
+      name: "webshopSettings",
+      filename: "webshop-settings.js",
+      exposes: {
+        './WebshopSettingsModule': './src/app/webshop-settings/webshop-settings.module.ts',
+      },
+      shared: share(sharedLibrary)
+    }),
+    new ModuleFederationPlugin({
+      // For remotes (please adjust)
+      name: "sharedService",
+      filename: "shared-service.js",
+      exposes: {
+        './SharedServiceModule': './src/app/shared/shared-service.module.ts',
+      },
+      shared: share(sharedLibrary)
+    }),
+    new ModuleFederationPlugin({
+      // For remotes (please adjust)
+      name: "transactionAudit",
+      filename: "transaction-audit.js",
+      exposes: {
+        './TransactionAuditModule': './src/app/transaction-audit/transaction-audit.module.ts'
+      },
+      shared: share(sharedLibrary)
+    }),
+    new ModuleFederationPlugin({
+      // For remotes (please adjust)
+      name: "dayClosure",
+      filename: "day-closure.js",
+      exposes: {
+        './DayClosureModule': './src/app/day-closure/day-closure.module.ts',
+      },
+      shared: share(sharedLibrary)
     }),
     sharedMappings.getPlugin()
   ],
