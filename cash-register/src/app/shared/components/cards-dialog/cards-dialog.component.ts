@@ -33,7 +33,7 @@ export class CardsComponent implements OnInit, AfterViewInit {
   redeemedLoyaltyPoints = 0;
   customer: any;
   pincode: any;
-  giftCardInfo = { sGiftCardNumber: '', pincode: '', nAmount: 0, profileIconUrl: '', type: 'custom', nPaidAmount: 0 };
+  giftCardInfo = { sGiftCardNumber: '', pincode: '', nAmount: 0, profileIconUrl: '', type: 'custom', nPaidAmount: 0, iArticleGroupId: '' };
   // elem ref
   constructor(
     private viewContainerRef: ViewContainerRef,
@@ -124,6 +124,7 @@ export class CardsComponent implements OnInit, AfterViewInit {
     this.giftCardInfo.nAmount = this.nAmount;
     this.giftCardInfo.pincode = this.pincode;
     this.giftCardInfo.profileIconUrl = this.externalGiftCardDetails.profileIconUrl;
+    this.giftCardInfo.iArticleGroupId = this.giftCardDetails.iArticleGroupId;
     this.giftCardInfo.type = this.externalGiftCardDetails.type ? this.externalGiftCardDetails.type : 'custom';
     this.close({ giftCardInfo: this.giftCardInfo, redeemedLoyaltyPoints: this.redeemedLoyaltyPoints });
   }

@@ -96,6 +96,7 @@ export class TillComponent implements OnInit {
     'iArticleGroupId',
     'iBusinessPartnerId',
     'iBusinessBrandId',
+    'nPurchasePrice'
   ];
   discountArticleGroup: any = {};
   saveInProgress = false;
@@ -507,6 +508,7 @@ export class TillComponent implements OnInit {
               const cardPaymethod = _.clone(giftCardPayment);
               cardPaymethod.amount = element.nAmount;
               cardPaymethod.sGiftCardNumber = element.sGiftCardNumber;
+              cardPaymethod.iArticleGroupId = element.iArticleGroupId;
               cardPaymethod.type = element.type;
               body.payments.push(cardPaymethod);
             });
