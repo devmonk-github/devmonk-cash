@@ -25,6 +25,7 @@ import { TerminalDialogComponent } from '../shared/components/terminal-dialog/te
 import { CreateArticleGroupService } from '../shared/service/create-article-groups.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { CustomerStructureService } from '../shared/service/customer-structure.service';
+import { Observable } from 'rxjs';
 @Component({
   selector: 'app-till',
   templateUrl: './till.component.html',
@@ -189,23 +190,23 @@ export class TillComponent implements OnInit {
     })
   }
 
-  fetchBusinessProductDetail(iBusinessProductId: any) {
-    this.fetchingProductDetails = true;
-    this.apiService.getNew('core', `/api/v1/business/products/${iBusinessProductId}?iBusinessId=${this.business._id}`).subscribe(
-      (result: any) => {
-        this.fetchingProductDetails = false;
-        console.log('fetchBusinessProductDetail: ', result);
-      }, (error) => {
-        console.error('error in fetching product: ', error);
-      });    
-  }
+  // fetchBusinessProductDetail(iBusinessProductId: any) {
+  //   this.fetchingProductDetails = true;
+  //   this.apiService.getNew('core', `/api/v1/business/products/${iBusinessProductId}?iBusinessId=${this.business._id}`).subscribe(
+  //     (result: any) => {
+  //       this.fetchingProductDetails = false;
+  //       console.log('fetchBusinessProductDetail: ', result);
+  //     }, (error) => {
+  //       console.error('error in fetching product: ', error);
+  //     });    
+  // }
 
   addItemToTransaction(item: any): void {
     this.fetchingProductDetails = true;
     this.apiService.getNew('core', `/api/v1/business/products/${item.iBusinessProductId}?iBusinessId=${this.business._id}`).subscribe(
       (result: any) => {
         if (result.message == 'success') {
-          this.onSelectProduct(result.data, 'business', 'same-article');
+          this.onSelectProduct(result.data, 'business', 'quick-button');
           this.fetchingProductDetails = false;
         }
       });
@@ -611,8 +612,15 @@ export class TillComponent implements OnInit {
     }
   }
 
+  getBusinessProduct(iBusinessProductId: string): Observable<any> {
+    return this.apiService.getNew('core', `/api/v1/business/products/${iBusinessProductId}?iBusinessId=${this.business._id}`)
+  }
+
   // Add selected product into purchase order
-  onSelectProduct(product: any, isFrom: string, isFor: string) {
+  async onSelectProduct(product: any, isFrom: string, isFor: string) {
+    let _oBusinessProductDetail;
+    if (isFor != 'quick-button') _oBusinessProductDetail = await this.getBusinessProduct(product?._id).toPromise();
+    console.log('onSelectProduct: ', product, _oBusinessProductDetail);
     const price = product.aLocation.find((o: any) => o._id === this.locationId);
     this.transactionItems.push({
       name: product.oName ? product.oName['en'] : 'No name',
