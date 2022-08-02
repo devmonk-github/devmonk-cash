@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import {
   faScrewdriverWrench, faTruck, faBoxesStacked, faGifts,
   faUserPlus, faUser, faTimes, faTimesCircle, faTrashAlt, faRing,
@@ -80,6 +80,7 @@ export class TillComponent implements OnInit {
   dOpenDate: any = '';
   iWorkstationId!: any;
 
+
   aProjection: Array<any> = [
     'oName',
     'sEan',
@@ -119,6 +120,7 @@ export class TillComponent implements OnInit {
   ) {
   }
 
+
   ngOnInit(): void {
     this.business._id = localStorage.getItem('currentBusiness');
     this.locationId = localStorage.getItem('currentLocation') || null;
@@ -139,6 +141,14 @@ export class TillComponent implements OnInit {
 
     this.fetchQuickButtons();
 
+  }
+
+
+  @ViewChild("searchField", { static: false })
+  set searchField(element: ElementRef<HTMLInputElement>) {
+    if (element) {
+      element.nativeElement.focus()
+    }
   }
 
   loadTransaction() {
@@ -197,7 +207,7 @@ export class TillComponent implements OnInit {
         console.log('fetchBusinessProductDetail: ', result);
       }, (error) => {
         console.error('error in fetching product: ', error);
-      });    
+      });
   }
 
   addItemToTransaction(item: any): void {
@@ -906,5 +916,10 @@ export class TillComponent implements OnInit {
     this.payMethods[index].amount = this.getTotals('price');
     this.changeInPayment();
     this.createTransaction();
+  }
+
+  switchMode() {
+    if (this.eKind === 'giftcard' || this.eKind === 'gold-purchase')
+      this.eKind = 'regular';
   }
 }
