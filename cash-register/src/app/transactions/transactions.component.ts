@@ -32,7 +32,7 @@ export class TransactionsComponent implements OnInit {
   requestParams: any = {
     iBusinessId: "",
     skip: 0,
-    limit: 12,
+    limit: 10,
     searchValue: '',
     sortBy: 'dCreatedDate',
     sortOrder: 'desc'
@@ -41,7 +41,7 @@ export class TransactionsComponent implements OnInit {
   widgetLog: string[] = [];
   pageCounts: Array<number> = [10, 25, 50, 100]
   pageNumber: number = 1;
-  setPaginateSize: number = 12;
+  setPaginateSize: number = 10;
   paginationConfig: any = {
     itemsPerPage: 10,
     currentPage: 1,
@@ -97,6 +97,7 @@ export class TransactionsComponent implements OnInit {
 
   async ngOnInit() {
     if (this.routes.url.includes('/business/web-orders')) this.eType = 'webshop-revenue';
+    else if (this.routes.url.includes('/business/reservations')) this.eType = 'webshop-reservation';
     else this.eType = 'cash-register-revenue';
 
     this.businessDetails._id = localStorage.getItem("currentBusiness");

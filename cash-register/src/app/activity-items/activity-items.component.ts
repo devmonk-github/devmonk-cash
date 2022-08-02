@@ -15,7 +15,7 @@ export class ActivityItemsComponent implements OnInit {
   pageCounts: Array<number> = [10, 25, 50, 100]
   pageCount: number = 10;
   pageNumber: number = 1;
-  setPaginateSize: number = 1;
+  setPaginateSize: number = 10;
   paginationConfig: any = {
     itemsPerPage: '10',
     currentPage: 1,

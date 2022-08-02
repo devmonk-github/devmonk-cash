@@ -65,7 +65,10 @@ export class TransactionItemsDetailsComponent implements OnInit {
 
     if (this.itemType === 'activity') {
       delete this.requestParams.iTransactionId;
-      url = `/api/v1/activities/items/${this.transaction._id}`;
+      let id;
+      if(this.transaction?.iActivityId) id = this.transaction.iActivityId
+      else id = this.transaction._id
+      url = `/api/v1/activities/items/${id}`;
     };
     this.apiService.postNew('cashregistry', url, this.requestParams).subscribe((result: any) => {
       this.transactionItems = result.data[0].result;
