@@ -68,6 +68,12 @@ export class ProductComponent {
     }
   }
 
+  changeTypeArray() {
+    if (!this.item.oType.refund) {
+      this.item.price = -this.item.price;
+    }
+  }
+
   openDiscountDialog(): void {
     this.dialogService.openModal(DiscountDialogComponent, { context: { item: JSON.parse(JSON.stringify(this.item)) } })
       .instance.close.subscribe((data) => {

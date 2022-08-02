@@ -852,15 +852,6 @@ export class TillComponent implements OnInit {
       });
   }
 
-  // createArticleGroup() {
-  // this.createArticleGroupService.createArticleGroup({ name: 'Discount', sCategory: 'Discount', sSubCategory: 'Discount' })
-  //   .subscribe((res: any) => {
-  //     this.discountArticleGroup = res.data[0].result[0];
-  //   },
-  //     err => {
-  //       this.toastrService.show({ type: 'danger', text: err.message });
-  //     });
-  // }
   async createArticleGroup() {
     const articleBody = { name: 'Discount', sCategory: 'Discount', sSubCategory: 'Discount' };
     const result: any = await this.createArticleGroupService.createArticleGroup(articleBody);
@@ -914,5 +905,6 @@ export class TillComponent implements OnInit {
   assignAllAmount(index: number) {
     this.payMethods[index].amount = this.getTotals('price');
     this.changeInPayment();
+    this.createTransaction();
   }
 }
