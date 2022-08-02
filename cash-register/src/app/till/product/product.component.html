@@ -32,7 +32,8 @@
       <div class="w-90px pe-2">
         <app-dialer [(quantity)]="item.quantity"></app-dialer>
         <div class="d-flex">
-          <select name="taxRate" id="taxRate" class="form-select" [(ngModel)]="item.eTransactionItemType">
+          <select name="taxRate" id="taxRate" class="form-select" [(ngModel)]="item.eTransactionItemType"
+            (ngModelChange)="changeTypeArray()">
             <option *ngFor="let type of typeArray" [ngValue]="type">{{type}}</option>
           </select>
         </div>
