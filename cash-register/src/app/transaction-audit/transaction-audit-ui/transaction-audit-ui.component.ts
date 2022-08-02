@@ -43,10 +43,6 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
     endDate: new Date(new Date().setHours(23, 59, 59)),
     startDate: new Date(new Date().setHours(0, 0, 0))
   };
-  // filterDates = {
-  //   "endDate": "2022-07-26T18:29:59.878Z",
-  //   "startDate": "2022-07-22T18:29:59.878Z"
-  // };
 
   creditAmount = 0;
   debitAmount = 0;
@@ -137,7 +133,10 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.iStatisticId = this.route.snapshot?.params?.iStatisticId;
-    console.log('iStatisticId: ', this.iStatisticId);
+    const oQueryParams = this.route.snapshot?.queryParams;
+    // const _dOpenDate = this.route.snapshot?.queryParams?.get('dStartDate');
+    if (oQueryParams?.dStartDate) this.filterDates.startDate = oQueryParams?.dStartDate;
+    console.log('iStatisticId: ', this.iStatisticId, oQueryParams?.dStartDate);
     this.businessDetails._id = localStorage.getItem("currentBusiness");
     this.fetchBusinessDetails();
     this.printingDate();
@@ -172,7 +171,6 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
     this.bStatisticLoading = true;
     const oBody = {
       iBusinessId: this.iBusinessId,
-      iStatisticId: this.iStatisticId,
       oFilter: {
         aLocationId: this?.aSelectedLocation?.length ? this.aSelectedLocation : [],
         iWorkstationId: this.selectedWorkStation?._id,
@@ -197,7 +195,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
   }
 
   fetchStatistics(sDisplayMethod?: string) {
-    if (this.iStatisticId) this.IsDynamicState = false;
+    if (this.iStatisticId) this.IsDynamicState = true;
     if (!this.IsDynamicState) return this.fetchStatisticDocument();
     this.aStatistic = [];
     this.aPaymentMethods = [];
@@ -206,7 +204,6 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
       oFilter: {
         aLocationId: this?.aSelectedLocation?.length ? this.aSelectedLocation : [],
         iWorkstationId: this.selectedWorkStation?._id,
-        // iWorkstationId: this.selectedWorkStation?._id,
         iEmployeeId: this.selectedEmployee?._id,
         sTransactionType: this.optionMenu,
         sDisplayMethod: sDisplayMethod || this.sDisplayMethod,
@@ -215,6 +212,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
         aFilterProperty: this.aFilterProperty
       }
     }
+    console.log('fetchStatistics oBody: ', oBody);
     this.bStatisticLoading = true;
     this.statisticAuditSubscription = this.apiService.postNew('cashregistry', `/api/v1/statistics/transaction/audit`, oBody).subscribe((result: any) => {
       if (result?.data) {
@@ -340,12 +338,12 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
     this.workstationListSubscription = this.apiService.getNew('cashregistry', '/api/v1/workstations/list/' + this.iBusinessId).subscribe(
       (result: any) => {
         if (result && result.data?.length) this.aWorkStation = result.data;
-        // console.log('getWorkstations called: ', this.aWorkStation);
       }),
       (error: any) => {
         console.error(error)
       }
   }
+
   getEmployees() {
     const oBody = { iBusinessId: this.iBusinessId }
 
@@ -550,11 +548,9 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
       },
 
     };
-    // console.log('sDisplayMethod', this.sDisplayMethod);
 
     const _aTransactionItems = await this.fetchTransactionItems().toPromise();
 
-    // console.log('_aTransactionItems', _aTransactionItems);
     const aTransactionItems = _aTransactionItems?.data[0]?.result;
 
     this.aRefundItems = aTransactionItems.filter((item: any) => item.oType.bRefund);
@@ -695,14 +691,10 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
     content.push(refundHeaderData);
     if (this.aRefundItems.length) {
       this.aRefundItems.forEach((item: any) => {
-        // console.log('item', item);
         let itemDescription = item.nQuantity;
         if (item.sComment) {
           itemDescription += "x" + item.sComment;
         }
-        // else {
-        //   itemDescription += ' - ';
-        // }
         let texts: any = [{ text: itemDescription, style: 'td' },
         { text: item.nPriceIncVat, style: 'td' },
         { text: item.nVatRate, style: 'td' },
@@ -825,7 +817,6 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
     content.push(oHeaderData);
     if (this.aRepairItems.length) {
       this.aRepairItems.forEach((item: any) => {
-        // console.log('item', item);
         let texts: any = [
           { text: item.sProductName, style: 'td' },
           { text: item.sCommentVisibleCustomer, style: 'td' },
@@ -864,7 +855,6 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
 
   addGiftcardsToPdf(content: any) {
     content.push({ text: 'Giftcard(s)', style: ['left', 'normal'], margin: [0, 30, 0, 10] });
-    // console.log(this.aGiftItems);
     const aHeaders = [
       'Giftcard Number',
       'Comment',
@@ -1017,11 +1007,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
   }
 
   processPdfByRevenuePerBusinessPartner(content: any, columnWidths: any, tableLayout: any) {
-    // console.log('processPdfByRevenuePerBusinessPartner');
     let arr: Array<any> = [];
-
-    // console.log('this.aStatistic', this.aStatistic);
-
 
     this.aStatistic[0].individual.forEach((el: any) => {
       var obj: any = {};
@@ -1057,7 +1043,6 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
       arr.push(obj);
     });
     arr.forEach((singleRecord: any) => {
-      // console.log('singleRecord', singleRecord);
       let texts: any = [{ text: singleRecord.sBusinessPartnerName, style: 'th' },
       { text: singleRecord.nQuantity, style: 'th' },
       { text: singleRecord.nTotalRevenue, style: 'th' },
@@ -1075,7 +1060,6 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
       };
       content.push(data);
       singleRecord.aArticleGroups.forEach((articleGroup: any) => {
-        // console.log('articleGroup', articleGroup);
         let texts: any = [
           { text: articleGroup.sName, style: ['td', 'articleGroup'] },
           { text: articleGroup.nQuantity, style: ['td', 'articleGroup'] },
@@ -1120,10 +1104,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
   }
 
   processPdfByRevenuePerArticleGroupAndProperty(content: any, columnWidths: any, tableLayout: any) {
-    // console.log('processPdfByRevenuePerArticleGroupAndProperty');
     let arr: Array<any> = [];
-
-    // console.log('this.aStatistic', this.aStatistic);
 
     this.aStatistic[0].individual.forEach((el: any) => {
       var obj: any = {};
@@ -1148,7 +1129,6 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
       arr.push(obj);
     });
     arr.forEach((singleRecord: any) => {
-      // console.log('singleRecord', singleRecord);
       let texts: any = [
         { text: singleRecord.sName, style: ['td', 'articleGroup'] },
         { text: singleRecord.nQuantity, style: ['td', 'articleGroup'] },
@@ -1189,10 +1169,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
   }
 
   processPdfByRevenuePerSupplierAndArticleGroup(content: any, columnWidths: any, tableLayout: any) {
-    // console.log('processPdfByRevenuePerSupplierAndArticleGroup');
     let arr: Array<any> = [];
-
-    // console.log('this.aStatistic', this.aStatistic);
 
     this.aStatistic[0].individual.forEach((el: any) => {
       var obj: any = {};
@@ -1217,7 +1194,6 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
       arr.push(obj);
     });
     arr.forEach((singleRecord: any) => {
-      // console.log('singleRecord', singleRecord);
       let texts: any = [{ text: singleRecord.sBusinessPartnerName, style: 'th' },
       { text: singleRecord.nQuantity, style: 'th' },
       { text: singleRecord.nTotalRevenue, style: 'th' },
@@ -1235,7 +1211,6 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
       };
       content.push(data);
       singleRecord.aArticleGroups.forEach((articleGroup: any) => {
-        // console.log('articleGroup', articleGroup);
         let texts: any = [
           { text: articleGroup.sName, style: ['td', 'articleGroup'] },
           { text: articleGroup.nQuantity, style: ['td', 'articleGroup'] },
@@ -1258,10 +1233,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
   }
 
   processPdfByRevenuePerProperty(content: any, columnWidths: any, tableLayout: any) {
-    // console.log('processPdfByRevenuePerProperty');
     let arr: Array<any> = [];
-
-    // console.log('this.aStatistic', this.aStatistic);
 
     this.aStatistic[0].individual.forEach((property: any) => {
       let revenue = {
@@ -1276,7 +1248,6 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
       arr.push(revenue);
     });
     arr.forEach((property: any) => {
-      // console.log('singleRecord', property);
 
       let texts: any = [
         { text: (property.aCategory.length) ? property.aCategory : '-', style: ['td', 'property'], },
@@ -1299,10 +1270,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
   }
 
   processPdfByRevenuePerArticleGroup(content: any, columnWidths: any, tableLayout: any) {
-    // console.log('processPdfByRevenuePerArticleGroup');
     let arr: Array<any> = [];
-
-    // console.log('this.aStatistic', this.aStatistic);
 
     this.aStatistic[0].individual.forEach((el: any) => {
       var obj: any = {};
@@ -1316,7 +1284,6 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
       arr.push(obj);
     });
     arr.forEach((singleRecord: any) => {
-      // console.log('singleRecord', singleRecord);
       let texts: any = [
         { text: singleRecord.sName, style: ['td', 'articleGroup'] },
         { text: singleRecord.nQuantity, style: ['td', 'articleGroup'] },
@@ -1346,7 +1313,6 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
   }
 
   expandItem(item: any, iBusinessPartnerId: string = '') {
-    // console.log(item, this.sDisplayMethod);
     item.bIsCollapseItem = !item.bIsCollapseItem;
     if (item.aTransactionItems) {
       return;
@@ -1420,6 +1386,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
 
     return this.apiService.postNew('cashregistry', '/api/v1/activities/items', data);
   }
+
   fetchGoldPurchaseItems(): Observable<any> {
     let data = {
       oFilterBy: {
@@ -1436,7 +1403,8 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
     const oBody = {
       iBusinessId: this.iBusinessId,
       iLocationId: this.iLocationId,
-      iWorkstationId: this.iWorkstationId
+      iWorkstationId: this.iWorkstationId,
+      iStatisticId: this.iStatisticId
     }
     this.closingDayState = true;
     if (event) event.target.disabled = true;

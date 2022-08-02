@@ -104,6 +104,7 @@ export class TillService {
       redeemedLoyaltyPoints,
     };
     body.transactionItems = transactionItems.map((i: any) => {
+      console.log(i);
       return new TransactionItem(
         i.name,
         i.comment,
@@ -165,7 +166,7 @@ export class TillService {
         {
           eTransactionType: i.eTransactionType || 'cash-registry', // TODO
           bRefund: i.oType?.bRefund || i.nDiscount.quantity < 0 || i.price < 0,
-          nStockCorrection: i.eTransactionItemType === 'regular' ? i.quantity : i.quantity - i.nBrokenProduct,
+          nStockCorrection: i.eTransactionItemType === 'regular' ? i.quantity : i.quantity - (i.nBrokenProduct || 0),
           eKind: i.type, // TODO // repair
           bDiscount: i.nDiscount > 0,
           bPrepayment: (i.paymentAmount > 0 || this.getUsedPayMethods(true, payMethods) - this.getTotals('price', transactionItems) < 0) && (i.paymentAmount !== i.amountToBePaid),
