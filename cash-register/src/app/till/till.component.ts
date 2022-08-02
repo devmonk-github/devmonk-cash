@@ -189,6 +189,17 @@ export class TillComponent implements OnInit {
     })
   }
 
+  fetchBusinessProductDetail(iBusinessProductId: any) {
+    this.fetchingProductDetails = true;
+    this.apiService.getNew('core', `/api/v1/business/products/${iBusinessProductId}?iBusinessId=${this.business._id}`).subscribe(
+      (result: any) => {
+        this.fetchingProductDetails = false;
+        console.log('fetchBusinessProductDetail: ', result);
+      }, (error) => {
+        console.error('error in fetching product: ', error);
+      });    
+  }
+
   addItemToTransaction(item: any): void {
     this.fetchingProductDetails = true;
     this.apiService.getNew('core', `/api/v1/business/products/${item.iBusinessProductId}?iBusinessId=${this.business._id}`).subscribe(
