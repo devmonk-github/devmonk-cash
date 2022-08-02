@@ -22,7 +22,7 @@
 
     <div class="col-md-9 col-xs-12 column-auto till-body ps-0 pe-0">
       <div class="d-flex justify-content-start">
-        <button class="btn d-flex bg-white rounded p-4 mb-3 me-3 min-w-90px"
+        <button class="btn d-flex btn-white  rounded p-4 mb-3 me-3 text-hover-primary min-w-90px"
           [ngClass]="{'btn-color-primary': eKind === 'regular' }"
           (click)="shopProducts = []; commonProducts = []; eKind = 'regular'; isStockSelected = true"
           [disabled]="isGoldForPayments">
@@ -40,7 +40,7 @@
           </div>
         </button>
 
-        <button class="btn d-flex bg-white rounded p-4 mb-3 me-3 min-w-90px"
+        <button class="btn d-flex btn-white  rounded p-4 mb-3 me-3 text-hover-primary min-w-90px"
           [ngClass]="{'btn-color-primary': eKind === 'order' }"
           (click)="shopProducts = []; commonProducts = []; eKind = 'order'; isStockSelected = false">
           <div class="d-flex flex-column justify-center align-items-center flex-grow-1">
@@ -57,7 +57,7 @@
           </div>
         </button>
 
-        <button class="btn d-flex bg-white rounded p-4 mb-3 me-3 min-w-90px"
+        <button class="btn d-flex btn-white  rounded p-4 mb-3 me-3 text-hover-primary min-w-90px"
           [ngClass]="{'btn-color-primary': eKind === 'repair' }" (click)="eKind = 'repair'; addItem('repair')">
           <div class="d-flex flex-column justify-center align-items-center flex-grow-1">
             <div class="symbol symbol-40px mb-2">
@@ -73,7 +73,7 @@
           </div>
         </button>
 
-        <button class="btn d-flex bg-white rounded p-4 mb-3 me-3 text-hover-primary min-w-90px"
+        <button class="btn d-flex btn-white  rounded p-4 mb-3 me-3 text-hover-primary min-w-90px"
           [ngClass]="{'btn-color-primary': eKind === 'giftcard' }" (click)="eKind = 'giftcard'; addItem('giftcard')">
           <div class="d-flex flex-column justify-center align-items-center flex-grow-1">
             <div class="symbol symbol-40px mb-2">
@@ -89,7 +89,7 @@
           </div>
         </button>
 
-        <button class="btn d-flex bg-white rounded p-4 mb-3 me-3 text-hover-primary min-w-90px"
+        <button class="btn d-flex btn-white  rounded p-4 mb-3 me-3 text-hover-primary min-w-90px"
           (click)="eKind = 'gold-purchase'; addItem('gold-purchase')">
           <div class="d-flex flex-column justify-center align-items-center flex-grow-1">
             <div class="symbol symbol-40px mb-2">
@@ -105,7 +105,7 @@
           </div>
         </button>
 
-        <button class="btn d-flex bg-white rounded p-4 mb-3 me-3 text-hover-primary min-w-90px"
+        <button class="btn d-flex btn-white  rounded p-4 mb-3 me-3 text-hover-primary min-w-90px"
           (click)="addItem('gold-sell')">
           <div class="d-flex flex-column justify-center align-items-center flex-grow-1">
             <div class="symbol symbol-40px mb-2">
@@ -121,7 +121,7 @@
           </div>
         </button>
 
-        <button class="btn d-flex bg-white rounded p-4 mb-3 me-3 text-hover-primary min-w-90px">
+        <button class="btn d-flex btn-white  rounded p-4 mb-3 me-3 text-hover-primary min-w-90px">
           <div class="d-flex flex-column justify-center align-items-center flex-grow-1">
             <div class="symbol symbol-40px mb-2">
               <span class="symbol-label">
@@ -136,7 +136,7 @@
           </div>
         </button>
 
-        <button class="btn d-flex bg-white rounded p-4 mb-3 me-3 text-hover-primary min-w-90px"
+        <button class="btn d-flex btn-white  rounded p-4 mb-3 me-3 text-hover-primary min-w-90px"
           (click)="openExpenses()">
           <div class="d-flex flex-column justify-center align-items-center flex-grow-1">
             <div class="symbol symbol-40px mb-2">
@@ -213,8 +213,8 @@
           <div class="till-padding">
             <div class="d-flex">
               <input type="text" class="form-control me-3" placeholder="Search..." [(ngModel)]="searchKeyword"
-                (ngModelChange)="searchKeyword? shopProducts = shopProducts: shopProducts = []"
-                (keyup.enter)="search()">
+                (ngModelChange)="searchKeyword? shopProducts = shopProducts: shopProducts = []" (keyup.enter)="search()"
+                (focus)="switchMode()" #searchField>
               <button class="btn btn-secondary me-3 d-flex" (click)="openTransactionSearchDialog()">
                 <fa-icon [icon]="faSearch"></fa-icon> {{ "TRANSACTION" |
                 translate}}
@@ -311,13 +311,13 @@
           </div>
 
 
-          <div class="bg-white py-3">
+          <div class="py-3">
             <!-- <div *ngIf="bSearchingProduct" class="spinner-border mx-auto"></div> -->
             <ul *ngIf="quickButtons.length" id="quick-buttons" class="nav nav-pills nav-pills-custom mb-3">
               <li class="nav-item mb-3 me-3" *ngFor="let button of quickButtons">
                 <div>
                   <button
-                    class="nav-link d-flex justify-content-center flex-column flex-center overflow-hidden active w-85px h-85px py-4"
+                    class="nav-link d-flex justify-content-center flex-column flex-center overflow-hidden w-85px h-85px py-4"
                     (click)="addItemToTransaction(button)">
                     <h4 class="nav-text text-gray-800 fw-bold fs-6 lh-1 text-center mb-2">{{button.sName}}</h4>
                     <span class="text-gray-600">{{button.nPrice | currency: '€'}}</span>
@@ -341,7 +341,7 @@
       </div>
     </div>
     <div class="col-md-3 col-xs-12">
-      <button *ngIf="!customer" class="btn d-flex bg-white rounded p-5 mb-3 text-hover-primary w-100"
+      <button *ngIf="!customer" class="btn d-flex btn-white rounded p-5 mb-3 text-hover-primary w-100"
         (click)="openCustomerDialog()">
         <div class="d-flex justify-center align-items-center flex-grow-1">
           <div class="symbol symbol-40px me-2">
