@@ -85,7 +85,8 @@ export class DayClosureComponent implements OnInit, OnDestroy {
       if (result?.data?.bIsDayStateOpened && result?.data?.oStatisticDetail?._id) {
         this.bIsDayStateOpened = true;
         console.log('isAnyDayStateOpened: ', this.bIsDayStateOpened, result.data.oStatisticDetail._id);
-        this.router.navigate(['../transactions-audit/view', result.data.oStatisticDetail._id], { relativeTo: this.route })
+        // { queryParams: { dStartDate: result.data.oStatisticDetail.dOpenDate } }
+        this.router.navigate(['../transactions-audit/view', result.data.oStatisticDetail._id], { relativeTo: this.route, queryParams: { dStartDate: result.data.oStatisticDetail.dOpenDate } })
       }
     }, (error) => {
       console.error('Error here: ', error);
