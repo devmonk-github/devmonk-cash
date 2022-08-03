@@ -74,6 +74,7 @@ export class ServicesComponent implements OnInit {
   locations: Array<any> = [];
   selectedLocations: Array<any> = [];
   iLocationId: String | null | undefined;
+  webOrders: Boolean = false;
 
   tableHeaders: Array<any> = [
     { key: 'Activity No.', selected: false, sort: '' },
@@ -95,6 +96,10 @@ export class ServicesComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    if (this.routes.url.includes('/business/webshop-orders')) {
+      this.webOrders = true;
+      this.requestParams.eType = ['webshop-revenue','webshop-reservation']
+    }
     this.businessDetails._id = localStorage.getItem('currentBusiness');
     this.iLocationId = localStorage.getItem('currentLocation');
     this.userType = localStorage.getItem('type');
@@ -201,7 +206,7 @@ export class ServicesComponent implements OnInit {
   }
 
   openActivities(activity: any) {
-    this.dialogService.openModal(ActivityDetailsComponent, { cssClass: 'w-fullscreen', context: { activity, items: false } })
+    this.dialogService.openModal(ActivityDetailsComponent, { cssClass: 'w-fullscreen', context: { activity, items: false, webOrders: this.webOrders } })
       .instance.close.subscribe(result => {
         // console.log('I am closing this modal');
         // if (result.url)
