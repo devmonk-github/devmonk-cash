@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { faLongArrowAltDown, faLongArrowAltUp, faMinusCircle, faPlus, faPlusCircle, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { ActivityDetailsComponent } from '../shared/components/activity-details-dialog/activity-details.component';
 import { ApiService } from '../shared/service/api.service';
@@ -89,7 +90,8 @@ export class ServicesComponent implements OnInit {
 
   constructor(
     private apiService: ApiService,
-    private dialogService: DialogService
+    private dialogService: DialogService,
+    private routes: Router
   ) { }
 
   ngOnInit(): void {
@@ -208,6 +210,9 @@ export class ServicesComponent implements OnInit {
   }
 
   loadTransaction() {
+    if (this.routes.url.includes('/business/webshop-orders')) {
+      this.requestParams.eType = ['webshop-revenue','webshop-reservation']
+    }
     this.activities = [];
     this.requestParams.iBusinessId = this.businessDetails._id;
     this.requestParams.skip = this.requestParams.skip || 0;
