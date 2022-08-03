@@ -212,7 +212,8 @@
         <div class="card-body p-3">
           <div class="till-padding">
             <div class="d-flex">
-              <input type="text" class="form-control me-3" placeholder="Search..." [(ngModel)]="searchKeyword"
+              <input type="text" class="form-control me-3 highlight-search" placeholder="Search..."
+                [(ngModel)]="searchKeyword"
                 (ngModelChange)="searchKeyword? shopProducts = shopProducts: shopProducts = []" (keyup.enter)="search()"
                 (focus)="switchMode()" #searchField>
               <button class="btn btn-secondary me-3 d-flex" (click)="openTransactionSearchDialog()">
