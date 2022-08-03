@@ -104,14 +104,13 @@ export class TillService {
       redeemedLoyaltyPoints,
     };
     body.transactionItems = transactionItems.map((i: any) => {
-      console.log(i);
       return new TransactionItem(
         i.name,
         i.comment,
         i.sProductNumber,
         i.price,
-        i.nPurchasePrice || i.price, // TODO
-        i.price - i.nPurchasePrice, // TODO
+        i.nCalculatedPurchasePrice || i.price, // TODO
+        i.price - i.nCalculatedPurchasePrice, // TODO
         null,
         i.tax,
         i.quantity,

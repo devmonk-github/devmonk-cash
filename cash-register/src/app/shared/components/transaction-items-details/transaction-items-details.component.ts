@@ -33,7 +33,7 @@ export class TransactionItemsDetailsComponent implements OnInit {
       'nQuantity',
       'sProductName',
       'nPriceIncVat',
-      'nPurchasePrice',
+      'nCalculatedPurchasePrice',
       'nVatRate',
       'nPaymentAmount',
       'nRefundAmount',
@@ -66,7 +66,7 @@ export class TransactionItemsDetailsComponent implements OnInit {
     if (this.itemType === 'activity') {
       delete this.requestParams.iTransactionId;
       let id;
-      if(this.transaction?.iActivityId) id = this.transaction.iActivityId
+      if (this.transaction?.iActivityId) id = this.transaction.iActivityId
       else id = this.transaction._id
       url = `/api/v1/activities/items/${id}`;
     };

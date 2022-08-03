@@ -98,7 +98,7 @@ export class TillComponent implements OnInit {
     'iArticleGroupId',
     'iBusinessPartnerId',
     'iBusinessBrandId',
-    'nPurchasePrice'
+    'nCalculatedPurchasePrice'
   ];
   discountArticleGroup: any = {};
   saveInProgress = false;
@@ -234,7 +234,7 @@ export class TillComponent implements OnInit {
       quantity: 1,
       nBrokenProduct: 0,
       price: 0,
-      nPurchasePrice: 0,
+      nCalculatedPurchasePrice: 0,
       nDiscount: 0,
       tax: 21,
       paymentAmount: 0,
@@ -308,7 +308,7 @@ export class TillComponent implements OnInit {
       quantity: 1,
       nBrokenProduct: 0,
       price,
-      nPurchasePrice: price,
+      nCalculatedPurchasePrice: price,
       nTotal: type === 'gold-purchase' ? -1 * price : price,
       nDiscount: 0,
       tax: 21,
@@ -593,33 +593,29 @@ export class TillComponent implements OnInit {
   }
 
   listCommonBrandProducts(searchValue: string | undefined, isFromEAN: boolean | false) {
-    try {
-      let data = {
-        iBusinessId: this.business._id,
-        skip: 0,
-        limit: 10,
-        sortBy: '',
-        sortOrder: '',
-        searchValue: searchValue,
-        aProjection: this.aProjection,
-        oFilterBy: {
-          oStatic: {},
-          oDynamic: {}
-        }
-      };
-      this.bSearchingProduct = true;
-      this.apiService.postNew('core', '/api/v1/products/commonbrand/list', data).subscribe((result: any) => {
-        this.bSearchingProduct = false;
-        if (result && result.data && result.data.length) {
-          const response = result.data[0];
-          this.commonProducts = response.result;
-        }
-      }, (error) => {
-        this.bSearchingProduct = false;
-      })
-    } catch (e) {
-      // this.isLoading = false;
-    }
+    let data = {
+      iBusinessId: this.business._id,
+      skip: 0,
+      limit: 10,
+      sortBy: '',
+      sortOrder: '',
+      searchValue: searchValue,
+      aProjection: this.aProjection,
+      oFilterBy: {
+        oStatic: {},
+        oDynamic: {}
+      }
+    };
+    this.bSearchingProduct = true;
+    this.apiService.postNew('core', '/api/v1/products/commonbrand/list', data).subscribe((result: any) => {
+      this.bSearchingProduct = false;
+      if (result && result.data && result.data.length) {
+        const response = result.data[0];
+        this.commonProducts = response.result;
+      }
+    }, (error) => {
+      this.bSearchingProduct = false;
+    });
   }
 
   getBusinessProduct(iBusinessProductId: string): Observable<any> {
@@ -630,7 +626,6 @@ export class TillComponent implements OnInit {
   async onSelectProduct(product: any, isFrom: string, isFor: string) {
     let _oBusinessProductDetail;
     if (isFor != 'quick-button') _oBusinessProductDetail = await this.getBusinessProduct(product?._id).toPromise();
-    console.log('onSelectProduct: ', product, _oBusinessProductDetail);
     const price = product.aLocation.find((o: any) => o._id === this.locationId);
     this.transactionItems.push({
       name: product.oName ? product.oName['en'] : 'No name',
@@ -638,7 +633,7 @@ export class TillComponent implements OnInit {
       type: this.eKind,
       quantity: 1,
       price: price ? price.nPriceIncludesVat : 0,
-      nPurchasePrice: price ? price.nPriceIncludesVat : 0,
+      nCalculatedPurchasePrice: price ? price.nPriceIncludesVat : 0,
       paymentAmount: 0,
       oType: { bRefund: false, bDiscount: false, bPrepayment: false },
       nDiscount: product.nDiscount || 0,
