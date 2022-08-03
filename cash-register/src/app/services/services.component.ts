@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { faLongArrowAltDown, faLongArrowAltUp, faMinusCircle, faPlus, faPlusCircle, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { ActivityDetailsComponent } from '../shared/components/activity-details-dialog/activity-details.component';
 import { ApiService } from '../shared/service/api.service';
@@ -73,6 +74,7 @@ export class ServicesComponent implements OnInit {
   locations: Array<any> = [];
   selectedLocations: Array<any> = [];
   iLocationId: String | null | undefined;
+  webOrders: Boolean = false;
 
   tableHeaders: Array<any> = [
     { key: 'Activity No.', selected: false, sort: '' },
@@ -89,10 +91,15 @@ export class ServicesComponent implements OnInit {
 
   constructor(
     private apiService: ApiService,
-    private dialogService: DialogService
+    private dialogService: DialogService,
+    private routes: Router
   ) { }
 
   ngOnInit(): void {
+    if (this.routes.url.includes('/business/webshop-orders')) {
+      this.webOrders = true;
+      this.requestParams.eType = ['webshop-revenue','webshop-reservation']
+    }
     this.businessDetails._id = localStorage.getItem('currentBusiness');
     this.iLocationId = localStorage.getItem('currentLocation');
     this.userType = localStorage.getItem('type');
@@ -199,8 +206,9 @@ export class ServicesComponent implements OnInit {
   }
 
   openActivities(activity: any) {
-    this.dialogService.openModal(ActivityDetailsComponent, { cssClass: 'w-fullscreen', context: { activity, items: false } })
+    this.dialogService.openModal(ActivityDetailsComponent, { cssClass: 'w-fullscreen', context: { activity, items: false, webOrders: this.webOrders } })
       .instance.close.subscribe(result => {
+        if(this.webOrders && result) this.routes.navigate(['business/till']);
         // console.log('I am closing this modal');
         // if (result.url)
         // this.item.aImage.push(result.url);
@@ -208,6 +216,9 @@ export class ServicesComponent implements OnInit {
   }
 
   loadTransaction() {
+    if (this.routes.url.includes('/business/webshop-orders')) {
+      this.requestParams.eType = ['webshop-revenue','webshop-reservation']
+    }
     this.activities = [];
     this.requestParams.iBusinessId = this.businessDetails._id;
     this.requestParams.skip = this.requestParams.skip || 0;

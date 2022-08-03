@@ -16,7 +16,8 @@ export class ActivityDetailsComponent implements OnInit {
   dialogRef: DialogComponent;
   customer: any;
   activity: any;
-  items: Boolean | undefined;
+  webOrders: boolean | undefined;
+  items: Array<any> = [];
   mode: string = '';
   showLoader = false;
   activityItems: Array<any> = [];
@@ -64,7 +65,7 @@ export class ActivityDetailsComponent implements OnInit {
   ngOnInit(): void {
     this.activity = this.dialogRef.context.activity;
     this.items = this.dialogRef.context.activity;
-    if (this.items) {
+    if (this.items.length) {
       const items = JSON.parse(JSON.stringify(this.activity));
       this.activityItems = [items]
     } else {

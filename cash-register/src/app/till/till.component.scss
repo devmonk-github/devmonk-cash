@@ -37,3 +37,7 @@
 	background: #56acacc4;
 	z-index: 9999;
 }
+
+.highlight-search:focus {
+	box-shadow: 0px 0px 5px 1px #4ab69c !important;
+}
