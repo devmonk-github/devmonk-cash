@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { faLongArrowAltDown, faLongArrowAltUp, faMinusCircle, faPlusCircle, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { ActivityDetailsComponent } from '../shared/components/activity-details-dialog/activity-details.component';
 import { ApiService } from '../shared/service/api.service';
@@ -67,7 +68,8 @@ export class ActivityItemsComponent implements OnInit {
 
   constructor(
     private apiService: ApiService,
-    private dialogService: DialogService
+    private dialogService: DialogService,
+    private routes: Router
   ) { }
 
   ngOnInit(): void {
@@ -104,7 +106,9 @@ export class ActivityItemsComponent implements OnInit {
 
   openActivities(activity: any) {
     this.dialogService.openModal(ActivityDetailsComponent, { cssClass: 'w-fullscreen', context: { activity, items: true } })
-      .instance.close.subscribe((result: any) => { });
+      .instance.close.subscribe((result: any) => { 
+        if (result) this.routes.navigate(['business/till']);
+      });
   }
 
   fetchCustomer(customerId: any, index: number) {

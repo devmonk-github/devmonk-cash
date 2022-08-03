@@ -94,7 +94,7 @@
 
                                         <select name="status" id="status" class="form-select"
                                             [(ngModel)]="activity.eRepairStatus">
-                                            <option *ngFor="let type of repairStatus" [ngValue]="type">{{type}}</option>
+                                            <option *ngFor="let type of repairStatus" [value]="type">{{type}}</option>
                                         </select>
                                         <div>
                                             Inform the customer that the product can be picked up.
@@ -226,6 +226,47 @@
                                         </div>
                                     </div>
                                 </div>
+                                <div *ngIf="activity.eRepairStatus == 'completed'" class="col-md-12 card-body d-flex flex-wrap py-5 border mt-5 mb-5 row">
+                                    <div class="col-md-8">
+                                        <div class="">
+                                            <span>{{ "SHIPPING_METHOD" | translate }} : </span>
+                                            <label class="form-control-solid">Standard Shipping</label>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <label>{{ "CARRIER" | translate}}</label>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <select name="career" id="career" class="form-select">
+                                                    <option>PostNL</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <input type="text" class="form-control" placeholder="www.trackandtracelink.com">
+                                        </div>
+                                        <div class="row">
+                                            <label>Only place the tracking code here</label>
+                                        </div>
+                                        <div class="row">
+                                            <label>Open tracking link</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 gap-5">
+                                        <button class="btn btn-primary w-100 d-flex">
+                                            <label class="mx-auto">Sent to customer</label>
+                                        </button>
+                                        <button class="btn btn-secondary w-100 d-flex">
+                                            <label class="mx-auto">Ready to pik up</label>
+                                        </button>
+                                        <button class="btn btn-secondary w-100 d-flex">
+                                            <label class="mx-auto">Deliver</label>
+                                        </button>
+                                        <button *ngIf="webOrders" class="btn btn-primary w-100 d-flex" (click)="openTransaction(activity, 'activity')">
+                                            <label class="mx-auto">Open activity</label>
+                                        </button>
+                                    </div>
+                                </div>
                                 <div class="row">
                                     <input type="text" name="activityName" [(ngModel)]="activity.sProductName"
                                         class="form-control">
@@ -311,7 +352,7 @@
                                         </div>
                                     </div>
                                     <div class="col-3">
-                                        <div *ngIf="1 > activity.aImage.length">
+                                        <div *ngIf="!activity?.aImage?.length">
                                             No Images
                                         </div>
                                         <div class="d-flex">

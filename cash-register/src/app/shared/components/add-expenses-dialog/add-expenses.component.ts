@@ -103,7 +103,7 @@ export class AddExpensesComponent implements OnInit {
       sProductName: 'Expenses',
       sComment: description,
       nPriceIncVat: amount,
-      nPurchasePrice: amount,
+      nCalculatedPurchasePrice: amount,
       iBusinessId: localStorage.getItem('currentBusiness'),
       iArticleGroupId: this.selectedArticleGroup._id,
       oArticleGroupMetaData,

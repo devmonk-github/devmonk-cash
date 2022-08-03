@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import {
   faScrewdriverWrench, faTruck, faBoxesStacked, faGifts,
   faUserPlus, faUser, faTimes, faTimesCircle, faTrashAlt, faRing,
@@ -25,6 +25,7 @@ import { TerminalDialogComponent } from '../shared/components/terminal-dialog/te
 import { CreateArticleGroupService } from '../shared/service/create-article-groups.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { CustomerStructureService } from '../shared/service/customer-structure.service';
+import { Observable } from 'rxjs';
 @Component({
   selector: 'app-till',
   templateUrl: './till.component.html',
@@ -80,6 +81,7 @@ export class TillComponent implements OnInit {
   dOpenDate: any = '';
   iWorkstationId!: any;
 
+
   aProjection: Array<any> = [
     'oName',
     'sEan',
@@ -96,7 +98,7 @@ export class TillComponent implements OnInit {
     'iArticleGroupId',
     'iBusinessPartnerId',
     'iBusinessBrandId',
-    'nPurchasePrice'
+    'nCalculatedPurchasePrice'
   ];
   discountArticleGroup: any = {};
   saveInProgress = false;
@@ -119,6 +121,7 @@ export class TillComponent implements OnInit {
   ) {
   }
 
+
   ngOnInit(): void {
     this.business._id = localStorage.getItem('currentBusiness');
     this.locationId = localStorage.getItem('currentLocation') || null;
@@ -139,6 +142,14 @@ export class TillComponent implements OnInit {
 
     this.fetchQuickButtons();
 
+  }
+
+
+  @ViewChild("searchField", { static: false })
+  set searchField(element: ElementRef<HTMLInputElement>) {
+    if (element) {
+      element.nativeElement.focus()
+    }
   }
 
   loadTransaction() {
@@ -189,12 +200,23 @@ export class TillComponent implements OnInit {
     })
   }
 
+  // fetchBusinessProductDetail(iBusinessProductId: any) {
+  //   this.fetchingProductDetails = true;
+  //   this.apiService.getNew('core', `/api/v1/business/products/${iBusinessProductId}?iBusinessId=${this.business._id}`).subscribe(
+  //     (result: any) => {
+  //       this.fetchingProductDetails = false;
+  //       console.log('fetchBusinessProductDetail: ', result);
+  //     }, (error) => {
+  //       console.error('error in fetching product: ', error);
+  //     });    
+  // }
+
   addItemToTransaction(item: any): void {
     this.fetchingProductDetails = true;
     this.apiService.getNew('core', `/api/v1/business/products/${item.iBusinessProductId}?iBusinessId=${this.business._id}`).subscribe(
       (result: any) => {
         if (result.message == 'success') {
-          this.onSelectProduct(result.data, 'business', 'same-article');
+          this.onSelectProduct(result.data, 'business', 'quick-button');
           this.fetchingProductDetails = false;
         }
       });
@@ -212,7 +234,7 @@ export class TillComponent implements OnInit {
       quantity: 1,
       nBrokenProduct: 0,
       price: 0,
-      nPurchasePrice: 0,
+      nCalculatedPurchasePrice: 0,
       nDiscount: 0,
       tax: 21,
       paymentAmount: 0,
@@ -286,7 +308,7 @@ export class TillComponent implements OnInit {
       quantity: 1,
       nBrokenProduct: 0,
       price,
-      nPurchasePrice: price,
+      nCalculatedPurchasePrice: price,
       nTotal: type === 'gold-purchase' ? -1 * price : price,
       nDiscount: 0,
       tax: 21,
@@ -571,37 +593,39 @@ export class TillComponent implements OnInit {
   }
 
   listCommonBrandProducts(searchValue: string | undefined, isFromEAN: boolean | false) {
-    try {
-      let data = {
-        iBusinessId: this.business._id,
-        skip: 0,
-        limit: 10,
-        sortBy: '',
-        sortOrder: '',
-        searchValue: searchValue,
-        aProjection: this.aProjection,
-        oFilterBy: {
-          oStatic: {},
-          oDynamic: {}
-        }
-      };
-      this.bSearchingProduct = true;
-      this.apiService.postNew('core', '/api/v1/products/commonbrand/list', data).subscribe((result: any) => {
-        this.bSearchingProduct = false;
-        if (result && result.data && result.data.length) {
-          const response = result.data[0];
-          this.commonProducts = response.result;
-        }
-      }, (error) => {
-        this.bSearchingProduct = false;
-      })
-    } catch (e) {
-      // this.isLoading = false;
-    }
+    let data = {
+      iBusinessId: this.business._id,
+      skip: 0,
+      limit: 10,
+      sortBy: '',
+      sortOrder: '',
+      searchValue: searchValue,
+      aProjection: this.aProjection,
+      oFilterBy: {
+        oStatic: {},
+        oDynamic: {}
+      }
+    };
+    this.bSearchingProduct = true;
+    this.apiService.postNew('core', '/api/v1/products/commonbrand/list', data).subscribe((result: any) => {
+      this.bSearchingProduct = false;
+      if (result && result.data && result.data.length) {
+        const response = result.data[0];
+        this.commonProducts = response.result;
+      }
+    }, (error) => {
+      this.bSearchingProduct = false;
+    });
+  }
+
+  getBusinessProduct(iBusinessProductId: string): Observable<any> {
+    return this.apiService.getNew('core', `/api/v1/business/products/${iBusinessProductId}?iBusinessId=${this.business._id}`)
   }
 
   // Add selected product into purchase order
-  onSelectProduct(product: any, isFrom: string, isFor: string) {
+  async onSelectProduct(product: any, isFrom: string, isFor: string) {
+    let _oBusinessProductDetail;
+    if (isFor != 'quick-button') _oBusinessProductDetail = await this.getBusinessProduct(product?._id).toPromise();
     const price = product.aLocation.find((o: any) => o._id === this.locationId);
     this.transactionItems.push({
       name: product.oName ? product.oName['en'] : 'No name',
@@ -609,7 +633,7 @@ export class TillComponent implements OnInit {
       type: this.eKind,
       quantity: 1,
       price: price ? price.nPriceIncludesVat : 0,
-      nPurchasePrice: price ? price.nPriceIncludesVat : 0,
+      nCalculatedPurchasePrice: price ? price.nPriceIncludesVat : 0,
       paymentAmount: 0,
       oType: { bRefund: false, bDiscount: false, bPrepayment: false },
       nDiscount: product.nDiscount || 0,
@@ -841,15 +865,6 @@ export class TillComponent implements OnInit {
       });
   }
 
-  // createArticleGroup() {
-  // this.createArticleGroupService.createArticleGroup({ name: 'Discount', sCategory: 'Discount', sSubCategory: 'Discount' })
-  //   .subscribe((res: any) => {
-  //     this.discountArticleGroup = res.data[0].result[0];
-  //   },
-  //     err => {
-  //       this.toastrService.show({ type: 'danger', text: err.message });
-  //     });
-  // }
   async createArticleGroup() {
     const articleBody = { name: 'Discount', sCategory: 'Discount', sSubCategory: 'Discount' };
     const result: any = await this.createArticleGroupService.createArticleGroup(articleBody);
@@ -903,5 +918,11 @@ export class TillComponent implements OnInit {
   assignAllAmount(index: number) {
     this.payMethods[index].amount = this.getTotals('price');
     this.changeInPayment();
+    this.createTransaction();
+  }
+
+  switchMode() {
+    if (this.eKind === 'giftcard' || this.eKind === 'gold-purchase')
+      this.eKind = 'regular';
   }
 }

@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { DialogComponent } from '../../service/dialog';
+import { DialogComponent, DialogService } from '../../service/dialog';
 import { ViewContainerRef } from '@angular/core';
 import { ApiService } from 'src/app/shared/service/api.service';
 import { faTimes, faMessage, faEnvelope, faEnvelopeSquare, faUser, faReceipt, faEuro } from "@fortawesome/free-solid-svg-icons";
 import { PdfService } from '../../service/pdf.service';
+import { TransactionItemsDetailsComponent } from '../transaction-items-details/transaction-items-details.component';
 @Component({
   selector: 'app-activity-details',
   templateUrl: './activity-details.component.html',
@@ -15,7 +16,8 @@ export class ActivityDetailsComponent implements OnInit {
   dialogRef: DialogComponent;
   customer: any;
   activity: any;
-  items: Boolean | undefined;
+  webOrders: boolean | undefined;
+  items: Array<any> = [];
   mode: string = '';
   showLoader = false;
   activityItems: Array<any> = [];
@@ -29,7 +31,6 @@ export class ActivityDetailsComponent implements OnInit {
   repairStatus = ['info', 'processing', 'cancelled', 'inspection', 'completed'];
   printOptions = ['Portrait', 'Landscape'];
   itemType = 'transaction';
-  status = true;
   customerReceiptDownloading: Boolean = false;
   iBusinessId = localStorage.getItem('currentBusiness');
   requestParams: any = {
@@ -41,7 +42,7 @@ export class ActivityDetailsComponent implements OnInit {
       'nQuantity',
       'sProductName',
       'nPriceIncVat',
-      'nPurchasePrice',
+      'nCalculatedPurchasePrice',
       'nVatRate',
       'nPaymentAmount',
       'nRefundAmount',
@@ -54,7 +55,8 @@ export class ActivityDetailsComponent implements OnInit {
   constructor(
     private viewContainerRef: ViewContainerRef,
     private apiService: ApiService,
-    private pdfService: PdfService
+    private pdfService: PdfService,
+    private dialogService: DialogService,
   ) {
     const _injector = this.viewContainerRef.injector;
     this.dialogRef = _injector.get<DialogComponent>(DialogComponent);
@@ -63,15 +65,69 @@ export class ActivityDetailsComponent implements OnInit {
   ngOnInit(): void {
     this.activity = this.dialogRef.context.activity;
     this.items = this.dialogRef.context.activity;
-    if(this.items){
-      const items =  JSON.parse(JSON.stringify(this.activity));
+    if (this.items.length) {
+      const items = JSON.parse(JSON.stringify(this.activity));
       this.activityItems = [items]
-    }else{
+    } else {
       this.fetchTransactionItems();
     }
     this.fetchCustomer(this.activity.iCustomerId);
     // this.itemType = this.dialogRef.context.itemType;
     // this.transaction = this.dialogRef.context.transaction;
+  }
+
+  openTransaction(transaction: any, itemType: any) {
+    this.dialogService.openModal(TransactionItemsDetailsComponent, { cssClass: "modal-xl", context: { transaction, itemType } })
+      .instance.close.subscribe((result: any) => {
+        const transactionItems: any = [];
+        if (result.transaction) {
+          result.transactionItems.forEach((transactionItem: any) => {
+            if (transactionItem.isSelected) {
+              const { tType } = transactionItem;
+              let paymentAmount = transactionItem.nQuantity * transactionItem.nPriceIncVat - transactionItem.nPaidAmount;
+              if (tType === 'refund') {
+                paymentAmount = -1 * transactionItem.nPaidAmount;
+                transactionItem.oType.bRefund = true;
+              } else if (tType === 'revert') {
+                paymentAmount = transactionItem.nPaidAmount;
+                transactionItem.oType.bRefund = false;
+              };
+              transactionItems.push({
+                name: transactionItem.sProductName,
+                iActivityItemId: transactionItem.iActivityItemId,
+                nRefundAmount: transactionItem.nPaidAmount,
+                iLastTransactionItemId: transactionItem.iTransactionItemId,
+                prePaidAmount: tType === 'refund' ? transactionItem.nPaidAmount : transactionItem.nPaymentAmount,
+                type: transactionItem.sGiftCardNumber ? 'giftcard' : transactionItem.oType.eKind,
+                eTransactionItemType: 'regular',
+                nBrokenProduct: 0,
+                tType,
+                oType: transactionItem.oType,
+                aImage: transactionItem.aImage,
+                nonEditable: transactionItem.sGiftCardNumber ? true : false,
+                sGiftCardNumber: transactionItem.sGiftCardNumber,
+                quantity: transactionItem.nQuantity,
+                price: transactionItem.nPriceIncVat,
+                iRepairerId: transactionItem.iRepairerId,
+                oArticleGroupMetaData: transactionItem.oArticleGroupMetaData,
+                iEmployeeId: transactionItem.iEmployeeId,
+                iBrandId: transactionItem.iBrandId,
+                discount: 0,
+                tax: transactionItem.nVatRate,
+                paymentAmount,
+                description: '',
+                open: true,
+              });
+            }
+          });
+          result.transactionItems = transactionItems;
+          localStorage.setItem('fromTransactionPage', JSON.stringify(result));
+          localStorage.setItem('recentUrl', '/business/transactions');
+          setTimeout(() => {
+            this.close(true);
+          }, 100);
+        }
+      });
   }
 
   downloadCustomerReceipt(index: number) {
@@ -121,7 +177,7 @@ export class ActivityDetailsComponent implements OnInit {
   fetchTransactionItems() {
     let url = `/api/v1/activities/items/${this.activity._id}`;
     this.apiService.postNew('cashregistry', url, this.requestParams).subscribe((result: any) => {
-      this.activityItems = result.data[0].result;;
+      this.activityItems = result.data[0].result;
     }, (error) => {
       alert(error.error.message);
       this.dialogRef.close.emit('data');

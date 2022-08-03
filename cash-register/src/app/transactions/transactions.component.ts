@@ -32,7 +32,7 @@ export class TransactionsComponent implements OnInit {
   requestParams: any = {
     iBusinessId: "",
     skip: 0,
-    limit: 12,
+    limit: 10,
     searchValue: '',
     sortBy: 'dCreatedDate',
     sortOrder: 'desc'
