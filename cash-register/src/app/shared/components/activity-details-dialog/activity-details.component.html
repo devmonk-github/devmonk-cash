@@ -94,7 +94,7 @@
 
                                         <select name="status" id="status" class="form-select"
                                             [(ngModel)]="activity.eRepairStatus">
-                                            <option *ngFor="let type of repairStatus" [ngValue]="type">{{type}}</option>
+                                            <option *ngFor="let type of repairStatus" [value]="type">{{type}}</option>
                                         </select>
                                         <div>
                                             Inform the customer that the product can be picked up.
@@ -262,7 +262,7 @@
                                         <button class="btn btn-secondary w-100 d-flex">
                                             <label class="mx-auto">Deliver</label>
                                         </button>
-                                        <button class="btn btn-primary w-100 d-flex" (click)="openTransaction(activity, 'activity')">
+                                        <button *ngIf="webOrders" class="btn btn-primary w-100 d-flex" (click)="openTransaction(activity, 'activity')">
                                             <label class="mx-auto">Open activity</label>
                                         </button>
                                     </div>
@@ -352,7 +352,7 @@
                                         </div>
                                     </div>
                                     <div class="col-3">
-                                        <div *ngIf="1 > activity.aImage.length">
+                                        <div *ngIf="!activity?.aImage?.length">
                                             No Images
                                         </div>
                                         <div class="d-flex">

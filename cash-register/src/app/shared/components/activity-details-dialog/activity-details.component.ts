@@ -16,6 +16,7 @@ export class ActivityDetailsComponent implements OnInit {
   dialogRef: DialogComponent;
   customer: any;
   activity: any;
+  webOrders: boolean | undefined;
   items: Boolean | undefined;
   mode: string = '';
   showLoader = false;
