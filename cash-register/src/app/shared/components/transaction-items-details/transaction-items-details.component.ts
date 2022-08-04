@@ -33,7 +33,7 @@ export class TransactionItemsDetailsComponent implements OnInit {
       'nQuantity',
       'sProductName',
       'nPriceIncVat',
-      'nCalculatedPurchasePrice',
+      'nPurchasePrice',
       'nVatRate',
       'nPaymentAmount',
       'nRefundAmount',

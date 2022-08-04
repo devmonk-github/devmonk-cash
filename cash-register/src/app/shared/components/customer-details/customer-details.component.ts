@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { DialogComponent } from '../../service/dialog';
 import { ViewContainerRef } from '@angular/core';
 import { ApiService } from 'src/app/shared/service/api.service';
@@ -9,7 +9,7 @@ import { faTimes } from "@fortawesome/free-solid-svg-icons";
   templateUrl: './customer-details.component.html',
   styleUrls: ['./customer-details.component.sass']
 })
-export class CustomerDetailsComponent implements OnInit {
+export class CustomerDetailsComponent implements OnInit, AfterViewInit {
 
   dialogRef: DialogComponent;
   salutations: Array<any> = ['Mr', 'Mrs', 'Mr/Mrs', 'Family', 'Firm']
@@ -76,7 +76,9 @@ export class CustomerDetailsComponent implements OnInit {
     currentPage: 1,
     totalItems: 0
   };
-  showLoader: boolean = false;
+  bTransactionsLoader: boolean = false;
+  bActivitiesLoader: boolean = false;
+  bActivityItemsLoader: boolean = false;
 
   aTransactions: any = [];
   aTransctionTableHeaders: Array<any> = [
@@ -107,12 +109,21 @@ export class CustomerDetailsComponent implements OnInit {
     { key: 'End date', selected: false, sort: 'asc' },
     { key: 'Status', disabled: true },
     { key: 'Supplier/Repairer', disabled: true },
+  ];
+
+  tabTitles: any = [
+    'Purchases',
+    'Activities',
+    'Items per visit',
+    'Statistics',
+    'General'
   ]
 
 
   constructor(
     private viewContainerRef: ViewContainerRef,
-    private apiService: ApiService
+    private apiService: ApiService,
+    private cdr: ChangeDetectorRef
   ) {
     const _injector = this.viewContainerRef.parentInjector;
     this.dialogRef = _injector.get<DialogComponent>(DialogComponent);
@@ -124,6 +135,10 @@ export class CustomerDetailsComponent implements OnInit {
     this.requestParams.oFilterBy = {
       iCustomerId: this.customer._id
     }
+  }
+
+  ngAfterViewInit() {
+    this.cdr.detectChanges();
   }
 
   customerCountryChanged(type: string, event: any) {
@@ -206,55 +221,56 @@ export class CustomerDetailsComponent implements OnInit {
 
   loadTransactions() {
 
-    this.showLoader = true;
+    this.bTransactionsLoader = true;
     this.apiService.postNew('cashregistry', '/api/v1/transaction/cashRegister', this.requestParams).subscribe((result: any) => {
       if (result?.data?.result?.length) {
         this.aTransactions = result.data.result;
         // this.paginationConfig.totalItems = result.data.totalCount;
       }
-      this.showLoader = false;
+      this.bTransactionsLoader = false;
     }, (error) => {
-      this.showLoader = false;
+      this.bTransactionsLoader = false;
     })
   }
 
   loadActivities() {
     console.log('loadActivities');
     this.aActivities = [];
-    this.showLoader = true;
+    this.bActivitiesLoader = true;
     this.apiService.postNew('cashregistry', '/api/v1/activities', this.requestParams).subscribe((result: any) => {
       this.aActivities = result.data;
       // this.paginationConfig.totalItems = result.count;
 
-      this.showLoader = false;
+      this.bActivitiesLoader = false;
     }, (error) => {
-      this.showLoader = false;
+      this.bActivitiesLoader = false;
     })
 
   }
   loadActivityItems() {
+    console.log('loadActivities items');
     this.aActivityItems = [];
-    this.showLoader = true;
+    this.bActivityItemsLoader = true;
     this.apiService.postNew('cashregistry', '/api/v1/activities/items', this.requestParams).subscribe(
       (result: any) => {
         this.aActivityItems = result.data;
         // this.paginationConfig.totalItems = result.count;
-        this.showLoader = false;
+        this.bActivityItemsLoader = false;
       },
       (error: any) => {
-        this.showLoader = false;
+        this.bActivityItemsLoader = false;
       })
   }
 
   activeTabsChanged(tab: any) {
     switch (tab) {
-      case 'Purchases':
+      case this.tabTitles[0]:
         if (!this.aTransactions.length) this.loadTransactions();
         break;
-      case 'Activities':
+      case this.tabTitles[1]:
         if (!this.aActivities.length) this.loadActivities();
         break;
-      case 'Activity Items':
+      case this.tabTitles[2]:
         if (!this.aActivityItems.length) this.loadActivityItems();
         break;
     }

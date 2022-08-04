@@ -457,6 +457,75 @@
         </div>
 
     </div>
+    <div class="card-body row">
+        <div class="col-md-12">
+            <h3 class="fw-bolder mb-3">
+                <span>{{ "ITEMS" | translate }}</span>
+            </h3>
+            <div class="row fw-bold gy-1 d-flex flex-wrap py-5">
+                <div class="flex-equal me-5">
+                    <table class="table table-hover table-rounded table-striped border gy-7 gs-7">
+                        <thead>
+                            <tr class="fw-bold fs-6 text-gray-400">
+                                <td class="text-muted">{{'IMAGE' | translate}}</td>
+                                <td class="text-muted">{{'PRODUCT' | translate}}</td>
+                                <td class="text-muted">{{'PRICE' | translate}}</td>
+                                <td class="text-muted">{{'QUANTITY' | translate}}</td>
+                                <td class="text-muted">{{'DISCOUNT_PER_ITEM' | translate}}</td>
+                                <td class="text-muted">{{'TAX' | translate}}</td>
+                                <td class="text-muted">{{'TOTAL_PRICE' | translate}}</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let item of transactions;">
+                                <td>
+                                    <img src="{{ item.aImage[0] || imagePlaceHolder}}" (error)="item.aImage[0]=imagePlaceHolder" class="product_image">
+                                </td>
+                                <td>
+                                    <div>
+                                        {{item.sProductName}}
+                                    </div>
+                                    <br>
+                                    <div *ngIf="item?.aProductVariant?.length > 0">
+                                        <div *ngFor="let variant of item.aProductVariant" class="d-flex">
+                                            <div class="w-25">
+                                                {{ variant.sVariantBase }}
+                                            </div> :
+                                            <div class="w-50 px-2">
+                                                <span *ngIf="variant.sVariantBase !== 'color'"> {{ variant.value }}
+                                                </span>
+                                                <span *ngIf="variant.sVariantBase === 'color'"
+                                                    [style.background]="variant.value"
+                                                    class="px-2 border border-gray-600"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>{{item.nPurchasePrice}}</td>
+                                <td>{{item.nQuantity}}</td>
+                                <td>0</td>
+                                <td>{{item.nVatRate || 0}}</td>
+                                <td>{{item.nPriceIncVat || 0}}</td>
+                            </tr>
+                            <tr *ngIf='transactions.length'>
+                                <td>{{'TOTAL' | translate}}</td>
+                                <td></td>
+                                <td></td>
+                                <td>{{quantity}}</td>
+                                <td></td>
+                                <td></td>
+                                <td>{{totalPrice}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="d-flex">
+                <h5 *ngIf='!transactions.length && !loading' style="text-align: center">{{'NO_DATA_FOUND' | translate }}</h5>
+                <div *ngIf="loading" class="spinner-border mx-auto"></div>
+            </div>
+        </div>
+    </div>
     <div class="card-footer">
         <button class="btn btn-primary" (click)="submit()" type="submit">Submit</button>
     </div>

@@ -21,6 +21,7 @@ export class ActivityDetailsComponent implements OnInit {
   mode: string = '';
   showLoader = false;
   activityItems: Array<any> = [];
+  imagePlaceHolder: string = '../../../../assets/images/no-photo.svg';
   faTimes = faTimes;
   faMessage = faMessage;
   faEnvelope = faEnvelope;
@@ -32,7 +33,11 @@ export class ActivityDetailsComponent implements OnInit {
   printOptions = ['Portrait', 'Landscape'];
   itemType = 'transaction';
   customerReceiptDownloading: Boolean = false;
+  loading: Boolean = false;
   iBusinessId = localStorage.getItem('currentBusiness');
+  transactions: Array<any> = [];
+  totalPrice: Number = 0;
+  quantity: Number = 0;
   requestParams: any = {
     iBusinessId: this.iBusinessId,
     aProjection: ['_id',
@@ -42,7 +47,7 @@ export class ActivityDetailsComponent implements OnInit {
       'nQuantity',
       'sProductName',
       'nPriceIncVat',
-      'nCalculatedPurchasePrice',
+      'nPurchasePrice',
       'nVatRate',
       'nPaymentAmount',
       'nRefundAmount',
@@ -77,6 +82,7 @@ export class ActivityDetailsComponent implements OnInit {
   }
 
   openTransaction(transaction: any, itemType: any) {
+    transaction.iActivityId = this.activity._id;
     this.dialogService.openModal(TransactionItemsDetailsComponent, { cssClass: "modal-xl", context: { transaction, itemType } })
       .instance.close.subscribe((result: any) => {
         const transactionItems: any = [];
@@ -176,9 +182,20 @@ export class ActivityDetailsComponent implements OnInit {
 
   fetchTransactionItems() {
     let url = `/api/v1/activities/items/${this.activity._id}`;
+    this.loading = true;
     this.apiService.postNew('cashregistry', url, this.requestParams).subscribe((result: any) => {
       this.activityItems = result.data[0].result;
+      this.transactions = [];
+      for(const obj of this.activityItems){
+        this.transactions = this.transactions.concat(obj.receipts);
+      }
+      for(const obj of this.transactions){
+        this.totalPrice += obj.nPaymentAmount;
+        this.quantity += obj.bRefund ? (- obj.nQuantity) : obj.nQuantity
+      }
+      this.loading = false;
     }, (error) => {
+      this.loading = false;
       alert(error.error.message);
       this.dialogRef.close.emit('data');
     });

@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import { ApiService } from '../shared/service/api.service';
-
+import { ExtraServiceComponent } from './component/extra-service/extra-service.component';
 @Component({
   selector: 'app-webshop-settings',
   templateUrl: './webshop-settings.component.html',
@@ -9,6 +9,7 @@ import { ApiService } from '../shared/service/api.service';
 })
 export class WebshopSettingsComponent implements OnInit {
 
+  @ViewChild(ExtraServiceComponent) extraService!: ExtraServiceComponent;
   faPlus = faPlus;
 
   deliveryMethods: Array<any> = ['ExpressShipping', 'RegisteredShipping', 'Pick-upInStore', 'Neighborhood']
@@ -67,4 +68,8 @@ export class WebshopSettingsComponent implements OnInit {
   }
 
   changeProvider(value: String) { }
+
+  updateSettings(){
+    this.extraService.updateExtraServiceDetails();
+  }
 }
