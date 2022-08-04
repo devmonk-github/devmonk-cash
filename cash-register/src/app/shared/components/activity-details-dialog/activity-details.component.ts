@@ -2,9 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { DialogComponent, DialogService } from '../../service/dialog';
 import { ViewContainerRef } from '@angular/core';
 import { ApiService } from 'src/app/shared/service/api.service';
-import { faTimes, faMessage, faEnvelope, faEnvelopeSquare, faUser, faReceipt, faEuro } from "@fortawesome/free-solid-svg-icons";
+import { faTimes, faMessage, faEnvelope, faEnvelopeSquare, faUser, faReceipt, faEuro, faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import { PdfService } from '../../service/pdf.service';
 import { TransactionItemsDetailsComponent } from '../transaction-items-details/transaction-items-details.component';
+import { MenuComponent } from '../../_layout/components/common';
 @Component({
   selector: 'app-activity-details',
   templateUrl: './activity-details.component.html',
@@ -21,6 +22,7 @@ export class ActivityDetailsComponent implements OnInit {
   mode: string = '';
   showLoader = false;
   activityItems: Array<any> = [];
+  imagePlaceHolder: string = '../../../../assets/images/no-photo.svg';
   faTimes = faTimes;
   faMessage = faMessage;
   faEnvelope = faEnvelope;
@@ -28,11 +30,20 @@ export class ActivityDetailsComponent implements OnInit {
   faUser = faUser;
   faReceipt = faReceipt;
   faEuro = faEuro;
+  faChevronRight = faChevronRight;
   repairStatus = ['info', 'processing', 'cancelled', 'inspection', 'completed'];
   printOptions = ['Portrait', 'Landscape'];
   itemType = 'transaction';
   customerReceiptDownloading: Boolean = false;
+  loading: Boolean = false;
   iBusinessId = localStorage.getItem('currentBusiness');
+  transactions: Array<any> = [];
+  totalPrice: Number = 0;
+  quantity: Number = 0;
+  userDetail: any;
+  selectedBusiness: any;
+  iLocationId: String = '';
+  showDetails: Boolean = true;
   requestParams: any = {
     iBusinessId: this.iBusinessId,
     aProjection: ['_id',
@@ -42,7 +53,7 @@ export class ActivityDetailsComponent implements OnInit {
       'nQuantity',
       'sProductName',
       'nPriceIncVat',
-      'nCalculatedPurchasePrice',
+      'nPurchasePrice',
       'nVatRate',
       'nPaymentAmount',
       'nRefundAmount',
@@ -71,9 +82,54 @@ export class ActivityDetailsComponent implements OnInit {
     } else {
       this.fetchTransactionItems();
     }
-    this.fetchCustomer(this.activity.iCustomerId);
+    if(this.activity?.iCustomerId) this.fetchCustomer(this.activity.iCustomerId);
+    this.getBusinessLocations();
     // this.itemType = this.dialogRef.context.itemType;
     // this.transaction = this.dialogRef.context.transaction;
+  }
+  
+  getBusinessLocations() {
+    this.apiService.getNew('core', '/api/v1/business/user-business-and-location/list')
+      .subscribe((result: any) => {
+        if (result.message == "success" && result?.data) {
+          this.userDetail = result.data;
+          if(this.userDetail) this.setSelectedBusinessLocation();
+        }
+        setTimeout(() => {
+          MenuComponent.reinitialization();
+        }, 200);
+      }, (error) => {
+        console.log('error: ', error);
+      });
+  }
+
+  selectBusiness(business: any, location?: any) {
+    this.selectedBusiness = business;
+    if (location?._id) {
+      this.selectedBusiness["selectedLocation"] = location;
+      this.iBusinessId = business._id;
+      this.iLocationId = location._id;
+    }
+  }
+
+  setSelectedBusinessLocation() {
+    if (this.userDetail.aBusiness) {
+      let locationId = localStorage.getItem("currentLocation");
+      this.userDetail.aBusiness.map(
+        (business: any) => {
+          if (business._id == this.iBusinessId) {
+            this.selectedBusiness = business;
+            if (locationId) {
+              business.aInLocation.map(
+                (location: any) => {
+                  if (location._id == locationId)
+                    this.selectedBusiness["selectedLocation"] = location;
+                }
+              )
+            }
+          }
+        });
+    }
   }
 
   openTransaction(transaction: any, itemType: any) {
@@ -177,9 +233,20 @@ export class ActivityDetailsComponent implements OnInit {
 
   fetchTransactionItems() {
     let url = `/api/v1/activities/items/${this.activity._id}`;
+    this.loading = true;
     this.apiService.postNew('cashregistry', url, this.requestParams).subscribe((result: any) => {
       this.activityItems = result.data[0].result;
+      this.transactions = [];
+      for(const obj of this.activityItems){
+        this.transactions = this.transactions.concat(obj.receipts);
+      }
+      for(const obj of this.transactions){
+        this.totalPrice += obj.nPaymentAmount;
+        this.quantity += obj.bRefund ? (- obj.nQuantity) : obj.nQuantity
+      }
+      this.loading = false;
     }, (error) => {
+      this.loading = false;
       alert(error.error.message);
       this.dialogRef.close.emit('data');
     });
