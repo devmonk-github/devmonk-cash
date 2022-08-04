@@ -823,7 +823,7 @@
                         <div class="countingTotal">
                             <div class="d-flex justify-content-start align-items-center">
                                 <label>Total Counted : </label>
-                                <input type="number" class="form-control mx-1 p-2" [(ngModel)]="nTotalCounted">
+                                <input type="number" class="form-control mx-1 p-2" [(ngModel)]="nTotalTCashCounting">
                             </div>
                         </div>
                     </div>
@@ -852,12 +852,12 @@
                             </div>
                             <div>
                                 <label>Cash Counted</label>
-                                <label class="bold">{{ nTotalCounted | currency:"EUR":"symbol" }} </label>
+                                <label class="bold">{{ nTotalTCashCounting | currency:"EUR":"symbol" }} </label>
                             </div>
                             <div>
                                 <label>Difference in Cash</label>
                                 <label class="bold">
-                                    {{ (nCashInTill - nTotalCounted) | currency:"EUR":"symbol" }}
+                                    {{ (nCashInTill - nTotalTCashCounting) | currency:"EUR":"symbol" }}
                                 </label>
                             </div>
                             <div>
@@ -871,7 +871,7 @@
                             <div>
                                 <label>Remaining Cash</label>
                                 <label class="bold">
-                                    {{ nTotalCounted | currency:"EUR":"symbol" }}
+                                    {{ nTotalTCashCounting | currency:"EUR":"symbol" }}
                                 </label>
                             </div>
                             <br>
