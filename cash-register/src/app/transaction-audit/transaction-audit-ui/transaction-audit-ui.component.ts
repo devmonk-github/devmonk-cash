@@ -107,7 +107,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
     { sLabel: '0.10', nValue: 0.1, nQuantity: 0 },
     { sLabel: '0.05', nValue: 0.05, nQuantity: 0 },
   ];
-  nTotalCounted: number = 0;
+  nTotalTCashCounting: number = 0;
   nCashInTill: number = 0;
   aRefundItems: any;
   aDiscountItems: any;
@@ -1306,9 +1306,9 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
   }
 
   calculateTotalCounting() {
-    this.nTotalCounted = 0;
+    this.nTotalTCashCounting = 0;
     this.aAmount.forEach((amount: any) => {
-      this.nTotalCounted += amount.nValue * amount.nQuantity;
+      this.nTotalTCashCounting += amount.nValue * amount.nQuantity;
     });
   }
 
