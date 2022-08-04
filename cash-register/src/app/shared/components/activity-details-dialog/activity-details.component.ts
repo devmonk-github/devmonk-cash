@@ -47,7 +47,7 @@ export class ActivityDetailsComponent implements OnInit {
       'nQuantity',
       'sProductName',
       'nPriceIncVat',
-      'nCalculatedPurchasePrice',
+      'nPurchasePrice',
       'nVatRate',
       'nPaymentAmount',
       'nRefundAmount',

@@ -98,7 +98,7 @@ export class TillComponent implements OnInit {
     'iArticleGroupId',
     'iBusinessPartnerId',
     'iBusinessBrandId',
-    'nCalculatedPurchasePrice'
+    'nPurchasePrice'
   ];
   discountArticleGroup: any = {};
   saveInProgress = false;
@@ -234,7 +234,7 @@ export class TillComponent implements OnInit {
       quantity: 1,
       nBrokenProduct: 0,
       price: 0,
-      nCalculatedPurchasePrice: 0,
+      nPurchasePrice: 0,
       nDiscount: 0,
       tax: 21,
       paymentAmount: 0,
@@ -308,7 +308,7 @@ export class TillComponent implements OnInit {
       quantity: 1,
       nBrokenProduct: 0,
       price,
-      nCalculatedPurchasePrice: price,
+      nPurchasePrice: price,
       nTotal: type === 'gold-purchase' ? -1 * price : price,
       nDiscount: 0,
       tax: 21,
@@ -633,7 +633,7 @@ export class TillComponent implements OnInit {
       type: this.eKind,
       quantity: 1,
       price: price ? price.nPriceIncludesVat : 0,
-      nCalculatedPurchasePrice: price ? price.nPriceIncludesVat : 0,
+      nPurchasePrice: price ? price.nPriceIncludesVat : 0,
       paymentAmount: 0,
       oType: { bRefund: false, bDiscount: false, bPrepayment: false },
       nDiscount: product.nDiscount || 0,
