@@ -118,6 +118,7 @@
             {{pIndex + 1}}
           </div> -->
           <div class="w-100" *ngIf="propertyOptions[property.iPropertyId]?.length > 0">
+            <!-- {{selectedProperties[property.iPropertyId]}} -->
             <ng-select class="form-control p-0 w-100" [(ngModel)]="selectedProperties[property.iPropertyId]"
               (change)="setPropertyOption(property, pIndex)" [clearable]="false">
               <ng-option *ngFor="let option of propertyOptions[property.iPropertyId]" [value]="option.sCode">{{

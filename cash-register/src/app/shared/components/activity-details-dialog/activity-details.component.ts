@@ -42,7 +42,7 @@ export class ActivityDetailsComponent implements OnInit {
       'nQuantity',
       'sProductName',
       'nPriceIncVat',
-      'nPurchasePrice',
+      'nCalculatedPurchasePrice',
       'nVatRate',
       'nPaymentAmount',
       'nRefundAmount',
@@ -65,10 +65,10 @@ export class ActivityDetailsComponent implements OnInit {
   ngOnInit(): void {
     this.activity = this.dialogRef.context.activity;
     this.items = this.dialogRef.context.activity;
-    if(this.items.length){
-      const items =  JSON.parse(JSON.stringify(this.activity));
+    if (this.items.length) {
+      const items = JSON.parse(JSON.stringify(this.activity));
       this.activityItems = [items]
-    }else{
+    } else {
       this.fetchTransactionItems();
     }
     this.fetchCustomer(this.activity.iCustomerId);
