@@ -6,12 +6,15 @@ import { TranslateModule } from '@ngx-translate/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { SharedModule } from 'primeng/api';
+import { ExtraServiceComponent } from './component/extra-service/extra-service.component';
+import { NgSelectModule } from '@ng-select/ng-select';
 
 
 
 @NgModule({
   declarations: [
-    WebshopSettingsComponent
+    WebshopSettingsComponent,
+    ExtraServiceComponent
   ],
   imports: [
     CommonModule,
@@ -20,6 +23,7 @@ import { SharedModule } from 'primeng/api';
     FormsModule,
     FontAwesomeModule,
     ReactiveFormsModule,
+    NgSelectModule,
     SharedModule
   ]
 })
