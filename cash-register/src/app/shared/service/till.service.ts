@@ -109,8 +109,8 @@ export class TillService {
         i.comment,
         i.sProductNumber,
         i.price,
-        i.nCalculatedPurchasePrice || i.price, // TODO
-        i.price - i.nCalculatedPurchasePrice, // TODO
+        i.nPurchasePrice || i.price, // TODO
+        i.price - i.nPurchasePrice, // TODO
         null,
         i.tax,
         i.quantity,

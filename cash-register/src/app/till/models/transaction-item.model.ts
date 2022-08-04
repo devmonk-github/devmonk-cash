@@ -11,7 +11,7 @@ export class TransactionItem {
     public sComment: string,
     public sProductNumber: string,
     public nPriceIncVat: number,
-    public nCalculatedPurchasePrice: number,
+    public nPurchasePrice: number,
     public nProfit: number,
     public bEntryMethodCustomerValue: boolean | null,
     public nVatRate: number,
