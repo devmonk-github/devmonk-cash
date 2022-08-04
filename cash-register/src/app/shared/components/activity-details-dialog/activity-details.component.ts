@@ -42,7 +42,7 @@ export class ActivityDetailsComponent implements OnInit {
       'nQuantity',
       'sProductName',
       'nPriceIncVat',
-      'nPurchasePrice',
+      'nCalculatedPurchasePrice',
       'nVatRate',
       'nPaymentAmount',
       'nRefundAmount',
@@ -65,10 +65,10 @@ export class ActivityDetailsComponent implements OnInit {
   ngOnInit(): void {
     this.activity = this.dialogRef.context.activity;
     this.items = this.dialogRef.context.activity;
-    if(this.items.length){
-      const items =  JSON.parse(JSON.stringify(this.activity));
+    if (this.items.length) {
+      const items = JSON.parse(JSON.stringify(this.activity));
       this.activityItems = [items]
-    }else{
+    } else {
       this.fetchTransactionItems();
     }
     this.fetchCustomer(this.activity.iCustomerId);
@@ -77,6 +77,7 @@ export class ActivityDetailsComponent implements OnInit {
   }
 
   openTransaction(transaction: any, itemType: any) {
+    transaction.iActivityId = this.activity._id;
     this.dialogService.openModal(TransactionItemsDetailsComponent, { cssClass: "modal-xl", context: { transaction, itemType } })
       .instance.close.subscribe((result: any) => {
         const transactionItems: any = [];
