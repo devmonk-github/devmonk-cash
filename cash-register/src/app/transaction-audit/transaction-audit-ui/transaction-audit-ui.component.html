@@ -698,7 +698,7 @@
                                 <tbody class="fw-bold text-gray-600">
                                     <tr class="even" *ngFor="let booking of bookingRecords">
                                         <td>
-                                            <span>{{booking.dCreatedDate | date: 'medium'}}</span>
+                                            <span>{{booking.dTransactionCreationDate | date: 'medium'}}</span>
                                         </td>
                                         <td>
                                             <span>{{booking.nLedgerNumber}}</span>
@@ -747,7 +747,7 @@
                                 <tbody class="fw-bold text-gray-600">
                                     <tr class="even" *ngFor="let booking of paymentRecords">
                                         <td>
-                                            <span>{{booking.dCreatedDate | date: 'medium'}}</span>
+                                            <span>{{booking.dTransactionCreationDate | date: 'medium'}}</span>
                                         </td>
                                         <td>
                                             <span>{{booking.nLedgerNumber}}</span>

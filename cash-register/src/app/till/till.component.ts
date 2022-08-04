@@ -633,7 +633,7 @@ export class TillComponent implements OnInit {
       type: this.eKind,
       quantity: 1,
       price: price ? price.nPriceIncludesVat : 0,
-      nPurchasePrice: price ? price.nPriceIncludesVat : 0,
+      nPurchasePrice: product.nPurchasePrice || 0,
       paymentAmount: 0,
       oType: { bRefund: false, bDiscount: false, bPrepayment: false },
       nDiscount: product.nDiscount || 0,
