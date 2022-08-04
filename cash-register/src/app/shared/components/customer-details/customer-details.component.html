@@ -14,7 +14,7 @@
     </div>
     <div *ngIf="mode === 'details'" class="card-body">
         <div class="row">
-            <div class="col-3">
+            <div class="col-4">
                 <h4 class="fw-bolder mb-0">
                     <span>{{ customer.sSalutation }} {{ customer.sFirstname }} {{ customer.sLastName }}</span>
                 </h4>
@@ -92,10 +92,10 @@
                             </div> -->
                 </div>
             </div>
-            <div class="col-9">
+            <div class="col-8">
                 <app-pn-tabs class="tab-content" addClass="nav-fill" (activeTabChanged)="activeTabsChanged($event)">
                     <div class="tab-gap"></div>
-                    <app-pn-tab tabTitle="{{ 'Purchases' | translate}}" #purchases>
+                    <app-pn-tab tabTitle="{{ tabTitles[0] | translate}}" #purchases>
                         <table class="table table-hover table-rounded table-striped border gs-7">
                             <thead>
                                 <tr class="fw-bold fs-6 text-gray-800 border-bottom-2 border-gray-200">
@@ -115,12 +115,12 @@
                                     <td>{{transaction.eType}}</td>
                                     <td>{{transaction.sTotal || 0}}</td>
                                 </tr>
-                                <tr *ngIf="showLoader">
+                                <tr *ngIf="bTransactionsLoader">
                                     <td colspan="5" class="text-center">
                                         <div class="spinner-border mx-auto"></div>
                                     </td>
                                 </tr>
-                                <tr *ngIf="!showLoader && !aTransactions.length">
+                                <tr *ngIf="!bTransactionsLoader && !aTransactions.length">
                                     <td colspan="5" class="text-center">
                                         No Records Found
                                     </td>
@@ -128,7 +128,7 @@
                             </tbody>
                         </table>
                     </app-pn-tab>
-                    <app-pn-tab tabTitle="{{ 'ACTIVITY' | translate}}" #activities>
+                    <app-pn-tab tabTitle="{{ tabTitles[1] | translate}}" #activities>
                         <table class="table table-hover table-rounded table-striped border gs-7">
                             <thead>
                                 <tr class="fw-bold fs-6 text-gray-800 border-bottom-2 border-gray-200">
@@ -149,12 +149,12 @@
                                     <td>{{activity?.eRepairStatus}}</td>
                                     <td>{{activity?.eType}}</td>
                                 </tr>
-                                <tr *ngIf="showLoader">
+                                <tr *ngIf="bActivitiesLoader">
                                     <td colspan="7" class="text-center">
                                         <div class="spinner-border mx-auto"></div>
                                     </td>
                                 </tr>
-                                <tr *ngIf="!showLoader && !aActivities.length">
+                                <tr *ngIf="!bActivitiesLoader && !aActivities.length">
                                     <td colspan="7" class="text-center">
                                         No Records Found
                                     </td>
@@ -162,7 +162,7 @@
                             </tbody>
                         </table>
                     </app-pn-tab>
-                    <app-pn-tab tabTitle="{{ 'REPAIRS_AND_SPECIAL_ORDERS' | translate}}" #activityItems>
+                    <app-pn-tab tabTitle="{{ tabTitles[2] | translate}}" #activityItems>
                         <table class="table table-hover table-rounded table-striped border gs-7">
                             <thead>
                                 <tr class="fw-bold fs-6 text-gray-800 border-bottom-2 border-gray-200">
@@ -183,12 +183,12 @@
                                     <td>{{activity?.eRepairStatus}}</td>
                                     <td>{{activity?.eType}}</td>
                                 </tr>
-                                <tr *ngIf="showLoader">
+                                <tr *ngIf="bActivityItemsLoader">
                                     <td colspan="7" class="text-center">
                                         <div class="spinner-border mx-auto"></div>
                                     </td>
                                 </tr>
-                                <tr *ngIf="!showLoader && !aActivities.length">
+                                <tr *ngIf="!bActivityItemsLoader && !aActivities.length">
                                     <td colspan="7" class="text-center">
                                         No Records Found
                                     </td>
@@ -196,24 +196,11 @@
                             </tbody>
                         </table>
                     </app-pn-tab>
-                    <app-pn-tab tabTitle="{{ 'Statistics' | translate}}" #statistics>
-                        <br>
-                        Turnover
-                        <br>
-                        Purchases division
-
+                    <app-pn-tab tabTitle="{{ tabTitles[3] | translate}}" #statistics>
+                        Statistics
                     </app-pn-tab>
-                    <app-pn-tab tabTitle="{{ 'General' | translate}}" #general>
-                        <br>
-                        Remarks
-                        <br>
-                        Giftcards:
-                        <br>
-                        - 123
-                        <br>
-                        - 456
-                        <br>
-                        - 789
+                    <app-pn-tab tabTitle="{{ tabTitles[4] | translate}}" #general>
+                        General
                     </app-pn-tab>
                 </app-pn-tabs>
             </div>

@@ -77,6 +77,7 @@ export class ActivityDetailsComponent implements OnInit {
   }
 
   openTransaction(transaction: any, itemType: any) {
+    transaction.iActivityId = this.activity._id;
     this.dialogService.openModal(TransactionItemsDetailsComponent, { cssClass: "modal-xl", context: { transaction, itemType } })
       .instance.close.subscribe((result: any) => {
         const transactionItems: any = [];
