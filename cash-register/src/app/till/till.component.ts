@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnInit, ViewChild, ViewChildren } from '@angular/core';
 import {
   faScrewdriverWrench, faTruck, faBoxesStacked, faGifts,
   faUserPlus, faUser, faTimes, faTimesCircle, faTrashAlt, faRing,
@@ -31,7 +31,7 @@ import { Observable } from 'rxjs';
   templateUrl: './till.component.html',
   styleUrls: ['./till.component.scss']
 })
-export class TillComponent implements OnInit {
+export class TillComponent implements OnInit, AfterViewInit {
   // icons
   faScrewdriverWrench = faScrewdriverWrench;
   faTruck = faTruck;
@@ -98,10 +98,13 @@ export class TillComponent implements OnInit {
     'iArticleGroupId',
     'iBusinessPartnerId',
     'iBusinessBrandId',
-    'nCalculatedPurchasePrice'
+    'nPurchasePrice'
   ];
   discountArticleGroup: any = {};
   saveInProgress = false;
+  @ViewChildren('searchField') searchField: any;
+  selectedQuickButton: any;
+
   randNumber(min: number, max: number): number {
     return Math.floor(Math.random() * (max - min + 1) + min);
   }
@@ -144,12 +147,8 @@ export class TillComponent implements OnInit {
 
   }
 
-
-  @ViewChild("searchField", { static: false })
-  set searchField(element: ElementRef<HTMLInputElement>) {
-    if (element) {
-      element.nativeElement.focus()
-    }
+  ngAfterViewInit() {
+    this.searchField.first.nativeElement.focus();
   }
 
   loadTransaction() {
@@ -211,16 +210,17 @@ export class TillComponent implements OnInit {
   //     });    
   // }
 
-  addItemToTransaction(item: any): void {
-    this.fetchingProductDetails = true;
-    this.apiService.getNew('core', `/api/v1/business/products/${item.iBusinessProductId}?iBusinessId=${this.business._id}`).subscribe(
-      (result: any) => {
-        if (result.message == 'success') {
-          this.onSelectProduct(result.data, 'business', 'quick-button');
-          this.fetchingProductDetails = false;
-        }
-      });
-  }
+  // addItemToTransaction(item: any): void {
+  //   this.selectedQuickButton = item;
+  //   this.bSearchingProduct = true;
+  //   this.apiService.getNew('core', `/api/v1/business/products/${item.iBusinessProductId}?iBusinessId=${this.business._id}`).subscribe(
+  //     (result: any) => {
+  //       if (result.message == 'success') {
+  //         this.onSelectProduct(result.data, 'business', 'quick-button');
+  //         this.bSearchingProduct = false;
+  //       }
+  //     });
+  // }
 
   addOrder(): void {
     this.transactionItems.push({
@@ -234,7 +234,7 @@ export class TillComponent implements OnInit {
       quantity: 1,
       nBrokenProduct: 0,
       price: 0,
-      nCalculatedPurchasePrice: 0,
+      nPurchasePrice: 0,
       nDiscount: 0,
       tax: 21,
       paymentAmount: 0,
@@ -308,7 +308,7 @@ export class TillComponent implements OnInit {
       quantity: 1,
       nBrokenProduct: 0,
       price,
-      nCalculatedPurchasePrice: price,
+      nPurchasePrice: price,
       nTotal: type === 'gold-purchase' ? -1 * price : price,
       nDiscount: 0,
       tax: 21,
@@ -623,17 +623,26 @@ export class TillComponent implements OnInit {
   }
 
   // Add selected product into purchase order
-  async onSelectProduct(product: any, isFrom: string, isFor: string) {
-    let _oBusinessProductDetail;
-    if (isFor != 'quick-button') _oBusinessProductDetail = await this.getBusinessProduct(product?._id).toPromise();
-    const price = product.aLocation.find((o: any) => o._id === this.locationId);
+  async onSelectProduct(product: any, isFrom: string = '', isFor: string = '') {
+    let price: any = {};
+    if (isFrom === 'quick-button') {
+      let selectedQuickButton = product;
+      this.bSearchingProduct = true;
+      const _oBusinessProductDetail = await this.getBusinessProduct(product?.iBusinessProductId).toPromise();
+      this.bSearchingProduct = false;
+      product = _oBusinessProductDetail.data;
+      price.nPriceIncludesVat = selectedQuickButton.nPrice;
+    } else {
+      price = product.aLocation.find((o: any) => o._id === this.locationId);
+    }
+
     this.transactionItems.push({
       name: product.oName ? product.oName['en'] : 'No name',
       eTransactionItemType: 'regular',
       type: this.eKind,
       quantity: 1,
       price: price ? price.nPriceIncludesVat : 0,
-      nCalculatedPurchasePrice: price ? price.nPriceIncludesVat : 0,
+      nPurchasePrice: product.nPurchasePrice || 0,
       paymentAmount: 0,
       oType: { bRefund: false, bDiscount: false, bPrepayment: false },
       nDiscount: product.nDiscount || 0,
@@ -922,7 +931,7 @@ export class TillComponent implements OnInit {
   }
 
   switchMode() {
-    if (this.eKind === 'giftcard' || this.eKind === 'gold-purchase')
+    if (this.eKind === 'giftcard' || this.eKind === 'gold-purchase' || this.eKind === 'repair')
       this.eKind = 'regular';
   }
 }

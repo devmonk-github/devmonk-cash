@@ -14,88 +14,97 @@
     </div>
     <div *ngIf="mode === 'details'" class="card-body">
         <div class="row">
-            <div class="col-3">
-                <h4 class="fw-bolder mb-0">
-                    <span>{{ customer.sSalutation }} {{ customer.sFirstname }} {{ customer.sLastName }}</span>
-                </h4>
+            <div class="col-12">
+                <div class="d-flex">
+                    <div class="flex-grow-1">
+                        <div class="d-flex align-items-center mb-5">
+                            <i class="fa fa-user fs-1"></i>
+                            <h2 class="fw-bolder mx-5 mb-0">
+                                <span>{{ customer.sSalutation }} {{ customer.sFirstname }} {{ customer.sLastName
+                                    }}</span>
+                            </h2>
+                        </div>
+                        <div class="d-flex justify-content-start align-items-start">
+
+                            <div class="me-10">
+                                <h4 class="text-gray-700 fw-bolder mb-2">{{'About' | translate}}</h4>
+                                <div class="d-flex flex-column mb-5">
+                                    <div class="d-flex">
+                                        <span>{{'RECEIVE_NEWSLETTER' | translate}}</span>
+                                        <div class="svg-icon svg-icon-2 ps-0 mx-5" *ngIf="customer.bNewsletter">
+                                            <i class="fas fa-check-circle"></i>
+                                        </div>
+                                        <div class="svg-icon svg-icon-2 ps-0 mx-5 text-warning"
+                                            *ngIf="!customer.bNewsletter">
+                                            <i class="fas fa-times-circle"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="me-10">
+                                <h4 class="text-gray-700 fw-bolder mb-2">{{'CONTACT' | translate}}</h4>
+                                <div class="d-flex flex-column block-buttons">
+                                    <p>
+                                        <a href="mailto:{{customer.sEmail}}"
+                                            class="text-gray-800 text-hover-primary btn btn-light">
+                                            <i class="fa fa-envelope"></i>
+                                            {{customer.sEmail}}</a>
+                                    </p>
+                                    <p>
+                                        <a href="https://wa.me/{{customer.oPhone.sMobile}}" target="_blank"
+                                            class="text-gray-800 text-hover-primary btn btn-light">
+                                            <i class="fab fa-whatsapp ms-1" *ngIf="customer.oPhone.bWhatsApp"
+                                                style="color: #1CB39B;"></i>
+                                            {{customer.oPhone.sMobile}}</a>
+                                    </p>
+                                    <p>
+                                        <span class="text-muted me-5">{{'PHONE_LANDLINE' | translate}} :- </span>
+                                        <span> {{ customer.oPhone.sLandLine }}</span>
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="me-10">
+                                <h4 class="text-gray-700 fw-bolder mb-2">{{'Shipping Address' | translate}}</h4>
+                                <div class="" *ngIf="customer.oShippingAddress">
+                                    <p>
+                                        {{ customer.oShippingAddress.sHouseNumber }}
+                                        {{ customer.oShippingAddress.sStreet }}<br>
+                                        {{ customer.oShippingAddress.sPostalCode }}
+                                        {{ customer.oShippingAddress.sCity }}
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="me-10">
+                                <h4 class="text-gray-700 fw-bolder mb-2">{{'Invoice Address' | translate}}</h4>
+                                <div class="" *ngIf="customer.oInvoiceAddress">
+                                    <p>
+                                        {{ customer.oInvoiceAddress.sHouseNumber }} -
+                                        {{ customer.oInvoiceAddress.sStreet }},<br>
+                                        {{ customer.oInvoiceAddress.sPostalCode }},
+                                        {{ customer.oInvoiceAddress.sCity }}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <p *ngIf="customer.note" class="text-gray-800 text-italic">{{customer.note}}</p>
                 <div class="d-flex flex-wrap py-5">
                     <div class="flex-equal me-5">
-                        <table class="table table-flush fw-bold gy-1">
-                            <tr>
-                                <td class="text-muted min-w-175px w-175px">{{'EMAIL' | translate}}</td>
-                                <td>
-                                    <a href="mailto:{{customer.sEmail}}"
-                                        class="text-gray-800 text-hover-primary">{{customer.sEmail}}</a>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="text-muted min-w-175px w-175px">{{'PHONE_MOBILE' | translate}}</td>
-                                <td class="text-gray-800">
-                                    <span>{{customer.oPhone.sMobile}}
-                                        <i class="fab fa-whatsapp ms-1" *ngIf="customer.oPhone.bWhatsApp"
-                                            style="color: #1CB39B;"></i>
-                                    </span>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="text-muted min-w-175px w-175px">{{'PHONE_LANDLINE' | translate}}</td>
-                                <td class="text-gray-800">
-                                    <span>{{ customer.oPhone.sLandLine }}</span>
-                                </td>
-                            </tr>
 
-                            <tr>
-                                <td class="text-muted min-w-175px w-175px">{{'RECEIVE_NEWSLETTER' | translate}}</td>
-                                <td class="text-gray-800">
-                                    <div class="svg-icon svg-icon-2 ps-0" *ngIf="customer.bNewsletter">
-                                        <i class="fas fa-check-circle"></i>
-                                    </div>
-                                    <div class="svg-icon svg-icon-2 ps-0 text-warning" *ngIf="!customer.bNewsletter">
-                                        <i class="fas fa-times-circle"></i>
-                                    </div>
-                                </td>
-                            </tr>
-                        </table>
                     </div>
-                    <!-- <div class="flex-equal">
-                                <table class="table table-flush fw-bold gy-1">
-                                    <tr>
-                                        <td class="text-muted min-w-125px w-125px">Lorem</td>
-                                        <td class="text-gray-800">Ipsum</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="text-muted min-w-125px w-125px">Lorem</td>
-                                        <td class="text-gray-800">Ipsum</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="text-muted min-w-125px w-125px">Lorem</td>
-                                        <td class="text-gray-800">Ipsum</td>
-                                    </tr>
-                                </table>
-                            </div>
-                            <div class="flex-equal">
-                                <table class="table table-flush fw-bold gy-1">
-                                    <tr>
-                                        <td class="text-muted min-w-125px w-125px">Lorem</td>
-                                        <td class="text-gray-800">Ipsum</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="text-muted min-w-125px w-125px">Lorem</td>
-                                        <td class="text-gray-800">Ipsum</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="text-muted min-w-125px w-125px">Lorem</td>
-                                        <td class="text-gray-800">Ipsum</td>
-                                    </tr>
-                                </table>
-                            </div> -->
                 </div>
             </div>
-            <div class="col-9">
-                <app-pn-tabs class="tab-content" addClass="nav-fill" (activeTabChanged)="activeTabsChanged($event)">
+        </div>
+        <div class="row">
+            <div class="col-4"></div>
+            <div class="col-8">
+                <app-pn-tabs class="tab-content" addClass="nav-fill" addChildLinkClass="text-gray-600"
+                    (activeTabChanged)="activeTabsChanged($event)">
                     <div class="tab-gap"></div>
-                    <app-pn-tab tabTitle="{{ 'Purchases' | translate}}" #purchases>
+                    <app-pn-tab tabTitle="{{ tabTitles[0] | translate}}" #purchases>
                         <table class="table table-hover table-rounded table-striped border gs-7">
                             <thead>
                                 <tr class="fw-bold fs-6 text-gray-800 border-bottom-2 border-gray-200">
@@ -115,12 +124,12 @@
                                     <td>{{transaction.eType}}</td>
                                     <td>{{transaction.sTotal || 0}}</td>
                                 </tr>
-                                <tr *ngIf="showLoader">
+                                <tr *ngIf="bTransactionsLoader">
                                     <td colspan="5" class="text-center">
                                         <div class="spinner-border mx-auto"></div>
                                     </td>
                                 </tr>
-                                <tr *ngIf="!showLoader && !aTransactions.length">
+                                <tr *ngIf="!bTransactionsLoader && !aTransactions.length">
                                     <td colspan="5" class="text-center">
                                         No Records Found
                                     </td>
@@ -128,7 +137,7 @@
                             </tbody>
                         </table>
                     </app-pn-tab>
-                    <app-pn-tab tabTitle="{{ 'Activities' | translate}}" #activities>
+                    <app-pn-tab tabTitle="{{ tabTitles[1] | translate}}" #activities>
                         <table class="table table-hover table-rounded table-striped border gs-7">
                             <thead>
                                 <tr class="fw-bold fs-6 text-gray-800 border-bottom-2 border-gray-200">
@@ -149,12 +158,12 @@
                                     <td>{{activity?.eRepairStatus}}</td>
                                     <td>{{activity?.eType}}</td>
                                 </tr>
-                                <tr *ngIf="showLoader">
+                                <tr *ngIf="bActivitiesLoader">
                                     <td colspan="7" class="text-center">
                                         <div class="spinner-border mx-auto"></div>
                                     </td>
                                 </tr>
-                                <tr *ngIf="!showLoader && !aActivities.length">
+                                <tr *ngIf="!bActivitiesLoader && !aActivities.length">
                                     <td colspan="7" class="text-center">
                                         No Records Found
                                     </td>
@@ -162,7 +171,7 @@
                             </tbody>
                         </table>
                     </app-pn-tab>
-                    <app-pn-tab tabTitle="{{ 'Activity Items' | translate}}" #activityItems>
+                    <app-pn-tab tabTitle="{{ tabTitles[2] | translate}}" #activityItems>
                         <table class="table table-hover table-rounded table-striped border gs-7">
                             <thead>
                                 <tr class="fw-bold fs-6 text-gray-800 border-bottom-2 border-gray-200">
@@ -183,12 +192,12 @@
                                     <td>{{activity?.eRepairStatus}}</td>
                                     <td>{{activity?.eType}}</td>
                                 </tr>
-                                <tr *ngIf="showLoader">
+                                <tr *ngIf="bActivityItemsLoader">
                                     <td colspan="7" class="text-center">
                                         <div class="spinner-border mx-auto"></div>
                                     </td>
                                 </tr>
-                                <tr *ngIf="!showLoader && !aActivities.length">
+                                <tr *ngIf="!bActivityItemsLoader && !aActivities.length">
                                     <td colspan="7" class="text-center">
                                         No Records Found
                                     </td>
@@ -196,10 +205,10 @@
                             </tbody>
                         </table>
                     </app-pn-tab>
-                    <app-pn-tab tabTitle="{{ 'Statistics' | translate}}" #statistics>
+                    <app-pn-tab tabTitle="{{ tabTitles[3] | translate}}" #statistics>
                         Statistics
                     </app-pn-tab>
-                    <app-pn-tab tabTitle="{{ 'General' | translate}}" #general>
+                    <app-pn-tab tabTitle="{{ tabTitles[4] | translate}}" #general>
                         General
                     </app-pn-tab>
                 </app-pn-tabs>
