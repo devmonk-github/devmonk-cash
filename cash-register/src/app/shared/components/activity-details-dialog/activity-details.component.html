@@ -55,7 +55,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-9">
+            <div *ngIf="from == 'activity-items'" class="col-9">
                 <h4>Activities</h4>
                 <div class="accordion" id="kt_accordion_1">
                     <div class="accordion-item" *ngFor="let activity of activityItems; index as index">
@@ -457,11 +457,16 @@
                         </div>
                     </div>
                 </div>
+                <div class="d-flex mt-100">
+                    <h5 *ngIf='!activityItems.length && !loading' style="text-align: center">{{'NO_DATA_FOUND' | translate }}
+                    </h5>
+                    <div *ngIf="loading" class="spinner-border mx-auto"></div>
+                </div>
             </div>
         </div>
 
     </div>
-    <div class="card-body row">
+    <div *ngIf="from == 'services'" class="card-body row">
         <div class="col-md-12">
             <h3 class="fw-bolder mb-3">
                 <span>{{ "ITEMS" | translate }}</span>
@@ -471,7 +476,7 @@
                     <span>{{ "STATUS" | translate }} : </span>
                 </div>
                 <div class="col-md-4">
-                    <select name="status" id="status" class="form-select" [(ngModel)]="activity.eRepairStatus">
+                    <select name="status" id="status" class="form-select" [(ngModel)]="activity.eRepairStatus" (click)="changeStatusForAll()">
                         <option *ngFor="let type of repairStatus" [value]="type">{{type}}</option>
                     </select>
                 </div>
@@ -517,13 +522,12 @@
                                     </div>
                                 </td>
                                 <td>{{item.nPurchasePrice}}</td>
-                                <td>{{item.nQuantity}}</td>
-                                <td>0</td>
-                                <td>{{item.nVatRate || 0}}</td>
-                                <td>{{item.nPriceIncVat || 0}}</td>
                                 <td>
+                                    <div class="d-flex align-items-stretch flex-shrink-0 me-sm-2">
+                                        {{item.nQuantity}}
+                                    </div>
                                     <div class="d-flex align-items-stretch flex-shrink-0 me-sm-2"
-                                        *ngIf="showDetails && userDetail">
+                                        *ngIf="showDetails && userDetail && item.iBusinessProductId">
                                         <div class="cursor-pointer my-auto fs-5 fw-bolder text-gray-700 show menu-dropdown"
                                             data-kt-menu-trigger="click" data-kt-menu-attach="parent"
                                             data-kt-menu-placement="bottom-start" data-kt-menu-flip="bottom">
@@ -531,32 +535,25 @@
                                             <span *ngIf="item">( {{item.locationName || 'Unknown'}} )</span>
                                         </div>
                                         <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg menu-state-primary fw-bold py-4 fs-6 w-200px" data-kt-menu="true">
-                                            <span *ngFor="let business of userDetail.aBusiness">
-                                                <div *ngIf="business?.aInLocation?.length > 0" class="menu-item px-3"
-                                                    data-kt-menu-trigger="hover" data-kt-menu-placement="right-start">
-                                                    <span class="menu-link d-flex">
-                                                        <div> {{ business.sName || 'Unknown' }} </div>
-                                                        <fa-icon [icon]="faChevronRight" class="ms-auto me-2"></fa-icon>
-                                                    </span>
-                                                    <div class="menu-sub menu-sub-dropdown py-4">
-                                                        <div class="menu-item px-3 cursor-pointer"
-                                                            *ngFor="let location of business.aInLocation">
-                                                            <a class="menu-link d-flex px-5"
-                                                                (click)="selectBusiness(business, i, location)">
-                                                                {{ location.sName }}
-                                                            </a>
-                                                        </div>
-                                                    </div>
+                                            <div *ngIf="business?.aInLocation?.length > 0" class="menu-item px-3"
+                                                data-kt-menu-trigger="hover" data-kt-menu-placement="right-start">
+                                                <div class="menu-item px-3 cursor-pointer" *ngFor="let location of business.aInLocation">
+                                                    <a class="menu-link d-flex px-5"
+                                                        (click)="selectBusiness(i, location)">
+                                                        {{ location.sName }}
+                                                    </a>
                                                 </div>
-                                                <div *ngIf="business?.aInLocation?.length == 0" class="menu-item px-3">
-                                                    <span class="menu-link d-flex" (click)="selectBusiness(business, i)">
-                                                        {{ business.sName || 'Unknown'}}</span>
-                                                </div>
-                                            </span>
+                                            </div>
+                                            <div *ngIf="business?.aInLocation?.length == 0" class="menu-item px-3">
+                                                <span class="menu-link d-flex" (click)="selectBusiness(i)">
+                                                    {{ business.sName || 'Unknown'}}</span>
+                                            </div>
                                         </div>
-                                        <span class="h-20px border-gray-300 border-start mx-4 my-auto"></span>
                                     </div>
                                 </td>
+                                <td>0</td>
+                                <td>{{item.nVatRate || 0}}</td>
+                                <td>{{item.nPriceIncVat || 0}}</td>
                             </tr>
                             <tr *ngIf='transactions.length'>
                                 <td>{{'TOTAL' | translate}}</td>
