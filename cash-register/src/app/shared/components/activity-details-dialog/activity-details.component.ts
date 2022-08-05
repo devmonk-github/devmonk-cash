@@ -19,6 +19,7 @@ export class ActivityDetailsComponent implements OnInit {
   activity: any;
   webOrders: boolean | undefined;
   items: Array<any> = [];
+  from: string = '';
   mode: string = '';
   showLoader = false;
   activityItems: Array<any> = [];
