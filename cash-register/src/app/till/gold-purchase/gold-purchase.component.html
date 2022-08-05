@@ -2,6 +2,13 @@
     <button class="accordion-button fs-4 fw-bold" type="button" data-bs-toggle="collapse"
         data-bs-target="#kt_accordion_1_body_1" aria-expanded="true" aria-controls="kt_accordion_1_body_1">
         <section class="d-flex product-row align-items-center">
+            <div class="w-90px"><svg width="15" height="15" class="m-1">
+                    <rect width="15" height="15"
+                        style="fill:{{getColorCode(item)}}; stroke-width:1;stroke:rgb(0,0,0)" />
+                    Sorry, your browser does not support inline SVG.
+                </svg>{{item.quantity}}
+            </div>
+
             <div class="w-275px">{{item.name}}</div>
             <div class="w-100px">{{item.price | currency: '€'}}</div>
             <div class="w-95px">{{item.nDiscount | currency: '€'}}</div>
@@ -20,6 +27,12 @@
             <div class="col-1">
                 <h3>1</h3>
                 <!-- <app-dialer [(quantity)]="item.quantity"></app-dialer> -->
+                <div class="d-flex">
+                    <select name="taxRate" id="taxRate" class="form-select" [(ngModel)]="item.eTransactionItemType"
+                        (ngModelChange)="changeTypeArray()">
+                        <option *ngFor="let type of typeArray" [ngValue]="type">{{type}}</option>
+                    </select>
+                </div>
             </div>
             <div class="col-3">
                 <input type="text" [(ngModel)]="item.name" class="form-control">

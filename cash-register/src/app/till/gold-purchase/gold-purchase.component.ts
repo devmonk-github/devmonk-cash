@@ -52,6 +52,7 @@ export class GoldPurchaseComponent implements OnInit {
   suppliersList: Array<any> = [];
   showDeleteBtn: boolean = false;
   aProperty: any = [];
+  typeArray = ['regular', 'return'];
   constructor(
     private priceService: PriceService,
     private apiService: ApiService,
@@ -146,5 +147,10 @@ export class GoldPurchaseComponent implements OnInit {
   }
   changeTotalAmount() {
     this.item.paymentAmount = -1 * this.item.quantity * this.item.price;
+  }
+  changeTypeArray() {
+    if (!this.item.oType.refund) {
+      this.item.price = -this.item.price;
+    }
   }
 }
