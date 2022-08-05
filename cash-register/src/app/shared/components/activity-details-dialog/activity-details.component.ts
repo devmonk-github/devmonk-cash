@@ -244,6 +244,9 @@ export class ActivityDetailsComponent implements OnInit {
         this.totalPrice += obj.nPaymentAmount;
         this.quantity += obj.bRefund ? (- obj.nQuantity) : obj.nQuantity
       }
+      setTimeout(() => {
+        MenuComponent.reinitialization();
+      }, 200);
       this.loading = false;
     }, (error) => {
       this.loading = false;
