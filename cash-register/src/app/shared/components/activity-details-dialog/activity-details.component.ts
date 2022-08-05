@@ -108,6 +108,16 @@ export class ActivityDetailsComponent implements OnInit {
       this.transactions[index].locationName = location.sName;
       this.transactions[index].iStockLocationId = location._id;
     }
+    this.updateTransaction(this.transactions[index]);
+  }
+
+  updateTransaction(transaction: any) {
+    transaction.iBusinessId = this.iBusinessId;
+    this.apiService.putNew('cashregistry', '/api/v1/transaction/item/StockLocation/' + transaction?._id , transaction)
+    .subscribe((result: any) => {
+    }, 
+    (error) => {
+    })
   }
 
   setSelectedBusinessLocation(locationId: string, index: number) {

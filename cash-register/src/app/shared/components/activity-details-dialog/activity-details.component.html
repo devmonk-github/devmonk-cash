@@ -457,6 +457,11 @@
                         </div>
                     </div>
                 </div>
+                <div class="d-flex mt-100">
+                    <h5 *ngIf='!activityItems.length && !loading' style="text-align: center">{{'NO_DATA_FOUND' | translate }}
+                    </h5>
+                    <div *ngIf="loading" class="spinner-border mx-auto"></div>
+                </div>
             </div>
         </div>
 
@@ -517,11 +522,10 @@
                                     </div>
                                 </td>
                                 <td>{{item.nPurchasePrice}}</td>
-                                <td>{{item.nQuantity}}</td>
-                                <td>0</td>
-                                <td>{{item.nVatRate || 0}}</td>
-                                <td>{{item.nPriceIncVat || 0}}</td>
                                 <td>
+                                    <div class="d-flex align-items-stretch flex-shrink-0 me-sm-2">
+                                        {{item.nQuantity}}
+                                    </div>
                                     <div class="d-flex align-items-stretch flex-shrink-0 me-sm-2"
                                         *ngIf="showDetails && userDetail">
                                         <div class="cursor-pointer my-auto fs-5 fw-bolder text-gray-700 show menu-dropdown"
@@ -536,7 +540,7 @@
                                                     data-kt-menu-trigger="hover" data-kt-menu-placement="right-start">
                                                     <span class="menu-link d-flex">
                                                         <div> {{ business.sName || 'Unknown' }} </div>
-                                                        <fa-icon [icon]="faChevronRight" class="ms-auto me-2"></fa-icon>
+                                                        <fa-icon [icon]="faChevronRight" class="me-2"></fa-icon>
                                                     </span>
                                                     <div class="menu-sub menu-sub-dropdown py-4">
                                                         <div class="menu-item px-3 cursor-pointer"
@@ -554,9 +558,12 @@
                                                 </div>
                                             </span>
                                         </div>
-                                        <span class="h-20px border-gray-300 border-start mx-4 my-auto"></span>
+                                        <!-- <span class="h-20px border-gray-300 border-start mx-4 my-auto"></span> -->
                                     </div>
                                 </td>
+                                <td>0</td>
+                                <td>{{item.nVatRate || 0}}</td>
+                                <td>{{item.nPriceIncVat || 0}}</td>
                             </tr>
                             <tr *ngIf='transactions.length'>
                                 <td>{{'TOTAL' | translate}}</td>
