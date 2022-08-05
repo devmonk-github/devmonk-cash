@@ -93,7 +93,6 @@ export class ActivityDetailsComponent implements OnInit {
       .subscribe((result: any) => {
         if (result.message == "success" && result?.data) {
           this.userDetail = result.data;
-          if(this.userDetail) this.setSelectedBusinessLocation();
         }
         setTimeout(() => {
           MenuComponent.reinitialization();
@@ -103,27 +102,25 @@ export class ActivityDetailsComponent implements OnInit {
       });
   }
 
-  selectBusiness(business: any, location?: any) {
+  selectBusiness(business: any, index: number, location?: any) {
     this.selectedBusiness = business;
     if (location?._id) {
-      this.selectedBusiness["selectedLocation"] = location;
-      this.iBusinessId = business._id;
-      this.iLocationId = location._id;
+      this.transactions[index].locationName = location.sName;
+      this.transactions[index].iStockLocationId = location._id;
     }
   }
 
-  setSelectedBusinessLocation() {
+  setSelectedBusinessLocation(locationId: string, index: number) {
     if (this.userDetail.aBusiness) {
-      let locationId = localStorage.getItem("currentLocation");
       this.userDetail.aBusiness.map(
         (business: any) => {
           if (business._id == this.iBusinessId) {
-            this.selectedBusiness = business;
+            this.transactions[index].selectedBusiness = business;
             if (locationId) {
               business.aInLocation.map(
                 (location: any) => {
                   if (location._id == locationId)
-                    this.selectedBusiness["selectedLocation"] = location;
+                    this.transactions[index].locationName = location.sName;
                 }
               )
             }
@@ -240,9 +237,11 @@ export class ActivityDetailsComponent implements OnInit {
       for(const obj of this.activityItems){
         this.transactions = this.transactions.concat(obj.receipts);
       }
-      for(const obj of this.transactions){
+      for(let i = 0; i < this.transactions.length; i++){
+        const obj = this.transactions[i];
         this.totalPrice += obj.nPaymentAmount;
         this.quantity += obj.bRefund ? (- obj.nQuantity) : obj.nQuantity
+        if(obj.iStockLocationId) this.setSelectedBusinessLocation(obj.iStockLocationId, i)
       }
       setTimeout(() => {
         MenuComponent.reinitialization();
