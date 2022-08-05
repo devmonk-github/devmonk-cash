@@ -476,7 +476,7 @@
                     <span>{{ "STATUS" | translate }} : </span>
                 </div>
                 <div class="col-md-4">
-                    <select name="status" id="status" class="form-select" [(ngModel)]="activity.eRepairStatus">
+                    <select name="status" id="status" class="form-select" [(ngModel)]="activity.eRepairStatus" (click)="changeStatusForAll()">
                         <option *ngFor="let type of repairStatus" [value]="type">{{type}}</option>
                     </select>
                 </div>
@@ -535,30 +535,20 @@
                                             <span *ngIf="item">( {{item.locationName || 'Unknown'}} )</span>
                                         </div>
                                         <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg menu-state-primary fw-bold py-4 fs-6 w-200px" data-kt-menu="true">
-                                            <span *ngFor="let business of userDetail.aBusiness">
-                                                <div *ngIf="business?.aInLocation?.length > 0" class="menu-item px-3"
-                                                    data-kt-menu-trigger="hover" data-kt-menu-placement="right-start">
-                                                    <span class="menu-link d-flex">
-                                                        <div> {{ business.sName || 'Unknown' }} </div>
-                                                        <fa-icon [icon]="faChevronRight" class="me-2"></fa-icon>
-                                                    </span>
-                                                    <div class="menu-sub menu-sub-dropdown py-4">
-                                                        <div class="menu-item px-3 cursor-pointer"
-                                                            *ngFor="let location of business.aInLocation">
-                                                            <a class="menu-link d-flex px-5"
-                                                                (click)="selectBusiness(business, i, location)">
-                                                                {{ location.sName }}
-                                                            </a>
-                                                        </div>
-                                                    </div>
+                                            <div *ngIf="business?.aInLocation?.length > 0" class="menu-item px-3"
+                                                data-kt-menu-trigger="hover" data-kt-menu-placement="right-start">
+                                                <div class="menu-item px-3 cursor-pointer" *ngFor="let location of business.aInLocation">
+                                                    <a class="menu-link d-flex px-5"
+                                                        (click)="selectBusiness(i, location)">
+                                                        {{ location.sName }}
+                                                    </a>
                                                 </div>
-                                                <div *ngIf="business?.aInLocation?.length == 0" class="menu-item px-3">
-                                                    <span class="menu-link d-flex" (click)="selectBusiness(business, i)">
-                                                        {{ business.sName || 'Unknown'}}</span>
-                                                </div>
-                                            </span>
+                                            </div>
+                                            <div *ngIf="business?.aInLocation?.length == 0" class="menu-item px-3">
+                                                <span class="menu-link d-flex" (click)="selectBusiness(i)">
+                                                    {{ business.sName || 'Unknown'}}</span>
+                                            </div>
                                         </div>
-                                        <!-- <span class="h-20px border-gray-300 border-start mx-4 my-auto"></span> -->
                                     </div>
                                 </td>
                                 <td>0</td>

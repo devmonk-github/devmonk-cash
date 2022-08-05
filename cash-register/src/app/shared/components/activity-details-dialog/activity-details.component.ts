@@ -41,7 +41,7 @@ export class ActivityDetailsComponent implements OnInit {
   totalPrice: Number = 0;
   quantity: Number = 0;
   userDetail: any;
-  selectedBusiness: any;
+  business: any;
   iLocationId: String = '';
   showDetails: Boolean = true;
   requestParams: any = {
@@ -88,11 +88,23 @@ export class ActivityDetailsComponent implements OnInit {
     // this.transaction = this.dialogRef.context.transaction;
   }
   
+  changeStatusForAll(){
+
+  }
+  
   getBusinessLocations() {
     this.apiService.getNew('core', '/api/v1/business/user-business-and-location/list')
       .subscribe((result: any) => {
         if (result.message == "success" && result?.data) {
           this.userDetail = result.data;
+          if (this.userDetail.aBusiness) {
+            this.userDetail.aBusiness.map(
+              (business: any) => {
+                if (business._id == this.iBusinessId) {
+                  this.business = business;
+                }
+              })
+            }
         }
         setTimeout(() => {
           MenuComponent.reinitialization();
@@ -102,8 +114,7 @@ export class ActivityDetailsComponent implements OnInit {
       });
   }
 
-  selectBusiness(business: any, index: number, location?: any) {
-    this.selectedBusiness = business;
+  selectBusiness(index: number, location?: any) {
     if (location?._id) {
       this.transactions[index].locationName = location.sName;
       this.transactions[index].iStockLocationId = location._id;
@@ -121,22 +132,11 @@ export class ActivityDetailsComponent implements OnInit {
   }
 
   setSelectedBusinessLocation(locationId: string, index: number) {
-    if (this.userDetail.aBusiness) {
-      this.userDetail.aBusiness.map(
-        (business: any) => {
-          if (business._id == this.iBusinessId) {
-            this.transactions[index].selectedBusiness = business;
-            if (locationId) {
-              business.aInLocation.map(
-                (location: any) => {
-                  if (location._id == locationId)
-                    this.transactions[index].locationName = location.sName;
-                }
-              )
-            }
-          }
-        });
-    }
+    this.business.aInLocation.map(
+      (location: any) => {
+        if (location._id == locationId)
+          this.transactions[index].locationName = location.sName;
+      })
   }
 
   openTransaction(transaction: any, itemType: any) {
