@@ -42,6 +42,8 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
   filterDates = {
     endDate: new Date(new Date().setHours(23, 59, 59)),
     startDate: new Date(new Date().setHours(0, 0, 0))
+    // endDate: moment(new Date(new Date().setHours(23, 59, 59))).format('yyyy-MM-DDThh:mm'),
+    // startDate: moment(new Date(new Date().setHours(0, 0, 0))).format('yyyy-MM-DDThh:mm'),
   };
 
   creditAmount = 0;
@@ -135,8 +137,8 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
     this.iStatisticId = this.route.snapshot?.params?.iStatisticId;
     const oQueryParams = this.route.snapshot?.queryParams;
     // const _dOpenDate = this.route.snapshot?.queryParams?.get('dStartDate');
-    if (oQueryParams?.dStartDate) this.filterDates.startDate = oQueryParams?.dStartDate;
-    console.log('iStatisticId: ', this.iStatisticId, oQueryParams?.dStartDate);
+    if (oQueryParams?.dStartDate) this.filterDates.startDate = moment(new Date(oQueryParams?.dStartDate)).format('yyyy-MM-DDThh:mm');
+
     this.businessDetails._id = localStorage.getItem("currentBusiness");
     this.fetchBusinessDetails();
     this.printingDate();
