@@ -476,7 +476,7 @@
                     <span>{{ "STATUS" | translate }} : </span>
                 </div>
                 <div class="col-md-4">
-                    <select name="status" id="status" class="form-select" [(ngModel)]="activity.eRepairStatus" (click)="changeStatusForAll()">
+                    <select name="status" id="status" class="form-select" [(ngModel)]="activity.eRepairStatus" (ngModelChange)="changeStatusForAll(activity.eRepairStatus)">
                         <option *ngFor="let type of repairStatus" [value]="type">{{type}}</option>
                     </select>
                 </div>
@@ -488,6 +488,8 @@
                             <tr class="fw-bold fs-6 text-gray-400">
                                 <td class="text-muted">{{'IMAGE' | translate}}</td>
                                 <td class="text-muted">{{'PRODUCT' | translate}}</td>
+                                <td class="text-muted">{{'STATUS' | translate}}</td>
+                                <td class="text-muted">{{'CUSTOMER' | translate}}</td>
                                 <td class="text-muted">{{'PRICE' | translate}}</td>
                                 <td class="text-muted">{{'QUANTITY' | translate}}</td>
                                 <td class="text-muted">{{'DISCOUNT_PER_ITEM' | translate}}</td>
@@ -521,7 +523,14 @@
                                         </div>
                                     </div>
                                 </td>
+                                <td *ngIf="!item.bRefund">
+                                    <select name="status" id="status" class="form-select" [(ngModel)]="item.eRepairStatus" (ngModelChange)="updateActivityItem(item)">
+                                        <option *ngFor="let type of repairStatus" [value]="type">{{type}}</option>
+                                    </select>
+                                </td>
+                                <td *ngIf="item.bRefund"></td>
                                 <td>{{item.nPurchasePrice}}</td>
+                                <td>{{item.customer.sFirstName}} {{item.customer.sLastName}}</td>
                                 <td>
                                     <div class="d-flex align-items-stretch flex-shrink-0 me-sm-2">
                                         {{item.nQuantity}}

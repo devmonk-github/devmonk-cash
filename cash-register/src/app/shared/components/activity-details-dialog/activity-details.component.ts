@@ -83,14 +83,26 @@ export class ActivityDetailsComponent implements OnInit {
     } else {
       this.fetchTransactionItems();
     }
-    if(this.activity?.iCustomerId) this.fetchCustomer(this.activity.iCustomerId);
+    if(this.activity?.iCustomerId) this.fetchCustomer(this.activity.iCustomerId, -1);
     this.getBusinessLocations();
     // this.itemType = this.dialogRef.context.itemType;
     // this.transaction = this.dialogRef.context.transaction;
   }
   
-  changeStatusForAll(){
+  changeStatusForAll(type: string){
+    this.activityItems.forEach((obj: any)=>{
+      obj.eRepairStatus = type;
+      this.updateActivityItem(obj)
+    })
+  }
 
+  updateActivityItem(item: any) {
+    item.iBusinessId = this.iBusinessId;
+    this.apiService.putNew('cashregistry', '/api/v1/activities/items/' + item?.iActivityItemId , item)
+    .subscribe((result: any) => {
+    }, 
+    (error) => {
+    })
   }
   
   getBusinessLocations() {
@@ -227,10 +239,12 @@ export class ActivityDetailsComponent implements OnInit {
       })
   }
 
-  fetchCustomer(customerId: any) {
+  fetchCustomer(customerId: any, index: number) {
     this.apiService.getNew('customer', `/api/v1/customer/${customerId}?iBusinessId=${this.iBusinessId}`).subscribe(
       (result: any) => {
-        this.customer = result;
+        console.log(result);
+        if(index > -1) this.transactions[index].customer = result;
+        else this.customer = result;
         // this.close({ action: true });
       },
       (error: any) => {
@@ -246,13 +260,18 @@ export class ActivityDetailsComponent implements OnInit {
       this.activityItems = result.data[0].result;
       this.transactions = [];
       for(const obj of this.activityItems){
-        this.transactions = this.transactions.concat(obj.receipts);
+        for(const item of obj.receipts){
+          // if(!item.bRefund) item.eRepairStatus = obj.eRepairStatus;
+          this.transactions.push({ ...item, ...obj });
+        }
+        // this.transactions = this.transactions.concat(obj.receipts);
       }
       for(let i = 0; i < this.transactions.length; i++){
         const obj = this.transactions[i];
         this.totalPrice += obj.nPaymentAmount;
         this.quantity += obj.bRefund ? (- obj.nQuantity) : obj.nQuantity
         if(obj.iStockLocationId) this.setSelectedBusinessLocation(obj.iStockLocationId, i)
+        this.fetchCustomer(obj.iCustomerId, i);
       }
       setTimeout(() => {
         MenuComponent.reinitialization();
