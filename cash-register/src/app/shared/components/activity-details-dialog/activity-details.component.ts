@@ -98,7 +98,7 @@ export class ActivityDetailsComponent implements OnInit {
 
   updateActivityItem(item: any) {
     item.iBusinessId = this.iBusinessId;
-    this.apiService.putNew('cashregistry', '/api/v1/activities/items/' + item?._id , item)
+    this.apiService.putNew('cashregistry', '/api/v1/activities/items/' + item?.iActivityItemId , item)
     .subscribe((result: any) => {
     }, 
     (error) => {
@@ -259,9 +259,10 @@ export class ActivityDetailsComponent implements OnInit {
       this.transactions = [];
       for(const obj of this.activityItems){
         for(const item of obj.receipts){
-          if(!item.bRefund) item.eRepairStatus = obj.eRepairStatus;
+          // if(!item.bRefund) item.eRepairStatus = obj.eRepairStatus;
+          this.transactions.push({ ...item, ...obj });
         }
-        this.transactions = this.transactions.concat(obj.receipts);
+        // this.transactions = this.transactions.concat(obj.receipts);
       }
       for(let i = 0; i < this.transactions.length; i++){
         const obj = this.transactions[i];
