@@ -11,4 +11,5 @@ export const environment = {
   LOG_URL: 'https://log.e-orderportal.com',
   apiURL: 'http://prismanote.com',
   oldPlatformUrl: 'https://kassa.prismanote.com',
+  fiskalyURL: 'https://kassensichv-middleware.fiskaly.com/api/v2',
 };

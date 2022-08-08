@@ -26,6 +26,7 @@ import { CreateArticleGroupService } from '../shared/service/create-article-grou
 import { Router, ActivatedRoute } from '@angular/router';
 import { CustomerStructureService } from '../shared/service/customer-structure.service';
 import { Observable } from 'rxjs';
+import { FiskalyService } from '../shared/service/fiskaly.service';
 @Component({
   selector: 'app-till',
   templateUrl: './till.component.html',
@@ -120,7 +121,8 @@ export class TillComponent implements OnInit, AfterViewInit {
     private barcodeService: BarcodeService,
     private terminalService: TerminalService,
     private createArticleGroupService: CreateArticleGroupService,
-    private customerStructureService: CustomerStructureService
+    private customerStructureService: CustomerStructureService,
+    private fiskalyService: FiskalyService
   ) {
   }
 
@@ -144,6 +146,14 @@ export class TillComponent implements OnInit, AfterViewInit {
     this.checkArticleGroups();
 
     this.fetchQuickButtons();
+
+    // this.fiskalyService.startTransaction()
+    //   .subscribe((res) => {
+    //     console.log(res);
+    //     localStorage.setItem('fiskalyTransaction', JSON.stringify(res));
+    //   }, error => {
+    //     console.log(error);
+    //   });
 
   }
 
@@ -321,6 +331,8 @@ export class TillComponent implements OnInit, AfterViewInit {
       ...(type === 'giftcard') && { isGiftCardNumberValid: false },
       ...(type === 'gold-purchase') && { oGoldFor: { name: 'stock', type: 'goods' } }
     });
+
+    this.updateFiskalyTransaction('ACTIVE', []);
   }
 
   cancelItems(): void {
@@ -534,7 +546,6 @@ export class TillComponent implements OnInit, AfterViewInit {
               cardPaymethod.type = element.type;
               body.payments.push(cardPaymethod);
             });
-            // giftCardPayment.amount = _.sumBy(this.appliedGiftCards, 'nAmount');
             body.giftCards = this.appliedGiftCards;
           }
           body.oTransaction.iActivityId = this.iActivityId;
@@ -552,6 +563,7 @@ export class TillComponent implements OnInit, AfterViewInit {
           this.apiService.postNew('cashregistry', '/api/v1/till/transaction', body)
             .subscribe((data: any) => {
               this.toastrService.show({ type: 'success', text: data.message });
+              this.updateFiskalyTransaction('FINISHED', body.payments);
               if (this.selectedTransaction) {
                 this.deleteParkedTransaction();
               };
@@ -933,5 +945,15 @@ export class TillComponent implements OnInit, AfterViewInit {
   switchMode() {
     if (this.eKind === 'giftcard' || this.eKind === 'gold-purchase' || this.eKind === 'repair')
       this.eKind = 'regular';
+  }
+
+  updateFiskalyTransaction(state: string, payments: []) {
+    this.fiskalyService.updateFiskalyTransaction(this.transactionItems, payments, state)
+      .subscribe(res => {
+        console.log(res);
+        localStorage.setItem('fiskalyTransaction', JSON.stringify(res));
+      }, error => {
+        console.log(error);
+      })
   }
 }

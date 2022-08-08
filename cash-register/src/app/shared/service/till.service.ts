@@ -5,12 +5,15 @@ import { TransactionItem } from 'src/app/till/models/transaction-item.model';
 import { Transaction } from 'src/app/till/models/transaction.model';
 import { ApiService } from './api.service';
 import * as _ from 'lodash';
+import { StringService } from './string.service';
 @Injectable({
   providedIn: 'root'
 })
 export class TillService {
 
-  constructor(private apiService: ApiService) { }
+  constructor(
+    private apiService: ApiService,
+    private stringService: StringService) { }
 
 
   getUsedPayMethods(total: boolean, payMethods: any): any {
@@ -67,16 +70,6 @@ export class TillService {
     } else {
       return localStorage.getItem(key) || '';
     }
-  }
-
-  getUniqueId(parts: number): string {
-    const stringArr = [];
-    for (let i = 0; i < parts; i++) {
-      // tslint:disable-next-line:no-bitwise
-      const S4 = (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
-      stringArr.push(S4);
-    }
-    return stringArr.join('-');
   }
 
   createTransactionBody(transactionItems: any, payMethods: any, discountArticleGroup: any, redeemedLoyaltyPoints: number): any {
@@ -175,7 +168,7 @@ export class TillService {
         i.nDiscount,
 
         i.redeemedLoyaltyPoints,
-        i.sUniqueIdentifier || this.getUniqueId(4),
+        i.sUniqueIdentifier || this.stringService.getUniqueId(4),
         i.paymentAmount
       )
     });
