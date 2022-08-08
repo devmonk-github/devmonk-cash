@@ -89,8 +89,20 @@ export class ActivityDetailsComponent implements OnInit {
     // this.transaction = this.dialogRef.context.transaction;
   }
   
-  changeStatusForAll(){
+  changeStatusForAll(type: string){
+    this.activityItems.forEach((obj: any)=>{
+      obj.eRepairStatus = type;
+      this.updateActivityItem(obj)
+    })
+  }
 
+  updateActivityItem(item: any) {
+    item.iBusinessId = this.iBusinessId;
+    this.apiService.putNew('cashregistry', '/api/v1/activities/items/' + item?._id , item)
+    .subscribe((result: any) => {
+    }, 
+    (error) => {
+    })
   }
   
   getBusinessLocations() {
@@ -246,6 +258,9 @@ export class ActivityDetailsComponent implements OnInit {
       this.activityItems = result.data[0].result;
       this.transactions = [];
       for(const obj of this.activityItems){
+        for(const item of obj.receipts){
+          if(!item.bRefund) item.eRepairStatus = obj.eRepairStatus;
+        }
         this.transactions = this.transactions.concat(obj.receipts);
       }
       for(let i = 0; i < this.transactions.length; i++){
