@@ -105,7 +105,7 @@ export class ActivityItemsComponent implements OnInit {
   }
 
   openActivities(activity: any) {
-    this.dialogService.openModal(ActivityDetailsComponent, { cssClass: 'w-fullscreen', context: { activity, items: true } })
+    this.dialogService.openModal(ActivityDetailsComponent, { cssClass: 'w-fullscreen', context: { activity, items: true, from: 'activity-items' } })
       .instance.close.subscribe((result: any) => { 
         if (result) this.routes.navigate(['business/till']);
       });

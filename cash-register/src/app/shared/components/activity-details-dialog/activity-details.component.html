@@ -55,7 +55,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-9">
+            <div *ngIf="from == 'activity-items'" class="col-9">
                 <h4>Activities</h4>
                 <div class="accordion" id="kt_accordion_1">
                     <div class="accordion-item" *ngFor="let activity of activityItems; index as index">
@@ -466,7 +466,7 @@
         </div>
 
     </div>
-    <div class="card-body row">
+    <div *ngIf="from == 'services'" class="card-body row">
         <div class="col-md-12">
             <h3 class="fw-bolder mb-3">
                 <span>{{ "ITEMS" | translate }}</span>
@@ -476,7 +476,7 @@
                     <span>{{ "STATUS" | translate }} : </span>
                 </div>
                 <div class="col-md-4">
-                    <select name="status" id="status" class="form-select" [(ngModel)]="activity.eRepairStatus" (click)="changeStatusForAll()">
+                    <select name="status" id="status" class="form-select" [(ngModel)]="activity.eRepairStatus" (ngModelChange)="changeStatusForAll(activity.eRepairStatus)">
                         <option *ngFor="let type of repairStatus" [value]="type">{{type}}</option>
                     </select>
                 </div>
@@ -488,6 +488,8 @@
                             <tr class="fw-bold fs-6 text-gray-400">
                                 <td class="text-muted">{{'IMAGE' | translate}}</td>
                                 <td class="text-muted">{{'PRODUCT' | translate}}</td>
+                                <td class="text-muted">{{'STATUS' | translate}}</td>
+                                <td class="text-muted">{{'CUSTOMER' | translate}}</td>
                                 <td class="text-muted">{{'PRICE' | translate}}</td>
                                 <td class="text-muted">{{'QUANTITY' | translate}}</td>
                                 <td class="text-muted">{{'DISCOUNT_PER_ITEM' | translate}}</td>
@@ -521,13 +523,20 @@
                                         </div>
                                     </div>
                                 </td>
+                                <td *ngIf="!item.bRefund">
+                                    <select name="status" id="status" class="form-select" [(ngModel)]="item.eRepairStatus" (ngModelChange)="updateActivityItem(item)">
+                                        <option *ngFor="let type of repairStatus" [value]="type">{{type}}</option>
+                                    </select>
+                                </td>
+                                <td *ngIf="item.bRefund"></td>
                                 <td>{{item.nPurchasePrice}}</td>
+                                <td>{{item.customer.sFirstName}} {{item.customer.sLastName}}</td>
                                 <td>
                                     <div class="d-flex align-items-stretch flex-shrink-0 me-sm-2">
                                         {{item.nQuantity}}
                                     </div>
                                     <div class="d-flex align-items-stretch flex-shrink-0 me-sm-2"
-                                        *ngIf="showDetails && userDetail">
+                                        *ngIf="showDetails && userDetail && item.iBusinessProductId">
                                         <div class="cursor-pointer my-auto fs-5 fw-bolder text-gray-700 show menu-dropdown"
                                             data-kt-menu-trigger="click" data-kt-menu-attach="parent"
                                             data-kt-menu-placement="bottom-start" data-kt-menu-flip="bottom">

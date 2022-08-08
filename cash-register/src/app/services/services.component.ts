@@ -206,7 +206,7 @@ export class ServicesComponent implements OnInit {
   }
 
   openActivities(activity: any) {
-    this.dialogService.openModal(ActivityDetailsComponent, { cssClass: 'w-fullscreen', context: { activity, items: false, webOrders: this.webOrders } })
+    this.dialogService.openModal(ActivityDetailsComponent, { cssClass: 'w-fullscreen', context: { activity, items: false, webOrders: this.webOrders, from: 'services' } })
       .instance.close.subscribe(result => {
         if(this.webOrders && result) this.routes.navigate(['business/till']);
         // console.log('I am closing this modal');
