@@ -489,6 +489,7 @@
                                 <td class="text-muted">{{'IMAGE' | translate}}</td>
                                 <td class="text-muted">{{'PRODUCT' | translate}}</td>
                                 <td class="text-muted">{{'STATUS' | translate}}</td>
+                                <td class="text-muted">{{'CUSTOMER' | translate}}</td>
                                 <td class="text-muted">{{'PRICE' | translate}}</td>
                                 <td class="text-muted">{{'QUANTITY' | translate}}</td>
                                 <td class="text-muted">{{'DISCOUNT_PER_ITEM' | translate}}</td>
@@ -529,6 +530,7 @@
                                 </td>
                                 <td *ngIf="item.bRefund"></td>
                                 <td>{{item.nPurchasePrice}}</td>
+                                <td>{{item.customer.sFirstName}} {{item.customer.sLastName}}</td>
                                 <td>
                                     <div class="d-flex align-items-stretch flex-shrink-0 me-sm-2">
                                         {{item.nQuantity}}

@@ -83,7 +83,7 @@ export class ActivityDetailsComponent implements OnInit {
     } else {
       this.fetchTransactionItems();
     }
-    if(this.activity?.iCustomerId) this.fetchCustomer(this.activity.iCustomerId);
+    if(this.activity?.iCustomerId) this.fetchCustomer(this.activity.iCustomerId, -1);
     this.getBusinessLocations();
     // this.itemType = this.dialogRef.context.itemType;
     // this.transaction = this.dialogRef.context.transaction;
@@ -239,10 +239,12 @@ export class ActivityDetailsComponent implements OnInit {
       })
   }
 
-  fetchCustomer(customerId: any) {
+  fetchCustomer(customerId: any, index: number) {
     this.apiService.getNew('customer', `/api/v1/customer/${customerId}?iBusinessId=${this.iBusinessId}`).subscribe(
       (result: any) => {
-        this.customer = result;
+        console.log(result);
+        if(index > -1) this.transactions[index].customer = result;
+        else this.customer = result;
         // this.close({ action: true });
       },
       (error: any) => {
@@ -269,6 +271,7 @@ export class ActivityDetailsComponent implements OnInit {
         this.totalPrice += obj.nPaymentAmount;
         this.quantity += obj.bRefund ? (- obj.nQuantity) : obj.nQuantity
         if(obj.iStockLocationId) this.setSelectedBusinessLocation(obj.iStockLocationId, i)
+        this.fetchCustomer(obj.iCustomerId, i);
       }
       setTimeout(() => {
         MenuComponent.reinitialization();
