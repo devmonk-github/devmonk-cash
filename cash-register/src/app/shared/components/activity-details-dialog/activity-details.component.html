@@ -522,7 +522,11 @@
                                         </div>
                                     </div>
                                 </td>
-                                <td *ngIf="!item.bRefund">{{item.eRepairStatus}}</td>
+                                <td *ngIf="!item.bRefund">
+                                    <select name="status" id="status" class="form-select" [(ngModel)]="item.eRepairStatus" (ngModelChange)="updateActivityItem(item)">
+                                        <option *ngFor="let type of repairStatus" [value]="type">{{type}}</option>
+                                    </select>
+                                </td>
                                 <td *ngIf="item.bRefund"></td>
                                 <td>{{item.nPurchasePrice}}</td>
                                 <td>
