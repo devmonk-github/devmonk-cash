@@ -73,6 +73,15 @@ module.exports = {
     }),
     new ModuleFederationPlugin({
       // For remotes (please adjust)
+      name: "fiskalySettings",
+      filename: "fiskaly-settings.js",
+      exposes: {
+        './FiskalySettingsModule': './src/app/fiskaly-settings/fiskaly-settings.module.ts',
+      },
+      shared: share(sharedLibrary)
+    }),
+    new ModuleFederationPlugin({
+      // For remotes (please adjust)
       name: "workStation",
       filename: "work-station.js",
       exposes: {
