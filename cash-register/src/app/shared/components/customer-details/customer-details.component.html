@@ -167,48 +167,8 @@
                 <app-pn-tabs class="tab-content" addClass="nav-fill" addChildLinkClass="text-gray-600"
                     (activeTabChanged)="activeTabsChanged($event)">
                     <div class="tab-gap"></div>
-                    <app-pn-tab tabTitle="{{ tabTitles[0] | translate}}" #statistics>
-                        <div class="row mb-5">
-                            <div id="statistics-chart" class="col-12">
-                                <apx-chart [series]="statisticsChartOptions.series"
-                                    [chart]="statisticsChartOptions.chart"
-                                    [dataLabels]="statisticsChartOptions.dataLabels"
-                                    [plotOptions]="statisticsChartOptions.plotOptions"
-                                    [yaxis]="statisticsChartOptions.yaxis" [xaxis]="statisticsChartOptions.xaxis">
-                                </apx-chart>
-                            </div>
-                        </div>
-                        <div class="row mb-5">
-                            <div class="col-6">
-                                <table class="table table-hover table-rounded table-striped border gs-7">
-                                    <thead>
-                                        <tr class="fw-bold fs-6 text-gray-800 border-bottom-2 border-gray-200">
-                                            <th>{{ 'Employee Name' }}</th>
-                                            <th>{{ 'Revenue' }}</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td colspan="2" class="text-center">No Records Found</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                            <div class="col-6">
-                                <div id="paymentMethodsChart">
-                                    <apx-chart [series]="paymentMethodsChartOptions.series"
-                                        [chart]="paymentMethodsChartOptions.chart"
-                                        [labels]="paymentMethodsChartOptions.labels"
-                                        [responsive]="paymentMethodsChartOptions.responsive"
-                                        [legend]="paymentMethodsChartOptions.legend"
-                                        [title]="paymentMethodsChartOptions.title"
-                                        [dataLabels]="paymentMethodsChartOptions.options.dataLabels">
-                                    </apx-chart>
-                                </div>
-                            </div>
-                        </div>
-                    </app-pn-tab>
-                    <app-pn-tab tabTitle="{{ tabTitles[1] | translate}}" #purchases>
+
+                    <app-pn-tab tabTitle="{{ tabTitles[0] | translate}}" #purchases>
                         <table class="table table-hover table-rounded table-striped border gs-7">
                             <thead>
                                 <tr class="fw-bold fs-6 text-gray-800 border-bottom-2 border-gray-200">
@@ -241,7 +201,7 @@
                             </tbody>
                         </table>
                     </app-pn-tab>
-                    <app-pn-tab tabTitle="{{ tabTitles[2] | translate}}" #activities>
+                    <app-pn-tab tabTitle="{{ tabTitles[1] | translate}}" #activities>
                         <table class="table table-hover table-rounded table-striped border gs-7">
                             <thead>
                                 <tr class="fw-bold fs-6 text-gray-800 border-bottom-2 border-gray-200">
@@ -275,7 +235,7 @@
                             </tbody>
                         </table>
                     </app-pn-tab>
-                    <app-pn-tab tabTitle="{{ tabTitles[3] | translate}}" #activityItems>
+                    <app-pn-tab tabTitle="{{ tabTitles[2] | translate}}" #activityItems>
                         <table class="table table-hover table-rounded table-striped border gs-7">
                             <thead>
                                 <tr class="fw-bold fs-6 text-gray-800 border-bottom-2 border-gray-200">
@@ -309,7 +269,55 @@
                             </tbody>
                         </table>
                     </app-pn-tab>
+                    <app-pn-tab tabTitle="{{ tabTitles[3] | translate}}" #statistics>
+                        <div class="row mb-5">
+                            <div id="statistics-chart" class="col-12">
+                                <apx-chart [series]="statisticsChartOptions.series"
+                                    [chart]="statisticsChartOptions.chart"
+                                    [dataLabels]="statisticsChartOptions.dataLabels"
+                                    [plotOptions]="statisticsChartOptions.plotOptions"
+                                    [yaxis]="statisticsChartOptions.yaxis" [xaxis]="statisticsChartOptions.xaxis"
+                                    [colors]="statisticsChartOptions.colors">
+                                </apx-chart>
+                            </div>
+                        </div>
+                        <div class="row mb-5">
+                            <div class="col-6">
+                                <table class="table table-hover table-rounded table-striped border gs-7">
+                                    <thead>
+                                        <tr class="fw-bold fs-6 text-gray-800 border-bottom-2 border-gray-200">
+                                            <th>{{ 'Employee Name' }}</th>
+                                            <th>{{ 'Revenue' }}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
 
+                                        <tr>
+                                            <td>Alex Neil</td>
+                                            <td>250</td>
+                                        </tr>
+                                        <tr>
+                                            <td>John Cena</td>
+                                            <td>190</td>
+                                        </tr>
+
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="col-6">
+                                <div id="paymentMethodsChart">
+                                    <apx-chart [series]="paymentMethodsChartOptions.series"
+                                        [chart]="paymentMethodsChartOptions.chart"
+                                        [labels]="paymentMethodsChartOptions.labels"
+                                        [responsive]="paymentMethodsChartOptions.responsive"
+                                        [legend]="paymentMethodsChartOptions.legend"
+                                        [title]="paymentMethodsChartOptions.title"
+                                        [dataLabels]="paymentMethodsChartOptions.options.dataLabels">
+                                    </apx-chart>
+                                </div>
+                            </div>
+                        </div>
+                    </app-pn-tab>
                     <app-pn-tab tabTitle="{{ tabTitles[4] | translate}}" #general>
                         General
                     </app-pn-tab>
