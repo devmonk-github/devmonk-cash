@@ -23,6 +23,7 @@ export interface BarChartOptions {
   plotOptions: ApexPlotOptions;
   yaxis: ApexYAxis;
   xaxis: ApexXAxis;
+  colors: any
 };
 
 export interface PieChartOptions {
@@ -143,10 +144,10 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
   ];
 
   tabTitles: any = [
-    'Statistics',
     'Purchases',
     'Activities',
     'Items per visit',
+    'Statistics',
     'General'
   ];
 
@@ -164,10 +165,10 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
     { type: "Special orders", value: 1 },
     { type: "Shop purchase", value: 12 },
     { type: "Quotation", value: 1 },
-    { type: "Webshop", value: 48 },
-    { type: "Refund", value: 0 },
-    { type: "Giftcard", value: 0 },
-    { type: "Gold purchase", value: 0 },
+    { type: "Webshop", value: 1 },
+    { type: "Refund", value: 1 },
+    { type: "Giftcard", value: 2 },
+    { type: "Gold purchase", value: 1 },
     { type: "Product reservation", value: 2 }
   ];
 
@@ -195,131 +196,10 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
       iCustomerId: this.customer._id
     }
 
-    this.statisticsChartOptions = {
-      series: [
-        {
-          name: "Cash Flow",
-          data: [
-            1.45,
-            5.42,
-            5.9,
-            -0.42,
-            -12.6,
-            -18.1,
-            -18.2,
-            -14.16,
-            -11.1,
-            -6.09,
-            0.34,
-            3.88,
-            13.07,
-            5.8,
-            2,
-            7.37,
-            8.1,
-            13.57,
-            15.75,
-            17.1,
-            19.8,
-            -27.03,
-            -54.4,
-            -47.2,
-            -43.3,
-            -18.6,
-            -48.6,
-            -41.1,
-            -39.6,
-            -37.6,
-            -29.4,
-            -21.4,
-            -2.4
-          ]
-        }
-      ],
-      chart: {
-        type: "bar",
-        height: 350
-      },
-      plotOptions: {
-        bar: {
-          colors: {
-            ranges: [
-              {
-                from: -100,
-                to: -46,
-                color: "#F15B46"
-              },
-              {
-                from: -45,
-                to: 0,
-                color: "#FEB019"
-              }
-            ]
-          },
-          columnWidth: "80%"
-        }
-      },
-      dataLabels: {
-        enabled: false
-      },
-      yaxis: {
-        title: {
-          text: "Growth"
-        },
-        labels: {
-          formatter: function (y: any) {
-            return y.toFixed(0) + "%";
-          }
-        }
-      },
-      xaxis: {
-        type: "datetime",
-        categories: [
-          "2011-01-01",
-          "2011-02-01",
-          "2011-03-01",
-          "2011-04-01",
-          "2011-05-01",
-          "2011-06-01",
-          "2011-07-01",
-          "2011-08-01",
-          "2011-09-01",
-          "2011-10-01",
-          "2011-11-01",
-          "2011-12-01",
-          "2012-01-01",
-          "2012-02-01",
-          "2012-03-01",
-          "2012-04-01",
-          "2012-05-01",
-          "2012-06-01",
-          "2012-07-01",
-          "2012-08-01",
-          "2012-09-01",
-          "2012-10-01",
-          "2012-11-01",
-          "2012-12-01",
-          "2013-01-01",
-          "2013-02-01",
-          "2013-03-01",
-          "2013-04-01",
-          "2013-05-01",
-          "2013-06-01",
-          "2013-07-01",
-          "2013-08-01",
-          "2013-09-01"
-        ],
-        labels: {
-          show: false,
-          rotate: -90
-        }
-      }
-    };
-
     this.activitiesChartOptions = {
       series: this.aActivityTitles.map((el: any) => el.value),
       chart: {
-        width: '90%',
+        width: '75%',
         type: "pie"
       },
       title: {
@@ -339,35 +219,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
       labels: this.aActivityTitles.map((el: any) => el.type + " (" + el.value + ") "),
     };
 
-    this.paymentMethodsChartOptions = {
-      series: this.aPaymentMethodTitles.map((el: any) => el.value),
-      chart: {
-        width: '100%',
-        type: "pie"
-      },
-      title: {
-        text: "Payment Methods",
-        style: {
-          fontWeight: 'bold',
-        },
-      },
-      legend: {
-        position: 'left',
-        itemMargin: {
-          horizontal: 15,
-          vertical: 5
-        },
-        fontWeight: 600,
-      },
-      labels: this.aPaymentMethodTitles.map((el: any) => el.type),
-      options: {
-        dataLabels: {
-          formatter: function (val: any) {
-            return "\u20AC" + Number(val).toFixed(2);
-          },
-        }
-      }
-    };
+    this.loadStatisticsTabData();
   }
 
   ngAfterViewInit() {
@@ -506,7 +358,110 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
       case this.tabTitles[2]:
         if (!this.aActivityItems.length) this.loadActivityItems();
         break;
+      case this.tabTitles[3]:
+        this.loadStatisticsTabData();
+        break;
     }
+  }
+
+  loadStatisticsTabData() {
+
+    this.statisticsChartOptions = {
+      series: [
+        {
+          name: "Watches",
+          data: [
+            10.45,
+          ]
+        },
+        {
+          name: "Jewellery",
+          data: [
+            15.45,
+          ]
+        },
+        {
+          name: "Repair",
+          data: [
+            25.45,
+          ]
+        },
+        {
+          name: "Giftcard",
+          data: [
+            5.45,
+          ]
+        },
+        {
+          name: "Gold purchase",
+          data: [
+            65.45,
+          ]
+        },
+        {
+          name: "Discounts",
+          data: [
+            -25.45,
+          ]
+        }
+      ],
+      colors: ['#2E93fA', '#66DA26', '#546E7A', '#E91E63', '#FF9800'],
+      chart: {
+        type: "bar",
+        height: 350
+      },
+      dataLabels: {
+        enabled: true
+      },
+      yaxis: {
+        title: {
+          text: "Revenue"
+        },
+        labels: {
+          formatter: function (y: any) {
+            return "\u20AC" + y.toFixed(0)
+          }
+        }
+      },
+      xaxis: {
+        categories: [
+          "Toady",
+        ],
+        labels: {
+          rotate: -90
+        }
+      }
+    };
+
+    this.paymentMethodsChartOptions = {
+      series: this.aPaymentMethodTitles.map((el: any) => el.value),
+      chart: {
+        width: '100%',
+        type: "pie"
+      },
+      title: {
+        text: "Payment Methods",
+        style: {
+          fontWeight: 'bold',
+        },
+      },
+      legend: {
+        position: 'left',
+        itemMargin: {
+          horizontal: 15,
+          vertical: 5
+        },
+        fontWeight: 600,
+      },
+      labels: this.aPaymentMethodTitles.map((el: any) => el.type),
+      options: {
+        dataLabels: {
+          formatter: function (val: any) {
+            return "\u20AC" + Number(val).toFixed(2);
+          },
+        }
+      }
+    };
   }
 
 }
