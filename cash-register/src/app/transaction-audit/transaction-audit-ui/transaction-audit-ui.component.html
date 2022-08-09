@@ -119,7 +119,7 @@
                             <div class="col-md-3 mt-5">
                                 <button type="button" class="btn btn-primary" data-kt-roles-modal-action="submit"
                                     (click)="fetchStatistics()" [class.disabled]="bStatisticLoading">
-                                    <span class="indicator-label">{{ "APPLY_FILTER" | translate}}</span>
+                                    <span class="indicator-label">{{ "APPLY_FILTER" | translate}}- {{bStatisticLoading}}</span>
                                 </button>
                             </div>
 
@@ -599,22 +599,19 @@
                                 <p> {{ 'VAT_RATES' | translate}} </p>
                             
                                 <div class="card-body">
-                                    <div class="table-responsive" *ngFor="let oStatistic of aStatistic">
+                                    <div class="table-responsive" *ngFor="let oStatistic of aStatistic; let i = index">
                                         <table
                                             class="table table-rounded border border-gray-300 table-row-bordered table-row-gray-300 gy-5 gs-5 text-gray-600">
                                             <thead>
                                                 <tr>
-                                                    <th><span class="">{{ 'ACTION' | translate}}</span></th>
-                                                    <th class="w-150px"><span class="">{{ "WEB_SHOP" |
-                                                            translate}}</span>
-                                                    </th>
+                                                    <th><span class="">{{ 'VAT_TYPE' | translate}}</span></th>
                                                     <th class="w-150px"><span class="">{{ "PRICE_WITH_VAT" |
                                                             translate}}</span></th>
                                                     <th class="w-150px"><span class="">{{ "PURCHASE_PRICE" |
                                                             translate}}</span></th>
                                                     <th class="w-150px"><span class="">{{ "GROSS_PROFIT" |
                                                             translate}}</span></th>
-                                                    <th class="w-150px"><span class="">{{"MARGIN" | translate}}</span>
+                                                    <th class="w-150px"><span class="">{{"VAT_AMOUNT" | translate}}</span>
                                                     </th>
                                                 </tr>
                                             </thead>
@@ -622,19 +619,15 @@
                                                 <td style="padding:0" colspan="6">
                                                     <table class="table table-row-bordered table-row-gray-300 gy-5 gs-5 mb-0 text-gray-600 fw-bold border"
                                                         *ngFor="let oVatRate of oStatistic.aVatRates; let vatRateIndex = index">
-                                                        <tr>
-                                                            <td><span class="">{{ 'ACTION' | translate}}</span></td>
-                                                            <td class="w-150px"><span class="">{{ "WEB_SHOP" |
-                                                                    translate}}</span>
-                                                            </td>
-                                                            <td class="w-150px"><span class="">{{ "PRICE_WItd_VAT" |
-                                                                    translate}}</span></td>
-                                                            <td class="w-150px"><span class="">{{ "PURCHASE_PRICE" |
-                                                                    translate}}</span></td>
-                                                            <td class="w-150px"><span class="">{{ "GROSS_PROFIT" |
-                                                                    translate}}</span></td>
-                                                            <td class="w-150px"><span class="">{{"MARGIN" | translate}}</span>
-                                                            </td>
+                                                        <tr><td class="text-center fw-bolder bg-gray-100" colspan="5">
+                                                            {{"VAT_RATE"}} - {{oVatRate?.nVat}}
+                                                        </td></tr>
+                                                        <tr *ngFor="let oVatMethod of aVatRateMethod">
+                                                            <td ><span class="">{{ oVatMethod }}</span></td>
+                                                            <td class="w-150px"><span class="">{{ oVatRate[oVatMethod].nProfit   }}</span></td>
+                                                            <td class="w-150px"><span class="">{{ oVatRate[oVatMethod].nPurchaseValue }}</span></td>
+                                                            <td class="w-150px"><span class="">{{ oVatRate[oVatMethod].nTotalRevenue }}</span></td>
+                                                            <td class="w-150px"><span class="">{{ oVatRate[oVatMethod].nVatAmount }}</span></td>
                                                         </tr>
                                                     </table>
                                                 </td>

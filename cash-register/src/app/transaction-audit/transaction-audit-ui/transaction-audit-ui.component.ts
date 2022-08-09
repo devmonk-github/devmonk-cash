@@ -71,6 +71,8 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
     { sKey: 'cash-registry', sValue: this.translate.instant('CASH_REGISTER') },
   ];
 
+  aVatRateMethod: any = ['oShopPurchase', 'oWebShop', 'oDeliverySupplier', 'oDeliveryRetailer', 'oSalesOrderSupplier']
+
   aDisplayMethod: any = [
     {
       sKey: 'revenuePerBusinessPartner',
@@ -188,15 +190,15 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
       },
     }
     this.getStatisticSubscription = this.apiService.postNew('cashregistry', `/api/v1/statistics/get`, oBody).subscribe((result: any) => {
+      this.bStatisticLoading = false;
       if (result?.data) {
         if (result.data?.aStatistic?.length) this.aStatistic = result.data.aStatistic;
         if (this.aStatistic?.length) this.nCashInTill = this.aStatistic[0].overall[0]?.nTotalRevenue || 0;
         if (result.data?.aPaymentMethods?.length) this.aPaymentMethods = result.data.aPaymentMethods;
       }
-      this.bStatisticLoading = false;
     }, (error) => {
-      console.log('error: ', error);
       this.bStatisticLoading = false;
+      console.log('error: ', error);
     })
   }
 
@@ -221,16 +223,16 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
     console.log('fetchStatistics oBody: ', oBody);
     this.bStatisticLoading = true;
     this.statisticAuditSubscription = this.apiService.postNew('cashregistry', `/api/v1/statistics/transaction/audit`, oBody).subscribe((result: any) => {
+      this.bStatisticLoading = false;
       if (result?.data) {
         if (result.data?.oTransactionAudit?.length) this.aStatistic = result.data.oTransactionAudit;
-        if (this.aStatistic?.length) this.nCashInTill = this.aStatistic[0].overall[0].nTotalRevenue;
+        if (this.aStatistic?.length && this.aStatistic[0]?.overall?.length) this.nCashInTill = this.aStatistic[0].overall[0].nTotalRevenue;
         if (result.data?.aPaymentMethods?.length) this.aPaymentMethods = result.data.aPaymentMethods;
       }
-      this.bStatisticLoading = false;
     }, (error) => {
+      this.bStatisticLoading = false;
       this.aStatistic = [];
       this.aPaymentMethods = [];
-      this.bStatisticLoading = false;
     })
     this.getGreenRecords();
   }

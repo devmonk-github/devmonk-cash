@@ -16,6 +16,7 @@ export const environment = {
   apiBasePath: 'http://localhost',
   apiURL: 'http://localhost:3000',
   oldPlatformUrl: `http://localhost:3000/`, // https://kassa.prismanote.com,
+  fiskalyURL: 'https://kassensichv-middleware.fiskaly.com/api/v2',
 };
 
 /*
