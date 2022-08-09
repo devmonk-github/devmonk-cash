@@ -1,8 +1,39 @@
-import { AfterViewInit, ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { DialogComponent } from '../../service/dialog';
 import { ViewContainerRef } from '@angular/core';
 import { ApiService } from 'src/app/shared/service/api.service';
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
+import {
+  ApexAxisChartSeries,
+  ApexChart,
+  ApexDataLabels,
+  ApexPlotOptions,
+  ApexYAxis,
+  ApexXAxis,
+  ChartComponent,
+  ApexNonAxisChartSeries,
+  ApexResponsive,
+  ApexLegend
+} from "ng-apexcharts";
+
+export interface BarChartOptions {
+  series: ApexAxisChartSeries;
+  chart: ApexChart;
+  dataLabels: ApexDataLabels;
+  plotOptions: ApexPlotOptions;
+  yaxis: ApexYAxis;
+  xaxis: ApexXAxis;
+};
+
+export interface PieChartOptions {
+  series: ApexNonAxisChartSeries;
+  chart: ApexChart;
+  responsive: ApexResponsive[];
+  labels: any;
+  legend: ApexLegend;
+  title: any;
+  options: any
+};
 
 @Component({
   selector: 'app-customer-details',
@@ -112,13 +143,41 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
   ];
 
   tabTitles: any = [
+    'Statistics',
     'Purchases',
     'Activities',
     'Items per visit',
-    'Statistics',
     'General'
-  ]
+  ];
 
+  @ViewChild("statistics-chart") statisticsChart !: ChartComponent;
+  public statisticsChartOptions !: Partial<BarChartOptions> | any;
+
+  @ViewChild("activities-chart") activitiesChart !: ChartComponent;
+  public activitiesChartOptions !: Partial<PieChartOptions> | any;
+
+  @ViewChild("paymentMethodsChart") paymentMethodsChart !: ChartComponent;
+  public paymentMethodsChartOptions !: Partial<PieChartOptions> | any;
+
+  aActivityTitles: any = [
+    { type: "Repairs", value: 7 },
+    { type: "Special orders", value: 1 },
+    { type: "Shop purchase", value: 12 },
+    { type: "Quotation", value: 1 },
+    { type: "Webshop", value: 48 },
+    { type: "Refund", value: 0 },
+    { type: "Giftcard", value: 0 },
+    { type: "Gold purchase", value: 0 },
+    { type: "Product reservation", value: 2 }
+  ];
+
+  aPaymentMethodTitles: any = [
+    { type: "Card", value: 7 },
+    { type: "Cash", value: 10 },
+    { type: "Paylater", value: 12 },
+    { type: "Bankpayment", value: 42 },
+    { type: "Expected Payment", value: 22 },
+  ];
 
   constructor(
     private viewContainerRef: ViewContainerRef,
@@ -135,6 +194,180 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
     this.requestParams.oFilterBy = {
       iCustomerId: this.customer._id
     }
+
+    this.statisticsChartOptions = {
+      series: [
+        {
+          name: "Cash Flow",
+          data: [
+            1.45,
+            5.42,
+            5.9,
+            -0.42,
+            -12.6,
+            -18.1,
+            -18.2,
+            -14.16,
+            -11.1,
+            -6.09,
+            0.34,
+            3.88,
+            13.07,
+            5.8,
+            2,
+            7.37,
+            8.1,
+            13.57,
+            15.75,
+            17.1,
+            19.8,
+            -27.03,
+            -54.4,
+            -47.2,
+            -43.3,
+            -18.6,
+            -48.6,
+            -41.1,
+            -39.6,
+            -37.6,
+            -29.4,
+            -21.4,
+            -2.4
+          ]
+        }
+      ],
+      chart: {
+        type: "bar",
+        height: 350
+      },
+      plotOptions: {
+        bar: {
+          colors: {
+            ranges: [
+              {
+                from: -100,
+                to: -46,
+                color: "#F15B46"
+              },
+              {
+                from: -45,
+                to: 0,
+                color: "#FEB019"
+              }
+            ]
+          },
+          columnWidth: "80%"
+        }
+      },
+      dataLabels: {
+        enabled: false
+      },
+      yaxis: {
+        title: {
+          text: "Growth"
+        },
+        labels: {
+          formatter: function (y: any) {
+            return y.toFixed(0) + "%";
+          }
+        }
+      },
+      xaxis: {
+        type: "datetime",
+        categories: [
+          "2011-01-01",
+          "2011-02-01",
+          "2011-03-01",
+          "2011-04-01",
+          "2011-05-01",
+          "2011-06-01",
+          "2011-07-01",
+          "2011-08-01",
+          "2011-09-01",
+          "2011-10-01",
+          "2011-11-01",
+          "2011-12-01",
+          "2012-01-01",
+          "2012-02-01",
+          "2012-03-01",
+          "2012-04-01",
+          "2012-05-01",
+          "2012-06-01",
+          "2012-07-01",
+          "2012-08-01",
+          "2012-09-01",
+          "2012-10-01",
+          "2012-11-01",
+          "2012-12-01",
+          "2013-01-01",
+          "2013-02-01",
+          "2013-03-01",
+          "2013-04-01",
+          "2013-05-01",
+          "2013-06-01",
+          "2013-07-01",
+          "2013-08-01",
+          "2013-09-01"
+        ],
+        labels: {
+          show: false,
+          rotate: -90
+        }
+      }
+    };
+
+    this.activitiesChartOptions = {
+      series: this.aActivityTitles.map((el: any) => el.value),
+      chart: {
+        width: '90%',
+        type: "pie"
+      },
+      title: {
+        text: "Number of Activities (71)",
+        style: {
+          fontWeight: 'bold',
+        },
+      },
+      legend: {
+        position: 'left',
+        itemMargin: {
+          horizontal: 15,
+          vertical: 5
+        },
+        fontWeight: 600,
+      },
+      labels: this.aActivityTitles.map((el: any) => el.type + " (" + el.value + ") "),
+    };
+
+    this.paymentMethodsChartOptions = {
+      series: this.aPaymentMethodTitles.map((el: any) => el.value),
+      chart: {
+        width: '100%',
+        type: "pie"
+      },
+      title: {
+        text: "Payment Methods",
+        style: {
+          fontWeight: 'bold',
+        },
+      },
+      legend: {
+        position: 'left',
+        itemMargin: {
+          horizontal: 15,
+          vertical: 5
+        },
+        fontWeight: 600,
+      },
+      labels: this.aPaymentMethodTitles.map((el: any) => el.type),
+      options: {
+        dataLabels: {
+          formatter: function (val: any) {
+            return "\u20AC" + Number(val).toFixed(2);
+          },
+        }
+      }
+    };
   }
 
   ngAfterViewInit() {

@@ -38,7 +38,7 @@ import { CardsComponent } from "./components/cards-dialog/cards-dialog.component
 import { MorePaymentsDialogComponent } from "./components/more-payments-dialog/more-payments-dialog.component";
 import { TerminalDialogComponent } from "./components/terminal-dialog/terminal-dialog.component";
 import { AddFavouritesComponent } from "./components/add-favourites/favourites.component";
-
+import { NgApexchartsModule } from "ng-apexcharts";
 @NgModule({
   declarations: [
     CustomerDialogComponent,
@@ -76,7 +76,8 @@ import { AddFavouritesComponent } from "./components/add-favourites/favourites.c
     ReactiveFormsModule,
     ToastModule.forRoot(),
     NgJsonEditorModule,
-    FileSaverModule
+    FileSaverModule,
+    NgApexchartsModule
   ],
   exports: [
     DialerComponent,
