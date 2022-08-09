@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { DialogComponent, DialogService } from '../../service/dialog';
 import { ViewContainerRef } from '@angular/core';
 import { ApiService } from 'src/app/shared/service/api.service';
-import { faTimes, faMessage, faEnvelope, faEnvelopeSquare, faUser, faReceipt, faEuro, faChevronRight } from "@fortawesome/free-solid-svg-icons";
+import { faTimes, faMessage, faEnvelope, faEnvelopeSquare, faUser, faReceipt, faEuro, faChevronRight, faDownload } from "@fortawesome/free-solid-svg-icons";
 import { PdfService } from '../../service/pdf.service';
 import { TransactionItemsDetailsComponent } from '../transaction-items-details/transaction-items-details.component';
 import { MenuComponent } from '../../_layout/components/common';
@@ -32,7 +32,9 @@ export class ActivityDetailsComponent implements OnInit {
   faReceipt = faReceipt;
   faEuro = faEuro;
   faChevronRight = faChevronRight;
+  faDownload = faDownload;
   repairStatus = ['info', 'processing', 'cancelled', 'inspection', 'completed'];
+  carriers = ['PostNL', 'DHL', 'DPD', 'bpost', 'other'];
   printOptions = ['Portrait', 'Landscape'];
   itemType = 'transaction';
   customerReceiptDownloading: Boolean = false;
@@ -89,9 +91,25 @@ export class ActivityDetailsComponent implements OnInit {
     // this.transaction = this.dialogRef.context.transaction;
   }
   
+  downloadOrder(){}
+  
   changeStatusForAll(type: string){
     this.activityItems.forEach((obj: any)=>{
       obj.eRepairStatus = type;
+      this.updateActivityItem(obj)
+    })
+  }
+
+  changeTrackingNumberForAll(sTrackingNumber: string){
+    this.activityItems.forEach((obj: any)=>{
+      obj.sTrackingNumber = sTrackingNumber;
+      this.updateActivityItem(obj)
+    })
+  }
+
+  changeCarrierForAll(eCarrier: string){
+    this.activityItems.forEach((obj: any)=>{
+      obj.eCarrier = eCarrier;
       this.updateActivityItem(obj)
     })
   }

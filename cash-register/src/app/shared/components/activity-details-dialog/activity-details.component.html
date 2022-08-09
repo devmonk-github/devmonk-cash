@@ -55,6 +55,55 @@
                     </div>
                 </div>
             </div>
+            <div *ngIf="from == 'services'" class="col-md-8 row">
+                <h3 class="fw-bolder mb-4">
+                    <span>{{ "OVERVIEW" | translate }}</span>
+                </h3>
+                <div class="col-md-8 row fw-bold gy-1">
+                    <div class="col-md-12">
+                        <select name="status" id="status" class="form-select" [(ngModel)]="activity.eRepairStatus" placeholder="Order status" (ngModelChange)="changeStatusForAll(activity.eRepairStatus)">
+                            <option *ngFor="let type of repairStatus" [value]="type">{{type}}</option>
+                        </select>
+                    </div>
+                    <label class="col-md-4 mt-5 text-muted">{{"SHIPPING_METHOD" | translate}} : </label>
+                    <div class="col-md-8 mt-5">
+                        <div class="text-gray-800">Completed</div>
+                    </div>
+                    <label class="col-md-4 mt-5 text-muted">{{"CARRIER" | translate}} : </label>
+                    <div class="col-md-8 mt-5">
+                        <select name="carrier" id="carrier" class="form-select" [(ngModel)]="activity.eCarrier" placeholder="carrier" (ngModelChange)="changeCarrierForAll(activity.eCarrier)">
+                            <option *ngFor="let carrier of carriers" [value]="carrier">{{carrier}}</option>
+                        </select>
+                    </div>
+                    <input type="text" name="activityName" [(ngModel)]="activity.sTrackingNumber" placeholder="Track and trace the order" class="form-control" (ngModelChange)="changeTrackingNumberForAll(activity.sTrackingNumber)">
+                </div>
+                <div class="col-md-4">
+                    <button class="btn btn-sm btn-secondary w-100 d-flex">
+                        <fa-icon [icon]="faDownload"></fa-icon>
+                        <label class="mx-auto">Receipt</label>
+                    </button>
+                    <button class="btn btn-sm btn-secondary w-100 d-flex">
+                        <fa-icon [icon]="faReceipt"></fa-icon>
+                        <label class="mx-auto">Print thermal</label>
+                    </button>
+                    <button class="btn btn-sm btn-secondary w-100 d-flex">
+                        <label class="mx-auto">Exchange</label>
+                    </button>
+                    <button class="btn btn-sm btn-secondary w-100 d-flex" (click)="downloadOrder()">
+                        <fa-icon [icon]="faDownload"></fa-icon>
+                        <label class="mx-auto">Download pdf</label>
+                    </button>
+                    <button class="btn btn-sm btn-primary w-100 d-flex mt-5">
+                        <label class="mx-auto">Sent to customer</label>
+                    </button>
+                    <button class="btn btn-sm btn-secondary w-100 d-flex">
+                        <label class="mx-auto">Ready to pick up</label>
+                    </button>
+                    <button class="btn btn-sm btn-secondary w-100 d-flex">
+                        <label class="mx-auto">Deliver</label>
+                    </button>
+                </div>
+            </div>
             <div *ngIf="from == 'activity-items'" class="col-9">
                 <h4>Activities</h4>
                 <div class="accordion" id="kt_accordion_1">
@@ -471,16 +520,6 @@
             <h3 class="fw-bolder mb-3">
                 <span>{{ "ITEMS" | translate }}</span>
             </h3>
-            <div class="row">
-                <div class="col-md-2">
-                    <span>{{ "STATUS" | translate }} : </span>
-                </div>
-                <div class="col-md-4">
-                    <select name="status" id="status" class="form-select" [(ngModel)]="activity.eRepairStatus" (ngModelChange)="changeStatusForAll(activity.eRepairStatus)">
-                        <option *ngFor="let type of repairStatus" [value]="type">{{type}}</option>
-                    </select>
-                </div>
-            </div>
             <div class="row fw-bold gy-1 d-flex flex-wrap py-5">
                 <div class="flex-equal me-5">
                     <table class="table table-hover table-rounded table-striped border gy-7 gs-7">
@@ -530,7 +569,7 @@
                                 </td>
                                 <td *ngIf="item.bRefund"></td>
                                 <td>{{item.nPurchasePrice}}</td>
-                                <td>{{item.customer.sFirstName}} {{item.customer.sLastName}}</td>
+                                <td>{{item?.customer?.sFirstName}} {{item?.customer?.sLastName}}</td>
                                 <td>
                                     <div class="d-flex align-items-stretch flex-shrink-0 me-sm-2">
                                         {{item.nQuantity}}
