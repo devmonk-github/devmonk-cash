@@ -65,6 +65,7 @@ export class WebOrderDetailsComponent implements OnInit {
 
   ngOnInit(): void {
     this.activity = this.dialogRef.context.activity;
+    if(this.activity?.iCustomerId) this.fetchCustomer(this.activity.iCustomerId, -1);
     this.getBusinessLocations()
     this.fetchTransactionItems();
   }
@@ -99,19 +100,19 @@ export class WebOrderDetailsComponent implements OnInit {
     this.apiService.postNew('cashregistry', url, this.requestParams).subscribe((result: any) => {
       this.activityItems = result.data[0].result;
       this.loading = false;
-      this.transactions = [];
-      for(const obj of this.activityItems){
-        for(const item of obj.receipts){
-          this.transactions.push({ ...item, ...obj });
-        }
-      }
-      for(let i = 0; i < this.transactions.length; i++){
-        const obj = this.transactions[i];
-        this.totalPrice += obj.nPaymentAmount;
-        this.quantity += obj.bRefund ? (- obj.nQuantity) : obj.nQuantity
-        if(obj.iStockLocationId) this.setSelectedBusinessLocation(obj.iStockLocationId, i)
-        this.fetchCustomer(obj.iCustomerId, i);
-      }
+      // this.transactions = [];
+      // for(const obj of this.activityItems){
+      //   for(const item of obj.receipts){
+      //     this.transactions.push({ ...item, ...obj });
+      //   }
+      // }
+      // for(let i = 0; i < this.transactions.length; i++){
+      //   const obj = this.transactions[i];
+      //   this.totalPrice += obj.nPaymentAmount;
+      //   this.quantity += obj.bRefund ? (- obj.nQuantity) : obj.nQuantity
+      //   if(obj.iStockLocationId) this.setSelectedBusinessLocation(obj.iStockLocationId, i)
+      //   this.fetchCustomer(obj.iCustomerId, i);
+      // }
       this.loading = false;
       setTimeout(() => {
         MenuComponent.reinitialization();

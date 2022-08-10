@@ -9,49 +9,39 @@
     </div>
     <div class="card-body">
         <div class="row">
-            <div class="col-3">
-                <h3>{{activity.sNumber}}</h3>
-                <div class="d-flex flex-wrap py-5 border">
-                    <div class="flex-equal me-5">
-                        Customer Details
-                        <div class="fs-6 ms-1">
-                            <div class="align-items-center">
-                                <div class="text-gray-600">{{customer?.sFirstName || ''}} {{customer?.sLastName || ''}}
-                                </div>
-                            </div>
+            <div class="col-md-4">
+                <h3 class="fw-bolder mb-4">
+                    <span>{{ "CUSTOMER" | translate }}</span>
+                </h3>
+                <div class="row fw-bold gy-1">
+                    <div class="col-md-12">
+                        <div class="text-gray-900 mt-2">{{ customer?.sFirstName }} {{
+                            customer?.sPrefix}} {{ customer?.sLastName }} </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mt-2 text-muted">Invoice Address</div>
+                        <div class="text-gray-800 mt-2">
+                            <span> {{ customer?.oInvoiceAddress?.sStreet }} {{
+                                customer?.oInvoiceAddress?.sHouseNumber }} </span>
+                            <span> {{ customer?.oInvoiceAddress?.sPostalCode }} {{
+                                customer?.oInvoiceAddress?.sCity }} </span>
+                            <span> {{ customer?.oInvoiceAddress?.sCountry }}</span>
                         </div>
-                        <div class="fs-6 ms-1">
-                            <div class="align-items-center">
-                                <div class="text-gray-600">{{customer?.sEmail || ''}}<a
-                                        href="mailto:{{customer?.sEmail}}">
-                                        <fa-icon [icon]="faEnvelope"></fa-icon>
-                                    </a></div>
-                            </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mt-2 text-muted">Shipping Address</div>
+                        <div class="text-gray-800 mt-2">
+                            <span> {{ customer?.oShippingAddress?.sStreet }} {{
+                                customer?.oShippingAddress?.sHouseNumber }} </span>
+                            <span> {{ customer?.oShippingAddress?.sPostalCode }} {{
+                                customer?.oShippingAddress?.sCity }} </span>
+                            <span> {{ customer?.oShippingAddress?.sCountry }}</span>
                         </div>
-                        <div class="fs-6 ms-1">
-                            <div class="align-items-center">
-                                {{'PHONE_MOBILE' | translate}}
-                                <span>{{customer?.oPhone?.sMobile}}
-                                    <i class="fab fa-whatsapp ms-1" *ngIf="customer?.oPhone?.bWhatsApp"
-                                        style="color: #1CB39B;"></i>
-                                </span>
-                            </div>
-                        </div>
-                        <div class="fs-6 ms-1">
-                            <div class="align-items-center">
-                                {{'PHONE_LANDLINE' | translate}}
-                                <span>{{customer?.oPhone?.sLandLine}}
-                                </span>
-                            </div>
-                        </div>
-
-                        <div class="fs-6 ms-1">
-                            <div class="align-items-center">
-                                {{'Advised by' | translate}}
-                                <span>{{customer?.oPhone?.sLandLine}}
-                                </span>
-                            </div>
-                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="text-gray-800 mt-2">{{ customer?.sEmail }}</div>
+                        <div class="text-gray-800 mt-2">{{ customer?.oPhone?.sMobile }} &nbsp; &nbsp; {{
+                            customer?.oPhone?.sLandLine }}</div>
                     </div>
                 </div>
             </div>
@@ -154,7 +144,7 @@
                                     </div>
                                 </td>
                                 <td *ngIf="!item.bRefund">
-                                    <select name="status" id="status" class="form-select" [(ngModel)]="item.eRepairStatus" (ngModelChange)="updateActivityItem(item)">
+                                    <select name="status" id="status" class="form-select" [(ngModel)]="item.eActivityItemStatus" (ngModelChange)="updateActivityItem(item)">
                                         <option *ngFor="let type of repairStatus" [value]="type">{{type}}</option>
                                     </select>
                                 </td>
@@ -194,7 +184,7 @@
                                 <td>{{item.nVatRate || 0}}</td>
                                 <td>{{item.nPriceIncVat || 0}}</td>
                             </tr>
-                            <tr *ngIf='transactions.length'>
+                            <tr *ngIf='activityItems.length'>
                                 <td>{{'TOTAL' | translate}}</td>
                                 <td></td>
                                 <td></td>
