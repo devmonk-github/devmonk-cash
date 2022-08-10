@@ -65,7 +65,30 @@ export class WebOrderDetailsComponent implements OnInit {
 
   ngOnInit(): void {
     this.activity = this.dialogRef.context.activity;
+    this.getBusinessLocations()
     this.fetchTransactionItems();
+  }
+
+  getBusinessLocations() {
+    this.apiService.getNew('core', '/api/v1/business/user-business-and-location/list')
+      .subscribe((result: any) => {
+        if (result.message == "success" && result?.data) {
+          this.userDetail = result.data;
+          if (this.userDetail.aBusiness) {
+            this.userDetail.aBusiness.map(
+              (business: any) => {
+                if (business._id == this.iBusinessId) {
+                  this.business = business;
+                }
+              })
+            }
+        }
+        setTimeout(() => {
+          MenuComponent.reinitialization();
+        }, 200);
+      }, (error) => {
+        console.log('error: ', error);
+      });
   }
 
   downloadOrder(){ }
@@ -90,6 +113,9 @@ export class WebOrderDetailsComponent implements OnInit {
         this.fetchCustomer(obj.iCustomerId, i);
       }
       this.loading = false;
+      setTimeout(() => {
+        MenuComponent.reinitialization();
+      }, 200);
     }, (error) => {
       this.loading = false;
       alert(error.error.message);
