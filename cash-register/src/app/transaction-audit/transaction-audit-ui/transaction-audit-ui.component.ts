@@ -15,6 +15,7 @@ const moment = (_moment as any).default ? (_moment as any).default : _moment;
 })
 export class TransactionAuditUiComponent implements OnInit, OnDestroy {
   iBusinessId: any = '';
+  sUserType: any = '';
   iLocationId: any = '';
   iStatisticId: any = '';
   aLocation: any = [];
@@ -71,7 +72,8 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
     { sKey: 'cash-registry', sValue: this.translate.instant('CASH_REGISTER') },
   ];
 
-  aVatRateMethod: any = ['oShopPurchase', 'oWebShop', 'oDeliverySupplier', 'oDeliveryRetailer', 'oSalesOrderSupplier']
+  aVatRateMethod: any = [
+    'oShopPurchase', 'oWebShop', 'oDeliverySupplier', 'oDeliveryRetailer', 'oSalesOrderSupplier']
 
   aDisplayMethod: any = [
     {
@@ -134,6 +136,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
     this.iBusinessId = localStorage.getItem('currentBusiness') || '';
     this.iLocationId = localStorage.getItem('currentLocation') || '';
     this.iWorkstationId = localStorage.getItem('currentWorkstation') || '';
+    this.sUserType = localStorage.getItem('type') || '';
     const _oUser = localStorage.getItem('currentUser');
     if (_oUser) this.oUser = JSON.parse(_oUser);
   }
