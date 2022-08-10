@@ -425,7 +425,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
       },
       xaxis: {
         categories: [
-          "Toady",
+          "Today",
         ],
         labels: {
           rotate: -90
