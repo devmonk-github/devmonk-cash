@@ -15,7 +15,7 @@ export class WebOrderDetailsComponent implements OnInit {
   dialogRef: DialogComponent;
   activityItems: Array<any> = [];
   business: any;
-  repairStatus = ['info', 'processing', 'cancelled', 'inspection', 'completed'];
+  repairStatus = ['info', 'processing', 'cancelled', 'inspection', 'completed', 'refund', 'refundInCashRegister'];
   carriers = ['PostNL', 'DHL', 'DPD', 'bpost', 'other'];
   faTimes = faTimes;
   faDownload = faDownload;
@@ -65,7 +65,7 @@ export class WebOrderDetailsComponent implements OnInit {
 
   ngOnInit(): void {
     this.activity = this.dialogRef.context.activity;
-    if(this.activity?.iCustomerId) this.fetchCustomer(this.activity.iCustomerId, -1);
+    if(this.activity?.iCustomerId) this.fetchCustomer(this.activity.iCustomerId, -1, -1);
     this.getBusinessLocations()
     this.fetchTransactionItems();
   }
@@ -101,11 +101,18 @@ export class WebOrderDetailsComponent implements OnInit {
       this.activityItems = result.data[0].result;
       this.loading = false;
       // this.transactions = [];
-      // for(const obj of this.activityItems){
-      //   for(const item of obj.receipts){
-      //     this.transactions.push({ ...item, ...obj });
-      //   }
-      // }
+      for(let i = 0; i < this.activityItems.length; i++){
+        // for(const item of obj.receipts){
+        const obj = this.activityItems[i];
+        for(let j = 0; j < obj.receipts.length; j++){
+          // this.transactions.push({ ...item, ...obj });
+            const item = obj.receipts[j];
+            this.totalPrice += item.nPaymentAmount;
+            this.quantity += item.bRefund ? (- item.nQuantity) : item.nQuantity
+            if(item.iStockLocationId) this.setSelectedBusinessLocation(item.iStockLocationId, i, j)
+            this.fetchCustomer(obj.iCustomerId, i, j);
+        }
+      }
       // for(let i = 0; i < this.transactions.length; i++){
       //   const obj = this.transactions[i];
       //   this.totalPrice += obj.nPaymentAmount;
@@ -124,11 +131,11 @@ export class WebOrderDetailsComponent implements OnInit {
     });
   }
 
-  setSelectedBusinessLocation(locationId: string, index: number) {
+  setSelectedBusinessLocation(locationId: string, parentIndex: number, index: number) {
     this.business.aInLocation.map(
       (location: any) => {
         if (location._id == locationId)
-          this.transactions[index].locationName = location.sName;
+          this.activityItems[parentIndex].receipts[index].locationName = location.sName;
       })
   }
 
@@ -151,11 +158,11 @@ export class WebOrderDetailsComponent implements OnInit {
   }
     
 
-  fetchCustomer(customerId: any, index: number) {
+  fetchCustomer(customerId: any, parentIndex: number, index: number) {
     this.apiService.getNew('customer', `/api/v1/customer/${customerId}?iBusinessId=${this.iBusinessId}`).subscribe(
       (result: any) => {
         console.log(result);
-        if(index > -1) this.transactions[index].customer = result;
+        if(index > -1) this.activityItems[parentIndex].receipts[index].customer = result;
         else this.customer = result;
         // this.close({ action: true });
       },
