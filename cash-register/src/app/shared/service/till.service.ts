@@ -5,6 +5,7 @@ import { TransactionItem } from 'src/app/till/models/transaction-item.model';
 import { Transaction } from 'src/app/till/models/transaction.model';
 import { ApiService } from './api.service';
 import * as _ from 'lodash';
+import { v4 as uuidv4 } from 'uuid';
 import { StringService } from './string.service';
 @Injectable({
   providedIn: 'root'
@@ -12,8 +13,7 @@ import { StringService } from './string.service';
 export class TillService {
 
   constructor(
-    private apiService: ApiService,
-    private stringService: StringService) { }
+    private apiService: ApiService) { }
 
 
   getUsedPayMethods(total: boolean, payMethods: any): any {
@@ -168,7 +168,7 @@ export class TillService {
         i.nDiscount,
 
         i.redeemedLoyaltyPoints,
-        i.sUniqueIdentifier || this.stringService.getUniqueId(4),
+        i.sUniqueIdentifier || uuidv4(),
         i.paymentAmount
       )
     });

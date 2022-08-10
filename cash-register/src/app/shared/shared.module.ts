@@ -38,7 +38,8 @@ import { CardsComponent } from "./components/cards-dialog/cards-dialog.component
 import { MorePaymentsDialogComponent } from "./components/more-payments-dialog/more-payments-dialog.component";
 import { TerminalDialogComponent } from "./components/terminal-dialog/terminal-dialog.component";
 import { AddFavouritesComponent } from "./components/add-favourites/favourites.component";
-
+import { NgApexchartsModule } from "ng-apexcharts";
+import { WebOrderDetailsComponent } from "./components/web-order-details/web-order-details.component";
 @NgModule({
   declarations: [
     CustomerDialogComponent,
@@ -58,6 +59,7 @@ import { AddFavouritesComponent } from "./components/add-favourites/favourites.c
     TransactionsSearchComponent,
     TransactionItemsDetailsComponent,
     ActivityDetailsComponent,
+    WebOrderDetailsComponent,
     AddExpensesComponent,
     CardsComponent,
     MorePaymentsDialogComponent,
@@ -76,7 +78,8 @@ import { AddFavouritesComponent } from "./components/add-favourites/favourites.c
     ReactiveFormsModule,
     ToastModule.forRoot(),
     NgJsonEditorModule,
-    FileSaverModule
+    FileSaverModule,
+    NgApexchartsModule
   ],
   exports: [
     DialerComponent,
@@ -91,6 +94,7 @@ import { AddFavouritesComponent } from "./components/add-favourites/favourites.c
     TransactionsSearchComponent,
     TransactionItemsDetailsComponent,
     ActivityDetailsComponent,
+    WebOrderDetailsComponent,
     AddExpensesComponent,
     CardsComponent,
     MorePaymentsDialogComponent,

@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { faLongArrowAltDown, faLongArrowAltUp, faMinusCircle, faPlus, faPlusCircle, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { ActivityDetailsComponent } from '../shared/components/activity-details-dialog/activity-details.component';
+import { WebOrderDetailsComponent } from '../shared/components/web-order-details/web-order-details.component';
 import { ApiService } from '../shared/service/api.service';
 import { DialogService } from '../shared/service/dialog';
 import { MenuComponent } from '../shared/_layout/components/common';
@@ -206,13 +207,17 @@ export class ServicesComponent implements OnInit {
   }
 
   openActivities(activity: any) {
-    this.dialogService.openModal(ActivityDetailsComponent, { cssClass: 'w-fullscreen', context: { activity, items: false, webOrders: this.webOrders, from: 'services' } })
+    if(this.webOrders){
+      this.dialogService.openModal(WebOrderDetailsComponent, { cssClass: 'w-fullscreen', context: { activity } })
       .instance.close.subscribe(result => {
         if(this.webOrders && result) this.routes.navigate(['business/till']);
-        // console.log('I am closing this modal');
-        // if (result.url)
-        // this.item.aImage.push(result.url);
       });
+    }else{
+      this.dialogService.openModal(ActivityDetailsComponent, { cssClass: 'w-fullscreen', context: { activity, items: false, webOrders: this.webOrders, from: 'services' } })
+      .instance.close.subscribe(result => {
+        if(this.webOrders && result) this.routes.navigate(['business/till']);
+      });
+    }
   }
 
   loadTransaction() {

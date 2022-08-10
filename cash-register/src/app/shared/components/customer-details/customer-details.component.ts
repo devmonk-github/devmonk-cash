@@ -1,8 +1,40 @@
-import { AfterViewInit, ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { DialogComponent } from '../../service/dialog';
 import { ViewContainerRef } from '@angular/core';
 import { ApiService } from 'src/app/shared/service/api.service';
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
+import {
+  ApexAxisChartSeries,
+  ApexChart,
+  ApexDataLabels,
+  ApexPlotOptions,
+  ApexYAxis,
+  ApexXAxis,
+  ChartComponent,
+  ApexNonAxisChartSeries,
+  ApexResponsive,
+  ApexLegend
+} from "ng-apexcharts";
+
+export interface BarChartOptions {
+  series: ApexAxisChartSeries;
+  chart: ApexChart;
+  dataLabels: ApexDataLabels;
+  plotOptions: ApexPlotOptions;
+  yaxis: ApexYAxis;
+  xaxis: ApexXAxis;
+  colors: any
+};
+
+export interface PieChartOptions {
+  series: ApexNonAxisChartSeries;
+  chart: ApexChart;
+  responsive: ApexResponsive[];
+  labels: any;
+  legend: ApexLegend;
+  title: any;
+  options: any
+};
 
 @Component({
   selector: 'app-customer-details',
@@ -117,8 +149,36 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
     'Items per visit',
     'Statistics',
     'General'
-  ]
+  ];
 
+  @ViewChild("statistics-chart") statisticsChart !: ChartComponent;
+  public statisticsChartOptions !: Partial<BarChartOptions> | any;
+
+  @ViewChild("activities-chart") activitiesChart !: ChartComponent;
+  public activitiesChartOptions !: Partial<PieChartOptions> | any;
+
+  @ViewChild("paymentMethodsChart") paymentMethodsChart !: ChartComponent;
+  public paymentMethodsChartOptions !: Partial<PieChartOptions> | any;
+
+  aActivityTitles: any = [
+    { type: "Repairs", value: 7 },
+    { type: "Special orders", value: 1 },
+    { type: "Shop purchase", value: 12 },
+    { type: "Quotation", value: 1 },
+    { type: "Webshop", value: 1 },
+    { type: "Refund", value: 1 },
+    { type: "Giftcard", value: 2 },
+    { type: "Gold purchase", value: 1 },
+    { type: "Product reservation", value: 2 }
+  ];
+
+  aPaymentMethodTitles: any = [
+    { type: "Card", value: 7 },
+    { type: "Cash", value: 10 },
+    { type: "Paylater", value: 12 },
+    { type: "Bankpayment", value: 42 },
+    { type: "Expected Payment", value: 22 },
+  ];
 
   constructor(
     private viewContainerRef: ViewContainerRef,
@@ -135,6 +195,31 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
     this.requestParams.oFilterBy = {
       iCustomerId: this.customer._id
     }
+
+    this.activitiesChartOptions = {
+      series: this.aActivityTitles.map((el: any) => el.value),
+      chart: {
+        width: '75%',
+        type: "pie"
+      },
+      title: {
+        text: "Number of Activities (71)",
+        style: {
+          fontWeight: 'bold',
+        },
+      },
+      legend: {
+        position: 'left',
+        itemMargin: {
+          horizontal: 15,
+          vertical: 5
+        },
+        fontWeight: 600,
+      },
+      labels: this.aActivityTitles.map((el: any) => el.type + " (" + el.value + ") "),
+    };
+
+    this.loadStatisticsTabData();
   }
 
   ngAfterViewInit() {
@@ -273,7 +358,110 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
       case this.tabTitles[2]:
         if (!this.aActivityItems.length) this.loadActivityItems();
         break;
+      case this.tabTitles[3]:
+        this.loadStatisticsTabData();
+        break;
     }
+  }
+
+  loadStatisticsTabData() {
+
+    this.statisticsChartOptions = {
+      series: [
+        {
+          name: "Watches",
+          data: [
+            10.45,
+          ]
+        },
+        {
+          name: "Jewellery",
+          data: [
+            15.45,
+          ]
+        },
+        {
+          name: "Repair",
+          data: [
+            25.45,
+          ]
+        },
+        {
+          name: "Giftcard",
+          data: [
+            5.45,
+          ]
+        },
+        {
+          name: "Gold purchase",
+          data: [
+            65.45,
+          ]
+        },
+        {
+          name: "Discounts",
+          data: [
+            -25.45,
+          ]
+        }
+      ],
+      colors: ['#2E93fA', '#66DA26', '#546E7A', '#E91E63', '#FF9800'],
+      chart: {
+        type: "bar",
+        height: 350
+      },
+      dataLabels: {
+        enabled: true
+      },
+      yaxis: {
+        title: {
+          text: "Revenue"
+        },
+        labels: {
+          formatter: function (y: any) {
+            return "\u20AC" + y.toFixed(0)
+          }
+        }
+      },
+      xaxis: {
+        categories: [
+          "Toady",
+        ],
+        labels: {
+          rotate: -90
+        }
+      }
+    };
+
+    this.paymentMethodsChartOptions = {
+      series: this.aPaymentMethodTitles.map((el: any) => el.value),
+      chart: {
+        width: '100%',
+        type: "pie"
+      },
+      title: {
+        text: "Payment Methods",
+        style: {
+          fontWeight: 'bold',
+        },
+      },
+      legend: {
+        position: 'left',
+        itemMargin: {
+          horizontal: 15,
+          vertical: 5
+        },
+        fontWeight: 600,
+      },
+      labels: this.aPaymentMethodTitles.map((el: any) => el.type),
+      options: {
+        dataLabels: {
+          formatter: function (val: any) {
+            return "\u20AC" + Number(val).toFixed(2);
+          },
+        }
+      }
+    };
   }
 
 }
