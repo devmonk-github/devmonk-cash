@@ -141,10 +141,10 @@ export class WebOrderDetailsComponent implements OnInit {
 
   selectBusiness(index: number, location?: any) {
     if (location?._id) {
-      this.transactions[index].locationName = location.sName;
-      this.transactions[index].iStockLocationId = location._id;
+      this.activityItems[index].receipts[0].locationName = location.sName;
+      this.activityItems[index].receipts[0].iStockLocationId = location._id;
     }
-    this.updateTransaction(this.transactions[index]);
+    this.updateTransaction(this.activityItems[index].receipts[0]);
   }
 
   updateTransaction(transaction: any) {
@@ -173,11 +173,11 @@ export class WebOrderDetailsComponent implements OnInit {
   }
 
   
-  changeStatusForAll(type: string){
+  changeStatusForAll(status: string){
     this.activityItems.forEach((obj: any)=>{
-      obj.eRepairStatus = type;
-      this.updateActivityItem(obj)
+      obj.eActivityItemStatus = status;
     })
+    this.updateActivity()
   }
 
   changeTrackingNumberForAll(sTrackingNumber: string){
@@ -201,6 +201,14 @@ export class WebOrderDetailsComponent implements OnInit {
     }, 
     (error) => {
     })
+  }
+
+  updateActivity() {
+    this.apiService.putNew('cashregistry', '/api/v1/activities/' + this.activity?._id , this.activity)
+    .subscribe(
+      (result: any) => { }, 
+      (error) => { }
+    )
   }
 
   close(data: any) {

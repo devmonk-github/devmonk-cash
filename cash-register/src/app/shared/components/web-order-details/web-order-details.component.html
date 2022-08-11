@@ -162,7 +162,7 @@
                                                 data-kt-menu-trigger="click" data-kt-menu-attach="parent"
                                                 data-kt-menu-placement="bottom-start" data-kt-menu-flip="bottom">
                                                 <label class="fs-5 form-label fw-bolder text-dark">Location : </label>
-                                                <span *ngIf="item">( {{item?.locationName || 'Unknown'}} )</span>
+                                                <span *ngIf="item?.receipts[0]">( {{item?.receipts[0]?.locationName || 'Unknown'}} )</span>
                                             </div>
                                             <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg menu-state-primary fw-bold py-4 fs-6 w-200px" data-kt-menu="true">
                                                 <div *ngIf="business?.aInLocation?.length > 0" class="menu-item px-3"
