@@ -65,7 +65,7 @@ export class WebOrderDetailsComponent implements OnInit {
 
   ngOnInit(): void {
     this.activity = this.dialogRef.context.activity;
-    if(this.activity?.iCustomerId) this.fetchCustomer(this.activity.iCustomerId, -1, -1);
+    if(this.activity?.iCustomerId) this.fetchCustomer(this.activity.iCustomerId, -1);
     this.getBusinessLocations()
     this.fetchTransactionItems();
   }
@@ -104,13 +104,13 @@ export class WebOrderDetailsComponent implements OnInit {
       for(let i = 0; i < this.activityItems.length; i++){
         // for(const item of obj.receipts){
         const obj = this.activityItems[i];
+        this.fetchCustomer(obj.iCustomerId, i);
         for(let j = 0; j < obj.receipts.length; j++){
           // this.transactions.push({ ...item, ...obj });
             const item = obj.receipts[j];
             this.totalPrice += item.nPaymentAmount;
             this.quantity += item.bRefund ? (- item.nQuantity) : item.nQuantity
             if(item.iStockLocationId) this.setSelectedBusinessLocation(item.iStockLocationId, i, j)
-            this.fetchCustomer(obj.iCustomerId, i, j);
         }
       }
       // for(let i = 0; i < this.transactions.length; i++){
@@ -158,11 +158,11 @@ export class WebOrderDetailsComponent implements OnInit {
   }
     
 
-  fetchCustomer(customerId: any, parentIndex: number, index: number) {
+  fetchCustomer(customerId: any, parentIndex: number) {
     this.apiService.getNew('customer', `/api/v1/customer/${customerId}?iBusinessId=${this.iBusinessId}`).subscribe(
       (result: any) => {
         console.log(result);
-        if(index > -1) this.activityItems[parentIndex].receipts[index].customer = result;
+        if(parentIndex > -1) this.activityItems[parentIndex].customer = result;
         else this.customer = result;
         // this.close({ action: true });
       },

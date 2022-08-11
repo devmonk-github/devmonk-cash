@@ -118,89 +118,91 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr *ngFor="let item of activityItems; let i = index">
-                                <td>
-                                    <img src="{{ item?.receipts[0]?.aImage?.length > 0 ? item.receipts[0].aImage[0] : imagePlaceHolder}}"
-                                        (error)="item.receipts[0].aImage[0]=imagePlaceHolder" class="product_image">
-                                </td>
-                                <td>
-                                    <div>
-                                        {{item?.receipts[0]?.sProductName}}
-                                    </div>
-                                    <br>
-                                    <div *ngIf="item?.receipts[0]?.aProductVariant?.length > 0">
-                                        <div *ngFor="let variant of item?.receipts[0]?.aProductVariant" class="d-flex">
-                                            <div class="w-25">
-                                                {{ variant.sVariantBase }}
-                                            </div> :
-                                            <div class="w-50 px-2">
-                                                <span *ngIf="variant.sVariantBase !== 'color'"> {{ variant.value }}
-                                                </span>
-                                                <span *ngIf="variant.sVariantBase === 'color'"
-                                                    [style.background]="variant.value"
-                                                    class="px-2 border border-gray-600"></span>
-                                            </div>
+                            <ng-container *ngFor="let item of activityItems; let i = index">
+                                <tr>
+                                    <td>
+                                        <img src="{{ item?.aImage?.length > 0 ? item.aImage[0] : imagePlaceHolder}}"
+                                        (error)="item.aImage[0]=imagePlaceHolder" class="product_image">
+                                    </td>
+                                    <td>
+                                        <div>
+                                            {{item?.sProductName}}
                                         </div>
-                                    </div>
-                                </td>
-                                <td *ngIf="!item?.receipts[0]?.bRefund">
-                                    <select name="status" id="status" class="form-select" [(ngModel)]="item.eActivityItemStatus" (ngModelChange)="updateActivityItem(item)">
-                                        <option *ngFor="let type of repairStatus" [value]="type">{{type}}</option>
-                                    </select>
-                                </td>
-                                <td *ngIf="item?.receipts[0]?.bRefund"></td>
-                                <td>{{item?.receipts[0]?.nPriceIncVat}}</td>
-                                <td>{{item?.receipts[0]?.customer?.sFirstName}} {{item?.receipts[0]?.customer?.sLastName}}</td>
-                                <td>
-                                    <div class="d-flex align-items-stretch flex-shrink-0 me-sm-2">
-                                        {{item?.receipts[0]?.nQuantity}}
-                                    </div>
-                                    <div class="d-flex align-items-stretch flex-shrink-0 me-sm-2"
-                                        *ngIf="showDetails && userDetail && item?.receipts[0]?.iBusinessProductId">
-                                        <div class="cursor-pointer my-auto fs-5 fw-bolder text-gray-700 show menu-dropdown"
-                                            data-kt-menu-trigger="click" data-kt-menu-attach="parent"
-                                            data-kt-menu-placement="bottom-start" data-kt-menu-flip="bottom">
-                                            <label class="fs-5 form-label fw-bolder text-dark">Location : </label>
-                                            <span *ngIf="item">( {{item?.receipts[0]?.locationName || 'Unknown'}} )</span>
-                                        </div>
-                                        <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg menu-state-primary fw-bold py-4 fs-6 w-200px" data-kt-menu="true">
-                                            <div *ngIf="business?.aInLocation?.length > 0" class="menu-item px-3"
-                                                data-kt-menu-trigger="hover" data-kt-menu-placement="right-start">
-                                                <div class="menu-item px-3 cursor-pointer" *ngFor="let location of business.aInLocation">
-                                                    <a class="menu-link d-flex px-5"
-                                                        (click)="selectBusiness(i, location)">
-                                                        {{ location.sName }}
-                                                    </a>
+                                        <br>
+                                        <div *ngIf="item?.aProductVariant?.length > 0">
+                                            <div *ngFor="let variant of item?.aProductVariant" class="d-flex">
+                                                <div class="w-25">
+                                                    {{ variant.sVariantBase }}
+                                                </div> :
+                                                <div class="w-50 px-2">
+                                                    <span *ngIf="variant.sVariantBase !== 'color'"> {{ variant.value }}
+                                                    </span>
+                                                    <span *ngIf="variant.sVariantBase === 'color'"
+                                                        [style.background]="variant.value"
+                                                        class="px-2 border border-gray-600"></span>
                                                 </div>
                                             </div>
-                                            <div *ngIf="business?.aInLocation?.length == 0" class="menu-item px-3">
-                                                <span class="menu-link d-flex" (click)="selectBusiness(i)">
-                                                    {{ business.sName || 'Unknown'}}</span>
+                                        </div>
+                                    </td>
+                                    <td *ngIf="!item?.bRefund">
+                                        <select name="status" id="status" class="form-select" [(ngModel)]="item.eActivityItemStatus" (ngModelChange)="updateActivityItem(item)">
+                                            <option *ngFor="let type of repairStatus" [value]="type">{{type}}</option>
+                                        </select>
+                                    </td>
+                                    <td *ngIf="item?.bRefund"></td>
+                                    <td>{{item?.nPriceIncVat}}</td>
+                                    <td>{{item?.customer?.sFirstName}} {{item?.customer?.sLastName}}</td>
+                                    <td>
+                                        <div class="d-flex align-items-stretch flex-shrink-0 me-sm-2">
+                                            {{item?.nQuantity}}
+                                        </div>
+                                        <div class="d-flex align-items-stretch flex-shrink-0 me-sm-2"
+                                            *ngIf="showDetails && userDetail && item?.iBusinessProductId">
+                                            <div class="cursor-pointer my-auto fs-5 fw-bolder text-gray-700 show menu-dropdown"
+                                                data-kt-menu-trigger="click" data-kt-menu-attach="parent"
+                                                data-kt-menu-placement="bottom-start" data-kt-menu-flip="bottom">
+                                                <label class="fs-5 form-label fw-bolder text-dark">Location : </label>
+                                                <span *ngIf="item">( {{item?.locationName || 'Unknown'}} )</span>
+                                            </div>
+                                            <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg menu-state-primary fw-bold py-4 fs-6 w-200px" data-kt-menu="true">
+                                                <div *ngIf="business?.aInLocation?.length > 0" class="menu-item px-3"
+                                                    data-kt-menu-trigger="hover" data-kt-menu-placement="right-start">
+                                                    <div class="menu-item px-3 cursor-pointer" *ngFor="let location of business.aInLocation">
+                                                        <a class="menu-link d-flex px-5"
+                                                            (click)="selectBusiness(i, location)">
+                                                            {{ location.sName }}
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                                <div *ngIf="business?.aInLocation?.length == 0" class="menu-item px-3">
+                                                    <span class="menu-link d-flex" (click)="selectBusiness(i)">
+                                                        {{ business.sName || 'Unknown'}}</span>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                </td>
-                                <td>0</td>
-                                <td>{{item?.receipts[0]?.nVatRate || 0}}</td>
-                                <td>{{item?.receipts[0]?.nPriceIncVat || 0}}</td>
-                            </tr>
-                            <tr *ngIf='activityItems.length'>
-                                <td>{{'TOTAL' | translate}}</td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td>{{quantity}}</td>
-                                <td></td>
-                                <td></td>
-                                <td>{{totalPrice}}</td>
-                            </tr>
+                                    </td>
+                                    <td>0</td>
+                                    <td>{{item?.nVatRate || 0}}</td>
+                                    <td>{{item?.nPriceIncVat || 0}}</td>
+                                </tr>
+                                <tr *ngIf='i == (activityItems.length - 1)'>
+                                    <td>{{'TOTAL' | translate}}</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>{{quantity}}</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>{{totalPrice}}</td>
+                                </tr>
+                            </ng-container>
                         </tbody>
                     </table>
                 </div>
             </div>
             <div class="d-flex">
-                <h5 *ngIf='!transactions.length && !loading' style="text-align: center">{{'NO_DATA_FOUND' | translate }}
+                <h5 *ngIf='!activityItems.length && !loading' style="text-align: center">{{'NO_DATA_FOUND' | translate }}
                 </h5>
                 <div *ngIf="loading" class="spinner-border mx-auto"></div>
             </div>
