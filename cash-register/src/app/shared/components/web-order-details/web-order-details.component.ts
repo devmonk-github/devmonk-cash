@@ -220,10 +220,8 @@ export class WebOrderDetailsComponent implements OnInit {
   fetchCustomer(customerId: any, parentIndex: number) {
     this.apiService.getNew('customer', `/api/v1/customer/${customerId}?iBusinessId=${this.iBusinessId}`).subscribe(
       (result: any) => {
-        console.log(result);
         if(parentIndex > -1) this.activityItems[parentIndex].customer = result;
         else this.customer = result;
-        // this.close({ action: true });
       },
       (error: any) => {
         console.error(error)
@@ -243,15 +241,15 @@ export class WebOrderDetailsComponent implements OnInit {
   changeTrackingNumberForAll(sTrackingNumber: string){
     this.activityItems.forEach((obj: any)=>{
       obj.sTrackingNumber = sTrackingNumber;
-      this.updateActivityItem(obj)
     })
+    this.updateActivity();
   }
 
   changeCarrierForAll(eCarrier: string){
     this.activityItems.forEach((obj: any)=>{
       obj.eCarrier = eCarrier;
-      this.updateActivityItem(obj)
     })
+    this.updateActivity();
   }
 
   updateActivityItem(item: any) {
