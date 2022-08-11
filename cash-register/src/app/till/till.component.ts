@@ -147,14 +147,13 @@ export class TillComponent implements OnInit, AfterViewInit {
 
     this.fetchQuickButtons();
 
-    // this.fiskalyService.startTransaction()
-    //   .subscribe((res) => {
-    //     console.log(res);
-    //     localStorage.setItem('fiskalyTransaction', JSON.stringify(res));
-    //   }, error => {
-    //     console.log(error);
-    //   });
+    // this.getfiskalyInfo();
 
+  }
+
+  async getfiskalyInfo() {
+    const tssId = await this.fiskalyService.fetchTSS();
+    console.log(tssId);
   }
 
   ngAfterViewInit() {
@@ -303,7 +302,7 @@ export class TillComponent implements OnInit, AfterViewInit {
     });
     return result;
   }
-  addItem(type: string): void {
+  async addItem(type: string) {
     const price = this.randNumber(5, 200);
     this.transactionItems.push({
       isExclude: type === 'repair' ? true : false,
@@ -332,7 +331,7 @@ export class TillComponent implements OnInit, AfterViewInit {
       ...(type === 'gold-purchase') && { oGoldFor: { name: 'stock', type: 'goods' } }
     });
 
-    this.updateFiskalyTransaction('ACTIVE', []);
+    // await this.updateFiskalyTransaction('ACTIVE', []);
   }
 
   cancelItems(): void {
@@ -559,11 +558,10 @@ export class TillComponent implements OnInit, AfterViewInit {
             }
           };
 
-          // console.log(body);
           this.apiService.postNew('cashregistry', '/api/v1/till/transaction', body)
             .subscribe((data: any) => {
               this.toastrService.show({ type: 'success', text: data.message });
-              this.updateFiskalyTransaction('FINISHED', body.payments);
+              // this.updateFiskalyTransaction('FINISHED', body.payments);
               if (this.selectedTransaction) {
                 this.deleteParkedTransaction();
               };
@@ -947,13 +945,27 @@ export class TillComponent implements OnInit, AfterViewInit {
       this.eKind = 'regular';
   }
 
-  updateFiskalyTransaction(state: string, payments: []) {
-    this.fiskalyService.updateFiskalyTransaction(this.transactionItems, payments, state)
-      .subscribe(res => {
-        console.log(res);
-        localStorage.setItem('fiskalyTransaction', JSON.stringify(res));
-      }, error => {
-        console.log(error);
-      })
+  async startFiskalyTransaction() {
+    try {
+      const res = await this.fiskalyService.startTransaction().toPromise();
+      localStorage.setItem('fiskalyTransaction', JSON.stringify(res));
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  async updateFiskalyTransaction(state: string, payments: []) {
+    try {
+      if (!localStorage.getItem('fiskalyTransaction')) {
+        await this.startFiskalyTransaction();
+      }
+      const result = await this.fiskalyService.updateFiskalyTransaction(this.transactionItems, payments, state);
+      if (state === 'FINISHED') {
+        localStorage.removeItem('fiskalyTransaction');
+      } else {
+        localStorage.setItem('fiskalyTransaction', JSON.stringify(result));
+      }
+    } catch (error) {
+      console.log(error);
+    }
   }
 }
