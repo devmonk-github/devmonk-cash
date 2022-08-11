@@ -112,9 +112,11 @@
                                 <td class="text-muted">{{'CUSTOMER' | translate}}</td>
                                 <td class="text-muted">{{'PRICE' | translate}}</td>
                                 <td class="text-muted">{{'QUANTITY' | translate}}</td>
+                                <td class="text-muted">{{'DATE' | translate}}</td>
                                 <td class="text-muted">{{'DISCOUNT_PER_ITEM' | translate}}</td>
                                 <td class="text-muted">{{'TAX' | translate}}</td>
                                 <td class="text-muted">{{'TOTAL_PRICE' | translate}}</td>
+                                <!-- date -->
                             </tr>
                         </thead>
                         <tbody>
@@ -181,21 +183,31 @@
                                             </div>
                                         </div>
                                     </td>
+                                    <td>{{item.dCreatedDate | date: 'short'}}</td>
                                     <td>0</td>
                                     <td>{{item?.nVatRate || 0}}</td>
-                                    <td>{{item?.nPriceIncVat || 0}}</td>
+                                    <td>
+                                        <div>{{item?.nPriceIncVat || 0}}</div>
+                                        <div class="fw-bold fs-6 text-gray-800 border-bottom-2 border-gray-200 text-muted">
+                                            <button class="btn btn-primary-sm" (click)="item.showMore = !item.showMore">
+                                                show more
+                                                <fa-icon [icon] ="item.showMore ? faArrowUp : faArrowDown"></fa-icon>
+                                            </button>
+                                        </div>
+                                    </td>
                                 </tr>
-                                <tr *ngIf="item.eActivityItemStatus == 'refund' && item.receipts.length > 1">
+                                <tr *ngIf="item.showMore">
                                     <td colspan="12" class="p-2">
                                         <table class="table table-hover table-rounded table-striped border gy-7 gs-7   text-gray-600 fw-bold border">
                                             <thead>
                                                 <tr class="fw-bold fs-6 text-gray-400">
                                                     <td class="text-muted">{{'IMAGE' | translate}}</td>
                                                     <td class="text-muted">{{'PRODUCT' | translate}}</td>
-                                                    <td class="text-muted">{{'STATUS' | translate}}</td>
+                                                    <!-- <td class="text-muted">{{'STATUS' | translate}}</td> -->
                                                     <td class="text-muted">{{'CUSTOMER' | translate}}</td>
                                                     <td class="text-muted">{{'PRICE' | translate}}</td>
                                                     <td class="text-muted">{{'QUANTITY' | translate}}</td>
+                                                    <td class="text-muted">{{'DATE' | translate}}</td>
                                                     <td class="text-muted">{{'DISCOUNT_PER_ITEM' | translate}}</td>
                                                     <td class="text-muted">{{'TAX' | translate}}</td>
                                                     <td class="text-muted">{{'TOTAL_PRICE' | translate}}</td>
@@ -228,11 +240,11 @@
                                                                 </div>
                                                             </div>
                                                         </td>
-                                                        <td *ngIf="!receipt?.bRefund && receiptsIndex > 0">
+                                                        <!-- <td *ngIf="!receipt?.bRefund && receiptsIndex > 0">
                                                             <select name="status" id="status" class="form-select" [(ngModel)]="receipt.eActivityItemStatus" (ngModelChange)="updateActivityItem(receipt)">
                                                                 <option *ngFor="let type of repairStatus" [value]="type">{{type}}</option>
                                                             </select>
-                                                        </td>
+                                                        </td> -->
                                                         <td *ngIf="receipt?.bRefund && receiptsIndex > 0"></td>
                                                         <td *ngIf="receiptsIndex > 0">{{receipt?.nPriceIncVat}}</td>
                                                         <td *ngIf="receiptsIndex > 0">{{receipt?.customer?.sFirstName}} {{receipt?.customer?.sLastName}}</td>
@@ -265,6 +277,7 @@
                                                                 </div>
                                                             </div>
                                                         </td>
+                                                        <td *ngIf="receiptsIndex > 0">{{item.dCreatedDate | date: 'short'}}</td>
                                                         <td *ngIf="receiptsIndex > 0">0</td>
                                                         <td *ngIf="receiptsIndex > 0">{{receipt?.nVatRate || 0}}</td>
                                                         <td *ngIf="receiptsIndex > 0">{{receipt?.nPriceIncVat || 0}}</td>
@@ -281,6 +294,7 @@
                                     <td></td>
                                     <td></td>
                                     <td>{{quantity}}</td>
+                                    <td></td>
                                     <td></td>
                                     <td></td>
                                     <td>{{totalPrice}}</td>

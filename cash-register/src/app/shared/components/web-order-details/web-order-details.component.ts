@@ -1,9 +1,10 @@
 import { Component, OnInit, ViewContainerRef } from '@angular/core';
-import { faDownload, faEnvelope, faReceipt, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faDownload, faEnvelope, faLongArrowAltDown, faLongArrowAltUp, faReceipt, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { ApiService } from '../../service/api.service';
 import { DialogComponent, DialogService } from '../../service/dialog';
 import { PdfService } from '../../service/pdf.service';
 import { MenuComponent } from '../../_layout/components/common';
+import { TransactionItemsDetailsComponent } from '../transaction-items-details/transaction-items-details.component';
 @Component({
   selector: 'app-web-order-details',
   templateUrl: './web-order-details.component.html',
@@ -21,6 +22,8 @@ export class WebOrderDetailsComponent implements OnInit {
   faDownload = faDownload;
   faReceipt = faReceipt;
   faEnvelope = faEnvelope;
+  faArrowUp = faLongArrowAltUp;
+  faArrowDown = faLongArrowAltDown;
   customer: any;
   activity: any;
   loading: Boolean = false;
@@ -30,6 +33,7 @@ export class WebOrderDetailsComponent implements OnInit {
   quantity: Number = 0;
   userDetail: any;
   showDetails: Boolean = true;
+  showMore: Boolean = false;
   imagePlaceHolder: string = '../../../../assets/images/no-photo.svg';
   requestParams: any = {
     iBusinessId: this.iBusinessId,
@@ -68,6 +72,61 @@ export class WebOrderDetailsComponent implements OnInit {
     if(this.activity?.iCustomerId) this.fetchCustomer(this.activity.iCustomerId, -1);
     this.getBusinessLocations()
     this.fetchTransactionItems();
+  }
+
+  openTransaction(transaction: any, itemType: any) {
+    transaction.iActivityId = this.activity._id;
+    this.dialogService.openModal(TransactionItemsDetailsComponent, { cssClass: "modal-xl", context: { transaction, itemType } })
+      .instance.close.subscribe((result: any) => {
+        const transactionItems: any = [];
+        if (result.transaction) {
+          result.transactionItems.forEach((transactionItem: any) => {
+            if (transactionItem.isSelected) {
+              const { tType } = transactionItem;
+              let paymentAmount = transactionItem.nQuantity * transactionItem.nPriceIncVat - transactionItem.nPaidAmount;
+              if (tType === 'refund') {
+                paymentAmount = -1 * transactionItem.nPaidAmount;
+                transactionItem.oType.bRefund = true;
+              } else if (tType === 'revert') {
+                paymentAmount = transactionItem.nPaidAmount;
+                transactionItem.oType.bRefund = false;
+              };
+              transactionItems.push({
+                name: transactionItem.sProductName,
+                iActivityItemId: transactionItem.iActivityItemId,
+                nRefundAmount: transactionItem.nPaidAmount,
+                iLastTransactionItemId: transactionItem.iTransactionItemId,
+                prePaidAmount: tType === 'refund' ? transactionItem.nPaidAmount : transactionItem.nPaymentAmount,
+                type: transactionItem.sGiftCardNumber ? 'giftcard' : transactionItem.oType.eKind,
+                eTransactionItemType: 'regular',
+                nBrokenProduct: 0,
+                tType,
+                oType: transactionItem.oType,
+                aImage: transactionItem.aImage,
+                nonEditable: transactionItem.sGiftCardNumber ? true : false,
+                sGiftCardNumber: transactionItem.sGiftCardNumber,
+                quantity: transactionItem.nQuantity,
+                price: transactionItem.nPriceIncVat,
+                iRepairerId: transactionItem.iRepairerId,
+                oArticleGroupMetaData: transactionItem.oArticleGroupMetaData,
+                iEmployeeId: transactionItem.iEmployeeId,
+                iBrandId: transactionItem.iBrandId,
+                discount: 0,
+                tax: transactionItem.nVatRate,
+                paymentAmount,
+                description: '',
+                open: true,
+              });
+            }
+          });
+          result.transactionItems = transactionItems;
+          localStorage.setItem('fromTransactionPage', JSON.stringify(result));
+          localStorage.setItem('recentUrl', '/business/transactions');
+          setTimeout(() => {
+            this.close(true);
+          }, 100);
+        }
+      });
   }
 
   getBusinessLocations() {
@@ -178,6 +237,7 @@ export class WebOrderDetailsComponent implements OnInit {
       obj.eActivityItemStatus = status;
     })
     this.updateActivity()
+    if(status == 'refundInCashRegister') this.openTransaction(this.activity, 'activity');
   }
 
   changeTrackingNumberForAll(sTrackingNumber: string){
