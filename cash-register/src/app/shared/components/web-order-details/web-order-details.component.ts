@@ -16,7 +16,7 @@ export class WebOrderDetailsComponent implements OnInit {
   dialogRef: DialogComponent;
   activityItems: Array<any> = [];
   business: any;
-  statuses = ['new', 'processing', 'cancelled', 'inspection', 'completed', 'refund', 'refundInCashRegister'];
+  statuses = ['new', 'processing', 'cancelled', 'completed', 'refund', 'refundInCashRegister'];
   carriers = ['PostNL', 'DHL', 'DPD', 'bpost', 'other'];
   faTimes = faTimes;
   faDownload = faDownload;
@@ -33,6 +33,11 @@ export class WebOrderDetailsComponent implements OnInit {
   quantity: Number = 0;
   userDetail: any;
   showDetails: Boolean = true;
+  downloading: Boolean = false;
+  iLocationId: string = '';
+  businessDetails: any;
+  computerId: number | undefined;
+  printerId: number | undefined;
   from: String = '';
   imagePlaceHolder: string = '../../../../assets/images/no-photo.svg';
   requestParams: any = {
@@ -73,9 +78,55 @@ export class WebOrderDetailsComponent implements OnInit {
       const index = this.statuses.indexOf('cancelled');
       if (index > -1) this.statuses.splice(index, 1);
     }
+    this.iLocationId = localStorage.getItem("currentLocation") || '';
     if(this.activity?.iCustomerId) this.fetchCustomer(this.activity.iCustomerId, -1);
-    this.getBusinessLocations()
+    this.fetchBusinessDetails();
+    this.getPrintSetting();
+    this.getBusinessLocations();
     this.fetchTransactionItems();
+  }
+
+  deliver(){
+    const transactions = []
+    for(const item of this.activityItems){
+      for(const receipt of item.receipts) { transactions.push({ ...receipt, iActivityItemId: item._id }) }
+    }
+    this.createStockCorrections(transactions)
+  }
+
+  createStockCorrections(transactions: any) {
+    transactions.iBusinessId = this.iBusinessId;
+    const data = {
+      transactions,
+      iBusinessId : this.iBusinessId
+    }
+    this.apiService.postNew('cashregistry', '/api/v1/transaction/item/stockCorrection/' + this.activity?._id , data)
+    .subscribe((result: any) => {
+      console.log(result);
+    }, 
+    (error) => {
+      console.log(error);
+    })
+  }
+
+  getPrintSetting(){
+    this.apiService.getNew('cashregistry', '/api/v1/print-settings/' + '6182a52f1949ab0a59ff4e7b' + '/' + '624c98415e537564184e5614').subscribe(
+      (result : any) => {
+        this.computerId = result?.data?.nComputerId;
+        this.printerId = result?.data?.nPrinterId;
+       },
+      (error: any) => {
+        console.error(error)
+      }
+    );
+  }
+
+  fetchBusinessDetails() {
+    this.apiService.getNew('core', '/api/v1/business/' + this.iBusinessId)
+    .subscribe(
+      (result : any) => {
+        this.businessDetails = result.data;
+    })
   }
 
   openTransaction(transaction: any, itemType: any) {
@@ -161,7 +212,47 @@ export class WebOrderDetailsComponent implements OnInit {
       });
   }
 
-  downloadOrder(){ }
+  downloadWebOrder(){ 
+    this.generatePDF(false);
+  }
+
+  generatePDF(print: boolean): void {
+    const sName = 'Sample', eType = this.activity.eType;
+    this.downloading = true;
+    this.activity.businessDetails = this.businessDetails;
+    for(let i = 0; i < this.businessDetails?.aLocation.length; i++){
+      if(this.businessDetails.aLocation[i]?._id.toString() == this.iLocationId.toString()){
+        this.activity.currentLocation = this.businessDetails.aLocation[i];
+      }
+    }
+    this.apiService.getNew('cashregistry', '/api/v1/pdf/templates/' + this.iBusinessId + '?sName=' + sName + '&eType=' + eType).subscribe(
+      (result: any) => {
+        const filename = new Date().getTime().toString()
+        let printData = null
+        if (print) {
+          printData = {
+            computerId: this.computerId,
+            printerId: this.printerId,
+            title: filename,
+            quantity: 1
+          }
+        }
+
+        let dataObject = this.activity
+
+        this.pdfService.createPdf(JSON.stringify(result.data), dataObject, filename, print, printData, this.iBusinessId, this.activity?._id)
+          .then( () => {
+            this.downloading = false;
+          })
+          .catch((e: any) => {
+            this.downloading = false;
+            console.error('err', e)
+          })
+    }, (error) => {
+      this.downloading = false;
+      console.log('printing error', error);
+    })
+  }
 
   fetchTransactionItems() {
     let url = `/api/v1/activities/items/${this.activity._id}`;
