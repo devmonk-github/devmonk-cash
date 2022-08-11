@@ -55,12 +55,12 @@
                             <option *ngFor="let status of statuses" [value]="status">{{status}}</option>
                         </select>
                     </div>
-                    <label class="col-md-4 mt-5 text-muted">{{"SHIPPING_METHOD" | translate}} : </label>
-                    <div class="col-md-8 mt-5">
+                    <label *ngIf="activity.eActivityStatus == 'completed'" class="col-md-4 mt-5 text-muted">{{"SHIPPING_METHOD" | translate}} : </label>
+                    <div *ngIf="activity.eActivityStatus == 'completed'" class="col-md-8 mt-5">
                         <div class="text-gray-800">Completed</div>
                     </div>
-                    <label class="col-md-4 mt-5 text-muted">{{"CARRIER" | translate}} : </label>
-                    <div class="col-md-8 mt-5">
+                    <label *ngIf="activity.eActivityStatus == 'completed'" class="col-md-4 mt-5 text-muted">{{"CARRIER" | translate}} : </label>
+                    <div *ngIf="activity.eActivityStatus == 'completed'" class="col-md-8 mt-5">
                         <select name="carrier" id="carrier" class="form-select" [(ngModel)]="activity.eCarrier" placeholder="carrier" (ngModelChange)="changeCarrierForAll(activity.eCarrier)">
                             <option *ngFor="let carrier of carriers" [value]="carrier">{{carrier}}</option>
                         </select>
@@ -79,17 +79,17 @@
                     <button class="btn btn-sm btn-secondary w-100 d-flex" (click)="openTransaction(activity, 'activity')">
                         <label class="mx-auto">Exchange</label>
                     </button>
-                    <button class="btn btn-sm btn-secondary w-100 d-flex" (click)="downloadOrder()">
+                    <button class="btn btn-sm btn-secondary w-100 d-flex" (click)="downloadWebOrder()">
                         <fa-icon [icon]="faDownload"></fa-icon>
                         <label class="mx-auto">Download pdf</label>
                     </button>
-                    <button class="btn btn-sm btn-primary w-100 d-flex mt-5">
+                    <button *ngIf="activity.eActivityStatus == 'completed'" class="btn btn-sm btn-primary w-100 d-flex mt-5">
                         <label class="mx-auto">Sent to customer</label>
                     </button>
-                    <button class="btn btn-sm btn-secondary w-100 d-flex">
+                    <button *ngIf="activity.eActivityStatus == 'completed'" class="btn btn-sm btn-secondary w-100 d-flex">
                         <label class="mx-auto">Ready to pick up</label>
                     </button>
-                    <button class="btn btn-sm btn-secondary w-100 d-flex">
+                    <button *ngIf="activity.eActivityStatus == 'completed'" class="btn btn-sm btn-secondary w-100 d-flex">
                         <label class="mx-auto">Deliver</label>
                     </button>
                 </div>
