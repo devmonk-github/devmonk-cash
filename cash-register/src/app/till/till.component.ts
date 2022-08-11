@@ -147,7 +147,7 @@ export class TillComponent implements OnInit, AfterViewInit {
 
     this.fetchQuickButtons();
 
-    // this.getfiskalyInfo();
+    this.getfiskalyInfo();
 
   }
 
@@ -331,7 +331,7 @@ export class TillComponent implements OnInit, AfterViewInit {
       ...(type === 'gold-purchase') && { oGoldFor: { name: 'stock', type: 'goods' } }
     });
 
-    // await this.updateFiskalyTransaction('ACTIVE', []);
+    await this.updateFiskalyTransaction('ACTIVE', []);
   }
 
   cancelItems(): void {
@@ -561,12 +561,10 @@ export class TillComponent implements OnInit, AfterViewInit {
           this.apiService.postNew('cashregistry', '/api/v1/till/transaction', body)
             .subscribe((data: any) => {
               this.toastrService.show({ type: 'success', text: data.message });
-              // this.updateFiskalyTransaction('FINISHED', body.payments);
+              this.updateFiskalyTransaction('FINISHED', body.payments);
               if (this.selectedTransaction) {
                 this.deleteParkedTransaction();
               };
-              this.saveInProgress = false;
-              this.clearAll();
             }, err => {
               this.toastrService.show({ type: 'danger', text: err.message });
               this.saveInProgress = false;
@@ -947,20 +945,23 @@ export class TillComponent implements OnInit, AfterViewInit {
 
   async startFiskalyTransaction() {
     try {
-      const res = await this.fiskalyService.startTransaction().toPromise();
+      const res = await this.fiskalyService.startTransaction();
       localStorage.setItem('fiskalyTransaction', JSON.stringify(res));
     } catch (error) {
       console.log(error);
     }
   }
   async updateFiskalyTransaction(state: string, payments: []) {
+    const pay = _.clone(payments);
     try {
       if (!localStorage.getItem('fiskalyTransaction')) {
         await this.startFiskalyTransaction();
       }
-      const result = await this.fiskalyService.updateFiskalyTransaction(this.transactionItems, payments, state);
+      const result = await this.fiskalyService.updateFiskalyTransaction(this.transactionItems, pay, state);
       if (state === 'FINISHED') {
         localStorage.removeItem('fiskalyTransaction');
+        this.saveInProgress = false;
+        this.clearAll();
       } else {
         localStorage.setItem('fiskalyTransaction', JSON.stringify(result));
       }
