@@ -568,7 +568,7 @@
                                     </select>
                                 </td>
                                 <td *ngIf="item.bRefund"></td>
-                                <td>{{item.nPurchasePrice}}</td>
+                                <td>{{item.nPriceIncVat}}</td>
                                 <td>{{item?.customer?.sFirstName}} {{item?.customer?.sLastName}}</td>
                                 <td>
                                     <div class="d-flex align-items-stretch flex-shrink-0 me-sm-2">
@@ -605,6 +605,8 @@
                             </tr>
                             <tr *ngIf='transactions.length'>
                                 <td>{{'TOTAL' | translate}}</td>
+                                <td></td>
+                                <td></td>
                                 <td></td>
                                 <td></td>
                                 <td>{{quantity}}</td>
