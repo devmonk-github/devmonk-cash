@@ -208,7 +208,7 @@ export class ServicesComponent implements OnInit {
 
   openActivities(activity: any) {
     if(this.webOrders){
-      this.dialogService.openModal(WebOrderDetailsComponent, { cssClass: 'w-fullscreen', context: { activity } })
+      this.dialogService.openModal(WebOrderDetailsComponent, { cssClass: 'w-fullscreen', context: { activity, from: 'web-orders' } })
       .instance.close.subscribe(result => {
         if(this.webOrders && result) this.routes.navigate(['business/till']);
       });

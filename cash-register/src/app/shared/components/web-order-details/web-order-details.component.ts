@@ -16,7 +16,7 @@ export class WebOrderDetailsComponent implements OnInit {
   dialogRef: DialogComponent;
   activityItems: Array<any> = [];
   business: any;
-  repairStatus = ['info', 'processing', 'cancelled', 'inspection', 'completed', 'refund', 'refundInCashRegister'];
+  statuses = ['new', 'processing', 'cancelled', 'inspection', 'completed', 'refund', 'refundInCashRegister'];
   carriers = ['PostNL', 'DHL', 'DPD', 'bpost', 'other'];
   faTimes = faTimes;
   faDownload = faDownload;
@@ -33,7 +33,7 @@ export class WebOrderDetailsComponent implements OnInit {
   quantity: Number = 0;
   userDetail: any;
   showDetails: Boolean = true;
-  showMore: Boolean = false;
+  from: String = '';
   imagePlaceHolder: string = '../../../../assets/images/no-photo.svg';
   requestParams: any = {
     iBusinessId: this.iBusinessId,
@@ -69,6 +69,10 @@ export class WebOrderDetailsComponent implements OnInit {
 
   ngOnInit(): void {
     this.activity = this.dialogRef.context.activity;
+    if(this.from == 'web-orders'){
+      const index = this.statuses.indexOf('cancelled');
+      if (index > -1) this.statuses.splice(index, 1);
+    }
     if(this.activity?.iCustomerId) this.fetchCustomer(this.activity.iCustomerId, -1);
     this.getBusinessLocations()
     this.fetchTransactionItems();
@@ -122,6 +126,12 @@ export class WebOrderDetailsComponent implements OnInit {
           result.transactionItems = transactionItems;
           localStorage.setItem('fromTransactionPage', JSON.stringify(result));
           localStorage.setItem('recentUrl', '/business/transactions');
+
+          this.activityItems.forEach((obj: any)=>{
+            obj.eActivityItemStatus = this.activity.eActivityStatus;
+          })
+          this.updateActivity()
+
           setTimeout(() => {
             this.close(true);
           }, 100);
@@ -231,11 +241,14 @@ export class WebOrderDetailsComponent implements OnInit {
 
   
   changeStatusForAll(status: string){
-    this.activityItems.forEach((obj: any)=>{
-      obj.eActivityItemStatus = status;
-    })
-    this.updateActivity()
-    if(status == 'refundInCashRegister') this.openTransaction(this.activity, 'activity');
+    if(status == 'refundInCashRegister') { 
+      this.openTransaction(this.activity, 'activity');
+    } else {
+      this.activityItems.forEach((obj: any)=>{
+        obj.eActivityItemStatus = status;
+      })
+      this.updateActivity()
+    }
   }
 
   changeTrackingNumberForAll(sTrackingNumber: string){

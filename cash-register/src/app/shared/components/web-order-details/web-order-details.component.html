@@ -52,7 +52,7 @@
                 <div class="col-md-8 row fw-bold gy-1">
                     <div class="col-md-12">
                         <select name="status" id="status" class="form-select" [(ngModel)]="activity.eActivityStatus" placeholder="Order status" (ngModelChange)="changeStatusForAll(activity.eActivityStatus)">
-                            <option *ngFor="let type of repairStatus" [value]="type">{{type}}</option>
+                            <option *ngFor="let status of statuses" [value]="status">{{status}}</option>
                         </select>
                     </div>
                     <label class="col-md-4 mt-5 text-muted">{{"SHIPPING_METHOD" | translate}} : </label>
@@ -76,7 +76,7 @@
                         <fa-icon [icon]="faReceipt"></fa-icon>
                         <label class="mx-auto">Print thermal</label>
                     </button>
-                    <button class="btn btn-sm btn-secondary w-100 d-flex">
+                    <button class="btn btn-sm btn-secondary w-100 d-flex" (click)="openTransaction(activity, 'activity')">
                         <label class="mx-auto">Exchange</label>
                     </button>
                     <button class="btn btn-sm btn-secondary w-100 d-flex" (click)="downloadOrder()">
@@ -148,7 +148,7 @@
                                     </td>
                                     <td *ngIf="!item?.bRefund">
                                         <select name="status" id="status" class="form-select" [(ngModel)]="item.eActivityItemStatus" (ngModelChange)="updateActivityItem(item)">
-                                            <option *ngFor="let type of repairStatus" [value]="type">{{type}}</option>
+                                            <option *ngFor="let status of statuses" [value]="status">{{status}}</option>
                                         </select>
                                     </td>
                                     <td *ngIf="item?.bRefund"></td>
