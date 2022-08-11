@@ -86,6 +86,29 @@ export class WebOrderDetailsComponent implements OnInit {
     this.fetchTransactionItems();
   }
 
+  deliver(){
+    const transactions = []
+    for(const item of this.activityItems){
+      for(const receipt of item.receipts) { transactions.push({ ...receipt, iActivityItemId: item._id }) }
+    }
+    this.createStockCorrections(transactions)
+  }
+
+  createStockCorrections(transactions: any) {
+    transactions.iBusinessId = this.iBusinessId;
+    const data = {
+      transactions,
+      iBusinessId : this.iBusinessId
+    }
+    this.apiService.postNew('cashregistry', '/api/v1/transaction/item/stockCorrection/' + this.activity?._id , data)
+    .subscribe((result: any) => {
+      console.log(result);
+    }, 
+    (error) => {
+      console.log(error);
+    })
+  }
+
   getPrintSetting(){
     this.apiService.getNew('cashregistry', '/api/v1/print-settings/' + '6182a52f1949ab0a59ff4e7b' + '/' + '624c98415e537564184e5614').subscribe(
       (result : any) => {

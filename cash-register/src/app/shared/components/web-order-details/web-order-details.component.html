@@ -89,7 +89,7 @@
                     <button *ngIf="activity.eActivityStatus == 'completed'" class="btn btn-sm btn-secondary w-100 d-flex">
                         <label class="mx-auto">Ready to pick up</label>
                     </button>
-                    <button *ngIf="activity.eActivityStatus == 'completed'" class="btn btn-sm btn-secondary w-100 d-flex">
+                    <button *ngIf="activity.eActivityStatus == 'completed'" class="btn btn-sm btn-secondary w-100 d-flex" (click)="deliver()">
                         <label class="mx-auto">Deliver</label>
                     </button>
                 </div>
