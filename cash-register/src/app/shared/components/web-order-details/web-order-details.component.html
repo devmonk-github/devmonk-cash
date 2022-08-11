@@ -185,7 +185,7 @@
                                     <td>{{item?.nVatRate || 0}}</td>
                                     <td>{{item?.nPriceIncVat || 0}}</td>
                                 </tr>
-                                <tr *ngIf="item.eActivityItemStatus == 'refund'">
+                                <tr *ngIf="item.eActivityItemStatus == 'refund' && item.receipts.length > 1">
                                     <td colspan="12" class="p-2">
                                         <table class="table table-hover table-rounded table-striped border gy-7 gs-7   text-gray-600 fw-bold border">
                                             <thead>
@@ -204,11 +204,11 @@
                                             <tbody>
                                                 <ng-container>
                                                     <tr *ngFor="let receipt of item.receipts; let receiptsIndex = index">
-                                                        <td>
+                                                        <td *ngIf="receiptsIndex > 0">
                                                             <img src="{{ receipt?.aImage?.length > 0 ? receipt.aImage[0] : imagePlaceHolder}}"
                                                             (error)="receipt.aImage[0]=imagePlaceHolder" class="product_image">
                                                         </td>
-                                                        <td>
+                                                        <td *ngIf="receiptsIndex > 0">
                                                             <div>
                                                                 {{receipt?.sProductName}}
                                                             </div>
@@ -228,15 +228,15 @@
                                                                 </div>
                                                             </div>
                                                         </td>
-                                                        <td *ngIf="!receipt?.bRefund">
+                                                        <td *ngIf="!receipt?.bRefund && receiptsIndex > 0">
                                                             <select name="status" id="status" class="form-select" [(ngModel)]="receipt.eActivityItemStatus" (ngModelChange)="updateActivityItem(receipt)">
                                                                 <option *ngFor="let type of repairStatus" [value]="type">{{type}}</option>
                                                             </select>
                                                         </td>
-                                                        <td *ngIf="receipt?.bRefund"></td>
-                                                        <td>{{receipt?.nPriceIncVat}}</td>
-                                                        <td>{{receipt?.customer?.sFirstName}} {{receipt?.customer?.sLastName}}</td>
-                                                        <td>
+                                                        <td *ngIf="receipt?.bRefund && receiptsIndex > 0"></td>
+                                                        <td *ngIf="receiptsIndex > 0">{{receipt?.nPriceIncVat}}</td>
+                                                        <td *ngIf="receiptsIndex > 0">{{receipt?.customer?.sFirstName}} {{receipt?.customer?.sLastName}}</td>
+                                                        <td *ngIf="receiptsIndex > 0">
                                                             <div class="d-flex align-items-stretch flex-shrink-0 me-sm-2">
                                                                 {{receipt?.nQuantity}}
                                                             </div>
@@ -265,9 +265,9 @@
                                                                 </div>
                                                             </div>
                                                         </td>
-                                                        <td>0</td>
-                                                        <td>{{receipt?.nVatRate || 0}}</td>
-                                                        <td>{{receipt?.nPriceIncVat || 0}}</td>
+                                                        <td *ngIf="receiptsIndex > 0">0</td>
+                                                        <td *ngIf="receiptsIndex > 0">{{receipt?.nVatRate || 0}}</td>
+                                                        <td *ngIf="receiptsIndex > 0">{{receipt?.nPriceIncVat || 0}}</td>
                                                     </tr>
                                                 </ng-container>
                                             <tbody>
