@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewContainerRef } from '@angular/core';
-import { faDownload, faEnvelope, faReceipt, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faDownload, faEnvelope, faLongArrowAltDown, faLongArrowAltUp, faReceipt, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { ApiService } from '../../service/api.service';
 import { DialogComponent, DialogService } from '../../service/dialog';
 import { PdfService } from '../../service/pdf.service';
@@ -21,6 +21,8 @@ export class WebOrderDetailsComponent implements OnInit {
   faDownload = faDownload;
   faReceipt = faReceipt;
   faEnvelope = faEnvelope;
+  faArrowUp = faLongArrowAltUp;
+  faArrowDown = faLongArrowAltDown;
   customer: any;
   activity: any;
   loading: Boolean = false;
@@ -30,6 +32,7 @@ export class WebOrderDetailsComponent implements OnInit {
   quantity: Number = 0;
   userDetail: any;
   showDetails: Boolean = true;
+  showMore: Boolean = false;
   imagePlaceHolder: string = '../../../../assets/images/no-photo.svg';
   requestParams: any = {
     iBusinessId: this.iBusinessId,
