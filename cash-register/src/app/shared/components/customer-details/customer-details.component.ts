@@ -36,6 +36,21 @@ export interface PieChartOptions {
   options: any
 };
 
+export const ChartColors = {
+  REPAIR: '#4ab69c',
+  SPECIAL_ORDERS: '#212E48',
+  SHOP_PURCHASE: '#1C3238',
+  QUOTATION: '#7337EE',
+  WEBSHOP: '#92929F',
+  REFUND: '#fd7e14',
+  GIFTCARD: '#198754',
+  GOLD_PURCHASE: '#800000',
+  PRODUCT_RESERVATION: '#d63384',
+  DISCOUNTS: '#dc3545',
+  JEWELLERY: '#20c997',
+  WATCHES: '#6f42c1'
+}
+
 @Component({
   selector: 'app-customer-details',
   templateUrl: './customer-details.component.html',
@@ -161,16 +176,27 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
   public paymentMethodsChartOptions !: Partial<PieChartOptions> | any;
 
   aActivityTitles: any = [
-    { type: "Repairs", value: 7 },
-    { type: "Special orders", value: 1 },
-    { type: "Shop purchase", value: 12 },
-    { type: "Quotation", value: 1 },
-    { type: "Webshop", value: 1 },
-    { type: "Refund", value: 1 },
-    { type: "Giftcard", value: 2 },
-    { type: "Gold purchase", value: 1 },
-    { type: "Product reservation", value: 2 }
+    { type: "Repairs", value: 7, color: ChartColors.REPAIR },//$primary-color
+    { type: "Special orders", value: 1, color: ChartColors.SPECIAL_ORDERS },//$dark-primary-light-color
+    { type: "Shop purchase", value: 12, color: ChartColors.SHOP_PURCHASE },//$dark-success-light-color
+    { type: "Quotation", value: 1, color: ChartColors.QUOTATION },//$info-active-color
+    { type: "Webshop", value: 1, color: ChartColors.WEBSHOP },//$gray-700
+    { type: "Refund", value: 1, color: ChartColors.REFUND },//$orange
+    { type: "Giftcard", value: 2, color: ChartColors.GIFTCARD },//$green
+    { type: "Gold purchase", value: 1, color: ChartColors.GOLD_PURCHASE },//$maroon
+    { type: "Product reservation", value: 2, color: ChartColors.PRODUCT_RESERVATION }//$pink
   ];
+
+  aStatisticsChartData: any = [
+    { element: { name: 'Watches', data: [10] }, color: ChartColors.WATCHES },
+    { element: { name: 'Jewellery', data: [3] }, color: ChartColors.JEWELLERY },
+    { element: { name: 'Repair', data: [3] }, color: ChartColors.REPAIR },
+    { element: { name: 'Giftcard', data: [1] }, color: ChartColors.GIFTCARD },
+    {
+      element: { name: 'Gold purchase', data: [2] }, color: ChartColors.GOLD_PURCHASE
+    },
+    { element: { name: 'Discounts', data: [-20] }, color: ChartColors.DISCOUNTS },
+  ]
 
   aPaymentMethodTitles: any = [
     { type: "Card", value: 7 },
@@ -198,6 +224,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
 
     this.activitiesChartOptions = {
       series: this.aActivityTitles.map((el: any) => el.value),
+      colors: this.aActivityTitles.map((el: any) => el.color),
       chart: {
         width: '75%',
         type: "pie"
@@ -367,45 +394,8 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
   loadStatisticsTabData() {
 
     this.statisticsChartOptions = {
-      series: [
-        {
-          name: "Watches",
-          data: [
-            10.45,
-          ]
-        },
-        {
-          name: "Jewellery",
-          data: [
-            15.45,
-          ]
-        },
-        {
-          name: "Repair",
-          data: [
-            25.45,
-          ]
-        },
-        {
-          name: "Giftcard",
-          data: [
-            5.45,
-          ]
-        },
-        {
-          name: "Gold purchase",
-          data: [
-            65.45,
-          ]
-        },
-        {
-          name: "Discounts",
-          data: [
-            -25.45,
-          ]
-        }
-      ],
-      colors: ['#2E93fA', '#66DA26', '#546E7A', '#E91E63', '#FF9800'],
+      series: this.aStatisticsChartData.map((el: any) => el.element),
+      colors: this.aStatisticsChartData.map((el: any) => el.color),
       chart: {
         type: "bar",
         height: 350
@@ -425,7 +415,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
       },
       xaxis: {
         categories: [
-          "Today",
+          "Till toady",
         ],
         labels: {
           rotate: -90
