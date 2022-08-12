@@ -3,6 +3,7 @@
         <h4 class="card-title" *ngIf="mode === 'create'">{{"NEW_CUSTOMER" | translate}}</h4>
         <h4 class="card-title" *ngIf="mode === 'details'">{{"CUSTOMER_DETAILS" | translate}}</h4>
         <div class="card-toolbar flex-row-fluid justify-content-end gap-5">
+            <button class="btn btn-secondary">{{"EDIT" | translate}}</button>
             <button class="btn btn-primary" (click)="EditOrCreateCustomer()">{{"SAVE" | translate}}</button>
             <a class="cancel my-auto" (click)="close(false)">
                 <i class="fa fa-times"></i>
@@ -103,7 +104,8 @@
                 <div id="activities-chart">
                     <apx-chart [series]="activitiesChartOptions.series" [chart]="activitiesChartOptions.chart"
                         [labels]="activitiesChartOptions.labels" [responsive]="activitiesChartOptions.responsive"
-                        [legend]="activitiesChartOptions.legend" [title]="activitiesChartOptions.title">
+                        [legend]="activitiesChartOptions.legend" [title]="activitiesChartOptions.title"
+                        [colors]="activitiesChartOptions.colors">
                     </apx-chart>
                 </div>
             </div>
