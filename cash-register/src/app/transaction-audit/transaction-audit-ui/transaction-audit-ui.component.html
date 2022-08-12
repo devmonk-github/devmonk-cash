@@ -119,7 +119,7 @@
                             <div class="col-md-3 mt-5">
                                 <button type="button" class="btn btn-primary" data-kt-roles-modal-action="submit"
                                     (click)="fetchStatistics()" [class.disabled]="bStatisticLoading">
-                                    <span class="indicator-label">{{ "APPLY_FILTER" | translate}}- {{bStatisticLoading}}</span>
+                                    <span class="indicator-label">{{ "APPLY_FILTER" | translate}}</span>
                                 </button>
                             </div>
 
@@ -617,19 +617,41 @@
                                             </thead>
                                             <tbody>
                                                 <td style="padding:0" colspan="6">
-                                                    <table class="table table-row-bordered table-row-gray-300 gy-5 gs-5 mb-0 text-gray-600 fw-bold border"
-                                                        *ngFor="let oVatRate of oStatistic.aVatRates; let vatRateIndex = index">
-                                                        <tr><td class="text-center fw-bolder bg-gray-100" colspan="5">
-                                                            {{"VAT_RATE"}} - {{oVatRate?.nVat}}
-                                                        </td></tr>
-                                                        <tr *ngFor="let oVatMethod of aVatRateMethod">
-                                                            <td ><span class="">{{ oVatMethod }}</span></td>
-                                                            <td class="w-150px"><span class="">{{ oVatRate[oVatMethod].nProfit   }}</span></td>
-                                                            <td class="w-150px"><span class="">{{ oVatRate[oVatMethod].nPurchaseValue }}</span></td>
-                                                            <td class="w-150px"><span class="">{{ oVatRate[oVatMethod].nTotalRevenue }}</span></td>
-                                                            <td class="w-150px"><span class="">{{ oVatRate[oVatMethod].nVatAmount }}</span></td>
-                                                        </tr>
-                                                    </table>
+                                                    <ng-container *ngFor="let oVatRate of oStatistic.aVatRates; let vatRateIndex = index">
+                                                        <table
+                                                            class="table table-row-bordered table-row-gray-300 gy-5 gs-5 mb-0 text-gray-600 fw-bold border">
+                                                            <tr>
+                                                                <td class="text-center fw-bolder bg-gray-100" colspan="5">
+                                                                    {{"VAT_RATE"}} - {{oVatRate?.nVat}}
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <ng-container [ngTemplateOutlet]="vatRateTemplates"
+                                                                    [ngTemplateOutletContext]="{ data: {sVatMethod: 'oShopPurchase', oVatRate: oVatRate} }" *ngIf="optionMenu == 'cash-registry'">
+                                                                </ng-container>
+                                                            </tr>
+                                                            <tr>
+                                                                <ng-container [ngTemplateOutlet]="vatRateTemplates"
+                                                                    [ngTemplateOutletContext]="{ data: {sVatMethod: 'oWebShop', oVatRate: oVatRate} }" *ngIf="optionMenu == 'cash-registry'">
+                                                                </ng-container>
+                                                            </tr>
+                                                            <tr>
+                                                                <ng-container [ngTemplateOutlet]="vatRateTemplates"
+                                                                    [ngTemplateOutletContext]="{ data: {sVatMethod: 'oDeliverySupplier', oVatRate: oVatRate} }" *ngIf="optionMenu == 'purchase-order' && sUserType == 'supplier'">
+                                                                </ng-container>
+                                                            </tr>
+                                                            <tr>
+                                                                <ng-container [ngTemplateOutlet]="vatRateTemplates"
+                                                                    [ngTemplateOutletContext]="{ data: {sVatMethod: 'oDeliveryRetailer', oVatRate: oVatRate} }" *ngIf="optionMenu == 'purchase-order' && sUserType == 'retailer'">
+                                                                </ng-container>
+                                                            </tr>
+                                                            <tr>
+                                                                <ng-container [ngTemplateOutlet]="vatRateTemplates"
+                                                                    [ngTemplateOutletContext]="{ data: {sVatMethod: 'oSalesOrderSupplier', oVatRate: oVatRate} }" *ngIf="optionMenu == 'sales-order'">
+                                                                </ng-container>
+                                                            </tr>
+                                                        </table>
+                                                    </ng-container>
                                                 </td>
                                             </tbody>
                                         </table>
@@ -638,19 +660,22 @@
                                 </div>
                             </div>
                         </div>
-                        <!-- <div class="row" *ngIf="aStatistic[0].overall.length">
-                <div class="col-md-4">
-                    <span class="">{{ 'QUANTITY' | translate}}</span>
-                    <h3 class="text-black">{{aStatistic[0].overall[0].nQuantity}}</h3>
-                </div>
-                <div class="col-md-4">
-                    <span class="">{{ 'TOTAL' | translate}}</span>
-                    <h3 class="text-black">{{aStatistic[0].overall[0].nTotal}}</h3>
-                </div>
-        </div> -->
 
                     </div>
                     <!-- LOAD DATA -END -->
+
+                    <!-- VAT-RATES TEMPLATE BEGIN -->
+                    <ng-template let-data="data" #vatRateTemplates>
+                        <!-- <p>Dear {{person.name}} , {{person.message}} </p> -->
+                        <td><span class="">{{ data?.sVatMethod }}</span></td>
+                        <td class="w-150px"><span class="">{{ data?.oVatRate[data?.sVatMethod].nProfit }}</span></td>
+                        <td class="w-150px"><span class="">{{ data?.oVatRate[data?.sVatMethod].nPurchaseValue }}</span>
+                        </td>
+                        <td class="w-150px"><span class="">{{ data?.oVatRate[data?.sVatMethod].nTotalRevenue }}</span>
+                        </td>
+                        <td class="w-150px"><span class="">{{ data?.oVatRate[data?.sVatMethod].nVatAmount }}</span></td>
+                    </ng-template>
+
                 </div>
                 <!-- STATISTICS CODE END -->
 

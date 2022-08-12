@@ -39,6 +39,7 @@ import { MorePaymentsDialogComponent } from "./components/more-payments-dialog/m
 import { TerminalDialogComponent } from "./components/terminal-dialog/terminal-dialog.component";
 import { AddFavouritesComponent } from "./components/add-favourites/favourites.component";
 import { NgApexchartsModule } from "ng-apexcharts";
+import { WebOrderDetailsComponent } from "./components/web-order-details/web-order-details.component";
 @NgModule({
   declarations: [
     CustomerDialogComponent,
@@ -58,6 +59,7 @@ import { NgApexchartsModule } from "ng-apexcharts";
     TransactionsSearchComponent,
     TransactionItemsDetailsComponent,
     ActivityDetailsComponent,
+    WebOrderDetailsComponent,
     AddExpensesComponent,
     CardsComponent,
     MorePaymentsDialogComponent,
@@ -92,6 +94,7 @@ import { NgApexchartsModule } from "ng-apexcharts";
     TransactionsSearchComponent,
     TransactionItemsDetailsComponent,
     ActivityDetailsComponent,
+    WebOrderDetailsComponent,
     AddExpensesComponent,
     CardsComponent,
     MorePaymentsDialogComponent,
