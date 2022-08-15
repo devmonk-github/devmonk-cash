@@ -32,6 +32,7 @@ export class WebOrderDetailsComponent implements OnInit {
   totalPrice: Number = 0;
   quantity: Number = 0;
   userDetail: any;
+  showDeliverBtn: Boolean = false;
   showDetails: Boolean = true;
   downloading: Boolean = false;
   iLocationId: string = '';
@@ -80,6 +81,7 @@ export class WebOrderDetailsComponent implements OnInit {
     }
     this.iLocationId = localStorage.getItem("currentLocation") || '';
     if(this.activity?.iCustomerId) this.fetchCustomer(this.activity.iCustomerId, -1);
+    if(this.activity?.eActivityStatus != 'completed') this.showDeliverBtn = true;
     this.fetchBusinessDetails();
     this.getPrintSetting();
     this.getBusinessLocations();
@@ -98,11 +100,15 @@ export class WebOrderDetailsComponent implements OnInit {
     transactions.iBusinessId = this.iBusinessId;
     const data = {
       transactions,
+      activity: this.activity,
       iBusinessId : this.iBusinessId
     }
     this.apiService.postNew('cashregistry', '/api/v1/transaction/item/stockCorrection/' + this.activity?._id , data)
     .subscribe((result: any) => {
-      console.log(result);
+      this.activityItems.forEach((item)=>{
+        item.eActivityItemStatus = 'completed';
+      })
+      this.showDeliverBtn = false;
     }, 
     (error) => {
       console.log(error);
@@ -334,6 +340,7 @@ export class WebOrderDetailsComponent implements OnInit {
   changeStatusForAll(status: string){
     if(status == 'refundInCashRegister') { 
       this.openTransaction(this.activity, 'activity');
+    } else if(status == 'completed'){
     } else {
       this.activityItems.forEach((obj: any)=>{
         obj.eActivityItemStatus = status;
