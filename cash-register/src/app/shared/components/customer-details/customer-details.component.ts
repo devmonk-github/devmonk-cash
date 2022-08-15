@@ -23,7 +23,8 @@ export interface BarChartOptions {
   plotOptions: ApexPlotOptions;
   yaxis: ApexYAxis;
   xaxis: ApexXAxis;
-  colors: any
+  colors: any;
+  tooltip: any
 };
 
 export interface PieChartOptions {
@@ -188,15 +189,103 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
   ];
 
   aStatisticsChartData: any = [
-    { element: { name: 'Watches', data: [10] }, color: ChartColors.WATCHES },
-    { element: { name: 'Jewellery', data: [3] }, color: ChartColors.JEWELLERY },
-    { element: { name: 'Repair', data: [3] }, color: ChartColors.REPAIR },
-    { element: { name: 'Giftcard', data: [1] }, color: ChartColors.GIFTCARD },
     {
-      element: { name: 'Gold purchase', data: [2] }, color: ChartColors.GOLD_PURCHASE
+      item: {
+        element:
+        {
+          name: 'Watches',
+          data: [
+            {
+              x: 'Watches',
+              y: 7,
+              info: [{ type: 'info 1', value: 5 }, { type: 'info 2', value: 20 }],
+            }
+          ],
+        },
+        color: ChartColors.WATCHES
+      }
     },
-    { element: { name: 'Discounts', data: [-20] }, color: ChartColors.DISCOUNTS },
-  ]
+    {
+      item: {
+        element:
+        {
+          name: 'Jewellery',
+          data: [
+            {
+              x: 'Jewellery',
+              y: 6,
+              info: [{ type: 'info 1', value: 10 }, { type: 'info 2', value: 20 }],
+            }
+          ],
+        },
+        color: ChartColors.JEWELLERY
+      },
+    },
+    {
+      item: {
+        element:
+        {
+          name: 'Repair',
+          data: [
+            {
+              x: 'Repair',
+              y: 5,
+              info: [{ type: 'info 1', value: 10 }, { type: 'info 2', value: 20 }],
+            }
+          ],
+        },
+        color: ChartColors.REPAIR
+      },
+    },
+    {
+      item: {
+        element:
+        {
+          name: 'Giftcard',
+          data: [
+            {
+              x: 'Giftcard',
+              y: 2,
+              info: [{ type: 'info 1', value: 10 }, { type: 'info 2', value: 20 }],
+            }
+          ],
+        },
+        color: ChartColors.GIFTCARD
+      },
+    },
+    {
+      item: {
+        element:
+        {
+          name: 'Gold purchase',
+          data: [
+            {
+              x: 'Gold purchase',
+              y: 2,
+              info: [{ type: 'info 1', value: 10 }, { type: 'info 2', value: 20 }],
+            }
+          ],
+        },
+        color: ChartColors.GOLD_PURCHASE
+      },
+    },
+    {
+      item: {
+        element:
+        {
+          name: 'Discounts',
+          data: [
+            {
+              x: 'Discounts',
+              y: -5,
+              info: [{ type: 'info 1', value: 10 }, { type: 'info 2', value: 20 }],
+            }
+          ],
+        },
+        color: ChartColors.DISCOUNTS
+      },
+    }
+  ];
 
   aPaymentMethodTitles: any = [
     { type: "Card", value: 7 },
@@ -394,8 +483,23 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
   loadStatisticsTabData() {
 
     this.statisticsChartOptions = {
-      series: this.aStatisticsChartData.map((el: any) => el.element),
-      colors: this.aStatisticsChartData.map((el: any) => el.color),
+      series: this.aStatisticsChartData.map((el: any) => el.item.element),
+      colors: this.aStatisticsChartData.map((el: any) => el.item.color),
+      tooltip: {
+        custom: function ({ series, seriesIndex, dataPointIndex, w }: any) {
+          let data = w.globals.initialSeries[seriesIndex].data[dataPointIndex];
+
+          let html = `<div>
+          <div style="background:#E4E6EF;padding:10px">${data.x}</div>
+          <ul style='list-style-type:circle;padding:5px 15px;margin:5px;line-height:1.5'>`;
+          data.info.forEach((el: any) => {
+            html += `<li><span>${el.type}:<span><span style="margin:10px 5px;font-weight:bold"> € ${el.value}</span></li>`;
+          });
+          html += "</ul><div>"
+
+          return html;
+        }
+      },
       chart: {
         type: "bar",
         height: 350
@@ -414,12 +518,13 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
         }
       },
       xaxis: {
-        categories: [
-          "Till toady",
-        ],
-        labels: {
-          rotate: -90
-        }
+        type: 'category',
+        // categories: [
+        //   "Till toady",
+        // ],
+        // labels: {
+        //   rotate: -90
+        // }
       }
     };
 
