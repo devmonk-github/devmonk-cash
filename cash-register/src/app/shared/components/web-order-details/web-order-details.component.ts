@@ -284,8 +284,9 @@ export class WebOrderDetailsComponent implements OnInit {
             if(item.iStockLocationId) this.setSelectedBusinessLocation(item.iStockLocationId, i, j)
         }
       }
-      if(completed == this.activityItems.length) this.FeStatus = 'completed';
-      else this.FeStatus = `Partly Completed (Refunded: ${refunded}/${this.activityItems.length})`;
+      if(completed == this.activityItems.length) { this.FeStatus = `completed (Refunded: ${refunded}/${this.activityItems.length})`}
+      else if(completed) { this.FeStatus = `Partly Completed (Refunded: ${refunded}/${this.activityItems.length})`}
+      else this.FeStatus = 'New';
       // for(let i = 0; i < this.transactions.length; i++){
       //   const obj = this.transactions[i];
       //   this.totalPrice += obj.nPaymentAmount;

@@ -79,7 +79,8 @@ export class ActivityDetailsComponent implements OnInit {
   ngOnInit(): void {
     this.activity = this.dialogRef.context.activity;
     this.items = this.dialogRef.context.activity;
-    if (this.items.length) {
+    // if (this.items.length) {
+    if (this.activity) {
       const items = JSON.parse(JSON.stringify(this.activity));
       this.activityItems = [items]
     } else {
