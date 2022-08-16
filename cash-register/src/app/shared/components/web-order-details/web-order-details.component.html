@@ -50,7 +50,15 @@
                     <span>{{ "OVERVIEW" | translate }}</span>
                 </h3>
                 <div class="col-md-8 row fw-bold gy-1">
-                    <div class="col-md-12">
+                    <label class="col-md-4 mb-3 text-muted">{{"ACTIVITY_NUMBER" | translate}} : </label>
+                    <div class="col-md-8 mb-3">
+                        <div class="text-gray-800">{{activity.sNumber}}</div>
+                    </div>
+                    <label class="col-md-4 mt-3 mb-3 text-muted">{{"TRANSACTION_NUMBER" | translate}} : </label>
+                    <div class="col-md-8 mt-3 mb-3">
+                        <div class="text-gray-800">{{activityItems[0]?.receipts[0]?.sTransactionNumber}}</div>
+                    </div>
+                    <div class="col-md-12 mb-3">
                         <select name="status" id="status" class="form-select" [(ngModel)]="activity.eActivityStatus" placeholder="Order status" (ngModelChange)="changeStatusForAll(activity.eActivityStatus)">
                             <option *ngFor="let status of statuses" [value]="status">{{status}}</option>
                         </select>
@@ -151,9 +159,10 @@
                                         </div>
                                     </td>
                                     <td *ngIf="!item?.bRefund">
-                                        <select name="status" id="status" class="form-select" [(ngModel)]="item.eActivityItemStatus" (ngModelChange)="updateActivityItem(item)">
-                                            <option *ngFor="let status of statuses" [value]="status">{{status}}</option>
+                                        <select *ngIf="item.eActivityItemStatus != 'refundInCashRegister'" name="status" id="status" class="form-select" [(ngModel)]="item.eActivityItemStatus" (ngModelChange)="updateActivityItem(item)">
+                                            <option *ngFor="let status of statusesForItems" [value]="status">{{status}}</option>
                                         </select>
+                                        <input *ngIf="item.eActivityItemStatus == 'refundInCashRegister'" type="text" [disabled]="true" [(ngModel)]="item.eActivityItemStatus" class="form-control">
                                     </td>
                                     <td *ngIf="item?.bRefund"></td>
                                     <td>{{item?.nPriceIncVat}}</td>
@@ -192,7 +201,7 @@
                                     <td>{{item?.nVatRate || 0}}</td>
                                     <td>
                                         <div>{{item?.nPriceIncVat || 0}}</div>
-                                        <div class="fw-bold fs-6 text-gray-800 border-bottom-2 border-gray-200 text-muted">
+                                        <div *ngIf="item.receipts.length > 1" class="fw-bold fs-6 text-gray-800 border-bottom-2 border-gray-200 text-muted">
                                             <button class="btn btn-primary-sm" (click)="item.showMore = !item.showMore">
                                                 show more
                                                 <fa-icon [icon] ="item.showMore ? faArrowUp : faArrowDown"></fa-icon>

@@ -17,6 +17,7 @@ export class WebOrderDetailsComponent implements OnInit {
   activityItems: Array<any> = [];
   business: any;
   statuses = ['new', 'processing', 'cancelled', 'completed', 'refund', 'refundInCashRegister'];
+  statusesForItems = ['new', 'processing', 'cancelled', 'completed', 'refund'];
   FeStatus = '';
   carriers = ['PostNL', 'DHL', 'DPD', 'bpost', 'other'];
   faTimes = faTimes;
@@ -79,6 +80,9 @@ export class WebOrderDetailsComponent implements OnInit {
     if(this.from == 'web-orders'){
       const index = this.statuses.indexOf('cancelled');
       if (index > -1) this.statuses.splice(index, 1);
+
+      const index2 = this.statusesForItems.indexOf('cancelled');
+      if (index > -1) this.statusesForItems.splice(index2, 1);
     }
     this.iLocationId = localStorage.getItem("currentLocation") || '';
     if(this.activity?.iCustomerId) this.fetchCustomer(this.activity.iCustomerId, -1);
