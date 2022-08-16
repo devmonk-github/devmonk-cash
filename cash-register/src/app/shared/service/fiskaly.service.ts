@@ -144,23 +144,10 @@ export class FiskalyService {
       fiskalyAuth = await this.loginToFiskaly();
     }
     const location = localStorage.getItem('currentLocation') || 'asperen';
-    const finalUrl = `${this.fiskalyURL}/tss`;
-    let httpHeaders = {
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${fiskalyAuth.access_token}` }
-    };
-    const result = await this.httpClient.get<any>(finalUrl, httpHeaders).toPromise();
-    let tss = result.data.find((o: any) => o.metadata.location === location);
-    if (!tss) {
-      tss = await this.createTSS().toPromise();
-    }
-    // admin_puk
-    if (tss.state !== 'INITIALIZED') {
-      await this.changeStateTSS(tss._id, 'UNINITIALIZED').toPromise();
-      await this.authenticateAdmin(tss);
-      await this.changeStateTSS(tss._id, 'INITIALIZED').toPromise();
-    }
-    localStorage.setItem('tssId', tss._id);
-    return tss._id;
+    const iBusinessId = localStorage.getItem('currentBusiness');
+    const result: any = await this.apiService.postNew('fiskaly', `/api/v1/tss/fetch-tss/${iBusinessId}`, { fiskalyToken: fiskalyAuth.access_token, location }).toPromise();
+    localStorage.setItem('tssId', result.tssInfo._id);
+    return result.tssInfo._id;
   }
 
   createTSS(): Observable<any> {

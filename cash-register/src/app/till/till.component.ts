@@ -951,6 +951,7 @@ export class TillComponent implements OnInit, AfterViewInit {
       console.log(error);
     }
   }
+
   async updateFiskalyTransaction(state: string, payments: []) {
     const pay = _.clone(payments);
     try {

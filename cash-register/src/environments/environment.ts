@@ -13,6 +13,7 @@ export const environment = {
   ORGANIZATION_URL: 'http://localhost:3001',
   LOG_URL: 'http://localhost:3003',
   WEBSITE_URL: 'http://localhost:3010',
+  FISKALY_URL: 'http://localhost:3020',
   apiBasePath: 'http://localhost',
   apiURL: 'http://localhost:3000',
   oldPlatformUrl: `http://localhost:3000/`, // https://kassa.prismanote.com,
