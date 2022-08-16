@@ -20,9 +20,9 @@ export class FiskalyService {
 
 
   async loginToFiskaly() {
-    const result: any = await this.apiService.postNew('auth', '/api/v1/fiskaly/login', {}).toPromise();
-    localStorage.setItem('fiskalyAuth', JSON.stringify(result.data));
-    return result.data;
+    const result = await this.apiService.postNew('fiskaly', '/api/v1/fiskaly/login', {}).toPromise();
+    localStorage.setItem('fiskalyAuth', JSON.stringify(result));
+    return result;
   }
 
   async startTransaction() {
@@ -129,9 +129,9 @@ export class FiskalyService {
     if (clientId) {
       return clientId;
     }
-    const client = await this.createClient(tssId);
-    localStorage.setItem('clientId', client._id);
-    return client.Id;
+    const client: any = await this.createClient(tssId);
+    localStorage.setItem('clientId', client.clientInfo._id);
+    return client.clientInfo._id;
   }
   async fetchTSS() {
     const tssId = localStorage.getItem('tssId');
@@ -150,94 +150,58 @@ export class FiskalyService {
     return result.tssInfo._id;
   }
 
-  createTSS(): Observable<any> {
-    const guid = uuidv4();
-    let fiskalyAuth: any = localStorage.getItem('fiskalyAuth');
-    fiskalyAuth = JSON.parse(fiskalyAuth);
-    const body = {
-      metadata: {
-        location: localStorage.getItem('currentLocation') || 'asperen',
-      },
-    };
-    const finalUrl = `${this.fiskalyURL}/tss/${guid}`;
-    let httpHeaders = {
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${fiskalyAuth.access_token}` }
-    };
-    return this.httpClient.put<any>(finalUrl, body, httpHeaders).pipe(retry(1));
-  }
-
-  changeStateTSS(tssId: string, state: string): Observable<any> {
-    let fiskalyAuth: any = localStorage.getItem('fiskalyAuth');
-    fiskalyAuth = JSON.parse(fiskalyAuth);
-
-    const body = {
-      state,
-    };
-
-    const finalUrl = `${this.fiskalyURL}/tss/${tssId}`;
-    let httpHeaders = {
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${fiskalyAuth.access_token}` }
-    };
-    return this.httpClient.patch<any>(finalUrl, body, httpHeaders).pipe(retry(1));
-  }
-
   async createClient(tssId: string) {
-    const guid = uuidv4();
-    let fiskalyAuth: any = localStorage.getItem('fiskalyAuth');
-
-    fiskalyAuth = JSON.parse(fiskalyAuth);
-
-    const body = {
-      serial_number: `ERS ${guid}`,
-      metadata: {
-        location: localStorage.getItem('currentLocation') || 'asperen',
-        currentWorkstation: localStorage.getItem('currentWorkstation')
-      }
-    };
-
-    const finalUrl = `${this.fiskalyURL}/tss/${tssId}/client/${guid}`;
-    let httpHeaders = {
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${fiskalyAuth.access_token}` }
-    };
-    return await this.httpClient.put<any>(finalUrl, body, httpHeaders).pipe(retry(1)).toPromise();
-  }
-
-  async changeAdminPin(tss: any) {
-    const tssId = tss._id;
-    const finalUrl = `/api/v1/fiskaly/${tssId}/change-admin-pin`;
     let fiskalyAuth: any = localStorage.getItem('fiskalyAuth');
     fiskalyAuth = JSON.parse(fiskalyAuth);
-    const body = {
-      newAdminPin: '1234567890', fiskalyToken: fiskalyAuth.access_token, adminPuk: tss.admin_puk
+    const iBusinessId = localStorage.getItem('currentBusiness');
+    if (!fiskalyAuth) {
+      fiskalyAuth = await this.loginToFiskaly();
     }
-    await this.apiService.postNew('auth', finalUrl, body).pipe(retry(1)).toPromise();
+    const body = {
+      fiskalyToken: fiskalyAuth.access_token,
+      location: localStorage.getItem('currentLocation') || 'asperen',
+      currentWorkstation: localStorage.getItem('currentWorkstation'),
+      tssId
+    };
+    return await this.apiService.postNew('fiskaly', `/api/v1/tss/fetch-client/${iBusinessId}`, body).toPromise();
   }
 
-  async authenticateAdmin(tss: any) {
-    try {
-      const tssId = tss._id;
-      let fiskalyAuth: any = localStorage.getItem('fiskalyAuth');
-      fiskalyAuth = JSON.parse(fiskalyAuth);
-      if (!fiskalyAuth) {
-        fiskalyAuth = this.loginToFiskaly();
-      }
-      const body = {
-        admin_pin: '1234567890',
-      };
-      const finalUrl = `${this.fiskalyURL}/tss/${tssId}/admin/auth`;
-      let httpHeaders = {
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${fiskalyAuth.access_token}` }
-      };
-      await this.httpClient.post<any>(finalUrl, body, httpHeaders).pipe(retry(1)).toPromise();
-      return true;
-    } catch (error: any) {
-      if (error.status === 401) {
-        await this.changeAdminPin(tss);
-        await this.authenticateAdmin(tss);
-        return true;
-      } else {
-        return false;
-      }
-    }
-  }
+  // async changeAdminPin(tss: any) {
+  //   const tssId = tss._id;
+  //   const finalUrl = `/api/v1/fiskaly/${tssId}/change-admin-pin`;
+  //   let fiskalyAuth: any = localStorage.getItem('fiskalyAuth');
+  //   fiskalyAuth = JSON.parse(fiskalyAuth);
+  //   const body = {
+  //     newAdminPin: '1234567890', fiskalyToken: fiskalyAuth.access_token, adminPuk: tss.admin_puk
+  //   }
+  //   await this.apiService.postNew('auth', finalUrl, body).pipe(retry(1)).toPromise();
+  // }
+
+  // async authenticateAdmin(tss: any) {
+  //   try {
+  //     const tssId = tss._id;
+  //     let fiskalyAuth: any = localStorage.getItem('fiskalyAuth');
+  //     fiskalyAuth = JSON.parse(fiskalyAuth);
+  //     if (!fiskalyAuth) {
+  //       fiskalyAuth = this.loginToFiskaly();
+  //     }
+  //     const body = {
+  //       admin_pin: '1234567890',
+  //     };
+  //     const finalUrl = `${this.fiskalyURL}/tss/${tssId}/admin/auth`;
+  //     let httpHeaders = {
+  //       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${fiskalyAuth.access_token}` }
+  //     };
+  //     await this.httpClient.post<any>(finalUrl, body, httpHeaders).pipe(retry(1)).toPromise();
+  //     return true;
+  //   } catch (error: any) {
+  //     if (error.status === 401) {
+  //       await this.changeAdminPin(tss);
+  //       await this.authenticateAdmin(tss);
+  //       return true;
+  //     } else {
+  //       return false;
+  //     }
+  //   }
+  // }
 }
