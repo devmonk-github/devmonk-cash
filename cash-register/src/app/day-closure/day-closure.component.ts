@@ -17,6 +17,7 @@ export class DayClosureComponent implements OnInit, OnDestroy {
   iWorkstationId: any;
   closingDayState: boolean = false;
   bIsDayStateOpened: boolean = false;
+  bIsDayStateOpenLoading: boolean = false;
   closeSubscription !: Subscription;
   constructor(
     private apiService: ApiService,
@@ -81,14 +82,15 @@ export class DayClosureComponent implements OnInit, OnDestroy {
       iLocationId: this.iLocationId,
       iWorkstationId: this.iWorkstationId
     }
+    this.bIsDayStateOpenLoading = true;
     this.apiService.postNew('cashregistry', `/api/v1/statistics/day-closure/check`, oBody).subscribe((result: any) => {
+      this.bIsDayStateOpenLoading = false;
       if (result?.data?.bIsDayStateOpened && result?.data?.oStatisticDetail?._id) {
         this.bIsDayStateOpened = true;
-        console.log('isAnyDayStateOpened: ', this.bIsDayStateOpened, result.data.oStatisticDetail._id);
-        // { queryParams: { dStartDate: result.data.oStatisticDetail.dOpenDate } }
         this.router.navigate(['../transactions-audit/view', result.data.oStatisticDetail._id], { relativeTo: this.route, queryParams: { dStartDate: result.data.oStatisticDetail.dOpenDate } })
       }
     }, (error) => {
+      this.bIsDayStateOpenLoading = false;
       console.error('Error here: ', error);
       this.toastService.show({ type: 'warning', text: `Day-state is not closed` });
     })

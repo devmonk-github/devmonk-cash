@@ -4,7 +4,7 @@ import { Observable, Subscription } from 'rxjs';
 import { ApiService } from 'src/app/shared/service/api.service';
 import { PdfService } from 'src/app/shared/service/pdf2.service';
 import * as _moment from 'moment';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ToastService } from 'src/app/shared/components/toast';
 const moment = (_moment as any).default ? (_moment as any).default : _moment;
 
@@ -131,6 +131,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
     private pdf: PdfService,
     private translate: TranslateService,
     private route: ActivatedRoute,
+    private router: Router,
     private toastService: ToastService
   ) {
     this.iBusinessId = localStorage.getItem('currentBusiness') || '';
@@ -1359,7 +1360,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
     if (
       this.sDisplayMethod === 'revenuePerProperty'
     ) {
-      data.oFilterBy.aPropertyIds = item.aPropertyIds
+      data.oFilterBy.aPropertyOptionIds = item.aPropertyOptionIds
     }
 
     item.isLoading = true;
@@ -1367,6 +1368,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
       (result: any) => {
         item.isLoading = false;
         if (result?.data[0]?.result?.length) {
+          console.log('expandItem response: ', result?.data[0]?.result);
           item.aTransactionItems = result.data[0].result;
         }
       });
@@ -1417,12 +1419,14 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
       iWorkstationId: this.iWorkstationId,
       iStatisticId: this.iStatisticId
     }
+
     this.closingDayState = true;
     if (event) event.target.disabled = true;
     this.closeSubscription = this.apiService.postNew('cashregistry', `/api/v1/statistics/close/day-state`, oBody).subscribe((result: any) => {
       this.toastService.show({ type: 'success', text: `Day-state is close now` });
       this.closingDayState = false;
       if (event) event.target.disabled = false;
+      // this.router.navigate(['../transactions-audit'])
     }, (error) => {
       console.log('Error: ', error);
       this.toastService.show({ type: 'warning', text: 'Something went wrong or open the day-state first' });
