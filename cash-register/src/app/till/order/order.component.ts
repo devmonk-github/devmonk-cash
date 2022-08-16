@@ -121,6 +121,7 @@ export class OrderComponent implements OnInit {
                 if (option?.sCode?.trim() != '') {
                   let opt: any = {
                     iPropertyId: property._id,
+                    iPropertyOptionId: option?._id,
                     sPropertyName: property.sName,
                     oProperty: {
                     },
