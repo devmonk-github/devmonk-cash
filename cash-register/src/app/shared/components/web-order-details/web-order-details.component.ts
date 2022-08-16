@@ -17,6 +17,7 @@ export class WebOrderDetailsComponent implements OnInit {
   activityItems: Array<any> = [];
   business: any;
   statuses = ['new', 'processing', 'cancelled', 'completed', 'refund', 'refundInCashRegister'];
+  FeStatus = '';
   carriers = ['PostNL', 'DHL', 'DPD', 'bpost', 'other'];
   faTimes = faTimes;
   faDownload = faDownload;
@@ -187,7 +188,8 @@ export class WebOrderDetailsComponent implements OnInit {
           this.activityItems.forEach((obj: any)=>{
             obj.eActivityItemStatus = this.activity.eActivityStatus;
           })
-          this.updateActivity()
+          // Need to find out some other option to change the status in this case.
+          // this.updateActivity()
 
           setTimeout(() => {
             this.close(true);
@@ -266,10 +268,13 @@ export class WebOrderDetailsComponent implements OnInit {
     this.apiService.postNew('cashregistry', url, this.requestParams).subscribe((result: any) => {
       this.activityItems = result.data[0].result;
       this.loading = false;
+      let completed = 0, refunded = 0;
       // this.transactions = [];
       for(let i = 0; i < this.activityItems.length; i++){
         // for(const item of obj.receipts){
         const obj = this.activityItems[i];
+        if(obj.eActivityItemStatus == 'completed' || obj.eActivityItemStatus == 'refund' || obj.eActivityItemStatus == 'refundInCashRegister') completed += 1;
+        if(obj.eActivityItemStatus == 'refund' || obj.eActivityItemStatus == 'refundInCashRegister') refunded += 1;
         this.fetchCustomer(obj.iCustomerId, i);
         for(let j = 0; j < obj.receipts.length; j++){
           // this.transactions.push({ ...item, ...obj });
@@ -279,6 +284,8 @@ export class WebOrderDetailsComponent implements OnInit {
             if(item.iStockLocationId) this.setSelectedBusinessLocation(item.iStockLocationId, i, j)
         }
       }
+      if(completed == this.activityItems.length) this.FeStatus = 'completed';
+      else this.FeStatus = `Partly Completed (Refunded: ${refunded}/${this.activityItems.length})`;
       // for(let i = 0; i < this.transactions.length; i++){
       //   const obj = this.transactions[i];
       //   this.totalPrice += obj.nPaymentAmount;

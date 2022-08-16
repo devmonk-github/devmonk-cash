@@ -55,6 +55,10 @@
                             <option *ngFor="let status of statuses" [value]="status">{{status}}</option>
                         </select>
                     </div>
+                    <label class="col-md-4 mt-3 mt-3 text-muted">{{"STATUS" | translate}} : </label>
+                    <div class="col-md-8 mt-3 mt-3">
+                        <div class="text-gray-800">{{FeStatus}}</div>
+                    </div>
                     <label *ngIf="activity.eActivityStatus == 'completed'" class="col-md-4 mt-5 text-muted">{{"SHIPPING_METHOD" | translate}} : </label>
                     <div *ngIf="activity.eActivityStatus == 'completed'" class="col-md-8 mt-5">
                         <div class="text-gray-800">Completed</div>
@@ -128,7 +132,7 @@
                                     </td>
                                     <td>
                                         <div>
-                                            {{item?.sProductName}}
+                                            {{item?.receipts[0]?.sProductNumber}}
                                         </div>
                                         <br>
                                         <div *ngIf="item?.aProductVariant?.length > 0">
