@@ -133,7 +133,7 @@ export class TransactionsSearchComponent implements OnInit, AfterViewInit {
                 tax: transactionItem.nVatRate,
                 oGoldFor: transactionItem.oGoldFor,
                 paymentAmount,
-                description: '',
+                description: transactionItem.sDescription,
                 open: true,
               });
             }

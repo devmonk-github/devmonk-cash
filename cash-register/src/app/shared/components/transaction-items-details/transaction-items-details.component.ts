@@ -42,7 +42,8 @@ export class TransactionItemsDetailsComponent implements OnInit {
       'dCreatedDate',
       'dUpdatedDate',
       'iActivityItemId',
-      'oArticleGroupMetaData']
+      'oArticleGroupMetaData',
+      'sDescription']
   };
   constructor(
     private viewContainerRef: ViewContainerRef,
