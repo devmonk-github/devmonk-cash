@@ -109,12 +109,12 @@
                 <div class="accordion" id="kt_accordion_1">
                     <div class="accordion-item" *ngFor="let activity of activityItems; index as index">
                         <h2 class="accordion-header">
-                            <button class="accordion-button fs-4 fw-bold collapsed=collapsedBtn" (click)="collapsedBtn = !collapsedBtn" type="button"
-                                data-bs-toggle="collapsedBtn" #accordionBtn>
+                            <button class="accordion-button fs-4 fw-bold" (click)="collapsedBtn = !collapsedBtn" type="button"
+                                data-bs-toggle="collapse" [ngClass]="{'collapsed': collapsedBtn }" #accordionBtn>
                                 <label>{{activity.sNumber}}</label>
                             </button>
                         </h2>
-                        <div class="accordion-collapse collapse=collapsedBtn" data-bs-parent="accordion">
+                        <div class="accordion-collapse collapse" data-bs-parent="accordion" [ngClass]="{'show': collapsedBtn }">
                             <div class="accordion-body">
                                 <div class="row">
                                     <div class="col-4">
