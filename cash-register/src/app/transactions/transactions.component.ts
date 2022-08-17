@@ -30,6 +30,10 @@ export class TransactionsComponent implements OnInit {
   businessDetails: any = {};
   userType: any = {};
   requestParams: any = {
+    paymentMethods: [],
+    selectedMethods: [],
+    TIEkinds: ['regular', 'giftcard', 'repair', 'order', 'gold-purchase', 'gold-sell', 'discount'],
+    selectedTIEKinds: [],
     iBusinessId: "",
     skip: 0,
     limit: 10,
@@ -62,13 +66,11 @@ export class TransactionsComponent implements OnInit {
     endDate: new Date(new Date().setHours(23, 59, 59)),
     startDate: new Date('01-01-2015'),
   }
-  paymentMethods: Array<any> = [];
-  transactionTypes: Array<any> = ['All', 'Refund', 'Repair', 'Gold-purchase', 'Gold-sale'];
+
   transactionStatuses: Array<any> = ['ALL', 'EXPECTED_PAYMENTS', 'NEW', 'CANCELLED', 'FAILED', 'EXPIRED', 'COMPLETED', 'REFUNDED'];
   invoiceStatus: string = 'all';
   importStatus: string = 'all';
   methodValue: string = 'All';
-  transactionValue: string = 'All';
   employee: any = { sFirstName: 'All' };
   employees: Array<any> = [this.employee];
   workstations: Array<any> = [];
@@ -113,8 +115,8 @@ export class TransactionsComponent implements OnInit {
   getPaymentMethods() {
     this.apiService.getNew('cashregistry', '/api/v1/payment-methods/' + this.requestParams.iBusinessId).subscribe((result: any) => {
       if (result && result.data && result.data.length) {
-        this.paymentMethods = [ { sName: 'All' }, ...result.data.map((v: any) => ({ ...v, isDisabled: false })) ]
-        this.paymentMethods.forEach((element: any) => {
+        this.requestParams.paymentMethods = [ ...result.data.map((v: any) => ({ ...v, isDisabled: false })) ]
+        this.requestParams.paymentMethods.forEach((element: any) => {
           element.sName = element.sName.toLowerCase();
         });
       }
@@ -152,7 +154,6 @@ export class TransactionsComponent implements OnInit {
     this.requestParams.invoiceStatus = this.invoiceStatus;
     this.requestParams.importStatus = this.importStatus;
     this.requestParams.methodValue = this.methodValue;
-    this.requestParams.transactionValue = this.transactionValue;
     this.requestParams.iEmployeeId = this.employee && this.employee._id ? this.employee._id : '';
     this.requestParams.iWorkstationId = undefined // we need to work on this once devides are available.
     this.requestParams.workstations = this.selectedWorkstations;

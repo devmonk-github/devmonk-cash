@@ -60,19 +60,18 @@
               <div class="col-lg-4">
                 <label class="fs-6 form-label fw-bolder text-dark">{{ 'PAYMENT_METHOD' | translate }}</label>
                 <!--begin::Select-->
-                <ng-select class="form-control form-control-solid p-0" [(ngModel)]="methodValue" [clearable]="false">
-                  <ng-option *ngFor="let method of paymentMethods" [value]="method">{{method.sName}}</ng-option>
+                <ng-select class="form-control form-control-solid p-0" [(ngModel)]="requestParams.selectedMethods" [clearable]="false" [multiple]="true">
+                  <ng-option *ngFor="let method of requestParams.paymentMethods" [value]="method.sName">{{method.sName}}</ng-option>
                 </ng-select>
                 <!--end::Select-->
               </div>
               <!--end::Col-->
               <!--begin::Col-->
               <div class="col-lg-4">
-                <label class="fs-6 form-label fw-bolder text-dark">{{ 'TRANSACTION_TYPE' | translate }}</label>
+                <label class="fs-6 form-label fw-bolder text-dark">{{ 'TRANSACTION_ITEM_EKINDS' | translate }}</label>
                 <!--begin::Select-->
-                <ng-select class="form-control form-control-solid p-0" [(ngModel)]="transactionValue"
-                  [clearable]="false">
-                  <ng-option *ngFor="let type of transactionTypes" [value]="type">{{type}}</ng-option>
+                <ng-select class="form-control form-control-solid p-0" [(ngModel)]="requestParams.selectedTIEKinds" [clearable]="false" [multiple]="true">
+                  <ng-option *ngFor="let type of requestParams.TIEkinds" [value]="type">{{type}}</ng-option>
                 </ng-select>
                 <!--end::Select-->
               </div>
@@ -113,7 +112,7 @@
             <!--begin::Row-->
             <div class="row g-4">
               <!--begin::Col-->
-              <div class="col-lg-6">
+              <div class="col-lg-6" [hidden]="true">
                 <label class="fs-6 form-label fw-bolder text-dark">{{ 'INVOICE_STATUS' | translate }}</label>
                 <!--begin::Radio group-->
                 <div class="nav-group nav-group-fluid">
