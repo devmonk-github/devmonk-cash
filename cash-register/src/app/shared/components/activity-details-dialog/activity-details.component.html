@@ -55,7 +55,7 @@
                     </div>
                 </div>
             </div>
-            <div *ngIf="from == 'services'" class="col-md-8 row">
+            <!-- <div *ngIf="from == 'services'" class="col-md-8 row">
                 <h3 class="fw-bolder mb-4">
                     <span>{{ "OVERVIEW" | translate }}</span>
                 </h3>
@@ -103,18 +103,18 @@
                         <label class="mx-auto">Deliver</label>
                     </button>
                 </div>
-            </div>
-            <div *ngIf="from == 'activity-items'" class="col-9">
+            </div> -->
+            <div class="col-9">
                 <h4>Activities</h4>
                 <div class="accordion" id="kt_accordion_1">
                     <div class="accordion-item" *ngFor="let activity of activityItems; index as index">
                         <h2 class="accordion-header">
-                            <button class="accordion-button fs-4 fw-bold collapsed" type="button"
-                                data-bs-toggle="collapse" #accordionBtn>
+                            <button class="accordion-button fs-4 fw-bold collapsed=collapsedBtn" (click)="collapsedBtn = !collapsedBtn" type="button"
+                                data-bs-toggle="collapsedBtn" #accordionBtn>
                                 <label>{{activity.sNumber}}</label>
                             </button>
                         </h2>
-                        <div class="accordion-collapse collapse" data-bs-parent="accordion">
+                        <div class="accordion-collapse collapse=collapsedBtn" data-bs-parent="accordion">
                             <div class="accordion-body">
                                 <div class="row">
                                     <div class="col-4">

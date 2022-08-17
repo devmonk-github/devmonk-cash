@@ -17,7 +17,7 @@ export class WebOrderDetailsComponent implements OnInit {
   activityItems: Array<any> = [];
   business: any;
   statuses = ['new', 'processing', 'cancelled', 'completed', 'refund', 'refundInCashRegister'];
-  statusesForItems = ['new', 'processing', 'cancelled', 'completed', 'refund'];
+  statusesForItems = ['new', 'processing', 'cancelled', 'completed'];
   FeStatus = '';
   carriers = ['PostNL', 'DHL', 'DPD', 'bpost', 'other'];
   faTimes = faTimes;
@@ -93,18 +93,19 @@ export class WebOrderDetailsComponent implements OnInit {
     this.fetchTransactionItems();
   }
 
-  deliver(){
+  deliver(type: string){
     const transactions = []
     for(const item of this.activityItems){
       for(const receipt of item.receipts) { transactions.push({ ...receipt, iActivityItemId: item._id }) }
     }
-    this.createStockCorrections(transactions)
+    this.createStockCorrections(transactions, type)
   }
 
-  createStockCorrections(transactions: any) {
+  createStockCorrections(transactions: any, type: string) {
     transactions.iBusinessId = this.iBusinessId;
     const data = {
       transactions,
+      type,
       activity: this.activity,
       iBusinessId : this.iBusinessId
     }
@@ -279,10 +280,11 @@ export class WebOrderDetailsComponent implements OnInit {
         const obj = this.activityItems[i];
         if(obj.eActivityItemStatus == 'completed' || obj.eActivityItemStatus == 'refund' || obj.eActivityItemStatus == 'refundInCashRegister') completed += 1;
         if(obj.eActivityItemStatus == 'refund' || obj.eActivityItemStatus == 'refundInCashRegister') refunded += 1;
-        this.fetchCustomer(obj.iCustomerId, i);
+        if(obj?.iCustomerId) this.fetchCustomer(obj.iCustomerId, i);
         for(let j = 0; j < obj.receipts.length; j++){
           // this.transactions.push({ ...item, ...obj });
             const item = obj.receipts[j];
+            if(!item.iStockLocationId && item.iLocationId) item.iStockLocationId = item.iLocationId;
             this.totalPrice += item.nPaymentAmount;
             this.quantity += item.bRefund ? (- item.nQuantity) : item.nQuantity
             if(item.iStockLocationId) this.setSelectedBusinessLocation(item.iStockLocationId, i, j)

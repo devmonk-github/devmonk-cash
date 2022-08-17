@@ -77,7 +77,7 @@
                             <option *ngFor="let carrier of carriers" [value]="carrier">{{carrier}}</option>
                         </select>
                     </div>
-                    <input type="text" name="activityName" [(ngModel)]="activity.sTrackingNumber" placeholder="Track and trace the order" class="form-control" (ngModelChange)="changeTrackingNumberForAll(activity.sTrackingNumber)">
+                    <input *ngIf="showDeliverBtn" type="text" name="activityName" [(ngModel)]="activity.sTrackingNumber" placeholder="Track and trace the order" class="form-control" (ngModelChange)="changeTrackingNumberForAll(activity.sTrackingNumber)">
                 </div>
                 <div class="col-md-4">
                     <button class="btn btn-sm btn-secondary w-100 d-flex">
@@ -95,13 +95,13 @@
                         <fa-icon [icon]="faDownload"></fa-icon>
                         <label class="mx-auto">Download pdf</label>
                     </button>
-                    <button *ngIf="activity.eActivityStatus == 'completed'" class="btn btn-sm btn-primary w-100 d-flex mt-5">
+                    <button *ngIf="activity.eActivityStatus == 'completed'" [disabled]="!showDeliverBtn" class="btn btn-sm btn-primary w-100 d-flex mt-5" (click)="deliver('sentToCustomer')">
                         <label class="mx-auto">Sent to customer</label>
                     </button>
                     <button *ngIf="activity.eActivityStatus == 'completed'" class="btn btn-sm btn-secondary w-100 d-flex">
                         <label class="mx-auto">Ready to pick up</label>
                     </button>
-                    <button *ngIf="activity.eActivityStatus == 'completed'" [disabled]="!showDeliverBtn" class="btn btn-sm btn-secondary w-100 d-flex" (click)="deliver()">
+                    <button *ngIf="activity.eActivityStatus == 'completed'" [disabled]="!showDeliverBtn" class="btn btn-sm btn-secondary w-100 d-flex" (click)="deliver('deliver')">
                         <label class="mx-auto">Deliver</label>
                     </button>
                 </div>
@@ -162,7 +162,7 @@
                                         <select *ngIf="item.eActivityItemStatus != 'refundInCashRegister'" name="status" id="status" class="form-select" [(ngModel)]="item.eActivityItemStatus" (ngModelChange)="updateActivityItem(item)">
                                             <option *ngFor="let status of statusesForItems" [value]="status">{{status}}</option>
                                         </select>
-                                        <input *ngIf="item.eActivityItemStatus == 'refundInCashRegister'" type="text" [disabled]="true" [(ngModel)]="item.eActivityItemStatus" class="form-control">
+                                        <input *ngIf="item.eActivityItemStatus == 'refundInCashRegister' || item.eActivityItemStatus == 'refund'" type="text" [disabled]="true" [(ngModel)]="item.eActivityItemStatus" class="form-control">
                                     </td>
                                     <td *ngIf="item?.bRefund"></td>
                                     <td>{{item?.nPriceIncVat}}</td>

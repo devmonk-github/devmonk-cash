@@ -39,6 +39,7 @@ export class ActivityDetailsComponent implements OnInit {
   itemType = 'transaction';
   customerReceiptDownloading: Boolean = false;
   loading: Boolean = false;
+  collapsedBtn: Boolean = false;
   iBusinessId = localStorage.getItem('currentBusiness');
   transactions: Array<any> = [];
   totalPrice: Number = 0;
@@ -83,6 +84,7 @@ export class ActivityDetailsComponent implements OnInit {
     if (this.activity) {
       const items = JSON.parse(JSON.stringify(this.activity));
       this.activityItems = [items]
+      if(this.activityItems.length = 1) this.collapsedBtn = true;
     } else {
       this.fetchTransactionItems();
     }
