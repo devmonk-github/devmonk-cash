@@ -31,6 +31,10 @@ export class ServicesComponent implements OnInit {
   businessDetails: any = {};
   userType: any = {};
   requestParams: any = {
+    transactionStatuses: ['new', 'processing', 'cancelled', 'inspection', 'completed', 'refund', 'refundInCashRegister'],
+    selectedTransactionStatuses: [],
+    locations: [],
+    selectedLocations: [],
     searchValue: '',
     sortBy: { key: 'Date', selected: true, sort: 'asc' },
     sortOrder: 'asc'
@@ -72,8 +76,6 @@ export class ServicesComponent implements OnInit {
   employees: Array<any> = [this.employee];
   workstations: Array<any> = [];
   selectedWorkstations: Array<any> = [];
-  locations: Array<any> = [];
-  selectedLocations: Array<any> = [];
   iLocationId: String | null | undefined;
   webOrders: Boolean = false;
 
@@ -133,7 +135,7 @@ export class ServicesComponent implements OnInit {
     this.apiService.postNew('core', `/api/v1/business/${this.iBusinessId}/list-location`, {}).subscribe(
       (result: any) => {
         if (result.message == 'success') {
-          this.locations = result.data.aLocation;
+          this.requestParams.locations = result.data.aLocation;
         }
       }),
       (error: any) => {
