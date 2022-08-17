@@ -32,6 +32,8 @@ export class ActivityItemsComponent implements OnInit {
     sortOrder: 'asc',
     selectedRepairStatuses: [],
     selectedWorkstations: [],
+    locations: [],
+    selectedLocations: [],
     selectedTypes: [],
     employee: { sFirstName: 'All' }
   };
@@ -43,8 +45,6 @@ export class ActivityItemsComponent implements OnInit {
   faArrowUp = faLongArrowAltUp;
   faArrowDown = faLongArrowAltDown;
 
-  locations: Array<any> = [];
-  selectedLocations: Array<any> = [];
   showAdvanceSearch = false;
 
   workstations: Array<any> = [];
@@ -136,7 +136,7 @@ export class ActivityItemsComponent implements OnInit {
     this.apiService.postNew('core', `/api/v1/business/${this.businessDetails._id}/list-location`, {}).subscribe(
       (result: any) => {
         if (result.message == 'success') {
-          this.locations = result.data.aLocation;
+          this.requestParams.locations = result.data.aLocation;
         }
       }),
       (error: any) => {
