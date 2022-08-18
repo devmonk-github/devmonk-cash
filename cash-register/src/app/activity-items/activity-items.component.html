@@ -112,9 +112,9 @@
             <td>{{activity?.oCustomer?.sFirstName}} {{activity?.oCustomer?.sLastName}}</td>
             <td>
               <div class="btn-group me-4">
-                <span class="btn btn-primary fs-bold px-6">
-                  <span class="indicator-label" (click)="openActivities(activity)">{{ "VIEW"}}</span>
-                </span>
+                <div class="btn btn-primary fs-bold px-6" (click)="openActivities(activity)">
+                  <span class="indicator-label">{{ "VIEW"}}</span>
+                </div>
               </div>
             </td>
           </tr>
