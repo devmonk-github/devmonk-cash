@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
 import { retry } from 'rxjs/operators';
-import { ApiService } from './api.service';
-import { StringService } from './string.service';
-import { environment } from '../../../environments/environment';
+import { Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { v4 as uuidv4 } from 'uuid';
 import * as _ from 'lodash';
+
+import { ApiService } from './api.service';
+import { StringService } from './string.service';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -27,9 +28,15 @@ export class FiskalyService {
 
   async startTransaction() {
     let fiskalyAuth: any = localStorage.getItem('fiskalyAuth');
+    if (!fiskalyAuth) {
+      fiskalyAuth = await this.loginToFiskaly();
+    }
     fiskalyAuth = JSON.parse(fiskalyAuth);
     const guid = uuidv4();
     let tssId = await this.fetchTSS();
+    if (!tssId) {
+      return;
+    }
     const clientId = await this.getClientId(tssId);
     const body = {
       'state': 'ACTIVE',
@@ -101,7 +108,13 @@ export class FiskalyService {
   }
   async updateFiskalyTransaction(transactionItems: any, payments: any, state: string) {
     let fiskalyAuth: any = localStorage.getItem('fiskalyAuth');
+    if (!fiskalyAuth) {
+      fiskalyAuth = await this.loginToFiskaly();
+    }
     let tssId = await this.fetchTSS();
+    if (!tssId) {
+      return;
+    };
     fiskalyAuth = JSON.parse(fiskalyAuth);
 
     const schema = this.createSchema(transactionItems);
@@ -133,21 +146,29 @@ export class FiskalyService {
     localStorage.setItem('clientId', client.clientInfo._id);
     return client.clientInfo._id;
   }
-  async fetchTSS() {
-    const tssId = localStorage.getItem('tssId');
-    if (tssId) {
-      return tssId;
-    }
+
+  async createTSS(location: string) {
     let fiskalyAuth: any = localStorage.getItem('fiskalyAuth');
     fiskalyAuth = JSON.parse(fiskalyAuth);
     if (!fiskalyAuth) {
       fiskalyAuth = await this.loginToFiskaly();
     }
-    const location = localStorage.getItem('currentLocation') || 'asperen';
     const iBusinessId = localStorage.getItem('currentBusiness');
-    const result: any = await this.apiService.postNew('fiskaly', `/api/v1/tss/fetch-tss/${iBusinessId}`, { fiskalyToken: fiskalyAuth.access_token, location }).toPromise();
-    localStorage.setItem('tssId', result.tssInfo._id);
-    return result.tssInfo._id;
+    return this.apiService.postNew('fiskaly', `/api/v1/tss/create/${iBusinessId}`, { fiskalyToken: fiskalyAuth.access_token, location }).toPromise();
+  }
+
+  async fetchTSS() {
+    let tssId = localStorage.getItem('tssId');
+    if (!tssId) {
+      const location = localStorage.getItem('currentLocation') || 'asperen';
+      const iBusinessId = localStorage.getItem('currentBusiness');
+      const result: any = await this.apiService.getNew('fiskaly', `/api/v1/tss/get/${iBusinessId}/${location}`).toPromise();
+      if (result) {
+        localStorage.setItem('tssId', result._id);
+        tssId = result._id;
+      }
+    }
+    return tssId;
   }
 
   async createClient(tssId: string) {
@@ -166,42 +187,18 @@ export class FiskalyService {
     return await this.apiService.postNew('fiskaly', `/api/v1/tss/fetch-client/${iBusinessId}`, body).toPromise();
   }
 
-  // async changeAdminPin(tss: any) {
-  //   const tssId = tss._id;
-  //   const finalUrl = `/api/v1/fiskaly/${tssId}/change-admin-pin`;
-  //   let fiskalyAuth: any = localStorage.getItem('fiskalyAuth');
-  //   fiskalyAuth = JSON.parse(fiskalyAuth);
-  //   const body = {
-  //     newAdminPin: '1234567890', fiskalyToken: fiskalyAuth.access_token, adminPuk: tss.admin_puk
-  //   }
-  //   await this.apiService.postNew('auth', finalUrl, body).pipe(retry(1)).toPromise();
-  // }
+  getTSSList() {
+    const iBusinessId = localStorage.getItem('currentBusiness');
+    return this.apiService.getNew('fiskaly', `/api/v1/tss/list/${iBusinessId}`);
+  }
 
-  // async authenticateAdmin(tss: any) {
-  //   try {
-  //     const tssId = tss._id;
-  //     let fiskalyAuth: any = localStorage.getItem('fiskalyAuth');
-  //     fiskalyAuth = JSON.parse(fiskalyAuth);
-  //     if (!fiskalyAuth) {
-  //       fiskalyAuth = this.loginToFiskaly();
-  //     }
-  //     const body = {
-  //       admin_pin: '1234567890',
-  //     };
-  //     const finalUrl = `${this.fiskalyURL}/tss/${tssId}/admin/auth`;
-  //     let httpHeaders = {
-  //       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${fiskalyAuth.access_token}` }
-  //     };
-  //     await this.httpClient.post<any>(finalUrl, body, httpHeaders).pipe(retry(1)).toPromise();
-  //     return true;
-  //   } catch (error: any) {
-  //     if (error.status === 401) {
-  //       await this.changeAdminPin(tss);
-  //       await this.authenticateAdmin(tss);
-  //       return true;
-  //     } else {
-  //       return false;
-  //     }
-  //   }
-  // }
+  async changeTSSState(iTssId: string, bEnabled: boolean) {
+    const iBusinessId = localStorage.getItem('currentBusiness');
+    const body = {
+      bEnabled,
+      iTssId
+    };
+    return await this.apiService.putNew('fiskaly', `/api/v1/tss/change-state/${iBusinessId}`, body).toPromise();
+
+  }
 }

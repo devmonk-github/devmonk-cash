@@ -128,6 +128,8 @@ export class TillComponent implements OnInit, AfterViewInit {
 
 
   ngOnInit(): void {
+    localStorage.removeItem('fiskalyTransaction');
+    localStorage.removeItem('tssId');
     this.business._id = localStorage.getItem('currentBusiness');
     this.locationId = localStorage.getItem('currentLocation') || null;
     this.iWorkstationId = localStorage.getItem('currentWorkstation');
