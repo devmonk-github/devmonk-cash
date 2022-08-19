@@ -82,7 +82,7 @@ export class ActivityDetailsComponent implements OnInit {
     this.items = this.dialogRef.context.activity;
     // if (this.items.length) {
     if (this.activity) {
-      if(this.activity?.activityitems.length){
+      if(this.activity?.activityitems?.length){
         this.activityItems = this.activity.activityitems;
       }else{
         const items = JSON.parse(JSON.stringify(this.activity));

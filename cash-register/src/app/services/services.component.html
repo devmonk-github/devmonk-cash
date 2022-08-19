@@ -15,7 +15,7 @@
       </div>
       <div class="d-flex align-items-right ms-auto">
         <button class="btn btn-secondary">New</button>
-        <button class="btn btn-secondary">Trash</button>
+        <!-- <button class="btn btn-secondary">Trash</button> -->
       </div>
     </div>
     <div class="collapse row" id="kt_advanced_search_form" data-kt-search-minimize="on"
@@ -177,15 +177,15 @@
           <td>{{getTypes(activity.activityitems)}}</td>
           <td scope="row">{{activity?.dCreatedDate | date: 'yyyy-MM-dd HH:mm'}}</td>
           <td scope="row">{{activity?.dPickedUp | date: 'yyyy-MM-dd HH:mm'}}</td>
-          <td>{{activity?.eActivityStatus}}</td>
-          <td>{{activity?.eType}}</td>
-          <td>{{activity?.eType}}</td>
+          <td>{{activity?.eActivityStatus || '-'}}</td>
+          <td>{{'-'}}</td>
+          <td>{{'-'}}</td>
           <td>{{activity?.oCustomer?.sFirstName}} {{activity?.oCustomer?.sLastName}}</td>
           
           <td>
             <div class="btn-group me-4">
-              <span class="btn btn-primary fs-bold px-6">
-                <span class="indicator-label" (click)="openActivities(activity)">{{ "VIEW"}}</span>
+              <span class="btn btn-primary fs-bold px-6" (click)="openActivities(activity)">
+                <span class="indicator-label">{{ "VIEW"}}</span>
               </span>
               <span class="btn btn-primary btn-icon fs-bold" role="button">
                 <div class="btn btn-icon" data-kt-menu-trigger="click" data-kt-menu-attach="parent"
