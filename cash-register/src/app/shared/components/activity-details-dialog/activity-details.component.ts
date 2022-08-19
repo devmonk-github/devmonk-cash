@@ -82,9 +82,13 @@ export class ActivityDetailsComponent implements OnInit {
     this.items = this.dialogRef.context.activity;
     // if (this.items.length) {
     if (this.activity) {
-      const items = JSON.parse(JSON.stringify(this.activity));
-      this.activityItems = [items]
-      if(this.activityItems.length = 1) this.collapsedBtn = true;
+      if(this.activity?.activityitems.length){
+        this.activityItems = this.activity.activityitems;
+      }else{
+        const items = JSON.parse(JSON.stringify(this.activity));
+        this.activityItems = [items]
+      }
+      if(this.activityItems.length == 1) this.collapsedBtn = true;
     } else {
       this.fetchTransactionItems();
     }
