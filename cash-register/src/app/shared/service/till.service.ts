@@ -6,7 +6,6 @@ import { Transaction } from 'src/app/till/models/transaction.model';
 import { ApiService } from './api.service';
 import * as _ from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
-import { StringService } from './string.service';
 @Injectable({
   providedIn: 'root'
 })

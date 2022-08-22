@@ -1,0 +1,48 @@
+<div class="card shadow-sm">
+    <div class="card-header" style="margin-top: 20px;">
+        <h4>{{"SELECT_SUPPLIER_AND_BRAND" | translate}}</h4>
+    </div>
+    <div class="card-body row">
+        <label for="articlegroup">{{ "ARTICLE_GROUP" | translate}}</label>
+        <ng-select *ngIf="!articlegroup" [(ngModel)]="articlegroup" (search)="searchArticlegroup($event.term)"
+            (ngModelChange)="changeInArticleGroup()" class="form-control form-control-solid p-0 w-100 custom"
+            placeholder="Search articlegroup" [minTermLength]="2" [clearable]="false"
+            [disabled]="1 > articleGroupsList.length" [isOpen]="filteredArticleGroups.length > 0">
+            <ng-option *ngFor="let option of filteredArticleGroups" [value]="option">{{option.oName.en ||
+                'Unknown'}}</ng-option>
+        </ng-select>
+
+        <label *ngIf="articlegroup">{{ articlegroup.oName.en }}</label>
+
+        <br>
+        <label for="supplier">{{ "SUPPLIER" | translate}}</label>
+        <ng-select *ngIf="!supplier" [(ngModel)]="supplier" (search)="searchSupplier($event.term)"
+            (ngModelChange)="changeInSupplier()" class="form-control form-control-solid p-0 w-100 custom"
+            placeholder="Search supplier" [minTermLength]="2" [clearable]="false"
+            [isOpen]="filteredSupplierList.length > 0">
+            <ng-option *ngFor="let option of filteredSupplierList" [value]="option">{{option.sName ||
+                'Unknown'}}</ng-option>
+        </ng-select>
+
+        <label *ngIf="supplier">{{ supplier.sName }}</label>
+        <br>
+        <label for="brand">{{ "BRAND" | translate}}</label>
+        <ng-select *ngIf="!brand" [(ngModel)]="brand" (search)="searchBrand($event.term)"
+            (ngModelChange)="changeInBrand()" class="form-control form-control-solid p-0 w-100 custom"
+            placeholder="Search brand" [minTermLength]="2" [clearable]="false" [isOpen]="filteredBrandList.length > 0">
+            <ng-option *ngFor="let option of filteredBrandList" [value]="option">{{option.sName ||
+                'Unknown'}}</ng-option>
+        </ng-select>
+
+        <label *ngIf="brand">{{ brand.sName }}</label>
+
+    </div>
+
+    <div class="card-footer">
+        <div class="btn-holder">
+            <!-- <button type="button" class="btn btn-secondary" (click)="close('hi hello')">{{"CANCEL" |
+                translate}}</button> -->
+            <button type="button" class="btn btn-primary" (click)="close()">{{"SELECT" | translate}}</button>
+        </div>
+    </div>
+</div>

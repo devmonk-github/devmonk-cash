@@ -40,6 +40,7 @@ import { TerminalDialogComponent } from "./components/terminal-dialog/terminal-d
 import { AddFavouritesComponent } from "./components/add-favourites/favourites.component";
 import { NgApexchartsModule } from "ng-apexcharts";
 import { WebOrderDetailsComponent } from "./components/web-order-details/web-order-details.component";
+import { SelectArticleDialogComponent } from "./components/select-articlegroup-dialog/select-articlegroup-dialog.component";
 @NgModule({
   declarations: [
     CustomerDialogComponent,
@@ -64,7 +65,8 @@ import { WebOrderDetailsComponent } from "./components/web-order-details/web-ord
     CardsComponent,
     MorePaymentsDialogComponent,
     TabsComponent,
-    TabComponent
+    TabComponent,
+    SelectArticleDialogComponent,
   ],
   imports: [
     CommonModule,
@@ -99,7 +101,8 @@ import { WebOrderDetailsComponent } from "./components/web-order-details/web-ord
     CardsComponent,
     MorePaymentsDialogComponent,
     TabsComponent,
-    TabComponent
+    TabComponent,
+    SelectArticleDialogComponent,
   ],
   providers: [CurrencyPipe]
 })
