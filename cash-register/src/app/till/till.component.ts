@@ -1,12 +1,12 @@
-import { AfterViewInit, Component, ElementRef, OnInit, ViewChild, ViewChildren } from '@angular/core';
+import { AfterViewInit, Component, OnInit, ViewChildren } from '@angular/core';
 import {
-  faScrewdriverWrench, faTruck, faBoxesStacked, faGifts,
-  faUserPlus, faUser, faTimes, faTimesCircle, faTrashAlt, faRing,
+  faScrewdriverWrench, faTruck, faBoxesStacked, faGifts, faUser, faTimes, faTimesCircle, faTrashAlt, faRing,
   faCoins, faCalculator, faArrowRightFromBracket, faSpinner, faSearch, faMoneyBill
 } from '@fortawesome/free-solid-svg-icons';
+import { Observable } from 'rxjs';
+import { TranslateService } from '@ngx-translate/core';
 import * as _ from 'lodash';
 
-import { TranslateService } from '@ngx-translate/core';
 import { DialogService } from '../shared/service/dialog'
 import { CustomerDialogComponent } from '../shared/components/customer-dialog/customer-dialog.component';
 import { TaxService } from '../shared/service/tax.service';
@@ -23,9 +23,7 @@ import { BarcodeService } from "../shared/service/barcode.service";
 import { TerminalService } from '../shared/service/terminal.service';
 import { TerminalDialogComponent } from '../shared/components/terminal-dialog/terminal-dialog.component';
 import { CreateArticleGroupService } from '../shared/service/create-article-groups.service';
-import { Router, ActivatedRoute } from '@angular/router';
 import { CustomerStructureService } from '../shared/service/customer-structure.service';
-import { Observable } from 'rxjs';
 import { FiskalyService } from '../shared/service/fiskaly.service';
 @Component({
   selector: 'app-till',
@@ -150,7 +148,6 @@ export class TillComponent implements OnInit, AfterViewInit {
     this.fetchQuickButtons();
 
     this.getfiskalyInfo();
-
   }
 
   async getfiskalyInfo() {
@@ -174,7 +171,6 @@ export class TillComponent implements OnInit, AfterViewInit {
         this.fetchCustomer(transaction.iCustomerId);
       }
       this.changeInPayment();
-      // localStorage.removeItem('fromTransactionPage')
     }
   }
 
@@ -209,29 +205,6 @@ export class TillComponent implements OnInit, AfterViewInit {
       this.payMethodsLoading = false;
     })
   }
-
-  // fetchBusinessProductDetail(iBusinessProductId: any) {
-  //   this.fetchingProductDetails = true;
-  //   this.apiService.getNew('core', `/api/v1/business/products/${iBusinessProductId}?iBusinessId=${this.business._id}`).subscribe(
-  //     (result: any) => {
-  //       this.fetchingProductDetails = false;
-  //       console.log('fetchBusinessProductDetail: ', result);
-  //     }, (error) => {
-  //       console.error('error in fetching product: ', error);
-  //     });    
-  // }
-
-  // addItemToTransaction(item: any): void {
-  //   this.selectedQuickButton = item;
-  //   this.bSearchingProduct = true;
-  //   this.apiService.getNew('core', `/api/v1/business/products/${item.iBusinessProductId}?iBusinessId=${this.business._id}`).subscribe(
-  //     (result: any) => {
-  //       if (result.message == 'success') {
-  //         this.onSelectProduct(result.data, 'business', 'quick-button');
-  //         this.bSearchingProduct = false;
-  //       }
-  //     });
-  // }
 
   addOrder(): void {
     this.transactionItems.push({
@@ -271,7 +244,6 @@ export class TillComponent implements OnInit, AfterViewInit {
               i.nTotal = i.quantity * (i.price - i.nDiscount);
               i.nTotal = i.type === 'gold-purchase' ? -1 * i.nTotal : i.nTotal;
               result += i.nTotal - (i.prePaidAmount || 0);
-              // result += type === 'price' ? i.quantity * i.price - i.prePaidAmount || 0 : i[type]
             }
           } else {
             i.paymentAmount = 0;
@@ -326,6 +298,7 @@ export class TillComponent implements OnInit, AfterViewInit {
       paymentAmount: type === 'gold-purchase' ? -1 * price : 0,
       description: '',
       open: true,
+      new: true,
       iBusinessId: this.getValueFromLocalStorage('currentBusiness'),
       ...(type === 'giftcard') && { sGiftCardNumber: Date.now() },
       ...(type === 'giftcard') && { taxHandling: 'true' },
@@ -483,6 +456,7 @@ export class TillComponent implements OnInit, AfterViewInit {
     this.customer = null;
   }
 
+
   startTerminalPayment() {
     this.dialogService.openModal(TerminalDialogComponent, { cssClass: 'modal-lg', context: { payments: this.payMethods } })
       .instance.close.subscribe((data) => {
@@ -496,6 +470,7 @@ export class TillComponent implements OnInit, AfterViewInit {
         }
       })
   }
+
   // nRefundAmount needs to be added
   checkUseForGold() {
     let isGoldForPayment = true;
