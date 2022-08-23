@@ -57,7 +57,7 @@ export class ActivityItemsComponent implements OnInit {
   tableHeaders: Array<any> = [
     { key: 'Activity No.', selected: false, sort: '' },
     { key: 'Repair number', disabled: true },
-    { key: 'Type', disabled: true },
+    // { key: 'Type', disabled: true },
     { key: 'Intake date', selected: true, sort: 'asc' },
     { key: 'End date', selected: false, sort: 'asc' },
     { key: 'Status', disabled: true },
