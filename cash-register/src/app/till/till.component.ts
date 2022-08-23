@@ -225,6 +225,7 @@ export class TillComponent implements OnInit, AfterViewInit {
       oArticleGroupMetaData: { aProperty: [], sCategory: '', sSubCategory: '' },
       description: '',
       open: true,
+      new: true,
     });
     this.searchKeyword = '';
   }
