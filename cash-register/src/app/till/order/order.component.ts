@@ -1,6 +1,8 @@
 import { Component, EventEmitter, Input, OnInit, Output, ViewEncapsulation } from '@angular/core';
-import { faTimes, faPlus, faMinus, faArrowDown, faArrowUp, faUpload } from '@fortawesome/free-solid-svg-icons'
+import { faTimes, faPlus, faMinus, faArrowDown, faArrowUp, faUpload } from '@fortawesome/free-solid-svg-icons';
+
 import { ImageUploadComponent } from 'src/app/shared/components/image-upload/image-upload.component';
+import { SelectArticleDialogComponent } from 'src/app/shared/components/select-articlegroup-dialog/select-articlegroup-dialog.component';
 import { ToastService } from 'src/app/shared/components/toast';
 import { ApiService } from 'src/app/shared/service/api.service';
 import { CreateArticleGroupService } from 'src/app/shared/service/create-article-groups.service';
@@ -57,7 +59,37 @@ export class OrderComponent implements OnInit {
     this.getProperties();
     this.listSuppliers();
     this.getBusinessBrands();
+    if (this.item.new) {
+      this.selectArticleGroup();
+    }
   }
+
+  selectArticleGroup() {
+    this.dialogService.openModal(SelectArticleDialogComponent, { cssClass: 'modal-m', context: {} })
+      .instance.close.subscribe((data) => {
+        const { articlegroup, brand, supplier } = data;
+        this.item.supplier = supplier.sName;
+        this.supplier = supplier.sName;
+        this.item.iSupplierId = supplier._id;
+        this.brand = brand.sName;
+        this.item.iBusinessBrandId = brand._id;
+        this.updateProperties(articlegroup);
+      });
+  }
+
+  updateProperties(articlegroup: any) {
+    articlegroup.aProperty.forEach((properties: any) => {
+      const propertiesIndex = this.item.oArticleGroupMetaData.aProperty.findIndex((aProperty: any) => aProperty.iPropertyId === properties.iPropertyId);
+      if (propertiesIndex > -1) {
+        const prop = this.propertyOptions[properties.iPropertyId]?.find((prop: any) => prop.sCode === properties.sCode);
+        if (prop) {
+          this.item.oArticleGroupMetaData.aProperty[propertiesIndex] = prop;
+          this.selectedProperties[properties.iPropertyId] = properties.sCode;
+        }
+      };
+    });
+  }
+
   deleteItem(): void {
     this.itemChanged.emit('delete')
   }
@@ -200,8 +232,8 @@ export class OrderComponent implements OnInit {
     this.apiService.postNew('core', '/api/v1/business/brands/list', oBody).subscribe((result: any) => {
       if (result.data && result.data.length > 0) {
         this.brandsList = result.data[0].result;
-        if (this.item.iBrandId) {
-          const tempsupp = this.brandsList.find(o => o._id === this.item.iBrandId);
+        if (this.item.iBusinessBrandId) {
+          const tempsupp = this.brandsList.find(o => o._id === this.item.iBusinessBrandId);
           this.brand = tempsupp.sName;
         }
       }

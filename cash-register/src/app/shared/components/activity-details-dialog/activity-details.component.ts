@@ -82,40 +82,40 @@ export class ActivityDetailsComponent implements OnInit {
     this.items = this.dialogRef.context.activity;
     // if (this.items.length) {
     if (this.activity) {
-      if(this.activity?.activityitems?.length){
+      if (this.activity?.activityitems?.length) {
         this.activityItems = this.activity.activityitems;
-      }else{
+      } else {
         const items = JSON.parse(JSON.stringify(this.activity));
         this.activityItems = [items]
       }
-      if(this.activityItems.length == 1) this.collapsedBtn = true;
+      if (this.activityItems.length == 1) this.collapsedBtn = true;
     } else {
       this.fetchTransactionItems();
     }
-    if(this.activity?.iCustomerId) this.fetchCustomer(this.activity.iCustomerId, -1);
+    if (this.activity?.iCustomerId) this.fetchCustomer(this.activity.iCustomerId, -1);
     this.getBusinessLocations();
     // this.itemType = this.dialogRef.context.itemType;
     // this.transaction = this.dialogRef.context.transaction;
   }
-  
-  downloadOrder(){}
-  
-  changeStatusForAll(type: string){
-    this.activityItems.forEach((obj: any)=>{
+
+  downloadOrder() { }
+
+  changeStatusForAll(type: string) {
+    this.activityItems.forEach((obj: any) => {
       obj.eRepairStatus = type;
       this.updateActivityItem(obj)
     })
   }
 
-  changeTrackingNumberForAll(sTrackingNumber: string){
-    this.activityItems.forEach((obj: any)=>{
+  changeTrackingNumberForAll(sTrackingNumber: string) {
+    this.activityItems.forEach((obj: any) => {
       obj.sTrackingNumber = sTrackingNumber;
       this.updateActivityItem(obj)
     })
   }
 
-  changeCarrierForAll(eCarrier: string){
-    this.activityItems.forEach((obj: any)=>{
+  changeCarrierForAll(eCarrier: string) {
+    this.activityItems.forEach((obj: any) => {
       obj.eCarrier = eCarrier;
       this.updateActivityItem(obj)
     })
@@ -123,13 +123,13 @@ export class ActivityDetailsComponent implements OnInit {
 
   updateActivityItem(item: any) {
     item.iBusinessId = this.iBusinessId;
-    this.apiService.putNew('cashregistry', '/api/v1/activities/items/' + item?.iActivityItemId , item)
-    .subscribe((result: any) => {
-    }, 
-    (error) => {
-    })
+    this.apiService.putNew('cashregistry', '/api/v1/activities/items/' + item?.iActivityItemId, item)
+      .subscribe((result: any) => {
+      },
+        (error) => {
+        })
   }
-  
+
   getBusinessLocations() {
     this.apiService.getNew('core', '/api/v1/business/user-business-and-location/list')
       .subscribe((result: any) => {
@@ -142,7 +142,7 @@ export class ActivityDetailsComponent implements OnInit {
                   this.business = business;
                 }
               })
-            }
+          }
         }
         setTimeout(() => {
           MenuComponent.reinitialization();
@@ -162,11 +162,11 @@ export class ActivityDetailsComponent implements OnInit {
 
   updateTransaction(transaction: any) {
     transaction.iBusinessId = this.iBusinessId;
-    this.apiService.putNew('cashregistry', '/api/v1/transaction/item/StockLocation/' + transaction?._id , transaction)
-    .subscribe((result: any) => {
-    }, 
-    (error) => {
-    })
+    this.apiService.putNew('cashregistry', '/api/v1/transaction/item/StockLocation/' + transaction?._id, transaction)
+      .subscribe((result: any) => {
+      },
+        (error) => {
+        })
   }
 
   setSelectedBusinessLocation(locationId: string, index: number) {
@@ -213,7 +213,7 @@ export class ActivityDetailsComponent implements OnInit {
                 iRepairerId: transactionItem.iRepairerId,
                 oArticleGroupMetaData: transactionItem.oArticleGroupMetaData,
                 iEmployeeId: transactionItem.iEmployeeId,
-                iBrandId: transactionItem.iBrandId,
+                iBusinessBrandId: transactionItem.iBusinessBrandId,
                 discount: 0,
                 tax: transactionItem.nVatRate,
                 paymentAmount,
@@ -268,7 +268,7 @@ export class ActivityDetailsComponent implements OnInit {
     this.apiService.getNew('customer', `/api/v1/customer/${customerId}?iBusinessId=${this.iBusinessId}`).subscribe(
       (result: any) => {
         console.log(result);
-        if(index > -1) this.transactions[index].customer = result;
+        if (index > -1) this.transactions[index].customer = result;
         else this.customer = result;
         // this.close({ action: true });
       },
@@ -284,18 +284,18 @@ export class ActivityDetailsComponent implements OnInit {
     this.apiService.postNew('cashregistry', url, this.requestParams).subscribe((result: any) => {
       this.activityItems = result.data[0].result;
       this.transactions = [];
-      for(const obj of this.activityItems){
-        for(const item of obj.receipts){
+      for (const obj of this.activityItems) {
+        for (const item of obj.receipts) {
           // if(!item.bRefund) item.eRepairStatus = obj.eRepairStatus;
           this.transactions.push({ ...item, ...obj });
         }
         // this.transactions = this.transactions.concat(obj.receipts);
       }
-      for(let i = 0; i < this.transactions.length; i++){
+      for (let i = 0; i < this.transactions.length; i++) {
         const obj = this.transactions[i];
         this.totalPrice += obj.nPaymentAmount;
         this.quantity += obj.bRefund ? (- obj.nQuantity) : obj.nQuantity
-        if(obj.iStockLocationId) this.setSelectedBusinessLocation(obj.iStockLocationId, i)
+        if (obj.iStockLocationId) this.setSelectedBusinessLocation(obj.iStockLocationId, i)
         this.fetchCustomer(obj.iCustomerId, i);
       }
       setTimeout(() => {
