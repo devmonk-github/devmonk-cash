@@ -200,8 +200,8 @@ export class OrderComponent implements OnInit {
     this.apiService.postNew('core', '/api/v1/business/brands/list', oBody).subscribe((result: any) => {
       if (result.data && result.data.length > 0) {
         this.brandsList = result.data[0].result;
-        if (this.item.iBrandId) {
-          const tempsupp = this.brandsList.find(o => o._id === this.item.iBrandId);
+        if (this.item.iBusinessBrandId) {
+          const tempsupp = this.brandsList.find(o => o._id === this.item.iBusinessBrandId);
           this.brand = tempsupp.sName;
         }
       }
