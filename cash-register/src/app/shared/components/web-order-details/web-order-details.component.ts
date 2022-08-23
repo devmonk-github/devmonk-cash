@@ -319,6 +319,18 @@ export class WebOrderDetailsComponent implements OnInit {
       })
   }
 
+  checkAllLocations(){
+    let flag = true;
+    for(let i = 0; i < this.activityItems.length; i++){
+      const obj = this.activityItems[i];
+      for(let j = 0; j < obj.receipts.length; j++){
+          const item = obj.receipts[j];
+          if(!item.iStockLocationId && item?.iBusinessProductId) flag = false;
+      }
+    }
+    return flag;
+  }
+
   selectBusiness(index: number, location?: any) {
     if (location?._id) {
       this.activityItems[index].receipts[0].locationName = location.sName;
