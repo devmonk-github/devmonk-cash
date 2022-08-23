@@ -169,7 +169,7 @@ export class TillService {
         i.redeemedLoyaltyPoints,
         i.sUniqueIdentifier || uuidv4(),
         i.paymentAmount,
-        i.description
+        i.description,
       )
     });
     const originalTItemsLength = length = body.transactionItems.filter((i: any) => i.oType.eKind !== 'loyalty-points').length;

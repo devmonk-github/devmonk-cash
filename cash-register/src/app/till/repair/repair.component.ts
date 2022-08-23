@@ -55,6 +55,7 @@ export class RepairComponent implements OnInit {
     this.getProperties();
     this.listSuppliers();
     this.getBusinessBrands();
+    console.log(this.item);
     if (this.item.new) {
       this.selectArticleGroup();
     }
@@ -68,7 +69,7 @@ export class RepairComponent implements OnInit {
         this.supplier = supplier.sName;
         this.item.iSupplierId = supplier._id;
         this.brand = brand.sName;
-        this.item.iBrandId = brand._id;
+        this.item.iBusinessBrandId = brand._id;
         this.updateProperties(articlegroup);
       });
   }
@@ -164,8 +165,8 @@ export class RepairComponent implements OnInit {
     this.apiService.postNew('core', '/api/v1/business/brands/list', oBody).subscribe((result: any) => {
       if (result.data && result.data.length > 0) {
         this.brandsList = result.data[0].result;
-        if (this.item.iBrandId) {
-          const tempsupp = this.brandsList.find(o => o._id === this.item.iBrandId);
+        if (this.item.iBusinessBrandId) {
+          const tempsupp = this.brandsList.find(o => o._id === this.item.iBusinessBrandId);
           this.brand = tempsupp.sName;
         }
       }

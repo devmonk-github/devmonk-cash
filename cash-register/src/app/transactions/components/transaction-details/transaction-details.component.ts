@@ -398,10 +398,10 @@ export class TransactionDetailsComponent implements OnInit {
   fetchTransaction(sNumber: any) {
     if (!sNumber) return;
     this.loading = true;
-    let body: any = {  
+    let body: any = {
       iBusinessId: this.iBusinessId
     }
-    if(this.eType === 'webshop-reservation') body.eKind = 'reservation';
+    if (this.eType === 'webshop-reservation') body.eKind = 'reservation';
     this.apiService.postNew('cashregistry', '/api/v1/transaction/detail/' + sNumber, body).subscribe((result: any) => {
       if (!result?.data?.oCustomer) result.data.oCustomer = this.transaction.oCustomer;
       this.transaction = result.data;
@@ -449,6 +449,7 @@ export class TransactionDetailsComponent implements OnInit {
                 iBrandId: transactionItem.iBrandId,
                 discount: 0,
                 tax: transactionItem.nVatRate,
+                iSupplierId: transactionItem.iSupplierId,
                 paymentAmount,
                 description: transactionItem.sDescription,
                 open: true,

@@ -63,6 +63,7 @@
         <select name="taxRate" id="taxRate" class="form-select" [(ngModel)]="item.tax">
           <option *ngFor="let rate of taxes" [ngValue]="rate.rate">{{rate.name}}</option>
         </select>
+        <!-- <input type="number" step="any" name="discount" class="form-control"> -->
         <button class="btn btn-bg-light btn-active-color-primary mt-2" (click)="openImageModal()"> Photos
           <fa-icon [icon]="faUpload"></fa-icon>
         </button>
@@ -86,7 +87,7 @@
         <ng-select *ngIf="!brand" [(ngModel)]="brand" (search)="searchBrands($event.term)"
           class="form-control form-control-solid p-0 w-100 custom" placeholder="Search brand" [minTermLength]="2"
           [clearable]="false" [isOpen]="filteredBrands.length > 0"
-          (change)="brand = $event.sName; item.iBrandId = $event._id; filteredBrands = []">
+          (change)="brand = $event.sName; item.iBusinessBrandId = $event._id; filteredBrands = []">
           <ng-option *ngFor="let option of filteredBrands" [value]="option">{{option.sName ||
             'Unknown'}}</ng-option>
         </ng-select>
