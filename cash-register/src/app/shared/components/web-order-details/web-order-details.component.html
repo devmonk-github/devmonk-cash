@@ -95,13 +95,13 @@
                         <fa-icon [icon]="faDownload"></fa-icon>
                         <label class="mx-auto">Download pdf</label>
                     </button>
-                    <button *ngIf="activity.eActivityStatus == 'completed'" [disabled]="!showDeliverBtn" class="btn btn-sm btn-primary w-100 d-flex mt-5" (click)="deliver('sentToCustomer')">
+                    <button *ngIf="activity.eActivityStatus == 'completed'" [disabled]="!showDeliverBtn && checkAllLocations()" class="btn btn-sm btn-primary w-100 d-flex mt-5" (click)="deliver('sentToCustomer')">
                         <label class="mx-auto">Sent to customer</label>
                     </button>
                     <button *ngIf="activity.eActivityStatus == 'completed'" class="btn btn-sm btn-secondary w-100 d-flex">
                         <label class="mx-auto">Ready to pick up</label>
                     </button>
-                    <button *ngIf="activity.eActivityStatus == 'completed'" [disabled]="!showDeliverBtn" class="btn btn-sm btn-secondary w-100 d-flex" (click)="deliver('deliver')">
+                    <button *ngIf="activity.eActivityStatus == 'completed'" [disabled]="!showDeliverBtn && checkAllLocations()" class="btn btn-sm btn-secondary w-100 d-flex" (click)="deliver('deliver')">
                         <label class="mx-auto">Deliver</label>
                     </button>
                 </div>
