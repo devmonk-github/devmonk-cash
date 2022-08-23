@@ -175,7 +175,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
 
   @ViewChild("paymentMethodsChart") paymentMethodsChart !: ChartComponent;
   public paymentMethodsChartOptions !: Partial<PieChartOptions> | any;
-
+  aStatisticsChartDataLoading = true
   aActivityTitles: any = [
     { type: "Repairs", value: 7, color: ChartColors.REPAIR },//$primary-color
     { type: "Special orders", value: 1, color: ChartColors.SPECIAL_ORDERS },//$dark-primary-light-color
@@ -188,104 +188,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
     { type: "Product reservation", value: 2, color: ChartColors.PRODUCT_RESERVATION }//$pink
   ];
 
-  aStatisticsChartData: any = [
-    {
-      item: {
-        element:
-        {
-          name: 'Watches',
-          data: [
-            {
-              x: 'Watches',
-              y: 7,
-              info: [{ type: 'info 1', value: 5 }, { type: 'info 2', value: 20 }],
-            }
-          ],
-        },
-        color: ChartColors.WATCHES
-      }
-    },
-    {
-      item: {
-        element:
-        {
-          name: 'Jewellery',
-          data: [
-            {
-              x: 'Jewellery',
-              y: 6,
-              info: [{ type: 'info 1', value: 10 }, { type: 'info 2', value: 20 }],
-            }
-          ],
-        },
-        color: ChartColors.JEWELLERY
-      },
-    },
-    {
-      item: {
-        element:
-        {
-          name: 'Repair',
-          data: [
-            {
-              x: 'Repair',
-              y: 5,
-              info: [{ type: 'info 1', value: 10 }, { type: 'info 2', value: 20 }],
-            }
-          ],
-        },
-        color: ChartColors.REPAIR
-      },
-    },
-    {
-      item: {
-        element:
-        {
-          name: 'Giftcard',
-          data: [
-            {
-              x: 'Giftcard',
-              y: 2,
-              info: [{ type: 'info 1', value: 10 }, { type: 'info 2', value: 20 }],
-            }
-          ],
-        },
-        color: ChartColors.GIFTCARD
-      },
-    },
-    {
-      item: {
-        element:
-        {
-          name: 'Gold purchase',
-          data: [
-            {
-              x: 'Gold purchase',
-              y: 2,
-              info: [{ type: 'info 1', value: 10 }, { type: 'info 2', value: 20 }],
-            }
-          ],
-        },
-        color: ChartColors.GOLD_PURCHASE
-      },
-    },
-    {
-      item: {
-        element:
-        {
-          name: 'Discounts',
-          data: [
-            {
-              x: 'Discounts',
-              y: -5,
-              info: [{ type: 'info 1', value: 10 }, { type: 'info 2', value: 20 }],
-            }
-          ],
-        },
-        color: ChartColors.DISCOUNTS
-      },
-    }
-  ];
+  aStatisticsChartData: any = [];
 
   aPaymentMethodTitles: any = [
     { type: "Card", value: 7 },
@@ -310,6 +213,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
     this.requestParams.oFilterBy = {
       iCustomerId: this.customer._id
     }
+    this.getCoreStatistics()
 
     this.activitiesChartOptions = {
       series: this.aActivityTitles.map((el: any) => el.value),
@@ -375,6 +279,56 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
     this.dialogRef.close.emit(data);
   }
 
+  getCoreStatistics() {
+    const body = {
+      iBusinessId: localStorage.getItem('currentBusiness'),
+      oFilter: {
+        iCustomerId: this.customer._id,
+        sTransactionType: 'cash-registry',
+        sDisplayMethod: 'revenuePerBusinessPartner',
+      },
+    };
+    this.apiService
+      .postNew('cashregistry', '/api/v1/statistics/transaction/audit', body)
+      .subscribe(
+        (result: any) => {
+          this.setAStatisticsChartData(result.data.oTransactionAudit[0].individual[0].aArticleGroups)
+          console.log({ CoreStatistics: result });
+          this.aStatisticsChartDataLoading = false;
+        },
+        (error: any) => {
+          this.aStatisticsChartDataLoading = false;
+        }
+      );
+  }
+  setAStatisticsChartData(data: any[]) {
+    console.log({ setAStatisticsChartData: data });
+    const aStatisticsChartData: any[] = []
+    data.map((item, index) => {
+      let color: any = Object.entries(ChartColors)
+      // color = color[Math.floor(Math.random() * color.length)][1]
+      let chartItem = {
+        item: {
+          element: {
+            name: item.sName,
+            data: [
+              {
+                x: item.sName,
+                y: item.nTotalRevenue,
+                info: [
+                  { type: item.sName, value: item.nTotalRevenue }
+                ]
+              }
+            ]
+          },
+          color: color[index][1]
+        }
+      }
+      aStatisticsChartData.push(chartItem)
+    })
+    this.aStatisticsChartData = aStatisticsChartData
+    this.loadStatisticsTabData()
+  }
 
 
   //  Function for set sort option on transaction table
@@ -502,20 +456,31 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
       },
       chart: {
         type: "bar",
-        height: 350
+        height: 350,
+
       },
       dataLabels: {
-        enabled: true
+        enabled: true,
+        style: {
+          'fontSize': '15px'
+        }
       },
       yaxis: {
         title: {
-          text: "Revenue"
+          text: "Revenue",
+          style: {
+            'fontSize': '15px'
+          }
         },
         labels: {
           formatter: function (y: any) {
             return "\u20AC" + y.toFixed(0)
           }
-        }
+          ,
+          style: {
+            'fontSize': '15px'
+          }
+        },
       },
       xaxis: {
         type: 'category',

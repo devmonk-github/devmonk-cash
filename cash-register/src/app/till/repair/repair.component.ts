@@ -55,14 +55,13 @@ export class RepairComponent implements OnInit {
     this.getProperties();
     this.listSuppliers();
     this.getBusinessBrands();
-    console.log(this.item);
     if (this.item.new) {
       this.selectArticleGroup();
     }
   }
 
   selectArticleGroup() {
-    this.dialogService.openModal(SelectArticleDialogComponent, { cssClass: 'modal-lg', context: { payments: 'this.payMethods' } })
+    this.dialogService.openModal(SelectArticleDialogComponent, { cssClass: 'modal-m', context: { payments: 'this.payMethods' } })
       .instance.close.subscribe((data) => {
         const { articlegroup, brand, supplier } = data;
         this.item.supplier = supplier.sName;
