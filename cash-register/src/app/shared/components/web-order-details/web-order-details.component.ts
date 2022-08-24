@@ -319,6 +319,8 @@ export class WebOrderDetailsComponent implements OnInit {
       })
   }
 
+  togglePayInCashRegister(event: any){}
+
   checkAllLocations(){
     let flag = true;
     for(let i = 0; i < this.activityItems.length; i++){
