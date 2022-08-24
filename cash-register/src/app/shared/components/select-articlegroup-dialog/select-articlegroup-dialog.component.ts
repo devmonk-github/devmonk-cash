@@ -136,10 +136,14 @@ export class SelectArticleDialogComponent implements OnInit {
     })
   }
 
-  close(): void {
-    if (!this.brand || !this.articlegroup || !this.supplier) {
-      return
+  close(status: boolean): void {
+    if (status) {
+      if (!this.brand || !this.articlegroup || !this.supplier) {
+        return
+      }
+      this.dialogRef.close.emit({ brand: this.brand, articlegroup: this.articlegroup, supplier: this.supplier });
+    } else {
+      this.dialogRef.close.emit(false);
     }
-    this.dialogRef.close.emit({ brand: this.brand, articlegroup: this.articlegroup, supplier: this.supplier });
   }
 }

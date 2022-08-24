@@ -61,19 +61,22 @@ export class OrderComponent implements OnInit {
     this.getBusinessBrands();
     if (this.item.new) {
       this.selectArticleGroup();
+      this.item.new = false;
     }
   }
 
   selectArticleGroup() {
     this.dialogService.openModal(SelectArticleDialogComponent, { cssClass: 'modal-m', context: {} })
       .instance.close.subscribe((data) => {
-        const { articlegroup, brand, supplier } = data;
-        this.item.supplier = supplier.sName;
-        this.supplier = supplier.sName;
-        this.item.iSupplierId = supplier._id;
-        this.brand = brand.sName;
-        this.item.iBusinessBrandId = brand._id;
-        this.updateProperties(articlegroup);
+        if (data) {
+          const { articlegroup, brand, supplier } = data;
+          this.item.supplier = supplier.sName;
+          this.supplier = supplier.sName;
+          this.item.iSupplierId = supplier._id;
+          this.brand = brand.sName;
+          this.item.iBusinessBrandId = brand._id;
+          this.updateProperties(articlegroup);
+        }
       });
   }
 
