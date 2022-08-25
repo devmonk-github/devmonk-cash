@@ -286,6 +286,8 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
         iCustomerId: this.customer._id,
         sTransactionType: 'cash-registry',
         sDisplayMethod: 'revenuePerBusinessPartner',
+        dStartDate: "2022-07-16T13:59",
+        dEndDate: "2022-09-24T21:59:59.639Z",
       },
     };
     this.apiService
@@ -306,7 +308,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
     const aStatisticsChartData: any[] = []
     data.map((item, index) => {
       let color: any = Object.entries(ChartColors)
-      // color = color[Math.floor(Math.random() * color.length)][1]
+      color = color[Math.floor(Math.random() * color.length)][1]
       let chartItem = {
         item: {
           element: {
@@ -321,7 +323,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
               }
             ]
           },
-          color: color[index][1]
+          color: color
         }
       }
       aStatisticsChartData.push(chartItem)
