@@ -24,6 +24,8 @@ export class SelectArticleDialogComponent implements OnInit {
   articlegroup: any = null;
   supplier: any = null;
   iBusinessId = localStorage.getItem('currentBusiness');
+  iArticleGroupId: any = null;
+  iBusinessBrandId: any = null;
   constructor(
     private viewContainer: ViewContainerRef,
     private tillService: TillService,
@@ -36,6 +38,7 @@ export class SelectArticleDialogComponent implements OnInit {
     this.fetchArticleGroups(null);
     this.fetchBusinessPartners([]);
     this.getBusinessBrands();
+    this.iBusinessBrandId= this.dialogRef.context?.item?.iBusinessBrandId;
   }
 
   fetchArticleGroups(iBusinessPartnerId: any) {
@@ -53,6 +56,8 @@ export class SelectArticleDialogComponent implements OnInit {
       .subscribe((result: any) => {
         if (result && result.data && result.data[0] && result.data[0].result && result.data[0].result.length) {
           this.articleGroupsList = result.data[0].result;
+          console.log(this.iArticleGroupId);
+          console.log(this.articleGroupsList);
         } else {
           this.fetchArticleGroups(null);
         }
@@ -132,6 +137,7 @@ export class SelectArticleDialogComponent implements OnInit {
     this.apiService.postNew('core', '/api/v1/business/brands/list', oBody).subscribe((result: any) => {
       if (result.data && result.data.length > 0) {
         this.brandsList = result.data[0].result;
+        this.brand = this.brandsList.find((o: any) => o.iBrandId === this.iBusinessBrandId);
       }
     })
   }

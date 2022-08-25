@@ -60,14 +60,15 @@ export class OrderComponent implements OnInit {
     this.getProperties();
     this.listSuppliers();
     this.getBusinessBrands();
-    if (this.item.new) {
+    console.log(this.item);
+    if (this.item.new && this.item.isFor !== 'shopProducts') {
       this.selectArticleGroup();
       this.item.new = false;
     }
   }
 
-  selectArticleGroup() {
-    this.dialogService.openModal(SelectArticleDialogComponent, { cssClass: 'modal-m', context: {} })
+  selectArticleGroup() {   
+    this.dialogService.openModal(SelectArticleDialogComponent, { cssClass: 'modal-m', context: { item: this.item } })
       .instance.close.subscribe((data) => {
         if (data) {
           const { articlegroup, brand, supplier, nMargin } = data;
@@ -263,6 +264,9 @@ export class OrderComponent implements OnInit {
     }
   }
   checkArticleGroups() {
+    if(this.item.iArticleGroupId) {
+      return;
+    }
     this.createArticleGroupService.checkArticleGroups('Ordered products')
       .subscribe((res: any) => {
         if (1 > res.data.length) {
