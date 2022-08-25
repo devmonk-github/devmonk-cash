@@ -140,8 +140,10 @@ export class SelectArticleDialogComponent implements OnInit {
     if (status) {
       if (!this.brand || !this.articlegroup || !this.supplier) {
         return
-      }
-      this.dialogRef.close.emit({ brand: this.brand, articlegroup: this.articlegroup, supplier: this.supplier });
+      };
+      const businessPartener = this.articlegroup.aBusinessPartner.find((o: any) => o.iBusinessPartnerId === this.supplier._id );
+      let nMargin = businessPartener? businessPartener.nMargin: 1;
+      this.dialogRef.close.emit({ brand: this.brand, articlegroup: this.articlegroup, supplier: this.supplier, nMargin });
     } else {
       this.dialogRef.close.emit(false);
     }

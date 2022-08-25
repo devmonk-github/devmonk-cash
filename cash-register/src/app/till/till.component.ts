@@ -152,7 +152,6 @@ export class TillComponent implements OnInit, AfterViewInit {
 
   async getfiskalyInfo() {
     const tssId = await this.fiskalyService.fetchTSS();
-    console.log(tssId);
   }
 
   ngAfterViewInit() {
@@ -219,6 +218,7 @@ export class TillComponent implements OnInit, AfterViewInit {
       nBrokenProduct: 0,
       price: 0,
       nPurchasePrice: 0,
+      nMargin: 1,
       nDiscount: 0,
       tax: 21,
       paymentAmount: 0,
@@ -292,6 +292,7 @@ export class TillComponent implements OnInit, AfterViewInit {
       quantity: 1,
       nBrokenProduct: 0,
       price,
+      nMargin: 1,
       nPurchasePrice: price,
       nTotal: type === 'gold-purchase' ? -1 * price : price,
       nDiscount: 0,
@@ -628,6 +629,7 @@ export class TillComponent implements OnInit, AfterViewInit {
       type: this.eKind,
       quantity: 1,
       price: price ? price.nPriceIncludesVat : 0,
+      nMargin: 1,
       nPurchasePrice: product.nPurchasePrice || 0,
       paymentAmount: 0,
       oType: { bRefund: false, bDiscount: false, bPrepayment: false },

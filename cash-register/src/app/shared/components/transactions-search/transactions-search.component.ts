@@ -136,6 +136,8 @@ export class TransactionsSearchComponent implements OnInit, AfterViewInit {
                 paymentAmount,
                 description: transactionItem.sDescription,
                 open: true,
+                nMargin: transactionItem.nMargin,
+                nPurchasePrice: transactionItem.nPurchasePrice,
               });
             }
           });

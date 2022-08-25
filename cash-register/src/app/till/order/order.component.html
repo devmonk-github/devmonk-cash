@@ -44,17 +44,30 @@
       </div>
       <div class="col-2">
         <label for="price">{{ "PRICE" | translate}}</label>
-        <input type="number" (change)="updatePayments()" name="price" class="form-control" [(ngModel)]="item.price"
+        <input type="number" (change)="updatePayments(); changeInMargin()" name="price" class="form-control" [(ngModel)]="item.price"
           [disabled]="item.oType?.bRefund || item.tType === 'pay'">
-        <label for="discount">{{ "DISCOUNT" | translate}}</label>
-        <input *ngIf="!item.oType.bRefund && !item.oType.bDiscount && !item.oType.bPrepayment" type="number" step="any"
-          name="discount" class="form-control" [(ngModel)]="item.nDiscount">
-        <input *ngIf="item.oType.bRefund || item.oType.bDiscount|| item.oType.bPrepayment" type="number" step="any"
-          name="discount" class="form-control" [value]="item.nDiscount - (item.nRedeemedLoyaltyPoints || 0)" disabled>
-        <label for="discount" *ngIf="item.oType.bRefund">{{ "LOYALTY_POINTS" | translate}}:
-          {{item.nRedeemedLoyaltyPoints}}</label>
-        <label for="bagNumber">{{ "PREPAYMENT" | translate}}</label>
-        <input type="number" name="bagNumber" id="bagNumber" [(ngModel)]="item.paymentAmount" class="form-control">
+          <button class="accordion-button-more" type="button" data-bs-toggle="collapse" (click)="collapsedBtn = !collapsedBtn" [ngClass]="{'collapsed': collapsedBtn }" data-bs-target="#kt_accordion_123" aria-expanded="true" aria-controls="kt_accordion_123">
+            More
+          </button>
+          <div id="kt_accordion_123"  [ngClass]="{'show': collapsedBtn }" class="accordion-collapse collapse">
+            <label for="discount">{{ "MARGIN" | translate}}</label>
+            <input type="number" step="any" (keyup)="changeInMargin()"
+              name="discount" class="form-control" [(ngModel)]="item.nMargin" [disabled]="item.oType.bRefund || item.oType.bPrepayment">
+            <label for="discount">{{ "PURCHASE_PRICE" | translate}}</label>
+            <input type="number" step="any" (keyup)="changeInPurchasePrice()"
+              name="discount" class="form-control" [(ngModel)]="item.nPurchasePrice" [disabled]="item.oType.bRefund || item.oType.bPrepayment">
+          </div>
+          <div>
+            <label for="discount">{{ "DISCOUNT" | translate}}</label>
+            <input *ngIf="!item.oType.bRefund && !item.oType.bDiscount && !item.oType.bPrepayment" type="number" step="any"
+              name="discount" class="form-control" [(ngModel)]="item.nDiscount">
+            <input *ngIf="item.oType.bRefund || item.oType.bDiscount|| item.oType.bPrepayment" type="number" step="any"
+              name="discount" class="form-control" [value]="item.nDiscount - (item.nRedeemedLoyaltyPoints || 0)" disabled>
+            <label for="discount" *ngIf="item.oType.bRefund">{{ "LOYALTY_POINTS" | translate}}:
+              {{item.nRedeemedLoyaltyPoints}}</label>
+            <label for="bagNumber">{{ "PREPAYMENT" | translate}}</label>
+            <input type="number" name="bagNumber" id="bagNumber" [(ngModel)]="item.paymentAmount" class="form-control">
+          </div>
       </div>
 
       <div class="col-2">
