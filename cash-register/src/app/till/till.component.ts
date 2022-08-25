@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnInit, ViewChildren } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, OnInit, ViewChildren } from '@angular/core';
 import {
   faScrewdriverWrench, faTruck, faBoxesStacked, faGifts, faUser, faTimes, faTimesCircle, faTrashAlt, faRing,
   faCoins, faCalculator, faArrowRightFromBracket, faSpinner, faSearch, faMoneyBill
@@ -30,7 +30,7 @@ import { FiskalyService } from '../shared/service/fiskaly.service';
   templateUrl: './till.component.html',
   styleUrls: ['./till.component.scss']
 })
-export class TillComponent implements OnInit, AfterViewInit {
+export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   // icons
   faScrewdriverWrench = faScrewdriverWrench;
   faTruck = faTruck;
@@ -126,8 +126,6 @@ export class TillComponent implements OnInit, AfterViewInit {
 
 
   ngOnInit(): void {
-    localStorage.removeItem('fiskalyTransaction');
-    localStorage.removeItem('tssId');
     this.business._id = localStorage.getItem('currentBusiness');
     this.locationId = localStorage.getItem('currentLocation') || null;
     this.iWorkstationId = localStorage.getItem('currentWorkstation');
@@ -148,6 +146,7 @@ export class TillComponent implements OnInit, AfterViewInit {
     this.fetchQuickButtons();
 
     this.getfiskalyInfo();
+    this.ngOnDestroy();
   }
 
   async getfiskalyInfo() {
@@ -541,6 +540,10 @@ export class TillComponent implements OnInit, AfterViewInit {
             .subscribe((data: any) => {
               this.toastrService.show({ type: 'success', text: data.message });
               this.updateFiskalyTransaction('FINISHED', body.payments);
+              setTimeout(() => {
+                this.saveInProgress = false;
+                this.clearAll();
+              }, 100);
               if (this.selectedTransaction) {
                 this.deleteParkedTransaction();
               };
@@ -941,13 +944,21 @@ export class TillComponent implements OnInit, AfterViewInit {
       const result = await this.fiskalyService.updateFiskalyTransaction(this.transactionItems, pay, state);
       if (state === 'FINISHED') {
         localStorage.removeItem('fiskalyTransaction');
-        this.saveInProgress = false;
-        this.clearAll();
       } else {
         localStorage.setItem('fiskalyTransaction', JSON.stringify(result));
       }
     } catch (error) {
       console.log(error);
+    }
+  }
+
+  async ngOnDestroy() {    
+    if (localStorage.getItem('fiskalyTransaction')) {
+      await this.fiskalyService.updateFiskalyTransaction(this.transactionItems, [], 'CANCELLED');
+      localStorage.removeItem('fiskalyTransaction');
+      localStorage.removeItem('tssId');
+    } else {
+      localStorage.removeItem('tssId');
     }
   }
 }
