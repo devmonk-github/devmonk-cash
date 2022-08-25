@@ -3,8 +3,8 @@
         <h4 class="card-title" *ngIf="mode === 'create'">{{"NEW_CUSTOMER" | translate}}</h4>
         <h4 class="card-title" *ngIf="mode === 'details'">{{"CUSTOMER_DETAILS" | translate}}</h4>
         <div class="card-toolbar flex-row-fluid justify-content-end gap-5">
-            <button class="btn btn-secondary">{{"EDIT" | translate}}</button>
-            <button class="btn btn-primary" (click)="EditOrCreateCustomer()">{{"SAVE" | translate}}</button>
+            <button class="btn btn-secondary" (click)="editProfile = true">{{"EDIT" | translate}}</button>
+            <button class="btn btn-primary" *ngIf="editProfile" (click)="EditOrCreateCustomer()">{{"SAVE" | translate}}</button>
             <a class="cancel my-auto" (click)="close(false)">
                 <i class="fa fa-times"></i>
             </a>
@@ -25,7 +25,7 @@
                                     }}</span>
                             </h2>
                         </div>
-                        <div class="d-flex justify-content-between align-items-start">
+                        <div class="d-flex justify-content-between align-items-start" *ngIf="!editProfile">
 
                             <div class="">
                                 <h4 class="text-gray-700 fw-bolder mb-2">{{'About' | translate}}</h4>
@@ -346,12 +346,12 @@
             <div class="d-flex flex-row-fluid justify-content-end gap-5">
                 <button class="btn btn-secondary" (click)="editProfile = !editProfile"><span>{{'MORE_DETAILS' |
                         translate}}</span></button>
-                <button class="btn btn-secondary" (click)="showStatistics = !showStatistics"><span>{{'STATISTICS' |
-                        translate}}</span></button>
+                <!-- <button class="btn btn-secondary" (click)="showStatistics = !showStatistics"><span>{{'STATISTICS' |
+                        translate}}</span></button> -->
             </div>
         </div>
     </div>
-    <div class="card-footer" *ngIf="mode === 'details' && showStatistics">
+    <!-- <div class="card-footer" *ngIf="mode === 'details' && showStatistics">
         <div class="row">
             <div class="col-4">
                 <h3 class="fw-bolder">{{"TURNOVER" | translate}}</h3>
@@ -363,7 +363,7 @@
                 <h3 class="fw-bolder">{{"RECENT_SERVICES" | translate}}</h3>
             </div>
         </div>
-    </div>
+    </div> -->
     <div class="card-footer" *ngIf="mode === 'create' || (mode === 'details' && editProfile)">
         <div class="row">
             <div class="col-8">
