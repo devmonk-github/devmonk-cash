@@ -274,13 +274,26 @@
                     <app-pn-tab tabTitle="{{ tabTitles[3] | translate}}" #statistics>
                         <div class="row mb-5">
                             <div id="statistics-chart" class="col-12">
-                                <apx-chart [series]="statisticsChartOptions.series"
-                                    [chart]="statisticsChartOptions.chart"
-                                    [dataLabels]="statisticsChartOptions.dataLabels"
-                                    [plotOptions]="statisticsChartOptions.plotOptions"
-                                    [yaxis]="statisticsChartOptions.yaxis" [xaxis]="statisticsChartOptions.xaxis"
-                                    [colors]="statisticsChartOptions.colors" [tooltip]="statisticsChartOptions.tooltip">
-                                </apx-chart>
+                                <ng-container *ngIf="aStatisticsChartData.length && !aStatisticsChartDataLoading;">
+                                    <apx-chart [series]="statisticsChartOptions.series"
+                                        [chart]="statisticsChartOptions.chart"
+                                        [dataLabels]="statisticsChartOptions.dataLabels"
+                                        [plotOptions]="statisticsChartOptions.plotOptions"
+                                        [yaxis]="statisticsChartOptions.yaxis" [xaxis]="statisticsChartOptions.xaxis"
+                                        [colors]="statisticsChartOptions.colors"
+                                        [tooltip]="statisticsChartOptions.tooltip">
+                                    </apx-chart>
+                                </ng-container>
+                                <ng-container *ngIf="!aStatisticsChartData.length && aStatisticsChartDataLoading">
+                                    <div class="d-flex my-20">
+                                        <div class="spinner-border mx-auto"></div>
+                                    </div>
+                                </ng-container>
+                                <ng-container *ngIf="!aStatisticsChartData.length && !aStatisticsChartDataLoading">
+                                    <div class="d-flex my-20">
+                                        <div class="mx-auto">No Data Found </div>
+                                    </div>
+                                </ng-container>
                             </div>
                         </div>
                         <div class="row mb-5">
@@ -308,6 +321,7 @@
                             </div>
                             <div class="col-6">
                                 <div id="paymentMethodsChart">
+
                                     <apx-chart [series]="paymentMethodsChartOptions.series"
                                         [chart]="paymentMethodsChartOptions.chart"
                                         [labels]="paymentMethodsChartOptions.labels"
@@ -316,6 +330,7 @@
                                         [title]="paymentMethodsChartOptions.title"
                                         [dataLabels]="paymentMethodsChartOptions.options.dataLabels">
                                     </apx-chart>
+
                                 </div>
                             </div>
                         </div>

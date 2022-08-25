@@ -136,10 +136,16 @@ export class SelectArticleDialogComponent implements OnInit {
     })
   }
 
-  close(): void {
-    if (!this.brand || !this.articlegroup || !this.supplier) {
-      return
+  close(status: boolean): void {
+    if (status) {
+      if (!this.brand || !this.articlegroup || !this.supplier) {
+        return
+      };
+      const businessPartener = this.articlegroup.aBusinessPartner.find((o: any) => o.iBusinessPartnerId === this.supplier._id );
+      let nMargin = businessPartener? businessPartener.nMargin: 1;
+      this.dialogRef.close.emit({ brand: this.brand, articlegroup: this.articlegroup, supplier: this.supplier, nMargin });
+    } else {
+      this.dialogRef.close.emit(false);
     }
-    this.dialogRef.close.emit({ brand: this.brand, articlegroup: this.articlegroup, supplier: this.supplier });
   }
 }

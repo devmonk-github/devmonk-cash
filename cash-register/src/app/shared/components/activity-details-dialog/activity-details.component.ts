@@ -219,6 +219,8 @@ export class ActivityDetailsComponent implements OnInit {
                 paymentAmount,
                 description: '',
                 open: true,
+                nMargin: transactionItem.nMargin,
+                nPurchasePrice: transactionItem.nPurchasePrice,
               });
             }
           });

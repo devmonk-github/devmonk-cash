@@ -113,7 +113,7 @@ export class TillService {
         i.ean,
         i.sArticleNumber,
         i.aImage,
-        0, // TODO
+        i.nMargin, // TODO
         null,
         null,
         i.iBusinessPartnerId, // TODO: Needed in till??

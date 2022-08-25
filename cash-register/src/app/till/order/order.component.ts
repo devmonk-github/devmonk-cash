@@ -47,6 +47,7 @@ export class OrderComponent implements OnInit {
   suppliersList: Array<any> = [];
   showDeleteBtn: boolean = false;
   aProperty: any = [];
+  collapsedBtn: Boolean = false;
   constructor(
     private priceService: PriceService,
     private apiService: ApiService,
@@ -61,20 +62,33 @@ export class OrderComponent implements OnInit {
     this.getBusinessBrands();
     if (this.item.new) {
       this.selectArticleGroup();
+      this.item.new = false;
     }
   }
 
   selectArticleGroup() {
     this.dialogService.openModal(SelectArticleDialogComponent, { cssClass: 'modal-m', context: {} })
       .instance.close.subscribe((data) => {
-        const { articlegroup, brand, supplier } = data;
-        this.item.supplier = supplier.sName;
-        this.supplier = supplier.sName;
-        this.item.iSupplierId = supplier._id;
-        this.brand = brand.sName;
-        this.item.iBusinessBrandId = brand._id;
-        this.updateProperties(articlegroup);
+        if (data) {
+          const { articlegroup, brand, supplier, nMargin } = data;
+          this.item.supplier = supplier.sName;
+          this.item.nMargin = nMargin;
+          this.supplier = supplier.sName;
+          this.item.iSupplierId = supplier._id;
+          this.brand = brand.sName;
+          this.item.iBusinessBrandId = brand._id;
+          this.updateProperties(articlegroup);
+          this.changeInMargin();
+        }
       });
+  }
+  
+  changeInMargin() {
+    this.item.nPurchasePrice = this.item.price / this.item.nMargin || 1;
+  }
+
+  changeInPurchasePrice() {
+    this.item.nMargin = this.item.price / this.item.nPurchasePrice || 1;
   }
 
   updateProperties(articlegroup: any) {

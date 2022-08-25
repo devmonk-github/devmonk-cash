@@ -37,7 +37,7 @@ export class RepairComponent implements OnInit {
   selectedProperties: Array<any> = [];
   aProperty: any = [];
   showDeleteBtn: boolean = false;
-
+  collapsedBtn: Boolean = false;
   repairer: any = null;
   // temporary variable
   supplier: any;
@@ -57,20 +57,33 @@ export class RepairComponent implements OnInit {
     this.getBusinessBrands();
     if (this.item.new) {
       this.selectArticleGroup();
+      this.item.new = false;
     }
   }
 
   selectArticleGroup() {
     this.dialogService.openModal(SelectArticleDialogComponent, { cssClass: 'modal-m', context: { payments: 'this.payMethods' } })
       .instance.close.subscribe((data) => {
-        const { articlegroup, brand, supplier } = data;
-        this.item.supplier = supplier.sName;
-        this.supplier = supplier.sName;
-        this.item.iSupplierId = supplier._id;
-        this.brand = brand.sName;
-        this.item.iBusinessBrandId = brand._id;
-        this.updateProperties(articlegroup);
+        if (data) {
+          const { articlegroup, brand, supplier, nMargin } = data;
+          this.item.supplier = supplier.sName;
+          this.supplier = supplier.sName;
+          this.item.iSupplierId = supplier._id;
+          this.item.nMargin = nMargin;
+          this.brand = brand.sName;
+          this.item.iBusinessBrandId = brand._id;
+          this.updateProperties(articlegroup);
+          this.changeInMargin();
+        }
       });
+  }
+
+  changeInMargin() {
+    this.item.nPurchasePrice = this.item.price / this.item.nMargin || 1;
+  }
+
+  changeInPurchasePrice() {
+    this.item.nMargin = this.item.price / this.item.nPurchasePrice || 1;
   }
 
   updateProperties(articlegroup: any) {

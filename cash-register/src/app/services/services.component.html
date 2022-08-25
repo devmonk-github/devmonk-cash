@@ -4,7 +4,7 @@
       <div class="position-relative w-md-400px me-md-2">
         <fa-icon [icon]="faSearch" class="text-gray-500 position-absolute top-50 translate-middle ms-6"></fa-icon>
         <!--end::Svg Icon-->
-        <input type="text" class="form-control form-control-solid ps-10" (keyup.enter)="loadTransaction()" name="search"
+        <input type="text" class="form-control form-control-solid ps-10" [(ngModel)]="requestParams.searchValue" (keyup.enter)="loadTransaction()" name="search"
           value="" placeholder="Search" />
       </div>
       <div class="d-flex align-items-center">
