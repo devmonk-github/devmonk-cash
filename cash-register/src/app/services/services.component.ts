@@ -101,7 +101,7 @@ export class ServicesComponent implements OnInit {
   ngOnInit(): void {
     if (this.routes.url.includes('/business/webshop-orders')) {
       this.webOrders = true;
-      this.requestParams.eType = ['webshop-revenue','webshop-reservation']
+      this.requestParams.eType = ['webshop-revenue', 'webshop-reservation']
     }
     this.businessDetails._id = localStorage.getItem('currentBusiness');
     this.iLocationId = localStorage.getItem('currentLocation');
@@ -118,14 +118,14 @@ export class ServicesComponent implements OnInit {
 
   }
 
-  getTypes(arr: any){
+  getTypes(arr: any) {
     let str = '';
-    if(arr && arr.length){
-      for(let i = 0; i < arr.length; i++){
-        if(arr[i]?.oArticleGroupMetaData?.sCategory){
-          if(!str){ str += (arr[i]?.oArticleGroupMetaData?.sCategory) }
+    if (arr && arr.length) {
+      for (let i = 0; i < arr.length; i++) {
+        if (arr[i]?.oArticleGroupMetaData?.sCategory) {
+          if (!str) { str += (arr[i]?.oArticleGroupMetaData?.sCategory) }
           else { str += (', ' + arr[i]?.oArticleGroupMetaData?.sCategory) }
-        } 
+        }
       }
     }
     return str;
@@ -134,6 +134,7 @@ export class ServicesComponent implements OnInit {
   getLocations() {
     this.apiService.postNew('core', `/api/v1/business/${this.iBusinessId}/list-location`, {}).subscribe(
       (result: any) => {
+        console.log({ getLocations: result });
         if (result.message == 'success') {
           this.requestParams.locations = result.data.aLocation;
         }
@@ -209,33 +210,36 @@ export class ServicesComponent implements OnInit {
   }
 
   openActivities(activity: any) {
-    if(this.webOrders){
+    if (this.webOrders) {
       this.dialogService.openModal(WebOrderDetailsComponent, { cssClass: 'w-fullscreen', context: { activity, from: 'web-orders' } })
-      .instance.close.subscribe(result => {
-        if(this.webOrders && result) this.routes.navigate(['business/till']);
-      });
-    }else{
+        .instance.close.subscribe(result => {
+          if (this.webOrders && result) this.routes.navigate(['business/till']);
+        });
+    } else {
       this.dialogService.openModal(ActivityDetailsComponent, { cssClass: 'w-fullscreen', context: { activity, items: false, webOrders: this.webOrders, from: 'services' } })
-      .instance.close.subscribe(result => {
-        if(this.webOrders && result) this.routes.navigate(['business/till']);
-      });
+        .instance.close.subscribe(result => {
+          if (this.webOrders && result) this.routes.navigate(['business/till']);
+        });
     }
   }
 
   loadTransaction() {
     if (this.routes.url.includes('/business/webshop-orders')) {
-      this.requestParams.eType = ['webshop-revenue','webshop-reservation']
+      this.requestParams.eType = ['webshop-revenue', 'webshop-reservation']
     }
     this.activities = [];
     this.requestParams.iBusinessId = this.businessDetails._id;
     this.requestParams.skip = this.requestParams.skip || 0;
     this.requestParams.limit = this.paginationConfig.itemsPerPage || 50;
     this.requestParams.importStatus = this.importStatus;
-    if(this.iLocationId) this.requestParams.iLocationId = this.iLocationId;
+    if (this.iLocationId) this.requestParams.iLocationId = this.iLocationId;
     this.showLoader = true;
     this.apiService.postNew('cashregistry', '/api/v1/activities', this.requestParams).subscribe((result: any) => {
-      this.activities = result.data;
-      this.paginationConfig.totalItems = result.count;
+      if (result?.data?.length)
+        this.activities = result?.data;
+      else
+        this.activities = [];
+      this.paginationConfig.totalItems = result?.count;
       this.getCustomers();
       setTimeout(() => {
         MenuComponent.bootstrap();
@@ -246,10 +250,10 @@ export class ServicesComponent implements OnInit {
     })
   }
 
-  getCustomers(){
+  getCustomers() {
     const arr = [];
-    for(let i = 0; i < this.activities.length; i++){
-      if(this.activities[i].iCustomerId && arr.indexOf(this.activities[i].iCustomerId) < 0 ) arr.push(this.activities[i].iCustomerId);
+    for (let i = 0; i < this.activities.length; i++) {
+      if (this.activities[i].iCustomerId && arr.indexOf(this.activities[i].iCustomerId) < 0) arr.push(this.activities[i].iCustomerId);
     }
 
     const body = {
@@ -260,9 +264,9 @@ export class ServicesComponent implements OnInit {
     this.apiService.postNew('customer', '/api/v1/customer/list', body)
       .subscribe(async (result: any) => {
         const customers = result.data[0].result || [];
-        for(let i = 0; i < this.activities.length; i++){
-          for(let j = 0; j < customers.length; j++){
-            if(this.activities[i]?.iCustomerId?.toString() == customers[j]?._id?.toString()){
+        for (let i = 0; i < this.activities.length; i++) {
+          for (let j = 0; j < customers.length; j++) {
+            if (this.activities[i]?.iCustomerId?.toString() == customers[j]?._id?.toString()) {
               this.activities[i].oCustomer = {
                 sFirstName: customers[j].sFirstName,
                 sPrefix: customers[j].sPrefix,
@@ -272,7 +276,7 @@ export class ServicesComponent implements OnInit {
           }
         }
       },
-      (error) => {
-      })
+        (error) => {
+        })
   }
 }

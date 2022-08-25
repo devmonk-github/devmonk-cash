@@ -331,6 +331,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
   }
 
   onProperties(value?: any) {
+    console.log('onProperties called: ', this.selectedProperties, this.propertyOptions, this.aProperty);
     if (this.selectedProperties && this.selectedProperties[value]) {
       this.aFilterProperty = [];
       for (const oProperty of this.aProperty) {
