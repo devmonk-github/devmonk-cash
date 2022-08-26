@@ -3,6 +3,8 @@ import { faTimes, faArrowDown, faArrowUp, faMinus } from '@fortawesome/free-soli
 import { DialogService } from "../../shared/service/dialog";
 import { DiscountDialogComponent } from "../dialogs/discount-dialog/discount-dialog.component";
 import { PriceService } from "../../shared/service/price.service";
+import { ApiService } from 'src/app/shared/service/api.service';
+import { ToastService } from 'src/app/shared/components/toast';
 
 @Component({
   // eslint-disable-next-line @angular-eslint/component-selector
@@ -10,7 +12,7 @@ import { PriceService } from "../../shared/service/price.service";
   templateUrl: './product.component.html',
   styleUrls: ['./product.component.sass'],
 })
-export class ProductComponent {
+export class ProductComponent implements OnInit{
   @Input() item: any
   @Input() taxes: any
   @Output() itemChanged = new EventEmitter<any>();
@@ -20,11 +22,30 @@ export class ProductComponent {
   faArrowUp = faArrowUp;
   typeArray = ['regular', 'return'];
 
-  constructor(private dialogService: DialogService, private priceService: PriceService) { }
+  constructor(private dialogService: DialogService,
+    private priceService: PriceService,
+    private apiService: ApiService,
+    private toastrService: ToastService) { }
 
-  // ngOnInit(): void {
-  //   // this.item.sArticleNumber = '0001234567'
-  // }
+  ngOnInit(): void {
+    this.fetchArticleGroupInfo();
+  }
+
+  fetchArticleGroupInfo() {
+    const iBusinessId = localStorage.getItem('currentBusiness');
+    this.apiService.getNew('core', `/api/v1/business/article-group/${this.item.iArticleGroupId}?iBusinessId=${iBusinessId}`).
+    subscribe((res: any) => {
+      this.item.oArticleGroupMetaData.aProperty = res.data.aProperty;
+      if(res.data.aBusinessPartner) {
+        const marginData = res.data.aBusinessPartner.find((o: any)=> o.iBusinessPartnerId === this.item.iSupplierId);
+        this.item.nMargin = marginData?.nMargin || 1;
+        this.item.nPurchasePrice = this.item.price / this.item.nMargin || 1;
+      }
+    }, err => {
+      this.toastrService.show({ type: 'danger', text: err.message });
+    });
+
+  }
 
   deleteItem(): void {
     this.itemChanged.emit('delete')

@@ -1,11 +1,9 @@
 import { Component, Input, OnInit, ViewContainerRef } from '@angular/core';
-import * as _ from 'lodash';
+// import * as _ from 'lodash';
+
 import { ApiService } from '../../service/api.service';
-
 import { DialogComponent } from "../../service/dialog";
-import { TillService } from '../../service/till.service';
-// import { TerminalService } from '../../service/terminal.service';
-
+import { ToastService } from '../toast';
 @Component({
   selector: 'app-select-articlegroup-dialog',
   templateUrl: './select-articlegroup-dialog.component.html',
@@ -24,10 +22,12 @@ export class SelectArticleDialogComponent implements OnInit {
   articlegroup: any = null;
   supplier: any = null;
   iBusinessId = localStorage.getItem('currentBusiness');
+  iArticleGroupId: any = null;
+  iBusinessBrandId: any = null;
   constructor(
     private viewContainer: ViewContainerRef,
-    private tillService: TillService,
-    private apiService: ApiService) {
+    private apiService: ApiService,
+    private toastrService: ToastService) {
     const _injector = this.viewContainer.injector;
     this.dialogRef = _injector.get<DialogComponent>(DialogComponent);
   }
@@ -36,6 +36,7 @@ export class SelectArticleDialogComponent implements OnInit {
     this.fetchArticleGroups(null);
     this.fetchBusinessPartners([]);
     this.getBusinessBrands();
+    this.iBusinessBrandId= this.dialogRef.context?.item?.iBusinessBrandId;
   }
 
   fetchArticleGroups(iBusinessPartnerId: any) {
@@ -57,7 +58,7 @@ export class SelectArticleDialogComponent implements OnInit {
           this.fetchArticleGroups(null);
         }
       }, error => {
-        console.log(error);
+        this.toastrService.show({ type: 'danger', text: error.message });
       });
   }
 
@@ -132,6 +133,7 @@ export class SelectArticleDialogComponent implements OnInit {
     this.apiService.postNew('core', '/api/v1/business/brands/list', oBody).subscribe((result: any) => {
       if (result.data && result.data.length > 0) {
         this.brandsList = result.data[0].result;
+        this.brand = this.brandsList.find((o: any) => o.iBrandId === this.iBusinessBrandId);
       }
     })
   }

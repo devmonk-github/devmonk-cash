@@ -106,7 +106,7 @@ export class TransactionsSearchComponent implements OnInit, AfterViewInit {
                 transactionItem.oType.bRefund = false;
               };
               transactionItems.push({
-                name: transactionItem.sProductName,
+                name: transactionItem.sProductName || transactionItem.sProductNumber,
                 iActivityItemId: transactionItem.iActivityItemId,
                 nRefundAmount: transactionItem.nPaidAmount,
                 iLastTransactionItemId: transactionItem.iTransactionItemId,

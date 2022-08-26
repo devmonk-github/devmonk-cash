@@ -60,14 +60,15 @@ export class OrderComponent implements OnInit {
     this.getProperties();
     this.listSuppliers();
     this.getBusinessBrands();
-    if (this.item.new) {
+    console.log(this.item);
+    if (this.item.new && this.item.isFor !== 'shopProducts') {
       this.selectArticleGroup();
       this.item.new = false;
     }
   }
 
-  selectArticleGroup() {
-    this.dialogService.openModal(SelectArticleDialogComponent, { cssClass: 'modal-m', context: {} })
+  selectArticleGroup() {   
+    this.dialogService.openModal(SelectArticleDialogComponent, { cssClass: 'modal-m', context: { item: this.item } })
       .instance.close.subscribe((data) => {
         if (data) {
           const { articlegroup, brand, supplier, nMargin } = data;
@@ -159,6 +160,8 @@ export class OrderComponent implements OnInit {
     const aProperty: any = [];
     this.apiService.postNew('core', '/api/v1/properties/list', data).subscribe(
       (result: any) => {
+        console.log('I am printing properties.');
+        console.log(result.data);
         if (result.data && result.data.length > 0) {
           result.data[0].result.map((property: any) => {
             if (typeof (this.propertyOptions[property._id]) == 'undefined') {
@@ -184,10 +187,12 @@ export class OrderComponent implements OnInit {
               });
             }
           });
-
-          if (this.item.oArticleGroupMetaData.aProperty.length === 0) {
-            this.item.oArticleGroupMetaData.aProperty = aProperty
-          };
+          aProperty.forEach((prop: any) => {
+            const check = this.item.oArticleGroupMetaData.aProperty.find((o:any) => o.iPropertyId === prop.iPropertyId);
+            if (!check) {
+              this.item.oArticleGroupMetaData.aProperty.push(prop);
+            }
+          });
           const data = this.item.oArticleGroupMetaData.aProperty.filter(
             (set => (a: any) => true === set.has(a.iPropertyId))(new Set(aProperty.map((b: any) => b.iPropertyId)))
           );
@@ -263,6 +268,9 @@ export class OrderComponent implements OnInit {
     }
   }
   checkArticleGroups() {
+    if(this.item.iArticleGroupId) {
+      return;
+    }
     this.createArticleGroupService.checkArticleGroups('Ordered products')
       .subscribe((res: any) => {
         if (1 > res.data.length) {

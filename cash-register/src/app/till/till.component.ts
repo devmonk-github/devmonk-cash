@@ -97,7 +97,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     'iArticleGroupId',
     'iBusinessPartnerId',
     'iBusinessBrandId',
-    'nPurchasePrice'
+    'nPurchasePrice',
+    'iBrandId',
   ];
   discountArticleGroup: any = {};
   saveInProgress = false;
@@ -146,7 +147,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     this.fetchQuickButtons();
 
     this.getfiskalyInfo();
-    this.ngOnDestroy();
+    this.cancelFiskalyTransaction();
   }
 
   async getfiskalyInfo() {
@@ -204,7 +205,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     })
   }
 
-  addOrder(): void {
+  addOrder(product: any): void {
     this.transactionItems.push({
       eTransactionItemType: 'regular',
       manualUpdate: false,
@@ -225,6 +226,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       description: '',
       open: true,
       new: true,
+      isFor: 'create',
     });
     this.searchKeyword = '';
   }
@@ -623,17 +625,17 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       product = _oBusinessProductDetail.data;
       price.nPriceIncludesVat = selectedQuickButton.nPrice;
     } else {
-      price = product.aLocation.find((o: any) => o._id === this.locationId);
+      price = product.aLocation? product.aLocation.find((o: any) => o._id === this.locationId): 0;
     }
 
     this.transactionItems.push({
-      name: product.oName ? product.oName['en'] : 'No name',
+      name: product.oName ? product.oName['en'] : this.searchKeyword,
       eTransactionItemType: 'regular',
       type: this.eKind,
       quantity: 1,
       price: price ? price.nPriceIncludesVat : 0,
       nMargin: 1,
-      nPurchasePrice: product.nPurchasePrice || 0,
+      nPurchasePrice: product.nPurchasePrice || price,
       paymentAmount: 0,
       oType: { bRefund: false, bDiscount: false, bPrepayment: false },
       nDiscount: product.nDiscount || 0,
@@ -643,12 +645,14 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       description: product.sLabelDescription,
       iArticleGroupId: product.iArticleGroupId,
       oArticleGroupMetaData: { aProperty: product.aProperty || [], sCategory: '', sSubCategory: '', oName: {} },
-      iBusinessBrandId: product.iBusinessBrandId,
+      iBusinessBrandId: product.iBusinessBrandId || product.iBrandId,
       iBusinessProductId: product._id,
       iSupplierId: product.iBusinessPartnerId,
       aImage: product.aImage,
       isExclude: false,
       open: true,
+      new: true,
+      isFor
     });
     this.resetSearch();
   }
@@ -662,8 +666,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   search() {
     this.shopProducts = [];
     this.commonProducts = [];
-    // if (searchValue && searchValue.length > 2) {
-    //   this.isLoading = true;
     this.listShopProducts(this.searchKeyword, false);
     if (!this.isStockSelected) {
       this.listCommonBrandProducts(this.searchKeyword, false); // Searching for the products of common brand
@@ -727,8 +729,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
         this.taxes = transactionInfo.aTaxes;
         this.transactionItems = transactionInfo.aTransactionItems;
         this.customer = transactionInfo.oCustomer;
-        // this.searchKeyword = transactionInfo.searchKeyword;
-        // this.shopProducts = transactionInfo.shopProducts;
         this.businessId = transactionInfo.iBusinessId;
         this.supplierId = transactionInfo.iSupplierId;
         this.iActivityId = transactionInfo.iActivityId;
@@ -930,8 +930,11 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     try {
       const res = await this.fiskalyService.startTransaction();
       localStorage.setItem('fiskalyTransaction', JSON.stringify(res));
-    } catch (error) {
-      console.log(error);
+    } catch (error: any) {
+      if(error.error.code === 'E_UNAUTHORIZED') {
+        localStorage.removeItem('fiskalyAuth');
+        await this.startFiskalyTransaction();
+      }
     }
   }
 
@@ -947,18 +950,31 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       } else {
         localStorage.setItem('fiskalyTransaction', JSON.stringify(result));
       }
-    } catch (error) {
-      console.log(error);
+    } catch (error: any) {
+      if(error.error.code === 'E_UNAUTHORIZED') {
+        localStorage.removeItem('fiskalyAuth');
+        await this.updateFiskalyTransaction(state, payments);
+      }
     }
   }
 
-  async ngOnDestroy() {    
-    if (localStorage.getItem('fiskalyTransaction')) {
-      await this.fiskalyService.updateFiskalyTransaction(this.transactionItems, [], 'CANCELLED');
+  async cancelFiskalyTransaction() {
+    try {
+      if (localStorage.getItem('fiskalyTransaction')) {
+        await this.fiskalyService.updateFiskalyTransaction(this.transactionItems, [], 'CANCELLED');
+        localStorage.removeItem('fiskalyTransaction');
+        localStorage.removeItem('tssId');
+      } else {
+        localStorage.removeItem('tssId');
+      }
+    } catch (error) {
       localStorage.removeItem('fiskalyTransaction');
       localStorage.removeItem('tssId');
-    } else {
-      localStorage.removeItem('tssId');
-    }
+    } 
+  }
+
+  ngOnDestroy() { 
+    localStorage.removeItem('fromTransactionPage');  
+    this.cancelFiskalyTransaction();
   }
 }
