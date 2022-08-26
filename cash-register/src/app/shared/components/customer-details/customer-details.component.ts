@@ -15,6 +15,7 @@ import {
   ApexResponsive,
   ApexLegend
 } from "ng-apexcharts";
+import { ToastService } from '../toast';
 
 export interface BarChartOptions {
   series: ApexAxisChartSeries;
@@ -118,6 +119,9 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
   }
   requestParams: any = {
     iBusinessId: "",
+    aProjection: ['sSalutation', 'sFirstName', 'sPrefix', 'sLastName', 'dDateOfBirth', 'dDateOfBirth', 'nClientId', 'sGender', 'bIsEmailVerified',
+      'bCounter', 'sEmail', 'oPhone', 'oShippingAddress', 'oInvoiceAddress', 'iBusinessId', 'sComment', 'bNewsletter', 'sCompanyName', 'oPoints',
+      'sCompanyName', 'oIdentity', 'sVatNumber', 'sCocNumber', 'nPaymentTermDays', 'nDiscount', 'bWhatsApp', 'nMatchingCode'],
   };
   paginationConfig: any = {
     itemsPerPage: 10,
@@ -128,7 +132,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
   bActivitiesLoader: boolean = false;
   bActivityItemsLoader: boolean = false;
 
-  aTransactions: any = [];
+  aTransactions !: Array<any>;
   aTransctionTableHeaders: Array<any> = [
     { key: 'Date', selected: true, sort: 'desc' },
     { key: 'Transaction no.', selected: false, sort: '' },
@@ -137,7 +141,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
     { key: 'Total', disabled: true },
   ];
 
-  aActivities: any = [];
+  aActivities!: Array<any>;
   aActivityTableHeaders: Array<any> = [
     { key: 'Activity No.', selected: false, sort: '' },
     { key: 'Repair number', disabled: true },
@@ -148,7 +152,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
     { key: 'Supplier/Repairer', disabled: true },
   ]
 
-  aActivityItems: any = [];
+  aActivityItems!: Array<any>;
   aActivityItemsTableHeaders: Array<any> = [
     { key: 'Activity No.', selected: false, sort: '' },
     { key: 'Repair number', disabled: true },
@@ -201,7 +205,8 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
   constructor(
     private viewContainerRef: ViewContainerRef,
     private apiService: ApiService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private toastService: ToastService,
   ) {
     const _injector = this.viewContainerRef.parentInjector;
     this.dialogRef = _injector.get<DialogComponent>(DialogComponent);
@@ -211,7 +216,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
     this.requestParams.iBusinessId = localStorage.getItem('currentBusiness');
     this.requestParams.iLocationid = localStorage.getItem('currentLocation');
     this.requestParams.oFilterBy = {
-      iCustomerId: this.customer._id
+      _id: this.customer._id
     }
     this.getCoreStatistics()
 
@@ -266,13 +271,37 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
     if (this.mode == 'details') {
       this.apiService.putNew('customer', '/api/v1/customer/update/' + this.requestParams.iBusinessId + '/' + this.customer._id, this.customer).subscribe(
         (result: any) => {
-          this.close({ action: true });
+          if(result?.message === 'success'){
+            this.toastService.show({ type: 'success', text: `Successfully updated!` });
+            this.fetchUpdatedDetails();
+          }
+          // this.close({ action: true });
         },
         (error: any) => {
           console.error(error)
         }
       );
     }
+  }
+
+  fetchUpdatedDetails() {
+    this.apiService.postNew('customer', `/api/v1/customer/list`,this.requestParams)
+    .subscribe((result: any) => {
+      this.customer = result.data[0].result[0];
+      
+      this.bTransactionsLoader = false;
+      this.bActivitiesLoader = false;
+      this.bActivityItemsLoader = false;
+      
+      this.cdr.detectChanges();
+
+      this.editProfile = false;
+      // console.log(result);
+    },
+    (error: any) => {
+       console.error(error)
+    }
+    )
   }
 
   close(data: any) {
@@ -377,11 +406,10 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
   }
 
   loadTransactions() {
-
     this.bTransactionsLoader = true;
     this.apiService.postNew('cashregistry', '/api/v1/transaction/cashRegister', this.requestParams).subscribe((result: any) => {
-      if (result?.data?.result?.length) {
-        this.aTransactions = result.data.result;
+      if (result?.data?.result) {
+        this.aTransactions = result.data.result || [];
         // this.paginationConfig.totalItems = result.data.totalCount;
       }
       this.bTransactionsLoader = false;
@@ -391,11 +419,11 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
   }
 
   loadActivities() {
-    console.log('loadActivities');
+    // console.log('loadActivities');
     this.aActivities = [];
     this.bActivitiesLoader = true;
     this.apiService.postNew('cashregistry', '/api/v1/activities', this.requestParams).subscribe((result: any) => {
-      this.aActivities = result.data;
+      this.aActivities = result.data || [];
       // this.paginationConfig.totalItems = result.count;
 
       this.bActivitiesLoader = false;
@@ -405,12 +433,11 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
 
   }
   loadActivityItems() {
-    console.log('loadActivities items');
-    this.aActivityItems = [];
+    // console.log('loadActivities items');
     this.bActivityItemsLoader = true;
     this.apiService.postNew('cashregistry', '/api/v1/activities/items', this.requestParams).subscribe(
       (result: any) => {
-        this.aActivityItems = result.data;
+        this.aActivityItems = result.data || [];
         // this.paginationConfig.totalItems = result.count;
         this.bActivityItemsLoader = false;
       },
@@ -422,13 +449,13 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
   activeTabsChanged(tab: any) {
     switch (tab) {
       case this.tabTitles[0]:
-        if (!this.aTransactions.length) this.loadTransactions();
+        if (!this.aTransactions) this.loadTransactions();
         break;
       case this.tabTitles[1]:
-        if (!this.aActivities.length) this.loadActivities();
+        if (!this.aActivities) this.loadActivities();
         break;
       case this.tabTitles[2]:
-        if (!this.aActivityItems.length) this.loadActivityItems();
+        if (!this.aActivityItems) this.loadActivityItems();
         break;
       case this.tabTitles[3]:
         this.loadStatisticsTabData();
@@ -446,12 +473,15 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
           let data = w.globals.initialSeries[seriesIndex].data[dataPointIndex];
 
           let html = `<div>
-          <div style="background:#E4E6EF;padding:10px">${data.x}</div>
-          <ul style='list-style-type:circle;padding:5px 15px;margin:5px;line-height:1.5'>`;
+                        <div style="background:#E4E6EF;padding:10px">${data.x}</div>
+                        <ul style='list-style-type:circle;padding:5px 15px;margin:5px;line-height:1.5'>`;
           data.info.forEach((el: any) => {
-            html += `<li><span>${el.type}:<span><span style="margin:10px 5px;font-weight:bold"> € ${el.value}</span></li>`;
+            html += `<li>
+                        <span>${el.type}:<span>
+                        <span style="margin:10px 5px;font-weight:bold"> € ${el.value}</span>
+                    </li>`;
           });
-          html += "</ul><div>"
+          html += `</ul><div>`;
 
           return html;
         }

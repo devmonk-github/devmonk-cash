@@ -3,7 +3,7 @@
         <h4 class="card-title" *ngIf="mode === 'create'">{{"NEW_CUSTOMER" | translate}}</h4>
         <h4 class="card-title" *ngIf="mode === 'details'">{{"CUSTOMER_DETAILS" | translate}}</h4>
         <div class="card-toolbar flex-row-fluid justify-content-end gap-5">
-            <button class="btn btn-secondary" (click)="editProfile = true">{{"EDIT" | translate}}</button>
+            <button class="btn btn-secondary" (click)="editProfile = !editProfile">{{ (editProfile)?"CANCEL":"EDIT" | translate}}</button>
             <button class="btn btn-primary" *ngIf="editProfile" (click)="EditOrCreateCustomer()">{{"SAVE" | translate}}</button>
             <a class="cancel my-auto" (click)="close(false)">
                 <i class="fa fa-times"></i>
@@ -13,343 +13,602 @@
             </button> -->
         </div>
     </div>
-    <div *ngIf="mode === 'details'" class="card-body main">
-        <div class="row">
-            <div class="col-12">
-                <div class="d-flex">
-                    <div class="flex-grow-1">
-                        <div class="d-flex align-items-center mb-5">
-                            <i class="fa fa-user fs-1"></i>
-                            <h2 class="fw-bolder mx-5 mb-0">
-                                <span>{{ customer.sSalutation }} {{ customer.sFirstname }} {{ customer.sLastName
-                                    }}</span>
-                            </h2>
-                        </div>
-                        <div class="d-flex justify-content-between align-items-start" *ngIf="!editProfile">
-
-                            <div class="">
-                                <h4 class="text-gray-700 fw-bolder mb-2">{{'About' | translate}}</h4>
-                                <div class="d-flex flex-column mb-5">
-                                    <div class="d-flex">
-                                        <span>{{'RECEIVE_NEWSLETTER' | translate}}</span>
-                                        <div class="svg-icon svg-icon-2 ps-0 mx-5" *ngIf="customer.bNewsletter">
-                                            <i class="fas fa-check-circle"></i>
+    <div class="card-body main">
+        <ng-container *ngIf="mode === 'details'">
+            <div class="row">
+                <div class="col-12">
+                    <div class="d-flex">
+                        <div class="flex-grow-1">
+                            <div class="d-flex align-items-center mb-5">
+                                <i class="fa fa-user fs-1"></i>
+                                <h2 class="fw-bolder mx-5 mb-0">
+                                    <span>{{ customer.sSalutation }} {{ customer.sFirstname }} {{ customer.sLastName
+                                        }}</span>
+                                </h2>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-start" *ngIf="!editProfile">
+    
+                                <div class="">
+                                    <h4 class="text-gray-700 fw-bolder mb-2">{{'About' | translate}}</h4>
+                                    <div class="d-flex flex-column mb-5">
+                                        <div class="d-flex">
+                                            <span>{{'RECEIVE_NEWSLETTER' | translate}}</span>
+                                            <div class="svg-icon svg-icon-2 ps-0 mx-5" *ngIf="customer.bNewsletter">
+                                                <i class="fas fa-check-circle"></i>
+                                            </div>
+                                            <div class="svg-icon svg-icon-2 ps-0 mx-5 text-warning"
+                                                *ngIf="!customer.bNewsletter">
+                                                <i class="fas fa-times-circle"></i>
+                                            </div>
                                         </div>
-                                        <div class="svg-icon svg-icon-2 ps-0 mx-5 text-warning"
-                                            *ngIf="!customer.bNewsletter">
-                                            <i class="fas fa-times-circle"></i>
+                                    </div>
+                                </div>
+                                <div class="">
+                                    <h4 class="text-gray-700 fw-bolder mb-2">{{'CONTACT' | translate}}</h4>
+                                    <div class="d-flex flex-column block-buttons">
+                                        <p>
+                                            <a href="mailto:{{customer.sEmail}}"
+                                                class="text-gray-800 text-hover-primary btn btn-light">
+                                                <i class="fa fa-envelope"></i>
+                                                {{customer.sEmail}}</a>
+                                        </p>
+                                        <p>
+                                            <a href="https://wa.me/{{customer.oPhone.sMobile}}" target="_blank"
+                                                class="text-gray-800 text-hover-primary btn btn-light">
+                                                <i class="fab fa-whatsapp ms-1" *ngIf="customer.oPhone.bWhatsApp"
+                                                    style="color: #1CB39B;"></i>
+                                                {{customer.oPhone.sMobile}}</a>
+                                        </p>
+                                        <p>
+                                            <span class="text-muted me-5">{{'PHONE_LANDLINE' | translate}} :- </span>
+                                            <span> {{ customer.oPhone.sLandLine }}</span>
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="">
+                                    <h4 class="text-gray-700 fw-bolder mb-2">{{'Shipping Address' | translate}}</h4>
+                                    <div class="" *ngIf="customer.oShippingAddress">
+                                        <p>
+                                            {{ customer.oShippingAddress.sHouseNumber }}
+                                            {{ customer.oShippingAddress.sStreet }}<br>
+                                            {{ customer.oShippingAddress.sPostalCode }}
+                                            {{ customer.oShippingAddress.sCity }}
+                                        </p>
+                                    </div>
+                                </div>
+    
+                                <div class="">
+                                    <h4 class="text-gray-700 fw-bolder mb-2">{{'Invoice Address' | translate}}</h4>
+                                    <div class="" *ngIf="customer.oInvoiceAddress">
+                                        <p>
+                                            {{ customer.oInvoiceAddress.sHouseNumber }} -
+                                            {{ customer.oInvoiceAddress.sStreet }},<br>
+                                            {{ customer.oInvoiceAddress.sPostalCode }},
+                                            {{ customer.oInvoiceAddress.sCity }}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+    
+                    <p *ngIf="customer.note" class="text-gray-800 text-italic">{{customer.note}}</p>
+                    <div class="d-flex flex-wrap py-5">
+                        <div class="flex-equal me-5">
+    
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <ng-container *ngIf="!editProfile">
+    
+                <div class="row mb-5">
+                    <div class="col-9">
+                        <div id="activities-chart">
+                            <apx-chart [series]="activitiesChartOptions.series" [chart]="activitiesChartOptions.chart"
+                                [labels]="activitiesChartOptions.labels" [responsive]="activitiesChartOptions.responsive"
+                                [legend]="activitiesChartOptions.legend" [title]="activitiesChartOptions.title"
+                                [colors]="activitiesChartOptions.colors">
+                            </apx-chart>
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <div>
+                            <div class="card panel-card mb-3">
+                                <div class="card-header">
+                                    <h3 class="card-title">Order Value</h3>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row mb-7">
+                                        <label class="col-8">Total turnover Incl. VAT</label>
+                                        <label class="col-4">{{ '100' | currency: 'EUR'}}</label>
+                                    </div>
+                                    <div class="row mb-7">
+                                        <label class="col-8">Average order value Incl. VAT</label>
+                                        <label class="col-4">{{ '10' | currency: 'EUR'}}</label>
+                                    </div>
+                                </div>
+                            </div>
+    
+                            <div class="card panel-card">
+                                <div class="card-header">
+                                    <h3 class="card-title">Saving points</h3>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row mb-7">
+                                        <label class="col-7">Saved points</label>
+                                        <label class="col-5">{{ '1000' }}</label>
+                                    </div>
+                                    <div class="row mb-7">
+                                        <label class="col-7">Value of the points</label>
+                                        <label class="col-5">{{ '1000' | currency: 'EUR'}}
+                                            <span class="mx-3">
+                                                <i class="fa fa-info-circle"></i>
+                                            </span>
+                                        </label>
+                                    </div>
+                                    <div class="row mb-2">
+                                        <label class="col-12">Adding/reducing points</label>
+                                        <div class="col-12">
+                                            <div class="d-flex">
+                                                <input type="text" class="form-control">
+                                                <button class="btn btn-secondary">Save</button>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            </div>
-                            <div class="">
-                                <h4 class="text-gray-700 fw-bolder mb-2">{{'CONTACT' | translate}}</h4>
-                                <div class="d-flex flex-column block-buttons">
-                                    <p>
-                                        <a href="mailto:{{customer.sEmail}}"
-                                            class="text-gray-800 text-hover-primary btn btn-light">
-                                            <i class="fa fa-envelope"></i>
-                                            {{customer.sEmail}}</a>
-                                    </p>
-                                    <p>
-                                        <a href="https://wa.me/{{customer.oPhone.sMobile}}" target="_blank"
-                                            class="text-gray-800 text-hover-primary btn btn-light">
-                                            <i class="fab fa-whatsapp ms-1" *ngIf="customer.oPhone.bWhatsApp"
-                                                style="color: #1CB39B;"></i>
-                                            {{customer.oPhone.sMobile}}</a>
-                                    </p>
-                                    <p>
-                                        <span class="text-muted me-5">{{'PHONE_LANDLINE' | translate}} :- </span>
-                                        <span> {{ customer.oPhone.sLandLine }}</span>
-                                    </p>
-                                </div>
-                            </div>
-                            <div class="">
-                                <h4 class="text-gray-700 fw-bolder mb-2">{{'Shipping Address' | translate}}</h4>
-                                <div class="" *ngIf="customer.oShippingAddress">
-                                    <p>
-                                        {{ customer.oShippingAddress.sHouseNumber }}
-                                        {{ customer.oShippingAddress.sStreet }}<br>
-                                        {{ customer.oShippingAddress.sPostalCode }}
-                                        {{ customer.oShippingAddress.sCity }}
-                                    </p>
-                                </div>
-                            </div>
-
-                            <div class="">
-                                <h4 class="text-gray-700 fw-bolder mb-2">{{'Invoice Address' | translate}}</h4>
-                                <div class="" *ngIf="customer.oInvoiceAddress">
-                                    <p>
-                                        {{ customer.oInvoiceAddress.sHouseNumber }} -
-                                        {{ customer.oInvoiceAddress.sStreet }},<br>
-                                        {{ customer.oInvoiceAddress.sPostalCode }},
-                                        {{ customer.oInvoiceAddress.sCity }}
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <p *ngIf="customer.note" class="text-gray-800 text-italic">{{customer.note}}</p>
-                <div class="d-flex flex-wrap py-5">
-                    <div class="flex-equal me-5">
-
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row mb-5">
-            <div class="col-9">
-                <div id="activities-chart">
-                    <apx-chart [series]="activitiesChartOptions.series" [chart]="activitiesChartOptions.chart"
-                        [labels]="activitiesChartOptions.labels" [responsive]="activitiesChartOptions.responsive"
-                        [legend]="activitiesChartOptions.legend" [title]="activitiesChartOptions.title"
-                        [colors]="activitiesChartOptions.colors">
-                    </apx-chart>
-                </div>
-            </div>
-            <div class="col-3">
-                <div>
-                    <div class="card panel-card mb-3">
-                        <div class="card-header">
-                            <h3 class="card-title">Order Value</h3>
-                        </div>
-                        <div class="card-body">
-                            <div class="row mb-7">
-                                <label class="col-8">Total turnover Incl. VAT</label>
-                                <label class="col-4">{{ '100' | currency: 'EUR'}}</label>
-                            </div>
-                            <div class="row mb-7">
-                                <label class="col-8">Average order value Incl. VAT</label>
-                                <label class="col-4">{{ '10' | currency: 'EUR'}}</label>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="card panel-card">
-                        <div class="card-header">
-                            <h3 class="card-title">Saving points</h3>
-                        </div>
-                        <div class="card-body">
-                            <div class="row mb-7">
-                                <label class="col-7">Saved points</label>
-                                <label class="col-5">{{ '1000' }}</label>
-                            </div>
-                            <div class="row mb-7">
-                                <label class="col-7">Value of the points</label>
-                                <label class="col-5">{{ '1000' | currency: 'EUR'}}
-                                    <span class="mx-3">
-                                        <i class="fa fa-info-circle"></i>
-                                    </span>
-                                </label>
-                            </div>
-                            <div class="row mb-2">
-                                <label class="col-12">Adding/reducing points</label>
-                                <div class="col-12">
-                                    <div class="d-flex">
-                                        <input type="text" class="form-control">
-                                        <button class="btn btn-secondary">Save</button>
+                                    <div class="row mb-7">
+                                        <label
+                                            class="col-12 form-check form-check-sm form-check-custom form-check-solid me-5">
+                                            <input class="form-check-input" type="checkbox" value="1" />
+                                            <span class="form-check-label">Points never expire</span>
+                                        </label>
                                     </div>
                                 </div>
                             </div>
-                            <div class="row mb-7">
-                                <label class="col-12 form-check form-check-sm form-check-custom form-check-solid me-5">
-                                    <input class="form-check-input" type="checkbox" value="1" />
-                                    <span class="form-check-label">Points never expire</span>
-                                </label>
-                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-12">
-                <app-pn-tabs class="tab-content" addClass="nav-fill" addChildLinkClass="text-gray-600"
-                    (activeTabChanged)="activeTabsChanged($event)">
-                    <div class="tab-gap"></div>
-
-                    <app-pn-tab tabTitle="{{ tabTitles[0] | translate}}" #purchases>
-                        <table class="table table-hover table-rounded table-striped border gs-7">
-                            <thead>
-                                <tr class="fw-bold fs-6 text-gray-800 border-bottom-2 border-gray-200">
-                                    <th scope="col" *ngFor="let th of aTransctionTableHeaders"
-                                        [ngClass]="{'fw-bolder': th.selected, 'cursor-pointer': !th.disabled, 'pe-none': th.disabled}"
-                                        (click)="setSortOption(th)">
-                                        {{ th.key }}
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr *ngFor="let transaction of aTransactions, let i = index;" data-bs-toggle="tooltip"
-                                    data-bs-placement="top">
-                                    <td>{{transaction.dCreatedDate | date: 'medium'}}</td>
-                                    <td>{{transaction.sNumber}}</td>
-                                    <td>{{transaction.sReceiptNumber}}</td>
-                                    <td>{{transaction.eType}}</td>
-                                    <td>{{transaction.sTotal || 0}}</td>
-                                </tr>
-                                <tr *ngIf="bTransactionsLoader">
-                                    <td colspan="5" class="text-center">
-                                        <div class="spinner-border mx-auto"></div>
-                                    </td>
-                                </tr>
-                                <tr *ngIf="!bTransactionsLoader && !aTransactions.length">
-                                    <td colspan="5" class="text-center">
-                                        No Records Found
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </app-pn-tab>
-                    <app-pn-tab tabTitle="{{ tabTitles[1] | translate}}" #activities>
-                        <table class="table table-hover table-rounded table-striped border gs-7">
-                            <thead>
-                                <tr class="fw-bold fs-6 text-gray-800 border-bottom-2 border-gray-200">
-                                    <th scope="col" *ngFor="let th of aActivityTableHeaders"
-                                        [ngClass]="{'fw-bolder': th.selected, 'cursor-pointer': !th.disabled, 'pe-none': th.disabled}"
-                                        (click)="setSortOption(th)">
-                                        {{ th.key }}
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr *ngFor="let activity of aActivities, let i = index;">
-                                    <td>{{activity?.sNumber}}</td>
-                                    <td>{{activity?.sReceiptNumber}}</td>
-                                    <td>{{getTypes(activity.activityitems)}}</td>
-                                    <td scope="row">{{activity?.dCreatedDate | date: 'yyyy-MM-dd HH:mm'}}</td>
-                                    <td scope="row">{{activity?.dPickedUp | date: 'yyyy-MM-dd HH:mm'}}</td>
-                                    <td>{{activity?.eRepairStatus}}</td>
-                                    <td>{{activity?.eType}}</td>
-                                </tr>
-                                <tr *ngIf="bActivitiesLoader">
-                                    <td colspan="7" class="text-center">
-                                        <div class="spinner-border mx-auto"></div>
-                                    </td>
-                                </tr>
-                                <tr *ngIf="!bActivitiesLoader && !aActivities.length">
-                                    <td colspan="7" class="text-center">
-                                        No Records Found
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </app-pn-tab>
-                    <app-pn-tab tabTitle="{{ tabTitles[2] | translate}}" #activityItems>
-                        <table class="table table-hover table-rounded table-striped border gs-7">
-                            <thead>
-                                <tr class="fw-bold fs-6 text-gray-800 border-bottom-2 border-gray-200">
-                                    <th scope="col" *ngFor="let th of aActivityItemsTableHeaders"
-                                        [ngClass]="{'fw-bolder': th.selected, 'cursor-pointer': !th.disabled, 'pe-none': th.disabled}"
-                                        (click)="setSortOption(th)">
-                                        {{ th.key }}
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr *ngFor="let activity of aActivityItems, let i = index;">
-                                    <td>{{activity?.sNumber}}</td>
-                                    <td>{{activity?.sReceiptNumber}}</td>
-                                    <td>{{activity?.oType?.eTransactionType}}</td>
-                                    <td scope="row">{{activity?.dCreatedDate | date: 'yyyy-MM-dd HH:mm'}}</td>
-                                    <td scope="row">{{activity?.dEstimatedDate | date: 'yyyy-MM-dd HH:mm'}}</td>
-                                    <td>{{activity?.eRepairStatus}}</td>
-                                    <td>{{activity?.eType}}</td>
-                                </tr>
-                                <tr *ngIf="bActivityItemsLoader">
-                                    <td colspan="7" class="text-center">
-                                        <div class="spinner-border mx-auto"></div>
-                                    </td>
-                                </tr>
-                                <tr *ngIf="!bActivityItemsLoader && !aActivities.length">
-                                    <td colspan="7" class="text-center">
-                                        No Records Found
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </app-pn-tab>
-                    <app-pn-tab tabTitle="{{ tabTitles[3] | translate}}" #statistics>
-                        <div class="row mb-5">
-                            <div id="statistics-chart" class="col-12">
-                                <ng-container *ngIf="aStatisticsChartData.length && !aStatisticsChartDataLoading;">
-                                    <apx-chart [series]="statisticsChartOptions.series"
-                                        [chart]="statisticsChartOptions.chart"
-                                        [dataLabels]="statisticsChartOptions.dataLabels"
-                                        [plotOptions]="statisticsChartOptions.plotOptions"
-                                        [yaxis]="statisticsChartOptions.yaxis" [xaxis]="statisticsChartOptions.xaxis"
-                                        [colors]="statisticsChartOptions.colors"
-                                        [tooltip]="statisticsChartOptions.tooltip">
-                                    </apx-chart>
-                                </ng-container>
-                                <ng-container *ngIf="!aStatisticsChartData.length && aStatisticsChartDataLoading">
-                                    <div class="d-flex my-20">
-                                        <div class="spinner-border mx-auto"></div>
-                                    </div>
-                                </ng-container>
-                                <ng-container *ngIf="!aStatisticsChartData.length && !aStatisticsChartDataLoading">
-                                    <div class="d-flex my-20">
-                                        <div class="mx-auto">No Data Found </div>
-                                    </div>
-                                </ng-container>
-                            </div>
-                        </div>
-                        <div class="row mb-5">
-                            <div class="col-6">
+                <div class="row">
+                    <div class="col-12">
+                        <app-pn-tabs class="tab-content" addClass="nav-fill" addChildLinkClass="text-gray-600"
+                            (activeTabChanged)="activeTabsChanged($event)">
+                            <div class="tab-gap"></div>
+    
+                            <app-pn-tab tabTitle="{{ tabTitles[0] | translate}}" #purchases>
                                 <table class="table table-hover table-rounded table-striped border gs-7">
                                     <thead>
                                         <tr class="fw-bold fs-6 text-gray-800 border-bottom-2 border-gray-200">
-                                            <th>{{ 'Employee Name' }}</th>
-                                            <th>{{ 'Revenue' }}</th>
+                                            <th scope="col" *ngFor="let th of aTransctionTableHeaders"
+                                                [ngClass]="{'fw-bolder': th.selected, 'cursor-pointer': !th.disabled, 'pe-none': th.disabled}"
+                                                (click)="setSortOption(th)">
+                                                {{ th.key }}
+                                            </th>
                                         </tr>
                                     </thead>
                                     <tbody>
-
-                                        <tr>
-                                            <td>Alex Neil</td>
-                                            <td>250</td>
+                                        <tr *ngFor="let transaction of aTransactions, let i = index;"
+                                            data-bs-toggle="tooltip" data-bs-placement="top">
+                                            <td>{{transaction.dCreatedDate | date: 'medium'}}</td>
+                                            <td>{{transaction.sNumber}}</td>
+                                            <td>{{transaction.sReceiptNumber}}</td>
+                                            <td>{{transaction.eType}}</td>
+                                            <td>{{transaction.sTotal || 0}}</td>
                                         </tr>
-                                        <tr>
-                                            <td>John Cena</td>
-                                            <td>190</td>
+                                        <tr *ngIf="bTransactionsLoader">
+                                            <td colspan="5" class="text-center">
+                                                <div class="spinner-border mx-auto"></div>
+                                            </td>
                                         </tr>
-
+                                        <tr *ngIf="!bTransactionsLoader && !aTransactions?.length">
+                                            <td colspan="5" class="text-center">
+                                                No Records Found
+                                            </td>
+                                        </tr>
                                     </tbody>
                                 </table>
+                            </app-pn-tab>
+                            <app-pn-tab tabTitle="{{ tabTitles[1] | translate}}" #activities>
+                                <table class="table table-hover table-rounded table-striped border gs-7">
+                                    <thead>
+                                        <tr class="fw-bold fs-6 text-gray-800 border-bottom-2 border-gray-200">
+                                            <th scope="col" *ngFor="let th of aActivityTableHeaders"
+                                                [ngClass]="{'fw-bolder': th.selected, 'cursor-pointer': !th.disabled, 'pe-none': th.disabled}"
+                                                (click)="setSortOption(th)">
+                                                {{ th.key }}
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr *ngFor="let activity of aActivities, let i = index;">
+                                            <td>{{activity?.sNumber}}</td>
+                                            <td>{{activity?.sReceiptNumber}}</td>
+                                            <td>{{getTypes(activity.activityitems)}}</td>
+                                            <td scope="row">{{activity?.dCreatedDate | date: 'yyyy-MM-dd HH:mm'}}</td>
+                                            <td scope="row">{{activity?.dPickedUp | date: 'yyyy-MM-dd HH:mm'}}</td>
+                                            <td>{{activity?.eRepairStatus}}</td>
+                                            <td>{{activity?.eType}}</td>
+                                        </tr>
+                                        <tr *ngIf="bActivitiesLoader">
+                                            <td colspan="7" class="text-center">
+                                                <div class="spinner-border mx-auto"></div>
+                                            </td>
+                                        </tr>
+                                        <tr *ngIf="!bActivitiesLoader && !aActivities?.length">
+                                            <td colspan="7" class="text-center">
+                                                No Records Found
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </app-pn-tab>
+                            <app-pn-tab tabTitle="{{ tabTitles[2] | translate}}" #activityItems>
+                                <table class="table table-hover table-rounded table-striped border gs-7">
+                                    <thead>
+                                        <tr class="fw-bold fs-6 text-gray-800 border-bottom-2 border-gray-200">
+                                            <th scope="col" *ngFor="let th of aActivityItemsTableHeaders"
+                                                [ngClass]="{'fw-bolder': th.selected, 'cursor-pointer': !th.disabled, 'pe-none': th.disabled}"
+                                                (click)="setSortOption(th)">
+                                                {{ th.key }}
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr *ngFor="let activity of aActivityItems, let i = index;">
+                                            <td>{{activity?.sNumber}}</td>
+                                            <td>{{activity?.sReceiptNumber}}</td>
+                                            <td>{{activity?.oType?.eTransactionType}}</td>
+                                            <td scope="row">{{activity?.dCreatedDate | date: 'yyyy-MM-dd HH:mm'}}</td>
+                                            <td scope="row">{{activity?.dEstimatedDate | date: 'yyyy-MM-dd HH:mm'}}</td>
+                                            <td>{{activity?.eRepairStatus}}</td>
+                                            <td>{{activity?.eType}}</td>
+                                        </tr>
+                                        <tr *ngIf="bActivityItemsLoader">
+                                            <td colspan="7" class="text-center">
+                                                <div class="spinner-border mx-auto"></div>
+                                            </td>
+                                        </tr>
+                                        <tr *ngIf="!bActivityItemsLoader && !aActivityItems?.length">
+                                            <td colspan="7" class="text-center">
+                                                No Records Found
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </app-pn-tab>
+                            <app-pn-tab tabTitle="{{ tabTitles[3] | translate}}" #statistics>
+                                <div class="row mb-5">
+                                    <div id="statistics-chart" class="col-12">
+                                        <ng-container *ngIf="aStatisticsChartData.length && !aStatisticsChartDataLoading;">
+                                            <apx-chart [series]="statisticsChartOptions.series"
+                                                [chart]="statisticsChartOptions.chart"
+                                                [dataLabels]="statisticsChartOptions.dataLabels"
+                                                [plotOptions]="statisticsChartOptions.plotOptions"
+                                                [yaxis]="statisticsChartOptions.yaxis"
+                                                [xaxis]="statisticsChartOptions.xaxis"
+                                                [colors]="statisticsChartOptions.colors"
+                                                [tooltip]="statisticsChartOptions.tooltip">
+                                            </apx-chart>
+                                        </ng-container>
+                                        <ng-container *ngIf="!aStatisticsChartData.length && aStatisticsChartDataLoading">
+                                            <div class="d-flex my-20">
+                                                <div class="spinner-border mx-auto"></div>
+                                            </div>
+                                        </ng-container>
+                                        <ng-container *ngIf="!aStatisticsChartData.length && !aStatisticsChartDataLoading">
+                                            <div class="d-flex my-20">
+                                                <div class="mx-auto">No Data Found </div>
+                                            </div>
+                                        </ng-container>
+                                    </div>
+                                </div>
+                                <div class="row mb-5">
+                                    <div class="col-6">
+                                        <table class="table table-hover table-rounded table-striped border gs-7">
+                                            <thead>
+                                                <tr class="fw-bold fs-6 text-gray-800 border-bottom-2 border-gray-200">
+                                                    <th>{{ 'Employee Name' }}</th>
+                                                    <th>{{ 'Revenue' }}</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+    
+                                                <tr>
+                                                    <td>Alex Neil</td>
+                                                    <td>250</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>John Cena</td>
+                                                    <td>190</td>
+                                                </tr>
+    
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="col-6">
+                                        <div id="paymentMethodsChart">
+    
+                                            <apx-chart [series]="paymentMethodsChartOptions.series"
+                                                [chart]="paymentMethodsChartOptions.chart"
+                                                [labels]="paymentMethodsChartOptions.labels"
+                                                [responsive]="paymentMethodsChartOptions.responsive"
+                                                [legend]="paymentMethodsChartOptions.legend"
+                                                [title]="paymentMethodsChartOptions.title"
+                                                [dataLabels]="paymentMethodsChartOptions.options.dataLabels">
+                                            </apx-chart>
+    
+                                        </div>
+                                    </div>
+                                </div>
+                            </app-pn-tab>
+                            <app-pn-tab tabTitle="{{ tabTitles[4] | translate}}" #general>
+                                General
+                            </app-pn-tab>
+                        </app-pn-tabs>
+                    </div>
+                </div>
+    
+            </ng-container>
+    
+            <!-- <div class="row my-3">
+                <div class="d-flex flex-row-fluid justify-content-end gap-5">
+                    <button class="btn btn-secondary" (click)="editProfile = !editProfile"><span>{{'MORE_DETAILS' |
+                            translate}}</span></button>
+                    <button class="btn btn-secondary" (click)="showStatistics = !showStatistics"><span>{{'STATISTICS' |
+                            translate}}</span></button>
+                </div>
+            </div> -->
+        </ng-container>
+        <ng-container *ngIf="mode === 'create' || (mode === 'details' && editProfile)">
+            <div class="row">
+                <div class="col-8">
+                    <div class="row mb-3">
+                        <div class="col-2">
+                            <ng-select [(ngModel)]="customer.sSalutation" id="sSalutation" [clearable]="false">
+                                <ng-option *ngFor="let salutation of salutations" [value]="salutation">{{salutation}}
+                                </ng-option>
+                            </ng-select>
+                        </div>
+                        <div class="col-4">
+                            <div>
+                                <input class="form-control" id="sFirstName" placeholder="{{'MALE' | translate}}"
+                                    [(ngModel)]="customer.sFirstName" />
                             </div>
-                            <div class="col-6">
-                                <div id="paymentMethodsChart">
-
-                                    <apx-chart [series]="paymentMethodsChartOptions.series"
-                                        [chart]="paymentMethodsChartOptions.chart"
-                                        [labels]="paymentMethodsChartOptions.labels"
-                                        [responsive]="paymentMethodsChartOptions.responsive"
-                                        [legend]="paymentMethodsChartOptions.legend"
-                                        [title]="paymentMethodsChartOptions.title"
-                                        [dataLabels]="paymentMethodsChartOptions.options.dataLabels">
-                                    </apx-chart>
-
+                        </div>
+                        <div class="col-2">
+                            <div>
+                                <input class="form-control" id="sPrefix" placeholder="{{'INSERT' | translate}}"
+                                    [(ngModel)]="customer.sPrefix" />
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div><input class="form-control" id="sLastName" placeholder="{{'LAST_NAME' | translate}}"
+                                    [(ngModel)]="customer.sLastName" required /></div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="mb-3">
+                                <input class="form-control" id="sEmail" placeholder="{{'EMAIL' | translate}}"
+                                    [(ngModel)]="customer.sEmail" />
+                            </div>
+        
+                        </div>
+                        <div class="col-6">
+                            <div class="mb-3">
+                                <input class="form-control" id="sMobile" placeholder="{{'PHONE_MOBILE' | translate}}"
+                                    [(ngModel)]="customer.oPhone.sMobile" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+        
+                        <div class="col-4">
+                            <input class="form-control" id="sLandLine" placeholder="{{'PHONE_LANDLINE' | translate}}"
+                                [(ngModel)]="customer.oPhone.sLandLine" />
+                        </div>
+                        <div class="d-flex col-4">
+                            <label class="form-check form-switch form-check-custom form-check-solid">
+                                <input class="form-check-input" type="checkbox" [(ngModel)]="customer.oPhone.bWhatsApp" />
+                                <span class="form-check-label fw-bold">{{'USE_FOR_WHATSAPP' | translate}}</span>
+                            </label>
+                        </div>
+                        <div class="d-flex col-4">
+                            <label class="form-check form-switch form-check-custom form-check-solid">
+                                <input class="form-check-input" type="checkbox" [(ngModel)]="customer.bNewsletter" />
+                                <span class="form-check-label fw-bold">{{'RECEIVE_NEWSLETTER' | translate}}</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <label for="sGender">{{'GENDER' | translate}}</label>
+                            <div class="row g-9 mb-3" id="sGender" data-kt-buttons="true"
+                                data-kt-buttons-target="[data-kt-button]">
+                                <div class="col-4 col-lg-12 col-xxl-4">
+                                    <label
+                                        class="btn btn-outline btn-outline-dashed btn-outline-default active d-flex text-start p-3"
+                                        data-kt-button="true" [ngClass]="{'active': customer.sGender === 'male'}">
+                                        <span
+                                            class="form-check form-check-custom form-check-solid form-check-sm align-items-start mt-1">
+                                            <input class="form-check-input" type="radio" name="eGender" value="male"
+                                                [(ngModel)]="customer.sGender" />
+                                        </span>
+                                        <span class="ms-5">
+                                            <span class="fs-6 fw-bolder mb-1 d-block">{{"MALE" | translate}}</span>
+                                        </span>
+                                    </label>
+                                </div>
+                                <div class="col-4 col-lg-12 col-xxl-4">
+                                    <label class="btn btn-outline btn-outline-dashed btn-outline-default d-flex text-start p-3"
+                                        data-kt-button="true" [ngClass]="{'active': customer.sGender === 'female'}">
+                                        <span
+                                            class="form-check form-check-custom form-check-solid form-check-sm align-items-start mt-1">
+                                            <input class="form-check-input" type="radio" name="eGender" value="female"
+                                                [(ngModel)]="customer.sGender" />
+                                        </span>
+                                        <span class="ms-5">
+                                            <span class="fs-6 fw-bolder mb-1 d-block">{{"FEMALE" | translate}}</span>
+                                        </span>
+                                    </label>
+                                </div>
+                                <div class="col-4 col-lg-12 col-xxl-4">
+                                    <label class="btn btn-outline btn-outline-dashed btn-outline-default d-flex text-start p-3"
+                                        data-kt-button="true" [ngClass]="{'active': customer.sGender === 'other'}">
+                                        <span
+                                            class="form-check form-check-custom form-check-solid form-check-sm align-items-start mt-1">
+                                            <input class="form-check-input" type="radio" name="eGender" value="other"
+                                                [(ngModel)]="customer.sGender" />
+                                        </span>
+                                        <span class="ms-5">
+                                            <span class="fs-6 fw-bolder mb-1 d-block">{{"OTHER" | translate}}</span>
+                                        </span>
+                                    </label>
                                 </div>
                             </div>
                         </div>
-                    </app-pn-tab>
-                    <app-pn-tab tabTitle="{{ tabTitles[4] | translate}}" #general>
-                        General
-                    </app-pn-tab>
-                </app-pn-tabs>
+                    </div>
+                    <div class="row">
+                        <div class="col-12 mt-6">
+                            <div class="d-flex justify-content-between align-items-center mb-6">
+                                <h3>{{'INVOICE_ADDRESS' | translate}}</h3>
+                                <div>
+                                    <button class="btn btn-sm btn-secondary">{{'COPY_TO_SHIPPING_ADDRESS' |
+                                        translate}}</button>
+                                    <mark>todo: make this button copy all invoice details to shipping details</mark>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-7">
+                                    <input class="form-control" placeholder="{{'STREET' | translate}}"
+                                        [(ngModel)]="customer.oInvoiceAddress.sStreet" />
+                                </div>
+        
+                                <div class="col-3">
+                                    <input class="form-control" placeholder="{{'HOUSE_NUMBER' | translate}}"
+                                        [(ngModel)]="customer.oInvoiceAddress.sHouseNumber" />
+                                </div>
+                                <div class="col-2">
+                                    <input class="form-control" placeholder="{{'HOUSE_NUMBER_SUFFIX' | translate}}"
+                                        [(ngModel)]="customer.oInvoiceAddress.sAddition" />
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-4">
+                                    <input class="form-control" placeholder="{{'PSOTAL_CODE' | translate}}"
+                                        [(ngModel)]="customer.oInvoiceAddress.sPostalCode" />
+                                </div>
+                                <div class="col-8">
+                                    <input class="form-control" placeholder="{{'CITY' | translate}}"
+                                        [(ngModel)]="customer.oInvoiceAddress.sCity" />
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div>
+                                    <label class="required" for="country">{{'COUNTRY' | translate}}</label>
+                                    <country-list id="country" [country]="customer.oInvoiceAddress.country"
+                                        [(ngModel)]="customer.oInvoiceAddress.sCountry" ngDefaultControl
+                                        (customerCountryChanged)="customerCountryChanged('oInvoiceAddress', $event)"
+                                        name="country"></country-list>
+                                </div>
+                            </div>
+        
+                        </div>
+                        <div class="col-12 mt-6">
+                            <h3>{{'SHIPPING_ADDRESS' | translate}}</h3>
+        
+                            <div class="row mb-3">
+                                <div class="col-7">
+                                    <input class="form-control" placeholder="{{'STREET' | translate}}"
+                                        [(ngModel)]="customer.oShippingAddress.sStreet" />
+                                </div>
+        
+                                <div class="col-3">
+                                    <input class="form-control" placeholder="{{'HOUSE_NUMBER' | translate}}"
+                                        [(ngModel)]="customer.oShippingAddress.sHouseNumber" />
+                                </div>
+                                <div class="col-2">
+                                    <input class="form-control" placeholder="{{'HOUSE_NUMBER_SUFFIX' | translate}}"
+                                        [(ngModel)]="customer.oShippingAddress.sAddition" />
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-4">
+                                    <input class="form-control" placeholder="{{'POSTAL_CODE' | translate}}"
+                                        [(ngModel)]="customer.oShippingAddress.sPostalCode" />
+                                </div>
+                                <div class="col-8">
+                                    <input class="form-control" placeholder="{{'CITY' | translate}}"
+                                        [(ngModel)]="customer.oShippingAddress.sCity" />
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div>
+                                    <label class="required" for="s_country">{{'COUNTRY' | translate}}</label>
+                                    <country-list id="s_country" [country]="customer.oShippingAddress.sCountry"
+                                        [(ngModel)]="customer.oShippingAddress.sCountry" ngDefaultControl
+                                        (customerCountryChanged)="customerCountryChanged('oInvoiceAddress', $event)"
+                                        name="country"></country-list>
+                                </div>
+                            </div>
+        
+                        </div>
+        
+                    </div>
+                </div>
+        
+                <div class="col-4">
+                    <div class="mb-3">
+                        <label for="note">{{'NOTES' | translate}}</label>
+                        <textarea name="note" id="note" cols="30" rows="6" class="form-control"
+                            [(ngModel)]="customer.note"></textarea>
+                    </div>
+                    <div class="mb-6">
+                        <label for="dDateOfBirth">{{'DATE_OF_BIRTH' | translate}}</label>
+                        <div class="input-group date" id="dDateOfBirth" data-target-input="nearest">
+                            <input type="date" class="form-control datetimepicker-input"
+                                [ngModel]="customer.dDateOfBirth | date:'yyyy-MM-dd'"
+                                (ngModelChange)="customer.dDateOfBirth = $event" />
+                        </div>
+                    </div>
+        
+        
+                    <div class="mb-3" *ngIf="customer?.oIdentity?.documentName">
+                        <label for="documentName">{{'DOCUMENT_NAME' | translate}}</label>
+                        <ng-select id="documentName" [(ngModel)]="customer.oIdentity.documentName" [clearable]="false">
+                            <ng-option *ngFor="let type of documentTypes" [value]="type">{{type}}</ng-option>
+                        </ng-select>
+                    </div>
+                    <div class="mb-6" *ngIf="customer?.oIdentity?.documentNumber">
+                        <input class="form-control" placeholder="{{'DOCUMENT_NUMBER' | translate}}"
+                            [(ngModel)]="customer.oIdentity.documentNumber" />
+                    </div>
+        
+                    <h3>{{'COMPANY_DETAILS' | translate}}</h3>
+        
+                    <div class="mb-3">
+                        <label for="sCompanyName">{{'COMPANY_NAME' | translate}}</label>
+                        <input class="form-control mb-6" id="sCompanyName" [(ngModel)]="customer.sCompanyName" />
+                    </div>
+        
+        
+                    <div class="mb-3">
+                        <label for="nPaymentTermDays">{{'PAYMENT_TERM_IN_DAYS' | translate}}</label>
+                        <input class="form-control" id="nPaymentTermDays" [(ngModel)]="customer.nPaymentTermDays" />
+                    </div>
+        
+                    <div class="mb-3">
+                        <label for="sVatNumber">{{'VAT_NUMBER' | translate}}</label>
+                        <input class="form-control" [(ngModel)]="customer.sVatNumber" />
+                    </div>
+        
+                    <div class="mb-3" *ngIf="customer?.sCocNumber">
+                        <label for="sCocNumber">{{'COC_NUMBER' | translate}}</label>
+                        <input class="form-control" [(ngModel)]="customer.sCocNumber" />
+                    </div>
+                </div>
             </div>
-        </div>
+        </ng-container>
 
-        <div class="row my-3">
-            <div class="d-flex flex-row-fluid justify-content-end gap-5">
-                <button class="btn btn-secondary" (click)="editProfile = !editProfile"><span>{{'MORE_DETAILS' |
-                        translate}}</span></button>
-                <!-- <button class="btn btn-secondary" (click)="showStatistics = !showStatistics"><span>{{'STATISTICS' |
-                        translate}}</span></button> -->
-            </div>
-        </div>
     </div>
     <!-- <div class="card-footer" *ngIf="mode === 'details' && showStatistics">
         <div class="row">
@@ -364,256 +623,5 @@
             </div>
         </div>
     </div> -->
-    <div class="card-footer" *ngIf="mode === 'create' || (mode === 'details' && editProfile)">
-        <div class="row">
-            <div class="col-8">
-                <div class="row mb-3">
-                    <div class="col-2">
-                        <ng-select [(ngModel)]="customer.sSalutation" id="sSalutation" [clearable]="false">
-                            <ng-option *ngFor="let salutation of salutations" [value]="salutation">{{salutation}}
-                            </ng-option>
-                        </ng-select>
-                    </div>
-                    <div class="col-4">
-                        <div>
-                            <input class="form-control" id="sFirstName" placeholder="{{'MALE' | translate}}"
-                                [(ngModel)]="customer.sFirstName" />
-                        </div>
-                    </div>
-                    <div class="col-2">
-                        <div>
-                            <input class="form-control" id="sPrefix" placeholder="{{'INSERT' | translate}}"
-                                [(ngModel)]="customer.sPrefix" />
-                        </div>
-                    </div>
-                    <div class="col-4">
-                        <div><input class="form-control" id="sLastName" placeholder="{{'LAST_NAME' | translate}}"
-                                [(ngModel)]="customer.sLastName" required /></div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-6">
-                        <div class="mb-3">
-                            <input class="form-control" id="sEmail" placeholder="{{'EMAIL' | translate}}"
-                                [(ngModel)]="customer.sEmail" />
-                        </div>
-
-                    </div>
-                    <div class="col-6">
-                        <div class="mb-3">
-                            <input class="form-control" id="sMobile" placeholder="{{'PHONE_MOBILE' | translate}}"
-                                [(ngModel)]="customer.oPhone.sMobile" />
-                        </div>
-                    </div>
-                </div>
-                <div class="row mt-3">
-
-                    <div class="col-4">
-                        <input class="form-control" id="sLandLine" placeholder="{{'PHONE_LANDLINE' | translate}}"
-                            [(ngModel)]="customer.oPhone.sLandLine" />
-                    </div>
-                    <div class="d-flex col-4">
-                        <label class="form-check form-switch form-check-custom form-check-solid">
-                            <input class="form-check-input" type="checkbox" [(ngModel)]="customer.oPhone.bWhatsApp" />
-                            <span class="form-check-label fw-bold">{{'USE_FOR_WHATSAPP' | translate}}</span>
-                        </label>
-                    </div>
-                    <div class="d-flex col-4">
-                        <label class="form-check form-switch form-check-custom form-check-solid">
-                            <input class="form-check-input" type="checkbox" [(ngModel)]="customer.bNewsletter" />
-                            <span class="form-check-label fw-bold">{{'RECEIVE_NEWSLETTER' | translate}}</span>
-                        </label>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-12">
-                        <label for="sGender">{{'GENDER' | translate}}</label>
-                        <div class="row g-9 mb-3" id="sGender" data-kt-buttons="true"
-                            data-kt-buttons-target="[data-kt-button]">
-                            <div class="col-4 col-lg-12 col-xxl-4">
-                                <label
-                                    class="btn btn-outline btn-outline-dashed btn-outline-default active d-flex text-start p-3"
-                                    data-kt-button="true" [ngClass]="{'active': customer.sGender === 'male'}">
-                                    <span
-                                        class="form-check form-check-custom form-check-solid form-check-sm align-items-start mt-1">
-                                        <input class="form-check-input" type="radio" name="eGender" value="male"
-                                            [(ngModel)]="customer.sGender" />
-                                    </span>
-                                    <span class="ms-5">
-                                        <span class="fs-6 fw-bolder mb-1 d-block">{{"MALE" | translate}}</span>
-                                    </span>
-                                </label>
-                            </div>
-                            <div class="col-4 col-lg-12 col-xxl-4">
-                                <label
-                                    class="btn btn-outline btn-outline-dashed btn-outline-default d-flex text-start p-3"
-                                    data-kt-button="true" [ngClass]="{'active': customer.sGender === 'female'}">
-                                    <span
-                                        class="form-check form-check-custom form-check-solid form-check-sm align-items-start mt-1">
-                                        <input class="form-check-input" type="radio" name="eGender" value="female"
-                                            [(ngModel)]="customer.sGender" />
-                                    </span>
-                                    <span class="ms-5">
-                                        <span class="fs-6 fw-bolder mb-1 d-block">{{"FEMALE" | translate}}</span>
-                                    </span>
-                                </label>
-                            </div>
-                            <div class="col-4 col-lg-12 col-xxl-4">
-                                <label
-                                    class="btn btn-outline btn-outline-dashed btn-outline-default d-flex text-start p-3"
-                                    data-kt-button="true" [ngClass]="{'active': customer.sGender === 'other'}">
-                                    <span
-                                        class="form-check form-check-custom form-check-solid form-check-sm align-items-start mt-1">
-                                        <input class="form-check-input" type="radio" name="eGender" value="other"
-                                            [(ngModel)]="customer.sGender" />
-                                    </span>
-                                    <span class="ms-5">
-                                        <span class="fs-6 fw-bolder mb-1 d-block">{{"OTHER" | translate}}</span>
-                                    </span>
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-12 mt-6">
-                        <div class="d-flex justify-content-between align-items-center mb-6">
-                            <h3>{{'INVOICE_ADDRESS' | translate}}</h3>
-                            <div>
-                                <button class="btn btn-sm btn-secondary">{{'COPY_TO_SHIPPING_ADDRESS' |
-                                    translate}}</button>
-                                <mark>todo: make this button copy all invoice details to shipping details</mark>
-                            </div>
-                        </div>
-                        <div class="row mb-3">
-                            <div class="col-7">
-                                <input class="form-control" placeholder="{{'STREET' | translate}}"
-                                    [(ngModel)]="customer.oInvoiceAddress.sStreet" />
-                            </div>
-
-                            <div class="col-3">
-                                <input class="form-control" placeholder="{{'HOUSE_NUMBER' | translate}}"
-                                    [(ngModel)]="customer.oInvoiceAddress.sHouseNumber" />
-                            </div>
-                            <div class="col-2">
-                                <input class="form-control" placeholder="{{'HOUSE_NUMBER_SUFFIX' | translate}}"
-                                    [(ngModel)]="customer.oInvoiceAddress.sAddition" />
-                            </div>
-                        </div>
-                        <div class="row mb-3">
-                            <div class="col-4">
-                                <input class="form-control" placeholder="{{'PSOTAL_CODE' | translate}}"
-                                    [(ngModel)]="customer.oInvoiceAddress.sPostalCode" />
-                            </div>
-                            <div class="col-8">
-                                <input class="form-control" placeholder="{{'CITY' | translate}}"
-                                    [(ngModel)]="customer.oInvoiceAddress.sCity" />
-                            </div>
-                        </div>
-                        <div class="row mb-3">
-                            <div>
-                                <label class="required" for="country">{{'COUNTRY' | translate}}</label>
-                                <country-list id="country" [country]="customer.oInvoiceAddress.country"
-                                    [(ngModel)]="customer.oInvoiceAddress.sCountry"
-                                    (customerCountryChanged)="customerCountryChanged('oInvoiceAddress', $event)"
-                                    name="country"></country-list>
-                            </div>
-                        </div>
-
-                    </div>
-                    <div class="col-12 mt-6">
-                        <h3>{{'SHIPPING_ADDRESS' | translate}}</h3>
-
-                        <div class="row mb-3">
-                            <div class="col-7">
-                                <input class="form-control" placeholder="{{'STREET' | translate}}"
-                                    [(ngModel)]="customer.oShippingAddress.sStreet" />
-                            </div>
-
-                            <div class="col-3">
-                                <input class="form-control" placeholder="{{'HOUSE_NUMBER' | translate}}"
-                                    [(ngModel)]="customer.oShippingAddress.sHouseNumber" />
-                            </div>
-                            <div class="col-2">
-                                <input class="form-control" placeholder="{{'HOUSE_NUMBER_SUFFIX' | translate}}"
-                                    [(ngModel)]="customer.oShippingAddress.sAddition" />
-                            </div>
-                        </div>
-                        <div class="row mb-3">
-                            <div class="col-4">
-                                <input class="form-control" placeholder="{{'POSTAL_CODE' | translate}}"
-                                    [(ngModel)]="customer.oShippingAddress.sPostalCode" />
-                            </div>
-                            <div class="col-8">
-                                <input class="form-control" placeholder="{{'CITY' | translate}}"
-                                    [(ngModel)]="customer.oShippingAddress.sCity" />
-                            </div>
-                        </div>
-                        <div class="row mb-3">
-                            <div>
-                                <label class="required" for="s_country">{{'COUNTRY' | translate}}</label>
-                                <country-list id="s_country" [country]="customer.oShippingAddress.sCountry"
-                                    [(ngModel)]="customer.oShippingAddress.sCountry"
-                                    (customerCountryChanged)="customerCountryChanged('oInvoiceAddress', $event)"
-                                    name="country"></country-list>
-                            </div>
-                        </div>
-
-                    </div>
-
-                </div>
-            </div>
-
-            <div class="col-4">
-                <div class="mb-3">
-                    <label for="note">{{'NOTES' | translate}}</label>
-                    <textarea name="note" id="note" cols="30" rows="6" class="form-control"
-                        [(ngModel)]="customer.note"></textarea>
-                </div>
-                <div class="mb-6">
-                    <label for="dDateOfBirth">{{'DATE_OF_BIRTH' | translate}}</label>
-                    <div class="input-group date" id="dDateOfBirth" data-target-input="nearest">
-                        <input type="date" class="form-control datetimepicker-input"
-                            [ngModel]="customer.dDateOfBirth | date:'yyyy-MM-dd'"
-                            (ngModelChange)="customer.dDateOfBirth = $event" />
-                    </div>
-                </div>
-
-
-                <div class="mb-3">
-                    <label for="documentName">{{'DOCUMENT_NAME' | translate}}</label>
-                    <ng-select id="documentName" [(ngModel)]="customer.oIdentity.documentName" [clearable]="false">
-                        <ng-option *ngFor="let type of documentTypes" [value]="type">{{type}}</ng-option>
-                    </ng-select>
-                </div>
-                <div class="mb-6">
-                    <input class="form-control" placeholder="{{'DOCUMENT_NUMBER' | translate}}"
-                        [(ngModel)]="customer.oIdentity.documentNumber" />
-                </div>
-
-                <h3>{{'COMPANY_DETAILS' | translate}}</h3>
-
-                <div class="mb-3">
-                    <label for="sCompanyName">{{'COMPANY_NAME' | translate}}</label>
-                    <input class="form-control mb-6" id="sCompanyName" [(ngModel)]="customer.sCompanyName" />
-                </div>
-
-
-                <div class="mb-3">
-                    <label for="nPaymentTermDays">{{'PAYMENT_TERM_IN_DAYS' | translate}}</label>
-                    <input class="form-control" id="nPaymentTermDays" [(ngModel)]="customer.nPaymentTermDays" />
-                </div>
-
-                <div class="mb-3">
-                    <label for="sVatNumber">{{'VAT_NUMBER' | translate}}</label>
-                    <input class="form-control" [(ngModel)]="customer.sVatNumber" />
-                </div>
-
-                <div class="mb-3">
-                    <label for="sCocNumber">{{'COC_NUMBER' | translate}}</label>
-                    <input class="form-control" [(ngModel)]="customer.sCocNumber" />
-                </div>
-            </div>
-        </div>
-    </div>
+    
 </div>
