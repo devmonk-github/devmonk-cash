@@ -97,7 +97,8 @@ export class AddExpensesComponent implements OnInit {
     const oArticleGroupMetaData = {
       aProperty: this.selectedArticleGroup.aProperty,
       sCategory: this.selectedArticleGroup.sCategory,
-      sSubCategory: this.selectedArticleGroup.sSubCategory
+      sSubCategory: this.selectedArticleGroup.sSubCategory,
+      oName: this.selectedArticleGroup.oName
     }
     const transactionItem = {
       sProductName: 'Expenses',
