@@ -635,7 +635,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       quantity: 1,
       price: price ? price.nPriceIncludesVat : 0,
       nMargin: 1,
-      nPurchasePrice: product.nPurchasePrice || 0,
+      nPurchasePrice: product.nPurchasePrice || price,
       paymentAmount: 0,
       oType: { bRefund: false, bDiscount: false, bPrepayment: false },
       nDiscount: product.nDiscount || 0,
