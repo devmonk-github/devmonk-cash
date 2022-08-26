@@ -35,6 +35,7 @@ export class ProductComponent implements OnInit{
     const iBusinessId = localStorage.getItem('currentBusiness');
     this.apiService.getNew('core', `/api/v1/business/article-group/${this.item.iArticleGroupId}?iBusinessId=${iBusinessId}`).
     subscribe((res: any) => {
+      this.item.oArticleGroupMetaData.aProperty = res.data.aProperty;
       if(res.data.aBusinessPartner) {
         const marginData = res.data.aBusinessPartner.find((o: any)=> o.iBusinessPartnerId === this.item.iSupplierId);
         this.item.nMargin = marginData?.nMargin || 1;
