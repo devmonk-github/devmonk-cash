@@ -1,11 +1,9 @@
 import { Component, Input, OnInit, ViewContainerRef } from '@angular/core';
-import * as _ from 'lodash';
+// import * as _ from 'lodash';
+
 import { ApiService } from '../../service/api.service';
-
 import { DialogComponent } from "../../service/dialog";
-import { TillService } from '../../service/till.service';
-// import { TerminalService } from '../../service/terminal.service';
-
+import { ToastService } from '../toast';
 @Component({
   selector: 'app-select-articlegroup-dialog',
   templateUrl: './select-articlegroup-dialog.component.html',
@@ -28,8 +26,8 @@ export class SelectArticleDialogComponent implements OnInit {
   iBusinessBrandId: any = null;
   constructor(
     private viewContainer: ViewContainerRef,
-    private tillService: TillService,
-    private apiService: ApiService) {
+    private apiService: ApiService,
+    private toastrService: ToastService) {
     const _injector = this.viewContainer.injector;
     this.dialogRef = _injector.get<DialogComponent>(DialogComponent);
   }
@@ -56,13 +54,11 @@ export class SelectArticleDialogComponent implements OnInit {
       .subscribe((result: any) => {
         if (result && result.data && result.data[0] && result.data[0].result && result.data[0].result.length) {
           this.articleGroupsList = result.data[0].result;
-          console.log(this.iArticleGroupId);
-          console.log(this.articleGroupsList);
         } else {
           this.fetchArticleGroups(null);
         }
       }, error => {
-        console.log(error);
+        this.toastrService.show({ type: 'danger', text: error.message });
       });
   }
 

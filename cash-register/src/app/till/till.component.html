@@ -169,13 +169,13 @@
           <div class="accordion" id="till-items-accordion" [itemLength]="transactionItems.length">
             <ng-container *ngFor="let item of transactionItems; let i = index">
               <div style="display:inline-table;">
-                <div class="accordion-item d-table-cell" till-product *ngIf="item.type=== 'regular'" [item]="item"
+                <div class="accordion-item d-table-cell" till-product *ngIf="item.type === 'regular' || item.type === 'reservation'" [item]="item"
                   [taxes]="taxes" (itemChanged)="itemChanged($event, i)"></div>
-                <div class="accordion-item d-table-cell" till-order *ngIf="item.type=== 'order'" [item]="item"
+                <div class="accordion-item d-table-cell" till-order *ngIf="item.type === 'order'" [item]="item"
                   [taxes]="taxes" (itemChanged)="itemChanged($event, i)"></div>
-                <div class="accordion-item d-table-cell" till-repair *ngIf="item.type=== 'repair'" [item]="item"
+                <div class="accordion-item d-table-cell" till-repair *ngIf="item.type === 'repair'" [item]="item"
                   [taxes]="taxes" (itemChanged)="itemChanged($event, i)"></div>
-                <div class="accordion-item d-table-cell w-100" till-gift *ngIf="item.type=== 'giftcard'" [item]="item"
+                <div class="accordion-item d-table-cell w-100" till-gift *ngIf="item.type === 'giftcard'" [item]="item"
                   [transactionItems]="transactionItems" [taxes]="taxes" (itemChanged)="itemChanged($event, i)"
                   (createGiftCard)="createGiftCard($event, i)">
                 </div>
