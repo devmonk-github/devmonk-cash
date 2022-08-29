@@ -172,6 +172,7 @@ export class WebOrderDetailsComponent implements OnInit {
                 aImage: transactionItem.aImage,
                 nonEditable: transactionItem.sGiftCardNumber ? true : false,
                 sGiftCardNumber: transactionItem.sGiftCardNumber,
+                iArticleGroupId: transactionItem.iArticleGroupId,
                 quantity: transactionItem.nQuantity,
                 price: transactionItem.nPriceIncVat,
                 iRepairerId: transactionItem.iRepairerId,
