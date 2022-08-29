@@ -107,12 +107,23 @@
                         <div class="row mb-5" *ngIf="IsDynamicState">
                             <div class="col-md-3">
                                 <label class="fs-6 form-label fw-bolder text-dark">{{'EMPLOYEE' | translate}}</label>
-                                <ng-select class="form-control form-control-solid p-0" [(ngModel)]="selectedEmployee"
-                                    [clearable]="false">
+                                <ng-select class="form-control form-control-solid p-0" [(ngModel)]="selectedEmployee" [clearable]="false">
                                     <ng-option *ngFor="let oEmployee of aEmployee" [value]="oEmployee">
                                         {{oEmployee.sFirstName + ' ' +oEmployee.sLastName}}
                                     </ng-option>
                                 </ng-select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="w-75 align-middle lh-xxl">{{ "LEVEL_FILTER" | translate}}</label>
+                                <label class="form-check form-switch form-check-custom form-check-solid w-25">
+                                    <input type="checkbox" class="form-check-input" [(ngModel)]="bIsArticleGroupLevel">
+                                </label>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="w-75 align-middle lh-xxl">{{ "MODE_FILTER" | translate}}</label>
+                                <label class="form-check form-switch form-check-custom form-check-solid w-25">
+                                    <input type="checkbox" class="form-check-input" [(ngModel)]="bIsBusinessOwnerMode">
+                                </label>
                             </div>
                         </div>
                         <div class="row">

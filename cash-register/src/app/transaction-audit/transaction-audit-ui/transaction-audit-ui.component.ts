@@ -40,12 +40,18 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
   businessDetails: any = {};
   statistics: any;
   optionMenu = 'cash-registry';
+  statisticFilter = {
+    isArticleGroupLevel: true,
+    isProductLevel: false
+  }
   filterDates = {
     endDate: new Date(new Date().setHours(23, 59, 59)),
     startDate: new Date(new Date().setHours(0, 0, 0))
     // endDate: moment(new Date(new Date().setHours(23, 59, 59))).format('yyyy-MM-DDThh:mm'),
     // startDate: moment(new Date(new Date().setHours(0, 0, 0))).format('yyyy-MM-DDThh:mm'),
   };
+  bIsArticleGroupLevel: boolean = true; // Could be Article-group level or product-level (if false then article-group mode)
+  bIsBusinessOwnerMode: boolean = true; // could be Business-owner-mode or supplier-mode (if false then supplier-mode)
 
   creditAmount = 0;
   debitAmount = 0;
@@ -190,7 +196,9 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
         sDisplayMethod: sDisplayMethod || this.sDisplayMethod,
         dStartDate: this.filterDates.startDate,
         dEndDate: this.filterDates.endDate,
-        aFilterProperty: this.aFilterProperty
+        aFilterProperty: this.aFilterProperty,
+        bIsArticleGroupLevel: this.bIsArticleGroupLevel,
+        bIsBusinessOwnerMode: this.bIsBusinessOwnerMode
       },
     }
     this.getStatisticSubscription = this.apiService.postNew('cashregistry', `/api/v1/statistics/get`, oBody).subscribe((result: any) => {
@@ -221,7 +229,9 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
         sDisplayMethod: sDisplayMethod || this.sDisplayMethod,
         dStartDate: this.filterDates.startDate,
         dEndDate: this.filterDates.endDate,
-        aFilterProperty: this.aFilterProperty
+        aFilterProperty: this.aFilterProperty,
+        bIsArticleGroupLevel: this.bIsArticleGroupLevel,
+        bIsBusinessOwnerMode: this.bIsBusinessOwnerMode
       }
     }
     console.log('fetchStatistics oBody: ', oBody);
@@ -1340,6 +1350,8 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
       oFilterBy: {
         dStartDate: this.filterDates.startDate,
         dEndDate: this.filterDates.endDate,
+        bIsArticleGroupLevel: this.bIsArticleGroupLevel,
+        bIsBusinessOwnerMode: this.bIsBusinessOwnerMode
       },
       iBusinessId: this.iBusinessId
     };
@@ -1381,6 +1393,8 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
       oFilterBy: {
         dStartDate: this.filterDates.startDate,
         dEndDate: this.filterDates.endDate,
+        bIsArticleGroupLevel: this.bIsArticleGroupLevel,
+        bIsBusinessOwnerMode: this.bIsBusinessOwnerMode
       },
       iBusinessId: this.iBusinessId,
       iLocationId: this.iLocationId,
