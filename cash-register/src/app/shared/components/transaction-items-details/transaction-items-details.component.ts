@@ -21,7 +21,7 @@ export class TransactionItemsDetailsComponent implements OnInit {
   transactionItems: Array<any> = [];
   faTimes = faTimes;
   itemType = 'transaction';
-
+  selectedId: any;
   status = true;
 
   requestParams: any = {
@@ -56,6 +56,7 @@ export class TransactionItemsDetailsComponent implements OnInit {
   ngOnInit(): void {
     this.itemType = this.dialogRef.context.itemType;
     this.transaction = this.dialogRef.context.transaction;
+    this.selectedId = this.dialogRef.context.selectedId;
     this.requestParams.iBusinessId = localStorage.getItem('currentBusiness');
     this.fetchTransactionItems();
   }
@@ -74,7 +75,7 @@ export class TransactionItemsDetailsComponent implements OnInit {
     this.apiService.postNew('cashregistry', url, this.requestParams).subscribe((result: any) => {
       this.transactionItems = result.data[0].result;
       const discountRecords = this.transactionItems.filter(o => o.oType.eKind === 'discount' || o.oType.eKind === 'loyalty-points-discount');
-      const loyaltyPoints = this.transactionItems.filter(o => o.oType.eKind === 'loyalty-points' || o.oType.eKind === 'loyalty-points');
+      // const loyaltyPoints = this.transactionItems.filter(o => o.oType.eKind === 'loyalty-points' || o.oType.eKind === 'loyalty-points');
       this.transactionItems = this.transactionItems.filter(o => o.oType.eKind !== 'discount' && o.oType.eKind !== 'loyalty-points' && o.oType.eKind !== 'loyalty-points-discount');
       this.transactionItems.forEach(element => {
         const elementDiscount = discountRecords.filter(o => o.sUniqueIdentifier === element.sUniqueIdentifier);
@@ -99,13 +100,13 @@ export class TransactionItemsDetailsComponent implements OnInit {
           // to do partial refund
           transactionItem.tType = 'refunded';
         }
+        if(this.selectedId && this.selectedId === transactionItem._id ) {
+          transactionItem.isSelected = true;
+        }
       });
       if (discountRecords.length > 0) {
         localStorage.setItem('discountRecords', JSON.stringify(discountRecords));
       }
-      // if (loyaltyPoints.length > 0) {
-      //   localStorage.setItem('loyaltyPointsRecords', JSON.stringify(loyaltyPoints));
-      // }
 
     }, (error) => {
       alert(error.error.message);

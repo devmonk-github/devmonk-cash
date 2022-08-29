@@ -60,7 +60,6 @@ export class OrderComponent implements OnInit {
     this.getProperties();
     this.listSuppliers();
     this.getBusinessBrands();
-    console.log(this.item);
     if (this.item.new && this.item.isFor !== 'shopProducts') {
       this.selectArticleGroup();
       this.item.new = false;
@@ -160,8 +159,6 @@ export class OrderComponent implements OnInit {
     const aProperty: any = [];
     this.apiService.postNew('core', '/api/v1/properties/list', data).subscribe(
       (result: any) => {
-        console.log('I am printing properties.');
-        console.log(result.data);
         if (result.data && result.data.length > 0) {
           result.data[0].result.map((property: any) => {
             if (typeof (this.propertyOptions[property._id]) == 'undefined') {

@@ -6,6 +6,7 @@ import { faTimes, faMessage, faEnvelope, faEnvelopeSquare, faUser, faReceipt, fa
 import { PdfService } from '../../service/pdf.service';
 import { TransactionItemsDetailsComponent } from '../transaction-items-details/transaction-items-details.component';
 import { MenuComponent } from '../../_layout/components/common';
+import { Router } from '@angular/router';
 @Component({
   selector: 'app-activity-details',
   templateUrl: './activity-details.component.html',
@@ -48,6 +49,7 @@ export class ActivityDetailsComponent implements OnInit {
   business: any;
   iLocationId: String = '';
   showDetails: Boolean = true;
+  loadCashRegister: Boolean = false;
   requestParams: any = {
     iBusinessId: this.iBusinessId,
     aProjection: ['_id',
@@ -72,6 +74,7 @@ export class ActivityDetailsComponent implements OnInit {
     private apiService: ApiService,
     private pdfService: PdfService,
     private dialogService: DialogService,
+    private routes: Router
   ) {
     const _injector = this.viewContainerRef.injector;
     this.dialogRef = _injector.get<DialogComponent>(DialogComponent);
@@ -179,7 +182,7 @@ export class ActivityDetailsComponent implements OnInit {
 
   openTransaction(transaction: any, itemType: any) {
     transaction.iActivityId = this.activity._id;
-    this.dialogService.openModal(TransactionItemsDetailsComponent, { cssClass: "modal-xl", context: { transaction, itemType } })
+    this.dialogService.openModal(TransactionItemsDetailsComponent, { cssClass: "modal-xl", context: { transaction, itemType, selectedId: transaction._id } })
       .instance.close.subscribe((result: any) => {
         const transactionItems: any = [];
         if (result.transaction) {
@@ -197,6 +200,7 @@ export class ActivityDetailsComponent implements OnInit {
               transactionItems.push({
                 name: transactionItem.sProductName || transactionItem.sProductNumber,
                 iActivityItemId: transactionItem.iActivityItemId,
+                iArticleGroupId: transactionItem.iArticleGroupId,
                 nRefundAmount: transactionItem.nPaidAmount,
                 iLastTransactionItemId: transactionItem.iTransactionItemId,
                 prePaidAmount: tType === 'refund' ? transactionItem.nPaidAmount : transactionItem.nPaymentAmount,
@@ -228,6 +232,9 @@ export class ActivityDetailsComponent implements OnInit {
           localStorage.setItem('fromTransactionPage', JSON.stringify(result));
           localStorage.setItem('recentUrl', '/business/transactions');
           setTimeout(() => {
+            if (this.loadCashRegister) {
+              this.routes.navigate(['/business/till']);
+            }
             this.close(true);
           }, 100);
         }
