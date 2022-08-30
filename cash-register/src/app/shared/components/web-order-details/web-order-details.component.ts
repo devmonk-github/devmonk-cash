@@ -16,7 +16,7 @@ export class WebOrderDetailsComponent implements OnInit {
   dialogRef: DialogComponent;
   activityItems: Array<any> = [];
   business: any;
-  statuses = ['new', 'processing', 'cancelled', 'completed', 'refund', 'refundInCashRegister'];
+  statuses = ['new', 'processing', 'cancelled', 'completed', 'refund', 'refundInCashRegister', 'payInCashRegister'];
   statusesForItems = ['new', 'processing', 'cancelled', 'completed'];
   FeStatus = '';
   carriers = ['PostNL', 'DHL', 'DPD', 'bpost', 'other'];
@@ -320,7 +320,7 @@ export class WebOrderDetailsComponent implements OnInit {
       })
   }
 
-  togglePayInCashRegister(event: any){}
+  // togglePayInCashRegister(event: any){}
 
   checkAllLocations(){
     let flag = true;
@@ -367,7 +367,7 @@ export class WebOrderDetailsComponent implements OnInit {
 
   
   changeStatusForAll(status: string){
-    if(status == 'refundInCashRegister') { 
+    if(status == 'refundInCashRegister' || status == 'payInCashRegister') { 
       this.openTransaction(this.activity, 'activity');
     } else if(status == 'completed'){
     } else {

@@ -138,7 +138,7 @@ export class ServicesComponent implements OnInit {
 
       this.apiService.getNew('core', '/api/v1/business/user-business-and-location/list')
         .subscribe((result: any) => {
-          console.log({ getBusinessLocations: result });
+          // console.log({ getBusinessLocations: result });
           if (result.message == "success" && result?.data) {
 
           }
@@ -154,10 +154,10 @@ export class ServicesComponent implements OnInit {
     return new Promise<any>((resolve, reject) => {
       this.apiService.postNew('core', `/api/v1/business/${this.iBusinessId}/list-location`, {}).subscribe(
         (result: any) => {
-          console.log({ getLocations: result });
+          // console.log({ getLocations: result });
           if (result.message == 'success') {
             this.requestParams.locations = result.data.aLocation;
-            console.log({ requestParams: this.requestParams.locations });
+            // console.log({ requestParams: this.requestParams.locations });
           }
           resolve(result);
         }),

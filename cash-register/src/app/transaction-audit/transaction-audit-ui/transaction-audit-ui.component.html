@@ -7,13 +7,59 @@
                     <div class="card-body">
                         <div class="row mb-5">
                             <div class="col-md-3">
-                                <label class="fs-6 form-label fw-bolder text-dark">{{'TYPE' | translate}}</label>
-                                <ng-select class="form-control form-control-solid p-0" [(ngModel)]="optionMenu"
+                                <!-- <label class="fs-6 form-label fw-bolder text-dark">{{'TYPE' | translate}}</label> -->
+                                <!-- <ng-select class="form-control form-control-solid p-0" [(ngModel)]="optionMenu"
                                     [clearable]="false" (change)="onChanges(optionMenu)">
+
                                     <ng-option [value]="option.sKey" *ngFor="let option of aOptionMenu">
                                         {{ option.sValue | translate}}
+
+                                    </ng-option>
+                                </ng-select> -->
+
+                                <!-- <mat-form-field class="dropdown">
+                                    <mat-select #mySelect [(ngModel)]="selectedClassification" [disabled]="true"
+                                        [matMenuTriggerFor]="levelOne" #levelOneTrigger="matMenuTrigger"
+                                        (click)="levelOneTrigger.openMenu()">
+                                        <mat-option *ngFor="let category of selectionList" [value]="category">
+                                            {{category}}</mat-option>
+                                    </mat-select>
+                                </mat-form-field> -->
+                                <label class="fs-6 form-label fw-bolder text-dark">{{'TYPE' | translate}}</label>
+                                <ng-select [matMenuTriggerFor]="levelOne" #levelOneTrigger="matMenuTrigger"
+                                    (click)="levelOneTrigger.openMenu()" [disabled]="true"
+                                    class="form-control form-control-solid p-0" [(ngModel)]="selectionListItem"
+                                    [clearable]="false">
+                                    <ng-option [value]="option" *ngFor="let option of selectionList">
+                                        {{ option | translate}}
                                     </ng-option>
                                 </ng-select>
+                                <mat-menu #levelOne="matMenu" direction="down" yPosition="below">
+                                    <ng-container *ngFor="let parent of aOptionMenu">
+                                        <span (mouseleave)="levelOneTrigger.closeMenu()"></span>
+                                        <ng-container>
+                                            <li mat-menu-item [matMenuTriggerFor]="levelTwo">
+                                                <span>{{parent.sKey}}</span>
+                                            </li>
+                                            <mat-menu #levelTwo="matMenu">
+                                                <ng-container *ngFor="let child1 of parent.children">
+                                                    <button mat-menu-item [matMenuTriggerFor]="levelThree">
+                                                        {{child1.sKey}}
+                                                    </button>
+                                                    <mat-menu #levelThree="matMenu">
+                                                        <ng-container *ngFor="let child2 of child1.children">
+                                                            <button mat-menu-item [value]="child2.sValue"
+                                                                (click)="onDropdownItemSelected(parent,child1,child2)"
+                                                                [ngClass]="{'selectedMenu': child2.sValue === selectionListItem}">
+                                                                {{child2.sValue}}
+                                                            </button>
+                                                        </ng-container>
+                                                    </mat-menu>
+                                                </ng-container>
+                                            </mat-menu>
+                                        </ng-container>
+                                    </ng-container>
+                                </mat-menu>
                             </div>
                             <div class="col-md-3">
                                 <label class="fs-6 form-label fw-bolder text-dark">{{'DISPLAY_METHOD' |
@@ -107,7 +153,8 @@
                         <div class="row mb-5" *ngIf="IsDynamicState">
                             <div class="col-md-3">
                                 <label class="fs-6 form-label fw-bolder text-dark">{{'EMPLOYEE' | translate}}</label>
-                                <ng-select class="form-control form-control-solid p-0" [(ngModel)]="selectedEmployee" [clearable]="false">
+                                <ng-select class="form-control form-control-solid p-0" [(ngModel)]="selectedEmployee"
+                                    [clearable]="false">
                                     <ng-option *ngFor="let oEmployee of aEmployee" [value]="oEmployee">
                                         {{oEmployee.sFirstName + ' ' +oEmployee.sLastName}}
                                     </ng-option>
@@ -620,7 +667,7 @@
 
                             <div class="card" *ngIf="sDisplayMethod === 'aVatRates'">
                                 <p> {{ 'VAT_RATES' | translate}} </p>
-                            
+
                                 <div class="card-body">
                                     <div class="table-responsive" *ngFor="let oStatistic of aStatistic; let i = index">
                                         <table
@@ -634,43 +681,51 @@
                                                             translate}}</span></th>
                                                     <th class="w-150px"><span class="">{{ "GROSS_PROFIT" |
                                                             translate}}</span></th>
-                                                    <th class="w-150px"><span class="">{{"VAT_AMOUNT" | translate}}</span>
+                                                    <th class="w-150px"><span class="">{{"VAT_AMOUNT" |
+                                                            translate}}</span>
                                                     </th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 <td style="padding:0" colspan="6">
-                                                    <ng-container *ngFor="let oVatRate of oStatistic.aVatRates; let vatRateIndex = index">
+                                                    <ng-container
+                                                        *ngFor="let oVatRate of oStatistic.aVatRates; let vatRateIndex = index">
                                                         <table
                                                             class="table table-row-bordered table-row-gray-300 gy-5 gs-5 mb-0 text-gray-600 fw-bold border">
                                                             <tr>
-                                                                <td class="text-center fw-bolder bg-gray-100" colspan="5">
+                                                                <td class="text-center fw-bolder bg-gray-100"
+                                                                    colspan="5">
                                                                     {{"VAT_RATE"}} - {{oVatRate?.nVat}}
                                                                 </td>
                                                             </tr>
                                                             <tr>
                                                                 <ng-container [ngTemplateOutlet]="vatRateTemplates"
-                                                                    [ngTemplateOutletContext]="{ data: {sVatMethod: 'oShopPurchase', oVatRate: oVatRate} }" *ngIf="optionMenu == 'cash-registry'">
+                                                                    [ngTemplateOutletContext]="{ data: {sVatMethod: 'oShopPurchase', oVatRate: oVatRate} }"
+                                                                    *ngIf="optionMenu == 'cash-registry'">
                                                                 </ng-container>
                                                             </tr>
                                                             <tr>
                                                                 <ng-container [ngTemplateOutlet]="vatRateTemplates"
-                                                                    [ngTemplateOutletContext]="{ data: {sVatMethod: 'oWebShop', oVatRate: oVatRate} }" *ngIf="optionMenu == 'cash-registry'">
+                                                                    [ngTemplateOutletContext]="{ data: {sVatMethod: 'oWebShop', oVatRate: oVatRate} }"
+                                                                    *ngIf="optionMenu == 'cash-registry'">
                                                                 </ng-container>
                                                             </tr>
                                                             <tr>
                                                                 <ng-container [ngTemplateOutlet]="vatRateTemplates"
-                                                                    [ngTemplateOutletContext]="{ data: {sVatMethod: 'oDeliverySupplier', oVatRate: oVatRate} }" *ngIf="optionMenu == 'purchase-order' && sUserType == 'supplier'">
+                                                                    [ngTemplateOutletContext]="{ data: {sVatMethod: 'oDeliverySupplier', oVatRate: oVatRate} }"
+                                                                    *ngIf="optionMenu == 'purchase-order' && sUserType == 'supplier'">
                                                                 </ng-container>
                                                             </tr>
                                                             <tr>
                                                                 <ng-container [ngTemplateOutlet]="vatRateTemplates"
-                                                                    [ngTemplateOutletContext]="{ data: {sVatMethod: 'oDeliveryRetailer', oVatRate: oVatRate} }" *ngIf="optionMenu == 'purchase-order' && sUserType == 'retailer'">
+                                                                    [ngTemplateOutletContext]="{ data: {sVatMethod: 'oDeliveryRetailer', oVatRate: oVatRate} }"
+                                                                    *ngIf="optionMenu == 'purchase-order' && sUserType == 'retailer'">
                                                                 </ng-container>
                                                             </tr>
                                                             <tr>
                                                                 <ng-container [ngTemplateOutlet]="vatRateTemplates"
-                                                                    [ngTemplateOutletContext]="{ data: {sVatMethod: 'oSalesOrderSupplier', oVatRate: oVatRate} }" *ngIf="optionMenu == 'sales-order'">
+                                                                    [ngTemplateOutletContext]="{ data: {sVatMethod: 'oSalesOrderSupplier', oVatRate: oVatRate} }"
+                                                                    *ngIf="optionMenu == 'sales-order'">
                                                                 </ng-container>
                                                             </tr>
                                                         </table>
@@ -678,7 +733,7 @@
                                                 </td>
                                             </tbody>
                                         </table>
-                            
+
                                     </div>
                                 </div>
                             </div>
@@ -705,7 +760,12 @@
                 <!-- PAYMENT START -->
                 <div class="card">
                     <div class="container">
-                        <strong> {{ 'PAYMENT_METHODS' | translate}} </strong>
+                        <div class="d-flex justify-content-between">
+                            <strong> {{ 'PAYMENT_METHODS' | translate}} </strong>
+                            <button class="btn" (click)="paymentEditMode = !paymentEditMode">
+                                <i class="fa fa-edit"></i>
+                            </button>
+                        </div>
                         <p *ngIf="!aPaymentMethods?.length">{{ 'PAYMENT_METHODS_NOT_FOUND' | translate}}</p>
                         <div *ngIf="aPaymentMethods?.length">
                             <div class="card-body">
@@ -914,7 +974,8 @@
                         <div class="countingTotal">
                             <div class="d-flex justify-content-start align-items-center">
                                 <label>Total Counted : </label>
-                                <input type="number" class="form-control mx-1 p-2" [(ngModel)]="nTotalTCashCounting">
+                                <input type="number" class="form-control mx-1 p-2"
+                                    [(ngModel)]="oCountings.nCashCounted">
                             </div>
                         </div>
                     </div>
@@ -939,16 +1000,16 @@
                             </div>
                             <div>
                                 <label>Cash in Till</label>
-                                <label class="">{{ nCashInTill | currency:"EUR":"symbol" }}</label>
+                                <label class="">{{ oCountings.nCashInTill | currency:"EUR":"symbol" }}</label>
                             </div>
                             <div>
                                 <label>Cash Counted</label>
-                                <label class="bold">{{ nTotalTCashCounting | currency:"EUR":"symbol" }} </label>
+                                <label class="bold">{{ oCountings.nCashCounted | currency:"EUR":"symbol" }} </label>
                             </div>
                             <div>
                                 <label>Difference in Cash</label>
                                 <label class="bold">
-                                    {{ (nCashInTill - nTotalTCashCounting) | currency:"EUR":"symbol" }}
+                                    {{ (oCountings.nCashInTill - oCountings.nCashCounted) | currency:"EUR":"symbol" }}
                                 </label>
                             </div>
                             <div>
@@ -957,19 +1018,23 @@
                             </div>
                             <div>
                                 <label>Skim</label>
-                                <input class="form-control p-2 w-30">
+                                <input class="form-control p-2 w-30" [(ngModel)]="oCountings.nSkim">
                             </div>
                             <div>
                                 <label>Remaining Cash</label>
                                 <label class="bold">
-                                    {{ nTotalTCashCounting | currency:"EUR":"symbol" }}
+                                    {{ (oCountings.nCashCounted - oCountings.nSkim) | currency:"EUR":"symbol" }}
                                 </label>
                             </div>
                             <br>
-                            <button type="button" class="btn btn-primary" data-kt-roles-modal-action="submit"
-                                (click)="closeDayState($event)" [class.disabled]="bStatisticLoading">
-                                <span class="indicator-label">{{ "CLOSE_DAYSTATE" | translate}}</span>
-                            </button>
+                            <div class="d-flex justify-content-start">
+                                <button type="button" class="btn btn-primary" data-kt-roles-modal-action="submit"
+                                    (click)="closeDayState()" [class.disabled]="closingDayState">
+                                    <span class="indicator-label">{{ "CLOSE_DAYSTATE" | translate}}</span>
+                                </button>
+                                <div *ngIf="closingDayState" class="spinner-border mx-5"></div>
+                            </div>
+
                         </div>
                     </div>
                 </div>

@@ -78,12 +78,12 @@
                         </select>
                     </div>
                     <input *ngIf="showDeliverBtn && activity.eActivityStatus == 'completed'" type="text" name="activityName" [(ngModel)]="activity.sTrackingNumber" placeholder="Track and trace the order" class="form-control" (ngModelChange)="changeTrackingNumberForAll(activity.sTrackingNumber)">
-                    <label class="form-check form-switch form-check-custom form-check-solid mt-5">
+                    <!-- <label class="form-check form-switch form-check-custom form-check-solid mt-5">
                         <input class="form-check-input" type="checkbox" id="bPayInCashRegister"
                             checked="checked" [(ngModel)]="activity.bPayInCashRegister"
                             (ngModelChange)="togglePayInCashRegister($event)" />
                         <span class="form-check-label">{{"PAY_IN_CASH_REGISTER" | translate}}</span>
-                    </label>
+                    </label> -->
                 </div>
                 <div class="col-md-4">
                     <button class="btn btn-sm btn-secondary w-100 d-flex">

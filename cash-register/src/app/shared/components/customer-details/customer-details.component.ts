@@ -201,7 +201,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
     { type: "Bankpayment", value: 42 },
     { type: "Expected Payment", value: 22 },
   ];
-
+  totalActivities: number = 0;
   constructor(
     private viewContainerRef: ViewContainerRef,
     private apiService: ApiService,
@@ -228,7 +228,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
         type: "pie"
       },
       title: {
-        text: "Number of Activities (71)",
+        text: "Number of Activities",
         style: {
           fontWeight: 'bold',
         },
@@ -406,45 +406,51 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
   }
 
   loadTransactions() {
+    console.log('-------loadTransactions!');
     this.bTransactionsLoader = true;
     this.requestParams.iCustomerId = this.customer._id;
     this.apiService.postNew('cashregistry', '/api/v1/transaction/cashRegister', this.requestParams).subscribe((result: any) => {
       if (result?.data?.result) {
         this.aTransactions = result.data.result || [];
         this.aTransactions.forEach(transaction => {
-          switch (transaction.eType) {
-            case "purchase-order-retailer":
-              this.aActivityTitles[1].value += 1;
-              break;
-            case "purchase-order-supplier":
-              this.aActivityTitles[1].value += 1;
-              break;
-            case "sales-order":
-              this.aActivityTitles[1].value += 1;
-              break;
-            case "cash-register-revenue":
-              this.aActivityTitles[1].value += 1;
-              break;
-            case "cash-register-service":
-              this.aActivityTitles[1].value += 1;
-              break;
-            case "webshop-revenue":
-              this.aActivityTitles[4].value += 1;
-              break;
-            case "webshop-reservation":
-              this.aActivityTitles[8].value += 1;
-              break;
-            case "edi":
-              break;
-            case "shop-purchase":
-              this.aActivityTitles[2].value += 1;
-              break;
-            case "repair":[]
-              this.aActivityTitles[0].value += 1;
-              break;
-            case "expenses":
-              break;
-          }
+          transaction.aTransactionItems.forEach((item: any) => {
+            const count = this.totalActivities;
+            if(item?.oType?.eKind) this.totalActivities = count + item.nQuantity || 0;
+            switch (item?.oType?.eKind) {
+              case "regular":
+                this.aActivityTitles[1].value += 1;
+                break;
+              case "expenses":
+                break;
+              case "reservation":
+                this.aActivityTitles[8].value += 1;
+                break;
+              case "giftcard":
+                this.aActivityTitles[6].value += 1;
+                break;
+              case "empty-line":
+                break;
+              case "repair":
+                this.aActivityTitles[0].value += 1;
+                break;
+              case "order":
+                break;
+              case "gold-purchase":
+                this.aActivityTitles[7].value += 1;
+                break;
+              case "gold-sell":
+                
+                break;
+              case "loyalty-points-discount":
+                break;
+              case "loyalty-points":
+                break;
+              case "discount":
+                break;
+              case "payment-discount":
+                break;
+            }
+          })
         });
         // this.paginationConfig.totalItems = result.data.totalCount;
         this.activitiesChartOptions = {
@@ -455,7 +461,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
             type: "pie"
           },
           title: {
-            text: "Number of Activities (71)",
+            text: `Number of Activities (${this.totalActivities})`,
             style: {
               fontWeight: 'bold',
             },
