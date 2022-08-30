@@ -98,7 +98,7 @@ export class ServicesComponent implements OnInit {
     private routes: Router
   ) { }
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     if (this.routes.url.includes('/business/webshop-orders')) {
       this.webOrders = true;
       this.requestParams.eType = ['webshop-revenue', 'webshop-reservation']
@@ -106,11 +106,14 @@ export class ServicesComponent implements OnInit {
     this.businessDetails._id = localStorage.getItem('currentBusiness');
     this.iLocationId = localStorage.getItem('currentLocation');
     this.userType = localStorage.getItem('type');
-    this.loadTransaction();
     this.iBusinessId = localStorage.getItem('currentBusiness');
+
+    this.showLoader = true;
+    await this.setLocation()
+    this.showLoader = false
+    this.loadTransaction();
     this.listEmployee();
     this.getWorkstations();
-    this.getLocations();
   }
 
   // Function for handle event of transaction menu
@@ -130,18 +133,73 @@ export class ServicesComponent implements OnInit {
     }
     return str;
   }
+  getBusinessLocations() {
+    return new Promise<any>((resolve, reject) => {
 
-  getLocations() {
-    this.apiService.postNew('core', `/api/v1/business/${this.iBusinessId}/list-location`, {}).subscribe(
-      (result: any) => {
-        console.log({ getLocations: result });
-        if (result.message == 'success') {
-          this.requestParams.locations = result.data.aLocation;
+      this.apiService.getNew('core', '/api/v1/business/user-business-and-location/list')
+        .subscribe((result: any) => {
+          console.log({ getBusinessLocations: result });
+          if (result.message == "success" && result?.data) {
+
+          }
+          resolve(result);
+        }, (error) => {
+          resolve(error);
+          console.error('error: ', error);
+        })
+    })
+
+  }
+  async getLocations() {
+    return new Promise<any>((resolve, reject) => {
+      this.apiService.postNew('core', `/api/v1/business/${this.iBusinessId}/list-location`, {}).subscribe(
+        (result: any) => {
+          console.log({ getLocations: result });
+          if (result.message == 'success') {
+            this.requestParams.locations = result.data.aLocation;
+            console.log({ requestParams: this.requestParams.locations });
+          }
+          resolve(result);
+        }),
+        (error: any) => {
+          reject(error);
+          console.error(error)
         }
-      }),
-      (error: any) => {
-        console.error(error)
+    })
+  }
+  async setLocation(sLocationId: string = "") {
+    return new Promise<void>(async (resolve, reject) => {
+      this.iLocationId = sLocationId ?? (localStorage.getItem('currentLocation') ?? '')
+      try {
+        const oBusinessLocation: any = await this.getBusinessLocations()
+        let oNewLocation: any
+        let bIsCurrentBIsWebshop = false
+        for (let k = 0; k < oBusinessLocation?.data?.aBusiness?.length; k++) {
+          const oAllLocations = oBusinessLocation?.data?.aBusiness[k]
+          // console.log({ oAllLocations });
+          //for (let i = 0; i < location?.data?.aLocation.length; i++) {
+          //  const l = location?.data?.aLocation[i];    
+          for (let i = 0; i < oAllLocations?.aLocation?.length; i++) {
+            const l = oAllLocations?.aLocation[i];
+            // console.log({ aLocation: l });
+            if (l.bIsWebshop) oNewLocation = l
+            if (l._id.toString() === this.iLocationId) {
+              if (l.bIsWebshop) {
+                bIsCurrentBIsWebshop = true
+                this.iLocationId = l._id.toString()
+                break
+              }
+            }
+          }
+        }
+        if (!bIsCurrentBIsWebshop) {
+          this.iLocationId = oNewLocation._id.toString()
+        }
+        resolve()
+      } catch (error) {
+        resolve()
       }
+    })
   }
 
   getWorkstations() {
@@ -235,6 +293,7 @@ export class ServicesComponent implements OnInit {
     if (this.iLocationId) this.requestParams.iLocationId = this.iLocationId;
     this.showLoader = true;
     this.apiService.postNew('cashregistry', '/api/v1/activities', this.requestParams).subscribe((result: any) => {
+      console.log({ loadTransaction: result });
       if (result?.data?.length)
         this.activities = result?.data;
       else
