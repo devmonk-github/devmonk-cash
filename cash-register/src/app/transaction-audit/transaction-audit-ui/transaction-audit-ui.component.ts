@@ -51,7 +51,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
     // startDate: moment(new Date(new Date().setHours(0, 0, 0))).format('yyyy-MM-DDThh:mm'),
   };
   bIsArticleGroupLevel: boolean = true; // Could be Article-group level or product-level (if false then article-group mode)
-  bIsBusinessOwnerMode: boolean = true; // could be Business-owner-mode or supplier-mode (if false then supplier-mode)
+  bIsSupplierMode: boolean = true; // could be Business-owner-mode or supplier-mode (if true then supplier-mode)
 
   creditAmount = 0;
   debitAmount = 0;
@@ -197,9 +197,13 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
         dStartDate: this.filterDates.startDate,
         dEndDate: this.filterDates.endDate,
         aFilterProperty: this.aFilterProperty,
-        bIsArticleGroupLevel: this.bIsArticleGroupLevel,
-        bIsBusinessOwnerMode: this.bIsBusinessOwnerMode
+        bIsArticleGroupLevel: true,
+        bIsSupplierMode: true
       },
+    }
+    if (this.IsDynamicState) {
+      oBody.oFilter.bIsArticleGroupLevel = this.bIsArticleGroupLevel;
+      oBody.oFilter.bIsSupplierMode = this.bIsSupplierMode;
     }
     this.getStatisticSubscription = this.apiService.postNew('cashregistry', `/api/v1/statistics/get`, oBody).subscribe((result: any) => {
       this.bStatisticLoading = false;
@@ -230,11 +234,14 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
         dStartDate: this.filterDates.startDate,
         dEndDate: this.filterDates.endDate,
         aFilterProperty: this.aFilterProperty,
-        bIsArticleGroupLevel: this.bIsArticleGroupLevel,
-        bIsBusinessOwnerMode: this.bIsBusinessOwnerMode
+        bIsArticleGroupLevel: true,
+        bIsSupplierMode: true
       }
     }
-    console.log('fetchStatistics oBody: ', oBody);
+    if (this.IsDynamicState) {
+      oBody.oFilter.bIsArticleGroupLevel = this.bIsArticleGroupLevel;
+      oBody.oFilter.bIsSupplierMode = this.bIsSupplierMode;
+    }
     this.bStatisticLoading = true;
     this.statisticAuditSubscription = this.apiService.postNew('cashregistry', `/api/v1/statistics/transaction/audit`, oBody).subscribe((result: any) => {
       this.bStatisticLoading = false;
@@ -1351,7 +1358,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
         dStartDate: this.filterDates.startDate,
         dEndDate: this.filterDates.endDate,
         bIsArticleGroupLevel: this.bIsArticleGroupLevel,
-        bIsBusinessOwnerMode: this.bIsBusinessOwnerMode
+        bIsSupplierMode: this.bIsSupplierMode
       },
       iBusinessId: this.iBusinessId
     };
@@ -1394,7 +1401,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
         dStartDate: this.filterDates.startDate,
         dEndDate: this.filterDates.endDate,
         bIsArticleGroupLevel: this.bIsArticleGroupLevel,
-        bIsBusinessOwnerMode: this.bIsBusinessOwnerMode
+        bIsSupplierMode: this.bIsSupplierMode
       },
       iBusinessId: this.iBusinessId,
       iLocationId: this.iLocationId,

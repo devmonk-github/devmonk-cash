@@ -114,16 +114,28 @@
                                 </ng-select>
                             </div>
                             <div class="col-md-3">
-                                <label class="w-75 align-middle lh-xxl">{{ "LEVEL_FILTER" | translate}}</label>
-                                <label class="form-check form-switch form-check-custom form-check-solid w-25">
-                                    <input type="checkbox" class="form-check-input" [(ngModel)]="bIsArticleGroupLevel">
-                                </label>
+                                <label class="fs-6 form-label fw-bolder text-dark">{{ "LEVEL_FILTER" | translate}}</label>
+                                <div class="d-flex mt-2">
+                                    <label class="w-75 align-middle lh-xxl" *ngIf="bIsArticleGroupLevel">{{ "ARTICLE_GROUP_LEVEL" |
+                                        translate}}</label>
+                                    <label class="w-75 align-middle lh-xxl" *ngIf="!bIsArticleGroupLevel">{{ "PRODUCT_LEVEL" |
+                                        translate}}</label>
+                                    <label class="form-check form-switch form-check-custom form-check-solid w-25">
+                                        <input type="checkbox" class="form-check-input" [(ngModel)]="bIsArticleGroupLevel">
+                                    </label>
+                                </div>
                             </div>
                             <div class="col-md-3">
-                                <label class="w-75 align-middle lh-xxl">{{ "MODE_FILTER" | translate}}</label>
-                                <label class="form-check form-switch form-check-custom form-check-solid w-25">
-                                    <input type="checkbox" class="form-check-input" [(ngModel)]="bIsBusinessOwnerMode">
-                                </label>
+                                <label class="fs-6 form-label fw-bolder text-dark">{{ "MODE_FILTER" | translate}}</label>
+                                <div class="d-flex mt-2">
+                                    <label class="w-75 align-middle lh-xxl" *ngIf="bIsSupplierMode">{{ "SUPPLIER_MODE" |
+                                        translate}}</label>
+                                    <label class="w-75 align-middle lh-xxl" *ngIf="!bIsSupplierMode">{{ "BUSINESS_MODE" |
+                                        translate}}</label>
+                                    <label class="form-check form-switch form-check-custom form-check-solid w-25">
+                                        <input type="checkbox" class="form-check-input" [(ngModel)]="bIsSupplierMode">
+                                    </label>
+                                </div>
                             </div>
                         </div>
                         <div class="row">
@@ -268,7 +280,7 @@
                                                                     <!--start of dyamic property -->
                                                                     <tr>
                                                                         <td class="ps-9">
-                                                                            {{oRevenueByProperty.aCategory.join(' |')}}
+                                                                           {{oRevenueByProperty.aCategory.join(' |')}}
                                                                         </td>
                                                                         <td>{{oRevenueByProperty.nQuantity}}</td>
                                                                         <td>{{oRevenueByProperty.nTotalRevenue}}</td>
