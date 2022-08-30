@@ -19,22 +19,6 @@
                 </div>
             </div>
         </div>
-        <div class="pb-4">
-            <label class="fs-5" for="supplier">{{ "SUPPLIER" | translate}}</label>
-            <ng-select *ngIf="!supplier" [(ngModel)]="supplier" (search)="searchSupplier($event.term)"
-                (ngModelChange)="changeInSupplier()" class="form-control form-control-solid p-0 w-100 custom"
-                placeholder="Search supplier" [minTermLength]="2" [clearable]="false"
-                [isOpen]="filteredSupplierList.length > 0">
-                <ng-option *ngFor="let option of filteredSupplierList" [value]="option">{{option.sName ||
-                    'Unknown'}}</ng-option>
-            </ng-select>
-            <div class="chip d-flex" *ngIf="supplier">
-                {{supplier.sName}}
-                <div (click)="supplier=null">
-                    &nbsp;<i class="close fas fa-times cursor-pointer"></i>
-                </div>
-            </div>
-        </div>
         <div>
             <label class="fs-5" for="brand">{{ "BRAND" | translate}}</label>
             <ng-select *ngIf="!brand" [(ngModel)]="brand" (search)="searchBrand($event.term)"
@@ -52,6 +36,22 @@
             </div>
         </div>
 
+        <div class="pb-4">
+            <label class="fs-5" for="supplier">{{ "SUPPLIER" | translate}}</label>
+            <ng-select *ngIf="!supplier" [(ngModel)]="supplier" (search)="searchSupplier($event.term)"
+                (ngModelChange)="changeInSupplier()" class="form-control form-control-solid p-0 w-100 custom"
+                placeholder="Search supplier" [minTermLength]="2" [clearable]="false"
+                [isOpen]="filteredSupplierList.length > 0">
+                <ng-option *ngFor="let option of filteredSupplierList" [value]="option">{{option.sName ||
+                    'Unknown'}}</ng-option>
+            </ng-select>
+            <div class="chip d-flex" *ngIf="supplier">
+                {{supplier.sName}}
+                <div (click)="supplier=null">
+                    &nbsp;<i class="close fas fa-times cursor-pointer"></i>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div class="card-footer">
