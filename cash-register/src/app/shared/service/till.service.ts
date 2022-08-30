@@ -116,10 +116,11 @@ export class TillService {
         i.nMargin, // TODO
         null,
         null,
-        i.iBusinessPartnerId, // TODO: Needed in till??
+        i.iBusinessPartnerId,
         this.getValueFromLocalStorage('currentBusiness'),
 
-        i.iArticleGroupId, // TODO
+        i.iArticleGroupId,
+        i.iArticleGroupOriginalId || i.iArticleGroupId,
         i.oArticleGroupMetaData || null, //oArticleGroupMetaData
         null,
         false, // TODO
@@ -197,6 +198,7 @@ export class TillService {
           i.nPaymentAmount += i.nDiscount * i.nQuantity;
           const tItem1 = JSON.parse(JSON.stringify(i));
           tItem1.iArticleGroupId = discountArticleGroup._id;
+          tItem1.iArticleGroupOriginalId = i.iArticleGroupId;
           tItem1.oArticleGroupMetaData.sCategory = discountArticleGroup.sCategory;
           tItem1.oArticleGroupMetaData.sSubCategory = discountArticleGroup.sSubCategory;
           tItem1.oType.eTransactionType = 'cash-registry';
