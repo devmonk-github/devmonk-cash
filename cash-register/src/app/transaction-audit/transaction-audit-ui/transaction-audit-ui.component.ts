@@ -46,7 +46,8 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
   }
   filterDates = {
     endDate: new Date(new Date().setHours(23, 59, 59)),
-    startDate: new Date(new Date().setHours(0, 0, 0))
+    startDate: new Date(new Date().setHours(0, 0, 0))//'2022-08-29T10:50'
+    // startDate: '2022-08-29T10:50'
     // endDate: moment(new Date(new Date().setHours(23, 59, 59))).format('yyyy-MM-DDThh:mm'),
     // startDate: moment(new Date(new Date().setHours(0, 0, 0))).format('yyyy-MM-DDThh:mm'),
   };
@@ -109,22 +110,27 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
   ];
 
   aAmount: any = [
-    { sLabel: '500.00', nValue: 500, nQuantity: 0 },
-    { sLabel: '200.00', nValue: 200, nQuantity: 0 },
-    { sLabel: '100.00', nValue: 100, nQuantity: 0 },
-    { sLabel: '50.00', nValue: 50, nQuantity: 0 },
-    { sLabel: '20.00', nValue: 20, nQuantity: 0 },
-    { sLabel: '10.00', nValue: 10, nQuantity: 0 },
-    { sLabel: '5.00', nValue: 5, nQuantity: 0 },
-    { sLabel: '2.00', nValue: 2, nQuantity: 0 },
-    { sLabel: '1.00', nValue: 1, nQuantity: 0 },
-    { sLabel: '0.50', nValue: 0.5, nQuantity: 0 },
-    { sLabel: '0.20', nValue: 0.2, nQuantity: 0 },
-    { sLabel: '0.10', nValue: 0.1, nQuantity: 0 },
-    { sLabel: '0.05', nValue: 0.05, nQuantity: 0 },
+    { sLabel: '500.00', nValue: 500, nQuantity: 0, key:'nType500' },
+    { sLabel: '200.00', nValue: 200, nQuantity: 0, key:'nType200' },
+    { sLabel: '100.00', nValue: 100, nQuantity: 0, key:'nType100' },
+    { sLabel: '50.00', nValue: 50, nQuantity: 0, key:'nType50' },
+    { sLabel: '20.00', nValue: 20, nQuantity: 0, key:'nType20' },
+    { sLabel: '10.00', nValue: 10, nQuantity: 0, key:'nType10' },
+    { sLabel: '5.00', nValue: 5, nQuantity: 0, key:'nType5' },
+    { sLabel: '2.00', nValue: 2, nQuantity: 0, key:'nType2' },
+    { sLabel: '1.00', nValue: 1, nQuantity: 0, key:'nType1' },
+    { sLabel: '0.50', nValue: 0.5, nQuantity: 0, key:'nType0_5' },
+    { sLabel: '0.20', nValue: 0.2, nQuantity: 0, key:'nType0_2' },
+    { sLabel: '0.10', nValue: 0.1, nQuantity: 0, key:'nType0_1' },
+    { sLabel: '0.05', nValue: 0.05, nQuantity: 0, key:'nType0_05' },
   ];
-  nTotalTCashCounting: number = 0;
-  nCashInTill: number = 0;
+
+  oCountings:any = {
+    nCashCounted: 0,
+    nCashInTill: 0,
+    nSkim: 0,
+    oCountingsCashDetails: {}
+  }
   aRefundItems: any;
   aDiscountItems: any;
   aRepairItems: any;
@@ -205,7 +211,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
       this.bStatisticLoading = false;
       if (result?.data) {
         if (result.data?.aStatistic?.length) this.aStatistic = result.data.aStatistic;
-        if (this.aStatistic?.length) this.nCashInTill = this.aStatistic[0].overall[0]?.nTotalRevenue || 0;
+        if (this.aStatistic?.length) this.oCountings.nCashInTill = this.aStatistic[0].overall[0]?.nTotalRevenue || 0;
         if (result.data?.aPaymentMethods?.length) this.aPaymentMethods = result.data.aPaymentMethods;
       }
     }, (error) => {
@@ -240,7 +246,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
       this.bStatisticLoading = false;
       if (result?.data) {
         if (result.data?.oTransactionAudit?.length) this.aStatistic = result.data.oTransactionAudit;
-        if (this.aStatistic?.length && this.aStatistic[0]?.overall?.length) this.nCashInTill = this.aStatistic[0].overall[0].nTotalRevenue;
+        if (this.aStatistic?.length && this.aStatistic[0]?.overall?.length) this.oCountings.nCashInTill = this.aStatistic[0].overall[0].nTotalRevenue;
         if (result.data?.aPaymentMethods?.length) this.aPaymentMethods = result.data.aPaymentMethods;
       }
     }, (error) => {
@@ -1329,9 +1335,9 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
   }
 
   calculateTotalCounting() {
-    this.nTotalTCashCounting = 0;
+    this.oCountings.nCashCounted = 0;
     this.aAmount.forEach((amount: any) => {
-      this.nTotalTCashCounting += amount.nValue * amount.nQuantity;
+      this.oCountings.nCashCounted += amount.nValue * amount.nQuantity;
     });
   }
 
@@ -1428,11 +1434,14 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
   }
 
   closeDayState(event?: any) {
+    this.aAmount.filter((item: any) => item.nQuantity > 0).forEach((item: any) => this.oCountings.oCountingsCashDetails[item.key] = item.nQuantity);
+
     const oBody = {
       iBusinessId: this.iBusinessId,
       iLocationId: this.iLocationId,
       iWorkstationId: this.iWorkstationId,
-      iStatisticId: this.iStatisticId
+      iStatisticId: this.iStatisticId,
+      oCountings: this.oCountings,
     }
 
     this.closingDayState = true;
