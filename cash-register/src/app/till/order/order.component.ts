@@ -72,6 +72,7 @@ export class OrderComponent implements OnInit {
         if (data) {
           const { articlegroup, brand, supplier, nMargin } = data;
           this.item.supplier = supplier.sName;
+          this.item.iArticleGroupOriginalId = articlegroup._id;
           this.item.nMargin = nMargin;
           this.supplier = supplier.sName;
           this.item.iSupplierId = supplier._id;

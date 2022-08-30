@@ -67,6 +67,7 @@ export class RepairComponent implements OnInit {
         if (data) {
           const { articlegroup, brand, supplier, nMargin } = data;
           this.item.supplier = supplier.sName;
+          this.item.iArticleGroupOriginalId = articlegroup._id;
           this.supplier = supplier.sName;
           this.item.iSupplierId = supplier._id;
           this.item.nMargin = nMargin;

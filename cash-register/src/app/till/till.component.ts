@@ -522,6 +522,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
               cardPaymethod.amount = element.nAmount;
               cardPaymethod.sGiftCardNumber = element.sGiftCardNumber;
               cardPaymethod.iArticleGroupId = element.iArticleGroupId;
+              cardPaymethod.iArticleGroupOriginalId = element.iArticleGroupOriginalId;
               cardPaymethod.type = element.type;
               body.payments.push(cardPaymethod);
             });
