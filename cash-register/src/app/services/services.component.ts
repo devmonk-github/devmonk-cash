@@ -107,6 +107,7 @@ export class ServicesComponent implements OnInit {
     this.iLocationId = localStorage.getItem('currentLocation');
     this.userType = localStorage.getItem('type');
     this.iBusinessId = localStorage.getItem('currentBusiness');
+
     this.showLoader = true;
     await this.setLocation()
     this.showLoader = false
@@ -132,7 +133,23 @@ export class ServicesComponent implements OnInit {
     }
     return str;
   }
+  getBusinessLocations() {
+    return new Promise<any>((resolve, reject) => {
 
+      this.apiService.getNew('core', '/api/v1/business/user-business-and-location/list')
+        .subscribe((result: any) => {
+          console.log({ getBusinessLocations: result });
+          if (result.message == "success" && result?.data) {
+
+          }
+          resolve(result);
+        }, (error) => {
+          resolve(error);
+          console.error('error: ', error);
+        })
+    })
+
+  }
   async getLocations() {
     return new Promise<any>((resolve, reject) => {
       this.apiService.postNew('core', `/api/v1/business/${this.iBusinessId}/list-location`, {}).subscribe(
@@ -154,17 +171,24 @@ export class ServicesComponent implements OnInit {
     return new Promise<void>(async (resolve, reject) => {
       this.iLocationId = sLocationId ?? (localStorage.getItem('currentLocation') ?? '')
       try {
-        const location: any = await this.getLocations()
+        const oBusinessLocation: any = await this.getBusinessLocations()
         let oNewLocation: any
         let bIsCurrentBIsWebshop = false
-        for (let i = 0; i < location?.data?.aLocation.length; i++) {
-          const l = location?.data?.aLocation[i];
-          if (l.bIsWebshop) oNewLocation = l
-          if (l._id.toString() === this.iLocationId) {
-            if (l.bIsWebshop) {
-              bIsCurrentBIsWebshop = true
-              this.iLocationId = l._id.toString()
-              break
+        for (let k = 0; k < oBusinessLocation?.data?.aBusiness?.length; k++) {
+          const oAllLocations = oBusinessLocation?.data?.aBusiness[k]
+          // console.log({ oAllLocations });
+          //for (let i = 0; i < location?.data?.aLocation.length; i++) {
+          //  const l = location?.data?.aLocation[i];    
+          for (let i = 0; i < oAllLocations?.aLocation?.length; i++) {
+            const l = oAllLocations?.aLocation[i];
+            // console.log({ aLocation: l });
+            if (l.bIsWebshop) oNewLocation = l
+            if (l._id.toString() === this.iLocationId) {
+              if (l.bIsWebshop) {
+                bIsCurrentBIsWebshop = true
+                this.iLocationId = l._id.toString()
+                break
+              }
             }
           }
         }
