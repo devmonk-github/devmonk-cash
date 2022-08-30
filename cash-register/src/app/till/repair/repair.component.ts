@@ -62,7 +62,7 @@ export class RepairComponent implements OnInit {
   }
 
   selectArticleGroup() {
-    this.dialogService.openModal(SelectArticleDialogComponent, { cssClass: 'modal-m', context: { payments: 'this.payMethods' } })
+    this.dialogService.openModal(SelectArticleDialogComponent, { cssClass: 'modal-m', context: { from: 'repair' } })
       .instance.close.subscribe((data) => {
         if (data) {
           const { articlegroup, brand, supplier, nMargin } = data;

@@ -24,6 +24,7 @@ export class SelectArticleDialogComponent implements OnInit {
   iBusinessId = localStorage.getItem('currentBusiness');
   iArticleGroupId: any = null;
   iBusinessBrandId: any = null;
+  from: any;
   constructor(
     private viewContainer: ViewContainerRef,
     private apiService: ApiService,
@@ -37,6 +38,7 @@ export class SelectArticleDialogComponent implements OnInit {
     this.fetchBusinessPartners([]);
     this.getBusinessBrands();
     this.iBusinessBrandId= this.dialogRef.context?.item?.iBusinessBrandId;
+    this.from = this.dialogRef.context.item;
   }
 
   fetchArticleGroups(iBusinessPartnerId: any) {
@@ -94,11 +96,16 @@ export class SelectArticleDialogComponent implements OnInit {
       iBusinessId: this.iBusinessId,
       aBusinessPartnerId
     };
-    this.brand = null;
+    if(this.supplier) {
+      this.brand = null;
+    }
     this.apiService.postNew('core', '/api/v1/business/partners/list', body).subscribe(
       (result: any) => {
         if (result && result.data && result.data && result.data[0] && result.data[0].result && result.data[0].result.length && result.data[0].count && result.data[0].count.totalData) {
           this.partnersList = result.data[0].result;
+          if (aBusinessPartnerId.length > 0) {
+            this.supplier = this.partnersList[0];
+          }
         }
       },
       (error: any) => {
@@ -114,7 +121,8 @@ export class SelectArticleDialogComponent implements OnInit {
         aBusinessPartnerId.push(bPartner.iBusinessPartnerId);
       });
     };
-    this.fetchBusinessPartners(aBusinessPartnerId);
+    if(!this.supplier)
+      this.fetchBusinessPartners(aBusinessPartnerId);
 
   }
 
@@ -123,7 +131,12 @@ export class SelectArticleDialogComponent implements OnInit {
   }
 
   changeInBrand() {
-    console.log(this.brand);
+    if (!this.supplier) {
+      if(this.from && this.from === 'repair') {
+        this.brand.iBusinessPartnerId = this.brand.iRepairerId ? this.brand.iRepairerId : this.brand.iBusinessPartnerId
+      }
+      this.fetchBusinessPartners([this.brand.iBusinessPartnerId]);
+    }
   }
 
   getBusinessBrands() {
