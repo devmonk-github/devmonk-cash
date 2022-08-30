@@ -151,6 +151,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
     private router: Router,
     private toastService: ToastService,
     private dialogService: DialogService,
+    private activatedRoute: ActivatedRoute
   ) {
     this.iBusinessId = localStorage.getItem('currentBusiness') || '';
     this.iLocationId = localStorage.getItem('currentLocation') || '';
@@ -1485,7 +1486,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
     this.closeSubscription = this.apiService.postNew('cashregistry', `/api/v1/statistics/close/day-state`, oBody).subscribe((result: any) => {
       this.toastService.show({ type: 'success', text: `Day-state is close now` });
       this.closingDayState = false;
-      this.router.navigate(['../transactions-audit'])
+      this.router.navigate(['../day-closure/list'], { relativeTo: this.activatedRoute })
     }, (error) => {
       console.log('Error: ', error);
       this.toastService.show({ type: 'warning', text: 'Something went wrong or open the day-state first' });
