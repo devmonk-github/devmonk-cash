@@ -181,15 +181,15 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
   public paymentMethodsChartOptions !: Partial<PieChartOptions> | any;
   aStatisticsChartDataLoading = true
   aActivityTitles: any = [
-    { type: "Repairs", value: 7, color: ChartColors.REPAIR },//$primary-color
-    { type: "Special orders", value: 1, color: ChartColors.SPECIAL_ORDERS },//$dark-primary-light-color
-    { type: "Shop purchase", value: 12, color: ChartColors.SHOP_PURCHASE },//$dark-success-light-color
-    { type: "Quotation", value: 1, color: ChartColors.QUOTATION },//$info-active-color
-    { type: "Webshop", value: 1, color: ChartColors.WEBSHOP },//$gray-700
-    { type: "Refund", value: 1, color: ChartColors.REFUND },//$orange
-    { type: "Giftcard", value: 2, color: ChartColors.GIFTCARD },//$green
-    { type: "Gold purchase", value: 1, color: ChartColors.GOLD_PURCHASE },//$maroon
-    { type: "Product reservation", value: 2, color: ChartColors.PRODUCT_RESERVATION }//$pink
+    { type: "Repairs", value: 0, color: ChartColors.REPAIR },//$primary-color
+    { type: "Special orders", value: 0, color: ChartColors.SPECIAL_ORDERS },//$dark-primary-light-color
+    { type: "Shop purchase", value: 0, color: ChartColors.SHOP_PURCHASE },//$dark-success-light-color
+    { type: "Quotation", value: 0, color: ChartColors.QUOTATION },//$info-active-color
+    { type: "Webshop", value: 0, color: ChartColors.WEBSHOP },//$gray-700
+    { type: "Refund", value: 0, color: ChartColors.REFUND },//$orange
+    { type: "Giftcard", value: 0, color: ChartColors.GIFTCARD },//$green
+    { type: "Gold purchase", value: 0, color: ChartColors.GOLD_PURCHASE },//$maroon
+    { type: "Product reservation", value: 0, color: ChartColors.PRODUCT_RESERVATION }//$pink
   ];
 
   aStatisticsChartData: any = [];
@@ -407,10 +407,69 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
 
   loadTransactions() {
     this.bTransactionsLoader = true;
+    this.requestParams.iCustomerId = this.customer._id;
     this.apiService.postNew('cashregistry', '/api/v1/transaction/cashRegister', this.requestParams).subscribe((result: any) => {
       if (result?.data?.result) {
         this.aTransactions = result.data.result || [];
+        this.aTransactions.forEach(transaction => {
+          switch (transaction.eType) {
+            case "purchase-order-retailer":
+              this.aActivityTitles[1].value += 1;
+              break;
+            case "purchase-order-supplier":
+              this.aActivityTitles[1].value += 1;
+              break;
+            case "sales-order":
+              this.aActivityTitles[1].value += 1;
+              break;
+            case "cash-register-revenue":
+              this.aActivityTitles[1].value += 1;
+              break;
+            case "cash-register-service":
+              this.aActivityTitles[1].value += 1;
+              break;
+            case "webshop-revenue":
+              this.aActivityTitles[4].value += 1;
+              break;
+            case "webshop-reservation":
+              this.aActivityTitles[8].value += 1;
+              break;
+            case "edi":
+              break;
+            case "shop-purchase":
+              this.aActivityTitles[2].value += 1;
+              break;
+            case "repair":[]
+              this.aActivityTitles[0].value += 1;
+              break;
+            case "expenses":
+              break;
+          }
+        });
         // this.paginationConfig.totalItems = result.data.totalCount;
+        this.activitiesChartOptions = {
+          series: this.aActivityTitles.map((el: any) => el.value),
+          colors: this.aActivityTitles.map((el: any) => el.color),
+          chart: {
+            width: '75%',
+            type: "pie"
+          },
+          title: {
+            text: "Number of Activities (71)",
+            style: {
+              fontWeight: 'bold',
+            },
+          },
+          legend: {
+            position: 'left',
+            itemMargin: {
+              horizontal: 15,
+              vertical: 5
+            },
+            fontWeight: 600,
+          },
+          labels: this.aActivityTitles.map((el: any) => el.type + " (" + el.value + ") "),
+        };
       }
       this.bTransactionsLoader = false;
     }, (error) => {

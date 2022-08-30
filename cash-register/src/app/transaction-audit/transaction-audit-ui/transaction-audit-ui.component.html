@@ -693,7 +693,12 @@
                 <!-- PAYMENT START -->
                 <div class="card">
                     <div class="container">
-                        <strong> {{ 'PAYMENT_METHODS' | translate}} </strong>
+                        <div class="d-flex justify-content-between">
+                            <strong> {{ 'PAYMENT_METHODS' | translate}} </strong>
+                            <button class="btn" (click)="paymentEditMode = !paymentEditMode">
+                                <i class="fa fa-edit"></i>
+                            </button>
+                        </div>
                         <p *ngIf="!aPaymentMethods?.length">{{ 'PAYMENT_METHODS_NOT_FOUND' | translate}}</p>
                         <div *ngIf="aPaymentMethods?.length">
                             <div class="card-body">
@@ -902,7 +907,7 @@
                         <div class="countingTotal">
                             <div class="d-flex justify-content-start align-items-center">
                                 <label>Total Counted : </label>
-                                <input type="number" class="form-control mx-1 p-2" [(ngModel)]="nTotalTCashCounting">
+                                <input type="number" class="form-control mx-1 p-2" [(ngModel)]="oCountings.nCashCounted">
                             </div>
                         </div>
                     </div>
@@ -927,16 +932,16 @@
                             </div>
                             <div>
                                 <label>Cash in Till</label>
-                                <label class="">{{ nCashInTill | currency:"EUR":"symbol" }}</label>
+                                <label class="">{{ oCountings.nCashInTill | currency:"EUR":"symbol" }}</label>
                             </div>
                             <div>
                                 <label>Cash Counted</label>
-                                <label class="bold">{{ nTotalTCashCounting | currency:"EUR":"symbol" }} </label>
+                                <label class="bold">{{ oCountings.nCashCounted | currency:"EUR":"symbol" }} </label>
                             </div>
                             <div>
                                 <label>Difference in Cash</label>
                                 <label class="bold">
-                                    {{ (nCashInTill - nTotalTCashCounting) | currency:"EUR":"symbol" }}
+                                    {{ (oCountings.nCashInTill - oCountings.nCashCounted) | currency:"EUR":"symbol" }}
                                 </label>
                             </div>
                             <div>
@@ -945,19 +950,23 @@
                             </div>
                             <div>
                                 <label>Skim</label>
-                                <input class="form-control p-2 w-30">
+                                <input class="form-control p-2 w-30" [(ngModel)]="oCountings.nSkim">
                             </div>
                             <div>
                                 <label>Remaining Cash</label>
                                 <label class="bold">
-                                    {{ nTotalTCashCounting | currency:"EUR":"symbol" }}
+                                    {{ (oCountings.nCashCounted - oCountings.nSkim) | currency:"EUR":"symbol" }}
                                 </label>
                             </div>
                             <br>
-                            <button type="button" class="btn btn-primary" data-kt-roles-modal-action="submit"
-                                (click)="closeDayState($event)" [class.disabled]="bStatisticLoading">
-                                <span class="indicator-label">{{ "CLOSE_DAYSTATE" | translate}}</span>
-                            </button>
+                            <div class="d-flex justify-content-start">
+                                <button type="button" class="btn btn-primary" data-kt-roles-modal-action="submit" (click)="closeDayState()"
+                                    [class.disabled]="closingDayState">
+                                    <span class="indicator-label">{{ "CLOSE_DAYSTATE" | translate}}</span>
+                                </button>
+                                <div *ngIf="closingDayState" class="spinner-border mx-5"></div>
+                            </div>
+                            
                         </div>
                     </div>
                 </div>

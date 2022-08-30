@@ -104,7 +104,10 @@
     
                 <div class="row mb-5">
                     <div class="col-9">
-                        <div id="activities-chart">
+                        <div *ngIf="bTransactionsLoader" style="text-align: center;">
+                            <div class="spinner-border h-50px w-50px mx-auto"></div>
+                        </div>
+                        <div *ngIf="!bTransactionsLoader" id="activities-chart">
                             <apx-chart [series]="activitiesChartOptions.series" [chart]="activitiesChartOptions.chart"
                                 [labels]="activitiesChartOptions.labels" [responsive]="activitiesChartOptions.responsive"
                                 [legend]="activitiesChartOptions.legend" [title]="activitiesChartOptions.title"
