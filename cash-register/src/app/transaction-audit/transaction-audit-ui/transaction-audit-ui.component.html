@@ -693,7 +693,12 @@
                 <!-- PAYMENT START -->
                 <div class="card">
                     <div class="container">
-                        <strong> {{ 'PAYMENT_METHODS' | translate}} </strong>
+                        <div class="d-flex justify-content-between">
+                            <strong> {{ 'PAYMENT_METHODS' | translate}} </strong>
+                            <button class="btn" (click)="paymentEditMode = !paymentEditMode">
+                                <i class="fa fa-edit"></i>
+                            </button>
+                        </div>
                         <p *ngIf="!aPaymentMethods?.length">{{ 'PAYMENT_METHODS_NOT_FOUND' | translate}}</p>
                         <div *ngIf="aPaymentMethods?.length">
                             <div class="card-body">
@@ -955,7 +960,7 @@
                             </div>
                             <br>
                             <div class="d-flex justify-content-start">
-                                <button type="button" class="btn btn-primary" data-kt-roles-modal-action="submit" (click)="closeDayState($event)"
+                                <button type="button" class="btn btn-primary" data-kt-roles-modal-action="submit" (click)="closeDayState()"
                                     [class.disabled]="closingDayState">
                                     <span class="indicator-label">{{ "CLOSE_DAYSTATE" | translate}}</span>
                                 </button>

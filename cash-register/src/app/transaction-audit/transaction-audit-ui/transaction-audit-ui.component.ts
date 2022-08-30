@@ -6,6 +6,7 @@ import { PdfService } from 'src/app/shared/service/pdf2.service';
 import * as _moment from 'moment';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastService } from 'src/app/shared/components/toast';
+import { DialogService } from 'src/app/shared/service/dialog';
 const moment = (_moment as any).default ? (_moment as any).default : _moment;
 
 @Component({
@@ -64,6 +65,10 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
   bookkeeping = { totalAmount: 0 };
   bookingRecords: any;
   paymentRecords: any;
+  payMethods:any;
+  allPaymentMethod:any;
+  paymentEditMode: boolean = false;
+
   listBusinessSubscription !: Subscription;
   getStatisticSubscription !: Subscription;
   statisticAuditSubscription !: Subscription;
@@ -144,7 +149,8 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
     private translate: TranslateService,
     private route: ActivatedRoute,
     private router: Router,
-    private toastService: ToastService
+    private toastService: ToastService,
+    private dialogService: DialogService,
   ) {
     this.iBusinessId = localStorage.getItem('currentBusiness') || '';
     this.iLocationId = localStorage.getItem('currentLocation') || '';
@@ -169,6 +175,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
     this.fetchStatisticDocument();
     this.getWorkstations();
     this.getEmployees();
+    this.getPaymentMethods();
   }
 
   fetchBusinessLocation() {
@@ -1432,9 +1439,40 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
 
     return this.apiService.postNew('cashregistry', '/api/v1/activities/gold-purchases-payments/list', data);
   }
+  addExpenses(amount:number): Observable<any>{
+    const value = localStorage.getItem('currentEmployee');
+    let currentEmployeeId;
+    if (value) {
+      currentEmployeeId = JSON.parse(value)._id;
+    }
+    const transactionItem = {
+      sProductName: 'Expenses',
+      sComment: 'Lost money',
+      nPriceIncVat: amount,
+      nPurchasePrice: amount,
+      iBusinessId: localStorage.getItem('currentBusiness'),
+      nTotal: amount,
+      nPaymentAmount: amount,
+      iWorkstationId: localStorage.getItem('currentWorkstation'),
+      iEmployeeId: currentEmployeeId,
+      iLocationId: localStorage.getItem('currentLocation'),
+      oType: {
+        eTransactionType: 'expenses',
+        bRefund: false,
+        eKind: 'expenses',
+        bDiscount: false,
+      },
+    }
+    return this.apiService.postNew('cashregistry', `/api/v1/till/add-expenses`, transactionItem)      
+  }
 
-  closeDayState(event?: any) {
+  async closeDayState() {
+    this.closingDayState = true;
     this.aAmount.filter((item: any) => item.nQuantity > 0).forEach((item: any) => this.oCountings.oCountingsCashDetails[item.key] = item.nQuantity);
+
+    if ( (this.oCountings.nCashInTill - this.oCountings.nCashCounted) > 0 ) { //we have difference in cash, so add that as and expense
+      const _expense = await this.addExpenses(this.oCountings.nCashInTill - this.oCountings.nCashCounted).toPromise();
+    }
 
     const oBody = {
       iBusinessId: this.iBusinessId,
@@ -1444,18 +1482,34 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
       oCountings: this.oCountings,
     }
 
-    this.closingDayState = true;
-    if (event) event.target.disabled = true;
     this.closeSubscription = this.apiService.postNew('cashregistry', `/api/v1/statistics/close/day-state`, oBody).subscribe((result: any) => {
       this.toastService.show({ type: 'success', text: `Day-state is close now` });
       this.closingDayState = false;
-      if (event) event.target.disabled = false;
-      // this.router.navigate(['../transactions-audit'])
+      this.router.navigate(['../transactions-audit'])
     }, (error) => {
       console.log('Error: ', error);
       this.toastService.show({ type: 'warning', text: 'Something went wrong or open the day-state first' });
       this.closingDayState = false;
-      if (event) event.target.disabled = false;
+    })
+  }
+
+  getPaymentMethods() {
+    // this.payMethodsLoading = true;
+    this.payMethods = [];
+    const methodsToDisplay = ['card', 'cash', 'bankpayment', 'maestro', 'mastercard', 'visa'];
+    this.apiService.getNew('cashregistry', '/api/v1/payment-methods/' + this.iBusinessId).subscribe((result: any) => {
+      if (result && result.data && result.data.length) {
+        this.allPaymentMethod = result.data;
+        result.data.forEach((element: any) => {
+          if (methodsToDisplay.includes(element.sName.toLowerCase())) {
+            this.payMethods.push(element);
+          }
+        });
+      }
+      // console.log(this.payMethods);
+      // this.payMethodsLoading = false;
+    }, (error) => {
+      // this.payMethodsLoading = false;
     })
   }
 
