@@ -24,13 +24,13 @@ export interface ChildChild {
   sKey: string;
   sValue: string;
   data?: {
-    displayMethod?: DisplayMethodKeys,
-    modeFilter?: string,
-    levelFilter?: string
+    displayMethod?: DisplayMethodKeysEnum,
+    modeFilter?: 'supplier' | 'businessOwner',
+    levelFilter?: 'articleGroup' | 'product'
   }
 }
 
-enum DisplayMethodKeys {
+enum DisplayMethodKeysEnum {
   revenuePerBusinessPartner = 'revenuePerBusinessPartner',
   revenuePerArticleGroupAndProperty = 'revenuePerArticleGroupAndProperty',
   revenuePerSupplierAndArticleGroup = 'revenuePerSupplierAndArticleGroup',
@@ -40,7 +40,7 @@ enum DisplayMethodKeys {
 
 }
 export interface DisplayMethod {
-  sKey: DisplayMethodKeys;
+  sKey: DisplayMethodKeysEnum | string;
   sValue: string;
 }
 
@@ -68,9 +68,9 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
   aWorkStation: any = [];
   aEmployee: any = [];
   aPaymentMethods: any = [];
-  
+
   closingDayState: boolean = false;
-  
+
   closeSubscription!: Subscription;
 
   statisticsData$: any;
@@ -90,7 +90,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
   };
   bIsArticleGroupLevel: boolean = true; // Could be Article-group level or product-level (if false then article-group mode)
   bIsSupplierMode: boolean = true; // could be Business-owner-mode or supplier-mode (if true then supplier-mode)
-
+  displayMethodKeysEnum = DisplayMethodKeysEnum
   creditAmount = 0;
   debitAmount = 0;
   paymentCreditAmount = 0;
@@ -101,7 +101,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
   bookkeeping = { totalAmount: 0 };
   bookingRecords: any;
   paymentRecords: any;
-  
+
   payMethods: any;
   allPaymentMethod: any;
   paymentEditMode: boolean = false;
@@ -125,8 +125,22 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
   }
 
 
-
+  // aOptionMenu: any = [
+  //   { sKey: 'purchase-order', sValue: this.translate.instant('PURCHASE_ORDER') },
+  //   { sKey: 'sales-order', sValue: this.translate.instant('SALES_ORDER') },
+  //   { sKey: 'cash-registry', sValue: this.translate.instant('CASH_REGISTER') },
+  // ];
   aOptionMenu: View[] = [];
+  public sOptionMenu: {
+    parent: View,
+    child1: ViewChild,
+    child2: ChildChild,
+  } = {} as {
+    parent: View,
+    child1: ViewChild,
+    child2: ChildChild,
+  };
+  public sSelectedOptionMenu = '';
 
   aVatRateMethod: any = [
     'oShopPurchase',
@@ -138,32 +152,32 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
 
   aDisplayMethod: DisplayMethod[] = [
     {
-      sKey: DisplayMethodKeys.revenuePerBusinessPartner,
+      sKey: DisplayMethodKeysEnum.revenuePerBusinessPartner,
       sValue: 'Supplier And Article-Group And Dynamic Property',
     },
     {
       // sKey: 'revenuePerArticleGroupAndProperty',
-      sKey: DisplayMethodKeys.revenuePerArticleGroupAndProperty,
+      sKey: DisplayMethodKeysEnum.revenuePerArticleGroupAndProperty,
       sValue: 'Article Group and Dynamic Property',
     },
     {
-      sKey: DisplayMethodKeys.revenuePerSupplierAndArticleGroup, // Use the revenuePerBusinessPartner and Remove the Dynamic Property
+      sKey: DisplayMethodKeysEnum.revenuePerSupplierAndArticleGroup, // Use the revenuePerBusinessPartner and Remove the Dynamic Property
       sValue: 'Supplier And Article-Group',
     },
     {
-      sKey: DisplayMethodKeys.revenuePerProperty,
+      sKey: DisplayMethodKeysEnum.revenuePerProperty,
       sValue: 'Revenue Per Property',
     },
     {
-      sKey: DisplayMethodKeys.revenuePerArticleGroup, // Use the revenuePerArticleGroupAndProperty and remove the Dynamic Property
+      sKey: DisplayMethodKeysEnum.revenuePerArticleGroup, // Use the revenuePerArticleGroupAndProperty and remove the Dynamic Property
       sValue: 'Article Group',
     },
     {
-      sKey: DisplayMethodKeys.aVatRates,
+      sKey: DisplayMethodKeysEnum.aVatRates,
       sValue: 'Vat Rates',
     },
   ];
-  sDisplayMethod: DisplayMethodKeys = DisplayMethodKeys.revenuePerBusinessPartner
+  sDisplayMethod: DisplayMethodKeysEnum = DisplayMethodKeysEnum.revenuePerBusinessPartner
 
   aAmount: any = [
     { sLabel: '500.00', nValue: 500, nQuantity: 0, key: 'nType500' },
@@ -193,7 +207,6 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
   iWorkstationId: string | null;
   aGoldPurchases: any;
   aGiftItems: any;
-  public sSelectionListItem = '';
 
   constructor(
     private apiService: ApiService,
@@ -238,7 +251,6 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
         sKey: 'Sales',
         sValue: this.translate.instant('SALES'),
         children: [
-          // ArticleGroup
           {
             sKey: 'ArticleGroup',
             sValue: this.translate.instant('ARTICLE GROUP'),
@@ -247,14 +259,18 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
                 sKey: 'Compact',
                 sValue: this.translate.instant('COMPACT'),
                 data: {
-                  displayMethod: DisplayMethodKeys.revenuePerArticleGroup,
+                  displayMethod: DisplayMethodKeysEnum.revenuePerArticleGroup,
                   modeFilter: 'supplier',
-                  levelFilter: 'supplier'
                 }
               },
               {
                 sKey: 'Specific',
                 sValue: this.translate.instant('SPECIFIC'),
+                data: {
+                  displayMethod: DisplayMethodKeysEnum.revenuePerArticleGroupAndProperty,
+                  modeFilter: 'supplier',
+                  levelFilter: 'articleGroup'
+                }
               }
             ]
           },
@@ -265,14 +281,23 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
               {
                 sKey: 'Vat rates',
                 sValue: this.translate.instant('VAT_RATES'),
+                data: {
+                  displayMethod: DisplayMethodKeysEnum.aVatRates,
+                }
               },
               {
                 sKey: 'Revenue per',
                 sValue: this.translate.instant('REVENUE_PER'),
+                data: {
+                  displayMethod: DisplayMethodKeysEnum.revenuePerProperty
+                }
               },
               {
                 sKey: 'Article group',
                 sValue: this.translate.instant('ARTICLE_GROUP'),
+                data: {
+                  displayMethod: DisplayMethodKeysEnum.aVatRates
+                }
               },
             ]
           },
@@ -283,10 +308,19 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
               {
                 sKey: 'Compact',
                 sValue: this.translate.instant('COMPACT'),
+                data: {
+                  displayMethod: DisplayMethodKeysEnum.revenuePerSupplierAndArticleGroup,
+                  modeFilter: 'supplier',
+                }
               },
               {
                 sKey: 'Specific',
                 sValue: this.translate.instant('SPECIFIC'),
+                data: {
+                  displayMethod: DisplayMethodKeysEnum.revenuePerBusinessPartner,
+                  modeFilter: 'supplier',
+                  levelFilter: 'articleGroup'
+                }
               }
             ]
           },
@@ -297,10 +331,19 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
               {
                 sKey: 'Compact',
                 sValue: this.translate.instant('COMPACT'),
+                data: {
+                  displayMethod: DisplayMethodKeysEnum.revenuePerArticleGroup,
+                  modeFilter: 'businessOwner',
+                }
               },
               {
                 sKey: 'Specific',
                 sValue: this.translate.instant('SPECIFIC'),
+                data: {
+                  displayMethod: DisplayMethodKeysEnum.revenuePerArticleGroupAndProperty,
+                  modeFilter: 'businessOwner',
+                  levelFilter: 'articleGroup'
+                }
               }
             ]
           },
@@ -310,7 +353,6 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
         sKey: 'Purchases',
         sValue: this.translate.instant('PURCHASES'),
         children: [
-          // ArticleGroup
           {
             sKey: 'ArticleGroup',
             sValue: this.translate.instant('ARTICLE GROUP'),
@@ -318,10 +360,19 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
               {
                 sKey: 'Compact',
                 sValue: this.translate.instant('COMPACT'),
+                data: {
+                  displayMethod: DisplayMethodKeysEnum.revenuePerArticleGroup,
+                  modeFilter: 'supplier',
+                }
               },
               {
                 sKey: 'Specific',
                 sValue: this.translate.instant('SPECIFIC'),
+                data: {
+                  displayMethod: DisplayMethodKeysEnum.revenuePerArticleGroupAndProperty,
+                  modeFilter: 'supplier',
+                  levelFilter: 'articleGroup'
+                }
               }
             ]
           },
@@ -332,14 +383,23 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
               {
                 sKey: 'Vat rates',
                 sValue: this.translate.instant('VAT_RATES'),
+                data: {
+                  displayMethod: DisplayMethodKeysEnum.aVatRates,
+                }
               },
               {
                 sKey: 'Revenue per',
                 sValue: this.translate.instant('REVENUE_PER'),
+                data: {
+                  displayMethod: DisplayMethodKeysEnum.revenuePerProperty
+                }
               },
               {
                 sKey: 'Article group',
                 sValue: this.translate.instant('ARTICLE_GROUP'),
+                data: {
+                  displayMethod: DisplayMethodKeysEnum.aVatRates
+                }
               },
             ]
           },
@@ -350,10 +410,19 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
               {
                 sKey: 'Compact',
                 sValue: this.translate.instant('COMPACT'),
+                data: {
+                  displayMethod: DisplayMethodKeysEnum.revenuePerSupplierAndArticleGroup,
+                  modeFilter: 'supplier',
+                }
               },
               {
                 sKey: 'Specific',
                 sValue: this.translate.instant('SPECIFIC'),
+                data: {
+                  displayMethod: DisplayMethodKeysEnum.revenuePerBusinessPartner,
+                  modeFilter: 'supplier',
+                  levelFilter: 'articleGroup'
+                }
               }
             ]
           },
@@ -364,10 +433,19 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
               {
                 sKey: 'Compact',
                 sValue: this.translate.instant('COMPACT'),
+                data: {
+                  displayMethod: DisplayMethodKeysEnum.revenuePerArticleGroup,
+                  modeFilter: 'businessOwner',
+                }
               },
               {
                 sKey: 'Specific',
                 sValue: this.translate.instant('SPECIFIC'),
+                data: {
+                  displayMethod: DisplayMethodKeysEnum.revenuePerArticleGroupAndProperty,
+                  modeFilter: 'businessOwner',
+                  levelFilter: 'articleGroup'
+                }
               }
             ]
           },
@@ -385,10 +463,19 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
               {
                 sKey: 'Compact',
                 sValue: this.translate.instant('COMPACT'),
+                data: {
+                  displayMethod: DisplayMethodKeysEnum.revenuePerArticleGroup,
+                  modeFilter: 'supplier',
+                }
               },
               {
                 sKey: 'Specific',
                 sValue: this.translate.instant('SPECIFIC'),
+                data: {
+                  displayMethod: DisplayMethodKeysEnum.revenuePerArticleGroupAndProperty,
+                  modeFilter: 'supplier',
+                  levelFilter: 'articleGroup'
+                }
               }
             ]
           },
@@ -399,14 +486,23 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
               {
                 sKey: 'Vat rates',
                 sValue: this.translate.instant('VAT_RATES'),
+                data: {
+                  displayMethod: DisplayMethodKeysEnum.aVatRates,
+                }
               },
               {
                 sKey: 'Revenue per',
                 sValue: this.translate.instant('REVENUE_PER'),
+                data: {
+                  displayMethod: DisplayMethodKeysEnum.revenuePerProperty
+                }
               },
               {
                 sKey: 'Article group',
                 sValue: this.translate.instant('ARTICLE_GROUP'),
+                data: {
+                  displayMethod: DisplayMethodKeysEnum.aVatRates
+                }
               },
             ]
           },
@@ -417,10 +513,19 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
               {
                 sKey: 'Compact',
                 sValue: this.translate.instant('COMPACT'),
+                data: {
+                  displayMethod: DisplayMethodKeysEnum.revenuePerSupplierAndArticleGroup,
+                  modeFilter: 'supplier',
+                }
               },
               {
                 sKey: 'Specific',
                 sValue: this.translate.instant('SPECIFIC'),
+                data: {
+                  displayMethod: DisplayMethodKeysEnum.revenuePerBusinessPartner,
+                  modeFilter: 'supplier',
+                  levelFilter: 'articleGroup'
+                }
               }
             ]
           },
@@ -431,10 +536,19 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
               {
                 sKey: 'Compact',
                 sValue: this.translate.instant('COMPACT'),
+                data: {
+                  displayMethod: DisplayMethodKeysEnum.revenuePerArticleGroup,
+                  modeFilter: 'businessOwner',
+                }
               },
               {
                 sKey: 'Specific',
                 sValue: this.translate.instant('SPECIFIC'),
+                data: {
+                  displayMethod: DisplayMethodKeysEnum.revenuePerArticleGroupAndProperty,
+                  modeFilter: 'businessOwner',
+                  levelFilter: 'articleGroup'
+                }
               }
             ]
           },
@@ -448,9 +562,31 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
     }
 
   }
-  onDropdownItemSelected(parent: any, child1: any, child2: any) {
+  onDropdownItemSelected(parent: View, child1: ViewChild, child2: ChildChild) {
+    console.log({
+      parent,
+      child1,
+      child2,
+    });
+    this.sOptionMenu = {
+      parent,
+      child1,
+      child2,
+    }
+    this.sSelectedOptionMenu = `${parent.sKey}->${child1.sKey}->${child2.sKey}`
+    const eDisplayMethod = child2.data?.displayMethod || null
+    const sModeFilter = child2.data?.modeFilter || null
+    const sLevelFilter = child2.data?.levelFilter || null
 
-    this.sSelectionListItem = `${parent.sKey}->${child1.sKey}->${child2.sKey}`
+    if (eDisplayMethod) {
+      this.sDisplayMethod = eDisplayMethod
+    }
+    if (sModeFilter) {
+      this.bIsSupplierMode = sModeFilter === "supplier"
+    }
+    if (sLevelFilter) {
+      this.bIsArticleGroupLevel = sLevelFilter === "articleGroup"
+    }
 
 
   }
@@ -493,7 +629,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
           : [],
         iWorkstationId: this.selectedWorkStation?._id,
         sTransactionType: this.optionMenu,
-        sDisplayMethod: sDisplayMethod || this.sDisplayMethod,
+        sDisplayMethod: sDisplayMethod || this.sDisplayMethod.toString(),
         dStartDate: this.filterDates.startDate,
         dEndDate: this.filterDates.endDate,
         aFilterProperty: this.aFilterProperty,
@@ -543,7 +679,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
         iWorkstationId: this.selectedWorkStation?._id,
         iEmployeeId: this.selectedEmployee?._id,
         sTransactionType: this.optionMenu,
-        sDisplayMethod: sDisplayMethod || this.sDisplayMethod,
+        sDisplayMethod: sDisplayMethod || this.sDisplayMethod.toString(),
         dStartDate: this.filterDates.startDate,
         dEndDate: this.filterDates.endDate,
         aFilterProperty: this.aFilterProperty,
@@ -568,9 +704,9 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
             if (this.aStatistic?.length && this.aStatistic[0]?.overall?.length)
               this.oCountings.nCashInTill =
                 this.aStatistic[0].overall[0].nTotalRevenue;
-            if (result.data?.aPaymentMethods?.length){
+            if (result.data?.aPaymentMethods?.length) {
               this.aPaymentMethods = result.data.aPaymentMethods;
-              this.aPaymentMethods.map((item:any) => {
+              this.aPaymentMethods.map((item: any) => {
                 item.nNewAmount = item.nAmount;
                 this.nPaymentMethodTotal += parseFloat(item.nAmount);
 
@@ -790,13 +926,14 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
     let sDisplayMethod =
       this.aDisplayMethod[
         this.aDisplayMethod.findIndex(
-          (el: DisplayMethod) => el.sKey == this.sDisplayMethod
+          (el: DisplayMethod) => el.sKey.toString() == this.sDisplayMethod.toString()
         )
       ].sValue;
-    let sType =
-      this.aOptionMenu[
-        this.aOptionMenu.findIndex((el: any) => el.sKey == this.optionMenu)
-      ].sValue;
+    // let sType =
+    //   this.aOptionMenu[
+    //     this.aOptionMenu.findIndex((el: any) => el.sKey == this.optionMenu)
+    //   ].sValue;
+    let sType = this.sOptionMenu.parent.sValue
     let dataType = this.IsDynamicState ? 'Dynamic Data' : 'Static Data';
 
     // get selected locaions
@@ -1978,7 +2115,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
   }
   addExpenses(data: any): Observable<any> {
     console.log('adding expenses', data);
-    
+
     const value = localStorage.getItem('currentEmployee');
     let currentEmployeeId;
     if (value) {
@@ -2082,42 +2219,42 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
       );
   }
 
-  filterDuplicatePaymentMethods(){
+  filterDuplicatePaymentMethods() {
     const aPresent = [...this.aPaymentMethods.map((item: any) => item.iPaymentMethodId), ...this.aNewSelectedPaymentMethods.map((item: any) => item._id)];
     this.payMethods = this.payMethods.filter((item: any) => !aPresent.includes(item._id));
     // console.log(aPresent, this.payMethods);
   }
 
-  toggleEditPaymentMode(){
+  toggleEditPaymentMode() {
     this.paymentEditMode = !this.paymentEditMode;
     // this.addRow();
-    if(!this.paymentEditMode) this.aNewSelectedPaymentMethods = [];
+    if (!this.paymentEditMode) this.aNewSelectedPaymentMethods = [];
   }
 
-  addRow(){
+  addRow() {
     this.aNewSelectedPaymentMethods.push({})
     this.filterDuplicatePaymentMethods()
   }
 
-  reCalculateTotal(){
+  reCalculateTotal() {
     this.nNewPaymentMethodTotal = 0;
     this.aPaymentMethods.forEach((item: any) => {
       if (item.nNewAmount)
-      this.nNewPaymentMethodTotal += parseFloat(item.nNewAmount);
+        this.nNewPaymentMethodTotal += parseFloat(item.nNewAmount);
       // console.log(parseFloat(item.nNewAmount), this.nNewPaymentMethodTotal);
     });
     if (this.aNewSelectedPaymentMethods?.length)
-    this.aNewSelectedPaymentMethods.forEach((item: any) =>{
-      if(item.nAmount)
-      this.nNewPaymentMethodTotal += parseFloat(item.nAmount);
-    }); 
+      this.aNewSelectedPaymentMethods.forEach((item: any) => {
+        if (item.nAmount)
+          this.nNewPaymentMethodTotal += parseFloat(item.nAmount);
+      });
   }
 
   async saveUpdatedPayments(){
     // console.log(this.aNewSelectedPaymentMethods);
     // return;
     await this.aPaymentMethods.forEach(async (item: any) => {
-      if (item.nAmount != item.nNewAmount){
+      if (item.nAmount != item.nNewAmount) {
         await this.addExpenses({
           amount: item.nNewAmount - item.nAmount,
           comment: 'Payment method change',
@@ -2130,7 +2267,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
       }
     });
 
-     if (this.aNewSelectedPaymentMethods.length){
+    if (this.aNewSelectedPaymentMethods.length) {
       await this.aNewSelectedPaymentMethods.forEach(async (item: any) => {
         if (item.nAmount) {
           await this.addExpenses({
