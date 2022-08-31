@@ -34,7 +34,7 @@
                                             <span class="menu-icon">
                                                 <i class="bi bi-bar-chart fs-3"></i>
                                             </span>
-                                            <span class="menu-title">{{sSelectionListItem}}</span>
+                                            <span class="menu-title">{{sSelectedOptionMenu}}</span>
                                             <span class="menu-arrow"></span>
                                         </a>
                                         <!--end::Menu link-->
@@ -204,36 +204,43 @@
                                     </ng-option>
                                 </ng-select>
                             </div>
-                            <div class="col-md-3">
-                                <label class="fs-6 form-label fw-bolder text-dark">{{ "LEVEL_FILTER" |
-                                    translate}}</label>
-                                <div class="d-flex mt-2">
-                                    <label class="w-75 align-middle lh-xxl" *ngIf="bIsArticleGroupLevel">{{
-                                        "ARTICLE_GROUP_LEVEL" |
+                            <ng-container
+                                *ngIf="sDisplayMethod === this.displayMethodKeysEnum.revenuePerBusinessPartner || sDisplayMethod === this.displayMethodKeysEnum.revenuePerArticleGroupAndProperty">
+
+                                <div class="col-md-3">
+                                    <label class="fs-6 form-label fw-bolder text-dark">{{ "LEVEL_FILTER" |
                                         translate}}</label>
-                                    <label class="w-75 align-middle lh-xxl" *ngIf="!bIsArticleGroupLevel">{{
-                                        "PRODUCT_LEVEL" |
-                                        translate}}</label>
-                                    <label class="form-check form-switch form-check-custom form-check-solid w-25">
-                                        <input type="checkbox" class="form-check-input"
-                                            [(ngModel)]="bIsArticleGroupLevel">
-                                    </label>
+                                    <div class="d-flex mt-2">
+                                        <label class="w-75 align-middle lh-xxl" *ngIf="bIsArticleGroupLevel">{{
+                                            "ARTICLE_GROUP_LEVEL" |
+                                            translate}}</label>
+                                        <label class="w-75 align-middle lh-xxl" *ngIf="!bIsArticleGroupLevel">{{
+                                            "PRODUCT_LEVEL" |
+                                            translate}}</label>
+                                        <label class="form-check form-switch form-check-custom form-check-solid w-25">
+                                            <input type="checkbox" class="form-check-input"
+                                                [(ngModel)]="bIsArticleGroupLevel">
+                                        </label>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-md-3">
-                                <label class="fs-6 form-label fw-bolder text-dark">{{ "MODE_FILTER" |
-                                    translate}}</label>
-                                <div class="d-flex mt-2">
-                                    <label class="w-75 align-middle lh-xxl" *ngIf="bIsSupplierMode">{{ "SUPPLIER_MODE" |
+                                <div class="col-md-3">
+                                    <label class="fs-6 form-label fw-bolder text-dark">{{ "MODE_FILTER" |
                                         translate}}</label>
-                                    <label class="w-75 align-middle lh-xxl" *ngIf="!bIsSupplierMode">{{ "BUSINESS_MODE"
-                                        |
-                                        translate}}</label>
-                                    <label class="form-check form-switch form-check-custom form-check-solid w-25">
-                                        <input type="checkbox" class="form-check-input" [(ngModel)]="bIsSupplierMode">
-                                    </label>
+                                    <div class="d-flex mt-2">
+                                        <label class="w-75 align-middle lh-xxl" *ngIf="bIsSupplierMode">{{
+                                            "SUPPLIER_MODE" |
+                                            translate}}</label>
+                                        <label class="w-75 align-middle lh-xxl" *ngIf="!bIsSupplierMode">{{
+                                            "BUSINESS_MODE"
+                                            |
+                                            translate}}</label>
+                                        <label class="form-check form-switch form-check-custom form-check-solid w-25">
+                                            <input type="checkbox" class="form-check-input"
+                                                [(ngModel)]="bIsSupplierMode">
+                                        </label>
+                                    </div>
                                 </div>
-                            </div>
+                            </ng-container>
                         </div>
                         <div class="row">
                             <div class="col-md-3 mt-5">
@@ -826,7 +833,8 @@
                                         <tr class="fw-bold fs-6 text-gray-800">
                                             <th>{{ 'METHOD' | translate}}</th>
                                             <th class="w-150px">{{ 'AMOUNT' | translate}}</th>
-                                            <th *ngIf="paymentEditMode" class="w-150px">{{ 'NEW AMOUNT' | translate}}</th>
+                                            <th *ngIf="paymentEditMode" class="w-150px">{{ 'NEW AMOUNT' | translate}}
+                                            </th>
                                             <th class="w-150px">{{ 'QUANTITY' | translate}}</th>
                                         </tr>
                                     </thead>
@@ -835,7 +843,9 @@
                                             <td class="ps-9">{{oPayment.sMethod}}</td>
                                             <td>{{oPayment.nAmount}}</td>
                                             <td *ngIf="paymentEditMode">
-                                                <input class="form-control" type="number" [(ngModel)]="oPayment.nNewAmount" (ngModelChange)="reCalculateTotal()">
+                                                <input class="form-control" type="number"
+                                                    [(ngModel)]="oPayment.nNewAmount"
+                                                    (ngModelChange)="reCalculateTotal()">
                                             </td>
                                             <td>{{oPayment.nQuantity}}</td>
                                         </tr>
@@ -843,8 +853,10 @@
                                             <tr *ngFor="let oPayment of aNewSelectedPaymentMethods; let i = index">
                                                 <td>
                                                     <div>
-                                                        <ng-select [(ngModel)]="aNewSelectedPaymentMethods[i]" [clearable]="false">
-                                                            <ng-option [value]="option" *ngFor="let option of payMethods">
+                                                        <ng-select [(ngModel)]="aNewSelectedPaymentMethods[i]"
+                                                            [clearable]="false">
+                                                            <ng-option [value]="option"
+                                                                *ngFor="let option of payMethods">
                                                                 {{ option.sName | translate }}
                                                             </ng-option>
                                                         </ng-select>
@@ -852,12 +864,15 @@
                                                 </td>
                                                 <td></td>
                                                 <td>
-                                                    <input class="form-control" type="number" [(ngModel)]="oPayment.nAmount" (ngModelChange)="reCalculateTotal()">
+                                                    <input class="form-control" type="number"
+                                                        [(ngModel)]="oPayment.nAmount"
+                                                        (ngModelChange)="reCalculateTotal()">
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <td colspan="3" class="text-start">
-                                                    <span class="cursor-pointer text-gray-800" (click)="addRow()"> + Click here to add more</span>
+                                                    <span class="cursor-pointer text-gray-800" (click)="addRow()"> +
+                                                        Click here to add more</span>
                                                 </td>
                                             </tr>
                                         </ng-container>
@@ -868,10 +883,13 @@
                                             <th class="w-150px">{{ nPaymentMethodTotal }}</th>
                                             <ng-container *ngIf="paymentEditMode">
                                                 <th>
-                                                    <span [ngClass]="nNewPaymentMethodTotal == nPaymentMethodTotal ? 'valid' : 'invalid' ">{{ nNewPaymentMethodTotal }}</span>
+                                                    <span
+                                                        [ngClass]="nNewPaymentMethodTotal === nPaymentMethodTotal ? 'valid' : 'invalid' ">{{
+                                                        nNewPaymentMethodTotal }}</span>
                                                 </th>
                                                 <th class="w-150px">
-                                                    <button class="btn btn-sm btn-primary" (click)="saveUpdatedPayments()">Save</button>
+                                                    <button class="btn btn-sm btn-primary"
+                                                        (click)="saveUpdatedPayments()">Save</button>
                                                 </th>
                                             </ng-container>
                                         </tr>
@@ -1066,7 +1084,7 @@
                                 <label>Total Counted : </label>
                                 <input type="number" class="form-control mx-1 p-2"
                                     [(ngModel)]="oCountings.nCashCounted">
-                            </div>
+                            </div>z
                         </div>
                     </div>
 
