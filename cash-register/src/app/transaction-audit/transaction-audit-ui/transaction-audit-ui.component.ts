@@ -118,7 +118,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
         {
           sKey: 'ArticleGroup',
           sValue: this.translate.instant('ARTICLE GROUP'),
-          children: this.CompactAndSpecific
+          children: this.aCompactAndSpecific
         },
         {
           sKey: 'Bookkeeping',
@@ -141,12 +141,12 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
         {
           sKey: 'Supplier',
           sValue: this.translate.instant('SUPPLIER'),
-          children: this.CompactAndSpecific
+          children: this.aCompactAndSpecific
         },
         {
           sKey: 'Manager',
           sValue: this.translate.instant('MANAGER'),
-          children: this.CompactAndSpecific
+          children: this.aCompactAndSpecific
         },
       ],
     },
@@ -158,7 +158,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
         {
           sKey: 'ArticleGroup',
           sValue: this.translate.instant('ARTICLE GROUP'),
-          children: this.CompactAndSpecific
+          children: this.aCompactAndSpecific
         },
         {
           sKey: 'Bookkeeping',
@@ -181,12 +181,12 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
         {
           sKey: 'Supplier',
           sValue: this.translate.instant('SUPPLIER'),
-          children: this.CompactAndSpecific
+          children: this.aCompactAndSpecific
         },
         {
           sKey: 'Manager',
           sValue: this.translate.instant('MANAGER'),
-          children: this.CompactAndSpecific
+          children: this.aCompactAndSpecific
         },
       ],
     },
@@ -198,7 +198,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
         {
           sKey: 'ArticleGroup',
           sValue: this.translate.instant('ARTICLE GROUP'),
-          children: this.CompactAndSpecific
+          children: this.aCompactAndSpecific
         },
         {
           sKey: 'Bookkeeping',
@@ -221,12 +221,12 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
         {
           sKey: 'Supplier',
           sValue: this.translate.instant('SUPPLIER'),
-          children: this.CompactAndSpecific
+          children: this.aCompactAndSpecific
         },
         {
           sKey: 'Manager',
           sValue: this.translate.instant('MANAGER'),
-          children: this.CompactAndSpecific
+          children: this.aCompactAndSpecific
         },
       ],
     },
