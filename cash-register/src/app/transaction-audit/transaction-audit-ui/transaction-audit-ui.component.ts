@@ -6,7 +6,6 @@ import { PdfService } from 'src/app/shared/service/pdf2.service';
 import * as _moment from 'moment';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastService } from 'src/app/shared/components/toast';
-import { DialogService } from 'src/app/shared/service/dialog';
 const moment = (_moment as any).default ? (_moment as any).default : _moment;
 
 export interface View {
@@ -69,7 +68,9 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
   aWorkStation: any = [];
   aEmployee: any = [];
   aPaymentMethods: any = [];
+  
   closingDayState: boolean = false;
+  
   closeSubscription!: Subscription;
 
   statisticsData$: any;
@@ -100,9 +101,15 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
   bookkeeping = { totalAmount: 0 };
   bookingRecords: any;
   paymentRecords: any;
+  
   payMethods: any;
   allPaymentMethod: any;
   paymentEditMode: boolean = false;
+  nPaymentMethodTotal: number = 0;
+  nNewPaymentMethodTotal: number = 0;
+  bInvalidNewTotal: boolean = false;
+
+  aNewSelectedPaymentMethods: any = [];
 
   listBusinessSubscription!: Subscription;
   getStatisticSubscription!: Subscription;
@@ -195,8 +202,6 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private router: Router,
     private toastService: ToastService,
-    private dialogService: DialogService,
-    private activatedRoute: ActivatedRoute
   ) {
     this.iBusinessId = localStorage.getItem('currentBusiness') || '';
     this.iLocationId = localStorage.getItem('currentLocation') || '';
@@ -563,8 +568,17 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
             if (this.aStatistic?.length && this.aStatistic[0]?.overall?.length)
               this.oCountings.nCashInTill =
                 this.aStatistic[0].overall[0].nTotalRevenue;
-            if (result.data?.aPaymentMethods?.length)
+            if (result.data?.aPaymentMethods?.length){
               this.aPaymentMethods = result.data.aPaymentMethods;
+              this.aPaymentMethods.map((item:any) => {
+                item.nNewAmount = item.nAmount;
+                this.nPaymentMethodTotal += parseFloat(item.nAmount);
+
+                return item;
+              });
+              this.nNewPaymentMethodTotal = this.nPaymentMethodTotal;
+              this.filterDuplicatePaymentMethods();
+            }
           }
         },
         (error) => {
@@ -1962,7 +1976,9 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
       data
     );
   }
-  addExpenses(amount: number): Observable<any> {
+  addExpenses(data: any): Observable<any> {
+    console.log('adding expenses', data);
+    
     const value = localStorage.getItem('currentEmployee');
     let currentEmployeeId;
     if (value) {
@@ -1970,15 +1986,15 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
     }
     const transactionItem = {
       sProductName: 'Expenses',
-      sComment: 'Lost money',
-      nPriceIncVat: amount,
-      nPurchasePrice: amount,
-      iBusinessId: localStorage.getItem('currentBusiness'),
-      nTotal: amount,
-      nPaymentAmount: amount,
-      iWorkstationId: localStorage.getItem('currentWorkstation'),
+      sComment: data.comment,
+      nPriceIncVat: data.amount,
+      nPurchasePrice: data.amount,
+      iBusinessId: this.iBusinessId,
+      nTotal: data.amount,
+      nPaymentAmount: data.amount,
+      iWorkstationId: this.iWorkstationId,
       iEmployeeId: currentEmployeeId,
-      iLocationId: localStorage.getItem('currentLocation'),
+      iLocationId: this.iLocationId,
       oType: {
         eTransactionType: 'expenses',
         bRefund: false,
@@ -2005,7 +2021,10 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
     if (this.oCountings.nCashInTill - this.oCountings.nCashCounted > 0) {
       //we have difference in cash, so add that as and expense
       const _expense = await this.addExpenses(
-        this.oCountings.nCashInTill - this.oCountings.nCashCounted
+        {
+          amount: this.oCountings.nCashInTill - this.oCountings.nCashCounted,
+          comment: 'Lost money'
+        }
       ).toPromise();
     }
 
@@ -2020,7 +2039,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
     this.closeSubscription = this.apiService.postNew('cashregistry', `/api/v1/statistics/close/day-state`, oBody).subscribe((result: any) => {
       this.toastService.show({ type: 'success', text: `Day-state is close now` });
       this.closingDayState = false;
-      this.router.navigate(['../day-closure/list'], { relativeTo: this.activatedRoute })
+      this.router.navigate(['../day-closure/list'], { relativeTo: this.route })
     }, (error) => {
       console.log('Error: ', error);
       this.toastService.show({ type: 'warning', text: 'Something went wrong or open the day-state first' });
@@ -2029,6 +2048,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
   }
 
   getPaymentMethods() {
+    console.log('getPaymentMethods');
     // this.payMethodsLoading = true;
     this.payMethods = [];
     const methodsToDisplay = [
@@ -2050,6 +2070,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
                 this.payMethods.push(element);
               }
             });
+            this.filterDuplicatePaymentMethods();
           }
           // console.log(this.payMethods);
           // this.payMethodsLoading = false;
@@ -2058,6 +2079,61 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
           // this.payMethodsLoading = false;
         }
       );
+  }
+
+  filterDuplicatePaymentMethods(){
+    const aPresent = [...this.aPaymentMethods.map((item: any) => item.iPaymentMethodId), ...this.aNewSelectedPaymentMethods.map((item: any) => item._id)];
+    this.payMethods = this.payMethods.filter((item: any) => !aPresent.includes(item._id));
+    // console.log(aPresent, this.payMethods);
+  }
+
+  toggleEditPaymentMode(){
+    this.paymentEditMode = !this.paymentEditMode;
+    // this.addRow();
+    if(!this.paymentEditMode) this.aNewSelectedPaymentMethods = [];
+  }
+
+  addRow(){
+    this.aNewSelectedPaymentMethods.push({})
+    this.filterDuplicatePaymentMethods()
+  }
+
+  reCalculateTotal(){
+    this.nNewPaymentMethodTotal = 0;
+    this.aPaymentMethods.forEach((item: any) => {
+      if (item.nNewAmount)
+      this.nNewPaymentMethodTotal += parseFloat(item.nNewAmount);
+      // console.log(parseFloat(item.nNewAmount), this.nNewPaymentMethodTotal);
+    });
+    if (this.aNewSelectedPaymentMethods?.length)
+    this.aNewSelectedPaymentMethods.forEach((item: any) =>{
+      if(item.nAmount)
+      this.nNewPaymentMethodTotal += parseFloat(item.nAmount);
+    }); 
+  }
+
+  async saveUpdatedPayments(){
+    await this.aPaymentMethods.forEach(async (item: any) => {
+      if (item.nAmount != item.nNewAmount){
+        await this.addExpenses({
+          amount: item.nNewAmount - item.nAmount,
+          comment: 'Payment method change'
+        }).toPromise();
+      }
+    });
+
+     if (this.aNewSelectedPaymentMethods.length){
+      await this.aNewSelectedPaymentMethods.forEach(async (item: any) => {
+        if (item.nAmount) {
+          await this.addExpenses({
+            amount: item.nAmount,
+            comment: 'Payment method change'
+          }).toPromise();
+        }
+      });
+    }
+
+    this.fetchStatistics();
   }
 
   ngOnDestroy(): void {
