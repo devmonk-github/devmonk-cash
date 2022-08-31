@@ -2039,7 +2039,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
     this.closeSubscription = this.apiService.postNew('cashregistry', `/api/v1/statistics/close/day-state`, oBody).subscribe((result: any) => {
       this.toastService.show({ type: 'success', text: `Day-state is close now` });
       this.closingDayState = false;
-      this.router.navigate(['../day-closure/list'], { relativeTo: this.route })
+      this.router.navigate(['/business/day-closure/list'])
     }, (error) => {
       console.log('Error: ', error);
       this.toastService.show({ type: 'warning', text: 'Something went wrong or open the day-state first' });
