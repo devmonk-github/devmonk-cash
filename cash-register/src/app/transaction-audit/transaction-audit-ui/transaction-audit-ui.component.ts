@@ -2132,6 +2132,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
       iWorkstationId: this.iWorkstationId,
       iEmployeeId: currentEmployeeId,
       iLocationId: this.iLocationId,
+      oPayment: data?.oPayment,
       oType: {
         eTransactionType: 'expenses',
         bRefund: false,
@@ -2249,12 +2250,19 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
       });
   }
 
-  async saveUpdatedPayments() {
+  async saveUpdatedPayments(){
+    // console.log(this.aNewSelectedPaymentMethods);
+    // return;
     await this.aPaymentMethods.forEach(async (item: any) => {
       if (item.nAmount != item.nNewAmount) {
         await this.addExpenses({
           amount: item.nNewAmount - item.nAmount,
-          comment: 'Payment method change'
+          comment: 'Payment method change',
+          oPayment: {
+            iPaymentMethodId: item.iPaymentMethodId,
+            nAmount: item.nNewAmount - item.nAmount,
+            sMethod: item.sMethod
+          }
         }).toPromise();
       }
     });
@@ -2264,7 +2272,12 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
         if (item.nAmount) {
           await this.addExpenses({
             amount: item.nAmount,
-            comment: 'Payment method change'
+            comment: 'Payment method change',
+            oPaymentMethod: {
+              iPaymentMethodId: item._id,
+              nAmount: item.nAmount,
+              sMethod: item.sMethod
+            }
           }).toPromise();
         }
       });
