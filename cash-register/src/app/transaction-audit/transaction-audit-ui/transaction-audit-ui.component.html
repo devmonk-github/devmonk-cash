@@ -7,22 +7,23 @@
                     <div class="card-body">
 
                         <div class="row mb-5">
+                            <!-- START_DATE -->
                             <div class="col-md-3">
                                 <label class="fs-6 form-label fw-bolder text-dark">{{'START_DATE' | translate}}</label>
                                 <input type="datetime-local" class="form-control form-control form-control-solid"
                                     name="startDate" [ngModel]="filterDates.startDate"
                                     (ngModelChange)="filterDates.startDate = $event;" />
                             </div>
+                            <!-- END_DATE -->
                             <div class="col-md-3">
                                 <label class="fs-6 form-label fw-bolder text-dark">{{'END_DATE' | translate}}</label>
                                 <input type="datetime-local" class="form-control form-control form-control-solid"
                                     name="endDate" [ngModel]="filterDates.endDate"
                                     (ngModelChange)="filterDates.endDate = $event;" />
                             </div>
+                            <!-- VIEW -->
                             <div class="col-md-3">
-
                                 <label class="fs-6 form-label fw-bolder text-dark">{{'VIEW' | translate}}</label>
-
                                 <!--begin::Menu-->
                                 <div class="menu menu-rounded menu-column menu-gray-600 menu-state-bg fw-semibold w-250px form-contro"
                                     data-kt-menu="true">
@@ -31,10 +32,7 @@
                                         data-kt-menu-placement="bottom-start">
                                         <!--begin::Menu link-->
                                         <a class="menu-link py-3">
-                                            <span class="menu-icon">
-                                                <i class="bi bi-bar-chart fs-3"></i>
-                                            </span>
-                                            <span class="menu-title">{{sSelectedOptionMenu}}</span>
+                                            <span class="menu-title">{{sSelectedOptionMenu ??'Select'}}</span>
                                             <span class="menu-arrow"></span>
                                         </a>
                                         <!--end::Menu link-->
@@ -114,7 +112,7 @@
                                 <!--end::Menu-->
 
                             </div>
-
+                            <!-- DISPLAY_METHOD -->
                             <div class="col-md-3">
                                 <label class="fs-6 form-label fw-bolder text-dark">{{'DISPLAY_METHOD' |
                                     translate}}</label>
@@ -127,44 +125,10 @@
                                     </ng-option>
                                 </ng-select>
                             </div>
-
                         </div>
 
                         <div class="row mb-5">
-                            <div class="col-md-3">
-                                <label class="fs-6 form-label fw-bolder text-dark">{{'SHOW_DYNAMIC_STATE' |
-                                    translate}}</label>
-                                <br>
-                                <label
-                                    class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20">
-                                    <input class="form-check-input" type="checkbox" [(ngModel)]="IsDynamicState"
-                                        name="IsDynamicState" [disabled]="iStatisticId ? true : false" />
-                                    <span class="form-check-label"> {{ "SHOW_DYNAMIC" | translate}} </span>
-                                </label>
-                            </div>
-                            <div class="col-md-3">
-                                <label class="fs-6 form-label fw-bolder text-dark">{{ "PROPERTIES" | translate}}</label>
-                                <div class="d-flex" *ngFor="let property of aProperty; let pIndex = index">
-                                    <div class="w-100" *ngIf="propertyOptions[property.iPropertyId]?.length">
-                                        <ng-select [multiple]="true" [items]="propertyOptions[property.iPropertyId]"
-                                            [(ngModel)]="selectedProperties[property.iPropertyId]" name="propertyId"
-                                            bindValue="sName" bindLabel="sName" placeholder="Select"
-                                            (click)="onProperties(property.iPropertyId)" required
-                                            [closeOnSelect]="false">
-
-                                            <ng-template ng-option-tmp let-item="item" let-item$="item$"
-                                                let-index="index">
-                                                <input id="item-{{index}}" type="checkbox" name="item-{{index}}"
-                                                    [ngModel]="item$.selected" />
-                                                {{item.sName}}
-                                            </ng-template>
-
-                                        </ng-select>
-
-                                    </div>
-                                </div>
-                            </div>
-
+                            <!-- LOCATION -->
                             <div class="col-md-3">
                                 <label class="fs-6 form-label fw-bolder text-dark">{{'LOCATION' | translate}}</label>
                                 <div class="w-100" *ngIf="aLocation?.length">
@@ -181,8 +145,18 @@
                                     </ng-select>
 
                                 </div>
-
                             </div>
+                            <!-- EMPLOYEE -->
+                            <div class="col-md-3">
+                                <label class="fs-6 form-label fw-bolder text-dark">{{'EMPLOYEE' | translate}}</label>
+                                <ng-select class="form-control form-control-solid p-0" [(ngModel)]="selectedEmployee"
+                                    [clearable]="false">
+                                    <ng-option *ngFor="let oEmployee of aEmployee" [value]="oEmployee">
+                                        {{oEmployee.sFirstName + ' ' +oEmployee.sLastName}}
+                                    </ng-option>
+                                </ng-select>
+                            </div>
+                            <!-- WORK_STATION -->
                             <div class="col-md-3">
                                 <label class="fs-6 form-label fw-bolder text-dark">{{'WORK_STATION' |
                                     translate}}</label>
@@ -193,20 +167,38 @@
                                     </ng-option>
                                 </ng-select>
                             </div>
-                        </div>
-                        <div class="row mb-5" *ngIf="IsDynamicState">
-                            <div class="col-md-3">
-                                <label class="fs-6 form-label fw-bolder text-dark">{{'EMPLOYEE' | translate}}</label>
-                                <ng-select class="form-control form-control-solid p-0" [(ngModel)]="selectedEmployee"
-                                    [clearable]="false">
-                                    <ng-option *ngFor="let oEmployee of aEmployee" [value]="oEmployee">
-                                        {{oEmployee.sFirstName + ' ' +oEmployee.sLastName}}
-                                    </ng-option>
-                                </ng-select>
-                            </div>
                             <ng-container
                                 *ngIf="sDisplayMethod === this.displayMethodKeysEnum.revenuePerBusinessPartner || sDisplayMethod === this.displayMethodKeysEnum.revenuePerArticleGroupAndProperty">
+                                <!-- PROPERTIES -->
+                                <div class="col-md-3">
+                                    <label class="fs-6 form-label fw-bolder text-dark">{{ "PROPERTIES" |
+                                        translate}}</label>
+                                    <div class="d-flex" *ngFor="let property of aProperty; let pIndex = index">
+                                        <div class="w-100" *ngIf="propertyOptions[property.iPropertyId]?.length">
+                                            <ng-select [multiple]="true" [items]="propertyOptions[property.iPropertyId]"
+                                                [(ngModel)]="selectedProperties[property.iPropertyId]" name="propertyId"
+                                                bindValue="sName" bindLabel="sName" placeholder="Select"
+                                                (click)="onProperties(property.iPropertyId)" required
+                                                [closeOnSelect]="false">
 
+                                                <ng-template ng-option-tmp let-item="item" let-item$="item$"
+                                                    let-index="index">
+                                                    <input id="item-{{index}}" type="checkbox" name="item-{{index}}"
+                                                        [ngModel]="item$.selected" />
+                                                    {{item.sName}}
+                                                </ng-template>
+
+                                            </ng-select>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </ng-container>
+                        </div>
+                        <div class="row mb-5">
+                            <ng-container
+                                *ngIf="sDisplayMethod === this.displayMethodKeysEnum.revenuePerBusinessPartner || sDisplayMethod === this.displayMethodKeysEnum.revenuePerArticleGroupAndProperty ">
+                                <!-- LEVEL_FILTER -->
                                 <div class="col-md-3">
                                     <label class="fs-6 form-label fw-bolder text-dark">{{ "LEVEL_FILTER" |
                                         translate}}</label>
@@ -223,6 +215,7 @@
                                         </label>
                                     </div>
                                 </div>
+                                <!-- MODE_FILTER -->
                                 <div class="col-md-3">
                                     <label class="fs-6 form-label fw-bolder text-dark">{{ "MODE_FILTER" |
                                         translate}}</label>
@@ -241,27 +234,40 @@
                                     </div>
                                 </div>
                             </ng-container>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-3 mt-5">
-                                <button type="button" class="btn btn-primary" data-kt-roles-modal-action="submit"
-                                    (click)="fetchStatistics()" [class.disabled]="bStatisticLoading">
-                                    <span class="indicator-label">{{ "APPLY_FILTER" | translate}}</span>
-                                </button>
+
+                            <!-- SHOW_DYNAMIC_STATE -->
+                            <div class="col-md-3">
+                                <label class="fs-6 form-label fw-bolder text-dark">{{'SHOW_DYNAMIC_STATE' |
+                                    translate}}</label>
+                                <br>
+                                <label
+                                    class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20">
+                                    <input class="form-check-input" type="checkbox" [(ngModel)]="IsDynamicState"
+                                        name="IsDynamicState" [disabled]="iStatisticId ? true : false" />
+                                    <span class="form-check-label"> {{ "SHOW_DYNAMIC" | translate}} </span>
+                                </label>
                             </div>
+                            <div class="row">
+                                <div class="col-md-3 mt-5">
+                                    <button type="button" class="btn btn-primary" data-kt-roles-modal-action="submit"
+                                        (click)="fetchStatistics()" [class.disabled]="bStatisticLoading">
+                                        <span class="indicator-label">{{ "APPLY_FILTER" | translate}}</span>
+                                    </button>
+                                </div>
 
-                            <div class="col-md-3 mt-5">
-                                <!-- <button type="button" class="btn btn-primary" data-kt-roles-modal-action="submit"
-                                    (click)="closeDayState($event)" [class.disabled]="bStatisticLoading">
-                                    <span class="indicator-label">{{ "CLOSE_DAYSTATE" | translate}}</span>
-                                </button> -->
-                                <div *ngIf="closingDayState" class="spinner-border mx-auto"></div>
-
-                                <!-- <div class="d-flex align-items-center">
-                                    <button class="btn btn-primary mx-2" (click)="closeDayState($event)">{{ "CLOSE_DAYSTATE" |
-                                        translate}}</button>
+                                <div class="col-md-3 mt-5">
+                                    <!-- <button type="button" class="btn btn-primary" data-kt-roles-modal-action="submit"
+                                        (click)="closeDayState($event)" [class.disabled]="bStatisticLoading">
+                                        <span class="indicator-label">{{ "CLOSE_DAYSTATE" | translate}}</span>
+                                    </button> -->
                                     <div *ngIf="closingDayState" class="spinner-border mx-auto"></div>
-                                </div> -->
+
+                                    <!-- <div class="d-flex align-items-center">
+                                        <button class="btn btn-primary mx-2" (click)="closeDayState($event)">{{ "CLOSE_DAYSTATE" |
+                                            translate}}</button>
+                                        <div *ngIf="closingDayState" class="spinner-border mx-auto"></div>
+                                    </div> -->
+                                </div>
                             </div>
                         </div>
                     </div> <!-- Card body-->
