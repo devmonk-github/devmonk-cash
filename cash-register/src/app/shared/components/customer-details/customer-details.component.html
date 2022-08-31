@@ -91,13 +91,18 @@
                             </div>
                         </div>
                     </div>
+
+                    <div class="mb-3">
+                        <label for="note">{{'NOTES' | translate}}</label>
+                        <textarea name="note" id="note" cols="30" rows="6" class="form-control" disabled [(ngModel)]="customer.note"></textarea>
+                    </div>
     
-                    <p *ngIf="customer.note" class="text-gray-800 text-italic">{{customer.note}}</p>
+                    <!-- <p *ngIf="customer.note" class="text-gray-800 text-italic">{{customer.note}}</p>
                     <div class="d-flex flex-wrap py-5">
                         <div class="flex-equal me-5">
     
                         </div>
-                    </div>
+                    </div> -->
                 </div>
             </div>
             <ng-container *ngIf="!editProfile">
