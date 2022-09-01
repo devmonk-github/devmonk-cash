@@ -560,14 +560,16 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
       let iPurchaseIndex = this.aOptionMenu.findIndex(i => i.sKey.toLowerCase() === 'sales orders')
       this.aOptionMenu.splice(iPurchaseIndex, 1)
     }
+    this.onDropdownItemSelected(this.aOptionMenu[0], this.aOptionMenu[0].children[0], this.aOptionMenu[0].children[0].children[0])
+    // console.log({ aOptionMenu: this.aOptionMenu });
 
   }
   onDropdownItemSelected(parent: View, child1: ViewChild, child2: ChildChild) {
-    console.log({
-      parent,
-      child1,
-      child2,
-    });
+    // console.log({
+    //   parent,
+    //   child1,
+    //   child2,
+    // });
     this.sOptionMenu = {
       parent,
       child1,
