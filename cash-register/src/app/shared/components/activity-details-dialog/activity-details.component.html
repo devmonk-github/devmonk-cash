@@ -7,53 +7,63 @@
             </button>
         </div>
     </div>
-    <div class="card-body">
+    <div class="card-body bg-light-gray">
         <div class="row">
-            <div class="col-3">
-                <h3>{{activity.sNumber}}</h3>
-                <div class="d-flex flex-wrap py-5 border">
-                    <div class="flex-equal me-5">
-                        Customer Details
-                        <div class="fs-6 ms-1">
-                            <div class="align-items-center">
-                                <div class="text-gray-600">{{customer?.sFirstName || ''}} {{customer?.sLastName || ''}}
-                                </div>
-                            </div>
-                        </div>
-                        <div class="fs-6 ms-1">
-                            <div class="align-items-center">
-                                <div class="text-gray-600">{{customer?.sEmail || ''}}<a
-                                        href="mailto:{{customer?.sEmail}}">
-                                        <fa-icon [icon]="faEnvelope"></fa-icon>
-                                    </a></div>
-                            </div>
-                        </div>
-                        <div class="fs-6 ms-1">
-                            <div class="align-items-center">
-                                {{'PHONE_MOBILE' | translate}}
-                                <span>{{customer?.oPhone?.sMobile}}
-                                    <i class="fab fa-whatsapp ms-1" *ngIf="customer?.oPhone?.bWhatsApp"
-                                        style="color: #1CB39B;"></i>
-                                </span>
-                            </div>
-                        </div>
-                        <div class="fs-6 ms-1">
-                            <div class="align-items-center">
-                                {{'PHONE_LANDLINE' | translate}}
-                                <span>{{customer?.oPhone?.sLandLine}}
-                                </span>
-                            </div>
-                        </div>
+            <div class="col-2">
+                <div class="card m-0" style="width: 18rem;">
+                    <span class="card-header justify-content-center align-items-center text-center fs-3 m-0">
+                        <p>{{activity.sNumber}}</p>
+                    </span>
 
-                        <div class="fs-6 ms-1">
-                            <div class="align-items-center">
-                                {{'Advised by' | translate}}
-                                <span>{{customer?.oPhone?.sLandLine}}
-                                </span>
+                    <div class="card-body">
+
+                        <div class="d-flex flex-wrap py-5">
+                            <div class="flex-equal me-5">
+                                Customer Details
+                                <div class="fs-6 ms-1">
+                                    <div class="align-items-center">
+                                        <div class="text-gray-600">{{customer?.sFirstName || ''}} {{customer?.sLastName
+                                            || ''}}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="fs-6 ms-1">
+                                    <div class="align-items-center">
+                                        <div class="text-gray-600">{{customer?.sEmail || ''}}<a
+                                                href="mailto:{{customer?.sEmail}}">
+                                                <fa-icon [icon]="faEnvelope"></fa-icon>
+                                            </a></div>
+                                    </div>
+                                </div>
+                                <div class="fs-6 ms-1">
+                                    <div class="align-items-center">
+                                        {{'PHONE_MOBILE' | translate}}
+                                        <span>{{customer?.oPhone?.sMobile}}
+                                            <i class="fab fa-whatsapp ms-1" *ngIf="customer?.oPhone?.bWhatsApp"
+                                                style="color: #1CB39B;"></i>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="fs-6 ms-1">
+                                    <div class="align-items-center">
+                                        {{'PHONE_LANDLINE' | translate}}
+                                        <span>{{customer?.oPhone?.sLandLine}}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div class="fs-6 ms-1">
+                                    <div class="align-items-center">
+                                        {{'Advised by' | translate}}
+                                        <span>{{customer?.oPhone?.sLandLine}}
+                                        </span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
+
             </div>
             <!-- <div *ngIf="from == 'services'" class="col-md-8 row">
                 <h3 class="fw-bolder mb-4">
@@ -104,7 +114,7 @@
                     </button>
                 </div>
             </div> -->
-            <div class="col-9">
+            <div class="col-10">
                 <h4>Activities</h4>
                 <div class="accordion" id="kt_accordion_1">
                     <div class="accordion-item" *ngFor="let activity of activityItems; index as index">
@@ -120,43 +130,41 @@
                             <div class="accordion-body">
                                 <div class="row">
                                     <div class="col-4">
-                                        <span>Title</span>
-                                        <label for="description" for="activityName">{{ "NAME" | translate}}</label>
-                                        <input type="text" name="activityName" [(ngModel)]="activity.sProductName"
-                                            class="form-control">
-                                        <label for="description">{{ "DESCRIPTION" | translate}}</label>
-                                        <textarea class="form-control" name="description"
-                                            placeholder="{{ 'DESCRIPTION' | translate}}" lines="10"
-                                            [(ngModel)]="activity.sDescription"></textarea>
+                                        <div class="form-group">
+                                            <label class="form-control-label mb-1">Title {{ "NAME" | translate}}</label>
+                                            <input class="form-control form-control-solid mb-3 mb-lg-0" type="text"
+                                                name="activityName" [(ngModel)]="activity.sProductName">
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-control-label mb-1">{{ "DESCRIPTION" |
+                                                translate}}</label>
+                                            <textarea class="form-control form-control-solid" name="description"
+                                                placeholder="{{ 'DESCRIPTION' | translate}}" lines="10"
+                                                [(ngModel)]="activity.sDescription"></textarea>
+                                        </div>
+
                                     </div>
                                     <div class="col-5">
 
-                                        <!-- <div class="progress-track">
-                                            <ul id="progressbar">
-                                                <li class="step0 active " id="step1">Info</li>
-                                                <li class="step0 active text-center" id="step2">Processing</li>
-                                                <li class="step0 active text-center" id="step3">Cancelled</li>
-                                                <li class="step0 active text-right" id="step4">Inspection</li>
-                                                <li class="step0 text-right" id="step5">Completed</li>
-                                            </ul>
-                                        </div> -->
+                                        <div class="form-group">
+                                            <label class="form-control-label mb-1">{{ "STATUS" | translate}}</label>
+                                            <select name="status" id="status" class="form-control form-control-solid"
+                                                [(ngModel)]="activity.eRepairStatus">
+                                                <option *ngFor="let type of repairStatus" [value]="type">{{type}}
+                                                </option>
+                                            </select>
+                                        </div>
 
-                                        <label for="status" for="activityName">{{ "STATUS" | translate}}</label>
-
-                                        <select name="status" id="status" class="form-select"
-                                            [(ngModel)]="activity.eRepairStatus">
-                                            <option *ngFor="let type of repairStatus" [value]="type">{{type}}</option>
-                                        </select>
                                         <div>
                                             Inform the customer that the product can be picked up.
                                         </div>
-                                        <div class="border">
-                                            <div class="border">
+                                        <div class="border p-3 mb-5">
+                                            <div class="border p-1 ">
                                                 To be paid (excl. deposits/refunds/gold purchase/other fees)
                                             </div>
                                             <div class="row">
                                                 <div class="col-8">
-                                                    <input class="form-control w-100" type="text"
+                                                    <input class="form-control form-control-solid w-100" type="text"
                                                         [(ngModel)]="activity.nTotalAmount">
                                                 </div>
                                                 <div class="col-4">
@@ -284,20 +292,21 @@
                                     <div class="col-md-8">
                                         <div class="">
                                             <span>{{ "SHIPPING_METHOD" | translate }} : </span>
-                                            <label class="form-control-solid">Standard Shipping</label>
+                                            <label class="form-control form-control-solid-solid">Standard
+                                                Shipping</label>
                                         </div>
                                         <div class="row">
                                             <div class="col-md-6">
                                                 <label>{{ "CARRIER" | translate}}</label>
                                             </div>
                                             <div class="col-md-6">
-                                                <select name="career" id="career" class="form-select">
+                                                <select name="career" id="career" class="form-select form-select-solid">
                                                     <option>PostNL</option>
                                                 </select>
                                             </div>
                                         </div>
                                         <div class="row">
-                                            <input type="text" class="form-control"
+                                            <input type="text" class="form-control form-control-solid"
                                                 placeholder="www.trackandtracelink.com">
                                         </div>
                                         <div class="row">
@@ -323,16 +332,26 @@
                                         </button>
                                     </div>
                                 </div>
+                                <div class="row my-5">
+                                    <div class="col-4">
+                                        <div class="form-group w-50">
+                                            <input type="text" name="activityName" [(ngModel)]="activity.sProductName"
+                                                class="form-control form-control-solid">
+                                        </div>
+
+                                    </div>
+                                    <div class="col-8"></div>
+                                </div>
                                 <div class="row">
-                                    <input type="text" name="activityName" [(ngModel)]="activity.sProductName"
-                                        class="form-control">
+
                                     <div class="col-5">
+
                                         <div class="row">
                                             <div class="col-6">
                                                 Intake date
                                             </div>
                                             <div class="col-6">
-                                                <input type="text" class="form-control"
+                                                <input type="text" class="form-control form-control-solid"
                                                     [(ngModel)]="activity.dCreatedDate">
                                             </div>
                                         </div>
@@ -341,7 +360,7 @@
                                                 Location
                                             </div>
                                             <div class="col-6">
-                                                <input type="text" class="form-control"
+                                                <input type="text" class="form-control form-control-solid"
                                                     [(ngModel)]="activity.iLocationId">
                                             </div>
                                         </div>
@@ -350,7 +369,7 @@
                                                 Estimated date ready
                                             </div>
                                             <div class="col-6">
-                                                <input type="text" class="form-control"
+                                                <input type="text" class="form-control form-control-solid"
                                                     [(ngModel)]="activity.dEstimatedDate">
                                             </div>
                                         </div>
@@ -367,7 +386,7 @@
                                                 Estimated price upon ingestion
                                             </div>
                                             <div class="col-6">
-                                                <input type="text" class="form-control"
+                                                <input type="text" class="form-control form-control-solid"
                                                     [(ngModel)]="activity.nPriceIncVat">
                                             </div>
                                         </div>
@@ -376,7 +395,7 @@
                                                 To be paid (excl. deposits/refunds/gold purchse/other fees)
                                             </div>
                                             <div class="col-6">
-                                                <input type="text" class="form-control"
+                                                <input type="text" class="form-control form-control-solid"
                                                     [(ngModel)]="activity.nPriceIncVat">
                                             </div>
                                         </div>
@@ -429,7 +448,8 @@
                                                 Brand
                                             </div>
                                             <div class="col-6">
-                                                <input type="text" class="form-control" [(ngModel)]="activity.iBrandId">
+                                                <input type="text" class="form-control form-control-solid"
+                                                    [(ngModel)]="activity.iBrandId">
                                             </div>
                                         </div>
                                         <div class="row">
@@ -437,7 +457,7 @@
                                                 Repair number
                                             </div>
                                             <div class="col-6">
-                                                <input type="text" class="form-control"
+                                                <input type="text" class="form-control form-control-solid"
                                                     [(ngModel)]="activity.sBagNumber">
                                             </div>
                                         </div>
@@ -446,7 +466,7 @@
                                                 Costs incurred (excluding VAT)
                                             </div>
                                             <div class="col-6">
-                                                <input type="text" class="form-control"
+                                                <input type="text" class="form-control form-control-solid"
                                                     [(ngModel)]="activity.nPriceIncVat">
                                             </div>
                                         </div>
@@ -455,7 +475,7 @@
                                                 Product category
                                             </div>
                                             <div class="col-6">
-                                                <input type="text" class="form-control"
+                                                <input type="text" class="form-control form-control-solid"
                                                     [(ngModel)]="activity.iArticleGroupId">
                                             </div>
                                         </div>
@@ -464,7 +484,7 @@
                                                 Product material
                                             </div>
                                             <div class="col-6">
-                                                <input type="text" class="form-control"
+                                                <input type="text" class="form-control form-control-solid"
                                                     [(ngModel)]="activity.iArticleGroupId">
                                             </div>
                                         </div>
@@ -473,7 +493,7 @@
                                                 Supplier
                                             </div>
                                             <div class="col-6">
-                                                <input type="text" class="form-control"
+                                                <input type="text" class="form-control form-control-solid"
                                                     [(ngModel)]="activity.iSupplierId">
                                             </div>
                                         </div>
@@ -546,14 +566,16 @@
                                     <div class="col-6">
                                         <label for="sCommentVisibleServicePartner">{{ "REMARK_FOR_SERVICE_PARTNERS" |
                                             translate}}</label>
-                                        <textarea class="form-control" name="sCommentVisibleServicePartner"
+                                        <textarea class="form-control form-control-solid"
+                                            name="sCommentVisibleServicePartner"
                                             placeholder="{{ 'REMARK_FOR_SERVICE_PARTNERS' | translate}}" lines="10"
                                             [(ngModel)]="activity.sCommentVisibleServicePartner"></textarea>
                                     </div>
                                     <div class="col-6">
                                         <label for="sCommentVisibleCollegues">{{ "REMARK_FOR_COLLEAGUES" |
                                             translate}}</label>
-                                        <textarea class="form-control" name="sCommentVisibleCollegues"
+                                        <textarea class="form-control form-control-solid"
+                                            name="sCommentVisibleCollegues"
                                             placeholder="{{ 'REMARK_FOR_COLLEAGUES' | translate}}" lines="10"
                                             [(ngModel)]="activity.sCommentVisibleCollegues"></textarea>
                                     </div>
