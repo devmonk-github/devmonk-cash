@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output, ViewEncapsulation } from '@angular/core';
-import { faTimes, faPlus, faMinus, faUpload } from "@fortawesome/free-solid-svg-icons";
+import { faTimes, faPlus, faMinus, faUpload, faArrowDown, faArrowUp } from "@fortawesome/free-solid-svg-icons";
 import { SelectArticleDialogComponent } from 'src/app/shared/components/select-articlegroup-dialog/select-articlegroup-dialog.component';
 import { ToastService } from 'src/app/shared/components/toast';
 import { ApiService } from 'src/app/shared/service/api.service';
@@ -24,6 +24,8 @@ export class RepairComponent implements OnInit {
   faPlus = faPlus;
   faMinus = faMinus;
   faUpload = faUpload;
+  faArrowDown = faArrowDown;
+  faArrowUp = faArrowUp;
   employee: any = null;
   brand: any = null;
   supplierOptions: Array<any> = [];
