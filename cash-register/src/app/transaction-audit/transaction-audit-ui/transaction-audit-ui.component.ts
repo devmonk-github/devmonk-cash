@@ -77,7 +77,7 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
   statisticsData$: any;
   businessDetails: any = {};
   statistics: any;
-  optionMenu = 'cash-registry';
+  optionMenu = 'sales_orders';
   statisticFilter = {
     isArticleGroupLevel: true,
     isProductLevel: false,
