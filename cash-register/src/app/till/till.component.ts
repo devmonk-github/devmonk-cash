@@ -626,7 +626,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       product = _oBusinessProductDetail.data;
       price.nPriceIncludesVat = selectedQuickButton.nPrice;
     } else {
-      price = product.aLocation? product.aLocation.find((o: any) => o._id === this.locationId): 0;
+      price = product.aLocation ? product.aLocation.find((o: any) => o._id === this.locationId) : 0;
     }
 
     this.transactionItems.push({
@@ -706,8 +706,14 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
   park(): void {
     this.apiService.postNew('cashregistry', `/api/v1/park?iBusinessId=${this.getValueFromLocalStorage('currentBusiness')}`, this.getParkedTransactionBody())
-      .subscribe(data => {
+      .subscribe((data: any) => {
+        this.parkedTransactions.unshift({
+          _id: data?._id.toString(),
+          dUpdatedDate: data?.dUpdatedDate.toString(),
+          sNumber: data?.sNumber.toString()
+        })
         this.toastrService.show({ type: 'success', text: 'Transaction parked!' })
+
       }, err => {
         this.toastrService.show({ type: 'danger', text: err.message });
       });
@@ -718,6 +724,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     this.apiService.getNew('cashregistry', `/api/v1/park?iBusinessId=${this.getValueFromLocalStorage('currentBusiness')}`)
       .subscribe((data: any) => {
         this.parkedTransactions = data;
+
       }, err => {
         this.toastrService.show({ type: 'danger', text: err.message });
       });
@@ -932,7 +939,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       const res = await this.fiskalyService.startTransaction();
       localStorage.setItem('fiskalyTransaction', JSON.stringify(res));
     } catch (error: any) {
-      if(error.error.code === 'E_UNAUTHORIZED') {
+      if (error.error.code === 'E_UNAUTHORIZED') {
         localStorage.removeItem('fiskalyAuth');
         await this.startFiskalyTransaction();
       }
@@ -952,7 +959,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
         localStorage.setItem('fiskalyTransaction', JSON.stringify(result));
       }
     } catch (error: any) {
-      if(error.error.code === 'E_UNAUTHORIZED') {
+      if (error.error.code === 'E_UNAUTHORIZED') {
         localStorage.removeItem('fiskalyAuth');
         await this.updateFiskalyTransaction(state, payments);
       }
@@ -971,11 +978,11 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     } catch (error) {
       localStorage.removeItem('fiskalyTransaction');
       localStorage.removeItem('tssId');
-    } 
+    }
   }
 
-  ngOnDestroy() { 
-    localStorage.removeItem('fromTransactionPage');  
+  ngOnDestroy() {
+    localStorage.removeItem('fromTransactionPage');
     this.cancelFiskalyTransaction();
   }
 }
