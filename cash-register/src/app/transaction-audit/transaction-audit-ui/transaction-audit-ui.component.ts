@@ -77,7 +77,7 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
   statisticsData$: any;
   businessDetails: any = {};
   statistics: any;
-  optionMenu = 'sales_orders';
+  optionMenu = 'sales-order';
   statisticFilter = {
     isArticleGroupLevel: true,
     isProductLevel: false,
@@ -262,7 +262,7 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
     this.aOptionMenu = [
       {
         sKey: 'Sales',
-        sValue: this.translate.instant('SALES'),
+        sValue: 'cash-registry',
         children: [
           {
             sKey: 'ArticleGroup',
@@ -364,7 +364,7 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
       },
       {
         sKey: 'Purchases',
-        sValue: this.translate.instant('PURCHASES'),
+        sValue: 'purchase-order',
         children: [
           {
             sKey: 'ArticleGroup',
@@ -466,7 +466,7 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
       },
       {
         sKey: 'Sales orders',
-        sValue: this.translate.instant('SALES_ORDERS'),
+        sValue: 'sales-order',
         children: [
           // ArticleGroup
           {
@@ -571,7 +571,7 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
 
     const eUserType = localStorage.getItem('type') ?? ''
     if (eUserType && eUserType.toLowerCase() !== 'supplier') {
-      let iPurchaseIndex = this.aOptionMenu.findIndex(i => i.sValue.toLowerCase() === 'sales_orders')
+      let iPurchaseIndex = this.aOptionMenu.findIndex(i => i.sValue.toLowerCase() === 'sales-order')
       this.aOptionMenu.splice(iPurchaseIndex, 1)
     }
     this.onDropdownItemSelected(this.aOptionMenu[0], this.aOptionMenu[0].children[0], this.aOptionMenu[0].children[0].children[0])
@@ -590,10 +590,12 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
       child2,
     }
     this.optionMenu = parent.sValue.toLowerCase().trim()
+    console.log('this.optionMenu: ', this.optionMenu);
     this.sSelectedOptionMenu = `${parent.sKey}->${child1.sKey}->${child2.sKey}`
     const eDisplayMethod = child2.data?.displayMethod || null
     const sModeFilter = child2.data?.modeFilter || null
     const sLevelFilter = child2.data?.levelFilter || null
+    console.log('eDisplayMethod: ', eDisplayMethod);
 
     if (eDisplayMethod) {
       this.sDisplayMethod = eDisplayMethod
@@ -710,6 +712,7 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
       oBody.oFilter.bIsSupplierMode = this.bIsSupplierMode;
     }
     this.bStatisticLoading = true;
+    console.log('sDisplayMethod: ', oBody?.oFilter?.sDisplayMethod, sDisplayMethod);
     this.statisticAuditSubscription = this.apiService
       .postNew('cashregistry', `/api/v1/statistics/transaction/audit`, oBody)
       .subscribe(

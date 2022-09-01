@@ -769,31 +769,31 @@
                                                             <tr>
                                                                 <ng-container [ngTemplateOutlet]="vatRateTemplates"
                                                                     [ngTemplateOutletContext]="{ data: {sVatMethod: 'oShopPurchase', oVatRate: oVatRate} }"
-                                                                    *ngIf="optionMenu === 'sales'">
+                                                                    *ngIf="optionMenu === 'cash-registry'">
                                                                 </ng-container>
                                                             </tr>
                                                             <tr>
                                                                 <ng-container [ngTemplateOutlet]="vatRateTemplates"
                                                                     [ngTemplateOutletContext]="{ data: {sVatMethod: 'oWebShop', oVatRate: oVatRate} }"
-                                                                    *ngIf="optionMenu === 'sales'">
+                                                                    *ngIf="optionMenu === 'cash-registry'">
                                                                 </ng-container>
                                                             </tr>
                                                             <tr>
                                                                 <ng-container [ngTemplateOutlet]="vatRateTemplates"
                                                                     [ngTemplateOutletContext]="{ data: {sVatMethod: 'oDeliverySupplier', oVatRate: oVatRate} }"
-                                                                    *ngIf="optionMenu === 'purchases' && sUserType === 'supplier'">
+                                                                    *ngIf="optionMenu === 'purchase-order' && sUserType === 'supplier'">
                                                                 </ng-container>
                                                             </tr>
                                                             <tr>
                                                                 <ng-container [ngTemplateOutlet]="vatRateTemplates"
                                                                     [ngTemplateOutletContext]="{ data: {sVatMethod: 'oDeliveryRetailer', oVatRate: oVatRate} }"
-                                                                    *ngIf="optionMenu === 'purchases' && sUserType === 'retailer'">
+                                                                    *ngIf="optionMenu === 'purchase-order' && sUserType === 'retailer'">
                                                                 </ng-container>
                                                             </tr>
                                                             <tr>
                                                                 <ng-container [ngTemplateOutlet]="vatRateTemplates"
                                                                     [ngTemplateOutletContext]="{ data: {sVatMethod: 'oSalesOrderSupplier', oVatRate: oVatRate} }"
-                                                                    *ngIf="optionMenu === 'sales_orders'">
+                                                                    *ngIf="optionMenu === 'sales-order'">
                                                                 </ng-container>
                                                             </tr>
                                                         </table>
