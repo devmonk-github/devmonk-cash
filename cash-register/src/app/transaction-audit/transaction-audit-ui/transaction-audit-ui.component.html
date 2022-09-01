@@ -17,22 +17,22 @@
                             <!-- END_DATE -->
                             <div class="col-md-3">
                                 <label class="fs-6 form-label fw-bolder text-dark">{{'END_DATE' | translate}}</label>
-                                <input type="datetime-local" class="form-control form-control form-control-solid"
-                                    name="endDate" [ngModel]="filterDates.endDate"
-                                    (ngModelChange)="filterDates.endDate = $event;" />
+                                <input type="datetime-local" class="form-control form-control-solid" name="endDate"
+                                    [ngModel]="filterDates.endDate" (ngModelChange)="filterDates.endDate = $event;" />
                             </div>
                             <!-- VIEW -->
                             <div class="col-md-3">
                                 <label class="fs-6 form-label fw-bolder text-dark">{{'VIEW' | translate}}</label>
                                 <!--begin::Menu-->
-                                <div class="menu menu-rounded menu-column menu-gray-600 menu-state-bg fw-semibold w-250px form-contro"
+                                <div class="menu menu-rounded menu-column menu-gray-600 menu-state-bg fw-semibold form-control form-control-solid"
                                     data-kt-menu="true">
                                     <!--begin::Menu item-->
                                     <div class="menu-item" data-kt-menu-trigger="click" data-kt-menu-attach="parent"
                                         data-kt-menu-placement="bottom-start">
                                         <!--begin::Menu link-->
                                         <a class="menu-link py-3">
-                                            <span class="menu-title">{{sSelectedOptionMenu ??'Select'}}</span>
+                                            <span class="menu-title text-overflow-ellipsis">{{sSelectedOptionMenu
+                                                ||'Select'}}</span>
                                             <span class="menu-arrow"></span>
                                         </a>
                                         <!--end::Menu link-->
@@ -113,7 +113,7 @@
 
                             </div>
                             <!-- DISPLAY_METHOD -->
-                            <div class="col-md-3">
+                            <!-- <div class="col-md-3">
                                 <label class="fs-6 form-label fw-bolder text-dark">{{'DISPLAY_METHOD' |
                                     translate}}</label>
                                 <ng-select class="form-control form-control-solid p-0" [(ngModel)]="sDisplayMethod"
@@ -124,10 +124,7 @@
                                         translate}}
                                     </ng-option>
                                 </ng-select>
-                            </div>
-                        </div>
-
-                        <div class="row mb-5">
+                            </div> -->
                             <!-- LOCATION -->
                             <div class="col-md-3">
                                 <label class="fs-6 form-label fw-bolder text-dark">{{'LOCATION' | translate}}</label>
@@ -146,6 +143,9 @@
 
                                 </div>
                             </div>
+                        </div>
+
+                        <div class="row mb-5">
                             <!-- EMPLOYEE -->
                             <div class="col-md-3">
                                 <label class="fs-6 form-label fw-bolder text-dark">{{'EMPLOYEE' | translate}}</label>
@@ -168,7 +168,7 @@
                                 </ng-select>
                             </div>
                             <ng-container
-                                *ngIf="sDisplayMethod === this.displayMethodKeysEnum.revenuePerBusinessPartner || sDisplayMethod === this.displayMethodKeysEnum.revenuePerArticleGroupAndProperty">
+                                *ngIf="sDisplayMethod === this.edisplayMethodKeysEnum.revenuePerBusinessPartner || sDisplayMethod === this.edisplayMethodKeysEnum.revenuePerArticleGroupAndProperty">
                                 <!-- PROPERTIES -->
                                 <div class="col-md-3">
                                     <label class="fs-6 form-label fw-bolder text-dark">{{ "PROPERTIES" |
@@ -197,7 +197,7 @@
                         </div>
                         <div class="row mb-5">
                             <ng-container
-                                *ngIf="sDisplayMethod === this.displayMethodKeysEnum.revenuePerBusinessPartner || sDisplayMethod === this.displayMethodKeysEnum.revenuePerArticleGroupAndProperty ">
+                                *ngIf="sDisplayMethod === this.edisplayMethodKeysEnum.revenuePerBusinessPartner || sDisplayMethod === this.edisplayMethodKeysEnum.revenuePerArticleGroupAndProperty ">
                                 <!-- LEVEL_FILTER -->
                                 <div class="col-md-3">
                                     <label class="fs-6 form-label fw-bolder text-dark">{{ "LEVEL_FILTER" |
@@ -352,7 +352,8 @@
                                                     </th>
                                                     <th class="w-150px"><span class="">{{"GROSS_PROFIT" |
                                                             translate}}</span>
-                                                        <h4 class="text-black">{{oSupplier.nProfit}}</h4>
+                                                        <h4 class="text-black">{{oSupplier.nProfit| number :'1.2-2'}}
+                                                        </h4>
                                                     </th>
                                                     <th class="w-150px"><span class="">{{"MARGIN" | translate}}</span>
                                                         <h4 class="text-black">{{oSupplier.nMargin}}</h4>
@@ -378,7 +379,7 @@
                                                                         {{oArticleGroup.nTotalPurchaseAmount}}
                                                                     </th>
                                                                     <th scope="col" class="w-150px">
-                                                                        {{oArticleGroup.nProfit}}</th>
+                                                                        {{oArticleGroup.nProfit| number :'1.2-2'}}</th>
                                                                     <th scope="col" class="w-150px">
                                                                         {{oArticleGroup.nMargin}}</th>
                                                                 </tr>
@@ -396,7 +397,8 @@
                                                                         <td>{{oRevenueByProperty.nTotalRevenue}}</td>
                                                                         <td>{{oRevenueByProperty.nTotalPurchaseAmount}}
                                                                         </td>
-                                                                        <td>{{oRevenueByProperty.nProfit}}</td>
+                                                                        <td>{{oRevenueByProperty.nProfit| number
+                                                                            :'1.2-2'}}</td>
                                                                         <td>{{oRevenueByProperty.nMargin}}</td>
                                                                     </tr>
                                                                 </tbody>
@@ -436,7 +438,8 @@
                                                     </th>
                                                     <th class="w-150px"><span class="">{{"GROSS_PROFIT" |
                                                             translate}}</span>
-                                                        <h4 class="text-black">{{oSupplier.nProfit}}</h4>
+                                                        <h4 class="text-black">{{oSupplier.nProfit| number :'1.2-2' }}
+                                                        </h4>
                                                     </th>
                                                     <th class="w-150px"><span class="">{{"MARGIN" | translate}}</span>
                                                         <h4 class="text-black">{{oSupplier.nMargin}}</h4>
@@ -477,7 +480,7 @@
                                                                         {{oArticleGroup.nTotalPurchaseAmount}}
                                                                     </th>
                                                                     <th scope="col" class="w-150px">
-                                                                        {{oArticleGroup.nProfit}}</th>
+                                                                        {{oArticleGroup.nProfit| number :'1.2-2'}}</th>
                                                                     <th scope="col" class="w-150px">
                                                                         {{oArticleGroup.nMargin}}
                                                                     </th>
@@ -525,7 +528,8 @@
                                                     <th scope="col" class="w-150px">
                                                         {{oArticleGroup.nTotalPurchaseAmount}}
                                                     </th>
-                                                    <th scope="col" class="w-150px">{{oArticleGroup.nProfit}}</th>
+                                                    <th scope="col" class="w-150px">{{oArticleGroup.nProfit| number
+                                                        :'1.2-2'}}</th>
                                                     <th scope="col" class="w-150px">{{oArticleGroup.nMargin}}</th>
                                                 </tr>
                                             </thead>
@@ -539,7 +543,7 @@
                                                         <td>{{oRevenueByProperty.nQuantity}}</td>
                                                         <td>{{oRevenueByProperty.nTotalRevenue}}</td>
                                                         <td>{{oRevenueByProperty.nTotalPurchaseAmount}}</td>
-                                                        <td>{{oRevenueByProperty.nProfit}}</td>
+                                                        <td>{{oRevenueByProperty.nProfit| number :'1.2-2'}}</td>
                                                         <td>{{oRevenueByProperty.nMargin}}</td>
                                                     </tr>
                                                 </tbody>
@@ -610,7 +614,7 @@
                                                                 <th class="w-150px">
                                                                     {{oRevenueByProperty.nTotalPurchaseAmount}}</th>
                                                                 <th class="w-150px">
-                                                                    {{oRevenueByProperty.nProfit}}</th>
+                                                                    {{oRevenueByProperty.nProfit| number :'1.2-2'}}</th>
                                                                 <th class="w-150px">
                                                                     {{oRevenueByProperty.nMargin}}</th>
                                                             </tr>
@@ -696,7 +700,8 @@
                                                                 <td class="w-150px">{{oArticleGroup.nTotalRevenue}}</td>
                                                                 <td class="w-150px">
                                                                     {{oArticleGroup.nTotalPurchaseAmount}}</td>
-                                                                <td class="w-150px">{{oArticleGroup.nProfit}}</td>
+                                                                <td class="w-150px">{{oArticleGroup.nProfit| number
+                                                                    :'1.2-2'}}</td>
                                                                 <td class="w-150px">{{oArticleGroup.nMargin}}</td>
                                                             </tr>
                                                             <tr *ngIf="oArticleGroup.isLoading">
@@ -764,31 +769,31 @@
                                                             <tr>
                                                                 <ng-container [ngTemplateOutlet]="vatRateTemplates"
                                                                     [ngTemplateOutletContext]="{ data: {sVatMethod: 'oShopPurchase', oVatRate: oVatRate} }"
-                                                                    *ngIf="optionMenu === 'cash-registry'">
+                                                                    *ngIf="optionMenu === 'sales'">
                                                                 </ng-container>
                                                             </tr>
                                                             <tr>
                                                                 <ng-container [ngTemplateOutlet]="vatRateTemplates"
                                                                     [ngTemplateOutletContext]="{ data: {sVatMethod: 'oWebShop', oVatRate: oVatRate} }"
-                                                                    *ngIf="optionMenu === 'cash-registry'">
+                                                                    *ngIf="optionMenu === 'sales'">
                                                                 </ng-container>
                                                             </tr>
                                                             <tr>
                                                                 <ng-container [ngTemplateOutlet]="vatRateTemplates"
                                                                     [ngTemplateOutletContext]="{ data: {sVatMethod: 'oDeliverySupplier', oVatRate: oVatRate} }"
-                                                                    *ngIf="optionMenu === 'purchase-order' && sUserType === 'supplier'">
+                                                                    *ngIf="optionMenu === 'purchases' && sUserType === 'supplier'">
                                                                 </ng-container>
                                                             </tr>
                                                             <tr>
                                                                 <ng-container [ngTemplateOutlet]="vatRateTemplates"
                                                                     [ngTemplateOutletContext]="{ data: {sVatMethod: 'oDeliveryRetailer', oVatRate: oVatRate} }"
-                                                                    *ngIf="optionMenu === 'purchase-order' && sUserType === 'retailer'">
+                                                                    *ngIf="optionMenu === 'purchases' && sUserType === 'retailer'">
                                                                 </ng-container>
                                                             </tr>
                                                             <tr>
                                                                 <ng-container [ngTemplateOutlet]="vatRateTemplates"
                                                                     [ngTemplateOutletContext]="{ data: {sVatMethod: 'oSalesOrderSupplier', oVatRate: oVatRate} }"
-                                                                    *ngIf="optionMenu === 'sales-order'">
+                                                                    *ngIf="optionMenu === 'sales_orders'">
                                                                 </ng-container>
                                                             </tr>
                                                         </table>
@@ -809,7 +814,8 @@
                     <ng-template let-data="data" #vatRateTemplates>
                         <!-- <p>Dear {{person.name}} , {{person.message}} </p> -->
                         <td><span class="">{{ data?.sVatMethod }}</span></td>
-                        <td class="w-150px"><span class="">{{ data?.oVatRate[data?.sVatMethod].nProfit }}</span></td>
+                        <td class="w-150px"><span class="">{{ data?.oVatRate[data?.sVatMethod].nProfit| number :'1.2-2'
+                                }}</span></td>
                         <td class="w-150px"><span class="">{{ data?.oVatRate[data?.sVatMethod].nPurchaseValue }}</span>
                         </td>
                         <td class="w-150px"><span class="">{{ data?.oVatRate[data?.sVatMethod].nTotalRevenue }}</span>
@@ -908,145 +914,155 @@
                 <!-- PAYMENT END -->
 
                 <!-- Tushar's code START -->
-                <div class="card-body pt-0">
-                    <div class="dataTables_wrapper dt-bootstrap4 no-footer">
-                        <div class="table-responsive">
-                            <table class="table align-middle table-row-dashed fs-6 gy-5 dataTable no-footer">
-                                <thead>
-                                    <tr class="text-start text-gray-400 fw-bolder fs-7 text-uppercase gs-0">
-                                        <th class="min-w-100px sorting" tabindex="0">{{ "STATISTICS_OVERALL" |
-                                            translate}}
-                                        </th>
-                                        <th class="min-w-100px sorting" tabindex="0">{{ "STATISTICS_VALUE" | translate}}
-                                        </th>
-                                        <th class="min-w-100px sorting" tabindex="0">{{ "BOOKKEEPING_VALUE" | translate
-                                            }}
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody class="fw-bold text-gray-600">
-                                    <tr class="even">
-                                        <td>
-                                            <span>Total Revenue</span>
-                                        </td>
-                                        <td>
-                                        </td>
-                                        <td>
-                                        </td>
-                                    </tr>
-                                    <tr class="even">
-                                        <td>
-                                            <span>Quantity</span>
-                                        </td>
-                                        <td>
-                                        </td>
-                                        <td>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                <ng-container
+                    *ngIf="sDisplayMethod === this.edisplayMethodKeysEnum.revenuePerBusinessPartner || sDisplayMethod === this.edisplayMethodKeysEnum.revenuePerArticleGroupAndProperty">
 
-                            <hr>
-                            <h4>Transactions</h4>
-                            <table
-                                class="table table-green align-middle table-row-dashed fs-6 gy-5 dataTable no-footer">
-                                <thead style="position: sticky;">
-                                    <tr class="text-start text-gray-400 fw-bolder fs-7 text-uppercase gs-0">
-                                        <th class="min-w-100px sorting" tabindex="0">{{ "BOOKING_DATE" | translate}}
-                                        </th>
-                                        <th class="min-w-100px sorting" tabindex="0">{{ "LEDGER_NUMBER" | translate}}
-                                        </th>
-                                        <th class="min-w-100px sorting" tabindex="0">{{ "CREDIT" | translate}} </th>
-                                        <th class="min-w-100px sorting" tabindex="0">{{ "DEBIT" | translate }}</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="fw-bold text-gray-600">
-                                    <tr class="even" *ngFor="let booking of bookingRecords">
-                                        <td>
-                                            <span>{{booking.dTransactionCreationDate | date: 'medium'}}</span>
-                                        </td>
-                                        <td>
-                                            <span>{{booking.nLedgerNumber}}</span>
-                                        </td>
-                                        <td>
-                                            <span>{{ booking.eType === 'credit' ? (booking.nValue | number:'2.1-5'):
-                                                '-'}}</span>
-                                        </td>
-                                        <td>
-                                            <span>{{booking.eType === 'debit' ? (booking.nValue | number:'2.1-5'): '-'
-                                                }}</span>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                                <tfoot style="position: sticky;">
-                                    <tr class="even">
-                                        <td>
-                                            <span>Total</span>
-                                        </td>
-                                        <td>
-                                            <span>-</span>
-                                        </td>
-                                        <td>
-                                            <span>{{creditAmount}}</span>
-                                        </td>
-                                        <td>
-                                            <span>{{debitAmount}}</span>
-                                        </td>
-                                    </tr>
-                                </tfoot>
-                            </table>
-                            <hr>
-                            <h4>Payments</h4>
-                            <table
-                                class="table table-green align-middle table-row-dashed fs-6 gy-5 dataTable no-footer">
-                                <thead style="position: sticky;">
-                                    <tr class="text-start text-gray-400 fw-bolder fs-7 text-uppercase gs-0">
-                                        <th class="min-w-100px sorting" tabindex="0">{{ "BOOKING_DATE" | translate}}
-                                        </th>
-                                        <th class="min-w-100px sorting" tabindex="0">{{ "LEDGER_NUMBER" | translate}}
-                                        </th>
-                                        <th class="min-w-100px sorting" tabindex="0">{{ "CREDIT" | translate}} </th>
-                                        <th class="min-w-100px sorting" tabindex="0">{{ "DEBIT" | translate }}</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="fw-bold text-gray-600">
-                                    <tr class="even" *ngFor="let booking of paymentRecords">
-                                        <td>
-                                            <span>{{booking.dTransactionCreationDate | date: 'medium'}}</span>
-                                        </td>
-                                        <td>
-                                            <span>{{booking.nLedgerNumber}}</span>
-                                        </td>
-                                        <td>
-                                            <span>{{ booking.eType === 'credit' ? (booking.nValue | number:'2.1-5'):
-                                                '-'}}</span>
-                                        </td>
-                                        <td>
-                                            <span>{{booking.eType === 'debit' ? (booking.nValue | number:'2.1-5'): '-'
-                                                }}</span>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                                <tfoot style="position: sticky;">
-                                    <tr class="even">
-                                        <td>
-                                            <span>Total</span>
-                                        </td>
-                                        <td>
-                                            <span>-</span>
-                                        </td>
-                                        <td>
-                                            <span>{{paymentCreditAmount}}</span>
-                                        </td>
-                                        <td>
-                                            <span>{{paymentDebitAmount}}</span>
-                                        </td>
-                                    </tr>
-                                </tfoot>
-                            </table>
+                    <div class="card-body pt-0">
+                        <div class="dataTables_wrapper dt-bootstrap4 no-footer">
+                            <div class="table-responsive">
+                                <table class="table align-middle table-row-dashed fs-6 gy-5 dataTable no-footer">
+                                    <thead>
+                                        <tr class="text-start text-gray-400 fw-bolder fs-7 text-uppercase gs-0">
+                                            <th class="min-w-100px sorting" tabindex="0">{{ "STATISTICS_OVERALL" |
+                                                translate}}
+                                            </th>
+                                            <th class="min-w-100px sorting" tabindex="0">{{ "STATISTICS_VALUE" |
+                                                translate}}
+                                            </th>
+                                            <th class="min-w-100px sorting" tabindex="0">{{ "BOOKKEEPING_VALUE" |
+                                                translate
+                                                }}
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="fw-bold text-gray-600">
+                                        <tr class="even">
+                                            <td>
+                                                <span>Total Revenue</span>
+                                            </td>
+                                            <td>
+                                            </td>
+                                            <td>
+                                            </td>
+                                        </tr>
+                                        <tr class="even">
+                                            <td>
+                                                <span>Quantity</span>
+                                            </td>
+                                            <td>
+                                            </td>
+                                            <td>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                                <hr>
+                                <h4>Transactions</h4>
+                                <table
+                                    class="table table-green align-middle table-row-dashed fs-6 gy-5 dataTable no-footer">
+                                    <thead style="position: sticky;">
+                                        <tr class="text-start text-gray-400 fw-bolder fs-7 text-uppercase gs-0">
+                                            <th class="min-w-100px sorting" tabindex="0">{{ "BOOKING_DATE" | translate}}
+                                            </th>
+                                            <th class="min-w-100px sorting" tabindex="0">{{ "LEDGER_NUMBER" |
+                                                translate}}
+                                            </th>
+                                            <th class="min-w-100px sorting" tabindex="0">{{ "CREDIT" | translate}} </th>
+                                            <th class="min-w-100px sorting" tabindex="0">{{ "DEBIT" | translate }}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="fw-bold text-gray-600">
+                                        <tr class="even" *ngFor="let booking of bookingRecords">
+                                            <td>
+                                                <span>{{booking.dTransactionCreationDate | date: 'medium'}}</span>
+                                            </td>
+                                            <td>
+                                                <span>{{booking.nLedgerNumber}}</span>
+                                            </td>
+                                            <td>
+                                                <span>{{ booking.eType === 'credit' ? (booking.nValue | number:'2.1-5'):
+                                                    '-'}}</span>
+                                            </td>
+                                            <td>
+                                                <span>{{booking.eType === 'debit' ? (booking.nValue | number:'2.1-5'):
+                                                    '-'
+                                                    }}</span>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                    <tfoot style="position: sticky;">
+                                        <tr class="even">
+                                            <td>
+                                                <span>Total</span>
+                                            </td>
+                                            <td>
+                                                <span>-</span>
+                                            </td>
+                                            <td>
+                                                <span>{{creditAmount}}</span>
+                                            </td>
+                                            <td>
+                                                <span>{{debitAmount}}</span>
+                                            </td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                                <hr>
+                                <h4>Payments</h4>
+                                <table
+                                    class="table table-green align-middle table-row-dashed fs-6 gy-5 dataTable no-footer">
+                                    <thead style="position: sticky;">
+                                        <tr class="text-start text-gray-400 fw-bolder fs-7 text-uppercase gs-0">
+                                            <th class="min-w-100px sorting" tabindex="0">{{ "BOOKING_DATE" | translate}}
+                                            </th>
+                                            <th class="min-w-100px sorting" tabindex="0">{{ "LEDGER_NUMBER" |
+                                                translate}}
+                                            </th>
+                                            <th class="min-w-100px sorting" tabindex="0">{{ "CREDIT" | translate}} </th>
+                                            <th class="min-w-100px sorting" tabindex="0">{{ "DEBIT" | translate }}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="fw-bold text-gray-600">
+                                        <tr class="even" *ngFor="let booking of paymentRecords">
+                                            <td>
+                                                <span>{{booking.dTransactionCreationDate | date: 'medium'}}</span>
+                                            </td>
+                                            <td>
+                                                <span>{{booking.nLedgerNumber}}</span>
+                                            </td>
+                                            <td>
+                                                <span>{{ booking.eType === 'credit' ? (booking.nValue | number:'2.1-5'):
+                                                    '-'}}</span>
+                                            </td>
+                                            <td>
+                                                <span>{{booking.eType === 'debit' ? (booking.nValue | number:'2.1-5'):
+                                                    '-'
+                                                    }}</span>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                    <tfoot style="position: sticky;">
+                                        <tr class="even">
+                                            <td>
+                                                <span>Total</span>
+                                            </td>
+                                            <td>
+                                                <span>-</span>
+                                            </td>
+                                            <td>
+                                                <span>{{paymentCreditAmount}}</span>
+                                            </td>
+                                            <td>
+                                                <span>{{paymentDebitAmount}}</span>
+                                            </td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
                         </div>
                     </div>
-                </div>
+                </ng-container>
                 <!-- Tushar's code END -->
 
             </div>

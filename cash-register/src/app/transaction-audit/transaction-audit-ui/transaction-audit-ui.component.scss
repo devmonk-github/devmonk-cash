@@ -42,12 +42,16 @@
   font-weight: bold;
 }
 
-
 span.invalid {
-  color:red
+  color: red;
 }
 
 span.valid {
-  color:green
+  color: green;
 }
 
+.text-overflow-ellipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

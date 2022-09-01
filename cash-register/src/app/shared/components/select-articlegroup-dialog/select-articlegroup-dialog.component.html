@@ -2,9 +2,9 @@
     <div class="card-header" style="margin-top: 20px;">
         <h3>{{"SELECT_SUPPLIER_AND_BRAND" | translate}}</h3>
     </div>
-    <div class="card-body row">
+    <div class="card-body row pb-0 pt-3 ">
         <div class="pb-4">
-            <label class="fs-5" for="articlegroup">{{ "ARTICLE_GROUP" | translate}}</label>
+            <label class="fs-5 my-2" for="articlegroup">{{ "ARTICLE_GROUP" | translate}}</label>
             <ng-select *ngIf="!articlegroup" [(ngModel)]="articlegroup" (search)="searchArticlegroup($event.term)"
                 (ngModelChange)="changeInArticleGroup()" class="form-control form-control-solid p-0 w-100 custom"
                 placeholder="Search articlegroup" [minTermLength]="2" [clearable]="false"
@@ -19,8 +19,8 @@
                 </div>
             </div>
         </div>
-        <div>
-            <label class="fs-5" for="brand">{{ "BRAND" | translate}}</label>
+        <div class="pb-4">
+            <label class="fs-5 my-2" for="brand">{{ "BRAND" | translate}}</label>
             <ng-select *ngIf="!brand" [(ngModel)]="brand" (search)="searchBrand($event.term)"
                 (ngModelChange)="changeInBrand()" class="form-control form-control-solid p-0 w-100 custom"
                 placeholder="Search brand" [minTermLength]="2" [clearable]="false"
@@ -37,7 +37,7 @@
         </div>
 
         <div class="pb-4">
-            <label class="fs-5" for="supplier">{{ "SUPPLIER" | translate}}</label>
+            <label class="fs-5 my-2" for="supplier">{{ "SUPPLIER" | translate}}</label>
             <ng-select *ngIf="!supplier" [(ngModel)]="supplier" (search)="searchSupplier($event.term)"
                 (ngModelChange)="changeInSupplier()" class="form-control form-control-solid p-0 w-100 custom"
                 placeholder="Search supplier" [minTermLength]="2" [clearable]="false"
