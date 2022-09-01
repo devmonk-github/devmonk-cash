@@ -79,7 +79,7 @@ export class TransactionItem {
     public nDiscount: number,
     public nRedeemedLoyaltyPoints: number,
     public sUniqueIdentifier: string,
-    public nRevenueAmt: number,
+    public nRevenueAmount: number,
     public sDescription: string) { }
 
 }
