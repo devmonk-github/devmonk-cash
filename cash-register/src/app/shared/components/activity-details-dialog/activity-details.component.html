@@ -109,12 +109,14 @@
                 <div class="accordion" id="kt_accordion_1">
                     <div class="accordion-item" *ngFor="let activity of activityItems; index as index">
                         <h2 class="accordion-header">
-                            <button class="accordion-button fs-4 fw-bold" (click)="collapsedBtn = !collapsedBtn" type="button"
-                                data-bs-toggle="collapse" [ngClass]="{'collapsed': collapsedBtn }" #accordionBtn>
+                            <button class="accordion-button fs-4 fw-bold" (click)="collapsedBtn = !collapsedBtn"
+                                type="button" data-bs-toggle="collapse" [ngClass]="{'collapsed': collapsedBtn }"
+                                #accordionBtn>
                                 <label>{{activity.sNumber}}</label>
                             </button>
                         </h2>
-                        <div class="accordion-collapse collapse" data-bs-parent="accordion" [ngClass]="{'show': collapsedBtn }">
+                        <div class="accordion-collapse collapse" data-bs-parent="accordion"
+                            [ngClass]="{'show': collapsedBtn }">
                             <div class="accordion-body">
                                 <div class="row">
                                     <div class="col-4">
@@ -269,7 +271,8 @@
                                             </span>
                                         </div>
                                         <div class="btn-group me-4 w-100">
-                                            <span class="btn btn-primary fs-bold px-6" (click)="loadCashRegister = true; openTransaction(activity, 'activity')">
+                                            <span class="btn btn-primary fs-bold px-6"
+                                                (click)="loadCashRegister = true; openTransaction(activity, 'activity')">
                                                 <fa-icon [icon]="faEuro"></fa-icon>
                                                 <span class="indicator-label">{{ "CHECKOUT"}}</span>
                                             </span>
@@ -474,14 +477,67 @@
                                                     [(ngModel)]="activity.iSupplierId">
                                             </div>
                                         </div>
-                                        <div>
-                                            I repair this myself
-                                        </div>
-                                        <div>
-                                            Repairer
-                                            <input type="text" class="form-control" placeholder="Search employee">
-                                            OR
-                                            <input type="text" class="form-control" placeholder="Search repairer">
+                                        <div class="row">
+                                            <div>
+                                                I repair this myself
+                                            </div>
+                                            <div class="col">
+
+                                                <label for="employee">{{ "REPAIRER" | translate}}</label>
+                                                <ng-select *ngIf="!employee" [(ngModel)]="employee"
+                                                    (search)="searchEmployees($event.term)"
+                                                    class="form-control form-control-solid p-0 w-100 custom"
+                                                    placeholder="Search employee" [minTermLength]="2"
+                                                    [clearable]="false" [isOpen]="filteredEmployees.length > 0"
+                                                    (change)="onEmployeeChange($event)">
+                                                    <ng-option *ngFor="let option of filteredEmployees"
+                                                        [value]="option">
+                                                        {{option.sName ||
+                                                        'Unknown'}}</ng-option>
+                                                </ng-select>
+                                                <div class="chip d-flex" *ngIf="employee">
+                                                    {{employee}}
+                                                    <div (click)="employee=null">
+                                                        &nbsp;<i class="close fas fa-times cursor-pointer"></i>
+                                                    </div>
+                                                </div>
+
+                                                <label for="supplier">{{ "OR" | translate}}</label>
+                                                <ng-select *ngIf="!supplier" [(ngModel)]="supplier"
+                                                    (search)="searchSuppliers($event.term)"
+                                                    class="form-control form-control-solid p-0 w-100 custom"
+                                                    placeholder="Search repairer" [minTermLength]="2"
+                                                    [clearable]="false" [isOpen]="supplierOptions.length > 0"
+                                                    (change)="onSupplierChange($event)">
+                                                    <ng-option *ngFor="let option of supplierOptions" [value]="option">
+                                                        {{option.sName ||
+                                                        'Unknown'}}</ng-option>
+                                                </ng-select>
+                                                <div class="chip d-flex" *ngIf="supplier">
+                                                    {{supplier}}
+                                                    <div (click)="supplier=null">
+                                                        &nbsp;<i class="close fas fa-times cursor-pointer"></i>
+                                                    </div>
+                                                </div>
+
+                                                <label for="brand">{{ "BRAND" | translate}}</label>
+                                                <ng-select *ngIf="!brand" [(ngModel)]="brand"
+                                                    (search)="searchBrands($event.term)"
+                                                    class="form-control form-control-solid p-0 w-100 custom"
+                                                    placeholder="Search brand" [minTermLength]="2" [clearable]="false"
+                                                    [isOpen]="filteredBrands.length > 0"
+                                                    (change)="onBrandChange($event)">
+                                                    <ng-option *ngFor="let option of filteredBrands" [value]="option">
+                                                        {{option.sName ||
+                                                        'Unknown'}}</ng-option>
+                                                </ng-select>
+                                                <div class="chip d-flex" *ngIf="brand">
+                                                    {{brand}}
+                                                    <div (click)="brand=null">
+                                                        &nbsp;<i class="close fas fa-times cursor-pointer"></i>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -507,7 +563,8 @@
                     </div>
                 </div>
                 <div class="d-flex mt-100">
-                    <h5 *ngIf='!activityItems.length && !loading' style="text-align: center">{{'NO_DATA_FOUND' | translate }}
+                    <h5 *ngIf='!activityItems.length && !loading' style="text-align: center">{{'NO_DATA_FOUND' |
+                        translate }}
                     </h5>
                     <div *ngIf="loading" class="spinner-border mx-auto"></div>
                 </div>
