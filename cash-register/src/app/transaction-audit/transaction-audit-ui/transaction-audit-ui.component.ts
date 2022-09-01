@@ -1,11 +1,12 @@
 import { TranslateService } from '@ngx-translate/core';
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit } from '@angular/core';
 import { Observable, Subscription } from 'rxjs';
 import { ApiService } from 'src/app/shared/service/api.service';
 import { PdfService } from 'src/app/shared/service/pdf2.service';
 import * as _moment from 'moment';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastService } from 'src/app/shared/components/toast';
+import { MenuComponent } from 'src/app/shared/_layout/components/common';
 const moment = (_moment as any).default ? (_moment as any).default : _moment;
 
 export interface View {
@@ -49,7 +50,7 @@ export interface DisplayMethod {
   templateUrl: './transaction-audit-ui.component.html',
   styleUrls: ['./transaction-audit-ui.component.scss'],
 })
-export class TransactionAuditUiComponent implements OnInit, OnDestroy {
+export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDestroy {
   iBusinessId: any = '';
   sUserType: any = '';
   iLocationId: any = '';
@@ -224,6 +225,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
     if (_oUser) this.oUser = JSON.parse(_oUser);
   }
 
+
   ngOnInit(): void {
     this.iStatisticId = this.route.snapshot?.params?.iStatisticId;
     const oQueryParams = this.route.snapshot?.queryParams;
@@ -244,7 +246,18 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
     this.getWorkstations();
     this.getEmployees();
     this.getPaymentMethods();
+
+
+
   }
+  ngAfterViewInit(): void {
+
+    setTimeout(() => {
+      MenuComponent.reinitialization();
+      console.log("Menu reinitializing");
+    }, 500);
+  }
+
   setOptionMenu() {
     this.aOptionMenu = [
       {
@@ -452,7 +465,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
         ],
       },
       {
-        sKey: 'Sales orders ',
+        sKey: 'Sales orders',
         sValue: this.translate.instant('SALES_ORDERS'),
         children: [
           // ArticleGroup
@@ -555,13 +568,14 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
         ],
       },
     ]
+
     const eUserType = localStorage.getItem('type') ?? ''
     if (eUserType && eUserType.toLowerCase() !== 'supplier') {
-      let iPurchaseIndex = this.aOptionMenu.findIndex(i => i.sKey.toLowerCase() === 'sales orders')
+      let iPurchaseIndex = this.aOptionMenu.findIndex(i => i.sValue.toLowerCase() === 'sales_orders')
       this.aOptionMenu.splice(iPurchaseIndex, 1)
     }
     this.onDropdownItemSelected(this.aOptionMenu[0], this.aOptionMenu[0].children[0], this.aOptionMenu[0].children[0].children[0])
-    // console.log({ aOptionMenu: this.aOptionMenu });
+    console.log({ aOptionMenu: this.aOptionMenu });
 
   }
   onDropdownItemSelected(parent: View, child1: ViewChild, child2: ChildChild) {
@@ -575,6 +589,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
       child1,
       child2,
     }
+    this.optionMenu = parent.sValue.toLowerCase().trim()
     this.sSelectedOptionMenu = `${parent.sKey}->${child1.sKey}->${child2.sKey}`
     const eDisplayMethod = child2.data?.displayMethod || null
     const sModeFilter = child2.data?.modeFilter || null
