@@ -2189,24 +2189,24 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
     console.log('getPaymentMethods');
     // this.payMethodsLoading = true;
     this.payMethods = [];
-    const methodsToDisplay = [
-      'card',
-      'cash',
-      'bankpayment',
-      'maestro',
-      'mastercard',
-      'visa',
-    ];
+    // const methodsToDisplay = [
+    //   'card',
+    //   'cash',
+    //   'bankpayment',
+    //   'maestro',
+    //   'mastercard',
+    //   'visa',
+    // ];
     this.apiService
       .getNew('cashregistry', '/api/v1/payment-methods/' + this.iBusinessId)
       .subscribe(
         (result: any) => {
           if (result && result.data && result.data.length) {
-            this.allPaymentMethod = result.data;
+            // this.allPaymentMethod = result.data;
             result.data.forEach((element: any) => {
-              if (methodsToDisplay.includes(element.sName.toLowerCase())) {
+              // if (methodsToDisplay.includes(element.sName.toLowerCase())) {
                 this.payMethods.push(element);
-              }
+              // }
             });
             this.filterDuplicatePaymentMethods();
           }
@@ -2250,10 +2250,10 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
       });
   }
 
-  async saveUpdatedPayments(){
-    // console.log(this.aNewSelectedPaymentMethods);
+  saveUpdatedPayments(){
+    console.log(this.aPaymentMethods, this.aNewSelectedPaymentMethods);
     // return;
-    await this.aPaymentMethods.forEach(async (item: any) => {
+    this.aPaymentMethods.forEach(async (item: any) => {
       if (item.nAmount != item.nNewAmount) {
         await this.addExpenses({
           amount: item.nNewAmount - item.nAmount,
@@ -2268,22 +2268,22 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
     });
 
     if (this.aNewSelectedPaymentMethods.length) {
-      await this.aNewSelectedPaymentMethods.forEach(async (item: any) => {
+      this.aNewSelectedPaymentMethods.forEach(async (item: any) => {
         if (item.nAmount) {
           await this.addExpenses({
             amount: item.nAmount,
             comment: 'Payment method change',
-            oPaymentMethod: {
+            oPayment: {
               iPaymentMethodId: item._id,
               nAmount: item.nAmount,
-              sMethod: item.sMethod
+              sMethod: item.sName.toLowerCase()
             }
           }).toPromise();
         }
       });
     }
 
-    this.fetchStatistics();
+    // this.fetchStatistics();
   }
 
   ngOnDestroy(): void {
