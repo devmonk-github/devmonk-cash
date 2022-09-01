@@ -24,13 +24,13 @@ export interface ChildChild {
   sKey: string;
   sValue: string;
   data?: {
-    displayMethod?: DisplayMethodKeysEnum,
+    displayMethod?: eDisplayMethodKeysEnum,
     modeFilter?: 'supplier' | 'businessOwner',
     levelFilter?: 'articleGroup' | 'product'
   }
 }
 
-enum DisplayMethodKeysEnum {
+enum eDisplayMethodKeysEnum {
   revenuePerBusinessPartner = 'revenuePerBusinessPartner',
   revenuePerArticleGroupAndProperty = 'revenuePerArticleGroupAndProperty',
   revenuePerSupplierAndArticleGroup = 'revenuePerSupplierAndArticleGroup',
@@ -40,7 +40,7 @@ enum DisplayMethodKeysEnum {
 
 }
 export interface DisplayMethod {
-  sKey: DisplayMethodKeysEnum | string;
+  sKey: eDisplayMethodKeysEnum | string;
   sValue: string;
 }
 
@@ -90,7 +90,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
   };
   bIsArticleGroupLevel: boolean = true; // Could be Article-group level or product-level (if false then article-group mode)
   bIsSupplierMode: boolean = true; // could be Business-owner-mode or supplier-mode (if true then supplier-mode)
-  displayMethodKeysEnum = DisplayMethodKeysEnum
+  edisplayMethodKeysEnum = eDisplayMethodKeysEnum
   creditAmount = 0;
   debitAmount = 0;
   paymentCreditAmount = 0;
@@ -152,32 +152,32 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
 
   aDisplayMethod: DisplayMethod[] = [
     {
-      sKey: DisplayMethodKeysEnum.revenuePerBusinessPartner,
+      sKey: eDisplayMethodKeysEnum.revenuePerBusinessPartner,
       sValue: 'Supplier And Article-Group And Dynamic Property',
     },
     {
       // sKey: 'revenuePerArticleGroupAndProperty',
-      sKey: DisplayMethodKeysEnum.revenuePerArticleGroupAndProperty,
+      sKey: eDisplayMethodKeysEnum.revenuePerArticleGroupAndProperty,
       sValue: 'Article Group and Dynamic Property',
     },
     {
-      sKey: DisplayMethodKeysEnum.revenuePerSupplierAndArticleGroup, // Use the revenuePerBusinessPartner and Remove the Dynamic Property
+      sKey: eDisplayMethodKeysEnum.revenuePerSupplierAndArticleGroup, // Use the revenuePerBusinessPartner and Remove the Dynamic Property
       sValue: 'Supplier And Article-Group',
     },
     {
-      sKey: DisplayMethodKeysEnum.revenuePerProperty,
+      sKey: eDisplayMethodKeysEnum.revenuePerProperty,
       sValue: 'Revenue Per Property',
     },
     {
-      sKey: DisplayMethodKeysEnum.revenuePerArticleGroup, // Use the revenuePerArticleGroupAndProperty and remove the Dynamic Property
+      sKey: eDisplayMethodKeysEnum.revenuePerArticleGroup, // Use the revenuePerArticleGroupAndProperty and remove the Dynamic Property
       sValue: 'Article Group',
     },
     {
-      sKey: DisplayMethodKeysEnum.aVatRates,
+      sKey: eDisplayMethodKeysEnum.aVatRates,
       sValue: 'Vat Rates',
     },
   ];
-  sDisplayMethod: DisplayMethodKeysEnum = DisplayMethodKeysEnum.revenuePerBusinessPartner
+  sDisplayMethod: eDisplayMethodKeysEnum = eDisplayMethodKeysEnum.revenuePerBusinessPartner
 
   aAmount: any = [
     { sLabel: '500.00', nValue: 500, nQuantity: 0, key: 'nType500' },
@@ -259,7 +259,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
                 sKey: 'Compact',
                 sValue: this.translate.instant('COMPACT'),
                 data: {
-                  displayMethod: DisplayMethodKeysEnum.revenuePerArticleGroup,
+                  displayMethod: eDisplayMethodKeysEnum.revenuePerArticleGroup,
                   modeFilter: 'supplier',
                 }
               },
@@ -267,7 +267,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
                 sKey: 'Specific',
                 sValue: this.translate.instant('SPECIFIC'),
                 data: {
-                  displayMethod: DisplayMethodKeysEnum.revenuePerArticleGroupAndProperty,
+                  displayMethod: eDisplayMethodKeysEnum.revenuePerArticleGroupAndProperty,
                   modeFilter: 'supplier',
                   levelFilter: 'articleGroup'
                 }
@@ -282,21 +282,21 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
                 sKey: 'Vat rates',
                 sValue: this.translate.instant('VAT_RATES'),
                 data: {
-                  displayMethod: DisplayMethodKeysEnum.aVatRates,
+                  displayMethod: eDisplayMethodKeysEnum.aVatRates,
                 }
               },
               {
                 sKey: 'Revenue per',
                 sValue: this.translate.instant('REVENUE_PER'),
                 data: {
-                  displayMethod: DisplayMethodKeysEnum.revenuePerProperty
+                  displayMethod: eDisplayMethodKeysEnum.revenuePerProperty
                 }
               },
               {
                 sKey: 'Article group',
                 sValue: this.translate.instant('ARTICLE_GROUP'),
                 data: {
-                  displayMethod: DisplayMethodKeysEnum.aVatRates
+                  displayMethod: eDisplayMethodKeysEnum.aVatRates
                 }
               },
             ]
@@ -309,7 +309,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
                 sKey: 'Compact',
                 sValue: this.translate.instant('COMPACT'),
                 data: {
-                  displayMethod: DisplayMethodKeysEnum.revenuePerSupplierAndArticleGroup,
+                  displayMethod: eDisplayMethodKeysEnum.revenuePerSupplierAndArticleGroup,
                   modeFilter: 'supplier',
                 }
               },
@@ -317,7 +317,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
                 sKey: 'Specific',
                 sValue: this.translate.instant('SPECIFIC'),
                 data: {
-                  displayMethod: DisplayMethodKeysEnum.revenuePerBusinessPartner,
+                  displayMethod: eDisplayMethodKeysEnum.revenuePerBusinessPartner,
                   modeFilter: 'supplier',
                   levelFilter: 'articleGroup'
                 }
@@ -332,7 +332,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
                 sKey: 'Compact',
                 sValue: this.translate.instant('COMPACT'),
                 data: {
-                  displayMethod: DisplayMethodKeysEnum.revenuePerArticleGroup,
+                  displayMethod: eDisplayMethodKeysEnum.revenuePerArticleGroup,
                   modeFilter: 'businessOwner',
                 }
               },
@@ -340,7 +340,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
                 sKey: 'Specific',
                 sValue: this.translate.instant('SPECIFIC'),
                 data: {
-                  displayMethod: DisplayMethodKeysEnum.revenuePerArticleGroupAndProperty,
+                  displayMethod: eDisplayMethodKeysEnum.revenuePerArticleGroupAndProperty,
                   modeFilter: 'businessOwner',
                   levelFilter: 'articleGroup'
                 }
@@ -361,7 +361,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
                 sKey: 'Compact',
                 sValue: this.translate.instant('COMPACT'),
                 data: {
-                  displayMethod: DisplayMethodKeysEnum.revenuePerArticleGroup,
+                  displayMethod: eDisplayMethodKeysEnum.revenuePerArticleGroup,
                   modeFilter: 'supplier',
                 }
               },
@@ -369,7 +369,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
                 sKey: 'Specific',
                 sValue: this.translate.instant('SPECIFIC'),
                 data: {
-                  displayMethod: DisplayMethodKeysEnum.revenuePerArticleGroupAndProperty,
+                  displayMethod: eDisplayMethodKeysEnum.revenuePerArticleGroupAndProperty,
                   modeFilter: 'supplier',
                   levelFilter: 'articleGroup'
                 }
@@ -384,21 +384,21 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
                 sKey: 'Vat rates',
                 sValue: this.translate.instant('VAT_RATES'),
                 data: {
-                  displayMethod: DisplayMethodKeysEnum.aVatRates,
+                  displayMethod: eDisplayMethodKeysEnum.aVatRates,
                 }
               },
               {
                 sKey: 'Revenue per',
                 sValue: this.translate.instant('REVENUE_PER'),
                 data: {
-                  displayMethod: DisplayMethodKeysEnum.revenuePerProperty
+                  displayMethod: eDisplayMethodKeysEnum.revenuePerProperty
                 }
               },
               {
                 sKey: 'Article group',
                 sValue: this.translate.instant('ARTICLE_GROUP'),
                 data: {
-                  displayMethod: DisplayMethodKeysEnum.aVatRates
+                  displayMethod: eDisplayMethodKeysEnum.aVatRates
                 }
               },
             ]
@@ -411,7 +411,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
                 sKey: 'Compact',
                 sValue: this.translate.instant('COMPACT'),
                 data: {
-                  displayMethod: DisplayMethodKeysEnum.revenuePerSupplierAndArticleGroup,
+                  displayMethod: eDisplayMethodKeysEnum.revenuePerSupplierAndArticleGroup,
                   modeFilter: 'supplier',
                 }
               },
@@ -419,7 +419,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
                 sKey: 'Specific',
                 sValue: this.translate.instant('SPECIFIC'),
                 data: {
-                  displayMethod: DisplayMethodKeysEnum.revenuePerBusinessPartner,
+                  displayMethod: eDisplayMethodKeysEnum.revenuePerBusinessPartner,
                   modeFilter: 'supplier',
                   levelFilter: 'articleGroup'
                 }
@@ -434,7 +434,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
                 sKey: 'Compact',
                 sValue: this.translate.instant('COMPACT'),
                 data: {
-                  displayMethod: DisplayMethodKeysEnum.revenuePerArticleGroup,
+                  displayMethod: eDisplayMethodKeysEnum.revenuePerArticleGroup,
                   modeFilter: 'businessOwner',
                 }
               },
@@ -442,7 +442,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
                 sKey: 'Specific',
                 sValue: this.translate.instant('SPECIFIC'),
                 data: {
-                  displayMethod: DisplayMethodKeysEnum.revenuePerArticleGroupAndProperty,
+                  displayMethod: eDisplayMethodKeysEnum.revenuePerArticleGroupAndProperty,
                   modeFilter: 'businessOwner',
                   levelFilter: 'articleGroup'
                 }
@@ -464,7 +464,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
                 sKey: 'Compact',
                 sValue: this.translate.instant('COMPACT'),
                 data: {
-                  displayMethod: DisplayMethodKeysEnum.revenuePerArticleGroup,
+                  displayMethod: eDisplayMethodKeysEnum.revenuePerArticleGroup,
                   modeFilter: 'supplier',
                 }
               },
@@ -472,7 +472,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
                 sKey: 'Specific',
                 sValue: this.translate.instant('SPECIFIC'),
                 data: {
-                  displayMethod: DisplayMethodKeysEnum.revenuePerArticleGroupAndProperty,
+                  displayMethod: eDisplayMethodKeysEnum.revenuePerArticleGroupAndProperty,
                   modeFilter: 'supplier',
                   levelFilter: 'articleGroup'
                 }
@@ -487,21 +487,21 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
                 sKey: 'Vat rates',
                 sValue: this.translate.instant('VAT_RATES'),
                 data: {
-                  displayMethod: DisplayMethodKeysEnum.aVatRates,
+                  displayMethod: eDisplayMethodKeysEnum.aVatRates,
                 }
               },
               {
                 sKey: 'Revenue per',
                 sValue: this.translate.instant('REVENUE_PER'),
                 data: {
-                  displayMethod: DisplayMethodKeysEnum.revenuePerProperty
+                  displayMethod: eDisplayMethodKeysEnum.revenuePerProperty
                 }
               },
               {
                 sKey: 'Article group',
                 sValue: this.translate.instant('ARTICLE_GROUP'),
                 data: {
-                  displayMethod: DisplayMethodKeysEnum.aVatRates
+                  displayMethod: eDisplayMethodKeysEnum.aVatRates
                 }
               },
             ]
@@ -514,7 +514,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
                 sKey: 'Compact',
                 sValue: this.translate.instant('COMPACT'),
                 data: {
-                  displayMethod: DisplayMethodKeysEnum.revenuePerSupplierAndArticleGroup,
+                  displayMethod: eDisplayMethodKeysEnum.revenuePerSupplierAndArticleGroup,
                   modeFilter: 'supplier',
                 }
               },
@@ -522,7 +522,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
                 sKey: 'Specific',
                 sValue: this.translate.instant('SPECIFIC'),
                 data: {
-                  displayMethod: DisplayMethodKeysEnum.revenuePerBusinessPartner,
+                  displayMethod: eDisplayMethodKeysEnum.revenuePerBusinessPartner,
                   modeFilter: 'supplier',
                   levelFilter: 'articleGroup'
                 }
@@ -537,7 +537,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
                 sKey: 'Compact',
                 sValue: this.translate.instant('COMPACT'),
                 data: {
-                  displayMethod: DisplayMethodKeysEnum.revenuePerArticleGroup,
+                  displayMethod: eDisplayMethodKeysEnum.revenuePerArticleGroup,
                   modeFilter: 'businessOwner',
                 }
               },
@@ -545,7 +545,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
                 sKey: 'Specific',
                 sValue: this.translate.instant('SPECIFIC'),
                 data: {
-                  displayMethod: DisplayMethodKeysEnum.revenuePerArticleGroupAndProperty,
+                  displayMethod: eDisplayMethodKeysEnum.revenuePerArticleGroupAndProperty,
                   modeFilter: 'businessOwner',
                   levelFilter: 'articleGroup'
                 }
@@ -2250,7 +2250,7 @@ export class TransactionAuditUiComponent implements OnInit, OnDestroy {
       });
   }
 
-  async saveUpdatedPayments(){
+  async saveUpdatedPayments() {
     // console.log(this.aNewSelectedPaymentMethods);
     // return;
     await this.aPaymentMethods.forEach(async (item: any) => {
