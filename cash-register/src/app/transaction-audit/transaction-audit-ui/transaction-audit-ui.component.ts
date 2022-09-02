@@ -717,6 +717,9 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
       .postNew('cashregistry', `/api/v1/statistics/transaction/audit`, oBody)
       .subscribe(
         (result: any) => {
+          console.log('result: ', JSON.parse(JSON.stringify(result)));
+          this.nPaymentMethodTotal = 0;
+          this.nNewPaymentMethodTotal = 0;
           this.bStatisticLoading = false;
           if (result?.data) {
             if (result.data?.oTransactionAudit?.length)
@@ -729,9 +732,11 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
               this.aPaymentMethods.map((item: any) => {
                 item.nNewAmount = item.nAmount;
                 this.nPaymentMethodTotal += parseFloat(item.nAmount);
-
+                console.log('item: ', item);
                 return item;
               });
+              console.log('this.nPaymentMethodTotal: ', this.nPaymentMethodTotal);
+              console.log('this.aPaymentMethods: ', this.aPaymentMethods);
               this.nNewPaymentMethodTotal = this.nPaymentMethodTotal;
               this.filterDuplicatePaymentMethods();
             }

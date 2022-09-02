@@ -516,9 +516,28 @@
                                 <p> {{ 'REVENUE_PER_ARTICLE_GROUP_AND_PROPERTY' | translate}} </p>
                                 <div class="card-body">
                                     <div class="table-responsive" *ngFor="let oStatistic of aStatistic; let i = index">
-                                        <table
-                                            class="table table-row-bordered table-row-gray-300 gy-5 gs-5 mb-0 text-gray-600 fw-bold border"
+                                        <table class="table table-row-bordered table-row-gray-300 gy-5 gs-5 mb-0 text-gray-600 fw-bold border"
                                             *ngFor="let oArticleGroup of oStatistic.individual; let articleGroupIndex = index">
+                                            <!-- HEADER -->
+                                            <!-- <thead>
+                                                                                        <tr>
+                                                                                            <th><span class="">{{ 'ARTICLE_NAME' | translate}}</span>
+                                                                                            </th>
+                                                                                            <th class="w-150px"><span class="">{{"QUANTITY" | translate}}</span>
+                                                                                            </th>
+                                                                                            <th class="w-150px"><span class="">{{"PRICE_WITH_VAT" |
+                                                                                                    translate}}</span>
+                                                                                            </th>
+                                                                                            <th class="w-150px"><span class="">{{"PURCHASE_PRICE" |
+                                                                                                    translate}}</span>
+                                                                                            </th>
+                                                                                            <th class="w-150px"><span class="">{{"GROSS_PROFIT" |
+                                                                                                    translate}}</span>
+                                                                                            </th>
+                                                                                            <th class="w-150px"><span class="">{{"MARGIN" | translate}}</span>
+                                                                                            </th>
+                                                                                        </tr>
+                                                                                    </thead> -->
                                             <!-- start of articlegroup -->
                                             <thead class="bg-gray-100">
                                                 <tr class="fw-bold fs-6 text-gray-800">
@@ -550,7 +569,6 @@
                                             </ng-container>
                                             <!-- start of articlegroup -->
                                         </table>
-
                                     </div>
                                 </div>
                             </div>
@@ -700,7 +718,7 @@
                                                                 <td class="w-150px">{{oArticleGroup.nTotalRevenue}}</td>
                                                                 <td class="w-150px">
                                                                     {{oArticleGroup.nTotalPurchaseAmount}}</td>
-                                                                <td class="w-150px">{{oArticleGroup.nProfit| number
+                                                                <td class="w-150px">{{oArticleGroup.nProfit | number
                                                                     :'1.2-2'}}</td>
                                                                 <td class="w-150px">{{oArticleGroup.nMargin}}</td>
                                                             </tr>
