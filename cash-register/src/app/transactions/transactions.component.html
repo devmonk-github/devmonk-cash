@@ -21,8 +21,7 @@
           (click)="showAdvanceSearch = !showAdvanceSearch">{{ 'ADVANCE_SEARCH' | translate }}</a>
       </div>
       <div class="d-flex align-items-right ms-auto">
-        <button class="btn btn-secondary" (click)="goToCashRegister()">{{ 'NEW' | translate }}</button>
-        <button class="btn btn-secondary">{{ 'TRASH' | translate }}</button>
+        <button class="btn btn-primary" (click)="goToCashRegister()">{{ 'NEW' | translate }}</button>
       </div>
       <!--end:Action-->
     </div>
@@ -60,7 +59,8 @@
               <div class="col-lg-4">
                 <label class="fs-6 form-label fw-bolder text-dark">{{ 'PAYMENT_METHOD' | translate }}</label>
                 <!--begin::Select-->
-                <ng-select class="form-control form-control-solid p-0" [(ngModel)]="requestParams.methods" [clearable]="false" [multiple]="true">
+                <ng-select class="form-control form-control-solid p-0" [(ngModel)]="requestParams.methods"
+                  [clearable]="false" [multiple]="true">
                   <ng-option *ngFor="let method of paymentMethods" [value]="method.sName">{{method.sName}}</ng-option>
                 </ng-select>
                 <!--end::Select-->
@@ -70,7 +70,8 @@
               <div class="col-lg-4">
                 <label class="fs-6 form-label fw-bolder text-dark">{{ 'TRANSACTION_ITEM_EKINDS' | translate }}</label>
                 <!--begin::Select-->
-                <ng-select class="form-control form-control-solid p-0" [(ngModel)]="requestParams.TIEKinds" [clearable]="false" [multiple]="true">
+                <ng-select class="form-control form-control-solid p-0" [(ngModel)]="requestParams.TIEKinds"
+                  [clearable]="false" [multiple]="true">
                   <ng-option *ngFor="let type of TIEkinds" [value]="type">{{type}}</ng-option>
                 </ng-select>
                 <!--end::Select-->
@@ -81,16 +82,23 @@
                 <label class="fs-6 form-label fw-bolder text-dark">{{ 'IMPORT_STATUS' | translate }}</label>
                 <div class="nav-group nav-group-fluid">
                   <label>
-                    <input type="radio" class="btn-check" name="import" value="all" [(ngModel)]="requestParams.importStatus" checked="checked" />
-                    <span class="btn btn-sm btn-color-muted btn-active btn-active-primary fw-bolder px-4">{{ 'ALL' | translate }}</span>
+                    <input type="radio" class="btn-check" name="import" value="all"
+                      [(ngModel)]="requestParams.importStatus" checked="checked" />
+                    <span class="btn btn-sm btn-color-muted btn-active btn-active-primary fw-bolder px-4">{{ 'ALL' |
+                      translate }}</span>
                   </label>
                   <label>
-                    <input type="radio" class="btn-check" name="import" value="imported" [(ngModel)]="requestParams.importStatus" />
-                    <span class="btn btn-sm btn-color-muted btn-active btn-active-primary fw-bolder px-4">{{ 'IMPORTED' | translate }}</span>
+                    <input type="radio" class="btn-check" name="import" value="imported"
+                      [(ngModel)]="requestParams.importStatus" />
+                    <span class="btn btn-sm btn-color-muted btn-active btn-active-primary fw-bolder px-4">{{ 'IMPORTED'
+                      | translate }}</span>
                   </label>
                   <label>
-                    <input type="radio" class="btn-check" name="import" value="unimported" [(ngModel)]="requestParams.importStatus" />
-                    <span class="btn btn-sm btn-color-muted btn-active btn-active-primary fw-bolder px-4">{{'NOT_IMPORTED' | translate }}</span>
+                    <input type="radio" class="btn-check" name="import" value="unimported"
+                      [(ngModel)]="requestParams.importStatus" />
+                    <span
+                      class="btn btn-sm btn-color-muted btn-active btn-active-primary fw-bolder px-4">{{'NOT_IMPORTED' |
+                      translate }}</span>
                   </label>
                 </div>
               </div>
@@ -204,8 +212,8 @@
               <div class="col-lg-4">
                 <label class="fs-6 form-label fw-bolder text-dark">{{ 'LOCATION' | translate }}</label>
                 <!--begin::Select-->
-                <ng-select class="form-control form-control-solid p-0" [multiple]="true" [(ngModel)]="requestParams.locations"
-                  [clearable]="false">
+                <ng-select class="form-control form-control-solid p-0" [multiple]="true"
+                  [(ngModel)]="requestParams.locations" [clearable]="false">
                   <ng-option *ngFor="let location of locations" [value]="location._id">{{location.sName}}</ng-option>
                 </ng-select>
                 <!--end::Select-->
