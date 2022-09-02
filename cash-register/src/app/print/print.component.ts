@@ -49,7 +49,8 @@ export class PrintComponent implements OnInit {
       "__QUANTITY": this.translationsResults.QUANTITY,
       "__DESCRIPTION": this.translationsResults.DESCRIPTION,
       "__DISCOUNT": this.translationsResults.DISCOUNT,
-      "__AMOUNT": this.translationsResults.AMOUNT
+      "__AMOUNT": this.translationsResults.AMOUNT,
+      "__SAVINGS_POINTS": this.translationsResults.SAVINGS_POINTS
     };
 
     const dataString = {

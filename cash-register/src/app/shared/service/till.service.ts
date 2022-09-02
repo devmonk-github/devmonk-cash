@@ -71,7 +71,7 @@ export class TillService {
     }
   }
 
-  createTransactionBody(transactionItems: any, payMethods: any, discountArticleGroup: any, redeemedLoyaltyPoints: number): any {
+  createTransactionBody(transactionItems: any, payMethods: any, discountArticleGroup: any, redeemedLoyaltyPoints: number, customer: any): any {
     const transaction = new Transaction(
       null,
       null,
@@ -83,6 +83,7 @@ export class TillService {
       this.getValueFromLocalStorage('currentWorkstation'),
       this.getValueFromLocalStorage('currentEmployee')._id,
       this.getValueFromLocalStorage('currentLocation'),
+      null,
       null ,
     )
 
@@ -94,6 +95,22 @@ export class TillService {
       oTransaction: transaction,
       payments: this.getUsedPayMethods(false, payMethods),
       redeemedLoyaltyPoints,
+    };
+    if (customer && customer._id) {
+      body.oTransaction.iCustomerId = customer._id;
+      body.oTransaction.oCustomer = {
+        _id: customer._id,
+        sFirstName: customer.sFirstName,
+        sLastName: customer.sLastName,
+        sPrefix: customer.sPrefix,
+        oInvoiceAddress: customer.oInvoiceAddress,
+        nClientId: customer.nClientId,
+        sGender: customer.sGender,
+        bCounter: customer.bCounter,
+        oPhone: customer.oPhone,
+        sVatNumber: customer.sVatNumber,
+        sCocNumber: customer.sCocNumber,
+      }
     };
     body.transactionItems = transactionItems.map((i: any) => {
       return new TransactionItem(

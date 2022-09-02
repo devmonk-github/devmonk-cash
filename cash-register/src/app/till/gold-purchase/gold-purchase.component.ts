@@ -55,13 +55,12 @@ export class GoldPurchaseComponent implements OnInit {
   typeArray = ['regular', 'return'];
   constructor(
     private priceService: PriceService,
-    private apiService: ApiService,
     private createArticleGroupService: CreateArticleGroupService,
-    private toastrService: ToastService,
-    private dialogService: DialogService) { }
+    private toastrService: ToastService) { }
 
   ngOnInit(): void {
     this.checkArticleGroups();
+    this.item.nPurchasePrice = this.item.price / 1.21;
   }
   deleteItem(): void {
     this.itemChanged.emit('delete')
@@ -139,7 +138,7 @@ export class GoldPurchaseComponent implements OnInit {
   }
 
   getTotalPrice(item: any): string {
-    return this.priceService.getArticlePrice(item)
+    return this.priceService.getArticlePrice(item);
   }
 
   removeImage(index: number): void {
@@ -147,6 +146,7 @@ export class GoldPurchaseComponent implements OnInit {
   }
   changeTotalAmount() {
     this.item.paymentAmount = -1 * this.item.quantity * this.item.price;
+    this.item.nPurchasePrice = this.item.price / 1.21;
   }
   changeTypeArray() {
     if (!this.item.oType.refund) {

@@ -14,11 +14,19 @@ export class Transaction {
     public iEmployeeId: string,
     public iLocationId: string,
     public items: TransactionItem[] | null,
+    public iCustomerId: any,
     public oCustomer?: {
       _id: string,
       sFirstName: string,
       sLastName: string,
-      sPrefix: string
+      sPrefix: string,
+      oInvoiceAddress: string,
+      nClientId: string,
+      sGender: string,
+      bCounter: string,
+      oPhone: string,
+      sVatNumber: string,
+      sCocNumber: string,
     }
   ) {
   }

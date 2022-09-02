@@ -293,7 +293,6 @@ export class ServicesComponent implements OnInit {
     if (this.iLocationId) this.requestParams.iLocationId = this.iLocationId;
     this.showLoader = true;
     this.apiService.postNew('cashregistry', '/api/v1/activities', this.requestParams).subscribe((result: any) => {
-      console.log({ loadTransaction: result });
       if (result?.data?.length)
         this.activities = result?.data;
       else

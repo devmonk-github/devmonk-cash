@@ -4,6 +4,8 @@ import { TransactionItemsDetailsComponent } from 'src/app/shared/components/tran
 import { ApiService } from 'src/app/shared/service/api.service';
 import { DialogComponent, DialogService } from 'src/app/shared/service/dialog';
 import { PdfService } from 'src/app/shared/service/pdf.service';
+import * as _moment from 'moment';
+const moment = (_moment as any).default ? (_moment as any).default : _moment;
 
 @Component({
   selector: 'app-transaction-details',
@@ -379,8 +381,42 @@ export class TransactionDetailsComponent implements OnInit {
           }
         }
 
-        let dataObject = this.transaction
-
+        let dataObject = JSON.parse(JSON.stringify(this.transaction));
+        dataObject.aTransactionItems = [];
+        this.transaction.aTransactionItems.forEach((item: any)=>{
+          if(item.oType?.eKind != 'discount' || item?.oType?.eKind != 'loyalty-points-discount') {
+            dataObject.aTransactionItems.push(item);
+          }
+        })
+        let language: any = localStorage.getItem('language')
+        dataObject.total = 0;
+        let total = 0, totalAfterDisc = 0, totalVat = 0, totalDiscount = 0, totalSavingPoints = 0;
+        dataObject.aTransactionItems.forEach((item: any)=>{
+          total = total + item.nPriceIncVat;
+          let name = '';
+          if(item && item.oArticleGroupMetaData && item.oArticleGroupMetaData.oName && item.oArticleGroupMetaData.oName[language]) name = item?.oArticleGroupMetaData?.oName[language] + ' ';
+          item.description = name;
+          if(item?.oBusinessProductMetaData?.sLabelDescription) item.description = item.description + item?.oBusinessProductMetaData?.sLabelDescription + ' ' + item?.sProductNumber;
+          const vat = (item.nVatRate * item.nPriceIncVat/100);
+          item.vat = `${item.nVatRate}% (${vat})`
+          totalVat += vat;
+          totalSavingPoints += item.nSavingsPoints;
+          let disc = item.nDiscount;
+          if(item.bPaymentDiscountPercent){ 
+            disc = (item.nDiscount * item.nPriceIncVat/100)
+            item.nDiscount = `${item.nDiscount}%`
+          } else {
+            item.nDiscount = `€ ${item.nDiscount}`
+          }
+          totalAfterDisc += (item.nPriceIncVat -  item.nDiscount)
+          totalDiscount += disc;
+        })
+        // dataObject.total = `€ ${totalAfterDisc}(${total})`;
+        dataObject.total = total;
+        dataObject.totalVat = totalVat;
+        dataObject.totalDiscount = totalDiscount;
+        dataObject.totalSavingPoints = totalSavingPoints;
+        dataObject.dCreatedDate = moment(dataObject.dCreatedDate).format('DD-MM-yyyy hh:mm');
         this.pdfService.createPdf(JSON.stringify(result.data), dataObject, filename, print, printData, this.iBusinessId, this.transaction?._id)
           .then(() => {
             this.downloadWithVATLoading = false;

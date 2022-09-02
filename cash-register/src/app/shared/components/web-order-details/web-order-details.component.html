@@ -146,7 +146,7 @@
                                     </td>
                                     <td>
                                         <div>
-                                            {{item?.receipts[0]?.sProductNumber}}
+                                            {{item?.receipts[0]?.sProductNumber || getName(item)}}
                                         </div>
                                         <br>
                                         <div *ngIf="item?.aProductVariant?.length > 0">

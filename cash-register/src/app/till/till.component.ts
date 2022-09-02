@@ -294,7 +294,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       nBrokenProduct: 0,
       price,
       nMargin: 1,
-      nPurchasePrice: price,
+      nPurchasePrice: 0,
       nTotal: type === 'gold-purchase' ? -1 * price : price,
       nDiscount: 0,
       tax: 21,
@@ -367,6 +367,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       sGiftCardNumber: this.transactionItems[index].sGiftCardNumber,
       eType: '',
       nPriceIncVat: this.transactionItems[index].price,
+      nPurchasePrice: this.transactionItems[index].price / 1.21,
       nVatRate: this.transactionItems[index].tax,
       nQuantity: this.transactionItems[index].quantity,
       nPaidAmount: 0,
@@ -515,7 +516,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
             }
           });
           payMethods = payMethods.filter((o: any) => o.amount !== 0);
-          const body = this.tillService.createTransactionBody(this.transactionItems, payMethods, this.discountArticleGroup, this.redeemedLoyaltyPoints);
+          const body = this.tillService.createTransactionBody(this.transactionItems, payMethods, this.discountArticleGroup, this.redeemedLoyaltyPoints, this.customer);
           if (giftCardPayment && this.appliedGiftCards.length > 0) {
             this.appliedGiftCards.forEach(element => {
               const cardPaymethod = _.clone(giftCardPayment);
@@ -529,16 +530,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
             body.giftCards = this.appliedGiftCards;
           }
           body.oTransaction.iActivityId = this.iActivityId;
-          if (this.customer && this.customer._id) {
-            body.oTransaction.iCustomerId = this.customer._id;
-            body.oTransaction.oCustomer = {
-              _id: this.customer._id,
-              sFirstName: this.customer.sFirstName,
-              sLastName: this.customer.sLastName,
-              sPrefix: this.customer.sPrefix
-            }
-          };
-
           this.apiService.postNew('cashregistry', '/api/v1/till/transaction', body)
             .subscribe((data: any) => {
               this.toastrService.show({ type: 'success', text: data.message });
@@ -628,7 +619,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     } else {
       price = product.aLocation ? product.aLocation.find((o: any) => o._id === this.locationId) : 0;
     }
-
     this.transactionItems.push({
       name: product.oName ? product.oName['en'] : this.searchKeyword,
       eTransactionItemType: 'regular',
@@ -636,7 +626,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       quantity: 1,
       price: price ? price.nPriceIncludesVat : 0,
       nMargin: 1,
-      nPurchasePrice: product.nPurchasePrice || price,
+      nPurchasePrice: product.nPurchasePrice,
       paymentAmount: 0,
       oType: { bRefund: false, bDiscount: false, bPrepayment: false },
       nDiscount: product.nDiscount || 0,

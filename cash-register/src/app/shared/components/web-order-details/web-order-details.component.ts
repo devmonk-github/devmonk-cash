@@ -334,6 +334,13 @@ export class WebOrderDetailsComponent implements OnInit {
     return flag;
   }
 
+  getName(item: any){
+    if(item?.oArticleGroupMetaData?.oName?.en == 'product shipping') return 'Shipping costs';
+    if(item?.oArticleGroupMetaData?.oName?.en == 'product engraving') return 'product engraving';
+    if(item?.oArticleGroupMetaData?.oName?.en == 'product Basic gift wrap') return 'Basic gift wrap';
+    return '';
+  }
+
   selectBusiness(index: number, location?: any) {
     if (location?._id) {
       this.activityItems[index].receipts[0].locationName = location.sName;

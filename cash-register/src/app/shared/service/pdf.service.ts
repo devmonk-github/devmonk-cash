@@ -826,9 +826,9 @@ export class PdfService {
             const filterMatches = variableStringFiltered.match(/\./g);
             let nrOfLevels = filterMatches ? filterMatches.length : 0;
             let parts = variableStringFiltered.split('.');
-            console.info('nrOfLevels',nrOfLevels)
-            console.info('variableStringFiltered',variableStringFiltered)
-            console.info('this.data',this.data)
+            // console.info('nrOfLevels',nrOfLevels)
+            // console.info('variableStringFiltered',variableStringFiltered)
+            // console.info('this.data',this.data)
             
             switch (nrOfLevels) {
               case 1:
