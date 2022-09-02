@@ -628,7 +628,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     } else {
       price = product.aLocation ? product.aLocation.find((o: any) => o._id === this.locationId) : 0;
     }
-
     this.transactionItems.push({
       name: product.oName ? product.oName['en'] : this.searchKeyword,
       eTransactionItemType: 'regular',
@@ -636,7 +635,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       quantity: 1,
       price: price ? price.nPriceIncludesVat : 0,
       nMargin: 1,
-      nPurchasePrice: product.nPurchasePrice || price,
+      nPurchasePrice: product.nPurchasePrice,
       paymentAmount: 0,
       oType: { bRefund: false, bDiscount: false, bPrepayment: false },
       nDiscount: product.nDiscount || 0,
