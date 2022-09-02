@@ -384,15 +384,30 @@ export class TransactionDetailsComponent implements OnInit {
         let dataObject = this.transaction
         let language: any = localStorage.getItem('language')
         dataObject.total = 0;
-        let total = 0;
+        let total = 0, totalVat = 0, totalDiscount = 0, totalSavingPoints = 0;
         dataObject.aTransactionItems.forEach((item: any)=>{
           total = total + item.nPriceIncVat;
           let name = '';
           if(item && item.oArticleGroupMetaData && item.oArticleGroupMetaData.oName && item.oArticleGroupMetaData.oName[language]) name = item?.oArticleGroupMetaData?.oName[language] + ' ';
           item.description = name;
-          if(item?.oBusinessProductMetaData?.sLabelDescription) item.description = item.description + item?.oBusinessProductMetaData?.sLabelDescription + ' ' + item?.sProductNumber
+          if(item?.oBusinessProductMetaData?.sLabelDescription) item.description = item.description + item?.oBusinessProductMetaData?.sLabelDescription + ' ' + item?.sProductNumber;
+          const vat = (item.nVatRate * item.nPriceIncVat/100);
+          item.vat = `${item.nVatRate}% (${vat})`
+          totalVat += vat;
+          totalSavingPoints += item.nSavingsPoints;
+          let disc = item.nDiscount;
+          if(item.bPaymentDiscountPercent){ 
+            disc = (item.nDiscount * item.nPriceIncVat/100)
+            item.nDiscount = `${item.nDiscount}%`
+          } else {
+            item.nDiscount = `€ ${item.nDiscount}`
+          }
+          totalDiscount += disc;
         })
         dataObject.total = total;
+        dataObject.totalVat = totalVat;
+        dataObject.totalDiscount = totalDiscount;
+        dataObject.totalSavingPoints = totalSavingPoints;
         dataObject.dCreatedDate = moment(dataObject.dCreatedDate).format('DD-MM-yyyy hh:mm');
         this.pdfService.createPdf(JSON.stringify(result.data), dataObject, filename, print, printData, this.iBusinessId, this.transaction?._id)
           .then(() => {
