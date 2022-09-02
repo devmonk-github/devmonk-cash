@@ -367,12 +367,14 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       sGiftCardNumber: this.transactionItems[index].sGiftCardNumber,
       eType: '',
       nPriceIncVat: this.transactionItems[index].price,
+      // nPurchasePrice: nPriceIncVat / (1 + (this.transactionItems[index].nVatRate / 100)),
       nVatRate: this.transactionItems[index].tax,
       nQuantity: this.transactionItems[index].quantity,
       nPaidAmount: 0,
       sProductName: this.transactionItems[index].name,
       iActivityId: this.iActivityId,
     };
+    console.log({ createGiftCard: body })
     this.apiService.postNew('cashregistry', '/api/v1/till/gift-card', body)
       .subscribe((data: any) => {
         this.iActivityId = data.iActivityId;
@@ -538,7 +540,10 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
               sPrefix: this.customer.sPrefix
             }
           };
-
+          body.transactionItems.map((item: any, index: number) => {
+            body.transactionItems[index].nPurchasePrice = item.nPriceIncVat / (1 + (item.nVatRate / 100))
+          })
+          console.log({ createTransaction: body });
           this.apiService.postNew('cashregistry', '/api/v1/till/transaction', body)
             .subscribe((data: any) => {
               this.toastrService.show({ type: 'success', text: data.message });
