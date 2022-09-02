@@ -39,7 +39,7 @@ export class ProductComponent implements OnInit{
       if(res.data.aBusinessPartner) {
         const marginData = res.data.aBusinessPartner.find((o: any)=> o.iBusinessPartnerId === this.item.iSupplierId);
         this.item.nMargin = marginData?.nMargin || 1;
-        this.item.nPurchasePrice = this.item.price / this.item.nMargin || 1;
+        this.item.nPurchasePrice = this.item.nPurchasePrice || this.item.price / this.item.nMargin || 1;
       }
     }, err => {
       this.toastrService.show({ type: 'danger', text: err.message });
