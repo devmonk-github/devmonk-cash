@@ -4,6 +4,8 @@ import { TransactionItemsDetailsComponent } from 'src/app/shared/components/tran
 import { ApiService } from 'src/app/shared/service/api.service';
 import { DialogComponent, DialogService } from 'src/app/shared/service/dialog';
 import { PdfService } from 'src/app/shared/service/pdf.service';
+import * as _moment from 'moment';
+const moment = (_moment as any).default ? (_moment as any).default : _moment;
 
 @Component({
   selector: 'app-transaction-details',
@@ -380,7 +382,18 @@ export class TransactionDetailsComponent implements OnInit {
         }
 
         let dataObject = this.transaction
-
+        let language: any = localStorage.getItem('language')
+        dataObject.total = 0;
+        let total = 0;
+        dataObject.aTransactionItems.forEach((item: any)=>{
+          total = total + item.nPriceIncVat;
+          let name = '';
+          if(item && item.oArticleGroupMetaData && item.oArticleGroupMetaData.oName && item.oArticleGroupMetaData.oName[language]) name = item?.oArticleGroupMetaData?.oName[language] + ' ';
+          item.description = name;
+          if(item?.oBusinessProductMetaData?.sLabelDescription) item.description = item.description + item?.oBusinessProductMetaData?.sLabelDescription + ' ' + item?.sProductNumber
+        })
+        dataObject.total = total;
+        dataObject.dCreatedDate = moment(dataObject.dCreatedDate).format('DD-MM-yyyy hh:mm');
         this.pdfService.createPdf(JSON.stringify(result.data), dataObject, filename, print, printData, this.iBusinessId, this.transaction?._id)
           .then(() => {
             this.downloadWithVATLoading = false;
