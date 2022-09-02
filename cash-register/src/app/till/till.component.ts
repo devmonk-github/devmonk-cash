@@ -294,7 +294,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       nBrokenProduct: 0,
       price,
       nMargin: 1,
-      nPurchasePrice: price,
+      nPurchasePrice: 0,
       nTotal: type === 'gold-purchase' ? -1 * price : price,
       nDiscount: 0,
       tax: 21,
