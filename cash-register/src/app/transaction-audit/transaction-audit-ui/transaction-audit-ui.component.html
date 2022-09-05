@@ -519,55 +519,64 @@
                                         <table class="table table-row-bordered table-row-gray-300 gy-5 gs-5 mb-0 text-gray-600 fw-bold border"
                                             *ngFor="let oArticleGroup of oStatistic.individual; let articleGroupIndex = index">
                                             <!-- HEADER -->
-                                            <!-- <thead>
-                                                                                        <tr>
-                                                                                            <th><span class="">{{ 'ARTICLE_NAME' | translate}}</span>
-                                                                                            </th>
-                                                                                            <th class="w-150px"><span class="">{{"QUANTITY" | translate}}</span>
-                                                                                            </th>
-                                                                                            <th class="w-150px"><span class="">{{"PRICE_WITH_VAT" |
-                                                                                                    translate}}</span>
-                                                                                            </th>
-                                                                                            <th class="w-150px"><span class="">{{"PURCHASE_PRICE" |
-                                                                                                    translate}}</span>
-                                                                                            </th>
-                                                                                            <th class="w-150px"><span class="">{{"GROSS_PROFIT" |
-                                                                                                    translate}}</span>
-                                                                                            </th>
-                                                                                            <th class="w-150px"><span class="">{{"MARGIN" | translate}}</span>
-                                                                                            </th>
-                                                                                        </tr>
-                                                                                    </thead> -->
-                                            <!-- start of articlegroup -->
-                                            <thead class="bg-gray-100">
-                                                <tr class="fw-bold fs-6 text-gray-800">
-                                                    <th scope="col">{{oArticleGroup.sName}}</th>
-                                                    <th scope="col" class="w-150px">{{oArticleGroup.nQuantity}}</th>
-                                                    <th scope="col" class="w-150px">{{oArticleGroup.nTotalRevenue}}</th>
-                                                    <th scope="col" class="w-150px">
-                                                        {{oArticleGroup.nTotalPurchaseAmount}}
+                            
+                                            <thead>
+                                                <tr>
+                                                    <th><span class="">{{ 'ARTICLE_NAME' | translate}}</span>
                                                     </th>
-                                                    <th scope="col" class="w-150px">{{oArticleGroup.nProfit| number
-                                                        :'1.2-2'}}</th>
-                                                    <th scope="col" class="w-150px">{{oArticleGroup.nMargin}}</th>
+                                                    <th class="w-150px"><span class="">{{"QUANTITY" | translate}}</span>
+                                                    </th>
+                                                    <th class="w-150px"><span class="">{{"PRICE_WITH_VAT" |
+                                                            translate}}</span>
+                                                    </th>
+                                                    <th class="w-150px"><span class="">{{"PURCHASE_PRICE" |
+                                                            translate}}</span>
+                                                    </th>
+                                                    <th class="w-150px"><span class="">{{"GROSS_PROFIT" |
+                                                            translate}}</span>
+                                                    </th>
+                                                    <th class="w-150px"><span class="">{{"MARGIN" | translate}}</span>
+                                                    </th>
                                                 </tr>
                                             </thead>
-                                            <ng-container *ngIf="oArticleGroup.aRevenueByProperty.length">
-                                                <tbody class="p-2"
-                                                    *ngFor="let oRevenueByProperty of oArticleGroup.aRevenueByProperty; let revenuePropertyIndex = index">
-                                                    <!--start of dyamic property -->
-                                                    <tr>
-                                                        <td class="ps-9">{{oRevenueByProperty.aCategory.join(' | ')}}
-                                                        </td>
-                                                        <td>{{oRevenueByProperty.nQuantity}}</td>
-                                                        <td>{{oRevenueByProperty.nTotalRevenue}}</td>
-                                                        <td>{{oRevenueByProperty.nTotalPurchaseAmount}}</td>
-                                                        <td>{{oRevenueByProperty.nProfit| number :'1.2-2'}}</td>
-                                                        <td>{{oRevenueByProperty.nMargin}}</td>
-                                                    </tr>
-                                                </tbody>
-                                            </ng-container>
-                                            <!-- start of articlegroup -->
+                                            <tbody>
+                                                <tr>
+                                                    <td>
+                                                        <table>
+                                                            <!-- start of articlegroup -->
+                                                            <thead class="bg-gray-100">
+                                                                <tr class="fw-bold fs-6 text-gray-800">
+                                                                    <th scope="col">{{oArticleGroup.sName}}</th>
+                                                                    <th scope="col" class="w-150px">{{oArticleGroup.nQuantity}}</th>
+                                                                    <th scope="col" class="w-150px">{{oArticleGroup.nTotalRevenue}}</th>
+                                                                    <th scope="col" class="w-150px">
+                                                                        {{oArticleGroup.nTotalPurchaseAmount}}
+                                                                    </th>
+                                                                    <th scope="col" class="w-150px">{{oArticleGroup.nProfit| number
+                                                                        :'1.2-2'}}</th>
+                                                                    <th scope="col" class="w-150px">{{oArticleGroup.nMargin}}</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <ng-container *ngIf="oArticleGroup.aRevenueByProperty.length">
+                                                                <tbody class="p-2"
+                                                                    *ngFor="let oRevenueByProperty of oArticleGroup.aRevenueByProperty; let revenuePropertyIndex = index">
+                                                                    <!--start of dyamic property -->
+                                                                    <tr>
+                                                                        <td class="ps-9">{{oRevenueByProperty.aCategory.join(' | ')}}
+                                                                        </td>
+                                                                        <td>{{oRevenueByProperty.nQuantity}}</td>
+                                                                        <td>{{oRevenueByProperty.nTotalRevenue}}</td>
+                                                                        <td>{{oRevenueByProperty.nTotalPurchaseAmount}}</td>
+                                                                        <td>{{oRevenueByProperty.nProfit| number :'1.2-2'}}</td>
+                                                                        <td>{{oRevenueByProperty.nMargin}}</td>
+                                                                    </tr>
+                                                                </tbody>
+                                                            </ng-container>
+                                                            <!-- start of articlegroup -->
+                                                        </table>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
                                         </table>
                                     </div>
                                 </div>
