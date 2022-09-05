@@ -22,7 +22,7 @@ export class PrintComponent implements OnInit {
   location: any = {};
   workstation: any = {};
   translationsResults: any = [];
-  translationsKey: Array<string> = ['CREATED_BY', 'ART_NUMBER', 'QUANTITY', 'DESCRIPTION', 'DISCOUNT', 'AMOUNT'];
+  translationsKey: Array<string> = ['CREATED_BY', 'ART_NUMBER', 'QUANTITY', 'DESCRIPTION', 'DISCOUNT', 'AMOUNT', 'SAVINGS_POINTS'];
 
   constructor(
     private pdfService: PdfService,
