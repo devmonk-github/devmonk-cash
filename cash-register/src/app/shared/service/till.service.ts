@@ -289,7 +289,7 @@ export class TillService {
       aProperty: product.aProperty,
       aImage: product.aImage, // "url;alt"
       oName: product.oName,
-      oShortDescription: {},
+      oShortDescription: product.oShortDescription,
       eGender: product.eGender,
       eOwnerShip: product.eOwnerShip,
     }
