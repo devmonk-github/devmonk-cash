@@ -767,8 +767,10 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   openExpenses() {
-    this.dialogService.openModal(AddExpensesComponent, { cssClass: 'modal-m', context: {} })
+    const paymentMethod = this.payMethods.find((o: any) => o.sName.toLowerCase() === 'cash');
+    this.dialogService.openModal(AddExpensesComponent, { cssClass: 'modal-m', context: { paymentMethod } })
       .instance.close.subscribe(result => {
+        // console.log(result);
       });
   }
 
