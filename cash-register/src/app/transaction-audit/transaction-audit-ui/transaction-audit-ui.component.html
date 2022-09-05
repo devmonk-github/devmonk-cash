@@ -516,7 +516,8 @@
                                 <p> {{ 'REVENUE_PER_ARTICLE_GROUP_AND_PROPERTY' | translate}} </p>
                                 <div class="card-body">
                                     <div class="table-responsive" *ngFor="let oStatistic of aStatistic; let i = index">
-                                        <table class="table table-row-bordered table-row-gray-300 gy-5 gs-5 mb-0 text-gray-600 fw-bold border"
+                                        <table
+                                            class="table table-row-bordered table-row-gray-300 gy-5 gs-5 mb-0 text-gray-600 fw-bold border"
                                             *ngFor="let oArticleGroup of oStatistic.individual; let articleGroupIndex = index">
                                             <!-- HEADER -->
                                             <!-- <thead>
