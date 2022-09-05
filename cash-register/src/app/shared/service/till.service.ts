@@ -162,7 +162,7 @@ export class TillService {
         null, // TODO
         i.iBusinessBrandId,
         i.iBusinessProductId,
-        null,
+        i.oBusinessProductMetaData,
         'y',
         this.getValueFromLocalStorage('currentWorkstation'),
         i.iEmployeeId || this.getValueFromLocalStorage('currentEmployee')._id,
@@ -275,5 +275,24 @@ export class TillService {
     return throwError(() => {
       message;
     });
+  }
+
+  createProductMetadata(product: any) {
+    const metadata = {
+      iSupplierId: product.iBusinessPartnerId, // from business collection with type supplier (Optional)
+      iBusinessPartnerId: product.iBusinessPartnerId,
+      iBusinessBrandId: product.iBusinessBrandId || product.iBrandId,
+      sLabelDescription: product.sLabelDescription,
+      bBestseller: product.bBestseller,
+      bHasStock: product.bHasStock,
+      bShowSuggestion: product.bShowSuggestion,
+      aProperty: product.aProperty,
+      aImage: product.aImage, // "url;alt"
+      oName: product.oName,
+      oShortDescription: {},
+      eGender: product.eGender,
+      eOwnerShip: product.eOwnerShip,
+    }
+    return metadata
   }
 }
