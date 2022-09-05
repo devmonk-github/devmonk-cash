@@ -2145,13 +2145,21 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
         (item: any) =>
           (this.oCountings.oCountingsCashDetails[item.key] = item.nQuantity)
       );
+    const nAmount = this.oCountings.nCashInTill - this.oCountings.nCashCounted;
 
-    if (this.oCountings.nCashInTill - this.oCountings.nCashCounted > 0) {
+    if (nAmount > 0) {
       //we have difference in cash, so add that as and expense
+      const oPayment = this.allPaymentMethod.filter((el: any) => el.sName.toLowerCase() === 'cash')[0];
+      
       const _expense = await this.addExpenses(
         {
-          amount: this.oCountings.nCashInTill - this.oCountings.nCashCounted,
-          comment: 'Lost money'
+          amount: nAmount,
+          comment: 'Lost money',
+          oPayment: {
+            iPaymentMethodId: oPayment._id,
+            nAmount: nAmount,
+            sMethod: oPayment.sName.toLowerCase()
+          }
         }
       ).toPromise();
     }
@@ -2192,7 +2200,7 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
       .subscribe(
         (result: any) => {
           if (result && result.data && result.data.length) {
-            // this.allPaymentMethod = result.data;
+            this.allPaymentMethod = result.data;
             result.data.forEach((element: any) => {
               // if (methodsToDisplay.includes(element.sName.toLowerCase())) {
               this.payMethods.push(element);
