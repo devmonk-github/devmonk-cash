@@ -384,7 +384,7 @@ export class TransactionDetailsComponent implements OnInit {
         let dataObject = JSON.parse(JSON.stringify(this.transaction));
         dataObject.aTransactionItems = [];
         this.transaction.aTransactionItems.forEach((item: any)=>{
-          if(item.oType?.eKind != 'discount' || item?.oType?.eKind != 'loyalty-points-discount') {
+          if(!(item.oType?.eKind == 'discount' || item?.oType?.eKind == 'loyalty-points-discount')) {
             dataObject.aTransactionItems.push(item);
           }
         })
