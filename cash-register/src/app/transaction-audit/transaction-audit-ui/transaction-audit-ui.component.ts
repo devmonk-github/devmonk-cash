@@ -6,44 +6,9 @@ import { PdfService } from 'src/app/shared/service/pdf2.service';
 import * as _moment from 'moment';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastService } from 'src/app/shared/components/toast';
-import { MenuComponent } from 'src/app/shared/_layout/components/common';
+import { defaultMenuOptions, MenuComponent } from 'src/app/shared/_layout/components/common';
 const moment = (_moment as any).default ? (_moment as any).default : _moment;
 
-export interface View {
-  sKey: string;
-  sValue: string;
-  children: ViewChild[];
-}
-
-export interface ViewChild {
-  sKey?: string;
-  sValue?: string;
-  children: ChildChild[];
-}
-
-export interface ChildChild {
-  sKey: string;
-  sValue: string;
-  data?: {
-    displayMethod?: eDisplayMethodKeysEnum,
-    modeFilter?: 'supplier' | 'businessOwner',
-    levelFilter?: 'articleGroup' | 'product'
-  }
-}
-
-enum eDisplayMethodKeysEnum {
-  revenuePerBusinessPartner = 'revenuePerBusinessPartner',
-  revenuePerArticleGroupAndProperty = 'revenuePerArticleGroupAndProperty',
-  revenuePerSupplierAndArticleGroup = 'revenuePerSupplierAndArticleGroup',
-  revenuePerProperty = 'revenuePerProperty',
-  revenuePerArticleGroup = 'revenuePerArticleGroup',
-  aVatRates = 'aVatRates',
-
-}
-export interface DisplayMethod {
-  sKey: eDisplayMethodKeysEnum | string;
-  sValue: string;
-}
 
 @Component({
   selector: 'app-transaction-audit-ui',
@@ -134,11 +99,11 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
   aOptionMenu: View[] = [];
   public sOptionMenu: {
     parent: View,
-    child1: ViewChild,
+    child1: ViewMenuChild,
     child2: ChildChild,
   } = {} as {
     parent: View,
-    child1: ViewChild,
+    child1: ViewMenuChild,
     child2: ChildChild,
   };
   public sSelectedOptionMenu = '';
@@ -217,12 +182,14 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
     private router: Router,
     private toastService: ToastService,
   ) {
+    MenuComponent.reinitialization()
     this.iBusinessId = localStorage.getItem('currentBusiness') || '';
     this.iLocationId = localStorage.getItem('currentLocation') || '';
     this.iWorkstationId = localStorage.getItem('currentWorkstation') || '';
     this.sUserType = localStorage.getItem('type') || '';
     const _oUser = localStorage.getItem('currentUser');
     if (_oUser) this.oUser = JSON.parse(_oUser);
+
   }
 
 
@@ -236,7 +203,7 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
       ).format('yyyy-MM-DDThh:mm');
 
     this.businessDetails._id = localStorage.getItem('currentBusiness');
-    console.log({ aDisplayMethod: this.aDisplayMethod });
+    // console.log({ aDisplayMethod: this.aDisplayMethod });
     this.setOptionMenu()
     this.fetchBusinessDetails();
     this.printingDate();
@@ -251,11 +218,9 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
 
   }
   ngAfterViewInit(): void {
-
     setTimeout(() => {
       MenuComponent.reinitialization();
-      console.log("Menu reinitializing");
-    }, 500);
+    }, 200);
   }
 
   setOptionMenu() {
@@ -575,10 +540,10 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
       this.aOptionMenu.splice(iPurchaseIndex, 1)
     }
     this.onDropdownItemSelected(this.aOptionMenu[0], this.aOptionMenu[0].children[0], this.aOptionMenu[0].children[0].children[0])
-    console.log({ aOptionMenu: this.aOptionMenu });
+    // console.log({ aOptionMenu: this.aOptionMenu });
 
   }
-  onDropdownItemSelected(parent: View, child1: ViewChild, child2: ChildChild) {
+  onDropdownItemSelected(parent: View, child1: ViewMenuChild, child2: ChildChild) {
     // console.log({
     //   parent,
     //   child1,
@@ -590,12 +555,12 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
       child2,
     }
     this.optionMenu = parent.sValue.toLowerCase().trim()
-    console.log('this.optionMenu: ', this.optionMenu);
+    // console.log('this.optionMenu: ', this.optionMenu);
     this.sSelectedOptionMenu = `${parent.sKey}->${child1.sKey}->${child2.sKey}`
     const eDisplayMethod = child2.data?.displayMethod || null
     const sModeFilter = child2.data?.modeFilter || null
     const sLevelFilter = child2.data?.levelFilter || null
-    console.log('eDisplayMethod: ', eDisplayMethod);
+    // console.log('eDisplayMethod: ', eDisplayMethod);
 
     if (eDisplayMethod) {
       this.sDisplayMethod = eDisplayMethod
@@ -712,12 +677,12 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
       oBody.oFilter.bIsSupplierMode = this.bIsSupplierMode;
     }
     this.bStatisticLoading = true;
-    console.log('sDisplayMethod: ', oBody?.oFilter?.sDisplayMethod, sDisplayMethod);
+    // console.log('sDisplayMethod: ', oBody?.oFilter?.sDisplayMethod, sDisplayMethod);
     this.statisticAuditSubscription = this.apiService
       .postNew('cashregistry', `/api/v1/statistics/transaction/audit`, oBody)
       .subscribe(
         (result: any) => {
-          console.log('result: ', JSON.parse(JSON.stringify(result)));
+          // console.log('result: ', JSON.parse(JSON.stringify(result)));
           this.nPaymentMethodTotal = 0;
           this.nNewPaymentMethodTotal = 0;
           this.bStatisticLoading = false;
@@ -735,8 +700,8 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
                 // console.log('item: ', item);
                 return item;
               });
-              console.log('this.nPaymentMethodTotal: ', this.nPaymentMethodTotal);
-              console.log('this.aPaymentMethods: ', this.aPaymentMethods);
+              // console.log('this.nPaymentMethodTotal: ', this.nPaymentMethodTotal);
+              // console.log('this.aPaymentMethods: ', this.aPaymentMethods);
               this.nNewPaymentMethodTotal = this.nPaymentMethodTotal;
               this.filterDuplicatePaymentMethods();
             }
@@ -854,12 +819,12 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
   }
 
   onProperties(value?: any) {
-    console.log(
-      'onProperties called: ',
-      this.selectedProperties,
-      this.propertyOptions,
-      this.aProperty
-    );
+    // console.log(
+    //   'onProperties called: ',
+    //   this.selectedProperties,
+    //   this.propertyOptions,
+    //   this.aProperty
+    // );
     if (this.selectedProperties && this.selectedProperties[value]) {
       this.aFilterProperty = [];
       for (const oProperty of this.aProperty) {
@@ -2081,7 +2046,7 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
       .subscribe((result: any) => {
         item.isLoading = false;
         if (result?.data[0]?.result?.length) {
-          console.log('expandItem response: ', result?.data[0]?.result);
+          // console.log('expandItem response: ', result?.data[0]?.result);
           item.aTransactionItems = result.data[0].result;
         }
       });
@@ -2139,7 +2104,7 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
     );
   }
   addExpenses(data: any): Observable<any> {
-    console.log('adding expenses', data);
+    // console.log('adding expenses', data);
 
     const value = localStorage.getItem('currentEmployee');
     let currentEmployeeId;
@@ -2238,7 +2203,7 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
             this.allPaymentMethod = result.data;
             result.data.forEach((element: any) => {
               // if (methodsToDisplay.includes(element.sName.toLowerCase())) {
-                this.payMethods.push(element);
+              this.payMethods.push(element);
               // }
             });
             this.filterDuplicatePaymentMethods();
@@ -2337,4 +2302,40 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
     if (this.transactionItemListSubscription)
       this.transactionItemListSubscription.unsubscribe();
   }
+}
+
+interface View {
+  sKey: string;
+  sValue: string;
+  children: ViewMenuChild[];
+}
+
+interface ViewMenuChild {
+  sKey?: string;
+  sValue?: string;
+  children: ChildChild[];
+}
+
+interface ChildChild {
+  sKey: string;
+  sValue: string;
+  data?: {
+    displayMethod?: eDisplayMethodKeysEnum,
+    modeFilter?: 'supplier' | 'businessOwner',
+    levelFilter?: 'articleGroup' | 'product'
+  }
+}
+
+enum eDisplayMethodKeysEnum {
+  revenuePerBusinessPartner = 'revenuePerBusinessPartner',
+  revenuePerArticleGroupAndProperty = 'revenuePerArticleGroupAndProperty',
+  revenuePerSupplierAndArticleGroup = 'revenuePerSupplierAndArticleGroup',
+  revenuePerProperty = 'revenuePerProperty',
+  revenuePerArticleGroup = 'revenuePerArticleGroup',
+  aVatRates = 'aVatRates',
+
+}
+interface DisplayMethod {
+  sKey: eDisplayMethodKeysEnum | string;
+  sValue: string;
 }

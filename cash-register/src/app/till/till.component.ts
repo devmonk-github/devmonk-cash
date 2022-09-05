@@ -643,7 +643,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       isExclude: false,
       open: true,
       new: true,
-      isFor
+      isFor,
+      oBusinessProductMetaData: this.tillService.createProductMetadata(product),
     });
     this.resetSearch();
   }

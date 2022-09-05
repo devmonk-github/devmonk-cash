@@ -1,7 +1,9 @@
-import {createPopper, VirtualElement} from '@popperjs/core';
-import {DataUtil, DOMEventHandlerUtil, ElementStyleUtil, EventHandlerUtil, getAttributeValueByBreakpoint,
+import { createPopper, VirtualElement } from '@popperjs/core';
+import {
+  DataUtil, DOMEventHandlerUtil, ElementStyleUtil, EventHandlerUtil, getAttributeValueByBreakpoint,
   getElementChild, getElementParents, getHighestZindex,
-  getUniqueIdWithPrefix, insertAfterElement, slideDown, slideUp, throttle} from '../utils';
+  getUniqueIdWithPrefix, insertAfterElement, slideDown, slideUp, throttle
+} from '../utils';
 
 export interface MenuOptions {
   dropdown: {
@@ -138,6 +140,7 @@ class MenuComponent {
       const menuItem = el as HTMLElement;
       let menuInstance = MenuComponent.getInstance(menuItem);
       if (!menuInstance) {
+        console.log();
         menuInstance = new MenuComponent(el as HTMLElement, defaultMenuOptions);
       }
     });
@@ -173,7 +176,7 @@ class MenuComponent {
       document.body,
       '.menu-item[data-kt-menu-trigger] > .menu-link, [data-kt-menu-trigger]:not(.menu-item):not([data-kt-menu-trigger="auto"])',
       'click',
-      function(this: HTMLElement, e: Event) {
+      function (this: HTMLElement, e: Event) {
         const menu = MenuComponent.getInstance(this) as MenuComponent;
         if (menu) {
           return menu.click(this, e);
@@ -186,7 +189,7 @@ class MenuComponent {
       document.body,
       '.menu-item:not([data-kt-menu-trigger]) > .menu-link',
       'click',
-      function(this: HTMLElement, e: Event) {
+      function (this: HTMLElement, e: Event) {
         e.stopPropagation();
         const menu = MenuComponent.getInstance(this);
         if (menu && menu.link) {
@@ -194,7 +197,7 @@ class MenuComponent {
           // close expanded accordion
           if (this.closest('.menu-accordion') === null) {
             const items = menu.element.querySelectorAll('.menu-accordion.hover');
-            items.forEach(function(item: HTMLElement) {
+            items.forEach(function (item: HTMLElement) {
               menu._hideAccordion(item);
             });
           }
@@ -209,7 +212,7 @@ class MenuComponent {
       document.body,
       '[data-kt-menu-dismiss="true"]',
       'click',
-      function(this: HTMLElement, e: Event) {
+      function (this: HTMLElement, e: Event) {
         const menu = MenuComponent.getInstance(this) as MenuComponent;
         if (menu) {
           return menu.dismiss(this, e);
@@ -222,7 +225,7 @@ class MenuComponent {
       document.body,
       '[data-kt-menu-trigger], .menu-sub',
       'mouseover',
-      function(this: HTMLElement, e: Event) {
+      function (this: HTMLElement, e: Event) {
         const menu = MenuComponent.getInstance(this) as MenuComponent;
         if (menu && menu.getItemSubType(this) === 'dropdown') {
           return menu.mouseover(this, e);
@@ -235,7 +238,7 @@ class MenuComponent {
       document.body,
       '[data-kt-menu-trigger], .menu-sub',
       'mouseout',
-      function(this: HTMLElement, e: Event) {
+      function (this: HTMLElement, e: Event) {
         const menu = MenuComponent.getInstance(this) as MenuComponent;
         if (menu && menu.getItemSubType(this) === 'dropdown') {
           return menu.mouseout(this, e);
@@ -264,11 +267,14 @@ class MenuComponent {
   }
 
   public static bootstrap = () => {
+    // console.log("MenuComponent bootstrap");
     MenuComponent.initGlobalHandlers();
     MenuComponent.createInstances('[data-kt-menu="true"]');
   }
 
   public static reinitialization = () => {
+    // console.log("MenuComponent reinitializing");
+
     MenuComponent.createInstances('[data-kt-menu="true"]');
   }
 
@@ -1050,4 +1056,4 @@ class MenuComponent {
   }
 }
 
-export {MenuComponent, defaultMenuOptions};
+export { MenuComponent, defaultMenuOptions };
