@@ -171,6 +171,8 @@ export class ApiService {
         return environment.BACKUP_URL;
       case 'log':
         return environment.LOG_URL;
+      case 'fiskaly':
+        return environment.FISKALY_URL;
       case 'oldplatform':
         return oldplatform += ':3000';
     }

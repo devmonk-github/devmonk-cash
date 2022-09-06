@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output, ViewEncapsulation } from '@angular/core';
-import { faTimes, faPlus, faMinus, faUpload } from "@fortawesome/free-solid-svg-icons";
+import { faTimes, faPlus, faMinus, faUpload, faArrowDown, faArrowUp } from "@fortawesome/free-solid-svg-icons";
+import { SelectArticleDialogComponent } from 'src/app/shared/components/select-articlegroup-dialog/select-articlegroup-dialog.component';
 import { ToastService } from 'src/app/shared/components/toast';
 import { ApiService } from 'src/app/shared/service/api.service';
 import { CreateArticleGroupService } from 'src/app/shared/service/create-article-groups.service';
@@ -23,6 +24,8 @@ export class RepairComponent implements OnInit {
   faPlus = faPlus;
   faMinus = faMinus;
   faUpload = faUpload;
+  faArrowDown = faArrowDown;
+  faArrowUp = faArrowUp;
   employee: any = null;
   brand: any = null;
   supplierOptions: Array<any> = [];
@@ -34,8 +37,9 @@ export class RepairComponent implements OnInit {
   typeArray = ['regular', 'broken', 'return'];
   propertyOptions: Array<any> = [];
   selectedProperties: Array<any> = [];
+  aProperty: any = [];
   showDeleteBtn: boolean = false;
-
+  collapsedBtn: Boolean = false;
   repairer: any = null;
   // temporary variable
   supplier: any;
@@ -53,7 +57,51 @@ export class RepairComponent implements OnInit {
     this.getProperties();
     this.listSuppliers();
     this.getBusinessBrands();
+    if (this.item.new) {
+      this.selectArticleGroup();
+      this.item.new = false;
+    }
   }
+
+  selectArticleGroup() {
+    this.dialogService.openModal(SelectArticleDialogComponent, { cssClass: 'modal-m', context: { from: 'repair' } })
+      .instance.close.subscribe((data) => {
+        if (data) {
+          const { articlegroup, brand, supplier, nMargin } = data;
+          this.item.supplier = supplier.sName;
+          this.item.iArticleGroupOriginalId = articlegroup._id;
+          this.supplier = supplier.sName;
+          this.item.iSupplierId = supplier._id;
+          this.item.nMargin = nMargin;
+          this.brand = brand.sName;
+          this.item.iBusinessBrandId = brand._id;
+          this.updateProperties(articlegroup);
+          this.changeInMargin();
+        }
+      });
+  }
+
+  changeInMargin() {
+    this.item.nPurchasePrice = this.item.price / this.item.nMargin || 1;
+  }
+
+  changeInPurchasePrice() {
+    this.item.nMargin = this.item.price / this.item.nPurchasePrice || 1;
+  }
+
+  updateProperties(articlegroup: any) {
+    articlegroup.aProperty.forEach((properties: any) => {
+      const propertiesIndex = this.item.oArticleGroupMetaData.aProperty.findIndex((aProperty: any) => aProperty.iPropertyId === properties.iPropertyId);
+      if (propertiesIndex > -1) {
+        const prop = this.propertyOptions[properties.iPropertyId]?.find((prop: any) => prop.sCode === properties.sCode);
+        if (prop) {
+          this.item.oArticleGroupMetaData.aProperty[propertiesIndex] = prop;
+          this.selectedProperties[properties.iPropertyId] = properties.sCode;
+        }
+      };
+    });
+  }
+
   updatePayments(): void {
     this.itemChanged.emit('update');
   }
@@ -132,8 +180,8 @@ export class RepairComponent implements OnInit {
     this.apiService.postNew('core', '/api/v1/business/brands/list', oBody).subscribe((result: any) => {
       if (result.data && result.data.length > 0) {
         this.brandsList = result.data[0].result;
-        if (this.item.iBrandId) {
-          const tempsupp = this.brandsList.find(o => o._id === this.item.iBrandId);
+        if (this.item.iBusinessBrandId) {
+          const tempsupp = this.brandsList.find(o => o._id === this.item.iBusinessBrandId);
           this.brand = tempsupp.sName;
         }
       }
@@ -154,7 +202,6 @@ export class RepairComponent implements OnInit {
       iBusinessId: localStorage.getItem('currentBusiness'),
     };
 
-    const aProperty: any = [];
     this.apiService.postNew('core', '/api/v1/properties/list', data).subscribe(
       (result: any) => {
         if (result.data && result.data.length > 0) {
@@ -165,6 +212,7 @@ export class RepairComponent implements OnInit {
                 if (option?.sCode?.trim() != '') {
                   let opt: any = {
                     iPropertyId: property._id,
+                    iPropertyOptionId: option?._id,
                     sPropertyName: property.sName,
                     oProperty: {
                     },
@@ -173,9 +221,9 @@ export class RepairComponent implements OnInit {
                   };
                   opt.oProperty[option.sKey] = option.value;
                   this.propertyOptions[property._id].push(opt);
-                  const proprtyIndex = aProperty.findIndex((prop: any) => prop.iPropertyId == property._id);
+                  const proprtyIndex = this.aProperty.findIndex((prop: any) => prop.iPropertyId == property._id);
                   if (proprtyIndex === -1) {
-                    aProperty.push(opt);
+                    this.aProperty.push(opt);
                   }
                 }
               });
@@ -183,10 +231,10 @@ export class RepairComponent implements OnInit {
           });
 
           if (this.item.oArticleGroupMetaData.aProperty.length === 0) {
-            this.item.oArticleGroupMetaData.aProperty = aProperty
+            this.item.oArticleGroupMetaData.aProperty = this.aProperty
           };
           const data = this.item.oArticleGroupMetaData.aProperty.filter(
-            (set => (a: any) => true === set.has(a.iPropertyId))(new Set(aProperty.map((b: any) => b.iPropertyId)))
+            (set => (a: any) => true === set.has(a.iPropertyId))(new Set(this.aProperty.map((b: any) => b.iPropertyId)))
           );
 
           data.forEach((element: any) => {

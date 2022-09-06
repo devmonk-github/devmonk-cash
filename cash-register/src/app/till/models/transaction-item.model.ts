@@ -30,6 +30,7 @@ export class TransactionItem {
     public iBusinessId: string,
 
     public iArticleGroupId: string | null,
+    public iArticleGroupOriginalId: string | null,
     public oArticleGroupMetaData: { aProperty: [Property] } | null,
     public aPayments: [Payment] | null,
     public bPayLater: boolean,
@@ -78,6 +79,7 @@ export class TransactionItem {
     public nDiscount: number,
     public nRedeemedLoyaltyPoints: number,
     public sUniqueIdentifier: string,
-    public nRevenueAmt: number) { }
+    public nRevenueAmount: number,
+    public sDescription: string) { }
 
 }

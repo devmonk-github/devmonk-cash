@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { faLongArrowAltDown, faLongArrowAltUp, faMinusCircle, faPlus, faPlusCircle, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { ActivityDetailsComponent } from '../shared/components/activity-details-dialog/activity-details.component';
@@ -12,7 +12,7 @@ import { MenuComponent } from '../shared/_layout/components/common';
   templateUrl: './services.component.html',
   styleUrls: ['./services.component.sass']
 })
-export class ServicesComponent implements OnInit {
+export class ServicesComponent implements OnInit, AfterViewInit {
 
   option: boolean = true;
   faSearch = faSearch;
@@ -31,6 +31,10 @@ export class ServicesComponent implements OnInit {
   businessDetails: any = {};
   userType: any = {};
   requestParams: any = {
+    transactionStatuses: ['new', 'processing', 'cancelled', 'inspection', 'completed', 'refund', 'refundInCashRegister'],
+    selectedTransactionStatuses: [],
+    locations: [],
+    selectedLocations: [],
     searchValue: '',
     sortBy: { key: 'Date', selected: true, sort: 'asc' },
     sortOrder: 'asc'
@@ -72,8 +76,6 @@ export class ServicesComponent implements OnInit {
   employees: Array<any> = [this.employee];
   workstations: Array<any> = [];
   selectedWorkstations: Array<any> = [];
-  locations: Array<any> = [];
-  selectedLocations: Array<any> = [];
   iLocationId: String | null | undefined;
   webOrders: Boolean = false;
 
@@ -96,49 +98,117 @@ export class ServicesComponent implements OnInit {
     private routes: Router
   ) { }
 
-  ngOnInit(): void {
+
+  async ngOnInit(): Promise<void> {
     if (this.routes.url.includes('/business/webshop-orders')) {
       this.webOrders = true;
-      this.requestParams.eType = ['webshop-revenue','webshop-reservation']
+      this.requestParams.eType = ['webshop-revenue', 'webshop-reservation']
     }
     this.businessDetails._id = localStorage.getItem('currentBusiness');
     this.iLocationId = localStorage.getItem('currentLocation');
     this.userType = localStorage.getItem('type');
-    this.loadTransaction();
     this.iBusinessId = localStorage.getItem('currentBusiness');
+
+    this.showLoader = true;
+    await this.setLocation()
+    this.showLoader = false
+    this.loadTransaction();
     this.listEmployee();
     this.getWorkstations();
-    this.getLocations();
+
   }
+  ngAfterViewInit(): void {
+    setTimeout(() => {
+      MenuComponent.reinitialization();
+    }, 200);
+  }
+
 
   // Function for handle event of transaction menu
   clickMenuOpt(key: string, transactionId: string) {
 
   }
 
-  getTypes(arr: any){
+  getTypes(arr: any) {
     let str = '';
-    if(arr && arr.length){
-      for(let i = 0; i < arr.length; i++){
-        if(arr[i]?.oArticleGroupMetaData?.sCategory){
-          if(!str){ str += (arr[i]?.oArticleGroupMetaData?.sCategory) }
+    if (arr && arr.length) {
+      for (let i = 0; i < arr.length; i++) {
+        if (arr[i]?.oArticleGroupMetaData?.sCategory) {
+          if (!str) { str += (arr[i]?.oArticleGroupMetaData?.sCategory) }
           else { str += (', ' + arr[i]?.oArticleGroupMetaData?.sCategory) }
-        } 
+        }
       }
     }
     return str;
   }
+  getBusinessLocations() {
+    return new Promise<any>((resolve, reject) => {
 
-  getLocations() {
-    this.apiService.postNew('core', `/api/v1/business/${this.iBusinessId}/list-location`, {}).subscribe(
-      (result: any) => {
-        if (result.message == 'success') {
-          this.locations = result.data.aLocation;
+      this.apiService.getNew('core', '/api/v1/business/user-business-and-location/list')
+        .subscribe((result: any) => {
+          // console.log({ getBusinessLocations: result });
+          if (result.message == "success" && result?.data) {
+
+            resolve(result);
+          }
+          resolve(null);
+        }, (error) => {
+          resolve(error);
+          console.error('error: ', error);
+        })
+    })
+
+  }
+  async getLocations() {
+    return new Promise<any>((resolve, reject) => {
+      this.apiService.postNew('core', `/api/v1/business/${this.iBusinessId}/list-location`, {}).subscribe(
+        (result: any) => {
+          // console.log({ getLocations: result });
+          if (result.message == 'success') {
+            this.requestParams.locations = result.data.aLocation;
+            // console.log({ requestParams: this.requestParams.locations });
+          }
+          resolve(result);
+        }),
+        (error: any) => {
+          reject(error);
+          console.error(error)
         }
-      }),
-      (error: any) => {
-        console.error(error)
+    })
+  }
+  async setLocation(sLocationId: string = "") {
+    return new Promise<void>(async (resolve, reject) => {
+      this.iLocationId = sLocationId ?? (localStorage.getItem('currentLocation') ?? '')
+      try {
+        const oBusinessLocation: any = await this.getBusinessLocations()
+        let oNewLocation: any
+        let bIsCurrentBIsWebshop = false
+        for (let k = 0; k < oBusinessLocation?.data?.aBusiness?.length; k++) {
+          const oAllLocations = oBusinessLocation?.data?.aBusiness[k]
+          // console.log({ oAllLocations });
+          //for (let i = 0; i < location?.data?.aLocation.length; i++) {
+          //  const l = location?.data?.aLocation[i];    
+          for (let i = 0; i < oAllLocations?.aLocation?.length; i++) {
+            const l = oAllLocations?.aLocation[i];
+            // console.log({ aLocation: l });
+            if (l.bIsWebshop) oNewLocation = l
+            if (l._id.toString() === this.iLocationId) {
+              if (l.bIsWebshop) {
+                bIsCurrentBIsWebshop = true
+                this.iLocationId = l._id.toString()
+                break
+              }
+            }
+          }
+        }
+        if (!bIsCurrentBIsWebshop) {
+          this.iLocationId = oNewLocation._id.toString()
+        }
+        resolve()
+      } catch (error) {
+        resolve()
       }
+    })
   }
 
   getWorkstations() {
@@ -207,47 +277,50 @@ export class ServicesComponent implements OnInit {
   }
 
   openActivities(activity: any) {
-    if(this.webOrders){
+    if (this.webOrders) {
       this.dialogService.openModal(WebOrderDetailsComponent, { cssClass: 'w-fullscreen', context: { activity, from: 'web-orders' } })
-      .instance.close.subscribe(result => {
-        if(this.webOrders && result) this.routes.navigate(['business/till']);
-      });
-    }else{
+        .instance.close.subscribe(result => {
+          if (this.webOrders && result) this.routes.navigate(['business/till']);
+        });
+    } else {
       this.dialogService.openModal(ActivityDetailsComponent, { cssClass: 'w-fullscreen', context: { activity, items: false, webOrders: this.webOrders, from: 'services' } })
-      .instance.close.subscribe(result => {
-        if(this.webOrders && result) this.routes.navigate(['business/till']);
-      });
+        .instance.close.subscribe(result => {
+          if (this.webOrders && result) this.routes.navigate(['business/till']);
+        });
     }
   }
 
   loadTransaction() {
     if (this.routes.url.includes('/business/webshop-orders')) {
-      this.requestParams.eType = ['webshop-revenue','webshop-reservation']
+      this.requestParams.eType = ['webshop-revenue', 'webshop-reservation']
     }
     this.activities = [];
     this.requestParams.iBusinessId = this.businessDetails._id;
     this.requestParams.skip = this.requestParams.skip || 0;
     this.requestParams.limit = this.paginationConfig.itemsPerPage || 50;
     this.requestParams.importStatus = this.importStatus;
-    if(this.iLocationId) this.requestParams.iLocationId = this.iLocationId;
+    if (this.iLocationId) this.requestParams.iLocationId = this.iLocationId;
     this.showLoader = true;
     this.apiService.postNew('cashregistry', '/api/v1/activities', this.requestParams).subscribe((result: any) => {
-      this.activities = result.data;
-      this.paginationConfig.totalItems = result.count;
+      if (result?.data?.length)
+        this.activities = result?.data;
+      else
+        this.activities = [];
+      this.paginationConfig.totalItems = result?.count;
       this.getCustomers();
       setTimeout(() => {
         MenuComponent.bootstrap();
-      }, 1000);
-      this.showLoader = false;
+        this.showLoader = false;
+      }, 200);
     }, (error) => {
       this.showLoader = false;
     })
   }
 
-  getCustomers(){
+  getCustomers() {
     const arr = [];
-    for(let i = 0; i < this.activities.length; i++){
-      if(this.activities[i].iCustomerId && arr.indexOf(this.activities[i].iCustomerId) < 0 ) arr.push(this.activities[i].iCustomerId);
+    for (let i = 0; i < this.activities.length; i++) {
+      if (this.activities[i].iCustomerId && arr.indexOf(this.activities[i].iCustomerId) < 0) arr.push(this.activities[i].iCustomerId);
     }
 
     const body = {
@@ -258,9 +331,9 @@ export class ServicesComponent implements OnInit {
     this.apiService.postNew('customer', '/api/v1/customer/list', body)
       .subscribe(async (result: any) => {
         const customers = result.data[0].result || [];
-        for(let i = 0; i < this.activities.length; i++){
-          for(let j = 0; j < customers.length; j++){
-            if(this.activities[i]?.iCustomerId?.toString() == customers[j]?._id?.toString()){
+        for (let i = 0; i < this.activities.length; i++) {
+          for (let j = 0; j < customers.length; j++) {
+            if (this.activities[i]?.iCustomerId?.toString() == customers[j]?._id?.toString()) {
               this.activities[i].oCustomer = {
                 sFirstName: customers[j].sFirstName,
                 sPrefix: customers[j].sPrefix,
@@ -270,7 +343,7 @@ export class ServicesComponent implements OnInit {
           }
         }
       },
-      (error) => {
-      })
+        (error) => {
+        })
   }
 }

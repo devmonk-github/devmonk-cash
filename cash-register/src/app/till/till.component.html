@@ -169,13 +169,13 @@
           <div class="accordion" id="till-items-accordion" [itemLength]="transactionItems.length">
             <ng-container *ngFor="let item of transactionItems; let i = index">
               <div style="display:inline-table;">
-                <div class="accordion-item d-table-cell" till-product *ngIf="item.type=== 'regular'" [item]="item"
+                <div class="accordion-item d-table-cell" till-product *ngIf="item.type === 'regular' || item.type === 'reservation'" [item]="item"
                   [taxes]="taxes" (itemChanged)="itemChanged($event, i)"></div>
-                <div class="accordion-item d-table-cell" till-order *ngIf="item.type=== 'order'" [item]="item"
+                <div class="accordion-item d-table-cell" till-order *ngIf="item.type === 'order'" [item]="item"
                   [taxes]="taxes" (itemChanged)="itemChanged($event, i)"></div>
-                <div class="accordion-item d-table-cell" till-repair *ngIf="item.type=== 'repair'" [item]="item"
+                <div class="accordion-item d-table-cell" till-repair *ngIf="item.type === 'repair'" [item]="item"
                   [taxes]="taxes" (itemChanged)="itemChanged($event, i)"></div>
-                <div class="accordion-item d-table-cell w-100" till-gift *ngIf="item.type=== 'giftcard'" [item]="item"
+                <div class="accordion-item d-table-cell w-100" till-gift *ngIf="item.type === 'giftcard'" [item]="item"
                   [transactionItems]="transactionItems" [taxes]="taxes" (itemChanged)="itemChanged($event, i)"
                   (createGiftCard)="createGiftCard($event, i)">
                 </div>
@@ -228,10 +228,10 @@
               </button>
             </div>
             <div class="d-flex create-order p-5" *ngIf="searchKeyword && eKind === 'order'">
-              <fa-icon [icon]="faTimes" class="topright cursor-pointer"></fa-icon>
+              <fa-icon [icon]="faTimes" class="topright cursor-pointer" (click)="searchKeyword = ''"></fa-icon>
               <div>
                 <span class="text-danger">Use 'Enter' to search</span>
-                <div class="cursor-pointer mt-2" (click)="addOrder()">
+                <div class="cursor-pointer mt-2" (click)="addOrder({ name: searchKeyword })">
                   <h4>{{searchKeyword}}</h4>
                   <span>
                     Use this entry(no stock product).
@@ -243,7 +243,8 @@
           <div class="row" *ngIf="shopProducts && shopProducts.length > 0">
             <div class="col-md-6 cursor-pointer" *ngFor="let product of shopProducts"
               (mouseenter)="product['showOption'] = true" (mouseleave)="product['showOption'] = false">
-              <a (click)="onSelectProduct(product, 'business', 'same-article')">
+              <!-- <a (click)="eKind === 'order'? addOrder(product): onSelectProduct(product, 'business', 'same-article')"> -->
+              <a (click)="onSelectProduct(product, 'business', 'shopProducts')">
                 <div class="card m-1 shadow-sm">
                   <div class="card-body">
                     <div class="d-flex">
@@ -276,7 +277,8 @@
           <div class="row" *ngIf="commonProducts && commonProducts.length > 0">
             <div class="col-md-6 cursor-pointer" *ngFor="let product of commonProducts"
               (mouseenter)="product['showOption'] = true" (mouseleave)="product['showOption'] = false">
-              <a (click)="onSelectProduct(product, 'business', 'same-article')">
+              <a (click)="onSelectProduct(product, 'business', 'commonProducts')">
+              <!-- <a (click)="eKind === 'order'? addOrder(product): onSelectProduct(product, 'business', 'same-article')"> -->
                 <div class="card m-1 shadow-sm">
                   <div class="card-body">
                     <div class="d-flex">
@@ -306,14 +308,11 @@
             </div>
           </div>
 
-
           <div class="d-flex mt-2">
             <div *ngIf="bSearchingProduct" class="spinner-border mx-auto"></div>
           </div>
 
-
           <div class="py-3">
-            <!-- <div *ngIf="bSearchingProduct" class="spinner-border mx-auto"></div> -->
             <ul *ngIf="quickButtons.length" id="quick-buttons" class="nav nav-pills nav-pills-custom mb-3">
               <li class="nav-item mb-3 me-3" *ngFor="let button of quickButtons">
                 <div>
@@ -322,7 +321,6 @@
                     (click)="onSelectProduct(button, 'quick-button')">
                     <h4 class="nav-text text-gray-800 fw-bold fs-6 lh-1 text-center mb-2">{{button.sName}}</h4>
                     <span class="text-gray-600">{{button.nPrice | currency: '€'}}</span>
-                    <!-- todo: color per quick button <span class="bullet-custom position-absolute bottom-0 w-100 h-4px bg-primary"></span> -->
                   </button>
                 </div>
               </li>

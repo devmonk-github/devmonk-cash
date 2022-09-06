@@ -16,7 +16,9 @@ export class WebOrderDetailsComponent implements OnInit {
   dialogRef: DialogComponent;
   activityItems: Array<any> = [];
   business: any;
-  statuses = ['new', 'processing', 'cancelled', 'completed', 'refund', 'refundInCashRegister'];
+  statuses = ['new', 'processing', 'cancelled', 'completed', 'refund', 'refundInCashRegister', 'payInCashRegister'];
+  statusesForItems = ['new', 'processing', 'cancelled', 'completed'];
+  FeStatus = '';
   carriers = ['PostNL', 'DHL', 'DPD', 'bpost', 'other'];
   faTimes = faTimes;
   faDownload = faDownload;
@@ -32,6 +34,7 @@ export class WebOrderDetailsComponent implements OnInit {
   totalPrice: Number = 0;
   quantity: Number = 0;
   userDetail: any;
+  showDeliverBtn: Boolean = false;
   showDetails: Boolean = true;
   downloading: Boolean = false;
   iLocationId: string = '';
@@ -77,32 +80,41 @@ export class WebOrderDetailsComponent implements OnInit {
     if(this.from == 'web-orders'){
       const index = this.statuses.indexOf('cancelled');
       if (index > -1) this.statuses.splice(index, 1);
+
+      const index2 = this.statusesForItems.indexOf('cancelled');
+      if (index > -1) this.statusesForItems.splice(index2, 1);
     }
     this.iLocationId = localStorage.getItem("currentLocation") || '';
     if(this.activity?.iCustomerId) this.fetchCustomer(this.activity.iCustomerId, -1);
+    if(this.activity?.eActivityStatus != 'completed') this.showDeliverBtn = true;
     this.fetchBusinessDetails();
     this.getPrintSetting();
     this.getBusinessLocations();
     this.fetchTransactionItems();
   }
 
-  deliver(){
+  deliver(type: string){
     const transactions = []
     for(const item of this.activityItems){
       for(const receipt of item.receipts) { transactions.push({ ...receipt, iActivityItemId: item._id }) }
     }
-    this.createStockCorrections(transactions)
+    this.createStockCorrections(transactions, type)
   }
 
-  createStockCorrections(transactions: any) {
+  createStockCorrections(transactions: any, type: string) {
     transactions.iBusinessId = this.iBusinessId;
     const data = {
       transactions,
+      type,
+      activity: this.activity,
       iBusinessId : this.iBusinessId
     }
     this.apiService.postNew('cashregistry', '/api/v1/transaction/item/stockCorrection/' + this.activity?._id , data)
     .subscribe((result: any) => {
-      console.log(result);
+      this.activityItems.forEach((item)=>{
+        item.eActivityItemStatus = 'completed';
+      })
+      this.showDeliverBtn = false;
     }, 
     (error) => {
       console.log(error);
@@ -147,7 +159,7 @@ export class WebOrderDetailsComponent implements OnInit {
                 transactionItem.oType.bRefund = false;
               };
               transactionItems.push({
-                name: transactionItem.sProductName,
+                name: transactionItem.sProductName || transactionItem.sProductNumber,
                 iActivityItemId: transactionItem.iActivityItemId,
                 nRefundAmount: transactionItem.nPaidAmount,
                 iLastTransactionItemId: transactionItem.iTransactionItemId,
@@ -160,6 +172,7 @@ export class WebOrderDetailsComponent implements OnInit {
                 aImage: transactionItem.aImage,
                 nonEditable: transactionItem.sGiftCardNumber ? true : false,
                 sGiftCardNumber: transactionItem.sGiftCardNumber,
+                iArticleGroupId: transactionItem.iArticleGroupId,
                 quantity: transactionItem.nQuantity,
                 price: transactionItem.nPriceIncVat,
                 iRepairerId: transactionItem.iRepairerId,
@@ -181,7 +194,8 @@ export class WebOrderDetailsComponent implements OnInit {
           this.activityItems.forEach((obj: any)=>{
             obj.eActivityItemStatus = this.activity.eActivityStatus;
           })
-          this.updateActivity()
+          // Need to find out some other option to change the status in this case.
+          // this.updateActivity()
 
           setTimeout(() => {
             this.close(true);
@@ -260,19 +274,26 @@ export class WebOrderDetailsComponent implements OnInit {
     this.apiService.postNew('cashregistry', url, this.requestParams).subscribe((result: any) => {
       this.activityItems = result.data[0].result;
       this.loading = false;
+      let completed = 0, refunded = 0;
       // this.transactions = [];
       for(let i = 0; i < this.activityItems.length; i++){
         // for(const item of obj.receipts){
         const obj = this.activityItems[i];
-        this.fetchCustomer(obj.iCustomerId, i);
+        if(obj.eActivityItemStatus == 'completed' || obj.eActivityItemStatus == 'refund' || obj.eActivityItemStatus == 'refundInCashRegister') completed += 1;
+        if(obj.eActivityItemStatus == 'refund' || obj.eActivityItemStatus == 'refundInCashRegister') refunded += 1;
+        if(obj?.iCustomerId) this.fetchCustomer(obj.iCustomerId, i);
         for(let j = 0; j < obj.receipts.length; j++){
           // this.transactions.push({ ...item, ...obj });
             const item = obj.receipts[j];
+            if(!item.iStockLocationId && item.iLocationId) item.iStockLocationId = item.iLocationId;
             this.totalPrice += item.nPaymentAmount;
             this.quantity += item.bRefund ? (- item.nQuantity) : item.nQuantity
             if(item.iStockLocationId) this.setSelectedBusinessLocation(item.iStockLocationId, i, j)
         }
       }
+      if(completed == this.activityItems.length) { this.FeStatus = `completed (Refunded: ${refunded}/${this.activityItems.length})`}
+      else if(completed) { this.FeStatus = `Partly Completed (Refunded: ${refunded}/${this.activityItems.length})`}
+      else this.FeStatus = 'New';
       // for(let i = 0; i < this.transactions.length; i++){
       //   const obj = this.transactions[i];
       //   this.totalPrice += obj.nPaymentAmount;
@@ -297,6 +318,27 @@ export class WebOrderDetailsComponent implements OnInit {
         if (location._id == locationId)
           this.activityItems[parentIndex].receipts[index].locationName = location.sName;
       })
+  }
+
+  // togglePayInCashRegister(event: any){}
+
+  checkAllLocations(){
+    let flag = true;
+    for(let i = 0; i < this.activityItems.length; i++){
+      const obj = this.activityItems[i];
+      for(let j = 0; j < obj.receipts.length; j++){
+          const item = obj.receipts[j];
+          if(!item.iStockLocationId && item?.iBusinessProductId) flag = false;
+      }
+    }
+    return flag;
+  }
+
+  getName(item: any){
+    if(item?.oArticleGroupMetaData?.oName?.en == 'product shipping') return 'Shipping costs';
+    if(item?.oArticleGroupMetaData?.oName?.en == 'product engraving') return 'product engraving';
+    if(item?.oArticleGroupMetaData?.oName?.en == 'product Basic gift wrap') return 'Basic gift wrap';
+    return '';
   }
 
   selectBusiness(index: number, location?: any) {
@@ -332,8 +374,9 @@ export class WebOrderDetailsComponent implements OnInit {
 
   
   changeStatusForAll(status: string){
-    if(status == 'refundInCashRegister') { 
+    if(status == 'refundInCashRegister' || status == 'payInCashRegister') { 
       this.openTransaction(this.activity, 'activity');
+    } else if(status == 'completed'){
     } else {
       this.activityItems.forEach((obj: any)=>{
         obj.eActivityItemStatus = status;

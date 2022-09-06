@@ -15,6 +15,7 @@ import {
   ApexResponsive,
   ApexLegend
 } from "ng-apexcharts";
+import { ToastService } from '../toast';
 
 export interface BarChartOptions {
   series: ApexAxisChartSeries;
@@ -23,7 +24,8 @@ export interface BarChartOptions {
   plotOptions: ApexPlotOptions;
   yaxis: ApexYAxis;
   xaxis: ApexXAxis;
-  colors: any
+  colors: any;
+  tooltip: any
 };
 
 export interface PieChartOptions {
@@ -117,6 +119,9 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
   }
   requestParams: any = {
     iBusinessId: "",
+    aProjection: ['sSalutation', 'sFirstName', 'sPrefix', 'sLastName', 'dDateOfBirth', 'dDateOfBirth', 'nClientId', 'sGender', 'bIsEmailVerified',
+      'bCounter', 'sEmail', 'oPhone', 'oShippingAddress', 'oInvoiceAddress', 'iBusinessId', 'sComment', 'bNewsletter', 'sCompanyName', 'oPoints',
+      'sCompanyName', 'oIdentity', 'sVatNumber', 'sCocNumber', 'nPaymentTermDays', 'nDiscount', 'bWhatsApp', 'nMatchingCode'],
   };
   paginationConfig: any = {
     itemsPerPage: 10,
@@ -127,7 +132,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
   bActivitiesLoader: boolean = false;
   bActivityItemsLoader: boolean = false;
 
-  aTransactions: any = [];
+  aTransactions !: Array<any>;
   aTransctionTableHeaders: Array<any> = [
     { key: 'Date', selected: true, sort: 'desc' },
     { key: 'Transaction no.', selected: false, sort: '' },
@@ -136,7 +141,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
     { key: 'Total', disabled: true },
   ];
 
-  aActivities: any = [];
+  aActivities!: Array<any>;
   aActivityTableHeaders: Array<any> = [
     { key: 'Activity No.', selected: false, sort: '' },
     { key: 'Repair number', disabled: true },
@@ -147,7 +152,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
     { key: 'Supplier/Repairer', disabled: true },
   ]
 
-  aActivityItems: any = [];
+  aActivityItems!: Array<any>;
   aActivityItemsTableHeaders: Array<any> = [
     { key: 'Activity No.', selected: false, sort: '' },
     { key: 'Repair number', disabled: true },
@@ -174,29 +179,20 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
 
   @ViewChild("paymentMethodsChart") paymentMethodsChart !: ChartComponent;
   public paymentMethodsChartOptions !: Partial<PieChartOptions> | any;
-
+  aStatisticsChartDataLoading = true
   aActivityTitles: any = [
-    { type: "Repairs", value: 7, color: ChartColors.REPAIR },//$primary-color
-    { type: "Special orders", value: 1, color: ChartColors.SPECIAL_ORDERS },//$dark-primary-light-color
-    { type: "Shop purchase", value: 12, color: ChartColors.SHOP_PURCHASE },//$dark-success-light-color
-    { type: "Quotation", value: 1, color: ChartColors.QUOTATION },//$info-active-color
-    { type: "Webshop", value: 1, color: ChartColors.WEBSHOP },//$gray-700
-    { type: "Refund", value: 1, color: ChartColors.REFUND },//$orange
-    { type: "Giftcard", value: 2, color: ChartColors.GIFTCARD },//$green
-    { type: "Gold purchase", value: 1, color: ChartColors.GOLD_PURCHASE },//$maroon
-    { type: "Product reservation", value: 2, color: ChartColors.PRODUCT_RESERVATION }//$pink
+    { type: "Repairs", value: 0, color: ChartColors.REPAIR },//$primary-color
+    { type: "Special orders", value: 0, color: ChartColors.SPECIAL_ORDERS },//$dark-primary-light-color
+    { type: "Shop purchase", value: 0, color: ChartColors.SHOP_PURCHASE },//$dark-success-light-color
+    { type: "Quotation", value: 0, color: ChartColors.QUOTATION },//$info-active-color
+    { type: "Webshop", value: 0, color: ChartColors.WEBSHOP },//$gray-700
+    { type: "Refund", value: 0, color: ChartColors.REFUND },//$orange
+    { type: "Giftcard", value: 0, color: ChartColors.GIFTCARD },//$green
+    { type: "Gold purchase", value: 0, color: ChartColors.GOLD_PURCHASE },//$maroon
+    { type: "Product reservation", value: 0, color: ChartColors.PRODUCT_RESERVATION }//$pink
   ];
 
-  aStatisticsChartData: any = [
-    { element: { name: 'Watches', data: [10] }, color: ChartColors.WATCHES },
-    { element: { name: 'Jewellery', data: [3] }, color: ChartColors.JEWELLERY },
-    { element: { name: 'Repair', data: [3] }, color: ChartColors.REPAIR },
-    { element: { name: 'Giftcard', data: [1] }, color: ChartColors.GIFTCARD },
-    {
-      element: { name: 'Gold purchase', data: [2] }, color: ChartColors.GOLD_PURCHASE
-    },
-    { element: { name: 'Discounts', data: [-20] }, color: ChartColors.DISCOUNTS },
-  ]
+  aStatisticsChartData: any = [];
 
   aPaymentMethodTitles: any = [
     { type: "Card", value: 7 },
@@ -205,11 +201,12 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
     { type: "Bankpayment", value: 42 },
     { type: "Expected Payment", value: 22 },
   ];
-
+  totalActivities: number = 0;
   constructor(
     private viewContainerRef: ViewContainerRef,
     private apiService: ApiService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private toastService: ToastService,
   ) {
     const _injector = this.viewContainerRef.parentInjector;
     this.dialogRef = _injector.get<DialogComponent>(DialogComponent);
@@ -219,8 +216,9 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
     this.requestParams.iBusinessId = localStorage.getItem('currentBusiness');
     this.requestParams.iLocationid = localStorage.getItem('currentLocation');
     this.requestParams.oFilterBy = {
-      iCustomerId: this.customer._id
+      _id: this.customer._id
     }
+    this.getCoreStatistics()
 
     this.activitiesChartOptions = {
       series: this.aActivityTitles.map((el: any) => el.value),
@@ -230,7 +228,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
         type: "pie"
       },
       title: {
-        text: "Number of Activities (71)",
+        text: "Number of Activities",
         style: {
           fontWeight: 'bold',
         },
@@ -273,7 +271,11 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
     if (this.mode == 'details') {
       this.apiService.putNew('customer', '/api/v1/customer/update/' + this.requestParams.iBusinessId + '/' + this.customer._id, this.customer).subscribe(
         (result: any) => {
-          this.close({ action: true });
+          if(result?.message === 'success'){
+            this.toastService.show({ type: 'success', text: `Successfully updated!` });
+            this.fetchUpdatedDetails();
+          }
+          // this.close({ action: true });
         },
         (error: any) => {
           console.error(error)
@@ -282,10 +284,82 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
     }
   }
 
+  fetchUpdatedDetails() {
+    this.apiService.postNew('customer', `/api/v1/customer/list`,this.requestParams)
+    .subscribe((result: any) => {
+      this.customer = result.data[0].result[0];
+      
+      this.bTransactionsLoader = false;
+      this.bActivitiesLoader = false;
+      this.bActivityItemsLoader = false;
+      
+      this.cdr.detectChanges();
+
+      this.editProfile = false;
+      // console.log(result);
+    },
+    (error: any) => {
+       console.error(error)
+    }
+    )
+  }
+
   close(data: any) {
     this.dialogRef.close.emit(data);
   }
 
+  getCoreStatistics() {
+    const body = {
+      iBusinessId: localStorage.getItem('currentBusiness'),
+      oFilter: {
+        iCustomerId: this.customer._id,
+        sTransactionType: 'cash-registry',
+        sDisplayMethod: 'revenuePerBusinessPartner',
+        dStartDate: "2022-07-16T13:59",
+        dEndDate: "2022-09-24T21:59:59.639Z",
+      },
+    };
+    this.apiService
+      .postNew('cashregistry', '/api/v1/statistics/transaction/audit', body)
+      .subscribe(
+        (result: any) => {
+          this.setAStatisticsChartData(result.data.oTransactionAudit[0].individual[0].aArticleGroups)
+          console.log({ CoreStatistics: result });
+          this.aStatisticsChartDataLoading = false;
+        },
+        (error: any) => {
+          this.aStatisticsChartDataLoading = false;
+        }
+      );
+  }
+  setAStatisticsChartData(data: any[]) {
+    console.log({ setAStatisticsChartData: data });
+    const aStatisticsChartData: any[] = []
+    data.map((item, index) => {
+      let color: any = Object.entries(ChartColors)
+      color = color[Math.floor(Math.random() * color.length)][1]
+      let chartItem = {
+        item: {
+          element: {
+            name: item.sName,
+            data: [
+              {
+                x: item.sName,
+                y: item.nTotalRevenue,
+                info: [
+                  { type: item.sName, value: item.nTotalRevenue }
+                ]
+              }
+            ]
+          },
+          color: color
+        }
+      }
+      aStatisticsChartData.push(chartItem)
+    })
+    this.aStatisticsChartData = aStatisticsChartData
+    this.loadStatisticsTabData()
+  }
 
 
   //  Function for set sort option on transaction table
@@ -332,12 +406,76 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
   }
 
   loadTransactions() {
-
+    console.log('-------loadTransactions!');
     this.bTransactionsLoader = true;
+    this.requestParams.iCustomerId = this.customer._id;
     this.apiService.postNew('cashregistry', '/api/v1/transaction/cashRegister', this.requestParams).subscribe((result: any) => {
-      if (result?.data?.result?.length) {
-        this.aTransactions = result.data.result;
+      if (result?.data?.result) {
+        this.aTransactions = result.data.result || [];
+        this.aTransactions.forEach(transaction => {
+          transaction.aTransactionItems.forEach((item: any) => {
+            const count = this.totalActivities;
+            if(item?.oType?.eKind) this.totalActivities = count + item.nQuantity || 0;
+            switch (item?.oType?.eKind) {
+              case "regular":
+                this.aActivityTitles[1].value += 1;
+                break;
+              case "expenses":
+                break;
+              case "reservation":
+                this.aActivityTitles[8].value += 1;
+                break;
+              case "giftcard":
+                this.aActivityTitles[6].value += 1;
+                break;
+              case "empty-line":
+                break;
+              case "repair":
+                this.aActivityTitles[0].value += 1;
+                break;
+              case "order":
+                break;
+              case "gold-purchase":
+                this.aActivityTitles[7].value += 1;
+                break;
+              case "gold-sell":
+                
+                break;
+              case "loyalty-points-discount":
+                break;
+              case "loyalty-points":
+                break;
+              case "discount":
+                break;
+              case "payment-discount":
+                break;
+            }
+          })
+        });
         // this.paginationConfig.totalItems = result.data.totalCount;
+        this.activitiesChartOptions = {
+          series: this.aActivityTitles.map((el: any) => el.value),
+          colors: this.aActivityTitles.map((el: any) => el.color),
+          chart: {
+            width: '75%',
+            type: "pie"
+          },
+          title: {
+            text: `Number of Activities (${this.totalActivities})`,
+            style: {
+              fontWeight: 'bold',
+            },
+          },
+          legend: {
+            position: 'left',
+            itemMargin: {
+              horizontal: 15,
+              vertical: 5
+            },
+            fontWeight: 600,
+          },
+          labels: this.aActivityTitles.map((el: any) => el.type + " (" + el.value + ") "),
+        };
       }
       this.bTransactionsLoader = false;
     }, (error) => {
@@ -346,11 +484,11 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
   }
 
   loadActivities() {
-    console.log('loadActivities');
+    // console.log('loadActivities');
     this.aActivities = [];
     this.bActivitiesLoader = true;
     this.apiService.postNew('cashregistry', '/api/v1/activities', this.requestParams).subscribe((result: any) => {
-      this.aActivities = result.data;
+      this.aActivities = result.data || [];
       // this.paginationConfig.totalItems = result.count;
 
       this.bActivitiesLoader = false;
@@ -360,12 +498,11 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
 
   }
   loadActivityItems() {
-    console.log('loadActivities items');
-    this.aActivityItems = [];
+    // console.log('loadActivities items');
     this.bActivityItemsLoader = true;
     this.apiService.postNew('cashregistry', '/api/v1/activities/items', this.requestParams).subscribe(
       (result: any) => {
-        this.aActivityItems = result.data;
+        this.aActivityItems = result.data || [];
         // this.paginationConfig.totalItems = result.count;
         this.bActivityItemsLoader = false;
       },
@@ -377,13 +514,13 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
   activeTabsChanged(tab: any) {
     switch (tab) {
       case this.tabTitles[0]:
-        if (!this.aTransactions.length) this.loadTransactions();
+        if (!this.aTransactions) this.loadTransactions();
         break;
       case this.tabTitles[1]:
-        if (!this.aActivities.length) this.loadActivities();
+        if (!this.aActivities) this.loadActivities();
         break;
       case this.tabTitles[2]:
-        if (!this.aActivityItems.length) this.loadActivityItems();
+        if (!this.aActivityItems) this.loadActivityItems();
         break;
       case this.tabTitles[3]:
         this.loadStatisticsTabData();
@@ -394,32 +531,62 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
   loadStatisticsTabData() {
 
     this.statisticsChartOptions = {
-      series: this.aStatisticsChartData.map((el: any) => el.element),
-      colors: this.aStatisticsChartData.map((el: any) => el.color),
+      series: this.aStatisticsChartData.map((el: any) => el.item.element),
+      colors: this.aStatisticsChartData.map((el: any) => el.item.color),
+      tooltip: {
+        custom: function ({ series, seriesIndex, dataPointIndex, w }: any) {
+          let data = w.globals.initialSeries[seriesIndex].data[dataPointIndex];
+
+          let html = `<div>
+                        <div style="background:#E4E6EF;padding:10px">${data.x}</div>
+                        <ul style='list-style-type:circle;padding:5px 15px;margin:5px;line-height:1.5'>`;
+          data.info.forEach((el: any) => {
+            html += `<li>
+                        <span>${el.type}:<span>
+                        <span style="margin:10px 5px;font-weight:bold"> € ${el.value}</span>
+                    </li>`;
+          });
+          html += `</ul><div>`;
+
+          return html;
+        }
+      },
       chart: {
         type: "bar",
-        height: 350
+        height: 350,
+
       },
       dataLabels: {
-        enabled: true
+        enabled: true,
+        style: {
+          'fontSize': '15px'
+        }
       },
       yaxis: {
         title: {
-          text: "Revenue"
+          text: "Revenue",
+          style: {
+            'fontSize': '15px'
+          }
         },
         labels: {
           formatter: function (y: any) {
             return "\u20AC" + y.toFixed(0)
           }
-        }
+          ,
+          style: {
+            'fontSize': '15px'
+          }
+        },
       },
       xaxis: {
-        categories: [
-          "Till toady",
-        ],
-        labels: {
-          rotate: -90
-        }
+        type: 'category',
+        // categories: [
+        //   "Till toady",
+        // ],
+        // labels: {
+        //   rotate: -90
+        // }
       }
     };
 

@@ -6,7 +6,6 @@ import { DialogComponent } from '../../service/dialog';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { ToastService } from '../toast';
 import { CreateArticleGroupService } from '../../service/create-article-groups.service';
-import { TransactionItem } from 'src/app/till/models/transaction-item.model';
 
 @Component({
   selector: 'app-add-expenses',
@@ -29,6 +28,8 @@ export class AddExpensesComponent implements OnInit {
   selectedArticleGroup: any;
   allArticleGroups: any = [];
   currentEmployeeId: any;
+  paymentMethod: any;
+
   constructor(
     private viewContainerRef: ViewContainerRef,
     private apiService: ApiService,
@@ -38,6 +39,7 @@ export class AddExpensesComponent implements OnInit {
   ) {
     const _injector = this.viewContainerRef.injector;;
     this.dialogRef = _injector.get<DialogComponent>(DialogComponent);
+    this.paymentMethod = this.dialogRef.context.paymentMethod;
   }
 
   ngOnInit() {
@@ -97,8 +99,14 @@ export class AddExpensesComponent implements OnInit {
     const oArticleGroupMetaData = {
       aProperty: this.selectedArticleGroup.aProperty,
       sCategory: this.selectedArticleGroup.sCategory,
-      sSubCategory: this.selectedArticleGroup.sSubCategory
+      sSubCategory: this.selectedArticleGroup.sSubCategory,
+      oName: this.selectedArticleGroup.oName
     }
+    const oPayment = {
+      iPaymentMethodId: this.paymentMethod._id,
+      sMethod: this.paymentMethod.sName.toLowerCase(),
+      nAmount: amount,
+    };
     const transactionItem = {
       sProductName: 'Expenses',
       sComment: description,
@@ -120,6 +128,7 @@ export class AddExpensesComponent implements OnInit {
         eKind: 'expenses',
         bDiscount: false,
       },
+      oPayment
     }
     this.apiService.postNew('cashregistry', '/api/v1/till/add-expenses', transactionItem)
       .subscribe((res: any) => {

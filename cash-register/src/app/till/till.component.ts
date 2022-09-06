@@ -1,12 +1,12 @@
-import { AfterViewInit, Component, ElementRef, OnInit, ViewChild, ViewChildren } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, OnInit, ViewChildren } from '@angular/core';
 import {
-  faScrewdriverWrench, faTruck, faBoxesStacked, faGifts,
-  faUserPlus, faUser, faTimes, faTimesCircle, faTrashAlt, faRing,
+  faScrewdriverWrench, faTruck, faBoxesStacked, faGifts, faUser, faTimes, faTimesCircle, faTrashAlt, faRing,
   faCoins, faCalculator, faArrowRightFromBracket, faSpinner, faSearch, faMoneyBill
 } from '@fortawesome/free-solid-svg-icons';
+import { Observable } from 'rxjs';
+import { TranslateService } from '@ngx-translate/core';
 import * as _ from 'lodash';
 
-import { TranslateService } from '@ngx-translate/core';
 import { DialogService } from '../shared/service/dialog'
 import { CustomerDialogComponent } from '../shared/components/customer-dialog/customer-dialog.component';
 import { TaxService } from '../shared/service/tax.service';
@@ -23,16 +23,14 @@ import { BarcodeService } from "../shared/service/barcode.service";
 import { TerminalService } from '../shared/service/terminal.service';
 import { TerminalDialogComponent } from '../shared/components/terminal-dialog/terminal-dialog.component';
 import { CreateArticleGroupService } from '../shared/service/create-article-groups.service';
-import { Router, ActivatedRoute } from '@angular/router';
 import { CustomerStructureService } from '../shared/service/customer-structure.service';
-import { Observable } from 'rxjs';
 import { FiskalyService } from '../shared/service/fiskaly.service';
 @Component({
   selector: 'app-till',
   templateUrl: './till.component.html',
   styleUrls: ['./till.component.scss']
 })
-export class TillComponent implements OnInit, AfterViewInit {
+export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   // icons
   faScrewdriverWrench = faScrewdriverWrench;
   faTruck = faTruck;
@@ -99,7 +97,8 @@ export class TillComponent implements OnInit, AfterViewInit {
     'iArticleGroupId',
     'iBusinessPartnerId',
     'iBusinessBrandId',
-    'nPurchasePrice'
+    'nPurchasePrice',
+    'iBrandId',
   ];
   discountArticleGroup: any = {};
   saveInProgress = false;
@@ -148,12 +147,11 @@ export class TillComponent implements OnInit, AfterViewInit {
     this.fetchQuickButtons();
 
     this.getfiskalyInfo();
-
+    this.cancelFiskalyTransaction();
   }
 
   async getfiskalyInfo() {
     const tssId = await this.fiskalyService.fetchTSS();
-    console.log(tssId);
   }
 
   ngAfterViewInit() {
@@ -172,7 +170,6 @@ export class TillComponent implements OnInit, AfterViewInit {
         this.fetchCustomer(transaction.iCustomerId);
       }
       this.changeInPayment();
-      // localStorage.removeItem('fromTransactionPage')
     }
   }
 
@@ -208,30 +205,7 @@ export class TillComponent implements OnInit, AfterViewInit {
     })
   }
 
-  // fetchBusinessProductDetail(iBusinessProductId: any) {
-  //   this.fetchingProductDetails = true;
-  //   this.apiService.getNew('core', `/api/v1/business/products/${iBusinessProductId}?iBusinessId=${this.business._id}`).subscribe(
-  //     (result: any) => {
-  //       this.fetchingProductDetails = false;
-  //       console.log('fetchBusinessProductDetail: ', result);
-  //     }, (error) => {
-  //       console.error('error in fetching product: ', error);
-  //     });    
-  // }
-
-  // addItemToTransaction(item: any): void {
-  //   this.selectedQuickButton = item;
-  //   this.bSearchingProduct = true;
-  //   this.apiService.getNew('core', `/api/v1/business/products/${item.iBusinessProductId}?iBusinessId=${this.business._id}`).subscribe(
-  //     (result: any) => {
-  //       if (result.message == 'success') {
-  //         this.onSelectProduct(result.data, 'business', 'quick-button');
-  //         this.bSearchingProduct = false;
-  //       }
-  //     });
-  // }
-
-  addOrder(): void {
+  addOrder(product: any): void {
     this.transactionItems.push({
       eTransactionItemType: 'regular',
       manualUpdate: false,
@@ -244,12 +218,15 @@ export class TillComponent implements OnInit, AfterViewInit {
       nBrokenProduct: 0,
       price: 0,
       nPurchasePrice: 0,
+      nMargin: 1,
       nDiscount: 0,
       tax: 21,
       paymentAmount: 0,
-      oArticleGroupMetaData: { aProperty: [], sCategory: '', sSubCategory: '' },
+      oArticleGroupMetaData: { aProperty: [], sCategory: '', sSubCategory: '', oName: {} },
       description: '',
       open: true,
+      new: true,
+      isFor: 'create',
     });
     this.searchKeyword = '';
   }
@@ -269,7 +246,6 @@ export class TillComponent implements OnInit, AfterViewInit {
               i.nTotal = i.quantity * (i.price - i.nDiscount);
               i.nTotal = i.type === 'gold-purchase' ? -1 * i.nTotal : i.nTotal;
               result += i.nTotal - (i.prePaidAmount || 0);
-              // result += type === 'price' ? i.quantity * i.price - i.prePaidAmount || 0 : i[type]
             }
           } else {
             i.paymentAmount = 0;
@@ -312,18 +288,20 @@ export class TillComponent implements OnInit, AfterViewInit {
       name: this.translateService.instant(type.toUpperCase()),
       type,
       oType: { bRefund: false, bDiscount: false, bPrepayment: false },
-      oArticleGroupMetaData: { aProperty: [], sCategory: '', sSubCategory: '' },
+      oArticleGroupMetaData: { aProperty: [], sCategory: '', sSubCategory: '', oName: {} },
       aImage: [],
       quantity: 1,
       nBrokenProduct: 0,
       price,
-      nPurchasePrice: price,
+      nMargin: 1,
+      nPurchasePrice: 0,
       nTotal: type === 'gold-purchase' ? -1 * price : price,
       nDiscount: 0,
       tax: 21,
       paymentAmount: type === 'gold-purchase' ? -1 * price : 0,
       description: '',
       open: true,
+      new: true,
       iBusinessId: this.getValueFromLocalStorage('currentBusiness'),
       ...(type === 'giftcard') && { sGiftCardNumber: Date.now() },
       ...(type === 'giftcard') && { taxHandling: 'true' },
@@ -389,6 +367,7 @@ export class TillComponent implements OnInit, AfterViewInit {
       sGiftCardNumber: this.transactionItems[index].sGiftCardNumber,
       eType: '',
       nPriceIncVat: this.transactionItems[index].price,
+      nPurchasePrice: this.transactionItems[index].price / 1.21,
       nVatRate: this.transactionItems[index].tax,
       nQuantity: this.transactionItems[index].quantity,
       nPaidAmount: 0,
@@ -481,6 +460,7 @@ export class TillComponent implements OnInit, AfterViewInit {
     this.customer = null;
   }
 
+
   startTerminalPayment() {
     this.dialogService.openModal(TerminalDialogComponent, { cssClass: 'modal-lg', context: { payments: this.payMethods } })
       .instance.close.subscribe((data) => {
@@ -494,6 +474,7 @@ export class TillComponent implements OnInit, AfterViewInit {
         }
       })
   }
+
   // nRefundAmount needs to be added
   checkUseForGold() {
     let isGoldForPayment = true;
@@ -535,33 +516,28 @@ export class TillComponent implements OnInit, AfterViewInit {
             }
           });
           payMethods = payMethods.filter((o: any) => o.amount !== 0);
-          const body = this.tillService.createTransactionBody(this.transactionItems, payMethods, this.discountArticleGroup, this.redeemedLoyaltyPoints);
+          const body = this.tillService.createTransactionBody(this.transactionItems, payMethods, this.discountArticleGroup, this.redeemedLoyaltyPoints, this.customer);
           if (giftCardPayment && this.appliedGiftCards.length > 0) {
             this.appliedGiftCards.forEach(element => {
               const cardPaymethod = _.clone(giftCardPayment);
               cardPaymethod.amount = element.nAmount;
               cardPaymethod.sGiftCardNumber = element.sGiftCardNumber;
               cardPaymethod.iArticleGroupId = element.iArticleGroupId;
+              cardPaymethod.iArticleGroupOriginalId = element.iArticleGroupOriginalId;
               cardPaymethod.type = element.type;
               body.payments.push(cardPaymethod);
             });
             body.giftCards = this.appliedGiftCards;
           }
           body.oTransaction.iActivityId = this.iActivityId;
-          if (this.customer && this.customer._id) {
-            body.oTransaction.iCustomerId = this.customer._id;
-            body.oTransaction.oCustomer = {
-              _id: this.customer._id,
-              sFirstName: this.customer.sFirstName,
-              sLastName: this.customer.sLastName,
-              sPrefix: this.customer.sPrefix
-            }
-          };
-
           this.apiService.postNew('cashregistry', '/api/v1/till/transaction', body)
             .subscribe((data: any) => {
               this.toastrService.show({ type: 'success', text: data.message });
               this.updateFiskalyTransaction('FINISHED', body.payments);
+              setTimeout(() => {
+                this.saveInProgress = false;
+                this.clearAll();
+              }, 100);
               if (this.selectedTransaction) {
                 this.deleteParkedTransaction();
               };
@@ -641,16 +617,16 @@ export class TillComponent implements OnInit, AfterViewInit {
       product = _oBusinessProductDetail.data;
       price.nPriceIncludesVat = selectedQuickButton.nPrice;
     } else {
-      price = product.aLocation.find((o: any) => o._id === this.locationId);
+      price = product.aLocation ? product.aLocation.find((o: any) => o._id === this.locationId) : 0;
     }
-
     this.transactionItems.push({
-      name: product.oName ? product.oName['en'] : 'No name',
+      name: product.oName ? product.oName['en'] : this.searchKeyword,
       eTransactionItemType: 'regular',
       type: this.eKind,
       quantity: 1,
       price: price ? price.nPriceIncludesVat : 0,
-      nPurchasePrice: product.nPurchasePrice || 0,
+      nMargin: 1,
+      nPurchasePrice: product.nPurchasePrice,
       paymentAmount: 0,
       oType: { bRefund: false, bDiscount: false, bPrepayment: false },
       nDiscount: product.nDiscount || 0,
@@ -659,13 +635,16 @@ export class TillComponent implements OnInit, AfterViewInit {
       sArticleNumber: product.sArticleNumber,
       description: product.sLabelDescription,
       iArticleGroupId: product.iArticleGroupId,
-      oArticleGroupMetaData: { aProperty: product.aProperty || [], sCategory: '', sSubCategory: '' },
-      iBusinessBrandId: product.iBusinessBrandId,
+      oArticleGroupMetaData: { aProperty: product.aProperty || [], sCategory: '', sSubCategory: '', oName: {} },
+      iBusinessBrandId: product.iBusinessBrandId || product.iBrandId,
       iBusinessProductId: product._id,
       iSupplierId: product.iBusinessPartnerId,
       aImage: product.aImage,
       isExclude: false,
       open: true,
+      new: true,
+      isFor,
+      oBusinessProductMetaData: this.tillService.createProductMetadata(product),
     });
     this.resetSearch();
   }
@@ -679,8 +658,6 @@ export class TillComponent implements OnInit, AfterViewInit {
   search() {
     this.shopProducts = [];
     this.commonProducts = [];
-    // if (searchValue && searchValue.length > 2) {
-    //   this.isLoading = true;
     this.listShopProducts(this.searchKeyword, false);
     if (!this.isStockSelected) {
       this.listCommonBrandProducts(this.searchKeyword, false); // Searching for the products of common brand
@@ -720,8 +697,14 @@ export class TillComponent implements OnInit, AfterViewInit {
   }
   park(): void {
     this.apiService.postNew('cashregistry', `/api/v1/park?iBusinessId=${this.getValueFromLocalStorage('currentBusiness')}`, this.getParkedTransactionBody())
-      .subscribe(data => {
+      .subscribe((data: any) => {
+        this.parkedTransactions.unshift({
+          _id: data?._id.toString(),
+          dUpdatedDate: data?.dUpdatedDate.toString(),
+          sNumber: data?.sNumber.toString()
+        })
         this.toastrService.show({ type: 'success', text: 'Transaction parked!' })
+
       }, err => {
         this.toastrService.show({ type: 'danger', text: err.message });
       });
@@ -732,6 +715,7 @@ export class TillComponent implements OnInit, AfterViewInit {
     this.apiService.getNew('cashregistry', `/api/v1/park?iBusinessId=${this.getValueFromLocalStorage('currentBusiness')}`)
       .subscribe((data: any) => {
         this.parkedTransactions = data;
+
       }, err => {
         this.toastrService.show({ type: 'danger', text: err.message });
       });
@@ -744,8 +728,6 @@ export class TillComponent implements OnInit, AfterViewInit {
         this.taxes = transactionInfo.aTaxes;
         this.transactionItems = transactionInfo.aTransactionItems;
         this.customer = transactionInfo.oCustomer;
-        // this.searchKeyword = transactionInfo.searchKeyword;
-        // this.shopProducts = transactionInfo.shopProducts;
         this.businessId = transactionInfo.iBusinessId;
         this.supplierId = transactionInfo.iSupplierId;
         this.iActivityId = transactionInfo.iActivityId;
@@ -786,8 +768,10 @@ export class TillComponent implements OnInit, AfterViewInit {
   }
 
   openExpenses() {
-    this.dialogService.openModal(AddExpensesComponent, { cssClass: 'modal-m', context: {} })
+    const paymentMethod = this.payMethods.find((o: any) => o.sName.toLowerCase() === 'cash');
+    this.dialogService.openModal(AddExpensesComponent, { cssClass: 'modal-m', context: { paymentMethod } })
       .instance.close.subscribe(result => {
+        // console.log(result);
       });
   }
 
@@ -849,7 +833,7 @@ export class TillComponent implements OnInit, AfterViewInit {
       nDiscount: 0,
       tax: 0,
       description: '',
-      oArticleGroupMetaData: { aProperty: [], sCategory: '', sSubCategory: '' },
+      oArticleGroupMetaData: { aProperty: [], sCategory: '', sSubCategory: '', oName: {} },
       open: true,
     });
     this.redeemedLoyaltyPoints = redeemedLoyaltyPoints;
@@ -947,10 +931,14 @@ export class TillComponent implements OnInit, AfterViewInit {
     try {
       const res = await this.fiskalyService.startTransaction();
       localStorage.setItem('fiskalyTransaction', JSON.stringify(res));
-    } catch (error) {
-      console.log(error);
+    } catch (error: any) {
+      if (error.error.code === 'E_UNAUTHORIZED') {
+        localStorage.removeItem('fiskalyAuth');
+        await this.startFiskalyTransaction();
+      }
     }
   }
+
   async updateFiskalyTransaction(state: string, payments: []) {
     const pay = _.clone(payments);
     try {
@@ -960,13 +948,34 @@ export class TillComponent implements OnInit, AfterViewInit {
       const result = await this.fiskalyService.updateFiskalyTransaction(this.transactionItems, pay, state);
       if (state === 'FINISHED') {
         localStorage.removeItem('fiskalyTransaction');
-        this.saveInProgress = false;
-        this.clearAll();
       } else {
         localStorage.setItem('fiskalyTransaction', JSON.stringify(result));
       }
-    } catch (error) {
-      console.log(error);
+    } catch (error: any) {
+      if (error.error.code === 'E_UNAUTHORIZED') {
+        localStorage.removeItem('fiskalyAuth');
+        await this.updateFiskalyTransaction(state, payments);
+      }
     }
+  }
+
+  async cancelFiskalyTransaction() {
+    try {
+      if (localStorage.getItem('fiskalyTransaction')) {
+        await this.fiskalyService.updateFiskalyTransaction(this.transactionItems, [], 'CANCELLED');
+        localStorage.removeItem('fiskalyTransaction');
+        localStorage.removeItem('tssId');
+      } else {
+        localStorage.removeItem('tssId');
+      }
+    } catch (error) {
+      localStorage.removeItem('fiskalyTransaction');
+      localStorage.removeItem('tssId');
+    }
+  }
+
+  ngOnDestroy() {
+    localStorage.removeItem('fromTransactionPage');
+    this.cancelFiskalyTransaction();
   }
 }

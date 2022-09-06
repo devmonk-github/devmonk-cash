@@ -106,7 +106,7 @@ export class TransactionsSearchComponent implements OnInit, AfterViewInit {
                 transactionItem.oType.bRefund = false;
               };
               transactionItems.push({
-                name: transactionItem.sProductName,
+                name: transactionItem.sProductName || transactionItem.sProductNumber,
                 iActivityItemId: transactionItem.iActivityItemId,
                 nRefundAmount: transactionItem.nPaidAmount,
                 iLastTransactionItemId: transactionItem.iTransactionItemId,
@@ -128,13 +128,16 @@ export class TransactionsSearchComponent implements OnInit, AfterViewInit {
                 nRedeemedLoyaltyPoints: transactionItem.nRedeemedLoyaltyPoints,
                 iArticleGroupId: transactionItem.iArticleGroupId,
                 iEmployeeId: transactionItem.iEmployeeId,
-                iBrandId: transactionItem.iBrandId,
+                iBusinessBrandId: transactionItem.iBusinessBrandId,
                 nDiscount: transactionItem.nDiscount || 0,
                 tax: transactionItem.nVatRate,
                 oGoldFor: transactionItem.oGoldFor,
+                iSupplierId: transactionItem.iSupplierId,
                 paymentAmount,
-                description: '',
+                description: transactionItem.sDescription,
                 open: true,
+                nMargin: transactionItem.nMargin,
+                nPurchasePrice: transactionItem.nPurchasePrice,
               });
             }
           });

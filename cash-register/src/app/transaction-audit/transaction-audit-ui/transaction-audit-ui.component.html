@@ -5,17 +5,115 @@
                 <div class="card-header align-items-center py-5 gap-2 gap-md-5">
                     <!-- FILTERS -->
                     <div class="card-body">
+
                         <div class="row mb-5">
+                            <!-- START_DATE -->
                             <div class="col-md-3">
-                                <label class="fs-6 form-label fw-bolder text-dark">{{'TYPE' | translate}}</label>
-                                <ng-select class="form-control form-control-solid p-0" [(ngModel)]="optionMenu"
-                                    [clearable]="false" (change)="onChanges(optionMenu)">
-                                    <ng-option [value]="option.sKey" *ngFor="let option of aOptionMenu">
-                                        {{ option.sValue | translate}}
-                                    </ng-option>
-                                </ng-select>
+                                <label class="fs-6 form-label fw-bolder text-dark">{{'START_DATE' | translate}}</label>
+                                <input type="datetime-local" class="form-control form-control form-control-solid"
+                                    name="startDate" [ngModel]="filterDates.startDate"
+                                    (ngModelChange)="filterDates.startDate = $event;" />
                             </div>
+                            <!-- END_DATE -->
                             <div class="col-md-3">
+                                <label class="fs-6 form-label fw-bolder text-dark">{{'END_DATE' | translate}}</label>
+                                <input type="datetime-local" class="form-control form-control-solid" name="endDate"
+                                    [ngModel]="filterDates.endDate" (ngModelChange)="filterDates.endDate = $event;" />
+                            </div>
+                            <!-- VIEW -->
+                            <div class="col-md-3">
+                                <label class="fs-6 form-label fw-bolder text-dark">{{'VIEW' | translate}}</label>
+                                <!--begin::Menu-->
+                                <div class="menu menu-rounded menu-column menu-gray-600 menu-state-bg fw-semibold form-control form-control-solid"
+                                    data-kt-menu="true">
+                                    <!--begin::Menu item-->
+                                    <div class="menu-item" data-kt-menu-trigger="click" data-kt-menu-attach="parent"
+                                        data-kt-menu-placement="bottom-start">
+                                        <!--begin::Menu link-->
+                                        <a class="menu-link py-3">
+                                            <span class="menu-title text-overflow-ellipsis">{{sSelectedOptionMenu
+                                                ||'Select'}}</span>
+                                            <span class="menu-arrow"></span>
+                                        </a>
+                                        <!--end::Menu link-->
+
+                                        <!--begin::Menu sub-->
+                                        <div class="menu-sub menu-sub-dropdown p-3 w-200px">
+                                            <!--begin::Menu item-->
+                                            <div class="menu-item" *ngFor="let parent of aOptionMenu">
+                                                <div class="menu-item" data-kt-menu-trigger="hover"
+                                                    data-kt-menu-placement="right-start">
+                                                    <!--begin::Menu link-->
+                                                    <a class="menu-link py-3">
+                                                        <span class="menu-icon">
+                                                            <i class="bi bi-bar-chart fs-3"></i>
+                                                        </span>
+                                                        <span class="menu-title">{{parent.sKey}}</span>
+                                                        <span class="menu-arrow"></span>
+                                                    </a>
+                                                    <!--end::Menu link-->
+
+                                                    <!--begin::Menu sub-->
+                                                    <div class="menu-sub menu-sub-dropdown p-3 w-200px">
+                                                        <!--begin::Menu item-->
+                                                        <div class="menu-item">
+                                                            <div class="menu-item">
+                                                                <div *ngFor="let child1 of parent.children"
+                                                                    class="menu-item" data-kt-menu-trigger="hover"
+                                                                    data-kt-menu-placement="right-start">
+                                                                    <!--begin::Menu link-->
+                                                                    <a class="menu-link py-3">
+                                                                        <span class="menu-icon">
+                                                                            <i class="bi bi-bar-chart fs-3"></i>
+                                                                        </span>
+                                                                        <span class="menu-title">{{child1.sKey}}</span>
+                                                                        <span class="menu-arrow"></span>
+                                                                    </a>
+                                                                    <!--end::Menu link-->
+
+                                                                    <!--begin::Menu sub-->
+                                                                    <div class="menu-sub menu-sub-dropdown p-3 w-200px">
+                                                                        <!--begin::Menu item-->
+                                                                        <div *ngFor="let child2 of child1.children"
+                                                                            class="menu-item">
+                                                                            <a (click)="onDropdownItemSelected(parent,child1,child2)"
+                                                                                class="menu-link px-1 py-3">
+                                                                                <span class="menu-bullet me-0">
+                                                                                    <span
+                                                                                        class="bullet bullet-dot"></span>
+                                                                                </span>
+                                                                                <span
+                                                                                    class="menu-title">{{child2.sValue}}</span>
+                                                                            </a>
+                                                                        </div>
+                                                                        <!--end::Menu item-->
+
+                                                                    </div>
+                                                                    <!--end::Menu sub-->
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <!--end::Menu item-->
+
+
+                                                    </div>
+                                                    <!--end::Menu sub-->
+                                                </div>
+                                            </div>
+                                            <!--end::Menu item-->
+
+
+                                        </div>
+                                        <!--end::Menu sub-->
+                                    </div>
+                                    <!--end::Menu item-->
+
+                                </div>
+                                <!--end::Menu-->
+
+                            </div>
+                            <!-- DISPLAY_METHOD -->
+                            <!-- <div class="col-md-3">
                                 <label class="fs-6 form-label fw-bolder text-dark">{{'DISPLAY_METHOD' |
                                     translate}}</label>
                                 <ng-select class="form-control form-control-solid p-0" [(ngModel)]="sDisplayMethod"
@@ -26,55 +124,8 @@
                                         translate}}
                                     </ng-option>
                                 </ng-select>
-                            </div>
-                            <div class="col-md-3">
-                                <label class="fs-6 form-label fw-bolder text-dark">{{'SHOW_DYNAMIC_STATE' |
-                                    translate}}</label>
-                                <br>
-                                <label
-                                    class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20">
-                                    <input class="form-check-input" type="checkbox" [(ngModel)]="IsDynamicState"
-                                        name="IsDynamicState" [disabled]="iStatisticId ? true : false" />
-                                    <span class="form-check-label"> {{ "SHOW_DYNAMIC" | translate}} </span>
-                                </label>
-                            </div>
-                            <div class="col-md-3">
-                                <label class="fs-6 form-label fw-bolder text-dark">{{ "PROPERTIES" | translate}}</label>
-                                <div class="d-flex" *ngFor="let property of aProperty; let pIndex = index">
-                                    <div class="w-100" *ngIf="propertyOptions[property.iPropertyId]?.length">
-                                        <ng-select [multiple]="true" [items]="propertyOptions[property.iPropertyId]"
-                                            [(ngModel)]="selectedProperties[property.iPropertyId]" name="propertyId"
-                                            bindValue="sName" bindLabel="sName" placeholder="Select"
-                                            (click)="onProperties(property.iPropertyId)" required
-                                            [closeOnSelect]="false">
-
-                                            <ng-template ng-option-tmp let-item="item" let-item$="item$"
-                                                let-index="index">
-                                                <input id="item-{{index}}" type="checkbox" name="item-{{index}}"
-                                                    [ngModel]="item$.selected" />
-                                                {{item.sName}}
-                                            </ng-template>
-
-                                        </ng-select>
-
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row mb-5">
-                            <div class="col-md-3">
-                                <label class="fs-6 form-label fw-bolder text-dark">{{'START_DATE' | translate}}</label>
-                                <input type="datetime-local" class="form-control form-control form-control-solid"
-                                    name="startDate" [ngModel]="filterDates.startDate"
-                                    (ngModelChange)="filterDates.startDate = $event;" />
-                            </div>
-                            <div class="col-md-3">
-                                <label class="fs-6 form-label fw-bolder text-dark">{{'END_DATE' | translate}}</label>
-                                <input type="datetime-local" class="form-control form-control form-control-solid"
-                                    name="endDate" [ngModel]="filterDates.endDate"
-                                    (ngModelChange)="filterDates.endDate = $event;" />
-                            </div>
+                            </div> -->
+                            <!-- LOCATION -->
                             <div class="col-md-3">
                                 <label class="fs-6 form-label fw-bolder text-dark">{{'LOCATION' | translate}}</label>
                                 <div class="w-100" *ngIf="aLocation?.length">
@@ -91,8 +142,21 @@
                                     </ng-select>
 
                                 </div>
-
                             </div>
+                        </div>
+
+                        <div class="row mb-5">
+                            <!-- EMPLOYEE -->
+                            <div class="col-md-3">
+                                <label class="fs-6 form-label fw-bolder text-dark">{{'EMPLOYEE' | translate}}</label>
+                                <ng-select class="form-control form-control-solid p-0" [(ngModel)]="selectedEmployee"
+                                    [clearable]="false">
+                                    <ng-option *ngFor="let oEmployee of aEmployee" [value]="oEmployee">
+                                        {{oEmployee.sFirstName + ' ' +oEmployee.sLastName}}
+                                    </ng-option>
+                                </ng-select>
+                            </div>
+                            <!-- WORK_STATION -->
                             <div class="col-md-3">
                                 <label class="fs-6 form-label fw-bolder text-dark">{{'WORK_STATION' |
                                     translate}}</label>
@@ -103,38 +167,107 @@
                                     </ng-option>
                                 </ng-select>
                             </div>
+                            <ng-container
+                                *ngIf="sDisplayMethod === this.edisplayMethodKeysEnum.revenuePerBusinessPartner || sDisplayMethod === this.edisplayMethodKeysEnum.revenuePerArticleGroupAndProperty">
+                                <!-- PROPERTIES -->
+                                <div class="col-md-3">
+                                    <label class="fs-6 form-label fw-bolder text-dark">{{ "PROPERTIES" |
+                                        translate}}</label>
+                                    <div class="d-flex" *ngFor="let property of aProperty; let pIndex = index">
+                                        <div class="w-100" *ngIf="propertyOptions[property.iPropertyId]?.length">
+                                            <ng-select [multiple]="true" [items]="propertyOptions[property.iPropertyId]"
+                                                [(ngModel)]="selectedProperties[property.iPropertyId]" name="propertyId"
+                                                bindValue="sName" bindLabel="sName" placeholder="Select"
+                                                (click)="onProperties(property.iPropertyId)" required
+                                                [closeOnSelect]="false">
+
+                                                <ng-template ng-option-tmp let-item="item" let-item$="item$"
+                                                    let-index="index">
+                                                    <input id="item-{{index}}" type="checkbox" name="item-{{index}}"
+                                                        [ngModel]="item$.selected" />
+                                                    {{item.sName}}
+                                                </ng-template>
+
+                                            </ng-select>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </ng-container>
                         </div>
-                        <div class="row mb-5" *ngIf="IsDynamicState">
+                        <div class="row mb-5">
+                            <ng-container
+                                *ngIf="sDisplayMethod === this.edisplayMethodKeysEnum.revenuePerBusinessPartner || sDisplayMethod === this.edisplayMethodKeysEnum.revenuePerArticleGroupAndProperty ">
+                                <!-- LEVEL_FILTER -->
+                                <div class="col-md-3">
+                                    <label class="fs-6 form-label fw-bolder text-dark">{{ "LEVEL_FILTER" |
+                                        translate}}</label>
+                                    <div class="d-flex mt-2">
+                                        <label class="w-75 align-middle lh-xxl" *ngIf="bIsArticleGroupLevel">{{
+                                            "ARTICLE_GROUP_LEVEL" |
+                                            translate}}</label>
+                                        <label class="w-75 align-middle lh-xxl" *ngIf="!bIsArticleGroupLevel">{{
+                                            "PRODUCT_LEVEL" |
+                                            translate}}</label>
+                                        <label class="form-check form-switch form-check-custom form-check-solid w-25">
+                                            <input type="checkbox" class="form-check-input"
+                                                [(ngModel)]="bIsArticleGroupLevel">
+                                        </label>
+                                    </div>
+                                </div>
+                                <!-- MODE_FILTER -->
+                                <div class="col-md-3">
+                                    <label class="fs-6 form-label fw-bolder text-dark">{{ "MODE_FILTER" |
+                                        translate}}</label>
+                                    <div class="d-flex mt-2">
+                                        <label class="w-75 align-middle lh-xxl" *ngIf="bIsSupplierMode">{{
+                                            "SUPPLIER_MODE" |
+                                            translate}}</label>
+                                        <label class="w-75 align-middle lh-xxl" *ngIf="!bIsSupplierMode">{{
+                                            "BUSINESS_MODE"
+                                            |
+                                            translate}}</label>
+                                        <label class="form-check form-switch form-check-custom form-check-solid w-25">
+                                            <input type="checkbox" class="form-check-input"
+                                                [(ngModel)]="bIsSupplierMode">
+                                        </label>
+                                    </div>
+                                </div>
+                            </ng-container>
+
+                            <!-- SHOW_DYNAMIC_STATE -->
                             <div class="col-md-3">
-                                <label class="fs-6 form-label fw-bolder text-dark">{{'EMPLOYEE' | translate}}</label>
-                                <ng-select class="form-control form-control-solid p-0" [(ngModel)]="selectedEmployee"
-                                    [clearable]="false">
-                                    <ng-option *ngFor="let oEmployee of aEmployee" [value]="oEmployee">
-                                        {{oEmployee.sFirstName + ' ' +oEmployee.sLastName}}
-                                    </ng-option>
-                                </ng-select>
+                                <label class="fs-6 form-label fw-bolder text-dark">{{'SHOW_DYNAMIC_STATE' |
+                                    translate}}</label>
+                                <br>
+                                <label
+                                    class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20">
+                                    <input class="form-check-input" type="checkbox" [(ngModel)]="IsDynamicState"
+                                        name="IsDynamicState" [disabled]="iStatisticId ? true : false" />
+                                    <span class="form-check-label"> {{ "SHOW_DYNAMIC" | translate}} </span>
+                                </label>
                             </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-3 mt-5">
-                                <button type="button" class="btn btn-primary" data-kt-roles-modal-action="submit"
-                                    (click)="fetchStatistics()" [class.disabled]="bStatisticLoading">
-                                    <span class="indicator-label">{{ "APPLY_FILTER" | translate}}</span>
-                                </button>
-                            </div>
+                            <div class="row">
+                                <div class="col-md-3 mt-5">
+                                    <button type="button" class="btn btn-primary" data-kt-roles-modal-action="submit"
+                                        (click)="fetchStatistics()" [class.disabled]="bStatisticLoading">
+                                        <span class="indicator-label">{{ "APPLY_FILTER" | translate}}</span>
+                                    </button>
+                                </div>
 
-                            <div class="col-md-3 mt-5">
-                                <!-- <button type="button" class="btn btn-primary" data-kt-roles-modal-action="submit"
-                                    (click)="closeDayState($event)" [class.disabled]="bStatisticLoading">
-                                    <span class="indicator-label">{{ "CLOSE_DAYSTATE" | translate}}</span>
-                                </button> -->
-                                <div *ngIf="closingDayState" class="spinner-border mx-auto"></div>
-
-                                <!-- <div class="d-flex align-items-center">
-                                    <button class="btn btn-primary mx-2" (click)="closeDayState($event)">{{ "CLOSE_DAYSTATE" |
-                                        translate}}</button>
+                                <div class="col-md-3 mt-5">
+                                    <!-- <button type="button" class="btn btn-primary" data-kt-roles-modal-action="submit"
+                                        (click)="closeDayState($event)" [class.disabled]="bStatisticLoading">
+                                        <span class="indicator-label">{{ "CLOSE_DAYSTATE" | translate}}</span>
+                                    </button> -->
                                     <div *ngIf="closingDayState" class="spinner-border mx-auto"></div>
-                                </div> -->
+
+                                    <!-- <div class="d-flex align-items-center">
+                                        <button class="btn btn-primary mx-2" (click)="closeDayState($event)">{{ "CLOSE_DAYSTATE" |
+                                            translate}}</button>
+                                        <div *ngIf="closingDayState" class="spinner-border mx-auto"></div>
+                                    </div> -->
+                                </div>
                             </div>
                         </div>
                     </div> <!-- Card body-->
@@ -219,7 +352,8 @@
                                                     </th>
                                                     <th class="w-150px"><span class="">{{"GROSS_PROFIT" |
                                                             translate}}</span>
-                                                        <h4 class="text-black">{{oSupplier.nProfit}}</h4>
+                                                        <h4 class="text-black">{{oSupplier.nProfit| number :'1.2-2'}}
+                                                        </h4>
                                                     </th>
                                                     <th class="w-150px"><span class="">{{"MARGIN" | translate}}</span>
                                                         <h4 class="text-black">{{oSupplier.nMargin}}</h4>
@@ -245,7 +379,7 @@
                                                                         {{oArticleGroup.nTotalPurchaseAmount}}
                                                                     </th>
                                                                     <th scope="col" class="w-150px">
-                                                                        {{oArticleGroup.nProfit}}</th>
+                                                                        {{oArticleGroup.nProfit| number :'1.2-2'}}</th>
                                                                     <th scope="col" class="w-150px">
                                                                         {{oArticleGroup.nMargin}}</th>
                                                                 </tr>
@@ -263,7 +397,8 @@
                                                                         <td>{{oRevenueByProperty.nTotalRevenue}}</td>
                                                                         <td>{{oRevenueByProperty.nTotalPurchaseAmount}}
                                                                         </td>
-                                                                        <td>{{oRevenueByProperty.nProfit}}</td>
+                                                                        <td>{{oRevenueByProperty.nProfit| number
+                                                                            :'1.2-2'}}</td>
                                                                         <td>{{oRevenueByProperty.nMargin}}</td>
                                                                     </tr>
                                                                 </tbody>
@@ -303,7 +438,8 @@
                                                     </th>
                                                     <th class="w-150px"><span class="">{{"GROSS_PROFIT" |
                                                             translate}}</span>
-                                                        <h4 class="text-black">{{oSupplier.nProfit}}</h4>
+                                                        <h4 class="text-black">{{oSupplier.nProfit| number :'1.2-2' }}
+                                                        </h4>
                                                     </th>
                                                     <th class="w-150px"><span class="">{{"MARGIN" | translate}}</span>
                                                         <h4 class="text-black">{{oSupplier.nMargin}}</h4>
@@ -344,7 +480,7 @@
                                                                         {{oArticleGroup.nTotalPurchaseAmount}}
                                                                     </th>
                                                                     <th scope="col" class="w-150px">
-                                                                        {{oArticleGroup.nProfit}}</th>
+                                                                        {{oArticleGroup.nProfit| number :'1.2-2'}}</th>
                                                                     <th scope="col" class="w-150px">
                                                                         {{oArticleGroup.nMargin}}
                                                                     </th>
@@ -383,6 +519,26 @@
                                         <table
                                             class="table table-row-bordered table-row-gray-300 gy-5 gs-5 mb-0 text-gray-600 fw-bold border"
                                             *ngFor="let oArticleGroup of oStatistic.individual; let articleGroupIndex = index">
+                                            <!-- HEADER -->
+                                            <!-- <thead>
+                                                                                        <tr>
+                                                                                            <th><span class="">{{ 'ARTICLE_NAME' | translate}}</span>
+                                                                                            </th>
+                                                                                            <th class="w-150px"><span class="">{{"QUANTITY" | translate}}</span>
+                                                                                            </th>
+                                                                                            <th class="w-150px"><span class="">{{"PRICE_WITH_VAT" |
+                                                                                                    translate}}</span>
+                                                                                            </th>
+                                                                                            <th class="w-150px"><span class="">{{"PURCHASE_PRICE" |
+                                                                                                    translate}}</span>
+                                                                                            </th>
+                                                                                            <th class="w-150px"><span class="">{{"GROSS_PROFIT" |
+                                                                                                    translate}}</span>
+                                                                                            </th>
+                                                                                            <th class="w-150px"><span class="">{{"MARGIN" | translate}}</span>
+                                                                                            </th>
+                                                                                        </tr>
+                                                                                    </thead> -->
                                             <!-- start of articlegroup -->
                                             <thead class="bg-gray-100">
                                                 <tr class="fw-bold fs-6 text-gray-800">
@@ -392,7 +548,8 @@
                                                     <th scope="col" class="w-150px">
                                                         {{oArticleGroup.nTotalPurchaseAmount}}
                                                     </th>
-                                                    <th scope="col" class="w-150px">{{oArticleGroup.nProfit}}</th>
+                                                    <th scope="col" class="w-150px">{{oArticleGroup.nProfit| number
+                                                        :'1.2-2'}}</th>
                                                     <th scope="col" class="w-150px">{{oArticleGroup.nMargin}}</th>
                                                 </tr>
                                             </thead>
@@ -406,14 +563,13 @@
                                                         <td>{{oRevenueByProperty.nQuantity}}</td>
                                                         <td>{{oRevenueByProperty.nTotalRevenue}}</td>
                                                         <td>{{oRevenueByProperty.nTotalPurchaseAmount}}</td>
-                                                        <td>{{oRevenueByProperty.nProfit}}</td>
+                                                        <td>{{oRevenueByProperty.nProfit| number :'1.2-2'}}</td>
                                                         <td>{{oRevenueByProperty.nMargin}}</td>
                                                     </tr>
                                                 </tbody>
                                             </ng-container>
                                             <!-- start of articlegroup -->
                                         </table>
-
                                     </div>
                                 </div>
                             </div>
@@ -477,7 +633,7 @@
                                                                 <th class="w-150px">
                                                                     {{oRevenueByProperty.nTotalPurchaseAmount}}</th>
                                                                 <th class="w-150px">
-                                                                    {{oRevenueByProperty.nProfit}}</th>
+                                                                    {{oRevenueByProperty.nProfit| number :'1.2-2'}}</th>
                                                                 <th class="w-150px">
                                                                     {{oRevenueByProperty.nMargin}}</th>
                                                             </tr>
@@ -563,7 +719,8 @@
                                                                 <td class="w-150px">{{oArticleGroup.nTotalRevenue}}</td>
                                                                 <td class="w-150px">
                                                                     {{oArticleGroup.nTotalPurchaseAmount}}</td>
-                                                                <td class="w-150px">{{oArticleGroup.nProfit}}</td>
+                                                                <td class="w-150px">{{oArticleGroup.nProfit | number
+                                                                    :'1.2-2'}}</td>
                                                                 <td class="w-150px">{{oArticleGroup.nMargin}}</td>
                                                             </tr>
                                                             <tr *ngIf="oArticleGroup.isLoading">
@@ -597,7 +754,7 @@
 
                             <div class="card" *ngIf="sDisplayMethod === 'aVatRates'">
                                 <p> {{ 'VAT_RATES' | translate}} </p>
-                            
+
                                 <div class="card-body">
                                     <div class="table-responsive" *ngFor="let oStatistic of aStatistic; let i = index">
                                         <table
@@ -611,43 +768,51 @@
                                                             translate}}</span></th>
                                                     <th class="w-150px"><span class="">{{ "GROSS_PROFIT" |
                                                             translate}}</span></th>
-                                                    <th class="w-150px"><span class="">{{"VAT_AMOUNT" | translate}}</span>
+                                                    <th class="w-150px"><span class="">{{"VAT_AMOUNT" |
+                                                            translate}}</span>
                                                     </th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 <td style="padding:0" colspan="6">
-                                                    <ng-container *ngFor="let oVatRate of oStatistic.aVatRates; let vatRateIndex = index">
+                                                    <ng-container
+                                                        *ngFor="let oVatRate of oStatistic.aVatRates; let vatRateIndex = index">
                                                         <table
                                                             class="table table-row-bordered table-row-gray-300 gy-5 gs-5 mb-0 text-gray-600 fw-bold border">
                                                             <tr>
-                                                                <td class="text-center fw-bolder bg-gray-100" colspan="5">
+                                                                <td class="text-center fw-bolder bg-gray-100"
+                                                                    colspan="5">
                                                                     {{"VAT_RATE"}} - {{oVatRate?.nVat}}
                                                                 </td>
                                                             </tr>
                                                             <tr>
                                                                 <ng-container [ngTemplateOutlet]="vatRateTemplates"
-                                                                    [ngTemplateOutletContext]="{ data: {sVatMethod: 'oShopPurchase', oVatRate: oVatRate} }" *ngIf="optionMenu == 'cash-registry'">
+                                                                    [ngTemplateOutletContext]="{ data: {sVatMethod: 'oShopPurchase', oVatRate: oVatRate} }"
+                                                                    *ngIf="optionMenu === 'cash-registry'">
                                                                 </ng-container>
                                                             </tr>
                                                             <tr>
                                                                 <ng-container [ngTemplateOutlet]="vatRateTemplates"
-                                                                    [ngTemplateOutletContext]="{ data: {sVatMethod: 'oWebShop', oVatRate: oVatRate} }" *ngIf="optionMenu == 'cash-registry'">
+                                                                    [ngTemplateOutletContext]="{ data: {sVatMethod: 'oWebShop', oVatRate: oVatRate} }"
+                                                                    *ngIf="optionMenu === 'cash-registry'">
                                                                 </ng-container>
                                                             </tr>
                                                             <tr>
                                                                 <ng-container [ngTemplateOutlet]="vatRateTemplates"
-                                                                    [ngTemplateOutletContext]="{ data: {sVatMethod: 'oDeliverySupplier', oVatRate: oVatRate} }" *ngIf="optionMenu == 'purchase-order' && sUserType == 'supplier'">
+                                                                    [ngTemplateOutletContext]="{ data: {sVatMethod: 'oDeliverySupplier', oVatRate: oVatRate} }"
+                                                                    *ngIf="optionMenu === 'purchase-order' && sUserType === 'supplier'">
                                                                 </ng-container>
                                                             </tr>
                                                             <tr>
                                                                 <ng-container [ngTemplateOutlet]="vatRateTemplates"
-                                                                    [ngTemplateOutletContext]="{ data: {sVatMethod: 'oDeliveryRetailer', oVatRate: oVatRate} }" *ngIf="optionMenu == 'purchase-order' && sUserType == 'retailer'">
+                                                                    [ngTemplateOutletContext]="{ data: {sVatMethod: 'oDeliveryRetailer', oVatRate: oVatRate} }"
+                                                                    *ngIf="optionMenu === 'purchase-order' && sUserType === 'retailer'">
                                                                 </ng-container>
                                                             </tr>
                                                             <tr>
                                                                 <ng-container [ngTemplateOutlet]="vatRateTemplates"
-                                                                    [ngTemplateOutletContext]="{ data: {sVatMethod: 'oSalesOrderSupplier', oVatRate: oVatRate} }" *ngIf="optionMenu == 'sales-order'">
+                                                                    [ngTemplateOutletContext]="{ data: {sVatMethod: 'oSalesOrderSupplier', oVatRate: oVatRate} }"
+                                                                    *ngIf="optionMenu === 'sales-order'">
                                                                 </ng-container>
                                                             </tr>
                                                         </table>
@@ -655,7 +820,7 @@
                                                 </td>
                                             </tbody>
                                         </table>
-                            
+
                                     </div>
                                 </div>
                             </div>
@@ -668,7 +833,8 @@
                     <ng-template let-data="data" #vatRateTemplates>
                         <!-- <p>Dear {{person.name}} , {{person.message}} </p> -->
                         <td><span class="">{{ data?.sVatMethod }}</span></td>
-                        <td class="w-150px"><span class="">{{ data?.oVatRate[data?.sVatMethod].nProfit }}</span></td>
+                        <td class="w-150px"><span class="">{{ data?.oVatRate[data?.sVatMethod].nProfit| number :'1.2-2'
+                                }}</span></td>
                         <td class="w-150px"><span class="">{{ data?.oVatRate[data?.sVatMethod].nPurchaseValue }}</span>
                         </td>
                         <td class="w-150px"><span class="">{{ data?.oVatRate[data?.sVatMethod].nTotalRevenue }}</span>
@@ -682,7 +848,12 @@
                 <!-- PAYMENT START -->
                 <div class="card">
                     <div class="container">
-                        <strong> {{ 'PAYMENT_METHODS' | translate}} </strong>
+                        <div class="d-flex justify-content-between">
+                            <strong> {{ 'PAYMENT_METHODS' | translate}} </strong>
+                            <button class="btn" (click)="toggleEditPaymentMode()">
+                                <i class="fa fa-edit"></i>
+                            </button>
+                        </div>
                         <p *ngIf="!aPaymentMethods?.length">{{ 'PAYMENT_METHODS_NOT_FOUND' | translate}}</p>
                         <div *ngIf="aPaymentMethods?.length">
                             <div class="card-body">
@@ -691,18 +862,69 @@
                                     class="table table-row-bordered table-row-gray-300 gy-5 gs-5 mb-0 text-gray-600 fw-bold border">
                                     <thead class="bg-gray-100">
                                         <tr class="fw-bold fs-6 text-gray-800">
-                                            <th scope="col">{{ 'METHOD' | translate}}</th>
-                                            <th scope="col" class="w-150px">{{ 'TOTAL_AMOUNT' | translate}}</th>
-                                            <th scope="col" class="w-150px">{{ 'QUANTITY' | translate}}</th>
+                                            <th>{{ 'METHOD' | translate}}</th>
+                                            <th class="w-150px">{{ 'AMOUNT' | translate}}</th>
+                                            <th *ngIf="paymentEditMode" class="w-150px">{{ 'NEW AMOUNT' | translate}}
+                                            </th>
+                                            <th class="w-150px">{{ 'QUANTITY' | translate}}</th>
                                         </tr>
                                     </thead>
-                                    <tbody class="p-2" *ngFor="let oPayment of aPaymentMethods; let i = index">
-                                        <tr>
+                                    <tbody class="p-2">
+                                        <tr *ngFor="let oPayment of aPaymentMethods; let i = index">
                                             <td class="ps-9">{{oPayment.sMethod}}</td>
                                             <td>{{oPayment.nAmount}}</td>
+                                            <td *ngIf="paymentEditMode">
+                                                <input class="form-control" type="number"
+                                                    [(ngModel)]="oPayment.nNewAmount"
+                                                    (ngModelChange)="reCalculateTotal()">
+                                            </td>
                                             <td>{{oPayment.nQuantity}}</td>
                                         </tr>
+                                        <ng-container *ngIf="paymentEditMode">
+                                            <tr *ngFor="let oPayment of aNewSelectedPaymentMethods; let i = index">
+                                                <td>
+                                                    <div>
+                                                        <ng-select [(ngModel)]="aNewSelectedPaymentMethods[i]"
+                                                            [clearable]="false">
+                                                            <ng-option [value]="option"
+                                                                *ngFor="let option of payMethods">
+                                                                {{ option.sName | translate }}
+                                                            </ng-option>
+                                                        </ng-select>
+                                                    </div>
+                                                </td>
+                                                <td></td>
+                                                <td>
+                                                    <input class="form-control" type="number"
+                                                        [(ngModel)]="oPayment.nAmount"
+                                                        (ngModelChange)="reCalculateTotal()">
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="3" class="text-start">
+                                                    <span class="cursor-pointer text-gray-800" (click)="addRow()"> +
+                                                        Click here to add more</span>
+                                                </td>
+                                            </tr>
+                                        </ng-container>
                                     </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <th class="text-end">{{ 'TOTAL' | translate}}</th>
+                                            <th class="w-150px">{{ nPaymentMethodTotal }}</th>
+                                            <ng-container *ngIf="paymentEditMode">
+                                                <th>
+                                                    <span
+                                                        [ngClass]="nNewPaymentMethodTotal === nPaymentMethodTotal ? 'valid' : 'invalid' ">{{
+                                                        nNewPaymentMethodTotal }}</span>
+                                                </th>
+                                                <th class="w-150px">
+                                                    <button class="btn btn-sm btn-primary"
+                                                        (click)="saveUpdatedPayments()">Save</button>
+                                                </th>
+                                            </ng-container>
+                                        </tr>
+                                    </tfoot>
                                 </table>
                             </div>
                         </div>
@@ -711,145 +933,155 @@
                 <!-- PAYMENT END -->
 
                 <!-- Tushar's code START -->
-                <div class="card-body pt-0">
-                    <div class="dataTables_wrapper dt-bootstrap4 no-footer">
-                        <div class="table-responsive">
-                            <table class="table align-middle table-row-dashed fs-6 gy-5 dataTable no-footer">
-                                <thead>
-                                    <tr class="text-start text-gray-400 fw-bolder fs-7 text-uppercase gs-0">
-                                        <th class="min-w-100px sorting" tabindex="0">{{ "STATISTICS_OVERALL" |
-                                            translate}}
-                                        </th>
-                                        <th class="min-w-100px sorting" tabindex="0">{{ "STATISTICS_VALUE" | translate}}
-                                        </th>
-                                        <th class="min-w-100px sorting" tabindex="0">{{ "BOOKKEEPING_VALUE" | translate
-                                            }}
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody class="fw-bold text-gray-600">
-                                    <tr class="even">
-                                        <td>
-                                            <span>Total Revenue</span>
-                                        </td>
-                                        <td>
-                                        </td>
-                                        <td>
-                                        </td>
-                                    </tr>
-                                    <tr class="even">
-                                        <td>
-                                            <span>Quantity</span>
-                                        </td>
-                                        <td>
-                                        </td>
-                                        <td>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                <ng-container
+                    *ngIf="sDisplayMethod === this.edisplayMethodKeysEnum.revenuePerBusinessPartner || sDisplayMethod === this.edisplayMethodKeysEnum.revenuePerArticleGroupAndProperty">
 
-                            <hr>
-                            <h4>Transactions</h4>
-                            <table
-                                class="table table-green align-middle table-row-dashed fs-6 gy-5 dataTable no-footer">
-                                <thead style="position: sticky;">
-                                    <tr class="text-start text-gray-400 fw-bolder fs-7 text-uppercase gs-0">
-                                        <th class="min-w-100px sorting" tabindex="0">{{ "BOOKING_DATE" | translate}}
-                                        </th>
-                                        <th class="min-w-100px sorting" tabindex="0">{{ "LEDGER_NUMBER" | translate}}
-                                        </th>
-                                        <th class="min-w-100px sorting" tabindex="0">{{ "CREDIT" | translate}} </th>
-                                        <th class="min-w-100px sorting" tabindex="0">{{ "DEBIT" | translate }}</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="fw-bold text-gray-600">
-                                    <tr class="even" *ngFor="let booking of bookingRecords">
-                                        <td>
-                                            <span>{{booking.dTransactionCreationDate | date: 'medium'}}</span>
-                                        </td>
-                                        <td>
-                                            <span>{{booking.nLedgerNumber}}</span>
-                                        </td>
-                                        <td>
-                                            <span>{{ booking.eType === 'credit' ? (booking.nValue | number:'2.1-5'):
-                                                '-'}}</span>
-                                        </td>
-                                        <td>
-                                            <span>{{booking.eType === 'debit' ? (booking.nValue | number:'2.1-5'): '-'
-                                                }}</span>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                                <tfoot style="position: sticky;">
-                                    <tr class="even">
-                                        <td>
-                                            <span>Total</span>
-                                        </td>
-                                        <td>
-                                            <span>-</span>
-                                        </td>
-                                        <td>
-                                            <span>{{creditAmount}}</span>
-                                        </td>
-                                        <td>
-                                            <span>{{debitAmount}}</span>
-                                        </td>
-                                    </tr>
-                                </tfoot>
-                            </table>
-                            <hr>
-                            <h4>Payments</h4>
-                            <table
-                                class="table table-green align-middle table-row-dashed fs-6 gy-5 dataTable no-footer">
-                                <thead style="position: sticky;">
-                                    <tr class="text-start text-gray-400 fw-bolder fs-7 text-uppercase gs-0">
-                                        <th class="min-w-100px sorting" tabindex="0">{{ "BOOKING_DATE" | translate}}
-                                        </th>
-                                        <th class="min-w-100px sorting" tabindex="0">{{ "LEDGER_NUMBER" | translate}}
-                                        </th>
-                                        <th class="min-w-100px sorting" tabindex="0">{{ "CREDIT" | translate}} </th>
-                                        <th class="min-w-100px sorting" tabindex="0">{{ "DEBIT" | translate }}</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="fw-bold text-gray-600">
-                                    <tr class="even" *ngFor="let booking of paymentRecords">
-                                        <td>
-                                            <span>{{booking.dTransactionCreationDate | date: 'medium'}}</span>
-                                        </td>
-                                        <td>
-                                            <span>{{booking.nLedgerNumber}}</span>
-                                        </td>
-                                        <td>
-                                            <span>{{ booking.eType === 'credit' ? (booking.nValue | number:'2.1-5'):
-                                                '-'}}</span>
-                                        </td>
-                                        <td>
-                                            <span>{{booking.eType === 'debit' ? (booking.nValue | number:'2.1-5'): '-'
-                                                }}</span>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                                <tfoot style="position: sticky;">
-                                    <tr class="even">
-                                        <td>
-                                            <span>Total</span>
-                                        </td>
-                                        <td>
-                                            <span>-</span>
-                                        </td>
-                                        <td>
-                                            <span>{{paymentCreditAmount}}</span>
-                                        </td>
-                                        <td>
-                                            <span>{{paymentDebitAmount}}</span>
-                                        </td>
-                                    </tr>
-                                </tfoot>
-                            </table>
+                    <div class="card-body pt-0">
+                        <div class="dataTables_wrapper dt-bootstrap4 no-footer">
+                            <div class="table-responsive">
+                                <table class="table align-middle table-row-dashed fs-6 gy-5 dataTable no-footer">
+                                    <thead>
+                                        <tr class="text-start text-gray-400 fw-bolder fs-7 text-uppercase gs-0">
+                                            <th class="min-w-100px sorting" tabindex="0">{{ "STATISTICS_OVERALL" |
+                                                translate}}
+                                            </th>
+                                            <th class="min-w-100px sorting" tabindex="0">{{ "STATISTICS_VALUE" |
+                                                translate}}
+                                            </th>
+                                            <th class="min-w-100px sorting" tabindex="0">{{ "BOOKKEEPING_VALUE" |
+                                                translate
+                                                }}
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="fw-bold text-gray-600">
+                                        <tr class="even">
+                                            <td>
+                                                <span>Total Revenue</span>
+                                            </td>
+                                            <td>
+                                            </td>
+                                            <td>
+                                            </td>
+                                        </tr>
+                                        <tr class="even">
+                                            <td>
+                                                <span>Quantity</span>
+                                            </td>
+                                            <td>
+                                            </td>
+                                            <td>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                                <hr>
+                                <h4>Transactions</h4>
+                                <table
+                                    class="table table-green align-middle table-row-dashed fs-6 gy-5 dataTable no-footer">
+                                    <thead style="position: sticky;">
+                                        <tr class="text-start text-gray-400 fw-bolder fs-7 text-uppercase gs-0">
+                                            <th class="min-w-100px sorting" tabindex="0">{{ "BOOKING_DATE" | translate}}
+                                            </th>
+                                            <th class="min-w-100px sorting" tabindex="0">{{ "LEDGER_NUMBER" |
+                                                translate}}
+                                            </th>
+                                            <th class="min-w-100px sorting" tabindex="0">{{ "CREDIT" | translate}} </th>
+                                            <th class="min-w-100px sorting" tabindex="0">{{ "DEBIT" | translate }}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="fw-bold text-gray-600">
+                                        <tr class="even" *ngFor="let booking of bookingRecords">
+                                            <td>
+                                                <span>{{booking.dTransactionCreationDate | date: 'medium'}}</span>
+                                            </td>
+                                            <td>
+                                                <span>{{booking.nLedgerNumber}}</span>
+                                            </td>
+                                            <td>
+                                                <span>{{ booking.eType === 'credit' ? (booking.nValue | number:'2.1-5'):
+                                                    '-'}}</span>
+                                            </td>
+                                            <td>
+                                                <span>{{booking.eType === 'debit' ? (booking.nValue | number:'2.1-5'):
+                                                    '-'
+                                                    }}</span>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                    <tfoot style="position: sticky;">
+                                        <tr class="even">
+                                            <td>
+                                                <span>Total</span>
+                                            </td>
+                                            <td>
+                                                <span>-</span>
+                                            </td>
+                                            <td>
+                                                <span>{{creditAmount}}</span>
+                                            </td>
+                                            <td>
+                                                <span>{{debitAmount}}</span>
+                                            </td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                                <hr>
+                                <h4>Payments</h4>
+                                <table
+                                    class="table table-green align-middle table-row-dashed fs-6 gy-5 dataTable no-footer">
+                                    <thead style="position: sticky;">
+                                        <tr class="text-start text-gray-400 fw-bolder fs-7 text-uppercase gs-0">
+                                            <th class="min-w-100px sorting" tabindex="0">{{ "BOOKING_DATE" | translate}}
+                                            </th>
+                                            <th class="min-w-100px sorting" tabindex="0">{{ "LEDGER_NUMBER" |
+                                                translate}}
+                                            </th>
+                                            <th class="min-w-100px sorting" tabindex="0">{{ "CREDIT" | translate}} </th>
+                                            <th class="min-w-100px sorting" tabindex="0">{{ "DEBIT" | translate }}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="fw-bold text-gray-600">
+                                        <tr class="even" *ngFor="let booking of paymentRecords">
+                                            <td>
+                                                <span>{{booking.dTransactionCreationDate | date: 'medium'}}</span>
+                                            </td>
+                                            <td>
+                                                <span>{{booking.nLedgerNumber}}</span>
+                                            </td>
+                                            <td>
+                                                <span>{{ booking.eType === 'credit' ? (booking.nValue | number:'2.1-5'):
+                                                    '-'}}</span>
+                                            </td>
+                                            <td>
+                                                <span>{{booking.eType === 'debit' ? (booking.nValue | number:'2.1-5'):
+                                                    '-'
+                                                    }}</span>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                    <tfoot style="position: sticky;">
+                                        <tr class="even">
+                                            <td>
+                                                <span>Total</span>
+                                            </td>
+                                            <td>
+                                                <span>-</span>
+                                            </td>
+                                            <td>
+                                                <span>{{paymentCreditAmount}}</span>
+                                            </td>
+                                            <td>
+                                                <span>{{paymentDebitAmount}}</span>
+                                            </td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
                         </div>
                     </div>
-                </div>
+                </ng-container>
                 <!-- Tushar's code END -->
 
             </div>
@@ -891,8 +1123,9 @@
                         <div class="countingTotal">
                             <div class="d-flex justify-content-start align-items-center">
                                 <label>Total Counted : </label>
-                                <input type="number" class="form-control mx-1 p-2" [(ngModel)]="nTotalTCashCounting">
-                            </div>
+                                <input type="number" class="form-control mx-1 p-2"
+                                    [(ngModel)]="oCountings.nCashCounted">
+                            </div>z
                         </div>
                     </div>
 
@@ -916,16 +1149,16 @@
                             </div>
                             <div>
                                 <label>Cash in Till</label>
-                                <label class="">{{ nCashInTill | currency:"EUR":"symbol" }}</label>
+                                <label class="">{{ oCountings.nCashInTill | currency:"EUR":"symbol" }}</label>
                             </div>
                             <div>
                                 <label>Cash Counted</label>
-                                <label class="bold">{{ nTotalTCashCounting | currency:"EUR":"symbol" }} </label>
+                                <label class="bold">{{ oCountings.nCashCounted | currency:"EUR":"symbol" }} </label>
                             </div>
                             <div>
                                 <label>Difference in Cash</label>
                                 <label class="bold">
-                                    {{ (nCashInTill - nTotalTCashCounting) | currency:"EUR":"symbol" }}
+                                    {{ (oCountings.nCashInTill - oCountings.nCashCounted) | currency:"EUR":"symbol" }}
                                 </label>
                             </div>
                             <div>
@@ -934,19 +1167,23 @@
                             </div>
                             <div>
                                 <label>Skim</label>
-                                <input class="form-control p-2 w-30">
+                                <input class="form-control p-2 w-30" [(ngModel)]="oCountings.nSkim">
                             </div>
                             <div>
                                 <label>Remaining Cash</label>
                                 <label class="bold">
-                                    {{ nTotalTCashCounting | currency:"EUR":"symbol" }}
+                                    {{ (oCountings.nCashCounted - oCountings.nSkim) | currency:"EUR":"symbol" }}
                                 </label>
                             </div>
                             <br>
-                            <button type="button" class="btn btn-primary" data-kt-roles-modal-action="submit"
-                                (click)="closeDayState($event)" [class.disabled]="bStatisticLoading">
-                                <span class="indicator-label">{{ "CLOSE_DAYSTATE" | translate}}</span>
-                            </button>
+                            <div class="d-flex justify-content-start">
+                                <button type="button" class="btn btn-primary" data-kt-roles-modal-action="submit"
+                                    (click)="closeDayState()" [class.disabled]="closingDayState">
+                                    <span class="indicator-label">{{ "CLOSE_DAYSTATE" | translate}}</span>
+                                </button>
+                                <div *ngIf="closingDayState" class="spinner-border mx-5"></div>
+                            </div>
+
                         </div>
                     </div>
                 </div>

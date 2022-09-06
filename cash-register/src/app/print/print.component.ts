@@ -22,7 +22,7 @@ export class PrintComponent implements OnInit {
   location: any = {};
   workstation: any = {};
   translationsResults: any = [];
-  translationsKey: Array<string> = ['CREATED_BY', 'ART_NUMBER', 'QUANTITY', 'DESCRIPTION', 'DISCOUNT', 'AMOUNT'];
+  translationsKey: Array<string> = ['CREATED_BY', 'ART_NUMBER', 'QUANTITY', 'DESCRIPTION', 'DISCOUNT', 'AMOUNT', 'SAVINGS_POINTS'];
 
   constructor(
     private pdfService: PdfService,
@@ -49,7 +49,8 @@ export class PrintComponent implements OnInit {
       "__QUANTITY": this.translationsResults.QUANTITY,
       "__DESCRIPTION": this.translationsResults.DESCRIPTION,
       "__DISCOUNT": this.translationsResults.DISCOUNT,
-      "__AMOUNT": this.translationsResults.AMOUNT
+      "__AMOUNT": this.translationsResults.AMOUNT,
+      "__SAVINGS_POINTS": this.translationsResults.SAVINGS_POINTS
     };
 
     const dataString = {

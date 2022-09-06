@@ -6,6 +6,7 @@ import { faTimes, faMessage, faEnvelope, faEnvelopeSquare, faUser, faReceipt, fa
 import { PdfService } from '../../service/pdf.service';
 import { TransactionItemsDetailsComponent } from '../transaction-items-details/transaction-items-details.component';
 import { MenuComponent } from '../../_layout/components/common';
+import { Router } from '@angular/router';
 @Component({
   selector: 'app-activity-details',
   templateUrl: './activity-details.component.html',
@@ -39,6 +40,7 @@ export class ActivityDetailsComponent implements OnInit {
   itemType = 'transaction';
   customerReceiptDownloading: Boolean = false;
   loading: Boolean = false;
+  collapsedBtn: Boolean = false;
   iBusinessId = localStorage.getItem('currentBusiness');
   transactions: Array<any> = [];
   totalPrice: Number = 0;
@@ -47,9 +49,11 @@ export class ActivityDetailsComponent implements OnInit {
   business: any;
   iLocationId: String = '';
   showDetails: Boolean = true;
+  loadCashRegister: Boolean = false;
   requestParams: any = {
     iBusinessId: this.iBusinessId,
-    aProjection: ['_id',
+    aProjection: [
+      '_id',
       'iBusinessId',
       'iProductId',
       'iSupplierId',
@@ -64,13 +68,25 @@ export class ActivityDetailsComponent implements OnInit {
       'sArticleNumber',
       'dCreatedDate',
       'dUpdatedDate',
-      'iActivityItemId']
+      'iActivityItemId'
+    ]
   };
+  employee: any = null;
+  filteredEmployees: Array<any> = [];
+  employeesList: Array<any> = [];
+  brand: any = null;
+  brandsList: Array<any> = [];
+  filteredBrands: Array<any> = [];
+  supplier: any;
+  supplierOptions: Array<any> = [];
+  suppliersList: Array<any> = [];
+
   constructor(
     private viewContainerRef: ViewContainerRef,
     private apiService: ApiService,
     private pdfService: PdfService,
     private dialogService: DialogService,
+    private routes: Router
   ) {
     const _injector = this.viewContainerRef.injector;
     this.dialogRef = _injector.get<DialogComponent>(DialogComponent);
@@ -79,36 +95,139 @@ export class ActivityDetailsComponent implements OnInit {
   ngOnInit(): void {
     this.activity = this.dialogRef.context.activity;
     this.items = this.dialogRef.context.activity;
-    if (this.items.length) {
-      const items = JSON.parse(JSON.stringify(this.activity));
-      this.activityItems = [items]
+    // if (this.items.length) {
+    if (this.activity) {
+      if (this.activity?.activityitems?.length) {
+        this.activityItems = this.activity.activityitems;
+      } else {
+        const items = JSON.parse(JSON.stringify(this.activity));
+        this.activityItems = [items]
+      }
+      if (this.activityItems.length == 1) this.collapsedBtn = true;
     } else {
       this.fetchTransactionItems();
     }
-    if(this.activity?.iCustomerId) this.fetchCustomer(this.activity.iCustomerId, -1);
+    if (this.activity?.iCustomerId) this.fetchCustomer(this.activity.iCustomerId, -1);
     this.getBusinessLocations();
     // this.itemType = this.dialogRef.context.itemType;
     // this.transaction = this.dialogRef.context.transaction;
+    this.getListEmployees()
+    this.getListSuppliers()
+    this.getBusinessBrands()
   }
-  
-  downloadOrder(){}
-  
-  changeStatusForAll(type: string){
-    this.activityItems.forEach((obj: any)=>{
+  getListEmployees() {
+    const oBody = {
+      iBusinessId: localStorage.getItem('currentBusiness') || '',
+    }
+    let url = '/api/v1/employee/list';
+    this.apiService.postNew('auth', url, oBody).subscribe((result: any) => {
+      if (result && result.data && result.data.length) {
+        this.employeesList = result.data[0].result;
+        this.employeesList.map(o => o.sName = `${o.sFirstName} ${o.sLastName}`);
+        // if (this.item.iEmployeeId) {
+        //   const tempsupp = this.employeesList.find(o => o._id === this.item.iSupplierId);
+        //   this.employee = tempsupp.sName;
+        // }
+      }
+    }, (error) => {
+    });
+  }
+
+  getListSuppliers() {
+    const oBody = {
+      iBusinessId: localStorage.getItem('currentBusiness') || '',
+    }
+    let url = '/api/v1/business/partners/supplierList';
+    this.apiService.postNew('core', url, oBody).subscribe((result: any) => {
+      if (result && result.data && result.data.length) {
+        this.suppliersList = result.data[0].result;
+        // if (this.item.iSupplierId) {
+        //   const tempsupp = this.suppliersList.find(o => o._id === this.item.iSupplierId);
+        //   this.supplier = tempsupp.sName;
+        // }
+      }
+    }, (error) => {
+    });
+  }
+
+  getBusinessBrands() {
+    const oBody = {
+      iBusinessId: localStorage.getItem('currentBusiness') || '',
+    }
+    this.apiService.postNew('core', '/api/v1/business/brands/list', oBody).subscribe((result: any) => {
+      if (result.data && result.data.length > 0) {
+        this.brandsList = result.data[0].result;
+        // if (this.item.iBusinessBrandId) {
+        //   const tempsupp = this.brandsList.find(o => o._id === this.item.iBusinessBrandId);
+        //   this.brand = tempsupp.sName;
+        // }
+      }
+    })
+  }
+  // Function for search suppliers
+  searchSuppliers(searchStr: string) {
+    if (searchStr && searchStr.length > 2) {
+      this.supplierOptions = this.suppliersList.filter((supplier: any) => {
+        return supplier.sName && supplier.sName.toLowerCase().includes(searchStr.toLowerCase());
+      });
+    }
+  }
+
+  // Function for search suppliers
+  searchEmployees(searchStr: string) {
+    if (searchStr && searchStr.length > 2) {
+      this.filteredEmployees = this.employeesList.filter((employee: any) => {
+        return employee.sName && employee.sName.toLowerCase().includes(searchStr.toLowerCase());
+      });
+    }
+  }
+
+  // Function for search suppliers
+  searchBrands(searchStr: string) {
+    if (searchStr && searchStr.length > 2) {
+      this.filteredBrands = this.brandsList.filter((brands: any) => {
+        return brands.sName && brands.sName.toLowerCase().includes(searchStr.toLowerCase());
+      });
+    }
+  }
+
+  onEmployeeChange(e: any) {
+    this.employee = e.sName
+    console.log({ onSupplierChange: e });
+
+  }
+  onSupplierChange(e: any) {
+    this.supplier = e.sName
+    console.log({ onSupplierChange: e });
+
+  }
+  onBrandChange(e: any) {
+    this.brand = e.sName
+    console.log({ onBrandChange: e });
+
+  }
+
+
+
+
+  downloadOrder() { }
+
+  changeStatusForAll(type: string) {
+    this.activityItems.forEach((obj: any) => {
       obj.eRepairStatus = type;
       this.updateActivityItem(obj)
     })
   }
 
-  changeTrackingNumberForAll(sTrackingNumber: string){
-    this.activityItems.forEach((obj: any)=>{
+  changeTrackingNumberForAll(sTrackingNumber: string) {
+    this.activityItems.forEach((obj: any) => {
       obj.sTrackingNumber = sTrackingNumber;
       this.updateActivityItem(obj)
     })
   }
 
-  changeCarrierForAll(eCarrier: string){
-    this.activityItems.forEach((obj: any)=>{
+  changeCarrierForAll(eCarrier: string) {
+    this.activityItems.forEach((obj: any) => {
       obj.eCarrier = eCarrier;
       this.updateActivityItem(obj)
     })
@@ -116,13 +235,13 @@ export class ActivityDetailsComponent implements OnInit {
 
   updateActivityItem(item: any) {
     item.iBusinessId = this.iBusinessId;
-    this.apiService.putNew('cashregistry', '/api/v1/activities/items/' + item?.iActivityItemId , item)
-    .subscribe((result: any) => {
-    }, 
-    (error) => {
-    })
+    this.apiService.putNew('cashregistry', '/api/v1/activities/items/' + item?.iActivityItemId, item)
+      .subscribe((result: any) => {
+      },
+        (error) => {
+        })
   }
-  
+
   getBusinessLocations() {
     this.apiService.getNew('core', '/api/v1/business/user-business-and-location/list')
       .subscribe((result: any) => {
@@ -135,7 +254,7 @@ export class ActivityDetailsComponent implements OnInit {
                   this.business = business;
                 }
               })
-            }
+          }
         }
         setTimeout(() => {
           MenuComponent.reinitialization();
@@ -155,11 +274,11 @@ export class ActivityDetailsComponent implements OnInit {
 
   updateTransaction(transaction: any) {
     transaction.iBusinessId = this.iBusinessId;
-    this.apiService.putNew('cashregistry', '/api/v1/transaction/item/StockLocation/' + transaction?._id , transaction)
-    .subscribe((result: any) => {
-    }, 
-    (error) => {
-    })
+    this.apiService.putNew('cashregistry', '/api/v1/transaction/item/StockLocation/' + transaction?._id, transaction)
+      .subscribe((result: any) => {
+      },
+        (error) => {
+        })
   }
 
   setSelectedBusinessLocation(locationId: string, index: number) {
@@ -172,7 +291,7 @@ export class ActivityDetailsComponent implements OnInit {
 
   openTransaction(transaction: any, itemType: any) {
     transaction.iActivityId = this.activity._id;
-    this.dialogService.openModal(TransactionItemsDetailsComponent, { cssClass: "modal-xl", context: { transaction, itemType } })
+    this.dialogService.openModal(TransactionItemsDetailsComponent, { cssClass: "modal-xl", context: { transaction, itemType, selectedId: transaction._id } })
       .instance.close.subscribe((result: any) => {
         const transactionItems: any = [];
         if (result.transaction) {
@@ -188,8 +307,9 @@ export class ActivityDetailsComponent implements OnInit {
                 transactionItem.oType.bRefund = false;
               };
               transactionItems.push({
-                name: transactionItem.sProductName,
+                name: transactionItem.sProductName || transactionItem.sProductNumber,
                 iActivityItemId: transactionItem.iActivityItemId,
+                iArticleGroupId: transactionItem.iArticleGroupId,
                 nRefundAmount: transactionItem.nPaidAmount,
                 iLastTransactionItemId: transactionItem.iTransactionItemId,
                 prePaidAmount: tType === 'refund' ? transactionItem.nPaidAmount : transactionItem.nPaymentAmount,
@@ -206,12 +326,14 @@ export class ActivityDetailsComponent implements OnInit {
                 iRepairerId: transactionItem.iRepairerId,
                 oArticleGroupMetaData: transactionItem.oArticleGroupMetaData,
                 iEmployeeId: transactionItem.iEmployeeId,
-                iBrandId: transactionItem.iBrandId,
+                iBusinessBrandId: transactionItem.iBusinessBrandId,
                 discount: 0,
                 tax: transactionItem.nVatRate,
                 paymentAmount,
                 description: '',
                 open: true,
+                nMargin: transactionItem.nMargin,
+                nPurchasePrice: transactionItem.nPurchasePrice,
               });
             }
           });
@@ -219,6 +341,9 @@ export class ActivityDetailsComponent implements OnInit {
           localStorage.setItem('fromTransactionPage', JSON.stringify(result));
           localStorage.setItem('recentUrl', '/business/transactions');
           setTimeout(() => {
+            if (this.loadCashRegister) {
+              this.routes.navigate(['/business/till']);
+            }
             this.close(true);
           }, 100);
         }
@@ -261,7 +386,7 @@ export class ActivityDetailsComponent implements OnInit {
     this.apiService.getNew('customer', `/api/v1/customer/${customerId}?iBusinessId=${this.iBusinessId}`).subscribe(
       (result: any) => {
         console.log(result);
-        if(index > -1) this.transactions[index].customer = result;
+        if (index > -1) this.transactions[index].customer = result;
         else this.customer = result;
         // this.close({ action: true });
       },
@@ -277,18 +402,18 @@ export class ActivityDetailsComponent implements OnInit {
     this.apiService.postNew('cashregistry', url, this.requestParams).subscribe((result: any) => {
       this.activityItems = result.data[0].result;
       this.transactions = [];
-      for(const obj of this.activityItems){
-        for(const item of obj.receipts){
+      for (const obj of this.activityItems) {
+        for (const item of obj.receipts) {
           // if(!item.bRefund) item.eRepairStatus = obj.eRepairStatus;
           this.transactions.push({ ...item, ...obj });
         }
         // this.transactions = this.transactions.concat(obj.receipts);
       }
-      for(let i = 0; i < this.transactions.length; i++){
+      for (let i = 0; i < this.transactions.length; i++) {
         const obj = this.transactions[i];
         this.totalPrice += obj.nPaymentAmount;
         this.quantity += obj.bRefund ? (- obj.nQuantity) : obj.nQuantity
-        if(obj.iStockLocationId) this.setSelectedBusinessLocation(obj.iStockLocationId, i)
+        if (obj.iStockLocationId) this.setSelectedBusinessLocation(obj.iStockLocationId, i)
         this.fetchCustomer(obj.iCustomerId, i);
       }
       setTimeout(() => {

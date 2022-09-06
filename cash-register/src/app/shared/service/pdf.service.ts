@@ -826,9 +826,9 @@ export class PdfService {
             const filterMatches = variableStringFiltered.match(/\./g);
             let nrOfLevels = filterMatches ? filterMatches.length : 0;
             let parts = variableStringFiltered.split('.');
-            console.info('nrOfLevels',nrOfLevels)
-            console.info('variableStringFiltered',variableStringFiltered)
-            console.info('this.data',this.data)
+            // console.info('nrOfLevels',nrOfLevels)
+            // console.info('variableStringFiltered',variableStringFiltered)
+            // console.info('this.data',this.data)
             
             switch (nrOfLevels) {
               case 1:
@@ -1303,7 +1303,7 @@ export class PdfService {
 
   getTranslations(){
     let translationsObj: any = {};
-    let translationsKey: Array<string> = ['CREATED_BY', 'ART_NUMBER', 'QUANTITY', 'DESCRIPTION', 'DISCOUNT', 'AMOUNT', 'VAT'];
+    let translationsKey: Array<string> = ['CREATED_BY', 'ART_NUMBER', 'QUANTITY', 'DESCRIPTION', 'DISCOUNT', 'AMOUNT', 'VAT', 'SAVINGS_POINTS'];
 
     this.translateService.get(translationsKey).subscribe((result) => {
        Object.entries(result).forEach((translation: any) => {

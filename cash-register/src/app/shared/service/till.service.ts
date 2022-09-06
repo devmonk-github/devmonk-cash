@@ -6,7 +6,6 @@ import { Transaction } from 'src/app/till/models/transaction.model';
 import { ApiService } from './api.service';
 import * as _ from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
-import { StringService } from './string.service';
 @Injectable({
   providedIn: 'root'
 })
@@ -72,7 +71,7 @@ export class TillService {
     }
   }
 
-  createTransactionBody(transactionItems: any, payMethods: any, discountArticleGroup: any, redeemedLoyaltyPoints: number): any {
+  createTransactionBody(transactionItems: any, payMethods: any, discountArticleGroup: any, redeemedLoyaltyPoints: number, customer: any): any {
     const transaction = new Transaction(
       null,
       null,
@@ -84,6 +83,7 @@ export class TillService {
       this.getValueFromLocalStorage('currentWorkstation'),
       this.getValueFromLocalStorage('currentEmployee')._id,
       this.getValueFromLocalStorage('currentLocation'),
+      null,
       null ,
     )
 
@@ -95,6 +95,22 @@ export class TillService {
       oTransaction: transaction,
       payments: this.getUsedPayMethods(false, payMethods),
       redeemedLoyaltyPoints,
+    };
+    if (customer && customer._id) {
+      body.oTransaction.iCustomerId = customer._id;
+      body.oTransaction.oCustomer = {
+        _id: customer._id,
+        sFirstName: customer.sFirstName,
+        sLastName: customer.sLastName,
+        sPrefix: customer.sPrefix,
+        oInvoiceAddress: customer.oInvoiceAddress,
+        nClientId: customer.nClientId,
+        sGender: customer.sGender,
+        bCounter: customer.bCounter,
+        oPhone: customer.oPhone,
+        sVatNumber: customer.sVatNumber,
+        sCocNumber: customer.sCocNumber,
+      }
     };
     body.transactionItems = transactionItems.map((i: any) => {
       return new TransactionItem(
@@ -114,13 +130,14 @@ export class TillService {
         i.ean,
         i.sArticleNumber,
         i.aImage,
-        0, // TODO
+        i.nMargin, // TODO
         null,
         null,
-        i.iBusinessPartnerId, // TODO: Needed in till??
+        i.iBusinessPartnerId,
         this.getValueFromLocalStorage('currentBusiness'),
 
-        i.iArticleGroupId, // TODO
+        i.iArticleGroupId,
+        i.iArticleGroupOriginalId || i.iArticleGroupId,
         i.oArticleGroupMetaData || null, //oArticleGroupMetaData
         null,
         false, // TODO
@@ -145,7 +162,7 @@ export class TillService {
         null, // TODO
         i.iBusinessBrandId,
         i.iBusinessProductId,
-        null,
+        i.oBusinessProductMetaData,
         'y',
         this.getValueFromLocalStorage('currentWorkstation'),
         i.iEmployeeId || this.getValueFromLocalStorage('currentEmployee')._id,
@@ -169,7 +186,8 @@ export class TillService {
 
         i.redeemedLoyaltyPoints,
         i.sUniqueIdentifier || uuidv4(),
-        i.paymentAmount
+        i.paymentAmount,
+        i.description,
       )
     });
     const originalTItemsLength = length = body.transactionItems.filter((i: any) => i.oType.eKind !== 'loyalty-points').length;
@@ -197,6 +215,7 @@ export class TillService {
           i.nPaymentAmount += i.nDiscount * i.nQuantity;
           const tItem1 = JSON.parse(JSON.stringify(i));
           tItem1.iArticleGroupId = discountArticleGroup._id;
+          tItem1.iArticleGroupOriginalId = i.iArticleGroupId;
           tItem1.oArticleGroupMetaData.sCategory = discountArticleGroup.sCategory;
           tItem1.oArticleGroupMetaData.sSubCategory = discountArticleGroup.sSubCategory;
           tItem1.oType.eTransactionType = 'cash-registry';
@@ -256,5 +275,24 @@ export class TillService {
     return throwError(() => {
       message;
     });
+  }
+
+  createProductMetadata(product: any) {
+    const metadata = {
+      iSupplierId: product.iBusinessPartnerId, // from business collection with type supplier (Optional)
+      iBusinessPartnerId: product.iBusinessPartnerId,
+      iBusinessBrandId: product.iBusinessBrandId || product.iBrandId,
+      sLabelDescription: product.sLabelDescription,
+      bBestseller: product.bBestseller,
+      bHasStock: product.bHasStock,
+      bShowSuggestion: product.bShowSuggestion,
+      aProperty: product.aProperty,
+      aImage: product.aImage, // "url;alt"
+      oName: product.oName,
+      oShortDescription: product.oShortDescription,
+      eGender: product.eGender,
+      eOwnerShip: product.eOwnerShip,
+    }
+    return metadata
   }
 }

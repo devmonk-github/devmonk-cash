@@ -4,8 +4,8 @@
       <div class="position-relative w-md-400px me-md-2">
         <fa-icon [icon]="faSearch" class="text-gray-500 position-absolute top-50 translate-middle ms-6"></fa-icon>
         <!--end::Svg Icon-->
-        <input type="text" class="form-control form-control-solid ps-10" (keyup.enter)="loadTransaction()" name="search"
-          value="" placeholder="Search" />
+        <input type="text" class="form-control form-control-solid ps-10" [(ngModel)]="requestParams.searchValue"
+          (keyup.enter)="loadTransaction()" name="search" value="" placeholder="Search" />
       </div>
       <div class="d-flex align-items-center">
         <button type="submit" class="btn btn-primary me-5" (click)="loadTransaction()">Search</button>
@@ -15,7 +15,7 @@
       </div>
       <div class="d-flex align-items-right ms-auto">
         <button class="btn btn-secondary">New</button>
-        <button class="btn btn-secondary">Trash</button>
+        <!-- <button class="btn btn-secondary">Trash</button> -->
       </div>
     </div>
     <div class="collapse row" id="kt_advanced_search_form" data-kt-search-minimize="on"
@@ -54,6 +54,14 @@
                 </ng-select>
               </div>
               <div class="col-lg-4">
+                <label class="fs-6 form-label fw-bolder text-dark">{{ 'TRANSACTION_STATUS' | translate }}</label>
+                <ng-select class="form-control form-control-solid p-0" [multiple]="true"
+                  [(ngModel)]="requestParams.selectedTransactionStatuses" [clearable]="false">
+                  <ng-option *ngFor="let status of requestParams.transactionStatuses" [value]="status">{{status}}
+                  </ng-option>
+                </ng-select>
+              </div>
+              <!-- <div class="col-lg-4"> 
                 <label class="fs-6 form-label fw-bolder text-dark">Transaction status</label>
                 <div class="nav-group nav-group-fluid">
                   <label>
@@ -72,7 +80,7 @@
                       class="btn btn-sm btn-color-muted btn-active btn-active-primary fw-bolder px-4">Completed</span>
                   </label>
                 </div>
-              </div>
+              </div> -->
             </div>
           </div>
         </div>
@@ -141,9 +149,10 @@
               </div>
               <div class="col-lg-4">
                 <label class="fs-6 form-label fw-bolder text-dark">{{ 'LOCATION' | translate }}</label>
-                <ng-select class="form-control form-control-solid p-0" [multiple]="true" [(ngModel)]="selectedLocations"
-                  [clearable]="false">
-                  <ng-option *ngFor="let location of locations" [value]="location._id">{{location.sName}}</ng-option>
+                <ng-select class="form-control form-control-solid p-0" [multiple]="true"
+                  [(ngModel)]="requestParams.selectedLocations" [clearable]="false">
+                  <ng-option *ngFor="let location of requestParams.locations" [value]="location._id">{{location.sName}}
+                  </ng-option>
                 </ng-select>
               </div>
             </div>
@@ -171,15 +180,15 @@
           <td>{{getTypes(activity.activityitems)}}</td>
           <td scope="row">{{activity?.dCreatedDate | date: 'yyyy-MM-dd HH:mm'}}</td>
           <td scope="row">{{activity?.dPickedUp | date: 'yyyy-MM-dd HH:mm'}}</td>
-          <td>{{activity?.eActivityStatus}}</td>
-          <td>{{activity?.eType}}</td>
-          <td>{{activity?.eType}}</td>
+          <td>{{activity?.eActivityStatus || '-'}}</td>
+          <td>{{'-'}}</td>
+          <td>{{'-'}}</td>
           <td>{{activity?.oCustomer?.sFirstName}} {{activity?.oCustomer?.sLastName}}</td>
-          
+
           <td>
             <div class="btn-group me-4">
-              <span class="btn btn-primary fs-bold px-6">
-                <span class="indicator-label" (click)="openActivities(activity)">{{ "VIEW"}}</span>
+              <span class="btn btn-primary fs-bold px-6" (click)="openActivities(activity)">
+                <span class="indicator-label">{{ "VIEW"}}</span>
               </span>
               <span class="btn btn-primary btn-icon fs-bold" role="button">
                 <div class="btn btn-icon" data-kt-menu-trigger="click" data-kt-menu-attach="parent"
@@ -206,7 +215,7 @@
       </tbody>
     </table>
     <div class="d-flex">
-      <h5 *ngIf='!activities.length && !showLoader' style="text-align: center;"> No data found!</h5>
+      <h5 *ngIf='!activities?.length && !showLoader' style="text-align: center;"> No data found!</h5>
       <div *ngIf="showLoader" class="spinner-border mx-auto"></div>
     </div>
     <div class="row">
@@ -221,16 +230,11 @@
         </div>
       </div>
       <div class="col-sm-12 col-md-9 d-flex align-items-center justify-content-center justify-content-md-end">
-        <pagination-controls
-             [hidden] = "activities.length === 0"
-             (pageChange)="pageChanged($event)"
-             (pageBoundsCorrection)="pageChanged($event)"
-             [maxSize]="setPaginateSize"
-             [previousLabel]="'PREVIOUS' | translate"
-             [nextLabel]="'NEXT' | translate"
-             screenReaderPaginationLabel="Pagination"
-             [screenReaderPageLabel]="'PAGE' | translate">
-         </pagination-controls>
+        <pagination-controls [hidden]="!activities?.length" (pageChange)="pageChanged($event)"
+          (pageBoundsCorrection)="pageChanged($event)" [maxSize]="setPaginateSize"
+          [previousLabel]="'PREVIOUS' | translate" [nextLabel]="'NEXT' | translate"
+          screenReaderPaginationLabel="Pagination" [screenReaderPageLabel]="'PAGE' | translate">
+        </pagination-controls>
       </div>
     </div>
   </div>

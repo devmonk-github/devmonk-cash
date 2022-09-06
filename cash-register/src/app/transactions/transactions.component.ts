@@ -27,9 +27,17 @@ export class TransactionsComponent implements OnInit {
   ];
   selectedCity: string = '';
   transactions: Array<any> = [];
+  TIEkinds: Array<any> = ['regular', 'giftcard', 'repair', 'order', 'gold-purchase', 'gold-sell', 'discount'];
+  paymentMethods:  Array<any> =  [];
   businessDetails: any = {};
   userType: any = {};
   requestParams: any = {
+    methods: [],
+    TIEKinds: [],
+    workstations: [],
+    locations: [],
+    invoiceStatus: 'all',
+    importStatus: 'all',
     iBusinessId: "",
     skip: 0,
     limit: 10,
@@ -62,20 +70,13 @@ export class TransactionsComponent implements OnInit {
     endDate: new Date(new Date().setHours(23, 59, 59)),
     startDate: new Date('01-01-2015'),
   }
-  paymentMethods: Array<any> = [];
-  transactionTypes: Array<any> = ['All', 'Refund', 'Repair', 'Gold-purchase', 'Gold-sale'];
+
   transactionStatuses: Array<any> = ['ALL', 'EXPECTED_PAYMENTS', 'NEW', 'CANCELLED', 'FAILED', 'EXPIRED', 'COMPLETED', 'REFUNDED'];
-  invoiceStatus: string = 'all';
-  importStatus: string = 'all';
-  methodValue: string = 'All';
-  transactionValue: string = 'All';
   employee: any = { sFirstName: 'All' };
   employees: Array<any> = [this.employee];
   workstations: Array<any> = [];
-  selectedWorkstations: Array<any> = [];
   selectedTransactionStatuses: Array<any> = [];
   locations: Array<any> = [];
-  selectedLocations: Array<any> = [];
   eType: string = '';
 
   tableHeaders: Array<any> = [
@@ -83,7 +84,7 @@ export class TransactionsComponent implements OnInit {
     { key: 'Transaction no.', selected: false, sort: '' },
     { key: 'Receipt number', selected: false, sort: '' },
     { key: 'Customer', selected: false, sort: '' },
-    { key: 'Method', disabled: true },
+    { key: 'Methods', disabled: true },
     { key: 'Total', disabled: true },
     { key: 'Type', disabled: true }
   ]
@@ -113,13 +114,22 @@ export class TransactionsComponent implements OnInit {
   getPaymentMethods() {
     this.apiService.getNew('cashregistry', '/api/v1/payment-methods/' + this.requestParams.iBusinessId).subscribe((result: any) => {
       if (result && result.data && result.data.length) {
-        this.paymentMethods = [ { sName: 'All' }, ...result.data.map((v: any) => ({ ...v, isDisabled: false })) ]
+        this.paymentMethods = [ ...result.data.map((v: any) => ({ ...v, isDisabled: false })) ]
         this.paymentMethods.forEach((element: any) => {
           element.sName = element.sName.toLowerCase();
         });
       }
     }, (error) => {
     })
+  }
+
+  getMethods(arr: any){
+    let str = undefined;
+    for(const obj of arr){
+      if(!str) str = obj.sMethod;
+      else str = str + ', ' + obj.sMethod;
+    }
+    return str;
   }
 
   toolTipData(item: any) {
@@ -149,14 +159,8 @@ export class TransactionsComponent implements OnInit {
     this.requestParams.type = 'transaction';
     this.requestParams.filterDates = this.filterDates;
     this.requestParams.transactionStatus = this.transactionStatuses;
-    this.requestParams.invoiceStatus = this.invoiceStatus;
-    this.requestParams.importStatus = this.importStatus;
-    this.requestParams.methodValue = this.methodValue;
-    this.requestParams.transactionValue = this.transactionValue;
     this.requestParams.iEmployeeId = this.employee && this.employee._id ? this.employee._id : '';
-    this.requestParams.iWorkstationId = undefined // we need to work on this once devides are available.
-    this.requestParams.workstations = this.selectedWorkstations;
-    this.requestParams.locations = this.selectedLocations;
+    this.requestParams.iWorkstationId = undefined // we need to work on this once devides are available.\
     this.showLoader = true;
     this.requestParams.eTransactionType = this.eType;
     this.apiService.postNew('cashregistry', '/api/v1/transaction/cashRegister', this.requestParams).subscribe((result: any) => {

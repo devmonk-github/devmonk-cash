@@ -35,18 +35,35 @@
       </div>
       <div class="col-2">
         <label for="price">{{ "PRICE" | translate}}</label>
-        <input type="number" step="any" name="price" class="form-control" (change)="updatePayments()"
+        <input type="number" step="any" name="price" class="form-control" (change)="updatePayments(); changeInMargin()"
           [(ngModel)]="item.price" [disabled]="item.oType?.bRefund || item.tType === 'pay'">
-        <label for="discount">{{ "DISCOUNT" | translate}}</label>
-        <input *ngIf="!item.oType.bRefund && !item.oType.bDiscount && !item.oType.bPrepayment" type="number" step="any"
-          name="discount" class="form-control" [(ngModel)]="item.nDiscount">
-        <input *ngIf="item.oType.bRefund || item.oType.bDiscount|| item.oType.bPrepayment" type="number" step="any"
-          name="discount" class="form-control" [value]="item.nDiscount - (item.nRedeemedLoyaltyPoints || 0)" disabled>
-        <label for="discount" *ngIf="item.oType.bRefund">{{ "LOYALTY_POINTS" | translate}}:
-          {{item.nRedeemedLoyaltyPoints}}</label>
-        <label for="bagNumber">{{ "PREPAYMENT" | translate}}</label>
-        <input type="number" step="any" name="bagNumber" id="bagNumber" (keyup)="updatePayments()"
-          [(ngModel)]="item.paymentAmount" class="form-control" [disabled]="item.isExclude">
+        <button class="btn btn-bg-light btn-active-color-primary mt-2" type="button" data-bs-toggle="collapse"
+          (click)="collapsedBtn = !collapsedBtn" [ngClass]="{'collapsed': collapsedBtn }"
+          data-bs-target="#kt_accordion_123" aria-expanded="true" aria-controls="kt_accordion_123">
+          More
+          <fa-icon *ngIf="!collapsedBtn" [icon]="faArrowDown"></fa-icon>
+          <fa-icon *ngIf="collapsedBtn" [icon]="faArrowUp"></fa-icon>
+        </button>
+        <div id="kt_accordion_123" [ngClass]="{'show': collapsedBtn }" class="accordion-collapse collapse">
+          <label for="discount">{{ "MARGIN" | translate}}</label>
+          <input type="number" step="any" (keyup)="changeInMargin()" name="discount" class="form-control"
+            [(ngModel)]="item.nMargin" [disabled]="item.oType.bRefund || item.oType.bPrepayment">
+          <label for="discount">{{ "PURCHASE_PRICE" | translate}}</label>
+          <input type="number" step="any" (keyup)="changeInPurchasePrice()" name="discount" class="form-control"
+            [(ngModel)]="item.nPurchasePrice" [disabled]="item.oType.bRefund || item.oType.bPrepayment">
+        </div>
+        <div id="kt_accordion_1234" [ngClass]="{'show': collapsedBtn }" class="accordion-collapse collapse">
+          <label for="discount">{{ "DISCOUNT" | translate}}</label>
+          <input *ngIf="!item.oType.bRefund && !item.oType.bDiscount && !item.oType.bPrepayment" type="number"
+            step="any" name="discount" class="form-control" [(ngModel)]="item.nDiscount">
+          <input *ngIf="item.oType.bRefund || item.oType.bDiscount|| item.oType.bPrepayment" type="number" step="any"
+            name="discount" class="form-control" [value]="item.nDiscount - (item.nRedeemedLoyaltyPoints || 0)" disabled>
+          <label for="discount" *ngIf="item.oType.bRefund">{{ "LOYALTY_POINTS" | translate}}:
+            {{item.nRedeemedLoyaltyPoints}}</label>
+          <label for="bagNumber">{{ "PREPAYMENT" | translate}}</label>
+          <input type="number" step="any" name="bagNumber" id="bagNumber" (keyup)="updatePayments()"
+            [(ngModel)]="item.paymentAmount" class="form-control" [disabled]="item.isExclude">
+        </div>
 
       </div>
       <div class="col-2">
@@ -95,7 +112,7 @@
         <ng-select *ngIf="!brand" [(ngModel)]="brand" (search)="searchBrands($event.term)"
           class="form-control form-control-solid p-0 w-100 custom" placeholder="Search brand" [minTermLength]="2"
           [clearable]="false" [isOpen]="filteredBrands.length > 0"
-          (change)="brand = $event.sName; item.iBrandId = $event._id; filteredBrands = []">
+          (change)="brand = $event.sName; item.iBusinessBrandId = $event._id; filteredBrands = []">
           <ng-option *ngFor="let option of filteredBrands" [value]="option">{{option.sName ||
             'Unknown'}}</ng-option>
         </ng-select>
@@ -114,11 +131,7 @@
 
         <label>{{ "PROPERTIES" | translate}}</label>
         <div class="d-flex" *ngFor="let property of item.oArticleGroupMetaData.aProperty; let pIndex = index">
-          <!-- <div class="w-50 align-middle lh-xxl">
-            {{pIndex + 1}}
-          </div> -->
           <div class="w-100" *ngIf="propertyOptions[property.iPropertyId]?.length > 0">
-            <!-- {{selectedProperties[property.iPropertyId]}} -->
             <ng-select class="form-control p-0 w-100" [(ngModel)]="selectedProperties[property.iPropertyId]"
               (change)="setPropertyOption(property, pIndex)" [clearable]="false">
               <ng-option *ngFor="let option of propertyOptions[property.iPropertyId]" [value]="option.sCode">{{
