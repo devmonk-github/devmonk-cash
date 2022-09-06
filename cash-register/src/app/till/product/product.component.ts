@@ -12,7 +12,7 @@ import { ToastService } from 'src/app/shared/components/toast';
   templateUrl: './product.component.html',
   styleUrls: ['./product.component.sass'],
 })
-export class ProductComponent implements OnInit{
+export class ProductComponent implements OnInit {
   @Input() item: any
   @Input() taxes: any
   @Output() itemChanged = new EventEmitter<any>();
@@ -21,6 +21,7 @@ export class ProductComponent implements OnInit{
   faArrowDown = faArrowDown;
   faArrowUp = faArrowUp;
   typeArray = ['regular', 'return'];
+  collapsedBtn: Boolean = false;
 
   constructor(private dialogService: DialogService,
     private priceService: PriceService,
@@ -48,7 +49,6 @@ export class ProductComponent implements OnInit{
     }, err => {
       this.toastrService.show({ type: 'danger', text: err.message });
     });
-
   }
 
   deleteItem(): void {

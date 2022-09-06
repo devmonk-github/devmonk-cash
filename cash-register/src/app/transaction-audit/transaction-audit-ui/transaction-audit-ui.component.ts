@@ -15,6 +15,7 @@ const moment = (_moment as any).default ? (_moment as any).default : _moment;
   templateUrl: './transaction-audit-ui.component.html',
   styleUrls: ['./transaction-audit-ui.component.scss'],
 })
+
 export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDestroy {
   iBusinessId: any = '';
   sUserType: any = '';
@@ -89,7 +90,6 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
   groupingHelper(item: any) {
     return item.child[0];
   }
-
 
   // aOptionMenu: any = [
   //   { sKey: 'purchase-order', sValue: this.translate.instant('PURCHASE_ORDER') },
@@ -837,6 +837,7 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
             }
           );
           for (const oOption of aOption) {
+            console.log('oOption: ', oOption);
             this.aFilterProperty.push(oOption?.sName);
           }
         }
@@ -2003,9 +2004,7 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
 
   expandItem(item: any, iBusinessPartnerId: string = '') {
     item.bIsCollapseItem = !item.bIsCollapseItem;
-    if (item.aTransactionItems) {
-      return;
-    }
+    if (item.aTransactionItems) return;
     let data: any = {
       skip: 0,
       limit: 100,
