@@ -222,7 +222,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       nDiscount: 0,
       tax: 21,
       paymentAmount: 0,
-      oArticleGroupMetaData: { aProperty: [], sCategory: '', sSubCategory: '', oName: {} },
+      oArticleGroupMetaData: { aProperty: [], sCategory: '', sSubCategory: '', oName: {}, oNameOriginal: {} },
       description: '',
       open: true,
       new: true,
@@ -288,7 +288,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       name: this.translateService.instant(type.toUpperCase()),
       type,
       oType: { bRefund: false, bDiscount: false, bPrepayment: false },
-      oArticleGroupMetaData: { aProperty: [], sCategory: '', sSubCategory: '', oName: {} },
+      oArticleGroupMetaData: { aProperty: [], sCategory: '', sSubCategory: '', oName: {}, oNameOriginal: {} },
       aImage: [],
       quantity: 1,
       nBrokenProduct: 0,
@@ -612,13 +612,13 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     if (isFrom === 'quick-button') {
       let selectedQuickButton = product;
       this.bSearchingProduct = true;
-      const _oBusinessProductDetail = await this.getBusinessProduct(product?.iBusinessProductId).toPromise();
       this.bSearchingProduct = false;
-      product = _oBusinessProductDetail.data;
       price.nPriceIncludesVat = selectedQuickButton.nPrice;
     } else {
       price = product.aLocation ? product.aLocation.find((o: any) => o._id === this.locationId) : 0;
     }
+    const _oBusinessProductDetail = await this.getBusinessProduct(product?.iBusinessProductId || product?._id).toPromise();
+    product = _oBusinessProductDetail.data;
     this.transactionItems.push({
       name: product.oName ? product.oName['en'] : this.searchKeyword,
       eTransactionItemType: 'regular',
@@ -635,7 +635,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       sArticleNumber: product.sArticleNumber,
       description: product.sLabelDescription,
       iArticleGroupId: product.iArticleGroupId,
-      oArticleGroupMetaData: { aProperty: product.aProperty || [], sCategory: '', sSubCategory: '', oName: {} },
+      oArticleGroupMetaData: { aProperty: product.aProperty || [], sCategory: '', sSubCategory: '', oName: {}, oNameOriginal: {}  },
       iBusinessBrandId: product.iBusinessBrandId || product.iBrandId,
       iBusinessProductId: product._id,
       iSupplierId: product.iBusinessPartnerId,
@@ -833,7 +833,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       nDiscount: 0,
       tax: 0,
       description: '',
-      oArticleGroupMetaData: { aProperty: [], sCategory: '', sSubCategory: '', oName: {} },
+      oArticleGroupMetaData: { aProperty: [], sCategory: '', sSubCategory: '', oName: {}, oNameOriginal: {} },
       open: true,
     });
     this.redeemedLoyaltyPoints = redeemedLoyaltyPoints;

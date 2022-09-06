@@ -70,6 +70,7 @@ export class RepairComponent implements OnInit {
           const { articlegroup, brand, supplier, nMargin } = data;
           this.item.supplier = supplier.sName;
           this.item.iArticleGroupOriginalId = articlegroup._id;
+          this.item.oArticleGroupMetaData.oNameOriginal = articlegroup.oName;
           this.supplier = supplier.sName;
           this.item.iSupplierId = supplier._id;
           this.item.nMargin = nMargin;
@@ -127,15 +128,20 @@ export class RepairComponent implements OnInit {
     });
   }
 
+  assignArticleGroupMetadata(articlegroup: any) {
+    this.item.iArticleGroupId = articlegroup._id;
+    this.item.oArticleGroupMetaData.oName = articlegroup.oName;
+    this.item.oArticleGroupMetaData.sCategory = articlegroup.sCategory;
+    this.item.oArticleGroupMetaData.sSubCategory = articlegroup.sSubCategory;
+  }
+
   checkArticleGroups() {
     this.createArticleGroupService.checkArticleGroups('Repair')
       .subscribe((res: any) => {
         if (1 > res.data.length) {
           this.createArticleGroup();
         } else {
-          this.item.iArticleGroupId = res.data[0].result[0]._id;
-          this.item.oArticleGroupMetaData.sCategory = res.data[0].result[0].sCategory;
-          this.item.oArticleGroupMetaData.sSubCategory = res.data[0].result[0].sSubCategory;
+          this.assignArticleGroupMetadata(res.data[0].result[0]);
         }
       }, err => {
         this.toastrService.show({ type: 'danger', text: err.message });
@@ -145,9 +151,7 @@ export class RepairComponent implements OnInit {
   async createArticleGroup() {
     const articleBody = { name: 'Repair', sCategory: 'Repair', sSubCategory: 'Repair' };
     const result: any = await this.createArticleGroupService.createArticleGroup(articleBody);
-    this.item.iArticleGroupId = result.data._id;
-    this.item.oArticleGroupMetaData.sCategory = result.data.sCategory;
-    this.item.oArticleGroupMetaData.sSubCategory = result.data.sSubCategory;
+    this.assignArticleGroupMetadata(result.data);
   }
 
   constisEqualsJson(obj1: any, obj2: any) {
