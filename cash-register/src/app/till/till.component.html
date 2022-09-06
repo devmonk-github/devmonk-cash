@@ -35,7 +35,8 @@
               </span>
             </div>
             <div class="fs-6">
-              <span class="text-gray-800fw-bold">{{"STOCK" | translate}}</span>
+              <span [ngClass]="eKind === 'regular'?'text-primary': 'text-gray-800'" class=" fw-bold">{{"STOCK" |
+                translate}}</span>
             </div>
           </div>
         </button>
@@ -52,7 +53,8 @@
               </span>
             </div>
             <div class="fs-6">
-              <span class="text-gray-800fw-bold">{{"ORDER" | translate}}</span>
+              <span [ngClass]="eKind === 'order'?'text-primary': 'text-gray-800'" class="fw-bold">{{"ORDER" |
+                translate}}</span>
             </div>
           </div>
         </button>
@@ -68,7 +70,8 @@
               </span>
             </div>
             <div class="fs-6">
-              <span class="text-gray-800fw-bold">{{"REPAIR" | translate}}</span>
+              <span [ngClass]="eKind === 'repair'?'text-primary': 'text-gray-800'" class="fw-bold">{{"REPAIR" |
+                translate}}</span>
             </div>
           </div>
         </button>
@@ -84,7 +87,8 @@
               </span>
             </div>
             <div class="fs-6">
-              <span class="text-gray-800fw-bold">{{"GIFT" | translate}}</span>
+              <span [ngClass]="eKind === 'giftcard'?'text-primary': 'text-gray-800'" class="fw-bold">{{"GIFT" |
+                translate}}</span>
             </div>
           </div>
         </button>
@@ -100,7 +104,8 @@
               </span>
             </div>
             <div class="fs-6">
-              <span class="text-gray-800fw-bold">{{"GOLD_PURCHASE" | translate}}</span>
+              <span [ngClass]="eKind === 'gold-purchase'?'text-primary': 'text-gray-800'"
+                class="fw-bold">{{"GOLD_PURCHASE" | translate}}</span>
             </div>
           </div>
         </button>
@@ -116,7 +121,7 @@
               </span>
             </div>
             <div class="fs-6">
-              <span class="text-gray-800fw-bold">{{"GOLD_SELL" | translate}}</span>
+              <span class="fw-bold text-gray-800">{{"GOLD_SELL" | translate}}</span>
             </div>
           </div>
         </button>
@@ -131,12 +136,12 @@
               </span>
             </div>
             <div class="fs-6">
-              <span class="text-gray-800fw-bold">{{"OFFER" | translate}}</span>
+              <span class="fw-bold text-gray-800">{{"OFFER" | translate}}</span>
             </div>
           </div>
         </button>
 
-        <button class="btn d-flex btn-white  rounded p-4 mb-3 me-3 text-hover-primary min-w-90px"
+        <button class="btn d-flex btn-white rounded p-4 mb-3 me-3 text-hover-primary min-w-90px"
           (click)="openExpenses()">
           <div class="d-flex flex-column justify-center align-items-center flex-grow-1">
             <div class="symbol symbol-40px mb-2">
@@ -147,7 +152,7 @@
               </span>
             </div>
             <div class="fs-6">
-              <span class="text-gray-800fw-bold">{{"ADD_EXPENSES" | translate}}</span>
+              <span class="fw-bold text-gray-800">{{"ADD_EXPENSES" | translate}}</span>
             </div>
           </div>
         </button>
@@ -169,21 +174,22 @@
           <div class="accordion" id="till-items-accordion" [itemLength]="transactionItems.length">
             <ng-container *ngFor="let item of transactionItems; let i = index">
               <div style="display:inline-table;">
-                <div class="accordion-item d-table-cell" till-product *ngIf="item.type === 'regular' || item.type === 'reservation'" [item]="item"
+                <div class="accordion-item w-100 d-table-cell" till-product
+                  *ngIf="item.type === 'regular' || item.type === 'reservation'" [item]="item" [taxes]="taxes"
+                  (itemChanged)="itemChanged($event, i)"></div>
+                <div class="accordion-item w-100 d-table-cell" till-order *ngIf="item.type === 'order'" [item]="item"
                   [taxes]="taxes" (itemChanged)="itemChanged($event, i)"></div>
-                <div class="accordion-item d-table-cell" till-order *ngIf="item.type === 'order'" [item]="item"
+                <div class="accordion-item w-100 d-table-cell" till-repair *ngIf="item.type === 'repair'" [item]="item"
                   [taxes]="taxes" (itemChanged)="itemChanged($event, i)"></div>
-                <div class="accordion-item d-table-cell" till-repair *ngIf="item.type === 'repair'" [item]="item"
-                  [taxes]="taxes" (itemChanged)="itemChanged($event, i)"></div>
-                <div class="accordion-item d-table-cell w-100" till-gift *ngIf="item.type === 'giftcard'" [item]="item"
-                  [transactionItems]="transactionItems" [taxes]="taxes" (itemChanged)="itemChanged($event, i)"
-                  (createGiftCard)="createGiftCard($event, i)">
+                <div class="accordion-item w-100 d-table-cell w-100" till-gift *ngIf="item.type === 'giftcard'"
+                  [item]="item" [transactionItems]="transactionItems" [taxes]="taxes"
+                  (itemChanged)="itemChanged($event, i)" (createGiftCard)="createGiftCard($event, i)">
                 </div>
-                <div class="accordion-item d-table-cell w-100" till-goldpurchase *ngIf="item.type === 'gold-purchase'"
-                  [item]="item" (itemChanged)="itemChanged($event, i)"></div>
-                <div class="accordion-item d-table-cell w-100" till-other *ngIf="item.type=== 'empty-line'"
+                <div class="accordion-item w-100 d-table-cell w-100" till-goldpurchase
+                  *ngIf="item.type === 'gold-purchase'" [item]="item" (itemChanged)="itemChanged($event, i)"></div>
+                <div class="accordion-item w-100 d-table-cell w-100" till-other *ngIf="item.type=== 'empty-line'"
                   [item]="item" [taxes]="taxes" (itemChanged)="itemChanged($event, i)"></div>
-                <div class="accordion-item d-table-cell w-100" till-loyalty-points-discount
+                <div class="accordion-item w-100 d-table-cell w-100" till-loyalty-points-discount
                   *ngIf="item.type=== 'loyalty-points'" [item]="item" [taxes]="taxes"
                   (itemChanged)="itemChanged($event, i)"></div>
                 <div class="d-table-cell">
@@ -278,7 +284,7 @@
             <div class="col-md-6 cursor-pointer" *ngFor="let product of commonProducts"
               (mouseenter)="product['showOption'] = true" (mouseleave)="product['showOption'] = false">
               <a (click)="onSelectProduct(product, 'business', 'commonProducts')">
-              <!-- <a (click)="eKind === 'order'? addOrder(product): onSelectProduct(product, 'business', 'same-article')"> -->
+                <!-- <a (click)="eKind === 'order'? addOrder(product): onSelectProduct(product, 'business', 'same-article')"> -->
                 <div class="card m-1 shadow-sm">
                   <div class="card-body">
                     <div class="d-flex">

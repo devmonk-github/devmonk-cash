@@ -12,7 +12,7 @@ import { ToastService } from 'src/app/shared/components/toast';
   templateUrl: './product.component.html',
   styleUrls: ['./product.component.sass'],
 })
-export class ProductComponent implements OnInit{
+export class ProductComponent implements OnInit {
   @Input() item: any
   @Input() taxes: any
   @Output() itemChanged = new EventEmitter<any>();
@@ -21,6 +21,7 @@ export class ProductComponent implements OnInit{
   faArrowDown = faArrowDown;
   faArrowUp = faArrowUp;
   typeArray = ['regular', 'return'];
+  collapsedBtn: Boolean = false;
 
   constructor(private dialogService: DialogService,
     private priceService: PriceService,
@@ -34,16 +35,16 @@ export class ProductComponent implements OnInit{
   fetchArticleGroupInfo() {
     const iBusinessId = localStorage.getItem('currentBusiness');
     this.apiService.getNew('core', `/api/v1/business/article-group/${this.item.iArticleGroupId}?iBusinessId=${iBusinessId}`).
-    subscribe((res: any) => {
-      this.item.oArticleGroupMetaData.aProperty = res.data.aProperty;
-      if(res.data.aBusinessPartner) {
-        const marginData = res.data.aBusinessPartner.find((o: any)=> o.iBusinessPartnerId === this.item.iSupplierId);
-        this.item.nMargin = marginData?.nMargin || 1;
-        this.item.nPurchasePrice = this.item.nPurchasePrice || 0;
-      }
-    }, err => {
-      this.toastrService.show({ type: 'danger', text: err.message });
-    });
+      subscribe((res: any) => {
+        this.item.oArticleGroupMetaData.aProperty = res.data.aProperty;
+        if (res.data.aBusinessPartner) {
+          const marginData = res.data.aBusinessPartner.find((o: any) => o.iBusinessPartnerId === this.item.iSupplierId);
+          this.item.nMargin = marginData?.nMargin || 1;
+          this.item.nPurchasePrice = this.item.nPurchasePrice || 0;
+        }
+      }, err => {
+        this.toastrService.show({ type: 'danger', text: err.message });
+      });
 
   }
 
