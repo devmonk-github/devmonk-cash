@@ -67,7 +67,7 @@ export class OrderComponent implements OnInit {
   }
 
   selectArticleGroup() {   
-    this.dialogService.openModal(SelectArticleDialogComponent, { cssClass: 'modal-m', context: { item: this.item } })
+    this.dialogService.openModal(SelectArticleDialogComponent, { cssClass: 'modal-m', context: { item: this.item, from: 'order' } })
       .instance.close.subscribe((data) => {
         if (data) {
           const { articlegroup, brand, supplier, nMargin } = data;

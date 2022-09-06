@@ -38,7 +38,7 @@ export class SelectArticleDialogComponent implements OnInit {
     this.fetchBusinessPartners([]);
     this.getBusinessBrands();
     this.iBusinessBrandId= this.dialogRef.context?.item?.iBusinessBrandId;
-    this.from = this.dialogRef.context.item;
+    this.from = this.dialogRef.context.from;
   }
 
   fetchArticleGroups(iBusinessPartnerId: any) {

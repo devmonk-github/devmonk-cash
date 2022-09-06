@@ -56,8 +56,8 @@
 
     <div class="card-footer">
         <div class="btn-holder">
-            <button type="button" class="btn btn-primary" (click)="close(true)">{{"SELECT" | translate}}</button>
-            <button type="button" class="btn btn-default" (click)="close(false)">{{"CANCEL" | translate}}</button>
+            <button type="button" class="btn btn-primary" (click)="close(true)" [disabled]="from && from === 'order' && !articlegroup">{{"SELECT" | translate}}</button>
+            <button type="button" class="btn btn-default" (click)="close(false)" [disabled]="from && from === 'order'">{{"CANCEL" | translate}}</button>
         </div>
     </div>
 </div>
