@@ -196,7 +196,6 @@ export class TillService {
       if (discountRecords) {
         discountRecords = JSON.parse(discountRecords);
       }
-      // console.log((i.nPriceIncVat - i.nDiscount + i.nPaymentAmount) === 0); // (i.nRefundAmount + i.nPaymentAmount) === 0 &&
       if (i.oType.bRefund && i.nDiscount !== 0) {
         const records = discountRecords.filter((o: any) => o.sUniqueIdentifier === i.sUniqueIdentifier);
         records.forEach((record: any) => {
