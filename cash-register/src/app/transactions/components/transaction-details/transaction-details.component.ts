@@ -397,21 +397,23 @@ export class TransactionDetailsComponent implements OnInit {
           if(item && item.oArticleGroupMetaData && item.oArticleGroupMetaData.oName && item.oArticleGroupMetaData.oName[language]) name = item?.oArticleGroupMetaData?.oName[language] + ' ';
           item.description = name;
           if(item?.oBusinessProductMetaData?.sLabelDescription) item.description = item.description + item?.oBusinessProductMetaData?.sLabelDescription + ' ' + item?.sProductNumber;
-          const vat = (item.nVatRate * item.nPriceIncVat/100);
-          item.vat = `${item.nVatRate}% (${vat})`
-          totalVat += vat;
           totalSavingPoints += item.nSavingsPoints;
           let disc = item.nDiscount;
           if(item.bPaymentDiscountPercent){ 
             disc = (item.nDiscount * item.nPriceIncVat/100)
-            item.nDiscount = `${item.nDiscount}%`
+            item.nDiscount = `${item.nDiscount}`
           } else {
             item.nDiscount = `€ ${item.nDiscount}`
           }
-          totalAfterDisc += (item.nPriceIncVat -  item.nDiscount)
+          item.priceAfterDiscount = (item.nPriceIncVat -  item.nDiscount);
+          if(item.bPaymentDiscountPercent) item.nDiscount = `${item.nDiscount} %`
+          const vat = (item.nVatRate * item.priceAfterDiscount/100);
+          item.vat = `${item.nVatRate}% (${vat})`
+          totalVat += vat;
+          totalAfterDisc += (parseFloat(item.nPriceIncVat) -  parseFloat(item.nDiscount))
           totalDiscount += disc;
         })
-        // dataObject.total = `€ ${totalAfterDisc}(${total})`;
+        dataObject.totalAfterDisc = totalAfterDisc;
         dataObject.total = total;
         dataObject.totalVat = totalVat;
         dataObject.totalDiscount = totalDiscount;
