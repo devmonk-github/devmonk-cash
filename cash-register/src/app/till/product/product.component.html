@@ -56,9 +56,18 @@
         <input type="text" class="form-control" name="price" (change)="updatePayments()"
           placeholder="{{ 'PRICE' | translate}}" id="price" [(ngModel)]="item.price"
           [disabled]="item.oType?.bRefund || item.tType === 'pay'">
-        <label for="bagNumber">{{ "PREPAYMENT" | translate}}</label>
-        <input type="number" name="bagNumber" id="bagNumber" [(ngModel)]="item.paymentAmount" class="form-control">
+        <button class="btn btn-bg-light btn-active-color-primary mt-2" type="button" data-bs-toggle="collapse"
+          (click)="collapsedBtn = !collapsedBtn" [ngClass]="{'collapsed': collapsedBtn }"
+          data-bs-target="#kt_accordion_123" aria-expanded="true" aria-controls="kt_accordion_123">
+          More
+          <fa-icon *ngIf="!collapsedBtn" [icon]="faArrowDown"></fa-icon>
+          <fa-icon *ngIf="collapsedBtn" [icon]="faArrowUp"></fa-icon>
+        </button>
+        <div id="kt_accordion_123" [ngClass]="{'show': collapsedBtn }" class="accordion-collapse collapse">
 
+          <label for="bagNumber">{{ "PREPAYMENT" | translate}}</label>
+          <input type="number" name="bagNumber" id="bagNumber" [(ngModel)]="item.paymentAmount" class="form-control">
+        </div>
         <label *ngIf="item.nDiscount > 0" for="discount">{{ "DISCOUNT" | translate}}</label>
         <input *ngIf="item.nDiscount > 0" type="number" step="any" name="discount" class="form-control"
           [value]="item.nDiscount - (item.nRedeemedLoyaltyPoints || 0)" disabled>
