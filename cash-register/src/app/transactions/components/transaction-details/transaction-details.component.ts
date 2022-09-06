@@ -320,12 +320,12 @@ export class TransactionDetailsComponent implements OnInit {
     this.iLocationId = localStorage.getItem("currentLocation") || '';
 
     let dataObject = JSON.parse(JSON.stringify(this.transaction));
-    // dataObject.aTransactionItems = [];
-    // this.transaction.aTransactionItems.forEach((item: any)=>{
-    //   if(!(item.oType?.eKind == 'discount' || item?.oType?.eKind == 'loyalty-points-discount')) {
-    //     dataObject.aTransactionItems.push(item);
-    //   }
-    // })
+    dataObject.aTransactionItems = [];
+    this.transaction.aTransactionItems.forEach((item: any)=>{
+      if(!(item.oType?.eKind == 'discount' || item?.oType?.eKind == 'loyalty-points-discount')) {
+        dataObject.aTransactionItems.push(item);
+      }
+    })
     let language: any = localStorage.getItem('language')
     dataObject.total = 0;
     let total = 0, totalAfterDisc = 0, totalVat = 0, totalDiscount = 0, totalSavingPoints = 0;
@@ -337,10 +337,10 @@ export class TransactionDetailsComponent implements OnInit {
       totalSavingPoints += item.nSavingsPoints;
       let disc = parseFloat(item.nDiscount);
       if(item.bPaymentDiscountPercent){ 
-        disc = (parseFloat(item.nDiscount) * parseFloat(item.nPriceIncVat)/100);
-        item.nDiscount = disc;
-      } else { item.nDiscount = disc; }
-      item.priceAfterDiscount = (parseFloat(item.nPriceIncVat) -  parseFloat(item.nDiscount));
+        disc = (disc * parseFloat(item.nPriceIncVat)/100);
+        item.nDiscountToShow = disc;
+      } else { item.nDiscountToShow = disc; }
+      item.priceAfterDiscount = (parseFloat(item.nPriceIncVat) -  parseFloat(item.nDiscountToShow));
       item.totalPriceIncVat = parseFloat(item.nPriceIncVat) * parseFloat(item.nQuantity);
       item.totalPriceIncVatAfterDisc = parseFloat(item.priceAfterDiscount) * parseFloat(item.nQuantity);
       const vat = (item.nVatRate * item.priceAfterDiscount/100);
@@ -360,6 +360,7 @@ export class TransactionDetailsComponent implements OnInit {
     this.transaction = dataObject;
 
     this.fetchBusinessDetails();
+    this.fetchCustomer(this.transaction.oCustomer._id);
     this.fetchTransaction(this.transaction.sNumber)
     this.getPrintSetting();
   }
@@ -472,6 +473,17 @@ export class TransactionDetailsComponent implements OnInit {
         this.downloadWithVATLoading = false;
         console.log('printing error', error);
       })
+  }
+
+  fetchCustomer(customerId: any) {
+    this.apiService.getNew('customer', `/api/v1/customer/${customerId}?iBusinessId=${this.iBusinessId}`).subscribe(
+      (result: any) => {
+        this.transaction.oCustomer = result;
+      },
+      (error: any) => {
+        console.error(error)
+      }
+    );
   }
 
   fetchTransaction(sNumber: any) {
