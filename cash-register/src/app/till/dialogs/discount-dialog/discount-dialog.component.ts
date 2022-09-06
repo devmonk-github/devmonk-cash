@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, ViewContainerRef } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
 import { DialogComponent } from "../../../shared/service/dialog";
 import { faTimes, faTriangleExclamation } from "@fortawesome/free-solid-svg-icons";
 import { PriceService } from "../../../shared/service/price.service";
@@ -9,7 +9,7 @@ import { StringService } from "../../../shared/service/string.service";
   templateUrl: './discount-dialog.component.html',
   styleUrls: ['./discount-dialog.component.sass']
 })
-export class DiscountDialogComponent implements OnInit {
+export class DiscountDialogComponent implements OnInit, AfterViewInit {
   @Input() item: any
   faTimes = faTimes
   dialogRef: DialogComponent
@@ -22,8 +22,8 @@ export class DiscountDialogComponent implements OnInit {
   showCurrentDiscount: boolean = false
   currentDiscount: string = ""
   customDiscountValuePercent: number = 0
-
-  selectedDiscount: any;
+  @ViewChild("customDiscountRef") customDiscountRef!: ElementRef
+  selectedDiscount: any = 'custom'
   discount: any
 
   amounts: any = {
@@ -77,6 +77,10 @@ export class DiscountDialogComponent implements OnInit {
     const _injector = this.viewContainer.parentInjector
     this.dialogRef = _injector.get<DialogComponent>(DialogComponent)
 
+
+  }
+  ngAfterViewInit(): void {
+    if (this.customDiscountRef) this.customDiscountRef.nativeElement.focus()
   }
 
   close(): void {
@@ -94,6 +98,8 @@ export class DiscountDialogComponent implements OnInit {
   }
 
   ngOnInit(): void {
+
+
     this.showCurrentDiscount = this.item.discount && this.item.discount.value > 0
     this.currentDiscount = this.priceService.getDiscount(this.item.discount)
 
@@ -101,7 +107,6 @@ export class DiscountDialogComponent implements OnInit {
     this.switchMode('fixed')
     this.discountTooHigh = this.stringService.translate("DISCOUNT_TOO_HIGH")
     this.discountIsTooLow = this.stringService.translate("DISCOUNT_IS_ZERO_OR_LOWER")
-
   }
 
   showAlert(message: string): void {

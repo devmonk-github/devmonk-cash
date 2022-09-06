@@ -12,7 +12,7 @@ import { MenuComponent } from '../shared/_layout/components/common';
   templateUrl: './services.component.html',
   styleUrls: ['./services.component.sass']
 })
-export class ServicesComponent implements OnInit, AfterViewInit, OnDestroy {
+export class ServicesComponent implements OnInit, AfterViewInit {
 
   option: boolean = true;
   faSearch = faSearch;
@@ -118,16 +118,11 @@ export class ServicesComponent implements OnInit, AfterViewInit, OnDestroy {
 
   }
   ngAfterViewInit(): void {
-    MenuComponent.reinitialization();
-    // setTimeout(() => {
-    //   MenuComponent.reinitialization();
-    // }, 200);
+    setTimeout(() => {
+      MenuComponent.reinitialization();
+    }, 200);
   }
-  ngOnDestroy(): void {
-    // setTimeout(() => {
-    // MenuComponent.reinitialization();
-    // }, 200);
-  }
+
 
   // Function for handle event of transaction menu
   clickMenuOpt(key: string, transactionId: string) {
@@ -154,8 +149,9 @@ export class ServicesComponent implements OnInit, AfterViewInit, OnDestroy {
           // console.log({ getBusinessLocations: result });
           if (result.message == "success" && result?.data) {
 
+            resolve(result);
           }
-          resolve(result);
+          resolve(null);
         }, (error) => {
           resolve(error);
           console.error('error: ', error);
