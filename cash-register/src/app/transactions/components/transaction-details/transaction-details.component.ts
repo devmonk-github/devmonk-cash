@@ -318,7 +318,49 @@ export class TransactionDetailsComponent implements OnInit {
   ngOnInit(): void {
     this.iBusinessId = localStorage.getItem("currentBusiness") || '';
     this.iLocationId = localStorage.getItem("currentLocation") || '';
+
+    let dataObject = JSON.parse(JSON.stringify(this.transaction));
+    dataObject.aTransactionItems = [];
+    this.transaction.aTransactionItems.forEach((item: any)=>{
+      if(!(item.oType?.eKind == 'discount' || item?.oType?.eKind == 'loyalty-points-discount')) {
+        dataObject.aTransactionItems.push(item);
+      }
+    })
+    let language: any = localStorage.getItem('language')
+    dataObject.total = 0;
+    let total = 0, totalAfterDisc = 0, totalVat = 0, totalDiscount = 0, totalSavingPoints = 0;
+    dataObject.aTransactionItems.forEach((item: any)=>{
+      let name = '';
+      if(item && item.oArticleGroupMetaData && item.oArticleGroupMetaData.oName && item.oArticleGroupMetaData.oName[language]) name = item?.oArticleGroupMetaData?.oName[language] + ' ';
+      item.description = name;
+      if(item?.oBusinessProductMetaData?.sLabelDescription) item.description = item.description + item?.oBusinessProductMetaData?.sLabelDescription + ' ' + item?.sProductNumber;
+      totalSavingPoints += item.nSavingsPoints;
+      let disc = parseFloat(item.nDiscount);
+      if(item.bPaymentDiscountPercent){ 
+        disc = (disc * parseFloat(item.nPriceIncVat)/100);
+        item.nDiscountToShow = disc;
+      } else { item.nDiscountToShow = disc; }
+      item.priceAfterDiscount = (parseFloat(item.nPriceIncVat) -  parseFloat(item.nDiscountToShow));
+      item.totalPriceIncVat = parseFloat(item.nPriceIncVat) * parseFloat(item.nQuantity);
+      item.totalPriceIncVatAfterDisc = parseFloat(item.priceAfterDiscount) * parseFloat(item.nQuantity);
+      const vat = (item.nVatRate * item.priceAfterDiscount/100);
+      item.vat = vat.toFixed(2);
+      totalVat += vat;
+      total = total + item.totalPriceIncVat;
+      totalAfterDisc += item.totalPriceIncVatAfterDisc;
+      totalDiscount += disc;
+    })
+    dataObject.totalAfterDisc = parseFloat(totalAfterDisc.toFixed(2));
+    dataObject.total = parseFloat(total.toFixed(2));
+    dataObject.totalVat = parseFloat(totalVat.toFixed(2));
+    dataObject.totalDiscount = parseFloat(totalDiscount.toFixed(2));
+    dataObject.totalSavingPoints = totalSavingPoints;
+    dataObject.dCreatedDate = moment(dataObject.dCreatedDate).format('DD-MM-yyyy hh:mm');
+
+    this.transaction = dataObject;
+
     this.fetchBusinessDetails();
+    this.fetchCustomer(this.transaction.oCustomer._id);
     this.fetchTransaction(this.transaction.sNumber)
     this.getPrintSetting();
   }
@@ -381,43 +423,45 @@ export class TransactionDetailsComponent implements OnInit {
           }
         }
 
-        let dataObject = JSON.parse(JSON.stringify(this.transaction));
-        dataObject.aTransactionItems = [];
-        this.transaction.aTransactionItems.forEach((item: any)=>{
-          if(item.oType?.eKind != 'discount' || item?.oType?.eKind != 'loyalty-points-discount') {
-            dataObject.aTransactionItems.push(item);
-          }
-        })
-        let language: any = localStorage.getItem('language')
-        dataObject.total = 0;
-        let total = 0, totalAfterDisc = 0, totalVat = 0, totalDiscount = 0, totalSavingPoints = 0;
-        dataObject.aTransactionItems.forEach((item: any)=>{
-          total = total + item.nPriceIncVat;
-          let name = '';
-          if(item && item.oArticleGroupMetaData && item.oArticleGroupMetaData.oName && item.oArticleGroupMetaData.oName[language]) name = item?.oArticleGroupMetaData?.oName[language] + ' ';
-          item.description = name;
-          if(item?.oBusinessProductMetaData?.sLabelDescription) item.description = item.description + item?.oBusinessProductMetaData?.sLabelDescription + ' ' + item?.sProductNumber;
-          const vat = (item.nVatRate * item.nPriceIncVat/100);
-          item.vat = `${item.nVatRate}% (${vat})`
-          totalVat += vat;
-          totalSavingPoints += item.nSavingsPoints;
-          let disc = item.nDiscount;
-          if(item.bPaymentDiscountPercent){ 
-            disc = (item.nDiscount * item.nPriceIncVat/100)
-            item.nDiscount = `${item.nDiscount}%`
-          } else {
-            item.nDiscount = `€ ${item.nDiscount}`
-          }
-          totalAfterDisc += (item.nPriceIncVat -  item.nDiscount)
-          totalDiscount += disc;
-        })
-        // dataObject.total = `€ ${totalAfterDisc}(${total})`;
-        dataObject.total = total;
-        dataObject.totalVat = totalVat;
-        dataObject.totalDiscount = totalDiscount;
-        dataObject.totalSavingPoints = totalSavingPoints;
-        dataObject.dCreatedDate = moment(dataObject.dCreatedDate).format('DD-MM-yyyy hh:mm');
-        this.pdfService.createPdf(JSON.stringify(result.data), dataObject, filename, print, printData, this.iBusinessId, this.transaction?._id)
+        // let dataObject = JSON.parse(JSON.stringify(this.transaction));
+        // dataObject.aTransactionItems = [];
+        // this.transaction.aTransactionItems.forEach((item: any)=>{
+        //   if(!(item.oType?.eKind == 'discount' || item?.oType?.eKind == 'loyalty-points-discount')) {
+        //     dataObject.aTransactionItems.push(item);
+        //   }
+        // })
+        // let language: any = localStorage.getItem('language')
+        // dataObject.total = 0;
+        // let total = 0, totalAfterDisc = 0, totalVat = 0, totalDiscount = 0, totalSavingPoints = 0;
+        // dataObject.aTransactionItems.forEach((item: any)=>{
+        //   total = total + item.nPriceIncVat;
+        //   let name = '';
+        //   if(item && item.oArticleGroupMetaData && item.oArticleGroupMetaData.oName && item.oArticleGroupMetaData.oName[language]) name = item?.oArticleGroupMetaData?.oName[language] + ' ';
+        //   item.description = name;
+        //   if(item?.oBusinessProductMetaData?.sLabelDescription) item.description = item.description + item?.oBusinessProductMetaData?.sLabelDescription + ' ' + item?.sProductNumber;
+        //   totalSavingPoints += item.nSavingsPoints;
+        //   let disc = item.nDiscount;
+        //   if(item.bPaymentDiscountPercent){ 
+        //     disc = (item.nDiscount * item.nPriceIncVat/100)
+        //     item.nDiscount = `${item.nDiscount}`
+        //   } else {
+        //     item.nDiscount = `€ ${item.nDiscount}`
+        //   }
+        //   item.priceAfterDiscount = (item.nPriceIncVat -  item.nDiscount);
+        //   if(item.bPaymentDiscountPercent) item.nDiscount = `${item.nDiscount} %`
+        //   const vat = (item.nVatRate * item.priceAfterDiscount/100);
+        //   item.vat = `${item.nVatRate}% (${vat})`
+        //   totalVat += vat;
+        //   totalAfterDisc += (parseFloat(item.nPriceIncVat) -  parseFloat(item.nDiscount))
+        //   totalDiscount += disc;
+        // })
+        // dataObject.totalAfterDisc = totalAfterDisc;
+        // dataObject.total = total;
+        // dataObject.totalVat = totalVat;
+        // dataObject.totalDiscount = totalDiscount;
+        // dataObject.totalSavingPoints = totalSavingPoints;
+        // dataObject.dCreatedDate = moment(dataObject.dCreatedDate).format('DD-MM-yyyy hh:mm');
+        this.pdfService.createPdf(JSON.stringify(result.data), this.transaction, filename, print, printData, this.iBusinessId, this.transaction?._id)
           .then(() => {
             this.downloadWithVATLoading = false;
           })
@@ -429,6 +473,17 @@ export class TransactionDetailsComponent implements OnInit {
         this.downloadWithVATLoading = false;
         console.log('printing error', error);
       })
+  }
+
+  fetchCustomer(customerId: any) {
+    this.apiService.getNew('customer', `/api/v1/customer/${customerId}?iBusinessId=${this.iBusinessId}`).subscribe(
+      (result: any) => {
+        this.transaction.oCustomer = result;
+      },
+      (error: any) => {
+        console.error(error)
+      }
+    );
   }
 
   fetchTransaction(sNumber: any) {

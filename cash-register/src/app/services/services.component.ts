@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { faLongArrowAltDown, faLongArrowAltUp, faMinusCircle, faPlus, faPlusCircle, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { ActivityDetailsComponent } from '../shared/components/activity-details-dialog/activity-details.component';
@@ -12,7 +12,7 @@ import { MenuComponent } from '../shared/_layout/components/common';
   templateUrl: './services.component.html',
   styleUrls: ['./services.component.sass']
 })
-export class ServicesComponent implements OnInit {
+export class ServicesComponent implements OnInit, AfterViewInit {
 
   option: boolean = true;
   faSearch = faSearch;
@@ -98,6 +98,7 @@ export class ServicesComponent implements OnInit {
     private routes: Router
   ) { }
 
+
   async ngOnInit(): Promise<void> {
     if (this.routes.url.includes('/business/webshop-orders')) {
       this.webOrders = true;
@@ -114,7 +115,14 @@ export class ServicesComponent implements OnInit {
     this.loadTransaction();
     this.listEmployee();
     this.getWorkstations();
+
   }
+  ngAfterViewInit(): void {
+    setTimeout(() => {
+      MenuComponent.reinitialization();
+    }, 200);
+  }
+
 
   // Function for handle event of transaction menu
   clickMenuOpt(key: string, transactionId: string) {
@@ -141,8 +149,9 @@ export class ServicesComponent implements OnInit {
           // console.log({ getBusinessLocations: result });
           if (result.message == "success" && result?.data) {
 
+            resolve(result);
           }
-          resolve(result);
+          resolve(null);
         }, (error) => {
           resolve(error);
           console.error('error: ', error);
@@ -301,8 +310,8 @@ export class ServicesComponent implements OnInit {
       this.getCustomers();
       setTimeout(() => {
         MenuComponent.bootstrap();
-      }, 1000);
-      this.showLoader = false;
+        this.showLoader = false;
+      }, 200);
     }, (error) => {
       this.showLoader = false;
     })

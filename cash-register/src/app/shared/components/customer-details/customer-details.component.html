@@ -3,8 +3,10 @@
         <h4 class="card-title" *ngIf="mode === 'create'">{{"NEW_CUSTOMER" | translate}}</h4>
         <h4 class="card-title" *ngIf="mode === 'details'">{{"CUSTOMER_DETAILS" | translate}}</h4>
         <div class="card-toolbar flex-row-fluid justify-content-end gap-5">
-            <button class="btn btn-secondary" (click)="editProfile = !editProfile">{{ (editProfile)?"CANCEL":"EDIT" | translate}}</button>
-            <button class="btn btn-primary" *ngIf="editProfile" (click)="EditOrCreateCustomer()">{{"SAVE" | translate}}</button>
+            <button class="btn btn-secondary" (click)="editProfile = !editProfile">{{ (editProfile)?"CANCEL":"EDIT" |
+                translate}}</button>
+            <button class="btn btn-primary" *ngIf="editProfile" (click)="EditOrCreateCustomer()">{{"SAVE" |
+                translate}}</button>
             <a class="cancel my-auto" (click)="close(false)">
                 <i class="fa fa-times"></i>
             </a>
@@ -27,7 +29,7 @@
                                 </h2>
                             </div>
                             <div class="d-flex justify-content-between align-items-start" *ngIf="!editProfile">
-    
+
                                 <div class="">
                                     <h4 class="text-gray-700 fw-bolder mb-2">{{'About' | translate}}</h4>
                                     <div class="d-flex flex-column mb-5">
@@ -76,7 +78,7 @@
                                         </p>
                                     </div>
                                 </div>
-    
+
                                 <div class="">
                                     <h4 class="text-gray-700 fw-bolder mb-2">{{'Invoice Address' | translate}}</h4>
                                     <div class="" *ngIf="customer.oInvoiceAddress">
@@ -92,11 +94,12 @@
                         </div>
                     </div>
 
-                    <div class="mb-3">
+                    <div *ngIf="!editProfile" class="mb-3">
                         <label for="note">{{'NOTES' | translate}}</label>
-                        <textarea name="note" id="note" cols="30" rows="6" class="form-control" disabled [(ngModel)]="customer.note"></textarea>
+                        <textarea name="note" id="note" cols="30" rows="6" class="form-control" disabled
+                            [(ngModel)]="customer.note"></textarea>
                     </div>
-    
+
                     <!-- <p *ngIf="customer.note" class="text-gray-800 text-italic">{{customer.note}}</p>
                     <div class="d-flex flex-wrap py-5">
                         <div class="flex-equal me-5">
@@ -106,7 +109,7 @@
                 </div>
             </div>
             <ng-container *ngIf="!editProfile">
-    
+
                 <div class="row mb-5">
                     <div class="col-9">
                         <div *ngIf="bTransactionsLoader" style="text-align: center;">
@@ -114,7 +117,8 @@
                         </div>
                         <div *ngIf="!bTransactionsLoader" id="activities-chart">
                             <apx-chart [series]="activitiesChartOptions.series" [chart]="activitiesChartOptions.chart"
-                                [labels]="activitiesChartOptions.labels" [responsive]="activitiesChartOptions.responsive"
+                                [labels]="activitiesChartOptions.labels"
+                                [responsive]="activitiesChartOptions.responsive"
                                 [legend]="activitiesChartOptions.legend" [title]="activitiesChartOptions.title"
                                 [colors]="activitiesChartOptions.colors">
                             </apx-chart>
@@ -137,7 +141,7 @@
                                     </div>
                                 </div>
                             </div>
-    
+
                             <div class="card panel-card">
                                 <div class="card-header">
                                     <h3 class="card-title">Saving points</h3>
@@ -181,7 +185,7 @@
                         <app-pn-tabs class="tab-content" addClass="nav-fill" addChildLinkClass="text-gray-600"
                             (activeTabChanged)="activeTabsChanged($event)">
                             <div class="tab-gap"></div>
-    
+
                             <app-pn-tab tabTitle="{{ tabTitles[0] | translate}}" #purchases>
                                 <table class="table table-hover table-rounded table-striped border gs-7">
                                     <thead>
@@ -286,7 +290,8 @@
                             <app-pn-tab tabTitle="{{ tabTitles[3] | translate}}" #statistics>
                                 <div class="row mb-5">
                                     <div id="statistics-chart" class="col-12">
-                                        <ng-container *ngIf="aStatisticsChartData.length && !aStatisticsChartDataLoading;">
+                                        <ng-container
+                                            *ngIf="aStatisticsChartData.length && !aStatisticsChartDataLoading;">
                                             <apx-chart [series]="statisticsChartOptions.series"
                                                 [chart]="statisticsChartOptions.chart"
                                                 [dataLabels]="statisticsChartOptions.dataLabels"
@@ -297,12 +302,14 @@
                                                 [tooltip]="statisticsChartOptions.tooltip">
                                             </apx-chart>
                                         </ng-container>
-                                        <ng-container *ngIf="!aStatisticsChartData.length && aStatisticsChartDataLoading">
+                                        <ng-container
+                                            *ngIf="!aStatisticsChartData.length && aStatisticsChartDataLoading">
                                             <div class="d-flex my-20">
                                                 <div class="spinner-border mx-auto"></div>
                                             </div>
                                         </ng-container>
-                                        <ng-container *ngIf="!aStatisticsChartData.length && !aStatisticsChartDataLoading">
+                                        <ng-container
+                                            *ngIf="!aStatisticsChartData.length && !aStatisticsChartDataLoading">
                                             <div class="d-flex my-20">
                                                 <div class="mx-auto">No Data Found </div>
                                             </div>
@@ -319,7 +326,7 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
-    
+
                                                 <tr>
                                                     <td>Alex Neil</td>
                                                     <td>250</td>
@@ -328,13 +335,13 @@
                                                     <td>John Cena</td>
                                                     <td>190</td>
                                                 </tr>
-    
+
                                             </tbody>
                                         </table>
                                     </div>
                                     <div class="col-6">
                                         <div id="paymentMethodsChart">
-    
+
                                             <apx-chart [series]="paymentMethodsChartOptions.series"
                                                 [chart]="paymentMethodsChartOptions.chart"
                                                 [labels]="paymentMethodsChartOptions.labels"
@@ -343,7 +350,7 @@
                                                 [title]="paymentMethodsChartOptions.title"
                                                 [dataLabels]="paymentMethodsChartOptions.options.dataLabels">
                                             </apx-chart>
-    
+
                                         </div>
                                     </div>
                                 </div>
@@ -354,9 +361,9 @@
                         </app-pn-tabs>
                     </div>
                 </div>
-    
+
             </ng-container>
-    
+
             <!-- <div class="row my-3">
                 <div class="d-flex flex-row-fluid justify-content-end gap-5">
                     <button class="btn btn-secondary" (click)="editProfile = !editProfile"><span>{{'MORE_DETAILS' |
@@ -399,7 +406,7 @@
                                 <input class="form-control" id="sEmail" placeholder="{{'EMAIL' | translate}}"
                                     [(ngModel)]="customer.sEmail" />
                             </div>
-        
+
                         </div>
                         <div class="col-6">
                             <div class="mb-3">
@@ -409,14 +416,15 @@
                         </div>
                     </div>
                     <div class="row mt-3">
-        
+
                         <div class="col-4">
                             <input class="form-control" id="sLandLine" placeholder="{{'PHONE_LANDLINE' | translate}}"
                                 [(ngModel)]="customer.oPhone.sLandLine" />
                         </div>
                         <div class="d-flex col-4">
                             <label class="form-check form-switch form-check-custom form-check-solid">
-                                <input class="form-check-input" type="checkbox" [(ngModel)]="customer.oPhone.bWhatsApp" />
+                                <input class="form-check-input" type="checkbox"
+                                    [(ngModel)]="customer.oPhone.bWhatsApp" />
                                 <span class="form-check-label fw-bold">{{'USE_FOR_WHATSAPP' | translate}}</span>
                             </label>
                         </div>
@@ -447,7 +455,8 @@
                                     </label>
                                 </div>
                                 <div class="col-4 col-lg-12 col-xxl-4">
-                                    <label class="btn btn-outline btn-outline-dashed btn-outline-default d-flex text-start p-3"
+                                    <label
+                                        class="btn btn-outline btn-outline-dashed btn-outline-default d-flex text-start p-3"
                                         data-kt-button="true" [ngClass]="{'active': customer.sGender === 'female'}">
                                         <span
                                             class="form-check form-check-custom form-check-solid form-check-sm align-items-start mt-1">
@@ -460,7 +469,8 @@
                                     </label>
                                 </div>
                                 <div class="col-4 col-lg-12 col-xxl-4">
-                                    <label class="btn btn-outline btn-outline-dashed btn-outline-default d-flex text-start p-3"
+                                    <label
+                                        class="btn btn-outline btn-outline-dashed btn-outline-default d-flex text-start p-3"
                                         data-kt-button="true" [ngClass]="{'active': customer.sGender === 'other'}">
                                         <span
                                             class="form-check form-check-custom form-check-solid form-check-sm align-items-start mt-1">
@@ -490,7 +500,7 @@
                                     <input class="form-control" placeholder="{{'STREET' | translate}}"
                                         [(ngModel)]="customer.oInvoiceAddress.sStreet" />
                                 </div>
-        
+
                                 <div class="col-3">
                                     <input class="form-control" placeholder="{{'HOUSE_NUMBER' | translate}}"
                                         [(ngModel)]="customer.oInvoiceAddress.sHouseNumber" />
@@ -519,17 +529,17 @@
                                         name="country"></country-list>
                                 </div>
                             </div>
-        
+
                         </div>
                         <div class="col-12 mt-6">
                             <h3>{{'SHIPPING_ADDRESS' | translate}}</h3>
-        
+
                             <div class="row mb-3">
                                 <div class="col-7">
                                     <input class="form-control" placeholder="{{'STREET' | translate}}"
                                         [(ngModel)]="customer.oShippingAddress.sStreet" />
                                 </div>
-        
+
                                 <div class="col-3">
                                     <input class="form-control" placeholder="{{'HOUSE_NUMBER' | translate}}"
                                         [(ngModel)]="customer.oShippingAddress.sHouseNumber" />
@@ -558,12 +568,12 @@
                                         name="country"></country-list>
                                 </div>
                             </div>
-        
+
                         </div>
-        
+
                     </div>
                 </div>
-        
+
                 <div class="col-4">
                     <div class="mb-3">
                         <label for="note">{{'NOTES' | translate}}</label>
@@ -578,8 +588,8 @@
                                 (ngModelChange)="customer.dDateOfBirth = $event" />
                         </div>
                     </div>
-        
-        
+
+
                     <div class="mb-3" *ngIf="customer?.oIdentity?.documentName">
                         <label for="documentName">{{'DOCUMENT_NAME' | translate}}</label>
                         <ng-select id="documentName" [(ngModel)]="customer.oIdentity.documentName" [clearable]="false">
@@ -590,25 +600,25 @@
                         <input class="form-control" placeholder="{{'DOCUMENT_NUMBER' | translate}}"
                             [(ngModel)]="customer.oIdentity.documentNumber" />
                     </div>
-        
+
                     <h3>{{'COMPANY_DETAILS' | translate}}</h3>
-        
+
                     <div class="mb-3">
                         <label for="sCompanyName">{{'COMPANY_NAME' | translate}}</label>
                         <input class="form-control mb-6" id="sCompanyName" [(ngModel)]="customer.sCompanyName" />
                     </div>
-        
-        
+
+
                     <div class="mb-3">
                         <label for="nPaymentTermDays">{{'PAYMENT_TERM_IN_DAYS' | translate}}</label>
                         <input class="form-control" id="nPaymentTermDays" [(ngModel)]="customer.nPaymentTermDays" />
                     </div>
-        
+
                     <div class="mb-3">
                         <label for="sVatNumber">{{'VAT_NUMBER' | translate}}</label>
                         <input class="form-control" [(ngModel)]="customer.sVatNumber" />
                     </div>
-        
+
                     <div class="mb-3" *ngIf="customer?.sCocNumber">
                         <label for="sCocNumber">{{'COC_NUMBER' | translate}}</label>
                         <input class="form-control" [(ngModel)]="customer.sCocNumber" />
@@ -631,5 +641,5 @@
             </div>
         </div>
     </div> -->
-    
+
 </div>
