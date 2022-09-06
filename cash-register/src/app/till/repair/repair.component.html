@@ -52,7 +52,7 @@
           <input type="number" step="any" (keyup)="changeInPurchasePrice()" name="discount" class="form-control"
             [(ngModel)]="item.nPurchasePrice" [disabled]="item.oType.bRefund || item.oType.bPrepayment">
         </div>
-        <div>
+        <div id="kt_accordion_1234" [ngClass]="{'show': collapsedBtn }" class="accordion-collapse collapse">
           <label for="discount">{{ "DISCOUNT" | translate}}</label>
           <input *ngIf="!item.oType.bRefund && !item.oType.bDiscount && !item.oType.bPrepayment" type="number"
             step="any" name="discount" class="form-control" [(ngModel)]="item.nDiscount">
