@@ -796,9 +796,7 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
       sortBy: '',
       sortOrder: '',
       searchValue: '',
-      oFilterBy: {
-        bRequiredForArticleGroup: true,
-      },
+      oFilterBy: {},
       iBusinessId: localStorage.getItem('currentBusiness'),
     };
 

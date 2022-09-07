@@ -212,6 +212,7 @@ export class TillService {
       } else {
         if (i.nDiscount && i.nDiscount > 0 && !i.oType.bRefund && !i.iActivityItemId) {
           i.nPaymentAmount += i.nDiscount * i.nQuantity;
+          i.nRevenueAmount += i.nDiscount * i.nQuantity;
           const tItem1 = JSON.parse(JSON.stringify(i));
           tItem1.iArticleGroupId = discountArticleGroup._id;
           tItem1.iArticleGroupOriginalId = i.iArticleGroupId;
@@ -220,6 +221,10 @@ export class TillService {
           tItem1.oType.eTransactionType = 'cash-registry';
           tItem1.oType.eKind = 'discount';
           tItem1.nPaymentAmount = -1 * tItem1.nDiscount * i.nQuantity;
+          tItem1.nRevenueAmount = tItem1.nPaymentAmount;
+          tItem1.nPriceIncVat = tItem1.nPaymentAmount;
+          tItem1.oType.bPrepayment = false;
+          tItem1.nPurchasePrice = tItem1.nPriceIncVat * i.nPurchasePrice / i.nPriceIncVat;
           body.transactionItems.push(tItem1);
         }
       }
@@ -291,6 +296,7 @@ export class TillService {
       oShortDescription: product.oShortDescription,
       eGender: product.eGender,
       eOwnerShip: product.eOwnerShip,
+      sProductNumber: product.sProductNumber,
     }
     return metadata
   }
