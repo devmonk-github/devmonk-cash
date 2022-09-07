@@ -329,7 +329,7 @@ export class TransactionDetailsComponent implements OnInit {
     let language: any = localStorage.getItem('language')
     dataObject.total = 0;
     let total = 0, totalAfterDisc = 0, totalVat = 0, totalDiscount = 0, totalSavingPoints = 0;
-    dataObject.aTransactionItems.forEach((item: any)=>{
+    dataObject.aTransactionItems.forEach((item: any, index: number)=>{
       let name = '';
       if(item && item.oArticleGroupMetaData && item.oArticleGroupMetaData.oName && item.oArticleGroupMetaData.oName[language]) name = item?.oArticleGroupMetaData?.oName[language] + ' ';
       item.description = name;
@@ -349,6 +349,7 @@ export class TransactionDetailsComponent implements OnInit {
       total = total + item.totalPriceIncVat;
       totalAfterDisc += item.totalPriceIncVatAfterDisc;
       totalDiscount += disc;
+      item.related = this.getRelatedTransactionItem(item?.iActivityItemId, item?._id, index)
     })
     dataObject.totalAfterDisc = parseFloat(totalAfterDisc.toFixed(2));
     dataObject.total = parseFloat(total.toFixed(2));
@@ -356,6 +357,7 @@ export class TransactionDetailsComponent implements OnInit {
     dataObject.totalDiscount = parseFloat(totalDiscount.toFixed(2));
     dataObject.totalSavingPoints = totalSavingPoints;
     dataObject.dCreatedDate = moment(dataObject.dCreatedDate).format('DD-MM-yyyy hh:mm');
+    dataObject.related = this.getRelatedTransaction(dataObject?.iActivityId, dataObject?._id)
 
     this.transaction = dataObject;
 
@@ -371,6 +373,31 @@ export class TransactionDetailsComponent implements OnInit {
         (result: any) => {
           this.businessDetails = result.data;
         })
+  }
+
+  getRelatedTransactionItem(iActivityItemId: string, iTransactionItemId: string, index: number){
+    console.log(iActivityItemId, iTransactionItemId, index);
+    this.apiService.getNew('cashregistry', `/api/v1/transaction/item/activityItem/${iActivityItemId}?iBusinessId=${this.iBusinessId}&iTransactionItemId=${iTransactionItemId}`)
+    .subscribe(
+      (result: any) => {
+        this.transaction.aTransactionItems[index].related = result.data || [];
+      }, (error) => {
+        console.log(error);
+      })
+  }
+
+  getRelatedTransaction(iActivityId: string, iTransactionId: string){
+    const body = {
+      iBusinessId: this.iBusinessId,
+      iTransactionId: iTransactionId
+    }
+    this.apiService.postNew('cashregistry', '/api/v1/transaction/activity/' + iActivityId, body)
+    .subscribe(
+      (result: any) => {
+        this.transaction.related = result.data || [];
+      }, (error) => {
+        console.log(error);
+      })
   }
 
   close(value: boolean) {
