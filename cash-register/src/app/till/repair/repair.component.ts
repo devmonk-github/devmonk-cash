@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output, ViewEncapsulation } from '@angular/core';
-import { faTimes, faPlus, faMinus, faUpload, faArrowDown, faArrowUp } from "@fortawesome/free-solid-svg-icons";
+import { faTimes, faPlus, faMinus, faUpload, faArrowDown, faArrowUp, faPhone, faAt } from "@fortawesome/free-solid-svg-icons";
 import { SelectArticleDialogComponent } from 'src/app/shared/components/select-articlegroup-dialog/select-articlegroup-dialog.component';
 import { ToastService } from 'src/app/shared/components/toast';
 import { ApiService } from 'src/app/shared/service/api.service';
@@ -24,6 +24,8 @@ export class RepairComponent implements OnInit {
   faPlus = faPlus;
   faMinus = faMinus;
   faUpload = faUpload;
+  faPhone = faPhone;
+  faAt = faAt;
   faArrowDown = faArrowDown;
   faArrowUp = faArrowUp;
   employee: any = null;
@@ -43,6 +45,10 @@ export class RepairComponent implements OnInit {
   repairer: any = null;
   // temporary variable
   supplier: any;
+  sIsEstimatedDate: 'PriceAgreed' | 'Quotation' = 'PriceAgreed'
+  contactType: 'phone' | 'email' | 'whatsapp' = 'phone'
+  bShowServicePartnerRemark = false
+  sServicePartnerRemark = ''
   constructor(private priceService: PriceService,
     private apiService: ApiService,
     private dialogService: DialogService,
