@@ -201,7 +201,7 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
   ngOnInit(): void {
     this.iStatisticId = this.route.snapshot?.params?.iStatisticId;
     const oQueryParams = this.route.snapshot?.queryParams;
-    // const _dOpenDate = this.route.snapshot?.queryParams?.get('dStartDate');
+
     if (oQueryParams?.dStartDate)
       this.filterDates.startDate = moment(
         new Date(oQueryParams?.dStartDate)
@@ -211,17 +211,14 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
     // console.log({ aDisplayMethod: this.aDisplayMethod });
     this.setOptionMenu()
     this.fetchBusinessDetails();
-    this.printingDate();
+    this.fetchStatistics(this.sDisplayMethod.toString());
     this.fetchBusinessLocation();
     this.getProperties();
-    this.fetchStatisticDocument();
     this.getWorkstations();
     this.getEmployees();
     this.getPaymentMethods();
-
-
-
   }
+
   ngAfterViewInit(): void {
     setTimeout(() => {
       MenuComponent.reinitialization();
@@ -610,10 +607,6 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
     this.aStatistic = [];
   }
 
-  printingDate() {
-    this.fetchStatistics(this.sDisplayMethod.toString());
-  }
-
   /* STATIC  */
   fetchStatisticDocument(sDisplayMethod?: string) {
     this.aStatistic = [];
@@ -666,6 +659,7 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
   fetchStatistics(sDisplayMethod?: string) {
     if (this.iStatisticId) this.IsDynamicState = true;
     if (!this.IsDynamicState) return this.fetchStatisticDocument();
+
     this.aStatistic = [];
     this.aPaymentMethods = [];
     const oBody = {

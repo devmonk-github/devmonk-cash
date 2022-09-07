@@ -1,8 +1,8 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { faTimes, faArrowDown, faArrowUp, faMinus } from '@fortawesome/free-solid-svg-icons'
-import { DialogService } from "../../shared/service/dialog";
+import { faArrowDown, faArrowUp, faMinus } from '@fortawesome/free-solid-svg-icons'
+import { DialogService } from '../../shared/service/dialog';
 import { DiscountDialogComponent } from "../dialogs/discount-dialog/discount-dialog.component";
-import { PriceService } from "../../shared/service/price.service";
+import { PriceService } from '../../shared/service/price.service';
 import { ApiService } from 'src/app/shared/service/api.service';
 import { ToastService } from 'src/app/shared/components/toast';
 
