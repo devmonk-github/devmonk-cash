@@ -20,7 +20,7 @@
 
     </div>
 
-    <div class="col-md-9 col-xs-12 column-auto till-body ps-0 pe-0">
+    <div class="col-md-8 col-xs-12 column-auto till-body ps-0 pe-0">
       <div class="d-flex justify-content-start">
         <button class="btn d-flex btn-white  rounded p-4 mb-3 me-3 text-hover-primary min-w-90px"
           [ngClass]="{'btn-color-primary': eKind === 'regular' }"
@@ -159,43 +159,48 @@
       </div>
 
       <div class="card card-flush mb-4">
-        <div id="till-items-header" class="card-header p-3 lh-1 justify-content-start min-h-0">
-          <div class="d-flex w-100 fw-bold text-gray-600 align-items-center">
-            <span class="w-90px">{{ "QUANTITY" | translate}}</span>
-            <span class="w-275px">{{ "DESCRIPTION" | translate}}</span>
-            <span class="w-100px">{{ "PRICE" | translate}}</span>
-            <span class="w-100px">{{ "DISCOUNT" | translate}}</span>
-            <span class="w-100px">{{ "TAX" | translate}}</span>
-            <span class="w-100px">{{ "TOTAL" | translate}}</span>
-            <span class="w-80px">{{ "PREPAYMENT" | translate}}</span>
+        <div class="row">
+          <div class="col">
+            <div id="till-items-header" class="card-header p-3 justify-content-start w-100">
+              <div class="row d-flex fw-bold text-gray-600 align-items-center w-100">
+                <span class="col">{{ "QUANTITY" | translate}}</span>
+                <span class="col">{{ "DESCRIPTION" | translate}}</span>
+                <span class="col">{{ "PRICE" | translate}}</span>
+                <span class="col">{{ "DISCOUNT" | translate}}</span>
+                <span class="col">{{ "TAX" | translate}}</span>
+                <span class="col">{{ "TOTAL" | translate}}</span>
+                <span class="col">{{ "PREPAYMENT" | translate}}</span>
+                <span class="col"></span>
+              </div>
+            </div>
           </div>
         </div>
         <div class="card-body p-0">
           <div class="accordion" id="till-items-accordion" [itemLength]="transactionItems.length">
             <ng-container *ngFor="let item of transactionItems; let i = index">
               <div style="display:inline-table;">
-                <div class="accordion-item w-100 d-table-cell" till-product
+                <div class="accordion-item w-100  d-table-cell" till-product
                   *ngIf="item.type === 'regular' || item.type === 'reservation'" [item]="item" [taxes]="taxes"
                   (itemChanged)="itemChanged($event, i)"></div>
                 <div class="accordion-item w-100 d-table-cell" till-order *ngIf="item.type === 'order'" [item]="item"
                   [taxes]="taxes" (itemChanged)="itemChanged($event, i)"></div>
                 <div class="accordion-item w-100 d-table-cell" till-repair *ngIf="item.type === 'repair'" [item]="item"
                   [taxes]="taxes" (itemChanged)="itemChanged($event, i)"></div>
-                <div class="accordion-item w-100 d-table-cell w-100" till-gift *ngIf="item.type === 'giftcard'"
-                  [item]="item" [transactionItems]="transactionItems" [taxes]="taxes"
-                  (itemChanged)="itemChanged($event, i)" (createGiftCard)="createGiftCard($event, i)">
+                <div class="accordion-item w-100 d-table-cell " till-gift *ngIf="item.type === 'giftcard'" [item]="item"
+                  [transactionItems]="transactionItems" [taxes]="taxes" (itemChanged)="itemChanged($event, i)"
+                  (createGiftCard)="createGiftCard($event, i)">
                 </div>
-                <div class="accordion-item w-100 d-table-cell w-100" till-goldpurchase
-                  *ngIf="item.type === 'gold-purchase'" [item]="item" (itemChanged)="itemChanged($event, i)"></div>
-                <div class="accordion-item w-100 d-table-cell w-100" till-other *ngIf="item.type=== 'empty-line'"
+                <div class="accordion-item w-100 d-table-cell " till-goldpurchase *ngIf="item.type === 'gold-purchase'"
+                  [item]="item" (itemChanged)="itemChanged($event, i)"></div>
+                <div class="accordion-item w-100 d-table-cell " till-other *ngIf="item.type=== 'empty-line'"
                   [item]="item" [taxes]="taxes" (itemChanged)="itemChanged($event, i)"></div>
-                <div class="accordion-item w-100 d-table-cell w-100" till-loyalty-points-discount
+                <div class="accordion-item w-100 d-table-cell " till-loyalty-points-discount
                   *ngIf="item.type=== 'loyalty-points'" [item]="item" [taxes]="taxes"
                   (itemChanged)="itemChanged($event, i)"></div>
                 <div class="d-table-cell">
-                  <button class="btn btn-sm btn-icon btn-active-color-primary w-30px h-30px"
+                  <button class="btn btn-sm btn-icon btn-active-color-primary w-30px h-30px p-3"
                     (click)="itemChanged('delete', i)">
-                    <span class="svg-icon svg-icon-1qx me-0">
+                    <span class="svg-icon svg-icon-2qx me-0">
                       <fa-icon [icon]="faTimes"></fa-icon>
                     </span>
                   </button>
@@ -204,11 +209,13 @@
             </ng-container>
             <section class="d-flex product-row p-3 text-gray-600 align-items-center"
               *ngIf="getTotals('quantity') !== 0">
-              <div class="w-90px">{{getTotals('quantity')}}</div>
-              <div class="w-300px">&nbsp;</div>
-              <div class="w-125px">{{getTotals('price') | currency: '€'}}</div>
-              <div class="w-100px">{{getTotals('discount')}}</div>
-              <div class="w-125px"></div>
+              <div class="row">
+                <div class="col">{{getTotals('quantity')}}</div>
+                <div class="col">&nbsp;</div>
+                <div class="col">{{getTotals('price') | currency: '€'}}</div>
+                <div class="col">{{getTotals('discount')}}</div>
+                <div class="col"></div>
+              </div>
             </section>
           </div>
         </div>
@@ -345,7 +352,7 @@
         </div>
       </div>
     </div>
-    <div class="col-md-3 col-xs-12">
+    <div class="col-md-4 col-xs-12">
       <button *ngIf="!customer" class="btn d-flex btn-white rounded p-5 mb-3 text-hover-primary w-100"
         (click)="openCustomerDialog()">
         <div class="d-flex justify-center align-items-center flex-grow-1">
