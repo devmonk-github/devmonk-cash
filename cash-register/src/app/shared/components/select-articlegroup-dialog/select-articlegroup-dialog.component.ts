@@ -156,8 +156,8 @@ export class SelectArticleDialogComponent implements OnInit {
       if (!this.brand || !this.articlegroup || !this.supplier) {
         return
       };
-      const businessPartener = this.articlegroup.aBusinessPartner.find((o: any) => o.iBusinessPartnerId === this.supplier._id );
-      let nMargin = businessPartener? businessPartener.nMargin: 1;
+      const businessPartner = this.articlegroup.aBusinessPartner.find((o: any) => o.iBusinessPartnerId === this.supplier._id );
+      let nMargin = businessPartner? businessPartner.nMargin: 1;
       this.dialogRef.close.emit({ brand: this.brand, articlegroup: this.articlegroup, supplier: this.supplier, nMargin });
     } else {
       this.dialogRef.close.emit(false);

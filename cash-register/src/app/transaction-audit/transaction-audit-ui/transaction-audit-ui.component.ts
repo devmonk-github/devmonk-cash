@@ -7,6 +7,7 @@ import * as _moment from 'moment';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastService } from 'src/app/shared/components/toast';
 import { defaultMenuOptions, MenuComponent } from 'src/app/shared/_layout/components/common';
+import { Location } from '@angular/common';
 const moment = (_moment as any).default ? (_moment as any).default : _moment;
 
 
@@ -173,6 +174,7 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
   iWorkstationId: string | null;
   aGoldPurchases: any;
   aGiftItems: any;
+  previousPage = 0
 
   constructor(
     private apiService: ApiService,
@@ -181,6 +183,8 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
     private route: ActivatedRoute,
     private router: Router,
     private toastService: ToastService,
+    private location: Location
+
   ) {
     MenuComponent.reinitialization()
     this.iBusinessId = localStorage.getItem('currentBusiness') || '';
@@ -189,6 +193,7 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
     this.sUserType = localStorage.getItem('type') || '';
     const _oUser = localStorage.getItem('currentUser');
     if (_oUser) this.oUser = JSON.parse(_oUser);
+    this.previousPage = this.route?.snapshot?.queryParams?.page || 0
 
   }
 
@@ -539,6 +544,15 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
     this.onDropdownItemSelected(this.aOptionMenu[0], this.aOptionMenu[0].children[0], this.aOptionMenu[0].children[0].children[0])
     // console.log({ aOptionMenu: this.aOptionMenu });
 
+  }
+  goBack() {
+    if (this.previousPage) {
+      this.router.navigateByUrl('/business/day-closure/list?page=' + this.previousPage, {
+        replaceUrl: true,
+      })
+      return
+    }
+    this.location.back()
   }
   onDropdownItemSelected(parent: View, child1: ViewMenuChild, child2: ChildChild) {
     // console.log({
@@ -2143,7 +2157,7 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
     if (nAmount > 0) {
       //we have difference in cash, so add that as and expense
       const oPayment = this.allPaymentMethod.filter((el: any) => el.sName.toLowerCase() === 'cash')[0];
-      
+
       const _expense = await this.addExpenses(
         {
           amount: nAmount,
