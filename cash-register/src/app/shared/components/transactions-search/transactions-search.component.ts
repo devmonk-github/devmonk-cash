@@ -138,6 +138,7 @@ export class TransactionsSearchComponent implements OnInit, AfterViewInit {
                 open: true,
                 nMargin: transactionItem.nMargin,
                 nPurchasePrice: transactionItem.nPurchasePrice,
+                oBusinessProductMetaData: transactionItem.oBusinessProductMetaData
               });
             }
           });

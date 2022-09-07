@@ -570,6 +570,7 @@ export class TransactionDetailsComponent implements OnInit {
                 iSupplierId: transactionItem.iSupplierId,
                 paymentAmount,
                 description: transactionItem.sDescription,
+                oBusinessProductMetaData: transactionItem.oBusinessProductMetaData,
                 open: true,
               });
             }
