@@ -41,6 +41,7 @@ import { AddFavouritesComponent } from "./components/add-favourites/favourites.c
 import { NgApexchartsModule } from "ng-apexcharts";
 import { WebOrderDetailsComponent } from "./components/web-order-details/web-order-details.component";
 import { SelectArticleDialogComponent } from "./components/select-articlegroup-dialog/select-articlegroup-dialog.component";
+import { NgxPaginationModule } from "ngx-pagination";
 @NgModule({
   declarations: [
     CustomerDialogComponent,
@@ -102,7 +103,7 @@ import { SelectArticleDialogComponent } from "./components/select-articlegroup-d
     MorePaymentsDialogComponent,
     TabsComponent,
     TabComponent,
-    SelectArticleDialogComponent,
+    SelectArticleDialogComponent, NgxPaginationModule
   ],
   providers: [CurrencyPipe]
 })
