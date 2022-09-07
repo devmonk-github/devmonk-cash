@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output, ViewEncapsulation } from '@angular/core';
-import { faTimes, faPlus, faMinus, faArrowDown, faArrowUp, faUpload } from '@fortawesome/free-solid-svg-icons';
+import { faTimes, faPlus, faMinus, faArrowDown, faArrowUp, faUpload, faPhone, faAt } from '@fortawesome/free-solid-svg-icons';
 
 import { ImageUploadComponent } from 'src/app/shared/components/image-upload/image-upload.component';
 import { SelectArticleDialogComponent } from 'src/app/shared/components/select-articlegroup-dialog/select-articlegroup-dialog.component';
@@ -26,6 +26,8 @@ export class OrderComponent implements OnInit {
   faArrowDown = faArrowDown;
   faArrowUp = faArrowUp;
   faUpload = faUpload;
+  faPhone = faPhone;
+  faAt = faAt;
   typeArray = ['regular', 'return'];
   propertyOptions: Array<any> = [];
   selectedProperties: Array<any> = [];
@@ -48,6 +50,11 @@ export class OrderComponent implements OnInit {
   showDeleteBtn: boolean = false;
   aProperty: any = [];
   collapsedBtn: Boolean = false;
+
+  contactType: 'phone' | 'email' | 'whatsapp' = 'phone'
+  bShowServicePartnerRemark = false
+  sServicePartnerRemark = ''
+
   constructor(
     private priceService: PriceService,
     private apiService: ApiService,
@@ -66,7 +73,7 @@ export class OrderComponent implements OnInit {
     }
   }
 
-  selectArticleGroup() {   
+  selectArticleGroup() {
     this.dialogService.openModal(SelectArticleDialogComponent, { cssClass: 'modal-m', context: { item: this.item, from: 'order' } })
       .instance.close.subscribe((data) => {
         if (data) {
@@ -84,7 +91,7 @@ export class OrderComponent implements OnInit {
         }
       });
   }
-  
+
   changeInMargin() {
     this.item.nPurchasePrice = this.item.price / this.item.nMargin || 1;
   }
@@ -192,7 +199,7 @@ export class OrderComponent implements OnInit {
             }
           });
           aProperty.forEach((prop: any) => {
-            const check = this.item.oArticleGroupMetaData.aProperty.find((o:any) => o.iPropertyId === prop.iPropertyId);
+            const check = this.item.oArticleGroupMetaData.aProperty.find((o: any) => o.iPropertyId === prop.iPropertyId);
             if (!check) {
               this.item.oArticleGroupMetaData.aProperty.push(prop);
             }
@@ -272,7 +279,7 @@ export class OrderComponent implements OnInit {
     }
   }
   checkArticleGroups() {
-    if(this.item.iArticleGroupId) {
+    if (this.item.iArticleGroupId) {
       return;
     }
     this.createArticleGroupService.checkArticleGroups('Ordered products')
