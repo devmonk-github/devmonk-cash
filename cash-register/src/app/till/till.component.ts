@@ -351,6 +351,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     switch (item) {
       case 'delete':
         this.transactionItems.splice(index, 1);
+        // this.updateFiskalyTransaction()
+        this.updateFiskalyTransaction('ACTIVE', []);
         break;
       case 'update':
         let availableAmount = this.getUsedPayMethods(true);
