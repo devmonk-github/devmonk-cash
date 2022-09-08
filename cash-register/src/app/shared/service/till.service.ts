@@ -178,6 +178,8 @@ export class TillService {
           nStockCorrection: i.eTransactionItemType === 'regular' ? i.quantity : i.quantity - (i.nBrokenProduct || 0),
           eKind: i.type, // TODO // repair
           bDiscount: i.nDiscount > 0,
+          //bPrepayment: true // B discount && prepayment fix Jolmer
+          //bPrepayment: false // A discount fix Jolmer
           bPrepayment: (i.paymentAmount > 0 || this.getUsedPayMethods(true, payMethods) - this.getTotals('price', transactionItems) < 0) && (i.paymentAmount !== i.amountToBePaid),
         },
         i.iActivityItemId,
@@ -223,7 +225,8 @@ export class TillService {
           tItem1.nPaymentAmount = -1 * tItem1.nDiscount * i.nQuantity;
           tItem1.nRevenueAmount = tItem1.nPaymentAmount;
           tItem1.nPriceIncVat = tItem1.nPaymentAmount;
-          tItem1.oType.bPrepayment = false;
+          //tItem1.oType.bPrepayment = true; // B jolmer testing discount && prepayment
+          tItem1.oType.bPrepayment = false;  // A Jolmer testing discount
           tItem1.nPurchasePrice = tItem1.nPriceIncVat * i.nPurchasePrice / i.nPriceIncVat;
           body.transactionItems.push(tItem1);
         }
