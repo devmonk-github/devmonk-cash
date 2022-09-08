@@ -156,9 +156,17 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit() {
-    this.searchField.first.nativeElement.focus();
+    if (this.searchField)
+      this.searchField.nativeElement.focus();
   }
-
+  onSelectRegular() {
+    this.shopProducts = []; this.commonProducts = []; this.eKind = 'regular'; this.isStockSelected = true
+  }
+  onSelectOrder() {
+    this.shopProducts = []; this.commonProducts = []; this.eKind = 'order'; this.isStockSelected = false
+    if (this.searchField)
+      this.searchField.nativeElement.focus();
+  }
   loadTransaction() {
     let fromTransactionPage: any = localStorage.getItem('fromTransactionPage');
     if (fromTransactionPage) {
@@ -636,7 +644,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       sArticleNumber: product.sArticleNumber,
       description: product.sLabelDescription,
       iArticleGroupId: product.iArticleGroupId,
-      oArticleGroupMetaData: { aProperty: product.aProperty || [], sCategory: '', sSubCategory: '', oName: {}, oNameOriginal: {}  },
+      oArticleGroupMetaData: { aProperty: product.aProperty || [], sCategory: '', sSubCategory: '', oName: {}, oNameOriginal: {} },
       iBusinessBrandId: product.iBusinessBrandId || product.iBrandId,
       iBusinessProductId: product._id,
       iSupplierId: product.iBusinessPartnerId,

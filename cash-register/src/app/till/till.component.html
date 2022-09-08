@@ -34,8 +34,7 @@
     <div class="col-md-9 col-xs-12 column-auto till-body ps-0 pe-0">
       <div class="d-flex justify-content-start">
         <button class="btn d-flex btn-white  rounded p-4 mb-3 me-3 text-hover-primary min-w-90px"
-          [ngClass]="{'btn-color-primary': eKind === 'regular' }"
-          (click)="shopProducts = []; commonProducts = []; eKind = 'regular'; isStockSelected = true"
+          [ngClass]="{'btn-color-primary': eKind === 'regular' }" (click)="onSelectRegular()"
           [disabled]="isGoldForPayments">
           <div class="d-flex flex-column justify-center align-items-center flex-grow-1">
             <div class="symbol symbol-40px mb-2">
@@ -53,8 +52,7 @@
         </button>
 
         <button class="btn d-flex btn-white  rounded p-4 mb-3 me-3 text-hover-primary min-w-90px"
-          [ngClass]="{'btn-color-primary': eKind === 'order' }"
-          (click)="shopProducts = []; commonProducts = []; eKind = 'order'; isStockSelected = false">
+          [ngClass]="{'btn-color-primary': eKind === 'order' }" (click)="onSelectOrder()">
           <div class="d-flex flex-column justify-center align-items-center flex-grow-1">
             <div class="symbol symbol-40px mb-2">
               <span class="symbol-label">
