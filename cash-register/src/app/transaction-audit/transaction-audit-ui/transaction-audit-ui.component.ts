@@ -208,7 +208,6 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
       ).format('yyyy-MM-DDThh:mm');
 
     this.businessDetails._id = localStorage.getItem('currentBusiness');
-    // console.log({ aDisplayMethod: this.aDisplayMethod });
     this.setOptionMenu()
     this.fetchBusinessDetails();
     this.fetchStatistics(this.sDisplayMethod.toString());
@@ -542,9 +541,8 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
       this.aOptionMenu.splice(iPurchaseIndex, 1)
     }
     this.onDropdownItemSelected(this.aOptionMenu[0], this.aOptionMenu[0].children[0], this.aOptionMenu[0].children[0].children[0])
-    // console.log({ aOptionMenu: this.aOptionMenu });
-
   }
+
   goBack() {
     if (this.previousPage) {
       this.router.navigateByUrl('/business/day-closure/list?page=' + this.previousPage, {
@@ -555,23 +553,16 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
     this.location.back()
   }
   onDropdownItemSelected(parent: View, child1: ViewMenuChild, child2: ChildChild) {
-    // console.log({
-    //   parent,
-    //   child1,
-    //   child2,
-    // });
     this.sOptionMenu = {
       parent,
       child1,
       child2,
     }
     this.optionMenu = parent.sValue.toLowerCase().trim()
-    // console.log('this.optionMenu: ', this.optionMenu);
     this.sSelectedOptionMenu = `${parent.sKey}->${child1.sKey}->${child2.sKey}`
     const eDisplayMethod = child2.data?.displayMethod || null
     const sModeFilter = child2.data?.modeFilter || null
     const sLevelFilter = child2.data?.levelFilter || null
-    // console.log('eDisplayMethod: ', eDisplayMethod);
 
     if (eDisplayMethod) {
       this.sDisplayMethod = eDisplayMethod
@@ -685,12 +676,10 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
       oBody.oFilter.bIsSupplierMode = this.bIsSupplierMode;
     }
     this.bStatisticLoading = true;
-    // console.log('sDisplayMethod: ', oBody?.oFilter?.sDisplayMethod, sDisplayMethod);
     this.statisticAuditSubscription = this.apiService
       .postNew('cashregistry', `/api/v1/statistics/transaction/audit`, oBody)
       .subscribe(
         (result: any) => {
-          // console.log('result: ', JSON.parse(JSON.stringify(result)));
           this.nPaymentMethodTotal = 0;
           this.nNewPaymentMethodTotal = 0;
           this.bStatisticLoading = false;
@@ -705,11 +694,8 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
               this.aPaymentMethods.map((item: any) => {
                 item.nNewAmount = item.nAmount;
                 this.nPaymentMethodTotal += parseFloat(item.nAmount);
-                // console.log('item: ', item);
                 return item;
               });
-              // console.log('this.nPaymentMethodTotal: ', this.nPaymentMethodTotal);
-              // console.log('this.aPaymentMethods: ', this.aPaymentMethods);
               this.nNewPaymentMethodTotal = this.nPaymentMethodTotal;
               this.filterDuplicatePaymentMethods();
             }
@@ -827,12 +813,6 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
   }
 
   onProperties(value?: any) {
-    // console.log(
-    //   'onProperties called: ',
-    //   this.selectedProperties,
-    //   this.propertyOptions,
-    //   this.aProperty
-    // );
     if (this.selectedProperties && this.selectedProperties[value]) {
       this.aFilterProperty = [];
       for (const oProperty of this.aProperty) {
@@ -2053,7 +2033,6 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
       .subscribe((result: any) => {
         item.isLoading = false;
         if (result?.data[0]?.result?.length) {
-          // console.log('expandItem response: ', result?.data[0]?.result);
           item.aTransactionItems = result.data[0].result;
         }
       });
@@ -2111,7 +2090,6 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
     );
   }
   addExpenses(data: any): Observable<any> {
-    // console.log('adding expenses', data);
 
     const value = localStorage.getItem('currentEmployee');
     let currentEmployeeId;
@@ -2191,17 +2169,7 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
   }
 
   getPaymentMethods() {
-    // console.log('getPaymentMethods');
-    // this.payMethodsLoading = true;
     this.payMethods = [];
-    // const methodsToDisplay = [
-    //   'card',
-    //   'cash',
-    //   'bankpayment',
-    //   'maestro',
-    //   'mastercard',
-    //   'visa',
-    // ];
     this.apiService
       .getNew('cashregistry', '/api/v1/payment-methods/' + this.iBusinessId)
       .subscribe(
@@ -2209,17 +2177,12 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
           if (result && result.data && result.data.length) {
             this.allPaymentMethod = result.data;
             result.data.forEach((element: any) => {
-              // if (methodsToDisplay.includes(element.sName.toLowerCase())) {
               this.payMethods.push(element);
-              // }
             });
             this.filterDuplicatePaymentMethods();
           }
-          // console.log(this.payMethods);
-          // this.payMethodsLoading = false;
         },
         (error) => {
-          // this.payMethodsLoading = false;
         }
       );
   }
@@ -2227,7 +2190,6 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
   filterDuplicatePaymentMethods() {
     const aPresent = [...this.aPaymentMethods.map((item: any) => item.iPaymentMethodId), ...this.aNewSelectedPaymentMethods.map((item: any) => item._id)];
     this.payMethods = this.payMethods.filter((item: any) => !aPresent.includes(item._id));
-    // console.log(aPresent, this.payMethods);
   }
 
   toggleEditPaymentMode() {
@@ -2246,7 +2208,6 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
     this.aPaymentMethods.forEach((item: any) => {
       if (item.nNewAmount)
         this.nNewPaymentMethodTotal += parseFloat(item.nNewAmount);
-      // console.log(parseFloat(item.nNewAmount), this.nNewPaymentMethodTotal);
     });
     if (this.aNewSelectedPaymentMethods?.length)
       this.aNewSelectedPaymentMethods.forEach((item: any) => {
@@ -2256,8 +2217,6 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
   }
 
   async saveUpdatedPayments() {
-    // console.log(this.aNewSelectedPaymentMethods);
-    // return;
     this.aPaymentMethods.forEach(async (item: any) => {
       if (item.nAmount != item.nNewAmount) {
         await this.addExpenses({
