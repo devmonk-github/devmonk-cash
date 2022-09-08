@@ -14,7 +14,8 @@ export class BusinessProductMetadata {
     public oName: object,
     public oShortDescription: object,
     public eGender: string,
-    public eOwnerShip: string
+    public eOwnerShip: string,
+    public sProductNumber: string,
   ) {
   }
 }
