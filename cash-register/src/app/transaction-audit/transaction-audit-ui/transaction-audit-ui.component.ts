@@ -79,6 +79,8 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
 
   aNewSelectedPaymentMethods: any = [];
 
+  oStatisticsData: any = {};
+
   listBusinessSubscription!: Subscription;
   getStatisticSubscription!: Subscription;
   statisticAuditSubscription!: Subscription;
@@ -87,6 +89,8 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
   workstationListSubscription!: Subscription;
   employeeListSubscription!: Subscription;
   transactionItemListSubscription!: Subscription;
+  sCurrentLocation: any;
+  sCurrentWorkstation: any;
 
   groupingHelper(item: any) {
     return item.child[0];
@@ -195,18 +199,23 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
     if (_oUser) this.oUser = JSON.parse(_oUser);
     this.previousPage = this.route?.snapshot?.queryParams?.page || 0
 
+    this.iStatisticId = this.route.snapshot?.params?.iStatisticId;
+    if(this.iStatisticId){
+      this.oStatisticsData.dStartDate = this.router.getCurrentNavigation()?.extras?.state?.dStartDate ?? null;
+      if (this.oStatisticsData.dStartDate){
+        console.log('if');
+        this.filterDates.startDate = this.oStatisticsData.dStartDate;
+        const endDate = new Date();
+        this.filterDates.endDate = endDate;
+        this.oStatisticsData.dEndDate = endDate;
+      } else {
+        console.log('else');
+        this.router.navigate(['/business/day-closure'])
+      }
+    }
   }
 
-
   ngOnInit(): void {
-    this.iStatisticId = this.route.snapshot?.params?.iStatisticId;
-    const oQueryParams = this.route.snapshot?.queryParams;
-
-    if (oQueryParams?.dStartDate)
-      this.filterDates.startDate = moment(
-        new Date(oQueryParams?.dStartDate)
-      ).format('yyyy-MM-DDThh:mm');
-
     this.businessDetails._id = localStorage.getItem('currentBusiness');
     this.setOptionMenu()
     this.fetchBusinessDetails();
@@ -587,6 +596,7 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
         (result: any) => {
           if (result?.data?.aLocation?.length)
             this.aLocation = result.data.aLocation;
+          this.sCurrentLocation = result?.data?.sName;
         },
         (error) => {
           console.log('error: ', error);
@@ -772,9 +782,7 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
       sortBy: '',
       sortOrder: '',
       searchValue: '',
-      oFilterBy: {
-        bRequiredForArticleGroup: true,
-      },
+      oFilterBy: {},
       iBusinessId: localStorage.getItem('currentBusiness'),
     };
 
@@ -834,10 +842,11 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
   }
 
   getWorkstations() {
-    (this.workstationListSubscription = this.apiService
-      .getNew('cashregistry', '/api/v1/workstations/list/' + this.iBusinessId)
-      .subscribe((result: any) => {
-        if (result && result.data?.length) this.aWorkStation = result.data;
+    (this.workstationListSubscription = this.apiService.getNew('cashregistry', '/api/v1/workstations/list/' + this.iBusinessId).subscribe((result: any) => {
+        if (result && result.data?.length) {
+          this.aWorkStation = result.data;
+          this.sCurrentWorkstation = this.aWorkStation.filter((el: any) => el._id === this.iWorkstationId)[0]?.sName;
+        }
       })),
       (error: any) => {
         console.error(error);
@@ -2216,7 +2225,8 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
       });
   }
 
-  async saveUpdatedPayments() {
+  async saveUpdatedPayments(event:any) {
+    event.target.disabled = true;
     this.aPaymentMethods.forEach(async (item: any) => {
       if (item.nAmount != item.nNewAmount) {
         await this.addExpenses({
@@ -2228,7 +2238,9 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
             sMethod: item.sMethod
           }
         }).toPromise();
+        event.target.disabled = false;
       }
+      this.paymentEditMode = false;
     });
 
     if (this.aNewSelectedPaymentMethods.length) {

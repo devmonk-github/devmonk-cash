@@ -104,6 +104,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   saveInProgress = false;
   @ViewChildren('searchField') searchField: any;
   selectedQuickButton: any;
+  bDayStateChecking: boolean = false;
 
   randNumber(min: number, max: number): number {
     return Math.floor(Math.random() * (max - min + 1) + min);
@@ -155,9 +156,17 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit() {
-    this.searchField.first.nativeElement.focus();
+    if (this.searchField)
+      this.searchField.nativeElement.focus();
   }
-
+  onSelectRegular() {
+    this.shopProducts = []; this.commonProducts = []; this.eKind = 'regular'; this.isStockSelected = true
+  }
+  onSelectOrder() {
+    this.shopProducts = []; this.commonProducts = []; this.eKind = 'order'; this.isStockSelected = false
+    if (this.searchField)
+      this.searchField.nativeElement.focus();
+  }
   loadTransaction() {
     let fromTransactionPage: any = localStorage.getItem('fromTransactionPage');
     if (fromTransactionPage) {
@@ -635,7 +644,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       sArticleNumber: product.sArticleNumber,
       description: product.sLabelDescription,
       iArticleGroupId: product.iArticleGroupId,
-      oArticleGroupMetaData: { aProperty: product.aProperty || [], sCategory: '', sSubCategory: '', oName: {}, oNameOriginal: {}  },
+      oArticleGroupMetaData: { aProperty: product.aProperty || [], sCategory: '', sSubCategory: '', oName: {}, oNameOriginal: {} },
       iBusinessBrandId: product.iBusinessBrandId || product.iBrandId,
       iBusinessProductId: product._id,
       iSupplierId: product.iBusinessPartnerId,
@@ -895,8 +904,10 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       iLocationId: this.locationId,
       iWorkstationId: this.iWorkstationId
     }
+    this.bDayStateChecking = true;
     this.apiService.postNew('cashregistry', `/api/v1/statistics/day-closure/check`, oBody).subscribe((result: any) => {
       if (result?.data?.bIsDayStateOpened) {
+        this.bDayStateChecking = false;
         this.bIsDayStateOpened = true;
         if (result?.data?.oStatisticDetail?.dOpenDate) {
           this.dOpenDate = result?.data?.oStatisticDetail?.dOpenDate;
