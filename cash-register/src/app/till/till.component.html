@@ -1,6 +1,17 @@
 <div class="overlay-full d-flex flex-column justify-content-center align-items-center" *ngIf="!bIsDayStateOpened">
-  <h1>{{ 'NO_OPEN_DAY_STATE_FOUND' | translate}}</h1>
-  <button class="btn btn-white" (click)="openDayState()">{{ 'OPEN_CASH_REGISTRY' | translate}}</button>
+
+  <div *ngIf="bDayStateChecking">
+    <div class="d-flex flex-column">
+      <h1>{{ 'Please wait while we are checking for day state' | translate}}</h1>
+      <div class="spinner-border mx-auto"></div>
+    </div>
+  </div>
+
+  <div *ngIf="!bDayStateChecking && !bIsDayStateOpened">
+    <h1>{{ 'NO_OPEN_DAY_STATE_FOUND' | translate}}</h1>
+    <button class="btn btn-white" (click)="openDayState()">{{ 'OPEN_CASH_REGISTRY' | translate}}</button>
+  </div>
+
 </div>
 <div class="container">
 
