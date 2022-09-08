@@ -83,6 +83,9 @@ export class RepairComponent implements OnInit {
           this.updateProperties(articlegroup);
           this.changeInMargin();
         }
+        else {
+          this.deleteItem();
+        }
       });
   }
 
