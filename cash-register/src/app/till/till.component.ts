@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnDestroy, OnInit, ViewChildren } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild, ViewChildren } from '@angular/core';
 import {
   faScrewdriverWrench, faTruck, faBoxesStacked, faGifts, faUser, faTimes, faTimesCircle, faTrashAlt, faRing,
   faCoins, faCalculator, faArrowRightFromBracket, faSpinner, faSearch, faMoneyBill
@@ -102,7 +102,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   ];
   discountArticleGroup: any = {};
   saveInProgress = false;
-  @ViewChildren('searchField') searchField: any;
+  @ViewChild('searchField') searchField!: ElementRef;
   selectedQuickButton: any;
   bDayStateChecking: boolean = false;
 
@@ -151,12 +151,23 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     this.cancelFiskalyTransaction();
   }
 
+
+
+  ngAfterViewInit() {
+    if (this.searchField)
+      this.searchField.nativeElement.focus();
+  }
   async getfiskalyInfo() {
     const tssId = await this.fiskalyService.fetchTSS();
   }
 
-  ngAfterViewInit() {
-    this.searchField.first.nativeElement.focus();
+  onSelectRegular() {
+    this.shopProducts = []; this.commonProducts = []; this.eKind = 'regular'; this.isStockSelected = true
+  }
+  onSelectOrder() {
+    this.shopProducts = []; this.commonProducts = []; this.eKind = 'order'; this.isStockSelected = false
+    if (this.searchField)
+      this.searchField.nativeElement.focus();
   }
 
   loadTransaction() {
@@ -636,7 +647,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       sArticleNumber: product.sArticleNumber,
       description: product.sLabelDescription,
       iArticleGroupId: product.iArticleGroupId,
-      oArticleGroupMetaData: { aProperty: product.aProperty || [], sCategory: '', sSubCategory: '', oName: {}, oNameOriginal: {}  },
+      oArticleGroupMetaData: { aProperty: product.aProperty || [], sCategory: '', sSubCategory: '', oName: {}, oNameOriginal: {} },
       iBusinessBrandId: product.iBusinessBrandId || product.iBrandId,
       iBusinessProductId: product._id,
       iSupplierId: product.iBusinessPartnerId,
