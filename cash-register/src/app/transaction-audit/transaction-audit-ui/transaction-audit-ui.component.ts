@@ -791,11 +791,11 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
       .subscribe((result: any) => {
         if (result?.data && result?.data[0]?.result?.length) {
           result.data[0].result.map((property: any) => {
-            console.log('--------------------------->>>>>>.... property: ', property);
             if (typeof this.propertyOptions[property._id] == 'undefined') {
               this.propertyOptions[property._id] = [];
 
               property.aOptions.map((option: any) => {
+                console.log('--------------------------->>>>>>.... option: ', option);
                 if (option?.sCode?.trim() != '') {
                   const opt: any = {
                     iPropertyId: property._id,
@@ -2024,7 +2024,7 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
       this.sDisplayMethod.toString() === 'revenuePerArticleGroupAndProperty' ||
       this.sDisplayMethod.toString() === 'revenuePerArticleGroup'
     ) {
-      data.oFilterBy.iArticleGroupId = item._id;
+      data.oFilterBy.iArticleGroupOriginalId = item._id;
     }
     if (
       this.sDisplayMethod.toString() === 'revenuePerBusinessPartner' ||
