@@ -75,8 +75,6 @@ export class RepairComponent implements OnInit {
         if (data) {
           const { articlegroup, brand, supplier, nMargin } = data;
           this.item.supplier = supplier.sName;
-          this.item.iArticleGroupOriginalId = articlegroup._id;
-          this.item.oArticleGroupMetaData.oNameOriginal = articlegroup.oName;
           this.supplier = supplier.sName;
           this.item.iSupplierId = supplier._id;
           this.item.nMargin = nMargin;
@@ -89,7 +87,7 @@ export class RepairComponent implements OnInit {
   }
 
   changeInMargin() {
-    this.item.nPurchasePrice = this.item.price / this.item.nMargin || 1;
+    this.item.nPurchasePrice = this.item.price / (this.item.nMargin || 1);
   }
 
   changeInPurchasePrice() {
@@ -136,6 +134,8 @@ export class RepairComponent implements OnInit {
 
   assignArticleGroupMetadata(articlegroup: any) {
     this.item.iArticleGroupId = articlegroup._id;
+    this.item.iArticleGroupOriginalId = articlegroup._id;
+    this.item.oArticleGroupMetaData.oNameOriginal = articlegroup.oName;
     this.item.oArticleGroupMetaData.oName = articlegroup.oName;
     this.item.oArticleGroupMetaData.sCategory = articlegroup.sCategory;
     this.item.oArticleGroupMetaData.sSubCategory = articlegroup.sSubCategory;
