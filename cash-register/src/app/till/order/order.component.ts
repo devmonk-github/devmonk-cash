@@ -101,6 +101,7 @@ export class OrderComponent implements OnInit {
   }
 
   updateProperties(articlegroup: any) {
+    this.item.oArticleGroupMetaData.aProperty = articlegroup.aProperty;
     articlegroup.aProperty.forEach((properties: any) => {
       const propertiesIndex = this.item.oArticleGroupMetaData.aProperty.findIndex((aProperty: any) => aProperty.iPropertyId === properties.iPropertyId);
       if (propertiesIndex > -1) {
@@ -160,7 +161,7 @@ export class OrderComponent implements OnInit {
     this.selectedProperties = [];
     let data = {
       skip: 0,
-      limit: 100,
+      limit: 500,
       sortBy: '',
       sortOrder: '',
       searchValue: '',

@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnDestroy, OnInit, ViewChildren } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild, ViewChildren } from '@angular/core';
 import {
   faScrewdriverWrench, faTruck, faBoxesStacked, faGifts, faUser, faTimes, faTimesCircle, faTrashAlt, faRing,
   faCoins, faCalculator, faArrowRightFromBracket, faSpinner, faSearch, faMoneyBill
@@ -102,7 +102,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   ];
   discountArticleGroup: any = {};
   saveInProgress = false;
-  @ViewChildren('searchField') searchField: any;
+  @ViewChild('searchField') searchField!: ElementRef;
   selectedQuickButton: any;
   bDayStateChecking: boolean = false;
 
@@ -151,14 +151,16 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     this.cancelFiskalyTransaction();
   }
 
-  async getfiskalyInfo() {
-    const tssId = await this.fiskalyService.fetchTSS();
-  }
+
 
   ngAfterViewInit() {
     if (this.searchField)
       this.searchField.nativeElement.focus();
   }
+  async getfiskalyInfo() {
+    const tssId = await this.fiskalyService.fetchTSS();
+  }
+
   onSelectRegular() {
     this.shopProducts = []; this.commonProducts = []; this.eKind = 'regular'; this.isStockSelected = true
   }
@@ -167,6 +169,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.searchField)
       this.searchField.nativeElement.focus();
   }
+
   loadTransaction() {
     let fromTransactionPage: any = localStorage.getItem('fromTransactionPage');
     if (fromTransactionPage) {
@@ -350,6 +353,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     switch (item) {
       case 'delete':
         this.transactionItems.splice(index, 1);
+        // this.updateFiskalyTransaction()
+        this.updateFiskalyTransaction('ACTIVE', []);
         break;
       case 'update':
         let availableAmount = this.getUsedPayMethods(true);
