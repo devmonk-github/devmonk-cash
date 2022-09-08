@@ -1,6 +1,17 @@
 <div class="overlay-full d-flex flex-column justify-content-center align-items-center" *ngIf="!bIsDayStateOpened">
-  <h1>{{ 'NO_OPEN_DAY_STATE_FOUND' | translate}}</h1>
-  <button class="btn btn-white" (click)="openDayState()">{{ 'OPEN_CASH_REGISTRY' | translate}}</button>
+
+  <div *ngIf="bDayStateChecking">
+    <div class="d-flex flex-column">
+      <h1>{{ 'Please wait while we are checking for day state' | translate}}</h1>
+      <div class="spinner-border mx-auto"></div>
+    </div>
+  </div>
+
+  <div *ngIf="!bDayStateChecking && !bIsDayStateOpened">
+    <h1>{{ 'NO_OPEN_DAY_STATE_FOUND' | translate}}</h1>
+    <button class="btn btn-white" (click)="openDayState()">{{ 'OPEN_CASH_REGISTRY' | translate}}</button>
+  </div>
+
 </div>
 <div class="container">
 
@@ -397,27 +408,27 @@
         </div>
       </div>
 
-      <div class="form-floating till-padding">
-        <select name="parkedTransactions" id="parkedTransactions" class="form-select" [(ngModel)]="selectedTransaction"
-          (ngModelChange)="fetchParkedTransactionInfo()">
-          <option [ngValue]="null"></option>
+      <div class="form-floating input-group mb-5 py-0 ">
+        <!-- <label for="parkedTransactions">{{"PARKED_TRANSACTIONS" | translate}}</label> -->
+        <select class="form-select" [(ngModel)]="selectedTransaction" (ngModelChange)="fetchParkedTransactionInfo()">
+          <option [ngValue]="null" disabled selected>
+            {{"PARKED_TRANSACTIONS" | translate}}
+          </option>
           <option *ngFor="let transaction of parkedTransactions" [ngValue]="transaction">{{transaction.sNumber}}
             ({{transaction.dUpdatedDate | date: 'short'}})
           </option>
         </select>
-        <label for="parkedTransactions">{{"PARKED_TRANSACTIONS" | translate}}</label>
-      </div>
-
-      <div class="input-group input-group-sm mb-5 till-padding">
-        <button class="btn btn-secondary" (click)="selectedTransaction ? updateParkedTransaction(): park()">{{
-          selectedTransaction ? "SAVE" : "PARK" |
-          translate}}</button>
-        <button class="btn btn-secondary" (click)="selectedTransaction = null" *ngIf="selectedTransaction">
-          <fa-icon [icon]="faTimesCircle"></fa-icon>
-        </button>
-        <button class="btn btn-secondary" *ngIf="selectedTransaction" (click)="deleteParkedTransaction()">
-          <fa-icon [icon]="faTrashAlt"></fa-icon>
-        </button>
+        <ng-container>
+          <button class="btn btn-secondary" (click)="selectedTransaction ? updateParkedTransaction(): park()">{{
+            selectedTransaction ? "SAVE" : "PARK" |
+            translate}}</button>
+          <button class="btn btn-secondary" (click)="selectedTransaction = null" *ngIf="selectedTransaction">
+            <fa-icon [icon]="faTimesCircle"></fa-icon>
+          </button>
+          <button class="btn btn-secondary" *ngIf="selectedTransaction" (click)="deleteParkedTransaction()">
+            <fa-icon [icon]="faTrashAlt"></fa-icon>
+          </button>
+        </ng-container>
       </div>
 
       <div class="input-group till-padding" *ngFor="let payment of payMethods; index as i">
