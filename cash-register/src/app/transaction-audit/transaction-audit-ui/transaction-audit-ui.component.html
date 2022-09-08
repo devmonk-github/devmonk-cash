@@ -530,10 +530,10 @@
                                                                     <tr class="bg-white"
                                                                         *ngFor="let item of oArticleGroup.aTransactionItems">
                                                                         <td> {{item.sProductName || item?.sProductNumber}} </td>
-                                                                        <td>{{item.nQuantity}}</td>
-                                                                        <td>{{item.nPriceIncVat}}</td>
-                                                                        <td>{{item.nPurchasePrice}}</td>
-                                                                        <td></td>
+                                                                        <td> {{ item.nQuantity }}</td>
+                                                                        <td> {{ item.nRevenueAmount }}</td>
+                                                                        <td> {{ item.nCostOfRevenue }}</td>
+                                                                        <td> {{item.nProfitOfRevenue}}</td>
                                                                         <td></td>
                                                                     </tr>
                                                                 </ng-container>
@@ -723,9 +723,9 @@
                                                                     *ngFor="let item of oRevenueByProperty.aTransactionItems">
                                                                     <td> {{item.sProductName || item?.sProductNumber}} </td>
                                                                     <td> {{ item.nQuantity }}</td>
-                                                                    <td> {{ item.nPriceIncVat }}</td>
-                                                                    <td> {{ item.nPurchasePrice }}</td>
-                                                                    <td></td>
+                                                                    <td> {{ item.nRevenueAmount }}</td>
+                                                                    <td> {{ item.nCostOfRevenue }}</td>
+                                                                    <td>{{item.nProfitOfRevenue}}</td>
                                                                     <td></td>
                                                                 </tr>
                                                                 <tr
@@ -809,9 +809,9 @@
                                                                     *ngFor="let item of oArticleGroup.aTransactionItems">
                                                                     <td> {{item.sProductName || item?.sProductNumber}} </td>
                                                                     <td> {{ item.nQuantity }}</td>
-                                                                    <td> {{ item.nPriceIncVat }}</td>
-                                                                    <td> {{ item.nPurchasePrice }}</td>
-                                                                    <td></td>
+                                                                    <td> {{ item.nRevenueAmount }}</td>
+                                                                    <td> {{ item.nCostOfRevenue }}</td>
+                                                                    <td>{{item.nProfitOfRevenue}}</td>
                                                                     <td></td>
                                                                 </tr>
                                                             </ng-container>
