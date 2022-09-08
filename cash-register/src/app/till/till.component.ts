@@ -104,6 +104,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   saveInProgress = false;
   @ViewChildren('searchField') searchField: any;
   selectedQuickButton: any;
+  bDayStateChecking: boolean = false;
 
   randNumber(min: number, max: number): number {
     return Math.floor(Math.random() * (max - min + 1) + min);
@@ -895,8 +896,10 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       iLocationId: this.locationId,
       iWorkstationId: this.iWorkstationId
     }
+    this.bDayStateChecking = true;
     this.apiService.postNew('cashregistry', `/api/v1/statistics/day-closure/check`, oBody).subscribe((result: any) => {
       if (result?.data?.bIsDayStateOpened) {
+        this.bDayStateChecking = false;
         this.bIsDayStateOpened = true;
         if (result?.data?.oStatisticDetail?.dOpenDate) {
           this.dOpenDate = result?.data?.oStatisticDetail?.dOpenDate;
