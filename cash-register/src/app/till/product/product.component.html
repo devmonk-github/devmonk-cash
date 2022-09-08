@@ -3,20 +3,27 @@
 <h2 class="accordion-header">
   <button class="accordion-button fs-4 fw-bold" type="button" data-bs-toggle="collapse"
     data-bs-target="#kt_accordion_1_body_1" aria-expanded="true" aria-controls="kt_accordion_1_body_1">
-    <section class="d-flex product-row align-items-center">
-      <div class="w-90px"><svg width="15" height="15" class="m-1">
-          <rect width="15" height="15" style="fill:{{getColorCode(item)}}; stroke-width:1;stroke:rgb(0,0,0)" />
-          Sorry, your browser does not support inline SVG.
-        </svg>{{item.quantity}}</div>
-      <div class="w-275px">{{item.name}}</div>
-      <div class="w-100px">{{item.price | currency: '€'}}</div>
-      <div class="w-95px">{{getTotalDiscount(item)}}</div>
-      <!-- <div class="w-95px">{{item.discount | currency: '€'}}</div> -->
-      <div class="w-100px">{{item.tax}}%</div>
-      <!-- <div class="w-100px">{{getTotalPrice(item)}}</div> -->
-      <div class="w-100px">{{(item.price - item.nDiscount) * item.quantity | currency: '€' }}
+    <section class="row d-flex product-row align-items-center w-100">
+      <div class="col">
+        <div class="row">
+          <div class="col">
+            <svg width="15" height="15" class="m-1">
+              <rect width="15" height="15" style="fill:{{getColorCode(item)}}; stroke-width:1;stroke:rgb(0,0,0)" />
+              Sorry, your browser does not support inline SVG.
+            </svg>
+            {{item.quantity}}
+          </div>
+          <div class="col">{{item.name}}</div>
+          <div class="col">{{item.price | currency: '€'}}</div>
+          <div class="col">{{getTotalDiscount(item)}}</div>
+          <!-- <div class="w-95px">{{item.discount | currency: '€'}}</div> -->
+          <div class="col">{{item.tax}}%</div>
+          <!-- <div class="col">{{getTotalPrice(item)}}</div> -->
+          <div class="col">{{(item.price - item.nDiscount) * item.quantity | currency: '€' }}
+          </div>
+          <div class="col">{{item.paymentAmount | currency: '€'}}</div>
+        </div>
       </div>
-      <div class="w-75px">{{item.paymentAmount | currency: '€'}}</div>
     </section>
   </button>
 </h2>
