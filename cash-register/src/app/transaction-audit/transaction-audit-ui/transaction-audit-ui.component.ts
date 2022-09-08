@@ -791,6 +791,7 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
       .subscribe((result: any) => {
         if (result?.data && result?.data[0]?.result?.length) {
           result.data[0].result.map((property: any) => {
+            console.log('--------------------------->>>>>>.... property: ', property);
             if (typeof this.propertyOptions[property._id] == 'undefined') {
               this.propertyOptions[property._id] = [];
 
