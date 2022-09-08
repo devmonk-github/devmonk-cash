@@ -167,6 +167,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.searchField)
       this.searchField.nativeElement.focus();
   }
+
   loadTransaction() {
     let fromTransactionPage: any = localStorage.getItem('fromTransactionPage');
     if (fromTransactionPage) {
