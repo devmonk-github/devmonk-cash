@@ -45,8 +45,8 @@
             <label for="description">{{ "DESCRIPTION" | translate }}</label>
           </div>
           <div class="col-12">
-            <textarea class="form-control" name="description" placeholder="{{ 'DESCRIPTION' | translate }}" lines="10"
-              [(ngModel)]="item.description"></textarea>
+            <textarea #descriptionRef class="form-control" name="description"
+              placeholder="{{ 'DESCRIPTION' | translate }}" lines="10" [(ngModel)]="item.description"></textarea>
           </div>
         </div>
         <div class="row my-3">
