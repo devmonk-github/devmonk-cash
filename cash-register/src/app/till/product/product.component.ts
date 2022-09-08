@@ -45,6 +45,7 @@ export class ProductComponent implements OnInit {
         const marginData = res.data.aBusinessPartner.find((o: any)=> o.iBusinessPartnerId === this.item.iSupplierId);
         this.item.nMargin = marginData?.nMargin || 1;
         this.item.nPurchasePrice = this.item.nPurchasePrice || 0;
+        this.changeInMargin();
       }
     }, err => {
       this.toastrService.show({ type: 'danger', text: err.message });
@@ -57,6 +58,10 @@ export class ProductComponent implements OnInit {
 
   getDiscount(item: any): string {
     return this.priceService.getDiscount(item.nDiscount || 0);
+  }
+
+  changeInMargin() {
+    this.item.nPurchasePrice = this.item.price / this.item.nMargin || 1;
   }
 
   getTotalDiscount(item: any): string {
