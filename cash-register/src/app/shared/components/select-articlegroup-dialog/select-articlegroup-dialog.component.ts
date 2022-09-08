@@ -1,4 +1,5 @@
-import { Component, Input, OnInit, ViewContainerRef } from '@angular/core';
+import { AfterViewInit, Component, Input, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
+import { NgSelectComponent } from '@ng-select/ng-select';
 // import * as _ from 'lodash';
 
 import { ApiService } from '../../service/api.service';
@@ -9,7 +10,7 @@ import { ToastService } from '../toast';
   templateUrl: './select-articlegroup-dialog.component.html',
   styleUrls: ['./select-articlegroup-dialog.component.scss']
 })
-export class SelectArticleDialogComponent implements OnInit {
+export class SelectArticleDialogComponent implements OnInit, AfterViewInit {
   @Input() customer: any;
   dialogRef: DialogComponent;
   filteredArticleGroups: Array<any> = [];
@@ -25,20 +26,34 @@ export class SelectArticleDialogComponent implements OnInit {
   iArticleGroupId: any = null;
   iBusinessBrandId: any = null;
   from: any;
+  @ViewChild('articleGroupRef') articleGroupRef!: NgSelectComponent
+  articleGroupLoading: boolean = true;
   constructor(
     private viewContainer: ViewContainerRef,
     private apiService: ApiService,
     private toastrService: ToastService) {
     const _injector = this.viewContainer.injector;
     this.dialogRef = _injector.get<DialogComponent>(DialogComponent);
+
   }
+
 
   ngOnInit(): void {
     this.fetchArticleGroups(null);
     this.fetchBusinessPartners([]);
     this.getBusinessBrands();
-    this.iBusinessBrandId= this.dialogRef.context?.item?.iBusinessBrandId;
+    this.iBusinessBrandId = this.dialogRef.context?.item?.iBusinessBrandId;
     this.from = this.dialogRef.context.from;
+  }
+  ngAfterViewInit(): void {
+    // let articleGroupFocusedInterval = setInterval(() => {
+    //   if (this.articleGroupRefFocused)
+    //     clearInterval(articleGroupFocusedInterval);
+    //   if (this.articleGroupRef)
+    //     this.articleGroupRef.focus()
+    //   console.count(`${this.articleGroupRef.focused}`);
+    // }, 100)
+
   }
 
   fetchArticleGroups(iBusinessPartnerId: any) {
@@ -56,9 +71,16 @@ export class SelectArticleDialogComponent implements OnInit {
       .subscribe((result: any) => {
         if (result && result.data && result.data[0] && result.data[0].result && result.data[0].result.length) {
           this.articleGroupsList = result.data[0].result;
+          console.log({ articleGroupsList: this.articleGroupsList });
+          setTimeout(() => {
+            this.articleGroupLoading = false;
+            if (this.articleGroupRef)
+              this.articleGroupRef.focus()
+          }, 150);
         } else {
           this.fetchArticleGroups(null);
         }
+
       }, error => {
         this.toastrService.show({ type: 'danger', text: error.message });
       });
@@ -96,7 +118,7 @@ export class SelectArticleDialogComponent implements OnInit {
       iBusinessId: this.iBusinessId,
       aBusinessPartnerId
     };
-    if(this.supplier) {
+    if (this.supplier) {
       this.brand = null;
     }
     this.apiService.postNew('core', '/api/v1/business/partners/list', body).subscribe(
@@ -121,7 +143,7 @@ export class SelectArticleDialogComponent implements OnInit {
         aBusinessPartnerId.push(bPartner.iBusinessPartnerId);
       });
     };
-    if(!this.supplier)
+    if (!this.supplier)
       this.fetchBusinessPartners(aBusinessPartnerId);
 
   }
@@ -132,7 +154,7 @@ export class SelectArticleDialogComponent implements OnInit {
 
   changeInBrand() {
     if (!this.supplier) {
-      if(this.from && this.from === 'repair') {
+      if (this.from && this.from === 'repair') {
         this.brand.iBusinessPartnerId = this.brand.iRepairerId ? this.brand.iRepairerId : this.brand.iBusinessPartnerId
       }
       this.fetchBusinessPartners([this.brand.iBusinessPartnerId]);
@@ -156,8 +178,8 @@ export class SelectArticleDialogComponent implements OnInit {
       if (!this.brand || !this.articlegroup || !this.supplier) {
         return
       };
-      const businessPartner = this.articlegroup.aBusinessPartner.find((o: any) => o.iBusinessPartnerId === this.supplier._id );
-      let nMargin = businessPartner? businessPartner.nMargin: 1;
+      const businessPartner = this.articlegroup.aBusinessPartner.find((o: any) => o.iBusinessPartnerId === this.supplier._id);
+      let nMargin = businessPartner ? businessPartner.nMargin : 1;
       this.dialogRef.close.emit({ brand: this.brand, articlegroup: this.articlegroup, supplier: this.supplier, nMargin });
     } else {
       this.dialogRef.close.emit(false);

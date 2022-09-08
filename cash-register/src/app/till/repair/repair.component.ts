@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output, ViewEncapsulation } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild, ViewEncapsulation } from '@angular/core';
 import { faTimes, faPlus, faMinus, faUpload, faArrowDown, faArrowUp, faPhone, faAt } from "@fortawesome/free-solid-svg-icons";
 import { SelectArticleDialogComponent } from 'src/app/shared/components/select-articlegroup-dialog/select-articlegroup-dialog.component';
 import { ToastService } from 'src/app/shared/components/toast';
@@ -49,6 +49,7 @@ export class RepairComponent implements OnInit {
   contactType: 'phone' | 'email' | 'whatsapp' = 'phone'
   bShowServicePartnerRemark = false
   sServicePartnerRemark = ''
+  @ViewChild('descriptionRef') descriptionRef!: ElementRef
   constructor(private priceService: PriceService,
     private apiService: ApiService,
     private dialogService: DialogService,
@@ -73,10 +74,11 @@ export class RepairComponent implements OnInit {
     this.dialogService.openModal(SelectArticleDialogComponent, { cssClass: 'modal-m', context: { from: 'repair' } })
       .instance.close.subscribe((data) => {
         if (data) {
+          if (this.descriptionRef) {
+            this.descriptionRef.nativeElement.focus();
+          }
           const { articlegroup, brand, supplier, nMargin } = data;
           this.item.supplier = supplier.sName;
-          this.item.iArticleGroupOriginalId = articlegroup._id;
-          this.item.oArticleGroupMetaData.oNameOriginal = articlegroup.oName;
           this.supplier = supplier.sName;
           this.item.iSupplierId = supplier._id;
           this.item.nMargin = nMargin;
@@ -89,7 +91,7 @@ export class RepairComponent implements OnInit {
   }
 
   changeInMargin() {
-    this.item.nPurchasePrice = this.item.price / this.item.nMargin || 1;
+    this.item.nPurchasePrice = this.item.price / (this.item.nMargin || 1);
   }
 
   changeInPurchasePrice() {
@@ -136,6 +138,8 @@ export class RepairComponent implements OnInit {
 
   assignArticleGroupMetadata(articlegroup: any) {
     this.item.iArticleGroupId = articlegroup._id;
+    this.item.iArticleGroupOriginalId = articlegroup._id;
+    this.item.oArticleGroupMetaData.oNameOriginal = articlegroup.oName;
     this.item.oArticleGroupMetaData.oName = articlegroup.oName;
     this.item.oArticleGroupMetaData.sCategory = articlegroup.sCategory;
     this.item.oArticleGroupMetaData.sSubCategory = articlegroup.sSubCategory;
