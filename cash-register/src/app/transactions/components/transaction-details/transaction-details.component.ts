@@ -321,7 +321,7 @@ export class TransactionDetailsComponent implements OnInit {
 
     let dataObject = JSON.parse(JSON.stringify(this.transaction));
     dataObject.aTransactionItems = [];
-    this.transaction.aTransactionItems.forEach((item: any)=>{
+    this.transaction.aTransactionItems.forEach((item: any, index: number)=>{
       if(!(item.oType?.eKind == 'discount' || item?.oType?.eKind == 'loyalty-points-discount')) {
         dataObject.aTransactionItems.push(item);
       }
@@ -349,7 +349,7 @@ export class TransactionDetailsComponent implements OnInit {
       total = total + item.totalPriceIncVat;
       totalAfterDisc += item.totalPriceIncVatAfterDisc;
       totalDiscount += disc;
-      item.related = this.getRelatedTransactionItem(item?.iActivityItemId, item?._id, index)
+      this.getRelatedTransactionItem(item?.iActivityItemId, item?._id, index)
     })
     dataObject.totalAfterDisc = parseFloat(totalAfterDisc.toFixed(2));
     dataObject.total = parseFloat(total.toFixed(2));
@@ -357,7 +357,7 @@ export class TransactionDetailsComponent implements OnInit {
     dataObject.totalDiscount = parseFloat(totalDiscount.toFixed(2));
     dataObject.totalSavingPoints = totalSavingPoints;
     dataObject.dCreatedDate = moment(dataObject.dCreatedDate).format('DD-MM-yyyy hh:mm');
-    dataObject.related = this.getRelatedTransaction(dataObject?.iActivityId, dataObject?._id)
+    this.getRelatedTransaction(dataObject?.iActivityId, dataObject?._id)
 
     this.transaction = dataObject;
 
@@ -376,7 +376,6 @@ export class TransactionDetailsComponent implements OnInit {
   }
 
   getRelatedTransactionItem(iActivityItemId: string, iTransactionItemId: string, index: number){
-    console.log(iActivityItemId, iTransactionItemId, index);
     this.apiService.getNew('cashregistry', `/api/v1/transaction/item/activityItem/${iActivityItemId}?iBusinessId=${this.iBusinessId}&iTransactionItemId=${iTransactionItemId}`)
     .subscribe(
       (result: any) => {
@@ -395,6 +394,9 @@ export class TransactionDetailsComponent implements OnInit {
     .subscribe(
       (result: any) => {
         this.transaction.related = result.data || [];
+        this.transaction.related.forEach((obj: any)=>{
+          this.transaction.aPayments = this.transaction.aPayments.concat(obj.aPayments);
+        })
       }, (error) => {
         console.log(error);
       })
