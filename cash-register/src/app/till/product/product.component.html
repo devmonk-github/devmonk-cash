@@ -8,7 +8,8 @@
         <div class="row">
           <div class="col">
             <svg width="15" height="15" class="m-1">
-              <rect width="15" height="15" style="fill:{{getColorCode(item)}}; stroke-width:1;stroke:rgb(0,0,0)" />
+              <rect width="15" height="15" [ngStyle]="{fill:getColorCode(item)}"
+                style="stroke-width:1;stroke:rgb(0,0,0)" />
               Sorry, your browser does not support inline SVG.
             </svg>
             {{item.quantity}}
@@ -35,68 +36,132 @@
 <div id="kt_accordion_1_body_1" class="accordion-collapse collapse show rounded-0"
   aria-labelledby="kt_accordion_1_header_1" data-bs-parent="#kt_accordion_1">
   <div class="accordion-body px-3 py-4">
-    <section class="d-flex product-row">
-      <div class="w-90px pe-2">
-        <app-dialer [(quantity)]="item.quantity"></app-dialer>
-        <div class="d-flex">
-          <select name="taxRate" id="taxRate" class="form-select" [(ngModel)]="item.eTransactionItemType"
-            (ngModelChange)="changeTypeArray()">
-            <option *ngFor="let type of typeArray" [ngValue]="type">{{type}}</option>
-          </select>
-        </div>
-        <div class="d-flex mt-3" *ngIf="item.eTransactionItemType === 'return'">
-          <span class="fs-7 w-100 d-block text-gray-600 mb-1">Broken:</span>
-          <input type="number" name="bagNumber" id="bagNumber" [(ngModel)]="item.nBrokenProduct" class="form-control"
-            (change)="changeInbrokenAmount(item)">
-        </div>
-      </div>
-      <div class="w-300px pe-2">
-        <div class="mb-1">
-          <input type="text" class="form-control" name="articleName" placeholder="{{ 'NAME' | translate}}"
-            id="articleName" [(ngModel)]="item.name">
-        </div>
-        <span class="fs-7 w-100 d-block text-gray-600 mb-1">{{item.sArticleNumber}}</span>
-        <textarea class="form-control" name="description" placeholder="{{ 'DESCRIPTION' | translate}}" lines="10"
-          [(ngModel)]="item.description"></textarea>
-      </div>
-      <div class="w-175px pe-2">
-        <input type="text" class="form-control" name="price" (change)="updatePayments()"
-          placeholder="{{ 'PRICE' | translate}}" id="price" [(ngModel)]="item.price"
-          [disabled]="item.oType?.bRefund || item.tType === 'pay'">
-        <button class="btn btn-bg-light btn-active-color-primary mt-2" type="button" data-bs-toggle="collapse"
-          (click)="collapsedBtn = !collapsedBtn" [ngClass]="{'collapsed': collapsedBtn }"
-          data-bs-target="#kt_accordion_123" aria-expanded="true" aria-controls="kt_accordion_123">
-          More
-          <fa-icon *ngIf="!collapsedBtn" [icon]="faArrowDown"></fa-icon>
-          <fa-icon *ngIf="collapsedBtn" [icon]="faArrowUp"></fa-icon>
-        </button>
-        <div id="kt_accordion_123" [ngClass]="{'show': collapsedBtn }" class="accordion-collapse collapse">
+    <section class="row product-row">
+      <div class="col-4">
+        <div class="row">
 
-          <label for="bagNumber">{{ "PREPAYMENT" | translate}}</label>
-          <input type="number" name="bagNumber" id="bagNumber" [(ngModel)]="item.paymentAmount" class="form-control">
+          <div class="col-12">
+            <app-dialer [(quantity)]="item.quantity"></app-dialer>
+          </div>
+
+          <div class="col-12">
+            <div class="form-group mb-4">
+              <select name="status" id="status" class="form-control form-control-solid"
+                [(ngModel)]="item.eTransactionItemType" (ngModelChange)="changeTypeArray()">
+                <option *ngFor="let type of typeArray" [ngValue]="type">{{type}}</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="col-12" *ngIf="item.eTransactionItemType === 'return'">
+            <div class="form-group mb-4">
+              <label class="form-control-label mb-3">{{ "BROKEN" | translate}}</label>:
+              <input class="form-control form-control-solid mb-3 mb-lg-0" type="text" name="activityName"
+                [(ngModel)]="item.nBrokenProduct" class="form-control" (change)="changeInbrokenAmount(item)">
+            </div>
+          </div>
         </div>
-        <label *ngIf="item.nDiscount > 0" for="discount">{{ "DISCOUNT" | translate}}</label>
-        <input *ngIf="item.nDiscount > 0" type="number" step="any" name="discount" class="form-control"
-          [value]="item.nDiscount - (item.nRedeemedLoyaltyPoints || 0)" disabled>
-        <label for="discount" *ngIf="item.oType.bRefund">{{ "LOYALTY_POINTS" | translate}}:
-          {{item.nRedeemedLoyaltyPoints}}</label>
+
       </div>
-      <div class="w-100px pe-2">
-        <button class="btn btn-icon btn-secondary w-35px h-35px" (click)="openDiscountDialog()"
-          [disabled]="item.oType?.bRefund || item.tType === 'pay'">
-          <span class="svg-icon svg-icon-1qx me-0">
-            <i class="fas fa-percent"></i>
-          </span>
-        </button>
-        <!-- <button class="btn btn-secondary" type="button" >{{ "ADD_DISCOUNT" | translate}}</button> -->
+
+      <div class="col-4">
+        <div class="row">
+          <!-- NAME  -->
+          <div class="col-12">
+            <div class="form-group mb-4">
+              <label class="form-control-label mb-3">{{ "NAME" | translate}}</label>:
+              <input class="form-control form-control-solid mb-3 mb-lg-0" type="text" name="name"
+                [(ngModel)]="item.name">
+            </div>
+          </div>
+          <!-- ARTICLE_NUMBER -->
+
+          <div class="col-12">
+            <div class="form-group mb-4">
+              <label class="form-control-label mb-3">{{ "ARTICLE_NUMBER" | translate}}</label>:
+              <span class="fs-7 w-100 d-block text-gray-600 mb-1">{{item.sArticleNumber}}</span>
+            </div>
+          </div>
+        </div>
+        <!-- DESCRIPTION -->
+        <div class="col-12">
+          <div class="form-group mb-4">
+            <label class="form-control-label mb-3">{{ "DESCRIPTION" | translate}}</label>:
+            <textarea class="form-control form-control-solid mb-3 mb-lg-0" type="text" name="description" lines="10"
+              [(ngModel)]="item.description"></textarea>
+          </div>
+        </div>
       </div>
-      <!-- <div class="w-100px">
-        <button class="btn btn-icon btn-secondary w-35px h-35px" (click)="deleteItem()">
-          <span class="svg-icon svg-icon-1qx me-0">
-            <i class="fas fa-times"></i>
-          </span>
-        </button>
-      </div> -->
+
+      <div class="col-4">
+        <div class="row">
+          <!-- PRICE -->
+          <div class="col-9">
+            <div class="form-group mb-4">
+              <label class="form-control-label mb-3">{{ "PRICE" | translate}}</label>:
+              <input class="form-control form-control-solid mb-3 mb-lg-0" type="text" name="price"
+                (change)="updatePayments()" placeholder="{{ 'PRICE' | translate}}" id="price" [(ngModel)]="item.price">
+            </div>
+          </div>
+          <!-- PERCENTAGE -->
+          <div class="col-3">
+            <div class="form-group mb-4">
+              <label class="form-control-label mb-3"></label>
+              <button class="btn btn-icon btn-secondary my-2" (click)="openDiscountDialog()"
+                [disabled]="item.oType?.bRefund || item.tType === 'pay'">
+                <span class="svg-icon svg-icon-1qx me-0">
+                  <i class="fas fa-percent"></i>
+                </span>
+              </button>
+            </div>
+
+          </div>
+        </div>
+        <div class="row">
+          <!-- MORE -->
+          <div class="col-12 mb-7">
+            <button class="btn btn-bg-light btn-active-color-primary mt-2" type="button" data-bs-toggle="collapse"
+              (click)="collapsedBtn = !collapsedBtn" [ngClass]="{'collapsed': collapsedBtn }"
+              data-bs-target="#kt_accordion_123" aria-expanded="true" aria-controls="kt_accordion_123">
+              More
+              <fa-icon *ngIf="!collapsedBtn" [icon]="faArrowDown"></fa-icon>
+              <fa-icon *ngIf="collapsedBtn" [icon]="faArrowUp"></fa-icon>
+            </button>
+          </div>
+          <div class="col-12">
+            <div id="kt_accordion_123" [ngClass]="{'show': collapsedBtn }" class="accordion-collapse collapse">
+              <!-- PREPAYMENT -->
+              <div class="row">
+                <div class="form-group mb-4">
+                  <label class="form-control-label mb-3">{{ "PREPAYMENT" | translate}}</label>:
+                  <input class="form-control form-control-solid mb-3 mb-lg-0" type="text" name="prepayment"
+                    placeholder="{{ 'PREPAYMENT' | translate}}" [(ngModel)]="item.paymentAmount">
+                </div>
+              </div>
+              <div class="row" *ngIf="item.nDiscount > 0">
+                <div class="form-group mb-4">
+                  <label class="form-control-label mb-3">{{ "DISCOUNT" | translate}}</label>:
+                  <input class="form-control form-control-solid mb-3 mb-lg-0" type="text" name="discount"
+                    placeholder="{{ 'DISCOUNT' | translate}}"
+                    [value]="item.nDiscount - (item.nRedeemedLoyaltyPoints || 0)" disabled>
+                </div>
+              </div>
+              <div class="row" *ngIf="item.oType.bRefund">
+                <div class="form-group mb-4">
+                  <label class="form-control-label mb-3">{{ "LOYALTY_POINTS" | translate}}</label>:
+                  <span class="fs-7 w-100 d-block text-gray-600 mb-1">{{item.nRedeemedLoyaltyPoints}}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+
+      </div>
+
+
+
     </section>
   </div>
 </div>

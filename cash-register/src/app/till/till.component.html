@@ -23,7 +23,7 @@
             <div class="alert alert-warning" *ngIf="!bIsDayStateClosed">
               <p class="mb-0" style="font-size: 1.2rem;font-weight: bold;margin-left:1.3rem">
                 <span style="margin-right:1rem; font-weight:bolder">!</span>
-                The previous day is not closed yet ({{ dOpenDate | date:'medium' }})
+                The previous day is not closed yet ({{ dOpenDate | date:'EEEE, dd-MM-YYYY hh:mm:ss aaa':'GMT'}})
               </p>
               <a class="btn btn-hover" routerLink="../day-closure">{{ "CLOSE_DAYSTATE" | translate}}</a>
             </div>
@@ -177,63 +177,63 @@
 
         <div class="card card-flush mb-4">
           <div id="till-items-header" class="card-header p-3 lh-1 justify-content-start min-h-0">
-            <div class="d-flex w-100 fw-bold text-gray-600 align-items-center">
-              <span class="w-90px">{{ "QUANTITY" | translate}}</span>
-              <span class="w-275px">{{ "DESCRIPTION" | translate}}</span>
-              <span class="w-100px">{{ "PRICE" | translate}}</span>
-              <span class="w-100px">{{ "DISCOUNT" | translate}}</span>
-              <span class="w-100px">{{ "TAX" | translate}}</span>
-              <span class="w-100px">{{ "TOTAL" | translate}}</span>
-              <span class="w-80px">{{ "PREPAYMENT" | translate}}</span>
+            <div class="row w-100 fw-bold text-gray-600 align-items-center">
+              <span class="col">{{ "QUANTITY" | translate}}</span>
+              <span class="col">{{ "DESCRIPTION" | translate}}</span>
+              <span class="col">{{ "PRICE" | translate}}</span>
+              <span class="col">{{ "DISCOUNT" | translate}}</span>
+              <span class="col">{{ "TAX" | translate}}</span>
+              <span class="col">{{ "TOTAL" | translate}}</span>
+              <span class="col">{{ "PREPAYMENT" | translate}}</span>
+              <span class="col"></span>
             </div>
           </div>
           <div class="card-body p-0">
             <div class="accordion" id="till-items-accordion" [itemLength]="transactionItems.length">
               <ng-container *ngFor="let item of transactionItems; let i = index">
                 <div style="display:inline-table;">
-
+                  <!-- regular -->
                   <div class="accordion-item w-100 d-table-cell" till-product
                     *ngIf="item.type === 'regular' || item.type === 'reservation'" [item]="item" [taxes]="taxes"
                     (itemChanged)="itemChanged($event, i)"></div>
-
+                  <!-- order -->
                   <div class="accordion-item w-100 d-table-cell" till-order *ngIf="item.type === 'order'" [item]="item"
                     [taxes]="taxes" (itemChanged)="itemChanged($event, i)"></div>
-
+                  <!-- repair -->
                   <div class="accordion-item w-100 d-table-cell" till-repair *ngIf="item.type === 'repair'"
                     [item]="item" [taxes]="taxes" (itemChanged)="itemChanged($event, i)"></div>
-
+                  <!-- giftcard -->
                   <div class="accordion-item w-100 d-table-cell w-100" till-gift *ngIf="item.type === 'giftcard'"
                     [item]="item" [transactionItems]="transactionItems" [taxes]="taxes"
                     (itemChanged)="itemChanged($event, i)" (createGiftCard)="createGiftCard($event, i)">
                   </div>
-
+                  <!-- gold-purchase -->
                   <div class="accordion-item w-100 d-table-cell w-100" till-goldpurchase
                     *ngIf="item.type === 'gold-purchase'" [item]="item" (itemChanged)="itemChanged($event, i)"></div>
-
+                  <!-- empty-line -->
                   <div class="accordion-item w-100 d-table-cell w-100" till-other *ngIf="item.type=== 'empty-line'"
                     [item]="item" [taxes]="taxes" (itemChanged)="itemChanged($event, i)"></div>
-
+                  <!-- loyalty-points -->
                   <div class="accordion-item w-100 d-table-cell w-100" till-loyalty-points-discount
                     *ngIf="item.type=== 'loyalty-points'" [item]="item" [taxes]="taxes"
                     (itemChanged)="itemChanged($event, i)"></div>
 
                   <div class="d-table-cell">
-                    <button class="btn btn-sm btn-icon btn-active-color-primary w-30px h-30px"
+                    <button class="btn btn-sm  btn-icon  btn-active-color-danger mx-6 ms-4"
                       (click)="itemChanged('delete', i)">
-                      <span class="svg-icon svg-icon-1qx me-0">
+                      <span class="svg-icon svg-icon-3qx me-0">
                         <fa-icon [icon]="faTimes"></fa-icon>
                       </span>
                     </button>
                   </div>
                 </div>
               </ng-container>
-              <section class="d-flex product-row p-3 text-gray-600 align-items-center"
-                *ngIf="getTotals('quantity') !== 0">
-                <div class="w-90px">{{getTotals('quantity')}}</div>
-                <div class="w-300px">&nbsp;</div>
-                <div class="w-125px">{{getTotals('price') | currency: '€'}}</div>
-                <div class="w-100px">{{getTotals('discount')}}</div>
-                <div class="w-125px"></div>
+              <section class="row product-row p-3 text-gray-600 align-items-center" *ngIf="getTotals('quantity') !== 0">
+                <div class="col">{{getTotals('quantity')}}</div>
+                <div class="col">&nbsp;</div>
+                <div class="col">{{getTotals('price') | currency: '€'}}</div>
+                <div class="col">{{getTotals('discount')}}</div>
+                <div class="col"></div>
               </section>
             </div>
           </div>
@@ -341,9 +341,11 @@
               </div>
             </div>
 
-            <div class="d-flex mt-2">
-              <div *ngIf="bSearchingProduct" class="spinner-border mx-auto"></div>
-            </div>
+            <ng-container *ngIf="bSearchingProduct">
+              <div class="d-flex mt-2">
+                <div class="spinner-border mx-auto"></div>
+              </div>
+            </ng-container>
 
             <div class="py-3">
               <ul *ngIf="quickButtons.length" id="quick-buttons" class="nav nav-pills nav-pills-custom mb-3">
@@ -360,12 +362,12 @@
               </ul>
               <div>
                 <div class="d-flex">
-                  <div class="text-center" *ngIf="!quickButtons.length && !quickButtonsLoading">
+                  <div class="text-center" *ngIf="!quickButtons.length && !bSearchingProduct">
                     <button [routerLink]="['/business/settings/cash-register']" class="btn">
                       Click here to add new favourite
                     </button>
                   </div>
-                  <div *ngIf="quickButtonsLoading" class="spinner-border mx-auto"></div>
+                  <!-- <div *ngIf="bSearchingProduct" class="spinner-border mx-auto"></div> -->
                 </div>
               </div>
             </div>
