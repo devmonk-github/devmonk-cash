@@ -10,7 +10,7 @@ import { PriceService } from 'src/app/shared/service/price.service';
   // eslint-disable-next-line @angular-eslint/component-selector
   selector: '[till-goldpurchase]',
   templateUrl: './gold-purchase.component.html',
-  styleUrls: ['./gold-purchase.component.sass'],
+  styleUrls: ['./gold-purchase.component.scss'],
   encapsulation: ViewEncapsulation.None
 })
 export class GoldPurchaseComponent implements OnInit {

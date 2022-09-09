@@ -46,8 +46,7 @@
 
           <div class="col-12">
             <div class="form-group mb-4">
-              <select name="status" id="status" class="form-control " [(ngModel)]="item.eTransactionItemType"
-                (ngModelChange)="changeTypeArray()">
+              <select class="form-control " [(ngModel)]="item.eTransactionItemType" (ngModelChange)="changeTypeArray()">
                 <option *ngFor="let type of typeArray" [ngValue]="type">{{type}}</option>
               </select>
             </div>

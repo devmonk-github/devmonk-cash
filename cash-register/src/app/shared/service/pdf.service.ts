@@ -566,8 +566,8 @@ export class PdfService {
 
   private createRows(cols: any, currentRow: any, printableArea: any, gutter: any) {
     console.log('-- createRows!!');
-    // console.log('cols ', cols);
-    // console.log('currentRow ', currentRow);
+    console.log('cols ', cols);
+    console.log('currentRow ', currentRow);
     let rowsToBeCreated = 1;
     let dataSourceObject = this.data;
     let createdRows = [];
@@ -610,6 +610,7 @@ export class PdfService {
         let gutterSize = this.calcColumnGutter(colsize, gutter);
         let newRowWidth = this.calcRowWidth(printableArea.width, colsize, gutterSize);
         let newCol = this.createCol(i, cols.length, newRowWidth, gutter, col, finalDataSourceObject,colsize, printableArea);
+        console.log('newCol : ', newCol);
 
         if (this.isDefined(col.css)) {
           newCol = this.applyCss(newCol, col.css);
@@ -643,9 +644,9 @@ export class PdfService {
       if (currentRow.htmlAfter) {
         newRow.appendChild(this.convertHtmlToElement(String(currentRow.htmlAfter)));
       }
-
+      console.log('Push : ', newRow);
       createdRows.push(newRow);
-      console.log('currentRow : ', currentRow);
+      console.log('createdRows : ', createdRows);
     }
 
     if (currentRow.container) {
@@ -706,7 +707,7 @@ export class PdfService {
       let totalRowHeight = 0;
 
       let newRows = this.createRows(cols, currentRow, printableArea, gutterSize);
-
+      console.log('newRows : ', newRows);
       for (let i = 0; i < newRows.length; i++) {
         let newRow = newRows[i];
 
@@ -1026,11 +1027,11 @@ export class PdfService {
 
     let layer1, layer2, layer3
     let dataSourceObject: string | never[] = [];
-    // console.log('key ', key);
+    console.log('key ', key);
     if (key.match(/\./g)) {
 
       let parts = key.split('.');
-      // console.log(parts);
+      console.log(parts);
 
       switch (parts.length) {
         case 0:
@@ -1122,55 +1123,66 @@ export class PdfService {
         let template = html.replace('/>', '>');
         html = '';
         if (forEach !== '') {
-          // console.log('-------- iff!', forEach);
+          html += this.replaceVariables(template, dataSourceObject);
           dataSourceObject = this.defineDataSource(forEach);
 
+          // console.log(dataSourceObject);
           for (let d = 0; d < dataSourceObject.length; d++) {
             let entry = dataSourceObject[d];
             let extractedVariables = this.getVariables(template);
             let htmlConcept = '';
-
-            if (extractedVariables) {
-              for (let v = 0; v < extractedVariables.length; v++) {
-                let matched = false;
-                let oldText = extractedVariables[v];
-                let newText = '';
-
-                let searchFor = this.removeBrackets(extractedVariables[v]);
-
-                let variableStringFiltered = searchFor;
-                let format = ''
-
-                if (searchFor.match(/\|/g) !== null) {
-                  let stringAndFormat = searchFor.split('|');
-                  variableStringFiltered = stringAndFormat[0];
-                  format = stringAndFormat[1]
-                }
-
-                Object.keys(entry).forEach((key) => {
-                  if (key === variableStringFiltered) {
-                    if (String(entry[variableStringFiltered]).length > 0) {
-                      matched = true;
-                      newText = String(entry[variableStringFiltered]);
-
-                      if (this.isDefined(format) && format !== 'null') {
-                        newText += this.formatContent(newText, format);
-                      }
-                    }
-                  }
-                });
-
-                if (matched) {
-                  htmlConcept = htmlConcept.replace(oldText, newText);
-                }
-              }
+            console.log('-- coming here ', colObject);
+            if (this.isDefined(colObject.forEach)){
+              console.log('----------------- here!!')
+              // We need to cross check if there is something going wrong with the printable area
+              console.log(printableArea);
+              // let gutterSizeNew = this.calcColumnGutter(colsize, gutter);
+              this.createRows(colObject.row, colObject, printableArea, 12);
             }
+            // if (extractedVariables) {
+            //   for (let v = 0; v < extractedVariables.length; v++) {
+            //     let matched = false;
+            //     let oldText = extractedVariables[v];
+            //     let newText = '';
+
+            //     let searchFor = this.removeBrackets(extractedVariables[v]);
+
+            //     let variableStringFiltered = searchFor;
+            //     let format = ''
+
+            //     if (searchFor.match(/\|/g) !== null) {
+            //       let stringAndFormat = searchFor.split('|');
+            //       variableStringFiltered = stringAndFormat[0];
+            //       format = stringAndFormat[1]
+            //     }
+
+            //     Object.keys(entry).forEach((key) => {
+            //       if (key === variableStringFiltered) {
+            //         if (String(entry[variableStringFiltered]).length > 0) {
+            //           matched = true;
+            //           newText = String(entry[variableStringFiltered]);
+
+            //           if (this.isDefined(format) && format !== 'null') {
+            //             newText += this.formatContent(newText, format);
+            //           }
+            //         }
+            //       }
+            //     });
+
+            //     if (matched) {
+            //       htmlConcept = htmlConcept.replace(oldText, newText);
+            //     }
+            //   }
+            // }
             html += htmlConcept
           }
         } else {
+          console.log('  else else else')
           html += this.replaceVariables(template, dataSourceObject);
+          console.log(html);
         }
         col.innerHTML = html;
+        console.log(col);
       }
     }
 
@@ -1190,14 +1202,15 @@ export class PdfService {
       col.innerHTML = htmlBefore + col.innerHTML + htmlAfter;
     }
 
-    console.log('col : ', col, col.innerHTML);
-    console.log('-- coming here ', colObject);
-    if (this.isDefined(colObject.forEach)){
-      // console.log('----------------- here!!')
-      // console.log(printableArea);
-      // let gutterSizeNew = this.calcColumnGutter(colsize, gutter);
-      this.createRows(colObject.row, colObject, printableArea, 12);
-    }
+    // console.log('col : ', col, col.innerHTML);
+    // console.log('-- coming here ', colObject);
+    // if (this.isDefined(colObject.forEach)){
+    //   // console.log('----------------- here!!')
+    //   console.log(printableArea);
+    //   // let gutterSizeNew = this.calcColumnGutter(colsize, gutter);
+    //   this.createRows(colObject.row, colObject, printableArea, 12);
+    // }
+    console.log(col);
     return col;
   }
 
