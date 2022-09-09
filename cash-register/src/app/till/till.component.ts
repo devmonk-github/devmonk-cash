@@ -72,14 +72,14 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   parkedTransactions: Array<any> = [];
   terminals: Array<any> = [];
   quickButtons: Array<any> = [];
-  
+
   // quickButtonsLoading: boolean = false;
   fetchingProductDetails: boolean = false;
   bSearchingProduct: boolean = false;
-  
+
   bIsDayStateClosed: boolean = true;
   bIsDayStateOpened: boolean = false; // Not opened then require to open it first
-  
+
   dOpenDate: any = '';
   iWorkstationId!: any;
 
@@ -108,7 +108,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('searchField') searchField!: ElementRef;
   selectedQuickButton: any;
   bDayStateChecking: boolean = true;
-
+  showItemLoading = true
   randNumber(min: number, max: number): number {
     return Math.floor(Math.random() * (max - min + 1) + min);
   }
