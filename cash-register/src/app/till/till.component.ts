@@ -72,11 +72,14 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   parkedTransactions: Array<any> = [];
   terminals: Array<any> = [];
   quickButtons: Array<any> = [];
-  quickButtonsLoading: boolean = false;
+  
+  // quickButtonsLoading: boolean = false;
   fetchingProductDetails: boolean = false;
   bSearchingProduct: boolean = false;
+  
   bIsDayStateClosed: boolean = true;
   bIsDayStateOpened: boolean = false; // Not opened then require to open it first
+  
   dOpenDate: any = '';
   iWorkstationId!: any;
 
@@ -104,7 +107,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   saveInProgress = false;
   @ViewChild('searchField') searchField!: ElementRef;
   selectedQuickButton: any;
-  bDayStateChecking: boolean = false;
+  bDayStateChecking: boolean = true;
 
   randNumber(min: number, max: number): number {
     return Math.floor(Math.random() * (max - min + 1) + min);
@@ -145,7 +148,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.checkArticleGroups();
 
-    this.fetchQuickButtons();
+    if (this.bIsDayStateOpened) this.fetchQuickButtons();
 
     this.getfiskalyInfo();
     this.cancelFiskalyTransaction();
@@ -887,19 +890,19 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   fetchQuickButtons() {
-    this.quickButtonsLoading = true;
+    this.bSearchingProduct = true;
     try {
       this.apiService.getNew('cashregistry', '/api/v1/quick-buttons/' + this.requestParams.iBusinessId).subscribe((result: any) => {
 
-        this.quickButtonsLoading = false;
+        this.bSearchingProduct = false;
         if (result?.length) {
           this.quickButtons = result;
         }
       }, (error) => {
-        this.quickButtonsLoading = false;
+        this.bSearchingProduct = false;
       })
     } catch (e) {
-      this.quickButtonsLoading = false;
+      this.bSearchingProduct = false;
     }
   }
 
@@ -914,6 +917,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       if (result?.data?.bIsDayStateOpened) {
         this.bDayStateChecking = false;
         this.bIsDayStateOpened = true;
+        if (this.bIsDayStateOpened) this.fetchQuickButtons();
         if (result?.data?.oStatisticDetail?.dOpenDate) {
           this.dOpenDate = result?.data?.oStatisticDetail?.dOpenDate;
 
