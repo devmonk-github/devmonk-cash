@@ -93,8 +93,7 @@ export class CustomersComponent implements OnInit {
     this.apiService.postNew('customer', '/api/v1/customer/list', this.requestParams)
       .subscribe(async (result: any) => {
         this.showLoader = false;
-
-        if (result && result.data && result.data[0] && result.data[0].result) {
+        if (result?.data?.[0]?.result) {
           this.paginationConfig.totalItems = result.data[0].count.totalData;
           this.customers = result.data[0].result;
           for (const customer of this.customers) {
