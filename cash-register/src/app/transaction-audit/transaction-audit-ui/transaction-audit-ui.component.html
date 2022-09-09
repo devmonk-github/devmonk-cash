@@ -1191,7 +1191,7 @@
                                     <label>Total Counted : </label>
                                     <input type="number" class="form-control mx-1 p-2"
                                         [(ngModel)]="oCountings.nCashCounted">
-                                </div>z
+                                </div>
                             </div>
                         </div>
 
@@ -1207,7 +1207,7 @@
                             <div class="earnings-section">
                                 <div>
                                     <label>Cash at opening day state</label>
-                                    <label class="">{{ '0.00' | currency:"EUR":"symbol" }}</label>
+                                    <label class="">{{ oCountings.nCashAtStart | currency:"EUR":"symbol" }}</label>
                                 </div>
                                 <div>
                                     <label>Cash mutations</label>
@@ -1229,11 +1229,11 @@
                                 </div>
                                 <div>
                                     <label>Amount to be kept in cash register</label>
-                                    <input class="form-control p-2 w-30">
+                                    <input type="number" class="form-control p-2 w-30" [(ngModel)]="oCountings.nCashToKept" (ngModelChange)="oCountings.nSkim = oCountings.nCashCounted - oCountings.nCashToKept">
                                 </div>
                                 <div>
                                     <label>Skim</label>
-                                    <input class="form-control p-2 w-30" [(ngModel)]="oCountings.nSkim">
+                                    <input type="number" class="form-control p-2 w-30" [(ngModel)]="oCountings.nSkim" (ngModelChange)="oCountings.nCashToKept = oCountings.nCashCounted - oCountings.nSkim">
                                 </div>
                                 <div>
                                     <label>Remaining Cash</label>
