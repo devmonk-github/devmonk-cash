@@ -3,8 +3,8 @@
 <h2 class="accordion-header">
   <button class="accordion-button fs-4 fw-bold" type="button" data-bs-toggle="collapse"
     data-bs-target="#kt_accordion_1_body_1" aria-expanded="true" aria-controls="kt_accordion_1_body_1">
-    <section class="row d-flex product-row align-items-center w-100">
-      <div class="col">
+    <section class="row product-row align-items-center w-100">
+      <div class="col-12">
         <div class="row">
           <div class="col">
             <svg width="15" height="15" class="m-1">
@@ -16,7 +16,7 @@
           </div>
           <div class="col">{{item.name}}</div>
           <div class="col">{{item.price | currency: '€'}}</div>
-          <div class="col">{{getTotalDiscount(item)}}</div>
+          <div class="col">{{totalDiscount}}</div>
           <!-- <div class="w-95px">{{item.discount | currency: '€'}}</div> -->
           <div class="col">{{item.tax}}%</div>
           <!-- <div class="col">{{getTotalPrice(item)}}</div> -->
@@ -46,8 +46,8 @@
 
           <div class="col-12">
             <div class="form-group mb-4">
-              <select name="status" id="status" class="form-control form-control-solid"
-                [(ngModel)]="item.eTransactionItemType" (ngModelChange)="changeTypeArray()">
+              <select name="status" id="status" class="form-control " [(ngModel)]="item.eTransactionItemType"
+                (ngModelChange)="changeTypeArray()">
                 <option *ngFor="let type of typeArray" [ngValue]="type">{{type}}</option>
               </select>
             </div>
@@ -56,7 +56,7 @@
           <div class="col-12" *ngIf="item.eTransactionItemType === 'return'">
             <div class="form-group mb-4">
               <label class="form-control-label mb-3">{{ "BROKEN" | translate}}</label>:
-              <input class="form-control form-control-solid mb-3 mb-lg-0" type="text" name="activityName"
+              <input class="form-control  mb-3 mb-lg-0" type="text" name="activityName"
                 [(ngModel)]="item.nBrokenProduct" class="form-control" (change)="changeInbrokenAmount(item)">
             </div>
           </div>
@@ -70,8 +70,7 @@
           <div class="col-12">
             <div class="form-group mb-4">
               <label class="form-control-label mb-3">{{ "NAME" | translate}}</label>:
-              <input class="form-control form-control-solid mb-3 mb-lg-0" type="text" name="name"
-                [(ngModel)]="item.name">
+              <input class="form-control  mb-3 mb-lg-0" type="text" name="name" [(ngModel)]="item.name">
             </div>
           </div>
           <!-- ARTICLE_NUMBER -->
@@ -87,7 +86,7 @@
         <div class="col-12">
           <div class="form-group mb-4">
             <label class="form-control-label mb-3">{{ "DESCRIPTION" | translate}}</label>:
-            <textarea class="form-control form-control-solid mb-3 mb-lg-0" type="text" name="description" lines="10"
+            <textarea class="form-control  mb-3 mb-lg-0" type="text" name="description" lines="10"
               [(ngModel)]="item.description"></textarea>
           </div>
         </div>
@@ -99,8 +98,8 @@
           <div class="col-9">
             <div class="form-group mb-4">
               <label class="form-control-label mb-3">{{ "PRICE" | translate}}</label>:
-              <input class="form-control form-control-solid mb-3 mb-lg-0" type="text" name="price"
-                (change)="updatePayments()" placeholder="{{ 'PRICE' | translate}}" id="price" [(ngModel)]="item.price">
+              <input class="form-control  mb-3 mb-lg-0" type="text" name="price" (change)="updatePayments()"
+                placeholder="{{ 'PRICE' | translate}}" id="price" [(ngModel)]="item.price">
             </div>
           </div>
           <!-- PERCENTAGE -->
@@ -134,14 +133,14 @@
               <div class="row">
                 <div class="form-group mb-4">
                   <label class="form-control-label mb-3">{{ "PREPAYMENT" | translate}}</label>:
-                  <input class="form-control form-control-solid mb-3 mb-lg-0" type="text" name="prepayment"
+                  <input class="form-control  mb-3 mb-lg-0" type="text" name="prepayment"
                     placeholder="{{ 'PREPAYMENT' | translate}}" [(ngModel)]="item.paymentAmount">
                 </div>
               </div>
               <div class="row" *ngIf="item.nDiscount > 0">
                 <div class="form-group mb-4">
                   <label class="form-control-label mb-3">{{ "DISCOUNT" | translate}}</label>:
-                  <input class="form-control form-control-solid mb-3 mb-lg-0" type="text" name="discount"
+                  <input class="form-control  mb-3 mb-lg-0" type="text" name="discount"
                     placeholder="{{ 'DISCOUNT' | translate}}"
                     [value]="item.nDiscount - (item.nRedeemedLoyaltyPoints || 0)" disabled>
                 </div>

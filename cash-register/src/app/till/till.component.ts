@@ -72,7 +72,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   parkedTransactions: Array<any> = [];
   terminals: Array<any> = [];
   quickButtons: Array<any> = [];
-  
+
   // quickButtonsLoading: boolean = false;
   fetchingProductDetails: boolean = false;
   bSearchingProduct: boolean = false;
