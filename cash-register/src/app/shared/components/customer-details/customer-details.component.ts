@@ -271,7 +271,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
     if (this.mode == 'details') {
       this.apiService.putNew('customer', '/api/v1/customer/update/' + this.requestParams.iBusinessId + '/' + this.customer._id, this.customer).subscribe(
         (result: any) => {
-          if(result?.message === 'success'){
+          if (result?.message === 'success') {
             this.toastService.show({ type: 'success', text: `Successfully updated!` });
             this.fetchUpdatedDetails();
           }
@@ -285,23 +285,23 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
   }
 
   fetchUpdatedDetails() {
-    this.apiService.postNew('customer', `/api/v1/customer/list`,this.requestParams)
-    .subscribe((result: any) => {
-      this.customer = result.data[0].result[0];
-      
-      this.bTransactionsLoader = false;
-      this.bActivitiesLoader = false;
-      this.bActivityItemsLoader = false;
-      
-      this.cdr.detectChanges();
+    this.apiService.postNew('customer', `/api/v1/customer/list`, this.requestParams)
+      .subscribe((result: any) => {
+        this.customer = result.data[0].result[0];
 
-      this.editProfile = false;
-      // console.log(result);
-    },
-    (error: any) => {
-       console.error(error)
-    }
-    )
+        this.bTransactionsLoader = false;
+        this.bActivitiesLoader = false;
+        this.bActivityItemsLoader = false;
+
+        this.cdr.detectChanges();
+
+        this.editProfile = false;
+        // console.log(result);
+      },
+        (error: any) => {
+          console.error(error)
+        }
+      )
   }
 
   close(data: any) {
@@ -315,19 +315,21 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
         iCustomerId: this.customer._id,
         sTransactionType: 'cash-registry',
         sDisplayMethod: 'revenuePerBusinessPartner',
-        dStartDate: "2022-07-16T13:59",
-        dEndDate: "2022-09-24T21:59:59.639Z",
+        dStartDate: "2022-08-16T13:59",
+        dEndDate: "2022-10-24T21:59:59.639Z",
       },
     };
     this.apiService
       .postNew('cashregistry', '/api/v1/statistics/transaction/audit', body)
       .subscribe(
         (result: any) => {
-          this.setAStatisticsChartData(result.data.oTransactionAudit[0].individual[0].aArticleGroups)
+          if (result?.data?.oTransactionAudit?.[0]?.individual?.[0]?.aArticleGroups)
+            this.setAStatisticsChartData(result?.data?.oTransactionAudit?.[0]?.individual?.[0]?.aArticleGroups)
           console.log({ CoreStatistics: result });
           this.aStatisticsChartDataLoading = false;
         },
         (error: any) => {
+          console.log(error);
           this.aStatisticsChartDataLoading = false;
         }
       );
@@ -415,7 +417,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
         this.aTransactions.forEach(transaction => {
           transaction.aTransactionItems.forEach((item: any) => {
             const count = this.totalActivities;
-            if(item?.oType?.eKind) this.totalActivities = count + item.nQuantity || 0;
+            if (item?.oType?.eKind) this.totalActivities = count + item.nQuantity || 0;
             switch (item?.oType?.eKind) {
               case "regular":
                 this.aActivityTitles[1].value += 1;
@@ -439,7 +441,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
                 this.aActivityTitles[7].value += 1;
                 break;
               case "gold-sell":
-                
+
                 break;
               case "loyalty-points-discount":
                 break;

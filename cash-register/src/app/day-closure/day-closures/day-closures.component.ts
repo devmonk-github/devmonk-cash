@@ -1,4 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { ApiService } from 'src/app/shared/service/api.service';
 
@@ -26,14 +27,30 @@ export class DayClosuresComponent implements OnInit, OnDestroy {
   listBusinessSubscription !: Subscription;
   workstationListSubscription !: Subscription;
   dayClosureListSubscription !: Subscription;
-
-  constructor(private apiService: ApiService) {
+  requestParams: any = {
+    skip: 0,
+    limit: 25,
+    sortOrder: 'descend'
+  };
+  pageCounts: Array<number> = [10, 25, 50, 100]
+  pageNumber: number = 1;
+  setPaginateSize: number = 10;
+  paginationConfig: any = {
+    itemsPerPage: 25,
+    currentPage: 1,
+    totalItems: 0
+  };
+  constructor(private apiService: ApiService,
+    private route: ActivatedRoute,
+  ) {
     this.iBusinessId = localStorage.getItem('currentBusiness') || '';
     this.iLocationId = localStorage.getItem('currentLocation') || '';
     this.iWorkstationId = localStorage.getItem('currentWorkstation');
 
     const _oUser = localStorage.getItem('currentUser');
     if (_oUser) this.oUser = JSON.parse(_oUser);
+    this.paginationConfig.currentPage = this.route?.snapshot?.queryParams?.page ? this.route?.snapshot?.queryParams?.page : this.paginationConfig.currentPage
+
   }
 
   ngOnInit(): void {
@@ -61,7 +78,18 @@ export class DayClosuresComponent implements OnInit, OnDestroy {
         console.error(error)
       }
   }
+  changeItemsPerPage(pageCount: any) {
+    this.paginationConfig.itemsPerPage = pageCount;
+    this.fetchDayClosureList();
+  }
+  pageChanged(page: any) {
+    this.requestParams.skip = (page - 1) * this.requestParams.limit;
+    // this.requestParams.limit = page * this.requestParams.limit;
 
+    this.fetchDayClosureList();
+
+    this.paginationConfig.currentPage = page;
+  }
   fetchDayClosureList() {
     this.aDayClosure = [];
     this.showLoader = true;
@@ -72,9 +100,14 @@ export class DayClosuresComponent implements OnInit, OnDestroy {
         aLocationId: this?.aSelectedLocation?.length ? this.aSelectedLocation : [],
         iWorkstationId: this.oSelectedWorkStation?._id,
       },
+      ...this.requestParams
     }
     this.dayClosureListSubscription = this.apiService.postNew('cashregistry', `/api/v1/statistics/day-closure/list`, oBody).subscribe((result: any) => {
-      if (result?.data?.length) this.aDayClosure = result.data;
+      if (result?.data?.length) {
+        this.aDayClosure = result.data[0]?.result;
+        this.paginationConfig.totalItems = result.data[0].count.totalData;
+
+      }
       this.showLoader = false;
     }, (error) => {
       console.log('error: ', error);

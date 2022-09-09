@@ -10,7 +10,7 @@ import { PriceService } from 'src/app/shared/service/price.service';
   // eslint-disable-next-line @angular-eslint/component-selector
   selector: '[till-goldpurchase]',
   templateUrl: './gold-purchase.component.html',
-  styleUrls: ['./gold-purchase.component.sass'],
+  styleUrls: ['./gold-purchase.component.scss'],
   encapsulation: ViewEncapsulation.None
 })
 export class GoldPurchaseComponent implements OnInit {
@@ -83,6 +83,13 @@ export class GoldPurchaseComponent implements OnInit {
     }
   }
 
+  assignArticleGroupMetadata(articlegroup: any) {
+    this.item.iArticleGroupId = articlegroup._id;
+    this.item.oArticleGroupMetaData.oName = articlegroup.oName;
+    this.item.oArticleGroupMetaData.sCategory = articlegroup.sCategory;
+    this.item.oArticleGroupMetaData.sSubCategory = articlegroup.sSubCategory;
+  }
+
   assignArticleGroup(value: string) {
     const goldFor = this.goldFor.find(o => o.name === value);
     this.item.oGoldFor = goldFor;
@@ -90,9 +97,7 @@ export class GoldPurchaseComponent implements OnInit {
     if (!artGroup) {
       this.createArticleGroup();
     } else {
-      this.item.iArticleGroupId = artGroup._id;
-      this.item.oArticleGroupMetaData.sCategory = artGroup.sCategory;
-      this.item.oArticleGroupMetaData.sSubCategory = artGroup.sSubCategory;
+      this.assignArticleGroupMetadata(artGroup);
     }
   }
 
@@ -113,9 +118,7 @@ export class GoldPurchaseComponent implements OnInit {
   async createArticleGroup() {
     const articleBody = { name: 'Gold purchase', sCategory: 'Gold purchase', sSubCategory: this.item.oGoldFor.name };
     const result: any = await this.createArticleGroupService.createArticleGroup(articleBody);
-    this.item.iArticleGroupId = result.data._id;
-    this.item.oArticleGroupMetaData.sCategory = result.data.sCategory;
-    this.item.oArticleGroupMetaData.sSubCategory = result.data.sSubCategory;
+    this.assignArticleGroupMetadata(result.data);
   }
 
   constisEqualsJson(obj1: any, obj2: any) {

@@ -565,6 +565,9 @@ export class PdfService {
   }
 
   private createRows(cols: any, currentRow: any, printableArea: any, gutter: any) {
+    console.log('-- createRows!!');
+    console.log('cols ', cols);
+    console.log('currentRow ', currentRow);
     let rowsToBeCreated = 1;
     let dataSourceObject = this.data;
     let createdRows = [];
@@ -572,12 +575,14 @@ export class PdfService {
 
     if (this.isDefined(currentRow.forEach)) {
       foreachActive = true;
+      console.log('defineDataSource 2 ', currentRow.forEach);
       dataSourceObject = this.defineDataSource(currentRow.forEach);
-
+      console.log(dataSourceObject);
       rowsToBeCreated = dataSourceObject.length;
     }
 
     for (let r = 0; r < rowsToBeCreated; r++) {
+      console.log('----------- loop!!');
       let finalDataSourceObject = dataSourceObject;
 
       if (typeof dataSourceObject.length === 'number') {
@@ -600,10 +605,12 @@ export class PdfService {
 
       for (let i = 0; i < cols.length; i++) {
         const col = cols[i];
+        console.log(col)
         let colsize = col.size;
         let gutterSize = this.calcColumnGutter(colsize, gutter);
         let newRowWidth = this.calcRowWidth(printableArea.width, colsize, gutterSize);
-        let newCol = this.createCol(i, cols.length, newRowWidth, gutter, col, finalDataSourceObject,colsize);
+        let newCol = this.createCol(i, cols.length, newRowWidth, gutter, col, finalDataSourceObject,colsize, printableArea);
+        console.log('newCol : ', newCol);
 
         if (this.isDefined(col.css)) {
           newCol = this.applyCss(newCol, col.css);
@@ -625,13 +632,21 @@ export class PdfService {
           clearBoth.style.clear = 'both';
           newRow.appendChild(clearBoth);
         }
+
+        // if (this.isDefined(col.forEach)){
+        //   console.log('----------------- here!!')
+        //   console.log(printableArea);
+        //   // let gutterSizeNew = this.calcColumnGutter(colsize, gutter);
+        //   this.createRows(col.row, col, printableArea, 12);
+        // }
       }
 
       if (currentRow.htmlAfter) {
         newRow.appendChild(this.convertHtmlToElement(String(currentRow.htmlAfter)));
       }
-
+      console.log('Push : ', newRow);
       createdRows.push(newRow);
+      console.log('createdRows : ', createdRows);
     }
 
     if (currentRow.container) {
@@ -692,7 +707,7 @@ export class PdfService {
       let totalRowHeight = 0;
 
       let newRows = this.createRows(cols, currentRow, printableArea, gutterSize);
-
+      console.log('newRows : ', newRows);
       for (let i = 0; i < newRows.length; i++) {
         let newRow = newRows[i];
 
@@ -1012,10 +1027,11 @@ export class PdfService {
 
     let layer1, layer2, layer3
     let dataSourceObject: string | never[] = [];
-
+    console.log('key ', key);
     if (key.match(/\./g)) {
 
       let parts = key.split('.');
+      console.log(parts);
 
       switch (parts.length) {
         case 0:
@@ -1070,18 +1086,21 @@ export class PdfService {
     return ((12 - currentSize) * gutter) / currentSize;
   }
 
-  private createCol(i: number, nrOfCols: number, newRowWidth: number, gutterSize: string, colObject: any, dataSourceObject: any = null, currentSize: number = 12) {
+  private createCol(i: number, nrOfCols: number, newRowWidth: number, gutterSize: string, colObject: any, dataSourceObject: any = null, currentSize: number = 12, printableArea: any) {
+    console.log('---- createCol!! ', i, nrOfCols, newRowWidth, colObject, dataSourceObject);
     let html = (colObject.html || '');
     let element = (colObject.element || 'div');
     let forEach = (colObject.forEach || '');
     let htmlBefore = (colObject.htmlBefore || '');
     let htmlAfter = (colObject.htmlAfter || '');
-
+    // console.log('forEach ', forEach);
     let col = document.createElement(element);
     let newContent = [];
-
+    // console.log(html);
     if (html.length > 0) {
+      // console.log('--- if!');
       if (typeof html[0] === 'object') {
+        // console.log('--- if if!');
         for (let e = 0; e < html.length; e++) {
           html[e].content = typeof html[e].content !== 'undefined' ? html[e].content.replace('/>', '>') : "";
 
@@ -1100,58 +1119,70 @@ export class PdfService {
         }
         col = this.insertElementsInCol(col, html, newContent);
       } else {
+        // console.log('--- if else!');
         let template = html.replace('/>', '>');
         html = '';
         if (forEach !== '') {
-
+          html += this.replaceVariables(template, dataSourceObject);
           dataSourceObject = this.defineDataSource(forEach);
 
+          // console.log(dataSourceObject);
           for (let d = 0; d < dataSourceObject.length; d++) {
             let entry = dataSourceObject[d];
             let extractedVariables = this.getVariables(template);
             let htmlConcept = '';
-
-            if (extractedVariables) {
-              for (let v = 0; v < extractedVariables.length; v++) {
-                let matched = false;
-                let oldText = extractedVariables[v];
-                let newText = '';
-
-                let searchFor = this.removeBrackets(extractedVariables[v]);
-
-                let variableStringFiltered = searchFor;
-                let format = ''
-
-                if (searchFor.match(/\|/g) !== null) {
-                  let stringAndFormat = searchFor.split('|');
-                  variableStringFiltered = stringAndFormat[0];
-                  format = stringAndFormat[1]
-                }
-
-                Object.keys(entry).forEach((key) => {
-                  if (key === variableStringFiltered) {
-                    if (String(entry[variableStringFiltered]).length > 0) {
-                      matched = true;
-                      newText = String(entry[variableStringFiltered]);
-
-                      if (this.isDefined(format) && format !== 'null') {
-                        newText += this.formatContent(newText, format);
-                      }
-                    }
-                  }
-                });
-
-                if (matched) {
-                  htmlConcept = htmlConcept.replace(oldText, newText);
-                }
-              }
+            console.log('-- coming here ', colObject);
+            if (this.isDefined(colObject.forEach)){
+              console.log('----------------- here!!')
+              // We need to cross check if there is something going wrong with the printable area
+              console.log(printableArea);
+              // let gutterSizeNew = this.calcColumnGutter(colsize, gutter);
+              this.createRows(colObject.row, colObject, printableArea, 12);
             }
+            // if (extractedVariables) {
+            //   for (let v = 0; v < extractedVariables.length; v++) {
+            //     let matched = false;
+            //     let oldText = extractedVariables[v];
+            //     let newText = '';
+
+            //     let searchFor = this.removeBrackets(extractedVariables[v]);
+
+            //     let variableStringFiltered = searchFor;
+            //     let format = ''
+
+            //     if (searchFor.match(/\|/g) !== null) {
+            //       let stringAndFormat = searchFor.split('|');
+            //       variableStringFiltered = stringAndFormat[0];
+            //       format = stringAndFormat[1]
+            //     }
+
+            //     Object.keys(entry).forEach((key) => {
+            //       if (key === variableStringFiltered) {
+            //         if (String(entry[variableStringFiltered]).length > 0) {
+            //           matched = true;
+            //           newText = String(entry[variableStringFiltered]);
+
+            //           if (this.isDefined(format) && format !== 'null') {
+            //             newText += this.formatContent(newText, format);
+            //           }
+            //         }
+            //       }
+            //     });
+
+            //     if (matched) {
+            //       htmlConcept = htmlConcept.replace(oldText, newText);
+            //     }
+            //   }
+            // }
             html += htmlConcept
           }
         } else {
+          console.log('  else else else')
           html += this.replaceVariables(template, dataSourceObject);
+          console.log(html);
         }
         col.innerHTML = html;
+        console.log(col);
       }
     }
 
@@ -1171,6 +1202,15 @@ export class PdfService {
       col.innerHTML = htmlBefore + col.innerHTML + htmlAfter;
     }
 
+    // console.log('col : ', col, col.innerHTML);
+    // console.log('-- coming here ', colObject);
+    // if (this.isDefined(colObject.forEach)){
+    //   // console.log('----------------- here!!')
+    //   console.log(printableArea);
+    //   // let gutterSizeNew = this.calcColumnGutter(colsize, gutter);
+    //   this.createRows(colObject.row, colObject, printableArea, 12);
+    // }
+    console.log(col);
     return col;
   }
 

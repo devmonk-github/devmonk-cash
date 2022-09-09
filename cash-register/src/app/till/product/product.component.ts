@@ -1,8 +1,8 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { faTimes, faArrowDown, faArrowUp, faMinus } from '@fortawesome/free-solid-svg-icons'
-import { DialogService } from "../../shared/service/dialog";
+import { faArrowDown, faArrowUp, faMinus } from '@fortawesome/free-solid-svg-icons'
+import { DialogService } from '../../shared/service/dialog';
 import { DiscountDialogComponent } from "../dialogs/discount-dialog/discount-dialog.component";
-import { PriceService } from "../../shared/service/price.service";
+import { PriceService } from '../../shared/service/price.service';
 import { ApiService } from 'src/app/shared/service/api.service';
 import { ToastService } from 'src/app/shared/components/toast';
 
@@ -12,7 +12,7 @@ import { ToastService } from 'src/app/shared/components/toast';
   templateUrl: './product.component.html',
   styleUrls: ['./product.component.sass'],
 })
-export class ProductComponent implements OnInit{
+export class ProductComponent implements OnInit {
   @Input() item: any
   @Input() taxes: any
   @Output() itemChanged = new EventEmitter<any>();
@@ -21,6 +21,8 @@ export class ProductComponent implements OnInit{
   faArrowDown = faArrowDown;
   faArrowUp = faArrowUp;
   typeArray = ['regular', 'return'];
+  collapsedBtn: Boolean = false;
+  totalDiscount = 0;
 
   constructor(private dialogService: DialogService,
     private priceService: PriceService,
@@ -29,22 +31,27 @@ export class ProductComponent implements OnInit{
 
   ngOnInit(): void {
     this.fetchArticleGroupInfo();
+    this.getTotalDiscount(this.item)
   }
 
   fetchArticleGroupInfo() {
     const iBusinessId = localStorage.getItem('currentBusiness');
     this.apiService.getNew('core', `/api/v1/business/article-group/${this.item.iArticleGroupId}?iBusinessId=${iBusinessId}`).
-    subscribe((res: any) => {
-      this.item.oArticleGroupMetaData.aProperty = res.data.aProperty;
-      if(res.data.aBusinessPartner) {
-        const marginData = res.data.aBusinessPartner.find((o: any)=> o.iBusinessPartnerId === this.item.iSupplierId);
-        this.item.nMargin = marginData?.nMargin || 1;
-        this.item.nPurchasePrice = this.item.nPurchasePrice || 0;
-      }
-    }, err => {
-      this.toastrService.show({ type: 'danger', text: err.message });
-    });
-
+      subscribe((res: any) => {
+        this.item.oArticleGroupMetaData.aProperty = res.data.aProperty;
+        this.item.oArticleGroupMetaData.oName = res.data.oName;
+        this.item.oArticleGroupMetaData.oNameOriginal = res.data.oName;
+        this.item.oArticleGroupMetaData.sCategory = res.data.sCategory;
+        this.item.oArticleGroupMetaData.sSubCategory = res.data.sSubCategory;
+        if (res.data.aBusinessPartner) {
+          const marginData = res.data.aBusinessPartner.find((o: any) => o.iBusinessPartnerId === this.item.iSupplierId);
+          this.item.nMargin = marginData?.nMargin || 1;
+          this.item.nPurchasePrice = this.item.nPurchasePrice || 0;
+          this.changeInMargin();
+        }
+      }, err => {
+        this.toastrService.show({ type: 'danger', text: err.message });
+      });
   }
 
   deleteItem(): void {
@@ -55,8 +62,12 @@ export class ProductComponent implements OnInit{
     return this.priceService.getDiscount(item.nDiscount || 0);
   }
 
+  changeInMargin() {
+    this.item.nPurchasePrice = this.item.price / this.item.nMargin || 1;
+  }
+
   getTotalDiscount(item: any): string {
-    return this.priceService.getDiscountValue(item);
+    return this.totalDiscount = this.priceService.getDiscountValue(item);
   }
 
   getTotalPrice(item: any): string {

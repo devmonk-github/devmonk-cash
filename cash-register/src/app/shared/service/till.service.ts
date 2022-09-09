@@ -178,6 +178,8 @@ export class TillService {
           nStockCorrection: i.eTransactionItemType === 'regular' ? i.quantity : i.quantity - (i.nBrokenProduct || 0),
           eKind: i.type, // TODO // repair
           bDiscount: i.nDiscount > 0,
+          //bPrepayment: true // B discount && prepayment fix Jolmer
+          //bPrepayment: false // A discount fix Jolmer
           bPrepayment: (i.paymentAmount > 0 || this.getUsedPayMethods(true, payMethods) - this.getTotals('price', transactionItems) < 0) && (i.paymentAmount !== i.amountToBePaid),
         },
         i.iActivityItemId,
@@ -196,7 +198,6 @@ export class TillService {
       if (discountRecords) {
         discountRecords = JSON.parse(discountRecords);
       }
-      // console.log((i.nPriceIncVat - i.nDiscount + i.nPaymentAmount) === 0); // (i.nRefundAmount + i.nPaymentAmount) === 0 &&
       if (i.oType.bRefund && i.nDiscount !== 0) {
         const records = discountRecords.filter((o: any) => o.sUniqueIdentifier === i.sUniqueIdentifier);
         records.forEach((record: any) => {
@@ -213,6 +214,7 @@ export class TillService {
       } else {
         if (i.nDiscount && i.nDiscount > 0 && !i.oType.bRefund && !i.iActivityItemId) {
           i.nPaymentAmount += i.nDiscount * i.nQuantity;
+          i.nRevenueAmount += i.nDiscount * i.nQuantity;
           const tItem1 = JSON.parse(JSON.stringify(i));
           tItem1.iArticleGroupId = discountArticleGroup._id;
           tItem1.iArticleGroupOriginalId = i.iArticleGroupId;
@@ -221,6 +223,11 @@ export class TillService {
           tItem1.oType.eTransactionType = 'cash-registry';
           tItem1.oType.eKind = 'discount';
           tItem1.nPaymentAmount = -1 * tItem1.nDiscount * i.nQuantity;
+          tItem1.nRevenueAmount = tItem1.nPaymentAmount;
+          tItem1.nPriceIncVat = tItem1.nPaymentAmount;
+          //tItem1.oType.bPrepayment = true; // B jolmer testing discount && prepayment
+          // tItem1.oType.bPrepayment = false;  // A Jolmer testing discount
+          tItem1.nPurchasePrice = tItem1.nPriceIncVat * i.nPurchasePrice / i.nPriceIncVat;
           body.transactionItems.push(tItem1);
         }
       }
@@ -292,6 +299,7 @@ export class TillService {
       oShortDescription: product.oShortDescription,
       eGender: product.eGender,
       eOwnerShip: product.eOwnerShip,
+      sProductNumber: product.sProductNumber,
     }
     return metadata
   }

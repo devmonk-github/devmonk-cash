@@ -1,5 +1,5 @@
-import { Component, EventEmitter, Input, OnInit, Output, ViewEncapsulation } from '@angular/core';
-import { faTimes, faPlus, faMinus, faUpload, faArrowDown, faArrowUp } from "@fortawesome/free-solid-svg-icons";
+import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild, ViewEncapsulation } from '@angular/core';
+import { faTimes, faPlus, faMinus, faUpload, faArrowDown, faArrowUp, faPhone, faAt } from "@fortawesome/free-solid-svg-icons";
 import { SelectArticleDialogComponent } from 'src/app/shared/components/select-articlegroup-dialog/select-articlegroup-dialog.component';
 import { ToastService } from 'src/app/shared/components/toast';
 import { ApiService } from 'src/app/shared/service/api.service';
@@ -24,6 +24,8 @@ export class RepairComponent implements OnInit {
   faPlus = faPlus;
   faMinus = faMinus;
   faUpload = faUpload;
+  faPhone = faPhone;
+  faAt = faAt;
   faArrowDown = faArrowDown;
   faArrowUp = faArrowUp;
   employee: any = null;
@@ -43,6 +45,11 @@ export class RepairComponent implements OnInit {
   repairer: any = null;
   // temporary variable
   supplier: any;
+  sIsEstimatedDate: 'PriceAgreed' | 'Quotation' = 'PriceAgreed'
+  contactType: 'phone' | 'email' | 'whatsapp' = 'phone'
+  bShowServicePartnerRemark = false
+  sServicePartnerRemark = ''
+  @ViewChild('descriptionRef') descriptionRef!: ElementRef
   constructor(private priceService: PriceService,
     private apiService: ApiService,
     private dialogService: DialogService,
@@ -67,9 +74,11 @@ export class RepairComponent implements OnInit {
     this.dialogService.openModal(SelectArticleDialogComponent, { cssClass: 'modal-m', context: { from: 'repair' } })
       .instance.close.subscribe((data) => {
         if (data) {
+          if (this.descriptionRef) {
+            this.descriptionRef.nativeElement.focus();
+          }
           const { articlegroup, brand, supplier, nMargin } = data;
           this.item.supplier = supplier.sName;
-          this.item.iArticleGroupOriginalId = articlegroup._id;
           this.supplier = supplier.sName;
           this.item.iSupplierId = supplier._id;
           this.item.nMargin = nMargin;
@@ -78,11 +87,14 @@ export class RepairComponent implements OnInit {
           this.updateProperties(articlegroup);
           this.changeInMargin();
         }
+        else {
+          this.deleteItem();
+        }
       });
   }
 
   changeInMargin() {
-    this.item.nPurchasePrice = this.item.price / this.item.nMargin || 1;
+    this.item.nPurchasePrice = this.item.price / (this.item.nMargin || 1);
   }
 
   changeInPurchasePrice() {
@@ -90,6 +102,7 @@ export class RepairComponent implements OnInit {
   }
 
   updateProperties(articlegroup: any) {
+    this.item.oArticleGroupMetaData.aProperty = articlegroup.aProperty;
     articlegroup.aProperty.forEach((properties: any) => {
       const propertiesIndex = this.item.oArticleGroupMetaData.aProperty.findIndex((aProperty: any) => aProperty.iPropertyId === properties.iPropertyId);
       if (propertiesIndex > -1) {
@@ -127,15 +140,22 @@ export class RepairComponent implements OnInit {
     });
   }
 
+  assignArticleGroupMetadata(articlegroup: any) {
+    this.item.iArticleGroupId = articlegroup._id;
+    this.item.iArticleGroupOriginalId = articlegroup._id;
+    this.item.oArticleGroupMetaData.oNameOriginal = articlegroup.oName;
+    this.item.oArticleGroupMetaData.oName = articlegroup.oName;
+    this.item.oArticleGroupMetaData.sCategory = articlegroup.sCategory;
+    this.item.oArticleGroupMetaData.sSubCategory = articlegroup.sSubCategory;
+  }
+
   checkArticleGroups() {
     this.createArticleGroupService.checkArticleGroups('Repair')
       .subscribe((res: any) => {
         if (1 > res.data.length) {
           this.createArticleGroup();
         } else {
-          this.item.iArticleGroupId = res.data[0].result[0]._id;
-          this.item.oArticleGroupMetaData.sCategory = res.data[0].result[0].sCategory;
-          this.item.oArticleGroupMetaData.sSubCategory = res.data[0].result[0].sSubCategory;
+          this.assignArticleGroupMetadata(res.data[0].result[0]);
         }
       }, err => {
         this.toastrService.show({ type: 'danger', text: err.message });
@@ -145,9 +165,7 @@ export class RepairComponent implements OnInit {
   async createArticleGroup() {
     const articleBody = { name: 'Repair', sCategory: 'Repair', sSubCategory: 'Repair' };
     const result: any = await this.createArticleGroupService.createArticleGroup(articleBody);
-    this.item.iArticleGroupId = result.data._id;
-    this.item.oArticleGroupMetaData.sCategory = result.data.sCategory;
-    this.item.oArticleGroupMetaData.sSubCategory = result.data.sSubCategory;
+    this.assignArticleGroupMetadata(result.data);
   }
 
   constisEqualsJson(obj1: any, obj2: any) {
@@ -192,13 +210,11 @@ export class RepairComponent implements OnInit {
     this.selectedProperties = [];
     let data = {
       skip: 0,
-      limit: 100,
+      limit: 500,
       sortBy: '',
       sortOrder: '',
       searchValue: '',
-      oFilterBy: {
-        bRequiredForArticleGroup: true
-      },
+      oFilterBy: {},
       iBusinessId: localStorage.getItem('currentBusiness'),
     };
 

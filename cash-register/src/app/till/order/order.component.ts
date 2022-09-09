@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output, ViewEncapsulation } from '@angular/core';
-import { faTimes, faPlus, faMinus, faArrowDown, faArrowUp, faUpload } from '@fortawesome/free-solid-svg-icons';
+import { faTimes, faPlus, faMinus, faArrowDown, faArrowUp, faUpload, faPhone, faAt } from '@fortawesome/free-solid-svg-icons';
 
 import { ImageUploadComponent } from 'src/app/shared/components/image-upload/image-upload.component';
 import { SelectArticleDialogComponent } from 'src/app/shared/components/select-articlegroup-dialog/select-articlegroup-dialog.component';
@@ -13,6 +13,7 @@ import { PriceService } from 'src/app/shared/service/price.service';
   // eslint-disable-next-line @angular-eslint/component-selector
   selector: '[till-order]',
   templateUrl: './order.component.html',
+  styleUrls: ['./order.component.scss'],
   encapsulation: ViewEncapsulation.None
 })
 export class OrderComponent implements OnInit {
@@ -26,6 +27,8 @@ export class OrderComponent implements OnInit {
   faArrowDown = faArrowDown;
   faArrowUp = faArrowUp;
   faUpload = faUpload;
+  faPhone = faPhone;
+  faAt = faAt;
   typeArray = ['regular', 'return'];
   propertyOptions: Array<any> = [];
   selectedProperties: Array<any> = [];
@@ -48,6 +51,11 @@ export class OrderComponent implements OnInit {
   showDeleteBtn: boolean = false;
   aProperty: any = [];
   collapsedBtn: Boolean = false;
+
+  contactType: 'phone' | 'email' | 'whatsapp' = 'phone'
+  bShowServicePartnerRemark = false
+  sServicePartnerRemark = ''
+
   constructor(
     private priceService: PriceService,
     private apiService: ApiService,
@@ -66,13 +74,14 @@ export class OrderComponent implements OnInit {
     }
   }
 
-  selectArticleGroup() {   
-    this.dialogService.openModal(SelectArticleDialogComponent, { cssClass: 'modal-m', context: { item: this.item } })
+  selectArticleGroup() {
+    this.dialogService.openModal(SelectArticleDialogComponent, { cssClass: 'modal-m', context: { item: this.item, from: 'order' } })
       .instance.close.subscribe((data) => {
         if (data) {
           const { articlegroup, brand, supplier, nMargin } = data;
           this.item.supplier = supplier.sName;
           this.item.iArticleGroupOriginalId = articlegroup._id;
+          this.item.oArticleGroupMetaData.oNameOriginal = articlegroup.oName;
           this.item.nMargin = nMargin;
           this.supplier = supplier.sName;
           this.item.iSupplierId = supplier._id;
@@ -83,7 +92,7 @@ export class OrderComponent implements OnInit {
         }
       });
   }
-  
+
   changeInMargin() {
     this.item.nPurchasePrice = this.item.price / this.item.nMargin || 1;
   }
@@ -93,6 +102,7 @@ export class OrderComponent implements OnInit {
   }
 
   updateProperties(articlegroup: any) {
+    this.item.oArticleGroupMetaData.aProperty = articlegroup.aProperty;
     articlegroup.aProperty.forEach((properties: any) => {
       const propertiesIndex = this.item.oArticleGroupMetaData.aProperty.findIndex((aProperty: any) => aProperty.iPropertyId === properties.iPropertyId);
       if (propertiesIndex > -1) {
@@ -129,12 +139,17 @@ export class OrderComponent implements OnInit {
     }
   }
 
+  assignArticleGroupMetadata(articlegroup: any) {
+    this.item.iArticleGroupId = articlegroup._id;
+    this.item.oArticleGroupMetaData.oName = articlegroup.oName;
+    this.item.oArticleGroupMetaData.sCategory = articlegroup.sCategory;
+    this.item.oArticleGroupMetaData.sSubCategory = articlegroup.sSubCategory;
+  }
+
   async createArticleGroup() {
     const articleBody = { name: 'Ordered products', sCategory: 'Ordered products', sSubCategory: 'Ordered products' };
     const result: any = await this.createArticleGroupService.createArticleGroup(articleBody);
-    this.item.iArticleGroupId = result.data._id;
-    this.item.oArticleGroupMetaData.sCategory = result.data.sCategory;
-    this.item.oArticleGroupMetaData.sSubCategory = result.data.sSubCategory;
+    this.assignArticleGroupMetadata(result.data);
   }
 
   constisEqualsJson(obj1: any, obj2: any) {
@@ -147,13 +162,11 @@ export class OrderComponent implements OnInit {
     this.selectedProperties = [];
     let data = {
       skip: 0,
-      limit: 100,
+      limit: 500,
       sortBy: '',
       sortOrder: '',
       searchValue: '',
-      oFilterBy: {
-        bRequiredForArticleGroup: true
-      },
+      oFilterBy: {},
       iBusinessId: localStorage.getItem('currentBusiness'),
     };
 
@@ -186,7 +199,7 @@ export class OrderComponent implements OnInit {
             }
           });
           aProperty.forEach((prop: any) => {
-            const check = this.item.oArticleGroupMetaData.aProperty.find((o:any) => o.iPropertyId === prop.iPropertyId);
+            const check = this.item.oArticleGroupMetaData.aProperty.find((o: any) => o.iPropertyId === prop.iPropertyId);
             if (!check) {
               this.item.oArticleGroupMetaData.aProperty.push(prop);
             }
@@ -266,7 +279,7 @@ export class OrderComponent implements OnInit {
     }
   }
   checkArticleGroups() {
-    if(this.item.iArticleGroupId) {
+    if (this.item.iArticleGroupId) {
       return;
     }
     this.createArticleGroupService.checkArticleGroups('Ordered products')
@@ -274,9 +287,7 @@ export class OrderComponent implements OnInit {
         if (1 > res.data.length) {
           this.createArticleGroup();
         } else {
-          this.item.iArticleGroupId = res.data[0].result[0]._id;
-          this.item.oArticleGroupMetaData.sCategory = res.data[0].result[0].sCategory;
-          this.item.oArticleGroupMetaData.sSubCategory = res.data[0].result[0].sSubCategory;
+          this.assignArticleGroupMetadata(res.data[0].result[0]);
         }
       }, err => {
         this.toastrService.show({ type: 'danger', text: err.message });

@@ -83,8 +83,9 @@
                 </button>
                 <button class="btn btn-sm btn-secondary w-100 d-flex" (click)="downloadWithVAT()">
                     <fa-icon [hidden]="downloadWithVATLoading" [icon]="faDownload"></fa-icon>
-                    <i class="fa fa-spinner fa-spin" *ngIf="downloadWithVATLoading" [hidden]="!downloadWithVATLoading"
-                        style="font-size:15px;"></i>
+                    <span *ngIf="downloadWithVATLoading">
+                        <i class="fa fa-spinner fa-spin" [hidden]="!downloadWithVATLoading" style="font-size:15px;"></i>
+                    </span>
                     <label class="mx-auto">Download with VAT</label>
                 </button>
                 <button class="btn btn-sm btn-secondary w-100 d-flex">
@@ -200,11 +201,11 @@
                                         </div>
                                     </div>
                                 </td>
-                                <td>{{item.nPurchasePrice}}</td>
+                                <td>{{item.nPriceIncVat}}</td>
                                 <td>{{item.nQuantity}}</td>
-                                <td>0</td>
-                                <td>{{item.nVatRate || 0}}</td>
-                                <td>{{item.nPriceIncVat || 0}}</td>
+                                <td>{{item.nDiscountToShow}}</td>
+                                <td>{{item.nVatRate || 0}} %</td>
+                                <td>{{item.totalPriceIncVatAfterDisc || 0}}</td>
                             </tr>
                         </tbody>
                     </table>

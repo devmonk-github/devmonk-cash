@@ -7,6 +7,7 @@ import * as _moment from 'moment';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastService } from 'src/app/shared/components/toast';
 import { defaultMenuOptions, MenuComponent } from 'src/app/shared/_layout/components/common';
+import { Location } from '@angular/common';
 const moment = (_moment as any).default ? (_moment as any).default : _moment;
 
 
@@ -15,6 +16,7 @@ const moment = (_moment as any).default ? (_moment as any).default : _moment;
   templateUrl: './transaction-audit-ui.component.html',
   styleUrls: ['./transaction-audit-ui.component.scss'],
 })
+
 export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDestroy {
   iBusinessId: any = '';
   sUserType: any = '';
@@ -77,6 +79,8 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
 
   aNewSelectedPaymentMethods: any = [];
 
+  oStatisticsData: any = {};
+
   listBusinessSubscription!: Subscription;
   getStatisticSubscription!: Subscription;
   statisticAuditSubscription!: Subscription;
@@ -85,11 +89,12 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
   workstationListSubscription!: Subscription;
   employeeListSubscription!: Subscription;
   transactionItemListSubscription!: Subscription;
+  sCurrentLocation: any;
+  sCurrentWorkstation: any;
 
   groupingHelper(item: any) {
     return item.child[0];
   }
-
 
   // aOptionMenu: any = [
   //   { sKey: 'purchase-order', sValue: this.translate.instant('PURCHASE_ORDER') },
@@ -165,6 +170,9 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
     nCashCounted: 0,
     nCashInTill: 0,
     nSkim: 0,
+    nCashRemain: 0,
+    nCashToKept: 0,
+    nCashAtStart: 0,
     oCountingsCashDetails: {},
   };
   aRefundItems: any;
@@ -173,6 +181,7 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
   iWorkstationId: string | null;
   aGoldPurchases: any;
   aGiftItems: any;
+  previousPage = 0
 
   constructor(
     private apiService: ApiService,
@@ -181,6 +190,8 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
     private route: ActivatedRoute,
     private router: Router,
     private toastService: ToastService,
+    private location: Location
+
   ) {
     MenuComponent.reinitialization()
     this.iBusinessId = localStorage.getItem('currentBusiness') || '';
@@ -189,34 +200,34 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
     this.sUserType = localStorage.getItem('type') || '';
     const _oUser = localStorage.getItem('currentUser');
     if (_oUser) this.oUser = JSON.parse(_oUser);
+    this.previousPage = this.route?.snapshot?.queryParams?.page || 0
 
+    this.iStatisticId = this.route.snapshot?.params?.iStatisticId;
+    if(this.iStatisticId){
+      this.oStatisticsData.dStartDate = this.router.getCurrentNavigation()?.extras?.state?.dStartDate ?? null;
+      if (this.oStatisticsData.dStartDate){
+        this.filterDates.startDate = this.oStatisticsData.dStartDate;
+        const endDate = new Date();
+        this.filterDates.endDate = endDate;
+        this.oStatisticsData.dEndDate = endDate;
+      } else {
+        this.router.navigate(['/business/day-closure'])
+      }
+    }
   }
 
-
   ngOnInit(): void {
-    this.iStatisticId = this.route.snapshot?.params?.iStatisticId;
-    const oQueryParams = this.route.snapshot?.queryParams;
-    // const _dOpenDate = this.route.snapshot?.queryParams?.get('dStartDate');
-    if (oQueryParams?.dStartDate)
-      this.filterDates.startDate = moment(
-        new Date(oQueryParams?.dStartDate)
-      ).format('yyyy-MM-DDThh:mm');
-
     this.businessDetails._id = localStorage.getItem('currentBusiness');
-    // console.log({ aDisplayMethod: this.aDisplayMethod });
     this.setOptionMenu()
     this.fetchBusinessDetails();
-    this.printingDate();
+    this.fetchStatistics(this.sDisplayMethod.toString());
     this.fetchBusinessLocation();
     this.getProperties();
-    this.fetchStatisticDocument();
     this.getWorkstations();
     this.getEmployees();
     this.getPaymentMethods();
-
-
-
   }
+
   ngAfterViewInit(): void {
     setTimeout(() => {
       MenuComponent.reinitialization();
@@ -540,27 +551,28 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
       this.aOptionMenu.splice(iPurchaseIndex, 1)
     }
     this.onDropdownItemSelected(this.aOptionMenu[0], this.aOptionMenu[0].children[0], this.aOptionMenu[0].children[0].children[0])
-    // console.log({ aOptionMenu: this.aOptionMenu });
+  }
 
+  goBack() {
+    if (this.previousPage) {
+      this.router.navigateByUrl('/business/day-closure/list?page=' + this.previousPage, {
+        replaceUrl: true,
+      })
+      return
+    }
+    this.location.back()
   }
   onDropdownItemSelected(parent: View, child1: ViewMenuChild, child2: ChildChild) {
-    // console.log({
-    //   parent,
-    //   child1,
-    //   child2,
-    // });
     this.sOptionMenu = {
       parent,
       child1,
       child2,
     }
     this.optionMenu = parent.sValue.toLowerCase().trim()
-    // console.log('this.optionMenu: ', this.optionMenu);
     this.sSelectedOptionMenu = `${parent.sKey}->${child1.sKey}->${child2.sKey}`
     const eDisplayMethod = child2.data?.displayMethod || null
     const sModeFilter = child2.data?.modeFilter || null
     const sLevelFilter = child2.data?.levelFilter || null
-    // console.log('eDisplayMethod: ', eDisplayMethod);
 
     if (eDisplayMethod) {
       this.sDisplayMethod = eDisplayMethod
@@ -585,6 +597,7 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
         (result: any) => {
           if (result?.data?.aLocation?.length)
             this.aLocation = result.data.aLocation;
+          this.sCurrentLocation = result?.data?.sName;
         },
         (error) => {
           console.log('error: ', error);
@@ -594,10 +607,6 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
 
   displayMethodChange() {
     this.aStatistic = [];
-  }
-
-  printingDate() {
-    this.fetchStatistics(this.sDisplayMethod.toString());
   }
 
   /* STATIC  */
@@ -652,6 +661,7 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
   fetchStatistics(sDisplayMethod?: string) {
     if (this.iStatisticId) this.IsDynamicState = true;
     if (!this.IsDynamicState) return this.fetchStatisticDocument();
+
     this.aStatistic = [];
     this.aPaymentMethods = [];
     const oBody = {
@@ -677,12 +687,10 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
       oBody.oFilter.bIsSupplierMode = this.bIsSupplierMode;
     }
     this.bStatisticLoading = true;
-    // console.log('sDisplayMethod: ', oBody?.oFilter?.sDisplayMethod, sDisplayMethod);
     this.statisticAuditSubscription = this.apiService
       .postNew('cashregistry', `/api/v1/statistics/transaction/audit`, oBody)
       .subscribe(
         (result: any) => {
-          // console.log('result: ', JSON.parse(JSON.stringify(result)));
           this.nPaymentMethodTotal = 0;
           this.nNewPaymentMethodTotal = 0;
           this.bStatisticLoading = false;
@@ -697,11 +705,8 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
               this.aPaymentMethods.map((item: any) => {
                 item.nNewAmount = item.nAmount;
                 this.nPaymentMethodTotal += parseFloat(item.nAmount);
-                // console.log('item: ', item);
                 return item;
               });
-              // console.log('this.nPaymentMethodTotal: ', this.nPaymentMethodTotal);
-              // console.log('this.aPaymentMethods: ', this.aPaymentMethods);
               this.nNewPaymentMethodTotal = this.nPaymentMethodTotal;
               this.filterDuplicatePaymentMethods();
             }
@@ -778,9 +783,7 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
       sortBy: '',
       sortOrder: '',
       searchValue: '',
-      oFilterBy: {
-        bRequiredForArticleGroup: true,
-      },
+      oFilterBy: {},
       iBusinessId: localStorage.getItem('currentBusiness'),
     };
 
@@ -793,6 +796,7 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
               this.propertyOptions[property._id] = [];
 
               property.aOptions.map((option: any) => {
+                // console.log('--------------------------->>>>>>.... option: ', option);
                 if (option?.sCode?.trim() != '') {
                   const opt: any = {
                     iPropertyId: property._id,
@@ -819,12 +823,6 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
   }
 
   onProperties(value?: any) {
-    // console.log(
-    //   'onProperties called: ',
-    //   this.selectedProperties,
-    //   this.propertyOptions,
-    //   this.aProperty
-    // );
     if (this.selectedProperties && this.selectedProperties[value]) {
       this.aFilterProperty = [];
       for (const oProperty of this.aProperty) {
@@ -837,6 +835,7 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
             }
           );
           for (const oOption of aOption) {
+            console.log('oOption: ', oOption);
             this.aFilterProperty.push(oOption?.sName);
           }
         }
@@ -845,10 +844,11 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
   }
 
   getWorkstations() {
-    (this.workstationListSubscription = this.apiService
-      .getNew('cashregistry', '/api/v1/workstations/list/' + this.iBusinessId)
-      .subscribe((result: any) => {
-        if (result && result.data?.length) this.aWorkStation = result.data;
+    (this.workstationListSubscription = this.apiService.getNew('cashregistry', '/api/v1/workstations/list/' + this.iBusinessId).subscribe((result: any) => {
+        if (result && result.data?.length) {
+          this.aWorkStation = result.data;
+          this.sCurrentWorkstation = this.aWorkStation.filter((el: any) => el._id === this.iWorkstationId)[0]?.sName;
+        }
       })),
       (error: any) => {
         console.error(error);
@@ -2003,9 +2003,7 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
 
   expandItem(item: any, iBusinessPartnerId: string = '') {
     item.bIsCollapseItem = !item.bIsCollapseItem;
-    if (item.aTransactionItems) {
-      return;
-    }
+    if (item.aTransactionItems) return;
     let data: any = {
       skip: 0,
       limit: 100,
@@ -2027,7 +2025,7 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
       this.sDisplayMethod.toString() === 'revenuePerArticleGroupAndProperty' ||
       this.sDisplayMethod.toString() === 'revenuePerArticleGroup'
     ) {
-      data.oFilterBy.iArticleGroupId = item._id;
+      data.oFilterBy.iArticleGroupOriginalId = item._id;
     }
     if (
       this.sDisplayMethod.toString() === 'revenuePerBusinessPartner' ||
@@ -2046,7 +2044,6 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
       .subscribe((result: any) => {
         item.isLoading = false;
         if (result?.data[0]?.result?.length) {
-          // console.log('expandItem response: ', result?.data[0]?.result);
           item.aTransactionItems = result.data[0].result;
         }
       });
@@ -2104,7 +2101,6 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
     );
   }
   addExpenses(data: any): Observable<any> {
-    // console.log('adding expenses', data);
 
     const value = localStorage.getItem('currentEmployee');
     let currentEmployeeId;
@@ -2139,29 +2135,54 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
 
   async closeDayState() {
     this.closingDayState = true;
-    this.aAmount
-      .filter((item: any) => item.nQuantity > 0)
-      .forEach(
-        (item: any) =>
-          (this.oCountings.oCountingsCashDetails[item.key] = item.nQuantity)
-      );
+    this.aAmount.filter((item: any) => item.nQuantity > 0).forEach((item: any) =>(this.oCountings.oCountingsCashDetails[item.key] = item.nQuantity));
     const nAmount = this.oCountings.nCashInTill - this.oCountings.nCashCounted;
+    
+    const oCashPaymentMethod = this.allPaymentMethod.filter((el: any) => el.sName.toLowerCase() === 'cash')[0];
+    const oBankPaymentMethod = this.allPaymentMethod.filter((el: any) => el.sName.toLowerCase() === 'bankpayment')[0];
+    console.log(oBankPaymentMethod, oCashPaymentMethod);
 
     if (nAmount > 0) {
       //we have difference in cash, so add that as and expense
-      const oPayment = this.allPaymentMethod.filter((el: any) => el.sName.toLowerCase() === 'cash')[0];
-      
-      const _expense = await this.addExpenses(
+
+     await this.addExpenses(
         {
           amount: nAmount,
           comment: 'Lost money',
           oPayment: {
-            iPaymentMethodId: oPayment._id,
+            iPaymentMethodId: oCashPaymentMethod._id,
             nAmount: nAmount,
-            sMethod: oPayment.sName.toLowerCase()
+            sMethod: oCashPaymentMethod.sName.toLowerCase()
           }
         }
       ).toPromise();
+    }
+
+    if(this.oCountings.nSkim > 0){  
+      //amount to put in bank - so add create new expense with positive amount to add it as bank payment, and negative amount as cash
+      // so increase bank payment amount and equally decrease cash payment amount
+      
+      
+      await this.addExpenses({
+          amount: nAmount,
+          comment: 'Transfer to the bank',
+          oPayment: {
+            iPaymentMethodId: oBankPaymentMethod._id,
+            nAmount: this.oCountings.nSkim,
+            sMethod: oBankPaymentMethod.sName.toLowerCase()
+          }
+        }).toPromise();
+
+      await this.addExpenses({
+          amount: nAmount,
+          comment: 'Transfer to the bank',
+          oPayment: {
+            iPaymentMethodId: oCashPaymentMethod._id,
+            nAmount: -this.oCountings.nSkim,
+            sMethod: oCashPaymentMethod.sName.toLowerCase()
+          }
+        }).toPromise();
+
     }
 
     const oBody = {
@@ -2184,17 +2205,7 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
   }
 
   getPaymentMethods() {
-    // console.log('getPaymentMethods');
-    // this.payMethodsLoading = true;
     this.payMethods = [];
-    // const methodsToDisplay = [
-    //   'card',
-    //   'cash',
-    //   'bankpayment',
-    //   'maestro',
-    //   'mastercard',
-    //   'visa',
-    // ];
     this.apiService
       .getNew('cashregistry', '/api/v1/payment-methods/' + this.iBusinessId)
       .subscribe(
@@ -2202,17 +2213,12 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
           if (result && result.data && result.data.length) {
             this.allPaymentMethod = result.data;
             result.data.forEach((element: any) => {
-              // if (methodsToDisplay.includes(element.sName.toLowerCase())) {
               this.payMethods.push(element);
-              // }
             });
             this.filterDuplicatePaymentMethods();
           }
-          // console.log(this.payMethods);
-          // this.payMethodsLoading = false;
         },
         (error) => {
-          // this.payMethodsLoading = false;
         }
       );
   }
@@ -2220,7 +2226,6 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
   filterDuplicatePaymentMethods() {
     const aPresent = [...this.aPaymentMethods.map((item: any) => item.iPaymentMethodId), ...this.aNewSelectedPaymentMethods.map((item: any) => item._id)];
     this.payMethods = this.payMethods.filter((item: any) => !aPresent.includes(item._id));
-    // console.log(aPresent, this.payMethods);
   }
 
   toggleEditPaymentMode() {
@@ -2239,7 +2244,6 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
     this.aPaymentMethods.forEach((item: any) => {
       if (item.nNewAmount)
         this.nNewPaymentMethodTotal += parseFloat(item.nNewAmount);
-      // console.log(parseFloat(item.nNewAmount), this.nNewPaymentMethodTotal);
     });
     if (this.aNewSelectedPaymentMethods?.length)
       this.aNewSelectedPaymentMethods.forEach((item: any) => {
@@ -2248,9 +2252,8 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
       });
   }
 
-  async saveUpdatedPayments() {
-    // console.log(this.aNewSelectedPaymentMethods);
-    // return;
+  async saveUpdatedPayments(event:any) {
+    event.target.disabled = true;
     this.aPaymentMethods.forEach(async (item: any) => {
       if (item.nAmount != item.nNewAmount) {
         await this.addExpenses({
@@ -2262,7 +2265,9 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
             sMethod: item.sMethod
           }
         }).toPromise();
+        event.target.disabled = false;
       }
+      this.paymentEditMode = false;
     });
 
     if (this.aNewSelectedPaymentMethods.length) {

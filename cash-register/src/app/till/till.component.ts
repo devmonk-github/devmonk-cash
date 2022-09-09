@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnDestroy, OnInit, ViewChildren } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild, ViewChildren } from '@angular/core';
 import {
   faScrewdriverWrench, faTruck, faBoxesStacked, faGifts, faUser, faTimes, faTimesCircle, faTrashAlt, faRing,
   faCoins, faCalculator, faArrowRightFromBracket, faSpinner, faSearch, faMoneyBill
@@ -72,11 +72,15 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   parkedTransactions: Array<any> = [];
   terminals: Array<any> = [];
   quickButtons: Array<any> = [];
-  quickButtonsLoading: boolean = false;
+
+  // quickButtonsLoading: boolean = false;
   fetchingProductDetails: boolean = false;
   bSearchingProduct: boolean = false;
-  bIsDayStateClosed: boolean = true;
+  
+  bIsPreviousDayStateClosed: boolean = true;
   bIsDayStateOpened: boolean = false; // Not opened then require to open it first
+  bDayStateChecking: boolean = false;
+  
   dOpenDate: any = '';
   iWorkstationId!: any;
 
@@ -102,7 +106,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   ];
   discountArticleGroup: any = {};
   saveInProgress = false;
-  @ViewChildren('searchField') searchField: any;
+  @ViewChild('searchField') searchField!: ElementRef;
   selectedQuickButton: any;
 
   randNumber(min: number, max: number): number {
@@ -144,18 +148,29 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.checkArticleGroups();
 
-    this.fetchQuickButtons();
+    if (this.bIsDayStateOpened) this.fetchQuickButtons();
 
     this.getfiskalyInfo();
     this.cancelFiskalyTransaction();
   }
 
+
+
+  ngAfterViewInit() {
+    if (this.searchField)
+      this.searchField.nativeElement.focus();
+  }
   async getfiskalyInfo() {
     const tssId = await this.fiskalyService.fetchTSS();
   }
 
-  ngAfterViewInit() {
-    this.searchField.first.nativeElement.focus();
+  onSelectRegular() {
+    this.shopProducts = []; this.commonProducts = []; this.eKind = 'regular'; this.isStockSelected = true
+  }
+  onSelectOrder() {
+    this.shopProducts = []; this.commonProducts = []; this.eKind = 'order'; this.isStockSelected = false
+    if (this.searchField)
+      this.searchField.nativeElement.focus();
   }
 
   loadTransaction() {
@@ -222,7 +237,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       nDiscount: 0,
       tax: 21,
       paymentAmount: 0,
-      oArticleGroupMetaData: { aProperty: [], sCategory: '', sSubCategory: '', oName: {} },
+      oArticleGroupMetaData: { aProperty: [], sCategory: '', sSubCategory: '', oName: {}, oNameOriginal: {} },
       description: '',
       open: true,
       new: true,
@@ -288,7 +303,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       name: this.translateService.instant(type.toUpperCase()),
       type,
       oType: { bRefund: false, bDiscount: false, bPrepayment: false },
-      oArticleGroupMetaData: { aProperty: [], sCategory: '', sSubCategory: '', oName: {} },
+      oArticleGroupMetaData: { aProperty: [], sCategory: '', sSubCategory: '', oName: {}, oNameOriginal: {} },
       aImage: [],
       quantity: 1,
       nBrokenProduct: 0,
@@ -341,6 +356,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     switch (item) {
       case 'delete':
         this.transactionItems.splice(index, 1);
+        // this.updateFiskalyTransaction()
+        this.updateFiskalyTransaction('ACTIVE', []);
         break;
       case 'update':
         let availableAmount = this.getUsedPayMethods(true);
@@ -612,13 +629,13 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     if (isFrom === 'quick-button') {
       let selectedQuickButton = product;
       this.bSearchingProduct = true;
-      const _oBusinessProductDetail = await this.getBusinessProduct(product?.iBusinessProductId).toPromise();
       this.bSearchingProduct = false;
-      product = _oBusinessProductDetail.data;
       price.nPriceIncludesVat = selectedQuickButton.nPrice;
     } else {
       price = product.aLocation ? product.aLocation.find((o: any) => o._id === this.locationId) : 0;
     }
+    const _oBusinessProductDetail = await this.getBusinessProduct(product?.iBusinessProductId || product?._id).toPromise();
+    product = _oBusinessProductDetail.data;
     this.transactionItems.push({
       name: product.oName ? product.oName['en'] : this.searchKeyword,
       eTransactionItemType: 'regular',
@@ -635,7 +652,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       sArticleNumber: product.sArticleNumber,
       description: product.sLabelDescription,
       iArticleGroupId: product.iArticleGroupId,
-      oArticleGroupMetaData: { aProperty: product.aProperty || [], sCategory: '', sSubCategory: '', oName: {} },
+      oArticleGroupMetaData: { aProperty: product.aProperty || [], sCategory: '', sSubCategory: '', oName: {}, oNameOriginal: {} },
       iBusinessBrandId: product.iBusinessBrandId || product.iBrandId,
       iBusinessProductId: product._id,
       iSupplierId: product.iBusinessPartnerId,
@@ -833,7 +850,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       nDiscount: 0,
       tax: 0,
       description: '',
-      oArticleGroupMetaData: { aProperty: [], sCategory: '', sSubCategory: '', oName: {} },
+      oArticleGroupMetaData: { aProperty: [], sCategory: '', sSubCategory: '', oName: {}, oNameOriginal: {} },
       open: true,
     });
     this.redeemedLoyaltyPoints = redeemedLoyaltyPoints;
@@ -846,8 +863,11 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       iWorkstationId: this.iWorkstationId
     }
     this.apiService.postNew('cashregistry', `/api/v1/statistics/open/day-state`, oBody).subscribe((result: any) => {
-      this.bIsDayStateOpened = true;
-      this.toastrService.show({ type: 'success', text: `Day-state is open now` });
+      if(result?.message==='success'){
+        this.bIsDayStateOpened = true;
+        if (this.bIsDayStateOpened) this.fetchQuickButtons();
+        this.toastrService.show({ type: 'success', text: `Day-state is open nowssss` });
+      }
     }, (error) => {
       this.toastrService.show({ type: 'warning', text: `Day-state is not open` });
     })
@@ -873,19 +893,19 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   fetchQuickButtons() {
-    this.quickButtonsLoading = true;
+    this.bSearchingProduct = true;
     try {
       this.apiService.getNew('cashregistry', '/api/v1/quick-buttons/' + this.requestParams.iBusinessId).subscribe((result: any) => {
 
-        this.quickButtonsLoading = false;
+        this.bSearchingProduct = false;
         if (result?.length) {
           this.quickButtons = result;
         }
       }, (error) => {
-        this.quickButtonsLoading = false;
+        this.bSearchingProduct = false;
       })
     } catch (e) {
-      this.quickButtonsLoading = false;
+      this.bSearchingProduct = false;
     }
   }
 
@@ -895,9 +915,12 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       iLocationId: this.locationId,
       iWorkstationId: this.iWorkstationId
     }
+    this.bDayStateChecking = true;
     this.apiService.postNew('cashregistry', `/api/v1/statistics/day-closure/check`, oBody).subscribe((result: any) => {
-      if (result?.data?.bIsDayStateOpened) {
-        this.bIsDayStateOpened = true;
+      if (result?.data) {
+        this.bDayStateChecking = false;
+        this.bIsDayStateOpened = result?.data?.bIsDayStateOpened;
+        if (this.bIsDayStateOpened) this.fetchQuickButtons();
         if (result?.data?.oStatisticDetail?.dOpenDate) {
           this.dOpenDate = result?.data?.oStatisticDetail?.dOpenDate;
 
@@ -907,7 +930,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
           const nOpenTimeSecond = (new Date(this.dOpenDate).getTime());
           const nCurrentTimeSecond = (new Date().getTime());
           const nDifferenceInHrs = (nCurrentTimeSecond - nOpenTimeSecond) / 3600000;
-          if (nDifferenceInHrs > 24) this.bIsDayStateClosed = false;
+          if (nDifferenceInHrs > 24) this.bIsPreviousDayStateClosed = false;
         }
       }
     }, (error) => {
