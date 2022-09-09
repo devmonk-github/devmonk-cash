@@ -1,14 +1,13 @@
 .work-break {
-    word-break: break-word;
+  word-break: break-word;
 }
 
 .chip {
-    margin-top: 10px;
-    border-radius: 25px;
-    background-color: #f1f1f1;
+  margin-top: 10px;
+  border-radius: 25px;
+  background-color: #f1f1f1;
 }
 .accordion-button-more {
-    
 }
 
 // .ng-select {
@@ -38,6 +37,10 @@
 // }
 
 .custom ::ng-deep .ng-placeholder::before {
-    font-family: FontAwesome;
-    content: "\f002";
+  font-family: FontAwesome;
+  content: "\f002";
+}
+
+.accordion-button::after {
+  content: none;
 }
