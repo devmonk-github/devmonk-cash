@@ -1,6 +1,6 @@
-<div class="overlay-full d-flex flex-column justify-content-center align-items-center" *ngIf="!bIsDayStateOpened"> 
-  
-  <div *ngIf="bDayStateChecking"> 
+<div class="overlay-full d-flex flex-column justify-content-center align-items-center" *ngIf="!bIsDayStateOpened">
+
+  <div *ngIf="bDayStateChecking">
     <div class="d-flex flex-column">
       <h1>{{ 'Please wait while we are checking for day state' | translate}}</h1>
       <div class="spinner-border mx-auto"></div>
@@ -177,14 +177,15 @@
 
         <div class="card card-flush mb-4">
           <div id="till-items-header" class="card-header p-3 lh-1 justify-content-start min-h-0">
-            <div class="d-flex w-100 fw-bold text-gray-600 align-items-center">
-              <span class="w-90px">{{ "QUANTITY" | translate}}</span>
-              <span class="w-275px">{{ "DESCRIPTION" | translate}}</span>
-              <span class="w-100px">{{ "PRICE" | translate}}</span>
-              <span class="w-100px">{{ "DISCOUNT" | translate}}</span>
-              <span class="w-100px">{{ "TAX" | translate}}</span>
-              <span class="w-100px">{{ "TOTAL" | translate}}</span>
-              <span class="w-80px">{{ "PREPAYMENT" | translate}}</span>
+            <div class="row w-100 fw-bold text-gray-600 align-items-center">
+              <span class="col">{{ "QUANTITY" | translate}}</span>
+              <span class="col">{{ "DESCRIPTION" | translate}}</span>
+              <span class="col">{{ "PRICE" | translate}}</span>
+              <span class="col">{{ "DISCOUNT" | translate}}</span>
+              <span class="col">{{ "TAX" | translate}}</span>
+              <span class="col">{{ "TOTAL" | translate}}</span>
+              <span class="col">{{ "PREPAYMENT" | translate}}</span>
+              <span class="col"></span>
             </div>
           </div>
           <div class="card-body p-0">
@@ -218,22 +219,21 @@
                     (itemChanged)="itemChanged($event, i)"></div>
 
                   <div class="d-table-cell">
-                    <button class="btn btn-sm btn-icon btn-active-color-primary w-30px h-30px"
+                    <button class="btn btn-sm  btn-icon  btn-active-color-danger mx-6 ms-4"
                       (click)="itemChanged('delete', i)">
-                      <span class="svg-icon svg-icon-1qx me-0">
+                      <span class="svg-icon svg-icon-3qx me-0">
                         <fa-icon [icon]="faTimes"></fa-icon>
                       </span>
                     </button>
                   </div>
                 </div>
               </ng-container>
-              <section class="d-flex product-row p-3 text-gray-600 align-items-center"
-                *ngIf="getTotals('quantity') !== 0">
-                <div class="w-90px">{{getTotals('quantity')}}</div>
-                <div class="w-300px">&nbsp;</div>
-                <div class="w-125px">{{getTotals('price') | currency: '€'}}</div>
-                <div class="w-100px">{{getTotals('discount')}}</div>
-                <div class="w-125px"></div>
+              <section class="row product-row p-3 text-gray-600 align-items-center" *ngIf="getTotals('quantity') !== 0">
+                <div class="col">{{getTotals('quantity')}}</div>
+                <div class="col">&nbsp;</div>
+                <div class="col">{{getTotals('price') | currency: '€'}}</div>
+                <div class="col">{{getTotals('discount')}}</div>
+                <div class="col"></div>
               </section>
             </div>
           </div>
