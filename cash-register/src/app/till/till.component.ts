@@ -72,13 +72,14 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   parkedTransactions: Array<any> = [];
   terminals: Array<any> = [];
   quickButtons: Array<any> = [];
-  
+
   // quickButtonsLoading: boolean = false;
   fetchingProductDetails: boolean = false;
   bSearchingProduct: boolean = false;
   
-  bIsDayStateClosed: boolean = true;
+  bIsPreviousDayStateClosed: boolean = true;
   bIsDayStateOpened: boolean = false; // Not opened then require to open it first
+  bDayStateChecking: boolean = false;
   
   dOpenDate: any = '';
   iWorkstationId!: any;
@@ -107,7 +108,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   saveInProgress = false;
   @ViewChild('searchField') searchField!: ElementRef;
   selectedQuickButton: any;
-  bDayStateChecking: boolean = true;
 
   randNumber(min: number, max: number): number {
     return Math.floor(Math.random() * (max - min + 1) + min);
@@ -863,8 +863,11 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       iWorkstationId: this.iWorkstationId
     }
     this.apiService.postNew('cashregistry', `/api/v1/statistics/open/day-state`, oBody).subscribe((result: any) => {
-      this.bIsDayStateOpened = true;
-      this.toastrService.show({ type: 'success', text: `Day-state is open now` });
+      if(result?.message==='success'){
+        this.bIsDayStateOpened = true;
+        if (this.bIsDayStateOpened) this.fetchQuickButtons();
+        this.toastrService.show({ type: 'success', text: `Day-state is open nowssss` });
+      }
     }, (error) => {
       this.toastrService.show({ type: 'warning', text: `Day-state is not open` });
     })
@@ -914,9 +917,9 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     this.bDayStateChecking = true;
     this.apiService.postNew('cashregistry', `/api/v1/statistics/day-closure/check`, oBody).subscribe((result: any) => {
-      if (result?.data?.bIsDayStateOpened) {
+      if (result?.data) {
         this.bDayStateChecking = false;
-        this.bIsDayStateOpened = true;
+        this.bIsDayStateOpened = result?.data?.bIsDayStateOpened;
         if (this.bIsDayStateOpened) this.fetchQuickButtons();
         if (result?.data?.oStatisticDetail?.dOpenDate) {
           this.dOpenDate = result?.data?.oStatisticDetail?.dOpenDate;
@@ -927,7 +930,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
           const nOpenTimeSecond = (new Date(this.dOpenDate).getTime());
           const nCurrentTimeSecond = (new Date().getTime());
           const nDifferenceInHrs = (nCurrentTimeSecond - nOpenTimeSecond) / 3600000;
-          if (nDifferenceInHrs > 24) this.bIsDayStateClosed = false;
+          if (nDifferenceInHrs > 24) this.bIsPreviousDayStateClosed = false;
         }
       }
     }, (error) => {
