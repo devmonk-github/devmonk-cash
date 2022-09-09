@@ -2,31 +2,42 @@
   <h2 class="accordion-header">
     <button class="accordion-button fs-4 fw-bold" type="button" data-bs-toggle="collapse"
       data-bs-target="#kt_accordion_1_body_1" aria-expanded="true" aria-controls="kt_accordion_1_body_1">
-      <section class="d-flex product-row mb-3 align-items-center">
-        <div class="w-90px">{{item.quantity}}</div>
-        <div class="w-275px">{{item.name}} - {{item.sGiftCardNumber}}</div>
-        <div class="w-100px">{{item.price | currency: '€'}}</div>
-        <div class="w-95px"></div>
-        <div class="w-100px">{{item.tax}}%</div>
-        <div class="w-100px">{{item.price | currency: '€'}}</div>
-        <div class="w-75px"></div>
+      <section class="row  product-row mb-3 align-items-center w-100">
+        <div class="col-12">
+          <div class="row">
+            <div class="col">{{item.quantity}}</div>
+            <div class="col">{{item.name}} - {{item.sGiftCardNumber}}</div>
+            <div class="col">{{item.price | currency: '€'}}</div>
+            <div class="col"></div>
+            <div class="col">{{item.tax}}%</div>
+            <div class="col">{{item.price | currency: '€'}}</div>
+            <div class="col"></div>
+          </div>
+        </div>
       </section>
     </button>
   </h2>
   <div id="kt_accordion_1_body_1" class="accordion-collapse collapse show" aria-labelledby="kt_accordion_1_header_1"
     data-bs-parent="#kt_accordion_1">
     <div class="accordion-body px-3 py-4">
-      <section class="d-flex product-row mb-3 row">
-        <div class="col-2">
-          <button class="btn btn-bg-light btn-active-color-primary mb-2 w-100" (click)="create()"
-            [disabled]="!item.nonEditable && numberIcon === faBan">
-            Print <fa-icon [icon]="faPrint"></fa-icon>
-          </button>
-          <button class="btn btn-bg-light btn-active-color-primary" (click)="duplicate()">Duplicate <fa-icon
-              [icon]="faClone">
-            </fa-icon>
-          </button>
+      <section class="row product-row ">
+        <div class="col-3">
+          <div class="row">
+            <div class="col-12">
+              <button class="btn btn-bg-light btn-active-color-primary mb-2 w-100" (click)="create()"
+                [disabled]="!item.nonEditable && numberIcon === faBan">
+                Print <fa-icon [icon]="faPrint"></fa-icon>
+              </button>
+            </div>
+            <div class="col-12">
+              <button class="btn btn-bg-light btn-active-color-primary mb-2 w-100" (click)="duplicate()">Duplicate
+                <fa-icon [icon]="faClone">
+                </fa-icon>
+              </button>
+            </div>
+          </div>
         </div>
+
         <div class="col-3">
           <div class="input-group b-5">
             <input type="text" class="form-control" name="number" id="number" [(ngModel)]="item.sGiftCardNumber"
@@ -60,6 +71,7 @@
             </label>
           </div>
         </div>
+
         <div class="col-3">
           <div class="form-floating till-padding">
             <select name="taxRate" id="taxRate" class="form-select" [(ngModel)]="item.tax">

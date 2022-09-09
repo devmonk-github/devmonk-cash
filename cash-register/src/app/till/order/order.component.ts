@@ -13,6 +13,7 @@ import { PriceService } from 'src/app/shared/service/price.service';
   // eslint-disable-next-line @angular-eslint/component-selector
   selector: '[till-order]',
   templateUrl: './order.component.html',
+  styleUrls: ['./order.component.scss'],
   encapsulation: ViewEncapsulation.None
 })
 export class OrderComponent implements OnInit {

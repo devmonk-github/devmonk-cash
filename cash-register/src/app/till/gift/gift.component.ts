@@ -9,7 +9,7 @@ import { CreateArticleGroupService } from 'src/app/shared/service/create-article
 @Component({
   selector: '[till-gift]',
   templateUrl: './gift.component.html',
-  styleUrls: ['./gift.component.sass'],
+  styleUrls: ['./gift.component.scss'],
   encapsulation: ViewEncapsulation.None
 })
 export class GiftComponent implements OnInit {
@@ -88,7 +88,7 @@ export class GiftComponent implements OnInit {
   }
 
   changeInPrice() {
-    this.item.nPurchasePrice =  this.item.price / 1.21;
+    this.item.nPurchasePrice = this.item.price / 1.21;
   }
 
   create(): void {
