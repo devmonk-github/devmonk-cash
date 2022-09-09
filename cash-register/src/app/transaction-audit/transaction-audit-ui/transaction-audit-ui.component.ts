@@ -795,11 +795,13 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
               this.propertyOptions[property._id] = [];
 
               property.aOptions.map((option: any) => {
-                console.log('--------------------------->>>>>>.... option: ', option);
+                // console.log('--------------------------->>>>>>.... option: ', option);
                 if (option?.sCode?.trim() != '') {
                   const opt: any = {
                     iPropertyId: property._id,
                     sPropertyName: property.sName,
+                    iPropertyOptionId: option?._id,
+                    sPropertyOptionName: option?.value,
                     oProperty: {},
                     sCode: option.sCode,
                     sName: option.sKey,
@@ -823,6 +825,7 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
 
   onProperties(value?: any) {
     if (this.selectedProperties && this.selectedProperties[value]) {
+      console.log('onProperties: ', this.selectedProperties);
       this.aFilterProperty = [];
       for (const oProperty of this.aProperty) {
         if (this.selectedProperties[oProperty?.iPropertyId]?.length) {
@@ -835,7 +838,7 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
           );
           for (const oOption of aOption) {
             console.log('oOption: ', oOption);
-            this.aFilterProperty.push(oOption?.sName);
+            this.aFilterProperty.push(oOption?.iPropertyOptionId);
           }
         }
       }

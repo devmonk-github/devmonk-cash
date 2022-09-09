@@ -357,15 +357,15 @@
                                                     </th>
                                                     <th class="w-150px"><span class="">{{"PRICE_WITH_VAT" |
                                                             translate}}</span>
-                                                        <h4 class="text-black">{{oSupplier.nTotalRevenue}}</h4>
+                                                        <h4 class="text-black">{{oSupplier.nTotalRevenue | number :'1.2-2'}}</h4>
                                                     </th>
                                                     <th class="w-150px"><span class="">{{"PURCHASE_PRICE" |
                                                             translate}}</span>
-                                                        <h4 class="text-black">{{oSupplier.nTotalPurchaseAmount}}</h4>
+                                                        <h4 class="text-black">{{oSupplier.nTotalPurchaseAmount | number :'1.2-2'}}</h4>
                                                     </th>
                                                     <th class="w-150px"><span class="">{{"GROSS_PROFIT" |
                                                             translate}}</span>
-                                                        <h4 class="text-black">{{oSupplier.nProfit| number :'1.2-2'}}
+                                                        <h4 class="text-black">{{oSupplier.nProfit | number :'1.2-2'}}
                                                         </h4>
                                                     </th>
                                                     <th class="w-150px"><span class="">{{"MARGIN" | translate}}</span>
@@ -386,10 +386,10 @@
                                                                     <th scope="col" class="w-150px">
                                                                         {{oArticleGroup.nQuantity}}</th>
                                                                     <th scope="col" class="w-150px">
-                                                                        {{oArticleGroup.nTotalRevenue}}
+                                                                        {{oArticleGroup.nTotalRevenue | number :'1.2-2'}}
                                                                     </th>
                                                                     <th scope="col" class="w-150px">
-                                                                        {{oArticleGroup.nTotalPurchaseAmount}}
+                                                                        {{oArticleGroup.nTotalPurchaseAmount | number :'1.2-2'}}
                                                                     </th>
                                                                     <th scope="col" class="w-150px">
                                                                         {{oArticleGroup.nProfit| number :'1.2-2'}}</th>
@@ -407,8 +407,8 @@
                                                                             {{oRevenueByProperty.aCategory.join(' |')}}
                                                                         </td>
                                                                         <td>{{oRevenueByProperty.nQuantity}}</td>
-                                                                        <td>{{oRevenueByProperty.nTotalRevenue}}</td>
-                                                                        <td>{{oRevenueByProperty.nTotalPurchaseAmount}}
+                                                                        <td>{{oRevenueByProperty.nTotalRevenue | number :'1.2-2'}}</td>
+                                                                        <td>{{oRevenueByProperty.nTotalPurchaseAmount | number :'1.2-2'}}
                                                                         </td>
                                                                         <td>{{oRevenueByProperty.nProfit| number
                                                                             :'1.2-2'}}</td>
@@ -443,11 +443,11 @@
                                                     </th>
                                                     <th class="w-150px"><span class="">{{"PRICE_WITH_VAT" |
                                                             translate}}</span>
-                                                        <h4 class="text-black">{{oSupplier.nTotalRevenue}}</h4>
+                                                        <h4 class="text-black">{{oSupplier.nTotalRevenue | number :'1.2-2'}}</h4>
                                                     </th>
                                                     <th class="w-150px"><span class="">{{"PURCHASE_PRICE" |
                                                             translate}}</span>
-                                                        <h4 class="text-black">{{oSupplier.nTotalPurchaseAmount}}</h4>
+                                                        <h4 class="text-black">{{oSupplier.nTotalPurchaseAmount | number :'1.2-2'}}</h4>
                                                     </th>
                                                     <th class="w-150px"><span class="">{{"GROSS_PROFIT" |
                                                             translate}}</span>
@@ -487,13 +487,13 @@
                                                                     <th scope="col" class="w-150px">
                                                                         {{oArticleGroup.nQuantity}}</th>
                                                                     <th scope="col" class="w-150px">
-                                                                        {{oArticleGroup.nTotalRevenue}}
+                                                                        {{oArticleGroup.nTotalRevenue | number :'1.2-2'}}
                                                                     </th>
                                                                     <th scope="col" class="w-150px">
-                                                                        {{oArticleGroup.nTotalPurchaseAmount}}
+                                                                        {{oArticleGroup.nTotalPurchaseAmount | number :'1.2-2'}}
                                                                     </th>
                                                                     <th scope="col" class="w-150px">
-                                                                        {{oArticleGroup.nProfit| number :'1.2-2'}}</th>
+                                                                        {{oArticleGroup.nProfit | number :'1.2-2'}}</th>
                                                                     <th scope="col" class="w-150px">
                                                                         {{oArticleGroup.nMargin}}
                                                                     </th>
@@ -509,9 +509,9 @@
                                                                         *ngFor="let item of oArticleGroup.aTransactionItems">
                                                                         <td> {{item.sProductName || item?.sProductNumber}} </td>
                                                                         <td> {{ item.nQuantity }}</td>
-                                                                        <td> {{ item.nRevenueAmount }}</td>
-                                                                        <td> {{ item.nCostOfRevenue }}</td>
-                                                                        <td> {{item.nProfitOfRevenue}}</td>
+                                                                        <td> {{ item.nRevenueAmount  | number :'1.2-2' }}</td>
+                                                                        <td> {{ item.nCostOfRevenue  | number :'1.2-2' }}</td>
+                                                                        <td> {{item.nProfitOfRevenue | number :'1.2-2'}}</td>
                                                                         <td></td>
                                                                     </tr>
                                                                 </ng-container>
@@ -544,15 +544,15 @@
                                                     </th>
                                                     <th class="w-150px">
                                                         <span class="">{{"PRICE_WITH_VAT" | translate}}</span>
-                                                        <h4 class="text-black">{{aStatistic[0]?.overall[0]?.nTotalRevenue}}</h4>
+                                                        <h4 class="text-black">{{aStatistic[0]?.overall[0]?.nTotalRevenue | number :'1.2-2'}}</h4>
                                                     </th>
                                                     <th class="w-150px">
                                                         <span class="">{{"PURCHASE_PRICE" | translate}}</span>
-                                                        <h4 class="text-black">{{aStatistic[0]?.overall[0]?.nTotalPurchaseAmount}}</h4>
+                                                        <h4 class="text-black">{{aStatistic[0]?.overall[0]?.nTotalPurchaseAmount | number :'1.2-2'}}</h4>
                                                     </th>
                                                     <th class="w-150px">
                                                         <span class="">{{"GROSS_PROFIT" | translate}}</span>
-                                                        <h4 class="text-black">{{aStatistic[0]?.overall[0]?.nProfit}}</h4>
+                                                        <h4 class="text-black">{{aStatistic[0]?.overall[0]?.nProfit | number :'1.2-2'}}</h4>
                                                     </th>
                                                     <th class="w-150px">
                                                         <span class="">{{"MARGIN" | translate}}</span>
@@ -575,9 +575,9 @@
                                                                         <th scope="col" class="w-150px">
                                                                             {{oArticleGroup.nQuantity}}</th>
                                                                         <th scope="col" class="w-150px">
-                                                                            {{oArticleGroup.nTotalRevenue}}</th>
+                                                                            {{oArticleGroup.nTotalRevenue | number :'1.2-2'}}</th>
                                                                         <th scope="col" class="w-150px">
-                                                                            {{oArticleGroup.nTotalPurchaseAmount}}
+                                                                            {{oArticleGroup.nTotalPurchaseAmount | number :'1.2-2'}}
                                                                         </th>
                                                                         <th scope="col" class="w-150px">
                                                                             {{oArticleGroup.nProfit| number
@@ -595,9 +595,9 @@
                                                                                 {{oRevenueByProperty.aCategory.join(' |')}}
                                                                             </td>
                                                                             <td>{{oRevenueByProperty.nQuantity}}</td>
-                                                                            <td>{{oRevenueByProperty.nTotalRevenue}}
+                                                                            <td>{{oRevenueByProperty.nTotalRevenue | number :'1.2-2'}}
                                                                             </td>
-                                                                            <td>{{oRevenueByProperty.nTotalPurchaseAmount}}
+                                                                            <td>{{oRevenueByProperty.nTotalPurchaseAmount | number :'1.2-2'}}
                                                                             </td>
                                                                             <td>{{oRevenueByProperty.nProfit| number
                                                                                 :'1.2-2'}}</td>
@@ -634,11 +634,11 @@
                                                     </th>
                                                     <th class="w-150px">
                                                         <span class="">{{"PRICE_WITH_VAT" | translate}}</span>
-                                                        <h4 class="text-black">{{aStatistic[0]?.overall[0]?.nTotalRevenue}}</h4>
+                                                        <h4 class="text-black">{{aStatistic[0]?.overall[0]?.nTotalRevenue | number :'1.2-2'}}</h4>
                                                     </th>
                                                     <th class="w-150px">
                                                         <span class="">{{"PURCHASE_PRICE" | translate}}</span>
-                                                        <h4 class="text-black">{{aStatistic[0]?.overall[0]?.nTotalPurchaseAmount}}</h4>
+                                                        <h4 class="text-black">{{aStatistic[0]?.overall[0]?.nTotalPurchaseAmount | number :'1.2-2'}}</h4>
                                                     </th>
                                                     <th class="w-150px">
                                                         <span class="">{{"GROSS_PROFIT" | translate}}</span>
@@ -681,10 +681,10 @@
                                                                     {{oRevenueByProperty.sPropertyName}}
                                                                 </th>
                                                                 <th class="w-150px">
-                                                                    {{oRevenueByProperty.nTotalRevenue}}
+                                                                    {{oRevenueByProperty.nTotalRevenue | number :'1.2-2'}}
                                                                 </th>
                                                                 <th class="w-150px">
-                                                                    {{oRevenueByProperty.nTotalPurchaseAmount}}</th>
+                                                                    {{oRevenueByProperty.nTotalPurchaseAmount | number :'1.2-2'}}</th>
                                                                 <th class="w-150px">
                                                                     {{oRevenueByProperty.nProfit| number :'1.2-2'}}</th>
                                                                 <th class="w-150px">
@@ -701,9 +701,9 @@
                                                                     *ngFor="let item of oRevenueByProperty.aTransactionItems">
                                                                     <td> {{item.sProductName || item?.sProductNumber}} </td>
                                                                     <td> {{ item.nQuantity }}</td>
-                                                                    <td> {{ item.nRevenueAmount }}</td>
-                                                                    <td> {{ item.nCostOfRevenue }}</td>
-                                                                    <td>{{item.nProfitOfRevenue}}</td>
+                                                                    <td> {{ item.nRevenueAmount | number :'1.2-2'}}</td>
+                                                                    <td> {{ item.nCostOfRevenue | number :'1.2-2'}}</td>
+                                                                    <td>{{item.nProfitOfRevenue | number :'1.2-2'}}</td>
                                                                     <td></td>
                                                                 </tr>
                                                                 <tr
@@ -740,11 +740,11 @@
                                                     </th>
                                                     <th class="w-150px">
                                                         <span class="">{{"PRICE_WITH_VAT" | translate}}</span>
-                                                        <h4 class="text-black">{{aStatistic[0]?.overall[0]?.nTotalRevenue}}</h4>
+                                                        <h4 class="text-black">{{aStatistic[0]?.overall[0]?.nTotalRevenue | number :'1.2-2'}}</h4>
                                                     </th>
                                                     <th class="w-150px">
                                                         <span class="">{{"PURCHASE_PRICE" | translate}}</span>
-                                                        <h4 class="text-black">{{aStatistic[0]?.overall[0]?.nTotalPurchaseAmount}}</h4>
+                                                        <h4 class="text-black">{{aStatistic[0]?.overall[0]?.nTotalPurchaseAmount | number :'1.2-2'}}</h4>
                                                     </th>
                                                     <th class="w-150px">
                                                         <span class="">{{"GROSS_PROFIT" | translate}}</span>
@@ -781,9 +781,9 @@
 
                                                                 </td>
                                                                 <td class="w-150px">{{oArticleGroup.nQuantity}}</td>
-                                                                <td class="w-150px">{{oArticleGroup.nTotalRevenue}}</td>
+                                                                <td class="w-150px">{{oArticleGroup.nTotalRevenue | number :'1.2-2'}}</td>
                                                                 <td class="w-150px">
-                                                                    {{oArticleGroup.nTotalPurchaseAmount}}</td>
+                                                                    {{oArticleGroup.nTotalPurchaseAmount | number :'1.2-2'}}</td>
                                                                 <td class="w-150px">{{oArticleGroup.nProfit | number
                                                                     :'1.2-2'}}</td>
                                                                 <td class="w-150px">{{oArticleGroup.nMargin}}</td>
@@ -799,9 +799,9 @@
                                                                     *ngFor="let item of oArticleGroup.aTransactionItems">
                                                                     <td> {{item.sProductName || item?.sProductNumber}} </td>
                                                                     <td> {{ item.nQuantity }}</td>
-                                                                    <td> {{ item.nRevenueAmount }}</td>
-                                                                    <td> {{ item.nCostOfRevenue }}</td>
-                                                                    <td>{{item.nProfitOfRevenue}}</td>
+                                                                    <td> {{ item.nRevenueAmount  | number :'1.2-2'}}</td>
+                                                                    <td> {{ item.nCostOfRevenue  | number :'1.2-2'}}</td>
+                                                                    <td>{{item.nProfitOfRevenue  | number :'1.2-2'}}</td>
                                                                     <td></td>
                                                                 </tr>
                                                             </ng-container>
@@ -900,9 +900,9 @@
                         <td><span class="">{{ data?.sVatMethod }}</span></td>
                         <td class="w-150px"><span class="">{{ data?.oVatRate[data?.sVatMethod].nProfit| number :'1.2-2'
                                 }}</span></td>
-                        <td class="w-150px"><span class="">{{ data?.oVatRate[data?.sVatMethod].nPurchaseValue }}</span>
+                        <td class="w-150px"><span class="">{{ data?.oVatRate[data?.sVatMethod].nPurchaseValue | number :'1.2-2' }}</span>
                         </td>
-                        <td class="w-150px"><span class="">{{ data?.oVatRate[data?.sVatMethod].nTotalRevenue }}</span>
+                        <td class="w-150px"><span class="">{{ data?.oVatRate[data?.sVatMethod].nTotalRevenue | number :'1.2-2' }}</span>
                         </td>
                         <td class="w-150px"><span class="">{{ data?.oVatRate[data?.sVatMethod].nVatAmount }}</span></td>
                     </ng-template>
