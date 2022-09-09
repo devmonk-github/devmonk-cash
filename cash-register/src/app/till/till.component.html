@@ -1,5 +1,4 @@
 <div class="overlay-full d-flex flex-column justify-content-center align-items-center" *ngIf="!bIsDayStateOpened">
-
   <div *ngIf="bDayStateChecking">
     <div class="d-flex flex-column">
       <h1>{{ 'Please wait while we are checking for day state' | translate}}</h1>
@@ -7,7 +6,7 @@
     </div>
   </div>
 
-  <div *ngIf="!bDayStateChecking && !bIsDayStateOpened">
+  <div *ngIf="!bDayStateChecking && !bIsDayStateOpened" class="d-flex flex-column">
     <h1>{{ 'NO_OPEN_DAY_STATE_FOUND' | translate}}</h1>
     <button class="btn btn-white" (click)="openDayState()">{{ 'OPEN_CASH_REGISTRY' | translate}}</button>
   </div>
@@ -20,7 +19,7 @@
       <div class="col-12">
         <div class="row">
           <div class="col-8">
-            <div class="alert alert-warning" *ngIf="!bIsDayStateClosed">
+            <div class="alert alert-warning" *ngIf="!bIsPreviousDayStateClosed">
               <p class="mb-0" style="font-size: 1.2rem;font-weight: bold;margin-left:1.3rem">
                 <span style="margin-right:1rem; font-weight:bolder">!</span>
                 The previous day is not closed yet ({{ dOpenDate | date:'EEEE, dd-MM-YYYY hh:mm:ss aaa':'GMT'}})
