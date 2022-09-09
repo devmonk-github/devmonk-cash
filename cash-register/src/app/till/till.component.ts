@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnDestroy, OnInit, ViewChildren } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild, ViewChildren } from '@angular/core';
 import {
   faScrewdriverWrench, faTruck, faBoxesStacked, faGifts, faUser, faTimes, faTimesCircle, faTrashAlt, faRing,
   faCoins, faCalculator, faArrowRightFromBracket, faSpinner, faSearch, faMoneyBill
@@ -72,11 +72,14 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   parkedTransactions: Array<any> = [];
   terminals: Array<any> = [];
   quickButtons: Array<any> = [];
-  quickButtonsLoading: boolean = false;
+  
+  // quickButtonsLoading: boolean = false;
   fetchingProductDetails: boolean = false;
   bSearchingProduct: boolean = false;
+  
   bIsDayStateClosed: boolean = true;
   bIsDayStateOpened: boolean = false; // Not opened then require to open it first
+  
   dOpenDate: any = '';
   iWorkstationId!: any;
 
@@ -102,9 +105,9 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   ];
   discountArticleGroup: any = {};
   saveInProgress = false;
-  @ViewChildren('searchField') searchField: any;
+  @ViewChild('searchField') searchField!: ElementRef;
   selectedQuickButton: any;
-  bDayStateChecking: boolean = false;
+  bDayStateChecking: boolean = true;
 
   randNumber(min: number, max: number): number {
     return Math.floor(Math.random() * (max - min + 1) + min);
@@ -145,18 +148,29 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.checkArticleGroups();
 
-    this.fetchQuickButtons();
+    if (this.bIsDayStateOpened) this.fetchQuickButtons();
 
     this.getfiskalyInfo();
     this.cancelFiskalyTransaction();
   }
 
+
+
+  ngAfterViewInit() {
+    if (this.searchField)
+      this.searchField.nativeElement.focus();
+  }
   async getfiskalyInfo() {
     const tssId = await this.fiskalyService.fetchTSS();
   }
 
-  ngAfterViewInit() {
-    this.searchField.first.nativeElement.focus();
+  onSelectRegular() {
+    this.shopProducts = []; this.commonProducts = []; this.eKind = 'regular'; this.isStockSelected = true
+  }
+  onSelectOrder() {
+    this.shopProducts = []; this.commonProducts = []; this.eKind = 'order'; this.isStockSelected = false
+    if (this.searchField)
+      this.searchField.nativeElement.focus();
   }
 
   loadTransaction() {
@@ -342,6 +356,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     switch (item) {
       case 'delete':
         this.transactionItems.splice(index, 1);
+        // this.updateFiskalyTransaction()
+        this.updateFiskalyTransaction('ACTIVE', []);
         break;
       case 'update':
         let availableAmount = this.getUsedPayMethods(true);
@@ -636,7 +652,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       sArticleNumber: product.sArticleNumber,
       description: product.sLabelDescription,
       iArticleGroupId: product.iArticleGroupId,
-      oArticleGroupMetaData: { aProperty: product.aProperty || [], sCategory: '', sSubCategory: '', oName: {}, oNameOriginal: {}  },
+      oArticleGroupMetaData: { aProperty: product.aProperty || [], sCategory: '', sSubCategory: '', oName: {}, oNameOriginal: {} },
       iBusinessBrandId: product.iBusinessBrandId || product.iBrandId,
       iBusinessProductId: product._id,
       iSupplierId: product.iBusinessPartnerId,
@@ -874,19 +890,19 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   fetchQuickButtons() {
-    this.quickButtonsLoading = true;
+    this.bSearchingProduct = true;
     try {
       this.apiService.getNew('cashregistry', '/api/v1/quick-buttons/' + this.requestParams.iBusinessId).subscribe((result: any) => {
 
-        this.quickButtonsLoading = false;
+        this.bSearchingProduct = false;
         if (result?.length) {
           this.quickButtons = result;
         }
       }, (error) => {
-        this.quickButtonsLoading = false;
+        this.bSearchingProduct = false;
       })
     } catch (e) {
-      this.quickButtonsLoading = false;
+      this.bSearchingProduct = false;
     }
   }
 
@@ -901,6 +917,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       if (result?.data?.bIsDayStateOpened) {
         this.bDayStateChecking = false;
         this.bIsDayStateOpened = true;
+        if (this.bIsDayStateOpened) this.fetchQuickButtons();
         if (result?.data?.oStatisticDetail?.dOpenDate) {
           this.dOpenDate = result?.data?.oStatisticDetail?.dOpenDate;
 

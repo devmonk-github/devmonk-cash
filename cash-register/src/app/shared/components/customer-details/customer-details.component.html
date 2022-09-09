@@ -93,12 +93,25 @@
                             </div>
                         </div>
                     </div>
-
-                    <div *ngIf="!editProfile" class="mb-3">
+                    <div *ngIf="!editProfile" class="row mb-6">
+                        <label class="col-lg-3 col-form-label fw-bold fs-6">{{'NOTES' | translate}}</label>
+                        <div class="col-lg-9">
+                            <div class="row">
+                                <div class="col-lg-12 fv-row">
+                                    <textarea cols="30" rows="3" type="text"
+                                        class="form-control form-control-lg form-control-solid mb-3 mb-lg-0 w-100"
+                                        id="businessEmail" [(ngModel)]="customer.note" name="businessEmail"
+                                        placeholder="{{'NOTES' | translate}}"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- <div *ngIf="!editProfile" class="mb-3">
+                        
                         <label for="note">{{'NOTES' | translate}}</label>
                         <textarea name="note" id="note" cols="30" rows="6" class="form-control" disabled
-                            [(ngModel)]="customer.note"></textarea>
-                    </div>
+                            ></textarea>
+                                </div> -->
 
                     <!-- <p *ngIf="customer.note" class="text-gray-800 text-italic">{{customer.note}}</p>
                     <div class="d-flex flex-wrap py-5">
@@ -235,8 +248,10 @@
                                             <td>{{activity?.sNumber}}</td>
                                             <td>{{activity?.sReceiptNumber}}</td>
                                             <td>{{getTypes(activity.activityitems)}}</td>
-                                            <td scope="row">{{activity?.dCreatedDate | date: 'yyyy-MM-dd HH:mm'}}</td>
-                                            <td scope="row">{{activity?.dPickedUp | date: 'yyyy-MM-dd HH:mm'}}</td>
+                                            <td scope="row">{{activity?.dCreatedDate | date: 'yyyy-MM-dd
+                                                HH:mm'}}</td>
+                                            <td scope="row">{{activity?.dPickedUp | date: 'yyyy-MM-dd
+                                                HH:mm'}}</td>
                                             <td>{{activity?.eRepairStatus}}</td>
                                             <td>{{activity?.eType}}</td>
                                         </tr>
@@ -269,8 +284,10 @@
                                             <td>{{activity?.sNumber}}</td>
                                             <td>{{activity?.sReceiptNumber}}</td>
                                             <td>{{activity?.oType?.eTransactionType}}</td>
-                                            <td scope="row">{{activity?.dCreatedDate | date: 'yyyy-MM-dd HH:mm'}}</td>
-                                            <td scope="row">{{activity?.dEstimatedDate | date: 'yyyy-MM-dd HH:mm'}}</td>
+                                            <td scope="row">{{activity?.dCreatedDate | date: 'yyyy-MM-dd
+                                                HH:mm'}}</td>
+                                            <td scope="row">{{activity?.dEstimatedDate | date: 'yyyy-MM-dd
+                                                HH:mm'}}</td>
                                             <td>{{activity?.eRepairStatus}}</td>
                                             <td>{{activity?.eType}}</td>
                                         </tr>

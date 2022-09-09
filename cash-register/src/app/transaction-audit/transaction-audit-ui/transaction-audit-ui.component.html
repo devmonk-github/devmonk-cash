@@ -119,19 +119,7 @@
                                     <!--end::Menu-->
                         
                                 </div>
-                                <!-- DISPLAY_METHOD -->
-                                <!-- <div class="col-md-3">
-                                                        <label class="fs-6 form-label fw-bolder text-dark">{{'DISPLAY_METHOD' |
-                                                            translate}}</label>
-                                                        <ng-select class="form-control form-control-solid p-0" [(ngModel)]="sDisplayMethod"
-                                                            (ngModelChange)="displayMethodChange()" [clearable]="false">
-                                                            <ng-option *ngFor="let option of aDisplayMethod" [value]="option.sKey">{{
-                                                                option.sValue
-                                                                |
-                                                                translate}}
-                                                            </ng-option>
-                                                        </ng-select>
-                                                    </div> -->
+    
                                 <!-- LOCATION -->
                                 <div class="col-md-3">
                                     <label class="fs-6 form-label fw-bolder text-dark">{{'LOCATION' | translate}}</label>
@@ -258,17 +246,7 @@
                                     </div>
 
                                     <div class="col-md-3 mt-5">
-                                        <!-- <button type="button" class="btn btn-primary" data-kt-roles-modal-action="submit"
-                                            (click)="closeDayState($event)" [class.disabled]="bStatisticLoading">
-                                            <span class="indicator-label">{{ "CLOSE_DAYSTATE" | translate}}</span>
-                                        </button> -->
                                         <div *ngIf="closingDayState" class="spinner-border mx-auto"></div>
-
-                                        <!-- <div class="d-flex align-items-center">
-                                            <button class="btn btn-primary mx-2" (click)="closeDayState($event)">{{ "CLOSE_DAYSTATE" |
-                                                translate}}</button>
-                                            <div *ngIf="closingDayState" class="spinner-border mx-auto"></div>
-                                        </div> -->
                                     </div>
                                 </div>
                             </div>
@@ -529,11 +507,11 @@
                                                                 <ng-container *ngIf="oArticleGroup.bIsCollapseItem">
                                                                     <tr class="bg-white"
                                                                         *ngFor="let item of oArticleGroup.aTransactionItems">
-                                                                        <td>{{item.sProductName}}</td>
-                                                                        <td>{{item.nQuantity}}</td>
-                                                                        <td>{{item.nPriceIncVat}}</td>
-                                                                        <td>{{item.nPurchasePrice}}</td>
-                                                                        <td></td>
+                                                                        <td> {{item.sProductName || item?.sProductNumber}} </td>
+                                                                        <td> {{ item.nQuantity }}</td>
+                                                                        <td> {{ item.nRevenueAmount }}</td>
+                                                                        <td> {{ item.nCostOfRevenue }}</td>
+                                                                        <td> {{item.nProfitOfRevenue}}</td>
                                                                         <td></td>
                                                                     </tr>
                                                                 </ng-container>
@@ -556,20 +534,29 @@
 
                                             <thead>
                                                 <tr>
-                                                    <th><span class="">{{ 'ARTICLE_NAME' | translate}}</span>
+                                                    <th>
+                                                        <span class="">{{ 'ARTICLE' | translate}}</span>
+                                                        <h4 class="text-black">-</h4>
                                                     </th>
-                                                    <th class="w-150px"><span class="">{{"QUANTITY" | translate}}</span>
+                                                    <th class="w-150px">
+                                                        <span class="">{{"QUANTITY" | translate}}</span>
+                                                        <h4 class="text-black">{{aStatistic[0]?.overall[0]?.nQuantity}}</h4>
                                                     </th>
-                                                    <th class="w-150px"><span class="">{{"PRICE_WITH_VAT" |
-                                                            translate}}</span>
+                                                    <th class="w-150px">
+                                                        <span class="">{{"PRICE_WITH_VAT" | translate}}</span>
+                                                        <h4 class="text-black">{{aStatistic[0]?.overall[0]?.nTotalRevenue}}</h4>
                                                     </th>
-                                                    <th class="w-150px"><span class="">{{"PURCHASE_PRICE" |
-                                                            translate}}</span>
+                                                    <th class="w-150px">
+                                                        <span class="">{{"PURCHASE_PRICE" | translate}}</span>
+                                                        <h4 class="text-black">{{aStatistic[0]?.overall[0]?.nTotalPurchaseAmount}}</h4>
                                                     </th>
-                                                    <th class="w-150px"><span class="">{{"GROSS_PROFIT" |
-                                                            translate}}</span>
+                                                    <th class="w-150px">
+                                                        <span class="">{{"GROSS_PROFIT" | translate}}</span>
+                                                        <h4 class="text-black">{{aStatistic[0]?.overall[0]?.nProfit}}</h4>
                                                     </th>
-                                                    <th class="w-150px"><span class="">{{"MARGIN" | translate}}</span>
+                                                    <th class="w-150px">
+                                                        <span class="">{{"MARGIN" | translate}}</span>
+                                                        <h4 class="text-black">{{aStatistic[0]?.overall[0]?.nMargin}}</h4>
                                                     </th>
                                                 </tr>
                                             </thead>
@@ -637,17 +624,29 @@
                                             class="table table-rounded border border-gray-300 table-row-bordered table-row-gray-300 gy-5 gs-5 text-gray-600">
                                             <thead>
                                                 <tr>
-                                                    <th><span class="">{{ 'ARTICLE_GROUP' | translate}}</span></th>
-                                                    <th class="w-150px"><span class="">{{ "QUANTITY" |
-                                                            translate}}</span>
+                                                    <th>
+                                                        <span class="">{{ 'ARTICLE' | translate}}</span>
+                                                        <h4 class="text-black">-</h4>
                                                     </th>
-                                                    <th class="w-150px"><span class="">{{ "PRICE_WITH_VAT" |
-                                                            translate}}</span></th>
-                                                    <th class="w-150px"><span class="">{{ "PURCHASE_PRICE" |
-                                                            translate}}</span></th>
-                                                    <th class="w-150px"><span class="">{{ "GROSS_PROFIT" |
-                                                            translate}}</span></th>
-                                                    <th class="w-150px"><span class="">{{"MARGIN" | translate}}</span>
+                                                    <th class="w-150px">
+                                                        <span class="">{{"QUANTITY" | translate}}</span>
+                                                        <h4 class="text-black">{{aStatistic[0]?.overall[0]?.nQuantity}}</h4>
+                                                    </th>
+                                                    <th class="w-150px">
+                                                        <span class="">{{"PRICE_WITH_VAT" | translate}}</span>
+                                                        <h4 class="text-black">{{aStatistic[0]?.overall[0]?.nTotalRevenue}}</h4>
+                                                    </th>
+                                                    <th class="w-150px">
+                                                        <span class="">{{"PURCHASE_PRICE" | translate}}</span>
+                                                        <h4 class="text-black">{{aStatistic[0]?.overall[0]?.nTotalPurchaseAmount}}</h4>
+                                                    </th>
+                                                    <th class="w-150px">
+                                                        <span class="">{{"GROSS_PROFIT" | translate}}</span>
+                                                        <h4 class="text-black">{{aStatistic[0]?.overall[0]?.nProfit}}</h4>
+                                                    </th>
+                                                    <th class="w-150px">
+                                                        <span class="">{{"MARGIN" | translate}}</span>
+                                                        <h4 class="text-black">{{aStatistic[0]?.overall[0]?.nMargin}}</h4>
                                                     </th>
                                                 </tr>
                                             </thead>
@@ -700,11 +699,11 @@
                                                             <ng-container *ngIf="oRevenueByProperty.bIsCollapseItem">
                                                                 <tr class="bg-white"
                                                                     *ngFor="let item of oRevenueByProperty.aTransactionItems">
-                                                                    <td> {{item.sProductName}} </td>
+                                                                    <td> {{item.sProductName || item?.sProductNumber}} </td>
                                                                     <td> {{ item.nQuantity }}</td>
-                                                                    <td> {{ item.nPriceIncVat }}</td>
-                                                                    <td> {{ item.nPurchasePrice }}</td>
-                                                                    <td></td>
+                                                                    <td> {{ item.nRevenueAmount }}</td>
+                                                                    <td> {{ item.nCostOfRevenue }}</td>
+                                                                    <td>{{item.nProfitOfRevenue}}</td>
                                                                     <td></td>
                                                                 </tr>
                                                                 <tr
@@ -731,17 +730,29 @@
                                             class="table table-rounded border border-gray-300 table-row-bordered table-row-gray-300 gy-5 gs-5 text-gray-600">
                                             <thead>
                                                 <tr>
-                                                    <th><span class="">{{ 'ARTICLE_GROUP' | translate}}</span></th>
-                                                    <th class="w-150px"><span class="">{{ "QUANTITY" |
-                                                            translate}}</span>
+                                                    <th>
+                                                        <span class="">{{ 'ARTICLE' | translate}}</span>
+                                                        <h4 class="text-black">-</h4>
                                                     </th>
-                                                    <th class="w-150px"><span class="">{{ "PRICE_WITH_VAT" |
-                                                            translate}}</span></th>
-                                                    <th class="w-150px"><span class="">{{ "PURCHASE_PRICE" |
-                                                            translate}}</span></th>
-                                                    <th class="w-150px"><span class="">{{ "GROSS_PROFIT" |
-                                                            translate}}</span></th>
-                                                    <th class="w-150px"><span class="">{{"MARGIN" | translate}}</span>
+                                                    <th class="w-150px">
+                                                        <span class="">{{"QUANTITY" | translate}}</span>
+                                                        <h4 class="text-black">{{aStatistic[0]?.overall[0]?.nQuantity}}</h4>
+                                                    </th>
+                                                    <th class="w-150px">
+                                                        <span class="">{{"PRICE_WITH_VAT" | translate}}</span>
+                                                        <h4 class="text-black">{{aStatistic[0]?.overall[0]?.nTotalRevenue}}</h4>
+                                                    </th>
+                                                    <th class="w-150px">
+                                                        <span class="">{{"PURCHASE_PRICE" | translate}}</span>
+                                                        <h4 class="text-black">{{aStatistic[0]?.overall[0]?.nTotalPurchaseAmount}}</h4>
+                                                    </th>
+                                                    <th class="w-150px">
+                                                        <span class="">{{"GROSS_PROFIT" | translate}}</span>
+                                                        <h4 class="text-black">{{aStatistic[0]?.overall[0]?.nProfit}}</h4>
+                                                    </th>
+                                                    <th class="w-150px">
+                                                        <span class="">{{"MARGIN" | translate}}</span>
+                                                        <h4 class="text-black">{{aStatistic[0]?.overall[0]?.nMargin}}</h4>
                                                     </th>
                                                 </tr>
                                             </thead>
@@ -786,11 +797,11 @@
                                                             <ng-container *ngIf="oArticleGroup.bIsCollapseItem">
                                                                 <tr class="bg-white"
                                                                     *ngFor="let item of oArticleGroup.aTransactionItems">
-                                                                    <td> {{item.sProductName}} </td>
+                                                                    <td> {{item.sProductName || item?.sProductNumber}} </td>
                                                                     <td> {{ item.nQuantity }}</td>
-                                                                    <td> {{ item.nPriceIncVat }}</td>
-                                                                    <td> {{ item.nPurchasePrice }}</td>
-                                                                    <td></td>
+                                                                    <td> {{ item.nRevenueAmount }}</td>
+                                                                    <td> {{ item.nCostOfRevenue }}</td>
+                                                                    <td>{{item.nProfitOfRevenue}}</td>
                                                                     <td></td>
                                                                 </tr>
                                                             </ng-container>
