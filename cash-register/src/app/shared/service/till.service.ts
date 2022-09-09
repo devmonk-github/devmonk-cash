@@ -226,7 +226,7 @@ export class TillService {
           tItem1.nRevenueAmount = tItem1.nPaymentAmount;
           tItem1.nPriceIncVat = tItem1.nPaymentAmount;
           //tItem1.oType.bPrepayment = true; // B jolmer testing discount && prepayment
-          tItem1.oType.bPrepayment = false;  // A Jolmer testing discount
+          // tItem1.oType.bPrepayment = false;  // A Jolmer testing discount
           tItem1.nPurchasePrice = tItem1.nPriceIncVat * i.nPurchasePrice / i.nPriceIncVat;
           body.transactionItems.push(tItem1);
         }
