@@ -192,28 +192,28 @@
             <div class="accordion" id="till-items-accordion" [itemLength]="transactionItems.length">
               <ng-container *ngFor="let item of transactionItems; let i = index">
                 <div style="display:inline-table;">
-
+                  <!-- regular -->
                   <div class="accordion-item w-100 d-table-cell" till-product
                     *ngIf="item.type === 'regular' || item.type === 'reservation'" [item]="item" [taxes]="taxes"
                     (itemChanged)="itemChanged($event, i)"></div>
-
+                  <!-- order -->
                   <div class="accordion-item w-100 d-table-cell" till-order *ngIf="item.type === 'order'" [item]="item"
                     [taxes]="taxes" (itemChanged)="itemChanged($event, i)"></div>
-
+                  <!-- repair -->
                   <div class="accordion-item w-100 d-table-cell" till-repair *ngIf="item.type === 'repair'"
                     [item]="item" [taxes]="taxes" (itemChanged)="itemChanged($event, i)"></div>
-
+                  <!-- giftcard -->
                   <div class="accordion-item w-100 d-table-cell w-100" till-gift *ngIf="item.type === 'giftcard'"
                     [item]="item" [transactionItems]="transactionItems" [taxes]="taxes"
                     (itemChanged)="itemChanged($event, i)" (createGiftCard)="createGiftCard($event, i)">
                   </div>
-
+                  <!-- gold-purchase -->
                   <div class="accordion-item w-100 d-table-cell w-100" till-goldpurchase
                     *ngIf="item.type === 'gold-purchase'" [item]="item" (itemChanged)="itemChanged($event, i)"></div>
-
+                  <!-- empty-line -->
                   <div class="accordion-item w-100 d-table-cell w-100" till-other *ngIf="item.type=== 'empty-line'"
                     [item]="item" [taxes]="taxes" (itemChanged)="itemChanged($event, i)"></div>
-
+                  <!-- loyalty-points -->
                   <div class="accordion-item w-100 d-table-cell w-100" till-loyalty-points-discount
                     *ngIf="item.type=== 'loyalty-points'" [item]="item" [taxes]="taxes"
                     (itemChanged)="itemChanged($event, i)"></div>
