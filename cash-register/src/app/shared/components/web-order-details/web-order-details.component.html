@@ -171,8 +171,8 @@
                                         <input *ngIf="item.eActivityItemStatus == 'refundInCashRegister' || item.eActivityItemStatus == 'refund'" type="text" [disabled]="true" [(ngModel)]="item.eActivityItemStatus" class="form-control">
                                     </td>
                                     <td *ngIf="item?.bRefund"></td>
-                                    <td>{{item?.nPriceIncVat}}</td>
                                     <td>{{item?.customer?.sFirstName}} {{item?.customer?.sLastName}}</td>
+                                    <td>{{item?.nPriceIncVat}}</td>
                                     <td>
                                         <div class="d-flex align-items-stretch flex-shrink-0 me-sm-2">
                                             {{item?.nQuantity}}
