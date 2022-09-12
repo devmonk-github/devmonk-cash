@@ -2,10 +2,21 @@
     <div class="card-header align-items-center py-5">
         <h4 class="card-title" *ngIf="mode === 'create'">{{"NEW_CUSTOMER" | translate}}</h4>
         <h4 class="card-title" *ngIf="mode === 'details'">{{"CUSTOMER_DETAILS" | translate}}</h4>
-        <div class="card-toolbar flex-row-fluid justify-content-end gap-5">
+        <div *ngIf="mode === 'details'" class="card-toolbar flex-row-fluid justify-content-end gap-5">
             <button class="btn btn-secondary" (click)="editProfile = !editProfile">{{ (editProfile)?"CANCEL":"EDIT" |
                 translate}}</button>
             <button class="btn btn-primary" *ngIf="editProfile" (click)="EditOrCreateCustomer()">{{"SAVE" |
+                translate}}</button>
+            <a class="cancel my-auto" (click)="close(false)">
+                <i class="fa fa-times"></i>
+            </a>
+            <!-- <button type="button" class="btn btn-sm" (click)="close(false)">
+                <fa-icon [icon]="faTimes"></fa-icon>
+            </button> -->
+        </div>
+        <div *ngIf="mode === 'create'" class="card-toolbar flex-row-fluid justify-content-end gap-5">
+
+            <button class="btn btn-primary" (click)="EditOrCreateCustomer()">{{"CREATE" |
                 translate}}</button>
             <a class="cancel my-auto" (click)="close(false)">
                 <i class="fa fa-times"></i>
@@ -248,10 +259,8 @@
                                             <td>{{activity?.sNumber}}</td>
                                             <td>{{activity?.sReceiptNumber}}</td>
                                             <td>{{getTypes(activity.activityitems)}}</td>
-                                            <td scope="row">{{activity?.dCreatedDate | date: 'yyyy-MM-dd
-                                                HH:mm'}}</td>
-                                            <td scope="row">{{activity?.dPickedUp | date: 'yyyy-MM-dd
-                                                HH:mm'}}</td>
+                                            <td scope="row">{{activity?.dCreatedDate | date: 'yyyy-MM-dd HH:mm'}}</td>
+                                            <td scope="row">{{activity?.dPickedUp | date: 'yyyy-MM-dd HH:mm'}}</td>
                                             <td>{{activity?.eRepairStatus}}</td>
                                             <td>{{activity?.eType}}</td>
                                         </tr>
@@ -284,10 +293,8 @@
                                             <td>{{activity?.sNumber}}</td>
                                             <td>{{activity?.sReceiptNumber}}</td>
                                             <td>{{activity?.oType?.eTransactionType}}</td>
-                                            <td scope="row">{{activity?.dCreatedDate | date: 'yyyy-MM-dd
-                                                HH:mm'}}</td>
-                                            <td scope="row">{{activity?.dEstimatedDate | date: 'yyyy-MM-dd
-                                                HH:mm'}}</td>
+                                            <td scope="row">{{activity?.dCreatedDate | date: 'yyyy-MM-dd HH:mm'}}</td>
+                                            <td scope="row">{{activity?.dEstimatedDate | date: 'yyyy-MM-dd HH:mm'}}</td>
                                             <td>{{activity?.eRepairStatus}}</td>
                                             <td>{{activity?.eType}}</td>
                                         </tr>
