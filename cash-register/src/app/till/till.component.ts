@@ -866,7 +866,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       if(result?.message==='success'){
         this.bIsDayStateOpened = true;
         if (this.bIsDayStateOpened) this.fetchQuickButtons();
-        this.toastrService.show({ type: 'success', text: `Day-state is open nowssss` });
+        this.toastrService.show({ type: 'success', text: `Day-state is open now` });
       }
     }, (error) => {
       this.toastrService.show({ type: 'warning', text: `Day-state is not open` });

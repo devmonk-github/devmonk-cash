@@ -171,7 +171,6 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
     nCashInTill: 0,
     nSkim: 0,
     nCashRemain: 0,
-    nCashToKept: 0,
     nCashAtStart: 0,
     oCountingsCashDetails: {},
   };
@@ -226,6 +225,8 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
     this.getWorkstations();
     this.getEmployees();
     this.getPaymentMethods();
+    this.fetchCurrentStatisticDocument();
+    // this.fetchStatisticDocument();
   }
 
   ngAfterViewInit(): void {
@@ -609,6 +610,18 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
     this.aStatistic = [];
   }
 
+  fetchCurrentStatisticDocument(){
+    const oBody = {
+      iStatisticId: this.iStatisticId,
+      iBusinessId: this.iBusinessId,
+    }
+    this.apiService.postNew('cashregistry', `/api/v1/statistics/get`, oBody).subscribe((result: any) => {
+      if(result?.message === 'success'){
+        this.oCountings.nCashAtStart = result?.data?.aStatistic[0]?.oCountings?.nCashAtStart || 0;
+      }
+    });
+  }
+
   /* STATIC  */
   fetchStatisticDocument(sDisplayMethod?: string) {
     this.aStatistic = [];
@@ -667,9 +680,7 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
     const oBody = {
       iBusinessId: this.iBusinessId,
       oFilter: {
-        aLocationId: this?.aSelectedLocation?.length
-          ? this.aSelectedLocation
-          : [],
+        aLocationId: this?.aSelectedLocation?.length ? this.aSelectedLocation: [],
         iWorkstationId: this.selectedWorkStation?._id,
         iEmployeeId: this.selectedEmployee?._id,
         sTransactionType: this.optionMenu,
@@ -691,15 +702,19 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
       .postNew('cashregistry', `/api/v1/statistics/transaction/audit`, oBody)
       .subscribe(
         (result: any) => {
+          
           this.nPaymentMethodTotal = 0;
           this.nNewPaymentMethodTotal = 0;
           this.bStatisticLoading = false;
           if (result?.data) {
+
             if (result.data?.oTransactionAudit?.length)
               this.aStatistic = result.data.oTransactionAudit;
-            if (this.aStatistic?.length && this.aStatistic[0]?.overall?.length)
-              this.oCountings.nCashInTill =
-                this.aStatistic[0].overall[0].nTotalRevenue;
+
+            if (this.aStatistic?.length && this.aStatistic[0]?.overall?.length){
+              this.oCountings.nCashInTill = this.aStatistic[0].overall[0].nTotalRevenue;
+            }
+
             if (result.data?.aPaymentMethods?.length) {
               this.aPaymentMethods = result.data.aPaymentMethods;
               this.aPaymentMethods.map((item: any) => {
@@ -2139,22 +2154,22 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
   async closeDayState() {
     this.closingDayState = true;
     this.aAmount.filter((item: any) => item.nQuantity > 0).forEach((item: any) =>(this.oCountings.oCountingsCashDetails[item.key] = item.nQuantity));
-    const nAmount = this.oCountings.nCashInTill - this.oCountings.nCashCounted;
+    const nDifferenceAmount = this.oCountings.nCashInTill - this.oCountings.nCashCounted;
     
     const oCashPaymentMethod = this.allPaymentMethod.filter((el: any) => el.sName.toLowerCase() === 'cash')[0];
     const oBankPaymentMethod = this.allPaymentMethod.filter((el: any) => el.sName.toLowerCase() === 'bankpayment')[0];
     console.log(oBankPaymentMethod, oCashPaymentMethod);
 
-    if (nAmount > 0) {
+    if (nDifferenceAmount > 0) {
       //we have difference in cash, so add that as and expense
 
      await this.addExpenses(
         {
-          amount: nAmount,
+         amount: nDifferenceAmount,
           comment: 'Lost money',
           oPayment: {
             iPaymentMethodId: oCashPaymentMethod._id,
-            nAmount: nAmount,
+            nAmount: nDifferenceAmount,
             sMethod: oCashPaymentMethod.sName.toLowerCase()
           }
         }
@@ -2167,8 +2182,8 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
       
       
       await this.addExpenses({
-          amount: nAmount,
-          comment: 'Transfer to the bank',
+        amount: this.oCountings.nSkim,
+          comment: 'Transfer to the bank (increase bank amount)',
           oPayment: {
             iPaymentMethodId: oBankPaymentMethod._id,
             nAmount: this.oCountings.nSkim,
@@ -2177,8 +2192,8 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
         }).toPromise();
 
       await this.addExpenses({
-          amount: nAmount,
-          comment: 'Transfer to the bank',
+        amount: -this.oCountings.nSkim,
+          comment: 'Transfered to the bank (decrease cash amount)',
           oPayment: {
             iPaymentMethodId: oCashPaymentMethod._id,
             nAmount: -this.oCountings.nSkim,
