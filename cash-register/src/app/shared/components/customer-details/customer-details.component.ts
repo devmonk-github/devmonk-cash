@@ -421,39 +421,42 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
             transaction.sTotal += parseFloat(item.nPaymentAmount); 
             const count = this.totalActivities;
             if (item?.oType?.eKind) this.totalActivities = count + item.nQuantity || 0;
-            switch (item?.oType?.eKind) {
-              case "regular":
-                this.aActivityTitles[1].value += 1;
-                break;
-              case "expenses":
-                break;
-              case "reservation":
-                this.aActivityTitles[8].value += 1;
-                break;
-              case "giftcard":
-                this.aActivityTitles[6].value += 1;
-                break;
-              case "empty-line":
-                break;
-              case "repair":
-                this.aActivityTitles[0].value += 1;
-                break;
-              case "order":
-                break;
-              case "gold-purchase":
-                this.aActivityTitles[7].value += 1;
-                break;
-              case "gold-sell":
-
-                break;
-              case "loyalty-points-discount":
-                break;
-              case "loyalty-points":
-                break;
-              case "discount":
-                break;
-              case "payment-discount":
-                break;
+            if(item?.oType.bRefund){
+              this.aActivityTitles[5].value += 1;
+            }else{
+              switch (item?.oType?.eKind) {
+                case "regular":
+                  this.aActivityTitles[2].value += 1;
+                  break;
+                case "expenses":
+                  break;
+                case "reservation":
+                  this.aActivityTitles[8].value += 1;
+                  break;
+                case "giftcard":
+                  this.aActivityTitles[6].value += 1;
+                  break;
+                case "empty-line":
+                  break;
+                case "repair":
+                  this.aActivityTitles[0].value += 1;
+                  break;
+                case "order":
+                  break;
+                case "gold-purchase":
+                  this.aActivityTitles[7].value += 1;
+                  break;
+                case "gold-sell":
+                  break;
+                case "loyalty-points-discount":
+                  break;
+                case "loyalty-points":
+                  break;
+                case "discount":
+                  break;
+                case "payment-discount":
+                  break;
+              }
             }
           })
         });
