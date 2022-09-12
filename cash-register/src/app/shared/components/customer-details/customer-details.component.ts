@@ -298,7 +298,6 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
         this.cdr.detectChanges();
 
         this.editProfile = false;
-        // console.log(result);
       },
         (error: any) => {
           console.error(error)
@@ -327,7 +326,6 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
         (result: any) => {
           if (result?.data?.oTransactionAudit?.[0]?.individual?.[0]?.aArticleGroups)
             this.setAStatisticsChartData(result?.data?.oTransactionAudit?.[0]?.individual?.[0]?.aArticleGroups)
-          console.log({ CoreStatistics: result });
           this.aStatisticsChartDataLoading = false;
         },
         (error: any) => {
@@ -337,7 +335,6 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
       );
   }
   setAStatisticsChartData(data: any[]) {
-    console.log({ setAStatisticsChartData: data });
     const aStatisticsChartData: any[] = []
     data.map((item, index) => {
       let color: any = Object.entries(ChartColors)
@@ -410,10 +407,12 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
   }
 
   loadTransactions() {
-    console.log('-------loadTransactions!');
     this.bTransactionsLoader = true;
-    this.requestParams.iCustomerId = this.customer._id;
-    this.apiService.postNew('cashregistry', '/api/v1/transaction/cashRegister', this.requestParams).subscribe((result: any) => {
+    const body = {
+      iCustomerId: this.customer._id,
+      iBusinessId: this.requestParams.iBusinessId
+    }
+    this.apiService.postNew('cashregistry', '/api/v1/transaction/cashRegister', body).subscribe((result: any) => {
       if (result?.data?.result) {
         this.aTransactions = result.data.result || [];
         this.aTransactions.forEach(transaction => {
@@ -488,7 +487,6 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
   }
 
   loadActivities() {
-    // console.log('loadActivities');
     this.aActivities = [];
     this.bActivitiesLoader = true;
     this.apiService.postNew('cashregistry', '/api/v1/activities', this.requestParams).subscribe((result: any) => {
@@ -502,7 +500,6 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
 
   }
   loadActivityItems() {
-    // console.log('loadActivities items');
     this.bActivityItemsLoader = true;
     this.apiService.postNew('cashregistry', '/api/v1/activities/items', this.requestParams).subscribe(
       (result: any) => {

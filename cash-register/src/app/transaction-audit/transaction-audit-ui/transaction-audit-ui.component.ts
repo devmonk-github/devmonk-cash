@@ -170,6 +170,9 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
     nCashCounted: 0,
     nCashInTill: 0,
     nSkim: 0,
+    nCashRemain: 0,
+    nCashToKept: 0,
+    nCashAtStart: 0,
     oCountingsCashDetails: {},
   };
   aRefundItems: any;
@@ -203,13 +206,11 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
     if(this.iStatisticId){
       this.oStatisticsData.dStartDate = this.router.getCurrentNavigation()?.extras?.state?.dStartDate ?? null;
       if (this.oStatisticsData.dStartDate){
-        console.log('if');
         this.filterDates.startDate = this.oStatisticsData.dStartDate;
         const endDate = new Date();
         this.filterDates.endDate = endDate;
         this.oStatisticsData.dEndDate = endDate;
       } else {
-        console.log('else');
         this.router.navigate(['/business/day-closure'])
       }
     }
@@ -795,11 +796,13 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
               this.propertyOptions[property._id] = [];
 
               property.aOptions.map((option: any) => {
-                console.log('--------------------------->>>>>>.... option: ', option);
+                // console.log('--------------------------->>>>>>.... option: ', option);
                 if (option?.sCode?.trim() != '') {
                   const opt: any = {
                     iPropertyId: property._id,
                     sPropertyName: property.sName,
+                    iPropertyOptionId: option?._id,
+                    sPropertyOptionName: option?.value,
                     oProperty: {},
                     sCode: option.sCode,
                     sName: option.sKey,
@@ -823,6 +826,7 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
 
   onProperties(value?: any) {
     if (this.selectedProperties && this.selectedProperties[value]) {
+      console.log('onProperties: ', this.selectedProperties);
       this.aFilterProperty = [];
       for (const oProperty of this.aProperty) {
         if (this.selectedProperties[oProperty?.iPropertyId]?.length) {
@@ -835,7 +839,7 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
           );
           for (const oOption of aOption) {
             console.log('oOption: ', oOption);
-            this.aFilterProperty.push(oOption?.sName);
+            this.aFilterProperty.push(oOption?.iPropertyOptionId);
           }
         }
       }
@@ -2134,29 +2138,54 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
 
   async closeDayState() {
     this.closingDayState = true;
-    this.aAmount
-      .filter((item: any) => item.nQuantity > 0)
-      .forEach(
-        (item: any) =>
-          (this.oCountings.oCountingsCashDetails[item.key] = item.nQuantity)
-      );
+    this.aAmount.filter((item: any) => item.nQuantity > 0).forEach((item: any) =>(this.oCountings.oCountingsCashDetails[item.key] = item.nQuantity));
     const nAmount = this.oCountings.nCashInTill - this.oCountings.nCashCounted;
+    
+    const oCashPaymentMethod = this.allPaymentMethod.filter((el: any) => el.sName.toLowerCase() === 'cash')[0];
+    const oBankPaymentMethod = this.allPaymentMethod.filter((el: any) => el.sName.toLowerCase() === 'bankpayment')[0];
+    console.log(oBankPaymentMethod, oCashPaymentMethod);
 
     if (nAmount > 0) {
       //we have difference in cash, so add that as and expense
-      const oPayment = this.allPaymentMethod.filter((el: any) => el.sName.toLowerCase() === 'cash')[0];
 
-      const _expense = await this.addExpenses(
+     await this.addExpenses(
         {
           amount: nAmount,
           comment: 'Lost money',
           oPayment: {
-            iPaymentMethodId: oPayment._id,
+            iPaymentMethodId: oCashPaymentMethod._id,
             nAmount: nAmount,
-            sMethod: oPayment.sName.toLowerCase()
+            sMethod: oCashPaymentMethod.sName.toLowerCase()
           }
         }
       ).toPromise();
+    }
+
+    if(this.oCountings.nSkim > 0){  
+      //amount to put in bank - so add create new expense with positive amount to add it as bank payment, and negative amount as cash
+      // so increase bank payment amount and equally decrease cash payment amount
+      
+      
+      await this.addExpenses({
+          amount: nAmount,
+          comment: 'Transfer to the bank',
+          oPayment: {
+            iPaymentMethodId: oBankPaymentMethod._id,
+            nAmount: this.oCountings.nSkim,
+            sMethod: oBankPaymentMethod.sName.toLowerCase()
+          }
+        }).toPromise();
+
+      await this.addExpenses({
+          amount: nAmount,
+          comment: 'Transfer to the bank',
+          oPayment: {
+            iPaymentMethodId: oCashPaymentMethod._id,
+            nAmount: -this.oCountings.nSkim,
+            sMethod: oCashPaymentMethod.sName.toLowerCase()
+          }
+        }).toPromise();
+
     }
 
     const oBody = {
