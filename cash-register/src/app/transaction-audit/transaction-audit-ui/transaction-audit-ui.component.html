@@ -1186,13 +1186,13 @@
                                 </table>
 
                             </div>
-                            <div class="countingTotal">
+                            <!-- <div class="countingTotal">
                                 <div class="d-flex justify-content-start align-items-center">
                                     <label>Total Counted : </label>
                                     <input type="number" class="form-control mx-1 p-2"
                                         [(ngModel)]="oCountings.nCashCounted">
                                 </div>
-                            </div>
+                            </div> -->
                         </div>
 
                     </div>
@@ -1219,28 +1219,29 @@
                                 </div>
                                 <div>
                                     <label>Cash Counted</label>
-                                    <label class="bold">{{ oCountings.nCashCounted | currency:"EUR":"symbol" }} </label>
+                                    <input type="number" class="form-control p-2 w-30" [(ngModel)]="oCountings.nCashCounted">
                                 </div>
                                 <div>
                                     <label>Difference in Cash</label>
                                     <label class="bold">
-                                        {{ (oCountings.nCashInTill - oCountings.nCashCounted) | currency:"EUR":"symbol" }}
+                                        {{ (oCountings.nCashAtStart + oCountings.nCashInTill - oCountings.nCashCounted) | currency:"EUR":"symbol" }}
                                     </label>
                                 </div>
                                 <div>
-                                    <label>Amount to be kept in cash register</label>
-                                    <input type="number" class="form-control p-2 w-30" [(ngModel)]="oCountings.nCashToKept" (ngModelChange)="oCountings.nSkim = oCountings.nCashCounted - oCountings.nCashToKept">
-                                </div>
-                                <div>
                                     <label>Skim</label>
-                                    <input type="number" class="form-control p-2 w-30" [(ngModel)]="oCountings.nSkim" (ngModelChange)="oCountings.nCashToKept = oCountings.nCashCounted - oCountings.nSkim">
+                                    <input type="number" class="form-control p-2 w-30" [(ngModel)]="oCountings.nSkim" (ngModelChange)="oCountings.nCashRemain = oCountings.nCashCounted - oCountings.nSkim">
                                 </div>
                                 <div>
+                                    <label>Amount to be kept in cash register</label>
+                                    <input type="number" class="form-control p-2 w-30" [(ngModel)]="oCountings.nCashRemain"
+                                        (ngModelChange)="oCountings.nSkim = oCountings.nCashCounted - oCountings.nCashRemain">
+                                </div>
+                                <!-- <div>
                                     <label>Remaining Cash</label>
                                     <label class="bold">
                                         {{ (oCountings.nCashCounted - oCountings.nSkim) | currency:"EUR":"symbol" }}
                                     </label>
-                                </div>
+                                </div> -->
                                 <br>
                                 <div class="d-flex justify-content-start">
                                     <button type="button" class="btn btn-primary" data-kt-roles-modal-action="submit"
