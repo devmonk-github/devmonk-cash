@@ -18,19 +18,23 @@
 
                         <!-- HIDE FILTERS DURING CLOSING DAY STATE AND SHOW ONLY TEXT -->
                         <ng-container *ngIf="!iStatisticId">
-                        
+
                             <div class="row mb-5">
                                 <!-- START_DATE -->
                                 <div class="col-md-3">
-                                    <label class="fs-6 form-label fw-bolder text-dark">{{'START_DATE' | translate}}</label>
-                                    <input type="datetime-local" class="form-control form-control form-control-solid" name="startDate"
-                                        [ngModel]="filterDates.startDate" (ngModelChange)="filterDates.startDate = $event;" />
+                                    <label class="fs-6 form-label fw-bolder text-dark">{{'START_DATE' |
+                                        translate}}</label>
+                                    <input type="datetime-local" class="form-control form-control form-control-solid"
+                                        name="startDate" [ngModel]="filterDates.startDate"
+                                        (ngModelChange)="filterDates.startDate = $event;" />
                                 </div>
                                 <!-- END_DATE -->
                                 <div class="col-md-3">
-                                    <label class="fs-6 form-label fw-bolder text-dark">{{'END_DATE' | translate}}</label>
+                                    <label class="fs-6 form-label fw-bolder text-dark">{{'END_DATE' |
+                                        translate}}</label>
                                     <input type="datetime-local" class="form-control form-control-solid" name="endDate"
-                                        [ngModel]="filterDates.endDate" (ngModelChange)="filterDates.endDate = $event;" />
+                                        [ngModel]="filterDates.endDate"
+                                        (ngModelChange)="filterDates.endDate = $event;" />
                                 </div>
                                 <!-- VIEW -->
                                 <div class="col-md-3">
@@ -48,12 +52,13 @@
                                                 <span class="menu-arrow"></span>
                                             </a>
                                             <!--end::Menu link-->
-                        
+
                                             <!--begin::Menu sub-->
                                             <div class="menu-sub menu-sub-dropdown p-3 w-200px">
                                                 <!--begin::Menu item-->
                                                 <div class="menu-item" *ngFor="let parent of aOptionMenu">
-                                                    <div class="menu-item" data-kt-menu-trigger="hover" data-kt-menu-placement="right-start">
+                                                    <div class="menu-item" data-kt-menu-trigger="hover"
+                                                        data-kt-menu-placement="right-start">
                                                         <!--begin::Menu link-->
                                                         <a class="menu-link py-3">
                                                             <span class="menu-icon">
@@ -63,86 +68,98 @@
                                                             <span class="menu-arrow"></span>
                                                         </a>
                                                         <!--end::Menu link-->
-                        
+
                                                         <!--begin::Menu sub-->
                                                         <div class="menu-sub menu-sub-dropdown p-3 w-200px">
                                                             <!--begin::Menu item-->
                                                             <div class="menu-item">
                                                                 <div class="menu-item">
-                                                                    <div *ngFor="let child1 of parent.children" class="menu-item"
-                                                                        data-kt-menu-trigger="hover" data-kt-menu-placement="right-start">
+                                                                    <div *ngFor="let child1 of parent.children"
+                                                                        class="menu-item" data-kt-menu-trigger="hover"
+                                                                        data-kt-menu-placement="right-start">
                                                                         <!--begin::Menu link-->
                                                                         <a class="menu-link py-3">
                                                                             <span class="menu-icon">
                                                                                 <i class="bi bi-bar-chart fs-3"></i>
                                                                             </span>
-                                                                            <span class="menu-title">{{child1.sKey}}</span>
+                                                                            <span
+                                                                                class="menu-title">{{child1.sKey}}</span>
                                                                             <span class="menu-arrow"></span>
                                                                         </a>
                                                                         <!--end::Menu link-->
-                        
+
                                                                         <!--begin::Menu sub-->
-                                                                        <div class="menu-sub menu-sub-dropdown p-3 w-200px">
+                                                                        <div
+                                                                            class="menu-sub menu-sub-dropdown p-3 w-200px">
                                                                             <!--begin::Menu item-->
-                                                                            <div *ngFor="let child2 of child1.children" class="menu-item">
+                                                                            <div *ngFor="let child2 of child1.children"
+                                                                                class="menu-item">
                                                                                 <a (click)="onDropdownItemSelected(parent,child1,child2)"
                                                                                     class="menu-link px-1 py-3">
                                                                                     <span class="menu-bullet me-0">
-                                                                                        <span class="bullet bullet-dot"></span>
+                                                                                        <span
+                                                                                            class="bullet bullet-dot"></span>
                                                                                     </span>
-                                                                                    <span class="menu-title">{{child2.sValue}}</span>
+                                                                                    <span
+                                                                                        class="menu-title">{{child2.sValue}}</span>
                                                                                 </a>
                                                                             </div>
                                                                             <!--end::Menu item-->
-                        
+
                                                                         </div>
                                                                         <!--end::Menu sub-->
                                                                     </div>
                                                                 </div>
                                                             </div>
                                                             <!--end::Menu item-->
-                        
-                        
+
+
                                                         </div>
                                                         <!--end::Menu sub-->
                                                     </div>
                                                 </div>
                                                 <!--end::Menu item-->
-                        
-                        
+
+
                                             </div>
                                             <!--end::Menu sub-->
                                         </div>
                                         <!--end::Menu item-->
-                        
+
                                     </div>
                                     <!--end::Menu-->
-                        
+
                                 </div>
-    
+
                                 <!-- LOCATION -->
                                 <div class="col-md-3">
-                                    <label class="fs-6 form-label fw-bolder text-dark">{{'LOCATION' | translate}}</label>
+                                    <label class="fs-6 form-label fw-bolder text-dark">{{'LOCATION' |
+                                        translate}}</label>
                                     <div class="w-100" *ngIf="aLocation?.length">
-                                        <ng-select [multiple]="true" [items]="aLocation" [(ngModel)]="aSelectedLocation" name="iLocationId"
-                                            bindValue="_id" bindLabel="sName" placeholder="Select" required [closeOnSelect]="false">
-                        
-                                            <ng-template ng-option-tmp let-item="item" let-item$="item$" let-index="index">
-                                                <input id="item-{{index}}" type="checkbox" name="item-{{index}}" [ngModel]="item$.selected" />
+                                        <ng-select [multiple]="true" [items]="aLocation" [(ngModel)]="aSelectedLocation"
+                                            name="iLocationId" bindValue="_id" bindLabel="sName" placeholder="Select"
+                                            required [closeOnSelect]="false">
+
+                                            <ng-template ng-option-tmp let-item="item" let-item$="item$"
+                                                let-index="index">
+                                                <input id="item-{{index}}" type="checkbox" name="item-{{index}}"
+                                                    [ngModel]="item$.selected" />
                                                 {{item.sName}}
                                             </ng-template>
-                        
+
                                         </ng-select>
-                        
+
                                     </div>
                                 </div>
                             </div>
-                        
+
                             <div class="row mb-5">
                                 <!-- EMPLOYEE -->
                                 <div class="col-md-3">
-                                    <label class="fs-6 form-label fw-bolder text-dark">{{'EMPLOYEE' | translate}}</label>
-                                    <ng-select class="form-control form-control-solid p-0" [(ngModel)]="selectedEmployee" [clearable]="false">
+                                    <label class="fs-6 form-label fw-bolder text-dark">{{'EMPLOYEE' |
+                                        translate}}</label>
+                                    <ng-select class="form-control form-control-solid p-0"
+                                        [(ngModel)]="selectedEmployee" [clearable]="false">
                                         <ng-option *ngFor="let oEmployee of aEmployee" [value]="oEmployee">
                                             {{oEmployee.sFirstName + ' ' +oEmployee.sLastName}}
                                         </ng-option>
@@ -152,8 +169,8 @@
                                 <div class="col-md-3">
                                     <label class="fs-6 form-label fw-bolder text-dark">{{'WORK_STATION' |
                                         translate}}</label>
-                                    <ng-select class="form-control form-control-solid p-0" [(ngModel)]="selectedWorkStation"
-                                        [clearable]="false">
+                                    <ng-select class="form-control form-control-solid p-0"
+                                        [(ngModel)]="selectedWorkStation" [clearable]="false">
                                         <ng-option *ngFor="let oWorkStation of aWorkStation" [value]="oWorkStation">
                                             {{oWorkStation.sName}}
                                         </ng-option>
@@ -164,21 +181,29 @@
                                     <div class="col-md-3">
                                         <label class="fs-6 form-label fw-bolder text-dark">{{ "PROPERTIES" |
                                             translate}}</label>
-                                        <div class="d-flex" *ngFor="let property of aProperty; let pIndex = index">
-                                            <div class="w-100" *ngIf="propertyOptions[property.iPropertyId]?.length">
-                                                <ng-select [multiple]="true" [items]="propertyOptions[property.iPropertyId]"
-                                                    [(ngModel)]="selectedProperties[property.iPropertyId]" name="propertyId" bindValue="sName"
-                                                    bindLabel="sName" placeholder="Select" (click)="onProperties(property.iPropertyId)" required
-                                                    [closeOnSelect]="false">
-                        
-                                                    <ng-template ng-option-tmp let-item="item" let-item$="item$" let-index="index">
-                                                        <input id="item-{{index}}" type="checkbox" name="item-{{index}}"
-                                                            [ngModel]="item$.selected" />
-                                                        {{item.sName}}
-                                                    </ng-template>
-                        
-                                                </ng-select>
-                        
+                                        <div class="overflow-scroll py-1 h-150px">
+
+                                            <div class="d-flex" *ngFor="let property of aProperty; let pIndex = index">
+                                                <div class="w-100"
+                                                    *ngIf="propertyOptions[property.iPropertyId]?.length">
+                                                    <ng-select [multiple]="true"
+                                                        [items]="propertyOptions[property.iPropertyId]"
+                                                        [(ngModel)]="selectedProperties[property.iPropertyId]"
+                                                        name="propertyId" bindValue="sName" bindLabel="sName"
+                                                        placeholder="Select"
+                                                        (click)="onProperties(property.iPropertyId)" required
+                                                        [closeOnSelect]="false">
+
+                                                        <ng-template ng-option-tmp let-item="item" let-item$="item$"
+                                                            let-index="index">
+                                                            <input id="item-{{index}}" type="checkbox"
+                                                                name="item-{{index}}" [ngModel]="item$.selected" />
+                                                            {{item.sName}}
+                                                        </ng-template>
+
+                                                    </ng-select>
+
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -199,7 +224,8 @@
                                             <label class="w-75 align-middle lh-xxl" *ngIf="!bIsArticleGroupLevel">{{
                                                 "PRODUCT_LEVEL" |
                                                 translate}}</label>
-                                            <label class="form-check form-switch form-check-custom form-check-solid w-25">
+                                            <label
+                                                class="form-check form-switch form-check-custom form-check-solid w-25">
                                                 <input type="checkbox" class="form-check-input"
                                                     [(ngModel)]="bIsArticleGroupLevel">
                                             </label>
@@ -217,7 +243,8 @@
                                                 "BUSINESS_MODE"
                                                 |
                                                 translate}}</label>
-                                            <label class="form-check form-switch form-check-custom form-check-solid w-25">
+                                            <label
+                                                class="form-check form-switch form-check-custom form-check-solid w-25">
                                                 <input type="checkbox" class="form-check-input"
                                                     [(ngModel)]="bIsSupplierMode">
                                             </label>
@@ -239,8 +266,9 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-md-3 mt-5">
-                                        <button type="button" class="btn btn-primary" data-kt-roles-modal-action="submit"
-                                            (click)="fetchStatistics()" [class.disabled]="bStatisticLoading">
+                                        <button type="button" class="btn btn-primary"
+                                            data-kt-roles-modal-action="submit" (click)="fetchStatistics()"
+                                            [class.disabled]="bStatisticLoading">
                                             <span class="indicator-label">{{ "APPLY_FILTER" | translate}}</span>
                                         </button>
                                     </div>
@@ -254,14 +282,15 @@
 
                         <ng-container *ngIf="iStatisticId">
                             <div class="row m-0 p-0">
-                                
+
                                 <div class="col-6 m-0 p-0">
                                     <p class="row">
                                         <span class="col-4 fw-bolder">Start Date : </span>
-                                        <span class="col-8"> {{ oStatisticsData.dStartDate | date:'medium':'GMT'}} </span>
+                                        <span class="col-8"> {{ oStatisticsData.dStartDate | date:'medium':'GMT'}}
+                                        </span>
                                     </p>
                                     <p class="row">
-                                        <span class="col-4 fw-bolder" >End Date : </span>
+                                        <span class="col-4 fw-bolder">End Date : </span>
                                         <span class="col-8"> {{ oStatisticsData.dEndDate | date:'medium'}} </span>
                                     </p>
                                     <p class="row">
@@ -357,11 +386,13 @@
                                                     </th>
                                                     <th class="w-150px"><span class="">{{"PRICE_WITH_VAT" |
                                                             translate}}</span>
-                                                        <h4 class="text-black">{{oSupplier.nTotalRevenue | number :'1.2-2'}}</h4>
+                                                        <h4 class="text-black">{{oSupplier.nTotalRevenue | number
+                                                            :'1.2-2'}}</h4>
                                                     </th>
                                                     <th class="w-150px"><span class="">{{"PURCHASE_PRICE" |
                                                             translate}}</span>
-                                                        <h4 class="text-black">{{oSupplier.nTotalPurchaseAmount | number :'1.2-2'}}</h4>
+                                                        <h4 class="text-black">{{oSupplier.nTotalPurchaseAmount | number
+                                                            :'1.2-2'}}</h4>
                                                     </th>
                                                     <th class="w-150px"><span class="">{{"GROSS_PROFIT" |
                                                             translate}}</span>
@@ -386,10 +417,12 @@
                                                                     <th scope="col" class="w-150px">
                                                                         {{oArticleGroup.nQuantity}}</th>
                                                                     <th scope="col" class="w-150px">
-                                                                        {{oArticleGroup.nTotalRevenue | number :'1.2-2'}}
+                                                                        {{oArticleGroup.nTotalRevenue | number
+                                                                        :'1.2-2'}}
                                                                     </th>
                                                                     <th scope="col" class="w-150px">
-                                                                        {{oArticleGroup.nTotalPurchaseAmount | number :'1.2-2'}}
+                                                                        {{oArticleGroup.nTotalPurchaseAmount | number
+                                                                        :'1.2-2'}}
                                                                     </th>
                                                                     <th scope="col" class="w-150px">
                                                                         {{oArticleGroup.nProfit| number :'1.2-2'}}</th>
@@ -407,8 +440,10 @@
                                                                             {{oRevenueByProperty.aCategory.join(' |')}}
                                                                         </td>
                                                                         <td>{{oRevenueByProperty.nQuantity}}</td>
-                                                                        <td>{{oRevenueByProperty.nTotalRevenue | number :'1.2-2'}}</td>
-                                                                        <td>{{oRevenueByProperty.nTotalPurchaseAmount | number :'1.2-2'}}
+                                                                        <td>{{oRevenueByProperty.nTotalRevenue | number
+                                                                            :'1.2-2'}}</td>
+                                                                        <td>{{oRevenueByProperty.nTotalPurchaseAmount |
+                                                                            number :'1.2-2'}}
                                                                         </td>
                                                                         <td>{{oRevenueByProperty.nProfit| number
                                                                             :'1.2-2'}}</td>
@@ -443,11 +478,13 @@
                                                     </th>
                                                     <th class="w-150px"><span class="">{{"PRICE_WITH_VAT" |
                                                             translate}}</span>
-                                                        <h4 class="text-black">{{oSupplier.nTotalRevenue | number :'1.2-2'}}</h4>
+                                                        <h4 class="text-black">{{oSupplier.nTotalRevenue | number
+                                                            :'1.2-2'}}</h4>
                                                     </th>
                                                     <th class="w-150px"><span class="">{{"PURCHASE_PRICE" |
                                                             translate}}</span>
-                                                        <h4 class="text-black">{{oSupplier.nTotalPurchaseAmount | number :'1.2-2'}}</h4>
+                                                        <h4 class="text-black">{{oSupplier.nTotalPurchaseAmount | number
+                                                            :'1.2-2'}}</h4>
                                                     </th>
                                                     <th class="w-150px"><span class="">{{"GROSS_PROFIT" |
                                                             translate}}</span>
@@ -487,10 +524,12 @@
                                                                     <th scope="col" class="w-150px">
                                                                         {{oArticleGroup.nQuantity}}</th>
                                                                     <th scope="col" class="w-150px">
-                                                                        {{oArticleGroup.nTotalRevenue | number :'1.2-2'}}
+                                                                        {{oArticleGroup.nTotalRevenue | number
+                                                                        :'1.2-2'}}
                                                                     </th>
                                                                     <th scope="col" class="w-150px">
-                                                                        {{oArticleGroup.nTotalPurchaseAmount | number :'1.2-2'}}
+                                                                        {{oArticleGroup.nTotalPurchaseAmount | number
+                                                                        :'1.2-2'}}
                                                                     </th>
                                                                     <th scope="col" class="w-150px">
                                                                         {{oArticleGroup.nProfit | number :'1.2-2'}}</th>
@@ -507,11 +546,15 @@
                                                                 <ng-container *ngIf="oArticleGroup.bIsCollapseItem">
                                                                     <tr class="bg-white"
                                                                         *ngFor="let item of oArticleGroup.aTransactionItems">
-                                                                        <td> {{item.sProductName || item?.sProductNumber}} </td>
+                                                                        <td> {{item.sProductName ||
+                                                                            item?.sProductNumber}} </td>
                                                                         <td> {{ item.nQuantity }}</td>
-                                                                        <td> {{ item.nRevenueAmount  | number :'1.2-2' }}</td>
-                                                                        <td> {{ item.nCostOfRevenue  | number :'1.2-2' }}</td>
-                                                                        <td> {{item.nProfitOfRevenue | number :'1.2-2'}}</td>
+                                                                        <td> {{ item.nRevenueAmount | number :'1.2-2' }}
+                                                                        </td>
+                                                                        <td> {{ item.nCostOfRevenue | number :'1.2-2' }}
+                                                                        </td>
+                                                                        <td> {{item.nProfitOfRevenue | number :'1.2-2'}}
+                                                                        </td>
                                                                         <td></td>
                                                                     </tr>
                                                                 </ng-container>
@@ -540,23 +583,30 @@
                                                     </th>
                                                     <th class="w-150px">
                                                         <span class="">{{"QUANTITY" | translate}}</span>
-                                                        <h4 class="text-black">{{aStatistic[0]?.overall[0]?.nQuantity}}</h4>
+                                                        <h4 class="text-black">{{aStatistic[0]?.overall[0]?.nQuantity}}
+                                                        </h4>
                                                     </th>
                                                     <th class="w-150px">
                                                         <span class="">{{"PRICE_WITH_VAT" | translate}}</span>
-                                                        <h4 class="text-black">{{aStatistic[0]?.overall[0]?.nTotalRevenue | number :'1.2-2'}}</h4>
+                                                        <h4 class="text-black">
+                                                            {{aStatistic[0]?.overall[0]?.nTotalRevenue | number
+                                                            :'1.2-2'}}</h4>
                                                     </th>
                                                     <th class="w-150px">
                                                         <span class="">{{"PURCHASE_PRICE" | translate}}</span>
-                                                        <h4 class="text-black">{{aStatistic[0]?.overall[0]?.nTotalPurchaseAmount | number :'1.2-2'}}</h4>
+                                                        <h4 class="text-black">
+                                                            {{aStatistic[0]?.overall[0]?.nTotalPurchaseAmount | number
+                                                            :'1.2-2'}}</h4>
                                                     </th>
                                                     <th class="w-150px">
                                                         <span class="">{{"GROSS_PROFIT" | translate}}</span>
-                                                        <h4 class="text-black">{{aStatistic[0]?.overall[0]?.nProfit | number :'1.2-2'}}</h4>
+                                                        <h4 class="text-black">{{aStatistic[0]?.overall[0]?.nProfit |
+                                                            number :'1.2-2'}}</h4>
                                                     </th>
                                                     <th class="w-150px">
                                                         <span class="">{{"MARGIN" | translate}}</span>
-                                                        <h4 class="text-black">{{aStatistic[0]?.overall[0]?.nMargin}}</h4>
+                                                        <h4 class="text-black">{{aStatistic[0]?.overall[0]?.nMargin}}
+                                                        </h4>
                                                     </th>
                                                 </tr>
                                             </thead>
@@ -575,9 +625,11 @@
                                                                         <th scope="col" class="w-150px">
                                                                             {{oArticleGroup.nQuantity}}</th>
                                                                         <th scope="col" class="w-150px">
-                                                                            {{oArticleGroup.nTotalRevenue | number :'1.2-2'}}</th>
+                                                                            {{oArticleGroup.nTotalRevenue | number
+                                                                            :'1.2-2'}}</th>
                                                                         <th scope="col" class="w-150px">
-                                                                            {{oArticleGroup.nTotalPurchaseAmount | number :'1.2-2'}}
+                                                                            {{oArticleGroup.nTotalPurchaseAmount |
+                                                                            number :'1.2-2'}}
                                                                         </th>
                                                                         <th scope="col" class="w-150px">
                                                                             {{oArticleGroup.nProfit| number
@@ -592,12 +644,15 @@
                                                                         *ngFor="let oRevenueByProperty of oArticleGroup.aRevenueByProperty; let revenuePropertyIndex = index">
                                                                         <tr>
                                                                             <td class="ps-9">
-                                                                                {{oRevenueByProperty.aCategory.join(' |')}}
+                                                                                {{oRevenueByProperty.aCategory.join('
+                                                                                |')}}
                                                                             </td>
                                                                             <td>{{oRevenueByProperty.nQuantity}}</td>
-                                                                            <td>{{oRevenueByProperty.nTotalRevenue | number :'1.2-2'}}
+                                                                            <td>{{oRevenueByProperty.nTotalRevenue |
+                                                                                number :'1.2-2'}}
                                                                             </td>
-                                                                            <td>{{oRevenueByProperty.nTotalPurchaseAmount | number :'1.2-2'}}
+                                                                            <td>{{oRevenueByProperty.nTotalPurchaseAmount
+                                                                                | number :'1.2-2'}}
                                                                             </td>
                                                                             <td>{{oRevenueByProperty.nProfit| number
                                                                                 :'1.2-2'}}</td>
@@ -630,23 +685,30 @@
                                                     </th>
                                                     <th class="w-150px">
                                                         <span class="">{{"QUANTITY" | translate}}</span>
-                                                        <h4 class="text-black">{{aStatistic[0]?.overall[0]?.nQuantity}}</h4>
+                                                        <h4 class="text-black">{{aStatistic[0]?.overall[0]?.nQuantity}}
+                                                        </h4>
                                                     </th>
                                                     <th class="w-150px">
                                                         <span class="">{{"PRICE_WITH_VAT" | translate}}</span>
-                                                        <h4 class="text-black">{{aStatistic[0]?.overall[0]?.nTotalRevenue | number :'1.2-2'}}</h4>
+                                                        <h4 class="text-black">
+                                                            {{aStatistic[0]?.overall[0]?.nTotalRevenue | number
+                                                            :'1.2-2'}}</h4>
                                                     </th>
                                                     <th class="w-150px">
                                                         <span class="">{{"PURCHASE_PRICE" | translate}}</span>
-                                                        <h4 class="text-black">{{aStatistic[0]?.overall[0]?.nTotalPurchaseAmount | number :'1.2-2'}}</h4>
+                                                        <h4 class="text-black">
+                                                            {{aStatistic[0]?.overall[0]?.nTotalPurchaseAmount | number
+                                                            :'1.2-2'}}</h4>
                                                     </th>
                                                     <th class="w-150px">
                                                         <span class="">{{"GROSS_PROFIT" | translate}}</span>
-                                                        <h4 class="text-black">{{aStatistic[0]?.overall[0]?.nProfit}}</h4>
+                                                        <h4 class="text-black">{{aStatistic[0]?.overall[0]?.nProfit}}
+                                                        </h4>
                                                     </th>
                                                     <th class="w-150px">
                                                         <span class="">{{"MARGIN" | translate}}</span>
-                                                        <h4 class="text-black">{{aStatistic[0]?.overall[0]?.nMargin}}</h4>
+                                                        <h4 class="text-black">{{aStatistic[0]?.overall[0]?.nMargin}}
+                                                        </h4>
                                                     </th>
                                                 </tr>
                                             </thead>
@@ -681,10 +743,12 @@
                                                                     {{oRevenueByProperty.sPropertyName}}
                                                                 </th>
                                                                 <th class="w-150px">
-                                                                    {{oRevenueByProperty.nTotalRevenue | number :'1.2-2'}}
+                                                                    {{oRevenueByProperty.nTotalRevenue | number
+                                                                    :'1.2-2'}}
                                                                 </th>
                                                                 <th class="w-150px">
-                                                                    {{oRevenueByProperty.nTotalPurchaseAmount | number :'1.2-2'}}</th>
+                                                                    {{oRevenueByProperty.nTotalPurchaseAmount | number
+                                                                    :'1.2-2'}}</th>
                                                                 <th class="w-150px">
                                                                     {{oRevenueByProperty.nProfit| number :'1.2-2'}}</th>
                                                                 <th class="w-150px">
@@ -699,7 +763,8 @@
                                                             <ng-container *ngIf="oRevenueByProperty.bIsCollapseItem">
                                                                 <tr class="bg-white"
                                                                     *ngFor="let item of oRevenueByProperty.aTransactionItems">
-                                                                    <td> {{item.sProductName || item?.sProductNumber}} </td>
+                                                                    <td> {{item.sProductName || item?.sProductNumber}}
+                                                                    </td>
                                                                     <td> {{ item.nQuantity }}</td>
                                                                     <td> {{ item.nRevenueAmount | number :'1.2-2'}}</td>
                                                                     <td> {{ item.nCostOfRevenue | number :'1.2-2'}}</td>
@@ -736,23 +801,30 @@
                                                     </th>
                                                     <th class="w-150px">
                                                         <span class="">{{"QUANTITY" | translate}}</span>
-                                                        <h4 class="text-black">{{aStatistic[0]?.overall[0]?.nQuantity}}</h4>
+                                                        <h4 class="text-black">{{aStatistic[0]?.overall[0]?.nQuantity}}
+                                                        </h4>
                                                     </th>
                                                     <th class="w-150px">
                                                         <span class="">{{"PRICE_WITH_VAT" | translate}}</span>
-                                                        <h4 class="text-black">{{aStatistic[0]?.overall[0]?.nTotalRevenue | number :'1.2-2'}}</h4>
+                                                        <h4 class="text-black">
+                                                            {{aStatistic[0]?.overall[0]?.nTotalRevenue | number
+                                                            :'1.2-2'}}</h4>
                                                     </th>
                                                     <th class="w-150px">
                                                         <span class="">{{"PURCHASE_PRICE" | translate}}</span>
-                                                        <h4 class="text-black">{{aStatistic[0]?.overall[0]?.nTotalPurchaseAmount | number :'1.2-2'}}</h4>
+                                                        <h4 class="text-black">
+                                                            {{aStatistic[0]?.overall[0]?.nTotalPurchaseAmount | number
+                                                            :'1.2-2'}}</h4>
                                                     </th>
                                                     <th class="w-150px">
                                                         <span class="">{{"GROSS_PROFIT" | translate}}</span>
-                                                        <h4 class="text-black">{{aStatistic[0]?.overall[0]?.nProfit}}</h4>
+                                                        <h4 class="text-black">{{aStatistic[0]?.overall[0]?.nProfit}}
+                                                        </h4>
                                                     </th>
                                                     <th class="w-150px">
                                                         <span class="">{{"MARGIN" | translate}}</span>
-                                                        <h4 class="text-black">{{aStatistic[0]?.overall[0]?.nMargin}}</h4>
+                                                        <h4 class="text-black">{{aStatistic[0]?.overall[0]?.nMargin}}
+                                                        </h4>
                                                     </th>
                                                 </tr>
                                             </thead>
@@ -781,9 +853,11 @@
 
                                                                 </td>
                                                                 <td class="w-150px">{{oArticleGroup.nQuantity}}</td>
-                                                                <td class="w-150px">{{oArticleGroup.nTotalRevenue | number :'1.2-2'}}</td>
+                                                                <td class="w-150px">{{oArticleGroup.nTotalRevenue |
+                                                                    number :'1.2-2'}}</td>
                                                                 <td class="w-150px">
-                                                                    {{oArticleGroup.nTotalPurchaseAmount | number :'1.2-2'}}</td>
+                                                                    {{oArticleGroup.nTotalPurchaseAmount | number
+                                                                    :'1.2-2'}}</td>
                                                                 <td class="w-150px">{{oArticleGroup.nProfit | number
                                                                     :'1.2-2'}}</td>
                                                                 <td class="w-150px">{{oArticleGroup.nMargin}}</td>
@@ -797,11 +871,12 @@
                                                             <ng-container *ngIf="oArticleGroup.bIsCollapseItem">
                                                                 <tr class="bg-white"
                                                                     *ngFor="let item of oArticleGroup.aTransactionItems">
-                                                                    <td> {{item.sProductName || item?.sProductNumber}} </td>
+                                                                    <td> {{item.sProductName || item?.sProductNumber}}
+                                                                    </td>
                                                                     <td> {{ item.nQuantity }}</td>
-                                                                    <td> {{ item.nRevenueAmount  | number :'1.2-2'}}</td>
-                                                                    <td> {{ item.nCostOfRevenue  | number :'1.2-2'}}</td>
-                                                                    <td>{{item.nProfitOfRevenue  | number :'1.2-2'}}</td>
+                                                                    <td> {{ item.nRevenueAmount | number :'1.2-2'}}</td>
+                                                                    <td> {{ item.nCostOfRevenue | number :'1.2-2'}}</td>
+                                                                    <td>{{item.nProfitOfRevenue | number :'1.2-2'}}</td>
                                                                     <td></td>
                                                                 </tr>
                                                             </ng-container>
@@ -900,9 +975,11 @@
                         <td><span class="">{{ data?.sVatMethod }}</span></td>
                         <td class="w-150px"><span class="">{{ data?.oVatRate[data?.sVatMethod].nProfit| number :'1.2-2'
                                 }}</span></td>
-                        <td class="w-150px"><span class="">{{ data?.oVatRate[data?.sVatMethod].nPurchaseValue | number :'1.2-2' }}</span>
+                        <td class="w-150px"><span class="">{{ data?.oVatRate[data?.sVatMethod].nPurchaseValue | number
+                                :'1.2-2' }}</span>
                         </td>
-                        <td class="w-150px"><span class="">{{ data?.oVatRate[data?.sVatMethod].nTotalRevenue | number :'1.2-2' }}</span>
+                        <td class="w-150px"><span class="">{{ data?.oVatRate[data?.sVatMethod].nTotalRevenue | number
+                                :'1.2-2' }}</span>
                         </td>
                         <td class="w-150px"><span class="">{{ data?.oVatRate[data?.sVatMethod].nVatAmount }}</span></td>
                     </ng-template>
@@ -1174,7 +1251,8 @@
                                                 </label>
                                             </td>
                                             <td class="mx-2">
-                                                <input type="number" class="form-control p-2" [(ngModel)]="amount.nQuantity"
+                                                <input type="number" class="form-control p-2"
+                                                    [(ngModel)]="amount.nQuantity"
                                                     (ngModelChange)="calculateTotalCounting()">
                                             </td>
                                             <td class="w-50">
@@ -1219,21 +1297,25 @@
                                 </div>
                                 <div>
                                     <label>Cash Counted</label>
-                                    <input type="number" class="form-control p-2 w-30" [(ngModel)]="oCountings.nCashCounted">
+                                    <input type="number" class="form-control p-2 w-30"
+                                        [(ngModel)]="oCountings.nCashCounted">
                                 </div>
                                 <div>
                                     <label>Difference in Cash</label>
                                     <label class="bold">
-                                        {{ (oCountings.nCashAtStart + oCountings.nCashInTill - oCountings.nCashCounted) | currency:"EUR":"symbol" }}
+                                        {{ (oCountings.nCashAtStart + oCountings.nCashInTill - oCountings.nCashCounted)
+                                        | currency:"EUR":"symbol" }}
                                     </label>
                                 </div>
                                 <div>
                                     <label>Skim</label>
-                                    <input type="number" class="form-control p-2 w-30" [(ngModel)]="oCountings.nSkim" (ngModelChange)="oCountings.nCashRemain = oCountings.nCashCounted - oCountings.nSkim">
+                                    <input type="number" class="form-control p-2 w-30" [(ngModel)]="oCountings.nSkim"
+                                        (ngModelChange)="oCountings.nCashRemain = oCountings.nCashCounted - oCountings.nSkim">
                                 </div>
                                 <div>
                                     <label>Amount to be kept in cash register</label>
-                                    <input type="number" class="form-control p-2 w-30" [(ngModel)]="oCountings.nCashRemain"
+                                    <input type="number" class="form-control p-2 w-30"
+                                        [(ngModel)]="oCountings.nCashRemain"
                                         (ngModelChange)="oCountings.nSkim = oCountings.nCashCounted - oCountings.nCashRemain">
                                 </div>
                                 <!-- <div>
