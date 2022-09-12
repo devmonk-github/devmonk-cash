@@ -414,7 +414,9 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
       if (result?.data?.result) {
         this.aTransactions = result.data.result || [];
         this.aTransactions.forEach(transaction => {
+          transaction.sTotal = 0;
           transaction.aTransactionItems.forEach((item: any) => {
+            transaction.sTotal += parseFloat(item.nPaymentAmount); 
             const count = this.totalActivities;
             if (item?.oType?.eKind) this.totalActivities = count + item.nQuantity || 0;
             switch (item?.oType?.eKind) {
