@@ -25,6 +25,7 @@ import { TerminalDialogComponent } from '../shared/components/terminal-dialog/te
 import { CreateArticleGroupService } from '../shared/service/create-article-groups.service';
 import { CustomerStructureService } from '../shared/service/customer-structure.service';
 import { FiskalyService } from '../shared/service/fiskaly.service';
+import { PdfService } from '../shared/service/pdf.service';
 @Component({
   selector: 'app-till',
   templateUrl: './till.component.html',
@@ -125,7 +126,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     private terminalService: TerminalService,
     private createArticleGroupService: CreateArticleGroupService,
     private customerStructureService: CustomerStructureService,
-    private fiskalyService: FiskalyService
+    private fiskalyService: FiskalyService,
+    private pdfService: PdfService
   ) {
   }
 
@@ -549,7 +551,11 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
           body.oTransaction.iActivityId = this.iActivityId;
           this.apiService.postNew('cashregistry', '/api/v1/till/transaction', body)
             .subscribe((data: any) => {
-              this.toastrService.show({ type: 'success', text: data.message });
+              this.toastrService.show({ type: 'success', text: 'Transaction created.' });
+              // data.aTransactionItems = this.transactionItems;
+              const { transaction, aTransactionItems } = data;
+              transaction.aTransactionItems = aTransactionItems;
+              this.pdfService.generatePDF(transaction);
               this.updateFiskalyTransaction('FINISHED', body.payments);
               setTimeout(() => {
                 this.saveInProgress = false;

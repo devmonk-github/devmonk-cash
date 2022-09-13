@@ -110,7 +110,7 @@ export class WorkstationComponent implements OnInit {
 
   getWorkstations(){
     this.loading = true;
-    this.apiService.getNew('cashregistry', '/api/v1/workstations/list/' + this.business._id).subscribe(
+    this.apiService.getNew('cashregistry', `/api/v1/workstations/list/${this.business._id}/${this.iLocationId}`).subscribe(
       (result : any) => {
        if(result && result.data){
         this.workstations = result.data;

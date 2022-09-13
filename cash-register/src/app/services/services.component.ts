@@ -212,7 +212,7 @@ export class ServicesComponent implements OnInit, AfterViewInit {
   }
 
   getWorkstations() {
-    this.apiService.getNew('cashregistry', '/api/v1/workstations/list/' + this.businessDetails._id).subscribe(
+    this.apiService.getNew('cashregistry', `/api/v1/workstations/list/${this.businessDetails._id}/${this.iLocationId}`).subscribe(
       (result: any) => {
         if (result && result.data) {
           this.workstations = result.data;
