@@ -4,7 +4,9 @@ export class Property {
     public iPropertyId: string,
     public sPropertyName: string,
     public oProperty: object,
-    public sCode?: string
+    public sCode?: string,
+    public iPropertyOptionId?: string,
+    public sPropertyOptionName?: string
   ) {
   }
 }

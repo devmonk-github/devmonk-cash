@@ -315,8 +315,10 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
         iCustomerId: this.customer._id,
         sTransactionType: 'cash-registry',
         sDisplayMethod: 'revenuePerBusinessPartner',
-        dStartDate: "2022-08-16T13:59",
-        dEndDate: "2022-10-24T21:59:59.639Z",
+        dStartDate: new Date(new Date().setHours(0, 0, 0)),
+        dEndDate: new Date(new Date().setHours(23, 59, 59)),
+        // dStartDate: "2022-09-10T13:59",
+        // dEndDate: "2022-10-24T21:59:59.639Z",
       },
     };
     this.apiService
@@ -338,6 +340,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
     console.log({ setAStatisticsChartData: data });
     const aStatisticsChartData: any[] = []
     data.map((item, index) => {
+      console.log('item: ', item);
       let color: any = Object.entries(ChartColors)
       color = color[Math.floor(Math.random() * color.length)][1]
       let chartItem = {
