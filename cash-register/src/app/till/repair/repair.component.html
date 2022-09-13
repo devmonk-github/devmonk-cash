@@ -313,14 +313,17 @@
         <div class="col-12">
           <div class="form-group mb-4">
             <label class="form-control-label mb-3">{{ "PROPERTIES" | translate}}</label>:
-            <div class="d-flex" *ngFor="
+            <div class="overflow-scroll py-1 h-150px">
+
+              <div class="d-flex" *ngFor="
             let property of item.oArticleGroupMetaData.aProperty;let pIndex = index">
-              <div class="w-100" *ngIf="propertyOptions[property.iPropertyId]?.length > 0">
-                <ng-select class="form-control p-0 w-100" [(ngModel)]="selectedProperties[property.iPropertyId]"
-                  (change)="setPropertyOption(property, pIndex)" [clearable]="false">
-                  <ng-option *ngFor="let option of propertyOptions[property.iPropertyId]" [value]="option.sCode">{{
-                    option.sName }}</ng-option>
-                </ng-select>
+                <div class="w-100" *ngIf="propertyOptions[property.iPropertyId]?.length > 0">
+                  <ng-select class="form-control p-0 w-100" [(ngModel)]="selectedProperties[property.iPropertyId]"
+                    (change)="setPropertyOption(property, pIndex)" [clearable]="false">
+                    <ng-option *ngFor="let option of propertyOptions[property.iPropertyId]" [value]="option.sCode">{{
+                      option.sName }}</ng-option>
+                  </ng-select>
+                </div>
               </div>
             </div>
           </div>
