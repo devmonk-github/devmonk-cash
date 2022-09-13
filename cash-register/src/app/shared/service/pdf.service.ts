@@ -564,19 +564,19 @@ export class PdfService {
     }
   }
 
-  private createRows(cols: any, currentRow: any, printableArea: any, gutter: any) {
+  private createRows(cols: any, currentRow: any, printableArea: any, gutter: any, dataSourceObject?: any) {
     console.log('-- createRows!!');
     console.log('cols ', cols);
     console.log('currentRow ', currentRow);
     let rowsToBeCreated = 1;
-    let dataSourceObject = this.data;
+    dataSourceObject = dataSourceObject || this.data;
     let createdRows = [];
     let foreachActive = false;
 
     if (this.isDefined(currentRow.forEach)) {
       foreachActive = true;
       console.log('defineDataSource 2 ', currentRow.forEach);
-      dataSourceObject = this.defineDataSource(currentRow.forEach);
+      dataSourceObject = this.defineDataSource(currentRow.forEach, dataSourceObject);
       console.log(dataSourceObject);
       rowsToBeCreated = dataSourceObject.length;
     }
@@ -1023,10 +1023,10 @@ export class PdfService {
     return col;
   }
 
-  private defineDataSource(key: string): any {
+  private defineDataSource(key: string, dataSourceObject?: any): any {
 
     let layer1, layer2, layer3
-    let dataSourceObject: string | never[] = [];
+    dataSourceObject = dataSourceObject || [];
     console.log('key ', key);
     if (key.match(/\./g)) {
 
@@ -1056,8 +1056,8 @@ export class PdfService {
           break;
       }
     } else {
-      if (this.data[key] !== undefined) {
-        dataSourceObject = this.data[key];
+      if (dataSourceObject[key] !== undefined || this.data[key] !== undefined) {
+        dataSourceObject = dataSourceObject[key] || this.data[key];
       } else {
         dataSourceObject = [];
         console.error('The provided key "' + key + '" does not exist in the data')
@@ -1124,6 +1124,7 @@ export class PdfService {
         html = '';
         if (forEach !== '') {
           html += this.replaceVariables(template, dataSourceObject);
+          let relatedSourceObject = JSON.parse(JSON.stringify(dataSourceObject));
           dataSourceObject = this.defineDataSource(forEach);
 
           // console.log(dataSourceObject);
@@ -1137,7 +1138,7 @@ export class PdfService {
               // We need to cross check if there is something going wrong with the printable area
               console.log(printableArea);
               // let gutterSizeNew = this.calcColumnGutter(colsize, gutter);
-              let newRows = this.createRows(colObject.row, colObject, printableArea, 12);
+              let newRows = this.createRows(colObject.row, colObject, printableArea, 12, relatedSourceObject);
               for (let i = 0; i < newRows.length; i++) {
                 let newRow = newRows[i];
                 if (this.isDefined(colObject.row.css)) {
