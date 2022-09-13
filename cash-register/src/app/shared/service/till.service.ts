@@ -178,8 +178,6 @@ export class TillService {
           nStockCorrection: i.eTransactionItemType === 'regular' ? i.quantity : i.quantity - (i.nBrokenProduct || 0),
           eKind: i.type, // TODO // repair
           bDiscount: i.nDiscount > 0,
-          //bPrepayment: true // B discount && prepayment fix Jolmer
-          //bPrepayment: false // A discount fix Jolmer
           bPrepayment: (i.paymentAmount > 0 || this.getUsedPayMethods(true, payMethods) - this.getTotals('price', transactionItems) < 0) && (i.paymentAmount !== i.amountToBePaid),
         },
         i.iActivityItemId,
@@ -190,6 +188,8 @@ export class TillService {
         i.sUniqueIdentifier || uuidv4(),
         i.paymentAmount,
         i.description,
+        i.sServicePartnerRemark,
+
       )
     });
     const originalTItemsLength = length = body.transactionItems.filter((i: any) => i.oType.eKind !== 'loyalty-points').length;

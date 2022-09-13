@@ -48,7 +48,6 @@ export class RepairComponent implements OnInit {
   sIsEstimatedDate: 'PriceAgreed' | 'Quotation' = 'PriceAgreed'
   contactType: 'phone' | 'email' | 'whatsapp' = 'phone'
   bShowServicePartnerRemark = false
-  sServicePartnerRemark = ''
   @ViewChild('descriptionRef') descriptionRef!: ElementRef
   constructor(private priceService: PriceService,
     private apiService: ApiService,
