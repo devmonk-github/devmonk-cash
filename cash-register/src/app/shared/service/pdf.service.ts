@@ -126,7 +126,7 @@ export class PdfService {
 
   private isDefined(obj: any): boolean {
     //return typeof obj !== 'undefined'
-    if(Array.isArray(obj)) {
+    if (Array.isArray(obj)) {
       return Boolean(obj.length > 0 && obj[0] !== "")
     } else {
       return Boolean(obj)
@@ -459,25 +459,25 @@ export class PdfService {
 
     if (typeof paperSize === 'string') {
 
-      if(this.orientation === 'portrait' || this.orientation === 'landscape') {
+      if (this.orientation === 'portrait' || this.orientation === 'landscape') {
 
         definedPaperSize = this.staticPaperSize.find((size) => {
           return size.type === paperSize
         })
 
         if (this.orientation === 'landscape') {
-            let definedPaperSizeOldWidth = definedPaperSize.width
-            definedPaperSize.width = definedPaperSize.height
-            definedPaperSize.height = definedPaperSizeOldWidth
+          let definedPaperSizeOldWidth = definedPaperSize.width
+          definedPaperSize.width = definedPaperSize.height
+          definedPaperSize.height = definedPaperSizeOldWidth
         }
 
       } else {
         console.error('Invalid paper orientation! Choose portrait or landscape"');
       }
 
-      
 
-      
+
+
       // if (template.orientation !== 'portrait') {
       //   if (this.paperSize.width > this.paperSize.height) {
       //     console.error('The paper height is already in landscape. Decrease the paper or change orientation to "portrait"');
@@ -609,7 +609,7 @@ export class PdfService {
         let colsize = col.size;
         let gutterSize = this.calcColumnGutter(colsize, gutter);
         let newRowWidth = this.calcRowWidth(printableArea.width, colsize, gutterSize);
-        let newCol = this.createCol(i, cols.length, newRowWidth, gutter, col, finalDataSourceObject,colsize, printableArea);
+        let newCol = this.createCol(i, cols.length, newRowWidth, gutter, col, finalDataSourceObject, colsize, printableArea);
         console.log('newCol : ', newCol);
 
         if (this.isDefined(col.css)) {
@@ -844,10 +844,10 @@ export class PdfService {
             // console.info('nrOfLevels',nrOfLevels)
             // console.info('variableStringFiltered',variableStringFiltered)
             // console.info('this.data',this.data)
-            
+
             switch (nrOfLevels) {
               case 1:
-                if(this.isDefined(this.data[parts[0]])) {
+                if (this.isDefined(this.data[parts[0]])) {
                   providedData = this.data[parts[0]];
                   variableStringFiltered = parts[1];
                 } else {
@@ -856,9 +856,9 @@ export class PdfService {
                 }
                 break;
               case 2:
-                if(this.isDefined(this.data[parts[0]])) {
+                if (this.isDefined(this.data[parts[0]])) {
                   layer1 = this.data[parts[0]];
-                  if(this.isDefined(layer1[parts[1]])) {
+                  if (this.isDefined(layer1[parts[1]])) {
                     providedData = layer1[parts[1]];
                     variableStringFiltered = parts[2];
                   } else {
@@ -877,11 +877,11 @@ export class PdfService {
                 break;
               case 3:
 
-                if(this.isDefined(this.data[parts[0]])) {
+                if (this.isDefined(this.data[parts[0]])) {
                   layer1 = this.data[parts[0]];
-                  if(this.isDefined(layer1[parts[1]])) {
+                  if (this.isDefined(layer1[parts[1]])) {
                     layer2 = layer1[parts[1]]
-                    if(this.isDefined(layer2[parts[2]])) {
+                    if (this.isDefined(layer2[parts[2]])) {
                       providedData = layer2[parts[2]];
                       variableStringFiltered = parts[3];
                     } else {
@@ -1056,11 +1056,11 @@ export class PdfService {
           break;
       }
     } else {
-      if(this.data[key] !== undefined) {
+      if (this.data[key] !== undefined) {
         dataSourceObject = this.data[key];
       } else {
         dataSourceObject = [];
-        console.error('The provided key "'+key+'" does not exist in the data')
+        console.error('The provided key "' + key + '" does not exist in the data')
       }
     }
 
@@ -1132,12 +1132,20 @@ export class PdfService {
             let extractedVariables = this.getVariables(template);
             let htmlConcept = '';
             console.log('-- coming here ', colObject);
-            if (this.isDefined(colObject.forEach)){
+            if (this.isDefined(colObject.forEach)) {
               console.log('----------------- here!!')
               // We need to cross check if there is something going wrong with the printable area
               console.log(printableArea);
               // let gutterSizeNew = this.calcColumnGutter(colsize, gutter);
-              this.createRows(colObject.row, colObject, printableArea, 12);
+              let newRows = this.createRows(colObject.row, colObject, printableArea, 12);
+              for (let i = 0; i < newRows.length; i++) {
+                let newRow = newRows[i];
+                if (this.isDefined(colObject.row.css)) {
+                  newRow = this.applyCss(newRow, colObject.row.css);
+                }
+
+                html += newRow.outerHTML;
+              }
             }
             // if (extractedVariables) {
             //   for (let v = 0; v < extractedVariables.length; v++) {
@@ -1341,13 +1349,13 @@ export class PdfService {
     })
   }
 
-  getTranslations(){
+  getTranslations() {
     let translationsObj: any = {};
     let translationsKey: Array<string> = ['CREATED_BY', 'ART_NUMBER', 'QUANTITY', 'DESCRIPTION', 'DISCOUNT', 'AMOUNT', 'VAT', 'SAVINGS_POINTS'];
 
     this.translateService.get(translationsKey).subscribe((result) => {
-       Object.entries(result).forEach((translation: any) => {
-        translationsObj[ String("__"+translation[0]) ] = translation[1]
+      Object.entries(result).forEach((translation: any) => {
+        translationsObj[String("__" + translation[0])] = translation[1]
       })
     });
 

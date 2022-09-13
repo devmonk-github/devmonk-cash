@@ -68,6 +68,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
   editProfile: boolean = false;
   showStatistics: boolean = false;
   faTimes = faTimes;
+
   customer: any = {
     _id: '',
     bNewsletter: true,
@@ -117,6 +118,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
     sCocNumber: '',
     nPaymentTermDays: ''
   }
+
   requestParams: any = {
     iBusinessId: "",
     aProjection: ['sSalutation', 'sFirstName', 'sPrefix', 'sLastName', 'dDateOfBirth', 'dDateOfBirth', 'nClientId', 'sGender', 'bIsEmailVerified',
@@ -186,7 +188,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
     { type: "Shop purchase", value: 0, color: ChartColors.SHOP_PURCHASE },//$dark-success-light-color
     { type: "Quotation", value: 0, color: ChartColors.QUOTATION },//$info-active-color
     { type: "Webshop", value: 0, color: ChartColors.WEBSHOP },//$gray-700
-    { type: "Refund", value: 0, color: ChartColors.REFUND },//$orange
+    // { type: "Refund", value: 0, color: ChartColors.REFUND },//$orange
     { type: "Giftcard", value: 0, color: ChartColors.GIFTCARD },//$green
     { type: "Gold purchase", value: 0, color: ChartColors.GOLD_PURCHASE },//$maroon
     { type: "Product reservation", value: 0, color: ChartColors.PRODUCT_RESERVATION }//$pink
@@ -296,7 +298,6 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
         this.cdr.detectChanges();
 
         this.editProfile = false;
-        // console.log(result);
       },
         (error: any) => {
           console.error(error)
@@ -327,7 +328,6 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
         (result: any) => {
           if (result?.data?.oTransactionAudit?.[0]?.individual?.[0]?.aArticleGroups)
             this.setAStatisticsChartData(result?.data?.oTransactionAudit?.[0]?.individual?.[0]?.aArticleGroups)
-          console.log({ CoreStatistics: result });
           this.aStatisticsChartDataLoading = false;
         },
         (error: any) => {
@@ -337,7 +337,6 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
       );
   }
   setAStatisticsChartData(data: any[]) {
-    console.log({ setAStatisticsChartData: data });
     const aStatisticsChartData: any[] = []
     data.map((item, index) => {
       console.log('item: ', item);
@@ -411,50 +410,57 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
   }
 
   loadTransactions() {
-    console.log('-------loadTransactions!');
     this.bTransactionsLoader = true;
-    this.requestParams.iCustomerId = this.customer._id;
-    this.apiService.postNew('cashregistry', '/api/v1/transaction/cashRegister', this.requestParams).subscribe((result: any) => {
+    const body = {
+      iCustomerId: this.customer._id,
+      iBusinessId: this.requestParams.iBusinessId
+    }
+    this.apiService.postNew('cashregistry', '/api/v1/transaction/cashRegister', body).subscribe((result: any) => {
       if (result?.data?.result) {
         this.aTransactions = result.data.result || [];
         this.aTransactions.forEach(transaction => {
+          transaction.sTotal = 0;
           transaction.aTransactionItems.forEach((item: any) => {
+            transaction.sTotal += parseFloat(item.nPaymentAmount); 
             const count = this.totalActivities;
             if (item?.oType?.eKind) this.totalActivities = count + item.nQuantity || 0;
-            switch (item?.oType?.eKind) {
-              case "regular":
-                this.aActivityTitles[1].value += 1;
-                break;
-              case "expenses":
-                break;
-              case "reservation":
-                this.aActivityTitles[8].value += 1;
-                break;
-              case "giftcard":
-                this.aActivityTitles[6].value += 1;
-                break;
-              case "empty-line":
-                break;
-              case "repair":
-                this.aActivityTitles[0].value += 1;
-                break;
-              case "order":
-                break;
-              case "gold-purchase":
-                this.aActivityTitles[7].value += 1;
-                break;
-              case "gold-sell":
-
-                break;
-              case "loyalty-points-discount":
-                break;
-              case "loyalty-points":
-                break;
-              case "discount":
-                break;
-              case "payment-discount":
-                break;
-            }
+            // if(item?.oType.bRefund){
+            //   this.aActivityTitles[5].value += 1;
+            // }else{
+              switch (item?.oType?.eKind) {
+                case "regular":
+                  this.aActivityTitles[2].value += 1;
+                  break;
+                case "expenses":
+                  break;
+                case "reservation":
+                  this.aActivityTitles[7].value += 1;
+                  break;
+                case "giftcard":
+                  this.aActivityTitles[5].value += 1;
+                  break;
+                case "empty-line":
+                  break;
+                case "repair":
+                  this.aActivityTitles[0].value += 1;
+                  break;
+                case "order":
+                  break;
+                case "gold-purchase":
+                  this.aActivityTitles[6].value += 1;
+                  break;
+                case "gold-sell":
+                  break;
+                case "loyalty-points-discount":
+                  break;
+                case "loyalty-points":
+                  break;
+                case "discount":
+                  break;
+                case "payment-discount":
+                  break;
+              }
+            // }
           })
         });
         // this.paginationConfig.totalItems = result.data.totalCount;
@@ -489,7 +495,6 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
   }
 
   loadActivities() {
-    // console.log('loadActivities');
     this.aActivities = [];
     this.bActivitiesLoader = true;
     this.apiService.postNew('cashregistry', '/api/v1/activities', this.requestParams).subscribe((result: any) => {
@@ -503,7 +508,6 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
 
   }
   loadActivityItems() {
-    // console.log('loadActivities items');
     this.bActivityItemsLoader = true;
     this.apiService.postNew('cashregistry', '/api/v1/activities/items', this.requestParams).subscribe(
       (result: any) => {
