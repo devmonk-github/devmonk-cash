@@ -4,6 +4,7 @@ import { HttpClient, HttpErrorResponse } from "@angular/common/http";
 import { StringService } from "./string.service";
 import { FileSaverService } from "ngx-filesaver";
 import { TranslateService } from '@ngx-translate/core';
+import { ApiService } from './api.service';
 
 interface StaticPaperSize {
   type: string,
@@ -93,7 +94,8 @@ export class PdfService {
     private httpClient: HttpClient,
     private stringService: StringService,
     private translateService: TranslateService,
-    private fileSaver: FileSaverService) {
+    private fileSaver: FileSaverService,
+    private apiService: ApiService) {
   }
 
   private addRowToPageWrap(page: any, row: any) {
@@ -564,25 +566,19 @@ export class PdfService {
     }
   }
 
-  private createRows(cols: any, currentRow: any, printableArea: any, gutter: any) {
-    console.log('-- createRows!!');
-    console.log('cols ', cols);
-    console.log('currentRow ', currentRow);
+  private createRows(cols: any, currentRow: any, printableArea: any, gutter: any, dataSourceObject?: any) {
     let rowsToBeCreated = 1;
-    let dataSourceObject = this.data;
+    dataSourceObject = dataSourceObject || this.data;
     let createdRows = [];
     let foreachActive = false;
 
     if (this.isDefined(currentRow.forEach)) {
       foreachActive = true;
-      console.log('defineDataSource 2 ', currentRow.forEach);
-      dataSourceObject = this.defineDataSource(currentRow.forEach);
-      console.log(dataSourceObject);
+      dataSourceObject = this.defineDataSource(currentRow.forEach, dataSourceObject);
       rowsToBeCreated = dataSourceObject.length;
     }
 
     for (let r = 0; r < rowsToBeCreated; r++) {
-      console.log('----------- loop!!');
       let finalDataSourceObject = dataSourceObject;
 
       if (typeof dataSourceObject.length === 'number') {
@@ -605,13 +601,10 @@ export class PdfService {
 
       for (let i = 0; i < cols.length; i++) {
         const col = cols[i];
-        console.log(col)
         let colsize = col.size;
         let gutterSize = this.calcColumnGutter(colsize, gutter);
         let newRowWidth = this.calcRowWidth(printableArea.width, colsize, gutterSize);
         let newCol = this.createCol(i, cols.length, newRowWidth, gutter, col, finalDataSourceObject, colsize, printableArea);
-        console.log('newCol : ', newCol);
-
         if (this.isDefined(col.css)) {
           newCol = this.applyCss(newCol, col.css);
         }
@@ -634,8 +627,6 @@ export class PdfService {
         }
 
         // if (this.isDefined(col.forEach)){
-        //   console.log('----------------- here!!')
-        //   console.log(printableArea);
         //   // let gutterSizeNew = this.calcColumnGutter(colsize, gutter);
         //   this.createRows(col.row, col, printableArea, 12);
         // }
@@ -644,9 +635,7 @@ export class PdfService {
       if (currentRow.htmlAfter) {
         newRow.appendChild(this.convertHtmlToElement(String(currentRow.htmlAfter)));
       }
-      console.log('Push : ', newRow);
       createdRows.push(newRow);
-      console.log('createdRows : ', createdRows);
     }
 
     if (currentRow.container) {
@@ -707,7 +696,6 @@ export class PdfService {
       let totalRowHeight = 0;
 
       let newRows = this.createRows(cols, currentRow, printableArea, gutterSize);
-      console.log('newRows : ', newRows);
       for (let i = 0; i < newRows.length; i++) {
         let newRow = newRows[i];
 
@@ -1023,16 +1011,13 @@ export class PdfService {
     return col;
   }
 
-  private defineDataSource(key: string): any {
+  private defineDataSource(key: string, dataSourceObject?: any): any {
 
     let layer1, layer2, layer3
-    let dataSourceObject: string | never[] = [];
-    console.log('key ', key);
+    dataSourceObject = dataSourceObject || [];
     if (key.match(/\./g)) {
 
       let parts = key.split('.');
-      console.log(parts);
-
       switch (parts.length) {
         case 0:
           dataSourceObject = this.data[key]
@@ -1056,8 +1041,8 @@ export class PdfService {
           break;
       }
     } else {
-      if (this.data[key] !== undefined) {
-        dataSourceObject = this.data[key];
+      if (dataSourceObject[key] !== undefined || this.data[key] !== undefined) {
+        dataSourceObject = dataSourceObject[key] || this.data[key];
       } else {
         dataSourceObject = [];
         console.error('The provided key "' + key + '" does not exist in the data')
@@ -1087,20 +1072,15 @@ export class PdfService {
   }
 
   private createCol(i: number, nrOfCols: number, newRowWidth: number, gutterSize: string, colObject: any, dataSourceObject: any = null, currentSize: number = 12, printableArea: any) {
-    console.log('---- createCol!! ', i, nrOfCols, newRowWidth, colObject, dataSourceObject);
     let html = (colObject.html || '');
     let element = (colObject.element || 'div');
     let forEach = (colObject.forEach || '');
     let htmlBefore = (colObject.htmlBefore || '');
     let htmlAfter = (colObject.htmlAfter || '');
-    // console.log('forEach ', forEach);
     let col = document.createElement(element);
     let newContent = [];
-    // console.log(html);
     if (html.length > 0) {
-      // console.log('--- if!');
       if (typeof html[0] === 'object') {
-        // console.log('--- if if!');
         for (let e = 0; e < html.length; e++) {
           html[e].content = typeof html[e].content !== 'undefined' ? html[e].content.replace('/>', '>') : "";
 
@@ -1119,25 +1099,19 @@ export class PdfService {
         }
         col = this.insertElementsInCol(col, html, newContent);
       } else {
-        // console.log('--- if else!');
         let template = html.replace('/>', '>');
         html = '';
         if (forEach !== '') {
           html += this.replaceVariables(template, dataSourceObject);
+          let relatedSourceObject = JSON.parse(JSON.stringify(dataSourceObject));
           dataSourceObject = this.defineDataSource(forEach);
-
-          // console.log(dataSourceObject);
           for (let d = 0; d < dataSourceObject.length; d++) {
             let entry = dataSourceObject[d];
             let extractedVariables = this.getVariables(template);
             let htmlConcept = '';
-            console.log('-- coming here ', colObject);
             if (this.isDefined(colObject.forEach)) {
-              console.log('----------------- here!!')
-              // We need to cross check if there is something going wrong with the printable area
-              console.log(printableArea);
               // let gutterSizeNew = this.calcColumnGutter(colsize, gutter);
-              let newRows = this.createRows(colObject.row, colObject, printableArea, 12);
+              let newRows = this.createRows(colObject.row, colObject, printableArea, 12, relatedSourceObject);
               for (let i = 0; i < newRows.length; i++) {
                 let newRow = newRows[i];
                 if (this.isDefined(colObject.row.css)) {
@@ -1185,12 +1159,9 @@ export class PdfService {
             html += htmlConcept
           }
         } else {
-          console.log('  else else else')
           html += this.replaceVariables(template, dataSourceObject);
-          console.log(html);
         }
         col.innerHTML = html;
-        console.log(col);
       }
     }
 
@@ -1209,16 +1180,10 @@ export class PdfService {
     if (colObject.htmlBefore) {
       col.innerHTML = htmlBefore + col.innerHTML + htmlAfter;
     }
-
-    // console.log('col : ', col, col.innerHTML);
-    // console.log('-- coming here ', colObject);
     // if (this.isDefined(colObject.forEach)){
-    //   // console.log('----------------- here!!')
-    //   console.log(printableArea);
     //   // let gutterSizeNew = this.calcColumnGutter(colsize, gutter);
     //   this.createRows(colObject.row, colObject, printableArea, 12);
     // }
-    console.log(col);
     return col;
   }
 
@@ -1374,6 +1339,64 @@ export class PdfService {
   }
 
   logService(details: string) {
-    console.log('Log service called: ' + details);
+    // console.log('Log service called: ' + details);
+  }
+
+
+  async fetchBusinessDetails(iBusinessId: any) {
+    return await this.apiService.getNew('core', '/api/v1/business/' + iBusinessId).toPromise();
+  }
+
+  veiwObject(dataObject: any) {
+    let language: any = localStorage.getItem('language');
+    dataObject.total = 0;
+    let total = 0, totalAfterDisc = 0, totalVat = 0, totalDiscount = 0, totalSavingPoints = 0;
+    dataObject.aTransactionItems.forEach((item: any, index: number)=>{
+      let name = '';
+      if(item && item.oArticleGroupMetaData && item.oArticleGroupMetaData.oName && item.oArticleGroupMetaData.oName[language]) name = item?.oArticleGroupMetaData?.oName[language] + ' ';
+      item.description = name;
+      if(item?.oBusinessProductMetaData?.sLabelDescription) item.description = item.description + item?.oBusinessProductMetaData?.sLabelDescription + ' ' + item?.sProductNumber;
+      totalSavingPoints += item.nSavingsPoints;
+      let disc = parseFloat(item.nDiscount);
+      if(item.bPaymentDiscountPercent){ 
+        disc = (disc * parseFloat(item.nPriceIncVat)/100);
+        item.nDiscountToShow = disc;
+      } else { item.nDiscountToShow = disc; }
+      item.priceAfterDiscount = (parseFloat(item.nPriceIncVat) -  parseFloat(item.nDiscountToShow));
+      item.totalPriceIncVat = parseFloat(item.nPriceIncVat) * parseFloat(item.nQuantity);
+      item.totalPriceIncVatAfterDisc = parseFloat(item.priceAfterDiscount) * parseFloat(item.nQuantity);
+      const vat = (item.nVatRate * item.priceAfterDiscount/100);
+      item.vat = vat.toFixed(2);
+      totalVat += vat;
+      total = total + item.totalPriceIncVat;
+      totalAfterDisc += item.totalPriceIncVatAfterDisc;
+      totalDiscount += disc;
+    })
+    dataObject.totalAfterDisc = parseFloat(totalAfterDisc.toFixed(2));
+    dataObject.total = parseFloat(total.toFixed(2));
+    dataObject.totalVat = parseFloat(totalVat.toFixed(2));
+    dataObject.totalDiscount = parseFloat(totalDiscount.toFixed(2));
+    dataObject.totalSavingPoints = totalSavingPoints;
+    dataObject.dCreatedDate = moment(dataObject.dCreatedDate).format('DD-MM-yyyy hh:mm');
+
+    return dataObject;
+  }
+  async generatePDF(transaction: any ) {
+    transaction = this.veiwObject(transaction);
+    const iBusinessId = localStorage.getItem('currentBusiness') || '';
+    const res: any = await this.fetchBusinessDetails(iBusinessId);
+    const businessDetails = res.data;
+    const sName = 'Sample', eType = transaction.eType;
+    const iLocationId = localStorage.getItem('currentLocation') || '';
+    const filename = new Date().getTime().toString()
+    transaction.businessDetails = businessDetails;
+    for (let i = 0; i < businessDetails?.aLocation.length; i++) {
+      if (businessDetails.aLocation[i]?._id.toString() == iLocationId.toString()) {
+        transaction.currentLocation = businessDetails.aLocation[i];
+      }
+    }
+    const url = `/api/v1/pdf/templates/${businessDetails._id}?sName=${sName}&eType=${eType}`;
+    const result: any = await this.apiService.getNew('cashregistry', url).toPromise();
+    return this.createPdf(JSON.stringify(result.data), transaction, filename, false, null, iBusinessId, transaction?._id);
   }
 }
