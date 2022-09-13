@@ -566,15 +566,15 @@ export class PdfService {
     }
   }
 
-  private createRows(cols: any, currentRow: any, printableArea: any, gutter: any) {
+  private createRows(cols: any, currentRow: any, printableArea: any, gutter: any, dataSourceObject?: any) {
     let rowsToBeCreated = 1;
-    let dataSourceObject = this.data;
+    dataSourceObject = dataSourceObject || this.data;
     let createdRows = [];
     let foreachActive = false;
 
     if (this.isDefined(currentRow.forEach)) {
       foreachActive = true;
-      dataSourceObject = this.defineDataSource(currentRow.forEach);
+      dataSourceObject = this.defineDataSource(currentRow.forEach, dataSourceObject);
       rowsToBeCreated = dataSourceObject.length;
     }
 
@@ -1011,10 +1011,10 @@ export class PdfService {
     return col;
   }
 
-  private defineDataSource(key: string): any {
+  private defineDataSource(key: string, dataSourceObject?: any): any {
 
     let layer1, layer2, layer3
-    let dataSourceObject: string | never[] = [];
+    dataSourceObject = dataSourceObject || [];
     if (key.match(/\./g)) {
 
       let parts = key.split('.');
@@ -1041,8 +1041,8 @@ export class PdfService {
           break;
       }
     } else {
-      if (this.data[key] !== undefined) {
-        dataSourceObject = this.data[key];
+      if (dataSourceObject[key] !== undefined || this.data[key] !== undefined) {
+        dataSourceObject = dataSourceObject[key] || this.data[key];
       } else {
         dataSourceObject = [];
         console.error('The provided key "' + key + '" does not exist in the data')
@@ -1103,6 +1103,7 @@ export class PdfService {
         html = '';
         if (forEach !== '') {
           html += this.replaceVariables(template, dataSourceObject);
+          let relatedSourceObject = JSON.parse(JSON.stringify(dataSourceObject));
           dataSourceObject = this.defineDataSource(forEach);
           for (let d = 0; d < dataSourceObject.length; d++) {
             let entry = dataSourceObject[d];
@@ -1110,7 +1111,7 @@ export class PdfService {
             let htmlConcept = '';
             if (this.isDefined(colObject.forEach)) {
               // let gutterSizeNew = this.calcColumnGutter(colsize, gutter);
-              let newRows = this.createRows(colObject.row, colObject, printableArea, 12);
+              let newRows = this.createRows(colObject.row, colObject, printableArea, 12, relatedSourceObject);
               for (let i = 0; i < newRows.length; i++) {
                 let newRow = newRows[i];
                 if (this.isDefined(colObject.row.css)) {
