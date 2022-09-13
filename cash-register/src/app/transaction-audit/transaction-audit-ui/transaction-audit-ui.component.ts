@@ -603,7 +603,12 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
         (result: any) => {
           if (result?.data?.aLocation?.length)
             this.aLocation = result.data.aLocation;
-          this.sCurrentLocation = result?.data?.sName;
+            this.sCurrentLocation = result?.data?.sName;
+            this.aLocation.forEach((oLocation: any) =>{
+              if (oLocation._id === this.iLocationId){
+                this.sCurrentLocation += " ("+ oLocation?.sName + ")";
+              }
+            });
         },
         (error) => {
           console.log('error: ', error);
@@ -867,7 +872,7 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
   }
 
   getWorkstations() {
-    (this.workstationListSubscription = this.apiService.getNew('cashregistry', '/api/v1/workstations/list/' + this.iBusinessId).subscribe((result: any) => {
+    (this.workstationListSubscription = this.apiService.getNew('cashregistry', `/api/v1/workstations/list/${this.iBusinessId}/${this.iLocationId}`).subscribe((result: any) => {
         if (result && result.data?.length) {
           this.aWorkStation = result.data;
           this.sCurrentWorkstation = this.aWorkStation.filter((el: any) => el._id === this.iWorkstationId)[0]?.sName;
@@ -1074,6 +1079,7 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
 
     if (nDifferenceAmount > 0) {
       //we have difference in cash, so add that as and expense
+      // console.log('we have difference in cash, so add that as and expense', nDifferenceAmount)
 
      await this.addExpenses(
         {
@@ -1184,7 +1190,7 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
 
   async saveUpdatedPayments(event:any) {
     event.target.disabled = true;
-    this.aPaymentMethods.forEach(async (item: any) => {
+    for (const item of this.aPaymentMethods) {
       if (item.nAmount != item.nNewAmount) {
         await this.addExpenses({
           amount: item.nNewAmount - item.nAmount,
@@ -1194,14 +1200,12 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
             nAmount: item.nNewAmount - item.nAmount,
             sMethod: item.sMethod
           }
-        }).toPromise();
-        event.target.disabled = false;
+        }).toPromise(); 
       }
-      this.paymentEditMode = false;
-    });
+    }
 
     if (this.aNewSelectedPaymentMethods.length) {
-      this.aNewSelectedPaymentMethods.forEach(async (item: any) => {
+      for (const item of this.aNewSelectedPaymentMethods) {
         if (item.nAmount) {
           await this.addExpenses({
             amount: item.nAmount,
@@ -1213,10 +1217,17 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
             }
           }).toPromise();
         }
-      });
+      }
     }
 
-    // this.fetchStatistics();
+    const endDate = new Date();
+    this.filterDates.endDate = endDate;
+    this.oStatisticsData.dEndDate = endDate;
+
+    this.paymentEditMode = false;
+    event.target.disabled = false;
+
+    this.fetchStatistics();
   }
 
   ngOnDestroy(): void {
