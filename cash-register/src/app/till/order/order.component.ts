@@ -182,11 +182,12 @@ export class OrderComponent implements OnInit {
                   let opt: any = {
                     iPropertyId: property._id,
                     iPropertyOptionId: option?._id,
+                    sPropertyOptionName: option?.sKey,
                     sPropertyName: property.sName,
                     oProperty: {
                     },
                     sCode: option.sCode,
-                    sName: option.sKey
+                    sName: option.sKey,
                   };
                   opt.oProperty[option.sKey] = option.value;
                   this.propertyOptions[property._id].push(opt);

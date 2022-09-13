@@ -320,6 +320,9 @@ export class TransactionDetailsComponent implements OnInit {
     this.iLocationId = localStorage.getItem("currentLocation") || '';
 
     let dataObject = JSON.parse(JSON.stringify(this.transaction));
+    dataObject.aPayments.forEach((obj: any) => {
+      obj.dCreatedDate = moment(dataObject.dCreatedDate).format('DD-MM-yyyy hh:mm');
+    });
     dataObject.aTransactionItems = [];
     this.transaction.aTransactionItems.forEach((item: any, index: number)=>{
       if(!(item.oType?.eKind == 'discount' || item?.oType?.eKind == 'loyalty-points-discount')) {
@@ -340,14 +343,14 @@ export class TransactionDetailsComponent implements OnInit {
         disc = (disc * parseFloat(item.nPriceIncVat)/100);
         item.nDiscountToShow = disc;
       } else { item.nDiscountToShow = disc; }
-      item.priceAfterDiscount = (parseFloat(item.nPriceIncVat) -  parseFloat(item.nDiscountToShow));
-      item.totalPriceIncVat = parseFloat(item.nPriceIncVat) * parseFloat(item.nQuantity);
-      item.totalPriceIncVatAfterDisc = parseFloat(item.priceAfterDiscount) * parseFloat(item.nQuantity);
+      item.priceAfterDiscount = (parseFloat(item.nPaymentAmount) -  parseFloat(item.nDiscountToShow));
+      item.totalPaymentAmount = parseFloat(item.nPaymentAmount) * parseFloat(item.nQuantity);
+      item.totalPaymentAmountAfterDisc = parseFloat(item.priceAfterDiscount) * parseFloat(item.nQuantity);
       const vat = (item.nVatRate * item.priceAfterDiscount/100);
       item.vat = vat.toFixed(2);
       totalVat += vat;
-      total = total + item.totalPriceIncVat;
-      totalAfterDisc += item.totalPriceIncVatAfterDisc;
+      total = total + item.totalPaymentAmount;
+      totalAfterDisc += item.totalPaymentAmountAfterDisc;
       totalDiscount += disc;
       this.getRelatedTransactionItem(item?.iActivityItemId, item?._id, index)
     })
@@ -395,6 +398,9 @@ export class TransactionDetailsComponent implements OnInit {
       (result: any) => {
         this.transaction.related = result.data || [];
         this.transaction.related.forEach((obj: any)=>{
+          obj.aPayments.forEach((obj: any) => {
+            obj.dCreatedDate = moment(obj.dCreatedDate).format('DD-MM-yyyy hh:mm');
+          });
           this.transaction.aPayments = this.transaction.aPayments.concat(obj.aPayments);
         })
       }, (error) => {

@@ -145,7 +145,7 @@ export class ActivityItemsComponent implements OnInit {
   }
 
   getWorkstations() {
-    this.apiService.getNew('cashregistry', '/api/v1/workstations/list/' + this.businessDetails._id).subscribe(
+    this.apiService.getNew('cashregistry', `/api/v1/workstations/list/${this.businessDetails._id}/${this.iLocationId}`).subscribe(
       (result: any) => {
         if (result && result.data) {
           this.workstations = result.data;

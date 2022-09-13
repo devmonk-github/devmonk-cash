@@ -63,6 +63,7 @@ export class TransactionsComponent implements OnInit {
     { key: 'MARK_CONFIRMED' },
   ];
   iBusinessId: any = '';
+  iLocationId: any = '';
 
   // Advance search fields 
 
@@ -105,6 +106,7 @@ export class TransactionsComponent implements OnInit {
     this.userType = localStorage.getItem("type");
     this.loadTransaction();
     this.iBusinessId = localStorage.getItem('currentBusiness');
+    this.iLocationId = localStorage.getItem('currentLocation');
     this.listEmployee();
     this.getWorkstations();
     this.getLocations();
@@ -190,7 +192,7 @@ export class TransactionsComponent implements OnInit {
   }
 
   getWorkstations() {
-    this.apiService.getNew('cashregistry', '/api/v1/workstations/list/' + this.businessDetails._id).subscribe(
+    this.apiService.getNew('cashregistry', `/api/v1/workstations/list/${this.iBusinessId}/${this.iLocationId}`).subscribe(
       (result: any) => {
         if (result && result.data) {
           this.workstations = result.data;
