@@ -334,6 +334,7 @@ export class ActivityDetailsComponent implements OnInit {
                 open: true,
                 nMargin: transactionItem.nMargin,
                 nPurchasePrice: transactionItem.nPurchasePrice,
+                sServicePartnerRemark: transactionItem.sServicePartnerRemark,
               });
             }
           });

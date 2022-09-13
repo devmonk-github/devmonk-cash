@@ -574,6 +574,7 @@ export class TransactionDetailsComponent implements OnInit {
                 paymentAmount,
                 description: transactionItem.sDescription,
                 oBusinessProductMetaData: transactionItem.oBusinessProductMetaData,
+                sServicePartnerRemark: transactionItem.sServicePartnerRemark,
                 open: true,
               });
             }

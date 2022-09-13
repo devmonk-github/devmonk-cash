@@ -63,6 +63,7 @@ export class TransactionItem {
     public iLocationId: string,
     public sBagNumber: string,
     public iSupplierId: any,
+    
     //Optional here, since we don't know the transaction id when we create one
     public iLastTransactionItemId: string | null,
     public iTransactionId: string | null,
@@ -77,9 +78,11 @@ export class TransactionItem {
     public iActivityItemId: any,
     public oGoldFor: any,
     public nDiscount: number,
+
     public nRedeemedLoyaltyPoints: number,
     public sUniqueIdentifier: string,
     public nRevenueAmount: number,
-    public sDescription: string) { }
+    public sDescription: string,
+    public sServicePartnerRemark: string,) { }
 
 }
