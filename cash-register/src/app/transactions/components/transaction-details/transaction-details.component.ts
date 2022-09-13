@@ -38,6 +38,7 @@ export class TransactionDetailsComponent implements OnInit {
   pdfGenerating: Boolean = false;
   downloadWithVATLoading: Boolean = false;
   businessDetails: any = {};
+  ableToDownload: Boolean = false;
   templateString = {
     "barcodeheight": "10",
     "barcodetext": false,
@@ -375,6 +376,7 @@ export class TransactionDetailsComponent implements OnInit {
       .subscribe(
         (result: any) => {
           this.businessDetails = result.data;
+          this.ableToDownload = true;
         })
   }
 
