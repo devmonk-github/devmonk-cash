@@ -128,7 +128,7 @@ export class TransactionAuditUiPdfService {
             headerList.push({ text: singleHeader, bold: true });
         });
 
-        const columnWidths = ['*', 50, 50, 80, 100, 100];
+        const columnWidths = ['*', 60, 60, 80, 100, 100];
         // const columnWidths = '*';
 
         const tableLayout = {
@@ -310,8 +310,8 @@ export class TransactionAuditUiPdfService {
             { text: aStatistic[0].overall[0].nQuantity, style: 'th' },
             { text: aStatistic[0].overall[0].nTotalRevenue, style: 'th' },
             { text: aStatistic[0].overall[0].nTotalPurchaseAmount, style: 'th' },
-            { text: aStatistic[0].overall[0].nProfit, style: 'th' },
-            { text: aStatistic[0].overall[0].nMargin, style: 'th' },
+            { text: Math.round(aStatistic[0].overall[0].nProfit).toFixed(2), style: 'th' },
+            { text: Math.round(aStatistic[0].overall[0].nMargin).toFixed(2), style: 'th' },
         ];
 
         const overallData = {
