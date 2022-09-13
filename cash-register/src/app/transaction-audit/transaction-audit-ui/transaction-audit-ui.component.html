@@ -262,7 +262,7 @@
                                     </p>
                                     <p class="row">
                                         <span class="col-4 fw-bolder" >End Date : </span>
-                                        <span class="col-8"> {{ oStatisticsData.dEndDate | date:'medium'}} </span>
+                                        <span class="col-8"> {{ oStatisticsData.dEndDate | date:'medium':'GMT'}} </span>
                                     </p>
                                     <p class="row">
                                         <span class="col-4 fw-bolder">Display Method : </span>
@@ -331,8 +331,11 @@
                         <hr>
                         <div class="row">
                             <div class="col-md-12">
-                                <div class="d-flex justify-content-end">
-                                    <button class="btn btn-primary" (click)="exportToPDF()">{{ 'DOWNLOAD' }}</button>
+                                <div class="d-flex justify-content-end align-items-center">
+                                    <ng-container *ngIf="pdfGenerationInProgress">
+                                        <div class="spinner-border mx-2"></div>
+                                    </ng-container>
+                                    <button class="btn btn-primary" (click)="exportToPDF($event)">{{ 'DOWNLOAD' }}</button>
                                 </div>
                             </div>
                         </div>
