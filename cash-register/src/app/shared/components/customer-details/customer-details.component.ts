@@ -188,7 +188,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
     { type: "Shop purchase", value: 0, color: ChartColors.SHOP_PURCHASE },//$dark-success-light-color
     { type: "Quotation", value: 0, color: ChartColors.QUOTATION },//$info-active-color
     { type: "Webshop", value: 0, color: ChartColors.WEBSHOP },//$gray-700
-    { type: "Refund", value: 0, color: ChartColors.REFUND },//$orange
+    // { type: "Refund", value: 0, color: ChartColors.REFUND },//$orange
     { type: "Giftcard", value: 0, color: ChartColors.GIFTCARD },//$green
     { type: "Gold purchase", value: 0, color: ChartColors.GOLD_PURCHASE },//$maroon
     { type: "Product reservation", value: 0, color: ChartColors.PRODUCT_RESERVATION }//$pink
@@ -421,9 +421,9 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
             transaction.sTotal += parseFloat(item.nPaymentAmount); 
             const count = this.totalActivities;
             if (item?.oType?.eKind) this.totalActivities = count + item.nQuantity || 0;
-            if(item?.oType.bRefund){
-              this.aActivityTitles[5].value += 1;
-            }else{
+            // if(item?.oType.bRefund){
+            //   this.aActivityTitles[5].value += 1;
+            // }else{
               switch (item?.oType?.eKind) {
                 case "regular":
                   this.aActivityTitles[2].value += 1;
@@ -431,10 +431,10 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
                 case "expenses":
                   break;
                 case "reservation":
-                  this.aActivityTitles[8].value += 1;
+                  this.aActivityTitles[7].value += 1;
                   break;
                 case "giftcard":
-                  this.aActivityTitles[6].value += 1;
+                  this.aActivityTitles[5].value += 1;
                   break;
                 case "empty-line":
                   break;
@@ -444,7 +444,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
                 case "order":
                   break;
                 case "gold-purchase":
-                  this.aActivityTitles[7].value += 1;
+                  this.aActivityTitles[6].value += 1;
                   break;
                 case "gold-sell":
                   break;
@@ -457,7 +457,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
                 case "payment-discount":
                   break;
               }
-            }
+            // }
           })
         });
         // this.paginationConfig.totalItems = result.data.totalCount;
