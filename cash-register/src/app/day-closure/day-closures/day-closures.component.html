@@ -66,9 +66,7 @@
                             <td>Skimmed</td>
 
                             <td>
-                                <button class="btn btn-primary"
-                                    [routerLink]="['../../transactions-audit/view', oDayClosure._id]"
-                                    [queryParams]="{ page: this.paginationConfig?.currentPage}">
+                                <button class="btn btn-primary" (click)="goToView(oDayClosure._id, oDayClosure?.dOpenDate, oDayClosure?.dCloseDate)">
                                     {{"VIEW" | translate}}
                                 </button>
                             </td>

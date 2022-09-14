@@ -995,9 +995,11 @@
                     <div class="container">
                         <div class="d-flex justify-content-between">
                             <strong> {{ 'PAYMENT_METHODS' | translate}} </strong>
-                            <button class="btn" (click)="toggleEditPaymentMode()">
-                                <i class="fa fa-edit"></i>
-                            </button>
+                            <ng-container *ngIf="iStatisticId && oStatisticsDocument.bIsDayState">
+                                <button class="btn" (click)="toggleEditPaymentMode()">
+                                    <i class="fa fa-edit"></i>
+                                </button>
+                            </ng-container>
                         </div>
                         <p *ngIf="!aPaymentMethods?.length">{{ 'PAYMENT_METHODS_NOT_FOUND' | translate}}</p>
                         <div *ngIf="aPaymentMethods?.length">
@@ -1232,7 +1234,7 @@
             </div>
         </div>
     </div>
-    <ng-container *ngIf="iStatisticId">
+    <ng-container *ngIf="iStatisticId && oStatisticsDocument.bIsDayState">
         <!-- COUNTING SECTION START -->
         <div class="row">
             <div class="card card-flush">

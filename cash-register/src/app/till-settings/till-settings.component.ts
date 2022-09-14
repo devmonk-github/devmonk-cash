@@ -23,6 +23,8 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
   requestParams: any = {
     iBusinessId: ''
   }
+  updatingSettings: boolean = false;
+  
   settings: any = { nLastReceiptNumber: 0, nLastInvoiceNumber: 0, id: null };
   overviewColumns = [
     // { key:'', name:'action'}, 
@@ -224,12 +226,19 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
   //   console.log(this.settings);
   // }
 
-  updateSettings(): void {
-    const { nLastInvoiceNumber, nLastReceiptNumber } = this.settings;
-    const body = { nLastInvoiceNumber, nLastReceiptNumber };
+  updateSettings(event:any): void {
+    const { nLastInvoiceNumber, nLastReceiptNumber, sDayClosurePeriod } = this.settings;
+    const body = { nLastInvoiceNumber, nLastReceiptNumber, sDayClosurePeriod };
+    event.target.disabled = true;
+    this.updatingSettings = true;
     this.updateSettingsSubscription = this.apiService.putNew('cashregistry', '/api/v1/settings/update/' + this.requestParams.iBusinessId, body)
       .subscribe((result: any) => {
-        console.log(result);
+        // console.log(result);
+        if (result){
+          this.updatingSettings = false;
+          event.target.disabled = false;
+          this.toastService.show({ type: 'success', text: 'Saved Successfully' });
+        } 
         // this.getWebShopSettings()
         // this.showLoader = false;
       }, (error) => {
