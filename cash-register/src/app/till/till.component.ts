@@ -953,7 +953,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
             const nDifference = (nCurrentTimeSecond - nOpenTimeSecond) / 1000;
             if (nDifference > nDayClosurePeriodAllowed) this.bIsPreviousDayStateClosed = false;
-            console.log({ nDayClosurePeriodAllowed, nDifference, diff: nDifference > nDayClosurePeriodAllowed });
           }, (error) => {
             console.log(error);
           })
