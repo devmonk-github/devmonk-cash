@@ -1347,7 +1347,16 @@ export class PdfService {
     return await this.apiService.getNew('core', '/api/v1/business/' + iBusinessId).toPromise();
   }
 
-  veiwObject(dataObject: any) {
+  veiwObject(dataObj: any) {
+    let dataObject = JSON.parse(JSON.stringify(dataObj));
+
+    dataObject.aTransactionItems = [];
+    dataObj.aTransactionItems.forEach((item: any, index: number) => {
+      if (!(item.oType?.eKind == 'discount' || item?.oType?.eKind == 'loyalty-points-discount')) {
+        dataObject.aTransactionItems.push(item);
+      }
+    })
+
     let language: any = localStorage.getItem('language');
     dataObject.total = 0;
     let total = 0, totalAfterDisc = 0, totalVat = 0, totalDiscount = 0, totalSavingPoints = 0;
@@ -1359,13 +1368,13 @@ export class PdfService {
       totalSavingPoints += item.nSavingsPoints;
       let disc = parseFloat(item.nDiscount);
       if(item.bPaymentDiscountPercent){ 
-        disc = (disc * parseFloat(item.nPriceIncVat)/100);
+        disc = (disc * parseFloat(item.nPriceIncVat)/(100 + parseFloat(item.nVatRate)));
         item.nDiscountToShow = disc;
       } else { item.nDiscountToShow = disc; }
       item.priceAfterDiscount = (parseFloat(item.nPriceIncVat) -  parseFloat(item.nDiscountToShow));
       item.totalPriceIncVat = parseFloat(item.nPriceIncVat) * parseFloat(item.nQuantity);
       item.totalPriceIncVatAfterDisc = parseFloat(item.priceAfterDiscount) * parseFloat(item.nQuantity);
-      const vat = (item.nVatRate * item.priceAfterDiscount/100);
+      const vat = (item.nVatRate * item.priceAfterDiscount/(100 + parseFloat(item.nVatRate)));
       item.vat = vat.toFixed(2);
       totalVat += vat;
       total = total + item.totalPriceIncVat;
