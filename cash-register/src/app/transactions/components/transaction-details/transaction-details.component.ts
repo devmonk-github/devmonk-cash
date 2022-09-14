@@ -341,13 +341,13 @@ export class TransactionDetailsComponent implements OnInit {
       totalSavingPoints += item.nSavingsPoints;
       let disc = parseFloat(item.nDiscount);
       if(item.bPaymentDiscountPercent){ 
-        disc = (disc * parseFloat(item.nPriceIncVat)/100);
+        disc = (disc * parseFloat(item.nPriceIncVat)/(100 + parseFloat(item.nVatRate)));
         item.nDiscountToShow = disc;
       } else { item.nDiscountToShow = disc; }
       item.priceAfterDiscount = (parseFloat(item.nPaymentAmount) -  parseFloat(item.nDiscountToShow));
       item.totalPaymentAmount = parseFloat(item.nPaymentAmount) * parseFloat(item.nQuantity);
       item.totalPaymentAmountAfterDisc = parseFloat(item.priceAfterDiscount) * parseFloat(item.nQuantity);
-      const vat = (item.nVatRate * item.priceAfterDiscount/100);
+      const vat = (item.nVatRate * item.priceAfterDiscount/(100 + parseFloat(item.nVatRate)));
       item.vat = vat.toFixed(2);
       totalVat += vat;
       total = total + item.totalPaymentAmount;
