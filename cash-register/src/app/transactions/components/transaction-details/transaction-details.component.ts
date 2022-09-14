@@ -325,29 +325,29 @@ export class TransactionDetailsComponent implements OnInit {
       obj.dCreatedDate = moment(dataObject.dCreatedDate).format('DD-MM-yyyy hh:mm');
     });
     dataObject.aTransactionItems = [];
-    this.transaction.aTransactionItems.forEach((item: any, index: number)=>{
-      if(!(item.oType?.eKind == 'discount' || item?.oType?.eKind == 'loyalty-points-discount')) {
+    this.transaction.aTransactionItems.forEach((item: any, index: number) => {
+      if (!(item.oType?.eKind == 'discount' || item?.oType?.eKind == 'loyalty-points-discount')) {
         dataObject.aTransactionItems.push(item);
       }
     })
     let language: any = localStorage.getItem('language')
     dataObject.total = 0;
     let total = 0, totalAfterDisc = 0, totalVat = 0, totalDiscount = 0, totalSavingPoints = 0;
-    dataObject.aTransactionItems.forEach((item: any, index: number)=>{
+    dataObject.aTransactionItems.forEach((item: any, index: number) => {
       let name = '';
-      if(item && item.oArticleGroupMetaData && item.oArticleGroupMetaData.oName && item.oArticleGroupMetaData.oName[language]) name = item?.oArticleGroupMetaData?.oName[language] + ' ';
+      if (item && item.oArticleGroupMetaData && item.oArticleGroupMetaData.oName && item.oArticleGroupMetaData.oName[language]) name = item?.oArticleGroupMetaData?.oName[language] + ' ';
       item.description = name;
-      if(item?.oBusinessProductMetaData?.sLabelDescription) item.description = item.description + item?.oBusinessProductMetaData?.sLabelDescription + ' ' + item?.sProductNumber;
+      if (item?.oBusinessProductMetaData?.sLabelDescription) item.description = item.description + item?.oBusinessProductMetaData?.sLabelDescription + ' ' + item?.sProductNumber;
       totalSavingPoints += item.nSavingsPoints;
       let disc = parseFloat(item.nDiscount);
-      if(item.bPaymentDiscountPercent){ 
-        disc = (disc * parseFloat(item.nPriceIncVat)/100);
+      if (item.bPaymentDiscountPercent) {
+        disc = (disc * parseFloat(item.nPriceIncVat) / 100);
         item.nDiscountToShow = disc;
       } else { item.nDiscountToShow = disc; }
-      item.priceAfterDiscount = (parseFloat(item.nPaymentAmount) -  parseFloat(item.nDiscountToShow));
+      item.priceAfterDiscount = (parseFloat(item.nPaymentAmount) - parseFloat(item.nDiscountToShow));
       item.totalPaymentAmount = parseFloat(item.nPaymentAmount) * parseFloat(item.nQuantity);
       item.totalPaymentAmountAfterDisc = parseFloat(item.priceAfterDiscount) * parseFloat(item.nQuantity);
-      const vat = (item.nVatRate * item.priceAfterDiscount/100);
+      const vat = (item.nVatRate * item.priceAfterDiscount / 100);
       item.vat = vat.toFixed(2);
       totalVat += vat;
       total = total + item.totalPaymentAmount;
@@ -380,34 +380,34 @@ export class TransactionDetailsComponent implements OnInit {
         })
   }
 
-  getRelatedTransactionItem(iActivityItemId: string, iTransactionItemId: string, index: number){
+  getRelatedTransactionItem(iActivityItemId: string, iTransactionItemId: string, index: number) {
     this.apiService.getNew('cashregistry', `/api/v1/transaction/item/activityItem/${iActivityItemId}?iBusinessId=${this.iBusinessId}&iTransactionItemId=${iTransactionItemId}`)
-    .subscribe(
-      (result: any) => {
-        this.transaction.aTransactionItems[index].related = result.data || [];
-      }, (error) => {
-        console.log(error);
-      })
+      .subscribe(
+        (result: any) => {
+          this.transaction.aTransactionItems[index].related = result.data || [];
+        }, (error) => {
+          console.log(error);
+        })
   }
 
-  getRelatedTransaction(iActivityId: string, iTransactionId: string){
+  getRelatedTransaction(iActivityId: string, iTransactionId: string) {
     const body = {
       iBusinessId: this.iBusinessId,
       iTransactionId: iTransactionId
     }
     this.apiService.postNew('cashregistry', '/api/v1/transaction/activity/' + iActivityId, body)
-    .subscribe(
-      (result: any) => {
-        this.transaction.related = result.data || [];
-        this.transaction.related.forEach((obj: any)=>{
-          obj.aPayments.forEach((obj: any) => {
-            obj.dCreatedDate = moment(obj.dCreatedDate).format('DD-MM-yyyy hh:mm');
-          });
-          this.transaction.aPayments = this.transaction.aPayments.concat(obj.aPayments);
+      .subscribe(
+        (result: any) => {
+          this.transaction.related = result.data || [];
+          this.transaction.related.forEach((obj: any) => {
+            obj.aPayments.forEach((obj: any) => {
+              obj.dCreatedDate = moment(obj.dCreatedDate).format('DD-MM-yyyy hh:mm');
+            });
+            this.transaction.aPayments = this.transaction.aPayments.concat(obj.aPayments);
+          })
+        }, (error) => {
+          console.log(error);
         })
-      }, (error) => {
-        console.log(error);
-      })
   }
 
   close(value: boolean) {
@@ -498,6 +498,7 @@ export class TransactionDetailsComponent implements OnInit {
         // dataObject.totalDiscount = totalDiscount;
         // dataObject.totalSavingPoints = totalSavingPoints;
         // dataObject.dCreatedDate = moment(dataObject.dCreatedDate).format('DD-MM-yyyy hh:mm');
+
         console.log(this.transaction);
         this.pdfService.createPdf(JSON.stringify(result.data), this.transaction, filename, print, printData, this.iBusinessId, this.transaction?._id)
           .then(() => {

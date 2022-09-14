@@ -46,7 +46,7 @@ export class RepairComponent implements OnInit {
   // temporary variable
   supplier: any;
   sIsEstimatedDate: 'PriceAgreed' | 'Quotation' = 'PriceAgreed'
-  contactType: 'phone' | 'email' | 'whatsapp' = 'phone'
+  contactType: 'phone' | 'email' | 'whatsapp' | '' = ''
   bShowServicePartnerRemark = false
   @ViewChild('descriptionRef') descriptionRef!: ElementRef
   constructor(private priceService: PriceService,
@@ -67,6 +67,10 @@ export class RepairComponent implements OnInit {
       this.selectArticleGroup();
       this.item.new = false;
     }
+  }
+
+  onContactButtonClick(): void {
+
   }
 
   selectArticleGroup() {
