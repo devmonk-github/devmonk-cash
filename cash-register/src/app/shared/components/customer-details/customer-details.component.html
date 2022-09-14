@@ -350,16 +350,10 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
-
-                                                <tr>
-                                                    <td>Alex Neil</td>
-                                                    <td>250</td>
+                                                <tr *ngFor="let oEmployeeStatistic of aEmployeeStatistic">
+                                                    <td>{{oEmployeeStatistic?.sName}}</td>
+                                                    <td>{{oEmployeeStatistic?.nTotalRevenue}}</td>
                                                 </tr>
-                                                <tr>
-                                                    <td>John Cena</td>
-                                                    <td>190</td>
-                                                </tr>
-
                                             </tbody>
                                         </table>
                                     </div>
@@ -372,7 +366,8 @@
                                                 [responsive]="paymentMethodsChartOptions.responsive"
                                                 [legend]="paymentMethodsChartOptions.legend"
                                                 [title]="paymentMethodsChartOptions.title"
-                                                [dataLabels]="paymentMethodsChartOptions.options.dataLabels">
+                                                
+                                                >
                                             </apx-chart>
 
                                         </div>

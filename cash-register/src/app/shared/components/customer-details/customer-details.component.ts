@@ -58,6 +58,7 @@ export const ChartColors = {
   templateUrl: './customer-details.component.html',
   styleUrls: ['./customer-details.component.sass']
 })
+
 export class CustomerDetailsComponent implements OnInit, AfterViewInit {
 
   dialogRef: DialogComponent;
@@ -68,6 +69,8 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
   editProfile: boolean = false;
   showStatistics: boolean = false;
   faTimes = faTimes;
+  aPaymentChartData: any = [];
+  aEmployeeStatistic: any = [];
 
   customer: any = {
     _id: '',
@@ -181,6 +184,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
 
   @ViewChild("paymentMethodsChart") paymentMethodsChart !: ChartComponent;
   public paymentMethodsChartOptions !: Partial<PieChartOptions> | any;
+
   aStatisticsChartDataLoading = true
   aActivityTitles: any = [
     { type: "Repairs", value: 0, color: ChartColors.REPAIR },//$primary-color
@@ -196,13 +200,6 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
 
   aStatisticsChartData: any = [];
 
-  aPaymentMethodTitles: any = [
-    { type: "Card", value: 7 },
-    { type: "Cash", value: 10 },
-    { type: "Paylater", value: 12 },
-    { type: "Bankpayment", value: 42 },
-    { type: "Expected Payment", value: 22 },
-  ];
   totalActivities: number = 0;
   constructor(
     private viewContainerRef: ViewContainerRef,
@@ -310,13 +307,15 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
   }
 
   getCoreStatistics() {
+    const dDate = new Date(new Date().setHours(0, 0, 0));
+    dDate.setFullYear(dDate.getFullYear() - 1);
     const body = {
       iBusinessId: localStorage.getItem('currentBusiness'),
       oFilter: {
         iCustomerId: this.customer._id,
         sTransactionType: 'cash-registry',
-        sDisplayMethod: 'revenuePerBusinessPartner',
-        dStartDate: new Date(new Date().setHours(0, 0, 0)),
+        sDisplayMethod: 'revenuePerArticleGroup',
+        dStartDate: dDate,
         dEndDate: new Date(new Date().setHours(23, 59, 59)),
         // dStartDate: "2022-09-10T13:59",
         // dEndDate: "2022-10-24T21:59:59.639Z",
@@ -326,8 +325,9 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
       .postNew('cashregistry', '/api/v1/statistics/transaction/audit', body)
       .subscribe(
         (result: any) => {
-          if (result?.data?.oTransactionAudit?.[0]?.individual?.[0]?.aArticleGroups)
-            this.setAStatisticsChartData(result?.data?.oTransactionAudit?.[0]?.individual?.[0]?.aArticleGroups)
+          if (result?.data?.oTransactionAudit?.[0]?.individual?.length) this.setAStatisticsChartData(result?.data?.oTransactionAudit?.[0]?.individual)
+          if (result?.data?.aPaymentMethods?.length) this.aPaymentChartData = result?.data?.aPaymentMethods;
+          if (result?.data?.aEmployeeStatistic?.length) this.aEmployeeStatistic = result?.data?.aEmployeeStatistic;
           this.aStatisticsChartDataLoading = false;
         },
         (error: any) => {
@@ -336,10 +336,10 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
         }
       );
   }
+
   setAStatisticsChartData(data: any[]) {
     const aStatisticsChartData: any[] = []
     data.map((item, index) => {
-      console.log('item: ', item);
       let color: any = Object.entries(ChartColors)
       color = color[Math.floor(Math.random() * color.length)][1]
       let chartItem = {
@@ -364,7 +364,6 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
     this.aStatisticsChartData = aStatisticsChartData
     this.loadStatisticsTabData()
   }
-
 
   //  Function for set sort option on transaction table
   setSortOption(sortHeader: any) {
@@ -507,6 +506,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
     })
 
   }
+
   loadActivityItems() {
     this.bActivityItemsLoader = true;
     this.apiService.postNew('cashregistry', '/api/v1/activities/items', this.requestParams).subscribe(
@@ -589,18 +589,12 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
         },
       },
       xaxis: {
-        type: 'category',
-        // categories: [
-        //   "Till toady",
-        // ],
-        // labels: {
-        //   rotate: -90
-        // }
+        type: 'category'
       }
     };
 
     this.paymentMethodsChartOptions = {
-      series: this.aPaymentMethodTitles.map((el: any) => el.value),
+      series: this.aPaymentChartData.map((el: any) => el.nAmount),
       chart: {
         width: '100%',
         type: "pie"
@@ -619,13 +613,14 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
         },
         fontWeight: 600,
       },
-      labels: this.aPaymentMethodTitles.map((el: any) => el.type),
+      labels: this.aPaymentChartData.map((el: any) => `${el.sMethod} (${el.nAmount})`),
       options: {
-        dataLabels: {
-          formatter: function (val: any) {
-            return "\u20AC" + Number(val).toFixed(2);
-          },
-        }
+        // dataLabels: {
+        //   formatter: function (val: any) {
+        //     console.log('val: ', val);
+        //     return "\u20AC" + Number(val).toFixed(2);
+        //   },
+        // }
       }
     };
   }
