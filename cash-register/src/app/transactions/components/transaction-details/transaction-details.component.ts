@@ -347,6 +347,7 @@ export class TransactionDetailsComponent implements OnInit {
       item.priceAfterDiscount = (parseFloat(item.nPaymentAmount) - parseFloat(item.nDiscountToShow));
       item.totalPaymentAmount = parseFloat(item.nPaymentAmount) * parseFloat(item.nQuantity);
       item.totalPaymentAmountAfterDisc = parseFloat(item.priceAfterDiscount) * parseFloat(item.nQuantity);
+      item.bPrepayment = item?.oType?.bPrepayment || false;
       const vat = (item.nVatRate * item.priceAfterDiscount/(100 + parseFloat(item.nVatRate)));
       item.vat = vat.toFixed(2);
       totalVat += vat;
