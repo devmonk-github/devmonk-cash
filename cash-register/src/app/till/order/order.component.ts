@@ -52,7 +52,7 @@ export class OrderComponent implements OnInit {
   aProperty: any = [];
   collapsedBtn: Boolean = false;
 
-  contactType: 'phone' | 'email' | 'whatsapp' = 'phone'
+  contactType: 'phone' | 'email' | 'whatsapp' | '' = ''
   bShowServicePartnerRemark = false
   sServicePartnerRemark = ''
 

@@ -38,6 +38,7 @@ export class TransactionDetailsComponent implements OnInit {
   pdfGenerating: Boolean = false;
   downloadWithVATLoading: Boolean = false;
   businessDetails: any = {};
+  ableToDownload: Boolean = false;
   templateString = {
     "barcodeheight": "10",
     "barcodetext": false,
@@ -320,34 +321,38 @@ export class TransactionDetailsComponent implements OnInit {
     this.iLocationId = localStorage.getItem("currentLocation") || '';
 
     let dataObject = JSON.parse(JSON.stringify(this.transaction));
+    dataObject.aPayments.forEach((obj: any) => {
+      obj.dCreatedDate = moment(dataObject.dCreatedDate).format('DD-MM-yyyy hh:mm');
+    });
     dataObject.aTransactionItems = [];
-    this.transaction.aTransactionItems.forEach((item: any, index: number)=>{
-      if(!(item.oType?.eKind == 'discount' || item?.oType?.eKind == 'loyalty-points-discount')) {
+    this.transaction.aTransactionItems.forEach((item: any, index: number) => {
+      if (!(item.oType?.eKind == 'discount' || item?.oType?.eKind == 'loyalty-points-discount')) {
         dataObject.aTransactionItems.push(item);
       }
     })
     let language: any = localStorage.getItem('language')
     dataObject.total = 0;
     let total = 0, totalAfterDisc = 0, totalVat = 0, totalDiscount = 0, totalSavingPoints = 0;
-    dataObject.aTransactionItems.forEach((item: any, index: number)=>{
+    dataObject.aTransactionItems.forEach((item: any, index: number) => {
       let name = '';
-      if(item && item.oArticleGroupMetaData && item.oArticleGroupMetaData.oName && item.oArticleGroupMetaData.oName[language]) name = item?.oArticleGroupMetaData?.oName[language] + ' ';
+      if (item && item.oArticleGroupMetaData && item.oArticleGroupMetaData.oName && item.oArticleGroupMetaData.oName[language]) name = item?.oArticleGroupMetaData?.oName[language] + ' ';
       item.description = name;
-      if(item?.oBusinessProductMetaData?.sLabelDescription) item.description = item.description + item?.oBusinessProductMetaData?.sLabelDescription + ' ' + item?.sProductNumber;
+      if (item?.oBusinessProductMetaData?.sLabelDescription) item.description = item.description + item?.oBusinessProductMetaData?.sLabelDescription + ' ' + item?.sProductNumber;
       totalSavingPoints += item.nSavingsPoints;
       let disc = parseFloat(item.nDiscount);
       if(item.bPaymentDiscountPercent){ 
-        disc = (disc * parseFloat(item.nPriceIncVat)/100);
+        disc = (disc * parseFloat(item.nPriceIncVat)/(100 + parseFloat(item.nVatRate)));
         item.nDiscountToShow = disc;
       } else { item.nDiscountToShow = disc; }
-      item.priceAfterDiscount = (parseFloat(item.nPriceIncVat) -  parseFloat(item.nDiscountToShow));
-      item.totalPriceIncVat = parseFloat(item.nPriceIncVat) * parseFloat(item.nQuantity);
-      item.totalPriceIncVatAfterDisc = parseFloat(item.priceAfterDiscount) * parseFloat(item.nQuantity);
-      const vat = (item.nVatRate * item.priceAfterDiscount/100);
+      item.priceAfterDiscount = (parseFloat(item.nPaymentAmount) - parseFloat(item.nDiscountToShow));
+      item.totalPaymentAmount = parseFloat(item.nPaymentAmount) * parseFloat(item.nQuantity);
+      item.totalPaymentAmountAfterDisc = parseFloat(item.priceAfterDiscount) * parseFloat(item.nQuantity);
+      item.bPrepayment = item?.oType?.bPrepayment || false;
+      const vat = (item.nVatRate * item.priceAfterDiscount/(100 + parseFloat(item.nVatRate)));
       item.vat = vat.toFixed(2);
       totalVat += vat;
-      total = total + item.totalPriceIncVat;
-      totalAfterDisc += item.totalPriceIncVatAfterDisc;
+      total = total + item.totalPaymentAmount;
+      totalAfterDisc += item.totalPaymentAmountAfterDisc;
       totalDiscount += disc;
       this.getRelatedTransactionItem(item?.iActivityItemId, item?._id, index)
     })
@@ -372,34 +377,38 @@ export class TransactionDetailsComponent implements OnInit {
       .subscribe(
         (result: any) => {
           this.businessDetails = result.data;
+          this.ableToDownload = true;
         })
   }
 
-  getRelatedTransactionItem(iActivityItemId: string, iTransactionItemId: string, index: number){
+  getRelatedTransactionItem(iActivityItemId: string, iTransactionItemId: string, index: number) {
     this.apiService.getNew('cashregistry', `/api/v1/transaction/item/activityItem/${iActivityItemId}?iBusinessId=${this.iBusinessId}&iTransactionItemId=${iTransactionItemId}`)
-    .subscribe(
-      (result: any) => {
-        this.transaction.aTransactionItems[index].related = result.data || [];
-      }, (error) => {
-        console.log(error);
-      })
+      .subscribe(
+        (result: any) => {
+          this.transaction.aTransactionItems[index].related = result.data || [];
+        }, (error) => {
+          console.log(error);
+        })
   }
 
-  getRelatedTransaction(iActivityId: string, iTransactionId: string){
+  getRelatedTransaction(iActivityId: string, iTransactionId: string) {
     const body = {
       iBusinessId: this.iBusinessId,
       iTransactionId: iTransactionId
     }
     this.apiService.postNew('cashregistry', '/api/v1/transaction/activity/' + iActivityId, body)
-    .subscribe(
-      (result: any) => {
-        this.transaction.related = result.data || [];
-        this.transaction.related.forEach((obj: any)=>{
-          this.transaction.aPayments = this.transaction.aPayments.concat(obj.aPayments);
+      .subscribe(
+        (result: any) => {
+          this.transaction.related = result.data || [];
+          this.transaction.related.forEach((obj: any) => {
+            obj.aPayments.forEach((obj: any) => {
+              obj.dCreatedDate = moment(obj.dCreatedDate).format('DD-MM-yyyy hh:mm');
+            });
+            this.transaction.aPayments = this.transaction.aPayments.concat(obj.aPayments);
+          })
+        }, (error) => {
+          console.log(error);
         })
-      }, (error) => {
-        console.log(error);
-      })
   }
 
   close(value: boolean) {
@@ -574,6 +583,9 @@ export class TransactionDetailsComponent implements OnInit {
                 paymentAmount,
                 description: transactionItem.sDescription,
                 oBusinessProductMetaData: transactionItem.oBusinessProductMetaData,
+                sServicePartnerRemark: transactionItem.sServicePartnerRemark,
+                eActivityItemStatus: transactionItem.eActivityItemStatus,
+                eEstimatedDateAction: transactionItem.eEstimatedDateAction,
                 open: true,
               });
             }

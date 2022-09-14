@@ -81,7 +81,7 @@
                     <fa-icon [icon]="faFileInvoice"></fa-icon>
                     <label class="mx-auto">General Invoice</label>
                 </button>
-                <button class="btn btn-sm btn-secondary w-100 d-flex" (click)="downloadWithVAT()">
+                <button [disabled]="!ableToDownload" class="btn btn-sm btn-secondary w-100 d-flex" (click)="downloadWithVAT()">
                     <fa-icon [hidden]="downloadWithVATLoading" [icon]="faDownload"></fa-icon>
                     <span *ngIf="downloadWithVATLoading">
                         <i class="fa fa-spinner fa-spin" [hidden]="!downloadWithVATLoading" style="font-size:15px;"></i>

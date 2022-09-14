@@ -113,6 +113,7 @@ export class TillService {
       }
     };
     body.transactionItems = transactionItems.map((i: any) => {
+      const bRefund = i.oType?.bRefund || i.nDiscount.quantity < 0 || i.price < 0;
       return new TransactionItem(
         i.name,
         i.comment,
@@ -124,7 +125,7 @@ export class TillService {
         i.tax,
         i.quantity,
         null,
-
+        // 10
         null,
         i._id,
         i.ean,
@@ -135,7 +136,7 @@ export class TillService {
         null,
         i.iBusinessPartnerId,
         this.getValueFromLocalStorage('currentBusiness'),
-
+        // 20
         i.iArticleGroupId,
         i.iArticleGroupOriginalId || i.iArticleGroupId,
         i.oArticleGroupMetaData || null, //oArticleGroupMetaData
@@ -146,7 +147,7 @@ export class TillService {
         i.sGiftCardNumber, // TODO sGiftCardNumber
         null, // TODO
         null, //TODO
-
+        // 30
         i.nTotal, // TODO?
         i.paymentAmount || 0,
         0, // TODO
@@ -154,11 +155,10 @@ export class TillService {
         i.nDiscount.percent,
         i.nDiscount.value,
         i.nRefundAmount,
-
         null,
         null,
-
         i.dEstimatedDate, // estimated date
+        // 40
         null, // TODO
         i.iBusinessBrandId,
         i.iBusinessProductId,
@@ -169,27 +169,29 @@ export class TillService {
         this.getValueFromLocalStorage('currentLocation'),
         i.sBagNumber,
         i.iSupplierId, // repairer id
-
+        // 50
         i.iLastTransactionItemId,
         null,
         {
           eTransactionType: i.eTransactionType || 'cash-registry', // TODO
-          bRefund: i.oType?.bRefund || i.nDiscount.quantity < 0 || i.price < 0,
+          bRefund,
           nStockCorrection: i.eTransactionItemType === 'regular' ? i.quantity : i.quantity - (i.nBrokenProduct || 0),
           eKind: i.type, // TODO // repair
           bDiscount: i.nDiscount > 0,
-          //bPrepayment: true // B discount && prepayment fix Jolmer
-          //bPrepayment: false // A discount fix Jolmer
-          bPrepayment: (i.paymentAmount > 0 || this.getUsedPayMethods(true, payMethods) - this.getTotals('price', transactionItems) < 0) && (i.paymentAmount !== i.amountToBePaid),
+          bPrepayment: (bRefund && i.oType?.bPrepayment) || (i.paymentAmount > 0 || this.getUsedPayMethods(true, payMethods) - this.getTotals('price', transactionItems) < 0) && (i.paymentAmount !== i.amountToBePaid),
         },
         i.iActivityItemId,
         i.oGoldFor,
         i.nDiscount,
-
         i.redeemedLoyaltyPoints,
         i.sUniqueIdentifier || uuidv4(),
         i.paymentAmount,
         i.description,
+        // 60
+        i.sServicePartnerRemark,
+        i.eEstimatedDateAction,
+        i.eActivityItemStatus,
+
       )
     });
     const originalTItemsLength = length = body.transactionItems.filter((i: any) => i.oType.eKind !== 'loyalty-points').length;
@@ -199,6 +201,9 @@ export class TillService {
         discountRecords = JSON.parse(discountRecords);
       }
       if (i.oType.bRefund && i.nDiscount !== 0) {
+        i.nPaymentAmount -= i.nDiscount * i.nQuantity;
+        i.nRevenueAmount = i.nPaymentAmount;
+        console.log('I am printing ', i.nPaymentAmount, i.nRevenueAmount);
         const records = discountRecords.filter((o: any) => o.sUniqueIdentifier === i.sUniqueIdentifier);
         records.forEach((record: any) => {
           i.nPaymentAmount += record.nPaymentAmount;

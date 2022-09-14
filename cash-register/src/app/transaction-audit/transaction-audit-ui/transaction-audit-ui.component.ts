@@ -83,6 +83,7 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
   aNewSelectedPaymentMethods: any = [];
 
   oStatisticsData: any = {};
+  oStatisticsDocument: any;
 
   listBusinessSubscription!: Subscription;
   getStatisticSubscription!: Subscription;
@@ -209,9 +210,10 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
     this.iStatisticId = this.route.snapshot?.params?.iStatisticId;
     if(this.iStatisticId){
       this.oStatisticsData.dStartDate = this.router.getCurrentNavigation()?.extras?.state?.dStartDate ?? null;
+      this.oStatisticsData.dEndDate = this.router.getCurrentNavigation()?.extras?.state?.dEndDate ?? null;
       if (this.oStatisticsData.dStartDate){
         this.filterDates.startDate = this.oStatisticsData.dStartDate;
-        const endDate = new Date();
+        const endDate = (this.oStatisticsData.dEndDate) ? this.oStatisticsData.dEndDate : new Date();
         this.filterDates.endDate = endDate;
         this.oStatisticsData.dEndDate = endDate;
       } else {
@@ -626,8 +628,10 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
       iBusinessId: this.iBusinessId,
     }
     this.apiService.postNew('cashregistry', `/api/v1/statistics/get`, oBody).subscribe((result: any) => {
+      console.log(result);
       if(result?.message === 'success'){
-        this.oCountings.nCashAtStart = result?.data?.aStatistic[0]?.oCountings?.nCashAtStart || 0;
+        this.oStatisticsDocument = result?.data?.aStatistic[0];
+        this.oCountings.nCashAtStart = this.oStatisticsDocument?.oCountings?.nCashAtStart || 0;
       }
     });
   }
