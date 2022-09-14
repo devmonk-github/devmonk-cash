@@ -1374,6 +1374,7 @@ export class PdfService {
       item.priceAfterDiscount = (parseFloat(item.nPriceIncVat) -  parseFloat(item.nDiscountToShow));
       item.totalPriceIncVat = parseFloat(item.nPriceIncVat) * parseFloat(item.nQuantity);
       item.totalPriceIncVatAfterDisc = parseFloat(item.priceAfterDiscount) * parseFloat(item.nQuantity);
+      item.bPrepayment = item?.oType?.bPrepayment || false;
       const vat = (item.nVatRate * item.priceAfterDiscount/(100 + parseFloat(item.nVatRate)));
       item.vat = vat.toFixed(2);
       totalVat += vat;
