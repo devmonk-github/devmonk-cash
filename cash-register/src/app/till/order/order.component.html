@@ -186,15 +186,15 @@
         <div class="col-12">
           <div class="row my-3">
             <div class="btn-group" role="group" aria-label="Basic example">
-              <button (click)="contactType='phone'" [ngClass]="{active:contactType==='phone'}" type="button"
+              <button (click)="item.eEstimatedDateAction='call_on_ready'" [ngClass]="{active:item.eEstimatedDateAction==='call_on_ready'}" type="button"
                 class="btn btn-primary fs-6 p-2">
                 <fa-icon [icon]="faPhone"></fa-icon>
               </button>
-              <button (click)="contactType='email'" [ngClass]="{active:contactType==='email'}" type="button"
+              <button (click)="item.eEstimatedDateAction='email_on_ready'" [ngClass]="{active:item.eEstimatedDateAction==='email_on_ready'}" type="button"
                 class="btn btn-primary fs-6 p-2">
                 <fa-icon [icon]="faAt"></fa-icon>
               </button>
-              <button (click)="contactType='whatsapp'" [ngClass]="{active:contactType==='whatsapp'}" type="button"
+              <button (click)="item.eEstimatedDateAction='whatsapp_on_ready'" [ngClass]="{active:item.eEstimatedDateAction==='whatsapp_on_ready'}" type="button"
                 class="btn btn-primary fs-6 p-2">
                 <i class="bi bi-whatsapp"></i>
               </button>

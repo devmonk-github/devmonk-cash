@@ -51,8 +51,6 @@ export class OrderComponent implements OnInit {
   showDeleteBtn: boolean = false;
   aProperty: any = [];
   collapsedBtn: Boolean = false;
-
-  contactType: 'phone' | 'email' | 'whatsapp' = 'phone'
   bShowServicePartnerRemark = false
   sServicePartnerRemark = ''
 

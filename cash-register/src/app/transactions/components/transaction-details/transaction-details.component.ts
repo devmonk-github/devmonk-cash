@@ -583,6 +583,8 @@ export class TransactionDetailsComponent implements OnInit {
                 description: transactionItem.sDescription,
                 oBusinessProductMetaData: transactionItem.oBusinessProductMetaData,
                 sServicePartnerRemark: transactionItem.sServicePartnerRemark,
+                eActivityItemStatus: transactionItem.eActivityItemStatus,
+                eEstimatedDateAction: transactionItem.eEstimatedDateAction,
                 open: true,
               });
             }

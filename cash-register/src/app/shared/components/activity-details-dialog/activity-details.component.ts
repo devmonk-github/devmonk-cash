@@ -335,6 +335,8 @@ export class ActivityDetailsComponent implements OnInit {
                 nMargin: transactionItem.nMargin,
                 nPurchasePrice: transactionItem.nPurchasePrice,
                 sServicePartnerRemark: transactionItem.sServicePartnerRemark,
+                eActivityItemStatus: transactionItem.eActivityItemStatus,
+                eEstimatedDateAction: transactionItem.eEstimatedDateAction,
               });
             }
           });

@@ -63,7 +63,7 @@ export class ProductComponent implements OnInit {
   }
 
   changeInMargin() {
-    this.item.nPurchasePrice = this.item.price / this.item.nMargin || 1;
+    // this.item.nPurchasePrice = this.item.price / this.item.nMargin || 1;
   }
 
   getTotalDiscount(item: any): string {

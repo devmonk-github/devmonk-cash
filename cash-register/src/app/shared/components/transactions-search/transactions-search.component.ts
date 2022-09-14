@@ -140,6 +140,8 @@ export class TransactionsSearchComponent implements OnInit, AfterViewInit {
                 nPurchasePrice: transactionItem.nPurchasePrice,
                 oBusinessProductMetaData: transactionItem.oBusinessProductMetaData,
                 sServicePartnerRemark: transactionItem.sServicePartnerRemark,
+                eActivityItemStatus: transactionItem.eActivityItemStatus,
+                eEstimatedDateAction: transactionItem.eEstimatedDateAction,
               });
             }
           });

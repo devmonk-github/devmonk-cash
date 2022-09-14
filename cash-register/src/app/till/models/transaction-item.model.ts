@@ -63,7 +63,7 @@ export class TransactionItem {
     public iLocationId: string,
     public sBagNumber: string,
     public iSupplierId: any,
-    
+
     //Optional here, since we don't know the transaction id when we create one
     public iLastTransactionItemId: string | null,
     public iTransactionId: string | null,
@@ -83,6 +83,8 @@ export class TransactionItem {
     public sUniqueIdentifier: string,
     public nRevenueAmount: number,
     public sDescription: string,
-    public sServicePartnerRemark: string,) { }
+    public sServicePartnerRemark: string,
+    public eEstimatedDateAction: string,
+    public eActivityItemStatus: string,) { }
 
 }

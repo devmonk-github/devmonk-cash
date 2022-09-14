@@ -189,6 +189,8 @@ export class TillService {
         i.paymentAmount,
         i.description,
         i.sServicePartnerRemark,
+        i.eEstimatedDateAction,
+        i.eActivityItemStatus,
 
       )
     });
