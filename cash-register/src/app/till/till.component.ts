@@ -3,7 +3,7 @@ import {
   faScrewdriverWrench, faTruck, faBoxesStacked, faGifts, faUser, faTimes, faTimesCircle, faTrashAlt, faRing,
   faCoins, faCalculator, faArrowRightFromBracket, faSpinner, faSearch, faMoneyBill
 } from '@fortawesome/free-solid-svg-icons';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
 import * as _ from 'lodash';
 
@@ -109,6 +109,9 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   saveInProgress = false;
   @ViewChild('searchField') searchField!: ElementRef;
   selectedQuickButton: any;
+  getSettingsSubscription !: Subscription;
+  dayClosureCheckSubscription !: Subscription;
+  settings: any;
 
   randNumber(min: number, max: number): number {
     return Math.floor(Math.random() * (max - min + 1) + min);
@@ -924,7 +927,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       iWorkstationId: this.iWorkstationId
     }
     this.bDayStateChecking = true;
-    this.apiService.postNew('cashregistry', `/api/v1/statistics/day-closure/check`, oBody).subscribe((result: any) => {
+    this.dayClosureCheckSubscription = this.apiService.postNew('cashregistry', `/api/v1/statistics/day-closure/check`, oBody).subscribe((result: any) => {
       if (result?.data) {
         this.bDayStateChecking = false;
         this.bIsDayStateOpened = result?.data?.bIsDayStateOpened;
@@ -932,13 +935,34 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
         if (result?.data?.oStatisticDetail?.dOpenDate) {
           this.dOpenDate = result?.data?.oStatisticDetail?.dOpenDate;
 
+          this.getSettingsSubscription = this.apiService.getNew('cashregistry', `/api/v1/settings/${this.business._id}`).subscribe((result: any) => {
+            
+            this.settings = result;
+            
+            let nDayClosurePeriodAllowed = 0;
 
+            if (this.settings?.sDayClosurePeriod && this.settings.sDayClosurePeriod === 'week'){
+              nDayClosurePeriodAllowed = 3600 * 24 * 7;
+            } else {
+              nDayClosurePeriodAllowed = 3600 * 24;
+            }
 
-          /* Show Close day state warning when Day-state is close from last 24hrs */
-          const nOpenTimeSecond = (new Date(this.dOpenDate).getTime());
-          const nCurrentTimeSecond = (new Date().getTime());
-          const nDifferenceInHrs = (nCurrentTimeSecond - nOpenTimeSecond) / 3600000;
-          if (nDifferenceInHrs > 24) this.bIsPreviousDayStateClosed = false;
+            /* Show Close day state warning when Day-state is close according to settings day/week */
+            const nOpenTimeSecond = new Date(this.dOpenDate).getTime();
+            const nCurrentTimeSecond = new Date().getTime();
+
+            const nDifference = (nCurrentTimeSecond - nOpenTimeSecond) / 1000;
+            if (nDifference > nDayClosurePeriodAllowed) this.bIsPreviousDayStateClosed = false;
+          }, (error) => {
+            console.log(error);
+          })
+          
+
+          // /* Show Close day state warning when Day-state is close from last 24hrs */
+          // const nOpenTimeSecond = (new Date(this.dOpenDate).getTime());
+          // const nCurrentTimeSecond = (new Date().getTime());
+          // const nDifferenceInHrs = (nCurrentTimeSecond - nOpenTimeSecond) / 3600000;
+          // if (nDifferenceInHrs > 24) this.bIsPreviousDayStateClosed = false;
         }
       }
     }, (error) => {
@@ -1008,5 +1032,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnDestroy() {
     localStorage.removeItem('fromTransactionPage');
     this.cancelFiskalyTransaction();
+    if (this.getSettingsSubscription) this.getSettingsSubscription.unsubscribe();
+    if (this.dayClosureCheckSubscription) this.dayClosureCheckSubscription.unsubscribe();
   }
 }
