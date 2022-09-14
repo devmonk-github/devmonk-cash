@@ -218,7 +218,8 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
     this.requestParams.iBusinessId = localStorage.getItem('currentBusiness');
     this.requestParams.iLocationid = localStorage.getItem('currentLocation');
     this.requestParams.oFilterBy = {
-      _id: this.customer._id
+      _id: this.customer._id,
+      iCustomerId: this.customer._id
     }
     this.getCoreStatistics()
 
@@ -497,7 +498,9 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
   loadActivities() {
     this.aActivities = [];
     this.bActivitiesLoader = true;
-    this.apiService.postNew('cashregistry', '/api/v1/activities', this.requestParams).subscribe((result: any) => {
+    let oBody:any = {...this.requestParams};
+    delete oBody.oFilterBy._id;
+    this.apiService.postNew('cashregistry', '/api/v1/activities', oBody).subscribe((result: any) => {
       this.aActivities = result.data || [];
       // this.paginationConfig.totalItems = result.count;
 
@@ -509,7 +512,9 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
   }
   loadActivityItems() {
     this.bActivityItemsLoader = true;
-    this.apiService.postNew('cashregistry', '/api/v1/activities/items', this.requestParams).subscribe(
+    let oBody: any = { ...this.requestParams };
+    delete oBody.oFilterBy._id;
+    this.apiService.postNew('cashregistry', '/api/v1/activities/items', oBody).subscribe(
       (result: any) => {
         this.aActivityItems = result.data || [];
         // this.paginationConfig.totalItems = result.count;
