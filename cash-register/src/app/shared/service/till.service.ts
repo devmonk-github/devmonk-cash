@@ -113,6 +113,7 @@ export class TillService {
       }
     };
     body.transactionItems = transactionItems.map((i: any) => {
+      const bRefund = i.oType?.bRefund || i.nDiscount.quantity < 0 || i.price < 0;
       return new TransactionItem(
         i.name,
         i.comment,
@@ -173,11 +174,11 @@ export class TillService {
         null,
         {
           eTransactionType: i.eTransactionType || 'cash-registry', // TODO
-          bRefund: i.oType?.bRefund || i.nDiscount.quantity < 0 || i.price < 0,
+          bRefund,
           nStockCorrection: i.eTransactionItemType === 'regular' ? i.quantity : i.quantity - (i.nBrokenProduct || 0),
           eKind: i.type, // TODO // repair
           bDiscount: i.nDiscount > 0,
-          bPrepayment: (i.paymentAmount > 0 || this.getUsedPayMethods(true, payMethods) - this.getTotals('price', transactionItems) < 0) && (i.paymentAmount !== i.amountToBePaid),
+          bPrepayment: (bRefund && i.oType?.bPrepayment) || (i.paymentAmount > 0 || this.getUsedPayMethods(true, payMethods) - this.getTotals('price', transactionItems) < 0) && (i.paymentAmount !== i.amountToBePaid),
         },
         i.iActivityItemId,
         i.oGoldFor,
@@ -200,6 +201,9 @@ export class TillService {
         discountRecords = JSON.parse(discountRecords);
       }
       if (i.oType.bRefund && i.nDiscount !== 0) {
+        i.nPaymentAmount -= i.nDiscount * i.nQuantity;
+        i.nRevenueAmount = i.nPaymentAmount;
+        console.log('I am printing ', i.nPaymentAmount, i.nRevenueAmount);
         const records = discountRecords.filter((o: any) => o.sUniqueIdentifier === i.sUniqueIdentifier);
         records.forEach((record: any) => {
           i.nPaymentAmount += record.nPaymentAmount;
