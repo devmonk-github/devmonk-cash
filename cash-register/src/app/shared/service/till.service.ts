@@ -124,7 +124,7 @@ export class TillService {
         i.tax,
         i.quantity,
         null,
-
+        // 10
         null,
         i._id,
         i.ean,
@@ -135,7 +135,7 @@ export class TillService {
         null,
         i.iBusinessPartnerId,
         this.getValueFromLocalStorage('currentBusiness'),
-
+        // 20
         i.iArticleGroupId,
         i.iArticleGroupOriginalId || i.iArticleGroupId,
         i.oArticleGroupMetaData || null, //oArticleGroupMetaData
@@ -146,7 +146,7 @@ export class TillService {
         i.sGiftCardNumber, // TODO sGiftCardNumber
         null, // TODO
         null, //TODO
-
+        // 30
         i.nTotal, // TODO?
         i.paymentAmount || 0,
         0, // TODO
@@ -154,11 +154,10 @@ export class TillService {
         i.nDiscount.percent,
         i.nDiscount.value,
         i.nRefundAmount,
-
         null,
         null,
-
         i.dEstimatedDate, // estimated date
+        // 40
         null, // TODO
         i.iBusinessBrandId,
         i.iBusinessProductId,
@@ -169,7 +168,7 @@ export class TillService {
         this.getValueFromLocalStorage('currentLocation'),
         i.sBagNumber,
         i.iSupplierId, // repairer id
-
+        // 50
         i.iLastTransactionItemId,
         null,
         {
@@ -183,11 +182,11 @@ export class TillService {
         i.iActivityItemId,
         i.oGoldFor,
         i.nDiscount,
-
         i.redeemedLoyaltyPoints,
         i.sUniqueIdentifier || uuidv4(),
         i.paymentAmount,
         i.description,
+        // 60
         i.sServicePartnerRemark,
         i.eEstimatedDateAction,
         i.eActivityItemStatus,
