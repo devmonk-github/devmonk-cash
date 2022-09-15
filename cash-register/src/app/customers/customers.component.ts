@@ -118,7 +118,7 @@ export class CustomersComponent implements OnInit {
   }
 
   openCustomer(customer: any) {
-    this.dialogService.openModal(CustomerDetailsComponent, { cssClass: "modal-xl position-fixed start-0 end-0", context: { customer: customer, mode: 'details' } }).instance.close.subscribe(
+    this.dialogService.openModal(CustomerDetailsComponent, { cssClass: "modal-xl position-fixed start-0 end-0", context: { customer: customer, mode: 'details', from: 'customer' } }).instance.close.subscribe(
       result => { if (result && result.action && result.action == true) this.getCustomers(); });
   }
 
