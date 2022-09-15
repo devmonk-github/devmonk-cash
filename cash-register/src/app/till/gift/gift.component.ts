@@ -41,6 +41,7 @@ export class GiftComponent implements OnInit {
     this.iBusinessId = localStorage.getItem('currentBusiness') || '';
     this.checkNumber();
     this.checkArticleGroups();
+    this.changeInPrice();
   }
 
   deleteItem(): void {

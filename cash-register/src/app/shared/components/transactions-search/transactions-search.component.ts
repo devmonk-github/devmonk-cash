@@ -142,6 +142,7 @@ export class TransactionsSearchComponent implements OnInit, AfterViewInit {
                 sServicePartnerRemark: transactionItem.sServicePartnerRemark,
                 eActivityItemStatus: transactionItem.eActivityItemStatus,
                 eEstimatedDateAction: transactionItem.eEstimatedDateAction,
+                bGiftcardTaxHandling: transactionItem.bGiftcardTaxHandling,
               });
             }
           });

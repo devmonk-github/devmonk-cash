@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild, ViewChildren } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import {
   faScrewdriverWrench, faTruck, faBoxesStacked, faGifts, faUser, faTimes, faTimesCircle, faTrashAlt, faRing,
   faCoins, faCalculator, faArrowRightFromBracket, faSpinner, faSearch, faMoneyBill
@@ -26,13 +26,13 @@ import { CreateArticleGroupService } from '../shared/service/create-article-grou
 import { CustomerStructureService } from '../shared/service/customer-structure.service';
 import { FiskalyService } from '../shared/service/fiskaly.service';
 import { PdfService } from '../shared/service/pdf.service';
+import { SupplierWarningDialogComponent } from './dialogs/supplier-warning-dialog/supplier-warning-dialog.component';
 @Component({
   selector: 'app-till',
   templateUrl: './till.component.html',
   styleUrls: ['./till.component.scss']
 })
 export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
-  // icons
   faScrewdriverWrench = faScrewdriverWrench;
   faTruck = faTruck;
   faBoxesStacked = faBoxesStacked;
@@ -73,19 +73,13 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   parkedTransactions: Array<any> = [];
   terminals: Array<any> = [];
   quickButtons: Array<any> = [];
-
-  // quickButtonsLoading: boolean = false;
   fetchingProductDetails: boolean = false;
   bSearchingProduct: boolean = false;
-  
   bIsPreviousDayStateClosed: boolean = true;
   bIsDayStateOpened: boolean = false; // Not opened then require to open it first
   bDayStateChecking: boolean = false;
-  
   dOpenDate: any = '';
   iWorkstationId!: any;
-
-
   aProjection: Array<any> = [
     'oName',
     'sEan',
@@ -329,7 +323,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       new: true,
       iBusinessId: this.getValueFromLocalStorage('currentBusiness'),
       ...(type === 'giftcard') && { sGiftCardNumber: Date.now() },
-      ...(type === 'giftcard') && { taxHandling: 'true' },
+      ...(type === 'giftcard') && { bGiftcardTaxHandling: 'true' },
       ...(type === 'giftcard') && { isGiftCardNumberValid: false },
       ...(type === 'gold-purchase') && { oGoldFor: { name: 'stock', type: 'goods' } }
     });
@@ -560,16 +554,18 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
             body.giftCards = this.appliedGiftCards;
           }
           body.oTransaction.iActivityId = this.iActivityId;
+          let result = body.transactionItems.map((a: any)=> a.iBusinessPartnerId);
+          const uniq = [...new Set(_.compact(result))];
           this.apiService.postNew('cashregistry', '/api/v1/till/transaction', body)
             .subscribe((data: any) => {
               this.toastrService.show({ type: 'success', text: 'Transaction created.' });
-              // data.aTransactionItems = this.transactionItems;
               const { transaction, aTransactionItems } = data;
               transaction.aTransactionItems = aTransactionItems;
               this.pdfService.generatePDF(transaction);
               this.updateFiskalyTransaction('FINISHED', body.payments);
               setTimeout(() => {
                 this.saveInProgress = false;
+                this.fetchBusinessPartnersProductCount(uniq);
                 this.clearAll();
               }, 100);
               if (this.selectedTransaction) {
@@ -581,6 +577,35 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
             });
         }
       });
+  }
+
+  fetchBusinessPartnersProductCount(aBusinessPartnerId: any) {
+    if(!aBusinessPartnerId.length || 1 > aBusinessPartnerId.length) {
+      return;
+    }
+    var body = {
+      iBusinessId: this.getValueFromLocalStorage('currentBusiness'),
+      aBusinessPartnerId
+    };
+    this.apiService.postNew('core', '/api/v1/business/partners/product-count', body).subscribe(
+      (result: any) => {
+        if (result && result.data) {
+          const urls: any = [];
+          result.data.forEach((element: any) => {
+            if(element.businessproducts > 10) {
+              urls.push({name: element.sName, iBusinessPartnerId: element._id});
+            }
+          });
+          if (urls.length > 0) {
+            this.openWarningPopup(urls);
+          }
+        }
+      },
+      (error: any) => {
+        // this.partnersList = [];
+        console.log(error);
+      }
+    );
   }
 
   /* Search API for finding the  common-brands products */
@@ -672,6 +697,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       oArticleGroupMetaData: { aProperty: product.aProperty || [], sCategory: '', sSubCategory: '', oName: {}, oNameOriginal: {} },
       iBusinessBrandId: product.iBusinessBrandId || product.iBrandId,
       iBusinessProductId: product._id,
+      iBusinessPartnerId: product.iBusinessPartnerId, //'6274d2fd8f38164d68186410',
       iSupplierId: product.iBusinessPartnerId,
       aImage: product.aImage,
       isExclude: false,
@@ -1033,6 +1059,13 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       localStorage.removeItem('fiskalyTransaction');
       localStorage.removeItem('tssId');
     }
+  }
+  
+  openWarningPopup(urls: any): void {
+    this.dialogService.openModal(SupplierWarningDialogComponent, {cssClass: 'modal-lg', context: {urls} })
+      .instance.close.subscribe((data) => {
+        console.log(data);
+      })
   }
 
   ngOnDestroy() {
