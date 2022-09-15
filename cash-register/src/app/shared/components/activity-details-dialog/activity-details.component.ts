@@ -7,6 +7,7 @@ import { PdfService } from '../../service/pdf.service';
 import { TransactionItemsDetailsComponent } from '../transaction-items-details/transaction-items-details.component';
 import { MenuComponent } from '../../_layout/components/common';
 import { Router } from '@angular/router';
+import { TransactionDetailsComponent } from 'src/app/transactions/components/transaction-details/transaction-details.component';
 @Component({
   selector: 'app-activity-details',
   templateUrl: './activity-details.component.html',
@@ -93,17 +94,19 @@ export class ActivityDetailsComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.activity = this.dialogRef.context.activity;
-    this.items = this.dialogRef.context.activity;
+    // this.activity = this.dialogRef.context.activity;
+    // this.items = this.dialogRef.context.items;
     // if (this.items.length) {
+    console.log(this.activity);
     if (this.activity) {
       if (this.activity?.activityitems?.length) {
         this.activityItems = this.activity.activityitems;
       } else {
-        const items = JSON.parse(JSON.stringify(this.activity));
-        this.activityItems = [items]
+        this.fetchTransactionItems();
+        // const items = JSON.parse(JSON.stringify(this.activity));
+        // this.activityItems = [items]
       }
-      if (this.activityItems.length == 1) this.collapsedBtn = true;
+      
     } else {
       this.fetchTransactionItems();
     }
@@ -388,7 +391,7 @@ export class ActivityDetailsComponent implements OnInit {
   fetchCustomer(customerId: any, index: number) {
     this.apiService.getNew('customer', `/api/v1/customer/${customerId}?iBusinessId=${this.iBusinessId}`).subscribe(
       (result: any) => {
-        console.log(result);
+        // console.log(result);
         if (index > -1) this.transactions[index].customer = result;
         else this.customer = result;
         // this.close({ action: true });
@@ -400,10 +403,10 @@ export class ActivityDetailsComponent implements OnInit {
   }
 
   fetchTransactionItems() {
-    let url = `/api/v1/activities/items/${this.activity._id}`;
     this.loading = true;
-    this.apiService.postNew('cashregistry', url, this.requestParams).subscribe((result: any) => {
+    this.apiService.postNew('cashregistry', `/api/v1/activities/items/${this.activity._id}`, this.requestParams).subscribe((result: any) => {
       this.activityItems = result.data[0].result;
+      if (this.activityItems.length == 1) this.collapsedBtn = true;
       this.transactions = [];
       for (const obj of this.activityItems) {
         for (const item of obj.receipts) {
@@ -419,6 +422,7 @@ export class ActivityDetailsComponent implements OnInit {
         if (obj.iStockLocationId) this.setSelectedBusinessLocation(obj.iStockLocationId, i)
         this.fetchCustomer(obj.iCustomerId, i);
       }
+      // console.log(this.transactions);
       setTimeout(() => {
         MenuComponent.reinitialization();
       }, 200);
@@ -437,4 +441,15 @@ export class ActivityDetailsComponent implements OnInit {
   submit() {
     console.log('Submit');
   }
+
+
+  // Function for show transaction details
+  showTransaction(transaction: any) {
+    this.dialogService.openModal(TransactionDetailsComponent, { cssClass: "modal-xl", context: { transaction: transaction, eType: 'cash-register-revenue', from: 'activity-details' } })
+      .instance.close.subscribe(
+        (res: any) => {
+          // if (res) this.router.navigate(['business/till']);
+        });
+  }
+  
 }
