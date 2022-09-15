@@ -121,7 +121,8 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
     sVatNumber: '',
     sCocNumber: '',
     nPaymentTermDays: '',
-    nLoyaltyPoints: 0
+    nLoyaltyPoints: 0,
+    nLoyaltyPointsValue: 0
   }
 
   requestParams: any = {
@@ -649,12 +650,17 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
         });
   }
 
-  fetchLoyaltyPoints() {
+
+
+  async fetchLoyaltyPoints() {
     if (this.customer) {
-      this.apiService.getNew('cashregistry', `/api/v1/points-settings/points?iBusinessId=${this.requestParams.iBusinessId}&iCustomerId=${this.customer._id}`).subscribe((result: any) => {
-        this.customer.nLoyaltyPoints = result;
-      });
+      const nPointsResult:any = await this.apiService.getNew('cashregistry', `/api/v1/points-settings/points?iBusinessId=${this.requestParams.iBusinessId}&iCustomerId=${this.customer._id}`).toPromise();
+      const oPointsSettingsResult:any = await this.apiService.getNew('cashregistry', `/api/v1/points-settings?iBusinessId=${this.requestParams.iBusinessId}`).toPromise();
+      this.customer.nLoyaltyPoints = nPointsResult;
+      this.customer.nLoyaltyPointsValue = nPointsResult / oPointsSettingsResult.nPerEuro2;
     }
   }
+
+
 
 }
