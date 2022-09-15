@@ -1,5 +1,5 @@
 import { AfterViewInit, ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
-import { DialogComponent } from '../../service/dialog';
+import { DialogComponent, DialogService } from '../../service/dialog';
 import { ViewContainerRef } from '@angular/core';
 import { ApiService } from 'src/app/shared/service/api.service';
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
@@ -16,6 +16,7 @@ import {
   ApexLegend
 } from "ng-apexcharts";
 import { ToastService } from '../toast';
+import { TransactionDetailsComponent } from 'src/app/transactions/components/transaction-details/transaction-details.component';
 
 export interface BarChartOptions {
   series: ApexAxisChartSeries;
@@ -201,11 +202,14 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
   aStatisticsChartData: any = [];
 
   totalActivities: number = 0;
+  from !: string;
+
   constructor(
     private viewContainerRef: ViewContainerRef,
     private apiService: ApiService,
     private cdr: ChangeDetectorRef,
     private toastService: ToastService,
+    private dialogService: DialogService,
   ) {
     const _injector = this.viewContainerRef.parentInjector;
     this.dialogRef = _injector.get<DialogComponent>(DialogComponent);
@@ -217,6 +221,10 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
     this.requestParams.oFilterBy = {
       _id: this.customer._id,
       iCustomerId: this.customer._id
+    }
+
+    if (this.from === 'customer') {
+      this.aTransctionTableHeaders.push({ key: 'Action', disabled: true });
     }
     this.getCoreStatistics()
 
@@ -628,6 +636,15 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
         // }
       }
     };
+  }
+
+  // Function for show transaction details
+  showTransaction(transaction: any) {
+    this.dialogService.openModal(TransactionDetailsComponent, { cssClass: "modal-xl", context: { transaction: transaction, eType: 'cash-register-revenue', from: 'customer' } })
+      .instance.close.subscribe(
+        (res:any) => {
+          // if (res) this.router.navigate(['business/till']);
+        });
   }
 
 }
