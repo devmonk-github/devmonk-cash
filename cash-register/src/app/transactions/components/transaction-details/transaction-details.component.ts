@@ -5,6 +5,7 @@ import { ApiService } from 'src/app/shared/service/api.service';
 import { DialogComponent, DialogService } from 'src/app/shared/service/dialog';
 import { PdfService } from 'src/app/shared/service/pdf.service';
 import * as _moment from 'moment';
+import { CustomerDetailsComponent } from 'src/app/shared/components/customer-details/customer-details.component';
 const moment = (_moment as any).default ? (_moment as any).default : _moment;
 
 @Component({
@@ -39,7 +40,8 @@ export class TransactionDetailsComponent implements OnInit {
   downloadWithVATLoading: Boolean = false;
   businessDetails: any = {};
   ableToDownload: Boolean = false;
- 
+  from !: string;
+
   constructor(
     private viewContainerRef: ViewContainerRef,
     private apiService: ApiService,
@@ -53,7 +55,6 @@ export class TransactionDetailsComponent implements OnInit {
   ngOnInit(): void {
     this.iBusinessId = localStorage.getItem("currentBusiness") || '';
     this.iLocationId = localStorage.getItem("currentLocation") || '';
-
     let dataObject = JSON.parse(JSON.stringify(this.transaction));
     dataObject.aPayments.forEach((obj: any) => {
       obj.dCreatedDate = moment(dataObject.dCreatedDate).format('DD-MM-yyyy hh:mm');
@@ -289,5 +290,10 @@ export class TransactionDetailsComponent implements OnInit {
         console.error(error)
       }
     );
+  }
+
+  openCustomer(customer: any) {
+    this.dialogService.openModal(CustomerDetailsComponent, 
+      { cssClass: "modal-xl position-fixed start-0 end-0", context: { customer: customer, mode: 'details', from:'transactions' } }).instance.close.subscribe(result => {  });
   }
 }

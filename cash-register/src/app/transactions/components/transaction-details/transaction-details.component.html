@@ -5,11 +5,18 @@
             <fa-icon [icon]="faTimes"></fa-icon>
         </button>
     </div>
-    <div class="card-body row">
+    <div class="card-body row main m-0">
         <div class="col-md-4">
-            <h3 class="fw-bolder mb-4">
-                <span>{{ "CUSTOMER" | translate }}</span>
-            </h3>
+            <div class="d-flex justify-content-between align-items-center">
+                <h3 class="fw-bolder mb-4">
+                    <span>{{ "CUSTOMER" | translate }}</span>
+                </h3>
+                <ng-container *ngIf="from === 'transactions'">
+                    <button class="btn btn-primary" (click)="openCustomer(transaction.oCustomer)">
+                        {{ 'VIEW' | translate }}
+                    </button>
+                </ng-container>
+            </div>
             <div class="row fw-bold gy-1">
                 <div class="col-md-12">
                     <div class="text-gray-900 mt-2">{{ transaction?.oCustomer?.sFirstName }} {{
@@ -155,8 +162,8 @@
                 </button>
             </div>
         </div>
-    </div>
-    <div class="card-body row">
+    <!-- </div> -->
+    <div class="row">
         <div class="col-md-12">
             <h3 class="fw-bolder mb-3">
                 <span>{{ "ITEMS" | translate }}</span>
@@ -243,6 +250,7 @@
                 </div>
             </div>
         </div>
+    </div>
     </div>
     <div class="card-footer">
         <button class="btn btn-secondary cancel ml-auto" (click)="close(false)">{{"TEXT_CANCEL" | translate}}</button>

@@ -271,7 +271,7 @@ export class TransactionsComponent implements OnInit {
 
   // Function for show transaction details
   showTransaction(transaction: any) {
-    this.dialogService.openModal(TransactionDetailsComponent, { cssClass: "modal-xl", context: { transaction: transaction, eType: this.eType } })
+    this.dialogService.openModal(TransactionDetailsComponent, { cssClass: "modal-xl", context: { transaction: transaction, eType: this.eType, from:'transactions' } })
       .instance.close.subscribe(
         res => {
           if (res) this.routes.navigate(['business/till']);
