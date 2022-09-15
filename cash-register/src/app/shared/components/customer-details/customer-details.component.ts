@@ -120,7 +120,8 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
     sCompanyName: '',
     sVatNumber: '',
     sCocNumber: '',
-    nPaymentTermDays: ''
+    nPaymentTermDays: '',
+    nLoyaltyPoints: 0
   }
 
   requestParams: any = {
@@ -226,7 +227,8 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
     if (this.from === 'customer') {
       this.aTransctionTableHeaders.push({ key: 'Action', disabled: true });
     }
-    this.getCoreStatistics()
+    this.fetchLoyaltyPoints();
+    this.getCoreStatistics();
 
     this.activitiesChartOptions = {
       series: this.aActivityTitles.map((el: any) => el.value),
@@ -645,6 +647,14 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
         (res:any) => {
           // if (res) this.router.navigate(['business/till']);
         });
+  }
+
+  fetchLoyaltyPoints() {
+    if (this.customer) {
+      this.apiService.getNew('cashregistry', `/api/v1/points-settings/points?iBusinessId=${this.requestParams.iBusinessId}&iCustomerId=${this.customer._id}`).subscribe((result: any) => {
+        this.customer.nLoyaltyPoints = result;
+      });
+    }
   }
 
 }
