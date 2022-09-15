@@ -1321,7 +1321,21 @@ export class PdfService {
 
   getTranslations() {
     let translationsObj: any = {};
-    let translationsKey: Array<string> = ['CREATED_BY', 'ART_NUMBER', 'QUANTITY', 'DESCRIPTION', 'DISCOUNT', 'AMOUNT', 'VAT', 'SAVINGS_POINTS'];
+    let translationsKey: Array<string> = [
+      'CREATED_BY', 
+      'ART_NUMBER', 
+      'QUANTITY', 
+      'DESCRIPTION', 
+      'DISCOUNT', 
+      'AMOUNT', 
+      'VAT', 
+      'SAVINGS_POINTS',
+      'GIFTCARD',
+      'TO_THE_VALUE_OF', 
+      'ISSUED_AT',
+      'VALID_UNTIL',
+      'CARDNUMBER'
+    ];
 
     this.translateService.get(translationsKey).subscribe((result) => {
       Object.entries(result).forEach((translation: any) => {

@@ -390,7 +390,10 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     const body = {
       iBusinessId: this.getValueFromLocalStorage('currentBusiness'),
       iLocationId: this.getValueFromLocalStorage('currentLocation'),
+
+      // Do we still need to keep this hard code value here?
       iCustomerId: '6182a52f1949ab0a59ff4e7b',
+
       sGiftCardNumber: this.transactionItems[index].sGiftCardNumber,
       eType: '',
       nPriceIncVat: this.transactionItems[index].price,
