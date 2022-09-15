@@ -1082,19 +1082,24 @@ export class PdfService {
     if (html.length > 0) {
       if (typeof html[0] === 'object') {
         for (let e = 0; e < html.length; e++) {
-          html[e].content = typeof html[e].content !== 'undefined' ? html[e].content.replace('/>', '>') : "";
-
-          if (this.isDefined(html[e].if)) {
-            newContent.push([
-              html[e].content,
-              this.replaceVariables(html[e].content, dataSourceObject),
-              this.checkConditions(html[e].if, dataSourceObject)
-            ]);
+          if(this.isDefined(html[e].if) && !this.checkConditions(html[e].if, dataSourceObject)) {
+            html.splice(e,1);
+            e--; 
           } else {
-            newContent.push([
-              html[e].content,
-              this.replaceVariables(html[e].content, dataSourceObject)
-            ])
+            html[e].content = typeof html[e].content !== 'undefined' ? html[e].content.replace('/>', '>') : "";
+
+            if (this.isDefined(html[e].if)) {
+              newContent.push([
+                html[e].content,
+                this.replaceVariables(html[e].content, dataSourceObject),
+                this.checkConditions(html[e].if, dataSourceObject)
+              ]);
+            } else {
+              newContent.push([
+                html[e].content,
+                this.replaceVariables(html[e].content, dataSourceObject)
+              ])
+            }
           }
         }
         col = this.insertElementsInCol(col, html, newContent);
@@ -1371,15 +1376,15 @@ export class PdfService {
         disc = (disc * parseFloat(item.nPriceIncVat)/(100 + parseFloat(item.nVatRate)));
         item.nDiscountToShow = disc;
       } else { item.nDiscountToShow = disc; }
-      item.priceAfterDiscount = (parseFloat(item.nPriceIncVat) -  parseFloat(item.nDiscountToShow));
-      item.totalPriceIncVat = parseFloat(item.nPriceIncVat) * parseFloat(item.nQuantity);
-      item.totalPriceIncVatAfterDisc = parseFloat(item.priceAfterDiscount) * parseFloat(item.nQuantity);
+      item.priceAfterDiscount = (parseFloat(item.nPaymentAmount) -  parseFloat(item.nDiscountToShow));
+      item.totalPaymentAmount = parseFloat(item.nPaymentAmount) * parseFloat(item.nQuantity);
+      item.totalPaymentAmountAfterDisc = parseFloat(item.priceAfterDiscount) * parseFloat(item.nQuantity);
       item.bPrepayment = item?.oType?.bPrepayment || false;
       const vat = (item.nVatRate * item.priceAfterDiscount/(100 + parseFloat(item.nVatRate)));
       item.vat = vat.toFixed(2);
       totalVat += vat;
-      total = total + item.totalPriceIncVat;
-      totalAfterDisc += item.totalPriceIncVatAfterDisc;
+      total = total + item.totalPaymentAmount;
+      totalAfterDisc += item.totalPaymentAmountAfterDisc;
       totalDiscount += disc;
     })
     dataObject.totalAfterDisc = parseFloat(totalAfterDisc.toFixed(2));
