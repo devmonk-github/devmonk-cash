@@ -54,10 +54,7 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
   };
   filterDates = {
     endDate: new Date(new Date().setHours(23, 59, 59)),
-    startDate: new Date(new Date().setHours(0, 0, 0)), //'2022-08-29T10:50'
-    // startDate: '2022-08-29T10:50'
-    // endDate: moment(new Date(new Date().setHours(23, 59, 59))).format('yyyy-MM-DDThh:mm'),
-    // startDate: moment(new Date(new Date().setHours(0, 0, 0))).format('yyyy-MM-DDThh:mm'),
+    startDate: new Date(new Date().setHours(0, 0, 0)),
   };
   bIsArticleGroupLevel: boolean = true; // Could be Article-group level or product-level (if false then article-group mode)
   bIsSupplierMode: boolean = true; // could be Business-owner-mode or supplier-mode (if true then supplier-mode)
@@ -820,6 +817,7 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
       .postNew('core', '/api/v1/properties/list', data)
       .subscribe((result: any) => {
         if (result?.data && result?.data[0]?.result?.length) {
+          console.log('aProperty: ', result.data[0].result);
           result.data[0].result.map((property: any) => {
             if (typeof this.propertyOptions[property._id] == 'undefined') {
               this.propertyOptions[property._id] = [];
@@ -832,12 +830,12 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
                     sPropertyName: property.sName,
                     iPropertyOptionId: option?._id,
                     sPropertyOptionName: option?.value,
-                    oProperty: {},
+                    // oProperty: {},
                     sCode: option.sCode,
                     sName: option.sKey,
                     selected: false,
                   };
-                  opt.oProperty[option.sKey] = option.value;
+                  // opt.oProperty[option.sKey] = option.value;
                   this.propertyOptions[property._id].push(opt);
                   const propertyIndex = this.aProperty.findIndex(
                     (prop: any) => prop.iPropertyId == property._id
@@ -849,6 +847,7 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
               });
             }
           });
+          console.log('this.propertyOptions: ', this.propertyOptions);
         }
       });
   }
