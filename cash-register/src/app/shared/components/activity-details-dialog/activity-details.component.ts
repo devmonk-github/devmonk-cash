@@ -337,6 +337,7 @@ export class ActivityDetailsComponent implements OnInit {
                 sServicePartnerRemark: transactionItem.sServicePartnerRemark,
                 eActivityItemStatus: transactionItem.eActivityItemStatus,
                 eEstimatedDateAction: transactionItem.eEstimatedDateAction,
+                bGiftcardTaxHandling: transactionItem.bGiftcardTaxHandling,
               });
             }
           });

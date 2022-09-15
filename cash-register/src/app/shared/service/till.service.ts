@@ -191,6 +191,7 @@ export class TillService {
         i.sServicePartnerRemark,
         i.eEstimatedDateAction,
         i.eActivityItemStatus,
+        i.bGiftcardTaxHandling,
 
       )
     });

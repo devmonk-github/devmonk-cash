@@ -34,6 +34,7 @@ export class GiftComponent implements OnInit {
   ngOnInit(): void {
     this.checkNumber();
     this.checkArticleGroups();
+    this.changeInPrice();
   }
 
   deleteItem(): void {

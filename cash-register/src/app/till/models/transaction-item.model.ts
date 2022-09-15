@@ -82,6 +82,7 @@ export class TransactionItem {
     // 60
     public sServicePartnerRemark: string,
     public eEstimatedDateAction: string,
-    public eActivityItemStatus: string,) { }
+    public eActivityItemStatus: string,
+    public bGiftcardTaxHandling: string,) { }
 
 }
