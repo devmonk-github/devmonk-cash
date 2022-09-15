@@ -1,5 +1,5 @@
 import { AfterViewInit, ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
-import { DialogComponent } from '../../service/dialog';
+import { DialogComponent, DialogService } from '../../service/dialog';
 import { ViewContainerRef } from '@angular/core';
 import { ApiService } from 'src/app/shared/service/api.service';
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
@@ -16,6 +16,7 @@ import {
   ApexLegend
 } from "ng-apexcharts";
 import { ToastService } from '../toast';
+import { TransactionDetailsComponent } from 'src/app/transactions/components/transaction-details/transaction-details.component';
 
 export interface BarChartOptions {
   series: ApexAxisChartSeries;
@@ -58,6 +59,7 @@ export const ChartColors = {
   templateUrl: './customer-details.component.html',
   styleUrls: ['./customer-details.component.sass']
 })
+
 export class CustomerDetailsComponent implements OnInit, AfterViewInit {
 
   dialogRef: DialogComponent;
@@ -68,6 +70,8 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
   editProfile: boolean = false;
   showStatistics: boolean = false;
   faTimes = faTimes;
+  aPaymentChartData: any = [];
+  aEmployeeStatistic: any = [];
 
   customer: any = {
     _id: '',
@@ -116,7 +120,8 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
     sCompanyName: '',
     sVatNumber: '',
     sCocNumber: '',
-    nPaymentTermDays: ''
+    nPaymentTermDays: '',
+    nLoyaltyPoints: 0
   }
 
   requestParams: any = {
@@ -181,6 +186,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
 
   @ViewChild("paymentMethodsChart") paymentMethodsChart !: ChartComponent;
   public paymentMethodsChartOptions !: Partial<PieChartOptions> | any;
+
   aStatisticsChartDataLoading = true
   aActivityTitles: any = [
     { type: "Repairs", value: 0, color: ChartColors.REPAIR },//$primary-color
@@ -196,19 +202,15 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
 
   aStatisticsChartData: any = [];
 
-  aPaymentMethodTitles: any = [
-    { type: "Card", value: 7 },
-    { type: "Cash", value: 10 },
-    { type: "Paylater", value: 12 },
-    { type: "Bankpayment", value: 42 },
-    { type: "Expected Payment", value: 22 },
-  ];
   totalActivities: number = 0;
+  from !: string;
+
   constructor(
     private viewContainerRef: ViewContainerRef,
     private apiService: ApiService,
     private cdr: ChangeDetectorRef,
     private toastService: ToastService,
+    private dialogService: DialogService,
   ) {
     const _injector = this.viewContainerRef.parentInjector;
     this.dialogRef = _injector.get<DialogComponent>(DialogComponent);
@@ -221,7 +223,12 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
       _id: this.customer._id,
       iCustomerId: this.customer._id
     }
-    this.getCoreStatistics()
+
+    if (this.from === 'customer') {
+      this.aTransctionTableHeaders.push({ key: 'Action', disabled: true });
+    }
+    this.fetchLoyaltyPoints();
+    this.getCoreStatistics();
 
     this.activitiesChartOptions = {
       series: this.aActivityTitles.map((el: any) => el.value),
@@ -311,13 +318,15 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
   }
 
   getCoreStatistics() {
+    const dDate = new Date(new Date().setHours(0, 0, 0));
+    dDate.setFullYear(dDate.getFullYear() - 1);
     const body = {
       iBusinessId: localStorage.getItem('currentBusiness'),
       oFilter: {
         iCustomerId: this.customer._id,
         sTransactionType: 'cash-registry',
-        sDisplayMethod: 'revenuePerBusinessPartner',
-        dStartDate: new Date(new Date().setHours(0, 0, 0)),
+        sDisplayMethod: 'revenuePerArticleGroup',
+        dStartDate: dDate,
         dEndDate: new Date(new Date().setHours(23, 59, 59)),
         // dStartDate: "2022-09-10T13:59",
         // dEndDate: "2022-10-24T21:59:59.639Z",
@@ -327,8 +336,9 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
       .postNew('cashregistry', '/api/v1/statistics/transaction/audit', body)
       .subscribe(
         (result: any) => {
-          if (result?.data?.oTransactionAudit?.[0]?.individual?.[0]?.aArticleGroups)
-            this.setAStatisticsChartData(result?.data?.oTransactionAudit?.[0]?.individual?.[0]?.aArticleGroups)
+          if (result?.data?.oTransactionAudit?.[0]?.individual?.length) this.setAStatisticsChartData(result?.data?.oTransactionAudit?.[0]?.individual)
+          if (result?.data?.aPaymentMethods?.length) this.aPaymentChartData = result?.data?.aPaymentMethods;
+          if (result?.data?.aEmployeeStatistic?.length) this.aEmployeeStatistic = result?.data?.aEmployeeStatistic;
           this.aStatisticsChartDataLoading = false;
         },
         (error: any) => {
@@ -337,10 +347,10 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
         }
       );
   }
+
   setAStatisticsChartData(data: any[]) {
     const aStatisticsChartData: any[] = []
     data.map((item, index) => {
-      console.log('item: ', item);
       let color: any = Object.entries(ChartColors)
       color = color[Math.floor(Math.random() * color.length)][1]
       let chartItem = {
@@ -365,7 +375,6 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
     this.aStatisticsChartData = aStatisticsChartData
     this.loadStatisticsTabData()
   }
-
 
   //  Function for set sort option on transaction table
   setSortOption(sortHeader: any) {
@@ -510,6 +519,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
     })
 
   }
+
   loadActivityItems() {
     this.bActivityItemsLoader = true;
     let oBody: any = { ...this.requestParams };
@@ -594,18 +604,12 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
         },
       },
       xaxis: {
-        type: 'category',
-        // categories: [
-        //   "Till toady",
-        // ],
-        // labels: {
-        //   rotate: -90
-        // }
+        type: 'category'
       }
     };
 
     this.paymentMethodsChartOptions = {
-      series: this.aPaymentMethodTitles.map((el: any) => el.value),
+      series: this.aPaymentChartData.map((el: any) => el.nAmount),
       chart: {
         width: '100%',
         type: "pie"
@@ -624,15 +628,33 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
         },
         fontWeight: 600,
       },
-      labels: this.aPaymentMethodTitles.map((el: any) => el.type),
+      labels: this.aPaymentChartData.map((el: any) => `${el.sMethod} (${el.nAmount})`),
       options: {
-        dataLabels: {
-          formatter: function (val: any) {
-            return "\u20AC" + Number(val).toFixed(2);
-          },
-        }
+        // dataLabels: {
+        //   formatter: function (val: any) {
+        //     console.log('val: ', val);
+        //     return "\u20AC" + Number(val).toFixed(2);
+        //   },
+        // }
       }
     };
+  }
+
+  // Function for show transaction details
+  showTransaction(transaction: any) {
+    this.dialogService.openModal(TransactionDetailsComponent, { cssClass: "modal-xl", context: { transaction: transaction, eType: 'cash-register-revenue', from: 'customer' } })
+      .instance.close.subscribe(
+        (res:any) => {
+          // if (res) this.router.navigate(['business/till']);
+        });
+  }
+
+  fetchLoyaltyPoints() {
+    if (this.customer) {
+      this.apiService.getNew('cashregistry', `/api/v1/points-settings/points?iBusinessId=${this.requestParams.iBusinessId}&iCustomerId=${this.customer._id}`).subscribe((result: any) => {
+        this.customer.nLoyaltyPoints = result;
+      });
+    }
   }
 
 }

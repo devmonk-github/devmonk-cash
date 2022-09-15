@@ -208,6 +208,7 @@ export class TillService {
         records.forEach((record: any) => {
           i.nPaymentAmount += record.nPaymentAmount;
           record.nPaymentAmount = -1 * record.nPaymentAmount;
+          record.nRevenueAmount = -1 * record.nRevenueAmount;
           record.nPaidAmount = -1 * record.nPaidAmount;
           record.oType.bRefund = true;
           record.nRedeemedLoyaltyPoints = -1 * record.nRedeemedLoyaltyPoints;

@@ -173,7 +173,7 @@
                                 <div class="card-body">
                                     <div class="row mb-7">
                                         <label class="col-7">Saved points</label>
-                                        <label class="col-5">{{ '1000' }}</label>
+                                        <label class="col-5">{{ customer.nLoyaltyPoints }}</label>
                                     </div>
                                     <div class="row mb-7">
                                         <label class="col-7">Value of the points</label>
@@ -214,11 +214,12 @@
                                 <table class="table table-hover table-rounded table-striped border gs-7">
                                     <thead>
                                         <tr class="fw-bold fs-6 text-gray-800 border-bottom-2 border-gray-200">
-                                            <th scope="col" *ngFor="let th of aTransctionTableHeaders"
-                                                [ngClass]="{'fw-bolder': th.selected, 'cursor-pointer': !th.disabled, 'pe-none': th.disabled}"
+                                            <ng-container *ngFor="let th of aTransctionTableHeaders">
+                                                <th scope="col" [ngClass]="{'fw-bolder': th.selected, 'cursor-pointer': !th.disabled, 'pe-none': th.disabled}"
                                                 (click)="setSortOption(th)">
                                                 {{ th.key }}
                                             </th>
+                                        </ng-container>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -229,6 +230,13 @@
                                             <td>{{transaction.sReceiptNumber}}</td>
                                             <td>{{transaction.eType}}</td>
                                             <td>{{transaction.sTotal || 0}}</td>
+                                            <ng-container *ngIf="from === 'customer'">
+                                                <td>
+                                                    <button class="btn btn-primary" (click)="showTransaction(transaction)">
+                                                        {{ 'VIEW' | translate }}
+                                                    </button>
+                                                </td>
+                                            </ng-container>
                                         </tr>
                                         <tr *ngIf="bTransactionsLoader">
                                             <td colspan="5" class="text-center">
@@ -350,16 +358,10 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
-
-                                                <tr>
-                                                    <td>Alex Neil</td>
-                                                    <td>250</td>
+                                                <tr *ngFor="let oEmployeeStatistic of aEmployeeStatistic">
+                                                    <td>{{oEmployeeStatistic?.sName}}</td>
+                                                    <td>{{oEmployeeStatistic?.nTotalRevenue}}</td>
                                                 </tr>
-                                                <tr>
-                                                    <td>John Cena</td>
-                                                    <td>190</td>
-                                                </tr>
-
                                             </tbody>
                                         </table>
                                     </div>
@@ -372,7 +374,8 @@
                                                 [responsive]="paymentMethodsChartOptions.responsive"
                                                 [legend]="paymentMethodsChartOptions.legend"
                                                 [title]="paymentMethodsChartOptions.title"
-                                                [dataLabels]="paymentMethodsChartOptions.options.dataLabels">
+                                                
+                                                >
                                             </apx-chart>
 
                                         </div>
