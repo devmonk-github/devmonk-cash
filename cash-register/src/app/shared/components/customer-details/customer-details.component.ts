@@ -1,5 +1,5 @@
 import { AfterViewInit, ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
-import { DialogComponent } from '../../service/dialog';
+import { DialogComponent, DialogService } from '../../service/dialog';
 import { ViewContainerRef } from '@angular/core';
 import { ApiService } from 'src/app/shared/service/api.service';
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
@@ -16,6 +16,7 @@ import {
   ApexLegend
 } from "ng-apexcharts";
 import { ToastService } from '../toast';
+import { TransactionDetailsComponent } from 'src/app/transactions/components/transaction-details/transaction-details.component';
 
 export interface BarChartOptions {
   series: ApexAxisChartSeries;
@@ -58,6 +59,7 @@ export const ChartColors = {
   templateUrl: './customer-details.component.html',
   styleUrls: ['./customer-details.component.sass']
 })
+
 export class CustomerDetailsComponent implements OnInit, AfterViewInit {
 
   dialogRef: DialogComponent;
@@ -68,6 +70,9 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
   editProfile: boolean = false;
   showStatistics: boolean = false;
   faTimes = faTimes;
+  aPaymentChartData: any = [];
+  aEmployeeStatistic: any = [];
+
   customer: any = {
     _id: '',
     bNewsletter: true,
@@ -115,8 +120,11 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
     sCompanyName: '',
     sVatNumber: '',
     sCocNumber: '',
-    nPaymentTermDays: ''
+    nPaymentTermDays: '',
+    nLoyaltyPoints: 0,
+    nLoyaltyPointsValue: 0
   }
+
   requestParams: any = {
     iBusinessId: "",
     aProjection: ['sSalutation', 'sFirstName', 'sPrefix', 'sLastName', 'dDateOfBirth', 'dDateOfBirth', 'nClientId', 'sGender', 'bIsEmailVerified',
@@ -179,6 +187,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
 
   @ViewChild("paymentMethodsChart") paymentMethodsChart !: ChartComponent;
   public paymentMethodsChartOptions !: Partial<PieChartOptions> | any;
+
   aStatisticsChartDataLoading = true
   aActivityTitles: any = [
     { type: "Repairs", value: 0, color: ChartColors.REPAIR },//$primary-color
@@ -186,7 +195,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
     { type: "Shop purchase", value: 0, color: ChartColors.SHOP_PURCHASE },//$dark-success-light-color
     { type: "Quotation", value: 0, color: ChartColors.QUOTATION },//$info-active-color
     { type: "Webshop", value: 0, color: ChartColors.WEBSHOP },//$gray-700
-    { type: "Refund", value: 0, color: ChartColors.REFUND },//$orange
+    // { type: "Refund", value: 0, color: ChartColors.REFUND },//$orange
     { type: "Giftcard", value: 0, color: ChartColors.GIFTCARD },//$green
     { type: "Gold purchase", value: 0, color: ChartColors.GOLD_PURCHASE },//$maroon
     { type: "Product reservation", value: 0, color: ChartColors.PRODUCT_RESERVATION }//$pink
@@ -194,19 +203,15 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
 
   aStatisticsChartData: any = [];
 
-  aPaymentMethodTitles: any = [
-    { type: "Card", value: 7 },
-    { type: "Cash", value: 10 },
-    { type: "Paylater", value: 12 },
-    { type: "Bankpayment", value: 42 },
-    { type: "Expected Payment", value: 22 },
-  ];
   totalActivities: number = 0;
+  from !: string;
+
   constructor(
     private viewContainerRef: ViewContainerRef,
     private apiService: ApiService,
     private cdr: ChangeDetectorRef,
     private toastService: ToastService,
+    private dialogService: DialogService,
   ) {
     const _injector = this.viewContainerRef.parentInjector;
     this.dialogRef = _injector.get<DialogComponent>(DialogComponent);
@@ -216,9 +221,15 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
     this.requestParams.iBusinessId = localStorage.getItem('currentBusiness');
     this.requestParams.iLocationid = localStorage.getItem('currentLocation');
     this.requestParams.oFilterBy = {
-      _id: this.customer._id
+      _id: this.customer._id,
+      iCustomerId: this.customer._id
     }
-    this.getCoreStatistics()
+
+    if (this.from === 'customer') {
+      this.aTransctionTableHeaders.push({ key: 'Action', disabled: true });
+    }
+    this.fetchLoyaltyPoints();
+    this.getCoreStatistics();
 
     this.activitiesChartOptions = {
       series: this.aActivityTitles.map((el: any) => el.value),
@@ -296,7 +307,6 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
         this.cdr.detectChanges();
 
         this.editProfile = false;
-        // console.log(result);
       },
         (error: any) => {
           console.error(error)
@@ -309,23 +319,27 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
   }
 
   getCoreStatistics() {
+    const dDate = new Date(new Date().setHours(0, 0, 0));
+    dDate.setFullYear(dDate.getFullYear() - 1);
     const body = {
       iBusinessId: localStorage.getItem('currentBusiness'),
       oFilter: {
         iCustomerId: this.customer._id,
         sTransactionType: 'cash-registry',
-        sDisplayMethod: 'revenuePerBusinessPartner',
-        dStartDate: "2022-08-16T13:59",
-        dEndDate: "2022-10-24T21:59:59.639Z",
+        sDisplayMethod: 'revenuePerArticleGroup',
+        dStartDate: dDate,
+        dEndDate: new Date(new Date().setHours(23, 59, 59)),
+        // dStartDate: "2022-09-10T13:59",
+        // dEndDate: "2022-10-24T21:59:59.639Z",
       },
     };
     this.apiService
       .postNew('cashregistry', '/api/v1/statistics/transaction/audit', body)
       .subscribe(
         (result: any) => {
-          if (result?.data?.oTransactionAudit?.[0]?.individual?.[0]?.aArticleGroups)
-            this.setAStatisticsChartData(result?.data?.oTransactionAudit?.[0]?.individual?.[0]?.aArticleGroups)
-          console.log({ CoreStatistics: result });
+          if (result?.data?.oTransactionAudit?.[0]?.individual?.length) this.setAStatisticsChartData(result?.data?.oTransactionAudit?.[0]?.individual)
+          if (result?.data?.aPaymentMethods?.length) this.aPaymentChartData = result?.data?.aPaymentMethods;
+          if (result?.data?.aEmployeeStatistic?.length) this.aEmployeeStatistic = result?.data?.aEmployeeStatistic;
           this.aStatisticsChartDataLoading = false;
         },
         (error: any) => {
@@ -334,8 +348,8 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
         }
       );
   }
+
   setAStatisticsChartData(data: any[]) {
-    console.log({ setAStatisticsChartData: data });
     const aStatisticsChartData: any[] = []
     data.map((item, index) => {
       let color: any = Object.entries(ChartColors)
@@ -362,7 +376,6 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
     this.aStatisticsChartData = aStatisticsChartData
     this.loadStatisticsTabData()
   }
-
 
   //  Function for set sort option on transaction table
   setSortOption(sortHeader: any) {
@@ -408,50 +421,57 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
   }
 
   loadTransactions() {
-    console.log('-------loadTransactions!');
     this.bTransactionsLoader = true;
-    this.requestParams.iCustomerId = this.customer._id;
-    this.apiService.postNew('cashregistry', '/api/v1/transaction/cashRegister', this.requestParams).subscribe((result: any) => {
+    const body = {
+      iCustomerId: this.customer._id,
+      iBusinessId: this.requestParams.iBusinessId
+    }
+    this.apiService.postNew('cashregistry', '/api/v1/transaction/cashRegister', body).subscribe((result: any) => {
       if (result?.data?.result) {
         this.aTransactions = result.data.result || [];
         this.aTransactions.forEach(transaction => {
+          transaction.sTotal = 0;
           transaction.aTransactionItems.forEach((item: any) => {
+            transaction.sTotal += parseFloat(item.nPaymentAmount); 
             const count = this.totalActivities;
             if (item?.oType?.eKind) this.totalActivities = count + item.nQuantity || 0;
-            switch (item?.oType?.eKind) {
-              case "regular":
-                this.aActivityTitles[1].value += 1;
-                break;
-              case "expenses":
-                break;
-              case "reservation":
-                this.aActivityTitles[8].value += 1;
-                break;
-              case "giftcard":
-                this.aActivityTitles[6].value += 1;
-                break;
-              case "empty-line":
-                break;
-              case "repair":
-                this.aActivityTitles[0].value += 1;
-                break;
-              case "order":
-                break;
-              case "gold-purchase":
-                this.aActivityTitles[7].value += 1;
-                break;
-              case "gold-sell":
-
-                break;
-              case "loyalty-points-discount":
-                break;
-              case "loyalty-points":
-                break;
-              case "discount":
-                break;
-              case "payment-discount":
-                break;
-            }
+            // if(item?.oType.bRefund){
+            //   this.aActivityTitles[5].value += 1;
+            // }else{
+              switch (item?.oType?.eKind) {
+                case "regular":
+                  this.aActivityTitles[2].value += 1;
+                  break;
+                case "expenses":
+                  break;
+                case "reservation":
+                  this.aActivityTitles[7].value += 1;
+                  break;
+                case "giftcard":
+                  this.aActivityTitles[5].value += 1;
+                  break;
+                case "empty-line":
+                  break;
+                case "repair":
+                  this.aActivityTitles[0].value += 1;
+                  break;
+                case "order":
+                  break;
+                case "gold-purchase":
+                  this.aActivityTitles[6].value += 1;
+                  break;
+                case "gold-sell":
+                  break;
+                case "loyalty-points-discount":
+                  break;
+                case "loyalty-points":
+                  break;
+                case "discount":
+                  break;
+                case "payment-discount":
+                  break;
+              }
+            // }
           })
         });
         // this.paginationConfig.totalItems = result.data.totalCount;
@@ -486,10 +506,11 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
   }
 
   loadActivities() {
-    // console.log('loadActivities');
     this.aActivities = [];
     this.bActivitiesLoader = true;
-    this.apiService.postNew('cashregistry', '/api/v1/activities', this.requestParams).subscribe((result: any) => {
+    let oBody:any = {...this.requestParams};
+    delete oBody.oFilterBy._id;
+    this.apiService.postNew('cashregistry', '/api/v1/activities', oBody).subscribe((result: any) => {
       this.aActivities = result.data || [];
       // this.paginationConfig.totalItems = result.count;
 
@@ -499,10 +520,12 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
     })
 
   }
+
   loadActivityItems() {
-    // console.log('loadActivities items');
     this.bActivityItemsLoader = true;
-    this.apiService.postNew('cashregistry', '/api/v1/activities/items', this.requestParams).subscribe(
+    let oBody: any = { ...this.requestParams };
+    delete oBody.oFilterBy._id;
+    this.apiService.postNew('cashregistry', '/api/v1/activities/items', oBody).subscribe(
       (result: any) => {
         this.aActivityItems = result.data || [];
         // this.paginationConfig.totalItems = result.count;
@@ -582,18 +605,12 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
         },
       },
       xaxis: {
-        type: 'category',
-        // categories: [
-        //   "Till toady",
-        // ],
-        // labels: {
-        //   rotate: -90
-        // }
+        type: 'category'
       }
     };
 
     this.paymentMethodsChartOptions = {
-      series: this.aPaymentMethodTitles.map((el: any) => el.value),
+      series: this.aPaymentChartData.map((el: any) => el.nAmount),
       chart: {
         width: '100%',
         type: "pie"
@@ -612,15 +629,38 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
         },
         fontWeight: 600,
       },
-      labels: this.aPaymentMethodTitles.map((el: any) => el.type),
+      labels: this.aPaymentChartData.map((el: any) => `${el.sMethod} (${el.nAmount})`),
       options: {
-        dataLabels: {
-          formatter: function (val: any) {
-            return "\u20AC" + Number(val).toFixed(2);
-          },
-        }
+        // dataLabels: {
+        //   formatter: function (val: any) {
+        //     console.log('val: ', val);
+        //     return "\u20AC" + Number(val).toFixed(2);
+        //   },
+        // }
       }
     };
   }
+
+  // Function for show transaction details
+  showTransaction(transaction: any) {
+    this.dialogService.openModal(TransactionDetailsComponent, { cssClass: "modal-xl", context: { transaction: transaction, eType: 'cash-register-revenue', from: 'customer' } })
+      .instance.close.subscribe(
+        (res:any) => {
+          // if (res) this.router.navigate(['business/till']);
+        });
+  }
+
+
+
+  async fetchLoyaltyPoints() {
+    if (this.customer) {
+      const nPointsResult:any = await this.apiService.getNew('cashregistry', `/api/v1/points-settings/points?iBusinessId=${this.requestParams.iBusinessId}&iCustomerId=${this.customer._id}`).toPromise();
+      const oPointsSettingsResult:any = await this.apiService.getNew('cashregistry', `/api/v1/points-settings?iBusinessId=${this.requestParams.iBusinessId}`).toPromise();
+      this.customer.nLoyaltyPoints = nPointsResult;
+      this.customer.nLoyaltyPointsValue = nPointsResult / oPointsSettingsResult.nPerEuro2;
+    }
+  }
+
+
 
 }

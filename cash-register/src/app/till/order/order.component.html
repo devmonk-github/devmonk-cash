@@ -105,7 +105,7 @@
             <div class="form-group mb-4">
               <label class="form-control-label mb-3">{{ "PRICE" | translate}}</label>:
               <input class="form-control  mb-3 mb-lg-0" type="text" name="price"
-                (change)="updatePayments(); changeInMargin()" placeholder="{{ 'PRICE' | translate}}" id="price"
+                (keyup)="updatePayments(); changeInMargin()" placeholder="{{ 'PRICE' | translate}}" id="price"
                 [(ngModel)]="item.price" [disabled]="item.oType?.bRefund || item.tType === 'pay'">
             </div>
           </div>
@@ -127,8 +127,8 @@
                 <div class="col-6">
                   <div class="form-group mb-1">
                     <label class="form-control-label mb-1">{{ "MARGIN" | translate}}</label>:
-                    <input class="form-control mb-3 mb-lg-0" type="number" step="any" (keyup)="changeInMargin()"
-                      [disabled]="item.oType.bRefund || item.oType.bPrepayment">
+                    <input class="form-control mb-3 mb-lg-0" type="number" step="any" [(ngModel)]="item.nMargin"
+                      (keyup)="changeInMargin()" [disabled]="item.oType.bRefund || item.oType.bPrepayment">
                   </div>
                 </div>
                 <!-- PURCHASE_PRICE -->
@@ -186,19 +186,36 @@
         <div class="col-12">
           <div class="row my-3">
             <div class="btn-group" role="group" aria-label="Basic example">
-              <button (click)="contactType='phone'" [ngClass]="{active:contactType==='phone'}" type="button"
+              <button (click)="item.eEstimatedDateAction='call_on_ready'" [ngClass]="{active:item.eEstimatedDateAction==='call_on_ready'}" type="button"
                 class="btn btn-primary fs-6 p-2">
                 <fa-icon [icon]="faPhone"></fa-icon>
               </button>
-              <button (click)="contactType='email'" [ngClass]="{active:contactType==='email'}" type="button"
+              <button (click)="item.eEstimatedDateAction='email_on_ready'" [ngClass]="{active:item.eEstimatedDateAction==='email_on_ready'}" type="button"
                 class="btn btn-primary fs-6 p-2">
                 <fa-icon [icon]="faAt"></fa-icon>
               </button>
-              <button (click)="contactType='whatsapp'" [ngClass]="{active:contactType==='whatsapp'}" type="button"
+              <button (click)="item.eEstimatedDateAction='whatsapp_on_ready'" [ngClass]="{active:item.eEstimatedDateAction==='whatsapp_on_ready'}" type="button"
                 class="btn btn-primary fs-6 p-2">
                 <i class="bi bi-whatsapp"></i>
               </button>
             </div>
+          </div>
+        </div>
+        <div class="col-12" *ngIf="contactType">
+          <div class="row my-3">
+            <!--begin::Alert-->
+            <div class="alert alert-warning d-flex align-items-center p-5">
+              <!--begin::Wrapper-->
+              <div class="d-flex flex-column">
+                <!--begin::Title-->
+                <!--end::Title-->
+                <!--begin::Content-->
+                <span>No Customer Selected</span>
+                <!--end::Content-->
+              </div>
+              <!--end::Wrapper-->
+            </div>
+            <!--end::Alert-->
           </div>
         </div>
         <div class="col-12">
@@ -269,13 +286,15 @@
           <div class="col-12">
             <div class="form-group mb-4">
               <label class="form-control-label mb-3">{{ "PROPERTIES" | translate}}</label>:
-              <div class="d-flex" *ngFor="let property of item.oArticleGroupMetaData.aProperty; let pIndex = index">
-                <div class="w-100">
-                  <ng-select class="form-control p-0 w-100" [(ngModel)]="selectedProperties[property.iPropertyId]"
-                    (change)="setPropertyOption(property, pIndex)" [clearable]="false">
-                    <ng-option *ngFor="let option of propertyOptions[property.iPropertyId]" [value]="option.sCode">{{
-                      option.sName }}</ng-option>
-                  </ng-select>
+              <div class="overflow-scroll py-1 h-150px">
+                <div class="d-flex" *ngFor="let property of item.oArticleGroupMetaData.aProperty; let pIndex = index">
+                  <div class="w-100">
+                    <ng-select class="form-control p-0 w-100" [(ngModel)]="selectedProperties[property.iPropertyId]"
+                      (change)="setPropertyOption(property, pIndex)" [clearable]="false">
+                      <ng-option *ngFor="let option of propertyOptions[property.iPropertyId]" [value]="option.sCode">{{
+                        option.sName }}</ng-option>
+                    </ng-select>
+                  </div>
                 </div>
               </div>
             </div>

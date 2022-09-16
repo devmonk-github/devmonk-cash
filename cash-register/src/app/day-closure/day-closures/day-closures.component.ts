@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { ApiService } from 'src/app/shared/service/api.service';
 
@@ -42,6 +42,7 @@ export class DayClosuresComponent implements OnInit, OnDestroy {
   };
   constructor(private apiService: ApiService,
     private route: ActivatedRoute,
+    private router: Router,
   ) {
     this.iBusinessId = localStorage.getItem('currentBusiness') || '';
     this.iLocationId = localStorage.getItem('currentLocation') || '';
@@ -69,7 +70,7 @@ export class DayClosuresComponent implements OnInit, OnDestroy {
   }
 
   getWorkstations() {
-    this.workstationListSubscription = this.apiService.getNew('cashregistry', '/api/v1/workstations/list/' + this.iBusinessId).subscribe(
+    this.workstationListSubscription = this.apiService.getNew('cashregistry', `/api/v1/workstations/list/${this.iBusinessId}/${this.iLocationId}`).subscribe(
       (result: any) => {
         if (result && result.data?.length) this.aWorkStation = result.data;
         console.log('getWorkstations called: ', this.aWorkStation);
@@ -113,6 +114,10 @@ export class DayClosuresComponent implements OnInit, OnDestroy {
       console.log('error: ', error);
       this.showLoader = false;
     })
+  }
+
+  goToView(iStatisticsId: any, dOpenDate: any, dCloseDate:any){
+    this.router.navigate(['../../transactions-audit/view', iStatisticsId], { relativeTo: this.route, state: { dStartDate: dOpenDate, dEndDate: dCloseDate } }); 
   }
 
   ngOnDestroy(): void {

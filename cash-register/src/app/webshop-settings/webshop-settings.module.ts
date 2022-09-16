@@ -8,13 +8,17 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { SharedModule } from 'primeng/api';
 import { ExtraServiceComponent } from './component/extra-service/extra-service.component';
 import { NgSelectModule } from '@ng-select/ng-select';
+import { CouponServiceComponent } from './component/coupon-service/coupon-service.component';
+import { AddEditCouponComponent } from './component/add-edit-coupon/add-edit-coupon.component';
 
 
 
 @NgModule({
   declarations: [
     WebshopSettingsComponent,
-    ExtraServiceComponent
+    ExtraServiceComponent,
+    CouponServiceComponent,
+    AddEditCouponComponent
   ],
   imports: [
     CommonModule,

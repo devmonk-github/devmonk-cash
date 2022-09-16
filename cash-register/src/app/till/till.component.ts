@@ -1,9 +1,9 @@
-import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild, ViewChildren } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import {
   faScrewdriverWrench, faTruck, faBoxesStacked, faGifts, faUser, faTimes, faTimesCircle, faTrashAlt, faRing,
   faCoins, faCalculator, faArrowRightFromBracket, faSpinner, faSearch, faMoneyBill
 } from '@fortawesome/free-solid-svg-icons';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
 import * as _ from 'lodash';
 
@@ -25,13 +25,14 @@ import { TerminalDialogComponent } from '../shared/components/terminal-dialog/te
 import { CreateArticleGroupService } from '../shared/service/create-article-groups.service';
 import { CustomerStructureService } from '../shared/service/customer-structure.service';
 import { FiskalyService } from '../shared/service/fiskaly.service';
+import { PdfService } from '../shared/service/pdf.service';
+import { SupplierWarningDialogComponent } from './dialogs/supplier-warning-dialog/supplier-warning-dialog.component';
 @Component({
   selector: 'app-till',
   templateUrl: './till.component.html',
   styleUrls: ['./till.component.scss']
 })
 export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
-  // icons
   faScrewdriverWrench = faScrewdriverWrench;
   faTruck = faTruck;
   faBoxesStacked = faBoxesStacked;
@@ -72,19 +73,13 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   parkedTransactions: Array<any> = [];
   terminals: Array<any> = [];
   quickButtons: Array<any> = [];
-
-  // quickButtonsLoading: boolean = false;
   fetchingProductDetails: boolean = false;
   bSearchingProduct: boolean = false;
-  
   bIsPreviousDayStateClosed: boolean = true;
   bIsDayStateOpened: boolean = false; // Not opened then require to open it first
   bDayStateChecking: boolean = false;
-  
   dOpenDate: any = '';
   iWorkstationId!: any;
-
-
   aProjection: Array<any> = [
     'oName',
     'sEan',
@@ -108,6 +103,9 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   saveInProgress = false;
   @ViewChild('searchField') searchField!: ElementRef;
   selectedQuickButton: any;
+  getSettingsSubscription !: Subscription;
+  dayClosureCheckSubscription !: Subscription;
+  settings: any;
 
   randNumber(min: number, max: number): number {
     return Math.floor(Math.random() * (max - min + 1) + min);
@@ -125,7 +123,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     private terminalService: TerminalService,
     private createArticleGroupService: CreateArticleGroupService,
     private customerStructureService: CustomerStructureService,
-    private fiskalyService: FiskalyService
+    private fiskalyService: FiskalyService,
+    private pdfService: PdfService
   ) {
   }
 
@@ -239,6 +238,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       paymentAmount: 0,
       oArticleGroupMetaData: { aProperty: [], sCategory: '', sSubCategory: '', oName: {}, oNameOriginal: {} },
       description: '',
+      sServicePartnerRemark: '',
+      eEstimatedDateAction: 'call_on_ready',
       open: true,
       new: true,
       isFor: 'create',
@@ -315,11 +316,14 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       tax: 21,
       paymentAmount: type === 'gold-purchase' ? -1 * price : 0,
       description: '',
+      sServicePartnerRemark: '',
+      eActivityItemStatus: 'new',
+      eEstimatedDateAction: 'call_on_ready',
       open: true,
       new: true,
       iBusinessId: this.getValueFromLocalStorage('currentBusiness'),
       ...(type === 'giftcard') && { sGiftCardNumber: Date.now() },
-      ...(type === 'giftcard') && { taxHandling: 'true' },
+      ...(type === 'giftcard') && { bGiftcardTaxHandling: 'true' },
       ...(type === 'giftcard') && { isGiftCardNumberValid: false },
       ...(type === 'gold-purchase') && { oGoldFor: { name: 'stock', type: 'goods' } }
     });
@@ -380,7 +384,10 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     const body = {
       iBusinessId: this.getValueFromLocalStorage('currentBusiness'),
       iLocationId: this.getValueFromLocalStorage('currentLocation'),
+
+      // Do we still need to keep this hard code value here?
       iCustomerId: '6182a52f1949ab0a59ff4e7b',
+
       sGiftCardNumber: this.transactionItems[index].sGiftCardNumber,
       eType: '',
       nPriceIncVat: this.transactionItems[index].price,
@@ -547,12 +554,18 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
             body.giftCards = this.appliedGiftCards;
           }
           body.oTransaction.iActivityId = this.iActivityId;
+          let result = body.transactionItems.map((a: any)=> a.iBusinessPartnerId);
+          const uniq = [...new Set(_.compact(result))];
           this.apiService.postNew('cashregistry', '/api/v1/till/transaction', body)
             .subscribe((data: any) => {
-              this.toastrService.show({ type: 'success', text: data.message });
+              this.toastrService.show({ type: 'success', text: 'Transaction created.' });
+              const { transaction, aTransactionItems } = data;
+              transaction.aTransactionItems = aTransactionItems;
+              this.pdfService.generatePDF(transaction);
               this.updateFiskalyTransaction('FINISHED', body.payments);
               setTimeout(() => {
                 this.saveInProgress = false;
+                this.fetchBusinessPartnersProductCount(uniq);
                 this.clearAll();
               }, 100);
               if (this.selectedTransaction) {
@@ -564,6 +577,35 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
             });
         }
       });
+  }
+
+  fetchBusinessPartnersProductCount(aBusinessPartnerId: any) {
+    if(!aBusinessPartnerId.length || 1 > aBusinessPartnerId.length) {
+      return;
+    }
+    var body = {
+      iBusinessId: this.getValueFromLocalStorage('currentBusiness'),
+      aBusinessPartnerId
+    };
+    this.apiService.postNew('core', '/api/v1/business/partners/product-count', body).subscribe(
+      (result: any) => {
+        if (result && result.data) {
+          const urls: any = [];
+          result.data.forEach((element: any) => {
+            if(element.businessproducts > 10) {
+              urls.push({name: element.sName, iBusinessPartnerId: element._id});
+            }
+          });
+          if (urls.length > 0) {
+            this.openWarningPopup(urls);
+          }
+        }
+      },
+      (error: any) => {
+        // this.partnersList = [];
+        console.log(error);
+      }
+    );
   }
 
   /* Search API for finding the  common-brands products */
@@ -655,6 +697,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       oArticleGroupMetaData: { aProperty: product.aProperty || [], sCategory: '', sSubCategory: '', oName: {}, oNameOriginal: {} },
       iBusinessBrandId: product.iBusinessBrandId || product.iBrandId,
       iBusinessProductId: product._id,
+      iBusinessPartnerId: product.iBusinessPartnerId, //'6274d2fd8f38164d68186410',
       iSupplierId: product.iBusinessPartnerId,
       aImage: product.aImage,
       isExclude: false,
@@ -866,7 +909,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       if(result?.message==='success'){
         this.bIsDayStateOpened = true;
         if (this.bIsDayStateOpened) this.fetchQuickButtons();
-        this.toastrService.show({ type: 'success', text: `Day-state is open nowssss` });
+        this.toastrService.show({ type: 'success', text: `Day-state is open now` });
       }
     }, (error) => {
       this.toastrService.show({ type: 'warning', text: `Day-state is not open` });
@@ -916,7 +959,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       iWorkstationId: this.iWorkstationId
     }
     this.bDayStateChecking = true;
-    this.apiService.postNew('cashregistry', `/api/v1/statistics/day-closure/check`, oBody).subscribe((result: any) => {
+    this.dayClosureCheckSubscription = this.apiService.postNew('cashregistry', `/api/v1/statistics/day-closure/check`, oBody).subscribe((result: any) => {
       if (result?.data) {
         this.bDayStateChecking = false;
         this.bIsDayStateOpened = result?.data?.bIsDayStateOpened;
@@ -924,13 +967,34 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
         if (result?.data?.oStatisticDetail?.dOpenDate) {
           this.dOpenDate = result?.data?.oStatisticDetail?.dOpenDate;
 
+          this.getSettingsSubscription = this.apiService.getNew('cashregistry', `/api/v1/settings/${this.business._id}`).subscribe((result: any) => {
+            
+            this.settings = result;
+            
+            let nDayClosurePeriodAllowed = 0;
 
+            if (this.settings?.sDayClosurePeriod && this.settings.sDayClosurePeriod === 'week'){
+              nDayClosurePeriodAllowed = 3600 * 24 * 7;
+            } else {
+              nDayClosurePeriodAllowed = 3600 * 24;
+            }
 
-          /* Show Close day state warning when Day-state is close from last 24hrs */
-          const nOpenTimeSecond = (new Date(this.dOpenDate).getTime());
-          const nCurrentTimeSecond = (new Date().getTime());
-          const nDifferenceInHrs = (nCurrentTimeSecond - nOpenTimeSecond) / 3600000;
-          if (nDifferenceInHrs > 24) this.bIsPreviousDayStateClosed = false;
+            /* Show Close day state warning when Day-state is close according to settings day/week */
+            const nOpenTimeSecond = new Date(this.dOpenDate).getTime();
+            const nCurrentTimeSecond = new Date().getTime();
+
+            const nDifference = (nCurrentTimeSecond - nOpenTimeSecond) / 1000;
+            if (nDifference > nDayClosurePeriodAllowed) this.bIsPreviousDayStateClosed = false;
+          }, (error) => {
+            console.log(error);
+          })
+          
+
+          // /* Show Close day state warning when Day-state is close from last 24hrs */
+          // const nOpenTimeSecond = (new Date(this.dOpenDate).getTime());
+          // const nCurrentTimeSecond = (new Date().getTime());
+          // const nDifferenceInHrs = (nCurrentTimeSecond - nOpenTimeSecond) / 3600000;
+          // if (nDifferenceInHrs > 24) this.bIsPreviousDayStateClosed = false;
         }
       }
     }, (error) => {
@@ -940,7 +1004,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   assignAllAmount(index: number) {
-    this.payMethods[index].amount = this.getTotals('price');
+    this.payMethods[index].amount = -(this.getUsedPayMethods(true) - this.getTotals('price'));
     this.changeInPayment();
     this.createTransaction();
   }
@@ -996,9 +1060,18 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       localStorage.removeItem('tssId');
     }
   }
+  
+  openWarningPopup(urls: any): void {
+    this.dialogService.openModal(SupplierWarningDialogComponent, {cssClass: 'modal-lg', context: {urls} })
+      .instance.close.subscribe((data) => {
+        console.log(data);
+      })
+  }
 
   ngOnDestroy() {
     localStorage.removeItem('fromTransactionPage');
     this.cancelFiskalyTransaction();
+    if (this.getSettingsSubscription) this.getSettingsSubscription.unsubscribe();
+    if (this.dayClosureCheckSubscription) this.dayClosureCheckSubscription.unsubscribe();
   }
 }

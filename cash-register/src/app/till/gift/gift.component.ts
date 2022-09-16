@@ -4,6 +4,7 @@ import { faTimes, faPlus, faMinus, faCheck, faSpinner, faPrint, faBan, faClone }
 import { ToastService } from 'src/app/shared/components/toast';
 import { ApiService } from 'src/app/shared/service/api.service';
 import { CreateArticleGroupService } from 'src/app/shared/service/create-article-groups.service';
+import { PdfService } from 'src/app/shared/service/pdf.service';
 // import { TaxService } from "../../shared/service/tax.service";
 
 @Component({
@@ -26,14 +27,21 @@ export class GiftComponent implements OnInit {
   faBan = faBan;
   faClone = faClone;
   checkingNumber: boolean = false
+  iBusinessId: string = '';
+  downloading: boolean = false;
+  computerId: number | undefined;
+  printerId: number | undefined;
   constructor(
     private apiService: ApiService,
+    private pdfService: PdfService,
     private toastrService: ToastService,
     private createArticleGroupService: CreateArticleGroupService) { }
 
   ngOnInit(): void {
+    this.iBusinessId = localStorage.getItem('currentBusiness') || '';
     this.checkNumber();
     this.checkArticleGroups();
+    this.changeInPrice();
   }
 
   deleteItem(): void {
@@ -92,7 +100,49 @@ export class GiftComponent implements OnInit {
   }
 
   create(): void {
+    this.generatePDF(false);
     this.createGiftCard.emit('create');
+  }
+
+  getPrintSetting() {
+    this.apiService.getNew('cashregistry', '/api/v1/print-settings/' + '6182a52f1949ab0a59ff4e7b' + '/' + '624c98415e537564184e5614').subscribe(
+      (result: any) => {
+        this.computerId = result?.data?.nComputerId;
+        this.printerId = result?.data?.nPrinterId;
+      },
+      (error: any) => {
+        console.error(error)
+      }
+    );
+  }
+
+  generatePDF(print: boolean): void {
+    const sName = 'Default Giftcard', eType = 'giftcard';
+    this.downloading = true;
+    this.apiService.getNew('cashregistry', '/api/v1/pdf/templates/' + this.iBusinessId + '?sName=' + sName + '&eType=' + eType).subscribe(
+      (result: any) => {
+        const filename = new Date().getTime().toString()
+        let printData = null
+        if (print) {
+          printData = {
+            computerId: this.computerId,
+            printerId: this.printerId,
+            title: filename,
+            quantity: 1
+          }
+        }
+        this.pdfService.createPdf(JSON.stringify(result.data), this.item, filename, print, printData, this.iBusinessId, this.item?._id)
+          .then(() => {
+            this.downloading = false;
+          })
+          .catch((e: any) => {
+            this.downloading = false;
+            console.error('err', e)
+          })
+      }, (error) => {
+        this.downloading = false;
+        console.error('printing error', error);
+      })
   }
 
   duplicate(): void {

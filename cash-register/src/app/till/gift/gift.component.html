@@ -59,13 +59,13 @@
           </div>
           <p>{{ "VAT_HANDLING" | translate}}</p>
           <div class="form-check form-check-custom form-check-solid">
-            <input class="form-check-input" type="radio" [(ngModel)]="item.taxHandling" value="true" id="vatPaid1" />
+            <input class="form-check-input" type="radio" [(ngModel)]="item.bGiftcardTaxHandling" value="true" id="vatPaid1" />
             <label class="form-check-label" for="vatPaid1">
               {{ "PAY_TAXES_WHEN_CREATE" | translate}}
             </label>
           </div>
           <div class="form-check form-check-custom form-check-solid">
-            <input class="form-check-input" type="radio" [(ngModel)]="item.taxHandling" value="false" id="vatPaid2" />
+            <input class="form-check-input" type="radio" [(ngModel)]="item.bGiftcardTaxHandling" value="false" id="vatPaid2" />
             <label class="form-check-label" for="vatPaid2">
               {{ "PAY_TAXES_WHEN_REDEEM" | translate}}
             </label>

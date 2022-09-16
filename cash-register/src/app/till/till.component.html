@@ -6,9 +6,12 @@
     </div>
   </div>
 
-  <div *ngIf="!bDayStateChecking && !bIsDayStateOpened" class="d-flex flex-column">
+  <div *ngIf="!bDayStateChecking && !bIsDayStateOpened" class="d-flex flex-column align-items-center">
     <h1>{{ 'NO_OPEN_DAY_STATE_FOUND' | translate}}</h1>
     <button class="btn btn-white" (click)="openDayState()">{{ 'OPEN_CASH_REGISTRY' | translate}}</button>
+    <div>
+      <button class="btn btn-dark mt-5" routerLink="../">{{ 'GO_TO_DASHBOARD' | translate}}</button>
+    </div>
   </div>
 
 </div>
@@ -22,7 +25,7 @@
             <div class="alert alert-warning" *ngIf="!bIsPreviousDayStateClosed">
               <p class="mb-0" style="font-size: 1.2rem;font-weight: bold;margin-left:1.3rem">
                 <span style="margin-right:1rem; font-weight:bolder">!</span>
-                The previous day is not closed yet ({{ dOpenDate | date:'EEEE, dd-MM-YYYY hh:mm:ss aaa':'GMT'}})
+                The previous {{ settings.sDayClosurePeriod }} is not closed yet ({{ dOpenDate | date:'EEEE, dd-MM-YYYY hh:mm:ss aaa':'GMT'}})
               </p>
               <a class="btn btn-hover" routerLink="../day-closure">{{ "CLOSE_DAYSTATE" | translate}}</a>
             </div>
@@ -241,7 +244,7 @@
 
         <div class="card card-flush">
           <div class="card-body p-3">
-            <div class="till-padding">
+            <div class="mb-5">
               <div class="d-flex">
                 <input type="text" class="form-control me-3 highlight-search" placeholder="Search..."
                   [(ngModel)]="searchKeyword"
@@ -271,20 +274,20 @@
                 </div>
               </div>
             </div>
-            <div class="row" *ngIf="shopProducts && shopProducts.length > 0">
-              <div class="col-md-6 cursor-pointer" *ngFor="let product of shopProducts"
+            <div class="row bg-light py-5" *ngIf="shopProducts && shopProducts.length > 0">
+              <div class="col-md-6 cursor-pointer py-5 px-2" *ngFor="let product of shopProducts"
                 (mouseenter)="product['showOption'] = true" (mouseleave)="product['showOption'] = false">
                 <!-- <a (click)="eKind === 'order'? addOrder(product): onSelectProduct(product, 'business', 'same-article')"> -->
                 <a (click)="onSelectProduct(product, 'business', 'shopProducts')">
-                  <div class="card m-1 shadow-sm">
+                  <div class="card m-1 shadow-sm h-100">
                     <div class="card-body">
                       <div class="d-flex">
-                        <div class="w-50 p-2">
+                        <div class="p-2">
                           <img
                             src="{{product.aImage[0]? product.aImage[0]: '../assets/images/no-photo-available.jpg' }}"
-                            class="w-auto h-xxl-100px">
+                            class="w-50">
                         </div>
-                        <div class="w-50 px-2">
+                        <div class="px-2">
                           <label class="business-bg-color rounded-full px-2 py-1 text-white text-sm">Business
                             product</label>
                           <span>
@@ -295,11 +298,11 @@
                           <p class="mt-2">{{ product.sProductNumber }}</p>
                         </div>
                       </div>
-                      <div class="absolute hover-product-option mt-n6" *ngIf="product['showOption']">
+                      <!-- <div class="absolute hover-product-option mt-n6" *ngIf="product['showOption']">
                         <div class="d-flex">
                           <button class="btn btn-secondary w-50 mr-2 p-0">Add this article</button>
                         </div>
-                      </div>
+                      </div> -->
                     </div>
                   </div>
                 </a>

@@ -17,7 +17,7 @@ export class TransactionItem {
     public nVatRate: number,
     public nQuantity: number,
     public nReceivedQuantity: number | null,
-
+    // 10
     public aExtraServices: [ExtraService] | null,
     public iProductId: string,
     public sEan: string,
@@ -28,7 +28,7 @@ export class TransactionItem {
     public oEdiProduct: EdiProduct | null,
     public iBusinessPartnerId: string | null,
     public iBusinessId: string,
-
+    // 20
     public iArticleGroupId: string | null,
     public iArticleGroupOriginalId: string | null,
     public oArticleGroupMetaData: { aProperty: [Property] } | null,
@@ -39,10 +39,8 @@ export class TransactionItem {
     public sGiftCardNumber: string | null,
     public iParentTransactionDetailId: string | null,
     public iGiftCardTransaction: string | null,
-    // public nOriginalQuantity: number, Not needed
-
+    // 30
     public nEstimatedTotal: number,
-    // public nOriginalTotal: number,
     public nPaymentAmount: number,
     public nPaidLaterAmount: number,
     public bDiscount: boolean,
@@ -51,8 +49,8 @@ export class TransactionItem {
     public nRefundAmount: number,
     public nProductSize: number | null,
     public nProductSizeFor: string | null,
-
     public dEstimatedDate: Date | null,
+    // 40
     public dEstimatedDateString: string | null,
     public iBusinessBrandId: string | null,
     public iBusinessProductId: string | null,
@@ -63,7 +61,7 @@ export class TransactionItem {
     public iLocationId: string,
     public sBagNumber: string,
     public iSupplierId: any,
-    //Optional here, since we don't know the transaction id when we create one
+    //Optional here, since we don't know the transaction id when we create one (50)
     public iLastTransactionItemId: string | null,
     public iTransactionId: string | null,
     public oType: {
@@ -80,6 +78,11 @@ export class TransactionItem {
     public nRedeemedLoyaltyPoints: number,
     public sUniqueIdentifier: string,
     public nRevenueAmount: number,
-    public sDescription: string) { }
+    public sDescription: string,
+    // 60
+    public sServicePartnerRemark: string,
+    public eEstimatedDateAction: string,
+    public eActivityItemStatus: string,
+    public bGiftcardTaxHandling: string,) { }
 
 }

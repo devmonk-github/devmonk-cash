@@ -46,9 +46,8 @@ export class RepairComponent implements OnInit {
   // temporary variable
   supplier: any;
   sIsEstimatedDate: 'PriceAgreed' | 'Quotation' = 'PriceAgreed'
-  contactType: 'phone' | 'email' | 'whatsapp' = 'phone'
+  contactType: 'phone' | 'email' | 'whatsapp' | '' = ''
   bShowServicePartnerRemark = false
-  sServicePartnerRemark = ''
   @ViewChild('descriptionRef') descriptionRef!: ElementRef
   constructor(private priceService: PriceService,
     private apiService: ApiService,
@@ -68,6 +67,10 @@ export class RepairComponent implements OnInit {
       this.selectArticleGroup();
       this.item.new = false;
     }
+  }
+
+  onContactButtonClick(): void {
+
   }
 
   selectArticleGroup() {
@@ -229,11 +232,12 @@ export class RepairComponent implements OnInit {
                   let opt: any = {
                     iPropertyId: property._id,
                     iPropertyOptionId: option?._id,
+                    sPropertyOptionName: option?.sKey,
                     sPropertyName: property.sName,
                     oProperty: {
                     },
                     sCode: option.sCode,
-                    sName: option.sKey
+                    sName: option.sKey,
                   };
                   opt.oProperty[option.sKey] = option.value;
                   this.propertyOptions[property._id].push(opt);

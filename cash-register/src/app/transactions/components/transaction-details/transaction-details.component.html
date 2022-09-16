@@ -5,11 +5,18 @@
             <fa-icon [icon]="faTimes"></fa-icon>
         </button>
     </div>
-    <div class="card-body row">
+    <div class="card-body row main m-0">
         <div class="col-md-4">
-            <h3 class="fw-bolder mb-4">
-                <span>{{ "CUSTOMER" | translate }}</span>
-            </h3>
+            <div class="d-flex justify-content-between align-items-center">
+                <h3 class="fw-bolder mb-4">
+                    <span>{{ "CUSTOMER" | translate }}</span>
+                </h3>
+                <ng-container *ngIf="from === 'transactions'">
+                    <button class="btn btn-primary" (click)="openCustomer(transaction.oCustomer)">
+                        {{ 'VIEW' | translate }}
+                    </button>
+                </ng-container>
+            </div>
             <div class="row fw-bold gy-1">
                 <div class="col-md-12">
                     <div class="text-gray-900 mt-2">{{ transaction?.oCustomer?.sFirstName }} {{
@@ -81,7 +88,7 @@
                     <fa-icon [icon]="faFileInvoice"></fa-icon>
                     <label class="mx-auto">General Invoice</label>
                 </button>
-                <button class="btn btn-sm btn-secondary w-100 d-flex" (click)="downloadWithVAT()">
+                <button [disabled]="!ableToDownload" class="btn btn-sm btn-secondary w-100 d-flex" (click)="downloadWithVAT()">
                     <fa-icon [hidden]="downloadWithVATLoading" [icon]="faDownload"></fa-icon>
                     <span *ngIf="downloadWithVATLoading">
                         <i class="fa fa-spinner fa-spin" [hidden]="!downloadWithVATLoading" style="font-size:15px;"></i>
@@ -155,8 +162,8 @@
                 </button>
             </div>
         </div>
-    </div>
-    <div class="card-body row">
+    <!-- </div> -->
+    <div class="row">
         <div class="col-md-12">
             <h3 class="fw-bolder mb-3">
                 <span>{{ "ITEMS" | translate }}</span>
@@ -183,7 +190,10 @@
                                 </td>
                                 <td>
                                     <div>
-                                        {{item.sProductName}}
+                                        {{item.description}}<br/>Original amount: {{item.nPriceIncVat}}<br/>Already paid:<br/>{{item.sTransactionNumber}} | {{item.nPaymentAmount}} (this receipt)<br/>
+                                        <div *ngFor="let obj of item.related">
+                                            {{obj.sTransactionNumber}} | {{obj.nPaymentAmount}}<br/>
+                                        </div>
                                     </div>
                                     <br>
                                     <div *ngIf="item?.aProductVariant?.length > 0">
@@ -205,7 +215,24 @@
                                 <td>{{item.nQuantity}}</td>
                                 <td>{{item.nDiscountToShow}}</td>
                                 <td>{{item.nVatRate || 0}} %</td>
-                                <td>{{item.totalPriceIncVatAfterDisc || 0}}</td>
+                                <td>
+                                    <div>
+                                        <div>
+                                            {{item.totalPriceIncVatAfterDisc || 0}}
+                                        </div>
+                                        <ng-container *ngIf="from != 'activity-details'">
+                                            <div>
+                                                <div class="d-flex align-items-center">
+                                                    <button class="btn btn-primary" (click)="showActivityItem(item,$event)">
+                                                        {{ 'VIEW' | translate }}
+                                                    </button>
+                                                    <div *ngIf="item.bFetchingActivityItem" class="spinner-border mx-2"></div>
+                                                </div>
+                                            </div>
+                                        </ng-container>
+                                    </div>
+
+                                </td>
                             </tr>
                         </tbody>
                     </table>
@@ -217,6 +244,30 @@
                 <div *ngIf="loading" class="spinner-border mx-auto"></div>
             </div>
         </div>
+        <div class="col-md-4">
+            <h3 class="fw-bolder mb-3">
+                <span>{{ "PAYMENTS" | translate }}</span>
+            </h3>
+            <div class="row fw-bold gy-1 d-flex flex-wrap py-5">
+                <div class="flex-equal me-5">
+                    <table class="table table-hover table-rounded table-striped border gs-7">
+                        <thead>
+                            <tr class="fw-bold fs-6 text-gray-400">
+                                <td class="text-muted">{{'METHOD' | translate}}</td>
+                                <td class="text-muted">{{'AMOUNT' | translate}}</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let item of transaction.aPayments">
+                                <td>{{item.sMethod}}</td>
+                                <td>{{item.nAmount || 0}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
     </div>
     <div class="card-footer">
         <button class="btn btn-secondary cancel ml-auto" (click)="close(false)">{{"TEXT_CANCEL" | translate}}</button>

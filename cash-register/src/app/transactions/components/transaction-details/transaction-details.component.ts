@@ -5,6 +5,8 @@ import { ApiService } from 'src/app/shared/service/api.service';
 import { DialogComponent, DialogService } from 'src/app/shared/service/dialog';
 import { PdfService } from 'src/app/shared/service/pdf.service';
 import * as _moment from 'moment';
+import { CustomerDetailsComponent } from 'src/app/shared/components/customer-details/customer-details.component';
+import { ActivityDetailsComponent } from 'src/app/shared/components/activity-details-dialog/activity-details.component';
 const moment = (_moment as any).default ? (_moment as any).default : _moment;
 
 @Component({
@@ -38,272 +40,8 @@ export class TransactionDetailsComponent implements OnInit {
   pdfGenerating: Boolean = false;
   downloadWithVATLoading: Boolean = false;
   businessDetails: any = {};
-  templateString = {
-    "barcodeheight": "10",
-    "barcodetext": false,
-    "barcodewidth": "auto",
-    "currency": "€",
-    "debug": false,
-    "defaultElement": "span",
-    "fontSize": "10px",
-    "margins": [5, 5],
-    "momentjs_dateformat": "",
-    "name": "Transaction with VAT",
-    "orientation": "landscape",
-    "paperSize": "A5",
-    "pixelsPerMm": "3.76",
-    "rotation": "0",
-    "layout": [
-      {
-        "row": [
-          {
-            "size": "4",
-            "html": "<img src=\"https://lirp.cdn-website.com/2568326e/dms3rep/multi/opt/Juwelier-Bos-208w.png\" />"
-          },
-          {
-            "size": 4,
-            "html": [
-              { "element": "span", "content": "[[oBusiness.sName]]" },
-              { "element": "span", "content": "[[oBusiness.sEmail]]" },
-              { "element": "span", "content": "[[oBusiness.oPhone.sMobile]]" },
-              { "element": "span", "content": "[[oBusiness.oPhone.sLandline]]" },
-              { "element": "span", "content": "<make function to combine address into single variable!!>" }
-
-            ],
-            "css": {
-              "text-align": "right"
-            }
-          },
-          {
-            "size": "4",
-            "html": [
-              { "element": "span", "content": "(iban)" }, { "element": "br", "content": "" },
-              { "element": "span", "content": "[[sInvoiceNumber]]" }, { "element": "br" },
-              { "element": "span", "content": "(coc number)" }
-            ],
-            "css": {
-              "text-align": "right"
-            }
-          }
-        ],
-        "css": {
-          "padding": [0, 0, 5, 0]
-        },
-        "section": "meta"
-      },
-      {
-        "row": [
-          {
-            "size": "12",
-            "float": "left",
-            "html": "Datum: [[dCreatedDate]]<br/>Bonnummer: [[sReceiptNumber]]"
-          }
-        ],
-        "css": {
-          "padding": [0, 0, 5, 0]
-        },
-        "section": "meta"
-      },
-      {
-        "row": [
-          {
-            "size": "12",
-            "float": "left",
-            "html": "[[__CREATED_BY]] [[oEmployee.sName]]"
-          }
-        ],
-        "css": {
-          "padding": [0, 0, 5, 0]
-        },
-        "section": "meta"
-      },
-      {
-        "row": [
-          { "size": 2, "html": "[[__ART_NUMBER]]" },
-          { "size": 1, "html": "[[__QUANTITY]]" },
-          { "size": 3, "html": "[[__DESCRIPTION]]" },
-          { "size": 2, "html": "[[__DISCOUNT]]" },
-          { "size": 2, "html": "[[__AMOUNT]]", "css": { "text-align": "right" } }
-        ],
-        "css": {
-          "font-weight": "bold",
-          "margin-bottom": "2mm"
-        }
-      },
-      {
-        "row": [
-          {
-            "size": "6",
-            "element": "table",
-            "htmlBefore": "<tr><th>Betalingen:</th><th></th></tr>",
-            "forEach": "aTransactionItems",
-            "html": "<tr><td>[[sMethod]]</td><td>(amount)</td></tr>"
-          },
-          {
-            "size": "6"
-          }
-        ],
-        "css": {
-          "padding": [3, 0, 0, 0]
-        },
-        "section": "payment"
-      },
-      {
-        "row": [
-          {
-            "size": 2,
-            "html": [
-              {
-                "element": "span",
-                "content": "[[sProductNumber]]"
-              }
-            ]
-          },
-          {
-            "size": 1,
-            "html": [
-              {
-                "element": "span",
-                "content": "[[nQuantity]]"
-              }
-            ]
-          },
-          {
-            "size": "5",
-            "html": [
-              {
-                "element": "span",
-                "content": "[[sProductName]]",
-                "css": {
-                  "margin": [0, 0, 1, 0]
-                }
-              }
-            ]
-          },
-          {
-            "size": 2,
-            "html": [
-              {
-                "element": "p",
-                "content": "€ [[nPriceIncVat|money]]"
-              }
-            ]
-          },
-          {
-            "size": 2,
-            "html": [
-              {
-                "element": "p",
-                "content": "€ [[nPriceIncVat|money]]"
-              }
-            ],
-            "css": {
-              "text-align": "right"
-            }
-          }
-        ],
-        "htmlBefore": "",
-        "htmlAfter": "",
-        "forEach": "aTransactionItems",
-        "section": "products",
-        "css": {
-          "margin-bottom": "2mm"
-        }
-      },
-      {
-        "row": [
-          {
-            "size": "12",
-            "html": "<hr/>"
-          }
-        ],
-        "section": "payment"
-      },
-      {
-        "row": [
-          {
-            "size": "6",
-            "html": [
-              {
-                "element": "h3",
-                "content": "Totaal"
-              }
-            ]
-          },
-          {
-            "size": "6",
-            "html": [
-              {
-                "element": "h3",
-                "content": "€ (total of transaction)",
-                "css": {
-                  "text-align": "right"
-                }
-              }
-            ]
-          }
-        ],
-        "css": {
-          "padding": [2, 0, 0, 0],
-          "flex": "1"
-        },
-        "section": "payment"
-      },
-      {
-        "row": [
-          {
-            "size": "6",
-            "element": "table",
-            "htmlBefore": "<tr><th>Betalingen:</th><th></th></tr>",
-            "forEach": "aPayments",
-            "html": "<tr><td>[[sMethod]]</td><td>(amount)</td></tr>"
-          },
-          {
-            "size": "6"
-          }
-        ],
-        "css": {
-          "padding": [3, 0, 0, 0]
-        },
-        "section": "payment"
-      },
-      {
-        "row": [
-          {
-            "size": "12",
-            "html": "<small><table><tr><td>TODO!</td><td>Ex. BTW</td><td>BTW</td><td>Totaal</td></tr><tr><td>0% BTW</td><td>€ 75,00</td><td>€ 0,00</td><td>€ 75,00</td></tr></table></small>"
-          }
-        ],
-        "css": {
-          "padding": [3, 0, 0, 0]
-        },
-        "section": "payment"
-      },
-      {
-        "row": [
-          {
-            "size": "12",
-            "html": "Spaarpunten! TODO!"
-          }
-        ],
-        "css": {
-          "padding": [3, 0, 0, 0]
-        }
-      },
-      {
-        "row": [
-          {
-            "size": "12",
-            "html": "Ruilen binnen 8 dagen op vertoon van deze bon.<br/>Dank voor uw bezoek."
-          }
-        ],
-        "css": {
-          "padding": [3, 0, 0, 0]
-        }
-      }
-    ]
-  }
-
+  ableToDownload: Boolean = false;
+  from !: string;
 
   constructor(
     private viewContainerRef: ViewContainerRef,
@@ -318,36 +56,40 @@ export class TransactionDetailsComponent implements OnInit {
   ngOnInit(): void {
     this.iBusinessId = localStorage.getItem("currentBusiness") || '';
     this.iLocationId = localStorage.getItem("currentLocation") || '';
-
     let dataObject = JSON.parse(JSON.stringify(this.transaction));
+    dataObject.aPayments.forEach((obj: any) => {
+      obj.dCreatedDate = moment(dataObject.dCreatedDate).format('DD-MM-yyyy hh:mm');
+    });
     dataObject.aTransactionItems = [];
-    this.transaction.aTransactionItems.forEach((item: any, index: number)=>{
-      if(!(item.oType?.eKind == 'discount' || item?.oType?.eKind == 'loyalty-points-discount')) {
+    this.transaction.aTransactionItems.forEach((item: any, index: number) => {
+      if (!(item.oType?.eKind == 'discount' || item?.oType?.eKind == 'loyalty-points-discount')) {
         dataObject.aTransactionItems.push(item);
       }
     })
     let language: any = localStorage.getItem('language')
     dataObject.total = 0;
     let total = 0, totalAfterDisc = 0, totalVat = 0, totalDiscount = 0, totalSavingPoints = 0;
-    dataObject.aTransactionItems.forEach((item: any, index: number)=>{
+    dataObject.aTransactionItems.forEach((item: any, index: number) => {
       let name = '';
-      if(item && item.oArticleGroupMetaData && item.oArticleGroupMetaData.oName && item.oArticleGroupMetaData.oName[language]) name = item?.oArticleGroupMetaData?.oName[language] + ' ';
+      if (item && item.oArticleGroupMetaData && item.oArticleGroupMetaData.oName && item.oArticleGroupMetaData.oName[language]) name = item?.oArticleGroupMetaData?.oName[language] + ' ';
       item.description = name;
-      if(item?.oBusinessProductMetaData?.sLabelDescription) item.description = item.description + item?.oBusinessProductMetaData?.sLabelDescription + ' ' + item?.sProductNumber;
+      if (item?.oBusinessProductMetaData?.sLabelDescription) item.description = item.description + item?.oBusinessProductMetaData?.sLabelDescription + ' ' + item?.sProductNumber;
       totalSavingPoints += item.nSavingsPoints;
       let disc = parseFloat(item.nDiscount);
       if(item.bPaymentDiscountPercent){ 
-        disc = (disc * parseFloat(item.nPriceIncVat)/100);
+        disc = (disc * parseFloat(item.nPriceIncVat)/(100 + parseFloat(item.nVatRate)));
         item.nDiscountToShow = disc;
       } else { item.nDiscountToShow = disc; }
-      item.priceAfterDiscount = (parseFloat(item.nPriceIncVat) -  parseFloat(item.nDiscountToShow));
-      item.totalPriceIncVat = parseFloat(item.nPriceIncVat) * parseFloat(item.nQuantity);
-      item.totalPriceIncVatAfterDisc = parseFloat(item.priceAfterDiscount) * parseFloat(item.nQuantity);
-      const vat = (item.nVatRate * item.priceAfterDiscount/100);
+      item.priceAfterDiscount = (parseFloat(item.nPaymentAmount) - parseFloat(item.nDiscountToShow));
+      item.nPriceIncVatAfterDiscount = (parseFloat(item.nPriceIncVat) - parseFloat(item.nDiscountToShow));
+      item.totalPaymentAmount = parseFloat(item.nPaymentAmount) * parseFloat(item.nQuantity);
+      item.totalPaymentAmountAfterDisc = parseFloat(item.priceAfterDiscount) * parseFloat(item.nQuantity);
+      item.bPrepayment = item?.oType?.bPrepayment || false;
+      const vat = (item.nVatRate * item.priceAfterDiscount/(100 + parseFloat(item.nVatRate)));
       item.vat = vat.toFixed(2);
       totalVat += vat;
-      total = total + item.totalPriceIncVat;
-      totalAfterDisc += item.totalPriceIncVatAfterDisc;
+      total = total + item.totalPaymentAmount;
+      totalAfterDisc += item.totalPaymentAmountAfterDisc;
       totalDiscount += disc;
       this.getRelatedTransactionItem(item?.iActivityItemId, item?._id, index)
     })
@@ -372,34 +114,38 @@ export class TransactionDetailsComponent implements OnInit {
       .subscribe(
         (result: any) => {
           this.businessDetails = result.data;
+          this.ableToDownload = true;
         })
   }
 
-  getRelatedTransactionItem(iActivityItemId: string, iTransactionItemId: string, index: number){
+  getRelatedTransactionItem(iActivityItemId: string, iTransactionItemId: string, index: number) {
     this.apiService.getNew('cashregistry', `/api/v1/transaction/item/activityItem/${iActivityItemId}?iBusinessId=${this.iBusinessId}&iTransactionItemId=${iTransactionItemId}`)
-    .subscribe(
-      (result: any) => {
-        this.transaction.aTransactionItems[index].related = result.data || [];
-      }, (error) => {
-        console.log(error);
-      })
+      .subscribe(
+        (result: any) => {
+          this.transaction.aTransactionItems[index].related = result.data || [];
+        }, (error) => {
+          console.log(error);
+        })
   }
 
-  getRelatedTransaction(iActivityId: string, iTransactionId: string){
+  getRelatedTransaction(iActivityId: string, iTransactionId: string) {
     const body = {
       iBusinessId: this.iBusinessId,
       iTransactionId: iTransactionId
     }
     this.apiService.postNew('cashregistry', '/api/v1/transaction/activity/' + iActivityId, body)
-    .subscribe(
-      (result: any) => {
-        this.transaction.related = result.data || [];
-        this.transaction.related.forEach((obj: any)=>{
-          this.transaction.aPayments = this.transaction.aPayments.concat(obj.aPayments);
+      .subscribe(
+        (result: any) => {
+          this.transaction.related = result.data || [];
+          this.transaction.related.forEach((obj: any) => {
+            obj.aPayments.forEach((obj: any) => {
+              obj.dCreatedDate = moment(obj.dCreatedDate).format('DD-MM-yyyy hh:mm');
+            });
+            this.transaction.aPayments = this.transaction.aPayments.concat(obj.aPayments);
+          })
+        }, (error) => {
+          console.log(error);
         })
-      }, (error) => {
-        console.log(error);
-      })
   }
 
   close(value: boolean) {
@@ -412,22 +158,6 @@ export class TransactionDetailsComponent implements OnInit {
 
   downloadWebOrder() {
     this.generatePDF(false);
-  }
-
-  createTemplate() {
-    const body = {
-      iBusinessId: this.iBusinessId,
-      iLocationId: localStorage.getItem('currentLocation'),
-      sName: 'Sample',
-      eType: this.transaction.eType,
-      template: this.templateString
-    }
-
-    this.apiService.postNew('cashregistry', '/api/v1/pdf/templates/create', body).subscribe((result: any) => {
-    }, (error) => {
-      this.loading = false;
-      console.log('printing error', error);
-    })
   }
 
   generatePDF(print: boolean): void {
@@ -490,6 +220,7 @@ export class TransactionDetailsComponent implements OnInit {
         // dataObject.totalDiscount = totalDiscount;
         // dataObject.totalSavingPoints = totalSavingPoints;
         // dataObject.dCreatedDate = moment(dataObject.dCreatedDate).format('DD-MM-yyyy hh:mm');
+
         this.pdfService.createPdf(JSON.stringify(result.data), this.transaction, filename, print, printData, this.iBusinessId, this.transaction?._id)
           .then(() => {
             this.downloadWithVATLoading = false;
@@ -573,6 +304,10 @@ export class TransactionDetailsComponent implements OnInit {
                 paymentAmount,
                 description: transactionItem.sDescription,
                 oBusinessProductMetaData: transactionItem.oBusinessProductMetaData,
+                sServicePartnerRemark: transactionItem.sServicePartnerRemark,
+                eActivityItemStatus: transactionItem.eActivityItemStatus,
+                eEstimatedDateAction: transactionItem.eEstimatedDateAction,
+                bGiftcardTaxHandling: transactionItem.bGiftcardTaxHandling,
                 open: true,
               });
             }
@@ -597,5 +332,26 @@ export class TransactionDetailsComponent implements OnInit {
         console.error(error)
       }
     );
+  }
+
+  openCustomer(customer: any) {
+    this.dialogService.openModal(CustomerDetailsComponent, 
+      { cssClass: "modal-xl position-fixed start-0 end-0", context: { customer: customer, mode: 'details', from:'transactions' } }).instance.close.subscribe(result => {  });
+  }
+
+  async showActivityItem(activityItem: any, event:any) {
+    const oBody = {
+      iBusinessId: this.iBusinessId,
+    }
+    activityItem.bFetchingActivityItem = true;
+    event.target.disabled = true;
+    const _oActivityitem: any = await this.apiService.postNew('cashregistry', `/api/v1/activities/items/${activityItem.iActivityItemId}`, oBody).toPromise();
+    const oActivityItem = _oActivityitem?.data[0]?.result[0];
+    activityItem.bFetchingActivityItem = false;
+    event.target.disabled = false;
+    this.dialogService.openModal(ActivityDetailsComponent, { cssClass: 'w-fullscreen', context: { activity: oActivityItem, items: true, from: 'transaction-details' } })
+      .instance.close.subscribe((result: any) => {
+        
+      });
   }
 }
