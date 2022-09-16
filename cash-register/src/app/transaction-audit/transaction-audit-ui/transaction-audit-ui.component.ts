@@ -39,10 +39,12 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
   aWorkStation: any = [];
   aEmployee: any = [];
   aPaymentMethods: any = [];
+  aDayClosure: any = [];
 
   closingDayState: boolean = false;
 
   closeSubscription!: Subscription;
+  dayClosureListSubscription !: Subscription;
 
   statisticsData$: any;
   businessDetails: any = {};
@@ -51,10 +53,12 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
   statisticFilter = {
     isArticleGroupLevel: true,
     isProductLevel: false,
+    dFromState: new Date(new Date().setHours(0, 0, 0)),
+    dToState: new Date(new Date().setHours(23, 59, 59))
   };
   filterDates = {
-    endDate: new Date(new Date().setHours(23, 59, 59)),
     startDate: new Date(new Date().setHours(0, 0, 0)),
+    endDate: new Date(new Date().setHours(23, 59, 59)),
   };
   bIsArticleGroupLevel: boolean = true; // Could be Article-group level or product-level (if false then article-group mode)
   bIsSupplierMode: boolean = true; // could be Business-owner-mode or supplier-mode (if true then supplier-mode)
@@ -93,6 +97,7 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
   sCurrentLocation: any;
   sCurrentWorkstation: any;
   pdfGenerationInProgress: boolean = false;
+  bShowProperty: boolean = false;
 
   groupingHelper(item: any) {
     return item.child[0];
@@ -229,7 +234,7 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
     this.getWorkstations();
     this.getEmployees();
     this.getPaymentMethods();
-    this.fetchCurrentStatisticDocument();
+    if (this.iStatisticId) this.fetchCurrentStatisticDocument();
     // this.fetchStatisticDocument();
   }
 
@@ -568,13 +573,16 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
     this.location.back()
   }
   onDropdownItemSelected(parent: View, child1: ViewMenuChild, child2: ChildChild) {
+    console.log('onDropdownItemSelected: ', parent, child1, child2);
+    this.bShowProperty = false;
     this.sOptionMenu = {
       parent,
       child1,
       child2,
     }
-    this.optionMenu = parent.sValue.toLowerCase().trim()
-    this.sSelectedOptionMenu = `${parent.sKey}->${child1.sKey}->${child2.sKey}`
+    this.optionMenu = parent.sValue.toLowerCase().trim();
+    this.sSelectedOptionMenu = `${parent.sKey}->${child1.sKey}->${child2.sKey}`;
+    if (child2?.sValue == 'REVENUE_PER' || child2?.sValue == "SPECIFIC") this.bShowProperty = true;
     const eDisplayMethod = child2.data?.displayMethod || null
     const sModeFilter = child2.data?.modeFilter || null
     const sLevelFilter = child2.data?.levelFilter || null
@@ -625,7 +633,6 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
       iBusinessId: this.iBusinessId,
     }
     this.apiService.postNew('cashregistry', `/api/v1/statistics/get`, oBody).subscribe((result: any) => {
-      console.log(result);
       if(result?.message === 'success'){
         this.oStatisticsDocument = result?.data?.aStatistic[0];
         this.oCountings.nCashAtStart = this.oStatisticsDocument?.oCountings?.nCashAtStart || 0;
@@ -647,19 +654,23 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
         iWorkstationId: this.selectedWorkStation?._id,
         sTransactionType: this.optionMenu,
         sDisplayMethod: sDisplayMethod || this.sDisplayMethod.toString(),
-        dStartDate: this.filterDates.startDate,
-        dEndDate: this.filterDates.endDate,
+        // dStartDate: this.filterDates.startDate,
+        // dEndDate: this.filterDates.endDate,
+        dStartDate: this.statisticFilter.dFromState,
+        dEndDate: this.statisticFilter.dToState,
         aFilterProperty: this.aFilterProperty,
         bIsArticleGroupLevel: true,
-        bIsSupplierMode: true
+        bIsSupplierMode: true,
       },
     };
 
+    console.log('fetchStatisticDocument oBody: ', oBody);
     if (this.IsDynamicState) {
       oBody.oFilter.bIsArticleGroupLevel = this.bIsArticleGroupLevel;
       oBody.oFilter.bIsSupplierMode = this.bIsSupplierMode;
     }
 
+    if (!this.aDayClosure?.length) this.fetchDayClosureList();
     this.getStatisticSubscription = this.apiService
       .postNew('cashregistry', `/api/v1/statistics/get`, oBody)
       .subscribe(
@@ -1233,6 +1244,49 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
     this.fetchStatistics();
   }
 
+  /* For FROM State and TO State */
+  fetchDayClosureList() {
+    try {
+      this.aDayClosure = [];
+      // this.showLoader = true;
+      const oBody = {
+        iBusinessId: this.iBusinessId,
+        oFilter: {
+          iLocationId: this.iLocationId,
+          aLocationId: this?.aSelectedLocation?.length ? this.aSelectedLocation : [],
+          iWorkstationId: this.selectedWorkStation?._id,
+        },
+      }
+      this.dayClosureListSubscription = this.apiService.postNew('cashregistry', `/api/v1/statistics/day-closure/list`, oBody).subscribe((result: any) => {
+        if (result?.data?.length && result.data[0]?.result?.length) {
+          const _aDayClosure = result.data[0]?.result.map((oDayClosure: any) => {
+            const oData = { _id: oDayClosure?._id, dOpenDate: oDayClosure?.dOpenDate, dCloseDate: oDayClosure?.dCloseDate, isDisable: true }
+            return oData;
+          });
+          this.aDayClosure = _aDayClosure;
+        }
+        // this.showLoader = false;
+      }, (error) => {
+        console.log('error: ', error);
+        // this.showLoader = false;
+      })
+    } catch (error) {
+      console.log('error: ', error);
+    }
+  }
+
+  onStateChange(dDate: any, isOpenDate: boolean) {
+    const dFromStateTime = new Date(this.statisticFilter.dFromState).getTime();
+    const dToStateTime = new Date(this.statisticFilter.dToState).getTime();
+    
+    /* Disabling the date which is smaller than the dFromState in dToState */
+    for (const oDayClosure of this.aDayClosure) {
+      oDayClosure.isDisable = false;
+      const dDayClosureDateTime = new Date(oDayClosure.dCloseDate).getTime();
+      if (dFromStateTime > dDayClosureDateTime) oDayClosure.isDisable = true;
+    }    
+  }
+
   ngOnDestroy(): void {
     if (this.listBusinessSubscription)
       this.listBusinessSubscription.unsubscribe();
@@ -1250,6 +1304,7 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
       this.employeeListSubscription.unsubscribe();
     if (this.transactionItemListSubscription)
       this.transactionItemListSubscription.unsubscribe();
+    if (this.dayClosureListSubscription) this.dayClosureListSubscription.unsubscribe();
   }
 }
 

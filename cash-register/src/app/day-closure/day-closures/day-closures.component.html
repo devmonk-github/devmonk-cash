@@ -61,9 +61,9 @@
                         <tr *ngFor="let oDayClosure of aDayClosure | paginate: paginationConfig; let i = index; ">
                             <td scope="row">{{oDayClosure?.dOpenDate | date: 'yyyy-MM-dd HH:mm'}}</td>
                             <td>{{oDayClosure?.dCloseDate | date: 'yyyy-MM-dd HH:mm' }}</td>
-                            <td>Cash is coming</td>
-                            <td>Cash in hands</td>
-                            <td>Skimmed</td>
+                            <td>{{oDayClosure?.oCountings?.nCashCounted}}</td>
+                            <td>{{oDayClosure?.oCountings?.nCashRemain}}</td>
+                            <td>{{oDayClosure?.oCountings?.nSkim}}</td>
 
                             <td>
                                 <button class="btn btn-primary" (click)="goToView(oDayClosure._id, oDayClosure?.dOpenDate, oDayClosure?.dCloseDate)">
