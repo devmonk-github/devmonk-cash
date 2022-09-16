@@ -81,6 +81,7 @@ export class ActivityDetailsComponent implements OnInit {
   supplier: any;
   supplierOptions: Array<any> = [];
   suppliersList: Array<any> = [];
+  bFetchingTransaction: boolean = false;
 
   constructor(
     private viewContainerRef: ViewContainerRef,
@@ -445,7 +446,20 @@ export class ActivityDetailsComponent implements OnInit {
 
 
   // Function for show transaction details
-  showTransaction(transaction: any) {
+  async showTransaction(transactionItem: any, event:any) {
+    const oBody = {
+      iBusinessId: this.iBusinessId,
+      oFilterBy: {
+        _id: transactionItem.iTransactionId
+      }
+    }
+    transactionItem.bFetchingTransaction = true;
+    event.target.disabled = true;
+    const _oTransaction: any = await this.apiService.postNew('cashregistry', `/api/v1/transaction/cashRegister`, oBody).toPromise();
+    const transaction = _oTransaction?.data?.result[0];
+    transactionItem.bFetchingTransaction = false;
+    event.target.disabled = false;
+
     this.dialogService.openModal(TransactionDetailsComponent, { cssClass: "modal-xl", context: { transaction: transaction, eType: 'cash-register-revenue', from: 'activity-details' } })
       .instance.close.subscribe(
         (res: any) => {

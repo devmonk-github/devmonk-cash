@@ -178,32 +178,33 @@
                                 </div>
                                 <ng-container>
                                     <!-- PROPERTIES -->
-                                    <div class="col-md-3">
+                                    <div class="col-md-6">
                                         <label class="fs-6 form-label fw-bolder text-dark">{{ "PROPERTIES" |
                                             translate}}</label>
-                                        <div class="overflow-scroll py-1 h-150px">
-
-                                            <div class="d-flex" *ngFor="let property of aProperty; let pIndex = index">
-                                                <div class="w-100"
-                                                    *ngIf="propertyOptions[property.iPropertyId]?.length">
-                                                    <ng-select [multiple]="true"
-                                                        [items]="propertyOptions[property.iPropertyId]"
-                                                        [(ngModel)]="selectedProperties[property.iPropertyId]"
-                                                        name="propertyId" bindValue="sName" bindLabel="sName"
-                                                        placeholder="Select"
-                                                        (click)="onProperties(property.iPropertyId)" required
-                                                        [closeOnSelect]="false">
-
-                                                        <ng-template ng-option-tmp let-item="item" let-item$="item$"
-                                                            let-index="index">
-                                                            <input id="item-{{index}}" type="checkbox"
-                                                                name="item-{{index}}" [ngModel]="item$.selected" />
-                                                            {{item.sName}}
-                                                        </ng-template>
-
-                                                    </ng-select>
-
+                                        <div class="overflow-scroll py-1 h-200px">
+                    
+                                            <div *ngFor="let property of aProperty; let pIndex = index">
+                                                <div class="row align-items-center">
+                                                    <div class="col-md-4" >
+                                                        <div>{{property?.sPropertyName}}</div>
+                                                    </div>
+                                                    <div class="col-md-8">
+                                                        <div *ngIf="propertyOptions[property.iPropertyId]?.length">
+                                                            <ng-select class="w-100" [multiple]="true" [items]="propertyOptions[property.iPropertyId]"
+                                                                [(ngModel)]="selectedProperties[property.iPropertyId]" name="propertyId" bindValue="sName" bindLabel="sName"
+                                                                placeholder="Select" (click)="onProperties(property.iPropertyId)" required [closeOnSelect]="false">
+                                                    
+                                                                <ng-template ng-option-tmp let-item="item" let-item$="item$" let-index="index">
+                                                                    <input id="item-{{index}}" type="checkbox" name="item-{{index}}" [ngModel]="item$.selected" />
+                                                                    {{item.sName}}
+                                                                </ng-template>
+                                                    
+                                                            </ng-select>
+                                                    
+                                                        </div>
+                                                    </div>
                                                 </div>
+                                                <br>
                                             </div>
                                         </div>
                                     </div>
