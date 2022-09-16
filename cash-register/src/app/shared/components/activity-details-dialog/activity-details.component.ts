@@ -98,7 +98,7 @@ export class ActivityDetailsComponent implements OnInit {
     // this.activity = this.dialogRef.context.activity;
     // this.items = this.dialogRef.context.items;
     // if (this.items.length) {
-    console.log(this.activity);
+    // console.log(this.activity);
     if (this.activity) {
       if (this.activity?.activityitems?.length) {
         this.activityItems = this.activity.activityitems;
