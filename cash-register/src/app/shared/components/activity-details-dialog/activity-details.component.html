@@ -389,7 +389,7 @@
                                                         <th>Receipt number</th>
                                                         <th>Created Date</th>
                                                         <th>Amount</th>
-                                                        <ng-container>
+                                                        <ng-container *ngIf="from != 'transaction-details'">
                                                             <th>{{ 'ACTION' | translate }}</th>    
                                                         </ng-container>
                                                     </tr>
@@ -399,12 +399,14 @@
                                                         <td>{{receipt.sTransactionNumber}}</td>
                                                         <td>{{receipt.dCreatedDate | date: 'medium'}}</td>
                                                         <td>{{receipt.nPaymentAmount | currency: '€'}}</td>
-                                                        <!-- *ngIf="from === 'customer'" -->
-                                                        <ng-container >
+                                                        <ng-container *ngIf="from != 'transaction-details'">
                                                             <td>
-                                                                <button class="btn btn-primary" (click)="showTransaction(receipt)">
-                                                                    {{ 'VIEW' | translate }}
-                                                                </button>
+                                                                <div class="d-flex align-items-center">
+                                                                    <button class="btn btn-primary" (click)="showTransaction(receipt, $event)">
+                                                                        {{ 'VIEW' | translate }}
+                                                                    </button>
+                                                                    <div *ngIf="receipt.bFetchingTransaction" class="spinner-border mx-2"></div>
+                                                                </div>
                                                             </td>
                                                         </ng-container>
                                                     </tr>
