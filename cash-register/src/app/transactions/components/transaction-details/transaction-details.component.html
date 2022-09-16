@@ -215,7 +215,24 @@
                                 <td>{{item.nQuantity}}</td>
                                 <td>{{item.nDiscountToShow}}</td>
                                 <td>{{item.nVatRate || 0}} %</td>
-                                <td>{{item.totalPriceIncVatAfterDisc || 0}}</td>
+                                <td>
+                                    <div>
+                                        <div>
+                                            {{item.totalPriceIncVatAfterDisc || 0}}
+                                        </div>
+                                        <ng-container *ngIf="from != 'activity-details'">
+                                            <div>
+                                                <div class="d-flex align-items-center">
+                                                    <button class="btn btn-primary" (click)="showActivityItem(item,$event)">
+                                                        {{ 'VIEW' | translate }}
+                                                    </button>
+                                                    <div *ngIf="item.bFetchingActivityItem" class="spinner-border mx-2"></div>
+                                                </div>
+                                            </div>
+                                        </ng-container>
+                                    </div>
+
+                                </td>
                             </tr>
                         </tbody>
                     </table>

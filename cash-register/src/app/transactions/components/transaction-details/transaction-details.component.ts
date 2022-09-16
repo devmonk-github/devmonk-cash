@@ -6,6 +6,7 @@ import { DialogComponent, DialogService } from 'src/app/shared/service/dialog';
 import { PdfService } from 'src/app/shared/service/pdf.service';
 import * as _moment from 'moment';
 import { CustomerDetailsComponent } from 'src/app/shared/components/customer-details/customer-details.component';
+import { ActivityDetailsComponent } from 'src/app/shared/components/activity-details-dialog/activity-details.component';
 const moment = (_moment as any).default ? (_moment as any).default : _moment;
 
 @Component({
@@ -335,5 +336,21 @@ export class TransactionDetailsComponent implements OnInit {
   openCustomer(customer: any) {
     this.dialogService.openModal(CustomerDetailsComponent, 
       { cssClass: "modal-xl position-fixed start-0 end-0", context: { customer: customer, mode: 'details', from:'transactions' } }).instance.close.subscribe(result => {  });
+  }
+
+  async showActivityItem(activityItem: any, event:any) {
+    const oBody = {
+      iBusinessId: this.iBusinessId,
+    }
+    activityItem.bFetchingActivityItem = true;
+    event.target.disabled = true;
+    const _oActivityitem: any = await this.apiService.postNew('cashregistry', `/api/v1/activities/items/${activityItem.iActivityItemId}`, oBody).toPromise();
+    const oActivityItem = _oActivityitem?.data[0]?.result[0];
+    activityItem.bFetchingActivityItem = false;
+    event.target.disabled = false;
+    this.dialogService.openModal(ActivityDetailsComponent, { cssClass: 'w-fullscreen', context: { activity: oActivityItem, items: true, from: 'transaction-details' } })
+      .instance.close.subscribe((result: any) => {
+        
+      });
   }
 }

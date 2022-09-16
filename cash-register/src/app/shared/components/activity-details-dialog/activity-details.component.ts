@@ -456,11 +456,9 @@ export class ActivityDetailsComponent implements OnInit {
     transactionItem.bFetchingTransaction = true;
     event.target.disabled = true;
     const _oTransaction: any = await this.apiService.postNew('cashregistry', `/api/v1/transaction/cashRegister`, oBody).toPromise();
-    console.log(_oTransaction);
     const transaction = _oTransaction?.data?.result[0];
     transactionItem.bFetchingTransaction = false;
     event.target.disabled = false;
-    console.log(transaction);
 
     this.dialogService.openModal(TransactionDetailsComponent, { cssClass: "modal-xl", context: { transaction: transaction, eType: 'cash-register-revenue', from: 'activity-details' } })
       .instance.close.subscribe(
