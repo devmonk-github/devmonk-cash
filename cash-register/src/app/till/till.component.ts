@@ -1004,7 +1004,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   assignAllAmount(index: number) {
-    this.payMethods[index].amount = this.getTotals('price');
+    this.payMethods[index].amount = -(this.getUsedPayMethods(true) - this.getTotals('price'));
     this.changeInPayment();
     this.createTransaction();
   }

@@ -81,6 +81,7 @@ export class ActivityDetailsComponent implements OnInit {
   supplier: any;
   supplierOptions: Array<any> = [];
   suppliersList: Array<any> = [];
+  bFetchingTransaction: boolean = false;
 
   constructor(
     private viewContainerRef: ViewContainerRef,
@@ -97,7 +98,7 @@ export class ActivityDetailsComponent implements OnInit {
     // this.activity = this.dialogRef.context.activity;
     // this.items = this.dialogRef.context.items;
     // if (this.items.length) {
-    console.log(this.activity);
+    // console.log(this.activity);
     if (this.activity) {
       if (this.activity?.activityitems?.length) {
         this.activityItems = this.activity.activityitems;
@@ -405,7 +406,7 @@ export class ActivityDetailsComponent implements OnInit {
 
   fetchTransactionItems() {
     this.loading = true;
-    this.apiService.postNew('cashregistry', `/api/v1/activities/items/${this.activity._id}`, this.requestParams).subscribe((result: any) => {
+    this.apiService.postNew('cashregistry', `/api/v1/activities/activity-item/${this.activity._id}`, this.requestParams).subscribe((result: any) => {
       this.activityItems = result.data[0].result;
       if (this.activityItems.length == 1) this.collapsedBtn = true;
       this.transactions = [];
@@ -445,7 +446,20 @@ export class ActivityDetailsComponent implements OnInit {
 
 
   // Function for show transaction details
-  showTransaction(transaction: any) {
+  async showTransaction(transactionItem: any, event:any) {
+    const oBody = {
+      iBusinessId: this.iBusinessId,
+      oFilterBy: {
+        _id: transactionItem.iTransactionId
+      }
+    }
+    transactionItem.bFetchingTransaction = true;
+    event.target.disabled = true;
+    const _oTransaction: any = await this.apiService.postNew('cashregistry', `/api/v1/transaction/cashRegister`, oBody).toPromise();
+    const transaction = _oTransaction?.data?.result[0];
+    transactionItem.bFetchingTransaction = false;
+    event.target.disabled = false;
+
     this.dialogService.openModal(TransactionDetailsComponent, { cssClass: "modal-xl", context: { transaction: transaction, eType: 'cash-register-revenue', from: 'activity-details' } })
       .instance.close.subscribe(
         (res: any) => {
