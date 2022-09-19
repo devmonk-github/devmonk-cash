@@ -249,8 +249,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   getTotals(type: string): number {
-    this.amountDefined = this.payMethods.find((pay) => pay.amount);
-
+    this.amountDefined = this.payMethods.find((pay) => pay.amount || pay.amount?.toString() === '0');
     if (!type) {
       return 0
     }
