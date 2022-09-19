@@ -258,6 +258,7 @@ export class TillService {
           tItem1.oType.eTransactionType = 'cash-registry';
           tItem1.oType.eKind = 'loyalty-points-discount';
           tItem1.nPaymentAmount = -1 * nDiscount;
+          tItem1.nRevenueAmount = -1 * nDiscount;
           tItem1.nRedeemedLoyaltyPoints = nDiscount;
           body.transactionItems.push(tItem1);
           i.nDiscount += nDiscount;

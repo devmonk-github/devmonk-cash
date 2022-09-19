@@ -406,7 +406,7 @@ export class ActivityDetailsComponent implements OnInit {
 
   fetchTransactionItems() {
     this.loading = true;
-    this.apiService.postNew('cashregistry', `/api/v1/activities/items/${this.activity._id}`, this.requestParams).subscribe((result: any) => {
+    this.apiService.postNew('cashregistry', `/api/v1/activities/activity-item/${this.activity._id}`, this.requestParams).subscribe((result: any) => {
       this.activityItems = result.data[0].result;
       if (this.activityItems.length == 1) this.collapsedBtn = true;
       this.transactions = [];
