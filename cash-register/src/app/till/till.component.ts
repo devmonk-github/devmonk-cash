@@ -27,6 +27,8 @@ import { CustomerStructureService } from '../shared/service/customer-structure.s
 import { FiskalyService } from '../shared/service/fiskaly.service';
 import { PdfService } from '../shared/service/pdf.service';
 import { SupplierWarningDialogComponent } from './dialogs/supplier-warning-dialog/supplier-warning-dialog.component';
+import * as _moment from 'moment';
+const moment = (_moment as any).default ? (_moment as any).default : _moment;
 @Component({
   selector: 'app-till',
   templateUrl: './till.component.html',
@@ -80,6 +82,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   bDayStateChecking: boolean = false;
   dOpenDate: any = '';
   iWorkstationId!: any;
+  transaction: any = {};
   aProjection: Array<any> = [
     'oName',
     'sEan',
@@ -513,6 +516,36 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     return isGoldForPayment;
   }
 
+  getRelatedTransactionItem(iActivityItemId: string, iTransactionItemId: string, index: number) {
+    this.apiService.getNew('cashregistry', `/api/v1/transaction/item/activityItem/${iActivityItemId}?iBusinessId=${this.business._id}&iTransactionItemId=${iTransactionItemId}`)
+      .subscribe(
+        (result: any) => {
+          this.transaction.aTransactionItems[index].related = result.data || [];
+        }, (error) => {
+          console.log(error);
+        })
+  }
+
+  getRelatedTransaction(iActivityId: string, iTransactionId: string) {
+    const body = {
+      iBusinessId: this.business._id,
+      iTransactionId: iTransactionId
+    }
+    this.apiService.postNew('cashregistry', '/api/v1/transaction/activity/' + iActivityId, body)
+      .subscribe(
+        (result: any) => {
+          this.transaction.related = result.data || [];
+          this.transaction.related.forEach((obj: any) => {
+            obj.aPayments.forEach((obj: any) => {
+              obj.dCreatedDate = moment(obj.dCreatedDate).format('DD-MM-yyyy hh:mm');
+            });
+            this.transaction.aPayments = this.transaction.aPayments.concat(obj.aPayments);
+          })
+        }, (error) => {
+          console.log(error);
+        })
+  }
+
   createTransaction(): void {
     this.locationId = localStorage.getItem('currentLocation') || null;
     const isGoldForCash = this.checkUseForGold();
@@ -561,7 +594,12 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
               this.toastrService.show({ type: 'success', text: 'Transaction created.' });
               const { transaction, aTransactionItems } = data;
               transaction.aTransactionItems = aTransactionItems;
-              this.pdfService.generatePDF(transaction);
+              this.transaction = transaction;
+              this.transaction.aTransactionItems.forEach((item: any, index: number) => {
+                this.getRelatedTransactionItem(item?.iActivityItemId, item?._id, index)
+              })
+              this.getRelatedTransaction(this.transaction?.iActivityId, this.transaction?._id)
+              this.pdfService.generatePDF(this.transaction);
               this.updateFiskalyTransaction('FINISHED', body.payments);
               setTimeout(() => {
                 this.saveInProgress = false;
