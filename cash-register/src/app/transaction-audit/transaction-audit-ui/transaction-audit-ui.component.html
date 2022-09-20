@@ -41,26 +41,29 @@
 
                                         <!-- For Static, FROM-STATE to TO-STATE -->
                                         <div class="row mb-5" *ngIf="!IsDynamicState">
+
                                             <div class="col-md-6">
                                                 <label class="fs-6 form-label fw-bolder text-dark">{{'FROM_STATE' |
                                                     translate}}</label>
                                                 <ng-select class="form-control form-control-solid p-0" [(ngModel)]="statisticFilter.dFromState"
-                                                    [clearable]="false" (change)="onStateChange($event, true)">
+                                                    [clearable]="false" (change)="onStateChange($event, true, aDayClosure)">
                                                     <ng-option *ngFor="let oDayClosure of aDayClosure" [value]="oDayClosure.dOpenDate">
-                                                        {{oDayClosure?.dOpenDate | date: 'yyyy-MM-dd HH:mm'}}
+                                                        {{oDayClosure?.dOpenDate | date: 'yyyy-MM-dd HH:mm'}} | {{oDayClosure?.sWorkStationName}}
                                                     </ng-option>
                                                 </ng-select>
                                             </div>
+
                                             <div class="col-md-6">
                                                 <label class="fs-6 form-label fw-bolder text-dark">{{'TO_STATE' |
                                                     translate}}</label>
                                                 <ng-select class="form-control form-control-solid p-0" [(ngModel)]="statisticFilter.dToState"
-                                                    [clearable]="false" (change)="onStateChange($event, false)">
-                                                    <ng-option *ngFor="let oDayClosure of aDayClosure" [value]="oDayClosure.dCloseDate" [disabled]="oDayClosure.isDisable ? true : false">
-                                                        {{oDayClosure?.dCloseDate | date: 'yyyy-MM-dd HH:mm' }}
+                                                    [clearable]="false" (change)="onStateChange($event, false, aDayClosure)">
+                                                    <ng-option *ngFor="let oDayClosure of aDayClosure" [value]="oDayClosure.dCloseDate" [disabled]="oDayClosure?.isDisable ? true : false">
+                                                        {{oDayClosure?.dCloseDate | date: 'yyyy-MM-dd HH:mm' }} | {{oDayClosure?.sWorkStationName}}
                                                     </ng-option>
                                                 </ng-select>
                                             </div>
+
                                         </div>
 
                                 </div>
