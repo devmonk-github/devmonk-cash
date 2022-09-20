@@ -83,6 +83,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   dOpenDate: any = '';
   iWorkstationId!: any;
   transaction: any = {};
+  amountDefined: any;
   aProjection: Array<any> = [
     'oName',
     'sEan',
@@ -251,6 +252,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   getTotals(type: string): number {
+    this.amountDefined = this.payMethods.find((pay) => pay.amount || pay.amount?.toString() === '0');
     if (!type) {
       return 0
     }
@@ -587,7 +589,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
             body.giftCards = this.appliedGiftCards;
           }
           body.oTransaction.iActivityId = this.iActivityId;
-          let result = body.transactionItems.map((a: any)=> a.iBusinessPartnerId);
+          let result = body.transactionItems.map((a: any) => a.iBusinessPartnerId);
           const uniq = [...new Set(_.compact(result))];
           this.apiService.postNew('cashregistry', '/api/v1/till/transaction', body)
             .subscribe((data: any) => {
@@ -618,7 +620,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   fetchBusinessPartnersProductCount(aBusinessPartnerId: any) {
-    if(!aBusinessPartnerId.length || 1 > aBusinessPartnerId.length) {
+    if (!aBusinessPartnerId.length || 1 > aBusinessPartnerId.length) {
       return;
     }
     var body = {
@@ -630,8 +632,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
         if (result && result.data) {
           const urls: any = [];
           result.data.forEach((element: any) => {
-            if(element.businessproducts > 10) {
-              urls.push({name: element.sName, iBusinessPartnerId: element._id});
+            if (element.businessproducts > 10) {
+              urls.push({ name: element.sName, iBusinessPartnerId: element._id });
             }
           });
           if (urls.length > 0) {
@@ -944,7 +946,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       iWorkstationId: this.iWorkstationId
     }
     this.apiService.postNew('cashregistry', `/api/v1/statistics/open/day-state`, oBody).subscribe((result: any) => {
-      if(result?.message==='success'){
+      if (result?.message === 'success') {
         this.bIsDayStateOpened = true;
         if (this.bIsDayStateOpened) this.fetchQuickButtons();
         this.toastrService.show({ type: 'success', text: `Day-state is open now` });
@@ -1006,12 +1008,9 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
           this.dOpenDate = result?.data?.oStatisticDetail?.dOpenDate;
 
           this.getSettingsSubscription = this.apiService.getNew('cashregistry', `/api/v1/settings/${this.business._id}`).subscribe((result: any) => {
-            
             this.settings = result;
-            
             let nDayClosurePeriodAllowed = 0;
-
-            if (this.settings?.sDayClosurePeriod && this.settings.sDayClosurePeriod === 'week'){
+            if (this.settings?.sDayClosurePeriod && this.settings.sDayClosurePeriod === 'week') {
               nDayClosurePeriodAllowed = 3600 * 24 * 7;
             } else {
               nDayClosurePeriodAllowed = 3600 * 24;
@@ -1026,7 +1025,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
           }, (error) => {
             console.log(error);
           })
-          
 
           // /* Show Close day state warning when Day-state is close from last 24hrs */
           // const nOpenTimeSecond = (new Date(this.dOpenDate).getTime());
@@ -1042,7 +1040,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   assignAllAmount(index: number) {
-    this.payMethods[index].amount = this.getTotals('price');
+    this.payMethods[index].amount = -(this.getUsedPayMethods(true) - this.getTotals('price'));
     this.changeInPayment();
     this.createTransaction();
   }
@@ -1098,9 +1096,9 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       localStorage.removeItem('tssId');
     }
   }
-  
+
   openWarningPopup(urls: any): void {
-    this.dialogService.openModal(SupplierWarningDialogComponent, {cssClass: 'modal-lg', context: {urls} })
+    this.dialogService.openModal(SupplierWarningDialogComponent, { cssClass: 'modal-lg', context: { urls } })
       .instance.close.subscribe((data) => {
         console.log(data);
       })

@@ -98,7 +98,7 @@ export class ActivityDetailsComponent implements OnInit {
     // this.activity = this.dialogRef.context.activity;
     // this.items = this.dialogRef.context.items;
     // if (this.items.length) {
-    console.log(this.activity);
+    // console.log(this.activity);
     if (this.activity) {
       if (this.activity?.activityitems?.length) {
         this.activityItems = this.activity.activityitems;
@@ -406,7 +406,7 @@ export class ActivityDetailsComponent implements OnInit {
 
   fetchTransactionItems() {
     this.loading = true;
-    this.apiService.postNew('cashregistry', `/api/v1/activities/items/${this.activity._id}`, this.requestParams).subscribe((result: any) => {
+    this.apiService.postNew('cashregistry', `/api/v1/activities/activity-item/${this.activity._id}`, this.requestParams).subscribe((result: any) => {
       this.activityItems = result.data[0].result;
       if (this.activityItems.length == 1) this.collapsedBtn = true;
       this.transactions = [];
