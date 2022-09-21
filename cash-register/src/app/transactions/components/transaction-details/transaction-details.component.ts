@@ -220,7 +220,370 @@ export class TransactionDetailsComponent implements OnInit {
         // dataObject.totalDiscount = totalDiscount;
         // dataObject.totalSavingPoints = totalSavingPoints;
         // dataObject.dCreatedDate = moment(dataObject.dCreatedDate).format('DD-MM-yyyy hh:mm');
-
+        // console.log(this.transaction)
+        result.data = {
+          "bReadOnly": true,
+          "margins": [
+            5,
+            5
+          ],
+          "layout": [
+            // {
+            //   "row": [
+            //     {
+            //       "size": "4",
+            //       "html": "<img src=\"https://lirp.cdn-website.com/2568326e/dms3rep/multi/opt/Juwelier-Bos-208w.png\" />"
+            //     },
+            //     {
+            //       "size": 4,
+            //       "html": [
+            //         {
+            //           "element": "span",
+            //           "content": "[[businessDetails.sName]]<br/>"
+            //         },
+            //         {
+            //           "element": "span",
+            //           "content": "[[businessDetails.sEmail]]<br/>"
+            //         },
+            //         {
+            //           "element": "span",
+            //           "content": "[[businessDetails.oPhone.sMobile]]<br/>"
+            //         },
+            //         {
+            //           "element": "span",
+            //           "content": "[[oBusiness.oPhone.sLandline]]<br/>"
+            //         },
+            //         {
+            //           "element": "span",
+            //           "content": "[[businessDetails.aLocation.oAddress.street]]"
+            //         }
+            //       ],
+            //       "css": {
+            //         "text-align": "right"
+            //       }
+            //     },
+            //     {
+            //       "size": "4",
+            //       "html": [
+            //         {
+            //           "element": "span",
+            //           "content": "[[businessDetails.aBankDetails.sBankAccountNumber]]<br/>"
+            //         },
+            //         {
+            //           "element": "span",
+            //           "content": "[[businessDetails.aBankDetails.sAccountHolder]]<br/>"
+            //         },
+            //         {
+            //           "element": "span",
+            //           "content": "[[sInvoiceNumber]]<br/>"
+            //         },
+            //         {
+            //           "element": "span",
+            //           "content": "[[oCustomer.sCocNumber]]<br/>"
+            //         }
+            //       ],
+            //       "css": {
+            //         "text-align": "right"
+            //       }
+            //     }
+            //   ],
+            //   "css": {
+            //     "padding": [
+            //       0,
+            //       0,
+            //       5,
+            //       0
+            //     ]
+            //   },
+            //   "section": "meta"
+            // },
+            // {
+            //   "row": [
+            //     {
+            //       "size": "12",
+            //       "float": "left",
+            //       "html": "Datum: [[dCreatedDate]]<br/>Bonnummer: [[sReceiptNumber]]<br/>Transaction number: [[sNumber]]"
+            //     }
+            //   ],
+            //   "css": {
+            //     "padding": [
+            //       0,
+            //       0,
+            //       5,
+            //       0
+            //     ]
+            //   },
+            //   "section": "meta"
+            // },
+            // {
+            //   "row": [
+            //     {
+            //       "size": "12",
+            //       "float": "left",
+            //       "html": "[[__CREATED_BY]] [[oEmployee.sName]]"
+            //     }
+            //   ],
+            //   "css": {
+            //     "padding": [
+            //       0,
+            //       0,
+            //       5,
+            //       0
+            //     ]
+            //   },
+            //   "section": "meta"
+            // },
+            // {
+            //   "row": [
+            //     {
+            //       "size": 1,
+            //       "html": "[[__QUANTITY]]"
+            //     },
+            //     {
+            //       "size": 4,
+            //       "html": "[[__DESCRIPTION]]"
+            //     },
+            //     {
+            //       "size": 2,
+            //       "html": "[[__VAT]]"
+            //     },
+            //     {
+            //       "size": 2,
+            //       "html": "[[__DISCOUNT]]"
+            //     },
+            //     {
+            //       "size": 1,
+            //       "html": "[[__SAVINGS_POINTS]]"
+            //     },
+            //     {
+            //       "size": 2,
+            //       "html": "[[__AMOUNT]]",
+            //       "css": {
+            //         "text-align": "right"
+            //       }
+            //     }
+            //   ],
+            //   "css": {
+            //     "font-weight": "bold",
+            //     "margin-bottom": "2mm"
+            //   }
+            // },
+            {
+              "row": [
+                {
+                  "size": 1,
+                  "html": "[[nQuantity]]"
+                },
+                {
+                  "size": 4,
+                  "html": [
+                    {
+                      "element": "span",
+                      "content": "[[description]]<br/>"
+                    },
+                    {
+                      "element": "span",
+                      "content": "Original amount: [[nPriceIncVatAfterDiscount]]<br/>"
+                    },
+                    {
+                      "element": "span",
+                      "content": "Already paid:<br/>[[sTransactionNumber]]<br/>",
+                      "row": [
+                        {
+                          "size": 4,
+                          "html": [
+                            {
+                              "element": "span",
+                              "content": "[[sTransactionNumber]] | [[nPaymentAmount]] <br/>"
+                            },
+                          ],
+                          "css": {
+                            "text-align": "left"
+                          }
+                        }
+                      ],
+                      "forEach": "related",
+                      "section": "items"
+                    },
+                    {
+                      "element": "span",
+                      "content": " | [[totalPaymentAmountAfterDisc]]<br/>"
+                    }
+                  ],
+                  
+                },
+                {
+                  "size": 2,
+                  "html": "[[nVatRate]]%([[vat|money]])"
+                },
+                {
+                  "size": 2,
+                  "html": "[[nDiscountToShow|money]]"
+                },
+                {
+                  "size": 1,
+                  "html": "[[nSavingsPoints]]"
+                },
+                {
+                  "size": 2,
+                  "html": "([[totalPaymentAmount|money]])[[totalPaymentAmountAfterDisc|money]]",
+                  "css": {
+                    "text-align": "right"
+                  }
+                },
+              ],
+              "forEach": "aTransactionItems",
+              "section": "items"
+            },
+            // {
+            //   "row": [
+            //     {
+            //       "size": "12",
+            //       "html": "<hr/>"
+            //     }
+            //   ],
+            //   "section": "items"
+            // },
+            // {
+            //   "row": [
+            //     {
+            //       "size": "5",
+            //       "html": [
+            //         {
+            //           "element": "h3",
+            //           "content": "Totaal"
+            //         }
+            //       ]
+            //     },
+            //     {
+            //       "size": 2,
+            //       "html": "[[totalVat|money]]"
+            //     },
+            //     {
+            //       "size": 2,
+            //       "html": "[[totalDiscount|money]]"
+            //     },
+            //     {
+            //       "size": 1,
+            //       "html": "[[totalSavingPoints]]"
+            //     },
+            //     {
+            //       "size": 2,
+            //       "html": "([[total|money]])[[totalAfterDisc|money]]",
+            //       "css": {
+            //         "text-align": "right"
+            //       }
+            //     }
+            //   ],
+            //   "css": {
+            //     "padding": [
+            //       2,
+            //       0,
+            //       0,
+            //       0
+            //     ],
+            //     "flex": "1"
+            //   },
+            //   "section": "payments"
+            // },
+            // {
+            //   "row": [
+            //     {
+            //       "size": "12",
+            //       "html": "<hr/>"
+            //     }
+            //   ],
+            //   "section": "payments"
+            // },
+            // {
+            //   "row": [
+            //     {
+            //       "size": "6",
+            //       "element": "h2",
+            //       "concent": "Betalingen"
+            //     }
+            //   ],
+            //   "section": "payments"
+            // },
+            // {
+            //   "row": [
+            //     {
+            //       "size": "3",
+            //       "html": "<strong>Methode</strong>"
+            //     },
+            //     {
+            //       "size": "3",
+            //       "html": "<strong>Bedrag</strong>",
+            //       "css": {
+            //         "text-align": "left"
+            //       }
+            //     },
+            //     {
+            //       "size": "6"
+            //     }
+            //   ],
+            //   "section": "payments"
+            // },
+            // {
+            //   "row": [
+            //     {
+            //       "size": "3",
+            //       "html": "<span>[[sMethod]] ([[dCreatedDate]])</span>"
+            //     },
+            //     {
+            //       "size": "3",
+            //       "html": "<span>[[nAmount|money]]</span>",
+            //       "css": {
+            //         "text-align": "left"
+            //       }
+            //     },
+            //     {
+            //       "size": "6"
+            //     }
+            //   ],
+            //   "forEach": "aPayments",
+            //   "section": "payments"
+            // },
+            // {
+            //   "row": [
+            //     {
+            //       "size": "12",
+            //       "html": "Ruilen binnen 8 dagen op vertoon van deze bon.<br/>Dank voor uw bezoek."
+            //     }
+            //   ],
+            //   "css": {
+            //     "padding": [
+            //       3,
+            //       0,
+            //       0,
+            //       0
+            //     ]
+            //   }
+            // }
+          ],
+          "eStatus": "y",
+          "_id": "62b414460e84216894b82e1a",
+          "iBusinessId": "6182a52f1949ab0a59ff4e7b",
+          "iLocationId": "623b6d840ed1002890334456",
+          "sName": "Sample",
+          "eType": "cash-register-revenue",
+          "barcodeheight": 10,
+          "barcodetext": false,
+          "barcodewidth": "auto",
+          "currency": "€",
+          "debug": false,
+          "defaultElement": "span",
+          "fontSize": "10px",
+          "momentjs_dateformat": null,
+          "name": "Transaction with VAT",
+          "orientation": "landscape",
+          "paperSize": "A5",
+          "pixelsPerMm": 3.76,
+          "rotation": 0,
+          "dCreatedDate": "2022-06-23T07:20:39.002Z",
+          "dUpdatedDate": "2022-06-23T07:20:39.002Z",
+          "__v": 0
+        };
         this.pdfService.createPdf(JSON.stringify(result.data), this.transaction, filename, print, printData, this.iBusinessId, this.transaction?._id)
           .then(() => {
             this.downloadWithVATLoading = false;

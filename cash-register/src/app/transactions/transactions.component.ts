@@ -104,7 +104,271 @@ export class TransactionsComponent implements OnInit {
 
     this.businessDetails._id = localStorage.getItem("currentBusiness");
     this.userType = localStorage.getItem("type");
-    this.loadTransaction();
+    // this.loadTransaction();
+    this.showTransaction({
+      "iBusinessId": "6182a52f1949ab0a59ff4e7b",
+      "iBusinessPartnerId": null,
+      "sNumber": "T2195-060922-1433",
+      "sInvoiceNumber": "0001929",
+      "eType": "cash-register-revenue",
+      "oCustomer": {
+        "oInvoiceAddress": {
+          "sStreet": "middlewerg",
+          "sHouseNumber": "9a",
+          "sPostalCode": "442001",
+          "sCity": "Asperen"
+        },
+        "oPhone": {
+          "bWhatsApp": true,
+          "sCountryCode": "+91",
+          "sMobile": "9970149807",
+          "sLandLine": "9970149807",
+          "sFax": ""
+        },
+        "bCounter": false,
+        "_id": "62420be55777d556346a9484",
+        "sFirstName": "Jolmer",
+        "sLastName": "Ekeren2",
+        "sPrefix": "Van",
+        "sGender": "male"
+      },
+      "sReceiptNumber": "0001929",
+      "dCreatedDate": "2022-09-06T12:33:31.685Z",
+      "eStatus": "y",
+      "eTransactionStatus": "inspection",
+      "iActivityId": "63173e1bb59f0f2c849b0443",
+      "aTransactionItems": [
+        {
+          "_id": "63173e1bb59f0f2c849b0446",
+          "oType": {
+            "bPrepayment": true,
+            "eTransactionType": "cash-registry",
+            "bRefund": false,
+            "eKind": "regular",
+            "bDiscount": false
+          },
+          "oBusinessProductMetaData": {
+            "bBestseller": false,
+            "bHasStock": false,
+            "bShowSuggestion": false,
+            "aImage": [],
+            "eOwnerShip": "possession",
+            "iSupplierId": "6275661d5732a79bf0e3f449",
+            "iBusinessPartnerId": "6275661d5732a79bf0e3f449",
+            "sLabelDescription": "p888888889 QQQ",
+            "aProperty": [],
+            "oName": {
+              "en": "p8-89",
+              "nl": "p8-89",
+              "de": "p8-89",
+              "fr": "p8-89"
+            },
+            "eGender": "female"
+          },
+          "aImage": [],
+          "nQuantity": 1,
+          "nAppliedStock": 0,
+          "bPaymentDiscount": false,
+          "bPaymentDiscountPercent": false,
+          "bImported": false,
+          "bIsInvoiced": false,
+          "eStatus": "y",
+          "sProductName": "p8-89",
+          "sProductNumber": "P8-89",
+          "nPriceIncVat": 80,
+          "nPurchasePrice": 40,
+          "bEntryMethodCustomerValue": null,
+          "nVatRate": 21,
+          "nReceivedQuantity": null,
+          "sArticleNumber": "00017021128",
+          "nMargin": 3,
+          "nExtraLabel": null,
+          "iBusinessId": "6182a52f1949ab0a59ff4e7b",
+          "iArticleGroupId": "6317229263b0661dc4920031",
+          "iArticleGroupOriginalId": "6317229263b0661dc4920031",
+          "oArticleGroupMetaData": {
+            "aProperty": [
+              {
+                "iPropertyId": "61160712ae3cbb7453177f98",
+                "sPropertyName": "Category",
+                "iPropertyOptionId": "61f01aa45fc7504de957b258",
+                "sCode": "WA",
+                "sPropertyOptionName": "WATCH"
+              },
+              {
+                "iPropertyId": "6261a5f76d3ec230f0886eee",
+                "sPropertyName": "Watch case material",
+                "iPropertyOptionId": "62e8bd09c2910b2073515bac",
+                "sCode": "ME",
+                "sPropertyOptionName": "METAL"
+              }
+            ],
+            "sCategory": "",
+            "sSubCategory": "",
+            "oName": {
+              "nl": "Prisma124",
+              "en": "Prisma124"
+            },
+            "oOriginalName": {
+              "nl": "PrismaOr124",
+              "en": "PrismaOr124"
+            }
+          },
+          "aPayments": [
+            {
+              "iPaymentMethodId": "6243ff1a0ab1c8da110423f4",
+              "sMethod": "cash",
+              "nAmount": 80
+            }
+          ],
+          "sProductCategory": "CATEGORY",
+          "iParentTransactionDetailId": null,
+          "nPaymentAmount": 60,
+          "nProductSize": null,
+          "nProductSizeFor": null,
+          "iBusinessProductId": "631722ba63b0661dc492004c",
+          "iWorkstationId": "624de4996f44035620df1f55",
+          "iLocationId": "623b4f531d7d736c686b51f1",
+          "iSupplierId": "6275661d5732a79bf0e3f449",
+          "iTransactionId": "63173e1bb59f0f2c849b0442",
+          "nDiscount": 0,
+          "sUniqueIdentifier": "9b3087a9-1418-4553-93be-97ed95c65a42",
+          "nRevenueAmount": 60,
+          "sDescription": "",
+          "nGrossProfitMarginExVat": 26.11570247933885,
+          "iCustomerId": "62420be55777d556346a9484",
+          "sTransactionNumber": "T2195-060922-1433",
+          "iBusinessPartnerId": "6275661d5732a79bf0e3f449",
+          "nSavingsPoints": 6,
+          "aProductVariant": [],
+          "nCostOfRevenue": 49.586776859504134,
+          "nProfitOfRevenue": 0,
+          "iActivityItemId": "63173e1bb59f0f2c849b0447",
+          "dCreatedDate": "2022-09-06T12:33:31.760Z",
+          "dUpdatedDate": "2022-09-06T12:33:31.760Z",
+          "__v": 0
+        },
+        {
+          "_id": "63173e1bb59f0f2c849b0449",
+          "oType": {
+            "bPrepayment": true,
+            "eTransactionType": "cash-registry",
+            "bRefund": false,
+            "eKind": "regular",
+            "bDiscount": false
+          },
+          "oBusinessProductMetaData": {
+            "bBestseller": false,
+            "bHasStock": false,
+            "bShowSuggestion": false,
+            "aImage": [],
+            "eOwnerShip": "possession",
+            "iSupplierId": "6275661d5732a79bf0e3f449",
+            "iBusinessPartnerId": "6275661d5732a79bf0e3f449",
+            "sLabelDescription": "asdfasdf",
+            "aProperty": [],
+            "oName": {
+              "en": "p8-88b",
+              "nl": "p8-88b",
+              "de": "p8-88b",
+              "fr": "p8-88b"
+            },
+            "eGender": "female"
+          },
+          "aImage": [],
+          "nQuantity": 1,
+          "nAppliedStock": 0,
+          "bPaymentDiscount": false,
+          "bPaymentDiscountPercent": false,
+          "bImported": false,
+          "bIsInvoiced": false,
+          "eStatus": "y",
+          "sProductName": "p8-88b",
+          "sProductNumber": "P8-88B",
+          "nPriceIncVat": 30,
+          "nPurchasePrice": 15,
+          "bEntryMethodCustomerValue": null,
+          "nVatRate": 21,
+          "nReceivedQuantity": null,
+          "sArticleNumber": "00017021126",
+          "nMargin": 4,
+          "nExtraLabel": null,
+          "iBusinessId": "6182a52f1949ab0a59ff4e7b",
+          "iArticleGroupId": "6307c60f6349513a50fcc34a",
+          "iArticleGroupOriginalId": "6307c60f6349513a50fcc34a",
+          "oArticleGroupMetaData": {
+            "aProperty": [
+              {
+                "iPropertyId": "61160712ae3cbb7453177f98",
+                "sPropertyName": "Category",
+                "iPropertyOptionId": "61f01aa45fc7504de957b258",
+                "sCode": "WA"
+              },
+              {
+                "iPropertyId": "6261a5f76d3ec230f0886eee",
+                "sPropertyName": "Watch case material",
+                "iPropertyOptionId": "61165be3ae3cbb7453178016",
+                "sCode": "ST"
+              }
+            ],
+            "sCategory": "",
+            "sSubCategory": "",
+            "oName": {
+              "nl": "Prisma124",
+              "en": "Prisma124"
+            },
+            "oOriginalName": {
+              "nl": "PrismaOr124",
+              "en": "PrismaOr124"
+            }
+          },
+          "aPayments": [
+            {
+              "iPaymentMethodId": "6243ff1a0ab1c8da110423f4",
+              "sMethod": "cash",
+              "nAmount": 80
+            }
+          ],
+          "sProductCategory": "CATEGORY",
+          "iParentTransactionDetailId": null,
+          "nPaymentAmount": 20,
+          "nProductSize": null,
+          "nProductSizeFor": null,
+          "iBusinessProductId": "63170656fcabe64c1481fe33",
+          "iWorkstationId": "624de4996f44035620df1f55",
+          "iLocationId": "623b4f531d7d736c686b51f1",
+          "iSupplierId": "6275661d5732a79bf0e3f449",
+          "iTransactionId": "63173e1bb59f0f2c849b0442",
+          "nDiscount": 0,
+          "sUniqueIdentifier": "261a0df7-775a-4c16-a8c9-7f4e5f7dae2d",
+          "nRevenueAmount": 20,
+          "sDescription": "",
+          "nGrossProfitMarginExVat": 9.793388429752067,
+          "iCustomerId": "62420be55777d556346a9484",
+          "sTransactionNumber": "T2195-060922-1433",
+          "iBusinessPartnerId": "6275661d5732a79bf0e3f449",
+          "nSavingsPoints": 2,
+          "aProductVariant": [],
+          "nCostOfRevenue": 16.528925619834713,
+          "nProfitOfRevenue": 0,
+          "iActivityItemId": "63173e1bb59f0f2c849b044a",
+          "dCreatedDate": "2022-09-06T12:33:31.760Z",
+          "dUpdatedDate": "2022-09-06T12:33:31.760Z",
+          "__v": 0
+        }
+      ],
+      "count": {
+        "totalData": 1
+      },
+      "aPayments": [
+        {
+          "iPaymentMethodId": "6243ff1a0ab1c8da110423f4",
+          "sMethod": "cash",
+          "nAmount": 80
+        }
+      ],
+      "_id": "63173e1bb59f0f2c849b0442"
+    });
     this.iBusinessId = localStorage.getItem('currentBusiness');
     this.iLocationId = localStorage.getItem('currentLocation');
     this.listEmployee();
