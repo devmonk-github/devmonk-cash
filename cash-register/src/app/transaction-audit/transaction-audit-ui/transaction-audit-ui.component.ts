@@ -573,7 +573,6 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
     this.location.back()
   }
   onDropdownItemSelected(parent: View, child1: ViewMenuChild, child2: ChildChild) {
-    console.log('onDropdownItemSelected: ', parent, child1, child2);
     this.bShowProperty = false;
     this.sOptionMenu = {
       parent,
@@ -664,13 +663,12 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
       },
     };
 
-    console.log('fetchStatisticDocument oBody: ', oBody);
     if (this.IsDynamicState) {
       oBody.oFilter.bIsArticleGroupLevel = this.bIsArticleGroupLevel;
       oBody.oFilter.bIsSupplierMode = this.bIsSupplierMode;
     }
 
-    if (!this.aDayClosure?.length) this.fetchDayClosureList();
+    this.fetchDayClosureList();
     this.getStatisticSubscription = this.apiService
       .postNew('cashregistry', `/api/v1/statistics/get`, oBody)
       .subscribe(
@@ -828,13 +826,11 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
       .postNew('core', '/api/v1/properties/list', data)
       .subscribe((result: any) => {
         if (result?.data && result?.data[0]?.result?.length) {
-          console.log('aProperty: ', result.data[0].result);
           result.data[0].result.map((property: any) => {
             if (typeof this.propertyOptions[property._id] == 'undefined') {
               this.propertyOptions[property._id] = [];
 
               property.aOptions.map((option: any) => {
-                // console.log('--------------------------->>>>>>.... option: ', option);
                 if (option?.sCode?.trim() != '') {
                   const opt: any = {
                     iPropertyId: property._id,
@@ -858,14 +854,12 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
               });
             }
           });
-          console.log('this.propertyOptions: ', this.propertyOptions);
         }
       });
   }
 
   onProperties(value?: any) {
     if (this.selectedProperties && this.selectedProperties[value]) {
-      console.log('onProperties: ', this.selectedProperties);
       this.aFilterProperty = [];
       for (const oProperty of this.aProperty) {
         if (this.selectedProperties[oProperty?.iPropertyId]?.length) {
@@ -877,7 +871,6 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
             }
           );
           for (const oOption of aOption) {
-            console.log('oOption: ', oOption);
             this.aFilterProperty.push(oOption?.iPropertyOptionId);
           }
         }
@@ -1089,11 +1082,9 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
     
     const oCashPaymentMethod = this.allPaymentMethod.filter((el: any) => el.sName.toLowerCase() === 'cash')[0];
     const oBankPaymentMethod = this.allPaymentMethod.filter((el: any) => el.sName.toLowerCase() === 'bankpayment')[0];
-    console.log(oBankPaymentMethod, oCashPaymentMethod);
 
     if (nDifferenceAmount > 0) {
       //we have difference in cash, so add that as and expense
-      // console.log('we have difference in cash, so add that as and expense', nDifferenceAmount)
 
      await this.addExpenses(
         {
@@ -1248,7 +1239,7 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
   fetchDayClosureList() {
     try {
       this.aDayClosure = [];
-      // this.showLoader = true;
+
       const oBody = {
         iBusinessId: this.iBusinessId,
         oFilter: {
@@ -1260,7 +1251,7 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
       this.dayClosureListSubscription = this.apiService.postNew('cashregistry', `/api/v1/statistics/day-closure/list`, oBody).subscribe((result: any) => {
         if (result?.data?.length && result.data[0]?.result?.length) {
           const _aDayClosure = result.data[0]?.result.map((oDayClosure: any) => {
-            const oData = { _id: oDayClosure?._id, dOpenDate: oDayClosure?.dOpenDate, dCloseDate: oDayClosure?.dCloseDate, isDisable: true }
+            const oData = { _id: oDayClosure?._id, dOpenDate: oDayClosure?.dOpenDate, dCloseDate: oDayClosure?.dCloseDate, isDisable: true, sWorkStationName: oDayClosure?.sWorkStationName }
             return oData;
           });
           this.aDayClosure = _aDayClosure;
@@ -1275,15 +1266,14 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
     }
   }
 
-  onStateChange(dDate: any, isOpenDate: boolean) {
+  onStateChange(dDate: any, isOpenDate: boolean, aDayClosure: any) {
     const dFromStateTime = new Date(this.statisticFilter.dFromState).getTime();
     const dToStateTime = new Date(this.statisticFilter.dToState).getTime();
-    
     /* Disabling the date which is smaller than the dFromState in dToState */
-    for (const oDayClosure of this.aDayClosure) {
-      oDayClosure.isDisable = false;
-      const dDayClosureDateTime = new Date(oDayClosure.dCloseDate).getTime();
-      if (dFromStateTime > dDayClosureDateTime) oDayClosure.isDisable = true;
+    for (let i = 0; i < aDayClosure?.length; i++) {
+      aDayClosure[i].isDisable = false;
+      const dDayClosureDateTime = new Date(aDayClosure[i].dCloseDate).getTime();
+      if (dFromStateTime > dDayClosureDateTime) aDayClosure[i].isDisable = true;
     }    
   }
 

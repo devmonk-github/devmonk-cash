@@ -1478,6 +1478,10 @@ export class PdfService {
     dataObject.totalSavingPoints = totalSavingPoints;
     dataObject.dCreatedDate = moment(dataObject.dCreatedDate).format('DD-MM-yyyy hh:mm');
 
+    dataObject.aPayments.forEach((obj: any) => {
+      obj.dCreatedDate = dataObject.dCreatedDate;
+    });
+
     return dataObject;
   }
   async generatePDF(transaction: any ) {

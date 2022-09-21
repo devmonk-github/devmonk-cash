@@ -432,45 +432,45 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
         this.aTransactions.forEach(transaction => {
           transaction.sTotal = 0;
           transaction.aTransactionItems.forEach((item: any) => {
-            transaction.sTotal += parseFloat(item.nPaymentAmount); 
+            transaction.sTotal += parseFloat(item.nPaymentAmount);
             const count = this.totalActivities;
             if (item?.oType?.eKind) this.totalActivities = count + item.nQuantity || 0;
             // if(item?.oType.bRefund){
             //   this.aActivityTitles[5].value += 1;
             // }else{
-              switch (item?.oType?.eKind) {
-                case "regular":
-                  this.aActivityTitles[2].value += 1;
-                  break;
-                case "expenses":
-                  break;
-                case "reservation":
-                  this.aActivityTitles[7].value += 1;
-                  break;
-                case "giftcard":
-                  this.aActivityTitles[5].value += 1;
-                  break;
-                case "empty-line":
-                  break;
-                case "repair":
-                  this.aActivityTitles[0].value += 1;
-                  break;
-                case "order":
-                  break;
-                case "gold-purchase":
-                  this.aActivityTitles[6].value += 1;
-                  break;
-                case "gold-sell":
-                  break;
-                case "loyalty-points-discount":
-                  break;
-                case "loyalty-points":
-                  break;
-                case "discount":
-                  break;
-                case "payment-discount":
-                  break;
-              }
+            switch (item?.oType?.eKind) {
+              case "regular":
+                this.aActivityTitles[2].value += 1;
+                break;
+              case "expenses":
+                break;
+              case "reservation":
+                this.aActivityTitles[7].value += 1;
+                break;
+              case "giftcard":
+                this.aActivityTitles[5].value += 1;
+                break;
+              case "empty-line":
+                break;
+              case "repair":
+                this.aActivityTitles[0].value += 1;
+                break;
+              case "order":
+                break;
+              case "gold-purchase":
+                this.aActivityTitles[6].value += 1;
+                break;
+              case "gold-sell":
+                break;
+              case "loyalty-points-discount":
+                break;
+              case "loyalty-points":
+                break;
+              case "discount":
+                break;
+              case "payment-discount":
+                break;
+            }
             // }
           })
         });
@@ -508,7 +508,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
   loadActivities() {
     this.aActivities = [];
     this.bActivitiesLoader = true;
-    let oBody:any = {...this.requestParams};
+    let oBody: any = { ...this.requestParams };
     delete oBody.oFilterBy._id;
     this.apiService.postNew('cashregistry', '/api/v1/activities', oBody).subscribe((result: any) => {
       this.aActivities = result.data || [];
@@ -645,7 +645,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
   showTransaction(transaction: any) {
     this.dialogService.openModal(TransactionDetailsComponent, { cssClass: "modal-xl", context: { transaction: transaction, eType: 'cash-register-revenue', from: 'customer' } })
       .instance.close.subscribe(
-        (res:any) => {
+        (res: any) => {
           // if (res) this.router.navigate(['business/till']);
         });
   }
@@ -654,13 +654,25 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
 
   async fetchLoyaltyPoints() {
     if (this.customer) {
-      const nPointsResult:any = await this.apiService.getNew('cashregistry', `/api/v1/points-settings/points?iBusinessId=${this.requestParams.iBusinessId}&iCustomerId=${this.customer._id}`).toPromise();
-      const oPointsSettingsResult:any = await this.apiService.getNew('cashregistry', `/api/v1/points-settings?iBusinessId=${this.requestParams.iBusinessId}`).toPromise();
+      const nPointsResult: any = await this.apiService.getNew('cashregistry', `/api/v1/points-settings/points?iBusinessId=${this.requestParams.iBusinessId}&iCustomerId=${this.customer._id}`).toPromise();
+      const oPointsSettingsResult: any = await this.apiService.getNew('cashregistry', `/api/v1/points-settings?iBusinessId=${this.requestParams.iBusinessId}`).toPromise();
       this.customer.nLoyaltyPoints = nPointsResult;
       this.customer.nLoyaltyPointsValue = nPointsResult / oPointsSettingsResult.nPerEuro2;
     }
   }
-
+  CopyInvoiceAddressToShipping() {
+    const invoiceAddress = {
+      sStreet: this.customer.oInvoiceAddress.sStreet,
+      sHouseNumber: this.customer.oInvoiceAddress.sHouseNumber,
+      sAddition: this.customer.oInvoiceAddress.sAddition,
+      sPostalCode: this.customer.oInvoiceAddress.sPostalCode,
+      sCity: this.customer.oInvoiceAddress.sCity,
+    }
+    this.customer.oShippingAddress = {
+      ...this.customer.oShippingAddress,
+      ...invoiceAddress
+    }
+  }
 
 
 }

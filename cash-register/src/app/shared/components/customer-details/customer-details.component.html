@@ -215,11 +215,12 @@
                                     <thead>
                                         <tr class="fw-bold fs-6 text-gray-800 border-bottom-2 border-gray-200">
                                             <ng-container *ngFor="let th of aTransctionTableHeaders">
-                                                <th scope="col" [ngClass]="{'fw-bolder': th.selected, 'cursor-pointer': !th.disabled, 'pe-none': th.disabled}"
-                                                (click)="setSortOption(th)">
-                                                {{ th.key }}
-                                            </th>
-                                        </ng-container>
+                                                <th scope="col"
+                                                    [ngClass]="{'fw-bolder': th.selected, 'cursor-pointer': !th.disabled, 'pe-none': th.disabled}"
+                                                    (click)="setSortOption(th)">
+                                                    {{ th.key }}
+                                                </th>
+                                            </ng-container>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -232,7 +233,8 @@
                                             <td>{{transaction.sTotal || 0}}</td>
                                             <ng-container *ngIf="from === 'customer'">
                                                 <td>
-                                                    <button class="btn btn-primary" (click)="showTransaction(transaction)">
+                                                    <button class="btn btn-primary"
+                                                        (click)="showTransaction(transaction)">
                                                         {{ 'VIEW' | translate }}
                                                     </button>
                                                 </td>
@@ -373,9 +375,7 @@
                                                 [labels]="paymentMethodsChartOptions.labels"
                                                 [responsive]="paymentMethodsChartOptions.responsive"
                                                 [legend]="paymentMethodsChartOptions.legend"
-                                                [title]="paymentMethodsChartOptions.title"
-                                                
-                                                >
+                                                [title]="paymentMethodsChartOptions.title">
                                             </apx-chart>
 
                                         </div>
@@ -517,9 +517,10 @@
                             <div class="d-flex justify-content-between align-items-center mb-6">
                                 <h3>{{'INVOICE_ADDRESS' | translate}}</h3>
                                 <div>
-                                    <button class="btn btn-sm btn-secondary">{{'COPY_TO_SHIPPING_ADDRESS' |
+                                    <button (click)="CopyInvoiceAddressToShipping()"
+                                        class="btn btn-sm btn-secondary">{{'COPY_TO_SHIPPING_ADDRESS' |
                                         translate}}</button>
-                                    <mark>todo: make this button copy all invoice details to shipping details</mark>
+                                    <!-- <mark>todo: make this button copy all invoice details to shipping details</mark> -->
                                 </div>
                             </div>
                             <div class="row mb-3">
