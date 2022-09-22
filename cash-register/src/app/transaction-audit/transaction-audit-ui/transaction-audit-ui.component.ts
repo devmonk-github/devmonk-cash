@@ -28,20 +28,21 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
   aLocation: any = [];
   aStatistic: any = [];
   oUser: any = {};
-  aSelectedLocation: any;
-  selectedWorkStation: any;
-  selectedEmployee: any;
+  aSelectedLocation: any = [];
+  selectedWorkStation: any = {};
+  selectedEmployee: any = {};
   propertyOptions: Array<any> = [];
   selectedProperties: any;
   aProperty: Array<any> = [];
   aFilterProperty: Array<any> = [];
-  IsDynamicState: boolean = true;
+  IsDynamicState: boolean = false;
   aWorkStation: any = [];
   aEmployee: any = [];
   aPaymentMethods: any = [];
   aDayClosure: any = [];
 
   closingDayState: boolean = false;
+  bShowDownload: boolean = false;
 
   closeSubscription!: Subscription;
   dayClosureListSubscription !: Subscription;
@@ -614,6 +615,7 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
             this.aLocation.forEach((oLocation: any) =>{
               if (oLocation._id === this.iLocationId){
                 this.sCurrentLocation += " ("+ oLocation?.sName + ")";
+                this.aSelectedLocation.push(oLocation._id);
               }
             });
         },
@@ -646,7 +648,7 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
             item.nQuantity = this.oStatisticsDocument?.oCountings?.oCountingsCashDetails[item.key];
           }
         });
-
+        this.checkShowDownload();
       }
     });
   }
@@ -679,6 +681,7 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
       oBody.oFilter.bIsArticleGroupLevel = this.bIsArticleGroupLevel;
       oBody.oFilter.bIsSupplierMode = this.bIsSupplierMode;
     }
+    this.checkShowDownload();
 
     this.fetchDayClosureList();
     this.getStatisticSubscription = this.apiService
@@ -704,9 +707,9 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
   }
 
   fetchStatistics(sDisplayMethod?: string) {
-    if (this.iStatisticId) this.IsDynamicState = true;
+    // if (this.iStatisticId) this.IsDynamicState = true;
     if (!this.IsDynamicState) return this.fetchStatisticDocument();
-
+    this.checkShowDownload();
     this.aStatistic = [];
     this.aPaymentMethods = [];
     const oBody = {
@@ -1289,6 +1292,11 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
       const dDayClosureDateTime = new Date(aDayClosure[i].dCloseDate).getTime();
       if (dFromStateTime > dDayClosureDateTime) aDayClosure[i].isDisable = true;
     }    
+  }
+
+  checkShowDownload(){
+    this.bShowDownload = (this.oStatisticsDocument && this.oStatisticsDocument?.bIsDayState === false) || 
+      (!this.IsDynamicState && !this.selectedEmployee?._id && !this.selectedWorkStation?._id && !(this.aSelectedLocation?.length > 1));
   }
 
   ngOnDestroy(): void {
