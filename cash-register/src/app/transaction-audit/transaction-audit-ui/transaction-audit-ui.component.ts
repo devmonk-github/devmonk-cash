@@ -98,6 +98,7 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
   sCurrentWorkstation: any;
   pdfGenerationInProgress: boolean = false;
   bShowProperty: boolean = false;
+  bDisableCountings: boolean = false;
 
   groupingHelper(item: any) {
     return item.child[0];
@@ -635,6 +636,17 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
       if(result?.message === 'success'){
         this.oStatisticsDocument = result?.data?.aStatistic[0];
         this.oCountings.nCashAtStart = this.oStatisticsDocument?.oCountings?.nCashAtStart || 0;
+        this.oCountings.nCashCounted = this.oStatisticsDocument?.oCountings?.nCashCounted || 0;
+        this.oCountings.nSkim = this.oStatisticsDocument?.oCountings?.nSkim || 0;
+        this.oCountings.nCashRemain = this.oStatisticsDocument?.oCountings?.nCashRemain || 0;
+        this.bDisableCountings = !this.oStatisticsDocument.bIsDayState;
+        const aKeys = Object.keys(this.oStatisticsDocument?.oCountings?.oCountingsCashDetails);
+        this.aAmount.map((item: any) => {
+          if(aKeys.includes(item.key)){
+            item.nQuantity = this.oStatisticsDocument?.oCountings?.oCountingsCashDetails[item.key];
+          }
+        });
+
       }
     });
   }

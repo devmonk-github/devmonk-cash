@@ -1279,7 +1279,7 @@
             </div>
         </div>
     </div>
-    <ng-container *ngIf="iStatisticId && oStatisticsDocument?.bIsDayState">
+    <ng-container *ngIf="iStatisticId">
         <!-- COUNTING SECTION START -->
         <div class="row">
             <div class="card card-flush">
@@ -1303,7 +1303,7 @@
                                             <td class="mx-2">
                                                 <input type="number" class="form-control p-2"
                                                     [(ngModel)]="amount.nQuantity"
-                                                    (ngModelChange)="calculateTotalCounting()">
+                                                    (ngModelChange)="calculateTotalCounting()" [disabled]="bDisableCountings">
                                             </td>
                                             <td class="w-50">
                                                 <label class="currency">{{ (amount.nQuantity * amount.nValue) |
@@ -1348,7 +1348,7 @@
                                 <div>
                                     <label>Cash Counted</label>
                                     <input type="number" class="form-control p-2 w-30"
-                                        [(ngModel)]="oCountings.nCashCounted">
+                                        [(ngModel)]="oCountings.nCashCounted" [disabled]="bDisableCountings">
                                 </div>
                                 <div>
                                     <label>Difference in Cash</label>
@@ -1360,13 +1360,13 @@
                                 <div>
                                     <label>Skim</label>
                                     <input type="number" class="form-control p-2 w-30" [(ngModel)]="oCountings.nSkim"
-                                        (ngModelChange)="oCountings.nCashRemain = oCountings.nCashCounted - oCountings.nSkim">
+                                        (ngModelChange)="oCountings.nCashRemain = oCountings.nCashCounted - oCountings.nSkim" [disabled]="bDisableCountings">
                                 </div>
                                 <div>
                                     <label>Amount to be kept in cash register</label>
                                     <input type="number" class="form-control p-2 w-30"
                                         [(ngModel)]="oCountings.nCashRemain"
-                                        (ngModelChange)="oCountings.nSkim = oCountings.nCashCounted - oCountings.nCashRemain">
+                                        (ngModelChange)="oCountings.nSkim = oCountings.nCashCounted - oCountings.nCashRemain" [disabled]="bDisableCountings">
                                 </div>
                                 <!-- <div>
                                     <label>Remaining Cash</label>
@@ -1375,13 +1375,15 @@
                                     </label>
                                 </div> -->
                                 <br>
-                                <div class="d-flex justify-content-start">
-                                    <button type="button" class="btn btn-primary" data-kt-roles-modal-action="submit"
+                                <ng-container *ngIf="oStatisticsDocument.bIsDayState">
+                                    <div class="d-flex justify-content-start">
+                                        <button type="button" class="btn btn-primary" data-kt-roles-modal-action="submit"
                                         (click)="closeDayState()" [class.disabled]="closingDayState">
                                         <span class="indicator-label">{{ "CLOSE_DAYSTATE" | translate}}</span>
                                     </button>
                                     <div *ngIf="closingDayState" class="spinner-border mx-5"></div>
                                 </div>
+                            </ng-container>
 
                             </div>
                         </div>
