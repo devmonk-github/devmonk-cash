@@ -51,9 +51,12 @@
                         <tr class="fw-bold fs-6 text-gray-400 border-bottom-2 border-gray-200">
                             <th scope="col">{{ 'OPEN_DATE' | translate }}</th>
                             <th scope="col">{{ 'CLOSE_DATE' | translate }}</th>
+                            <th scope="col">{{ 'PAYMENT_TOTAL' | translate }}</th>
+                            <th scope="col">{{ 'REVENUE' | translate }}</th>
+                            <th scope="col">{{ 'CASH_START' | translate }}</th>
                             <th scope="col">{{ 'CASH_COUNTED' | translate }}</th>
-                            <th scope="col">{{ 'DIFFERENCE_IN_CASH' | translate }}</th>
                             <th scope="col">{{ 'SKIMMED' | translate }}</th>
+                            <th scope="col">{{ 'CASH_REMAIN' | translate }}</th>
                             <th scope="col">{{ 'ACTION' | translate }}</th>
                         </tr>
                     </thead>
@@ -61,9 +64,12 @@
                         <tr *ngFor="let oDayClosure of aDayClosure | paginate: paginationConfig; let i = index; ">
                             <td scope="row">{{oDayClosure?.dOpenDate | date: 'yyyy-MM-dd HH:mm'}}</td>
                             <td>{{oDayClosure?.dCloseDate | date: 'yyyy-MM-dd HH:mm' }}</td>
+                            <td>{{oDayClosure?.nPaymentMethodTotal}}</td>
+                            <td>{{oDayClosure?.nTotalRevenue}}</td>
+                            <td>{{oDayClosure?.oCountings?.nCashAtStart}}</td>
                             <td>{{oDayClosure?.oCountings?.nCashCounted}}</td>
-                            <td>{{oDayClosure?.oCountings?.nCashRemain}}</td>
                             <td>{{oDayClosure?.oCountings?.nSkim}}</td>
+                            <td>{{oDayClosure?.oCountings?.nCashRemain}}</td>
 
                             <td>
                                 <button class="btn btn-primary" (click)="goToView(oDayClosure._id, oDayClosure?.dOpenDate, oDayClosure?.dCloseDate)">

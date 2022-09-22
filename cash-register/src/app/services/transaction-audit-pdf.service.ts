@@ -160,7 +160,7 @@ export class TransactionAuditUiPdfService {
         // get selected locaions
         let sLocations = '';
         let aLocations: any = [];
-        if (aSelectedLocation?.length > 0) {
+        if (aSelectedLocation?.length) {
             aSelectedLocation.forEach((el: any) => {
                 aLocations.push(
                     aLocation
@@ -353,7 +353,7 @@ export class TransactionAuditUiPdfService {
         };
         this.content.push(paymentHeaderData);
         // this.aPaymentMethods = [];
-        if (aPaymentMethods.length) {
+        if (aPaymentMethods?.length) {
             aPaymentMethods.forEach((paymentMethod: any) => {
                 let texts: any = [
                     { text: paymentMethod.sMethod, style: ['td'] },
@@ -428,7 +428,7 @@ export class TransactionAuditUiPdfService {
             },
         };
         this.content.push(refundHeaderData);
-        if (this.aRefundItems.length) {
+        if (this.aRefundItems?.length) {
             this.aRefundItems.forEach((item: any) => {
                 let itemDescription = item.nQuantity;
                 if (item.sComment) {
@@ -500,7 +500,7 @@ export class TransactionAuditUiPdfService {
             },
         };
         this.content.push(oHeaderData);
-        if (this.aDiscountItems.length) {
+        if (this.aDiscountItems?.length) {
             this.aDiscountItems.forEach((item: any) => {
                 // let itemDescription = (item.sComment) ? item.sComment : ' (not available) ';
 
@@ -575,7 +575,7 @@ export class TransactionAuditUiPdfService {
             },
         };
         this.content.push(oHeaderData);
-        if (this.aRepairItems.length) {
+        if (this.aRepairItems?.length) {
             this.aRepairItems.forEach((item: any) => {
                 let texts: any = [
                     { text: item.sProductName, style: 'td' },
@@ -647,7 +647,7 @@ export class TransactionAuditUiPdfService {
             },
         };
         this.content.push(oHeaderData);
-        if (this.aGiftItems.length) {
+        if (this.aGiftItems?.length) {
             this.aGiftItems.forEach((item: any) => {
                 let texts: any = [
                     { text: item.sGiftCardNumber, style: 'td' },

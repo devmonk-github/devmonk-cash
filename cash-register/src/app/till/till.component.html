@@ -25,7 +25,8 @@
             <div class="alert alert-warning" *ngIf="!bIsPreviousDayStateClosed">
               <p class="mb-0" style="font-size: 1.2rem;font-weight: bold;margin-left:1.3rem">
                 <span style="margin-right:1rem; font-weight:bolder">!</span>
-                The previous {{ settings.sDayClosurePeriod }} is not closed yet ({{ dOpenDate | date:'EEEE, dd-MM-YYYY hh:mm:ss aaa':'GMT'}})
+                The previous {{ settings.sDayClosurePeriod }} is not closed yet ({{ dOpenDate | date:'EEEE, dd-MM-YYYY
+                hh:mm:ss aaa':'GMT'}})
               </p>
               <a class="btn btn-hover" routerLink="../day-closure">{{ "CLOSE_DAYSTATE" | translate}}</a>
             </div>
@@ -490,9 +491,11 @@
           <div *ngIf="payMethodsLoading" class="spinner-border mx-auto"></div>
         </div>
         <h1>{{ "CHANGE" | translate}}: {{getUsedPayMethods(true) - getTotals('price') | currency: '€'}}</h1>
-
+        <!-- {{(getTotals('price') > 0.0099)}}{{ -0.0099 > getTotals('price')}} {{(getTotals('price') > 0.0099) && (-0.0099 >
+        getTotals('price'))}} -->
         <h4>{{ "PREPAYMENT" | translate}}: {{totalPrepayment() | currency: '€'}}</h4>
-        <button class="btn btn-primary till-save-button" (click)="createTransaction()" [disabled]="saveInProgress">
+        <button class="btn btn-primary till-save-button" (click)="createTransaction()"
+          [disabled]="saveInProgress || 1 > transactionItems.length || !amountDefined">
           <span class="d-flex" *ngIf="saveInProgress">
             <fa-icon [icon]="faSpinner" class="fa-spin"></fa-icon>
           </span>

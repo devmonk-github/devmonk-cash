@@ -220,7 +220,7 @@ export class TransactionDetailsComponent implements OnInit {
         // dataObject.totalDiscount = totalDiscount;
         // dataObject.totalSavingPoints = totalSavingPoints;
         // dataObject.dCreatedDate = moment(dataObject.dCreatedDate).format('DD-MM-yyyy hh:mm');
-
+        delete this.transaction.related;
         this.pdfService.createPdf(JSON.stringify(result.data), this.transaction, filename, print, printData, this.iBusinessId, this.transaction?._id)
           .then(() => {
             this.downloadWithVATLoading = false;

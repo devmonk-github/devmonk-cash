@@ -41,26 +41,29 @@
 
                                         <!-- For Static, FROM-STATE to TO-STATE -->
                                         <div class="row mb-5" *ngIf="!IsDynamicState">
+
                                             <div class="col-md-6">
                                                 <label class="fs-6 form-label fw-bolder text-dark">{{'FROM_STATE' |
                                                     translate}}</label>
                                                 <ng-select class="form-control form-control-solid p-0" [(ngModel)]="statisticFilter.dFromState"
-                                                    [clearable]="false" (change)="onStateChange($event, true)">
+                                                    [clearable]="false" (change)="onStateChange($event, true, aDayClosure)">
                                                     <ng-option *ngFor="let oDayClosure of aDayClosure" [value]="oDayClosure.dOpenDate">
-                                                        {{oDayClosure?.dOpenDate | date: 'yyyy-MM-dd HH:mm'}}
+                                                        {{oDayClosure?.dOpenDate | date: 'yyyy-MM-dd HH:mm'}} | {{oDayClosure?.sWorkStationName}}
                                                     </ng-option>
                                                 </ng-select>
                                             </div>
+
                                             <div class="col-md-6">
                                                 <label class="fs-6 form-label fw-bolder text-dark">{{'TO_STATE' |
                                                     translate}}</label>
                                                 <ng-select class="form-control form-control-solid p-0" [(ngModel)]="statisticFilter.dToState"
-                                                    [clearable]="false" (change)="onStateChange($event, false)">
-                                                    <ng-option *ngFor="let oDayClosure of aDayClosure" [value]="oDayClosure.dCloseDate" [disabled]="oDayClosure.isDisable ? true : false">
-                                                        {{oDayClosure?.dCloseDate | date: 'yyyy-MM-dd HH:mm' }}
+                                                    [clearable]="false" (change)="onStateChange($event, false, aDayClosure)">
+                                                    <ng-option *ngFor="let oDayClosure of aDayClosure" [value]="oDayClosure.dCloseDate" [disabled]="oDayClosure?.isDisable ? true : false">
+                                                        {{oDayClosure?.dCloseDate | date: 'yyyy-MM-dd HH:mm' }} | {{oDayClosure?.sWorkStationName}}
                                                     </ng-option>
                                                 </ng-select>
                                             </div>
+
                                         </div>
 
                                 </div>
@@ -167,7 +170,7 @@
                                     <div class="w-100" *ngIf="aLocation?.length">
                                         <ng-select [multiple]="true" [items]="aLocation" [(ngModel)]="aSelectedLocation"
                                             name="iLocationId" bindValue="_id" bindLabel="sName" placeholder="Select"
-                                            required [closeOnSelect]="false">
+                                            required [closeOnSelect]="false" (change)="fetchStatistics()">
 
                                             <ng-template ng-option-tmp let-item="item" let-item$="item$"
                                                 let-index="index">
@@ -199,7 +202,7 @@
                                         <div class="col-md-6">
                                             <label class="fs-6 form-label fw-bolder text-dark">{{'WORK_STATION' |
                                                 translate}}</label>
-                                            <ng-select class="form-control form-control-solid p-0" [(ngModel)]="selectedWorkStation" [clearable]="false">
+                                            <ng-select class="form-control form-control-solid p-0" [(ngModel)]="selectedWorkStation" [clearable]="false" (change)="fetchStatistics()">
                                                 <ng-option *ngFor="let oWorkStation of aWorkStation" [value]="oWorkStation">
                                                     {{oWorkStation.sName}}
                                                 </ng-option>
@@ -293,7 +296,7 @@
                                     <label
                                         class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20">
                                         <input class="form-check-input" type="checkbox" [(ngModel)]="IsDynamicState"
-                                            name="IsDynamicState" [disabled]="iStatisticId ? true : false" />
+                                            name="IsDynamicState" [disabled]="iStatisticId ? true : false" (click)="fetchStatistics()" />
                                         <span class="form-check-label"> {{ "SHOW_DYNAMIC" | translate}} </span>
                                     </label>
                                 </div>
@@ -1276,7 +1279,7 @@
             </div>
         </div>
     </div>
-    <ng-container *ngIf="iStatisticId && oStatisticsDocument?.bIsDayState">
+    <ng-container *ngIf="iStatisticId">
         <!-- COUNTING SECTION START -->
         <div class="row">
             <div class="card card-flush">
@@ -1300,7 +1303,7 @@
                                             <td class="mx-2">
                                                 <input type="number" class="form-control p-2"
                                                     [(ngModel)]="amount.nQuantity"
-                                                    (ngModelChange)="calculateTotalCounting()">
+                                                    (ngModelChange)="calculateTotalCounting()" [disabled]="bDisableCountings">
                                             </td>
                                             <td class="w-50">
                                                 <label class="currency">{{ (amount.nQuantity * amount.nValue) |
@@ -1345,7 +1348,7 @@
                                 <div>
                                     <label>Cash Counted</label>
                                     <input type="number" class="form-control p-2 w-30"
-                                        [(ngModel)]="oCountings.nCashCounted">
+                                        [(ngModel)]="oCountings.nCashCounted" [disabled]="bDisableCountings">
                                 </div>
                                 <div>
                                     <label>Difference in Cash</label>
@@ -1357,13 +1360,13 @@
                                 <div>
                                     <label>Skim</label>
                                     <input type="number" class="form-control p-2 w-30" [(ngModel)]="oCountings.nSkim"
-                                        (ngModelChange)="oCountings.nCashRemain = oCountings.nCashCounted - oCountings.nSkim">
+                                        (ngModelChange)="oCountings.nCashRemain = oCountings.nCashCounted - oCountings.nSkim" [disabled]="bDisableCountings">
                                 </div>
                                 <div>
                                     <label>Amount to be kept in cash register</label>
                                     <input type="number" class="form-control p-2 w-30"
                                         [(ngModel)]="oCountings.nCashRemain"
-                                        (ngModelChange)="oCountings.nSkim = oCountings.nCashCounted - oCountings.nCashRemain">
+                                        (ngModelChange)="oCountings.nSkim = oCountings.nCashCounted - oCountings.nCashRemain" [disabled]="bDisableCountings">
                                 </div>
                                 <!-- <div>
                                     <label>Remaining Cash</label>
@@ -1372,13 +1375,15 @@
                                     </label>
                                 </div> -->
                                 <br>
-                                <div class="d-flex justify-content-start">
-                                    <button type="button" class="btn btn-primary" data-kt-roles-modal-action="submit"
+                                <ng-container *ngIf="oStatisticsDocument.bIsDayState">
+                                    <div class="d-flex justify-content-start">
+                                        <button type="button" class="btn btn-primary" data-kt-roles-modal-action="submit"
                                         (click)="closeDayState()" [class.disabled]="closingDayState">
                                         <span class="indicator-label">{{ "CLOSE_DAYSTATE" | translate}}</span>
                                     </button>
                                     <div *ngIf="closingDayState" class="spinner-border mx-5"></div>
                                 </div>
+                            </ng-container>
 
                             </div>
                         </div>
