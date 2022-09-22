@@ -6,6 +6,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { SharedModule } from 'primeng/api';
+import { JsonEditorModule } from 'src/app/json-editor/json-editor.module';
 
 
 @NgModule({
@@ -19,7 +20,8 @@ import { SharedModule } from 'primeng/api';
     TranslateModule,
     FontAwesomeModule,
     ReactiveFormsModule,
-    SharedModule
+    SharedModule,
+    JsonEditorModule
   ]
 })
 export class PrintSettingsModule { }

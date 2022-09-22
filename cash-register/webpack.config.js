@@ -34,6 +34,16 @@ module.exports = {
   plugins: [
     new ModuleFederationPlugin({
       // For remotes (please adjust)
+      name: "jsonEditor",
+      filename: "jsonEditor.js",
+      exposes: {
+        './jsonEditorModule': './src/app/json-editor/json-editor.module.ts',
+      },
+
+      shared: share(sharedLibrary)
+    }),
+    new ModuleFederationPlugin({
+      // For remotes (please adjust)
       name: "till",
       filename: "till.js",
       exposes: {
