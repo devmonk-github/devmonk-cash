@@ -1149,7 +1149,9 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
     this.closeSubscription = this.apiService.postNew('cashregistry', `/api/v1/statistics/close/day-state`, oBody).subscribe((result: any) => {
       this.toastService.show({ type: 'success', text: `Day-state is close now` });
       this.closingDayState = false;
-      this.router.navigate(['/business/day-closure/list'])
+      // this.router.navigate(['/business/day-closure/list'])
+      this.bDisableCountings = true;
+      this.oStatisticsDocument.bIsDayState = false;
     }, (error) => {
       console.log('Error: ', error);
       this.toastService.show({ type: 'warning', text: 'Something went wrong or open the day-state first' });
