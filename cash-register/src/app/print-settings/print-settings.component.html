@@ -88,6 +88,10 @@
                         <button (click)="openLabelTemplateModal(label,'edit')" class="btn btn-primary">
                           {{'EDIT'| translate}}
                         </button>
+
+                        <button class="btn btn-icon btn-secondary" (click)="deleteLabelTemplate(label._id)">
+                          <i class="fa fa-trash"></i>
+                        </button>
                       </td>
                     </tr>
                   </tbody>

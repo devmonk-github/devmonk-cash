@@ -1,6 +1,9 @@
+import { ifStmt } from '@angular/compiler/src/output/output_ast';
 import { Component, OnInit } from '@angular/core';
 import { faRefresh, faPencilAlt } from '@fortawesome/free-solid-svg-icons';
-import { LabelTemplateModelComponent } from 'src/app/print-settings/label-template-model/label-template-model.component';
+import { LabelTemplateModelComponent } from 'src/app/print-settings/lable-template-model/label-template-model.component';
+import { ConfirmationDialogComponent } from 'src/app/shared/components/confirmation-dialog/confirmation-dialog.component';
+import { ToastService } from 'src/app/shared/components/toast';
 import { ApiService } from 'src/app/shared/service/api.service';
 import { PrintSettingsDetailsComponent } from '../shared/components/print-settings-details/print-settings-details.component';
 import { DialogService } from '../shared/service/dialog';
@@ -45,7 +48,7 @@ export class PrintSettingsComponent implements OnInit {
 
   constructor(
     private dialogService: DialogService,
-    // private toastService: ToastService,
+    private toastService: ToastService,
     private apiService: ApiService,
 
   ) { }
@@ -65,7 +68,6 @@ export class PrintSettingsComponent implements OnInit {
   }
 
   openLabelTemplateModal(jsonData: any, mode: 'create' | 'edit') {
-    if (mode === 'edit') return
     if (mode === 'create') {
       jsonData.readOnly = false
       jsonData.iBusinessId = this.iBusinessId
@@ -89,6 +91,10 @@ export class PrintSettingsComponent implements OnInit {
         if (mode === 'create') {
           this.createLabelTemplate(result)
           this.getLabelTemplate()
+        }
+        if (mode === 'edit') {
+          this.toastService.show({ type: 'warning', text: 'TODO: add put api in backend' });
+
         }
       }
       console.log(result);
@@ -126,14 +132,34 @@ export class PrintSettingsComponent implements OnInit {
 
       this.apiService.postNew('cashregistry', `/api/v1/label/templates/create`, oBody).subscribe((result: any) => {
         console.log(result);
-        // this.toastService.show({ type: 'success', text: 'Item added' });
+        this.toastService.show({ type: 'success', text: 'Item added' });
         resolve(result);
       }, (error) => {
         resolve(error);
         console.log('error: ', error);
-        // this.toastService.show({ type: 'warning', text: 'Something went wrong' });
+        this.toastService.show({ type: 'warning', text: 'Something went wrong' });
       })
     })
+  }
+  deleteLabelTemplate(id: string) {
+    const buttons = [
+      { text: 'YES', value: true, status: 'success', class: 'btn-primary ml-auto mr-2' },
+      { text: 'NO', value: false, class: 'btn-danger ' }
+    ]
+    this.dialogService.openModal(ConfirmationDialogComponent, {
+      context: {
+        header: 'REMOVE_LABEL_TEMPLATE',
+        bodyText: 'ARE_YOU_SURE_TO_REMOVE_THIS_LABEL_TEMPLATE',
+        buttonDetails: buttons
+      }
+    })
+      .instance.close.subscribe(
+        result => {
+          console.log(result)
+          this.toastService.show({ type: 'warning', text: 'TODO: add delete api in backend' });
+
+        }
+      )
   }
 
 }
