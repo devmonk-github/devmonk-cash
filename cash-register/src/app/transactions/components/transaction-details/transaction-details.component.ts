@@ -3,16 +3,18 @@ import { faTimes, faSync, faFileInvoice, faDownload, faReceipt, faAt, faUndoAlt,
 import { TransactionItemsDetailsComponent } from 'src/app/shared/components/transaction-items-details/transaction-items-details.component';
 import { ApiService } from 'src/app/shared/service/api.service';
 import { DialogComponent, DialogService } from 'src/app/shared/service/dialog';
-import { PdfService } from 'src/app/shared/service/pdf.service';
+// import { PdfService } from 'src/app/shared/service/pdf.service';
 import * as _moment from 'moment';
 import { CustomerDetailsComponent } from 'src/app/shared/components/customer-details/customer-details.component';
 import { ActivityDetailsComponent } from 'src/app/shared/components/activity-details-dialog/activity-details.component';
+import { TransactionReceiptService } from 'src/app/shared/service/transaction-receipt.service';
 const moment = (_moment as any).default ? (_moment as any).default : _moment;
 
 @Component({
   selector: 'app-transaction-details',
   templateUrl: './transaction-details.component.html',
-  styleUrls: ['./transaction-details.component.sass']
+  styleUrls: ['./transaction-details.component.sass'],
+  providers: [TransactionReceiptService]
 })
 export class TransactionDetailsComponent implements OnInit {
 
@@ -47,7 +49,7 @@ export class TransactionDetailsComponent implements OnInit {
     private viewContainerRef: ViewContainerRef,
     private apiService: ApiService,
     private dialogService: DialogService,
-    private pdfService: PdfService
+    private receiptService: TransactionReceiptService
   ) {
     const _injector = this.viewContainerRef.parentInjector;
     this.dialogRef = _injector.get<DialogComponent>(DialogComponent);
@@ -169,6 +171,8 @@ export class TransactionDetailsComponent implements OnInit {
         this.transaction.currentLocation = this.businessDetails.aLocation[i];
       }
     }
+    this.receiptService.exportToPdf({transaction:this.transaction});
+    return;
     this.apiService.getNew('cashregistry', '/api/v1/pdf/templates/' + this.iBusinessId + '?sName=' + sName + '&eType=' + eType).subscribe(
       (result: any) => {
         const filename = new Date().getTime().toString()
@@ -221,14 +225,15 @@ export class TransactionDetailsComponent implements OnInit {
         // dataObject.totalSavingPoints = totalSavingPoints;
         // dataObject.dCreatedDate = moment(dataObject.dCreatedDate).format('DD-MM-yyyy hh:mm');
         delete this.transaction.related;
-        this.pdfService.createPdf(JSON.stringify(result.data), this.transaction, filename, print, printData, this.iBusinessId, this.transaction?._id)
-          .then(() => {
-            this.downloadWithVATLoading = false;
-          })
-          .catch((e: any) => {
-            this.downloadWithVATLoading = false;
-            console.error('err', e)
-          })
+        
+        // this.pdfService.createPdf(JSON.stringify(result.data), this.transaction, filename, print, printData, this.iBusinessId, this.transaction?._id)
+        //   .then(() => {
+        //     this.downloadWithVATLoading = false;
+        //   })
+        //   .catch((e: any) => {
+        //     this.downloadWithVATLoading = false;
+        //     console.error('err', e)
+        //   })
       }, (error) => {
         this.downloadWithVATLoading = false;
         console.log('printing error', error);

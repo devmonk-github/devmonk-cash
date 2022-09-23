@@ -104,7 +104,6 @@ export class PdfService {
   }
 
   getPdfData(styles: any, content: any, orientation: string, pageSize: any, fileName: string) {
-    // console.log('inside getPdfData', styles, content);
     this.generatePdf(this.getDocDefinition(styles, content, orientation, pageSize), fileName);
   }
 }
