@@ -225,8 +225,7 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
     this.setOptionMenu()
     this.fetchBusinessDetails();
 
-    // if (this.iStatisticId) this.getStatisticDocument(); // Already existed in DB (using iStatisticId)
-    if (!this.IsDynamicState || this.iStatisticId) this.listCurrentStatisticDocument(); // Not existed but we are fetching current one (using filter etc)
+    if (!this.IsDynamicState || this.iStatisticId) this.listCurrentStatisticDocument(); // Static Data
     else this.fetchStatistics(this.sDisplayMethod.toString()); // Dynamic Data from transaction-item
 
     this.fetchBusinessLocation();
@@ -644,36 +643,8 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
     }
   }
 
-  // /* Fetching the Specific statistic document */
-  // getStatisticDocument() {
-  //   this.apiService.getNew('cashregistry', `/api/v1/statistics/${this.iStatisticId}?iBusinessId=${this.iBusinessId}`).subscribe((result: any) => {
-  //     if (result?.data?.oStatistic?._id) {
-  //       this.oStatisticsDocument = result?.data?.oStatistic;
-  //       this.aStatistic.push(this.oStatisticsDocument);
-  //       this.oCountings.nCashAtStart = this.oStatisticsDocument?.oCountings?.nCashAtStart || 0;
-  //       this.oCountings.nCashCounted = this.oStatisticsDocument?.oCountings?.nCashCounted || 0;
-  //       this.oCountings.nSkim = this.oStatisticsDocument?.oCountings?.nSkim || 0;
-  //       this.oCountings.nCashRemain = this.oStatisticsDocument?.oCountings?.nCashRemain || 0;
-  //       this.bDisableCountings = !this.oStatisticsDocument.bIsDayState;
-  //       let aKeys: any = [];
-  //       if (this.oStatisticsDocument?.oCountings?.oCountingsCashDetails) aKeys = Object.keys(this.oStatisticsDocument?.oCountings?.oCountingsCashDetails);
-  //       if (aKeys?.length) {
-  //         this.aAmount.map((item: any) => {
-  //           if (aKeys.includes(item.key)) {
-  //             item.nQuantity = this.oStatisticsDocument?.oCountings?.oCountingsCashDetails[item.key];
-  //           }
-  //         });
-  //       }
-  //     }
-  //   }, (error) => {
-  //     console.log('error: ', error);
-  //     this.toastService.show({ type: 'warning', text: 'Something went wrong' });
-  //   });
-  // }
-
   /* Listing the Statistic document with filter  */
   listCurrentStatisticDocument(sDisplayMethod?: string) {
-    console.log('------------------result--------------------: 655: ', this.iStatisticId);
     this.aStatistic = [];
     this.aPaymentMethods = [];
     this.bStatisticLoading = true;
@@ -706,15 +677,15 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
     this.getStatisticSubscription = this.apiService.postNew('cashregistry', `/api/v1/statistics/list`, oBody).
       subscribe((result: any) => {
         this.bStatisticLoading = false;
-
-        if (result.data?.aPaymentMethods?.length) this.aPaymentMethods = result.data.aPaymentMethods;
-        if (result?.data && result.data?.aStatistic?.length) {
-          this.aStatistic = result.data?.aStatistic;
-          this.oStatisticsDocument = this.aStatistic[0];
-          console.log({ aStatistic: this.aStatistic, oStatisticsDocument: this.oStatisticsDocument });
-          this.processCounting();
+        if (result?.data) {
+          const oData = result?.data;
+          if (oData.aStatistic?.length) this.aStatistic = oData.aStatistic;
+          if (oData?.oStatistic?._id) {
+            if (oData?.oStatistic?.aPaymentMethods?.length) this.aPaymentMethods = oData?.oStatistic?.aPaymentMethods;
+            this.oStatisticsDocument = oData?.oStatistic;
+            this.processCounting();
+          }
         }
-
       }, (error) => {
         this.bStatisticLoading = false;
         console.log('error: ', error);

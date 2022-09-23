@@ -352,7 +352,6 @@ export class TransactionAuditUiPdfService {
             },
         };
         this.content.push(paymentHeaderData);
-        // this.aPaymentMethods = [];
         if (aPaymentMethods?.length) {
             aPaymentMethods.forEach((paymentMethod: any) => {
                 let texts: any = [
