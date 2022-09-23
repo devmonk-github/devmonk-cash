@@ -57,59 +57,10 @@
       {{"LABEL" | translate}} {{"DEFINITIONS" | translate}}
     </div>
     <div class="card-body">
-      <div class="json-editor">
-        <app-json-editor></app-json-editor>
-      </div>
-      <div *ngIf="!newLabel">
-        <form name="labelForm" class="row">
-          <div class="col-md-6">
-            <label for="labelName" class="form-label">{{"NAME" | translate}}</label>
-            <input type="text" class="form-control" fullWidth id="labelName" required="true" name="labelName">
-          </div>
-          <div class="col-md-6">
-            <label for="labelLayout" class="form-label">{{"LAYOUT" | translate}}</label>
-            <select class="form-select" id="labelLayout" required="true" name="layout">
-              <option *ngFor="let layout of layouts" [value]="layout">{{ layout }}</option>
-            </select>
-          </div>
-          <div class="col-md-12">
-            <p class="help-block">{{"CHANGE_EXTRA_SETTINGS_AFTER_SAVING" | translate}}</p>
-            <button status="success" type="submit" class="btn btn-primary custom-margin-t10">
-              {{ 'ADD' | translate}}
-            </button>
-          </div>
-        </form>
-      </div>
-      <div *ngIf="newLabel">
-        <p>{{"CONTACT_SUPPORT_IF_YOU_NEED_CHANGES_TO_YOUR_LABELS" | translate}}</p>
-        <label for="labelPrinter" class="form-label">
-          {{"LABELPRINTER" | translate}}
-          <span class="label-info">{{"SETTINGS_FOR_DEVICE" | translate}}: {{device.name}}</span>
-        </label>
-        <select class="form-select" id="labelPrinter" required="true" name="layout">
-          <option *ngFor="let p of printers" [value]="p">{{ p }}</option>
-        </select>
-        <br>
-        <button type="submit" class="btn btn-primary custom-margin-t10">
-          {{ 'SAVE' | translate}}
-        </button>
-      </div>
-      <div *ngIf="!newLabel">
-        <div *ngFor="let label of oldLabelList; trackBy: trackByFun">
-          {{ label }}
-          <button type="submit" class="btn ms-1 table-btn-padding">
-            <fa-icon [icon]="faPencilAlt"></fa-icon>
-          </button>
-        </div>
-      </div>
-      <div *ngIf="newLabel">
-        <div *ngFor="let label of newLabelList; trackBy: trackByFun">
-          {{ label }}
-          <button type="submit" class="btn ms-1 table-btn-padding">
-            <fa-icon [icon]="faPencilAlt"></fa-icon>
-          </button>
-        </div>
-      </div>
+      <button (click)="openLabelTemplateModal()" type="button" class="btn btn-primary" data-bs-toggle="button"
+        aria-pressed="false" autocomplete="off">Open
+        Label model</button>
+
 
     </div>
   </div>

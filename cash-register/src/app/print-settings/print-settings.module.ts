@@ -7,11 +7,12 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { SharedModule } from 'primeng/api';
 import { JsonEditorModule } from 'src/app/json-editor/json-editor.module';
-
+import { LabelTemplateModelComponent } from "./label-template-model/label-template-model.component"
 
 @NgModule({
   declarations: [
-    PrintSettingsComponent
+    PrintSettingsComponent,
+    LabelTemplateModelComponent
   ],
   imports: [
     CommonModule,
