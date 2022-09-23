@@ -4,18 +4,18 @@ import { JsonEditorOptions } from "ang-jsoneditor";
 @Component({
   selector: 'app-json-editor',
   templateUrl: './json-editor.component.html',
-  styleUrls: ['./json-editor.component.scss']
+  styleUrls: ['./json-editor.component.scss'],
 })
 export class JsonEditorComponent implements OnInit {
 
   public editorOptions: JsonEditorOptions;
   public initialData: any;
-  public visibleData: any;
+  public jsonData: any;
 
   constructor() {
     this.editorOptions = new JsonEditorOptions()
-    this.editorOptions.modes = ['code', 'text', 'tree', 'view'];
-
+    this.editorOptions.modes = ['code', 'text', 'tree', 'view', 'form'];
+    this.editorOptions.mode = 'tree';
     this.initialData = {
       readOnly: false,
       inverted: false,
@@ -106,12 +106,12 @@ export class JsonEditorComponent implements OnInit {
       shopId: '5f68b68defa1921dbc1e7493',
       width: 72,
     };
-    this.visibleData = this.initialData;
+    this.jsonData = this.initialData;
   }
   ngOnInit() {
 
   }
   showJson(d: Event) {
-    this.visibleData = d;
+    this.jsonData = d;
   }
 }

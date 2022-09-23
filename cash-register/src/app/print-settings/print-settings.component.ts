@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { faRefresh, faPencilAlt } from '@fortawesome/free-solid-svg-icons';
+import { LabelTemplateModelComponent } from 'src/app/print-settings/label-template-model/label-template-model.component';
 import { PrintSettingsDetailsComponent } from '../shared/components/print-settings-details/print-settings-details.component';
 import { DialogService } from '../shared/service/dialog';
 
@@ -28,7 +29,7 @@ export class PrintSettingsComponent {
   layouts: Array<any> = [
     'Any'
   ]
-  printers: Array<any> =[
+  printers: Array<any> = [
     'Any'
   ]
   pageFormats: Array<any> = [
@@ -41,11 +42,17 @@ export class PrintSettingsComponent {
   ) { }
 
   createPrintSettings() {
-    this.dialogService.openModal(PrintSettingsDetailsComponent, { cssClass:"modal-xl", context: { mode: 'create' } }).instance.close.subscribe(result =>{ });
+    this.dialogService.openModal(PrintSettingsDetailsComponent, { cssClass: "modal-xl", context: { mode: 'create' } }).instance.close.subscribe(result => { });
   }
 
   trackByFun(index: any, item: any) {
     return index;
+  }
+
+  openLabelTemplateModal() {
+    this.dialogService.openModal(LabelTemplateModelComponent, {
+      cssClass: "modal-xl  w-100"
+    })
   }
 
 }
