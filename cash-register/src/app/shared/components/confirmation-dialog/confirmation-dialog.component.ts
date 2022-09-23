@@ -1,6 +1,6 @@
-import {Component, OnInit, ViewContainerRef} from '@angular/core';
-import {DialogComponent} from "../../service/dialog";
-import {faTimes} from "@fortawesome/free-solid-svg-icons";
+import { Component, OnInit, ViewContainerRef } from '@angular/core';
+import { DialogComponent } from "../../service/dialog";
+import { faTimes } from "@fortawesome/free-solid-svg-icons";
 
 @Component({
   selector: 'app-confirmation-dialog',
@@ -11,7 +11,7 @@ export class ConfirmationDialogComponent implements OnInit {
   header: string = ""
   bodyText: string = ""
   buttonDetails: Array<any> = [
-    { text: "CANCEL", value: false}
+    { text: "CANCEL", value: false }
   ]
   dialogRef: DialogComponent
 
@@ -25,11 +25,11 @@ export class ConfirmationDialogComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  confirmed(status : any): void {
-    if(status){
+  confirmed(status: any): void {
+    if (status) {
       this.dialogRef.close.emit(status)
     } else {
-      this.dialogRef.close.emit();
+      this.dialogRef.close.emit(status);
     }
   }
 

@@ -2,7 +2,6 @@ import { TranslateService } from '@ngx-translate/core';
 import { Component, OnInit, OnDestroy, AfterViewInit } from '@angular/core';
 import { Observable, Subscription } from 'rxjs';
 import { ApiService } from 'src/app/shared/service/api.service';
-import { PdfService } from 'src/app/shared/service/pdf2.service';
 import * as _moment from 'moment';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastService } from 'src/app/shared/components/toast';
@@ -187,7 +186,6 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
 
   constructor(
     private apiService: ApiService,
-    private pdf: PdfService,
     private translate: TranslateService,
     private route: ActivatedRoute,
     private router: Router,
