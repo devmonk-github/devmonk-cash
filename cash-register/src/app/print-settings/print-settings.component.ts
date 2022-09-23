@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { faRefresh, faPencilAlt } from '@fortawesome/free-solid-svg-icons';
+import { LabelTemplateModelComponent } from 'src/app/print-settings/label-template-model/label-template-model.component';
+import { ApiService } from 'src/app/shared/service/api.service';
 import { PrintSettingsDetailsComponent } from '../shared/components/print-settings-details/print-settings-details.component';
 import { DialogService } from '../shared/service/dialog';
 
@@ -8,7 +10,7 @@ import { DialogService } from '../shared/service/dialog';
   templateUrl: './print-settings.component.html',
   styleUrls: ['./print-settings.component.sass']
 })
-export class PrintSettingsComponent {
+export class PrintSettingsComponent implements OnInit {
 
   faRefresh = faRefresh;
   faPencilAlt = faPencilAlt;
@@ -28,24 +30,110 @@ export class PrintSettingsComponent {
   layouts: Array<any> = [
     'Any'
   ]
-  printers: Array<any> =[
+  printers: Array<any> = [
     'Any'
   ]
   pageFormats: Array<any> = [
     'Any',
     'Transaction receipt'
   ]
+  iBusinessId: string = '';
+  iLocationId: string = '';
+  isLoadingLabel: boolean = false;
+  defaultLabelsData: Array<any> = []
+  LabelTemplatesData: Array<any> = []
 
   constructor(
-    private dialogService: DialogService
+    private dialogService: DialogService,
+    // private toastService: ToastService,
+    private apiService: ApiService,
+
   ) { }
 
+  ngOnInit(): void {
+    this.iBusinessId = localStorage.getItem('currentBusiness') || '';
+    this.iLocationId = localStorage.getItem('currentLocation') || '';
+    this.getLabelTemplate()
+  }
+
   createPrintSettings() {
-    this.dialogService.openModal(PrintSettingsDetailsComponent, { cssClass:"modal-xl", context: { mode: 'create' } }).instance.close.subscribe(result =>{ });
+    this.dialogService.openModal(PrintSettingsDetailsComponent, { cssClass: "modal-xl", context: { mode: 'create' } }).instance.close.subscribe(result => { });
   }
 
   trackByFun(index: any, item: any) {
     return index;
+  }
+
+  openLabelTemplateModal(jsonData: any, mode: 'create' | 'edit') {
+    if (mode === 'edit') return
+    if (mode === 'create') {
+      jsonData.readOnly = false
+      jsonData.iBusinessId = this.iBusinessId
+      jsonData.iLocationId = this.iLocationId
+      delete jsonData.dCreatedDate
+      delete jsonData.dUpdatedDate
+      delete jsonData._id
+      delete jsonData.__v
+    }
+    const dialogRef = this.dialogService.openModal(LabelTemplateModelComponent, {
+      cssClass: "modal-xl w-100",
+      context: {
+        mode,
+        jsonData
+      }
+    })
+
+    dialogRef.instance.close.subscribe(result => {
+      if (result) {
+
+        if (mode === 'create') {
+          this.createLabelTemplate(result)
+          this.getLabelTemplate()
+        }
+      }
+      console.log(result);
+
+    });
+  }
+
+  async getLabelTemplate(): Promise<any[]> {
+    // await this.postLabelTemplate()
+    return new Promise((resolve, reject) => {
+      this.isLoadingLabel = true
+      this.apiService.getNew('cashregistry', `/api/v1/label/templates/${this.iBusinessId}`).subscribe((result: any) => {
+        console.log({ LabelTemplates: result })
+        this.defaultLabelsData = result.data.filter((lable: any) => lable.readOnly)
+        this.LabelTemplatesData = result.data.filter((lable: any) => !lable.readOnly)
+        this.isLoadingLabel = false
+
+        resolve(result.data)
+      }, (error) => {
+        this.isLoadingLabel = false
+
+        console.log('error: ', error);
+        resolve(error)
+      })
+    });
+  }
+
+  createLabelTemplate(jsonData: any) {
+    const oBody = {
+      "iBusinessId": jsonData.iBusinessId,
+      "iLocationId": jsonData.iLocationId,
+      "template": jsonData
+    }
+    return new Promise(resolve => {
+
+      this.apiService.postNew('cashregistry', `/api/v1/label/templates/create`, oBody).subscribe((result: any) => {
+        console.log(result);
+        // this.toastService.show({ type: 'success', text: 'Item added' });
+        resolve(result);
+      }, (error) => {
+        resolve(error);
+        console.log('error: ', error);
+        // this.toastService.show({ type: 'warning', text: 'Something went wrong' });
+      })
+    })
   }
 
 }
