@@ -230,12 +230,12 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
     this.setOptionMenu()
     this.fetchBusinessDetails();
     this.fetchStatistics(this.sDisplayMethod.toString());
+    // if (this.iStatisticId) this.fetchCurrentStatisticDocument();
     this.fetchBusinessLocation();
     this.getProperties();
     this.getWorkstations();
     this.getEmployees();
     this.getPaymentMethods();
-    if (this.iStatisticId) this.fetchCurrentStatisticDocument();
     // this.fetchStatisticDocument();
   }
 
@@ -627,29 +627,29 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
     this.aStatistic = [];
   }
 
-  fetchCurrentStatisticDocument(){
-    const oBody = {
-      iStatisticId: this.iStatisticId,
-      iBusinessId: this.iBusinessId,
-    }
-    this.apiService.postNew('cashregistry', `/api/v1/statistics/get`, oBody).subscribe((result: any) => {
-      if(result?.message === 'success'){
-        this.oStatisticsDocument = result?.data?.aStatistic[0];
-        this.oCountings.nCashAtStart = this.oStatisticsDocument?.oCountings?.nCashAtStart || 0;
-        this.oCountings.nCashCounted = this.oStatisticsDocument?.oCountings?.nCashCounted || 0;
-        this.oCountings.nSkim = this.oStatisticsDocument?.oCountings?.nSkim || 0;
-        this.oCountings.nCashRemain = this.oStatisticsDocument?.oCountings?.nCashRemain || 0;
-        this.bDisableCountings = !this.oStatisticsDocument.bIsDayState;
-        const aKeys = Object.keys(this.oStatisticsDocument?.oCountings?.oCountingsCashDetails);
-        this.aAmount.map((item: any) => {
-          if(aKeys.includes(item.key)){
-            item.nQuantity = this.oStatisticsDocument?.oCountings?.oCountingsCashDetails[item.key];
-          }
-        });
+  // fetchCurrentStatisticDocument(){
+  //   const oBody = {
+  //     iStatisticId: this.iStatisticId,
+  //     iBusinessId: this.iBusinessId,
+  //   }
+  //   this.apiService.postNew('cashregistry', `/api/v1/statistics/get`, oBody).subscribe((result: any) => {
+  //     if(result?.message === 'success'){
+  //       this.oStatisticsDocument = result?.data?.aStatistic[0];
+  //       this.oCountings.nCashAtStart = this.oStatisticsDocument?.oCountings?.nCashAtStart || 0;
+  //       this.oCountings.nCashCounted = this.oStatisticsDocument?.oCountings?.nCashCounted || 0;
+  //       this.oCountings.nSkim = this.oStatisticsDocument?.oCountings?.nSkim || 0;
+  //       this.oCountings.nCashRemain = this.oStatisticsDocument?.oCountings?.nCashRemain || 0;
+  //       this.bDisableCountings = !this.oStatisticsDocument.bIsDayState;
+  //       const aKeys = Object.keys(this.oStatisticsDocument?.oCountings?.oCountingsCashDetails);
+  //       this.aAmount.map((item: any) => {
+  //         if(aKeys.includes(item.key)){
+  //           item.nQuantity = this.oStatisticsDocument?.oCountings?.oCountingsCashDetails[item.key];
+  //         }
+  //       });
 
-      }
-    });
-  }
+  //     }
+  //   });
+  // }
 
   /* STATIC  */
   fetchStatisticDocument(sDisplayMethod?: string) {
@@ -658,6 +658,7 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
     this.bStatisticLoading = true;
     const oBody = {
       iBusinessId: this.iBusinessId,
+      iStatisticId: this.iStatisticId,
       oFilter: {
         aLocationId: this?.aSelectedLocation?.length
           ? this.aSelectedLocation
@@ -665,8 +666,6 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
         iWorkstationId: this.selectedWorkStation?._id,
         sTransactionType: this.optionMenu,
         sDisplayMethod: sDisplayMethod || this.sDisplayMethod.toString(),
-        // dStartDate: this.filterDates.startDate,
-        // dEndDate: this.filterDates.endDate,
         dStartDate: this.statisticFilter.dFromState,
         dEndDate: this.statisticFilter.dToState,
         aFilterProperty: this.aFilterProperty,
@@ -695,6 +694,19 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
             if (result.data?.aPaymentMethods?.length)
               this.aPaymentMethods = result.data.aPaymentMethods;
           }
+
+          this.oStatisticsDocument = result?.data?.aStatistic[0];
+          this.oCountings.nCashAtStart = this.oStatisticsDocument?.oCountings?.nCashAtStart || 0;
+          this.oCountings.nCashCounted = this.oStatisticsDocument?.oCountings?.nCashCounted || 0;
+          this.oCountings.nSkim = this.oStatisticsDocument?.oCountings?.nSkim || 0;
+          this.oCountings.nCashRemain = this.oStatisticsDocument?.oCountings?.nCashRemain || 0;
+          this.bDisableCountings = !this.oStatisticsDocument.bIsDayState;
+          const aKeys = Object.keys(this.oStatisticsDocument?.oCountings?.oCountingsCashDetails);
+          this.aAmount.map((item: any) => {
+            if(aKeys.includes(item.key)){
+              item.nQuantity = this.oStatisticsDocument?.oCountings?.oCountingsCashDetails[item.key];
+            }
+          });
         },
         (error) => {
           this.bStatisticLoading = false;
@@ -704,8 +716,12 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
   }
 
   fetchStatistics(sDisplayMethod?: string) {
-    if (this.iStatisticId) this.IsDynamicState = true;
-    if (!this.IsDynamicState) return this.fetchStatisticDocument();
+    if (this.iStatisticId) {
+      this.IsDynamicState = false;
+      this.fetchStatisticDocument();
+      return;
+    }
+     
 
     this.aStatistic = [];
     this.aPaymentMethods = [];
