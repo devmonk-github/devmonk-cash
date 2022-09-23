@@ -57,9 +57,9 @@
       {{"LABEL" | translate}} {{"DEFINITIONS" | translate}}
     </div>
     <div class="card-body">
-      <button (click)="openLabelTemplateModal()" type="button" class="btn btn-primary" data-bs-toggle="button"
+      <!-- <button (click)="openLabelTemplateModal()" type="button" class="btn btn-primary" data-bs-toggle="button"
         aria-pressed="false" autocomplete="off">Open
-        Label model</button>
+        Label model</button> -->
       <div class="row my-3">
         <div class="col-sm-12 col-md-6 col-lg-6">
           <div class="d-flex flex-column">
@@ -79,14 +79,13 @@
                       <td class="mw-100px text-truncate">
                         {{i+1}}
                       </td>
-                      <td class="mw-100px text-truncate" [title]="label || ''">
-                        {{label || ''}}
+                      <td class="mw-100px text-truncate" [title]="label.name || ''">
+                        {{label.name || ''}}
                       </td>
 
                       <td>
 
-
-                        <button class="btn btn-primary">
+                        <button (click)="openLabelTemplateModal(label,'edit')" class="btn btn-primary">
                           {{'EDIT'| translate}}
                         </button>
                       </td>
@@ -131,7 +130,7 @@
 
                       <td>
 
-                        <button class="btn btn-primary">
+                        <button (click)="openLabelTemplateModal(label,'create')" class="btn btn-primary">
                           {{'CREATE'| translate}}
 
                         </button>

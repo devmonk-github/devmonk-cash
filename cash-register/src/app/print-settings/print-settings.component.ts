@@ -64,110 +64,36 @@ export class PrintSettingsComponent implements OnInit {
     return index;
   }
 
-
-  addDefaultLabelTemplate() {
-    const oBody = {
-      "iBusinessId": this.iBusinessId,
-      "iLocationId": this.iLocationId,
-      "template": {
-        "readOnly": false,
-        "inverted": false,
-        "encoding": 28,
-        "media_darkness": 4,
-        "media_type": "T",
-        "disable_upload": false,
-        "can_rotate": true,
-        "alternative_price_notation": false,
-        "dpmm": 8,
-        "elements": [
-          {
-            "type": "rectangle",
-            "x": "1",
-            "y": "1",
-            "width": "140",
-            "height": "64"
-          },
-          {
-            "type": "rectangle",
-            "x": "140",
-            "y": "1",
-            "width": "140",
-            "height": "64"
-          },
-          {
-            "type": "barcode",
-            "x": "8",
-            "y": "8",
-            "height": "15",
-            "visible": true,
-            "pnfield": "%%ARTICLE_NUMBER%%"
-          },
-          {
-            "type": "scalabletext",
-            "charwidth": 22,
-            "charheight": 22,
-            "x": "8",
-            "y": "26",
-            "euro_prefix": true,
-            "pnfield": " %%SELLING_PRICE%%"
-          },
-          {
-            "type": "scalabletext",
-            "charwidth": 16,
-            "charheight": 16,
-            "x": "8",
-            "y": "47",
-            "pnfield": "%%ARTICLE_NUMBER%%"
-          },
-          {
-            "type": "scalabletext",
-            "charwidth": 16,
-            "charheight": 16,
-            "x": "148",
-            "y": "8",
-            "pnfield": "%%PRODUCT_NUMBER%%"
-          },
-          {
-            "type": "scalabletext",
-            "charwidth": 16,
-            "charheight": 16,
-            "x": "148",
-            "y": "22",
-            "blockwidth": 166,
-            "blocklines": 2,
-            "pnfield": "Dit is een beschrijving met twee"
-          },
-          {
-            "type": "scalabletext",
-            "charwidth": 16,
-            "charheight": 16,
-            "x": "148",
-            "y": "53",
-            "pnfield": "%%BRAND_NAME%%"
-          }
-        ],
-        "height": 12,
-        "labelleft": -12,
-        "labeltop": 16,
-        "layout_name": "LAYOUT3",
-        "name": "Kader 69mm (34 869IR)",
-        "offsetleft": 0,
-        "offsettop": 0,
-        "width": 71
-      }
+  openLabelTemplateModal(jsonData: any, mode: 'create' | 'edit') {
+    if (mode === 'edit') return
+    if (mode === 'create') {
+      jsonData.readOnly = false
+      jsonData.iBusinessId = this.iBusinessId
+      jsonData.iLocationId = this.iLocationId
+      delete jsonData.dCreatedDate
+      delete jsonData.dUpdatedDate
+      delete jsonData._id
+      delete jsonData.__v
     }
-    return new Promise(resolve => {
-
-      this.apiService.postNew('cashregistry', `/api/v1/label/templates/create`, oBody).subscribe((result: any) => {
-        console.log(result);
-        // this.toastService.show({ type: 'success', text: 'Item added' });
-        resolve(result);
-      }, (error) => {
-        resolve(error);
-        console.log('error: ', error);
-        // this.toastService.show({ type: 'warning', text: 'Something went wrong' });
-      })
+    const dialogRef = this.dialogService.openModal(LabelTemplateModelComponent, {
+      cssClass: "modal-xl w-100",
+      context: {
+        mode,
+        jsonData
+      }
     })
+
+    dialogRef.instance.close.subscribe(result => {
+      if (result) {
+
+        if (mode === 'create') {
+          this.createLabelTemplate(result)
+          this.getLabelTemplate()
+        }
+      }
+      console.log(result);
+
+    });
   }
 
   async getLabelTemplate(): Promise<any[]> {
@@ -190,9 +116,23 @@ export class PrintSettingsComponent implements OnInit {
     });
   }
 
-  openLabelTemplateModal() {
-    this.dialogService.openModal(LabelTemplateModelComponent, {
-      cssClass: "modal-xl w-100"
+  createLabelTemplate(jsonData: any) {
+    const oBody = {
+      "iBusinessId": jsonData.iBusinessId,
+      "iLocationId": jsonData.iLocationId,
+      "template": jsonData
+    }
+    return new Promise(resolve => {
+
+      this.apiService.postNew('cashregistry', `/api/v1/label/templates/create`, oBody).subscribe((result: any) => {
+        console.log(result);
+        // this.toastService.show({ type: 'success', text: 'Item added' });
+        resolve(result);
+      }, (error) => {
+        resolve(error);
+        console.log('error: ', error);
+        // this.toastService.show({ type: 'warning', text: 'Something went wrong' });
+      })
     })
   }
 

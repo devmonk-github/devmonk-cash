@@ -11,6 +11,8 @@ export class LabelTemplateModelComponent implements OnInit {
   @ViewChild('jsonEditor') jsonEditor!: any
   dialogRef: DialogComponent;
   faTimes = faTimes;
+  mode: 'create' | 'edit' = 'create'
+  jsonData = {}
 
   constructor(private viewContainerRef: ViewContainerRef,
   ) {
@@ -22,8 +24,9 @@ export class LabelTemplateModelComponent implements OnInit {
   }
   saveLabelTemplate() {
     console.log(
-      { json: this.jsonEditor }
+      { json: this.jsonEditor.jsonData }
     );
+    this.close(this.jsonEditor.jsonData)
   }
   close(data: any) {
     this.dialogRef.close.emit(data);
