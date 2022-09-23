@@ -1,8 +1,8 @@
 import { PdfService } from 'src/app/shared/service/pdf2.service';
 import * as _moment from 'moment';
-import { ChildChild, DisplayMethod, eDisplayMethodKeysEnum, View, ViewMenuChild } from '../transaction-audit/transaction-audit-ui.model';
+import { ChildChild, DisplayMethod, eDisplayMethodKeysEnum, View, ViewMenuChild } from '../../transaction-audit/transaction-audit-ui.model';
 import { Observable } from 'rxjs';
-import { ApiService } from '../shared/service/api.service';
+import { ApiService } from './api.service';
 import { Injectable } from '@angular/core';
 const moment = (_moment as any).default ? (_moment as any).default : _moment;
 

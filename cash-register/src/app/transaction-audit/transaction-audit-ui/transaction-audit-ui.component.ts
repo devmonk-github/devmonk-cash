@@ -9,8 +9,7 @@ import { ToastService } from 'src/app/shared/components/toast';
 import { defaultMenuOptions, MenuComponent } from 'src/app/shared/_layout/components/common';
 import { Location } from '@angular/common';
 import { ChildChild, DisplayMethod, eDisplayMethodKeysEnum, View, ViewMenuChild } from '../transaction-audit-ui.model';
-import { TransactionAuditUiPdfService } from 'src/app/services/transaction-audit-pdf.service';
-const moment = (_moment as any).default ? (_moment as any).default : _moment;
+import { TransactionAuditUiPdfService } from 'src/app/shared/service/transaction-audit-pdf.service';
 
 
 @Component({
