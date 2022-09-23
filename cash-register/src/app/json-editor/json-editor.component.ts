@@ -4,7 +4,7 @@ import { JsonEditorOptions } from "ang-jsoneditor";
 @Component({
   selector: 'app-json-editor',
   templateUrl: './json-editor.component.html',
-  styleUrls: ['./json-editor.component.scss']
+  styleUrls: ['./json-editor.component.scss'],
 })
 export class JsonEditorComponent implements OnInit {
 
@@ -14,8 +14,8 @@ export class JsonEditorComponent implements OnInit {
 
   constructor() {
     this.editorOptions = new JsonEditorOptions()
-    this.editorOptions.modes = ['code', 'text', 'tree', 'view'];
-
+    this.editorOptions.modes = ['code', 'text', 'tree', 'view', 'form'];
+    this.editorOptions.mode = 'tree';
     this.initialData = {
       readOnly: false,
       inverted: false,
