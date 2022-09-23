@@ -34,6 +34,7 @@
     "@fortawesome/free-regular-svg-icons": "^6.1.1",
     "@fortawesome/free-solid-svg-icons": "^6.1.1",
     "@iplab/ngx-file-upload": "^4.0.1",
+    "@maaxgr/ang-jsoneditor": "12",
     "@ng-select/ng-select": "^8.1.1",
     "@ngx-translate/core": "^14.0.0",
     "@popperjs/core": "^2.11.2",

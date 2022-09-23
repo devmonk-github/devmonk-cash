@@ -4,20 +4,23 @@
       <h1>Template</h1>
       <p>To change template, you need to update the component code</p>
       <json-editor [options]="editorOptions" [data]="templateString"></json-editor>
-<!--      <textarea [(ngModel)]="templateString" class="form-control" rows="20"></textarea>-->
+      <!-- <textarea [(ngModel)]="templateString" class="form-control" rows="20"></textarea>-->
     </div>
     <div class="col-md-6">
       <h1>Data</h1>
       <p>To change data, you need to update the component code</p>
       <json-editor [options]="editorOptions" [data]="dataString"></json-editor>
-
-<!--      <textarea [(ngModel)]="dataString" class="form-control" rows="20"></textarea>-->
+      <!--<textarea [(ngModel)]="dataString" class="form-control" rows="20"></textarea>-->
     </div>
     <div class="col-md-12">
       <p>ComputerId: {{computerId}} | PrinterId: {{printerId}}</p>
-      <div class="alert alert-danger" *ngIf="!computerId || !printerId">Copy local storage keys <strong>authorization</strong>, <strong>currentBusiness</strong> and <strong>org</strong> to the local storage of this page!</div>
-      <button class="btn btn-primary" type="button" (click)="generatePDF(false)">Download <span class="spinner-border spinner-border-sm align-middle ms-2" *ngIf="pdfGenerating"></span></button>
-      <button class="btn btn-primary" type="button" (click)="generatePDF(true)">Print <span class="spinner-border spinner-border-sm align-middle ms-2" *ngIf="pdfGenerating"></span></button>
+      <div class="alert alert-danger" *ngIf="!computerId || !printerId">Copy local storage keys
+        <strong>authorization</strong>, <strong>currentBusiness</strong> and <strong>org</strong> to the local storage
+        of this page!</div>
+      <button class="btn btn-primary" type="button" (click)="generatePDF(false)">Download <span
+          class="spinner-border spinner-border-sm align-middle ms-2" *ngIf="pdfGenerating"></span></button>
+      <button class="btn btn-primary" type="button" (click)="generatePDF(true)">Print <span
+          class="spinner-border spinner-border-sm align-middle ms-2" *ngIf="pdfGenerating"></span></button>
     </div>
   </div>
 </div>

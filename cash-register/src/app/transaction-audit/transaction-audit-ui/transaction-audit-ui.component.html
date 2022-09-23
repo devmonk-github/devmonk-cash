@@ -192,7 +192,7 @@
                                         <div class="col-md-6">
                                             <label class="fs-6 form-label fw-bolder text-dark">{{'EMPLOYEE' |
                                                 translate}}</label>
-                                            <ng-select class="form-control form-control-solid p-0" [(ngModel)]="selectedEmployee" [clearable]="false">
+                                            <ng-select class="form-control form-control-solid p-0" [(ngModel)]="selectedEmployee" (ngModelChange)="checkShowDownload()" [clearable]="false">
                                                 <ng-option *ngFor="let oEmployee of aEmployee" [value]="oEmployee">
                                                     {{oEmployee.sFirstName + ' ' +oEmployee.sLastName}}
                                                 </ng-option>
@@ -296,7 +296,7 @@
                                     <label
                                         class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20">
                                         <input class="form-check-input" type="checkbox" [(ngModel)]="IsDynamicState"
-                                            name="IsDynamicState" [disabled]="iStatisticId ? true : false" (click)="fetchStatistics()" />
+                                            name="IsDynamicState" [disabled]="iStatisticId ? true : false" (click)="IsDynamicState = !IsDynamicState;fetchStatistics()" />
                                         <span class="form-check-label"> {{ "SHOW_DYNAMIC" | translate}} </span>
                                     </label>
                                 </div>
@@ -394,7 +394,7 @@
                             </div>
                         </div>
                         <hr>
-                        <ng-container *ngIf="oStatisticsDocument && oStatisticsDocument.bIsDayState===false">
+                        <ng-container *ngIf="bShowDownload">
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="d-flex justify-content-end align-items-center">
@@ -1382,7 +1382,7 @@
                                     </label>
                                 </div> -->
                                 <br>
-                                <ng-container *ngIf="oStatisticsDocument.bIsDayState">
+                                <ng-container *ngIf="oStatisticsDocument?.bIsDayState">
                                     <div class="d-flex justify-content-start">
                                         <button type="button" class="btn btn-primary" data-kt-roles-modal-action="submit"
                                         (click)="closeDayState()" [class.disabled]="closingDayState">
