@@ -84,7 +84,7 @@ export class TillService {
       this.getValueFromLocalStorage('currentEmployee')._id,
       this.getValueFromLocalStorage('currentLocation'),
       null,
-      null ,
+      null,
     )
 
     const body = {
@@ -204,7 +204,6 @@ export class TillService {
       if (i.oType.bRefund && i.nDiscount !== 0) {
         i.nPaymentAmount -= i.nDiscount * i.nQuantity;
         i.nRevenueAmount = i.nPaymentAmount;
-        console.log('I am printing ', i.nPaymentAmount, i.nRevenueAmount);
         const records = discountRecords.filter((o: any) => o.sUniqueIdentifier === i.sUniqueIdentifier);
         records.forEach((record: any) => {
           i.nPaymentAmount += record.nPaymentAmount;
@@ -232,8 +231,6 @@ export class TillService {
           tItem1.nPaymentAmount = -1 * tItem1.nDiscount * i.nQuantity;
           tItem1.nRevenueAmount = tItem1.nPaymentAmount;
           tItem1.nPriceIncVat = tItem1.nPaymentAmount;
-          //tItem1.oType.bPrepayment = true; // B jolmer testing discount && prepayment
-          // tItem1.oType.bPrepayment = false;  // A Jolmer testing discount
           tItem1.nPurchasePrice = tItem1.nPriceIncVat * i.nPurchasePrice / i.nPriceIncVat;
           body.transactionItems.push(tItem1);
         }
@@ -268,6 +265,35 @@ export class TillService {
     return body;
   }
 
+  createGiftcardTransactionItem(body: any, discountArticleGroup: any) {
+    const originalTItems = length = body.transactionItems.filter((i: any) => i.oType.eKind !== 'loyalty-points-discount' && i.oType.eKind !== 'discount' && i.oType.eKind !== 'loyalty-points' && i.oType.eKind !== 'giftcard-discount');
+    console.log(originalTItems.length);
+    const gCard = body.payments.find((o: any) => o.sName === 'Giftcards' && o.type === 'custom');
+    // const ledger = this.ledgerNumberList.find(o => o.iArticleGroup.id === article._id && o.iArticleGroup.type === type);
+    let nDiscount = Math.round(gCard.amount / originalTItems.length);
+    originalTItems.map((i: any) => {
+      if (nDiscount > gCard.amount) {
+        nDiscount = gCard.amount;
+        gCard.amount = 0;
+      } else {
+        gCard.amount = gCard.amount - nDiscount;
+      }
+      const tItem1 = JSON.parse(JSON.stringify(i));
+      tItem1.iArticleGroupId = discountArticleGroup._id;
+      tItem1.oArticleGroupMetaData.sCategory = discountArticleGroup.sCategory;
+      tItem1.oArticleGroupMetaData.sSubCategory = discountArticleGroup.sSubCategory;
+      tItem1.oType.eTransactionType = 'cash-registry';
+      tItem1.oType.eKind = 'giftcard-discount';
+      tItem1.nPaymentAmount = -1 * nDiscount;
+      tItem1.nRevenueAmount = -1 * nDiscount;
+      tItem1.nPriceIncVat = -1 * nDiscount;
+      tItem1.nPurchasePrice = -1 * nDiscount;
+      tItem1.nDiscount = 0;
+      body.transactionItems.push(tItem1);
+    });
+
+
+  }
   checkArticleGroups(): Observable<any> {
     let data = {
       skip: 0,

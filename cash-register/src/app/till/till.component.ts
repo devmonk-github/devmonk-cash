@@ -591,26 +591,29 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
           body.oTransaction.iActivityId = this.iActivityId;
           let result = body.transactionItems.map((a: any) => a.iBusinessPartnerId);
           const uniq = [...new Set(_.compact(result))];
+          this.tillService.createGiftcardTransactionItem(body, this.discountArticleGroup);
+          console.log(body);
           this.apiService.postNew('cashregistry', '/api/v1/till/transaction', body)
             .subscribe((data: any) => {
               this.toastrService.show({ type: 'success', text: 'Transaction created.' });
-              const { transaction, aTransactionItems } = data;
-              transaction.aTransactionItems = aTransactionItems;
-              this.transaction = transaction;
-              this.transaction.aTransactionItems.forEach((item: any, index: number) => {
-                this.getRelatedTransactionItem(item?.iActivityItemId, item?._id, index)
-              })
-              this.getRelatedTransaction(this.transaction?.iActivityId, this.transaction?._id)
-              this.pdfService.generatePDF(this.transaction);
-              this.updateFiskalyTransaction('FINISHED', body.payments);
-              setTimeout(() => {
-                this.saveInProgress = false;
-                this.fetchBusinessPartnersProductCount(uniq);
-                this.clearAll();
-              }, 100);
-              if (this.selectedTransaction) {
-                this.deleteParkedTransaction();
-              };
+              this.saveInProgress = false;
+              // const { transaction, aTransactionItems } = data;
+              // transaction.aTransactionItems = aTransactionItems;
+              // this.transaction = transaction;
+              // this.transaction.aTransactionItems.forEach((item: any, index: number) => {
+              //   this.getRelatedTransactionItem(item?.iActivityItemId, item?._id, index)
+              // })
+              // this.getRelatedTransaction(this.transaction?.iActivityId, this.transaction?._id)
+              // this.pdfService.generatePDF(this.transaction);
+              // this.updateFiskalyTransaction('FINISHED', body.payments);
+              // setTimeout(() => {
+              //   this.saveInProgress = false;
+              //   this.fetchBusinessPartnersProductCount(uniq);
+              //   this.clearAll();
+              // }, 100);
+              // if (this.selectedTransaction) {
+              //   this.deleteParkedTransaction();
+              // };
             }, err => {
               this.toastrService.show({ type: 'danger', text: err.message });
               this.saveInProgress = false;
