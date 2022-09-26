@@ -93,7 +93,11 @@ export class PdfService {
       pageSize,
       pageMargins: pageMargin,
       content: content,
-      styles: styles
+      styles: styles,
+      defaultStyle: {
+        fontSize: 6,
+        // lineHeight: 1.3
+      }
     };
     return docDefinition;
   }

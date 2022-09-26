@@ -8,6 +8,8 @@ import * as _moment from 'moment';
 import { CustomerDetailsComponent } from 'src/app/shared/components/customer-details/customer-details.component';
 import { ActivityDetailsComponent } from 'src/app/shared/components/activity-details-dialog/activity-details.component';
 import { TransactionReceiptService } from 'src/app/shared/service/transaction-receipt.service';
+import { Pn2escposService } from 'src/app/shared/service/pn2escpos.service';
+import { PrintService } from 'src/app/shared/service/print.service';
 const moment = (_moment as any).default ? (_moment as any).default : _moment;
 
 @Component({
@@ -45,11 +47,13 @@ export class TransactionDetailsComponent implements OnInit {
   ableToDownload: Boolean = false;
   from !: string;
 
+  private pn2escposService = new Pn2escposService();
   constructor(
     private viewContainerRef: ViewContainerRef,
     private apiService: ApiService,
     private dialogService: DialogService,
-    private receiptService: TransactionReceiptService
+    private receiptService: TransactionReceiptService,
+    private printService: PrintService
   ) {
     const _injector = this.viewContainerRef.parentInjector;
     this.dialogRef = _injector.get<DialogComponent>(DialogComponent);
@@ -78,8 +82,8 @@ export class TransactionDetailsComponent implements OnInit {
       if (item?.oBusinessProductMetaData?.sLabelDescription) item.description = item.description + item?.oBusinessProductMetaData?.sLabelDescription + ' ' + item?.sProductNumber;
       totalSavingPoints += item.nSavingsPoints;
       let disc = parseFloat(item.nDiscount);
-      if(item.bPaymentDiscountPercent){ 
-        disc = (disc * parseFloat(item.nPriceIncVat)/(100 + parseFloat(item.nVatRate)));
+      if (item.bPaymentDiscountPercent) {
+        disc = (disc * parseFloat(item.nPriceIncVat) / (100 + parseFloat(item.nVatRate)));
         item.nDiscountToShow = disc;
       } else { item.nDiscountToShow = disc; }
       item.priceAfterDiscount = (parseFloat(item.nPaymentAmount) - parseFloat(item.nDiscountToShow));
@@ -87,7 +91,7 @@ export class TransactionDetailsComponent implements OnInit {
       item.totalPaymentAmount = parseFloat(item.nPaymentAmount) * parseFloat(item.nQuantity);
       item.totalPaymentAmountAfterDisc = parseFloat(item.priceAfterDiscount) * parseFloat(item.nQuantity);
       item.bPrepayment = item?.oType?.bPrepayment || false;
-      const vat = (item.nVatRate * item.priceAfterDiscount/(100 + parseFloat(item.nVatRate)));
+      const vat = (item.nVatRate * item.priceAfterDiscount / (100 + parseFloat(item.nVatRate)));
       item.vat = vat.toFixed(2);
       totalVat += vat;
       total = total + item.totalPaymentAmount;
@@ -116,6 +120,7 @@ export class TransactionDetailsComponent implements OnInit {
       .subscribe(
         (result: any) => {
           this.businessDetails = result.data;
+          this.businessDetails.currentLocation = this.businessDetails?.aLocation?.filter((location: any) => location?._id.toString() == this.iLocationId.toString())[0];
           this.ableToDownload = true;
         })
   }
@@ -171,7 +176,7 @@ export class TransactionDetailsComponent implements OnInit {
         this.transaction.currentLocation = this.businessDetails.aLocation[i];
       }
     }
-    this.receiptService.exportToPdf({transaction:this.transaction});
+    this.receiptService.exportToPdf({ transaction: this.transaction });
     return;
     this.apiService.getNew('cashregistry', '/api/v1/pdf/templates/' + this.iBusinessId + '?sName=' + sName + '&eType=' + eType).subscribe(
       (result: any) => {
@@ -225,7 +230,7 @@ export class TransactionDetailsComponent implements OnInit {
         // dataObject.totalSavingPoints = totalSavingPoints;
         // dataObject.dCreatedDate = moment(dataObject.dCreatedDate).format('DD-MM-yyyy hh:mm');
         delete this.transaction.related;
-        
+
         // this.pdfService.createPdf(JSON.stringify(result.data), this.transaction, filename, print, printData, this.iBusinessId, this.transaction?._id)
         //   .then(() => {
         //     this.downloadWithVATLoading = false;
@@ -340,11 +345,11 @@ export class TransactionDetailsComponent implements OnInit {
   }
 
   openCustomer(customer: any) {
-    this.dialogService.openModal(CustomerDetailsComponent, 
-      { cssClass: "modal-xl position-fixed start-0 end-0", context: { customer: customer, mode: 'details', from:'transactions' } }).instance.close.subscribe(result => {  });
+    this.dialogService.openModal(CustomerDetailsComponent,
+      { cssClass: "modal-xl position-fixed start-0 end-0", context: { customer: customer, mode: 'details', from: 'transactions' } }).instance.close.subscribe(result => { });
   }
 
-  async showActivityItem(activityItem: any, event:any) {
+  async showActivityItem(activityItem: any, event: any) {
     const oBody = {
       iBusinessId: this.iBusinessId,
     }
@@ -356,7 +361,241 @@ export class TransactionDetailsComponent implements OnInit {
     event.target.disabled = false;
     this.dialogService.openModal(ActivityDetailsComponent, { cssClass: 'w-fullscreen', context: { activity: oActivityItem, items: true, from: 'transaction-details' } })
       .instance.close.subscribe((result: any) => {
-        
+
       });
+  }
+
+  getThermalReceipt() {
+    let template = [
+      {
+        "logo": "C"
+      },
+      {
+        "break": 1
+      },
+      {
+        "align": "center"
+      },
+      {
+        "bold": true
+      },
+      {
+        "line": "[[business.sName]]"
+      },
+      {
+        "bold": false
+      },
+      {
+        "line": "[[business.currentLocation.oAddress.street]] [[business.currentLocation.oAddress.houseNumber]]"
+      },
+      {
+        "line": "[[business.currentLocation.oAddress.postalCode]] [[business.currentLocation.oAddress.city]]"
+      },
+      {
+        "line": "[[business.oPhone.sLandLine]]"
+      },
+      {
+        "divider": "_"
+      },
+      {
+        "break": 1
+      },
+      {
+        "align": "left"
+      },
+      {
+        "line": "[[dCreatedDate]]<<>>Bonnr:   [[sReceiptNumber]]"
+      },
+      {
+        "barcode": "T-[[sNumber]]"
+      },
+      {
+        "divider": "_"
+      },
+      {
+        "break": 1
+      },
+      {
+        "foreach": "aTransactionItems",
+        "template": [
+          {
+            "bold": true
+          },
+          {
+            "line": "[[nQuantity]] x [[sProductName]]"
+          },
+          {
+            "line": "[[sArticleNumber]]<<>>[[totalPaymentAmount]]"
+          },
+          {
+            "bold": false
+          },
+          {
+            "text": "[[comment]]",
+            "if": "item.sComment"
+          },
+          {
+            "break": 1,
+            "if": "item.sComment"
+          },
+          {
+            "text": "Uw korting: [[nDiscount]]",
+            "if": "item.nDiscount && item.nDiscount !== 0 && item.nDiscount !== '0'"
+          },
+          {
+            "text": "%",
+            "if": "item.nDiscount && item.nDiscount !== 0 && item.nDiscount !== '0' && item.bPaymentDiscountPercent"
+          },
+          {
+            "text": " Origineel bedrag: [[totalPaymentAmountAfterDisc]]",
+            "if": "item.nDiscount && item.totalPaymentAmount !== '' && item.totalPaymentAmount !== '€ 0,00'"
+          },
+          {
+            "line": " "
+          }
+        ],
+        "blankline": true
+      },
+      {
+        "divider": "_"
+      },
+      {
+        "break": 1
+      },
+      {
+        "line": "SUBTOTAAL<<>>[[total]]"
+      },
+      {
+        "bold": true
+      },
+      {
+        "line": "TOTAAL<<>>[[totalAfterDisc]]"
+      },
+      {
+        "bold": false
+      },
+      {
+        "break": 1
+      },
+      // {
+      //   "line": "WISSELGELD<<>>[[totals.change]]",
+      //   "if": "item.totals.change !== '€ 0,00'"
+      // },
+      // {
+      //   "break": 1,
+      //   "if": "item.totals.change !== '€ 0,00'"
+      // },
+      {
+        "bold": true
+      },
+      {
+        "line": "BETAALMETHODES"
+      },
+      {
+        "bold": false
+      },
+      {
+        "foreach": "aPayments",
+        "template": [
+          {
+            "line": "[[sMethod]]<<>>[[nAmount]]"
+          }
+        ],
+        "blankline": false
+      },
+      {
+        "break": 1
+      },
+      {
+        "bold": true
+      },
+      {
+        "line": "          Netto     BTW       Totaal"
+      },
+      {
+        "bold": false
+      },
+      // {
+      //   "foreach": "taxes",
+      //   "template": [
+      //     {
+      //       "text": "[[rate]]"
+      //     },
+      //     {
+      //       "text": "% van"
+      //     },
+      //     {
+      //       "text": "[[withoutTax]]"
+      //     },
+      //     {
+      //       "text": "[[tax]]"
+      //     },
+      //     {
+      //       "text": "[[total]]"
+      //     },
+      //     {
+      //       "break": 1
+      //     }
+      //   ],
+      //   "columns": [
+      //     2,
+      //     6,
+      //     9,
+      //     9,
+      //     13
+      //   ],
+      //   "blankline": false
+      // },
+      {
+        "break": 1
+      },
+      {
+        "line": "U bent geholpen door: [[oCustomer.sEmail]]"
+      },
+      {
+        "divider": "_"
+      },
+      {
+        "align": "center"
+      },
+      {
+        "break": 1
+      },
+      {
+        "line": "Hartelijk dank en graag tot ziens."
+      },
+      {
+        "line": "[[oCustomer.sName]]",
+        "if": "!item.oCustomer.counter"
+      },
+      // {
+      //   "line": "[[oCustomer.number]]",
+      //   "if": "item.oCustomer.number && !item.oCustomer.counter"
+      // },
+      {
+        "line": "[[oCustomer.oInvoiceAddress.postalCode]] [[oCustomer.oInvoiceAddress.city]]",
+        "if": "item.oCustomer.oInvoiceAddress.postalCode || item.oCustomer.oInvoiceAddress.city"
+      },
+      {
+        "line": "Kijk voor onze voorwaarden op https://www.sluijsmans.eu"
+      },
+      {
+        "bold": true
+      },
+      {
+        "line": "Ruilen binnen 14 dagen met kassabon"
+      },
+      {
+        "bold": false
+      },
+      {
+        "break": 2
+      }
+    ];
+    let transactionDetails = { business: this.businessDetails, ...this.transaction };
+    let command = this.pn2escposService.generate(JSON.stringify(template), JSON.stringify(transactionDetails));
+    this.printService.openDrawer(this.iBusinessId, JSON.stringify(command), this.printerId, this.computerId).then((response) => {
+      console.log(response);
+    })
   }
 }

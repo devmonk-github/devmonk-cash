@@ -42,9 +42,10 @@ export class PrintSettingsComponent implements OnInit {
   ]
   iBusinessId: string = '';
   iLocationId: string = '';
-  isLoadingLabel: boolean = false;
-  defaultLabelsData: Array<any> = []
-  LabelTemplatesData: Array<any> = []
+  isLoadingDefaultLabel: boolean = false;
+  isLoadingTemplatesLabel: boolean = false;
+  defaultLabelsData: Array<TemplateJSON> = []
+  LabelTemplatesData: Array<TemplateJSON> = []
 
   constructor(
     private dialogService: DialogService,
@@ -56,6 +57,8 @@ export class PrintSettingsComponent implements OnInit {
   ngOnInit(): void {
     this.iBusinessId = localStorage.getItem('currentBusiness') || '';
     this.iLocationId = localStorage.getItem('currentLocation') || '';
+    this.isLoadingDefaultLabel = true
+    this.isLoadingTemplatesLabel = true
     this.getLabelTemplate()
   }
 
@@ -67,7 +70,8 @@ export class PrintSettingsComponent implements OnInit {
     return index;
   }
 
-  openLabelTemplateModal(jsonData: any, mode: 'create' | 'edit') {
+
+  openLabelTemplateModal(jsonData: TemplateJSON, mode: 'create' | 'edit') {
     if (mode === 'create') {
       jsonData.readOnly = false
       jsonData.iBusinessId = this.iBusinessId
@@ -85,16 +89,19 @@ export class PrintSettingsComponent implements OnInit {
       }
     })
 
-    dialogRef.instance.close.subscribe(result => {
+    dialogRef.instance.close.subscribe(async (result) => {
       if (result) {
 
+        this.isLoadingTemplatesLabel = true
+
         if (mode === 'create') {
-          this.createLabelTemplate(result)
+          await this.createLabelTemplate(result)
           this.getLabelTemplate()
         }
         if (mode === 'edit') {
-          this.toastService.show({ type: 'warning', text: 'TODO: add put api in backend' });
-
+          await this.updateLabelTemplate(result._id.toString(), result)
+          this.getLabelTemplate()
+          // this.toastService.show({ type: 'warning', text: 'TODO: add put api in backend' });
         }
       }
       console.log(result);
@@ -105,24 +112,24 @@ export class PrintSettingsComponent implements OnInit {
   async getLabelTemplate(): Promise<any[]> {
     // await this.postLabelTemplate()
     return new Promise((resolve, reject) => {
-      this.isLoadingLabel = true
       this.apiService.getNew('cashregistry', `/api/v1/label/templates/${this.iBusinessId}`).subscribe((result: any) => {
         console.log({ LabelTemplates: result })
         this.defaultLabelsData = result.data.filter((lable: any) => lable.readOnly)
         this.LabelTemplatesData = result.data.filter((lable: any) => !lable.readOnly)
-        this.isLoadingLabel = false
+        this.isLoadingTemplatesLabel = false
+        this.isLoadingDefaultLabel = false
 
         resolve(result.data)
       }, (error) => {
-        this.isLoadingLabel = false
-
+        this.isLoadingTemplatesLabel = false
+        this.isLoadingDefaultLabel = false
         console.log('error: ', error);
         resolve(error)
       })
     });
   }
 
-  createLabelTemplate(jsonData: any) {
+  createLabelTemplate(jsonData: TemplateJSON) {
     const oBody = {
       "iBusinessId": jsonData.iBusinessId,
       "iLocationId": jsonData.iLocationId,
@@ -130,9 +137,9 @@ export class PrintSettingsComponent implements OnInit {
     }
     return new Promise(resolve => {
 
-      this.apiService.postNew('cashregistry', `/api/v1/label/templates/create`, oBody).subscribe((result: any) => {
+      this.apiService.postNew('cashregistry', `/api/v1/label/templates`, oBody).subscribe((result: any) => {
         console.log(result);
-        this.toastService.show({ type: 'success', text: 'Item added' });
+        this.toastService.show({ type: 'success', text: 'label created successfully' });
         resolve(result);
       }, (error) => {
         resolve(error);
@@ -141,7 +148,28 @@ export class PrintSettingsComponent implements OnInit {
       })
     })
   }
-  deleteLabelTemplate(id: string) {
+
+  updateLabelTemplate(id: string, jsonData: TemplateJSON) {
+    const oBody = {
+      "iBusinessId": jsonData.iBusinessId,
+      "iLocationId": jsonData.iLocationId,
+      "template": jsonData
+    }
+    return new Promise(resolve => {
+
+      this.apiService.putNew('cashregistry', `/api/v1/label/templates/${id.toString()}`, oBody).subscribe((result: any) => {
+        console.log(result);
+        this.toastService.show({ type: 'success', text: 'label updated successfully' });
+        resolve(result);
+      }, (error) => {
+        resolve(error);
+        console.log('error: ', error);
+        this.toastService.show({ type: 'warning', text: 'Something went wrong' });
+      })
+    })
+  }
+
+  deleteLabelTemplate(id: any) {
     const buttons = [
       { text: 'YES', value: true, status: 'success', class: 'btn-primary ml-auto mr-2' },
       { text: 'NO', value: false, class: 'btn-danger ' }
@@ -154,12 +182,68 @@ export class PrintSettingsComponent implements OnInit {
       }
     })
       .instance.close.subscribe(
-        result => {
+        (result) => {
           console.log(result)
-          this.toastService.show({ type: 'warning', text: 'TODO: add delete api in backend' });
+          if (result) {
+            this.isLoadingTemplatesLabel = true
+
+            this.apiService.deleteNew('cashregistry', `/api/v1/label/templates/${id.toString()}`).subscribe((result: any) => {
+              console.log(result);
+              this.getLabelTemplate()
+              this.toastService.show({ type: 'success', text: 'label deleted successfully' });
+
+            }, (error) => {
+              console.log('error: ', error);
+              this.toastService.show({ type: 'warning', text: 'Something went wrong' });
+              this.isLoadingTemplatesLabel = false
+
+            })
+          }
 
         }
       )
   }
 
+}
+// Generated by https://quicktype.io
+
+export interface TemplateJSON {
+  _id?: String;
+  __v?: String;
+  readOnly: boolean;
+  inverted: boolean;
+  encoding: number;
+  media_darkness: number;
+  media_type: string;
+  disable_upload: boolean;
+  can_rotate: boolean;
+  alternative_price_notation: boolean;
+  dpmm: number;
+  height: number;
+  width: number;
+  labelleft: number;
+  labeltop: number;
+  offsetleft: number;
+  offsettop: number;
+  elements: TemplateJSONElement[];
+  layout_name: string;
+  name: string;
+  iBusinessId: string;
+  iLocationId: string;
+  dCreatedDate?: string;
+  dUpdatedDate?: string;
+}
+
+export interface TemplateJSONElement {
+  _id?: string;
+  sType: string;
+  x: number;
+  y: number;
+  width?: number;
+  height?: number;
+  visible?: string;
+  pnfield?: string;
+  charwidth?: number;
+  charheight?: number;
+  euro_prefix?: boolean;
 }
