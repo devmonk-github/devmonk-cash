@@ -185,12 +185,8 @@ export class TransactionReceiptService {
             'SAVINGS_PO',
             'Amount',
         ];
-        const tableHeadersList: any = [];
-        tableHeaders.forEach((header:any)=>{
-            if(header==='Amount') tableHeadersList.push({text: header, style:['th','right']})
-            else tableHeadersList.push({text: header, style:['th']})
-        });
-        const transactionTableWidths = ['10%', '45%', '10%', '10%', '10%', '15%'];
+        
+        let transactionTableWidths = ['10%', '*', '10%', '10%', '10%', '15%'];
         
         let texts: any = [];
         let nTotalOriginalAmount = 0;
@@ -205,12 +201,11 @@ export class TransactionReceiptService {
                 description += `${related.sTransactionNumber}|${related.nPaymentAmount}\n`;
             });
 
-
             texts.push([
                 { text: item.nQuantity, style: ['td'] },
                 { text: description , style: ['td'] },
                 { text: `${item.nVatRate}(${item.vat})` , style: ['td'] },
-                { text: (item.nDiscountToShow > 0) ? item.nDiscountToShow:'' , style: ['td'] },
+                { text: item.nDiscountToShow, style: ['td'] },
                 { text: item.nSavingsPoints , style: ['td'] },
                 { text: `(${item.totalPaymentAmount})${item.totalPaymentAmountAfterDisc}` , style: ['td','right'] },
             ]);
@@ -222,11 +217,26 @@ export class TransactionReceiptService {
             { text: 'Total' },
             { text: '' },
             { text: this.transaction.totalVat },
-            { text: (this.transaction.totalDiscount > 0) ? this.transaction.totalDiscount: '' },
+            { text: this.transaction.totalDiscount },
             { text: this.transaction.totalSavingPoints },
-            { text: `(${this.transaction.total})${this.transaction.totalAfterDisc}\nFrom Total ${nTotalOriginalAmount}`, style: ['right'] },
+            { text: `(${this.transaction.total})${this.transaction.totalAfterDisc}\nFrom Total ${nTotalOriginalAmount}`, style: ['right'] }
         ];
         
+        if (!(this.transaction.totalDiscount > 0)) {
+            totalRow.splice(3,1);
+            tableHeaders.splice(3,1);
+            transactionTableWidths.splice(3,1);
+            texts.map((text:any)=>{
+                text.splice(3,1);
+            })
+        }
+        
+        const tableHeadersList: any = [];
+        tableHeaders.forEach((header: any) => {
+            if (header === 'Amount') tableHeadersList.push({ text: header, style: ['th', 'right'] })
+            else tableHeadersList.push({ text: header, style: ['th'] })
+        });
+
         const finalData = [[...tableHeadersList], ...texts, [...totalRow]];
         const transactionData = {
             table: {
