@@ -6,6 +6,7 @@ import { DialogComponent } from 'src/app/shared/service/dialog';
 import { Js2zplService } from 'src/app/shared/service/js2zpl.service';
 
 export const makeDataObjectForProduct = (product: any) => {
+
   const dataObject = {
     "%%PRODUCT_NAME%%": product.sProductNumber,
     "%%SELLING_PRICE%%": product.nPriceIncVat,
@@ -31,6 +32,7 @@ export const makeDataObjectForProduct = (product: any) => {
     "%%JEWEL_TYPE%%": "",
     "%%JEWEL_MATERIAL%%": "",
   }
+
   return dataObject
 
 }
@@ -49,7 +51,6 @@ export class LabelTemplateModelComponent implements OnInit {
 
   constructor(private viewContainerRef: ViewContainerRef,
     private toastService: ToastService,
-
   ) {
     const _injector = this.viewContainerRef.parentInjector;
     this.dialogRef = _injector.get<DialogComponent>(DialogComponent);
@@ -68,6 +69,7 @@ export class LabelTemplateModelComponent implements OnInit {
     this.dialogRef.close.emit(data);
   }
   validateTemplateJson(jsonData: TemplateJSON) {
+    let excluded = ['dCreatedDate', 'dUpdatedDate', '_id', '__v']
     let json: TemplateJSON = {
       "readOnly": false,
       "inverted": false,
@@ -99,7 +101,10 @@ export class LabelTemplateModelComponent implements OnInit {
       iLocationId: ''
     }
     let jsonKeys = Object.keys(json)
-    let jsonDataKeys = Object.keys(jsonData)
+    let jsonDataKeys = Object.keys(jsonData).filter(e => {
+      return !excluded.includes(e)
+    })
+
     let isMissingAnyKey = jsonKeys.sort().join() !== jsonDataKeys.sort().join();
     console.log({
       jsonKeys,
@@ -135,7 +140,8 @@ export class LabelTemplateModelComponent implements OnInit {
       brandName: "Brand Name",
 
     })
-    const JsonTemplate = this.jsonEditor.jsonData
+    const JsonTemplate = JSON.parse(JSON.stringify(this.jsonEditor.jsonData));
+
     JsonTemplate.elements = JsonTemplate.elements.map((template: any, i: number) => {
       JsonTemplate.elements[i]['type'] = template.sType
       return template
