@@ -1086,12 +1086,13 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
     const oCashPaymentMethod = this.allPaymentMethod.filter((el: any) => el.sName.toLowerCase() === 'cash')[0];
     const oBankPaymentMethod = this.allPaymentMethod.filter((el: any) => el.sName.toLowerCase() === 'bankpayment')[0];
 
+    console.log('nDifferenceAmount: ', nDifferenceAmount);
     if (nDifferenceAmount > 0) {
       //we have difference in cash, so add that as and expense
 
       await this.addExpenses(
         {
-          amount: nDifferenceAmount,
+          amount: -(nDifferenceAmount),
           comment: 'Lost money',
           oPayment: {
             iPaymentMethodId: oCashPaymentMethod._id,
