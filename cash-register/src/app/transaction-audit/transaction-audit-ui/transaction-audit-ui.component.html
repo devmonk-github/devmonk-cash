@@ -1322,12 +1322,14 @@
                                         [(ngModel)]="oCountings.nCashCounted">
                                 </div>
                             </div> -->
-                            <div class="d-flex flex-wrap">
-                                <label>{{'NOTES' | translate}}</label>
-                                <div class="flex-grow-1 ms-5">
-                                    <textarea class="form-control" rows="5"></textarea>
+                            <ng-container *ngIf="oStatisticsDocument">
+                                <div class="d-flex flex-wrap">
+                                    <label>{{'NOTES' | translate}}</label>
+                                    <div class="flex-grow-1 ms-5">
+                                        <textarea class="form-control" rows="5" [disabled]="bDisableCountings" [(ngModel)]="oStatisticsDocument.sComment"></textarea>
+                                    </div>
                                 </div>
-                            </div>
+                            </ng-container>
                         </div>
 
                     </div>
