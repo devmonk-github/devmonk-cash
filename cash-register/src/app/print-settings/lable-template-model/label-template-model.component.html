@@ -10,6 +10,12 @@
   <div class="card-body py-3">
     <div class="row">
       <div class="col-12">
+        <ng-container *ngIf="image">
+
+          <img [src]="image" alt="" />
+        </ng-container>
+      </div>
+      <div class="col-12">
 
         <div class="json-editor">
           <app-json-editor [initialData]="jsonData" #jsonEditor></app-json-editor>
@@ -20,7 +26,7 @@
 
   </div>
   <div class="card-footer d-flex justify-content-end">
-    <button class="btn btn-primary" type="submit" (click)="validateTemplateJson(jsonEditor.jsonData)">{{ 'VALIDATE' |
+    <button class="btn btn-primary" type="submit" (click)="preview()">{{ 'PREVIEW' |
       translate}}</button>
   </div>
   <div class="card-footer d-flex justify-content-end">
