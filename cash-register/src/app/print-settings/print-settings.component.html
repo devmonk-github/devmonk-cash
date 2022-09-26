@@ -65,6 +65,7 @@
           <div class="d-flex flex-column">
             <div class="h5">{{"LABEL_TEMPLATE"|translate}}</div>
             <div class="dataTables_wrapper dt-bootstrap4 no-footer">
+
               <div class="table-responsive">
                 <table class="table table-striped table-rounded table-hover fs-6 gy-5 gs-5 dataTable no-footer">
                   <thead>
@@ -94,19 +95,21 @@
                         </button>
                       </td>
                     </tr>
+                    <div class="d-flex">
+                      <h5 *ngIf='!LabelTemplatesData.length && !isLoadingTemplatesLabel' style="text-align: center;"> No
+                        data
+                        found!</h5>
+                      <div class="row h-200px" *ngIf="isLoadingTemplatesLabel">
+                        <div class="spinner-box h-200px">
+                          <div class="three-quarter-spinner">
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </tbody>
                 </table>
               </div>
-              <div class="d-flex">
-                <h5 *ngIf='!LabelTemplatesData.length && !isLoadingLabel' style="text-align: center;"> No data
-                  found!</h5>
-                <div class="row h-200px" *ngIf="isLoadingLabel">
-                  <div class="spinner-box h-200px">
-                    <div class="three-quarter-spinner">
-                    </div>
-                  </div>
-                </div>
-              </div>
+
             </div>
           </div>
         </div>
@@ -114,6 +117,7 @@
           <div class="d-flex flex-column">
             <div class="h5">{{"DEFAULT_LABEL"|translate}}</div>
             <div class="dataTables_wrapper dt-bootstrap4 no-footer">
+
               <div class="table-responsive">
                 <table class="table table-striped table-rounded table-hover fs-6 gy-5 gs-5 dataTable no-footer">
                   <thead>
@@ -141,19 +145,21 @@
 
                       </td>
                     </tr>
+                    <div class="d-flex">
+                      <h5 *ngIf='!defaultLabelsData.length && !isLoadingDefaultLabel' style="text-align: center;"> No
+                        data
+                        found!</h5>
+                      <div class="row h-200px" *ngIf="isLoadingDefaultLabel">
+                        <div class="spinner-box h-200px">
+                          <div class="three-quarter-spinner">
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </tbody>
                 </table>
               </div>
-              <div class="d-flex">
-                <h5 *ngIf='!defaultLabelsData.length && !isLoadingLabel' style="text-align: center;"> No data
-                  found!</h5>
-                <div class="row h-200px" *ngIf="isLoadingLabel">
-                  <div class="spinner-box h-200px">
-                    <div class="three-quarter-spinner">
-                    </div>
-                  </div>
-                </div>
-              </div>
+
             </div>
           </div>
         </div>
