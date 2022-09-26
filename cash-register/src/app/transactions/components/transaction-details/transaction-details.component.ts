@@ -594,7 +594,9 @@ export class TransactionDetailsComponent implements OnInit {
     ];
     let transactionDetails = { business: this.businessDetails, ...this.transaction };
     let command = this.pn2escposService.generate(JSON.stringify(template), JSON.stringify(transactionDetails));
-    this.printService.openDrawer(this.iBusinessId, JSON.stringify(command), this.printerId, this.computerId).then((response) => {
+    this.printerId = 70780318;
+    this.computerId = 394051;
+    this.printService.openDrawer(this.iBusinessId, command, this.printerId, this.computerId).then((response) => {
       console.log(response);
     })
   }
