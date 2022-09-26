@@ -123,7 +123,7 @@ export class TransactionReceiptService {
 
     async exportToPdf({transaction}:any){
         this.transaction = transaction;
-        // console.log(this.transaction);
+        console.log(this.transaction);
         const result = await this.getBase64FromUrl('https://lirp.cdn-website.com/2568326e/dms3rep/multi/opt/Juwelier-Bos-208w.png').toPromise();
         this.logoUri = result.data;
         
@@ -193,8 +193,10 @@ export class TransactionReceiptService {
         const transactionTableWidths = ['10%', '45%', '10%', '10%', '10%', '15%'];
         
         let texts: any = [];
+        let nTotalOriginalAmount = 0;
         this.transaction.aTransactionItems.forEach((item:any) =>{
             // console.log({item});
+            nTotalOriginalAmount += item.nPriceIncVat; 
             let description = `${item.description} 
                 Original amount: ${item.nPriceIncVat} 
                 Already paid: ${item.sTransactionNumber} | ${item.nPaymentAmount} (this receipt)\n`;
@@ -208,7 +210,7 @@ export class TransactionReceiptService {
                 { text: item.nQuantity, style: ['td'] },
                 { text: description , style: ['td'] },
                 { text: `${item.nVatRate}(${item.vat})` , style: ['td'] },
-                { text: item.nDiscountToShow , style: ['td'] },
+                { text: (item.nDiscountToShow > 0) ? item.nDiscountToShow:'' , style: ['td'] },
                 { text: item.nSavingsPoints , style: ['td'] },
                 { text: `(${item.totalPaymentAmount})${item.totalPaymentAmountAfterDisc}` , style: ['td','right'] },
             ]);
@@ -220,9 +222,9 @@ export class TransactionReceiptService {
             { text: 'Total' },
             { text: '' },
             { text: this.transaction.totalVat },
-            { text: this.transaction.totalDiscount },
+            { text: (this.transaction.totalDiscount > 0) ? this.transaction.totalDiscount: '' },
             { text: this.transaction.totalSavingPoints },
-            { text: `(${this.transaction.total})${this.transaction.totalAfterDisc}`, style: ['right'] },
+            { text: `(${this.transaction.total})${this.transaction.totalAfterDisc}\nFrom Total ${nTotalOriginalAmount}`, style: ['right'] },
         ];
         
         const finalData = [[...tableHeadersList], ...texts, [...totalRow]];
