@@ -38,6 +38,7 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
   aEmployee: any = [];
   aPaymentMethods: any = [];
   aDayClosure: any = [];
+  oStockPerLocation: any = [];
 
   closingDayState: boolean = false;
   bShowDownload: boolean = false;
@@ -603,15 +604,18 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
       })
       .subscribe(
         (result: any) => {
-          if (result?.data?.aLocation?.length)
+          if (result?.data?.aLocation?.length) {
             this.aLocation = result.data.aLocation;
-          this.sCurrentLocation = result?.data?.sName;
-          this.aLocation.forEach((oLocation: any) => {
-            if (oLocation._id === this.iLocationId) {
-              this.sCurrentLocation += " (" + oLocation?.sName + ")";
-              this.aSelectedLocation.push(oLocation._id);
-            }
-          });
+            this.fetchStockValuePerLocation();
+            this.sCurrentLocation = result?.data?.sName;
+            this.aLocation.forEach((oLocation: any) => {
+              if (oLocation._id === this.iLocationId) {
+                this.sCurrentLocation += " (" + oLocation?.sName + ")";
+                this.aSelectedLocation.push(oLocation._id);
+              }
+            });
+
+          }
         },
         (error) => {
           console.log('error: ', error);
@@ -1060,6 +1064,7 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
       iBusinessId: this.iBusinessId,
       nTotal: data.amount,
       nPaymentAmount: data.amount,
+      nRevenueAmount: data.amount,
       iWorkstationId: this.iWorkstationId,
       iEmployeeId: currentEmployeeId,
       iLocationId: this.iLocationId,
@@ -1286,6 +1291,24 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
   checkShowDownload() {
     this.bShowDownload = (this.oStatisticsDocument && this.oStatisticsDocument?.bIsDayState === false) ||
       (!this.IsDynamicState && !this.selectedEmployee?._id && !this.selectedWorkStation?._id && !(this.aSelectedLocation?.length > 1));
+  }
+
+  fetchStockValuePerLocation() {
+    const url = `/api/v1/stock/correction/stock-value/per-location`;
+    const oBody = { iBusinessId: this.iBusinessId }
+    this.listBusinessSubscription = this.apiService.postNew('core', url, oBody).subscribe((result: any) => {
+      if (result?.data?.aHistory?.length) {
+        this.oStockPerLocation = result.data;
+        for (let i = 0; i < this.aLocation?.length; i++) {
+          const oLocation = this.oStockPerLocation.aHistory.find((oHistory: any) => oHistory?._id == this.aLocation[i]._id)
+          if (oLocation) {
+            oLocation.sName = this.aLocation[i].sName;
+          }
+        }
+      }
+    }, (error) => {
+      console.log('error: ', error);
+    });
   }
 
   ngOnDestroy(): void {

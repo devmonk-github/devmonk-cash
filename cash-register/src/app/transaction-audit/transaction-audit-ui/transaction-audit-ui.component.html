@@ -322,12 +322,12 @@
                                 <div class="col-6 m-0 p-0">
                                     <p class="row">
                                         <span class="col-4 fw-bolder">Start Date : </span>
-                                        <span class="col-8"> {{ oStatisticsData.dStartDate | date:'medium':'GMT'}}
+                                        <span class="col-8"> {{ oStatisticsData.dStartDate | date:'medium' }}
                                         </span>
                                     </p>
                                     <p class="row">
                                         <span class="col-4 fw-bolder" >End Date : </span>
-                                        <span class="col-8"> {{ oStatisticsData.dEndDate | date:'medium':'GMT'}} </span>
+                                        <span class="col-8"> {{ oStatisticsData.dEndDate | date:'medium' }} </span>
                                     </p>
                                     <p class="row">
                                         <span class="col-4 fw-bolder">Display Method : </span>
@@ -1051,8 +1051,7 @@
                         <p *ngIf="!aPaymentMethods?.length">{{ 'PAYMENT_METHODS_NOT_FOUND' | translate}}</p>
                         <div *ngIf="aPaymentMethods?.length">
                             <div class="card-body">
-                                <table
-                                    class="table table-row-bordered table-row-gray-300 gy-5 gs-5 mb-0 text-gray-600 fw-bold border">
+                                <table class="table table-row-bordered table-row-gray-300 gy-5 gs-5 mb-0 text-gray-600 fw-bold border">
                                     <thead class="bg-gray-100">
                                         <tr class="fw-bold fs-6 text-gray-800">
                                             <th>{{ 'METHOD' | translate}}</th>
@@ -1067,8 +1066,7 @@
                                             <td class="ps-9">{{oPayment.sMethod}}</td>
                                             <td>{{oPayment.nAmount}}</td>
                                             <td *ngIf="paymentEditMode">
-                                                <input class="form-control" type="number"
-                                                    [(ngModel)]="oPayment.nNewAmount"
+                                                <input class="form-control" type="number" [(ngModel)]="oPayment.nNewAmount"
                                                     (ngModelChange)="reCalculateTotal()">
                                             </td>
                                             <td>{{oPayment.nQuantity}}</td>
@@ -1077,10 +1075,8 @@
                                             <tr *ngFor="let oPayment of aNewSelectedPaymentMethods; let i = index">
                                                 <td>
                                                     <div>
-                                                        <ng-select [(ngModel)]="aNewSelectedPaymentMethods[i]"
-                                                            [clearable]="false">
-                                                            <ng-option [value]="option"
-                                                                *ngFor="let option of payMethods">
+                                                        <ng-select [(ngModel)]="aNewSelectedPaymentMethods[i]" [clearable]="false">
+                                                            <ng-option [value]="option" *ngFor="let option of payMethods">
                                                                 {{ option.sName | translate }}
                                                             </ng-option>
                                                         </ng-select>
@@ -1088,8 +1084,7 @@
                                                 </td>
                                                 <td></td>
                                                 <td>
-                                                    <input class="form-control" type="number"
-                                                        [(ngModel)]="oPayment.nAmount"
+                                                    <input class="form-control" type="number" [(ngModel)]="oPayment.nAmount"
                                                         (ngModelChange)="reCalculateTotal()">
                                                 </td>
                                             </tr>
@@ -1124,6 +1119,35 @@
                     </div>
                 </div>
                 <!-- PAYMENT END -->
+
+                <!-- STOCK HISTORY START -->
+                <div class="card">
+                    <div class="container">
+                        <div class="d-flex justify-content-between">
+                            <strong> {{ 'STOCK_HISTORY' | translate}} </strong>
+                        </div>
+                        <p *ngIf="!oStockPerLocation.aHistory">{{ 'STOCK_HISTORY_NOT_FOUND' | translate}}</p>
+                        <div *ngIf="oStockPerLocation.aHistory">
+                            <div class="card-body">
+                                <table class="table table-row-bordered table-row-gray-300 gy-5 gs-5 mb-0 text-gray-600 fw-bold border">
+                                    <thead class="bg-gray-100">
+                                        <tr class="fw-bold fs-6 text-gray-800">
+                                            <th>{{ 'LOCATION_NAME' | translate}}</th>
+                                            <th class="w-150px">{{ 'PURCHASE_PRICE' | translate}} - {{oStockPerLocation.nTotalPurchasePrice}}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="p-2">
+                                        <tr *ngFor="let oHistory of oStockPerLocation.aHistory; let i = index">
+                                            <td class="ps-9">{{oHistory.sName ? oHistory.sName : '-' }}</td>
+                                            <td>{{oHistory.nPurchasePrice}}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- STOCK HISTORY END -->
 
                 <!-- Tushar's code START -->
                 <ng-container

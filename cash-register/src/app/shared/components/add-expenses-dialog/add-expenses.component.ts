@@ -118,6 +118,7 @@ export class AddExpensesComponent implements OnInit {
 
       nTotal: -(amount),
       nPaymentAmount: -(amount),
+      nRevenueAmount: -(amount),
       iWorkstationId: localStorage.getItem('currentWorkstation'),
       iEmployeeId: this.currentEmployeeId,
       iLocationId: localStorage.getItem('currentLocation'),
