@@ -42,6 +42,7 @@ import { NgApexchartsModule } from "ng-apexcharts";
 import { WebOrderDetailsComponent } from "./components/web-order-details/web-order-details.component";
 import { SelectArticleDialogComponent } from "./components/select-articlegroup-dialog/select-articlegroup-dialog.component";
 import { NgxPaginationModule } from "ngx-pagination";
+import { NgxBarcodeModule } from 'ngx-barcode';
 @NgModule({
   declarations: [
     CustomerDialogComponent,
@@ -82,7 +83,9 @@ import { NgxPaginationModule } from "ngx-pagination";
     ToastModule.forRoot(),
     NgJsonEditorModule,
     FileSaverModule,
-    NgApexchartsModule
+    NgApexchartsModule,
+    NgxPaginationModule,
+    NgxBarcodeModule
   ],
   exports: [
     DialerComponent,
@@ -103,7 +106,9 @@ import { NgxPaginationModule } from "ngx-pagination";
     MorePaymentsDialogComponent,
     TabsComponent,
     TabComponent,
-    SelectArticleDialogComponent, NgxPaginationModule
+    SelectArticleDialogComponent, 
+    NgxPaginationModule,
+    NgxBarcodeModule
   ],
   providers: [CurrencyPipe]
 })

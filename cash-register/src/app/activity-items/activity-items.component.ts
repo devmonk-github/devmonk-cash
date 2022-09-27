@@ -79,6 +79,91 @@ export class ActivityItemsComponent implements OnInit {
     this.getLocations();
     this.getWorkstations();
     this.listEmployee();
+    this.openActivities({
+      "_id": "6332bd040286494d78999e51",
+      "oType": {
+        "bPrepayment": true,
+        "eTransactionType": "cash-registry",
+        "bRefund": false,
+        "eKind": "repair",
+        "bDiscount": false
+      },
+      "eEstimatedDateAction": "call_on_ready",
+      "aImage": [],
+      "sProductName": "p8-95",
+      "nPriceIncVat": 180,
+      "nVatRate": 21,
+      "nQuantity": 1,
+      "oArticleGroupMetaData": {
+        "aProperty": [
+          {
+            "iPropertyId": "61160712ae3cbb7453177f98",
+            "iPropertyOptionId": "61f01aa45fc7504de957b258",
+            "sPropertyOptionName": "WATCH",
+            "sPropertyName": "Category",
+            "sCode": "WA"
+          },
+          {
+            "iPropertyId": "6261a5f76d3ec230f0886eee",
+            "iPropertyOptionId": "62e8bd09c2910b2073515bad",
+            "sPropertyOptionName": "TITANIUM",
+            "sPropertyName": "Watch case material",
+            "sCode": "TI"
+          }
+        ],
+        "sCategory": "Repair",
+        "sSubCategory": "Repair",
+        "oName": {
+          "nl": "Repair",
+          "en": "Repair",
+          "de": "Repair",
+          "fr": "Repair"
+        }
+      },
+      "dEstimatedDate": "2022-09-29T00:00:00.000Z",
+      "iEmployeeId": "622addb11044dda518a269c3",
+      "sBagNumber": "1234",
+      "iSupplierId": "61fcff54fb7d0e4b20e96bb5",
+      "sDescription": "description",
+      "iCustomerId": "62420be55777d556346a9484",
+      "iActivityId": "6332bd040286494d78999e4d",
+      "nTotalAmount": 180,
+      "nPaidAmount": 100,
+      "sNumber": "AI2555-270922-1436",
+      "iTransactionItemId": "6332bd040286494d78999e50",
+      "dCreatedDate": "2022-09-27T09:06:12.580Z",
+      "oBusinessProductMetaData": {
+        "bBestseller": false,
+        "bHasStock": false,
+        "bShowSuggestion": false,
+        "aImage": [],
+        "eOwnerShip": "possession",
+        "iSupplierId": "6275661d5732a79bf0e3f449",
+        "iBusinessPartnerId": "6275661d5732a79bf0e3f449",
+        "sLabelDescription": "",
+        "aProperty": [],
+        "oName": {
+          "en": "p8-95",
+          "nl": "p8-95",
+          "de": "p8-95",
+          "fr": "p8-95"
+        },
+        "oShortDescription": {
+          "nl": "",
+          "en": "",
+          "de": "",
+          "fr": ""
+        },
+        "eGender": "female"
+      },
+      "nPaymentAmount": 100,
+      "iActivityItemId": "6332bd040286494d78999e51",
+      "sEmployeeName": "Alex Nil",
+      "oCustomer": {
+        "sFirstName": "Jolmer",
+        "sLastName": "Ekeren2"
+      }
+    });
   }
 
   loadTransaction() {
@@ -105,6 +190,7 @@ export class ActivityItemsComponent implements OnInit {
   }
 
   openActivities(activity: any) {
+    console.log(activity);
     this.dialogService.openModal(ActivityDetailsComponent, { cssClass: 'w-fullscreen', context: { activity:activity, items: true, from: 'activity-items' } })
       .instance.close.subscribe((result: any) => { 
         if (result) this.routes.navigate(['business/till']);
