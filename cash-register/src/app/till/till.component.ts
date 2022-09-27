@@ -625,13 +625,9 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   async processTransactionForPdfReceipt(){
-    console.log('Processing transaction for PDF, calling processTransactionData()');
     await this.processTransactionData().toPromise();
-    console.log('Processing transaction for PDF, processTransactionData() returned');
     if (!this.businessDetails) {
-      console.log('Processing transaction for PDF, calling getBusinessDetails()');
       const _result: any = await this.getBusinessDetails().toPromise();
-      console.log('Processing transaction for PDF, getBusinessDetails() returned');
   
       this.businessDetails = _result.data;
       this.businessDetails.currentLocation = this.businessDetails?.aLocation?.filter((location: any) => location?._id.toString() == this.locationId.toString())[0];
@@ -640,7 +636,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     this.transaction.businessDetails = this.businessDetails;
     this.transaction.currentLocation = this.businessDetails.currentLocation;
     
-    console.log('now exporting ', this.transaction);
     this.receiptService.exportToPdf({ transaction: this.transaction });
   }
 
