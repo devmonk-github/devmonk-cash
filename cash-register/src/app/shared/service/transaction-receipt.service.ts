@@ -3,7 +3,9 @@ import { Observable } from "rxjs";
 import { ApiService } from "./api.service";
 import { PdfService } from "./pdf2.service";
 
-@Injectable()
+@Injectable({
+    providedIn: 'root'
+})
 export class TransactionReceiptService {
     iBusinessId: string;
     iLocationId: string;
@@ -142,6 +144,7 @@ export class TransactionReceiptService {
             this.pageSize,
             'Receipt'
         );
+        this.cleanUp();
     }
     
 
@@ -195,11 +198,13 @@ export class TransactionReceiptService {
             nTotalOriginalAmount += item.nPriceIncVat; 
             let description = `${item.description} 
                 Original amount: ${item.nPriceIncVat} 
-                Already paid: ${item.sTransactionNumber} | ${item.nPaymentAmount} (this receipt)\n`;
+                Already paid: \n${item.sTransactionNumber} | ${item.nPaymentAmount} (this receipt)\n`;
             
-            item.related.forEach((related:any)=>{
-                description += `${related.sTransactionNumber}|${related.nPaymentAmount}\n`;
-            });
+            if (item?.related?.length) {
+                item.related.forEach((related: any) => {
+                    description += `${related.sTransactionNumber}|${related.nPaymentAmount}\n`;
+                });
+            }
 
             texts.push([
                 { text: item.nQuantity, style: ['td'] },
@@ -282,5 +287,11 @@ export class TransactionReceiptService {
 
     getBase64FromUrl(url: any): Observable<any> {
         return this.apiService.getNew('cashregistry', `/api/v1/pdf/templates/getBase64/${this.iBusinessId}?url=${url}`);
+    }
+
+    cleanUp(){
+        this.transaction = null;
+        this.content = [];
+        this.styles = {};
     }
 }

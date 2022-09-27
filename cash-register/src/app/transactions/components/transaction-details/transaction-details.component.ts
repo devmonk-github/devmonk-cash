@@ -15,8 +15,7 @@ const moment = (_moment as any).default ? (_moment as any).default : _moment;
 @Component({
   selector: 'app-transaction-details',
   templateUrl: './transaction-details.component.html',
-  styleUrls: ['./transaction-details.component.sass'],
-  providers: [TransactionReceiptService]
+  styleUrls: ['./transaction-details.component.sass']
 })
 export class TransactionDetailsComponent implements OnInit {
 

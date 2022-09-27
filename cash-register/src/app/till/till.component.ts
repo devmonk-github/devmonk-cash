@@ -28,11 +28,12 @@ import { FiskalyService } from '../shared/service/fiskaly.service';
 import { PdfService } from '../shared/service/pdf.service';
 import { SupplierWarningDialogComponent } from './dialogs/supplier-warning-dialog/supplier-warning-dialog.component';
 import * as _moment from 'moment';
+import { TransactionReceiptService } from '../shared/service/transaction-receipt.service';
 const moment = (_moment as any).default ? (_moment as any).default : _moment;
 @Component({
   selector: 'app-till',
   templateUrl: './till.component.html',
-  styleUrls: ['./till.component.scss']
+  styleUrls: ['./till.component.scss'],
 })
 export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   faScrewdriverWrench = faScrewdriverWrench;
@@ -110,6 +111,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   getSettingsSubscription !: Subscription;
   dayClosureCheckSubscription !: Subscription;
   settings: any;
+  businessDetails: any;
 
   randNumber(min: number, max: number): number {
     return Math.floor(Math.random() * (max - min + 1) + min);
@@ -128,7 +130,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     private createArticleGroupService: CreateArticleGroupService,
     private customerStructureService: CustomerStructureService,
     private fiskalyService: FiskalyService,
-    private pdfService: PdfService
+    private pdfService: PdfService,
+    private receiptService: TransactionReceiptService,
   ) {
   }
 
@@ -597,11 +600,13 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
               const { transaction, aTransactionItems } = data;
               transaction.aTransactionItems = aTransactionItems;
               this.transaction = transaction;
-              this.transaction.aTransactionItems.forEach((item: any, index: number) => {
-                this.getRelatedTransactionItem(item?.iActivityItemId, item?._id, index)
-              })
-              this.getRelatedTransaction(this.transaction?.iActivityId, this.transaction?._id)
-              this.pdfService.generatePDF(this.transaction);
+              this.processTransactionForPdfReceipt();
+              // this.transaction.aTransactionItems.forEach((item: any, index: number) => {
+              //   this.getRelatedTransactionItem(item?.iActivityItemId, item?._id, index)
+              // })
+              // this.getRelatedTransaction(this.transaction?.iActivityId, this.transaction?._id)
+              
+              // this.pdfService.generatePDF(this.transaction);
               this.updateFiskalyTransaction('FINISHED', body.payments);
               setTimeout(() => {
                 this.saveInProgress = false;
@@ -618,6 +623,86 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
         }
       });
   }
+
+  async processTransactionForPdfReceipt(){
+    console.log('Processing transaction for PDF, calling processTransactionData()');
+    await this.processTransactionData().toPromise();
+    console.log('Processing transaction for PDF, processTransactionData() returned');
+    if (!this.businessDetails) {
+      console.log('Processing transaction for PDF, calling getBusinessDetails()');
+      const _result: any = await this.getBusinessDetails().toPromise();
+      console.log('Processing transaction for PDF, getBusinessDetails() returned');
+  
+      this.businessDetails = _result.data;
+      this.businessDetails.currentLocation = this.businessDetails?.aLocation?.filter((location: any) => location?._id.toString() == this.locationId.toString())[0];
+    }
+
+    this.transaction.businessDetails = this.businessDetails;
+    this.transaction.currentLocation = this.businessDetails.currentLocation;
+    
+    console.log('now exporting ', this.transaction);
+    this.receiptService.exportToPdf({ transaction: this.transaction });
+  }
+
+  processTransactionData(): Observable<any>{
+    return new Observable((observer: any) => {
+      let dataObject = JSON.parse(JSON.stringify(this.transaction));
+      dataObject.aPayments.forEach((obj: any) => {
+        obj.dCreatedDate = moment(dataObject.dCreatedDate).format('DD-MM-yyyy hh:mm');
+      });
+      dataObject.aTransactionItems = [];
+      this.transaction.aTransactionItems.forEach((item: any, index: number) => {
+        if (!(item.oType?.eKind == 'discount' || item?.oType?.eKind == 'loyalty-points-discount')) {
+          dataObject.aTransactionItems.push(item);
+        }
+      })
+      let language: any = localStorage.getItem('language')
+      dataObject.total = 0;
+      let total = 0, totalAfterDisc = 0, totalVat = 0, totalDiscount = 0, totalSavingPoints = 0;
+      dataObject.aTransactionItems.forEach((item: any, index: number) => {
+        let name = '';
+        if (item && item.oArticleGroupMetaData && item.oArticleGroupMetaData.oName && item.oArticleGroupMetaData.oName[language]) name = item?.oArticleGroupMetaData?.oName[language] + ' ';
+        item.description = name;
+        if (item?.oBusinessProductMetaData?.sLabelDescription) item.description = item.description + item?.oBusinessProductMetaData?.sLabelDescription + ' ' + item?.sProductNumber;
+        totalSavingPoints += item.nSavingsPoints;
+        let disc = parseFloat(item.nDiscount);
+        if (item.bPaymentDiscountPercent) {
+          disc = (disc * parseFloat(item.nPriceIncVat) / (100 + parseFloat(item.nVatRate)));
+          item.nDiscountToShow = disc;
+        } else { item.nDiscountToShow = disc; }
+        item.priceAfterDiscount = (parseFloat(item.nPaymentAmount) - parseFloat(item.nDiscountToShow));
+        item.nPriceIncVatAfterDiscount = (parseFloat(item.nPriceIncVat) - parseFloat(item.nDiscountToShow));
+        item.totalPaymentAmount = parseFloat(item.nPaymentAmount) * parseFloat(item.nQuantity);
+        item.totalPaymentAmountAfterDisc = parseFloat(item.priceAfterDiscount) * parseFloat(item.nQuantity);
+        item.bPrepayment = item?.oType?.bPrepayment || false;
+        const vat = (item.nVatRate * item.priceAfterDiscount / (100 + parseFloat(item.nVatRate)));
+        item.vat = vat.toFixed(2);
+        totalVat += vat;
+        total = total + item.totalPaymentAmount;
+        totalAfterDisc += item.totalPaymentAmountAfterDisc;
+        totalDiscount += disc;
+        this.getRelatedTransactionItem(item?.iActivityItemId, item?._id, index)
+      })
+      dataObject.totalAfterDisc = parseFloat(totalAfterDisc.toFixed(2));
+      dataObject.total = parseFloat(total.toFixed(2));
+      dataObject.totalVat = parseFloat(totalVat.toFixed(2));
+      dataObject.totalDiscount = parseFloat(totalDiscount.toFixed(2));
+      dataObject.totalSavingPoints = totalSavingPoints;
+      dataObject.dCreatedDate = moment(dataObject.dCreatedDate).format('DD-MM-yyyy hh:mm');
+      this.getRelatedTransaction(dataObject?.iActivityId, dataObject?._id)
+
+      this.transaction = dataObject;
+      
+
+      observer.complete();
+
+    });
+  }
+
+  getBusinessDetails() {
+    return this.apiService.getNew('core', '/api/v1/business/' + this.business._id);
+  }
+  
 
   fetchBusinessPartnersProductCount(aBusinessPartnerId: any) {
     if (!aBusinessPartnerId.length || 1 > aBusinessPartnerId.length) {
