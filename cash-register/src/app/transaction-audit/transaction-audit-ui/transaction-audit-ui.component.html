@@ -1023,14 +1023,14 @@
                     <ng-template let-data="data" #vatRateTemplates>
                         <!-- <p>Dear {{person.name}} , {{person.message}} </p> -->
                         <td><span class="">{{ data?.sVatMethod }}</span></td>
-                        <td class="w-150px"><span class="">{{ data?.oVatRate[data?.sVatMethod].nProfit| number :'1.2-2'
-                                }}</span></td>
-                        <td class="w-150px"><span class="">{{ data?.oVatRate[data?.sVatMethod].nPurchaseValue | number
-                                :'1.2-2' }}</span>
-                        </td>
                         <td class="w-150px"><span class="">{{ data?.oVatRate[data?.sVatMethod].nTotalRevenue | number
                                 :'1.2-2' }}</span>
                         </td>
+                        <td class="w-150px"><span class="">{{ data?.oVatRate[data?.sVatMethod].nPurchaseValue | number
+                            :'1.2-2' }}</span>
+                        </td>
+                        <td class="w-150px"><span class="">{{ data?.oVatRate[data?.sVatMethod].nProfit| number :'1.2-2'
+                                }}</span></td>
                         <td class="w-150px"><span class="">{{ data?.oVatRate[data?.sVatMethod].nVatAmount }}</span></td>
                     </ng-template>
 
@@ -1322,12 +1322,14 @@
                                         [(ngModel)]="oCountings.nCashCounted">
                                 </div>
                             </div> -->
-                            <div class="d-flex flex-wrap">
-                                <label>{{'NOTES' | translate}}</label>
-                                <div class="flex-grow-1 ms-5">
-                                    <textarea class="form-control" rows="5"></textarea>
+                            <ng-container *ngIf="oStatisticsDocument">
+                                <div class="d-flex flex-wrap">
+                                    <label>{{'NOTES' | translate}}</label>
+                                    <div class="flex-grow-1 ms-5">
+                                        <textarea class="form-control" rows="5" [disabled]="bDisableCountings" [(ngModel)]="oStatisticsDocument.sComment"></textarea>
+                                    </div>
                                 </div>
-                            </div>
+                            </ng-container>
                         </div>
 
                     </div>

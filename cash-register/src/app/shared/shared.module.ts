@@ -82,7 +82,8 @@ import { NgxPaginationModule } from "ngx-pagination";
     ToastModule.forRoot(),
     NgJsonEditorModule,
     FileSaverModule,
-    NgApexchartsModule
+    NgApexchartsModule,
+    NgxPaginationModule
   ],
   exports: [
     DialerComponent,
@@ -103,7 +104,8 @@ import { NgxPaginationModule } from "ngx-pagination";
     MorePaymentsDialogComponent,
     TabsComponent,
     TabComponent,
-    SelectArticleDialogComponent, NgxPaginationModule
+    SelectArticleDialogComponent, 
+    NgxPaginationModule
   ],
   providers: [CurrencyPipe]
 })

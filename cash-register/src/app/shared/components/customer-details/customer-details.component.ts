@@ -73,6 +73,14 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
   aPaymentChartData: any = [];
   aEmployeeStatistic: any = [];
 
+  pageCounts: Array<number> = [10, 25, 50, 100]
+  pageNumber: number = 1;
+  setPaginateSize: number = 10;
+  paginationConfig: any = {
+    itemsPerPage: 10,
+    currentPage: 1,
+    totalItems: 20
+  };
   customer: any = {
     _id: '',
     bNewsletter: true,
@@ -130,11 +138,6 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
     aProjection: ['sSalutation', 'sFirstName', 'sPrefix', 'sLastName', 'dDateOfBirth', 'dDateOfBirth', 'nClientId', 'sGender', 'bIsEmailVerified',
       'bCounter', 'sEmail', 'oPhone', 'oShippingAddress', 'oInvoiceAddress', 'iBusinessId', 'sComment', 'bNewsletter', 'sCompanyName', 'oPoints',
       'sCompanyName', 'oIdentity', 'sVatNumber', 'sCocNumber', 'nPaymentTermDays', 'nDiscount', 'bWhatsApp', 'nMatchingCode'],
-  };
-  paginationConfig: any = {
-    itemsPerPage: 10,
-    currentPage: 1,
-    totalItems: 0
   };
   bTransactionsLoader: boolean = false;
   bActivitiesLoader: boolean = false;
@@ -260,6 +263,20 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit() {
     this.cdr.detectChanges();
+  }
+
+  changeItemsPerPage(pageCount: any) {
+    this.paginationConfig.itemsPerPage = pageCount;
+    this.requestParams.skip = this.paginationConfig.itemsPerPage * (this.paginationConfig.currentPage - 1);
+    this.requestParams.limit = this.paginationConfig.itemsPerPage;
+    this.loadTransactions()
+  }
+
+  pageChanged(page: any) {
+    this.paginationConfig.currentPage = page;
+    this.requestParams.skip = this.paginationConfig.itemsPerPage * (page - 1);
+    this.requestParams.limit = this.paginationConfig.itemsPerPage;
+    this.loadTransactions()
   }
 
   customerCountryChanged(type: string, event: any) {
@@ -429,6 +446,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
     this.apiService.postNew('cashregistry', '/api/v1/transaction/cashRegister', body).subscribe((result: any) => {
       if (result?.data?.result) {
         this.aTransactions = result.data.result || [];
+        this.paginationConfig.totalItems = this.aTransactions.length;
         this.aTransactions.forEach(transaction => {
           transaction.sTotal = 0;
           transaction.aTransactionItems.forEach((item: any) => {

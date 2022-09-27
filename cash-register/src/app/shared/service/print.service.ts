@@ -142,7 +142,7 @@ export class PrintService {
    * @param {String} printer
    * @param {String} computer
    */
-  openDrawer(businessId: string, command: string, printer: any, computer: any) {
+  openDrawer(businessId: string, command: any, printer: any, computer: any) {
     return this.printRawContent(businessId, command, printer, computer, 1, { title: 'Open drawer' })
   }
 }

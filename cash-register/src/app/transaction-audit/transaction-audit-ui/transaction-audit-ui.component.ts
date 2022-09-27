@@ -681,6 +681,7 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
           if (oData?.oStatistic?._id) {
             if (oData?.oStatistic?.aPaymentMethods?.length) this.aPaymentMethods = oData?.oStatistic?.aPaymentMethods;
             this.oStatisticsDocument = oData?.oStatistic;
+            if(!this.oStatisticsDocument?.sComment) this.oStatisticsDocument.sComment = '';
             this.processCounting();
           }
         }
@@ -1085,12 +1086,13 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
     const oCashPaymentMethod = this.allPaymentMethod.filter((el: any) => el.sName.toLowerCase() === 'cash')[0];
     const oBankPaymentMethod = this.allPaymentMethod.filter((el: any) => el.sName.toLowerCase() === 'bankpayment')[0];
 
+    console.log('nDifferenceAmount: ', nDifferenceAmount);
     if (nDifferenceAmount > 0) {
       //we have difference in cash, so add that as and expense
 
       await this.addExpenses(
         {
-          amount: nDifferenceAmount,
+          amount: -(nDifferenceAmount),
           comment: 'Lost money',
           oPayment: {
             iPaymentMethodId: oCashPaymentMethod._id,
@@ -1134,6 +1136,7 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
       iWorkstationId: this.iWorkstationId,
       iStatisticId: this.iStatisticId,
       oCountings: this.oCountings,
+      sComment: this.oStatisticsDocument.sComment
     }
 
     this.closeSubscription = this.apiService.postNew('cashregistry', `/api/v1/statistics/close/day-state`, oBody).subscribe((result: any) => {
