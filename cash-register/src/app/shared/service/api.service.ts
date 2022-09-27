@@ -4,6 +4,8 @@ import { environment } from '../../../environments/environment';
 import { BehaviorSubject, Observable, of, throwError } from "rxjs";
 import { catchError, retry } from "rxjs/operators";
 
+type ApiTypes = 'auth' | 'organization' | 'core' | 'cashregistry' | 'customer' | 'bookkeeping' | 'website-builder' | 'backup' | 'oldplatform' | 'log' | 'fiskaly'
+
 @Injectable({
   providedIn: 'root'
 })
@@ -150,7 +152,7 @@ export class ApiService {
       )
   }
 
-  getApiBaseUrl(apiType: string): any {
+  getApiBaseUrl(apiType: ApiTypes): any {
     let oldplatform = environment.oldPlatformUrl;
     switch (apiType) {
       case 'auth':
@@ -178,7 +180,7 @@ export class ApiService {
     }
   }
 
-  getNew(apiType: string, url: string, header?: any): Observable<HttpResponse<any>> {
+  getNew(apiType: ApiTypes, url: string, header?: any): Observable<HttpResponse<any>> {
     this.setAPIHeaders();
     let finalUrl = this.getApiBaseUrl(apiType) + url;
     let finalHeaders = header && Object.keys(header).length > 0 ? header : this.defaultHeaders;
@@ -192,7 +194,7 @@ export class ApiService {
       );
   }
 
-  postNew(apiType: string, url: string, data: any, header?: any): Observable<HttpResponse<any>> {
+  postNew(apiType: ApiTypes, url: string, data: any, header?: any): Observable<HttpResponse<any>> {
     this.setAPIHeaders();
     let finalUrl = this.getApiBaseUrl(apiType) + url;
     let finalHeaders = header && Object.keys(header).length > 0 ? header : this.defaultHeaders;
@@ -202,7 +204,7 @@ export class ApiService {
     return this.httpClient.post<any>(finalUrl, data, httpHeaders);
   }
 
-  fileUpload(apiType: string, url: string, data: any, header?: any): Observable<HttpResponse<any>> {
+  fileUpload(apiType: ApiTypes, url: string, data: any, header?: any): Observable<HttpResponse<any>> {
     this.setAPIHeaders();
     let finalUrl = this.getApiBaseUrl(apiType) + url;
     let finalHeaders = header && Object.keys(header).length > 0 ? header : this.defaultHeaders;
@@ -213,7 +215,7 @@ export class ApiService {
     return this.httpClient.post<any>(finalUrl, data, httpHeaders);
   }
 
-  putNew(apiType: string, url: string, data: any, header?: any): Observable<HttpResponse<any>> {
+  putNew(apiType: ApiTypes, url: string, data: any, header?: any): Observable<HttpResponse<any>> {
     this.setAPIHeaders();
     let finalUrl = this.getApiBaseUrl(apiType) + url;
     let finalHeaders = header && Object.keys(header).length > 0 ? header : this.defaultHeaders;
@@ -224,7 +226,7 @@ export class ApiService {
       .pipe(catchError(this.httpError))
   }
 
-  deleteNew(apiType: string, url: string, header?: any): Observable<HttpResponse<any>> {
+  deleteNew(apiType: ApiTypes, url: string, header?: any): Observable<HttpResponse<any>> {
     this.setAPIHeaders();
     let finalUrl = this.getApiBaseUrl(apiType) + url;
     let finalHeaders = header && Object.keys(header).length > 0 ? header : this.defaultHeaders;
