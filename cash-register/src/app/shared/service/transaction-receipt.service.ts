@@ -163,7 +163,7 @@ export class TransactionReceiptService {
                 fit: [100, 100],
             },
             { text: businessDetails, width: '*', style:['center'] },
-            { text: `${this.transaction.sReceiptNumber}`, width: '*', style:['right'] },
+            { text: `${this.transaction.sReceiptNumber}`, width: '10%', style:['right'] },
         );
 
         this.content.push({
