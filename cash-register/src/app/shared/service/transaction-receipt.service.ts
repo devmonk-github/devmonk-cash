@@ -126,7 +126,7 @@ export class TransactionReceiptService {
     async exportToPdf({transaction}:any){
         this.transaction = transaction;
         console.log(this.transaction);
-        const result = await this.getBase64FromUrl('https://lirp.cdn-website.com/2568326e/dms3rep/multi/opt/Juwelier-Bos-208w.png').toPromise();
+        const result = await this.getBase64FromUrl(this.transaction.businessDetails.sLogoLight).toPromise();
         this.logoUri = result.data;
         
         this.processHeader();
