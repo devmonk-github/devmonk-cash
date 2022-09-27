@@ -252,6 +252,31 @@
                                         </tr>
                                     </tbody>
                                 </table>
+                                <div class="row">
+                                    <div
+                                        class="col-sm-12 col-md-3 d-flex align-items-center justify-content-center justify-content-md-start">
+                                        <div class="dataTables_length" id="kt_ecommerce_sales_table_length">
+                                            <label>
+                                                <select name="kt_ecommerce_sales_table_length"
+                                                    aria-controls="kt_ecommerce_sales_table"
+                                                    class="form-select form-select-sm form-select-solid"
+                                                    [(ngModel)]="requestParams.limit"
+                                                    (change)="changeItemsPerPage(requestParams.limit)">
+                                                    <option *ngFor="let pageNum of pageCounts" [value]="pageNum">{{ pageNum }}
+                                                    </option>
+                                                </select>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div
+                                        class="col-sm-12 col-md-9 d-flex align-items-center justify-content-center justify-content-md-end">
+                                        <pagination-controls (pageChange)="pageChanged($event)"
+                                            (pageBoundsCorrection)="pageChanged($event)" [maxSize]="setPaginateSize"
+                                            [previousLabel]="'PREVIOUS' | translate" [nextLabel]="'NEXT' | translate"
+                                            screenReaderPaginationLabel="Pagination" [screenReaderPageLabel]="'PAGE' | translate">
+                                        </pagination-controls>
+                                    </div>
+                                </div>
                             </app-pn-tab>
                             <app-pn-tab tabTitle="{{ tabTitles[1] | translate}}" #activities>
                                 <table class="table table-hover table-rounded table-striped border gs-7">
