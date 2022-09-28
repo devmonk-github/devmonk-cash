@@ -142,7 +142,7 @@ export class PrintSettingsComponent implements OnInit {
   }
   openToolsModal() {
     const dialogRef = this.dialogService.openModal(PrinterToolComponent, {
-      cssClass: "modal-md w-100",
+      cssClass: "modal-lg w-100",
       context: {}
     })
 

@@ -11,6 +11,7 @@ import { DialogComponent } from 'src/app/shared/service/dialog';
 export class PrinterToolComponent implements OnInit {
   dialogRef: DialogComponent;
   faTimes = faTimes;
+  zplCode = ''
   constructor(private viewContainerRef: ViewContainerRef,
     private toastService: ToastService,
   ) {
@@ -23,4 +24,16 @@ export class PrinterToolComponent implements OnInit {
     this.dialogRef.close.emit(data);
   }
   save() { }
+  prefillCommand(command: string) {
+    // console.log({ command });
+    this.zplCode = command;
+  }
+  //   Start: prefillCommand('~PS')
+  // Stop: prefillCommand('~PP')
+  // Calibrate: prefillCommand('~jc')
+  // Blanc label: prefillCommand('^XA^FD0^XZ')
+  // Que printer clean up: prefillCommand('~JA')
+
+  // Media darkness: prefillCommand('^XA~SD18^XZ')
+  // Alignment fix GK420t: prefillCommand('^XA^JSA^XZ')
 }
