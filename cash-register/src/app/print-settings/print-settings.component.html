@@ -38,18 +38,85 @@
     <div class="card-title">
       {{"PRINT_SETTINGS_LETTERPAPER" | translate}}
     </div>
-    <div class="card-body no-padding">
-      <div class="">
-        <div *ngFor="let format of pageFormats; trackBy: trackByFun">
-          {{ format }}
-          <button class="btn ms-1 table-btn-padding" type="submit">
-            <fa-icon [icon]="faPencilAlt"></fa-icon>
-          </button>
+  </div>
+  <div class="card-body">
+    <div class="row">
+      <div *ngFor="let format of pageFormats; trackBy: trackByFun">
+        {{ format }}
+        <button class="btn ms-1 table-btn-padding" type="submit">
+          <fa-icon [icon]="faPencilAlt"></fa-icon>
+        </button>
+      </div>
+    </div>
+
+    <div class="row" *ngFor="let template of aTemplates">
+      <div class="col-12">
+        <h3>{{template.sTitle}}</h3>
+      </div>
+
+      <div class="col-12 setting" *ngFor="let setting of template.aSettings">
+
+        <div *ngIf="setting.type==='dropdown'" class="row align-items-center mb-2">
+          
+          <label class="col-3">{{ setting.sTitle }}</label>
+          <ng-select [(ngModel)]="setting.value" [clearable]="false" class="col-3">
+            <ng-option *ngFor="let option of setting.eOptions" [value]="option">{{ option }}</ng-option>
+          </ng-select>
+
+          <ng-container *ngIf="setting.value==='custom'">
+            <div class="col-3">
+              <div class="d-flex align-items-center">
+                <label class="me-2">{{ 'WIDTH' | translate }}</label>
+                <input type="number" class="form-control" [(ngModel)]="setting.width">
+              </div>
+            </div>
+            <div class="col-3">
+              <div class="d-flex align-items-center">
+                <label class="me-2">{{ 'HEIGHT' | translate }}</label>
+                <input type="number" class="form-control" [(ngModel)]="setting.height">
+              </div>
+            </div>
+          </ng-container>
+
         </div>
+
+        <div *ngIf="setting.type==='textArray'" class="row mb-2 align-items-center">
+
+          <label class="col-3">{{ setting.sTitle }}</label>
+          <div class="col-9">
+            <div class="row">
+              <div *ngFor="let text of setting.eOptions;let i = index" class="col-3">
+
+                <div class="d-flex align-items-center">
+                  <label class="me-2">{{ text }}</label>
+                  <input type="number" class="form-control" [(ngModel)]="setting.values[i]">
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <div *ngIf="setting.type==='text'" class="row mb-2 align-items-center">
+          <label class="col-3">{{ setting.sTitle }}</label>
+          <div class="col-3">
+            <input type="number" class="form-control" [(ngModel)]="setting.value">
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+    <div class="row">
+      <div class="col-12">
+        <button class="btn btn-primary" (click)="saveTemplateSettings()">{{'SAVE' | translate}}</button>
       </div>
     </div>
   </div>
+
 </div>
+    
 
 <div class="card mb-5 mb-xl-10 d-flex" data-kt-scroll-section="label-definition">
   <div class="card-header row">
