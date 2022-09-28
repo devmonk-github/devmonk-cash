@@ -85,7 +85,6 @@ import { NgxPaginationModule } from "ngx-pagination";
     FileSaverModule,
     NgApexchartsModule,
     NgxPaginationModule,
-    // NgxBarcodeModule
   ],
   exports: [
     DialerComponent,
@@ -108,7 +107,6 @@ import { NgxPaginationModule } from "ngx-pagination";
     TabComponent,
     SelectArticleDialogComponent, 
     NgxPaginationModule,
-    // NgxBarcodeModule
   ],
   providers: [CurrencyPipe]
 })
