@@ -14,6 +14,7 @@ import { Observable } from 'rxjs';
 import { NgJsonEditorModule } from 'ang-jsoneditor';
 import { SharedServiceModule } from './shared/shared-service.module';
 import { BarcodeComponent } from './barcode/barcode.component';
+import { TranslationsService } from 'src/app/shared/service/translation.service';
 
 
 @NgModule({
@@ -36,5 +37,11 @@ import { BarcodeComponent } from './barcode/barcode.component';
   bootstrap: [AppComponent]
 })
 export class AppModule {
+  constructor(
+    private translationsService: TranslationsService,
 
+
+  ) {
+    this.translationsService.init()
+  }
 }
