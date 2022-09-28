@@ -49,78 +49,8 @@
       </div>
     </div>
 
-    <div class="row" *ngFor="let template of aTemplates">
-      <div class="col-12">
-        <h3>{{template.sTitle}}</h3>
-      </div>
-
-      <div class="col-12 setting" *ngFor="let setting of template.aSettings">
-
-        <div *ngIf="setting.type==='switch'" class="row align-items-center mb-3">
-          <label class="col-3">{{ setting.sTitle }}</label>
-          <label class="form-check form-switch form-check-custom form-check-solid col-9">
-            <input class="form-check-input" type="checkbox" [(ngModel)]="setting.bShow" />
-            <span class="form-check-label fw-bolder">{{ "SHOW_BUSINESS_LOGO" | translate }}</span>
-          </label>
-        </div>
-
-        <div *ngIf="setting.type==='dropdown'" class="row align-items-center mb-3">
-
-          <label class="col-3">{{ setting.sTitle }}</label>
-          <ng-select [(ngModel)]="setting.value" [clearable]="false" class="col-3">
-            <ng-option *ngFor="let option of setting.eOptions" [value]="option">{{ option }}</ng-option>
-          </ng-select>
-
-          <ng-container *ngIf="setting.value==='custom'">
-            <div class="col-3">
-              <div class="d-flex align-items-center">
-                <label class="me-2">{{ 'WIDTH' | translate }}</label>
-                <input type="number" class="form-control" [(ngModel)]="setting.width">
-              </div>
-            </div>
-            <div class="col-3">
-              <div class="d-flex align-items-center">
-                <label class="me-2">{{ 'HEIGHT' | translate }}</label>
-                <input type="number" class="form-control" [(ngModel)]="setting.height">
-              </div>
-            </div>
-          </ng-container>
-
-        </div>
-
-        <div *ngIf="setting.type==='textArray'" class="row mb-3 align-items-center">
-
-          <label class="col-3">{{ setting.sTitle }}</label>
-          <div class="col-9">
-            <div class="row">
-              <div *ngFor="let text of setting.eOptions;let i = index" class="col-3">
-
-                <div class="d-flex align-items-center">
-                  <label class="me-2">{{ text }}</label>
-                  <input type="number" class="form-control" [(ngModel)]="setting.values[i]">
-                </div>
-
-              </div>
-            </div>
-          </div>
-
-        </div>
-
-        <div *ngIf="setting.type==='text'" class="row mb-3 align-items-center">
-          <label class="col-3">{{ setting.sTitle }}</label>
-          <div class="col-3">
-            <input type="number" class="form-control" [(ngModel)]="setting.value">
-          </div>
-        </div>
-
-      </div>
-
-    </div>
-    <div class="row">
-      <div class="col-12">
-        <button class="btn btn-primary" (click)="saveTemplateSettings()">{{'SAVE' | translate}}</button>
-      </div>
-    </div>
+    
+    
   </div>
 
 </div>
