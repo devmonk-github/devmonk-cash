@@ -42,6 +42,8 @@ import { NgApexchartsModule } from "ng-apexcharts";
 import { WebOrderDetailsComponent } from "./components/web-order-details/web-order-details.component";
 import { SelectArticleDialogComponent } from "./components/select-articlegroup-dialog/select-articlegroup-dialog.component";
 import { NgxPaginationModule } from "ngx-pagination";
+import { PrintSettingsEditorComponent } from "./components/print-settings-editor/print-settings-editor.component";
+import { JsonEditorModule } from "../json-editor/json-editor.module";
 
 @NgModule({
   declarations: [
@@ -69,6 +71,7 @@ import { NgxPaginationModule } from "ngx-pagination";
     TabsComponent,
     TabComponent,
     SelectArticleDialogComponent,
+    PrintSettingsEditorComponent,
   ],
   imports: [
     CommonModule,
@@ -85,6 +88,7 @@ import { NgxPaginationModule } from "ngx-pagination";
     FileSaverModule,
     NgApexchartsModule,
     NgxPaginationModule,
+    JsonEditorModule
     // NgxBarcodeModule
   ],
   exports: [

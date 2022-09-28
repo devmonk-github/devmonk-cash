@@ -6,6 +6,7 @@ import { ConfirmationDialogComponent } from 'src/app/shared/components/confirmat
 import { ToastService } from 'src/app/shared/components/toast';
 import { ApiService } from 'src/app/shared/service/api.service';
 import { PrintSettingsDetailsComponent } from '../shared/components/print-settings-details/print-settings-details.component';
+import { PrintSettingsEditorComponent } from '../shared/components/print-settings-editor/print-settings-editor.component';
 import { DialogService } from '../shared/service/dialog';
 
 @Component({
@@ -36,9 +37,9 @@ export class PrintSettingsComponent implements OnInit {
   printers: Array<any> = [
     'Any'
   ]
-  pageFormats: Array<any> = [
-    'Any',
-    'Transaction receipt'
+  pageFormats: any = [
+    { key: 'transaction', value:'Transaction receipt'},
+    { key: 'activity', value: 'Activity receipt'},
   ];
 
   aTemplates: Array<any> = [
@@ -275,6 +276,13 @@ export class PrintSettingsComponent implements OnInit {
 
   saveTemplateSettings(){
 
+  }
+
+  openSettingsEditor(format:any){
+    this.dialogService.openModal(PrintSettingsEditorComponent, { cssClass: "modal-xl", context: { format: format } })
+    .instance.close.subscribe(result => {
+
+     });
   }
 
 
