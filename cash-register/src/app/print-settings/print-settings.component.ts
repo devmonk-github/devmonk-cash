@@ -46,6 +46,12 @@ export class PrintSettingsComponent implements OnInit {
       sTitle: 'Transaction Receipt',
       aSettings: [
         {
+          sTitle: 'Business logo',
+          sParameter: 'logo',
+          bShow: true,
+          type: 'switch'
+        },
+        {
           sTitle: 'Orientation',
           sParameter: 'orientation',
           eOptions: ['portrait', 'landscape'],

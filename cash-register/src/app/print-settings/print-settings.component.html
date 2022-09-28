@@ -56,7 +56,15 @@
 
       <div class="col-12 setting" *ngFor="let setting of template.aSettings">
 
-        <div *ngIf="setting.type==='dropdown'" class="row align-items-center mb-2">
+        <div *ngIf="setting.type==='switch'" class="row align-items-center mb-3">
+          <label class="col-3">{{ setting.sTitle }}</label>
+          <label class="form-check form-switch form-check-custom form-check-solid col-9">
+            <input class="form-check-input" type="checkbox" [(ngModel)]="setting.bShow" />
+            <span class="form-check-label fw-bolder">{{ "SHOW_BUSINESS_LOGO" | translate }}</span>
+          </label>
+        </div>
+
+        <div *ngIf="setting.type==='dropdown'" class="row align-items-center mb-3">
           
           <label class="col-3">{{ setting.sTitle }}</label>
           <ng-select [(ngModel)]="setting.value" [clearable]="false" class="col-3">
@@ -80,7 +88,7 @@
 
         </div>
 
-        <div *ngIf="setting.type==='textArray'" class="row mb-2 align-items-center">
+        <div *ngIf="setting.type==='textArray'" class="row mb-3 align-items-center">
 
           <label class="col-3">{{ setting.sTitle }}</label>
           <div class="col-9">
@@ -98,7 +106,7 @@
 
         </div>
 
-        <div *ngIf="setting.type==='text'" class="row mb-2 align-items-center">
+        <div *ngIf="setting.type==='text'" class="row mb-3 align-items-center">
           <label class="col-3">{{ setting.sTitle }}</label>
           <div class="col-3">
             <input type="number" class="form-control" [(ngModel)]="setting.value">
