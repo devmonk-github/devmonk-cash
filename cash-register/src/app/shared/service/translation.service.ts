@@ -55,7 +55,6 @@ export class TranslationsService {
     return new Promise((resolve, reject) => {
       this.apiService.getNew('core', `/api/v1/translation/all`).subscribe({
         next: async (translations: any) => {
-          console.log({ translations });
           if (translations.message !== 'success') {
             reject({ message: 'Error in getting translations' });
           }
