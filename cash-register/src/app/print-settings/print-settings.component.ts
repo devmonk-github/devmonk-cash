@@ -2,6 +2,7 @@ import { ifStmt } from '@angular/compiler/src/output/output_ast';
 import { Component, OnInit } from '@angular/core';
 import { faRefresh, faPencilAlt } from '@fortawesome/free-solid-svg-icons';
 import { LabelTemplateModelComponent } from 'src/app/print-settings/lable-template-model/label-template-model.component';
+import { PrinterToolComponent } from 'src/app/print-settings/printer-tool/printer-tool.component';
 import { ConfirmationDialogComponent } from 'src/app/shared/components/confirmation-dialog/confirmation-dialog.component';
 import { ToastService } from 'src/app/shared/components/toast';
 import { ApiService } from 'src/app/shared/service/api.service';
@@ -61,17 +62,17 @@ export class PrintSettingsComponent implements OnInit {
         {
           sTitle: 'Page size',
           sParameter: 'pageSize',
-          eOptions: ['A4', 'A5','custom'],
+          eOptions: ['A4', 'A5', 'custom'],
           value: 'A5',
-          width:0,
-          height:0,
+          width: 0,
+          height: 0,
           type: 'dropdown'
         },
         {
           sTitle: 'Page margins',
           sParameter: 'pageMargins',
-          eOptions: ['left', 'top','right', 'bottom'],
-          values: [0,0,0,0],
+          eOptions: ['left', 'top', 'right', 'bottom'],
+          values: [0, 0, 0, 0],
           type: 'textArray'
         },
         {
@@ -138,7 +139,17 @@ export class PrintSettingsComponent implements OnInit {
   trackByFun(index: any, item: any) {
     return index;
   }
+  openToolsModal() {
+    const dialogRef = this.dialogService.openModal(PrinterToolComponent, {
+      cssClass: "modal-md w-100",
+      context: {}
+    })
 
+    dialogRef.instance.close.subscribe(async (result) => {
+      console.log(result)
+      if (result) { }
+    })
+  }
 
   openLabelTemplateModal(jsonData: TemplateJSON, mode: 'create' | 'edit') {
     if (mode === 'create') {
@@ -273,9 +284,10 @@ export class PrintSettingsComponent implements OnInit {
       )
   }
 
-  saveTemplateSettings(){
+  saveTemplateSettings() {
 
   }
+
 
 
 }

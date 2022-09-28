@@ -9,11 +9,13 @@ import { SharedModule as primengSharedModule } from 'primeng/api';
 import { JsonEditorModule } from 'src/app/json-editor/json-editor.module';
 import { LabelTemplateModelComponent } from "./lable-template-model/label-template-model.component"
 import { SharedModule } from 'src/app/shared/shared.module';
+import { PrinterToolComponent } from 'src/app/print-settings/printer-tool/printer-tool.component';
 
 @NgModule({
   declarations: [
     PrintSettingsComponent,
-    LabelTemplateModelComponent
+    LabelTemplateModelComponent,
+    PrinterToolComponent
   ],
   imports: [
     CommonModule,

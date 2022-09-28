@@ -65,7 +65,7 @@
         </div>
 
         <div *ngIf="setting.type==='dropdown'" class="row align-items-center mb-3">
-          
+
           <label class="col-3">{{ setting.sTitle }}</label>
           <ng-select [(ngModel)]="setting.value" [clearable]="false" class="col-3">
             <ng-option *ngFor="let option of setting.eOptions" [value]="option">{{ option }}</ng-option>
@@ -124,17 +124,21 @@
   </div>
 
 </div>
-    
+
 
 <div class="card mb-5 mb-xl-10 d-flex" data-kt-scroll-section="label-definition">
   <div class="card-header row">
     <div class="card-title">
-      {{"LABEL" | translate}} {{"DEFINITIONS" | translate}}
+      <div class="col-md-11">
+        <span> {{"LABEL" | translate}} {{"DEFINITIONS" | translate}}</span>
+      </div>
+      <div class="col-md-1">
+        <button class="btn btn-primary" (click)="openToolsModal()">Tools</button>
+      </div>
+
     </div>
     <div class="card-body">
-      <!-- <button (click)="openLabelTemplateModal()" type="button" class="btn btn-primary" data-bs-toggle="button"
-        aria-pressed="false" autocomplete="off">Open
-        Label model</button> -->
+
       <div class="row my-3">
         <div class="col-sm-12 col-md-6 col-lg-6">
           <div class="d-flex flex-column">
@@ -172,8 +176,7 @@
                     </tr>
                     <div class="d-flex">
                       <h5 *ngIf='!LabelTemplatesData.length && !isLoadingTemplatesLabel' style="text-align: center;"> No
-                        data
-                        found!</h5>
+                        data found!</h5>
                       <div class="row h-200px" *ngIf="isLoadingTemplatesLabel">
                         <div class="spinner-box h-200px">
                           <div class="three-quarter-spinner">
