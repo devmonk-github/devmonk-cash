@@ -1,0 +1,19 @@
+<div class="card">
+  <div class="card-header" style="margin-top: 20px;">
+    <h4>{{ "SEND_MANUAL_COMMAND"| translate}}</h4>
+    <div>
+      <button type="button" class="btn btn-sm btn-light" (click)="close(false)">
+        <fa-icon [icon]="faTimes"></fa-icon>
+      </button>
+    </div>
+  </div>
+  <div class="card-body py-3">
+
+
+  </div>
+  <div class="card-footer d-flex justify-content-end">
+
+    <div class="card-footer d-flex justify-content-end">
+      <button class="btn btn-primary" type="submit" (click)="save()">{{ 'SAVE' | translate}}</button>
+    </div>
+  </div>
