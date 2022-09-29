@@ -76,7 +76,7 @@ export class TransactionItemsDetailsComponent implements OnInit {
       this.transactionItems = result.data[0].result;
       const discountRecords = this.transactionItems.filter(o => o.oType.eKind === 'discount' || o.oType.eKind === 'loyalty-points-discount');
       // const loyaltyPoints = this.transactionItems.filter(o => o.oType.eKind === 'loyalty-points' || o.oType.eKind === 'loyalty-points');
-      this.transactionItems = this.transactionItems.filter(o => o.oType.eKind !== 'discount' && o.oType.eKind !== 'loyalty-points' && o.oType.eKind !== 'loyalty-points-discount');
+      this.transactionItems = this.transactionItems.filter(o => o.oType.eKind !== 'discount' && o.oType.eKind !== 'loyalty-points' && o.oType.eKind !== 'loyalty-points-discount' && o.oType.eKind !== 'giftcard-discount');
       this.transactionItems.forEach(element => {
         const elementDiscount = discountRecords.filter(o => o.sUniqueIdentifier === element.sUniqueIdentifier);
         let nRedeemedLoyaltyPoints = 0;
@@ -100,7 +100,7 @@ export class TransactionItemsDetailsComponent implements OnInit {
           // to do partial refund
           transactionItem.tType = 'refunded';
         }
-        if(this.selectedId && this.selectedId === transactionItem._id ) {
+        if (this.selectedId && this.selectedId === transactionItem._id) {
           transactionItem.isSelected = true;
         }
       });
