@@ -16,7 +16,7 @@ export class PrintSettingsEditorComponent implements OnInit {
   format:any;
   jsonData:any = {};
   oTemplate: any = {
-    // _id: '6334284a47545070d8df8e6e'
+    layout:{}
   };
   
   iBusinessId: any = '';
@@ -91,7 +91,7 @@ export class PrintSettingsEditorComponent implements OnInit {
         this.mode = 'create';
         this.oTemplate.aSettings = this.getDefaultSettings();
       }
-      console.log(this.oTemplate.aSettings);
+      // console.log(this.oTemplate.aSettings);
     });
   }
   mapWithDefaultSettings(){
