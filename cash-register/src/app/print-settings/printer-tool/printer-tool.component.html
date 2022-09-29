@@ -20,12 +20,12 @@
       <div class="row mb-3">
         <div class="col-12  text-end">
           <span class="fw-bolder">
-            Printer:1234567
+            Printer:{{printerId}}
           </span>
         </div>
         <div class="col-12  text-end">
           <span class="fw-bolder">
-            Device:1234567
+            Device:{{computerId}}
           </span>
         </div>
       </div>
@@ -37,19 +37,19 @@
           <div class="card-body p-4">
             <div class="d-flex w-70 justify-content-start flex-wrap">
 
-              <button type="button" (click)="prefillCommand('~PS')"
+              <button type="button" (click)="prefillCommand(commands.Start)"
                 class="btn btn-secondary m-2 ">{{"START"|translate}}</button>
 
-              <button type="button" (click)="prefillCommand('~PP')"
+              <button type="button" (click)="prefillCommand(commands.Stop)"
                 class="btn btn-secondary m-2">{{"STOP"|translate}}</button>
 
-              <button type="button" (click)="prefillCommand('~jc')"
+              <button type="button" (click)="prefillCommand(commands.Calibrate)"
                 class="btn btn-secondary m-2">{{"CALIBRATE"|translate}}</button>
 
-              <button type="button" (click)="prefillCommand('^XA^FD0^XZ')"
+              <button type="button" (click)="prefillCommand(commands.BlancLabel)"
                 class="btn btn-secondary m-2">{{"BLANCE_LABEL"|translate}}</button>
 
-              <button type="button" (click)="prefillCommand('~JA')"
+              <button type="button" (click)="prefillCommand(commands.QuePrinterCleanUp)"
                 class="btn btn-secondary m-2">{{"QUE_PRINTER_CLEAN_UP"|translate}}</button>
             </div>
 
@@ -61,10 +61,10 @@
           <h4 class="card-title bg-gray-100 p-4">Title</h4>
           <div class="card-body p-4">
             <div class="d-flex justify-content-start flex-wrap">
-              <button type="button" (click)="prefillCommand('^XA~SD18^XZ')"
+              <button type="button" (click)="prefillCommand(commands.MediaDarkness)"
                 class="btn btn-secondary m-2 ">{{"MEDIA_DARKNESS"|translate}}</button>
 
-              <button type="button" (click)="prefillCommand('^XA^JSA^XZ')"
+              <button type="button" (click)="prefillCommand(commands.AlignmentFixGK420t)"
                 class="btn btn-secondary m-2">{{"ALIGNMENT_FIX_GK420T"|translate}}</button>
 
 
@@ -86,7 +86,8 @@
   </div>
 
   <div class="card-footer d-flex justify-content-end p-5">
-    <button class="btn btn-primary" type="submit" (click)="save()">{{ 'SEND' | translate}}</button>
+    <button class="btn btn-primary" type="submit" [disabled]="!this.zplCode" (click)="save()">{{ 'SEND' |
+      translate}}</button>
 
-    <button class="btn btn-secondary ms-4" type="submit" (click)="save()">{{ 'CLEAR' | translate}}</button>
+    <button class="btn btn-secondary ms-4" type="submit" (click)="clear()">{{ 'CLEAR' | translate}}</button>
   </div>

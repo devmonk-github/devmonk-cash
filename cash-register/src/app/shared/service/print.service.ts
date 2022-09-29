@@ -121,7 +121,7 @@ export class PrintService {
         quantity: qty,
         options: options
       }).subscribe((result: any) => {
-        if (result.data.deviceStatus === 'disconnected') {
+        if (result?.data?.deviceStatus === 'disconnected') {
           //TODO: make warning about offline device
           console.warn('DEVICE OFFLINE')
           return onSuccess(result)

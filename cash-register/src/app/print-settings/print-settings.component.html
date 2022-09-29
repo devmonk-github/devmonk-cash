@@ -48,7 +48,7 @@
         </button>
       </div>
     </div>
-    </div>
+  </div>
 </div>
 
 
@@ -56,12 +56,15 @@
 <div class="card mb-5 mb-xl-10 d-flex" data-kt-scroll-section="label-definition">
   <div class="card-header row">
     <div class="card-title">
-      {{"LABEL" | translate}} {{"DEFINITIONS" | translate}}
+      <div class="col-md-11">
+        <span> {{"LABEL" | translate}} {{"DEFINITIONS" | translate}}</span>
+      </div>
+      <div class="col-md-1">
+        <button class="btn btn-primary" (click)="openToolsModal()">Tools</button>
+      </div>
     </div>
     <div class="card-body">
-      <!-- <button (click)="openLabelTemplateModal()" type="button" class="btn btn-primary" data-bs-toggle="button"
-        aria-pressed="false" autocomplete="off">Open
-        Label model</button> -->
+
       <div class="row my-3">
         <div class="col-sm-12 col-md-6 col-lg-6">
           <div class="d-flex flex-column">
