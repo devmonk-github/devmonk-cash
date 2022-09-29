@@ -44,6 +44,7 @@ import { SelectArticleDialogComponent } from "./components/select-articlegroup-d
 import { NgxPaginationModule } from "ngx-pagination";
 import { PrintSettingsEditorComponent } from "./components/print-settings-editor/print-settings-editor.component";
 import { JsonEditorModule } from "../json-editor/json-editor.module";
+import { CommonPrintSettingsService } from "./service/common-print-settings.service";
 
 @NgModule({
   declarations: [
@@ -114,7 +115,7 @@ import { JsonEditorModule } from "../json-editor/json-editor.module";
     NgxPaginationModule,
     // NgxBarcodeModule
   ],
-  providers: [CurrencyPipe]
+  providers: [CurrencyPipe, CommonPrintSettingsService]
 })
 
 export class SharedModule {
