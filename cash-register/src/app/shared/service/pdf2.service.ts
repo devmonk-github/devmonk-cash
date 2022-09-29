@@ -102,7 +102,6 @@ export class PdfService {
     if(pageMargins) docDefinition.pageMargins = pageMargins;
     if(defaultStyle) docDefinition.defaultStyle = defaultStyle;
 
-    console.log(docDefinition);
     return docDefinition;
   }
 

@@ -6,7 +6,7 @@ import { JsonEditorOptions, JsonEditorComponent as JsonEditorComponent2 } from "
   templateUrl: './json-editor.component.html',
   styleUrls: ['./json-editor.component.scss'],
 })
-export class JsonEditorComponent implements OnInit, AfterViewInit {
+export class JsonEditorComponent implements OnInit {
 
   public editorOptions: JsonEditorOptions;
   @Input() initialData: any;
@@ -18,9 +18,6 @@ export class JsonEditorComponent implements OnInit, AfterViewInit {
     this.editorOptions.modes = ['code', 'text', 'tree', 'view', 'form'];
     this.editorOptions.mode = 'code';
 
-  }
-  ngAfterViewInit(): void {
-    console.log(this.editor);
   }
   ngOnInit() {
     this.jsonData = this.initialData;

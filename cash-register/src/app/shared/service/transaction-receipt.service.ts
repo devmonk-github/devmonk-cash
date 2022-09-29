@@ -1,4 +1,5 @@
 import { Injectable } from "@angular/core";
+import { TranslateService } from "@ngx-translate/core";
 import { Observable } from "rxjs";
 import { ApiService } from "./api.service";
 import { CommonPrintSettingsService } from "./common-print-settings.service";
@@ -115,10 +116,12 @@ export class TransactionReceiptService {
     logoUri: any;
     pageSize: any = 'A5';
     orientation: string = 'portrait';
+    translations: any;
 
     constructor(
         private pdf: PdfService,
         private apiService: ApiService,
+        private translateService: TranslateService,
         private commonService: CommonPrintSettingsService) {
         this.iBusinessId = localStorage.getItem('currentBusiness') || '';
         this.iLocationId = localStorage.getItem('currentLocation') || '';
@@ -127,20 +130,22 @@ export class TransactionReceiptService {
 
     async exportToPdf({ transaction, templateData, pdfTitle }:any){
         this.transaction = transaction;
-        console.log(this.transaction);
+        // console.log(this.transaction);
+        this.translations = await this.getTranslations();
+        console.log(this.translations);
         const result = await this.getBase64FromUrl(this.transaction.businessDetails.sLogoLight).toPromise();
         this.logoUri = result.data;
         this.commonService.pdfTitle = pdfTitle;
         this.commonService.mapCommonParams(templateData.aSettings);
         this.processTemplate(templateData.layout);
         
-        this.processHeader();
-        this.processTransactions();
-        this.processPayments();
+        // this.processHeader();
+        // this.processTransactions();
+        // this.processPayments();
         
-        this.content.push("\nRuilen binnen 8 dagen op vertoon van deze bon.\nDank voor uw bezoek.")
+        // this.content.push("\nRuilen binnen 8 dagen op vertoon van deze bon.\nDank voor uw bezoek.")
 
-        // console.log(this.content);
+        console.log(this.content);
 
         this.pdf.getPdfData(
             this.styles,
@@ -157,6 +162,134 @@ export class TransactionReceiptService {
 
     processTemplate(layout:any){
         console.log(layout);
+        layout.forEach((item:any)=>{
+            if(item.type==='columns'){
+                this.processColumns(item.row);
+            } else if(item.type==='simple'){
+                this.processSimpleData(item.row);
+            } else if (item.type === 'table') {
+                this.processTableData(item.rows, item.columns, item.forEach );
+            }
+        });
+    }
+
+    processTableData(rows:any, columns: any, forEach: any){
+        let tableWidths:any = [];
+        let tableBody:any = [];
+        columns.forEach((column:any)=>{
+            tableBody.push({ text: this.translations[this.removeBrackets(column.html)]});
+            tableWidths.push(column.width || '*');
+        });
+        
+        rows.forEach((row:any)=>{
+            let text = this.replaceVariables(row.html, forEach);
+            console.log({ text });
+            this.content.push({ text: text, alignment: row.align });
+        });
+        
+        console.log(tableBody);
+        const data = {
+            table: {
+                headerRows: 1,
+                widths: tableWidths,
+                body: [tableBody],
+                dontBreakRows: true,
+                keepWithHeaderRows: 1,
+            },
+            // layout: 'lightHorizontalLines'
+        };
+        this.content.push(data);
+
+    }
+    
+    processSimpleData(row:any){
+        row.forEach((el:any)=>{
+            let html = el.html || '';
+            if(typeof html==='string') {
+                let text = this.replaceVariables(html);
+                console.log({text});
+                this.content.push({ text: text, alignment: el.align });
+            }
+        });
+    }
+    
+    replaceVariables(html: any, dataSource?: any) {
+        let extractedVariables = this.getVariables(html);
+        let finalString = html;
+        let providedData = (dataSource) ? this.transaction[dataSource] : this.transaction;
+        console.log('provided data', providedData);
+        if (Array.isArray(providedData)) {
+            console.log('array', providedData);
+            let temp = '';
+            providedData.forEach((item: any) => {
+                temp += this.matchAndAppendData(item, extractedVariables);
+            })
+            console.log(temp);
+        } else {
+            console.log('object', providedData);
+            return this.matchAndAppendData(providedData, extractedVariables);
+        }
+        return finalString;
+    }
+
+    private matchAndAppendData(providedData: any, extractedVariables:any){
+        console.log({ providedData, extractedVariables });
+            let finalString = '';
+            extractedVariables.forEach((v:any) => {
+
+                let matched = false;
+                let newText = '';
+                let currentMatchClean = this.removeBrackets(v);
+
+                Object.keys(providedData).forEach((key) => {
+                    if (key === currentMatchClean && String(providedData[currentMatchClean]).length > 0) {
+                        matched = true;
+                        newText = String(providedData[currentMatchClean]);
+                    }
+                });
+
+                if (matched) {
+                    finalString = finalString.replace(v, newText);
+                }
+            })
+        
+        return finalString;
+    }
+
+    private removeBrackets(textWithBrackets: string): string {
+        return textWithBrackets.replace(/\s/g, '').replace(' ', '').replace('[[', '').replace(']]', '');
+    }
+
+    private getVariables(text: string): RegExpMatchArray | null {
+        return text.match(/\[\[(.*?)]]/ig) || null
+    }
+
+    processColumns(row:any){
+        const columns: any = [];
+
+        row.forEach((el: any) => {
+            if (el.element === 'businessLogo') {
+                columns.push(
+                    {
+                        image: this.logoUri,
+                        fit: [100, 100],
+                        alignment: el.align
+                    }
+                );
+            } else if (el.element ==='businessDetails'){
+                let details = `${this.transaction.businessDetails?.sName || ''}
+                            ${this.transaction.businessDetails?.sEmail || ''}
+                            ${this.transaction.businessDetails?.sMobile || ''}
+                            ${this.transaction.oBusiness?.oPhone?.sLandline || ''}
+                            ${this.transaction.businessDetails?.aLocation?.oAddress?.street || ''}`;
+                columns.push({ text: details, alignment: el.align})
+            } else if (el.element === 'sReceiptNumber'){
+                columns.push({ text: `${this.transaction.sReceiptNumber}`, alignment: el.align })
+            }
+        });
+        this.content.push({
+            columns: columns,
+        });
     }
     
 
@@ -299,6 +432,33 @@ export class TransactionReceiptService {
 
     getBase64FromUrl(url: any): Observable<any> {
         return this.apiService.getNew('cashregistry', `/api/v1/pdf/templates/getBase64/${this.iBusinessId}?url=${url}`);
+    }
+
+    getTranslations() {
+        let translationsObj: any = {};
+        let translationsKey: Array<string> = [
+            'CREATED_BY',
+            'ART_NUMBER',
+            'QUANTITY',
+            'DESCRIPTION',
+            'DISCOUNT',
+            'AMOUNT',
+            'VAT',
+            'SAVINGS_POINTS',
+            'GIFTCARD',
+            'TO_THE_VALUE_OF',
+            'ISSUED_AT',
+            'VALID_UNTIL',
+            'CARDNUMBER'
+        ];
+
+        this.translateService.get(translationsKey).subscribe((result:any) => {
+            Object.entries(result).forEach((translation: any) => {
+                translationsObj[String("__" + translation[0])] = translation[1]
+            })
+        });
+
+        return translationsObj;
     }
 
     cleanUp(){

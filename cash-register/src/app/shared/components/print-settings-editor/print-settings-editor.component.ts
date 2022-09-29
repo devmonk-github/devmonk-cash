@@ -74,13 +74,12 @@ export class PrintSettingsEditorComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    console.log(this.format);
     this.fetchSettings();
   }
   fetchSettings(){
     // this.apiService.getNew('cashregistry', `/api/v1/pdf/templates/getTemplate/${this.oTemplate._id}?iBusinessId=${this.iBusinessId}`).subscribe((result: any) => {
     this.apiService.getNew('cashregistry', `/api/v1/pdf/templates/${this.iBusinessId}?eType=${this.format.key}`).subscribe((result: any) => {
-      console.log(result);
+      // console.log(result);
       if(result?.data){
         this.mode = 'update';
         this.oTemplate = result.data;
@@ -95,7 +94,7 @@ export class PrintSettingsEditorComponent implements OnInit {
     });
   }
   mapWithDefaultSettings(){
-    console.log('mapWithDefaultSettings');
+    // console.log('mapWithDefaultSettings');
     this.oTemplate.aSettings.map((setting:any)=>{
       this.aDefaultSettings.forEach((defaultSetting:any) => {
         if (setting.sParameter === defaultSetting.sParameter){
@@ -144,17 +143,17 @@ export class PrintSettingsEditorComponent implements OnInit {
     }
   }
 
-  activeTabsChanged(tab: any) {
-    switch (tab) {
-      case 'CONTENT':
-        if (!this.layout) this.loadTemplate();
-        break;
-    }
-  }
+  // activeTabsChanged(tab: any) {
+  //   switch (tab) {
+  //     case 'CONTENT':
+  //       if (!this.layout) this.loadTemplate();
+  //       break;
+  //   }
+  // }
 
-  loadTemplate(){
+  // loadTemplate(){
 
-  }
+  // }
 
   close(data: any) {
     this.dialogRef.close.emit(data);
