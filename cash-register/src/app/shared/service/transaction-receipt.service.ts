@@ -1,6 +1,7 @@
 import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
 import { ApiService } from "./api.service";
+import { CommonPrintSettingsService } from "./common-print-settings.service";
 import { PdfService } from "./pdf2.service";
 
 @Injectable({
@@ -117,17 +118,21 @@ export class TransactionReceiptService {
 
     constructor(
         private pdf: PdfService,
-        private apiService: ApiService) {
+        private apiService: ApiService,
+        private commonService: CommonPrintSettingsService) {
         this.iBusinessId = localStorage.getItem('currentBusiness') || '';
         this.iLocationId = localStorage.getItem('currentLocation') || '';
         this.iWorkstationId = localStorage.getItem('currentWorkstation') || '';
     }
 
-    async exportToPdf({transaction}:any){
+    async exportToPdf({ transaction, templateData, pdfTitle }:any){
         this.transaction = transaction;
         console.log(this.transaction);
         const result = await this.getBase64FromUrl(this.transaction.businessDetails.sLogoLight).toPromise();
         this.logoUri = result.data;
+        this.commonService.pdfTitle = pdfTitle;
+        this.commonService.mapCommonParams(templateData.aSettings);
+        this.processTemplate(templateData.layout);
         
         this.processHeader();
         this.processTransactions();
@@ -140,11 +145,18 @@ export class TransactionReceiptService {
         this.pdf.getPdfData(
             this.styles,
             this.content,
-            this.orientation,
-            this.pageSize,
-            'Receipt'
+            this.commonService.oCommonParameters.orientation,
+            this.commonService.oCommonParameters.pageSize,
+            this.commonService.pdfTitle,
+            this.commonService.footer,
+            this.commonService.oCommonParameters.pageMargins,
+            this.commonService.oCommonParameters.defaultStyle
         );
         this.cleanUp();
+    }
+
+    processTemplate(layout:any){
+        console.log(layout);
     }
     
 

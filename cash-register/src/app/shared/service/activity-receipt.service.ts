@@ -1,15 +1,16 @@
 import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
 import { ApiService } from "./api.service";
+import { CommonPrintSettingsService } from "./common-print-settings.service";
 import { PdfService } from "./pdf2.service";
 
 @Injectable({
-    providedIn: 'root'
+    providedIn: 'root',
 })
 export class ActivityReceiptService {
     iBusinessId: string;
-    iLocationId: string;
-    iWorkstationId: string;
+    iLocationId !: string;
+    iWorkstationId !: string;
 
     content: any = [];
     styles: any = {
@@ -113,28 +114,26 @@ export class ActivityReceiptService {
     activity: any;
     customer: any;
     barcodeUri: any;
-    pageSize: any = 'A5';
-    orientation: string = 'portrait';
     businessLogoUri: any;
-    footer: any = {};
-    pageMargins: any = [10,0,0,100];
-    defaultStyle:any = {
-        fontSize: 10
-    }
+    
+    
 
     constructor(
         private pdf: PdfService,
-        private apiService: ApiService) {
+        private apiService: ApiService,
+        private commonService: CommonPrintSettingsService) {
         this.iBusinessId = localStorage.getItem('currentBusiness') || '';
         this.iLocationId = localStorage.getItem('currentLocation') || '';
-        this.iWorkstationId = localStorage.getItem('currentWorkstation') || '';
+        // this.iWorkstationId = localStorage.getItem('currentWorkstation') || '';
     }
 
-    async exportToPdf({ activity, customer, barcodeUri }:any){
+    async exportToPdf({ activity, customer, barcodeUri, templateData, pdfTitle }:any){
         this.activity = activity;
         this.customer = customer;
         this.barcodeUri = barcodeUri;
-        // console.log(this.activity);
+        this.commonService.pdfTitle = pdfTitle;
+        this.commonService.mapCommonParams(templateData.aSettings);
+        this.processTemplate(templateData.layout);
         
         this.content.push({
             image: this.barcodeUri,
@@ -150,14 +149,18 @@ export class ActivityReceiptService {
         this.pdf.getPdfData(
             this.styles,
             this.content,
-            this.orientation,
-            this.pageSize,
-            'Receipt',
-            this.footer,
-            this.pageMargins,
-            this.defaultStyle
+            this.commonService.oCommonParameters.orientation,
+            this.commonService.oCommonParameters.pageSize,
+            this.commonService.pdfTitle,
+            this.commonService.footer,
+            this.commonService.oCommonParameters.pageMargins,
+            this.commonService.oCommonParameters.defaultStyle
         );
         this.cleanUp();
+    }
+
+    processTemplate(templateData:any){
+
     }
     
 
@@ -197,8 +200,8 @@ export class ActivityReceiptService {
             { text: businessDetails, width: '40%', alignment:'right'},
         );
 
-        this.footer.columns = columns;
-        this.footer.margin = [20, 0, 0, 80];
+        this.commonService.footer.columns = columns;
+        this.commonService.footer.margin = [20, 0, 0, 80];
     }
     
     getBase64FromUrl(url: any): Observable<any> {

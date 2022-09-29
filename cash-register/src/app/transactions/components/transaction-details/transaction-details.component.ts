@@ -10,6 +10,7 @@ import { ActivityDetailsComponent } from 'src/app/shared/components/activity-det
 import { TransactionReceiptService } from 'src/app/shared/service/transaction-receipt.service';
 import { Pn2escposService } from 'src/app/shared/service/pn2escpos.service';
 import { PrintService } from 'src/app/shared/service/print.service';
+import { Observable } from 'rxjs';
 const moment = (_moment as any).default ? (_moment as any).default : _moment;
 
 @Component({
@@ -166,7 +167,7 @@ export class TransactionDetailsComponent implements OnInit {
     this.generatePDF(false);
   }
 
-  generatePDF(print: boolean): void {
+  async generatePDF(print: boolean) {
     const sName = 'Sample', eType = this.transaction.eType;
     this.downloadWithVATLoading = true;
     this.transaction.businessDetails = this.businessDetails;
@@ -175,7 +176,14 @@ export class TransactionDetailsComponent implements OnInit {
         this.transaction.currentLocation = this.businessDetails.aLocation[i];
       }
     }
-    this.receiptService.exportToPdf({ transaction: this.transaction });
+
+    const template = await this.getTemplate('transaction').toPromise();
+
+    this.receiptService.exportToPdf({ 
+      transaction: this.transaction, 
+      pdfTitle: 'Transaction Receipt', 
+      templateData: template.data
+    });
     return;
     this.apiService.getNew('cashregistry', '/api/v1/pdf/templates/' + this.iBusinessId + '?sName=' + sName + '&eType=' + eType).subscribe(
       (result: any) => {
@@ -242,6 +250,10 @@ export class TransactionDetailsComponent implements OnInit {
         this.downloadWithVATLoading = false;
         console.log('printing error', error);
       })
+  }
+
+  getTemplate(type: string): Observable<any> {
+    return this.apiService.getNew('cashregistry', `/api/v1/pdf/templates/${this.iBusinessId}?eType=${type}`);
   }
 
   fetchCustomer(customerId: any) {

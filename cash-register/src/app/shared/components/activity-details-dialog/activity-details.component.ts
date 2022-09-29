@@ -376,8 +376,15 @@ export class ActivityDetailsComponent implements OnInit{
       this.businessDetails = result.data;
       this.activity.businessDetails = this.businessDetails;
     } 
+    const template = await this.getTemplate('activity').toPromise();
 
-    this.activityReceiptService.exportToPdf({ activity: this.activity, customer:this.customer, barcodeUri : sBarcodeURI})
+    this.activityReceiptService.exportToPdf({ 
+      activity: this.activity, 
+      customer: this.customer, 
+      barcodeUri: sBarcodeURI, 
+      templateData: template.data, 
+      pdfTitle: 'Activity Receipt' 
+    })
     return;
     const data = this.activity.activityitems[index];
     const sName = 'Sample', eType = 'completed';
@@ -408,6 +415,10 @@ export class ActivityDetailsComponent implements OnInit{
       }, (error) => {
         this.customerReceiptDownloading = false;
       })
+  }
+
+  getTemplate(type:string): Observable<any>{
+    return this.apiService.getNew('cashregistry', `/api/v1/pdf/templates/${this.iBusinessId}?eType=${type}`);
   }
 
   fetchCustomer(customerId: any, index: number) {
