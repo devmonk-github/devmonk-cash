@@ -594,28 +594,30 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
           body.oTransaction.iActivityId = this.iActivityId;
           let result = body.transactionItems.map((a: any) => a.iBusinessPartnerId);
           const uniq = [...new Set(_.compact(result))];
+          this.tillService.createGiftcardTransactionItem(body, this.discountArticleGroup);
+          console.log(body);
           this.apiService.postNew('cashregistry', '/api/v1/till/transaction', body)
             .subscribe((data: any) => {
               this.toastrService.show({ type: 'success', text: 'Transaction created.' });
-              const { transaction, aTransactionItems } = data;
-              transaction.aTransactionItems = aTransactionItems;
-              this.transaction = transaction;
+              this.saveInProgress = false;
+              // const { transaction, aTransactionItems } = data;
+              // transaction.aTransactionItems = aTransactionItems;
+              // this.transaction = transaction;
               this.processTransactionForPdfReceipt();
               // this.transaction.aTransactionItems.forEach((item: any, index: number) => {
               //   this.getRelatedTransactionItem(item?.iActivityItemId, item?._id, index)
               // })
               // this.getRelatedTransaction(this.transaction?.iActivityId, this.transaction?._id)
-              
               // this.pdfService.generatePDF(this.transaction);
-              this.updateFiskalyTransaction('FINISHED', body.payments);
-              setTimeout(() => {
-                this.saveInProgress = false;
-                this.fetchBusinessPartnersProductCount(uniq);
-                this.clearAll();
-              }, 100);
-              if (this.selectedTransaction) {
-                this.deleteParkedTransaction();
-              };
+              // this.updateFiskalyTransaction('FINISHED', body.payments);
+              // setTimeout(() => {
+              //   this.saveInProgress = false;
+              //   this.fetchBusinessPartnersProductCount(uniq);
+              //   this.clearAll();
+              // }, 100);
+              // if (this.selectedTransaction) {
+              //   this.deleteParkedTransaction();
+              // };
             }, err => {
               this.toastrService.show({ type: 'danger', text: err.message });
               this.saveInProgress = false;
@@ -624,22 +626,22 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       });
   }
 
-  async processTransactionForPdfReceipt(){
+  async processTransactionForPdfReceipt() {
     await this.processTransactionData().toPromise();
     if (!this.businessDetails) {
       const _result: any = await this.getBusinessDetails().toPromise();
-  
+
       this.businessDetails = _result.data;
       this.businessDetails.currentLocation = this.businessDetails?.aLocation?.filter((location: any) => location?._id.toString() == this.locationId.toString())[0];
     }
 
     this.transaction.businessDetails = this.businessDetails;
     this.transaction.currentLocation = this.businessDetails.currentLocation;
-    
+
     this.receiptService.exportToPdf({ transaction: this.transaction });
   }
 
-  processTransactionData(): Observable<any>{
+  processTransactionData(): Observable<any> {
     return new Observable((observer: any) => {
       let dataObject = JSON.parse(JSON.stringify(this.transaction));
       dataObject.aPayments.forEach((obj: any) => {
@@ -687,7 +689,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       this.getRelatedTransaction(dataObject?.iActivityId, dataObject?._id)
 
       this.transaction = dataObject;
-      
+
 
       observer.complete();
 
@@ -697,7 +699,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   getBusinessDetails() {
     return this.apiService.getNew('core', '/api/v1/business/' + this.business._id);
   }
-  
+
 
   fetchBusinessPartnersProductCount(aBusinessPartnerId: any) {
     if (!aBusinessPartnerId.length || 1 > aBusinessPartnerId.length) {

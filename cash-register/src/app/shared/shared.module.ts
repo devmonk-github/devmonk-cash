@@ -29,7 +29,6 @@ import { MaterialModule } from './material.module';  // common material design m
 import {
   CountryListComponent, TabsComponent, TabComponent
 } from './components';
-// import { NgbModule } from "@ng-bootstrap/ng-bootstrap";
 import { NgJsonEditorModule } from "ang-jsoneditor";
 import { FileSaverModule } from "ngx-filesaver";
 import { ActivityDetailsComponent } from "./components/activity-details-dialog/activity-details.component";
@@ -82,7 +81,6 @@ import { CommonPrintSettingsService } from "./service/common-print-settings.serv
     NgSelectModule,
     WebcamModule,
     MaterialModule,
-    // NgbModule,
     ReactiveFormsModule,
     ToastModule.forRoot(),
     NgJsonEditorModule,
@@ -90,7 +88,6 @@ import { CommonPrintSettingsService } from "./service/common-print-settings.serv
     NgApexchartsModule,
     NgxPaginationModule,
     JsonEditorModule
-    // NgxBarcodeModule
   ],
   exports: [
     DialerComponent,
@@ -113,7 +110,6 @@ import { CommonPrintSettingsService } from "./service/common-print-settings.serv
     TabComponent,
     SelectArticleDialogComponent, 
     NgxPaginationModule,
-    // NgxBarcodeModule
   ],
   providers: [CurrencyPipe, CommonPrintSettingsService]
 })
