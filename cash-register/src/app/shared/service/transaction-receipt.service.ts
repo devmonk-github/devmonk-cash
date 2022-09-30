@@ -180,7 +180,7 @@ export class TransactionReceiptService {
         let tableHeadersList:any = [];
         if(columns){ // parsing columns if present
             columns.forEach((column:any)=>{
-                console.log('column: ',column);
+                // console.log('column: ',column);
                 let text = this.pdfService.removeBrackets(column.html);//removes [[ ]] from placeholders
                 let obj:any = { text: this.translations[text] || text };
                 if(column?.styles) {
@@ -189,10 +189,10 @@ export class TransactionReceiptService {
                     })
                 }
                 tableHeadersList.push(obj); 
-                console.log(obj);
+                // console.log(obj);
             });
         }
-        console.log(tableHeadersList);
+        // console.log(tableHeadersList);
         let currentDataSource = this.transaction;
         let texts:any = [];
 
@@ -236,8 +236,6 @@ export class TransactionReceiptService {
             finalData = [[...tableHeadersList], ...texts];
         else 
             finalData = texts;
-        // const finalData = [[...tableHeadersList], ...texts, [...totalRow]];
-        // console.log(finalData);
 
         const data = {
             table: {
