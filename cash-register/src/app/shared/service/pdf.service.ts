@@ -797,7 +797,7 @@ export class PdfService {
     return text.match(/\[\[(.*?)]]/ig) || null
   }
 
-  private removeBrackets(textWithBrackets: string): string {
+  removeBrackets(textWithBrackets: string): string {
     return textWithBrackets.replace(/\s/g, '').replace(' ', '').replace('[[', '').replace(']]', '');
   }
 

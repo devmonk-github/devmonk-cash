@@ -180,9 +180,19 @@ export class TransactionReceiptService {
         let tableHeadersList:any = [];
         if(columns){ // parsing columns if present
             columns.forEach((column:any)=>{
-                tableHeadersList.push({ text: this.translations[this.removeBrackets(column.html)]}); //removes [[ ]] and inserts translated values 
+                console.log('column: ',column);
+                let text = this.pdfService.removeBrackets(column.html);//removes [[ ]] from placeholders
+                let obj:any = { text: this.translations[text] || text };
+                if(column?.styles) {
+                    column.styles.forEach((style:any)=>{
+                        obj[style] = true;
+                    })
+                }
+                tableHeadersList.push(obj); 
+                console.log(obj);
             });
         }
+        console.log(tableHeadersList);
         let currentDataSource = this.transaction;
         let texts:any = [];
 
@@ -253,57 +263,6 @@ export class TransactionReceiptService {
                 this.content.push({ text: text, alignment: el.align });
             }
         });
-    }
-    
-    // replaceVariables(html: any, dataSource?: any) {
-    //     let extractedVariables = this.getVariables(html);
-    //     let finalString = html;
-    //     let providedData = (dataSource) ? this.transaction[dataSource] : this.transaction;
-    //     console.log('provided data', providedData);
-    //     if (Array.isArray(providedData)) {
-    //         console.log('array', providedData);
-    //         let temp = '';
-    //         providedData.forEach((item: any) => {
-    //             temp += this.matchAndAppendData(item, extractedVariables);
-    //         })
-    //         console.log(temp);
-    //     } else {
-    //         console.log('object', providedData);
-    //         return this.matchAndAppendData(providedData, extractedVariables);
-    //     }
-    //     return finalString;
-    // }
-
-    private matchAndAppendData(providedData: any, extractedVariables:any){
-        console.log({ providedData, extractedVariables });
-            let finalString = '';
-            extractedVariables.forEach((v:any) => {
-
-                let matched = false;
-                let newText = '';
-                let currentMatchClean = this.removeBrackets(v);
-
-                Object.keys(providedData).forEach((key) => {
-                    if (key === currentMatchClean && String(providedData[currentMatchClean]).length > 0) {
-                        matched = true;
-                        newText = String(providedData[currentMatchClean]);
-                    }
-                });
-
-                if (matched) {
-                    finalString = finalString.replace(v, newText);
-                }
-            })
-        
-        return finalString;
-    }
-
-    private removeBrackets(textWithBrackets: string): string {
-        return textWithBrackets.replace(/\s/g, '').replace(' ', '').replace('[[', '').replace(']]', '');
-    }
-
-    private getVariables(text: string): RegExpMatchArray | null {
-        return text.match(/\[\[(.*?)]]/ig) || null
     }
 
     processColumns(row:any){
@@ -491,7 +450,9 @@ export class TransactionReceiptService {
             'TO_THE_VALUE_OF',
             'ISSUED_AT',
             'VALID_UNTIL',
-            'CARDNUMBER'
+            'CARDNUMBER',
+            'Methode',
+            'Bedrag'
         ];
 
         this.translateService.get(translationsKey).subscribe((result:any) => {
