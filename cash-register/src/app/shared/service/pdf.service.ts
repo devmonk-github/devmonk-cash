@@ -801,7 +801,7 @@ export class PdfService {
     return textWithBrackets.replace(/\s/g, '').replace(' ', '').replace('[[', '').replace(']]', '');
   }
 
-  private replaceVariables(originalText: string, dataSourceObject: any) {
+  replaceVariables(originalText: string, dataSourceObject: any) {
     // console.log('replace vars',{originalText,dataSourceObject});
     if (!this.isDefined(originalText)) {
       return;

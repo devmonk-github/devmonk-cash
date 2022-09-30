@@ -3,7 +3,8 @@ import { TranslateService } from "@ngx-translate/core";
 import { Observable } from "rxjs";
 import { ApiService } from "./api.service";
 import { CommonPrintSettingsService } from "./common-print-settings.service";
-import { PdfService } from "./pdf2.service";
+import { PdfService as PdfServiceNew } from "./pdf2.service";
+import { PdfService as PdfService } from "./pdf.service";
 
 @Injectable({
     providedIn: 'root'
@@ -119,10 +120,11 @@ export class TransactionReceiptService {
     translations: any;
 
     constructor(
-        private pdf: PdfService,
+        private pdfServiceNew: PdfServiceNew,
         private apiService: ApiService,
         private translateService: TranslateService,
-        private commonService: CommonPrintSettingsService) {
+        private commonService: CommonPrintSettingsService,
+        private pdfService: PdfService) {
         this.iBusinessId = localStorage.getItem('currentBusiness') || '';
         this.iLocationId = localStorage.getItem('currentLocation') || '';
         this.iWorkstationId = localStorage.getItem('currentWorkstation') || '';
@@ -132,7 +134,7 @@ export class TransactionReceiptService {
         this.transaction = transaction;
         // console.log(this.transaction);
         this.translations = await this.getTranslations();
-        console.log(this.translations);
+        // console.log(this.translations);
         const result = await this.getBase64FromUrl(this.transaction.businessDetails.sLogoLight).toPromise();
         this.logoUri = result.data;
         this.commonService.pdfTitle = pdfTitle;
@@ -145,9 +147,9 @@ export class TransactionReceiptService {
         
         // this.content.push("\nRuilen binnen 8 dagen op vertoon van deze bon.\nDank voor uw bezoek.")
 
-        console.log(this.content);
+        // console.log(this.content);
 
-        this.pdf.getPdfData(
+        this.pdfServiceNew.getPdfData(
             this.styles,
             this.content,
             this.commonService.oCommonParameters.orientation,
@@ -161,13 +163,13 @@ export class TransactionReceiptService {
     }
 
     processTemplate(layout:any){
-        console.log(layout);
+        // console.log(layout);
         layout.forEach((item:any)=>{
-            if(item.type==='columns'){
+            if(item.type==='columns'){ // parse column structure
                 this.processColumns(item.row);
-            } else if(item.type==='simple'){
+            } else if(item.type==='simple'){ //parse simple data
                 this.processSimpleData(item.row);
-            } else if (item.type === 'table') {
+            } else if (item.type === 'table') { //parse table
                 this.processTableData(item.rows, item.columns, item.forEach );
             }
         });
@@ -175,29 +177,69 @@ export class TransactionReceiptService {
 
     processTableData(rows:any, columns: any, forEach: any){
         let tableWidths:any = [];
-        let tableBody:any = [];
-        columns.forEach((column:any)=>{
-            tableBody.push({ text: this.translations[this.removeBrackets(column.html)]});
-            tableWidths.push(column.width || '*');
-        });
-        
-        rows.forEach((row:any)=>{
-            let text = this.replaceVariables(row.html, forEach);
-            console.log({ text });
-            this.content.push({ text: text, alignment: row.align });
-        });
-        
-        console.log(tableBody);
+        let tableHeadersList:any = [];
+        if(columns){ // parsing columns if present
+            columns.forEach((column:any)=>{
+                tableHeadersList.push({ text: this.translations[this.removeBrackets(column.html)]}); //removes [[ ]] and inserts translated values 
+            });
+        }
+        let currentDataSource = this.transaction;
+        let texts:any = [];
+
+        if(forEach){ //if we have forEach (nested array) then loop through it
+            currentDataSource = this.transaction[forEach]; //take nested array as currentDataSource
+            let bWidthPushed = false;
+            currentDataSource.forEach((dataSource:any)=>{
+                let dataRow:any = [];
+                rows.forEach((row: any) => {
+                    // console.log(row, this.commonService.calcColumnWidth(row.size));
+                    let text = this.pdfService.replaceVariables(row.html, dataSource); //replacing placeholders with the actual values
+                    dataRow.push({text: text});
+                    if(!bWidthPushed) tableWidths.push(this.commonService.calcColumnWidth(row.size) || '*');
+                });
+                // console.log(dataRow, tableWidths);
+                texts.push(dataRow);
+                bWidthPushed = true;
+            });
+        } else { //we don't have foreach so only parsing single row
+            let dataRow: any = [];
+            rows.forEach((row: any) => { //parsing rows
+                // console.log(row, this.commonService.calcColumnWidth(row.size));
+                let text = this.pdfService.replaceVariables(row.html, currentDataSource); 
+                dataRow.push({ text: text });//colSpan: row?.colSpan || 0
+                // tableWidths.push(this.commonService.calcColumnWidth(row.size) || '*');
+                
+                if(row?.colSpan){ // we have colspan so need to add empty {} in current row
+                    tableWidths.push(this.commonService.calcColumnWidth(row.size) || '*');
+                } else {
+                    tableWidths.push(this.commonService.calcColumnWidth(row.size) || '*');
+                }
+                
+                    
+            });
+            // console.log(dataRow, tableWidths);
+            texts.push(dataRow);
+        }
+        // let totalRow: any = [];
+        let finalData:any = [];
+        if (tableHeadersList?.length)
+            finalData = [[...tableHeadersList], ...texts];
+        else 
+            finalData = texts;
+        // const finalData = [[...tableHeadersList], ...texts, [...totalRow]];
+        // console.log(finalData);
+
         const data = {
             table: {
                 headerRows: 1,
                 widths: tableWidths,
-                body: [tableBody],
+                body: finalData,
                 dontBreakRows: true,
                 keepWithHeaderRows: 1,
             },
             // layout: 'lightHorizontalLines'
         };
+        // console.log('finalData in content', data);
         this.content.push(data);
 
     }
@@ -206,31 +248,31 @@ export class TransactionReceiptService {
         row.forEach((el:any)=>{
             let html = el.html || '';
             if(typeof html==='string') {
-                let text = this.replaceVariables(html);
+                let text = this.pdfService.replaceVariables(html, this.transaction);
                 console.log({text});
                 this.content.push({ text: text, alignment: el.align });
             }
         });
     }
     
-    replaceVariables(html: any, dataSource?: any) {
-        let extractedVariables = this.getVariables(html);
-        let finalString = html;
-        let providedData = (dataSource) ? this.transaction[dataSource] : this.transaction;
-        console.log('provided data', providedData);
-        if (Array.isArray(providedData)) {
-            console.log('array', providedData);
-            let temp = '';
-            providedData.forEach((item: any) => {
-                temp += this.matchAndAppendData(item, extractedVariables);
-            })
-            console.log(temp);
-        } else {
-            console.log('object', providedData);
-            return this.matchAndAppendData(providedData, extractedVariables);
-        }
-        return finalString;
-    }
+    // replaceVariables(html: any, dataSource?: any) {
+    //     let extractedVariables = this.getVariables(html);
+    //     let finalString = html;
+    //     let providedData = (dataSource) ? this.transaction[dataSource] : this.transaction;
+    //     console.log('provided data', providedData);
+    //     if (Array.isArray(providedData)) {
+    //         console.log('array', providedData);
+    //         let temp = '';
+    //         providedData.forEach((item: any) => {
+    //             temp += this.matchAndAppendData(item, extractedVariables);
+    //         })
+    //         console.log(temp);
+    //     } else {
+    //         console.log('object', providedData);
+    //         return this.matchAndAppendData(providedData, extractedVariables);
+    //     }
+    //     return finalString;
+    // }
 
     private matchAndAppendData(providedData: any, extractedVariables:any){
         console.log({ providedData, extractedVariables });
@@ -459,6 +501,15 @@ export class TransactionReceiptService {
         });
 
         return translationsObj;
+    }
+
+    private isDefined(obj: any): boolean {
+        //return typeof obj !== 'undefined'
+        if (Array.isArray(obj)) {
+            return Boolean(obj.length > 0 && obj[0] !== "")
+        } else {
+            return Boolean(obj)
+        }
     }
 
     cleanUp(){
