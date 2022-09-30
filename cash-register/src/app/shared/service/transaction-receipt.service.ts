@@ -113,7 +113,7 @@ export class TransactionReceiptService {
         // },
     };
 
-    transaction: any;
+    oOriginalDataSource: any;
     logoUri: any;
     pageSize: any = 'A5';
     orientation: string = 'portrait';
@@ -130,13 +130,15 @@ export class TransactionReceiptService {
         this.iWorkstationId = localStorage.getItem('currentWorkstation') || '';
     }
 
-    async exportToPdf({ transaction, templateData, pdfTitle }:any){
-        this.transaction = transaction;
-        // console.log(this.transaction);
+    async exportToPdf({ oDataSource, templateData, pdfTitle }:any){
+        this.oOriginalDataSource = oDataSource;
+        // console.log(this.oOriginalDataSource);
         this.translations = await this.getTranslations();
         // console.log(this.translations);
-        const result = await this.getBase64FromUrl(this.transaction.businessDetails.sLogoLight).toPromise();
-        this.logoUri = result.data;
+        if (this.oOriginalDataSource?.businessDetails?.sLogoLight){
+            const result = await this.getBase64FromUrl(this.oOriginalDataSource.businessDetails.sLogoLight).toPromise();
+            this.logoUri = result.data;
+        }
         this.commonService.pdfTitle = pdfTitle;
         this.commonService.mapCommonParams(templateData.aSettings);
         this.processTemplate(templateData.layout);
@@ -193,11 +195,11 @@ export class TransactionReceiptService {
             });
         }
         // console.log(tableHeadersList);
-        let currentDataSource = this.transaction;
+        let currentDataSource = this.oOriginalDataSource;
         let texts:any = [];
 
         if(forEach){ //if we have forEach (nested array) then loop through it
-            currentDataSource = this.transaction[forEach]; //take nested array as currentDataSource
+            currentDataSource = this.oOriginalDataSource[forEach]; //take nested array as currentDataSource
             let bWidthPushed = false;
             currentDataSource.forEach((dataSource:any)=>{
                 let dataRow:any = [];
@@ -256,7 +258,7 @@ export class TransactionReceiptService {
         row.forEach((el:any)=>{
             let html = el.html || '';
             if(typeof html==='string') {
-                let text = this.pdfService.replaceVariables(html, this.transaction);
+                let text = this.pdfService.replaceVariables(html, this.oOriginalDataSource);
                 console.log({text});
                 this.content.push({ text: text, alignment: el.align });
             }
@@ -276,14 +278,14 @@ export class TransactionReceiptService {
                     }
                 );
             } else if (el.element ==='businessDetails'){
-                let details = `${this.transaction.businessDetails?.sName || ''}
-                            ${this.transaction.businessDetails?.sEmail || ''}
-                            ${this.transaction.businessDetails?.sMobile || ''}
-                            ${this.transaction.oBusiness?.oPhone?.sLandline || ''}
-                            ${this.transaction.businessDetails?.aLocation?.oAddress?.street || ''}`;
+                let details = `${this.oOriginalDataSource.businessDetails?.sName || ''}
+                            ${this.oOriginalDataSource.businessDetails?.sEmail || ''}
+                            ${this.oOriginalDataSource.businessDetails?.sMobile || ''}
+                            ${this.oOriginalDataSource.oBusiness?.oPhone?.sLandline || ''}
+                            ${this.oOriginalDataSource.businessDetails?.aLocation?.oAddress?.street || ''}`;
                 columns.push({ text: details, alignment: el.align})
             } else if (el.element === 'sReceiptNumber'){
-                columns.push({ text: `${this.transaction.sReceiptNumber}`, alignment: el.align })
+                columns.push({ text: `${this.oOriginalDataSource.sReceiptNumber}`, alignment: el.align })
             }
         });
         this.content.push({
@@ -295,11 +297,11 @@ export class TransactionReceiptService {
     processHeader() {
         const columns: any = [];
 
-        let businessDetails = `${this.transaction.businessDetails?.sName || ''}
-            ${this.transaction.businessDetails?.sEmail || ''}
-            ${this.transaction.businessDetails?.sMobile || ''}
-            ${this.transaction.oBusiness?.oPhone?.sLandline || ''}
-            ${this.transaction.businessDetails?.aLocation?.oAddress?.street || ''}`;
+        let businessDetails = `${this.oOriginalDataSource.businessDetails?.sName || ''}
+            ${this.oOriginalDataSource.businessDetails?.sEmail || ''}
+            ${this.oOriginalDataSource.businessDetails?.sMobile || ''}
+            ${this.oOriginalDataSource.oBusiness?.oPhone?.sLandline || ''}
+            ${this.oOriginalDataSource.businessDetails?.aLocation?.oAddress?.street || ''}`;
 
         columns.push(
             {
@@ -307,16 +309,16 @@ export class TransactionReceiptService {
                 fit: [100, 100],
             },
             { text: businessDetails, width: '*', style:['center'] },
-            { text: `${this.transaction.sReceiptNumber}`, width: '10%', style:['right'] },
+            { text: `${this.oOriginalDataSource.sReceiptNumber}`, width: '10%', style:['right'] },
         );
 
         this.content.push({
             columns: columns,
         });
 
-        let receiptDetails = `Datum: ${this.transaction.dCreatedDate}
-            Bonnummer: ${this.transaction.sReceiptNumber}
-            Transaction number: ${this.transaction.sNumber}\n\n\n`;
+        let receiptDetails = `Datum: ${this.oOriginalDataSource.dCreatedDate}
+            Bonnummer: ${this.oOriginalDataSource.sReceiptNumber}
+            Transaction number: ${this.oOriginalDataSource.sNumber}\n\n\n`;
 
         this.content.push({ text: receiptDetails });
 
@@ -337,7 +339,7 @@ export class TransactionReceiptService {
         
         let texts: any = [];
         let nTotalOriginalAmount = 0;
-        this.transaction.aTransactionItems.forEach((item:any) =>{
+        this.oOriginalDataSource.aTransactionItems.forEach((item:any) =>{
             // console.log({item});
             nTotalOriginalAmount += item.nPriceIncVat; 
             let description = `${item.description} 
@@ -365,13 +367,13 @@ export class TransactionReceiptService {
         let totalRow: any = [
             { text: 'Total' },
             { text: '' },
-            { text: this.transaction.totalVat },
-            { text: this.transaction.totalDiscount },
-            { text: this.transaction.totalSavingPoints },
-            { text: `(${this.transaction.total})${this.transaction.totalAfterDisc}\nFrom Total ${nTotalOriginalAmount}`, style: ['right'] }
+            { text: this.oOriginalDataSource.totalVat },
+            { text: this.oOriginalDataSource.totalDiscount },
+            { text: this.oOriginalDataSource.totalSavingPoints },
+            { text: `(${this.oOriginalDataSource.total})${this.oOriginalDataSource.totalAfterDisc}\nFrom Total ${nTotalOriginalAmount}`, style: ['right'] }
         ];
         
-        if (!(this.transaction.totalDiscount > 0)) {
+        if (!(this.oOriginalDataSource.totalDiscount > 0)) {
             totalRow.splice(3,1);
             tableHeaders.splice(3,1);
             transactionTableWidths.splice(3,1);
@@ -409,7 +411,7 @@ export class TransactionReceiptService {
         });
         const tableWidths = ['30%', '10%'];
         let texts:any = []
-        this.transaction.aPayments.forEach((payment:any)=>{
+        this.oOriginalDataSource.aPayments.forEach((payment:any)=>{
             texts.push([
                 { text: `${payment.sMethod} (${payment.dCreatedDate})`},
                 { text: `${payment.nAmount}`, style: ['left'] }
@@ -472,7 +474,7 @@ export class TransactionReceiptService {
     }
 
     cleanUp(){
-        this.transaction = null;
+        this.oOriginalDataSource = null;
         this.content = [];
         this.styles = {};
     }

@@ -178,9 +178,26 @@ export class TransactionDetailsComponent implements OnInit {
     }
 
     const template = await this.getTemplate('transaction').toPromise();
+    // console.log(this.transaction);
+    let nTotalOriginalAmount = 0;
+    this.transaction.aTransactionItems.map((item: any) => {
+      // console.log({item});
+      nTotalOriginalAmount += item.nPriceIncVat;
+      let description = `${item.description} 
+                Original amount: ${item.nPriceIncVat} 
+                Already paid: \n${item.sTransactionNumber} | ${item.nPaymentAmount} (this receipt)\n`;
+
+      if (item?.related?.length) {
+        item.related.forEach((related: any) => {
+          description += `${related.sTransactionNumber}|${related.nPaymentAmount}\n`;
+        });
+      }
+      item.description = description;
+    });
+    this.transaction.nTotalOriginalAmount = nTotalOriginalAmount;
 
     this.receiptService.exportToPdf({ 
-      transaction: this.transaction, 
+      oDataSource: this.transaction, 
       pdfTitle: 'Transaction Receipt', 
       templateData: template.data
     });
