@@ -20,16 +20,12 @@ export class CommonPrintSettingsService {
     footer: any = {};
     pageSizes: any = {
         A4:{
-            pageWidth:210,
-            pageHeight:297
+            pageWidth:595,
+            pageHeight:842
         },
         A5: {
             pageWidth: 420,
             pageHeight: 595
-        },
-        A3: {
-            pageWidth: 297,
-            pageHeight: 420
         }
     };
 
@@ -53,7 +49,7 @@ export class CommonPrintSettingsService {
                     break;
                 case 'pageMargins':
                     this.oCommonParameters[param.sParameter] = param.aValues;
-                    console.log(this.oCommonParameters);
+                    // console.log(this.oCommonParameters);
                     break;
             }
         });

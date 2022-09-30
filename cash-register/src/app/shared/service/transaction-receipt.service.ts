@@ -259,7 +259,7 @@ export class TransactionReceiptService {
             let html = el.html || '';
             if(typeof html==='string') {
                 let text = this.pdfService.replaceVariables(html, this.oOriginalDataSource);
-                console.log({text});
+                // console.log({text});
                 this.content.push({ text: text, alignment: el.align });
             }
         });
