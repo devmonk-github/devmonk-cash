@@ -4,7 +4,7 @@ import { Injectable } from "@angular/core";
     providedIn: 'root'
 })
 export class CommonPrintSettingsService {
- 
+    MM_TO_PT_CONVERSION_FACTOR = 2.837; //convert mm into points
 
     oCommonParameters: any = {
         pageSize: 'A5',
@@ -18,14 +18,16 @@ export class CommonPrintSettingsService {
     
     pdfTitle !: string;
     footer: any = {};
-    pageSizes: any = {
+    pageSizes: any = { // unitis mm
         A4:{
-            pageWidth:595,
-            pageHeight:842
+            pageWidth:210,
+            pageHeight:297
         },
         A5: {
-            pageWidth: 420,
-            pageHeight: 595
+            pageWidth: 148,
+            pageHeight: 210
+        }
+    };
         }
     };
 
@@ -58,7 +60,7 @@ export class CommonPrintSettingsService {
     calcColumnWidth(size: number): number {
         size = (size === null || size > 12 || size === undefined) ? 12 : size;
         let totalMargin = this.oCommonParameters['pageMargins'][0] + this.oCommonParameters['pageMargins'][2];
-        let num = size * ((this.pageWidth - totalMargin) / 12);
+        let num = size * ((this.pageWidth * this.MM_TO_PT_CONVERSION_FACTOR - totalMargin) / 12);
         // console.log({ size, width: parseFloat(num.toFixed(2)), totalMargin: totalMargin });
         return parseFloat(num.toFixed(2)) - 9;
     }
