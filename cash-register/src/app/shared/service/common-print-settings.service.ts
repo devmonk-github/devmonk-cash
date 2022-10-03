@@ -28,6 +28,36 @@ export class CommonPrintSettingsService {
             pageHeight: 210
         }
     };
+
+    layouts: any = {
+        onlyHorizontalLineLayout: {
+            hLineWidth: function (i: number, node: any) {
+                // return (i === node.table.body.length ) ? 0 : 1;
+                return 0.5;
+            },
+            vLineWidth: function (i: number, node: any) {
+                return 0;
+            },
+        },
+        onlyHorizontalLineLayoutExceptFirst: {
+            hLineWidth: function (i: number, node: any) {
+                return (i === 0 ) ? 0 : 0.5;
+            },
+            vLineWidth: function (i: number, node: any) {
+                return 0;
+            },
+        },
+
+        tableLayout: {
+            hLineWidth: function (i: number, node: any) {
+                return i === 0 || i === node.table.body.length ? 0 : 0.5;
+            },
+            vLineWidth: function (i: number, node: any) {
+                return i === 0 || i === node.table.widths.length ? 0 : 0;
+            },
+            hLineColor: function (i: number, node: any) {
+                return i === 0 || i === node.table.body.length ? '#999' : '#999';
+            }
         }
     };
 
