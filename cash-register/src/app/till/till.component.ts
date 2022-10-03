@@ -28,7 +28,7 @@ import { FiskalyService } from '../shared/service/fiskaly.service';
 import { PdfService } from '../shared/service/pdf.service';
 import { SupplierWarningDialogComponent } from './dialogs/supplier-warning-dialog/supplier-warning-dialog.component';
 import * as _moment from 'moment';
-import { TransactionReceiptService } from '../shared/service/transaction-receipt.service';
+import { TransactionReceiptService } from '../shared/service/receipt.service';
 const moment = (_moment as any).default ? (_moment as any).default : _moment;
 @Component({
   selector: 'app-till',
