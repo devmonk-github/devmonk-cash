@@ -181,22 +181,32 @@ export class TransactionDetailsComponent implements OnInit {
     // console.log(this.transaction);
     let nTotalOriginalAmount = 0;
     const oDataSource = JSON.parse(JSON.stringify(this.transaction));
-    oDataSource.aTransactionItems.forEach((item: any) => {
-      // console.log({item});
-      nTotalOriginalAmount += item.nPriceIncVat;
-      let description = `${item.description}
-                          Original amount: ${item.nPriceIncVat}\n
+    if (oDataSource.aTransactionItems?.length === 1 && oDataSource._id === oDataSource.aTransactionItems[0].iTransactionId){
+      nTotalOriginalAmount = oDataSource.total;
+      oDataSource.bHasPrePayments = false;
+    } else {
+      oDataSource.aTransactionItems.forEach((item: any) => {
+        // console.log({item});
+        nTotalOriginalAmount += item.nPriceIncVat;
+        let description = `${item.description}\n`;
+        if(item.nPriceIncVat !== item.nPaymentAmount){
+          description += `Original amount: ${item.nPriceIncVat}\n
                           Already paid: \n${item.sTransactionNumber} | ${item.nPaymentAmount} (this receipt)\n`;
 
-      if (item?.related?.length) {
-        item.related.forEach((related: any) => {
-          description += `${related.sTransactionNumber}|${related.nPaymentAmount}\n`;
-        });
-      }
-      item.description = description;
-    });
+          if (item?.related?.length) {
+            item.related.forEach((related: any) => {
+              description += `${related.sTransactionNumber}|${related.nPaymentAmount}\n`;
+            });
+          }
+        }
+        
+        item.description = description;
+      });
+      oDataSource.bHasPrePayments = true;
+    }
+    
     oDataSource.nTotalOriginalAmount = nTotalOriginalAmount;
-
+    console.log(oDataSource);
     this.receiptService.exportToPdf({ 
       oDataSource: oDataSource, 
       pdfTitle: 'Transaction Receipt', 
