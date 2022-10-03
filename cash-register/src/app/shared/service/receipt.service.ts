@@ -85,33 +85,8 @@ export class TransactionReceiptService {
             // color: "#ccc",
         },
     };
-    onlyHorizontalLineLayout = {
-        hLineWidth: function (i: number, node: any) {
-            // return (i === node.table.body.length ) ? 0 : 1;
-            return 0.5;
-        },
-        vLineWidth: function (i: number, node: any) {
-            return 0;
-        },
-    };
+    
 
-    tableLayout = {
-        hLineWidth: function (i: number, node: any) {
-            return i === 0 || i === node.table.body.length ? 0 : 0.5;
-        },
-        vLineWidth: function (i: number, node: any) {
-            return i === 0 || i === node.table.widths.length ? 0 : 0;
-        },
-        hLineColor: function (i: number, node: any) {
-            return i === 0 || i === node.table.body.length ? '#999' : '#999';
-        },
-        // paddingLeft: function (i: number, node: any) {
-        //     return i === 0 ? 0 : 20;
-        // },
-        // paddingRight: function (i: number, node: any) {
-        //     return i === node.table.widths.length ? 20 : 0;
-        // },
-    };
 
     oOriginalDataSource: any;
     logoUri: any;
@@ -165,6 +140,13 @@ export class TransactionReceiptService {
     }
 
     processTemplate(layout:any){
+        /*
+          we have 3 tipes of data structures
+          1. column - like sections of header (ex. LEFT : business logo, CENTER: business details, RIGHT: receipt number)
+          2. simple - plain textual information like paragraph
+          3. table format
+        */
+
         // console.log(layout);
         layout.forEach((item:any)=>{
             if(item.type==='columns'){ // parse column structure
@@ -172,12 +154,22 @@ export class TransactionReceiptService {
             } else if(item.type==='simple'){ //parse simple data
                 this.processSimpleData(item.row);
             } else if (item.type === 'table') { //parse table
-                this.processTableData(item.rows, item.columns, item.forEach );
+                this.processTableData(item.rows, item.columns, item.forEach, item?.layout );
+            } else if (item.type === 'absolute') { //parse table
+                this.processAbsoluteData(item.absoluteElements);
             }
         });
     }
 
-    processTableData(rows:any, columns: any, forEach: any){
+    processAbsoluteData(absoluteElements: any) {
+        // console.log('absoluteElements: ', absoluteElements);
+        absoluteElements.forEach((el: any) => {
+            let text = this.pdfService.replaceVariables(el.html, this.oOriginalDataSource);
+            this.content.push({ text: text, absolutePosition: { x: el.position.x * this.commonService.MM_TO_PT_CONVERSION_FACTOR, y: el.position.y * this.commonService.MM_TO_PT_CONVERSION_FACTOR } })
+        });
+    }
+
+    processTableData(rows:any, columns: any, forEach: any, layout?:any){
         let tableWidths:any = [];
         let tableHeadersList:any = [];
         if(columns){ // parsing columns if present
@@ -219,13 +211,13 @@ export class TransactionReceiptService {
                 // console.log(row, this.commonService.calcColumnWidth(row.size));
                 let text = this.pdfService.replaceVariables(row.html, currentDataSource); 
                 dataRow.push({ text: text });//colSpan: row?.colSpan || 0
-                // tableWidths.push(this.commonService.calcColumnWidth(row.size) || '*');
+                tableWidths.push(this.commonService.calcColumnWidth(row.size) || '*');
                 
-                if(row?.colSpan){ // we have colspan so need to add empty {} in current row
-                    tableWidths.push(this.commonService.calcColumnWidth(row.size) || '*');
-                } else {
-                    tableWidths.push(this.commonService.calcColumnWidth(row.size) || '*');
-                }
+                // if(row?.colSpan){ // we have colspan so need to add empty {} in current row
+                //     tableWidths.push(this.commonService.calcColumnWidth(row.size) || '*');
+                // } else {
+                //     tableWidths.push(this.commonService.calcColumnWidth(row.size) || '*');
+                // }
                 
                     
             });
@@ -239,7 +231,7 @@ export class TransactionReceiptService {
         else 
             finalData = texts;
 
-        const data = {
+        const data:any = {
             table: {
                 headerRows: 1,
                 widths: tableWidths,
@@ -247,8 +239,11 @@ export class TransactionReceiptService {
                 dontBreakRows: true,
                 keepWithHeaderRows: 1,
             },
-            // layout: 'lightHorizontalLines'
         };
+        if (layout){
+            //pdfmake provides 3 built-in layouts so we can use them directly, otherwise we can use custom layout from common service
+            data.layout = (['noBorders', 'headerLineOnly', 'lightHorizontalLines'].includes(layout)) ? data.layout = layout : this.commonService.layouts[layout];
+        } 
         // console.log('finalData in content', data);
         this.content.push(data);
 
@@ -294,142 +289,142 @@ export class TransactionReceiptService {
     }
     
 
-    processHeader() {
-        const columns: any = [];
+    // processHeader() {
+    //     const columns: any = [];
 
-        let businessDetails = `${this.oOriginalDataSource.businessDetails?.sName || ''}
-            ${this.oOriginalDataSource.businessDetails?.sEmail || ''}
-            ${this.oOriginalDataSource.businessDetails?.sMobile || ''}
-            ${this.oOriginalDataSource.oBusiness?.oPhone?.sLandline || ''}
-            ${this.oOriginalDataSource.businessDetails?.aLocation?.oAddress?.street || ''}`;
+    //     let businessDetails = `${this.oOriginalDataSource.businessDetails?.sName || ''}
+    //         ${this.oOriginalDataSource.businessDetails?.sEmail || ''}
+    //         ${this.oOriginalDataSource.businessDetails?.sMobile || ''}
+    //         ${this.oOriginalDataSource.oBusiness?.oPhone?.sLandline || ''}
+    //         ${this.oOriginalDataSource.businessDetails?.aLocation?.oAddress?.street || ''}`;
 
-        columns.push(
-            {
-                image: this.logoUri,
-                fit: [100, 100],
-            },
-            { text: businessDetails, width: '*', style:['center'] },
-            { text: `${this.oOriginalDataSource.sReceiptNumber}`, width: '10%', style:['right'] },
-        );
+    //     columns.push(
+    //         {
+    //             image: this.logoUri,
+    //             fit: [100, 100],
+    //         },
+    //         { text: businessDetails, width: '*', style:['center'] },
+    //         { text: `${this.oOriginalDataSource.sReceiptNumber}`, width: '10%', style:['right'] },
+    //     );
 
-        this.content.push({
-            columns: columns,
-        });
+    //     this.content.push({
+    //         columns: columns,
+    //     });
 
-        let receiptDetails = `Datum: ${this.oOriginalDataSource.dCreatedDate}
-            Bonnummer: ${this.oOriginalDataSource.sReceiptNumber}
-            Transaction number: ${this.oOriginalDataSource.sNumber}\n\n\n`;
+    //     let receiptDetails = `Datum: ${this.oOriginalDataSource.dCreatedDate}
+    //         Bonnummer: ${this.oOriginalDataSource.sReceiptNumber}
+    //         Transaction number: ${this.oOriginalDataSource.sNumber}\n\n\n`;
 
-        this.content.push({ text: receiptDetails });
+    //     this.content.push({ text: receiptDetails });
 
 
-    }
+    // }
 
-    processTransactions(){
-        const tableHeaders = [
-            'Quantity',
-            'Description',
-            'VAT',
-            'Discount',
-            'SAVINGS_PO',
-            'Amount',
-        ];
+    // processTransactions(){
+    //     const tableHeaders = [
+    //         'Quantity',
+    //         'Description',
+    //         'VAT',
+    //         'Discount',
+    //         'SAVINGS_PO',
+    //         'Amount',
+    //     ];
         
-        let transactionTableWidths = ['10%', '*', '10%', '10%', '10%', '15%'];
+    //     let transactionTableWidths = ['10%', '*', '10%', '10%', '10%', '15%'];
         
-        let texts: any = [];
-        let nTotalOriginalAmount = 0;
-        this.oOriginalDataSource.aTransactionItems.forEach((item:any) =>{
-            // console.log({item});
-            nTotalOriginalAmount += item.nPriceIncVat; 
-            let description = `${item.description} 
-                Original amount: ${item.nPriceIncVat} 
-                Already paid: \n${item.sTransactionNumber} | ${item.nPaymentAmount} (this receipt)\n`;
+    //     let texts: any = [];
+    //     let nTotalOriginalAmount = 0;
+    //     this.oOriginalDataSource.aTransactionItems.forEach((item:any) =>{
+    //         // console.log({item});
+    //         nTotalOriginalAmount += item.nPriceIncVat; 
+    //         let description = `${item.description} 
+    //             Original amount: ${item.nPriceIncVat} 
+    //             Already paid: \n${item.sTransactionNumber} | ${item.nPaymentAmount} (this receipt)\n`;
             
-            if (item?.related?.length) {
-                item.related.forEach((related: any) => {
-                    description += `${related.sTransactionNumber}|${related.nPaymentAmount}\n`;
-                });
-            }
+    //         if (item?.related?.length) {
+    //             item.related.forEach((related: any) => {
+    //                 description += `${related.sTransactionNumber}|${related.nPaymentAmount}\n`;
+    //             });
+    //         }
 
-            texts.push([
-                { text: item.nQuantity, style: ['td'] },
-                { text: description , style: ['td'] },
-                { text: `${item.nVatRate}(${item.vat})` , style: ['td'] },
-                { text: item.nDiscountToShow, style: ['td'] },
-                { text: item.nSavingsPoints , style: ['td'] },
-                { text: `(${item.totalPaymentAmount})${item.totalPaymentAmountAfterDisc}` , style: ['td','right'] },
-            ]);
+    //         texts.push([
+    //             { text: item.nQuantity, style: ['td'] },
+    //             { text: description , style: ['td'] },
+    //             { text: `${item.nVatRate}(${item.vat})` , style: ['td'] },
+    //             { text: item.nDiscountToShow, style: ['td'] },
+    //             { text: item.nSavingsPoints , style: ['td'] },
+    //             { text: `(${item.totalPaymentAmount})${item.totalPaymentAmountAfterDisc}` , style: ['td','right'] },
+    //         ]);
             
-        });
+    //     });
         
 
-        let totalRow: any = [
-            { text: 'Total' },
-            { text: '' },
-            { text: this.oOriginalDataSource.totalVat },
-            { text: this.oOriginalDataSource.totalDiscount },
-            { text: this.oOriginalDataSource.totalSavingPoints },
-            { text: `(${this.oOriginalDataSource.total})${this.oOriginalDataSource.totalAfterDisc}\nFrom Total ${nTotalOriginalAmount}`, style: ['right'] }
-        ];
+    //     let totalRow: any = [
+    //         { text: 'Total' },
+    //         { text: '' },
+    //         { text: this.oOriginalDataSource.totalVat },
+    //         { text: this.oOriginalDataSource.totalDiscount },
+    //         { text: this.oOriginalDataSource.totalSavingPoints },
+    //         { text: `(${this.oOriginalDataSource.total})${this.oOriginalDataSource.totalAfterDisc}\nFrom Total ${nTotalOriginalAmount}`, style: ['right'] }
+    //     ];
         
-        if (!(this.oOriginalDataSource.totalDiscount > 0)) {
-            totalRow.splice(3,1);
-            tableHeaders.splice(3,1);
-            transactionTableWidths.splice(3,1);
-            texts.map((text:any)=>{
-                text.splice(3,1);
-            })
-        }
+    //     if (!(this.oOriginalDataSource.totalDiscount > 0)) {
+    //         totalRow.splice(3,1);
+    //         tableHeaders.splice(3,1);
+    //         transactionTableWidths.splice(3,1);
+    //         texts.map((text:any)=>{
+    //             text.splice(3,1);
+    //         })
+    //     }
         
-        const tableHeadersList: any = [];
-        tableHeaders.forEach((header: any) => {
-            if (header === 'Amount') tableHeadersList.push({ text: header, style: ['th', 'right'] })
-            else tableHeadersList.push({ text: header, style: ['th'] })
-        });
+    //     const tableHeadersList: any = [];
+    //     tableHeaders.forEach((header: any) => {
+    //         if (header === 'Amount') tableHeadersList.push({ text: header, style: ['th', 'right'] })
+    //         else tableHeadersList.push({ text: header, style: ['th'] })
+    //     });
 
-        const finalData = [[...tableHeadersList], ...texts, [...totalRow]];
-        const transactionData = {
-            table: {
-                widths: transactionTableWidths,
-                body: finalData,
-            },
-            layout: this.onlyHorizontalLineLayout
-        };
-        this.content.push(transactionData);
-    }
+    //     const finalData = [[...tableHeadersList], ...texts, [...totalRow]];
+    //     const transactionData = {
+    //         table: {
+    //             widths: transactionTableWidths,
+    //             body: finalData,
+    //         },
+    //         layout: this.commonService.layouts['onlyHorizontalLineLayout']
+    //     };
+    //     this.content.push(transactionData);
+    // }
 
-    processPayments(){
-        this.content.push('\n\n');
-        const tableHeaders = [
-            'Methode',
-            'Bedrag',
-        ];
-        const tableHeadersList:any = [];
-        tableHeaders.forEach((singleHeader: any) => {
-            tableHeadersList.push({ text: singleHeader, style: ['th'] })
-        });
-        const tableWidths = ['30%', '10%'];
-        let texts:any = []
-        this.oOriginalDataSource.aPayments.forEach((payment:any)=>{
-            texts.push([
-                { text: `${payment.sMethod} (${payment.dCreatedDate})`},
-                { text: `${payment.nAmount}`, style: ['left'] }
-            ]);
-        });
-        const finalData = [[...tableHeadersList], ...texts];
-        const data = {
-            table: {
-                headerRows: 1,
-                widths: tableWidths,
-                body: finalData,
-                dontBreakRows: true,
-                keepWithHeaderRows: 1,
-            },
-            layout: 'lightHorizontalLines'
-        };
-        this.content.push(data);
-    }
+    // processPayments(){
+    //     this.content.push('\n\n');
+    //     const tableHeaders = [
+    //         'Methode',
+    //         'Bedrag',
+    //     ];
+    //     const tableHeadersList:any = [];
+    //     tableHeaders.forEach((singleHeader: any) => {
+    //         tableHeadersList.push({ text: singleHeader, style: ['th'] })
+    //     });
+    //     const tableWidths = ['30%', '10%'];
+    //     let texts:any = []
+    //     this.oOriginalDataSource.aPayments.forEach((payment:any)=>{
+    //         texts.push([
+    //             { text: `${payment.sMethod} (${payment.dCreatedDate})`},
+    //             { text: `${payment.nAmount}`, style: ['left'] }
+    //         ]);
+    //     });
+    //     const finalData = [[...tableHeadersList], ...texts];
+    //     const data = {
+    //         table: {
+    //             headerRows: 1,
+    //             widths: tableWidths,
+    //             body: finalData,
+    //             dontBreakRows: true,
+    //             keepWithHeaderRows: 1,
+    //         },
+    //         layout: 'lightHorizontalLines'
+    //     };
+    //     this.content.push(data);
+    // }
 
     getBase64FromUrl(url: any): Observable<any> {
         return this.apiService.getNew('cashregistry', `/api/v1/pdf/templates/getBase64/${this.iBusinessId}?url=${url}`);
@@ -462,15 +457,6 @@ export class TransactionReceiptService {
         });
 
         return translationsObj;
-    }
-
-    private isDefined(obj: any): boolean {
-        //return typeof obj !== 'undefined'
-        if (Array.isArray(obj)) {
-            return Boolean(obj.length > 0 && obj[0] !== "")
-        } else {
-            return Boolean(obj)
-        }
     }
 
     cleanUp(){
