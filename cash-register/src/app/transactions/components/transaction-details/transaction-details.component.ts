@@ -7,7 +7,7 @@ import { DialogComponent, DialogService } from 'src/app/shared/service/dialog';
 import * as _moment from 'moment';
 import { CustomerDetailsComponent } from 'src/app/shared/components/customer-details/customer-details.component';
 import { ActivityDetailsComponent } from 'src/app/shared/components/activity-details-dialog/activity-details.component';
-import { TransactionReceiptService } from 'src/app/shared/service/transaction-receipt.service';
+import { TransactionReceiptService } from 'src/app/shared/service/receipt.service';
 import { Pn2escposService } from 'src/app/shared/service/pn2escpos.service';
 import { PrintService } from 'src/app/shared/service/print.service';
 import { Observable } from 'rxjs';
@@ -180,12 +180,13 @@ export class TransactionDetailsComponent implements OnInit {
     const template = await this.getTemplate('transaction').toPromise();
     // console.log(this.transaction);
     let nTotalOriginalAmount = 0;
-    this.transaction.aTransactionItems.map((item: any) => {
+    const oDataSource = JSON.parse(JSON.stringify(this.transaction));
+    oDataSource.aTransactionItems.forEach((item: any) => {
       // console.log({item});
       nTotalOriginalAmount += item.nPriceIncVat;
-      let description = `${item.description} 
-                Original amount: ${item.nPriceIncVat} 
-                Already paid: \n${item.sTransactionNumber} | ${item.nPaymentAmount} (this receipt)\n`;
+      let description = `${item.description}
+                          Original amount: ${item.nPriceIncVat}\n
+                          Already paid: \n${item.sTransactionNumber} | ${item.nPaymentAmount} (this receipt)\n`;
 
       if (item?.related?.length) {
         item.related.forEach((related: any) => {
@@ -194,10 +195,10 @@ export class TransactionDetailsComponent implements OnInit {
       }
       item.description = description;
     });
-    this.transaction.nTotalOriginalAmount = nTotalOriginalAmount;
+    oDataSource.nTotalOriginalAmount = nTotalOriginalAmount;
 
     this.receiptService.exportToPdf({ 
-      oDataSource: this.transaction, 
+      oDataSource: oDataSource, 
       pdfTitle: 'Transaction Receipt', 
       templateData: template.data
     });
