@@ -820,6 +820,7 @@ export class PdfService {
     }
     
     originalText = this.processConditions(originalText, dataSourceObject);
+    // console.log(originalText);
 
     let extractedVariables = this.getVariables(originalText);
     // console.log({extractedVariables});
@@ -922,8 +923,11 @@ export class PdfService {
           let newText = '';
           // console.log({variableStringFiltered});
           if (this.isDefined(providedData)) {
-            Object.keys(providedData).forEach((key, index) => {
-              if (key === variableStringFiltered) {
+            // console.log(Object.keys(providedData));
+            const aKeys = Object.keys(providedData);
+            for(let l=0;l<aKeys.length;l++) {
+              // console.log(aKeys[l], variableStringFiltered);
+              if (aKeys[l] === variableStringFiltered) {
                 if (String(providedData[variableStringFiltered]).length > 0) {
                   matched = true;
                   newText = String(providedData[variableStringFiltered]);
@@ -932,8 +936,23 @@ export class PdfService {
                     newText = this.formatContent(newText, format);
                   }
                 }
+                break;
               }
-            });
+            }
+
+            // Object.keys(providedData).forEach((key, index) => {
+            //   console.log(key, variableStringFiltered);
+            //   if (key === variableStringFiltered) {
+            //     if (String(providedData[variableStringFiltered]).length > 0) {
+            //       matched = true;
+            //       newText = String(providedData[variableStringFiltered]);
+
+            //       if (this.isDefined(format) && format !== '') {
+            //         newText = this.formatContent(newText, format);
+            //       }
+            //     }
+            //   }
+            // });
           } else {
             console.warn('No match found for', currentMatch)
           }
