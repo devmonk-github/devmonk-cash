@@ -197,9 +197,9 @@ export class TransactionDetailsComponent implements OnInit {
     });
     oDataSource.nTotalOriginalAmount = nTotalOriginalAmount;
 
-    this.receiptService.exportToPdf({ 
-      oDataSource: oDataSource, 
-      pdfTitle: 'Transaction Receipt', 
+    this.receiptService.exportToPdf({
+      oDataSource: oDataSource,
+      pdfTitle: 'Transaction Receipt',
       templateData: template.data
     });
     return;
@@ -395,238 +395,16 @@ export class TransactionDetailsComponent implements OnInit {
   }
 
   getThermalReceipt() {
-    let template = [
-      {
-        "logo": "C"
-      },
-      {
-        "break": 1
-      },
-      {
-        "align": "center"
-      },
-      {
-        "bold": true
-      },
-      {
-        "line": "[[business.sName]]"
-      },
-      {
-        "bold": false
-      },
-      {
-        "line": "[[business.currentLocation.oAddress.street]] [[business.currentLocation.oAddress.houseNumber]]"
-      },
-      {
-        "line": "[[business.currentLocation.oAddress.postalCode]] [[business.currentLocation.oAddress.city]]"
-      },
-      {
-        "line": "[[business.oPhone.sLandLine]]"
-      },
-      {
-        "divider": "_"
-      },
-      {
-        "break": 1
-      },
-      {
-        "align": "left"
-      },
-      {
-        "line": "[[dCreatedDate]]<<>>Bonnr:   [[sReceiptNumber]]"
-      },
-      {
-        "barcode": "T-[[sNumber]]"
-      },
-      {
-        "divider": "_"
-      },
-      {
-        "break": 1
-      },
-      {
-        "foreach": "aTransactionItems",
-        "template": [
-          {
-            "bold": true
-          },
-          {
-            "line": "[[nQuantity]] x [[sProductName]]"
-          },
-          {
-            "line": "[[sArticleNumber]]<<>>[[totalPaymentAmount]]"
-          },
-          {
-            "bold": false
-          },
-          {
-            "text": "[[comment]]",
-            "if": "item.sComment"
-          },
-          {
-            "break": 1,
-            "if": "item.sComment"
-          },
-          {
-            "text": "Uw korting: [[nDiscount]]",
-            "if": "item.nDiscount && item.nDiscount !== 0 && item.nDiscount !== '0'"
-          },
-          {
-            "text": "%",
-            "if": "item.nDiscount && item.nDiscount !== 0 && item.nDiscount !== '0' && item.bPaymentDiscountPercent"
-          },
-          {
-            "text": " Origineel bedrag: [[totalPaymentAmountAfterDisc]]",
-            "if": "item.nDiscount && item.totalPaymentAmount !== '' && item.totalPaymentAmount !== '€ 0,00'"
-          },
-          {
-            "line": " "
-          }
-        ],
-        "blankline": true
-      },
-      {
-        "divider": "_"
-      },
-      {
-        "break": 1
-      },
-      {
-        "line": "SUBTOTAAL<<>>[[total]]"
-      },
-      {
-        "bold": true
-      },
-      {
-        "line": "TOTAAL<<>>[[totalAfterDisc]]"
-      },
-      {
-        "bold": false
-      },
-      {
-        "break": 1
-      },
-      // {
-      //   "line": "WISSELGELD<<>>[[totals.change]]",
-      //   "if": "item.totals.change !== '€ 0,00'"
-      // },
-      // {
-      //   "break": 1,
-      //   "if": "item.totals.change !== '€ 0,00'"
-      // },
-      {
-        "bold": true
-      },
-      {
-        "line": "BETAALMETHODES"
-      },
-      {
-        "bold": false
-      },
-      {
-        "foreach": "aPayments",
-        "template": [
-          {
-            "line": "[[sMethod]]<<>>[[nAmount]]"
-          }
-        ],
-        "blankline": false
-      },
-      {
-        "break": 1
-      },
-      {
-        "bold": true
-      },
-      {
-        "line": "          Netto     BTW       Totaal"
-      },
-      {
-        "bold": false
-      },
-      // {
-      //   "foreach": "taxes",
-      //   "template": [
-      //     {
-      //       "text": "[[rate]]"
-      //     },
-      //     {
-      //       "text": "% van"
-      //     },
-      //     {
-      //       "text": "[[withoutTax]]"
-      //     },
-      //     {
-      //       "text": "[[tax]]"
-      //     },
-      //     {
-      //       "text": "[[total]]"
-      //     },
-      //     {
-      //       "break": 1
-      //     }
-      //   ],
-      //   "columns": [
-      //     2,
-      //     6,
-      //     9,
-      //     9,
-      //     13
-      //   ],
-      //   "blankline": false
-      // },
-      {
-        "break": 1
-      },
-      {
-        "line": "U bent geholpen door: [[oCustomer.sEmail]]"
-      },
-      {
-        "divider": "_"
-      },
-      {
-        "align": "center"
-      },
-      {
-        "break": 1
-      },
-      {
-        "line": "Hartelijk dank en graag tot ziens."
-      },
-      {
-        "line": "[[oCustomer.sName]]",
-        "if": "!item.oCustomer.counter"
-      },
-      // {
-      //   "line": "[[oCustomer.number]]",
-      //   "if": "item.oCustomer.number && !item.oCustomer.counter"
-      // },
-      {
-        "line": "[[oCustomer.oInvoiceAddress.postalCode]] [[oCustomer.oInvoiceAddress.city]]",
-        "if": "item.oCustomer.oInvoiceAddress.postalCode || item.oCustomer.oInvoiceAddress.city"
-      },
-      {
-        "line": "Kijk voor onze voorwaarden op https://www.sluijsmans.eu"
-      },
-      {
-        "bold": true
-      },
-      {
-        "line": "Ruilen binnen 14 dagen met kassabon"
-      },
-      {
-        "bold": false
-      },
-      {
-        "break": 2
+    this.apiService.getNew('cashregistry', `/api/v1/print-template/business-receipt/${this.iBusinessId}/${this.iLocationId}`).subscribe((result: any) => {
+      if (result?.data?.aTemplate?.length > 0) {
+        let transactionDetails = { business: this.businessDetails, ...this.transaction };
+        let command = this.pn2escposService.generate(JSON.stringify(result.data.aTemplate), JSON.stringify(transactionDetails));
+        this.printerId = 70780318;
+        this.computerId = 394051;
+        this.printService.openDrawer(this.iBusinessId, command, this.printerId, this.computerId).then((response) => {
+          console.log(response);
+        })
       }
-    ];
-    let transactionDetails = { business: this.businessDetails, ...this.transaction };
-    let command = this.pn2escposService.generate(JSON.stringify(template), JSON.stringify(transactionDetails));
-    this.printerId = 70780318;
-    this.computerId = 394051;
-    this.printService.openDrawer(this.iBusinessId, command, this.printerId, this.computerId).then((response) => {
-      console.log(response);
-    })
+    });
   }
 }
