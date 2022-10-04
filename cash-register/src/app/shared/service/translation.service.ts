@@ -45,7 +45,7 @@ export class TranslationsService {
           for (let j = 0; j < languages.length; j++) {
             const lang = languages[j];
             if (!translationsObject?.[lang[0]]) translationsObject[lang[0]] = {}
-            translationsObject[lang[0]][element.keyword] = lang[1]
+            translationsObject[lang[0]][element.sKeyword] = lang[1]
           }
         }
         console.log(translationsObject);

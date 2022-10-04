@@ -10,8 +10,8 @@ export class StringService {
 
   }
 
-  translate(keyword: string): string {
-    return this.translateService.instant(keyword)
+  translate(sKeyword: string): string {
+    return this.translateService.instant(sKeyword)
   }
 
   slugify(text: string): string {

@@ -130,6 +130,12 @@
                                 </div>
                             </td>
                         </tr>
+
+                        <!-- WARNING ABOUT GIFT-CARD-DISCOUNT -->
+                        <p *ngIf="bIsAnyGiftCardDiscount">
+                            {{ "GIFT_CARD_WARNING" | translate }}
+                        </p>
+                        <!-- WARNING ABOUT GIFT-CARD-DISCOUNT -->
                     </tbody>
                 </table>
             </div>

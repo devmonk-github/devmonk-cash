@@ -267,16 +267,17 @@ export class TillService {
 
   createGiftcardTransactionItem(body: any, discountArticleGroup: any) {
     const originalTItems = length = body.transactionItems.filter((i: any) => i.oType.eKind !== 'loyalty-points-discount' && i.oType.eKind !== 'discount' && i.oType.eKind !== 'loyalty-points' && i.oType.eKind !== 'giftcard-discount');
-    console.log(originalTItems.length);
     const gCard = body.payments.find((o: any) => o.sName === 'Giftcards' && o.type === 'custom');
-    // const ledger = this.ledgerNumberList.find(o => o.iArticleGroup.id === article._id && o.iArticleGroup.type === type);
-    let nDiscount = Math.round(gCard.amount / originalTItems.length);
+    let nDiscount = 0;
+    if (gCard?.amount) nDiscount = (Math.round((gCard?.amount || 0) / (originalTItems?.length || 1))) || 0;
     originalTItems.map((i: any) => {
-      if (nDiscount > gCard.amount) {
-        nDiscount = gCard.amount;
-        gCard.amount = 0;
-      } else {
-        gCard.amount = gCard.amount - nDiscount;
+      if (gCard) {
+        if (nDiscount > gCard.amount) {
+          nDiscount = gCard.amount;
+          gCard.amount = 0;
+        } else {
+          gCard.amount = gCard.amount - nDiscount;
+        }
       }
       const tItem1 = JSON.parse(JSON.stringify(i));
       tItem1.iArticleGroupId = discountArticleGroup._id;

@@ -458,6 +458,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     );
   }
+
+  /* A payment which made */
   getUsedPayMethods(total: boolean): any {
     if (!this.payMethods) {
       return 0
@@ -594,8 +596,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
           body.oTransaction.iActivityId = this.iActivityId;
           let result = body.transactionItems.map((a: any) => a.iBusinessPartnerId);
           const uniq = [...new Set(_.compact(result))];
-          this.tillService.createGiftcardTransactionItem(body, this.discountArticleGroup);
-          console.log(body);
+          if (this.appliedGiftCards?.length) this.tillService.createGiftcardTransactionItem(body, this.discountArticleGroup);
+          
           this.apiService.postNew('cashregistry', '/api/v1/till/transaction', body)
             .subscribe((data: any) => {
               this.toastrService.show({ type: 'success', text: 'Transaction created.' });
@@ -960,6 +962,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   openCardsModal() {
     this.dialogService.openModal(CardsComponent, { cssClass: 'modal-lg', context: { customer: this.customer } })
       .instance.close.subscribe(result => {
+        console.log('When Redeem GiftCard closed: ', result, result?.giftCardInfo?.type);
         if (result) {
           if (result.giftCardInfo.nAmount > 0) {
             this.appliedGiftCards.push(result.giftCardInfo);
@@ -1121,8 +1124,11 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     })
   }
 
+  /* When doing */
   assignAllAmount(index: number) {
+    console.log('amount: ', this.payMethods[index].amount);
     this.payMethods[index].amount = -(this.getUsedPayMethods(true) - this.getTotals('price'));
+    console.log('index: ', this.payMethods[index], this.payMethods);
     this.changeInPayment();
     this.createTransaction();
   }
