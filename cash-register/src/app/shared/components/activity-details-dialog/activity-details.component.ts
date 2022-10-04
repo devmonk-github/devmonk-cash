@@ -9,7 +9,7 @@ import { MenuComponent } from '../../_layout/components/common';
 import { Router } from '@angular/router';
 import { TransactionDetailsComponent } from 'src/app/transactions/components/transaction-details/transaction-details.component';
 import * as JsBarcode /* , { Options as jsBarcodeOptions } */ from 'jsbarcode';
-import { ActivityReceiptService } from '../../service/activity-receipt.service';
+import { ReceiptService } from '../../service/receipt.service';
 import { Observable } from 'rxjs';
 @Component({
   selector: 'app-activity-details',
@@ -94,7 +94,7 @@ export class ActivityDetailsComponent implements OnInit{
     private pdfService: PdfService,
     private dialogService: DialogService,
     private routes: Router,
-    private activityReceiptService: ActivityReceiptService
+    private receiptService: ReceiptService
   ) {
     const _injector = this.viewContainerRef.injector;
     this.dialogRef = _injector.get<DialogComponent>(DialogComponent);
@@ -377,11 +377,20 @@ export class ActivityDetailsComponent implements OnInit{
       this.activity.businessDetails = this.businessDetails;
     } 
     const template = await this.getTemplate('activity').toPromise();
+    const oDataSource = JSON.parse(JSON.stringify(this.activity));
+    oDataSource.oCustomer = {
+      sFirstName: this.customer.sFirstName,
+      sLastName: this.customer.sLastName,
+      sEmail: this.customer.sEmail,
+      sMobile: this.customer.oPhone.sCountryCode + this.customer.oPhone.sMobile,
+      sLandLine: this.customer.oPhone.sLandLine,
 
-    this.activityReceiptService.exportToPdf({ 
-      activity: this.activity, 
-      customer: this.customer, 
-      barcodeUri: sBarcodeURI, 
+    };
+    oDataSource.sBarcodeURI = sBarcodeURI;
+    oDataSource.sBusinessLogoUrl = (await this.getBase64FromUrl(oDataSource?.businessDetails?.sLogoLight).toPromise()).data;
+
+    this.receiptService.exportToPdf({ 
+      oDataSource: oDataSource,
       templateData: template.data, 
       pdfTitle: 'Activity Receipt' 
     })
@@ -415,6 +424,10 @@ export class ActivityDetailsComponent implements OnInit{
       }, (error) => {
         this.customerReceiptDownloading = false;
       })
+  }
+
+  getBase64FromUrl(url: any): Observable<any> {
+    return this.apiService.getNew('cashregistry', `/api/v1/pdf/templates/getBase64/${this.iBusinessId}?url=${url}`);
   }
 
   getTemplate(type:string): Observable<any>{

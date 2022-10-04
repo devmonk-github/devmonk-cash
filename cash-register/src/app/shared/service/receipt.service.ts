@@ -9,7 +9,7 @@ import { PdfService as PdfService } from "./pdf.service";
 @Injectable({
     providedIn: 'root'
 })
-export class TransactionReceiptService {
+export class ReceiptService {
     iBusinessId: string;
     iLocationId: string;
     iWorkstationId: string;
@@ -89,7 +89,7 @@ export class TransactionReceiptService {
 
 
     oOriginalDataSource: any;
-    logoUri: any;
+    // logoUri: any;
     pageSize: any = 'A5';
     orientation: string = 'portrait';
     translations: any;
@@ -107,13 +107,13 @@ export class TransactionReceiptService {
 
     async exportToPdf({ oDataSource, templateData, pdfTitle }:any){
         this.oOriginalDataSource = oDataSource;
-        // console.log(this.oOriginalDataSource);
+        console.log(this.oOriginalDataSource);
         this.translations = await this.getTranslations();
         // console.log(this.translations);
-        if (this.oOriginalDataSource?.businessDetails?.sLogoLight){
-            const result = await this.getBase64FromUrl(this.oOriginalDataSource.businessDetails.sLogoLight).toPromise();
-            this.logoUri = result.data;
-        }
+        // if (this.oOriginalDataSource?.businessDetails?.sLogoLight){
+        //     const result = await this.getBase64FromUrl(this.oOriginalDataSource.businessDetails.sLogoLight).toPromise();
+        //     this.logoUri = result.data;
+        // }
         this.commonService.pdfTitle = pdfTitle;
         this.commonService.mapCommonParams(templateData.aSettings);
         this.processTemplate(templateData.layout);
@@ -139,7 +139,7 @@ export class TransactionReceiptService {
         this.cleanUp();
     }
 
-    processTemplate(layout:any){
+    processTemplate(layout: any) {
         /*
           we have 3 tipes of data structures
           1. column - like sections of header (ex. LEFT : business logo, CENTER: business details, RIGHT: receipt number)
@@ -148,25 +148,55 @@ export class TransactionReceiptService {
         */
 
         // console.log(layout);
-        layout.forEach((item:any)=>{
-            if(item.type==='columns'){ // parse column structure
+        for (const item of layout) {
+            if (item.type === 'columns') { // parse column structure
                 this.processColumns(item.row);
-            } else if(item.type==='simple'){ //parse simple data
-                this.processSimpleData(item.row);
+            } else if (item.type === 'simple') { //parse simple data
+                this.processSimpleData(item.row, item?.object);
             } else if (item.type === 'table') { //parse table
-                this.processTableData(item.rows, item.columns, item.forEach, item?.layout );
+                this.processTableData(item.rows, item.columns, item.forEach, item?.layout);
             } else if (item.type === 'absolute') { //parse table
                 this.processAbsoluteData(item.absoluteElements);
             }
-        });
+        }
     }
 
     processAbsoluteData(absoluteElements: any) {
         // console.log('absoluteElements: ', absoluteElements);
-        absoluteElements.forEach((el: any) => {
-            let text = this.pdfService.replaceVariables(el.html, this.oOriginalDataSource);
-            this.content.push({ text: text, absolutePosition: { x: el.position.x * this.commonService.MM_TO_PT_CONVERSION_FACTOR, y: el.position.y * this.commonService.MM_TO_PT_CONVERSION_FACTOR } })
-        });
+        // absoluteElements.forEach(async (el: any) => {
+        //     if(el.type==='text'){
+        //         let text = this.pdfService.replaceVariables(el.html, this.oOriginalDataSource);
+        //         this.content.push({ text: text, absolutePosition: { x: el.position.x * this.commonService.MM_TO_PT_CONVERSION_FACTOR, y: el.position.y * this.commonService.MM_TO_PT_CONVERSION_FACTOR } })
+        //     } else if(el.type==='image'){
+        //         let l = (await this.getBase64FromUrl(this.oOriginalDataSource[el.url]).toPromise()).data;
+        //         console.log(l);
+        //         this.content.push({
+        //             image: l,
+        //             width: el.size || 150,
+        //             absolutePosition: { x: el.position.x, y: el.position.y }
+        //         });
+                
+        //     }
+        // });
+
+        for (const el of absoluteElements) {
+            if (el.type === 'text') {
+                let text = this.pdfService.replaceVariables(el.html, this.oOriginalDataSource);
+                this.content.push({ text: text, absolutePosition: { x: el.position.x * this.commonService.MM_TO_PT_CONVERSION_FACTOR, y: el.position.y * this.commonService.MM_TO_PT_CONVERSION_FACTOR } })
+            } else if (el.type === 'image') {
+                // console.log(this.oOriginalDataSource);
+                // const result:any = await this.getBase64FromUrl(this.oOriginalDataSource[el.url]).toPromise();
+                // const img = result.data;
+                // console.log(img);
+                this.content.push({
+                    image: this.oOriginalDataSource[el.url],
+                    width: el.size || 150,
+                    absolutePosition: { x: el.position.x * this.commonService.MM_TO_PT_CONVERSION_FACTOR, y: el.position.y * this.commonService.MM_TO_PT_CONVERSION_FACTOR }
+                });
+
+            }
+            // });
+        }
     }
 
     processTableData(rows:any, columns: any, forEach: any, layout?:any){
@@ -249,13 +279,14 @@ export class TransactionReceiptService {
 
     }
     
-    processSimpleData(row:any){
+    processSimpleData(row:any, object?:any){
+        // console.log(row, object);
         row.forEach((el:any)=>{
             let html = el.html || '';
             if(typeof html==='string') {
-                let text = this.pdfService.replaceVariables(html, this.oOriginalDataSource);
+                let text = this.pdfService.replaceVariables(html, (object) ? this.oOriginalDataSource[object] : this.oOriginalDataSource);
                 // console.log({text});
-                this.content.push({ text: text, alignment: el.align });
+                this.content.push({ text: text, alignment: el?.align || 'left' });
             }
         });
     }
@@ -264,23 +295,42 @@ export class TransactionReceiptService {
         const columns: any = [];
 
         row.forEach((el: any) => {
-            if (el.element === 'businessLogo') {
+            if (el?.element === 'businessLogo') {
                 columns.push(
                     {
-                        image: this.logoUri,
+                        // image: (await this.getBase64FromUrl(this.oOriginalDataSource.businessDetails.sLogoLight).toPromise()).data,// this.logoUri,
+                        image: this.oOriginalDataSource[el.sBusinessLogoUrl],// this.logoUri,
                         fit: [100, 100],
                         alignment: el.align
                     }
                 );
-            } else if (el.element ==='businessDetails'){
+            } else if (el?.element ==='businessDetails'){
+                // console.log(el, this.oOriginalDataSource);
                 let details = `${this.oOriginalDataSource.businessDetails?.sName || ''}
                             ${this.oOriginalDataSource.businessDetails?.sEmail || ''}
                             ${this.oOriginalDataSource.businessDetails?.sMobile || ''}
                             ${this.oOriginalDataSource.oBusiness?.oPhone?.sLandline || ''}
                             ${this.oOriginalDataSource.businessDetails?.aLocation?.oAddress?.street || ''}`;
                 columns.push({ text: details, alignment: el.align})
-            } else if (el.element === 'sReceiptNumber'){
+            } else if (el?.element === 'sReceiptNumber'){
                 columns.push({ text: `${this.oOriginalDataSource.sReceiptNumber}`, alignment: el.align })
+            } else if( el?.element === 'barcode'){
+                columns.push(
+                    {
+                        image: this.oOriginalDataSource.sBarcodeURI,
+                        fit: [el.width, el.height],
+                        alignment: el.align
+                    }
+                );
+            } else if (el?.type === 'image') {
+                columns.push(
+                    {
+                        // image: (await this.getBase64FromUrl(this.oOriginalDataSource.businessDetails.sLogoLight).toPromise()).data,// this.logoUri,
+                        image: this.oOriginalDataSource[el.url],// this.logoUri,
+                        fit: [100, 100],
+                        alignment: el.align
+                    }
+                );
             }
         });
         this.content.push({
