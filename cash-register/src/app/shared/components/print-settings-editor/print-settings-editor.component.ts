@@ -84,7 +84,7 @@ export class PrintSettingsEditorComponent implements OnInit {
         this.mode = 'update';
         this.oTemplate = result.data;
         if (!result.data?.aSettings?.length){
-          // this.oTemplate.aSettings = this.getDefaultSettings();
+          this.oTemplate.aSettings = this.getDefaultSettings();
         } else this.mapWithDefaultSettings();
       } else {
         this.mode = 'create';
