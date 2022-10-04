@@ -7,7 +7,7 @@ import { DialogComponent, DialogService } from 'src/app/shared/service/dialog';
 import * as _moment from 'moment';
 import { CustomerDetailsComponent } from 'src/app/shared/components/customer-details/customer-details.component';
 import { ActivityDetailsComponent } from 'src/app/shared/components/activity-details-dialog/activity-details.component';
-import { TransactionReceiptService } from 'src/app/shared/service/receipt.service';
+import { ReceiptService } from 'src/app/shared/service/receipt.service';
 import { Pn2escposService } from 'src/app/shared/service/pn2escpos.service';
 import { PrintService } from 'src/app/shared/service/print.service';
 import { Observable } from 'rxjs';
@@ -52,7 +52,7 @@ export class TransactionDetailsComponent implements OnInit {
     private viewContainerRef: ViewContainerRef,
     private apiService: ApiService,
     private dialogService: DialogService,
-    private receiptService: TransactionReceiptService,
+    private receiptService: ReceiptService,
     private printService: PrintService
   ) {
     const _injector = this.viewContainerRef.parentInjector;
