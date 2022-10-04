@@ -1,10 +1,12 @@
 /* eslint-disable @angular-eslint/component-selector */
 import { Component, EventEmitter, Input, OnInit, Output, ViewEncapsulation } from '@angular/core';
 import { faTimes, faPlus, faMinus, faCheck, faSpinner, faPrint, faBan, faClone } from "@fortawesome/free-solid-svg-icons";
+import { Observable } from 'rxjs';
 import { ToastService } from 'src/app/shared/components/toast';
 import { ApiService } from 'src/app/shared/service/api.service';
 import { CreateArticleGroupService } from 'src/app/shared/service/create-article-groups.service';
 import { PdfService } from 'src/app/shared/service/pdf.service';
+import { ReceiptService } from 'src/app/shared/service/receipt.service';
 // import { TaxService } from "../../shared/service/tax.service";
 
 @Component({
@@ -33,6 +35,7 @@ export class GiftComponent implements OnInit {
   printerId: number | undefined;
   constructor(
     private apiService: ApiService,
+    private receiptService: ReceiptService,
     private pdfService: PdfService,
     private toastrService: ToastService,
     private createArticleGroupService: CreateArticleGroupService) { }
@@ -115,34 +118,46 @@ export class GiftComponent implements OnInit {
       }
     );
   }
+  getTemplate(type: string): Observable<any> {
+    return this.apiService.getNew('cashregistry', `/api/v1/pdf/templates/${this.iBusinessId}?eType=${type}`);
+  }
 
-  generatePDF(print: boolean): void {
+  async generatePDF(print: boolean) {
     const sName = 'Default Giftcard', eType = 'giftcard';
     this.downloading = true;
-    this.apiService.getNew('cashregistry', '/api/v1/pdf/templates/' + this.iBusinessId + '?sName=' + sName + '&eType=' + eType).subscribe(
-      (result: any) => {
-        const filename = new Date().getTime().toString()
-        let printData = null
-        if (print) {
-          printData = {
-            computerId: this.computerId,
-            printerId: this.printerId,
-            title: filename,
-            quantity: 1
-          }
-        }
-        this.pdfService.createPdf(JSON.stringify(result.data), this.item, filename, print, printData, this.iBusinessId, this.item?._id)
-          .then(() => {
-            this.downloading = false;
-          })
-          .catch((e: any) => {
-            this.downloading = false;
-            console.error('err', e)
-          })
-      }, (error) => {
-        this.downloading = false;
-        console.error('printing error', error);
-      })
+    const template = await this.getTemplate(eType).toPromise();
+    // this.apiService.getNew('cashregistry', '/api/v1/pdf/templates/' + this.iBusinessId + '?&eType=' + eType).subscribe(
+    //   (result: any) => {
+    const filename = new Date().getTime().toString()
+    let printData = null
+    if (print) {
+      printData = {
+        computerId: this.computerId,
+        printerId: this.printerId,
+        title: filename,
+        quantity: 1
+      }
+    }
+    console.log(this.item);
+    this.receiptService.exportToPdf({
+      oDataSource: this.item,
+      templateData: template.data,
+      pdfTitle: 'Giftcard'
+    })
+
+    return;
+    //   this.pdfService.createPdf(JSON.stringify(result.data), this.item, filename, print, printData, this.iBusinessId, this.item?._id)
+    //     .then(() => {
+    //       this.downloading = false;
+    //     })
+    //     .catch((e: any) => {
+    //       this.downloading = false;
+    //       console.error('err', e)
+    //     })
+    // }, (error) => {
+    //   this.downloading = false;
+    //   console.error('printing error', error);
+    // })
   }
 
   duplicate(): void {

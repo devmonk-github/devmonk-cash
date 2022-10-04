@@ -41,76 +41,77 @@ export class PrintSettingsComponent implements OnInit {
   pageFormats: any = [
     { key: 'transaction', value:'Transaction receipt'},
     { key: 'activity', value: 'Activity receipt'},
+    { key: 'giftcard', value: 'Giftcard receipt'},
   ];
 
-  aTemplates: Array<any> = [
-    {
-      sTitle: 'Transaction Receipt',
-      aSettings: [
-        {
-          sTitle: 'Business logo',
-          sParameter: 'logo',
-          bShow: true,
-          type: 'switch'
-        },
-        {
-          sTitle: 'Orientation',
-          sParameter: 'orientation',
-          eOptions: ['portrait', 'landscape'],
-          value: 'portrait',
-          type: 'dropdown'
-        },
-        {
-          sTitle: 'Page size',
-          sParameter: 'pageSize',
-          eOptions: ['A4', 'A5', 'custom'],
-          value: 'A5',
-          width: 0,
-          height: 0,
-          type: 'dropdown'
-        },
-        {
-          sTitle: 'Page margins',
-          sParameter: 'pageMargins',
-          eOptions: ['left', 'top', 'right', 'bottom'],
-          values: [0, 0, 0, 0],
-          type: 'textArray'
-        },
-        {
-          sTitle: 'Font size',
-          sParameter: 'fontSize',
-          value: 10,
-          type: 'text'
-        }
-      ]
-    },
-    {
-      sTitle: 'Activity Receipt',
-      aSettings: [
-        {
-          sTitle: 'Orientation',
-          sParameter: 'orientation',
-          eOptions: ['portrait', 'landscape'],
-          value: 'portrait',
-          type: 'dropdown'
-        },
-        {
-          sTitle: 'Page size',
-          sParameter: 'pageSize',
-          eOptions: ['A4', 'A5'],
-          value: 'A5',
-          type: 'dropdown'
-        },
-        {
-          sTitle: 'Page margins',
-          sParameter: 'pageMargins',
-          eOptions: ['left', 'top', 'right', 'bottom'],
-          values: [0, 0, 0, 0],
-          type: 'textArray'
-        }
-      ]
-    }
-  ]
+  // aTemplates: Array<any> = [
+  //   {
+  //     sTitle: 'Transaction Receipt',
+  //     aSettings: [
+  //       {
+  //         sTitle: 'Business logo',
+  //         sParameter: 'logo',
+  //         bShow: true,
+  //         type: 'switch'
+  //       },
+  //       {
+  //         sTitle: 'Orientation',
+  //         sParameter: 'orientation',
+  //         eOptions: ['portrait', 'landscape'],
+  //         value: 'portrait',
+  //         type: 'dropdown'
+  //       },
+  //       {
+  //         sTitle: 'Page size',
+  //         sParameter: 'pageSize',
+  //         eOptions: ['A4', 'A5', 'custom'],
+  //         value: 'A5',
+  //         width: 0,
+  //         height: 0,
+  //         type: 'dropdown'
+  //       },
+  //       {
+  //         sTitle: 'Page margins',
+  //         sParameter: 'pageMargins',
+  //         eOptions: ['left', 'top', 'right', 'bottom'],
+  //         values: [0, 0, 0, 0],
+  //         type: 'textArray'
+  //       },
+  //       {
+  //         sTitle: 'Font size',
+  //         sParameter: 'fontSize',
+  //         value: 10,
+  //         type: 'text'
+  //       }
+  //     ]
+  //   },
+  //   {
+  //     sTitle: 'Activity Receipt',
+  //     aSettings: [
+  //       {
+  //         sTitle: 'Orientation',
+  //         sParameter: 'orientation',
+  //         eOptions: ['portrait', 'landscape'],
+  //         value: 'portrait',
+  //         type: 'dropdown'
+  //       },
+  //       {
+  //         sTitle: 'Page size',
+  //         sParameter: 'pageSize',
+  //         eOptions: ['A4', 'A5'],
+  //         value: 'A5',
+  //         type: 'dropdown'
+  //       },
+  //       {
+  //         sTitle: 'Page margins',
+  //         sParameter: 'pageMargins',
+  //         eOptions: ['left', 'top', 'right', 'bottom'],
+  //         values: [0, 0, 0, 0],
+  //         type: 'textArray'
+  //       }
+  //     ]
+  //   }
+  // ]
   iBusinessId: string = '';
   iLocationId: string = '';
   isLoadingDefaultLabel: boolean = false;

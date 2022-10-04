@@ -797,15 +797,31 @@ export class PdfService {
     return text.match(/\[\[(.*?)]]/ig) || null
   }
 
-  private removeBrackets(textWithBrackets: string): string {
+  removeBrackets(textWithBrackets: string): string {
     return textWithBrackets.replace(/\s/g, '').replace(' ', '').replace('[[', '').replace(']]', '');
   }
 
-  private replaceVariables(originalText: string, dataSourceObject: any) {
+  processConditions(originalText: any, dataSourceObject: any) {
+    if (originalText.indexOf('<if') !== -1) {
+      let sConditionalString = originalText.substring(originalText.indexOf('<if'), originalText.indexOf('/if>') + 4);
+      let sCondition = sConditionalString.substring(sConditionalString.indexOf('<if') + 4, sConditionalString.indexOf('|') - 2).trim();
+      // console.log({ sConditionalString, sCondition });
+      if (dataSourceObject[sCondition]) return originalText;
+      else return originalText.replace(sConditionalString, '');
+    } else {
+      return originalText;
+    }
+  }
+
+  replaceVariables(originalText: string, dataSourceObject: any) {
     // console.log('replace vars',{originalText,dataSourceObject});
     if (!this.isDefined(originalText)) {
       return;
     }
+    
+    originalText = this.processConditions(originalText, dataSourceObject);
+    // console.log(originalText);
+
     let extractedVariables = this.getVariables(originalText);
     // console.log({extractedVariables});
     let providedData = dataSourceObject;
@@ -907,8 +923,11 @@ export class PdfService {
           let newText = '';
           // console.log({variableStringFiltered});
           if (this.isDefined(providedData)) {
-            Object.keys(providedData).forEach((key, index) => {
-              if (key === variableStringFiltered) {
+            // console.log(Object.keys(providedData));
+            const aKeys = Object.keys(providedData);
+            for(let l=0;l<aKeys.length;l++) {
+              // console.log(aKeys[l], variableStringFiltered);
+              if (aKeys[l] === variableStringFiltered) {
                 if (String(providedData[variableStringFiltered]).length > 0) {
                   matched = true;
                   newText = String(providedData[variableStringFiltered]);
@@ -917,8 +936,23 @@ export class PdfService {
                     newText = this.formatContent(newText, format);
                   }
                 }
+                break;
               }
-            });
+            }
+
+            // Object.keys(providedData).forEach((key, index) => {
+            //   console.log(key, variableStringFiltered);
+            //   if (key === variableStringFiltered) {
+            //     if (String(providedData[variableStringFiltered]).length > 0) {
+            //       matched = true;
+            //       newText = String(providedData[variableStringFiltered]);
+
+            //       if (this.isDefined(format) && format !== '') {
+            //         newText = this.formatContent(newText, format);
+            //       }
+            //     }
+            //   }
+            // });
           } else {
             console.warn('No match found for', currentMatch)
           }

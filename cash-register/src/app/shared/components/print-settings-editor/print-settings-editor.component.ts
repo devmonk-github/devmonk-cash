@@ -84,7 +84,7 @@ export class PrintSettingsEditorComponent implements OnInit {
         this.mode = 'update';
         this.oTemplate = result.data;
         if (!result.data?.aSettings?.length){
-          // this.oTemplate.aSettings = this.getDefaultSettings();
+          this.oTemplate.aSettings = this.getDefaultSettings();
         } else this.mapWithDefaultSettings();
       } else {
         this.mode = 'create';
@@ -120,7 +120,7 @@ export class PrintSettingsEditorComponent implements OnInit {
 
       this.apiService.putNew('cashregistry', `/api/v1/pdf/templates/${this.oTemplate._id}`, oBody).subscribe((result: any) => {
         this.toastService.show({ type: 'success', text: 'Your settings are successfully saved!' });
-        this.close(true);
+        // this.close(true);
       }, (err: any) => {
         this.toastService.show({ type: 'danger', text: 'Error occured!' });
       });
@@ -136,7 +136,7 @@ export class PrintSettingsEditorComponent implements OnInit {
       }
       this.apiService.postNew('cashregistry', `/api/v1/pdf/templates/create`, oBody).subscribe((result: any) => {
         this.toastService.show({ type: 'success', text: 'Your settings are successfully saved!' });
-        this.close(true);
+        // this.close(true);
       }, (err: any) => {
         this.toastService.show({ type: 'danger', text: 'Error occured!' });
       });
