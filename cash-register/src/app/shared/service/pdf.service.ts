@@ -801,11 +801,26 @@ export class PdfService {
     return textWithBrackets.replace(/\s/g, '').replace(' ', '').replace('[[', '').replace(']]', '');
   }
 
+  processConditions(originalText: any, dataSourceObject: any) {
+    if (originalText.indexOf('<if') !== -1) {
+      let sConditionalString = originalText.substring(originalText.indexOf('<if'), originalText.indexOf('/if>') + 4);
+      let sCondition = sConditionalString.substring(sConditionalString.indexOf('<if') + 4, sConditionalString.indexOf('|') - 2).trim();
+      // console.log({ sConditionalString, sCondition });
+      if (dataSourceObject[sCondition]) return originalText;
+      else return originalText.replace(sConditionalString, '');
+    } else {
+      return originalText;
+    }
+  }
+
   replaceVariables(originalText: string, dataSourceObject: any) {
     // console.log('replace vars',{originalText,dataSourceObject});
     if (!this.isDefined(originalText)) {
       return;
     }
+    
+    originalText = this.processConditions(originalText, dataSourceObject);
+
     let extractedVariables = this.getVariables(originalText);
     // console.log({extractedVariables});
     let providedData = dataSourceObject;
