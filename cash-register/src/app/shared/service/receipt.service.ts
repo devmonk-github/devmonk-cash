@@ -147,7 +147,7 @@ export class ReceiptService {
           3. table format
         */
 
-        // console.log(layout);
+        console.log(layout);
         for (const item of layout) {
             if (item.type === 'columns') { // parse column structure
                 this.processColumns(item.row);
@@ -300,7 +300,7 @@ export class ReceiptService {
                     {
                         // image: (await this.getBase64FromUrl(this.oOriginalDataSource.businessDetails.sLogoLight).toPromise()).data,// this.logoUri,
                         image: this.oOriginalDataSource[el.sBusinessLogoUrl],// this.logoUri,
-                        fit: [100, 100],
+                        // fit: [100, 100],
                         alignment: el.align
                     }
                 );
@@ -327,7 +327,7 @@ export class ReceiptService {
                     {
                         // image: (await this.getBase64FromUrl(this.oOriginalDataSource.businessDetails.sLogoLight).toPromise()).data,// this.logoUri,
                         image: this.oOriginalDataSource[el.url],// this.logoUri,
-                        fit: [100, 100],
+                        // fit: [100, 100],
                         alignment: el.align
                     }
                 );
@@ -497,7 +497,11 @@ export class ReceiptService {
             'VALID_UNTIL',
             'CARDNUMBER',
             'Methode',
-            'Bedrag'
+            'Bedrag',
+            'GIFTCARD',
+            'TO_THE_VALUE_OF',
+            'ISSUED_AT',
+            'VALID_UNTIL',
         ];
 
         this.translateService.get(translationsKey).subscribe((result:any) => {

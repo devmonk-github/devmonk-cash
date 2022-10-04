@@ -41,6 +41,7 @@ export class PrintSettingsComponent implements OnInit {
   pageFormats: any = [
     { key: 'transaction', value:'Transaction receipt'},
     { key: 'activity', value: 'Activity receipt'},
+    { key: 'giftcard', value: 'Giftcard receipt'},
   ];
 
   // aTemplates: Array<any> = [
