@@ -142,7 +142,6 @@ export class TerminalDialogComponent implements OnInit {
 
   continue() {
     const paymentsToreturn = this.cardPayments.concat(this.otherPayments);
-    // console.log(this.totalAmount);
     if (this.dialogRef.context.changeAmount > 0) {
       const cashPaymentMethod = _.clone(this.dialogRef.context.payments.find((o: any) => o.sName.toLowerCase() === 'cash'));
       cashPaymentMethod.amount = -this.dialogRef.context.changeAmount;

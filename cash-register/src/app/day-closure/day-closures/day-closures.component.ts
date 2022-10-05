@@ -73,7 +73,6 @@ export class DayClosuresComponent implements OnInit, OnDestroy {
     this.workstationListSubscription = this.apiService.getNew('cashregistry', `/api/v1/workstations/list/${this.iBusinessId}/${this.iLocationId}`).subscribe(
       (result: any) => {
         if (result && result.data?.length) this.aWorkStation = result.data;
-        console.log('getWorkstations called: ', this.aWorkStation);
       }),
       (error: any) => {
         console.error(error)

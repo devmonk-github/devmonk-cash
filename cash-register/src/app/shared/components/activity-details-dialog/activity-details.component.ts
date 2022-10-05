@@ -8,12 +8,15 @@ import { TransactionItemsDetailsComponent } from '../transaction-items-details/t
 import { MenuComponent } from '../../_layout/components/common';
 import { Router } from '@angular/router';
 import { TransactionDetailsComponent } from 'src/app/transactions/components/transaction-details/transaction-details.component';
+import * as JsBarcode /* , { Options as jsBarcodeOptions } */ from 'jsbarcode';
+import { ReceiptService } from '../../service/receipt.service';
+import { Observable } from 'rxjs';
 @Component({
   selector: 'app-activity-details',
   templateUrl: './activity-details.component.html',
   styleUrls: ['./activity-details.component.scss']
 })
-export class ActivityDetailsComponent implements OnInit {
+export class ActivityDetailsComponent implements OnInit{
 
   $element = HTMLInputElement
   dialogRef: DialogComponent;
@@ -48,6 +51,7 @@ export class ActivityDetailsComponent implements OnInit {
   quantity: Number = 0;
   userDetail: any;
   business: any;
+  businessDetails: any;
   iLocationId: String = '';
   showDetails: Boolean = true;
   loadCashRegister: Boolean = false;
@@ -82,17 +86,20 @@ export class ActivityDetailsComponent implements OnInit {
   supplierOptions: Array<any> = [];
   suppliersList: Array<any> = [];
   bFetchingTransaction: boolean = false;
+  px2mmFactor !: number;
 
   constructor(
     private viewContainerRef: ViewContainerRef,
     private apiService: ApiService,
     private pdfService: PdfService,
     private dialogService: DialogService,
-    private routes: Router
+    private routes: Router,
+    private receiptService: ReceiptService
   ) {
     const _injector = this.viewContainerRef.injector;
     this.dialogRef = _injector.get<DialogComponent>(DialogComponent);
   }
+  
 
   ngOnInit(): void {
     // this.activity = this.dialogRef.context.activity;
@@ -117,8 +124,9 @@ export class ActivityDetailsComponent implements OnInit {
     // this.transaction = this.dialogRef.context.transaction;
     this.getListEmployees()
     this.getListSuppliers()
-    this.getBusinessBrands()
+    this.getBusinessBrands();
   }
+  
   getListEmployees() {
     const oBody = {
       iBusinessId: localStorage.getItem('currentBusiness') || '',
@@ -357,8 +365,36 @@ export class ActivityDetailsComponent implements OnInit {
         }
       });
   }
+  getBusinessDetails(): Observable<any> {
+    return this.apiService.getNew('core', '/api/v1/business/' + this.business._id);
+  }
 
-  downloadCustomerReceipt(index: number) {
+  async downloadCustomerReceipt(index: number) {
+    const sBarcodeURI = this.generateBarcodeURI();
+    if (!this.businessDetails){
+      const result:any = await this.getBusinessDetails().toPromise();
+      this.businessDetails = result.data;
+      this.activity.businessDetails = this.businessDetails;
+    } 
+    const template = await this.getTemplate('activity').toPromise();
+    const oDataSource = JSON.parse(JSON.stringify(this.activity));
+    oDataSource.oCustomer = {
+      sFirstName: this.customer.sFirstName,
+      sLastName: this.customer.sLastName,
+      sEmail: this.customer.sEmail,
+      sMobile: this.customer.oPhone.sCountryCode + this.customer.oPhone.sMobile,
+      sLandLine: this.customer.oPhone.sLandLine,
+
+    };
+    oDataSource.sBarcodeURI = sBarcodeURI;
+    oDataSource.sBusinessLogoUrl = (await this.getBase64FromUrl(oDataSource?.businessDetails?.sLogoLight).toPromise()).data;
+
+    this.receiptService.exportToPdf({ 
+      oDataSource: oDataSource,
+      templateData: template.data, 
+      pdfTitle: 'Activity Receipt' 
+    })
+    return;
     const data = this.activity.activityitems[index];
     const sName = 'Sample', eType = 'completed';
     this.customerReceiptDownloading = true;
@@ -388,6 +424,14 @@ export class ActivityDetailsComponent implements OnInit {
       }, (error) => {
         this.customerReceiptDownloading = false;
       })
+  }
+
+  getBase64FromUrl(url: any): Observable<any> {
+    return this.apiService.getNew('cashregistry', `/api/v1/pdf/templates/getBase64/${this.iBusinessId}?url=${url}`);
+  }
+
+  getTemplate(type:string): Observable<any>{
+    return this.apiService.getNew('cashregistry', `/api/v1/pdf/templates/${this.iBusinessId}?eType=${type}`);
   }
 
   fetchCustomer(customerId: any, index: number) {
@@ -466,5 +510,22 @@ export class ActivityDetailsComponent implements OnInit {
           // if (res) this.router.navigate(['business/till']);
         });
   }
+
+  generateBarcodeURI(){
+    var canvas = document.createElement("canvas");
+    JsBarcode(canvas, this.activity.sNumber, { format: "CODE128" });
+    return canvas.toDataURL("image/png");
+    // this.getBase64FromUrl('')  
+  }
+
+  // getBase64FromUrl(url: any): Observable<any> {
+  //   const oBody = {
+  //     iBusinessId: this.iBusinessId,
+
+  //   }
+  //   return this.apiService.getNew('cashregistry', `/api/v1/pdf/templates/generateBarcode/`, oBody);
+  // }
+
+
   
 }

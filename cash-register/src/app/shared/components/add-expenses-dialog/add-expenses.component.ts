@@ -105,7 +105,7 @@ export class AddExpensesComponent implements OnInit {
     const oPayment = {
       iPaymentMethodId: this.paymentMethod._id,
       sMethod: this.paymentMethod.sName.toLowerCase(),
-      nAmount: amount,
+      nAmount: -(amount),
     };
     const transactionItem = {
       sProductName: 'Expenses',
@@ -116,8 +116,9 @@ export class AddExpensesComponent implements OnInit {
       iArticleGroupId: this.selectedArticleGroup._id,
       oArticleGroupMetaData,
 
-      nTotal: amount,
-      nPaymentAmount: amount,
+      nTotal: -(amount),
+      nPaymentAmount: -(amount),
+      nRevenueAmount: -(amount),
       iWorkstationId: localStorage.getItem('currentWorkstation'),
       iEmployeeId: this.currentEmployeeId,
       iLocationId: localStorage.getItem('currentLocation'),

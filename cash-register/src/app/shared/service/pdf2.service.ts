@@ -74,7 +74,7 @@ export class PdfService {
     return body;
   }
 
-  getDocDefinition(styles: any, content: any, orientation: string, pageSize?: any) {
+  getDocDefinition(styles: any, content: any, orientation: string, pageSize?: any, footer?: any, pageMargins?: any, defaultStyle?: any) {
 
     let pageMargin;
     let headerFont;
@@ -88,13 +88,20 @@ export class PdfService {
       contentFont = 10;
       pageMargin = [10, 10, 10, 10];
     }
-    const docDefinition = {
+    const docDefinition:any = {
       pageOrientation: orientation,
       pageSize,
       pageMargins: pageMargin,
       content: content,
-      styles: styles
+      styles: styles,
+      defaultStyle: {
+        fontSize: 6
+      },
     };
+    if(footer) docDefinition.footer = footer;
+    if(pageMargins) docDefinition.pageMargins = pageMargins;
+    if(defaultStyle) docDefinition.defaultStyle = defaultStyle;
+
     return docDefinition;
   }
 
@@ -103,8 +110,7 @@ export class PdfService {
     pdfObject.download(fileName);
   }
 
-  getPdfData(styles: any, content: any, orientation: string, pageSize: any, fileName: string) {
-    // console.log('inside getPdfData', styles, content);
-    this.generatePdf(this.getDocDefinition(styles, content, orientation, pageSize), fileName);
+  getPdfData(styles: any, content: any, orientation: string, pageSize: any, fileName: string, footer?: any, pageMargins?: any, defaultStyle?: any) {
+    this.generatePdf(this.getDocDefinition(styles, content, orientation, pageSize, footer, pageMargins, defaultStyle), fileName);
   }
 }

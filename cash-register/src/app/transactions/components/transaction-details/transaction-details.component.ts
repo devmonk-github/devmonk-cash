@@ -3,10 +3,14 @@ import { faTimes, faSync, faFileInvoice, faDownload, faReceipt, faAt, faUndoAlt,
 import { TransactionItemsDetailsComponent } from 'src/app/shared/components/transaction-items-details/transaction-items-details.component';
 import { ApiService } from 'src/app/shared/service/api.service';
 import { DialogComponent, DialogService } from 'src/app/shared/service/dialog';
-import { PdfService } from 'src/app/shared/service/pdf.service';
+// import { PdfService } from 'src/app/shared/service/pdf.service';
 import * as _moment from 'moment';
 import { CustomerDetailsComponent } from 'src/app/shared/components/customer-details/customer-details.component';
 import { ActivityDetailsComponent } from 'src/app/shared/components/activity-details-dialog/activity-details.component';
+import { ReceiptService } from 'src/app/shared/service/receipt.service';
+import { Pn2escposService } from 'src/app/shared/service/pn2escpos.service';
+import { PrintService } from 'src/app/shared/service/print.service';
+import { Observable } from 'rxjs';
 const moment = (_moment as any).default ? (_moment as any).default : _moment;
 
 @Component({
@@ -43,11 +47,13 @@ export class TransactionDetailsComponent implements OnInit {
   ableToDownload: Boolean = false;
   from !: string;
 
+  private pn2escposService = new Pn2escposService();
   constructor(
     private viewContainerRef: ViewContainerRef,
     private apiService: ApiService,
     private dialogService: DialogService,
-    private pdfService: PdfService
+    private receiptService: ReceiptService,
+    private printService: PrintService
   ) {
     const _injector = this.viewContainerRef.parentInjector;
     this.dialogRef = _injector.get<DialogComponent>(DialogComponent);
@@ -76,8 +82,8 @@ export class TransactionDetailsComponent implements OnInit {
       if (item?.oBusinessProductMetaData?.sLabelDescription) item.description = item.description + item?.oBusinessProductMetaData?.sLabelDescription + ' ' + item?.sProductNumber;
       totalSavingPoints += item.nSavingsPoints;
       let disc = parseFloat(item.nDiscount);
-      if(item.bPaymentDiscountPercent){ 
-        disc = (disc * parseFloat(item.nPriceIncVat)/(100 + parseFloat(item.nVatRate)));
+      if (item.bPaymentDiscountPercent) {
+        disc = (disc * parseFloat(item.nPriceIncVat) / (100 + parseFloat(item.nVatRate)));
         item.nDiscountToShow = disc;
       } else { item.nDiscountToShow = disc; }
       item.priceAfterDiscount = (parseFloat(item.nPaymentAmount) - parseFloat(item.nDiscountToShow));
@@ -85,7 +91,7 @@ export class TransactionDetailsComponent implements OnInit {
       item.totalPaymentAmount = parseFloat(item.nPaymentAmount) * parseFloat(item.nQuantity);
       item.totalPaymentAmountAfterDisc = parseFloat(item.priceAfterDiscount) * parseFloat(item.nQuantity);
       item.bPrepayment = item?.oType?.bPrepayment || false;
-      const vat = (item.nVatRate * item.priceAfterDiscount/(100 + parseFloat(item.nVatRate)));
+      const vat = (item.nVatRate * item.priceAfterDiscount / (100 + parseFloat(item.nVatRate)));
       item.vat = vat.toFixed(2);
       totalVat += vat;
       total = total + item.totalPaymentAmount;
@@ -114,6 +120,7 @@ export class TransactionDetailsComponent implements OnInit {
       .subscribe(
         (result: any) => {
           this.businessDetails = result.data;
+          this.businessDetails.currentLocation = this.businessDetails?.aLocation?.filter((location: any) => location?._id.toString() == this.iLocationId.toString())[0];
           this.ableToDownload = true;
         })
   }
@@ -160,7 +167,7 @@ export class TransactionDetailsComponent implements OnInit {
     this.generatePDF(false);
   }
 
-  generatePDF(print: boolean): void {
+  async generatePDF(print: boolean) {
     const sName = 'Sample', eType = this.transaction.eType;
     this.downloadWithVATLoading = true;
     this.transaction.businessDetails = this.businessDetails;
@@ -169,6 +176,52 @@ export class TransactionDetailsComponent implements OnInit {
         this.transaction.currentLocation = this.businessDetails.aLocation[i];
       }
     }
+
+    const template = await this.getTemplate('transaction').toPromise();
+    // console.log(this.transaction);
+    let nTotalOriginalAmount = 0;
+    const oDataSource = JSON.parse(JSON.stringify(this.transaction));
+    if (oDataSource.aTransactionItems?.length === 1 && oDataSource._id === oDataSource.aTransactionItems[0].iTransactionId) {
+      nTotalOriginalAmount = oDataSource.total;
+      oDataSource.bHasPrePayments = false;
+    } else {
+      oDataSource.aTransactionItems.forEach((item: any) => {
+        // console.log({item});
+        nTotalOriginalAmount += item.nPriceIncVat;
+        let description = `${item.description}\n`;
+        if (item.nPriceIncVat !== item.nPaymentAmount) {
+          description += `Original amount: ${item.nPriceIncVat}\n
+                          Already paid: \n${item.sTransactionNumber} | ${item.nPaymentAmount} (this receipt)\n`;
+
+          if (item?.related?.length) {
+            item.related.forEach((related: any) => {
+              description += `${related.sTransactionNumber}|${related.nPaymentAmount}\n`;
+            });
+          }
+        }
+
+        item.description = description;
+      });
+      oDataSource.bHasPrePayments = true;
+    }
+    oDataSource.sBusinessLogoUrl = (await this.getBase64FromUrl(oDataSource?.businessDetails?.sLogoLight).toPromise()).data;
+    oDataSource.oCustomer = {
+      sFirstName: this.transaction.oCustomer.sFirstName,
+      sLastName: this.transaction.oCustomer.sLastName,
+      sEmail: this.transaction.oCustomer.sEmail,
+      sMobile: this.transaction.oCustomer.oPhone?.sCountryCode + this.transaction.oCustomer.oPhone?.sMobile,
+      sLandLine: this.transaction.oCustomer.oPhone?.sLandLine,
+
+    };
+
+    oDataSource.nTotalOriginalAmount = nTotalOriginalAmount;
+    console.log(oDataSource);
+    this.receiptService.exportToPdf({
+      oDataSource: oDataSource,
+      pdfTitle: 'Transaction Receipt',
+      templateData: template.data
+    });
+    return;
     this.apiService.getNew('cashregistry', '/api/v1/pdf/templates/' + this.iBusinessId + '?sName=' + sName + '&eType=' + eType).subscribe(
       (result: any) => {
         const filename = new Date().getTime().toString()
@@ -221,23 +274,33 @@ export class TransactionDetailsComponent implements OnInit {
         // dataObject.totalSavingPoints = totalSavingPoints;
         // dataObject.dCreatedDate = moment(dataObject.dCreatedDate).format('DD-MM-yyyy hh:mm');
         delete this.transaction.related;
-        this.pdfService.createPdf(JSON.stringify(result.data), this.transaction, filename, print, printData, this.iBusinessId, this.transaction?._id)
-          .then(() => {
-            this.downloadWithVATLoading = false;
-          })
-          .catch((e: any) => {
-            this.downloadWithVATLoading = false;
-            console.error('err', e)
-          })
+
+        // this.pdfService.createPdf(JSON.stringify(result.data), this.transaction, filename, print, printData, this.iBusinessId, this.transaction?._id)
+        //   .then(() => {
+        //     this.downloadWithVATLoading = false;
+        //   })
+        //   .catch((e: any) => {
+        //     this.downloadWithVATLoading = false;
+        //     console.error('err', e)
+        //   })
       }, (error) => {
         this.downloadWithVATLoading = false;
         console.log('printing error', error);
       })
   }
 
+  getBase64FromUrl(url: any): Observable<any> {
+    return this.apiService.getNew('cashregistry', `/api/v1/pdf/templates/getBase64/${this.iBusinessId}?url=${url}`);
+  }
+
+  getTemplate(type: string): Observable<any> {
+    return this.apiService.getNew('cashregistry', `/api/v1/pdf/templates/${this.iBusinessId}?eType=${type}`);
+  }
+
   fetchCustomer(customerId: any) {
     this.apiService.getNew('customer', `/api/v1/customer/${customerId}?iBusinessId=${this.iBusinessId}`).subscribe(
       (result: any) => {
+        console.log('fetchCustomer', result);
         this.transaction.oCustomer = result;
       },
       (error: any) => {
@@ -335,11 +398,11 @@ export class TransactionDetailsComponent implements OnInit {
   }
 
   openCustomer(customer: any) {
-    this.dialogService.openModal(CustomerDetailsComponent, 
-      { cssClass: "modal-xl position-fixed start-0 end-0", context: { customer: customer, mode: 'details', from:'transactions' } }).instance.close.subscribe(result => {  });
+    this.dialogService.openModal(CustomerDetailsComponent,
+      { cssClass: "modal-xl position-fixed start-0 end-0", context: { customer: customer, mode: 'details', from: 'transactions' } }).instance.close.subscribe(result => { });
   }
 
-  async showActivityItem(activityItem: any, event:any) {
+  async showActivityItem(activityItem: any, event: any) {
     const oBody = {
       iBusinessId: this.iBusinessId,
     }
@@ -351,7 +414,21 @@ export class TransactionDetailsComponent implements OnInit {
     event.target.disabled = false;
     this.dialogService.openModal(ActivityDetailsComponent, { cssClass: 'w-fullscreen', context: { activity: oActivityItem, items: true, from: 'transaction-details' } })
       .instance.close.subscribe((result: any) => {
-        
+
       });
+  }
+
+  getThermalReceipt() {
+    this.apiService.getNew('cashregistry', `/api/v1/print-template/business-receipt/${this.iBusinessId}/${this.iLocationId}`).subscribe((result: any) => {
+      if (result?.data?.aTemplate?.length > 0) {
+        let transactionDetails = { business: this.businessDetails, ...this.transaction };
+        let command = this.pn2escposService.generate(JSON.stringify(result.data.aTemplate), JSON.stringify(transactionDetails));
+        this.printerId = 70780318;
+        this.computerId = 394051;
+        this.printService.openDrawer(this.iBusinessId, command, this.printerId, this.computerId).then((response) => {
+          console.log(response);
+        })
+      }
+    });
   }
 }

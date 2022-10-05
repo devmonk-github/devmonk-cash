@@ -192,7 +192,7 @@
                                         <div class="col-md-6">
                                             <label class="fs-6 form-label fw-bolder text-dark">{{'EMPLOYEE' |
                                                 translate}}</label>
-                                            <ng-select class="form-control form-control-solid p-0" [(ngModel)]="selectedEmployee" [clearable]="false">
+                                            <ng-select class="form-control form-control-solid p-0" [(ngModel)]="selectedEmployee" (ngModelChange)="checkShowDownload()" [clearable]="false">
                                                 <ng-option *ngFor="let oEmployee of aEmployee" [value]="oEmployee">
                                                     {{oEmployee.sFirstName + ' ' +oEmployee.sLastName}}
                                                 </ng-option>
@@ -296,7 +296,7 @@
                                     <label
                                         class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20">
                                         <input class="form-check-input" type="checkbox" [(ngModel)]="IsDynamicState"
-                                            name="IsDynamicState" [disabled]="iStatisticId ? true : false" (click)="fetchStatistics()" />
+                                            name="IsDynamicState" [disabled]="iStatisticId ? true : false" (click)="IsDynamicState = !IsDynamicState;fetchStatistics()" />
                                         <span class="form-check-label"> {{ "SHOW_DYNAMIC" | translate}} </span>
                                     </label>
                                 </div>
@@ -322,12 +322,12 @@
                                 <div class="col-6 m-0 p-0">
                                     <p class="row">
                                         <span class="col-4 fw-bolder">Start Date : </span>
-                                        <span class="col-8"> {{ oStatisticsData.dStartDate | date:'medium':'GMT'}}
+                                        <span class="col-8"> {{ oStatisticsData.dStartDate | date:'medium' }}
                                         </span>
                                     </p>
                                     <p class="row">
                                         <span class="col-4 fw-bolder" >End Date : </span>
-                                        <span class="col-8"> {{ oStatisticsData.dEndDate | date:'medium':'GMT'}} </span>
+                                        <span class="col-8"> {{ oStatisticsData.dEndDate | date:'medium' }} </span>
                                     </p>
                                     <p class="row">
                                         <span class="col-4 fw-bolder">Display Method : </span>
@@ -394,16 +394,18 @@
                             </div>
                         </div>
                         <hr>
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div class="d-flex justify-content-end align-items-center">
-                                    <ng-container *ngIf="pdfGenerationInProgress">
-                                        <div class="spinner-border mx-2"></div>
-                                    </ng-container>
-                                    <button class="btn btn-primary" (click)="exportToPDF($event)">{{ 'DOWNLOAD' }}</button>
+                        <ng-container *ngIf="bShowDownload">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="d-flex justify-content-end align-items-center">
+                                        <ng-container *ngIf="pdfGenerationInProgress">
+                                            <div class="spinner-border mx-2"></div>
+                                        </ng-container>
+                                        <button class="btn btn-primary" (click)="exportToPDF($event)">{{ 'DOWNLOAD' }}</button>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        </ng-container>
 
                         <div class="row">
 
@@ -1021,14 +1023,14 @@
                     <ng-template let-data="data" #vatRateTemplates>
                         <!-- <p>Dear {{person.name}} , {{person.message}} </p> -->
                         <td><span class="">{{ data?.sVatMethod }}</span></td>
-                        <td class="w-150px"><span class="">{{ data?.oVatRate[data?.sVatMethod].nProfit| number :'1.2-2'
-                                }}</span></td>
-                        <td class="w-150px"><span class="">{{ data?.oVatRate[data?.sVatMethod].nPurchaseValue | number
-                                :'1.2-2' }}</span>
-                        </td>
                         <td class="w-150px"><span class="">{{ data?.oVatRate[data?.sVatMethod].nTotalRevenue | number
                                 :'1.2-2' }}</span>
                         </td>
+                        <td class="w-150px"><span class="">{{ data?.oVatRate[data?.sVatMethod].nPurchaseValue | number
+                            :'1.2-2' }}</span>
+                        </td>
+                        <td class="w-150px"><span class="">{{ data?.oVatRate[data?.sVatMethod].nProfit| number :'1.2-2'
+                                }}</span></td>
                         <td class="w-150px"><span class="">{{ data?.oVatRate[data?.sVatMethod].nVatAmount }}</span></td>
                     </ng-template>
 
@@ -1040,7 +1042,7 @@
                     <div class="container">
                         <div class="d-flex justify-content-between">
                             <strong> {{ 'PAYMENT_METHODS' | translate}} </strong>
-                            <ng-container *ngIf="iStatisticId && oStatisticsDocument?.bIsDayState">
+                            <ng-container *ngIf="iStatisticId && oStatisticsDocument?.bIsDayState && aPaymentMethods?.length">
                                 <button class="btn" (click)="toggleEditPaymentMode()">
                                     <i class="fa fa-edit"></i>
                                 </button>
@@ -1049,9 +1051,7 @@
                         <p *ngIf="!aPaymentMethods?.length">{{ 'PAYMENT_METHODS_NOT_FOUND' | translate}}</p>
                         <div *ngIf="aPaymentMethods?.length">
                             <div class="card-body">
-
-                                <table
-                                    class="table table-row-bordered table-row-gray-300 gy-5 gs-5 mb-0 text-gray-600 fw-bold border">
+                                <table class="table table-row-bordered table-row-gray-300 gy-5 gs-5 mb-0 text-gray-600 fw-bold border">
                                     <thead class="bg-gray-100">
                                         <tr class="fw-bold fs-6 text-gray-800">
                                             <th>{{ 'METHOD' | translate}}</th>
@@ -1066,8 +1066,7 @@
                                             <td class="ps-9">{{oPayment.sMethod}}</td>
                                             <td>{{oPayment.nAmount}}</td>
                                             <td *ngIf="paymentEditMode">
-                                                <input class="form-control" type="number"
-                                                    [(ngModel)]="oPayment.nNewAmount"
+                                                <input class="form-control" type="number" [(ngModel)]="oPayment.nNewAmount"
                                                     (ngModelChange)="reCalculateTotal()">
                                             </td>
                                             <td>{{oPayment.nQuantity}}</td>
@@ -1076,10 +1075,8 @@
                                             <tr *ngFor="let oPayment of aNewSelectedPaymentMethods; let i = index">
                                                 <td>
                                                     <div>
-                                                        <ng-select [(ngModel)]="aNewSelectedPaymentMethods[i]"
-                                                            [clearable]="false">
-                                                            <ng-option [value]="option"
-                                                                *ngFor="let option of payMethods">
+                                                        <ng-select [(ngModel)]="aNewSelectedPaymentMethods[i]" [clearable]="false">
+                                                            <ng-option [value]="option" *ngFor="let option of payMethods">
                                                                 {{ option.sName | translate }}
                                                             </ng-option>
                                                         </ng-select>
@@ -1087,8 +1084,7 @@
                                                 </td>
                                                 <td></td>
                                                 <td>
-                                                    <input class="form-control" type="number"
-                                                        [(ngModel)]="oPayment.nAmount"
+                                                    <input class="form-control" type="number" [(ngModel)]="oPayment.nAmount"
                                                         (ngModelChange)="reCalculateTotal()">
                                                 </td>
                                             </tr>
@@ -1123,6 +1119,35 @@
                     </div>
                 </div>
                 <!-- PAYMENT END -->
+
+                <!-- STOCK HISTORY START -->
+                <div class="card">
+                    <div class="container">
+                        <div class="d-flex justify-content-between">
+                            <strong> {{ 'STOCK_HISTORY' | translate}} </strong>
+                        </div>
+                        <p *ngIf="!oStockPerLocation.aHistory">{{ 'STOCK_HISTORY_NOT_FOUND' | translate}}</p>
+                        <div *ngIf="oStockPerLocation.aHistory">
+                            <div class="card-body">
+                                <table class="table table-row-bordered table-row-gray-300 gy-5 gs-5 mb-0 text-gray-600 fw-bold border">
+                                    <thead class="bg-gray-100">
+                                        <tr class="fw-bold fs-6 text-gray-800">
+                                            <th>{{ 'LOCATION_NAME' | translate}}</th>
+                                            <th class="w-150px">{{ 'PURCHASE_PRICE' | translate}} - {{oStockPerLocation.nTotalPurchasePrice}}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="p-2">
+                                        <tr *ngFor="let oHistory of oStockPerLocation.aHistory; let i = index">
+                                            <td class="ps-9">{{oHistory.sName ? oHistory.sName : '-' }}</td>
+                                            <td>{{oHistory.nPurchasePrice}}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- STOCK HISTORY END -->
 
                 <!-- Tushar's code START -->
                 <ng-container
@@ -1321,6 +1346,14 @@
                                         [(ngModel)]="oCountings.nCashCounted">
                                 </div>
                             </div> -->
+                            <ng-container *ngIf="oStatisticsDocument">
+                                <div class="d-flex flex-wrap">
+                                    <label>{{'NOTES' | translate}}</label>
+                                    <div class="flex-grow-1 ms-5">
+                                        <textarea class="form-control" rows="5" [disabled]="bDisableCountings" [(ngModel)]="oStatisticsDocument.sComment"></textarea>
+                                    </div>
+                                </div>
+                            </ng-container>
                         </div>
 
                     </div>
@@ -1375,7 +1408,7 @@
                                     </label>
                                 </div> -->
                                 <br>
-                                <ng-container *ngIf="oStatisticsDocument.bIsDayState">
+                                <ng-container *ngIf="oStatisticsDocument?.bIsDayState">
                                     <div class="d-flex justify-content-start">
                                         <button type="button" class="btn btn-primary" data-kt-roles-modal-action="submit"
                                         (click)="closeDayState()" [class.disabled]="closingDayState">

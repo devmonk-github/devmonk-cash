@@ -29,7 +29,6 @@ import { MaterialModule } from './material.module';  // common material design m
 import {
   CountryListComponent, TabsComponent, TabComponent
 } from './components';
-// import { NgbModule } from "@ng-bootstrap/ng-bootstrap";
 import { NgJsonEditorModule } from "ang-jsoneditor";
 import { FileSaverModule } from "ngx-filesaver";
 import { ActivityDetailsComponent } from "./components/activity-details-dialog/activity-details.component";
@@ -42,6 +41,10 @@ import { NgApexchartsModule } from "ng-apexcharts";
 import { WebOrderDetailsComponent } from "./components/web-order-details/web-order-details.component";
 import { SelectArticleDialogComponent } from "./components/select-articlegroup-dialog/select-articlegroup-dialog.component";
 import { NgxPaginationModule } from "ngx-pagination";
+import { PrintSettingsEditorComponent } from "./components/print-settings-editor/print-settings-editor.component";
+import { JsonEditorModule } from "../json-editor/json-editor.module";
+import { CommonPrintSettingsService } from "./service/common-print-settings.service";
+
 @NgModule({
   declarations: [
     CustomerDialogComponent,
@@ -68,6 +71,7 @@ import { NgxPaginationModule } from "ngx-pagination";
     TabsComponent,
     TabComponent,
     SelectArticleDialogComponent,
+    PrintSettingsEditorComponent,
   ],
   imports: [
     CommonModule,
@@ -77,12 +81,13 @@ import { NgxPaginationModule } from "ngx-pagination";
     NgSelectModule,
     WebcamModule,
     MaterialModule,
-    // NgbModule,
     ReactiveFormsModule,
     ToastModule.forRoot(),
     NgJsonEditorModule,
     FileSaverModule,
-    NgApexchartsModule
+    NgApexchartsModule,
+    NgxPaginationModule,
+    JsonEditorModule
   ],
   exports: [
     DialerComponent,
@@ -103,9 +108,10 @@ import { NgxPaginationModule } from "ngx-pagination";
     MorePaymentsDialogComponent,
     TabsComponent,
     TabComponent,
-    SelectArticleDialogComponent, NgxPaginationModule
+    SelectArticleDialogComponent, 
+    NgxPaginationModule,
   ],
-  providers: [CurrencyPipe]
+  providers: [CurrencyPipe, CommonPrintSettingsService]
 })
 
 export class SharedModule {

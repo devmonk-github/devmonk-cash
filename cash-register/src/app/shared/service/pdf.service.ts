@@ -797,19 +797,36 @@ export class PdfService {
     return text.match(/\[\[(.*?)]]/ig) || null
   }
 
-  private removeBrackets(textWithBrackets: string): string {
+  removeBrackets(textWithBrackets: string): string {
     return textWithBrackets.replace(/\s/g, '').replace(' ', '').replace('[[', '').replace(']]', '');
   }
 
-  private replaceVariables(originalText: string, dataSourceObject: any) {
+  processConditions(originalText: any, dataSourceObject: any) {
+    if (originalText.indexOf('<if') !== -1) {
+      let sConditionalString = originalText.substring(originalText.indexOf('<if'), originalText.indexOf('/if>') + 4);
+      let sCondition = sConditionalString.substring(sConditionalString.indexOf('<if') + 4, sConditionalString.indexOf('|') - 2).trim();
+      // console.log({ sConditionalString, sCondition });
+      if (dataSourceObject[sCondition]) return originalText;
+      else return originalText.replace(sConditionalString, '');
+    } else {
+      return originalText;
+    }
+  }
+
+  replaceVariables(originalText: string, dataSourceObject: any) {
     // console.log('replace vars',{originalText,dataSourceObject});
     if (!this.isDefined(originalText)) {
       return;
     }
+    
+    originalText = this.processConditions(originalText, dataSourceObject);
+    // console.log('after process condition',originalText);
+
     let extractedVariables = this.getVariables(originalText);
     // console.log({extractedVariables});
     let providedData = dataSourceObject;
     let finalString = originalText;
+    // console.log(829, {finalString});
 
     if (extractedVariables) {
       for (let a = 0; a < extractedVariables.length; a++) {
@@ -907,33 +924,55 @@ export class PdfService {
           let newText = '';
           // console.log({variableStringFiltered});
           if (this.isDefined(providedData)) {
-            Object.keys(providedData).forEach((key, index) => {
-              if (key === variableStringFiltered) {
-                if (String(providedData[variableStringFiltered]).length > 0) {
-                  matched = true;
-                  newText = String(providedData[variableStringFiltered]);
+            
+            newText = providedData[variableStringFiltered] || '';
+            finalString = finalString.replace(currentMatch, newText);
 
-                  if (this.isDefined(format) && format !== '') {
-                    newText = this.formatContent(newText, format);
-                  }
-                }
-              }
-            });
+            // for (const key of Object.keys(providedData)) {
+            //   console.log(key, variableStringFiltered);
+            //   if (key === variableStringFiltered) {
+            //     if (String(providedData[variableStringFiltered]).length > 0) {
+            //       matched = true;
+            //       newText = String(providedData[variableStringFiltered]);
+            //       console.log({newText});
+
+            //       if (this.isDefined(format) && format !== '') {
+            //         newText = this.formatContent(newText, format);
+            //       }
+            //     }
+            //     break;
+            //   }
+            // }
+
+            // Object.keys(providedData).forEach((key, index) => {
+            //   console.log(key, variableStringFiltered);
+            //   if (key === variableStringFiltered) {
+            //     if (String(providedData[variableStringFiltered]).length > 0) {
+            //       matched = true;
+            //       newText = String(providedData[variableStringFiltered]);
+
+            //       if (this.isDefined(format) && format !== '') {
+            //         newText = this.formatContent(newText, format);
+            //       }
+            //     }
+            //   }
+            // });
           } else {
             console.warn('No match found for', currentMatch)
           }
 
-          if (matched) {
-            finalString = finalString.replace(currentMatch, newText);
-          } else {
-            console.warn(finalString + " could not be matched with the provided data.", currentMatch)
-            finalString = '';
-          }
+          // if (matched) {
+          //   finalString = finalString.replace(currentMatch, newText);
+          // } else {
+          //   console.warn(finalString + " could not be matched with the provided data.", currentMatch)
+          //   finalString = '';
+          // }
         } else {
           console.error('A variable in "' + currentMatch + '" is not closed properly', currentMatch)
         }
       }
     }
+    // console.log({finalString});
     return finalString;
   }
 

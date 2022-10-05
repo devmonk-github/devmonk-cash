@@ -2,15 +2,13 @@ import { TranslateService } from '@ngx-translate/core';
 import { Component, OnInit, OnDestroy, AfterViewInit } from '@angular/core';
 import { Observable, Subscription } from 'rxjs';
 import { ApiService } from 'src/app/shared/service/api.service';
-import { PdfService } from 'src/app/shared/service/pdf2.service';
 import * as _moment from 'moment';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastService } from 'src/app/shared/components/toast';
 import { defaultMenuOptions, MenuComponent } from 'src/app/shared/_layout/components/common';
 import { Location } from '@angular/common';
 import { ChildChild, DisplayMethod, eDisplayMethodKeysEnum, View, ViewMenuChild } from '../transaction-audit-ui.model';
-import { TransactionAuditUiPdfService } from 'src/app/services/transaction-audit-pdf.service';
-const moment = (_moment as any).default ? (_moment as any).default : _moment;
+import { TransactionAuditUiPdfService } from 'src/app/shared/service/transaction-audit-pdf.service';
 
 
 @Component({
@@ -28,20 +26,22 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
   aLocation: any = [];
   aStatistic: any = [];
   oUser: any = {};
-  aSelectedLocation: any;
-  selectedWorkStation: any;
-  selectedEmployee: any;
+  aSelectedLocation: any = [];
+  selectedWorkStation: any = {};
+  selectedEmployee: any = {};
   propertyOptions: Array<any> = [];
   selectedProperties: any;
   aProperty: Array<any> = [];
   aFilterProperty: Array<any> = [];
-  IsDynamicState: boolean = true;
+  IsDynamicState: boolean = false;
   aWorkStation: any = [];
   aEmployee: any = [];
   aPaymentMethods: any = [];
   aDayClosure: any = [];
+  oStockPerLocation: any = [];
 
   closingDayState: boolean = false;
+  bShowDownload: boolean = false;
 
   closeSubscription!: Subscription;
   dayClosureListSubscription !: Subscription;
@@ -104,11 +104,6 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
     return item.child[0];
   }
 
-  // aOptionMenu: any = [
-  //   { sKey: 'purchase-order', sValue: this.translate.instant('PURCHASE_ORDER') },
-  //   { sKey: 'sales-order', sValue: this.translate.instant('SALES_ORDER') },
-  //   { sKey: 'cash-registry', sValue: this.translate.instant('CASH_REGISTER') },
-  // ];
   aOptionMenu: View[] = [];
   public sOptionMenu: {
     parent: View,
@@ -192,7 +187,6 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
 
   constructor(
     private apiService: ApiService,
-    private pdf: PdfService,
     private translate: TranslateService,
     private route: ActivatedRoute,
     private router: Router,
@@ -211,10 +205,10 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
     this.previousPage = this.route?.snapshot?.queryParams?.page || 0
 
     this.iStatisticId = this.route.snapshot?.params?.iStatisticId;
-    if(this.iStatisticId){
+    if (this.iStatisticId) {
       this.oStatisticsData.dStartDate = this.router.getCurrentNavigation()?.extras?.state?.dStartDate ?? null;
       this.oStatisticsData.dEndDate = this.router.getCurrentNavigation()?.extras?.state?.dEndDate ?? null;
-      if (this.oStatisticsData.dStartDate){
+      if (this.oStatisticsData.dStartDate) {
         this.filterDates.startDate = this.oStatisticsData.dStartDate;
         const endDate = (this.oStatisticsData.dEndDate) ? this.oStatisticsData.dEndDate : new Date();
         this.filterDates.endDate = endDate;
@@ -229,14 +223,15 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
     this.businessDetails._id = localStorage.getItem('currentBusiness');
     this.setOptionMenu()
     this.fetchBusinessDetails();
-    this.fetchStatistics(this.sDisplayMethod.toString());
+
+    if (!this.IsDynamicState || this.iStatisticId) this.listCurrentStatisticDocument(); // Static Data
+    else this.fetchStatistics(this.sDisplayMethod.toString()); // Dynamic Data from transaction-item
+
     this.fetchBusinessLocation();
     this.getProperties();
     this.getWorkstations();
     this.getEmployees();
     this.getPaymentMethods();
-    if (this.iStatisticId) this.fetchCurrentStatisticDocument();
-    // this.fetchStatisticDocument();
   }
 
   ngAfterViewInit(): void {
@@ -573,6 +568,7 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
     }
     this.location.back()
   }
+
   onDropdownItemSelected(parent: View, child1: ViewMenuChild, child2: ChildChild) {
     this.bShowProperty = false;
     this.sOptionMenu = {
@@ -608,14 +604,18 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
       })
       .subscribe(
         (result: any) => {
-          if (result?.data?.aLocation?.length)
+          if (result?.data?.aLocation?.length) {
             this.aLocation = result.data.aLocation;
+            this.fetchStockValuePerLocation();
             this.sCurrentLocation = result?.data?.sName;
-            this.aLocation.forEach((oLocation: any) =>{
-              if (oLocation._id === this.iLocationId){
-                this.sCurrentLocation += " ("+ oLocation?.sName + ")";
+            this.aLocation.forEach((oLocation: any) => {
+              if (oLocation._id === this.iLocationId) {
+                this.sCurrentLocation += " (" + oLocation?.sName + ")";
+                this.aSelectedLocation.push(oLocation._id);
               }
             });
+
+          }
         },
         (error) => {
           console.log('error: ', error);
@@ -627,37 +627,32 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
     this.aStatistic = [];
   }
 
-  fetchCurrentStatisticDocument(){
-    const oBody = {
-      iStatisticId: this.iStatisticId,
-      iBusinessId: this.iBusinessId,
+  /* Countings Code (KK) */
+  processCounting() {
+    this.oCountings.nCashAtStart = this.oStatisticsDocument?.oCountings?.nCashAtStart || 0;
+    this.oCountings.nCashCounted = this.oStatisticsDocument?.oCountings?.nCashCounted || 0;
+    this.oCountings.nSkim = this.oStatisticsDocument?.oCountings?.nSkim || 0;
+    this.oCountings.nCashRemain = this.oStatisticsDocument?.oCountings?.nCashRemain || 0;
+    this.bDisableCountings = !this.oStatisticsDocument.bIsDayState;
+    let aKeys: any = [];
+    if (this.oStatisticsDocument?.oCountings?.oCountingsCashDetails) aKeys = Object.keys(this.oStatisticsDocument?.oCountings?.oCountingsCashDetails);
+    if (aKeys?.length) {
+      this.aAmount.map((item: any) => {
+        if (aKeys.includes(item.key)) {
+          item.nQuantity = this.oStatisticsDocument?.oCountings?.oCountingsCashDetails[item.key];
+        }
+      });
     }
-    this.apiService.postNew('cashregistry', `/api/v1/statistics/get`, oBody).subscribe((result: any) => {
-      if(result?.message === 'success'){
-        this.oStatisticsDocument = result?.data?.aStatistic[0];
-        this.oCountings.nCashAtStart = this.oStatisticsDocument?.oCountings?.nCashAtStart || 0;
-        this.oCountings.nCashCounted = this.oStatisticsDocument?.oCountings?.nCashCounted || 0;
-        this.oCountings.nSkim = this.oStatisticsDocument?.oCountings?.nSkim || 0;
-        this.oCountings.nCashRemain = this.oStatisticsDocument?.oCountings?.nCashRemain || 0;
-        this.bDisableCountings = !this.oStatisticsDocument.bIsDayState;
-        const aKeys = Object.keys(this.oStatisticsDocument?.oCountings?.oCountingsCashDetails);
-        this.aAmount.map((item: any) => {
-          if(aKeys.includes(item.key)){
-            item.nQuantity = this.oStatisticsDocument?.oCountings?.oCountingsCashDetails[item.key];
-          }
-        });
-
-      }
-    });
   }
 
-  /* STATIC  */
-  fetchStatisticDocument(sDisplayMethod?: string) {
+  /* Listing the Statistic document with filter  */
+  listCurrentStatisticDocument(sDisplayMethod?: string) {
     this.aStatistic = [];
     this.aPaymentMethods = [];
     this.bStatisticLoading = true;
-    const oBody = {
+    const oBody: any = {
       iBusinessId: this.iBusinessId,
+      iStatisticId: this.iStatisticId,
       oFilter: {
         aLocationId: this?.aSelectedLocation?.length
           ? this.aSelectedLocation
@@ -665,54 +660,52 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
         iWorkstationId: this.selectedWorkStation?._id,
         sTransactionType: this.optionMenu,
         sDisplayMethod: sDisplayMethod || this.sDisplayMethod.toString(),
-        // dStartDate: this.filterDates.startDate,
-        // dEndDate: this.filterDates.endDate,
         dStartDate: this.statisticFilter.dFromState,
         dEndDate: this.statisticFilter.dToState,
         aFilterProperty: this.aFilterProperty,
         bIsArticleGroupLevel: true,
         bIsSupplierMode: true,
-      },
-    };
+      }
+    }
 
     if (this.IsDynamicState) {
       oBody.oFilter.bIsArticleGroupLevel = this.bIsArticleGroupLevel;
       oBody.oFilter.bIsSupplierMode = this.bIsSupplierMode;
     }
 
+    this.checkShowDownload();
     this.fetchDayClosureList();
-    this.getStatisticSubscription = this.apiService
-      .postNew('cashregistry', `/api/v1/statistics/get`, oBody)
-      .subscribe(
-        (result: any) => {
-          this.bStatisticLoading = false;
-          if (result?.data) {
-            if (result.data?.aStatistic?.length)
-              this.aStatistic = result.data.aStatistic;
-            if (this.aStatistic?.length)
-              this.oCountings.nCashInTill =
-                this.aStatistic[0].overall[0]?.nTotalRevenue || 0;
-            if (result.data?.aPaymentMethods?.length)
-              this.aPaymentMethods = result.data.aPaymentMethods;
+
+    this.getStatisticSubscription = this.apiService.postNew('cashregistry', `/api/v1/statistics/list`, oBody).
+      subscribe((result: any) => {
+        this.bStatisticLoading = false;
+        if (result?.data) {
+          const oData = result?.data;
+          if (oData.aStatistic?.length) this.aStatistic = oData.aStatistic;
+          if (oData?.oStatistic?._id) {
+            if (oData?.oStatistic?.aPaymentMethods?.length) this.aPaymentMethods = oData?.oStatistic?.aPaymentMethods;
+            this.oStatisticsDocument = oData?.oStatistic;
+            if(!this.oStatisticsDocument?.sComment) this.oStatisticsDocument.sComment = '';
+            this.processCounting();
           }
-        },
-        (error) => {
-          this.bStatisticLoading = false;
-          console.log('error: ', error);
         }
-      );
+      }, (error) => {
+        this.bStatisticLoading = false;
+        console.log('error: ', error);
+      });
   }
 
   fetchStatistics(sDisplayMethod?: string) {
-    if (this.iStatisticId) this.IsDynamicState = true;
-    if (!this.IsDynamicState) return this.fetchStatisticDocument();
+    if (!this.IsDynamicState) return this.listCurrentStatisticDocument(); // Statistic Document
 
+    /* Below for Dynamic-data */
+    this.checkShowDownload();
     this.aStatistic = [];
     this.aPaymentMethods = [];
     const oBody = {
       iBusinessId: this.iBusinessId,
       oFilter: {
-        aLocationId: this?.aSelectedLocation?.length ? this.aSelectedLocation: [],
+        aLocationId: this?.aSelectedLocation?.length ? this.aSelectedLocation : [],
         iWorkstationId: this.selectedWorkStation?._id,
         iEmployeeId: this.selectedEmployee?._id,
         sTransactionType: this.optionMenu,
@@ -734,7 +727,7 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
       .postNew('cashregistry', `/api/v1/statistics/transaction/audit`, oBody)
       .subscribe(
         (result: any) => {
-          
+
           this.nPaymentMethodTotal = 0;
           this.nNewPaymentMethodTotal = 0;
           this.bStatisticLoading = false;
@@ -743,7 +736,7 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
             if (result.data?.oTransactionAudit?.length)
               this.aStatistic = result.data.oTransactionAudit;
 
-            if (this.aStatistic?.length && this.aStatistic[0]?.overall?.length){
+            if (this.aStatistic?.length && this.aStatistic[0]?.overall?.length) {
               this.oCountings.nCashInTill = this.aStatistic[0].overall[0].nTotalRevenue;
             }
 
@@ -892,11 +885,11 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
 
   getWorkstations() {
     (this.workstationListSubscription = this.apiService.getNew('cashregistry', `/api/v1/workstations/list/${this.iBusinessId}/${this.iLocationId}`).subscribe((result: any) => {
-        if (result && result.data?.length) {
-          this.aWorkStation = result.data;
-          this.sCurrentWorkstation = this.aWorkStation.filter((el: any) => el._id === this.iWorkstationId)[0]?.sName;
-        }
-      })),
+      if (result && result.data?.length) {
+        this.aWorkStation = result.data;
+        this.sCurrentWorkstation = this.aWorkStation.filter((el: any) => el._id === this.iWorkstationId)[0]?.sName;
+      }
+    })),
       (error: any) => {
         console.error(error);
       };
@@ -916,6 +909,7 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
         (error) => { }
       );
   }
+
   fetchBusinessDetails() {
     this.apiService
       .getNew('core', '/api/v1/business/' + this.businessDetails._id)
@@ -924,7 +918,7 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
       });
   }
 
-  async exportToPDF(event:any) {
+  async exportToPDF(event: any) {
     this.pdfGenerationInProgress = true;
     event.target.disabled = true;
     await this.transactionAuditPdfService.exportToPDF({
@@ -1054,6 +1048,7 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
       data
     );
   }
+
   addExpenses(data: any): Observable<any> {
 
     const value = localStorage.getItem('currentEmployee');
@@ -1069,6 +1064,7 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
       iBusinessId: this.iBusinessId,
       nTotal: data.amount,
       nPaymentAmount: data.amount,
+      nRevenueAmount: data.amount,
       iWorkstationId: this.iWorkstationId,
       iEmployeeId: currentEmployeeId,
       iLocationId: this.iLocationId,
@@ -1089,18 +1085,19 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
 
   async closeDayState() {
     this.closingDayState = true;
-    this.aAmount.filter((item: any) => item.nQuantity > 0).forEach((item: any) =>(this.oCountings.oCountingsCashDetails[item.key] = item.nQuantity));
+    this.aAmount.filter((item: any) => item.nQuantity > 0).forEach((item: any) => (this.oCountings.oCountingsCashDetails[item.key] = item.nQuantity));
     const nDifferenceAmount = this.oCountings.nCashInTill - this.oCountings.nCashCounted;
-    
+
     const oCashPaymentMethod = this.allPaymentMethod.filter((el: any) => el.sName.toLowerCase() === 'cash')[0];
     const oBankPaymentMethod = this.allPaymentMethod.filter((el: any) => el.sName.toLowerCase() === 'bankpayment')[0];
 
+    console.log('nDifferenceAmount: ', nDifferenceAmount);
     if (nDifferenceAmount > 0) {
       //we have difference in cash, so add that as and expense
 
-     await this.addExpenses(
+      await this.addExpenses(
         {
-         amount: nDifferenceAmount,
+          amount: -(nDifferenceAmount),
           comment: 'Lost money',
           oPayment: {
             iPaymentMethodId: oCashPaymentMethod._id,
@@ -1111,30 +1108,30 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
       ).toPromise();
     }
 
-    if(this.oCountings.nSkim > 0){  
+    if (this.oCountings.nSkim > 0) {
       //amount to put in bank - so add create new expense with positive amount to add it as bank payment, and negative amount as cash
       // so increase bank payment amount and equally decrease cash payment amount
-      
-      
+
+
       await this.addExpenses({
         amount: this.oCountings.nSkim,
-          comment: 'Transfer to the bank (increase bank amount)',
-          oPayment: {
-            iPaymentMethodId: oBankPaymentMethod._id,
-            nAmount: this.oCountings.nSkim,
-            sMethod: oBankPaymentMethod.sName.toLowerCase()
-          }
-        }).toPromise();
+        comment: 'Transfer to the bank (increase bank amount)',
+        oPayment: {
+          iPaymentMethodId: oBankPaymentMethod._id,
+          nAmount: this.oCountings.nSkim,
+          sMethod: oBankPaymentMethod.sName.toLowerCase()
+        }
+      }).toPromise();
 
       await this.addExpenses({
         amount: -this.oCountings.nSkim,
-          comment: 'Transfered to the bank (decrease cash amount)',
-          oPayment: {
-            iPaymentMethodId: oCashPaymentMethod._id,
-            nAmount: -this.oCountings.nSkim,
-            sMethod: oCashPaymentMethod.sName.toLowerCase()
-          }
-        }).toPromise();
+        comment: 'Transfered to the bank (decrease cash amount)',
+        oPayment: {
+          iPaymentMethodId: oCashPaymentMethod._id,
+          nAmount: -this.oCountings.nSkim,
+          sMethod: oCashPaymentMethod.sName.toLowerCase()
+        }
+      }).toPromise();
 
     }
 
@@ -1144,12 +1141,14 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
       iWorkstationId: this.iWorkstationId,
       iStatisticId: this.iStatisticId,
       oCountings: this.oCountings,
+      sComment: this.oStatisticsDocument.sComment
     }
 
     this.closeSubscription = this.apiService.postNew('cashregistry', `/api/v1/statistics/close/day-state`, oBody).subscribe((result: any) => {
       this.toastService.show({ type: 'success', text: `Day-state is close now` });
       this.closingDayState = false;
-      this.router.navigate(['/business/day-closure/list'])
+      this.bDisableCountings = true;
+      this.oStatisticsDocument.bIsDayState = false;
     }, (error) => {
       console.log('Error: ', error);
       this.toastService.show({ type: 'warning', text: 'Something went wrong or open the day-state first' });
@@ -1205,7 +1204,7 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
       });
   }
 
-  async saveUpdatedPayments(event:any) {
+  async saveUpdatedPayments(event: any) {
     event.target.disabled = true;
     for (const item of this.aPaymentMethods) {
       if (item.nAmount != item.nNewAmount) {
@@ -1217,7 +1216,7 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
             nAmount: item.nNewAmount - item.nAmount,
             sMethod: item.sMethod
           }
-        }).toPromise(); 
+        }).toPromise();
       }
     }
 
@@ -1286,7 +1285,30 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
       aDayClosure[i].isDisable = false;
       const dDayClosureDateTime = new Date(aDayClosure[i].dCloseDate).getTime();
       if (dFromStateTime > dDayClosureDateTime) aDayClosure[i].isDisable = true;
-    }    
+    }
+  }
+
+  checkShowDownload() {
+    this.bShowDownload = (this.oStatisticsDocument && this.oStatisticsDocument?.bIsDayState === false) ||
+      (!this.IsDynamicState && !this.selectedEmployee?._id && !this.selectedWorkStation?._id && !(this.aSelectedLocation?.length > 1));
+  }
+
+  fetchStockValuePerLocation() {
+    const url = `/api/v1/stock/correction/stock-value/per-location`;
+    const oBody = { iBusinessId: this.iBusinessId }
+    this.listBusinessSubscription = this.apiService.postNew('core', url, oBody).subscribe((result: any) => {
+      if (result?.data?.aHistory?.length) {
+        this.oStockPerLocation = result.data;
+        for (let i = 0; i < this.aLocation?.length; i++) {
+          const oLocation = this.oStockPerLocation.aHistory.find((oHistory: any) => oHistory?._id == this.aLocation[i]._id)
+          if (oLocation) {
+            oLocation.sName = this.aLocation[i].sName;
+          }
+        }
+      }
+    }, (error) => {
+      console.log('error: ', error);
+    });
   }
 
   ngOnDestroy(): void {
