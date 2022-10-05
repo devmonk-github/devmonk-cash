@@ -184,15 +184,20 @@ export class ReceiptService {
                 let text = this.pdfService.replaceVariables(el.html, this.oOriginalDataSource);
                 this.content.push({ text: text, absolutePosition: { x: el.position.x * this.commonService.MM_TO_PT_CONVERSION_FACTOR, y: el.position.y * this.commonService.MM_TO_PT_CONVERSION_FACTOR } })
             } else if (el.type === 'image') {
+                const img = this.addImage(el);
+                // console.log(188, img);
+                this.content.push(img);
                 // console.log(this.oOriginalDataSource);
                 // const result:any = await this.getBase64FromUrl(this.oOriginalDataSource[el.url]).toPromise();
                 // const img = result.data;
                 // console.log(img);
-                this.content.push({
-                    image: this.oOriginalDataSource[el.url],
-                    width: el.size || 150,
-                    absolutePosition: { x: el.position.x * this.commonService.MM_TO_PT_CONVERSION_FACTOR, y: el.position.y * this.commonService.MM_TO_PT_CONVERSION_FACTOR }
-                });
+                
+                
+                // this.content.push({
+                //     image: this.oOriginalDataSource[el.url],
+                //     width: el.size || 150,
+                //     absolutePosition: { x: el.position.x * this.commonService.MM_TO_PT_CONVERSION_FACTOR, y: el.position.y * this.commonService.MM_TO_PT_CONVERSION_FACTOR }
+                // });
 
             }
             // });
@@ -239,13 +244,15 @@ export class ReceiptService {
             let dataRow: any = [];
             rows.forEach((row: any) => { //parsing rows
                 if(row?.type === 'image'){
-                    const img:any = {
-                        image: this.oOriginalDataSource[row.url],// this.logoUri,
-                    };
-                    if(row?.margin) img.margin = row.margin;
-                    if(row?.fit) img.fit = row.fit;
-                    if (row?.align) img.alignment = row.align;
-                    if(row?.width) img.width = row.width;
+                    let img = this.addImage(row);
+                    // console.log(247, img);
+                    // let img:any = {
+                    //     image: this.oOriginalDataSource[row.url],// this.logoUri,
+                    // };
+                    // if(row?.margin) img.margin = row.margin;
+                    // if(row?.fit) img.fit = row.fit;
+                    // if (row?.align) img.alignment = row.align;
+                    // if(row?.width) img.width = row.width;
 
                     dataRow.push(img);
                     tableWidths.push(this.commonService.calcColumnWidth(row.size) || 'auto');
@@ -336,24 +343,29 @@ export class ReceiptService {
             // } 
             else if (el?.element === 'sReceiptNumber'){
                 columns.push({ text: `${this.oOriginalDataSource.sReceiptNumber}`, alignment: el.align })
-            } else if( el?.element === 'barcode'){
-                columns.push(
-                    {
-                        image: this.oOriginalDataSource.sBarcodeURI,
-                        fit: [el.width, el.height],
-                        alignment: el.align
-                    }
-                );
-            } else if (el?.type === 'image') {
-                columns.push(
-                    {
-                        // image: (await this.getBase64FromUrl(this.oOriginalDataSource.businessDetails.sLogoLight).toPromise()).data,// this.logoUri,
-                        image: this.oOriginalDataSource[el.url],// this.logoUri,
-                        fit: el?.fit || [100, 100],
-                        alignment: el.align,
-                        margin: el?.margin || [0,0,0,0]
-                    }
-                );
+            } 
+            // else if( el?.element === 'barcode'){
+            //     columns.push(
+            //         {
+            //             image: this.oOriginalDataSource.sBarcodeURI,
+            //             fit: [el.width, el.height],
+            //             alignment: el.align
+            //         }
+            //     );
+            // } 
+            else if (el?.type === 'image') {
+                let img = this.addImage(el);
+                // console.log(357, img);
+                columns.push(img);
+                // columns.push(
+                //     {
+                //         // image: (await this.getBase64FromUrl(this.oOriginalDataSource.businessDetails.sLogoLight).toPromise()).data,// this.logoUri,
+                //         image: this.oOriginalDataSource[el.url],// this.logoUri,
+                //         fit: el?.fit || [100, 100],
+                //         alignment: el.align,
+                //         margin: el?.margin || [0,0,0,0]
+                //     }
+                // );
             } else {
                 let html = el.html || '';
                 let object = el?.object;
@@ -539,6 +551,20 @@ export class ReceiptService {
         });
 
         return translationsObj;
+    }
+
+    addImage(el:any){
+        // console.log(el);
+        let img: any = {
+            image: this.oOriginalDataSource[el.url],// this.logoUri,
+        };
+        if (el?.margin) img.margin = el.margin;
+        if (el?.fit) img.fit = el.fit;
+        if (el?.align) img.alignment = el.align;
+        if (el?.width) img.width = el.width;
+        if (el?.absolutePosition) img.absolutePosition = { x: el.position.x * this.commonService.MM_TO_PT_CONVERSION_FACTOR, y: el.position.y * this.commonService.MM_TO_PT_CONVERSION_FACTOR };
+        
+        return img;
     }
 
     cleanUp(){

@@ -204,6 +204,15 @@ export class TransactionDetailsComponent implements OnInit {
       });
       oDataSource.bHasPrePayments = true;
     }
+    oDataSource.sBusinessLogoUrl = (await this.getBase64FromUrl(oDataSource?.businessDetails?.sLogoLight).toPromise()).data;
+    oDataSource.oCustomer = {
+      sFirstName: this.transaction.oCustomer.sFirstName,
+      sLastName: this.transaction.oCustomer.sLastName,
+      sEmail: this.transaction.oCustomer.sEmail,
+      sMobile: this.transaction.oCustomer.oPhone?.sCountryCode + this.transaction.oCustomer.oPhone?.sMobile,
+      sLandLine: this.transaction.oCustomer.oPhone?.sLandLine,
+
+    };
 
     oDataSource.nTotalOriginalAmount = nTotalOriginalAmount;
     console.log(oDataSource);
@@ -280,6 +289,10 @@ export class TransactionDetailsComponent implements OnInit {
       })
   }
 
+  getBase64FromUrl(url: any): Observable<any> {
+    return this.apiService.getNew('cashregistry', `/api/v1/pdf/templates/getBase64/${this.iBusinessId}?url=${url}`);
+  }
+
   getTemplate(type: string): Observable<any> {
     return this.apiService.getNew('cashregistry', `/api/v1/pdf/templates/${this.iBusinessId}?eType=${type}`);
   }
@@ -287,6 +300,7 @@ export class TransactionDetailsComponent implements OnInit {
   fetchCustomer(customerId: any) {
     this.apiService.getNew('customer', `/api/v1/customer/${customerId}?iBusinessId=${this.iBusinessId}`).subscribe(
       (result: any) => {
+        console.log('fetchCustomer', result);
         this.transaction.oCustomer = result;
       },
       (error: any) => {
