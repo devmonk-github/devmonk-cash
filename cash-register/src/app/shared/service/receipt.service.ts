@@ -147,14 +147,14 @@ export class ReceiptService {
           3. table format
         */
 
-        console.log(layout);
+        // console.log(layout);
         for (const item of layout) {
             if (item.type === 'columns') { // parse column structure
                 this.processColumns(item.row);
             } else if (item.type === 'simple') { //parse simple data
                 this.processSimpleData(item.row, item?.object);
             } else if (item.type === 'table') { //parse table
-                this.processTableData(item.rows, item.columns, item.forEach, item?.layout);
+                this.processTableData(item.rows, item.columns, item.forEach, item?.layout, item?.styles);
             } else if (item.type === 'absolute') { //parse table
                 this.processAbsoluteData(item.absoluteElements);
             }
@@ -199,7 +199,7 @@ export class ReceiptService {
         }
     }
 
-    processTableData(rows:any, columns: any, forEach: any, layout?:any){
+    processTableData(rows:any, columns: any, forEach: any, layout?:any, styles?:any){
         let tableWidths:any = [];
         let tableHeadersList:any = [];
         if(columns){ // parsing columns if present
@@ -238,10 +238,24 @@ export class ReceiptService {
         } else { //we don't have foreach so only parsing single row
             let dataRow: any = [];
             rows.forEach((row: any) => { //parsing rows
-                // console.log(row, this.commonService.calcColumnWidth(row.size));
-                let text = this.pdfService.replaceVariables(row.html, currentDataSource); 
-                dataRow.push({ text: text });//colSpan: row?.colSpan || 0
-                tableWidths.push(this.commonService.calcColumnWidth(row.size) || '*');
+                if(row?.type === 'image'){
+                    const img:any = {
+                        image: this.oOriginalDataSource[row.url],// this.logoUri,
+                    };
+                    if(row?.margin) img.margin = row.margin;
+                    if(row?.fit) img.fit = row.fit;
+                    if (row?.align) img.alignment = row.align;
+                    if(row?.width) img.width = row.width;
+
+                    dataRow.push(img);
+                    tableWidths.push(this.commonService.calcColumnWidth(row.size) || 'auto');
+                } else {
+                    // console.log(row, this.commonService.calcColumnWidth(row.size));
+                    if (row?.object) currentDataSource = this.oOriginalDataSource[row.object];
+                    let text = this.pdfService.replaceVariables(row.html, currentDataSource); 
+                    dataRow.push({ text: text });//colSpan: row?.colSpan || 0
+                    tableWidths.push(this.commonService.calcColumnWidth(row.size) || '*');
+                }
                 
                 // if(row?.colSpan){ // we have colspan so need to add empty {} in current row
                 //     tableWidths.push(this.commonService.calcColumnWidth(row.size) || '*');
@@ -261,7 +275,7 @@ export class ReceiptService {
         else 
             finalData = texts;
 
-        const data:any = {
+        let data:any = {
             table: {
                 headerRows: 1,
                 widths: tableWidths,
@@ -270,6 +284,12 @@ export class ReceiptService {
                 keepWithHeaderRows: 1,
             },
         };
+        if (styles) {
+            styles.forEach((style:any)=>{
+                data = { ...data, ...style};
+            });
+        }
+        
         if (layout){
             //pdfmake provides 3 built-in layouts so we can use them directly, otherwise we can use custom layout from common service
             data.layout = (['noBorders', 'headerLineOnly', 'lightHorizontalLines'].includes(layout)) ? data.layout = layout : this.commonService.layouts[layout];
@@ -304,15 +324,17 @@ export class ReceiptService {
                         alignment: el.align
                     }
                 );
-            } else if (el?.element ==='businessDetails'){
-                // console.log(el, this.oOriginalDataSource);
-                let details = `${this.oOriginalDataSource.businessDetails?.sName || ''}
-                            ${this.oOriginalDataSource.businessDetails?.sEmail || ''}
-                            ${this.oOriginalDataSource.businessDetails?.sMobile || ''}
-                            ${this.oOriginalDataSource.oBusiness?.oPhone?.sLandline || ''}
-                            ${this.oOriginalDataSource.businessDetails?.aLocation?.oAddress?.street || ''}`;
-                columns.push({ text: details, alignment: el.align})
-            } else if (el?.element === 'sReceiptNumber'){
+            } 
+            // else if (el?.element ==='businessDetails'){
+            //     // console.log(el, this.oOriginalDataSource);
+            //     let details = `${this.oOriginalDataSource.businessDetails?.sName || ''}
+            //                 ${this.oOriginalDataSource.businessDetails?.sEmail || ''}
+            //                 ${this.oOriginalDataSource.businessDetails?.sMobile || ''}
+            //                 ${this.oOriginalDataSource.oBusiness?.oPhone?.sLandline || ''}
+            //                 ${this.oOriginalDataSource.businessDetails?.aLocation?.oAddress?.street || ''}`;
+            //     columns.push({ text: details, alignment: el.align})
+            // } 
+            else if (el?.element === 'sReceiptNumber'){
                 columns.push({ text: `${this.oOriginalDataSource.sReceiptNumber}`, alignment: el.align })
             } else if( el?.element === 'barcode'){
                 columns.push(
@@ -327,10 +349,16 @@ export class ReceiptService {
                     {
                         // image: (await this.getBase64FromUrl(this.oOriginalDataSource.businessDetails.sLogoLight).toPromise()).data,// this.logoUri,
                         image: this.oOriginalDataSource[el.url],// this.logoUri,
-                        // fit: [100, 100],
-                        alignment: el.align
+                        fit: el?.fit || [100, 100],
+                        alignment: el.align,
+                        margin: el?.margin || [0,0,0,0]
                     }
                 );
+            } else {
+                let html = el.html || '';
+                let object = el?.object;
+                let text = this.pdfService.replaceVariables(html, (object) ? this.oOriginalDataSource[object] : this.oOriginalDataSource);
+                columns.push({ text: text, alignment: el?.align || 'left' });
             }
         });
         this.content.push({
