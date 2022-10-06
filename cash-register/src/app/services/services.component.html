@@ -5,17 +5,17 @@
         <fa-icon [icon]="faSearch" class="text-gray-500 position-absolute top-50 translate-middle ms-6"></fa-icon>
         <!--end::Svg Icon-->
         <input type="text" class="form-control form-control-solid ps-10" [(ngModel)]="requestParams.searchValue"
-          (keyup.enter)="loadTransaction()" name="search" value="" placeholder="Search" />
+          (keyup.enter)="loadTransaction()" name="search" value="" placeholder="{{ 'SEARCH' | translate }}" />
       </div>
       <div class="d-flex align-items-center">
-        <button type="submit" class="btn btn-primary me-5" (click)="loadTransaction()">Search</button>
+        <button type="submit" class="btn btn-primary me-5" (click)="loadTransaction()">{{ 'SEARCH' | translate
+          }}</button>
         <a id="kt_horizontal_search_advanced_link" class="btn btn-link" data-toggle="collapse"
           data-target="#kt_advanced_search_form" aria-expanded="true" aria-controls="kt_advanced_search_form"
-          (click)="showAdvanceSearch = !showAdvanceSearch">Advanced Search</a>
+          (click)="showAdvanceSearch = !showAdvanceSearch">{{ 'ADVANCED_SEARCH' | translate }}</a>
       </div>
       <div class="d-flex align-items-right ms-auto">
-        <button class="btn btn-secondary">New</button>
-        <!-- <button class="btn btn-secondary">Trash</button> -->
+        <button class="btn btn-primary" (click)="goToCashRegister()">{{ 'NEW' | translate }}</button>
       </div>
     </div>
     <div class="collapse row" id="kt_advanced_search_form" data-kt-search-minimize="on"

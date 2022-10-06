@@ -16,7 +16,7 @@ import { Observable } from 'rxjs';
   templateUrl: './activity-details.component.html',
   styleUrls: ['./activity-details.component.scss']
 })
-export class ActivityDetailsComponent implements OnInit{
+export class ActivityDetailsComponent implements OnInit {
 
   $element = HTMLInputElement
   dialogRef: DialogComponent;
@@ -99,7 +99,7 @@ export class ActivityDetailsComponent implements OnInit{
     const _injector = this.viewContainerRef.injector;
     this.dialogRef = _injector.get<DialogComponent>(DialogComponent);
   }
-  
+
 
   ngOnInit(): void {
     // this.activity = this.dialogRef.context.activity;
@@ -114,7 +114,7 @@ export class ActivityDetailsComponent implements OnInit{
         // const items = JSON.parse(JSON.stringify(this.activity));
         // this.activityItems = [items]
       }
-      
+
     } else {
       this.fetchTransactionItems();
     }
@@ -126,7 +126,7 @@ export class ActivityDetailsComponent implements OnInit{
     this.getListSuppliers()
     this.getBusinessBrands();
   }
-  
+
   getListEmployees() {
     const oBody = {
       iBusinessId: localStorage.getItem('currentBusiness') || '',
@@ -371,11 +371,11 @@ export class ActivityDetailsComponent implements OnInit{
 
   async downloadCustomerReceipt(index: number) {
     const sBarcodeURI = this.generateBarcodeURI();
-    if (!this.businessDetails){
-      const result:any = await this.getBusinessDetails().toPromise();
+    if (!this.businessDetails) {
+      const result: any = await this.getBusinessDetails().toPromise();
       this.businessDetails = result.data;
       this.activity.businessDetails = this.businessDetails;
-    } 
+    }
     const template = await this.getTemplate('activity').toPromise();
     const oDataSource = JSON.parse(JSON.stringify(this.activity));
     oDataSource.oCustomer = {
@@ -389,10 +389,10 @@ export class ActivityDetailsComponent implements OnInit{
     oDataSource.sBarcodeURI = sBarcodeURI;
     oDataSource.sBusinessLogoUrl = (await this.getBase64FromUrl(oDataSource?.businessDetails?.sLogoLight).toPromise()).data;
 
-    this.receiptService.exportToPdf({ 
+    this.receiptService.exportToPdf({
       oDataSource: oDataSource,
-      templateData: template.data, 
-      pdfTitle: 'Activity Receipt' 
+      templateData: template.data,
+      pdfTitle: 'Activity Receipt'
     })
     return;
     const data = this.activity.activityitems[index];
@@ -430,7 +430,7 @@ export class ActivityDetailsComponent implements OnInit{
     return this.apiService.getNew('cashregistry', `/api/v1/pdf/templates/getBase64/${this.iBusinessId}?url=${url}`);
   }
 
-  getTemplate(type:string): Observable<any>{
+  getTemplate(type: string): Observable<any> {
     return this.apiService.getNew('cashregistry', `/api/v1/pdf/templates/${this.iBusinessId}?eType=${type}`);
   }
 
@@ -490,7 +490,7 @@ export class ActivityDetailsComponent implements OnInit{
 
 
   // Function for show transaction details
-  async showTransaction(transactionItem: any, event:any) {
+  async showTransaction(transactionItem: any, event: any) {
     const oBody = {
       iBusinessId: this.iBusinessId,
       oFilterBy: {
@@ -511,7 +511,7 @@ export class ActivityDetailsComponent implements OnInit{
         });
   }
 
-  generateBarcodeURI(){
+  generateBarcodeURI() {
     var canvas = document.createElement("canvas");
     JsBarcode(canvas, this.activity.sNumber, { format: "CODE128" });
     return canvas.toDataURL("image/png");
@@ -526,6 +526,4 @@ export class ActivityDetailsComponent implements OnInit{
   //   return this.apiService.getNew('cashregistry', `/api/v1/pdf/templates/generateBarcode/`, oBody);
   // }
 
-
-  
 }
