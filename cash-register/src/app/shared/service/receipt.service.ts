@@ -108,7 +108,7 @@ export class ReceiptService {
     async exportToPdf({ oDataSource, templateData, pdfTitle }:any){
         this.oOriginalDataSource = oDataSource;
         console.log(this.oOriginalDataSource);
-        this.translations = await this.getTranslations();
+        this.pdfService.getTranslations();
         // console.log(this.translations);
         // if (this.oOriginalDataSource?.businessDetails?.sLogoLight){
         //     const result = await this.getBase64FromUrl(this.oOriginalDataSource.businessDetails.sLogoLight).toPromise();
@@ -184,15 +184,20 @@ export class ReceiptService {
                 let text = this.pdfService.replaceVariables(el.html, this.oOriginalDataSource);
                 this.content.push({ text: text, absolutePosition: { x: el.position.x * this.commonService.MM_TO_PT_CONVERSION_FACTOR, y: el.position.y * this.commonService.MM_TO_PT_CONVERSION_FACTOR } })
             } else if (el.type === 'image') {
+                const img = this.addImage(el);
+                // console.log(188, img);
+                this.content.push(img);
                 // console.log(this.oOriginalDataSource);
                 // const result:any = await this.getBase64FromUrl(this.oOriginalDataSource[el.url]).toPromise();
                 // const img = result.data;
                 // console.log(img);
-                this.content.push({
-                    image: this.oOriginalDataSource[el.url],
-                    width: el.size || 150,
-                    absolutePosition: { x: el.position.x * this.commonService.MM_TO_PT_CONVERSION_FACTOR, y: el.position.y * this.commonService.MM_TO_PT_CONVERSION_FACTOR }
-                });
+                
+                
+                // this.content.push({
+                //     image: this.oOriginalDataSource[el.url],
+                //     width: el.size || 150,
+                //     absolutePosition: { x: el.position.x * this.commonService.MM_TO_PT_CONVERSION_FACTOR, y: el.position.y * this.commonService.MM_TO_PT_CONVERSION_FACTOR }
+                // });
 
             }
             // });
@@ -206,7 +211,7 @@ export class ReceiptService {
             columns.forEach((column:any)=>{
                 // console.log('column: ',column);
                 let text = this.pdfService.removeBrackets(column.html);//removes [[ ]] from placeholders
-                let obj:any = { text: this.translations[text] || text };
+                let obj: any = { text: this.pdfService.translations[text] || text };
                 if(column?.styles) {
                     column.styles.forEach((style:any)=>{
                         obj[style] = true;
@@ -239,13 +244,15 @@ export class ReceiptService {
             let dataRow: any = [];
             rows.forEach((row: any) => { //parsing rows
                 if(row?.type === 'image'){
-                    const img:any = {
-                        image: this.oOriginalDataSource[row.url],// this.logoUri,
-                    };
-                    if(row?.margin) img.margin = row.margin;
-                    if(row?.fit) img.fit = row.fit;
-                    if (row?.align) img.alignment = row.align;
-                    if(row?.width) img.width = row.width;
+                    let img = this.addImage(row);
+                    // console.log(247, img);
+                    // let img:any = {
+                    //     image: this.oOriginalDataSource[row.url],// this.logoUri,
+                    // };
+                    // if(row?.margin) img.margin = row.margin;
+                    // if(row?.fit) img.fit = row.fit;
+                    // if (row?.align) img.alignment = row.align;
+                    // if(row?.width) img.width = row.width;
 
                     dataRow.push(img);
                     tableWidths.push(this.commonService.calcColumnWidth(row.size) || 'auto');
@@ -301,12 +308,26 @@ export class ReceiptService {
     
     processSimpleData(row:any, object?:any){
         // console.log(row, object);
-        row.forEach((el:any)=>{
-            let html = el.html || '';
-            if(typeof html==='string') {
-                let text = this.pdfService.replaceVariables(html, (object) ? this.oOriginalDataSource[object] : this.oOriginalDataSource);
-                // console.log({text});
-                this.content.push({ text: text, alignment: el?.align || 'left' });
+        row.forEach((el: any) => {
+            if (el?.html) {
+
+                let html = el.html || '';
+                if (typeof html === 'string') {
+                    let text = this.pdfService.replaceVariables(html, (object) ? this.oOriginalDataSource[object] : this.oOriginalDataSource) || html;
+                    // console.log({ text });
+                    // text = this.pdfService.removeBrackets(text);
+                    let obj:any = { text: text};
+                    // if(el?.align) obj.alignment = el.alignment;
+                    
+                    if (el?.styles) {
+                        obj = { ...obj, ...el.styles}
+                    }
+                    console.log(obj);
+                    this.content.push(obj);
+                }
+            } else if(el?.type === 'image'){
+                let img = this.addImage(el);
+                this.content.push(img);
             }
         });
     }
@@ -321,7 +342,7 @@ export class ReceiptService {
                         // image: (await this.getBase64FromUrl(this.oOriginalDataSource.businessDetails.sLogoLight).toPromise()).data,// this.logoUri,
                         image: this.oOriginalDataSource[el.sBusinessLogoUrl],// this.logoUri,
                         // fit: [100, 100],
-                        alignment: el.align
+                        alignment: el.alignment
                     }
                 );
             } 
@@ -332,33 +353,39 @@ export class ReceiptService {
             //                 ${this.oOriginalDataSource.businessDetails?.sMobile || ''}
             //                 ${this.oOriginalDataSource.oBusiness?.oPhone?.sLandline || ''}
             //                 ${this.oOriginalDataSource.businessDetails?.aLocation?.oAddress?.street || ''}`;
-            //     columns.push({ text: details, alignment: el.align})
+            //     columns.push({ text: details, alignment: el.alignment})
             // } 
             else if (el?.element === 'sReceiptNumber'){
-                columns.push({ text: `${this.oOriginalDataSource.sReceiptNumber}`, alignment: el.align })
-            } else if( el?.element === 'barcode'){
-                columns.push(
-                    {
-                        image: this.oOriginalDataSource.sBarcodeURI,
-                        fit: [el.width, el.height],
-                        alignment: el.align
-                    }
-                );
-            } else if (el?.type === 'image') {
-                columns.push(
-                    {
-                        // image: (await this.getBase64FromUrl(this.oOriginalDataSource.businessDetails.sLogoLight).toPromise()).data,// this.logoUri,
-                        image: this.oOriginalDataSource[el.url],// this.logoUri,
-                        fit: el?.fit || [100, 100],
-                        alignment: el.align,
-                        margin: el?.margin || [0,0,0,0]
-                    }
-                );
+                columns.push({ text: `${this.oOriginalDataSource.sReceiptNumber}`, alignment: el.alignment })
+            } 
+            // else if( el?.element === 'barcode'){
+            //     columns.push(
+            //         {
+            //             image: this.oOriginalDataSource.sBarcodeURI,
+            //             fit: [el.width, el.height],
+            //             alignment: el.alignment
+            //         }
+            //     );
+            // } 
+            else if (el?.type === 'image') {
+                let img = this.addImage(el);
+                // console.log(357, img);
+                columns.push(img);
+                // columns.push(
+                //     {
+                //         // image: (await this.getBase64FromUrl(this.oOriginalDataSource.businessDetails.sLogoLight).toPromise()).data,// this.logoUri,
+                //         image: this.oOriginalDataSource[el.url],// this.logoUri,
+                //         fit: el?.fit || [100, 100],
+                //         alignment: el.alignment,
+                //         margin: el?.margin || [0,0,0,0]
+                //     }
+                // );
             } else {
                 let html = el.html || '';
                 let object = el?.object;
                 let text = this.pdfService.replaceVariables(html, (object) ? this.oOriginalDataSource[object] : this.oOriginalDataSource);
-                columns.push({ text: text, alignment: el?.align || 'left' });
+                console.log(374, text);
+                columns.push({ text: text, alignment: el?.alignment || 'left' });
             }
         });
         this.content.push({
@@ -508,37 +535,51 @@ export class ReceiptService {
         return this.apiService.getNew('cashregistry', `/api/v1/pdf/templates/getBase64/${this.iBusinessId}?url=${url}`);
     }
 
-    getTranslations() {
-        let translationsObj: any = {};
-        let translationsKey: Array<string> = [
-            'CREATED_BY',
-            'ART_NUMBER',
-            'QUANTITY',
-            'DESCRIPTION',
-            'DISCOUNT',
-            'AMOUNT',
-            'VAT',
-            'SAVINGS_POINTS',
-            'GIFTCARD',
-            'TO_THE_VALUE_OF',
-            'ISSUED_AT',
-            'VALID_UNTIL',
-            'CARDNUMBER',
-            'Methode',
-            'Bedrag',
-            'GIFTCARD',
-            'TO_THE_VALUE_OF',
-            'ISSUED_AT',
-            'VALID_UNTIL',
-        ];
+    // getTranslations() {
+    //     let translationsObj: any = {};
+    //     let translationsKey: Array<string> = [
+    //         'CREATED_BY',
+    //         'ART_NUMBER',
+    //         'QUANTITY',
+    //         'DESCRIPTION',
+    //         'DISCOUNT',
+    //         'AMOUNT',
+    //         'VAT',
+    //         'SAVINGS_POINTS',
+    //         'GIFTCARD',
+    //         'TO_THE_VALUE_OF',
+    //         'ISSUED_AT',
+    //         'VALID_UNTIL',
+    //         'CARDNUMBER',
+    //         'Methode',
+    //         'Bedrag',
+    //         'GIFTCARD',
+    //         'TO_THE_VALUE_OF',
+    //         'ISSUED_AT',
+    //         'VALID_UNTIL',
+    //     ];
 
-        this.translateService.get(translationsKey).subscribe((result:any) => {
-            Object.entries(result).forEach((translation: any) => {
-                translationsObj[String("__" + translation[0])] = translation[1]
-            })
-        });
+    //     this.translateService.get(translationsKey).subscribe((result:any) => {
+    //         Object.entries(result).forEach((translation: any) => {
+    //             translationsObj[String("__" + translation[0])] = translation[1]
+    //         })
+    //     });
 
-        return translationsObj;
+    //     return translationsObj;
+    // }
+
+    addImage(el:any){
+        // console.log(el);
+        let img: any = {
+            image: this.oOriginalDataSource[el.url],// this.logoUri,
+        };
+        if (el?.margin) img.margin = el.margin;
+        if (el?.fit) img.fit = el.fit;
+        if (el?.alignment) img.alignment = el.alignment;
+        if (el?.width) img.width = el.width;
+        if (el?.absolutePosition) img.absolutePosition = { x: el.position.x * this.commonService.MM_TO_PT_CONVERSION_FACTOR, y: el.position.y * this.commonService.MM_TO_PT_CONVERSION_FACTOR };
+        
+        return img;
     }
 
     cleanUp(){
