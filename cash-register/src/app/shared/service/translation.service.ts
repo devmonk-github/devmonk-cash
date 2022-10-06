@@ -41,6 +41,7 @@ export class TranslationsService {
         }
         for (let i = 0; i < translations.length; i++) {
           const element = translations[i];
+          if (!element.aLanguageWiseTrans) continue;
           let languages = Object.entries(element.aLanguageWiseTrans)
           for (let j = 0; j < languages.length; j++) {
             const lang = languages[j];
