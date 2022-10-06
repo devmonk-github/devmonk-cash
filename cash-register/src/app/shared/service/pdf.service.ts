@@ -928,6 +928,9 @@ export class PdfService {
           if (this.isDefined(providedData)) {
             
             newText = providedData[variableStringFiltered] || this.translations[variableStringFiltered] || '';
+            if (this.isDefined(format) && format !== '') {
+              newText = this.formatContent(newText, format);
+            }
             finalString = finalString.replace(currentMatch, newText);
 
             // for (const key of Object.keys(providedData)) {
@@ -1462,6 +1465,7 @@ export class PdfService {
       'TO_THE_VALUE_OF',
       'ISSUED_AT',
       'VALID_UNTIL',
+      'EXPECTED_PRICE_PER_PIECE',
     ];
 
     this.translateService.get(translationsKey).subscribe((result) => {
