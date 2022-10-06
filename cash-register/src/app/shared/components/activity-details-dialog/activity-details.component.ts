@@ -376,7 +376,10 @@ export class ActivityDetailsComponent implements OnInit {
       this.businessDetails = result.data;
       this.activity.businessDetails = this.businessDetails;
     }
-    const template = await this.getTemplate('activity').toPromise();
+    // const template = await this.getTemplate('activity').toPromise();
+    // console.log(this.activity);
+    const template = await this.getTemplate(this.activity?.oType.eKind).toPromise();
+
     const oDataSource = JSON.parse(JSON.stringify(this.activity));
     oDataSource.oCustomer = {
       sFirstName: this.customer.sFirstName,
