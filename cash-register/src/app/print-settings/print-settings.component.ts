@@ -38,10 +38,12 @@ export class PrintSettingsComponent implements OnInit {
   printers: Array<any> = [
     'Any'
   ]
-  pageFormats: any = [
+  printFormats: any = [
     { key: 'transaction', value:'Transaction receipt'},
     { key: 'activity', value: 'Activity receipt'},
     { key: 'giftcard', value: 'Giftcard receipt'},
+    { key: 'single-activity', value: 'Single Activity Item receipt'},
+    { key: 'repair', value: 'Repair receipt'},
   ];
 
   // aTemplates: Array<any> = [

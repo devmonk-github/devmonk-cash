@@ -50,7 +50,7 @@ export class ActivityItemsComponent implements OnInit {
   workstations: Array<any> = [];
   employees: Array<any> = [this.requestParams.employee];
   repairStatuses: Array<any> = ['info', 'processing', 'cancelled', 'inspection', 'completed']
-  types: Array<any> = [ 'purchase-order-retailer', 'purchase-order-supplier', 'sales-order', 'cash-registry', 'webshop' ]
+  types: Array<any> = ['purchase-order-retailer', 'purchase-order-supplier', 'sales-order', 'cash-registry', 'webshop']
   methodValue: string = 'All';
   transactionValue: string = 'All';
 
@@ -170,7 +170,7 @@ export class ActivityItemsComponent implements OnInit {
     this.activityItems = [];
     this.requestParams.iBusinessId = this.businessDetails._id;
     this.requestParams.limit = this.paginationConfig.itemsPerPage || 50;
-    if(this.iLocationId) this.requestParams.iLocationId = this.iLocationId;
+    if (this.iLocationId) this.requestParams.iLocationId = this.iLocationId;
     this.showLoader = true;
     this.apiService.postNew('cashregistry', '/api/v1/activities/items', this.requestParams).subscribe(
       (result: any) => {
@@ -183,7 +183,7 @@ export class ActivityItemsComponent implements OnInit {
         //   MenuComponent.bootstrap();
         // }, 1000);
         this.showLoader = false;
-      }, 
+      },
       (error: any) => {
         this.showLoader = false;
       })
@@ -191,8 +191,8 @@ export class ActivityItemsComponent implements OnInit {
 
   openActivities(activity: any) {
     console.log(activity);
-    this.dialogService.openModal(ActivityDetailsComponent, { cssClass: 'w-fullscreen', context: { activity:activity, items: true, from: 'activity-items' } })
-      .instance.close.subscribe((result: any) => { 
+    this.dialogService.openModal(ActivityDetailsComponent, { cssClass: 'w-fullscreen', context: { activity: activity, items: true, from: 'activity-items' } })
+      .instance.close.subscribe((result: any) => {
         if (result) this.routes.navigate(['business/till']);
       });
   }
@@ -242,8 +242,8 @@ export class ActivityItemsComponent implements OnInit {
       }
   }
 
-   // Function for update item's per page
-   changeItemsPerPage(pageCount: any) {
+  // Function for update item's per page
+  changeItemsPerPage(pageCount: any) {
     this.paginationConfig.itemsPerPage = pageCount;
     this.loadTransaction();
   }
@@ -265,8 +265,8 @@ export class ActivityItemsComponent implements OnInit {
     this.loadTransaction();
   }
 
-   //  Function for set sort option on transaction table
-   setSortOption(sortHeader: any) {
+  //  Function for set sort option on transaction table
+  setSortOption(sortHeader: any) {
     if (sortHeader.selected) {
       sortHeader.sort = sortHeader.sort == 'asc' ? 'desc' : 'asc';
       this.sortAndLoadTransactions(sortHeader)
@@ -284,4 +284,7 @@ export class ActivityItemsComponent implements OnInit {
     }
   }
 
+  goToCashRegister() {
+    this.routes.navigate(['/business/till']);
+  }
 }

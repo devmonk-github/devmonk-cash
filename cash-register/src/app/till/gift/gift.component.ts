@@ -1,6 +1,7 @@
 /* eslint-disable @angular-eslint/component-selector */
 import { Component, EventEmitter, Input, OnInit, Output, ViewEncapsulation } from '@angular/core';
 import { faTimes, faPlus, faMinus, faCheck, faSpinner, faPrint, faBan, faClone } from "@fortawesome/free-solid-svg-icons";
+import * as JsBarcode from 'jsbarcode';
 import { Observable } from 'rxjs';
 import { ToastService } from 'src/app/shared/components/toast';
 import { ApiService } from 'src/app/shared/service/api.service';
@@ -122,6 +123,13 @@ export class GiftComponent implements OnInit {
     return this.apiService.getNew('cashregistry', `/api/v1/pdf/templates/${this.iBusinessId}?eType=${type}`);
   }
 
+  generateBarcodeURI(data:any) {
+    var canvas = document.createElement("canvas");
+    JsBarcode(canvas, data, { format: "CODE128" });
+    return canvas.toDataURL("image/png");
+    // this.getBase64FromUrl('')  
+  }
+
   async generatePDF(print: boolean) {
     const sName = 'Default Giftcard', eType = 'giftcard';
     this.downloading = true;
@@ -138,9 +146,13 @@ export class GiftComponent implements OnInit {
         quantity: 1
       }
     }
-    console.log(this.item);
+
+    const oDataSource = JSON.parse(JSON.stringify(this.item));
+    oDataSource.sBarcodeURI = this.generateBarcodeURI('G-'+oDataSource.sGiftCardNumber);
+
+    console.log(oDataSource);
     this.receiptService.exportToPdf({
-      oDataSource: this.item,
+      oDataSource: oDataSource,
       templateData: template.data,
       pdfTitle: 'Giftcard'
     })

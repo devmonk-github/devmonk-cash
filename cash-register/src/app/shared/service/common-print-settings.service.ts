@@ -81,10 +81,10 @@ export class CommonPrintSettingsService {
                     break;
                 case 'pageMargins':
                     this.oCommonParameters[param.sParameter] = param.aValues;
-                    // console.log(this.oCommonParameters);
                     break;
-            }
-        });
+                }
+            });
+            // console.log(this.oCommonParameters);
     }
 
     calcColumnWidth(size: number): number {

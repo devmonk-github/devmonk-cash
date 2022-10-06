@@ -346,4 +346,8 @@ export class ServicesComponent implements OnInit, AfterViewInit {
         (error) => {
         })
   }
+
+  goToCashRegister() {
+    this.routes.navigate(['/business/till']);
+  }
 }

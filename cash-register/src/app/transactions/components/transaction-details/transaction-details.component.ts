@@ -178,6 +178,7 @@ export class TransactionDetailsComponent implements OnInit {
     }
 
     const template = await this.getTemplate('transaction').toPromise();
+    // const template = await this.getTemplate('single-activity').toPromise();
     // console.log(this.transaction);
     let nTotalOriginalAmount = 0;
     const oDataSource = JSON.parse(JSON.stringify(this.transaction));

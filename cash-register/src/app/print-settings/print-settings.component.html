@@ -33,15 +33,22 @@
   </div>
 </div>
 
-<div class="card mb-5 mb-xl-10 d-flex" data-kt-scroll-section="print-settings-letter-paper">
+<div class="card d-flex" data-kt-scroll-section="print-settings-letter-paper">
   <div class="card-header row">
-    <div class="card-title">
-      {{"PRINT_SETTINGS_LETTERPAPER" | translate}}
+    <div class="card-title justify-content-between">
+     
+        <div>
+          <span>{{"PRINT_SETTINGS_LETTERPAPER" | translate}}</span>
+        </div>
+        <div class="">
+          <button class="btn btn-primary" (click)="createPrintSettings()">New</button>
+        </div>
+      
     </div>
   </div>
   <div class="card-body">
     <div class="row">
-      <div *ngFor="let format of pageFormats;">
+      <div *ngFor="let format of printFormats;">
         {{ format.value }}
         <button class="btn ms-1" (click)="openSettingsEditor(format)">
           <fa-icon [icon]="faPencilAlt"></fa-icon>

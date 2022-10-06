@@ -101,11 +101,30 @@ export class PdfService {
     if(footer) docDefinition.footer = footer;
     if(pageMargins) docDefinition.pageMargins = pageMargins;
     if(defaultStyle) docDefinition.defaultStyle = defaultStyle;
-
+    // console.log(docDefinition);
     return docDefinition;
   }
 
   generatePdf(docDefinition: any, fileName: any) {
+    // const fonts = {
+    //   MyCustom: {
+    //     normal: 'GIL_____.ttf',
+    //     bold: 'GILB____.ttf',
+    //     italics: 'GILI___.ttf',
+    //     bolditalics: 'GILBI___.ttf'
+    //   }
+    // };
+    
+    // pdfMake.fonts = {
+    //   MyCustom: {
+    //     normal: 'GIL_____.ttf',
+    //     bold: 'GILB____.ttf',
+    //     italics: 'GILI___.ttf',
+    //     bolditalics: 'GILBI___.ttf'
+    //   }
+    // };
+    // console.log(pdfMake);
+
     const pdfObject = pdfMake.createPdf(docDefinition);
     pdfObject.download(fileName);
   }

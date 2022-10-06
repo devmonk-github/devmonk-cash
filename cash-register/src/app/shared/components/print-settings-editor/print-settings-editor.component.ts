@@ -52,12 +52,19 @@ export class PrintSettingsEditorComponent implements OnInit {
       aValues: [0, 0, 0, 0],
       eType: 'textArray'
     },
+    // {
+    //   sTitle: 'Font',
+    //   sParameter: 'font',
+    //   value: 'MyCustom',
+    //   eOptions: ['MyCustom'],
+    //   eType: 'dropdown'
+    // },
     {
       sTitle: 'Font size',
       sParameter: 'fontSize',
       value: 10,
       eType: 'text'
-    }
+    },
   ];
   mode !: string;
   @ViewChild('jsonEditor') jsonEditor!: any
@@ -94,7 +101,7 @@ export class PrintSettingsEditorComponent implements OnInit {
     });
   }
   mapWithDefaultSettings(){
-    // console.log('mapWithDefaultSettings');
+    // console.log('mapWithDefaultSettings', this.oTemplate.aSettings, this.aDefaultSettings);
     this.oTemplate.aSettings.map((setting:any)=>{
       this.aDefaultSettings.forEach((defaultSetting:any) => {
         if (setting.sParameter === defaultSetting.sParameter){
