@@ -13,6 +13,7 @@ export class ReceiptService {
     iBusinessId: string;
     iLocationId: string;
     iWorkstationId: string;
+    DIVISON_FACTOR: number = 1;
 
     content: any = [];
     styles: any = {
@@ -117,7 +118,7 @@ export class ReceiptService {
         this.commonService.mapCommonParams(templateData.aSettings);
         this.processTemplate(templateData.layout);
 
-        console.log(this.content);
+        // console.log(this.content);
 
         this.pdfServiceNew.getPdfData(
             this.styles,
@@ -152,8 +153,71 @@ export class ReceiptService {
                 this.processAbsoluteData(item.absoluteElements);
             } else if (item.type === 'dashedLine'){
                 this.content.push(this.addDashedLine(item.coordinates, item.absolutePosition));
+            } else if (item.type === 'textAsTables'){
+                this.content.push(this.processTextAsTableData(item));
             }
         }
+    }
+
+    processTextAsTableData(item:any){
+        const rows = item.rows;
+        const layout = item?.layout;
+        let tableWidths: any = [];
+        let texts: any = [];
+        let tables:any = [];
+        let nSize = 0;
+        rows.forEach((row: any) => {
+            // console.log('process row', row);
+            if (row?.type === 'dashedLine'){
+                this.content.push(this.addDashedLine(row.coordinates, row.absolutePosition));
+            } else if(row?.type === 'rect'){
+                this.content.push(this.addRect(row.coordinates, row?.absolutePosition));
+            } else {
+
+                let text = this.pdfService.replaceVariables(row.html, this.oOriginalDataSource);
+                let obj = { text: text };
+                if (row?.styles) obj = { ...obj, ...row.styles };
+                texts.push(obj);
+                tableWidths.push(this.getWidth(row.size));
+
+                nSize += Number(row.size);
+                // console.log('size is', nSize);
+                if (nSize >= 12) {
+                    let data: any = {
+                        table: {
+                            widths: tableWidths,
+                            body: [texts],
+                        },
+                        layout: (layout) ? this.getLayout(layout) : 'noBorders'
+                    };
+                    tables.push(data);
+                    // console.log('pushing current table', data);
+                    tableWidths = [];
+                    nSize = 0;
+                    texts = [];
+                }
+            }
+            
+
+        });
+        if(tableWidths?.length){ //we have table, so push it
+            let data: any = {
+                table: {
+                    widths: tableWidths,
+                    body: [texts],
+                },
+                layout: (layout) ? this.getLayout(layout) : 'noBorders'
+            };
+            tables.push(data);
+        }
+        
+        // console.log({tables});
+        // if (layout) data.layout = this.getLayout(layout);
+        return tables;
+    }
+
+    getLayout(layout:any){
+        return (['noBorders', 'headerLineOnly', 'lightHorizontalLines'].includes(layout)) ? layout : this.commonService.layouts[layout];
     }
 
     processAbsoluteData(absoluteElements: any) {
@@ -239,7 +303,9 @@ export class ReceiptService {
                     let obj = { text: text };
                     if (row?.styles) obj = { ...obj, ...row.styles };
                     dataRow.push(obj);
-                    if(!bWidthPushed) tableWidths.push(this.getWidth(row.size));
+                    if(!bWidthPushed){
+                        tableWidths.push(this.getWidth(row.size));
+                    } 
                 });
                 // console.log(dataRow, tableWidths);
                 texts.push(dataRow);
@@ -283,11 +349,11 @@ export class ReceiptService {
 
         let data:any = {
             table: {
-                headerRows: 1,
+                // headerRows: 1,
                 widths: tableWidths,
                 body: finalData,
                 dontBreakRows: true,
-                keepWithHeaderRows: 1,
+                // keepWithHeaderRows: 1,
             },
         };
         if (styles) {
@@ -300,7 +366,7 @@ export class ReceiptService {
             //pdfmake provides 3 built-in layouts so we can use them directly, otherwise we can use custom layout from common service
             data.layout = (['noBorders', 'headerLineOnly', 'lightHorizontalLines'].includes(layout)) ? data.layout = layout : this.commonService.layouts[layout];
         } 
-        console.log('finalData in content', data);
+        // console.log('finalData in content', data);
         return data;
     }
     
@@ -333,18 +399,6 @@ export class ReceiptService {
     processColumns(row:any, styles ?:any){
         let columns: any = [];
         row.forEach((el: any) => {
-            // if (el?.element === 'businessLogo') {
-            //     columns.push(
-            //         {
-            //             // image: (await this.getBase64FromUrl(this.oOriginalDataSource.businessDetails.sLogoLight).toPromise()).data,// this.logoUri,
-            //             image: this.oOriginalDataSource[el.sBusinessLogoUrl],// this.logoUri,
-            //             alignment: el.alignment
-            //         }
-            //     );
-            // } 
-            // else if (el?.element === 'sReceiptNumber') {
-            //     columns.push({ text: `${this.oOriginalDataSource.sReceiptNumber}`, alignment: el.alignment })
-            // } 
             if (el?.type === 'image') {
                 let img = this.addImage(el);
                 // console.log(372, img);
@@ -353,7 +407,12 @@ export class ReceiptService {
                 columns.push(this.addDashedLine(el.coordinates))
             } else if(el?.type === 'table'){
                 columns.push(this.processTableData(el));
-            } else {
+            } else if (el?.type === 'textAsTables') {
+                this.DIVISON_FACTOR = row.length;
+                columns.push(this.processTextAsTableData(el));
+                this.DIVISON_FACTOR = 1;
+            }
+             else {
                 let html = el.html || '';
                 // console.log(360, html);
                 let object = el?.object;
@@ -361,6 +420,9 @@ export class ReceiptService {
                 // console.log(362, text);
                 let columnData:any = { text: text };
                 if(columnData?.alignment) columnData.alignment = el?.alignment;
+                if (el?.styles) {
+                    columnData = { ...columnData, ...el.styles }
+                }
                 columns.push(columnData);
             }
         });
@@ -375,7 +437,7 @@ export class ReceiptService {
     }
 
     addImage(el:any){
-        console.log(el);
+        // console.log(el);
         let img: any = {
             image: this.oOriginalDataSource[el.url],// this.logoUri,
         };
@@ -396,10 +458,10 @@ export class ReceiptService {
                     x1: coordinates.x1, y1: coordinates.y1, x2: coordinates.x2, y2: coordinates.y2, 
                     dash: { 
                         length: config?.dashLength || 2, 
-                        space: config?.dashSpace || 3
+                        space: config?.dashSpace || 4
                     }, 
-                    lineWidth: config?.lineWidth || 2, 
-                    lineColor: config?.lineColor 
+                    lineWidth: config?.lineWidth || 1, 
+                    lineColor: config?.lineColor || '#ccc' 
                 }
             ]
         };
@@ -409,7 +471,29 @@ export class ReceiptService {
         return obj;
     }
 
+    addRect(coordinates: any, absolutePosition?:any, config ?:any){
+        let obj:any = {
+            canvas: [
+                {
+                    type: 'rect',
+                    x: coordinates.x,
+                    y: coordinates.y,
+                    w: coordinates.w,
+                    h: coordinates.h,
+                    r: coordinates.r,
+                    lineWidth: config?.lineWidth || 1,
+                    lineColor: config?.lineColor || '#000',
+                }
+            ]
+        };
+        if (absolutePosition) {
+            obj.absolutePosition = absolutePosition;
+        }
+        return obj;
+    }
+
     getWidth(size:any){
+        size = size / this.DIVISON_FACTOR;
         return ['auto', '*'].includes(size) ? size : this.commonService.calcColumnWidth(size);
     }
 

@@ -76,7 +76,7 @@ export class CommonPrintSettingsService {
                         this.pageWidth = param.nWidth;
                     } else {
                         this.oCommonParameters[param.sParameter] = param.value;
-                        this.pageWidth = this.pageSizes[param.value].pageWidth;
+                        // this.pageWidth = this.pageSizes[param.value].pageWidth;
                     }
                     break;
                 case 'pageMargins':
@@ -84,6 +84,12 @@ export class CommonPrintSettingsService {
                     break;
                 }
             });
+
+            if (this.oCommonParameters['orientation'] === 'portrait') {
+                this.pageWidth = this.pageSizes[this.oCommonParameters['pageSize']].pageWidth;
+            } else {
+                this.pageWidth = this.pageSizes[this.oCommonParameters['pageSize']].pageHeight;
+            }
             // console.log(this.oCommonParameters);
     }
 
@@ -91,7 +97,7 @@ export class CommonPrintSettingsService {
         size = (size === null || size > 12 || size === undefined) ? 12 : size;
         let totalMargin = this.oCommonParameters['pageMargins'][0] + this.oCommonParameters['pageMargins'][2];
         let num = size * ((this.pageWidth * this.MM_TO_PT_CONVERSION_FACTOR - totalMargin) / 12);
-        // console.log({ size, width: parseFloat(num.toFixed(2)), totalMargin: totalMargin });
+        // console.log({ pageWidth: this.pageWidth, size, width: parseFloat(num.toFixed(2)) - 9, totalMargin: totalMargin });
         return parseFloat(num.toFixed(2)) - 9;
     }
 }

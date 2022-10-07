@@ -370,7 +370,7 @@ export class ActivityDetailsComponent implements OnInit {
   }
 
   async downloadCustomerReceipt(index: number) {
-    const sBarcodeURI = this.generateBarcodeURI();
+    const sBarcodeURI = this.generateBarcodeURI(this.activity?.oType.eKind !== 'repair');    
     if (!this.businessDetails) {
       const result: any = await this.getBusinessDetails().toPromise();
       this.businessDetails = result.data;
@@ -514,9 +514,9 @@ export class ActivityDetailsComponent implements OnInit {
         });
   }
 
-  generateBarcodeURI() {
+  generateBarcodeURI(displayValue: boolean = true) {
     var canvas = document.createElement("canvas");
-    JsBarcode(canvas, this.activity.sNumber, { format: "CODE128" });
+    JsBarcode(canvas, this.activity.sNumber, { format: "CODE128", displayValue: displayValue });
     return canvas.toDataURL("image/png");
     // this.getBase64FromUrl('')  
   }
