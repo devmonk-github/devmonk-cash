@@ -116,14 +116,8 @@ export class ReceiptService {
         this.commonService.pdfTitle = pdfTitle;
         this.commonService.mapCommonParams(templateData.aSettings);
         this.processTemplate(templateData.layout);
-        
-        // this.processHeader();
-        // this.processTransactions();
-        // this.processPayments();
-        
-        // this.content.push("\nRuilen binnen 8 dagen op vertoon van deze bon.\nDank voor uw bezoek.")
 
-        // console.log(this.content);
+        console.log(this.content);
 
         this.pdfServiceNew.getPdfData(
             this.styles,
@@ -339,17 +333,19 @@ export class ReceiptService {
     processColumns(row:any, styles ?:any){
         let columns: any = [];
         row.forEach((el: any) => {
-            if (el?.element === 'businessLogo') {
-                columns.push(
-                    {
-                        // image: (await this.getBase64FromUrl(this.oOriginalDataSource.businessDetails.sLogoLight).toPromise()).data,// this.logoUri,
-                        image: this.oOriginalDataSource[el.sBusinessLogoUrl],// this.logoUri,
-                        alignment: el.alignment
-                    }
-                );
-            } else if (el?.element === 'sReceiptNumber') {
-                columns.push({ text: `${this.oOriginalDataSource.sReceiptNumber}`, alignment: el.alignment })
-            } else if (el?.type === 'image') {
+            // if (el?.element === 'businessLogo') {
+            //     columns.push(
+            //         {
+            //             // image: (await this.getBase64FromUrl(this.oOriginalDataSource.businessDetails.sLogoLight).toPromise()).data,// this.logoUri,
+            //             image: this.oOriginalDataSource[el.sBusinessLogoUrl],// this.logoUri,
+            //             alignment: el.alignment
+            //         }
+            //     );
+            // } 
+            // else if (el?.element === 'sReceiptNumber') {
+            //     columns.push({ text: `${this.oOriginalDataSource.sReceiptNumber}`, alignment: el.alignment })
+            // } 
+            if (el?.type === 'image') {
                 let img = this.addImage(el);
                 // console.log(372, img);
                 columns.push(img);
@@ -363,7 +359,9 @@ export class ReceiptService {
                 let object = el?.object;
                 let text = this.pdfService.replaceVariables(html, (object) ? this.oOriginalDataSource[object] : this.oOriginalDataSource);
                 // console.log(362, text);
-                columns.push({ text: text, alignment: el?.alignment || 'left' });
+                let columnData:any = { text: text };
+                if(columnData?.alignment) columnData.alignment = el?.alignment;
+                columns.push(columnData);
             }
         });
         let obj = {columns: columns};
