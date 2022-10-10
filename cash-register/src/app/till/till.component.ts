@@ -602,9 +602,9 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
             .subscribe((data: any) => {
               this.toastrService.show({ type: 'success', text: 'Transaction created.' });
               this.saveInProgress = false;
-              // const { transaction, aTransactionItems } = data;
-              // transaction.aTransactionItems = aTransactionItems;
-              // this.transaction = transaction;
+              const { transaction, aTransactionItems } = data;
+              transaction.aTransactionItems = aTransactionItems;
+              this.transaction = transaction;
               this.processTransactionForPdfReceipt();
               // this.transaction.aTransactionItems.forEach((item: any, index: number) => {
               //   this.getRelatedTransactionItem(item?.iActivityItemId, item?._id, index)
@@ -639,8 +639,28 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.transaction.businessDetails = this.businessDetails;
     this.transaction.currentLocation = this.businessDetails.currentLocation;
+    const oDataSource = JSON.parse(JSON.stringify(this.transaction));
 
-    this.receiptService.exportToPdf({ transaction: this.transaction });
+    const template = await this.getTemplate('transaction').toPromise();
+    oDataSource.sBusinessLogoUrl = (await this.getBase64FromUrl(oDataSource?.businessDetails?.sLogoLight).toPromise()).data;
+
+    this.receiptService.exportToPdf({
+      oDataSource: oDataSource,
+      pdfTitle: 'Transaction Receipt',
+      templateData: template.data
+    });
+
+    this.clearAll();
+
+    // this.receiptService.exportToPdf({ transaction: this.transaction });
+  }
+
+  getBase64FromUrl(url: any): Observable<any> {
+    return this.apiService.getNew('cashregistry', `/api/v1/pdf/templates/getBase64/${this.businessDetails._id}?url=${url}`);
+  }
+
+  getTemplate(type: string): Observable<any> {
+    return this.apiService.getNew('cashregistry', `/api/v1/pdf/templates/${this.businessDetails._id}?eType=${type}`);
   }
 
   processTransactionData(): Observable<any> {

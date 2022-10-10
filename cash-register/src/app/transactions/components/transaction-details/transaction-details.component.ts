@@ -84,7 +84,7 @@ export class TransactionDetailsComponent implements OnInit {
       let disc = parseFloat(item.nDiscount);
       if (item.bPaymentDiscountPercent) {
         disc = (disc * parseFloat(item.nPriceIncVat) / (100 + parseFloat(item.nVatRate)));
-        item.nDiscountToShow = disc;
+        item.nDiscountToShow = parseFloat(disc.toFixed(2)) ;
       } else { item.nDiscountToShow = disc; }
       item.priceAfterDiscount = (parseFloat(item.nPaymentAmount) - parseFloat(item.nDiscountToShow));
       item.nPriceIncVatAfterDiscount = (parseFloat(item.nPriceIncVat) - parseFloat(item.nDiscountToShow));
