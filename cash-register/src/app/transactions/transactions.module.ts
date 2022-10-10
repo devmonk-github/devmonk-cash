@@ -25,7 +25,8 @@ import { TranslateModule } from '@ngx-translate/core';
     ReactiveFormsModule,
     FormsModule,
     NgSelectModule,
-    TranslateModule
+    TranslateModule,
+    // SupplierProductSliderModule
     // SharedModule
   ],
   providers: [ 
