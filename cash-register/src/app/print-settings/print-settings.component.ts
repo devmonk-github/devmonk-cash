@@ -20,7 +20,7 @@ export class PrintSettingsComponent implements OnInit {
   faRefresh = faRefresh;
   faPencilAlt = faPencilAlt;
   loading: boolean = false;
-  business: any;
+  businessDetails: any;
   device: any = {
     name: 'Shubham`s device'
   };
@@ -38,12 +38,10 @@ export class PrintSettingsComponent implements OnInit {
   printers: Array<any> = [
     'Any'
   ]
-  printFormats: any = [
-    { key: 'transaction', value:'Transaction receipt'},
-    { key: 'giftcard', value: 'Giftcard (Activity item)'},
-    { key: 'activity', value: 'Order (Activity)'},
-    { key: 'activity-item-repair', value: 'Repair (Activity item)'},
-    { key: 'activity-customer', value: 'Activity receipt (Customer)'},
+  pageFormats: any = [
+    { key: 'transaction', value: 'Transaction receipt' },
+    { key: 'activity', value: 'Activity receipt' },
+    { key: 'giftcard', value: 'Giftcard receipt' },
   ];
 
   // aTemplates: Array<any> = [
@@ -133,11 +131,20 @@ export class PrintSettingsComponent implements OnInit {
     this.iLocationId = localStorage.getItem('currentLocation') || '';
     this.isLoadingDefaultLabel = true
     this.isLoadingTemplatesLabel = true
-    this.getLabelTemplate()
+    this.getLabelTemplate();
+    this.fetchBusinessDetails();
   }
 
   createPrintSettings() {
     this.dialogService.openModal(PrintSettingsDetailsComponent, { cssClass: "modal-xl", context: { mode: 'create' } }).instance.close.subscribe(result => { });
+  }
+
+  // Function for fetch business details
+  fetchBusinessDetails() {
+    this.apiService.getNew('core', '/api/v1/business/' + this.iBusinessId)
+      .subscribe((result: any) => {
+        this.businessDetails = result.data;
+      });
   }
 
   trackByFun(index: any, item: any) {
@@ -292,11 +299,11 @@ export class PrintSettingsComponent implements OnInit {
 
   }
 
-  openSettingsEditor(format:any){
+  openSettingsEditor(format: any) {
     this.dialogService.openModal(PrintSettingsEditorComponent, { cssClass: "modal-xl", context: { format: format } })
-    .instance.close.subscribe(result => {
+      .instance.close.subscribe(result => {
 
-     });
+      });
   }
 
 

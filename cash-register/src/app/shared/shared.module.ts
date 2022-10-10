@@ -44,6 +44,8 @@ import { NgxPaginationModule } from "ngx-pagination";
 import { PrintSettingsEditorComponent } from "./components/print-settings-editor/print-settings-editor.component";
 import { JsonEditorModule } from "../json-editor/json-editor.module";
 import { CommonPrintSettingsService } from "./service/common-print-settings.service";
+import { AddEditWorkstationComponent } from './components/add-edit-workstation/add-edit-workstation.component';
+import { SortPipe } from "./directives/sort.pipe";
 
 @NgModule({
   declarations: [
@@ -72,6 +74,8 @@ import { CommonPrintSettingsService } from "./service/common-print-settings.serv
     TabComponent,
     SelectArticleDialogComponent,
     PrintSettingsEditorComponent,
+    AddEditWorkstationComponent,
+    SortPipe
   ],
   imports: [
     CommonModule,
@@ -108,8 +112,10 @@ import { CommonPrintSettingsService } from "./service/common-print-settings.serv
     MorePaymentsDialogComponent,
     TabsComponent,
     TabComponent,
-    SelectArticleDialogComponent, 
+    SelectArticleDialogComponent,
     NgxPaginationModule,
+    AddEditWorkstationComponent,
+    SortPipe
   ],
   providers: [CurrencyPipe, CommonPrintSettingsService]
 })
