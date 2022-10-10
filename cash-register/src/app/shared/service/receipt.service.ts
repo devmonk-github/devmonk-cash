@@ -299,7 +299,7 @@ export class ReceiptService {
 
         if(forEach){ //if we have forEach (nested array) then loop through it
             currentDataSource = this.oOriginalDataSource[forEach]; //take nested array as currentDataSource
-            // let bWidthPushed = false;
+            let bWidthPushed = false;
             currentDataSource.forEach((dataSource: any) => {
                 let dataRow: any = [];
                 rows.forEach((row: any) => {
@@ -316,15 +316,15 @@ export class ReceiptService {
                         // let obj = { text: text };
                         // if (row?.styles) obj = { ...obj, ...row.styles };
                         // dataRow.push(obj);
-                        // // if(!bWidthPushed){
-                        // tableWidths.push(this.getWidth(row.size));
-                        // } 
+                        if (!bWidthPushed) {
+                            tableWidths.push(this.getWidth(row.size));
+                        } 
                     }
-
+                    
                 });
                 // console.log(310, dataRow);
                 texts.push(dataRow);
-                // bWidthPushed = true;
+                bWidthPushed = true;
 
             });
         } else { //we don't have foreach so only parsing single row
@@ -336,7 +336,7 @@ export class ReceiptService {
                     tableWidths.push(this.getWidth(row.size));
                 } else {
                     // console.log(row, this.getWidth(row.size));
-                    if (row?.object) currentDataSource = this.oOriginalDataSource[row.object];
+                    currentDataSource = (row?.object) ? this.oOriginalDataSource[row.object] : this.oOriginalDataSource;
 
                     let bInclude: boolean = true;
                     if (row?.condition) {
@@ -345,13 +345,14 @@ export class ReceiptService {
                     }
 
                     if (bInclude) {
+                        // console.log('calling add row', currentDataSource);
                         this.addRow(dataRow,row,currentDataSource, tableWidths);
                         // let text = this.pdfService.replaceVariables(row.html, currentDataSource);
                         // let obj = { text: text };
                         // if (row?.styles) obj = { ...obj, ...row.styles };
                         // dataRow.push(obj);
                         // // console.log('328 ', obj)
-                        // tableWidths.push(this.getWidth(row.size));
+                        tableWidths.push(this.getWidth(row.size));
                     }
                 }               
             });
@@ -535,7 +536,7 @@ export class ReceiptService {
         if (row?.conditionalHtml){
             const bCheck = this.checkCondition(row.conditions,dataSource);
             html = (bCheck) ? row.htmlIf : row.htmlElse
-            console.log(row.conditionalHtml, bCheck, row.html);
+            // console.log(row.conditionalHtml, bCheck, {html});
         }
 
         let text = this.pdfService.replaceVariables(html, dataSource);
@@ -543,7 +544,7 @@ export class ReceiptService {
         if(row?.alignment) obj.alignment = row.alignment;
         if (row?.styles) obj = { ...obj, ...row.styles };
         dataRow.push(obj);
-        tableWidths.push(this.getWidth(row.size));
+        // tableWidths.push(this.getWidth(row.size));
     }
 
     cleanUp(){
