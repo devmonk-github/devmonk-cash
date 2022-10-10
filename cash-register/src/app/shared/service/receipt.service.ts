@@ -276,15 +276,20 @@ export class ReceiptService {
             // console.log('columns.foreach', columns);
             columns.forEach((column:any)=>{
                 // console.log('column: ',column);
-                let text = this.pdfService.removeBrackets(column.html);//removes [[ ]] from placeholders
-                let obj: any = { text: this.pdfService.translations[text] || text };
-                if(column?.styles) {
-                    // column.styles.forEach((style:any)=>{
-                    //     obj[style] = true;
-                    // })
-                    obj = { ...obj, ...column.styles};
+                let bInclude:boolean = true;
+                if(column?.condition){
+                    bInclude = this.checkCondition(column.condition, this.oOriginalDataSource);
+                    // console.log(bInclude, column.condition);
                 }
-                tableHeadersList.push(obj); 
+                if (bInclude){
+                    let text = this.pdfService.removeBrackets(column.html);//removes [[ ]] from placeholders
+                    let obj: any = { text: this.pdfService.translations[text] || text };
+                    if(column?.alignment) obj.alignment = column.alignment;
+                    if(column?.styles) {
+                        obj = { ...obj, ...column.styles};
+                    }
+                    tableHeadersList.push(obj); 
+                }
                 // console.log(obj);
             });
         }
@@ -295,21 +300,32 @@ export class ReceiptService {
         if(forEach){ //if we have forEach (nested array) then loop through it
             currentDataSource = this.oOriginalDataSource[forEach]; //take nested array as currentDataSource
             let bWidthPushed = false;
-            currentDataSource.forEach((dataSource:any)=>{
-                let dataRow:any = [];
+            currentDataSource.forEach((dataSource: any) => {
+                let dataRow: any = [];
                 rows.forEach((row: any) => {
-                    // console.log(row, this.commonService.calcColumnWidth(row.size));
-                    let text = this.pdfService.replaceVariables(row.html, dataSource); //replacing placeholders with the actual values
-                    let obj = { text: text };
-                    if (row?.styles) obj = { ...obj, ...row.styles };
-                    dataRow.push(obj);
-                    if(!bWidthPushed){
-                        tableWidths.push(this.getWidth(row.size));
-                    } 
+                    // console.log(301, row);
+                    let bInclude: boolean = true;
+                    if (row?.condition) {
+                        bInclude = this.checkCondition(row.condition, dataSource);
+                        // console.log(bInclude, row.condition);
+                    }
+
+                    if (bInclude) {
+                        this.addRow(dataRow, row, dataSource, tableWidths);
+                        // let text = this.pdfService.replaceVariables(row.html, dataSource); //replacing placeholders with the actual values
+                        // let obj = { text: text };
+                        // if (row?.styles) obj = { ...obj, ...row.styles };
+                        // dataRow.push(obj);
+                        if (!bWidthPushed) {
+                            tableWidths.push(this.getWidth(row.size));
+                        } 
+                    }
+                    
                 });
-                // console.log(dataRow, tableWidths);
+                // console.log(310, dataRow);
                 texts.push(dataRow);
                 bWidthPushed = true;
+
             });
         } else { //we don't have foreach so only parsing single row
             let dataRow: any = [];
@@ -320,22 +336,25 @@ export class ReceiptService {
                     tableWidths.push(this.getWidth(row.size));
                 } else {
                     // console.log(row, this.getWidth(row.size));
-                    if (row?.object) currentDataSource = this.oOriginalDataSource[row.object];
-                    let text = this.pdfService.replaceVariables(row.html, currentDataSource);
-                    let obj = { text: text };
-                    if(row?.styles) obj = { ...obj, ...row.styles};
-                    dataRow.push(obj);//colSpan: row?.colSpan || 0
-                    // console.log('calling getwidth', row)
-                    tableWidths.push(this.getWidth(row.size));
-                }
-                
-                // if(row?.colSpan){ // we have colspan so need to add empty {} in current row
-                //     tableWidths.push(this.commonService.calcColumnWidth(row.size) || '*');
-                // } else {
-                //     tableWidths.push(this.commonService.calcColumnWidth(row.size) || '*');
-                // }
-                
-                    
+                    currentDataSource = (row?.object) ? this.oOriginalDataSource[row.object] : this.oOriginalDataSource;
+
+                    let bInclude: boolean = true;
+                    if (row?.condition) {
+                        bInclude = this.checkCondition(row.condition, currentDataSource);
+                        // console.log(bInclude, row.condition);
+                    }
+
+                    if (bInclude) {
+                        // console.log('calling add row', currentDataSource);
+                        this.addRow(dataRow,row,currentDataSource, tableWidths);
+                        // let text = this.pdfService.replaceVariables(row.html, currentDataSource);
+                        // let obj = { text: text };
+                        // if (row?.styles) obj = { ...obj, ...row.styles };
+                        // dataRow.push(obj);
+                        // // console.log('328 ', obj)
+                        tableWidths.push(this.getWidth(row.size));
+                    }
+                }               
             });
             // console.log(dataRow, tableWidths);
             texts.push(dataRow);
@@ -378,7 +397,7 @@ export class ReceiptService {
                 let html = el.html || '';
                 if (typeof html === 'string') {
                     let text = this.pdfService.replaceVariables(html, (object) ? this.oOriginalDataSource[object] : this.oOriginalDataSource) || html;
-                    // console.log({ text });
+                    // console.log({ el, text });
                     // text = this.pdfService.removeBrackets(text);
                     let obj:any = { text: text};
                     if (el?.alignment) obj.alignment = el.alignment;
@@ -417,9 +436,9 @@ export class ReceiptService {
                 // console.log(360, html);
                 let object = el?.object;
                 let text = this.pdfService.replaceVariables(html, (object) ? this.oOriginalDataSource[object] : this.oOriginalDataSource);
-                // console.log(362, text);
+                // console.log(438, text, el);
                 let columnData:any = { text: text };
-                if(columnData?.alignment) columnData.alignment = el?.alignment;
+                if(el?.alignment) columnData.alignment = el?.alignment;
                 if (el?.styles) {
                     columnData = { ...columnData, ...el.styles }
                 }
@@ -493,8 +512,39 @@ export class ReceiptService {
     }
 
     getWidth(size:any){
-        size = size / this.DIVISON_FACTOR;
-        return ['auto', '*'].includes(size) ? size : this.commonService.calcColumnWidth(size);
+        return ['auto', '*'].includes(size) ? size : this.commonService.calcColumnWidth(size / this.DIVISON_FACTOR);
+    }
+
+    checkCondition(aConditions:any, dataSource:any){
+        return aConditions.every((condition:any) => {
+            switch(condition.operator){
+                case '>':
+                    // console.log('checking for >', dataSource[condition.field]);
+                    return dataSource[condition.field] > condition.value;
+                case '===':
+                    // console.log('checking for ===', condition, dataSource);
+                    return dataSource[condition.field1] === dataSource[condition.field2];
+                default:
+                    // console.log('default return false');
+                    return false; 
+            }
+        });
+    }
+
+    addRow(dataRow:any, row:any, dataSource:any, tableWidths:any ){
+        let html = row.html;
+        if (row?.conditionalHtml){
+            const bCheck = this.checkCondition(row.conditions,dataSource);
+            html = (bCheck) ? row.htmlIf : row.htmlElse
+            // console.log(row.conditionalHtml, bCheck, {html});
+        }
+
+        let text = this.pdfService.replaceVariables(html, dataSource);
+        let obj:any = { text: text };
+        if(row?.alignment) obj.alignment = row.alignment;
+        if (row?.styles) obj = { ...obj, ...row.styles };
+        dataRow.push(obj);
+        // tableWidths.push(this.getWidth(row.size));
     }
 
     cleanUp(){

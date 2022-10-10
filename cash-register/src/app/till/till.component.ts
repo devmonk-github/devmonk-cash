@@ -650,6 +650,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       templateData: template.data
     });
 
+    this.clearAll();
+
     // this.receiptService.exportToPdf({ transaction: this.transaction });
   }
 

@@ -1,0 +1,107 @@
+<button class="btn btn-primary"> {{ "MANAGE_RECEIPTS" | translate }} </button>
+<button class="btn btn-primary float-end" (click)="editWorkstation()"> {{ "ADD_NEW_WORKSTATION" | translate }} </button>
+<div class="tscroll">
+    <table class="table table-row-gray-400 gx-2 mt-4 table-row-bordered table-rounded border border-gray-400"
+        [style.width.px]="tableMaxWidth">
+        <thead>
+            <tr>
+                <td colspan="2" rowspan="2" class="sticky-col first-col border border-gray-400"></td>
+                <td [attr.colspan]="workstations?.length || 0"> {{ "WORKSTATION" | translate}}
+                </td>
+            </tr>
+            <tr>
+                <td *ngFor="let workstation of workstations | order_by:'nPrintNodeComputerId'; trackBy:trackByFunction;"
+                    class="lh-xxl" style="min-width: 260px;">
+                    {{ workstation.sName }}
+                    <div class="badge"
+                        [ngClass]="workstation?.computer?.state == 'connected' ? 'badge-light-success' : 'badge-light-danger'">
+                        {{ workstation?.computer?.name }}
+                    </div>
+                    <button class="btn btn-info float-end px-4 py-2" (click)="editWorkstation(workstation)">
+                        <fa-icon [icon]="faPencilAlt"></fa-icon>
+                    </button>
+                </td>
+            </tr>
+        </thead>
+        <tbody class="scroll-x">
+            <ng-container *ngFor="let template of templates">
+                <tr class="lh-xxl" *ngFor="let type of template.typeList; let tIndex = index;">
+                    <td [attr.rowspan]="template.typeList.length" *ngIf="tIndex == 0"
+                        class="sticky-col first-col border border-gray-400">
+                        <label class="vertical-label-text mt-per-35"> {{ template.name }} </label>
+                    </td>
+                    <td class="sticky-col second-col border border-gray-400">
+                        {{ type.name | translate}}
+                        <button class="btn btn-info float-end px-4 py-2" [disabled]="!type.enabled"
+                            (click)="openEditSetting(type)">
+                            <fa-icon [icon]="faPencilAlt"></fa-icon>
+                        </button>
+                    </td>
+                    <td *ngFor="let workstation of workstations">
+                        <div
+                            *ngIf="workstation.nPrintNodeComputerId && workstation?.printers?.length > 0; else set_workstation_printer">
+                            <ng-select fullWidth id="printer" name="printer" [clearable]="false" class="mt-2"
+                                [ngModel]="getSelectedValue({name: template.name, type: type.key, workstation: workstation})"
+                                (change)="onChange($event, {name: template.name, type: type.key, workstation: workstation})">
+                                <ng-option *ngFor="let printer of workstation?.printers" [value]="printer.id">
+                                    {{printer.name}}
+                                </ng-option>
+                            </ng-select>
+                            <div class="float-end mt-2">
+                                <button class="btn btn-info px-4 py-2">
+                                    <fa-icon [icon]="faPencilAlt"></fa-icon>
+                                </button>
+                                <button class="btn btn-success ms-1 px-4 py-2">
+                                    <fa-icon [icon]="faCopy"></fa-icon>
+                                </button>
+                                <button class="btn btn-danger ms-1 px-4 py-2">
+                                    <fa-icon [icon]="faXmark"></fa-icon>
+                                </button>
+                            </div>
+                        </div>
+                        <ng-template #set_workstation_printer>
+                            {{ "CONFIGURE_WORKSTATION_FOR_COMPUTER_OR_PRINTERS" | translate}}
+                        </ng-template>
+                    </td>
+                </tr>
+            </ng-container>
+
+            <!-- <tr class="lh-xxl">
+                <td>
+                    {{ "REPAIR_RECEIPT" | translate}}
+                    <button class="btn btn-info float-end px-4 py-2">
+                        <fa-icon [icon]="faPencilAlt"></fa-icon>
+                    </button>
+                </td>
+                <td>
+                    HP laser jet
+                    <div class="float-end">
+                        <button class="btn btn-info px-4 py-2">
+                            <fa-icon [icon]="faPencilAlt"></fa-icon>
+                        </button>
+                        <button class="btn btn-success ms-1 px-4 py-2">
+                            <fa-icon [icon]="faCopy"></fa-icon>
+                        </button>
+                        <button class="btn btn-danger ms-1 px-4 py-2">
+                            <fa-icon [icon]="faXmark"></fa-icon>
+                        </button>
+                    </div>
+                </td>
+                <td>
+                    HP laser jet
+                    <div class="float-end">
+                        <button class="btn btn-info px-4 py-2">
+                            <fa-icon [icon]="faPencilAlt"></fa-icon>
+                        </button>
+                        <button class="btn btn-success ms-1 px-4 py-2">
+                            <fa-icon [icon]="faCopy"></fa-icon>
+                        </button>
+                        <button class="btn btn-danger ms-1 px-4 py-2">
+                            <fa-icon [icon]="faXmark"></fa-icon>
+                        </button>
+                    </div>
+                </td>
+            </tr> -->
+        </tbody>
+    </table>
+</div>
