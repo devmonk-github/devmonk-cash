@@ -1,4 +1,4 @@
-import { Compiler, Component, Inject, Injector, NgModuleRef, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
+import { Component, OnInit, ViewContainerRef } from '@angular/core';
 import { faTimes, faSync, faFileInvoice, faDownload, faReceipt, faAt, faUndoAlt, faClipboard, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import { TransactionItemsDetailsComponent } from 'src/app/shared/components/transaction-items-details/transaction-items-details.component';
 import { ApiService } from 'src/app/shared/service/api.service';
@@ -10,9 +10,9 @@ import { ActivityDetailsComponent } from 'src/app/shared/components/activity-det
 import { ReceiptService } from 'src/app/shared/service/receipt.service';
 import { Pn2escposService } from 'src/app/shared/service/pn2escpos.service';
 import { PrintService } from 'src/app/shared/service/print.service';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 const moment = (_moment as any).default ? (_moment as any).default : _moment;
-import { faMagnifyingGlassPlus } from '@fortawesome/free-solid-svg-icons';
+// import { faMagnifyingGlassPlus } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-transaction-details',
