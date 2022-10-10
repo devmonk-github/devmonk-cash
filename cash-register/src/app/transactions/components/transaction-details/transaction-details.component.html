@@ -1,3 +1,5 @@
+<!-- <app-supplier-product-slider [$data]="SupplierStockProductSliderData.asObservable()">
+</app-supplier-product-slider> -->
 <div class="card shadow-sm">
     <div class="card-header mt-5">
         <h3>Transaction Details | {{transaction.sNumber}}</h3>
@@ -230,6 +232,12 @@
                                                             (click)="showActivityItem(item,$event)">
                                                             {{ 'VIEW' | translate }}
                                                         </button>
+                                                        <button id="kt_supplier_stock_product_toggle"
+                                                            class="btn btn-secondary btn-flex h-35px shadow-sm fs-6 px-4 rounded-top-0" title="" data-bs-toggle="tooltip"
+                                                            data-bs-placement="left" data-bs-dismiss="click" data-bs-trigger="hover"
+                                                            data-bs-original-title="Check out 20 more demos" (click)="onOpenProductSlider(item)">
+                                                            <fa-icon [icon]="faMagnifyingGlassPlus"></fa-icon>
+                                                        </button>
                                                         <div *ngIf="item.bFetchingActivityItem"
                                                             class="spinner-border mx-2"></div>
                                                     </div>
@@ -237,6 +245,9 @@
                                             </ng-container>
                                         </div>
 
+                                    </td>
+                                    <td>
+                                        <ng-template #supplierSliderTemplate></ng-template>
                                     </td>
                                 </tr>
                             </tbody>
