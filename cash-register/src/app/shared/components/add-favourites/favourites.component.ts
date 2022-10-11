@@ -13,7 +13,7 @@ export class AddFavouritesComponent implements OnInit {
   dialogRef: DialogComponent;
   searchKeyword: any;
   shopProducts: any;
-  commonProducts: any;
+  // commonProducts: any;
   business: any = {};
   mode: string = '';
   // isStockSelected = true;
@@ -67,7 +67,7 @@ export class AddFavouritesComponent implements OnInit {
   async search() {
 
     this.shopProducts = [];
-    this.commonProducts = [];
+    // this.commonProducts = [];
     // if (searchValue && searchValue.length > 2) {
     //   this.isLoading = true;
     let data = {
@@ -88,11 +88,11 @@ export class AddFavouritesComponent implements OnInit {
     if (shopResult && shopResult.data && shopResult.data.length) {
       this.shopProducts = shopResult.data[0].result;
     }
-    const commonResult:any = await this.apiService.postNew('core', '/api/v1/products/commonbrand/list', data).toPromise();
-    if (commonResult && commonResult.data && commonResult.data.length) {
-      const response = commonResult.data[0];
-      this.commonProducts = response.result;
-    }
+    // const commonResult:any = await this.apiService.postNew('core', '/api/v1/products/commonbrand/list', data).toPromise();
+    // if (commonResult && commonResult.data && commonResult.data.length) {
+    //   const response = commonResult.data[0];
+    //   this.commonProducts = response.result;
+    // }
     this.searching = false;
     // this.listShopProducts(this.searchKeyword, false);
     // if (!this.isStockSelected) {
@@ -168,8 +168,8 @@ export class AddFavouritesComponent implements OnInit {
     }
 
     this.shopProducts = null;
-    this.commonProducts = null;
-    console.log(this.shopProducts, this.commonProducts);
+    // this.commonProducts = null;
+    // console.log(this.shopProducts, this.commonProducts);
   }
 
   create(event: any) {

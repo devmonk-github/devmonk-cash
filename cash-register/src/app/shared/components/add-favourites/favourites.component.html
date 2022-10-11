@@ -18,7 +18,7 @@
         </div>
         <div>
             <div class="row" *ngIf="shopProducts && shopProducts.length > 0">
-                <h5>{{'BUSINESS_PRODUCTS'}}</h5>
+                <!-- <h5>{{'BUSINESS_PRODUCTS'}}</h5> -->
                 <div class="col-md-6 cursor-pointer" *ngFor="let product of shopProducts"
                     (mouseenter)="product['showOption'] = true" (mouseleave)="product['showOption'] = false">
                     <div class="card m-1 shadow-sm">
@@ -48,8 +48,8 @@
                     </div>
                 </div>
             </div>
-            <hr *ngIf="commonProducts && commonProducts.length > 0">
-            <div class="row" *ngIf="commonProducts && commonProducts.length > 0">
+            <!-- <hr *ngIf="commonProducts && commonProducts.length > 0"> -->
+            <!-- <div class="row" *ngIf="commonProducts && commonProducts.length > 0">
                 <div class="col-12">
                     <h5>{{'SUPPLIER_PRODUCTS'}}</h5>
                 </div>
@@ -84,7 +84,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> -->
         </div>
         <div class="row my-5" *ngIf="newSelectedProduct">
             <div class="col-md-6">
