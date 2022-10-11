@@ -299,6 +299,10 @@ export class ReceiptService {
 
         if(forEach){ //if we have forEach (nested array) then loop through it
             currentDataSource = this.oOriginalDataSource[forEach]; //take nested array as currentDataSource
+            if(!currentDataSource){
+                currentDataSource = [];
+                currentDataSource[0] = this.oOriginalDataSource;
+            } 
             let bWidthPushed = false;
             currentDataSource.forEach((dataSource: any) => {
                 let dataRow: any = [];
@@ -430,8 +434,14 @@ export class ReceiptService {
                 this.DIVISON_FACTOR = row.length;
                 columns.push(this.processTextAsTableData(el));
                 this.DIVISON_FACTOR = 1;
-            }
-             else {
+            } else if (el?.type === 'stack') {
+                let obj:any = {
+                    "stack":this.processStack(el)
+                };
+                if (el?.width) obj.width = el.width;
+                // console.log(obj);
+                columns.push(obj);
+            } else {
                 let html = el.html || '';
                 // console.log(360, html);
                 let object = el?.object;
