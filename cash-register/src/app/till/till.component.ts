@@ -29,6 +29,7 @@ import { PdfService } from '../shared/service/pdf.service';
 import { SupplierWarningDialogComponent } from './dialogs/supplier-warning-dialog/supplier-warning-dialog.component';
 import * as _moment from 'moment';
 import { ReceiptService } from '../shared/service/receipt.service';
+import { TransactionItemsDetailsComponent } from '../shared/components/transaction-items-details/transaction-items-details.component';
 const moment = (_moment as any).default ? (_moment as any).default : _moment;
 @Component({
   selector: 'app-till',
@@ -148,22 +149,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     this.getPaymentMethods();
     this.getParkedTransactions();
     this.barcodeService.barcodeScanned.subscribe((barcode: string) => {
-      if(barcode.startsWith("AI")){
-        // activityitem.find({sNumber: barcode},{eTransactionItem.eKind : 1})
-        this.toastrService.show({ type: 'success', text: 'Barcode detected: ' + barcode })
-      } else if (barcode.startsWith("T")){
-        //transactions.find({sNumber: barcode})
-        this.toastrService.show({ type: 'success', text: 'Barcode detected: ' + barcode })
-      } else if (barcode.startsWith("A")) {
-        //activity.find({sNumber: barcode})
-        this.toastrService.show({ type: 'success', text: 'Barcode detected: ' + barcode })
-      } else if (barcode.startsWith("G")) {
-        // activityitem.find({sGiftcardNumber: barcode},{eTransactionItem.eKind : 1})
-        this.toastrService.show({ type: 'success', text: 'Barcode detected: ' + barcode })
-      } else if (barcode.startsWith("R")) {
-        // activityitem.find({sRepairNumber: barcode},{eTransactionItem.eKind : 1})
-        this.toastrService.show({ type: 'success', text: 'Barcode detected: ' + barcode })
-      }
+      this.openModal(barcode);
 
     });
     this.loadTransaction();
@@ -1226,6 +1212,100 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       .instance.close.subscribe((data) => {
         console.log(data);
       })
+  }
+
+  async openModal(barcode:any){
+    if (barcode.startsWith("AI")) {
+      // activityitem.find({sNumber: barcode},{eTransactionItem.eKind : 1})
+      this.toastrService.show({ type: 'success', text: 'Barcode detected: ' + barcode })
+    } else if (barcode.startsWith("T")) {
+
+      console.log('transaction', barcode);
+      const oBody = {
+        iBusinessId: this.business._id,
+        oFilterBy:{
+          sNumber: barcode
+        } 
+      }
+      const result:any = await this.apiService.postNew('cashregistry', '/api/v1/transaction/search', oBody).toPromise();
+      if (result?.transactions?.records?.length)
+        this.openTransaction(result?.transactions?.records[0], 'transaction');
+
+      //transactions.find({sNumber: barcode})
+      this.toastrService.show({ type: 'success', text: 'Barcode detected: ' + barcode })
+    } else if (barcode.startsWith("A")) {
+      //activity.find({sNumber: barcode})
+      this.toastrService.show({ type: 'success', text: 'Barcode detected: ' + barcode })
+    } else if (barcode.startsWith("G")) {
+      // activityitem.find({sGiftcardNumber: barcode},{eTransactionItem.eKind : 1})
+      this.toastrService.show({ type: 'success', text: 'Barcode detected: ' + barcode })
+    } else if (barcode.startsWith("R")) {
+      // activityitem.find({sRepairNumber: barcode},{eTransactionItem.eKind : 1})
+      this.toastrService.show({ type: 'success', text: 'Barcode detected: ' + barcode })
+    }
+  }
+
+  openTransaction(transaction: any, itemType: any) {
+    this.dialogService.openModal(TransactionItemsDetailsComponent, { cssClass: "modal-xl", context: { transaction, itemType } })
+      .instance.close.subscribe(result => {
+        const transactionItems: any = [];
+        if (result.transaction) {
+          result.transactionItems.forEach((transactionItem: any) => {
+            if (transactionItem.isSelected) {
+              const { tType } = transactionItem;
+              let paymentAmount = transactionItem.nQuantity * transactionItem.nPriceIncVat - transactionItem.nPaidAmount;
+              if (tType === 'refund') {
+                // paymentAmount = -1 * transactionItem.nPaidAmount;
+                paymentAmount = 0;
+                transactionItem.oType.bRefund = true;
+              } else if (tType === 'revert') {
+                paymentAmount = transactionItem.nPaidAmount;
+                transactionItem.oType.bRefund = false;
+              };
+              transactionItems.push({
+                name: transactionItem.sProductName || transactionItem.sProductNumber,
+                iActivityItemId: transactionItem.iActivityItemId,
+                nRefundAmount: transactionItem.nPaidAmount,
+                iLastTransactionItemId: transactionItem.iTransactionItemId,
+                prePaidAmount: tType === 'refund' ? transactionItem.nPaidAmount : transactionItem.nPaymentAmount,
+                type: transactionItem.sGiftCardNumber ? 'giftcard' : transactionItem.oType.eKind,
+                eTransactionItemType: 'regular',
+                nBrokenProduct: 0,
+                tType,
+                oType: transactionItem.oType,
+                sUniqueIdentifier: transactionItem.sUniqueIdentifier,
+                aImage: transactionItem.aImage,
+                nonEditable: transactionItem.sGiftCardNumber ? true : false,
+                sGiftCardNumber: transactionItem.sGiftCardNumber,
+                quantity: transactionItem.nQuantity,
+                iBusinessProductId: transactionItem.iBusinessProductId,
+                price: transactionItem.nPriceIncVat,
+                iRepairerId: transactionItem.iRepairerId,
+                oArticleGroupMetaData: transactionItem.oArticleGroupMetaData,
+                nRedeemedLoyaltyPoints: transactionItem.nRedeemedLoyaltyPoints,
+                iArticleGroupId: transactionItem.iArticleGroupId,
+                iEmployeeId: transactionItem.iEmployeeId,
+                iBusinessBrandId: transactionItem.iBusinessBrandId,
+                nDiscount: transactionItem.nDiscount || 0,
+                tax: transactionItem.nVatRate,
+                oGoldFor: transactionItem.oGoldFor,
+                iSupplierId: transactionItem.iSupplierId,
+                paymentAmount,
+                description: transactionItem.sDescription,
+                open: true,
+                nMargin: transactionItem.nMargin,
+                nPurchasePrice: transactionItem.nPurchasePrice,
+                oBusinessProductMetaData: transactionItem.oBusinessProductMetaData,
+                sServicePartnerRemark: transactionItem.sServicePartnerRemark,
+                eActivityItemStatus: transactionItem.eActivityItemStatus,
+                eEstimatedDateAction: transactionItem.eEstimatedDateAction,
+                bGiftcardTaxHandling: transactionItem.bGiftcardTaxHandling,
+              });
+            }
+          });
+          result.transactionItems = transactionItems;
+        }
+      });
   }
 
   ngOnDestroy() {
