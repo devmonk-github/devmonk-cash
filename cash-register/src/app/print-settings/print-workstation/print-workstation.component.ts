@@ -30,8 +30,10 @@ export class PrintWorkstationComponent implements OnInit {
       name: 'PDF',
       typeList: [
         { name: 'BUSINESS_RECEIPT', key: 'transaction', enabled: true },
+        { name: 'ORDER_RECEIPT', key: 'activity', enabled: true },
         { name: 'REPAIR_RECEIPT', key: 'repair', enabled: true },
-        { name: 'GIFTCARD_RECEIPT', key: 'giftCard', enabled: true }
+        { name: 'GIFTCARD_RECEIPT', key: 'giftCard', enabled: true },
+        { name: 'REPAIR_ALTERNATIVE_RECEIPT', key: 'repair_alternative', enabled: true }
       ]
     },
     {
