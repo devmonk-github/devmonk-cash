@@ -529,4 +529,8 @@ export class ActivityDetailsComponent implements OnInit {
   //   return this.apiService.getNew('cashregistry', `/api/v1/pdf/templates/generateBarcode/`, oBody);
   // }
 
+  downloadReceipt(){
+    
+  }
+
 }
