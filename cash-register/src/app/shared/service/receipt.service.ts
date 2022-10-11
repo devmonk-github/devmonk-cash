@@ -557,6 +557,27 @@ export class ReceiptService {
         // tableWidths.push(this.getWidth(row.size));
     }
 
+    processStack(item:any, object?:any){
+        // console.log('processStack',item);
+        const stack:any = [];
+        item.elements.forEach((el:any)=>{
+            if(el?.type === 'image'){
+                stack.push(this.addImage(el))
+            } else {
+                let html = el.html;
+                let text = this.pdfService.replaceVariables(html, (object) ? this.oOriginalDataSource[object] : this.oOriginalDataSource) || html;
+                let obj: any = { text: text };
+                if (el?.alignment) obj.alignment = el.alignment;
+                if (el?.width) obj.width = el.width;
+                if (el?.styles) {
+                    obj = { ...obj, ...el.styles }
+                }
+                stack.push(obj)
+            }
+        });
+        return stack;
+    }
+
     cleanUp(){
         this.oOriginalDataSource = null;
         this.content = [];
