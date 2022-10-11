@@ -1,4 +1,4 @@
-import { Compiler, Component, Inject, Injector, NgModuleRef, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
+import { Component, OnInit, ViewContainerRef } from '@angular/core';
 import { faTimes, faSync, faFileInvoice, faDownload, faReceipt, faAt, faUndoAlt, faClipboard, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import { TransactionItemsDetailsComponent } from 'src/app/shared/components/transaction-items-details/transaction-items-details.component';
 import { ApiService } from 'src/app/shared/service/api.service';
@@ -10,9 +10,9 @@ import { ActivityDetailsComponent } from 'src/app/shared/components/activity-det
 import { ReceiptService } from 'src/app/shared/service/receipt.service';
 import { Pn2escposService } from 'src/app/shared/service/pn2escpos.service';
 import { PrintService } from 'src/app/shared/service/print.service';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 const moment = (_moment as any).default ? (_moment as any).default : _moment;
-import { faMagnifyingGlassPlus } from '@fortawesome/free-solid-svg-icons';
+// import { faMagnifyingGlassPlus } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-transaction-details',
@@ -47,10 +47,10 @@ export class TransactionDetailsComponent implements OnInit {
   businessDetails: any = {};
   ableToDownload: Boolean = false;
   from !: string;
-  faMagnifyingGlassPlus = faMagnifyingGlassPlus;
-  SupplierStockProductSliderData = new BehaviorSubject<any>({});
-  @ViewChild('supplierSliderTemplate', { read: ViewContainerRef }) container!: ViewContainerRef;
-  componentRef: any;
+  // faMagnifyingGlassPlus = faMagnifyingGlassPlus;
+  // SupplierStockProductSliderData = new BehaviorSubject<any>({});
+  // @ViewChild('supplierSliderTemplate', { read: ViewContainerRef }) container!: ViewContainerRef;
+  // componentRef: any;
 
   private pn2escposService = new Pn2escposService();
   constructor(
@@ -59,8 +59,8 @@ export class TransactionDetailsComponent implements OnInit {
     private dialogService: DialogService,
     private receiptService: ReceiptService,
     private printService: PrintService,
-    private compiler: Compiler,
-    private injector: Injector,
+    // private compiler: Compiler,
+    // private injector: Injector,
   ) {
     const _injector = this.viewContainerRef.parentInjector;
     this.dialogRef = _injector.get<DialogComponent>(DialogComponent);
@@ -82,7 +82,6 @@ export class TransactionDetailsComponent implements OnInit {
     let language: any = localStorage.getItem('language')
     dataObject.total = 0;
     let total = 0, totalAfterDisc = 0, totalVat = 0, totalDiscount = 0, totalSavingPoints = 0;
-    // this.loadDynamicComponent();
     dataObject.aTransactionItems.forEach((item: any, index: number) => {
       let name = '';
       if (item && item.oArticleGroupMetaData && item.oArticleGroupMetaData.oName && item.oArticleGroupMetaData.oName[language]) name = item?.oArticleGroupMetaData?.oName[language] + ' ';
@@ -441,29 +440,29 @@ export class TransactionDetailsComponent implements OnInit {
     });
   }
 
-  onOpenProductSlider(data: any) {
-    // data.bCanRightSliderTurnOnSupplier = this.oSupplierDetail?.bCanRightSliderTurnOn;
-    data.bCanRightSliderTurnOnRetailer = this.businessDetails?.bCanRightSliderTurnOn;
-    this.SupplierStockProductSliderData.next(data);
-    this.loadDynamicComponent();
-  }
+  // onOpenProductSlider(data: any) {
+  //   // data.bCanRightSliderTurnOnSupplier = this.oSupplierDetail?.bCanRightSliderTurnOn;
+  //   data.bCanRightSliderTurnOnRetailer = this.businessDetails?.bCanRightSliderTurnOn;
+  //   this.SupplierStockProductSliderData.next(data);
+  //   this.loadDynamicComponent();
+  // }
 
-  loadDynamicComponent() {
-    try {
-      console.log('loadDynamicComponent called');
-      import('supplierSlider/SupplierProductSliderModule').then(({ SupplierProductSliderModule }) => {
-      console.log('loadDynamicComponent called 1');
-        this.compiler.compileModuleAsync(SupplierProductSliderModule).then(moduleFactory => {
-          const moduleRef: NgModuleRef<typeof SupplierProductSliderModule> = moduleFactory.create(this.injector);
-          console.log('loadDynamicComponent called 2: ', moduleRef);
-          const componentFactory = moduleRef.instance.resolveComponent();
-          this.componentRef = this.container.createComponent(componentFactory, undefined, moduleRef.injector);
-          this.componentRef.instance.title = 'My application';
-          console.log('loadDynamicComponent called 3');
-        });
-      });
-    } catch (error) {
-      console.log('error: ', error);
-    }
-  }
+  // loadDynamicComponent() {
+  //   try {
+  //     console.log('loadDynamicComponent called');
+  //     import('supplierSlider/SupplierProductSliderModule').then(({ SupplierProductSliderModule }) => {
+  //     console.log('loadDynamicComponent called 1');
+  //       this.compiler.compileModuleAsync(SupplierProductSliderModule).then(moduleFactory => {
+  //         const moduleRef: NgModuleRef<typeof SupplierProductSliderModule> = moduleFactory.create(this.injector);
+  //         console.log('loadDynamicComponent called 2: ', moduleRef);
+  //         const componentFactory = moduleRef.instance.resolveComponent();
+  //         this.componentRef = this.container.createComponent(componentFactory, undefined, moduleRef.injector);
+  //         this.componentRef.instance.title = 'My application';
+  //         console.log('loadDynamicComponent called 3');
+  //       });
+  //     });
+  //   } catch (error) {
+  //     console.log('error: ', error);
+  //   }
+  // }
 }

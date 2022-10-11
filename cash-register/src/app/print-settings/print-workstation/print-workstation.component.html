@@ -38,25 +38,30 @@
                         </button>
                     </td>
                     <td *ngFor="let workstation of workstations">
-                        <div
-                            *ngIf="workstation.nPrintNodeComputerId && workstation?.printers?.length > 0; else set_workstation_printer">
-                            <ng-select fullWidth id="printer" name="printer" [clearable]="false" class="mt-2"
-                                [ngModel]="getSelectedValue({name: template.name, type: type.key, workstation: workstation})"
-                                (change)="onChange($event, {name: template.name, type: type.key, workstation: workstation})">
-                                <ng-option *ngFor="let printer of workstation?.printers" [value]="printer.id">
-                                    {{printer.name}}
-                                </ng-option>
-                            </ng-select>
-                            <div class="float-end mt-2">
-                                <button class="btn btn-info px-4 py-2">
-                                    <fa-icon [icon]="faPencilAlt"></fa-icon>
-                                </button>
-                                <button class="btn btn-success ms-1 px-4 py-2">
-                                    <fa-icon [icon]="faCopy"></fa-icon>
-                                </button>
-                                <button class="btn btn-danger ms-1 px-4 py-2">
-                                    <fa-icon [icon]="faXmark"></fa-icon>
-                                </button>
+                        <div *ngIf="workstation.nPrintNodeComputerId; else set_workstation_printer">
+                            <div
+                                *ngIf="getSelectedValue({name: template.name, type: type.key, workstation: workstation}) != '' && workstation[template.name][type.key]?.printerName != ''">
+                                {{ workstation[template.name][type.key]?.printerName || '' }}
+                                <div class="float-end mt-2">
+                                    <button class="btn btn-info px-4 py-2"
+                                        (click)="workstation[template.name][type.key].printerName = ''">
+                                        <fa-icon [icon]="faPencilAlt"></fa-icon>
+                                    </button>
+                                    <button class="btn btn-success ms-1 px-4 py-2">
+                                        <fa-icon [icon]="faCopy"></fa-icon>
+                                    </button>
+                                    <button class="btn btn-danger ms-1 px-4 py-2">
+                                        <fa-icon [icon]="faXmark"></fa-icon>
+                                    </button>
+                                </div>
+                            </div>
+                            <div
+                                *ngIf="!workstation[template.name] || !(workstation[template.name] && workstation[template.name][type.key]?.printerName && workstation[template.name][type.key].printerName != '' )">
+                                <ng-select id="printer" name="printer" [clearable]="false" class="mt-2"
+                                    [items]="printersList" bindLabel="name" bindValue="keyValue" [groupBy]="groupByFn"
+                                    [ngModel]="getSelectedValue({name: template.name, type: type.key, workstation: workstation})"
+                                    (ngModelChange)="onChange($event, {name: template.name, type: type.key, workstation: workstation})">
+                                </ng-select>
                             </div>
                         </div>
                         <ng-template #set_workstation_printer>

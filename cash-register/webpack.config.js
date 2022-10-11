@@ -198,13 +198,13 @@ module.exports = {
       },
       shared: share(sharedLibrary)
     }),
-    new ModuleFederationPlugin({
-      // For remotes (please adjust)
-      remotes: {
-        "supplierSlider": "supplierSlider@http://localhost:4202/supplierSlider.js",
-      },
-      shared: share(sharedLibrary)
-    }),
+    // new ModuleFederationPlugin({
+    //   // For remotes (please adjust)
+    //   remotes: {
+    //     "supplierSlider": "supplierSlider@http://localhost:4202/supplierSlider.js",
+    //   },
+    //   shared: share(sharedLibrary)
+    // }),
     sharedMappings.getPlugin()
   ],
 };
