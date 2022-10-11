@@ -16,7 +16,7 @@ export class AddFavouritesComponent implements OnInit {
   commonProducts: any;
   business: any = {};
   mode: string = '';
-  isStockSelected = true;
+  // isStockSelected = true;
   newSelectedProduct: any = {};
   requestParams: any = {
     iBusinessId: ''
@@ -48,6 +48,7 @@ export class AddFavouritesComponent implements OnInit {
     'iBusinessPartnerId',
     'iBusinessBrandId',
   ];
+  iLocationId: string = '';
 
   constructor(
     private viewContainer: ViewContainerRef,
@@ -60,29 +61,22 @@ export class AddFavouritesComponent implements OnInit {
 
   ngOnInit(): void {
     this.business._id = localStorage.getItem('currentBusiness');
-  }
+    this.iLocationId = localStorage.getItem('currentLocation') || '';
+  } 
 
-  search() {
+  async search() {
 
     this.shopProducts = [];
     this.commonProducts = [];
     // if (searchValue && searchValue.length > 2) {
     //   this.isLoading = true;
-    this.listShopProducts(this.searchKeyword, false);
-    if (!this.isStockSelected) {
-      this.listCommonBrandProducts(this.searchKeyword, false); // Searching for the products of common brand
-    }
-  }
-
-  /* Search API for finding the  common-brands products */
-  listShopProducts(searchValue: string | undefined, isFromEAN: boolean | false) {
     let data = {
       iBusinessId: this.business._id,
       skip: 0,
       limit: 10,
       sortBy: '',
       sortOrder: '',
-      searchValue: searchValue,
+      searchValue: this.searchKeyword,
       aProjection: this.aProjection,
       oFilterBy: {
         oStatic: {},
@@ -90,55 +84,92 @@ export class AddFavouritesComponent implements OnInit {
       }
     }
     this.searching = true;
-    this.apiService.postNew('core', '/api/v1/business/products/list', data).subscribe((result: any) => {
-      this.searching = false;
-      if (result && result.data && result.data.length) {
-        const response = result.data[0];
-        this.shopProducts = response.result;
-      }
-    }, (error) => {
-
-    });
-  }
-
-  listCommonBrandProducts(searchValue: string | undefined, isFromEAN: boolean | false) {
-    try {
-      let data = {
-        iBusinessId: this.business._id,
-        skip: 0,
-        limit: 10,
-        sortBy: '',
-        sortOrder: '',
-        searchValue: searchValue,
-        aProjection: this.aProjection,
-        oFilterBy: {
-          oStatic: {},
-          oDynamic: {}
-        }
-      };
-      this.searching = true;
-      this.apiService.postNew('core', '/api/v1/products/commonbrand/list', data).subscribe((result: any) => {
-        this.searching = false;
-        if (result && result.data && result.data.length) {
-          const response = result.data[0];
-          this.commonProducts = response.result;
-        }
-      }, (error) => {
-        this.searching = false;
-      })
-    } catch (e) {
-      this.searching = false;
+    const shopResult:any = await this.apiService.postNew('core', '/api/v1/business/products/list', data).toPromise();
+    if (shopResult && shopResult.data && shopResult.data.length) {
+      this.shopProducts = shopResult.data[0].result;
     }
+    const commonResult:any = await this.apiService.postNew('core', '/api/v1/products/commonbrand/list', data).toPromise();
+    if (commonResult && commonResult.data && commonResult.data.length) {
+      const response = commonResult.data[0];
+      this.commonProducts = response.result;
+    }
+    this.searching = false;
+    // this.listShopProducts(this.searchKeyword, false);
+    // if (!this.isStockSelected) {
+      // this.listCommonBrandProducts(this.searchKeyword, false); // Searching for the products of common brand
+    // }
   }
+  
+
+  /* Search API for finding the  common-brands products */
+  // listShopProducts(searchValue: string | undefined, isFromEAN: boolean | false) {
+  //   let data = {
+  //     iBusinessId: this.business._id,
+  //     skip: 0,
+  //     limit: 10,
+  //     sortBy: '',
+  //     sortOrder: '',
+  //     searchValue: searchValue,
+  //     aProjection: this.aProjection,
+  //     oFilterBy: {
+  //       oStatic: {},
+  //       oDynamic: {}
+  //     }
+  //   }
+  //   this.searching = true;
+  //   this.apiService.postNew('core', '/api/v1/business/products/list', data).subscribe((result: any) => {
+  //     this.searching = false;
+  //     if (result && result.data && result.data.length) {
+  //       const response = result.data[0];
+  //       this.shopProducts = response.result;
+  //     }
+  //   }, (error) => {
+
+  //   });
+  // }
+
+  // listCommonBrandProducts(searchValue: string | undefined, isFromEAN: boolean | false) {
+  //   try {
+  //     let data = {
+  //       iBusinessId: this.business._id,
+  //       skip: 0,
+  //       limit: 10,
+  //       sortBy: '',
+  //       sortOrder: '',
+  //       searchValue: searchValue,
+  //       aProjection: this.aProjection,
+  //       oFilterBy: {
+  //         oStatic: {},
+  //         oDynamic: {}
+  //       }
+  //     };
+  //     this.searching = true;
+  //     this.apiService.postNew('core', '/api/v1/products/commonbrand/list', data).subscribe((result: any) => {
+  //       this.searching = false;
+  //       if (result && result.data && result.data.length) {
+  //         const response = result.data[0];
+  //         this.commonProducts = response.result;
+  //       }
+  //     }, (error) => {
+  //       this.searching = false;
+  //     })
+  //   } catch (e) {
+  //     this.searching = false;
+  //   }
+  // }
 
   onSelectProduct(product: any, isFrom: string, isFor: string) {
     console.log('selected product', product);
-    this.shopProducts = null;
-
     this.newSelectedProduct.sName = product.oName ? product.oName['en'] : 'No name';
-    this.newSelectedProduct.nPrice = product.nPriceIncludesVat || 0;
     this.newSelectedProduct.iBusinessProductId = product._id;
     this.newSelectedProduct.aImage = product.aImage;
+    if (product?.aLocation?.length){
+      this.newSelectedProduct.nPrice = product?.aLocation.filter((location: any) => location._id === this.iLocationId)[0]?.nPriceIncludesVat || 0
+    }
+
+    this.shopProducts = null;
+    this.commonProducts = null;
+    console.log(this.shopProducts, this.commonProducts);
   }
 
   create(event: any) {
