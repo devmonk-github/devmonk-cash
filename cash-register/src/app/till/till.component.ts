@@ -148,7 +148,23 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     this.getPaymentMethods();
     this.getParkedTransactions();
     this.barcodeService.barcodeScanned.subscribe((barcode: string) => {
-      this.toastrService.show({ type: 'success', text: 'Barcode detected: ' + barcode })
+      if(barcode.startsWith("AI")){
+        // activityitem.find({sNumber: barcode},{eTransactionItem.eKind : 1})
+        this.toastrService.show({ type: 'success', text: 'Barcode detected: ' + barcode })
+      } else if (barcode.startsWith("T")){
+        //transactions.find({sNumber: barcode})
+        this.toastrService.show({ type: 'success', text: 'Barcode detected: ' + barcode })
+      } else if (barcode.startsWith("A")) {
+        //activity.find({sNumber: barcode})
+        this.toastrService.show({ type: 'success', text: 'Barcode detected: ' + barcode })
+      } else if (barcode.startsWith("G")) {
+        // activityitem.find({sGiftcardNumber: barcode},{eTransactionItem.eKind : 1})
+        this.toastrService.show({ type: 'success', text: 'Barcode detected: ' + barcode })
+      } else if (barcode.startsWith("R")) {
+        // activityitem.find({sRepairNumber: barcode},{eTransactionItem.eKind : 1})
+        this.toastrService.show({ type: 'success', text: 'Barcode detected: ' + barcode })
+      }
+
     });
     this.loadTransaction();
 
