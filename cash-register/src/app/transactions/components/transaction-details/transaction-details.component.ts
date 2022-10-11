@@ -223,10 +223,10 @@ export class TransactionDetailsComponent implements OnInit {
     };
 
     oDataSource.nTotalOriginalAmount = nTotalOriginalAmount;
-    console.log(oDataSource);
+    // console.log(oDataSource);
     this.receiptService.exportToPdf({
       oDataSource: oDataSource,
-      pdfTitle: 'Transaction Receipt',
+      pdfTitle: oDataSource.sNumber,
       templateData: template.data
     });
     return;
