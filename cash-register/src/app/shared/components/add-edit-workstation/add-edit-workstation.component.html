@@ -24,12 +24,16 @@
             <div class="col-md-6 pt-2">
                 <label> {{ "PRINT_NODE_COMPUTER" | translate }}</label>
             </div>
-            <div class="col-md-6 pt-2">
+            <div class="col-md-6 pt-2 d-flex">
                 <ng-select id="computer" name="computer" [clearable]="false"
-                    [(ngModel)]="workstation.nPrintNodeComputerId">
+                    [(ngModel)]="workstation.nPrintNodeComputerId" class="w-100">
                     <ng-option *ngFor="let computer of computers" [value]="computer.id"> {{computer.name}}
                     </ng-option>
                 </ng-select>
+                <button type="button" class="btn btn-sm btn-light float-end"
+                    (click)="workstation.nPrintNodeComputerId = null">
+                    <fa-icon [icon]="faTimes"></fa-icon>
+                </button>
             </div>
         </div>
     </div>
