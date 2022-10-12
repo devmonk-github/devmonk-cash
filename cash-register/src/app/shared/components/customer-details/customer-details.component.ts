@@ -16,7 +16,7 @@ import {
   ApexLegend
 } from "ng-apexcharts";
 import { ToastService } from '../toast';
-import { TransactionDetailsComponent } from 'src/app/transactions/components/transaction-details/transaction-details.component';
+import { TransactionDetailsComponent } from '../../../transactions/components/transaction-details/transaction-details.component';
 
 export interface BarChartOptions {
   series: ApexAxisChartSeries;
@@ -336,6 +336,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
   }
 
   getCoreStatistics() {
+    if (this.customer.bCounter) return;
     const dDate = new Date(new Date().setHours(0, 0, 0));
     dDate.setFullYear(dDate.getFullYear() - 1);
     const body = {
@@ -438,6 +439,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
   }
 
   loadTransactions() {
+    if (this.customer.bCounter) return;
     this.bTransactionsLoader = true;
     const body = {
       iCustomerId: this.customer._id,
@@ -524,6 +526,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
   }
 
   loadActivities() {
+    if (this.customer.bCounter) return;
     this.aActivities = [];
     this.bActivitiesLoader = true;
     let oBody: any = { ...this.requestParams };
@@ -540,6 +543,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
   }
 
   loadActivityItems() {
+    if (this.customer.bCounter) return;
     this.bActivityItemsLoader = true;
     let oBody: any = { ...this.requestParams };
     delete oBody.oFilterBy._id;
@@ -572,6 +576,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
   }
 
   loadStatisticsTabData() {
+    if (this.customer.bCounter) return;
 
     this.statisticsChartOptions = {
       series: this.aStatisticsChartData.map((el: any) => el.item.element),
@@ -671,6 +676,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
 
 
   async fetchLoyaltyPoints() {
+    if (this.customer.bCounter) return;
     if (this.customer) {
       const nPointsResult: any = await this.apiService.getNew('cashregistry', `/api/v1/points-settings/points?iBusinessId=${this.requestParams.iBusinessId}&iCustomerId=${this.customer._id}`).toPromise();
       const oPointsSettingsResult: any = await this.apiService.getNew('cashregistry', `/api/v1/points-settings?iBusinessId=${this.requestParams.iBusinessId}`).toPromise();
