@@ -1215,9 +1215,21 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   async openModal(barcode:any){
+    this.toastrService.show({ type: 'success', text: 'Barcode detected: ' + barcode })
     if (barcode.startsWith("AI")) {
+      console.log('activity', barcode);
       // activityitem.find({sNumber: barcode},{eTransactionItem.eKind : 1})
-      this.toastrService.show({ type: 'success', text: 'Barcode detected: ' + barcode })
+      const oBody = {
+        iBusinessId: this.business._id,
+        oFilterBy: {
+          sNumber: barcode
+        }
+      }
+      const result: any = await this.apiService.postNew('cashregistry', '/api/v1/transaction/search', oBody).toPromise();
+      if (result?.activities?.records?.length) {
+        this.openTransaction(result?.activities?.records[0], 'activity');
+      }
+
     } else if (barcode.startsWith("T")) {
 
       console.log('transaction', barcode);
@@ -1228,24 +1240,22 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
         } 
       }
       const result:any = await this.apiService.postNew('cashregistry', '/api/v1/transaction/search', oBody).toPromise();
-      if (result?.transactions?.records?.length)
+      if (result?.transactions?.records?.length){
         this.openTransaction(result?.transactions?.records[0], 'transaction');
-
+      }
       //transactions.find({sNumber: barcode})
-      this.toastrService.show({ type: 'success', text: 'Barcode detected: ' + barcode })
     } else if (barcode.startsWith("A")) {
       //activity.find({sNumber: barcode})
-      this.toastrService.show({ type: 'success', text: 'Barcode detected: ' + barcode })
     } else if (barcode.startsWith("G")) {
       // activityitem.find({sGiftcardNumber: barcode},{eTransactionItem.eKind : 1})
-      this.toastrService.show({ type: 'success', text: 'Barcode detected: ' + barcode })
     } else if (barcode.startsWith("R")) {
       // activityitem.find({sRepairNumber: barcode},{eTransactionItem.eKind : 1})
-      this.toastrService.show({ type: 'success', text: 'Barcode detected: ' + barcode })
     }
+    
   }
 
   openTransaction(transaction: any, itemType: any) {
+    console.log('open transaction', transaction, itemType);
     this.dialogService.openModal(TransactionItemsDetailsComponent, { cssClass: "modal-xl", context: { transaction, itemType } })
       .instance.close.subscribe(result => {
         const transactionItems: any = [];
