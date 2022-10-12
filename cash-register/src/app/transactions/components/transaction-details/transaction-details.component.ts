@@ -54,6 +54,7 @@ export class TransactionDetailsComponent implements OnInit {
   // componentRef: any;
 
   private pn2escposService = new Pn2escposService();
+  printSettings: any;
   constructor(
     private viewContainerRef: ViewContainerRef,
     private apiService: ApiService,
@@ -123,6 +124,7 @@ export class TransactionDetailsComponent implements OnInit {
     this.fetchCustomer(this.transaction.oCustomer._id);
     this.fetchTransaction(this.transaction.sNumber)
     this.getPrintSetting();
+    this.getPdfPrintSetting();
   }
 
   fetchBusinessDetails() {
@@ -175,6 +177,21 @@ export class TransactionDetailsComponent implements OnInit {
 
   downloadWebOrder() {
     this.generatePDF(false);
+  }
+
+  getPdfPrintSetting() {
+    this.apiService.getNew('cashregistry', `/api/v1/print-settings/${this.iBusinessId}/${this.iWorkstationId}/pdf/transaction`).subscribe(
+      (result: any) => {
+        if (result?.data?._id) {
+          this.printSettings = result?.data;
+        } else {
+          this.toastService.show({ type: 'danger', text: 'Check your business -> printer settings' });
+        }
+      },
+      (error: any) => {
+        console.error(error)
+      }
+    );
   }
 
   async generatePDF(print: boolean) {
@@ -230,8 +247,10 @@ export class TransactionDetailsComponent implements OnInit {
     this.receiptService.exportToPdf({
       oDataSource: oDataSource,
       pdfTitle: oDataSource.sNumber,
-      templateData: template.data
+      templateData: template.data,
+      printSettings: this.printSettings
     });
+    
     return;
     this.apiService.getNew('cashregistry', '/api/v1/pdf/templates/' + this.iBusinessId + '?sName=' + sName + '&eType=' + eType).subscribe(
       (result: any) => {
