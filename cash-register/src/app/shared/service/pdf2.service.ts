@@ -3,13 +3,17 @@ import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 import { CanvasService } from './canvas.service';
+import { PrintService } from './print.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PdfService {
+  iBusinessId: string;
 
-  constructor(private canvas: CanvasService) { }
+  constructor(private printService: PrintService) {
+    this.iBusinessId = localStorage.getItem('currentBusiness') || '';
+   }
 
   /** Method to set PDF Title */
   setTitle(logo: any, title: string, page: any, pageSize: string): any {
@@ -105,7 +109,7 @@ export class PdfService {
     return docDefinition;
   }
 
-  generatePdf(docDefinition: any, fileName: any) {
+  generatePdf(docDefinition: any, fileName: any, printSettings:any) {
     // const fonts = {
     //   MyCustom: {
     //     normal: 'GIL_____.ttf',
@@ -126,10 +130,21 @@ export class PdfService {
     // console.log(pdfMake);
 
     const pdfObject = pdfMake.createPdf(docDefinition);
+    pdfObject.getBase64((data:any)=>{
+      this.printService.printPDF(
+        this.iBusinessId,
+        data,
+        printSettings.nPrinterId,
+        printSettings.nComputerId,
+        1,
+        fileName,
+        { title: fileName }
+      )
+    });
     pdfObject.download(fileName);
   }
 
-  getPdfData(styles: any, content: any, orientation: string, pageSize: any, fileName: string, footer?: any, pageMargins?: any, defaultStyle?: any) {
-    this.generatePdf(this.getDocDefinition(styles, content, orientation, pageSize, footer, pageMargins, defaultStyle), fileName);
+  getPdfData(styles: any, content: any, orientation: string, pageSize: any, fileName: string, footer?: any, pageMargins?: any, defaultStyle?: any, printSettings ?:any) {
+    this.generatePdf(this.getDocDefinition(styles, content, orientation, pageSize, footer, pageMargins, defaultStyle), fileName, printSettings);
   }
 }

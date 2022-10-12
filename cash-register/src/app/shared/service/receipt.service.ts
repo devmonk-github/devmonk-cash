@@ -105,7 +105,7 @@ export class ReceiptService {
         this.iWorkstationId = localStorage.getItem('currentWorkstation') || '';
     }
 
-    async exportToPdf({ oDataSource, templateData, pdfTitle }:any){
+    async exportToPdf({ oDataSource, templateData, pdfTitle, printSettings }:any){
         this.oOriginalDataSource = oDataSource;
         console.log(this.oOriginalDataSource);
         this.pdfService.getTranslations();
@@ -128,7 +128,8 @@ export class ReceiptService {
             this.commonService.pdfTitle,
             this.commonService.footer,
             this.commonService.oCommonParameters.pageMargins,
-            this.commonService.oCommonParameters.defaultStyle
+            this.commonService.oCommonParameters.defaultStyle,
+            printSettings
         );
         this.cleanUp();
     }
@@ -299,6 +300,10 @@ export class ReceiptService {
 
         if(forEach){ //if we have forEach (nested array) then loop through it
             currentDataSource = this.oOriginalDataSource[forEach]; //take nested array as currentDataSource
+            if(!currentDataSource){
+                currentDataSource = [];
+                currentDataSource[0] = this.oOriginalDataSource;
+            } 
             let bWidthPushed = false;
             currentDataSource.forEach((dataSource: any) => {
                 let dataRow: any = [];
@@ -430,8 +435,14 @@ export class ReceiptService {
                 this.DIVISON_FACTOR = row.length;
                 columns.push(this.processTextAsTableData(el));
                 this.DIVISON_FACTOR = 1;
-            }
-             else {
+            } else if (el?.type === 'stack') {
+                let obj:any = {
+                    "stack":this.processStack(el)
+                };
+                if (el?.width) obj.width = el.width;
+                // console.log(obj);
+                columns.push(obj);
+            } else {
                 let html = el.html || '';
                 // console.log(360, html);
                 let object = el?.object;
@@ -545,6 +556,27 @@ export class ReceiptService {
         if (row?.styles) obj = { ...obj, ...row.styles };
         dataRow.push(obj);
         // tableWidths.push(this.getWidth(row.size));
+    }
+
+    processStack(item:any, object?:any){
+        // console.log('processStack',item);
+        const stack:any = [];
+        item.elements.forEach((el:any)=>{
+            if(el?.type === 'image'){
+                stack.push(this.addImage(el))
+            } else {
+                let html = el.html;
+                let text = this.pdfService.replaceVariables(html, (object) ? this.oOriginalDataSource[object] : this.oOriginalDataSource) || html;
+                let obj: any = { text: text };
+                if (el?.alignment) obj.alignment = el.alignment;
+                if (el?.width) obj.width = el.width;
+                if (el?.styles) {
+                    obj = { ...obj, ...el.styles }
+                }
+                stack.push(obj)
+            }
+        });
+        return stack;
     }
 
     cleanUp(){

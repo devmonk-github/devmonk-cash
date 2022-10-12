@@ -963,8 +963,9 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
         dStartDate: this.filterDates.startDate,
         dEndDate: this.filterDates.endDate,
         bIsArticleGroupLevel: this.bIsArticleGroupLevel,
-        bIsSupplierMode: this.bIsSupplierMode
+        bIsSupplierMode: this.bIsSupplierMode,
       },
+      sTransactionType: this.optionMenu,
       iBusinessId: this.iBusinessId,
     };
     if (

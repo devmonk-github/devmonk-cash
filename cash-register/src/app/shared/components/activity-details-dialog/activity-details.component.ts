@@ -370,17 +370,21 @@ export class ActivityDetailsComponent implements OnInit {
   }
 
   async downloadCustomerReceipt(index: number) {
-    const sBarcodeURI = this.generateBarcodeURI(this.activity?.oType.eKind !== 'repair');    
-    if (!this.businessDetails) {
+    // console.log('downloading customer receipt', index, this.activity);
+    let oDataSource = JSON.parse(JSON.stringify(this.activity));
+    if (oDataSource?.activityitems){
+      oDataSource = oDataSource.activityitems[index];
+    }
+    const sBarcodeURI = this.generateBarcodeURI(oDataSource?.oType.eKind !== 'repair', oDataSource.sNumber);    
+    if(!this.businessDetails){
       const result: any = await this.getBusinessDetails().toPromise();
       this.businessDetails = result.data;
-      this.activity.businessDetails = this.businessDetails;
     }
+    oDataSource.businessDetails = this.businessDetails;
     // const template = await this.getTemplate('activity').toPromise();
-    // console.log(this.activity);
-    const template = await this.getTemplate(this.activity?.oType.eKind).toPromise();
+    // console.log(oDataSource);
+    const template = await this.getTemplate(oDataSource?.oType.eKind).toPromise();
 
-    const oDataSource = JSON.parse(JSON.stringify(this.activity));
     oDataSource.oCustomer = {
       sFirstName: this.customer.sFirstName,
       sLastName: this.customer.sLastName,
@@ -514,9 +518,9 @@ export class ActivityDetailsComponent implements OnInit {
         });
   }
 
-  generateBarcodeURI(displayValue: boolean = true) {
+  generateBarcodeURI(displayValue: boolean = true, data :any) {
     var canvas = document.createElement("canvas");
-    JsBarcode(canvas, this.activity.sNumber, { format: "CODE128", displayValue: displayValue });
+    JsBarcode(canvas, data, { format: "CODE128", displayValue: displayValue });
     return canvas.toDataURL("image/png");
     // this.getBase64FromUrl('')  
   }
@@ -528,5 +532,37 @@ export class ActivityDetailsComponent implements OnInit {
   //   }
   //   return this.apiService.getNew('cashregistry', `/api/v1/pdf/templates/generateBarcode/`, oBody);
   // }
+
+  async downloadReceipt(){
+    // console.log(this.activity);
+    const oDataSource = JSON.parse(JSON.stringify(this.activity));
+    const template = await this.getTemplate('activity').toPromise();
+    if (!this.businessDetails) {
+      const result: any = await this.getBusinessDetails().toPromise();
+      this.businessDetails = result.data;
+    }
+    
+    oDataSource.businessDetails = this.businessDetails;
+    
+    oDataSource.oCustomer = {
+      sFirstName: this.customer.sFirstName,
+      sLastName: this.customer.sLastName,
+      sEmail: this.customer.sEmail,
+      sMobile: this.customer.oPhone.sCountryCode + this.customer.oPhone.sMobile,
+      sLandLine: this.customer.oPhone.sLandLine,
+    };
+
+    const sBarcodeURI = this.generateBarcodeURI(false, oDataSource.sNumber);
+    oDataSource.sBarcodeURI = sBarcodeURI;
+    
+    oDataSource.sBusinessLogoUrl = (await this.getBase64FromUrl(oDataSource?.businessDetails?.sLogoLight).toPromise()).data;
+
+    this.receiptService.exportToPdf({
+      oDataSource: oDataSource,
+      templateData: template.data,
+      pdfTitle: this.activity.sNumber
+    })
+
+  }
 
 }

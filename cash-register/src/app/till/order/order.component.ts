@@ -89,6 +89,8 @@ export class OrderComponent implements OnInit {
           this.item.iBusinessBrandId = brand._id;
           this.updateProperties(articlegroup);
           this.changeInMargin();
+        } else {
+          this.deleteItem();
         }
       });
   }

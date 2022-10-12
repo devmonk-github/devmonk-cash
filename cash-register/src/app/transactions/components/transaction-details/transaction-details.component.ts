@@ -11,6 +11,7 @@ import { ReceiptService } from 'src/app/shared/service/receipt.service';
 import { Pn2escposService } from 'src/app/shared/service/pn2escpos.service';
 import { PrintService } from 'src/app/shared/service/print.service';
 import { Observable } from 'rxjs';
+import { ToastService } from 'src/app/shared/components/toast';
 const moment = (_moment as any).default ? (_moment as any).default : _moment;
 // import { faMagnifyingGlassPlus } from '@fortawesome/free-solid-svg-icons';
 
@@ -34,31 +35,33 @@ export class TransactionDetailsComponent implements OnInit {
   transaction: any = {};
   iBusinessId: string = '';
   iLocationId: string = '';
+  iWorkstationId: string = '';
   loading: boolean = true;
   customerLoading: boolean = true;
   customer: any = {};
   imagePlaceHolder: string = '../../../../assets/images/no-photo.svg';
   eType: string = '';
-  computerId: number | undefined;
-  printerId: number | undefined;
   transactionId: string = '5c2f276e86a7527e67a45e9d'
   pdfGenerating: Boolean = false;
   downloadWithVATLoading: Boolean = false;
   businessDetails: any = {};
   ableToDownload: Boolean = false;
   from !: string;
+  thermalPrintSettings !: any;
   // faMagnifyingGlassPlus = faMagnifyingGlassPlus;
   // SupplierStockProductSliderData = new BehaviorSubject<any>({});
   // @ViewChild('supplierSliderTemplate', { read: ViewContainerRef }) container!: ViewContainerRef;
   // componentRef: any;
 
   private pn2escposService = new Pn2escposService();
+  printSettings: any;
   constructor(
     private viewContainerRef: ViewContainerRef,
     private apiService: ApiService,
     private dialogService: DialogService,
     private receiptService: ReceiptService,
     private printService: PrintService,
+    private toastService: ToastService
     // private compiler: Compiler,
     // private injector: Injector,
   ) {
@@ -69,6 +72,7 @@ export class TransactionDetailsComponent implements OnInit {
   ngOnInit(): void {
     this.iBusinessId = localStorage.getItem("currentBusiness") || '';
     this.iLocationId = localStorage.getItem("currentLocation") || '';
+    this.iWorkstationId = localStorage.getItem("currentWorkstation") || '';
     let dataObject = JSON.parse(JSON.stringify(this.transaction));
     dataObject.aPayments.forEach((obj: any) => {
       obj.dCreatedDate = moment(dataObject.dCreatedDate).format('DD-MM-yyyy hh:mm');
@@ -91,7 +95,7 @@ export class TransactionDetailsComponent implements OnInit {
       let disc = parseFloat(item.nDiscount);
       if (item.bPaymentDiscountPercent) {
         disc = (disc * parseFloat(item.nPriceIncVat) / (100 + parseFloat(item.nVatRate)));
-        item.nDiscountToShow = parseFloat(disc.toFixed(2)) ;
+        item.nDiscountToShow = parseFloat(disc.toFixed(2));
       } else { item.nDiscountToShow = disc; }
       item.priceAfterDiscount = (parseFloat(item.nPaymentAmount) - parseFloat(item.nDiscountToShow));
       item.nPriceIncVatAfterDiscount = (parseFloat(item.nPriceIncVat) - parseFloat(item.nDiscountToShow));
@@ -120,6 +124,7 @@ export class TransactionDetailsComponent implements OnInit {
     this.fetchCustomer(this.transaction.oCustomer._id);
     this.fetchTransaction(this.transaction.sNumber)
     this.getPrintSetting();
+    this.getPdfPrintSetting();
   }
 
   fetchBusinessDetails() {
@@ -174,6 +179,21 @@ export class TransactionDetailsComponent implements OnInit {
     this.generatePDF(false);
   }
 
+  getPdfPrintSetting() {
+    this.apiService.getNew('cashregistry', `/api/v1/print-settings/${this.iBusinessId}/${this.iWorkstationId}/pdf/transaction`).subscribe(
+      (result: any) => {
+        if (result?.data?._id) {
+          this.printSettings = result?.data;
+        } else {
+          this.toastService.show({ type: 'danger', text: 'Check your business -> printer settings' });
+        }
+      },
+      (error: any) => {
+        console.error(error)
+      }
+    );
+  }
+
   async generatePDF(print: boolean) {
     const sName = 'Sample', eType = this.transaction.eType;
     this.downloadWithVATLoading = true;
@@ -223,12 +243,14 @@ export class TransactionDetailsComponent implements OnInit {
     };
 
     oDataSource.nTotalOriginalAmount = nTotalOriginalAmount;
-    console.log(oDataSource);
+    // console.log(oDataSource);
     this.receiptService.exportToPdf({
       oDataSource: oDataSource,
-      pdfTitle: 'Transaction Receipt',
-      templateData: template.data
+      pdfTitle: oDataSource.sNumber,
+      templateData: template.data,
+      printSettings: this.printSettings
     });
+    
     return;
     this.apiService.getNew('cashregistry', '/api/v1/pdf/templates/' + this.iBusinessId + '?sName=' + sName + '&eType=' + eType).subscribe(
       (result: any) => {
@@ -236,8 +258,8 @@ export class TransactionDetailsComponent implements OnInit {
         let printData = null
         if (print) {
           printData = {
-            computerId: this.computerId,
-            printerId: this.printerId,
+            computerId: this.thermalPrintSettings?.nComputerId,
+            printerId: this.thermalPrintSettings?.nPrinterId,
             title: filename,
             quantity: 1
           }
@@ -394,10 +416,11 @@ export class TransactionDetailsComponent implements OnInit {
   }
 
   getPrintSetting() {
-    this.apiService.getNew('cashregistry', '/api/v1/print-settings/' + '6182a52f1949ab0a59ff4e7b' + '/' + '624c98415e537564184e5614').subscribe(
+    this.apiService.getNew('cashregistry', `/api/v1/print-settings/${this.iBusinessId}/${this.iWorkstationId}/thermal/transaction`).subscribe(
       (result: any) => {
-        this.computerId = result?.data?.nComputerId;
-        this.printerId = result?.data?.nPrinterId;
+        if (result?.data?._id) {
+          this.thermalPrintSettings = result?.data;
+        }
       },
       (error: any) => {
         console.error(error)
@@ -427,14 +450,17 @@ export class TransactionDetailsComponent implements OnInit {
   }
 
   getThermalReceipt() {
+    if (!this.thermalPrintSettings?.nPrinterId || !this.thermalPrintSettings?.nComputerId) {
+      this.toastService.show({ type: 'danger', text: 'Check your business -> printer settings' });
+    }
     this.apiService.getNew('cashregistry', `/api/v1/print-template/business-receipt/${this.iBusinessId}/${this.iLocationId}`).subscribe((result: any) => {
       if (result?.data?.aTemplate?.length > 0) {
         let transactionDetails = { business: this.businessDetails, ...this.transaction };
         let command = this.pn2escposService.generate(JSON.stringify(result.data.aTemplate), JSON.stringify(transactionDetails));
-        this.printerId = 70780318;
-        this.computerId = 394051;
-        this.printService.openDrawer(this.iBusinessId, command, this.printerId, this.computerId).then((response) => {
-          console.log(response);
+        this.printService.openDrawer(this.iBusinessId, command, this.thermalPrintSettings?.nPrinterId, this.thermalPrintSettings?.nComputerId).then((response: any) => {
+          if (response.deviceStatus == "disconnected") {
+            this.toastService.show({ type: 'warning', text: 'Your printer is offline' });
+          }
         })
       }
     });
