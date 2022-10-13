@@ -174,8 +174,8 @@ export class ReceiptService {
             } else if(row?.type === 'rect'){
                 this.content.push(this.addRect(row.coordinates, row?.absolutePosition));
             } else {
-
-                let text = this.pdfService.replaceVariables(row.html, this.oOriginalDataSource);
+                let object = row?.object;
+                let text = this.pdfService.replaceVariables(row.html, (object) ? this.oOriginalDataSource[object] : this.oOriginalDataSource); 
                 let obj = { text: text };
                 if (row?.styles) obj = { ...obj, ...row.styles };
                 texts.push(obj);

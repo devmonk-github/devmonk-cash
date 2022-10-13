@@ -208,6 +208,7 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
     if (this.iStatisticId) {
       this.oStatisticsData.dStartDate = this.router.getCurrentNavigation()?.extras?.state?.dStartDate ?? null;
       this.oStatisticsData.dEndDate = this.router.getCurrentNavigation()?.extras?.state?.dEndDate ?? null;
+      this.oStatisticsData.bIsDayStateOpened = this.router.getCurrentNavigation()?.extras?.state?.bIsDayStateOpened ? true : false;
       if (this.oStatisticsData.dStartDate) {
         this.filterDates.startDate = this.oStatisticsData.dStartDate;
         const endDate = (this.oStatisticsData.dEndDate) ? this.oStatisticsData.dEndDate : new Date();
@@ -224,8 +225,7 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
     this.setOptionMenu()
     this.fetchBusinessDetails();
 
-    if (!this.IsDynamicState || this.iStatisticId) this.listCurrentStatisticDocument(); // Static Data
-    else this.fetchStatistics(this.sDisplayMethod.toString()); // Dynamic Data from transaction-item
+    this.fetchStatistics(this.sDisplayMethod.toString()); /* Only for view or dynamic or static document */
 
     this.fetchBusinessLocation();
     this.getProperties();
@@ -645,19 +645,50 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
     }
   }
 
-  /* Listing the Statistic document with filter  */
-  listCurrentStatisticDocument(sDisplayMethod?: string) {
+  fetchStatistics(sDisplayMethod?: string) {
+    if (this.iStatisticId) this.fetchDayClosureData(sDisplayMethod);
+    else this.fetchAuditStatistic(sDisplayMethod);
+  }
+
+  /* (Only, for Viewing statistic) Day-closure view whenever we will have the iStatisticId */
+  fetchDayClosureData(sDisplayMethod?: string) {
+    /* If not closed yet then we require both data static as well and dynamic */
+    console.log('-------fetchDayClosureData---->: ', this.oStatisticsData.bIsDayStateOpened, this.iStatisticId);
+    if (this.oStatisticsData.bIsDayStateOpened) {
+      this.getStaticData(sDisplayMethod);
+      this.getDynamicData(sDisplayMethod);
+    } else {
+      /* Already closed then we can get all the data from one API only */
+      this.getStaticData(sDisplayMethod);
+    }
+  }
+
+  /* Fetch Audit (Be it Static or Dynamic), where user can change filter as well */
+  fetchAuditStatistic(sDisplayMethod?: string) {
+    if (this.IsDynamicState) this.getDynamicData(sDisplayMethod);
+    else this.getStaticData();
+  }
+
+  /* Static Data for statistic (from statistic document) */
+  getStaticData(sDisplayMethod?: string) {
     this.aStatistic = [];
     this.aPaymentMethods = [];
     this.bStatisticLoading = true;
+
+    let aLocation = this?.aSelectedLocation?.length ? this.aSelectedLocation : [];
+    let iWorkstationId = this.selectedWorkStation?._id;
+    if (this.iStatisticId) {
+      /* It's only for view purpose and we can only view for the current location and current workstation */
+      aLocation = [this.iLocationId];
+      iWorkstationId = this.iWorkstationId
+    }
+
     const oBody: any = {
       iBusinessId: this.iBusinessId,
       iStatisticId: this.iStatisticId,
       oFilter: {
-        aLocationId: this?.aSelectedLocation?.length
-          ? this.aSelectedLocation
-          : [],
-        iWorkstationId: this.selectedWorkStation?._id,
+        aLocationId: aLocation,
+        iWorkstationId: iWorkstationId,
         sTransactionType: this.optionMenu,
         sDisplayMethod: sDisplayMethod || this.sDisplayMethod.toString(),
         dStartDate: this.statisticFilter.dFromState,
@@ -695,18 +726,25 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
       });
   }
 
-  fetchStatistics(sDisplayMethod?: string) {
-    if (!this.IsDynamicState) return this.listCurrentStatisticDocument(); // Statistic Document
+  /* Dynamic Data for statistic (from transaction-item) */
+  getDynamicData(sDisplayMethod?: string) {
 
     /* Below for Dynamic-data */
     this.checkShowDownload();
     this.aStatistic = [];
     this.aPaymentMethods = [];
+    let aLocation = this?.aSelectedLocation?.length ? this.aSelectedLocation : [];
+    let iWorkstationId = this.selectedWorkStation?._id;
+    if (this.iStatisticId) {
+      /* It's only for view purpose and we can only view for the current location and current workstation */
+      aLocation = [this.iLocationId];
+      iWorkstationId = this.iWorkstationId
+    }
     const oBody = {
       iBusinessId: this.iBusinessId,
       oFilter: {
-        aLocationId: this?.aSelectedLocation?.length ? this.aSelectedLocation : [],
-        iWorkstationId: this.selectedWorkStation?._id,
+        aLocationId: aLocation,
+        iWorkstationId: iWorkstationId,
         iEmployeeId: this.selectedEmployee?._id,
         sTransactionType: this.optionMenu,
         sDisplayMethod: sDisplayMethod || this.sDisplayMethod.toString(),
@@ -964,6 +1002,8 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
         dEndDate: this.filterDates.endDate,
         bIsArticleGroupLevel: this.bIsArticleGroupLevel,
         bIsSupplierMode: this.bIsSupplierMode,
+        iLocationId: this?.aSelectedLocation?.length ? this.aSelectedLocation : [],
+        iWorkstationId: this.selectedWorkStation?._id,
       },
       sTransactionType: this.optionMenu,
       iBusinessId: this.iBusinessId,

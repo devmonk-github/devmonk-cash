@@ -8,7 +8,7 @@
         </div>
     </div>
     <div class="card-body">
-        <app-pn-tabs class="tab-content">
+        <app-pn-tabs class="tab-content" [activeTabIndex]="activeTabIndex">
             <app-pn-tab tabTitle="{{ 'EXTERNAL_GIFTCARDS' | translate}}" (click)="nAmount = 0" #externalGiftcards>
                 <div class="dataTables_wrapper dt-bootstrap4 no-footer">
                     <!-- <img *ngIf="externalGiftCardDetails?.profileIconUrl" style="height: 35px; width: 35px;"

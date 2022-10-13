@@ -34,6 +34,8 @@ export class CardsComponent implements OnInit, AfterViewInit {
   customer: any;
   pincode: any;
   giftCardInfo = { sGiftCardNumber: '', pincode: '', nAmount: 0, profileIconUrl: '', type: 'custom', nPaidAmount: 0, iArticleGroupId: '' };
+  oGiftcard:any;
+  activeTabIndex:number = 0;
   // elem ref
   constructor(
     private viewContainerRef: ViewContainerRef,
@@ -48,6 +50,11 @@ export class CardsComponent implements OnInit, AfterViewInit {
     this.customer = this.dialogRef.context.customer;
     this.iBusinessId = localStorage.getItem('currentBusiness');
     this.fetchLoyaltyPoints();
+    if(Object.keys(this.oGiftcard)?.length){
+      this.sGiftCardNumber = this.oGiftcard.sGiftCardNumber;
+      this.fetchGiftCard(this.sGiftCardNumber);
+      this.activeTabIndex = 1;
+    }
   }
 
   ngAfterViewInit(): void {
