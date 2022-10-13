@@ -52,26 +52,6 @@ export class DayClosureComponent implements OnInit, OnDestroy {
     iWindow.postMessage({ "parentOrigin": window.location.origin }, 'http://localhost:4002');
   }
 
-  /*   closeDayState(event?: any) {
-      const oBody = {
-        iBusinessId: this.iBusinessId,
-        iLocationId: this.iLocationId,
-        iWorkstationId: this.iWorkstationId
-      }
-      this.closingDayState = true;
-      if (event) event.target.disabled = true;
-      this.closeSubscription = this.apiService.postNew('cashregistry', `/api/v1/statistics/close/day-state`, oBody).subscribe((result: any) => {
-        this.toastService.show({ type: 'success', text: `Day-state is close now` });
-        this.closingDayState = false;
-        if (event) event.target.disabled = false;
-      }, (error) => {
-        console.log('Error: ', error);
-        this.toastService.show({ type: 'warning', text: 'Something went wrong or open the day-state first' });
-        this.closingDayState = false;
-        if (event) event.target.disabled = false;
-      })
-    } */
-
   ngOnDestroy(): void {
     if (this.closeSubscription) this.closeSubscription.unsubscribe();
   }
@@ -87,7 +67,12 @@ export class DayClosureComponent implements OnInit, OnDestroy {
       this.bIsDayStateOpenLoading = false;
       if (result?.data?.bIsDayStateOpened && result?.data?.oStatisticDetail?._id) {
         this.bIsDayStateOpened = true;
-        this.router.navigate(['../transactions-audit/view', result.data.oStatisticDetail._id], { relativeTo: this.route, state: { dStartDate: result.data.oStatisticDetail.dOpenDate } }) 
+        const oState = {
+          dStartDate: result.data.oStatisticDetail.dOpenDate,
+          dEndDate: result.data.oStatisticDetail.dCloseDate,
+          bIsDayStateOpened: this.bIsDayStateOpened
+        }
+        this.router.navigate(['../transactions-audit/view', result.data.oStatisticDetail._id], { relativeTo: this.route, state: oState })
       }
     }, (error) => {
       this.bIsDayStateOpenLoading = false;
