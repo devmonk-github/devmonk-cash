@@ -33,16 +33,19 @@ export class TabsComponent implements AfterContentInit {
   @Input() addChildListClass: string = '';
   @Input() addChildLinkClass: string = '';
   @Output() activeTabChanged = new EventEmitter<string>();
+  @Input() activeTabIndex !: number;
 
   // contentChildren are set
   ngAfterContentInit() {
     // get all active tabs
-    console.log(this.tabs);
-    let activeTabs = this.tabs.filter((tab) => tab.active);
-
-    // if there is no active tab set, activate the first
-    if (activeTabs.length === 0) {
-      this.selectTab(this.tabs.first);
+    // console.log(this.tabs);
+    
+    if (this.activeTabIndex){
+      this.selectTab(this.tabs.get(this.activeTabIndex));
+    } else {
+      let activeTabs = this.tabs.filter((tab) => tab.active);
+      // if there is no active tab set, activate the first
+      if (activeTabs.length === 0) this.selectTab(this.tabs.first);
     }
   }
 

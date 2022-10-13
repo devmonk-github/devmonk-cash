@@ -981,8 +981,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       });
   }
 
-  openCardsModal() {
-    this.dialogService.openModal(CardsComponent, { cssClass: 'modal-lg', context: { customer: this.customer } })
+  openCardsModal(oGiftcard?:any) {
+    this.dialogService.openModal(CardsComponent, { cssClass: 'modal-lg', context: { customer: this.customer, oGiftcard } })
       .instance.close.subscribe(result => {
         console.log('When Redeem GiftCard closed: ', result, result?.giftCardInfo?.type);
         if (result) {
@@ -1243,9 +1243,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       console.log('transaction', barcode);
       const oBody = {
         iBusinessId: this.business._id,
-        oFilterBy:{
-          sNumber: barcode
-        } 
+        searchValue: barcode
       }
       const result:any = await this.apiService.postNew('cashregistry', '/api/v1/transaction/search', oBody).toPromise();
       if (result?.transactions?.records?.length){
@@ -1265,6 +1263,18 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       }
       //activity.find({sNumber: barcode})
     } else if (barcode.startsWith("G")) {
+      let oBody: any = {
+        iBusinessId: this.business._id,
+        oFilterBy: {
+          sGiftCardNumber: barcode.substring(2)
+        }
+      }
+      let result: any = await this.apiService.postNew('cashregistry', `/api/v1/activities/activity-item`, oBody).toPromise();
+      // console.log(result);
+      if (result?.data[0]?.result?.length) {
+        const oGiftcard = result?.data[0]?.result[0];
+        this.openCardsModal(oGiftcard)
+      }
       // activityitem.find({sGiftcardNumber: barcode},{eTransactionItem.eKind : 1})
     } else if (barcode.startsWith("R")) {
       // activityitem.find({sRepairNumber: barcode},{eTransactionItem.eKind : 1})
