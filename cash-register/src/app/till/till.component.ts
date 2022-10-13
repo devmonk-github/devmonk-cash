@@ -1217,19 +1217,27 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   async openModal(barcode:any){
     this.toastrService.show({ type: 'success', text: 'Barcode detected: ' + barcode })
     if (barcode.startsWith("AI")) {
-      console.log('activity', barcode);
+      console.log('activity item', barcode);
       // activityitem.find({sNumber: barcode},{eTransactionItem.eKind : 1})
-      const oBody = {
+      let oBody:any = {
         iBusinessId: this.business._id,
-        oFilterBy: {
-          sNumber: barcode
+        oFilterBy:{
+          sNumber:barcode
         }
       }
-      const result: any = await this.apiService.postNew('cashregistry', '/api/v1/transaction/search', oBody).toPromise();
-      if (result?.activities?.records?.length) {
-        this.openTransaction(result?.activities?.records[0], 'activity');
-      }
+      const activityItemResult: any = await this.apiService.postNew('cashregistry', `/api/v1/activities/activity-item`, oBody).toPromise();
+      if(activityItemResult?.data[0]?.result?.length){
 
+        oBody = {
+          iBusinessId: this.business._id,
+        }
+        const iActivityId = activityItemResult?.data[0].result[0].iActivityId;
+        const iActivityItemId = activityItemResult?.data[0].result[0]._id;
+        // const activityResult: any = await this.apiService.postNew('cashregistry', `/api/v1/activities/items/${iActivityId}`, oBody).toPromise();
+        // console.log(activityResult);
+        // if (activityResult.data[0]?.result?.length)
+        this.openTransaction({ _id: iActivityId }, 'activity', [iActivityItemId]);
+      }
     } else if (barcode.startsWith("T")) {
 
       console.log('transaction', barcode);
@@ -1264,9 +1272,9 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     
   }
 
-  openTransaction(transaction: any, itemType: any) {
+  openTransaction(transaction: any, itemType: any, aSelectedIds ?:any) {
     console.log('open transaction', transaction, itemType);
-    this.dialogService.openModal(TransactionItemsDetailsComponent, { cssClass: "modal-xl", context: { transaction, itemType } })
+    this.dialogService.openModal(TransactionItemsDetailsComponent, { cssClass: "modal-xl", context: { transaction, itemType, aSelectedIds } })
       .instance.close.subscribe(result => {
         const transactionItems: any = [];
         if (result.transaction) {
