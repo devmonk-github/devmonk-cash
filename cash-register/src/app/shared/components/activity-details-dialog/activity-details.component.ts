@@ -386,14 +386,15 @@ export class ActivityDetailsComponent implements OnInit {
     const template = await this.getTemplate(oDataSource?.oType.eKind).toPromise();
 
     oDataSource.oCustomer = {
-      sFirstName: this.customer.sFirstName,
-      sLastName: this.customer.sLastName,
-      sEmail: this.customer.sEmail,
-      sMobile: this.customer.oPhone.sCountryCode + this.customer.oPhone.sMobile,
-      sLandLine: this.customer.oPhone.sLandLine,
-
+      sFirstName: this.customer?.sFirstName || '',
+      sLastName: this.customer?.sLastName || '',
+      sEmail: this.customer?.sEmail || '',
+      sMobile: this.customer?.oPhone?.sCountryCode || '' + this.customer?.oPhone?.sMobile || '',
+      sLandLine: this.customer?.oPhone?.sLandLine || '',
     };
     oDataSource.sBarcodeURI = sBarcodeURI;
+    const aTemp = oDataSource.sNumber.split("-");
+    oDataSource.sPartRepairNumber = aTemp[aTemp.length - 1];
     oDataSource.sBusinessLogoUrl = (await this.getBase64FromUrl(oDataSource?.businessDetails?.sLogoLight).toPromise()).data;
 
     this.receiptService.exportToPdf({
@@ -545,11 +546,11 @@ export class ActivityDetailsComponent implements OnInit {
     oDataSource.businessDetails = this.businessDetails;
     
     oDataSource.oCustomer = {
-      sFirstName: this.customer.sFirstName,
-      sLastName: this.customer.sLastName,
-      sEmail: this.customer.sEmail,
-      sMobile: this.customer.oPhone.sCountryCode + this.customer.oPhone.sMobile,
-      sLandLine: this.customer.oPhone.sLandLine,
+      sFirstName: this.customer?.sFirstName || '',
+      sLastName: this.customer?.sLastName || '',
+      sEmail: this.customer?.sEmail || '',
+      sMobile: this.customer?.oPhone?.sCountryCode || '' + this.customer?.oPhone?.sMobile || '',
+      sLandLine: this.customer?.oPhone?.sLandLine || '',
     };
 
     const sBarcodeURI = this.generateBarcodeURI(false, oDataSource.sNumber);

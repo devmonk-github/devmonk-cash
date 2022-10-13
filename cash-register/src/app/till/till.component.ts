@@ -981,8 +981,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       });
   }
 
-  openCardsModal() {
-    this.dialogService.openModal(CardsComponent, { cssClass: 'modal-lg', context: { customer: this.customer } })
+  openCardsModal(oGiftcard?:any) {
+    this.dialogService.openModal(CardsComponent, { cssClass: 'modal-lg', context: { customer: this.customer, oGiftcard } })
       .instance.close.subscribe(result => {
         console.log('When Redeem GiftCard closed: ', result, result?.giftCardInfo?.type);
         if (result) {
@@ -1217,27 +1217,33 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   async openModal(barcode:any){
     this.toastrService.show({ type: 'success', text: 'Barcode detected: ' + barcode })
     if (barcode.startsWith("AI")) {
-      console.log('activity', barcode);
+      console.log('activity item', barcode);
       // activityitem.find({sNumber: barcode},{eTransactionItem.eKind : 1})
-      const oBody = {
+      let oBody:any = {
         iBusinessId: this.business._id,
-        oFilterBy: {
-          sNumber: barcode
+        oFilterBy:{
+          sNumber:barcode
         }
       }
-      const result: any = await this.apiService.postNew('cashregistry', '/api/v1/transaction/search', oBody).toPromise();
-      if (result?.activities?.records?.length) {
-        this.openTransaction(result?.activities?.records[0], 'activity');
-      }
+      const activityItemResult: any = await this.apiService.postNew('cashregistry', `/api/v1/activities/activity-item`, oBody).toPromise();
+      if(activityItemResult?.data[0]?.result?.length){
 
+        oBody = {
+          iBusinessId: this.business._id,
+        }
+        const iActivityId = activityItemResult?.data[0].result[0].iActivityId;
+        const iActivityItemId = activityItemResult?.data[0].result[0]._id;
+        // const activityResult: any = await this.apiService.postNew('cashregistry', `/api/v1/activities/items/${iActivityId}`, oBody).toPromise();
+        // console.log(activityResult);
+        // if (activityResult.data[0]?.result?.length)
+        this.openTransaction({ _id: iActivityId }, 'activity', [iActivityItemId]);
+      }
     } else if (barcode.startsWith("T")) {
 
       console.log('transaction', barcode);
       const oBody = {
         iBusinessId: this.business._id,
-        oFilterBy:{
-          sNumber: barcode
-        } 
+        searchValue: barcode
       }
       const result:any = await this.apiService.postNew('cashregistry', '/api/v1/transaction/search', oBody).toPromise();
       if (result?.transactions?.records?.length){
@@ -1245,8 +1251,30 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       }
       //transactions.find({sNumber: barcode})
     } else if (barcode.startsWith("A")) {
+      console.log('Fetching activity', barcode);
+      
+      const oBody = {
+        iBusinessId: this.business._id,
+        searchValue: barcode
+      }
+      const result: any = await this.apiService.postNew('cashregistry', '/api/v1/transaction/search', oBody).toPromise();
+      if (result?.activities?.records?.length) {
+        this.openTransaction(result?.activities?.records[0], 'activity');
+      }
       //activity.find({sNumber: barcode})
     } else if (barcode.startsWith("G")) {
+      let oBody: any = {
+        iBusinessId: this.business._id,
+        oFilterBy: {
+          sGiftCardNumber: barcode.substring(2)
+        }
+      }
+      let result: any = await this.apiService.postNew('cashregistry', `/api/v1/activities/activity-item`, oBody).toPromise();
+      // console.log(result);
+      if (result?.data[0]?.result?.length) {
+        const oGiftcard = result?.data[0]?.result[0];
+        this.openCardsModal(oGiftcard)
+      }
       // activityitem.find({sGiftcardNumber: barcode},{eTransactionItem.eKind : 1})
     } else if (barcode.startsWith("R")) {
       // activityitem.find({sRepairNumber: barcode},{eTransactionItem.eKind : 1})
@@ -1254,9 +1282,9 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     
   }
 
-  openTransaction(transaction: any, itemType: any) {
+  openTransaction(transaction: any, itemType: any, aSelectedIds ?:any) {
     console.log('open transaction', transaction, itemType);
-    this.dialogService.openModal(TransactionItemsDetailsComponent, { cssClass: "modal-xl", context: { transaction, itemType } })
+    this.dialogService.openModal(TransactionItemsDetailsComponent, { cssClass: "modal-xl", context: { transaction, itemType, aSelectedIds } })
       .instance.close.subscribe(result => {
         const transactionItems: any = [];
         if (result.transaction) {
