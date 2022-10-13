@@ -1245,6 +1245,16 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       }
       //transactions.find({sNumber: barcode})
     } else if (barcode.startsWith("A")) {
+      console.log('Fetching activity', barcode);
+      
+      const oBody = {
+        iBusinessId: this.business._id,
+        searchValue: barcode
+      }
+      const result: any = await this.apiService.postNew('cashregistry', '/api/v1/transaction/search', oBody).toPromise();
+      if (result?.activities?.records?.length) {
+        this.openTransaction(result?.activities?.records[0], 'activity');
+      }
       //activity.find({sNumber: barcode})
     } else if (barcode.startsWith("G")) {
       // activityitem.find({sGiftcardNumber: barcode},{eTransactionItem.eKind : 1})
