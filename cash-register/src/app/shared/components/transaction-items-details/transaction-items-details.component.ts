@@ -26,6 +26,7 @@ export class TransactionItemsDetailsComponent implements OnInit {
   selectedId: any;
   status = true;
   bIsAnyGiftCardDiscount: boolean = false;
+  aSelectedIds:any = [];
 
   requestParams: any = {
     iBusinessId: "",
@@ -105,7 +106,7 @@ export class TransactionItemsDetailsComponent implements OnInit {
           // to do partial refund
           transactionItem.tType = 'refunded';
         }
-        if (this.selectedId && this.selectedId === transactionItem._id) {
+        if (this.aSelectedIds.includes(transactionItem._id) || (this.selectedId && this.selectedId === transactionItem._id)) {
           transactionItem.isSelected = true;
         }
       });
