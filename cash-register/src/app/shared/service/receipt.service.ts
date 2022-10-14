@@ -173,7 +173,8 @@ export class ReceiptService {
             if (row?.type === 'dashedLine'){
                 this.content.push(this.addDashedLine(row.coordinates, row.absolutePosition));
             } else if(row?.type === 'rect'){
-                this.content.push(this.addRect(row.coordinates, row?.absolutePosition));
+                texts.push(this.addRect(row.coordinates, row?.absolutePosition));
+                tableWidths.push(this.getWidth(row.size));
             } else {
                 let object = row?.object;
                 let text = this.pdfService.replaceVariables(row.html, (object) ? this.oOriginalDataSource[object] : this.oOriginalDataSource); 
@@ -424,17 +425,22 @@ export class ReceiptService {
     processColumns(row:any, styles ?:any){
         let columns: any = [];
         row.forEach((el: any) => {
+            let columnData: any;
             if (el?.type === 'image') {
                 let img = this.addImage(el);
                 // console.log(372, img);
-                columns.push(img);
+                columnData = img;
+                // columns.push(img);
             } else if(el?.type === 'dashedLine'){
-                columns.push(this.addDashedLine(el.coordinates))
+                columnData = this.addDashedLine(el.coordinates, el?.absolutePosition);
+                // columns.push()
             } else if(el?.type === 'table'){
-                columns.push(this.processTableData(el));
+                columnData = this.processTableData(el);
+                // columns.push();
             } else if (el?.type === 'textAsTables') {
                 this.DIVISON_FACTOR = row.length;
-                columns.push(this.processTextAsTableData(el));
+                // columns.push();
+                columnData = this.processTextAsTableData(el);
                 this.DIVISON_FACTOR = 1;
             } else if (el?.type === 'stack') {
                 let obj:any = {
@@ -442,20 +448,24 @@ export class ReceiptService {
                 };
                 if (el?.width) obj.width = el.width;
                 // console.log(obj);
-                columns.push(obj);
+                columnData = obj;
+                // columns.push(obj);
             } else {
                 let html = el.html || '';
                 // console.log(360, html);
                 let object = el?.object;
                 let text = this.pdfService.replaceVariables(html, (object) ? this.oOriginalDataSource[object] : this.oOriginalDataSource);
-                // console.log(438, text, el);
-                let columnData:any = { text: text };
-                if(el?.alignment) columnData.alignment = el?.alignment;
-                if (el?.styles) {
-                    columnData = { ...columnData, ...el.styles }
-                }
-                columns.push(columnData);
+                // console.log(459, text, el);
+                columnData = { text: text };
+                if (el?.width) columnData.width = el?.width;
+                if (el?.alignment) columnData.alignment = el?.alignment;
+                // columns.push(columnData);
             }
+            if (el?.alignment) columnData.alignment = el?.alignment;
+            if (el?.styles) columnData = { ...columnData, ...el.styles }
+            if(el?.width) columnData.width = el?.width;
+
+            columns.push(columnData)
         });
         let obj = {columns: columns};
         if (styles) obj = {...obj, ...styles };
