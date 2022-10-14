@@ -57,6 +57,7 @@ export class ActivityDetailsComponent implements OnInit {
   iLocationId: String = '';
   showDetails: Boolean = true;
   loadCashRegister: Boolean = false;
+  openActivityId: any;
   requestParams: any = {
     iBusinessId: this.iBusinessId,
     aProjection: [
@@ -115,6 +116,11 @@ export class ActivityDetailsComponent implements OnInit {
     if (this.activity) {
       if (this.activity?.activityitems?.length) {
         this.activityItems = this.activity.activityitems;
+        if (this.openActivityId){
+          this.activityItems.forEach((item:any)=>{
+            if(item._id === this.openActivityId) item.collapsedBtn = true;
+          });
+        }
       } else {
         this.fetchTransactionItems();
         // const items = JSON.parse(JSON.stringify(this.activity));
@@ -381,7 +387,7 @@ export class ActivityDetailsComponent implements OnInit {
     if (oDataSource?.activityitems){
       oDataSource = oDataSource.activityitems[index];
     }
-    const type = (oDataSource?.oType.eKind === 'regular') ? 'activity' : 'repair';
+    const type = (oDataSource?.oType.eKind === 'regular') ? 'repair_alternative' : 'repair';
     const sBarcodeURI = this.generateBarcodeURI(false, oDataSource.sNumber);    
     if(!this.businessDetails){
       const result: any = await this.getBusinessDetails().toPromise();
@@ -406,7 +412,7 @@ export class ActivityDetailsComponent implements OnInit {
     oDataSource.sBusinessLogoUrl = (await this.getBase64FromUrl(oDataSource?.businessDetails?.sLogoLight).toPromise()).data;
 
     if (bPrint)
-      this.printSettings = this.getPdfPrintSetting((type==='activity')?'order':'repair');
+      this.printSettings = this.getPdfPrintSetting(type);
 
     this.receiptService.exportToPdf({
       oDataSource: oDataSource,
@@ -473,7 +479,7 @@ export class ActivityDetailsComponent implements OnInit {
     this.loading = true;
     this.apiService.postNew('cashregistry', `/api/v1/activities/activity-item/${this.activity._id}`, this.requestParams).subscribe((result: any) => {
       this.activityItems = result.data[0].result;
-      if (this.activityItems.length == 1) this.collapsedBtn = true;
+      if (this.activityItems.length == 1) this.activityItems[0].collapsedBtn = true;
       this.transactions = [];
       for (const obj of this.activityItems) {
         for (const item of obj.receipts) {
