@@ -105,7 +105,7 @@ export class ReceiptService {
         this.iWorkstationId = localStorage.getItem('currentWorkstation') || '';
     }
 
-    async exportToPdf({ oDataSource, templateData, pdfTitle, printSettings }:any){
+    async exportToPdf({ oDataSource, templateData, pdfTitle, printSettings, bPrint }:any){
         this.oOriginalDataSource = oDataSource;
         console.log(this.oOriginalDataSource);
         this.pdfService.getTranslations();
@@ -129,7 +129,8 @@ export class ReceiptService {
             this.commonService.footer,
             this.commonService.oCommonParameters.pageMargins,
             this.commonService.oCommonParameters.defaultStyle,
-            printSettings
+            printSettings,
+            bPrint
         );
         this.cleanUp();
     }

@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewContainerRef } from '@angular/core';
-import { faTimes, faSync, faFileInvoice, faDownload, faReceipt, faAt, faUndoAlt, faClipboard, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
+import { faTimes, faSync, faFileInvoice, faDownload, faReceipt, faAt, faUndoAlt, faClipboard, faTrashAlt, faPrint } from '@fortawesome/free-solid-svg-icons';
 import { TransactionItemsDetailsComponent } from 'src/app/shared/components/transaction-items-details/transaction-items-details.component';
 import { ApiService } from 'src/app/shared/service/api.service';
 import { DialogComponent, DialogService } from 'src/app/shared/service/dialog';
@@ -27,6 +27,7 @@ export class TransactionDetailsComponent implements OnInit {
   faSync = faSync;
   faFileInvoice = faFileInvoice;
   faDownload = faDownload;
+  faPrint = faPrint;
   faReceipt = faReceipt;
   faAt = faAt;
   faUndoAlt = faUndoAlt;
@@ -171,8 +172,8 @@ export class TransactionDetailsComponent implements OnInit {
     this.dialogRef.close.emit(value);
   }
 
-  downloadWithVAT() {
-    this.generatePDF(false);
+  downloadWithVAT(print:boolean = false)  {
+    this.generatePDF(print);
   }
 
   downloadWebOrder() {
@@ -248,7 +249,8 @@ export class TransactionDetailsComponent implements OnInit {
       oDataSource: oDataSource,
       pdfTitle: oDataSource.sNumber,
       templateData: template.data,
-      printSettings: this.printSettings
+      printSettings: this.printSettings,
+      bPrint: print
     });
     
     return;
