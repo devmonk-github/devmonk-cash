@@ -11,6 +11,7 @@ import { TransactionsComponent } from './transactions.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TransactionDetailsComponent } from './components/transaction-details/transaction-details.component';
 import { TranslateModule } from '@ngx-translate/core';
+import { SharedModule } from '../shared/shared.module';
 
 @NgModule({
   declarations: [
@@ -22,6 +23,7 @@ import { TranslateModule } from '@ngx-translate/core';
     FontAwesomeModule,
     NgxPaginationModule,
     CommonModule,
+    SharedModule,
     ReactiveFormsModule,
     FormsModule,
     NgSelectModule,
