@@ -1,8 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, OnInit } from '@angular/core';
 import { DialogComponent, DialogService } from '../../service/dialog';
 import { ViewContainerRef } from '@angular/core';
 import { ApiService } from 'src/app/shared/service/api.service';
-import { faTimes, faMessage, faEnvelope, faEnvelopeSquare, faUser, faReceipt, faEuro, faChevronRight, faDownload } from "@fortawesome/free-solid-svg-icons";
+import { faTimes, faMessage, faEnvelope, faEnvelopeSquare, faUser, faReceipt, faEuro, faChevronRight, faDownload, faPrint } from "@fortawesome/free-solid-svg-icons";
 import { PdfService } from '../../service/pdf.service';
 import { TransactionItemsDetailsComponent } from '../transaction-items-details/transaction-items-details.component';
 import { MenuComponent } from '../../_layout/components/common';
@@ -11,6 +11,7 @@ import { TransactionDetailsComponent } from 'src/app/transactions/components/tra
 import * as JsBarcode /* , { Options as jsBarcodeOptions } */ from 'jsbarcode';
 import { ReceiptService } from '../../service/receipt.service';
 import { Observable } from 'rxjs';
+import { ToastService } from '../toast';
 @Component({
   selector: 'app-activity-details',
   templateUrl: './activity-details.component.html',
@@ -34,6 +35,7 @@ export class ActivityDetailsComponent implements OnInit {
   faEnvelope = faEnvelope;
   faEnvelopeSquare = faEnvelopeSquare;
   faUser = faUser;
+  faPrint = faPrint;
   faReceipt = faReceipt;
   faEuro = faEuro;
   faChevronRight = faChevronRight;
@@ -55,6 +57,7 @@ export class ActivityDetailsComponent implements OnInit {
   iLocationId: String = '';
   showDetails: Boolean = true;
   loadCashRegister: Boolean = false;
+  openActivityId: any;
   requestParams: any = {
     iBusinessId: this.iBusinessId,
     aProjection: [
@@ -87,6 +90,8 @@ export class ActivityDetailsComponent implements OnInit {
   suppliersList: Array<any> = [];
   bFetchingTransaction: boolean = false;
   px2mmFactor !: number;
+  printSettings: any;
+  iWorkstationId: string;
 
   constructor(
     private viewContainerRef: ViewContainerRef,
@@ -94,10 +99,12 @@ export class ActivityDetailsComponent implements OnInit {
     private pdfService: PdfService,
     private dialogService: DialogService,
     private routes: Router,
-    private receiptService: ReceiptService
+    private receiptService: ReceiptService,
+    private toastService: ToastService
   ) {
     const _injector = this.viewContainerRef.injector;
-    this.dialogRef = _injector.get<DialogComponent>(DialogComponent);
+    this.dialogRef = _injector.get<DialogComponent>(DialogComponent); 
+    this.iWorkstationId = localStorage.getItem("currentWorkstation") || '';
   }
 
 
@@ -109,6 +116,11 @@ export class ActivityDetailsComponent implements OnInit {
     if (this.activity) {
       if (this.activity?.activityitems?.length) {
         this.activityItems = this.activity.activityitems;
+        if (this.openActivityId){
+          this.activityItems.forEach((item:any)=>{
+            if(item._id === this.openActivityId) item.collapsedBtn = true;
+          });
+        }
       } else {
         this.fetchTransactionItems();
         // const items = JSON.parse(JSON.stringify(this.activity));
@@ -369,13 +381,14 @@ export class ActivityDetailsComponent implements OnInit {
     return this.apiService.getNew('core', '/api/v1/business/' + this.business._id);
   }
 
-  async downloadCustomerReceipt(index: number) {
+  async downloadCustomerReceipt(index: number, bPrint: boolean = false) {
     // console.log('downloading customer receipt', index, this.activity);
     let oDataSource = JSON.parse(JSON.stringify(this.activity));
     if (oDataSource?.activityitems){
       oDataSource = oDataSource.activityitems[index];
     }
-    const sBarcodeURI = this.generateBarcodeURI(oDataSource?.oType.eKind !== 'repair', oDataSource.sNumber);    
+    const type = (oDataSource?.oType.eKind === 'regular') ? 'repair_alternative' : 'repair';
+    const sBarcodeURI = this.generateBarcodeURI(false, oDataSource.sNumber);    
     if(!this.businessDetails){
       const result: any = await this.getBusinessDetails().toPromise();
       this.businessDetails = result.data;
@@ -383,7 +396,8 @@ export class ActivityDetailsComponent implements OnInit {
     oDataSource.businessDetails = this.businessDetails;
     // const template = await this.getTemplate('activity').toPromise();
     // console.log(oDataSource);
-    const template = await this.getTemplate(oDataSource?.oType.eKind).toPromise();
+    
+    const template = await this.getTemplate(type).toPromise();
 
     oDataSource.oCustomer = {
       sFirstName: this.customer?.sFirstName || '',
@@ -397,10 +411,15 @@ export class ActivityDetailsComponent implements OnInit {
     oDataSource.sPartRepairNumber = aTemp[aTemp.length - 1];
     oDataSource.sBusinessLogoUrl = (await this.getBase64FromUrl(oDataSource?.businessDetails?.sLogoLight).toPromise()).data;
 
+    if (bPrint)
+      this.printSettings = this.getPdfPrintSetting(type);
+
     this.receiptService.exportToPdf({
       oDataSource: oDataSource,
       templateData: template.data,
-      pdfTitle: 'Activity Receipt'
+      pdfTitle: oDataSource.sNumber,
+      printSettings: this.printSettings,
+      bPrint: bPrint
     })
     return;
     const data = this.activity.activityitems[index];
@@ -460,7 +479,7 @@ export class ActivityDetailsComponent implements OnInit {
     this.loading = true;
     this.apiService.postNew('cashregistry', `/api/v1/activities/activity-item/${this.activity._id}`, this.requestParams).subscribe((result: any) => {
       this.activityItems = result.data[0].result;
-      if (this.activityItems.length == 1) this.collapsedBtn = true;
+      if (this.activityItems.length == 1) this.activityItems[0].collapsedBtn = true;
       this.transactions = [];
       for (const obj of this.activityItems) {
         for (const item of obj.receipts) {
@@ -566,4 +585,7 @@ export class ActivityDetailsComponent implements OnInit {
 
   }
 
+  getPdfPrintSetting(eType:any) {
+    return this.apiService.getNew('cashregistry', `/api/v1/print-settings/${this.iBusinessId}/${this.iWorkstationId}/pdf/${eType}`);
+  }
 }

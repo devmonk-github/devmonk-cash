@@ -2,6 +2,8 @@ import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { faLongArrowAltDown, faLongArrowAltUp, faMinusCircle, faPlus, faPlusCircle, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { ActivityDetailsComponent } from '../shared/components/activity-details-dialog/activity-details.component';
+import { CardsComponent } from '../shared/components/cards-dialog/cards-dialog.component';
+import { ToastService } from '../shared/components/toast';
 import { WebOrderDetailsComponent } from '../shared/components/web-order-details/web-order-details.component';
 import { ApiService } from '../shared/service/api.service';
 import { DialogService } from '../shared/service/dialog';
@@ -95,7 +97,8 @@ export class ServicesComponent implements OnInit, AfterViewInit {
   constructor(
     private apiService: ApiService,
     private dialogService: DialogService,
-    private routes: Router
+    private routes: Router,
+    private toastrService: ToastService
   ) { }
 
 
@@ -276,14 +279,15 @@ export class ServicesComponent implements OnInit, AfterViewInit {
     })
   }
 
-  openActivities(activity: any) {
+  openActivities(activity: any, openActivityId?: any) {
+    console.log('opening ActivityDetailsComponent with', activity);
     if (this.webOrders) {
       this.dialogService.openModal(WebOrderDetailsComponent, { cssClass: 'w-fullscreen', context: { activity, from: 'web-orders' } })
         .instance.close.subscribe(result => {
           if (this.webOrders && result) this.routes.navigate(['business/till']);
         });
     } else {
-      this.dialogService.openModal(ActivityDetailsComponent, { cssClass: 'w-fullscreen', context: { activity, items: false, webOrders: this.webOrders, from: 'services' } })
+      this.dialogService.openModal(ActivityDetailsComponent, { cssClass: 'w-fullscreen', context: { activity, openActivityId, items: false, webOrders: this.webOrders, from: 'services' } })
         .instance.close.subscribe(result => {
           if (this.webOrders && result) this.routes.navigate(['business/till']);
         });
@@ -349,5 +353,94 @@ export class ServicesComponent implements OnInit, AfterViewInit {
 
   goToCashRegister() {
     this.routes.navigate(['/business/till']);
+  }
+
+  async openModal(barcode: any) {
+    this.toastrService.show({ type: 'success', text: 'Barcode detected: ' + barcode })
+    if (barcode.startsWith("AI")) {
+      console.log('activity item', barcode);
+      // activityitem.find({sNumber: barcode},{eTransactionItem.eKind : 1})
+      let oBody: any = {
+        iBusinessId: this.businessDetails._id,
+        oFilterBy: {
+          sNumber: barcode
+        }
+      }
+      const activityItemResult: any = await this.apiService.postNew('cashregistry', `/api/v1/activities/activity-item`, oBody).toPromise();
+      if (activityItemResult?.data[0]?.result?.length) {
+
+        const iActivityId = activityItemResult?.data[0].result[0].iActivityId;
+        const iActivityItemId = activityItemResult?.data[0].result[0]._id;
+        oBody = {
+          iBusinessId: this.businessDetails._id,
+          oFilterBy: {
+            _id: iActivityId
+          }
+        }
+        const activityResult: any = await this.apiService.postNew('cashregistry', '/api/v1/activities', oBody).toPromise();
+        console.log({ activityResult });
+
+        // const oActivityItem = activityItemResult?.data[0].result[0]._id;
+        // console.log({ oActivityItem });
+        // const activityItemsResult: any = await this.apiService.postNew('cashregistry', `/api/v1/activities/items/${iActivityId}`, {iBusinessId: this.businessDetails._id}).toPromise();
+        // console.log({ activityItemsResult });
+        if (activityResult.data?.length) {
+          this.openActivities(activityResult.data[0], iActivityItemId);
+        }
+      }
+    } else if (barcode.startsWith("A")) {
+      console.log('Fetching activity', barcode);
+      let oBody = {
+        iBusinessId: this.businessDetails._id,
+        oFilterBy: {
+          sNumber: barcode
+        }
+      }
+      const activityResult: any = await this.apiService.postNew('cashregistry', '/api/v1/activities', oBody).toPromise();
+      console.log({ activityResult });
+
+      // const oActivityItem = activityItemResult?.data[0].result[0]._id;
+      // console.log({ oActivityItem });
+      // const activityItemsResult: any = await this.apiService.postNew('cashregistry', `/api/v1/activities/items/${iActivityId}`, {iBusinessId: this.businessDetails._id}).toPromise();
+      // console.log({ activityItemsResult });
+      if (activityResult.data?.length) {
+        this.openActivities(activityResult.data[0]);
+      }
+
+      //activity.find({sNumber: barcode})
+    } else if (barcode.startsWith("G")) {
+      let oBody: any = {
+        iBusinessId: this.businessDetails._id,
+        oFilterBy: {
+          sGiftCardNumber: barcode.substring(2)
+        }
+      }
+      let result: any = await this.apiService.postNew('cashregistry', `/api/v1/activities/activity-item`, oBody).toPromise();
+      // console.log(result);
+      if (result?.data[0]?.result?.length) {
+        const oGiftcard = result?.data[0]?.result[0];
+        this.openCardsModal(oGiftcard)
+      }
+      // activityitem.find({sGiftcardNumber: barcode},{eTransactionItem.eKind : 1})
+    } else if (barcode.startsWith("R")) {
+      // activityitem.find({sRepairNumber: barcode},{eTransactionItem.eKind : 1})
+    }
+
+  }
+
+  openCardsModal(oGiftcard?: any, oCustomer?: any) {
+    this.dialogService.openModal(CardsComponent, { cssClass: 'modal-lg', context: { customer: oCustomer, oGiftcard } })
+      .instance.close.subscribe(result => {
+        console.log('When Redeem GiftCard closed: ', result, result?.giftCardInfo?.type);
+        if (result) {
+          // if (result.giftCardInfo.nAmount > 0) {
+          //   this.appliedGiftCards.push(result.giftCardInfo);
+          //   this.changeInPayment();
+          // }
+          // if (result.redeemedLoyaltyPoints && result.redeemedLoyaltyPoints > 0) {
+          //   this.addReedemedPoints(result.redeemedLoyaltyPoints);
+          // }
+        }
+      });
   }
 }

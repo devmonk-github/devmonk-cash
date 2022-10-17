@@ -90,6 +90,7 @@ export class PrintSettingsEditorComponent implements OnInit {
       if(result?.data){
         this.mode = 'update';
         this.oTemplate = result.data;
+        this.jsonEditor.jsonData = result.data.layout;
         if (!result.data?.aSettings?.length){
           this.oTemplate.aSettings = this.getDefaultSettings();
         } else this.mapWithDefaultSettings();

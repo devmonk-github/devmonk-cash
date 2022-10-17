@@ -7,6 +7,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { NgxPaginationModule, PaginatePipe } from 'ngx-pagination';
+import { SharedModule } from '../shared/shared.module';
 
 @NgModule({
   declarations: [
@@ -15,6 +16,7 @@ import { NgxPaginationModule, PaginatePipe } from 'ngx-pagination';
   imports: [
     TranslateModule,
     CommonModule,
+    SharedModule,
     ActivityItemsRoutingModule,
     FontAwesomeModule,
     ReactiveFormsModule,

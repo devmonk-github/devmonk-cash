@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, NavigationEnd, ActivatedRoute } from '@angular/router';
 import { faLongArrowAltDown, faLongArrowAltUp, faMinusCircle, faPlus, faPlusCircle, faSearch } from '@fortawesome/free-solid-svg-icons';
+import { ToastService } from '../shared/components/toast';
 import { ApiService } from '../shared/service/api.service';
 import { DialogService } from '../shared/service/dialog';
 import { MenuComponent } from '../shared/_layout/components/common';
@@ -94,7 +95,8 @@ export class TransactionsComponent implements OnInit {
   constructor(
     private apiService: ApiService,
     private dialogService: DialogService,
-    private routes: Router
+    private routes: Router,
+    private toastrService: ToastService
   ) { }
 
   async ngOnInit() {
@@ -972,5 +974,18 @@ export class TransactionsComponent implements OnInit {
         res => {
           if (res) this.routes.navigate(['business/till']);
         });
+  }
+
+  async openModal(barcode: any) {
+    this.toastrService.show({ type: 'success', text: 'Barcode detected: ' + barcode })
+    if (barcode.startsWith("T")) {
+      console.log('transaction', barcode);
+      const result: any = await this.apiService.postNew('cashregistry', `/api/v1/transaction/detail/${barcode}`, {iBusinessId: this.iBusinessId}).toPromise();
+      // console.log(result);
+      if (result?.data?._id) {
+        this.showTransaction(result?.data);
+      }
+      //transactions.find({sNumber: barcode})
+    }
   }
 }

@@ -99,6 +99,10 @@
                     </span>
                     <label class="mx-auto">Download with VAT</label>
                 </button>
+                <button class="btn btn-sm btn-secondary w-100 d-flex" (click)="downloadWithVAT(true)">
+                    <fa-icon [icon]="faPrint"></fa-icon>
+                    <label class="mx-auto">{{ "PRINT" | translate }}</label>
+                </button>
                 <button class="btn btn-sm btn-secondary w-100 d-flex">
                     <fa-icon [icon]="faDownload"></fa-icon>
                     <label class="mx-auto">Download without VAT</label>
@@ -194,7 +198,7 @@
                                     </td>
                                     <td>
                                         <div>
-                                            {{item.description}}<br />Original amount:
+                                            {{item.sProductName}} {{item.description}}<br />Original amount:
                                             {{item.nPriceIncVat}}<br />Already paid:<br />{{item.sTransactionNumber}} |
                                             {{item.nPaymentAmount}} (this receipt)<br />
                                             <div *ngFor="let obj of item.related">

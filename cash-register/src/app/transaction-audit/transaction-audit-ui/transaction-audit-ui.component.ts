@@ -666,7 +666,7 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
   /* Fetch Audit (Be it Static or Dynamic), where user can change filter as well */
   fetchAuditStatistic(sDisplayMethod?: string) {
     if (this.IsDynamicState) this.getDynamicData(sDisplayMethod);
-    else this.getStaticData();
+    else this.getStaticData(sDisplayMethod);
   }
 
   /* Static Data for statistic (from statistic document) */

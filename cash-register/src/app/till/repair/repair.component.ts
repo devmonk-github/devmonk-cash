@@ -84,6 +84,7 @@ export class RepairComponent implements OnInit {
           this.item.supplier = supplier.sName;
           this.supplier = supplier.sName;
           this.item.iSupplierId = supplier._id;
+          this.item.iBusinessPartnerId = supplier._id;
           this.item.nMargin = nMargin;
           this.brand = brand.sName;
           this.item.iBusinessBrandId = brand._id;

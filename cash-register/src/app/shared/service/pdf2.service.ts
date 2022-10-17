@@ -109,7 +109,7 @@ export class PdfService {
     return docDefinition;
   }
 
-  generatePdf(docDefinition: any, fileName: any, printSettings:any) {
+  generatePdf(docDefinition: any, fileName: any, printSettings:any, bPrint:boolean = false) {
     // const fonts = {
     //   MyCustom: {
     //     normal: 'GIL_____.ttf',
@@ -130,21 +130,22 @@ export class PdfService {
     // console.log(pdfMake);
 
     const pdfObject = pdfMake.createPdf(docDefinition);
-    pdfObject.getBase64((data:any)=>{
-      this.printService.printPDF(
-        this.iBusinessId,
-        data,
-        printSettings.nPrinterId,
-        printSettings.nComputerId,
-        1,
-        fileName,
-        { title: fileName }
-      )
-    });
-    pdfObject.download(fileName);
+    if (bPrint){      
+      pdfObject.getBase64((data:any)=>{
+        this.printService.printPDF(
+          this.iBusinessId,
+          data,
+          printSettings.nPrinterId,
+          printSettings.nComputerId,
+          1,
+          fileName,
+          { title: fileName }
+        )
+      });
+    } else pdfObject.download(fileName);
   }
 
-  getPdfData(styles: any, content: any, orientation: string, pageSize: any, fileName: string, footer?: any, pageMargins?: any, defaultStyle?: any, printSettings ?:any) {
-    this.generatePdf(this.getDocDefinition(styles, content, orientation, pageSize, footer, pageMargins, defaultStyle), fileName, printSettings);
+  getPdfData(styles: any, content: any, orientation: string, pageSize: any, fileName: string, footer?: any, pageMargins?: any, defaultStyle?: any, printSettings?: any, bPrint?:boolean) {
+    this.generatePdf(this.getDocDefinition(styles, content, orientation, pageSize, footer, pageMargins, defaultStyle), fileName, printSettings, bPrint);
   }
 }
