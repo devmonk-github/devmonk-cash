@@ -89,7 +89,9 @@ export class TransactionDetailsComponent implements OnInit {
     let total = 0, totalAfterDisc = 0, totalVat = 0, totalDiscount = 0, totalSavingPoints = 0;
     dataObject.aTransactionItems.forEach((item: any, index: number) => {
       let name = '';
-      if (item && item.oArticleGroupMetaData && item.oArticleGroupMetaData.oName && item.oArticleGroupMetaData.oName[language]) name = item?.oArticleGroupMetaData?.oName[language] + ' ';
+      if (item && item.oArticleGroupMetaData && item.oArticleGroupMetaData.oName && item.oArticleGroupMetaData.oName[language]){
+        name = item?.oArticleGroupMetaData?.oName[language] + ' ';
+      } 
       item.description = name;
       if (item?.oBusinessProductMetaData?.sLabelDescription) item.description = item.description + item?.oBusinessProductMetaData?.sLabelDescription + ' ' + item?.sProductNumber;
       totalSavingPoints += item.nSavingsPoints;

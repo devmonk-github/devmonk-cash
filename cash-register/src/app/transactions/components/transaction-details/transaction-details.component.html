@@ -198,7 +198,7 @@
                                     </td>
                                     <td>
                                         <div>
-                                            {{item.description}}<br />Original amount:
+                                            {{item.sProductName}} {{item.description}}<br />Original amount:
                                             {{item.nPriceIncVat}}<br />Already paid:<br />{{item.sTransactionNumber}} |
                                             {{item.nPaymentAmount}} (this receipt)<br />
                                             <div *ngFor="let obj of item.related">
