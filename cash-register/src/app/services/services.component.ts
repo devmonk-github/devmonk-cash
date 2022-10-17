@@ -2,6 +2,7 @@ import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { faLongArrowAltDown, faLongArrowAltUp, faMinusCircle, faPlus, faPlusCircle, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { ActivityDetailsComponent } from '../shared/components/activity-details-dialog/activity-details.component';
+import { CardsComponent } from '../shared/components/cards-dialog/cards-dialog.component';
 import { ToastService } from '../shared/components/toast';
 import { WebOrderDetailsComponent } from '../shared/components/web-order-details/web-order-details.component';
 import { ApiService } from '../shared/service/api.service';
@@ -418,12 +419,28 @@ export class ServicesComponent implements OnInit, AfterViewInit {
       // console.log(result);
       if (result?.data[0]?.result?.length) {
         const oGiftcard = result?.data[0]?.result[0];
-        // this.openCardsModal(oGiftcard)
+        this.openCardsModal(oGiftcard)
       }
       // activityitem.find({sGiftcardNumber: barcode},{eTransactionItem.eKind : 1})
     } else if (barcode.startsWith("R")) {
       // activityitem.find({sRepairNumber: barcode},{eTransactionItem.eKind : 1})
     }
 
+  }
+
+  openCardsModal(oGiftcard?: any, oCustomer?: any) {
+    this.dialogService.openModal(CardsComponent, { cssClass: 'modal-lg', context: { customer: oCustomer, oGiftcard } })
+      .instance.close.subscribe(result => {
+        console.log('When Redeem GiftCard closed: ', result, result?.giftCardInfo?.type);
+        if (result) {
+          // if (result.giftCardInfo.nAmount > 0) {
+          //   this.appliedGiftCards.push(result.giftCardInfo);
+          //   this.changeInPayment();
+          // }
+          // if (result.redeemedLoyaltyPoints && result.redeemedLoyaltyPoints > 0) {
+          //   this.addReedemedPoints(result.redeemedLoyaltyPoints);
+          // }
+        }
+      });
   }
 }
