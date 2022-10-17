@@ -275,6 +275,7 @@ export class ReceiptService {
         
         let tableWidths:any = [];
         let tableHeadersList:any = [];
+        let bWidthsPushedFromColumns = false;
         if(columns){ // parsing columns if present
             // console.log('columns.foreach', columns);
             columns.forEach((column:any)=>{
@@ -292,9 +293,11 @@ export class ReceiptService {
                         obj = { ...obj, ...column.styles};
                     }
                     tableHeadersList.push(obj); 
+                    tableWidths.push(this.getWidth(column.size));
                 }
                 // console.log(obj);
             });
+            bWidthsPushedFromColumns = true;
         }
         // console.log(tableHeadersList);
         let currentDataSource = this.oOriginalDataSource;
@@ -302,38 +305,41 @@ export class ReceiptService {
 
         if(forEach){ //if we have forEach (nested array) then loop through it
             currentDataSource = this.oOriginalDataSource[forEach]; //take nested array as currentDataSource
-            if(!currentDataSource){
-                currentDataSource = [];
-                currentDataSource[0] = this.oOriginalDataSource;
-            } 
+            // console.log('if foreach currentDataSource', currentDataSource);
+            // if(!currentDataSource){
+            //     console.log('307 if');
+            //     currentDataSource = [];
+            //     currentDataSource[0] = this.oOriginalDataSource;
+            // }
+            
+            // console.log(311, currentDataSource); 
             let bWidthPushed = false;
-            currentDataSource.forEach((dataSource: any) => {
-                let dataRow: any = [];
-                rows.forEach((row: any) => {
-                    // console.log(301, row);
-                    let bInclude: boolean = true;
-                    if (row?.condition) {
-                        bInclude = this.checkCondition(row.condition, dataSource);
-                        // console.log(bInclude, row.condition);
-                    }
+            if (currentDataSource?.length) {
+                currentDataSource.forEach((dataSource: any) => {
 
-                    if (bInclude) {
-                        this.addRow(dataRow, row, dataSource, tableWidths);
-                        // let text = this.pdfService.replaceVariables(row.html, dataSource); //replacing placeholders with the actual values
-                        // let obj = { text: text };
-                        // if (row?.styles) obj = { ...obj, ...row.styles };
-                        // dataRow.push(obj);
-                        if (!bWidthPushed) {
-                            tableWidths.push(this.getWidth(row.size));
-                        } 
-                    }
-                    
+                    let dataRow: any = [];
+                    rows.forEach((row: any) => {
+                        // console.log(301, row);
+                        let bInclude: boolean = true;
+                        if (row?.condition) {
+                            bInclude = this.checkCondition(row.condition, dataSource);
+                            // console.log(bInclude, row.condition, dataSource);
+                        }
+
+                        if (bInclude) {
+                            this.addRow(dataRow, row, dataSource, tableWidths);
+                            if (!bWidthPushed && !bWidthsPushedFromColumns) {
+                                tableWidths.push(this.getWidth(row.size));
+                            }
+                        }
+
+                    });
+                    // console.log(310, dataRow);
+                    texts.push(dataRow);
+                    bWidthPushed = true;
+
                 });
-                // console.log(310, dataRow);
-                texts.push(dataRow);
-                bWidthPushed = true;
-
-            });
+            }
         } else { //we don't have foreach so only parsing single row
             let dataRow: any = [];
             rows.forEach((row: any) => { //parsing rows
