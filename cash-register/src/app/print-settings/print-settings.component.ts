@@ -6,6 +6,7 @@ import { PrinterToolComponent } from 'src/app/print-settings/printer-tool/printe
 import { ConfirmationDialogComponent } from 'src/app/shared/components/confirmation-dialog/confirmation-dialog.component';
 import { ToastService } from 'src/app/shared/components/toast';
 import { ApiService } from 'src/app/shared/service/api.service';
+import { ActionSettingsComponent } from '../shared/components/actions-settings/action-settings.component';
 import { PrintSettingsDetailsComponent } from '../shared/components/print-settings-details/print-settings-details.component';
 import { PrintSettingsEditorComponent } from '../shared/components/print-settings-editor/print-settings-editor.component';
 import { DialogService } from '../shared/service/dialog';
@@ -43,6 +44,8 @@ export class PrintSettingsComponent implements OnInit {
     { key: 'activity', value: 'Activity receipt' },
     { key: 'giftcard', value: 'Giftcard receipt' },
   ];
+
+  aActionSettings:any = [];
 
   // aTemplates: Array<any> = [
   //   {
@@ -303,6 +306,14 @@ export class PrintSettingsComponent implements OnInit {
     this.dialogService.openModal(PrintSettingsEditorComponent, { cssClass: "modal-xl", context: { format: format } })
       .instance.close.subscribe(result => {
 
+      });
+  }
+
+  addNewAction(){
+    this.dialogService.openModal(ActionSettingsComponent, { cssClass: "modal-lg", context: {  } })
+      .instance.close.subscribe(result => {
+        console.log('new action', result);
+        this.aActionSettings.push(result);
       });
   }
 

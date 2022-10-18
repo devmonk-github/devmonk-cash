@@ -1,0 +1,54 @@
+<div class="card">
+    <div class="card-header" style="margin-top: 20px;">
+        <h4>{{ 'ADD_ACTION_SETTINGS' | translate}}</h4>
+        <div>
+            <button type="button" class="btn btn-sm btn-light" (click)="close(false)">
+                <fa-icon [icon]="faTimes"></fa-icon>
+            </button>
+        </div>
+    </div>
+    <div class="card-body p-5">
+        <div class="container">
+            <div class="row mb-5">
+                <div class="col-6">
+                    <span>{{ 'TYPE' | translate}}</span>
+                </div>
+                <div class="col-6">
+                    <ng-select [(ngModel)]="eType">
+                        <ng-option *ngFor="let option of aTypeOptions">
+                            {{ option | translate}}
+                        </ng-option>
+                    </ng-select>
+                </div>
+            </div>
+            <div class="row mb-5">
+                <div class="col-6">
+                    <span>{{ 'SITUATION' | translate}}</span>
+                </div>
+                <div class="col-6">
+                    <ng-select [(ngModel)]="eSituation" >
+                        <ng-option *ngFor="let option of aSituationOptions" [value]="option">
+                            {{ option | translate}}
+                        </ng-option>
+                    </ng-select>
+                </div>
+            </div>
+            <div class="row mb-5">
+                <div class="col-6">
+                    <span>{{ 'ACTION_TO_PERFORM' | translate}}</span>
+                </div>
+                <div class="col-6">
+                    <ng-select [(ngModel)]="sAction">
+                        <ng-option *ngFor="let option of aActionToPerform" [value]="option">
+                            {{ option | translate}}
+                        </ng-option>
+                    </ng-select>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card-footer">
+        <button class="btn btn-primary" (click)="saveSettings()">{{ 'SAVE' | translate}}</button>
+        <button class="btn btn-primary" (click)="close(false)">{{ 'CANCEL' | translate}}</button>
+    </div>
+</div>

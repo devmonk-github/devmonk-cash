@@ -178,6 +178,39 @@
   </div>
 </div>
 
+<div class="card mb-5 mb-xl-10 d-flex" data-kt-scroll-section="thermal-printer">
+  <div class="card-header row">
+    <div class="card-title flex-wrap">
+      <div class="d-flex justify-content-between align-items-center flex-grow-1">
+        <span>{{"PRINT_ACTIONS" | translate}}</span>
+        <button class="btn btn-primary btn-sm" (click)="addNewAction()">{{"ADD_NEW_ACTION" | translate}}</button>
+      </div>
+    </div>
+  </div>
+  <div class="card-body">
+    <table class="table table-row-gray-400 gx-2 mt-4 table-row-bordered table-rounded border border-gray-400">
+      <thead>
+        <tr>
+          <td class="border border-gray-400 text-center">{{'TYPE' | translate}}</td>
+          <td class="border border-gray-400 text-center">{{'SITUATION' | translate}}</td>
+          <td class="border border-gray-400 text-center">{{'ACTION' | translate}}</td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="" *ngFor="let item of aActionSettings">
+          <td class="border border-gray-400 text-center">{{item.eType}}</td>
+          <td class="border border-gray-400 text-center">{{item.eActions}}</td>
+          <td class="border border-gray-400 text-center">
+            <span class="badge badge-success">
+              {{item.aActionToPerform}}
+            </span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
 
 <div class="card mb-5 mb-xl-10 d-flex" data-kt-scroll-section="thermal-printer">
   <div class="card-header row">
