@@ -109,9 +109,8 @@
                                     <div class="col-5">
 
                                         <div class="form-group mb-6">
-                                            <label class="form-control-label mb-3">{{ "STATUS" | translate}}</label>
-                                            <select name="status" id="status" class="form-control form-control-solid"
-                                                [(ngModel)]="activity.eRepairStatus">
+                                            <label class="form-control-label mb-3">{{ "STATUS" | translate}} </label>
+                                            <select name="status" id="status" class="form-control form-control-solid" [(ngModel)]="activity.eActivityItemStatus">
                                                 <option *ngFor="let type of repairStatus" [value]="type">{{type}}
                                                 </option>
                                             </select>
