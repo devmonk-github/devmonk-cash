@@ -2,8 +2,8 @@ import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { ToastService } from 'src/app/shared/components/toast';
 import { ApiService } from 'src/app/shared/service/api.service';
-import * as en from 'src/assets/json/translations/en-translation.json';
-import * as nl from 'src/assets/json/translations/nl-translation.json';
+// import * as en from 'src/assets/json/translations/en-translation.json';
+// import * as nl from 'src/assets/json/translations/nl-translation.json';
 
 
 export enum Languages {
@@ -91,22 +91,22 @@ export class TranslationsService {
     }))
   }
 
-  initOld() {
-    this.translateService.addLangs(this.languages);
-    this.translateService.setDefaultLang('nl');
-    console.log({ en });
-    const currentLang: any = localStorage.getItem('language')?.toString() || 'nl';
-    this.translateService.use(currentLang);
-    console.log(this.translateService.getLangs());
-    if (currentLang === 'nl') {
-      this.translateService.setTranslation('nl', {
-        ...nl
-      });
-    }
-    else
-      this.translateService.setTranslation('en', {
-        ...en
-      });
-  }
+  // initOld() {
+  //   this.translateService.addLangs(this.languages);
+  //   this.translateService.setDefaultLang('nl');
+  //   // console.log({ en });
+  //   const currentLang: any = localStorage.getItem('language')?.toString() || 'nl';
+  //   this.translateService.use(currentLang);
+  //   console.log(this.translateService.getLangs());
+  //   if (currentLang === 'nl') {
+  //     this.translateService.setTranslation('nl', {
+  //       // ...nl
+  //     });
+  //   }
+  //   else
+  //     this.translateService.setTranslation('en', {
+  //       // ...en
+  //     });
+  // }
 
 }

@@ -422,13 +422,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     this.dialogService.openModal(TransactionsSearchComponent, { cssClass: 'modal-xl', context: { customer: this.customer } })
       .instance.close.subscribe((data) => {
         if (data.transaction) {
-          this.clearAll();
-          const { transactionItems, transaction } = data;
-          this.transactionItems = transactionItems;
-          this.iActivityId = transaction.iActivityId || transaction._id;
-          if (transaction.iCustomerId) {
-            this.fetchCustomer(transaction.iCustomerId);
-          }
+          this.handleTransactionResponse(data);
         }
         this.changeInPayment();
       });
@@ -1287,7 +1281,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     this.dialogService.openModal(TransactionItemsDetailsComponent, { cssClass: "modal-xl", context: { transaction, itemType, aSelectedIds } })
       .instance.close.subscribe(result => {
         const transactionItems: any = [];
-        if (result.transaction) {
+        if (result?.transaction) {
           result.transactionItems.forEach((transactionItem: any) => {
             if (transactionItem.isSelected) {
               const { tType } = transactionItem;
@@ -1342,8 +1336,20 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
             }
           });
           result.transactionItems = transactionItems;
+          this.handleTransactionResponse(result);
+          this.changeInPayment();
         }
       });
+  }
+
+  handleTransactionResponse(data:any){
+    this.clearAll();
+    const { transactionItems, transaction } = data;
+    this.transactionItems = transactionItems;
+    this.iActivityId = transaction.iActivityId || transaction._id;
+    if (transaction.iCustomerId) {
+      this.fetchCustomer(transaction.iCustomerId);
+    }
   }
 
   ngOnDestroy() {
