@@ -99,6 +99,10 @@ export class ActivityItemsComponent implements OnInit {
     this.activityItems = [];
     this.requestParams.iBusinessId = this.businessDetails._id;
     this.requestParams.limit = this.paginationConfig.itemsPerPage || 50;
+    if(this.requestParams.selectedKind.length){
+      this.requestParams.selectedKind= this.requestParams.selectedKind
+    }
+    
     if (this.iLocationId) this.requestParams.iLocationId = this.iLocationId;
     this.showLoader = true;
     const oBody = { ... this.requestParams }

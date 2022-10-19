@@ -13,8 +13,6 @@ export class ActionSettingsComponent implements OnInit {
 
   dialogRef: DialogComponent;
   faTimes = faTimes;
-  format:any;
-  jsonData:any = {};
   oTemplate: any = {
     layout:{}
   };
@@ -24,13 +22,21 @@ export class ActionSettingsComponent implements OnInit {
   layout: any;
 
   mode !: string;
-  aTypeOptions: any = ['REPAIR','GIFTCARD'];
-  aSituationOptions: any = ['IS_CREATED', 'IS_READY'];
+  aTypeOptions: any = [
+    { key: 'repair', value: 'REPAIR' },
+    { key: 'giftcard', value: 'GIFTCARD' }
+  ];
+  aSituationOptions: any = [
+    { key: 'is_created', value: 'IS_CREATED' },
+    { key: 'is_ready', value: 'IS_READY' }
+  ];
   aActionToPerform:any = ['DOWNLOAD', 'PRINT', 'EMAIL'];
 
-  eType:string = 'REPAIR';
-  eSituation: string = 'IS_CREATED';
-  sAction: string = 'DOWNLOAD';
+  eType:string = 'repair';
+  eSituation: string = 'is_created';
+  aActions: Array<string> = ['DOWNLOAD'];
+  iWorkstationId: string | null;
+  _id: any;
 
   constructor(
     private viewContainerRef: ViewContainerRef,
@@ -41,19 +47,36 @@ export class ActionSettingsComponent implements OnInit {
     this.dialogRef = _injector.get<DialogComponent>(DialogComponent);
     this.iBusinessId = localStorage.getItem('currentBusiness')
     this.iLocationId = localStorage.getItem('currentLocation')
+    this.iWorkstationId = localStorage.getItem('currentWorkstation')
   }
 
   ngOnInit(): void {
-
+    
   }
 
-  saveSettings(){
-    const data:any = {
+  async saveSettings(){
+    const data = {
       eType: this.eType,
-      eActions: this.eSituation,
-      aActionToPerform: [this.sAction]
-    };
-    this.close(data);
+      eSituation: this.eSituation,
+      aActionToPerform: this.aActions
+    } 
+    let oBody:any = {
+      iBusinessId: this.iBusinessId,
+      iLocationId: this.iLocationId,
+      iWorkstationId: this.iWorkstationId,
+      sMethod: 'actions',
+      aActions:[
+        {...data}
+      ]
+    }
+    let result;
+    if(this.mode === 'create') {
+      result = await this.apiService.postNew('cashregistry', '/api/v1/print-settings/create', oBody).toPromise()
+    } else {
+      oBody._id = this._id;
+      result = await this.apiService.putNew('cashregistry', '/api/v1/print-settings/update', oBody).toPromise();
+    }
+    this.close(true);
   }
 
   close(data: any) {
