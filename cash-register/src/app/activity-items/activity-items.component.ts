@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { faLongArrowAltDown, faLongArrowAltUp, faMinusCircle, faPlusCircle, faSearch } from '@fortawesome/free-solid-svg-icons';
+import { Subscription } from 'rxjs';
 import { ActivityDetailsComponent } from '../shared/components/activity-details-dialog/activity-details.component';
 import { CardsComponent } from '../shared/components/cards-dialog/cards-dialog.component';
 import { ToastService } from '../shared/components/toast';
@@ -70,6 +71,12 @@ export class ActivityItemsComponent implements OnInit {
     { key: 'Partner supplier status', disabled: true },
     { key: 'Customer', disabled: true },
   ]
+  
+  selectedProperties: any;
+  propertyOptions: Array<any> = [];
+  aPropertyOptionIds: Array<any> = [];
+  aProperty: Array<any> = [];
+  propertyListSubscription!: Subscription;
 
   constructor(
     private apiService: ApiService,
@@ -85,6 +92,7 @@ export class ActivityItemsComponent implements OnInit {
     this.getLocations();
     this.getWorkstations();
     this.listEmployee();
+    this.getProperties();
   }
 
   loadTransaction() {
@@ -93,7 +101,9 @@ export class ActivityItemsComponent implements OnInit {
     this.requestParams.limit = this.paginationConfig.itemsPerPage || 50;
     if (this.iLocationId) this.requestParams.iLocationId = this.iLocationId;
     this.showLoader = true;
-    this.apiService.postNew('cashregistry', '/api/v1/activities/items', this.requestParams).subscribe(
+    const oBody = { ... this.requestParams }
+    oBody.aPropertyOptionIds = this.aPropertyOptionIds;
+    this.apiService.postNew('cashregistry', '/api/v1/activities/items', oBody).subscribe(
       (result: any) => {
         this.activityItems = result.data
         this.paginationConfig.totalItems = result.count;
@@ -281,4 +291,73 @@ export class ActivityItemsComponent implements OnInit {
         }
       });
   }
+
+    /* Property filter */
+    getProperties() {
+      this.selectedProperties = [];
+      let data = {
+        skip: 0,
+        limit: 100,
+        sortBy: '',
+        sortOrder: '',
+        searchValue: '',
+        oFilterBy: {},
+        iBusinessId: localStorage.getItem('currentBusiness'),
+      };
+  
+      this.propertyListSubscription = this.apiService.postNew('core', '/api/v1/properties/list', data).subscribe((result: any) => {
+        if (result?.data && result?.data[0]?.result?.length) {
+          console.log('aProperty length: ', result?.data[0]?.result)
+          result.data[0].result.map((property: any) => {
+            if (typeof this.propertyOptions[property._id] == 'undefined') {
+              this.propertyOptions[property._id] = [];
+  
+              property.aOptions.map((option: any) => {
+                if (option?.sCode?.trim() != '') {
+                  const opt: any = {
+                    iPropertyId: property._id,
+                    sPropertyName: property.sName,
+                    iPropertyOptionId: option?._id,
+                    sPropertyOptionName: option?.value,
+                    sCode: option.sCode,
+                    sName: option.sKey,
+                    selected: false
+                  };
+                  this.propertyOptions[property._id].push(opt);
+                  const propertyIndex = this.aProperty.findIndex(
+                    (prop: any) => prop.iPropertyId == property._id
+                  );
+                  if (propertyIndex === -1) this.aProperty.push(opt);
+                }
+              });
+            }
+          });
+        }
+      });
+    }
+  
+    onProperties(value?: any) {
+      if (this.selectedProperties && this.selectedProperties[value]) {
+        this.aPropertyOptionIds = [];
+        for (const oProperty of this.aProperty) {
+          if (this.selectedProperties[oProperty?.iPropertyId]?.length) {
+            const aOption = this.propertyOptions[oProperty?.iPropertyId].filter(
+              (opt: any) => {
+                return this.selectedProperties[oProperty?.iPropertyId].includes(
+                  opt.sName
+                );
+              }
+            );
+            for (const oOption of aOption) {
+              this.aPropertyOptionIds.push(oOption?.iPropertyOptionId);
+            }
+          }
+        }
+      }
+      console.log('aPropertyOptionIds: ', this.aPropertyOptionIds);
+    }
+  
+    ngOnDestroy(): void {
+      if (this.propertyListSubscription) this.propertyListSubscription.unsubscribe();
+    }
 }

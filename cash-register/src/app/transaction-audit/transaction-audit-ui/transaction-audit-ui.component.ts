@@ -880,19 +880,15 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
                     sPropertyName: property.sName,
                     iPropertyOptionId: option?._id,
                     sPropertyOptionName: option?.value,
-                    // oProperty: {},
                     sCode: option.sCode,
                     sName: option.sKey,
                     selected: false,
                   };
-                  // opt.oProperty[option.sKey] = option.value;
                   this.propertyOptions[property._id].push(opt);
                   const propertyIndex = this.aProperty.findIndex(
                     (prop: any) => prop.iPropertyId == property._id
                   );
-                  if (propertyIndex === -1) {
-                    this.aProperty.push(opt);
-                  }
+                  if (propertyIndex === -1) this.aProperty.push(opt);
                 }
               });
             }

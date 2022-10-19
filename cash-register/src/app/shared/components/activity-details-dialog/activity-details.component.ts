@@ -40,8 +40,8 @@ export class ActivityDetailsComponent implements OnInit {
   faEuro = faEuro;
   faChevronRight = faChevronRight;
   faDownload = faDownload;
-  repairStatus = ['new', 'info', 'processing', 'cancelled', 'inspection', 'completed', 'refundInCashRegister',
-    'offer', 'offer-is-ok', 'to-repair', 'part-are-order', 'shipped-to-repair', 'delivered'];
+  repairStatus = ['new','info', 'processing', 'cancelled', 'inspection', 'completed', 'refundInCashRegister',
+  'offer', 'offer-is-ok', 'to-repair', 'part-are-order', 'shipped-to-repair', 'delivered'];
   
   carriers = ['PostNL', 'DHL', 'DPD', 'bpost', 'other'];
   printOptions = ['Portrait', 'Landscape'];
