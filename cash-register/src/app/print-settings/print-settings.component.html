@@ -2,21 +2,22 @@
   <div class="card-header row">
     <div class="card-title">
       <div class="col-md-11">
-        <span>{{ 'PRINT_SETTINGS' | translate}}</span>
+        <span></span>
+        <br>
+        <span>{{ 'FIRST_STEP_TO_PRINT' | translate}}</span>
       </div>
       <div class="col-md-1">
-        <button class="btn btn-primary" (click)="createPrintSettings()">New</button>
       </div>
     </div>
     <div class="card-body">
       <p>
         {{"INSTALL_A_HELP_PROGRAM_TO_SET_YOUR_PRINTERS" | translate}} &nbsp;
-        <a href="https://prismanote.atlassian.net/rest/servicedesk/knowledgebase/latest/articles/view/1114964123#Printersinstellen-Automatischafdrukken"
+        <a href="https://support.prismanote.com/nl/support/solutions/articles/101000096958-prismanote-printhelper-installeren"
           target="_blank">
           <strong>{{"CLICK_HERE_FOR_INSTRUCTIONS" | translate}}</strong>
         </a>
       </p>
-      <div>
+      <!-- <div>
         <span>
           {{"CLICK_TO_LOAD_PRINT_SETTINGS_1" | translate}} '{{"LOAD_SETTINGS" | translate}}'
           {{"CLICK_TO_LOAD_PRINT_SETTINGS_2" | translate}}
@@ -28,7 +29,7 @@
           <fa-icon [icon]="faRefresh"></fa-icon>
           <span> &nbsp; {{"LOAD_SETTINGS" | translate}}</span>
         </button>
-      </div>
+      </div> -->
     </div>
   </div>
 </div>
