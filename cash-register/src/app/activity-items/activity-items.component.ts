@@ -91,11 +91,10 @@ export class ActivityItemsComponent implements OnInit {
     this.activityItems = [];
     this.requestParams.iBusinessId = this.businessDetails._id;
     this.requestParams.limit = this.paginationConfig.itemsPerPage || 50;
-    if(!this.requestParams.selectedKind.length){
-      this.requestParams.selectedKind=['repair', 'giftcard', 'gold-sell', 'gold-purchase', 'order', 'reservation']
+    if(this.requestParams.selectedKind.length){
+      this.requestParams.selectedKind= this.requestParams.selectedKind
     }
-    console.log("------------------------------------------");
-    console.log(this.requestParams);
+    
     if (this.iLocationId) this.requestParams.iLocationId = this.iLocationId;
     this.showLoader = true;
     this.apiService.postNew('cashregistry', '/api/v1/activities/items', this.requestParams).subscribe(
