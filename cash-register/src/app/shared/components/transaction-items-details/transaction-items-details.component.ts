@@ -106,7 +106,7 @@ export class TransactionItemsDetailsComponent implements OnInit {
           // to do partial refund
           transactionItem.tType = 'refunded';
         }
-        if (this.aSelectedIds.includes(transactionItem._id) || (this.selectedId && this.selectedId === transactionItem._id)) {
+        if (this.aSelectedIds?.length && this.aSelectedIds.includes(transactionItem._id) || (this.selectedId && this.selectedId === transactionItem._id)) {
           transactionItem.isSelected = true;
         }
       });

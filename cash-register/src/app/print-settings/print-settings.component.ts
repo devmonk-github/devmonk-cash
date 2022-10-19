@@ -6,6 +6,7 @@ import { PrinterToolComponent } from 'src/app/print-settings/printer-tool/printe
 import { ConfirmationDialogComponent } from 'src/app/shared/components/confirmation-dialog/confirmation-dialog.component';
 import { ToastService } from 'src/app/shared/components/toast';
 import { ApiService } from 'src/app/shared/service/api.service';
+import { ActionSettingsComponent } from '../shared/components/actions-settings/action-settings.component';
 import { PrintSettingsDetailsComponent } from '../shared/components/print-settings-details/print-settings-details.component';
 import { PrintSettingsEditorComponent } from '../shared/components/print-settings-editor/print-settings-editor.component';
 import { DialogService } from '../shared/service/dialog';
@@ -44,80 +45,16 @@ export class PrintSettingsComponent implements OnInit {
     { key: 'giftcard', value: 'Giftcard receipt' },
   ];
 
-  // aTemplates: Array<any> = [
-  //   {
-  //     sTitle: 'Transaction Receipt',
-  //     aSettings: [
-  //       {
-  //         sTitle: 'Business logo',
-  //         sParameter: 'logo',
-  //         bShow: true,
-  //         type: 'switch'
-  //       },
-  //       {
-  //         sTitle: 'Orientation',
-  //         sParameter: 'orientation',
-  //         eOptions: ['portrait', 'landscape'],
-  //         value: 'portrait',
-  //         type: 'dropdown'
-  //       },
-  //       {
-  //         sTitle: 'Page size',
-  //         sParameter: 'pageSize',
-  //         eOptions: ['A4', 'A5', 'custom'],
-  //         value: 'A5',
-  //         width: 0,
-  //         height: 0,
-  //         type: 'dropdown'
-  //       },
-  //       {
-  //         sTitle: 'Page margins',
-  //         sParameter: 'pageMargins',
-  //         eOptions: ['left', 'top', 'right', 'bottom'],
-  //         values: [0, 0, 0, 0],
-  //         type: 'textArray'
-  //       },
-  //       {
-  //         sTitle: 'Font size',
-  //         sParameter: 'fontSize',
-  //         value: 10,
-  //         type: 'text'
-  //       }
-  //     ]
-  //   },
-  //   {
-  //     sTitle: 'Activity Receipt',
-  //     aSettings: [
-  //       {
-  //         sTitle: 'Orientation',
-  //         sParameter: 'orientation',
-  //         eOptions: ['portrait', 'landscape'],
-  //         value: 'portrait',
-  //         type: 'dropdown'
-  //       },
-  //       {
-  //         sTitle: 'Page size',
-  //         sParameter: 'pageSize',
-  //         eOptions: ['A4', 'A5'],
-  //         value: 'A5',
-  //         type: 'dropdown'
-  //       },
-  //       {
-  //         sTitle: 'Page margins',
-  //         sParameter: 'pageMargins',
-  //         eOptions: ['left', 'top', 'right', 'bottom'],
-  //         values: [0, 0, 0, 0],
-  //         type: 'textArray'
-  //       }
-  //     ]
-  //   }
-  // ]
+  aActionSettings:any = [];
+
+  
   iBusinessId: string = '';
   iLocationId: string = '';
   isLoadingDefaultLabel: boolean = false;
   isLoadingTemplatesLabel: boolean = false;
   defaultLabelsData: Array<TemplateJSON> = []
   LabelTemplatesData: Array<TemplateJSON> = []
+  bShowActionSettingsLoader: boolean = false;
 
   constructor(
     private dialogService: DialogService,
@@ -133,6 +70,7 @@ export class PrintSettingsComponent implements OnInit {
     this.isLoadingTemplatesLabel = true
     this.getLabelTemplate();
     this.fetchBusinessDetails();
+    this.fetchActionSettings();
   }
 
   createPrintSettings() {
@@ -306,6 +244,50 @@ export class PrintSettingsComponent implements OnInit {
       });
   }
 
+  async fetchActionSettings(){
+    this.bShowActionSettingsLoader = true;
+    const data = {
+      iLocationId: this.iLocationId,
+      oFilterBy: {
+        sMethod: 'actions'
+      }
+    }
+    const result:any = await this.apiService.postNew('cashregistry', `/api/v1/print-settings/list/${this.iBusinessId}`, data).toPromise();
+    this.bShowActionSettingsLoader = false;
+    if(result?.data[0]?.result?.length){
+      this.aActionSettings = result?.data[0]?.result[0];
+    }
+  }
+
+  openActionSetting(mode: string = 'create', index:number = 0){
+    let obj :any = {
+      mode: mode  
+    }
+    const item = this.aActionSettings.aActions[index];
+    
+    if (item?.eType) obj.eType = item?.eType;
+    if (item?.eSituation) obj.eSituation = item?.eSituation;
+    if (item?.aActionToPerform) obj.aActions = item?.aActionToPerform;
+    if(mode==='update') obj._id = this.aActionSettings._id;
+
+    this.dialogService.openModal(ActionSettingsComponent, { cssClass: "modal-lg", context: {...obj} })
+      .instance.close.subscribe(result => {
+        if(result){
+          this.aActionSettings = [];
+          this.fetchActionSettings();
+        }
+      });
+  }
+
+  async removeActionSetting(index:number){
+    const iPrintSettingsId = this.aActionSettings._id;
+    const iActionId = this.aActionSettings.aActions[index]._id;
+    await this.apiService.deleteNew('cashregistry', `/api/v1/print-settings/${this.iBusinessId}/${iPrintSettingsId}/${iActionId}`).toPromise();
+    // console.log(result);
+    this.fetchActionSettings();
+    // this.aActionSettings.splice(index, 1);
+  }
+
 
 
 }
@@ -319,7 +301,7 @@ export interface TemplateJSON {
   encoding: number;
   media_darkness: number;
   media_type: string;
-  disable_upload: boolean;
+  disable_upload: boolean; 
   can_rotate: boolean;
   alternative_price_notation: boolean;
   dpmm: number;

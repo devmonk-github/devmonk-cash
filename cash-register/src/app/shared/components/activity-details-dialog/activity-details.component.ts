@@ -40,7 +40,9 @@ export class ActivityDetailsComponent implements OnInit {
   faEuro = faEuro;
   faChevronRight = faChevronRight;
   faDownload = faDownload;
-  repairStatus = ['info', 'processing', 'cancelled', 'inspection', 'completed'];
+  repairStatus = ['new','info', 'processing', 'cancelled', 'inspection', 'completed', 'refundInCashRegister',
+  'offer', 'offer-is-ok', 'to-repair', 'part-are-order', 'shipped-to-repair', 'delivered'];
+  
   carriers = ['PostNL', 'DHL', 'DPD', 'bpost', 'other'];
   printOptions = ['Portrait', 'Landscape'];
   itemType = 'transaction';
@@ -109,10 +111,6 @@ export class ActivityDetailsComponent implements OnInit {
 
 
   ngOnInit(): void {
-    // this.activity = this.dialogRef.context.activity;
-    // this.items = this.dialogRef.context.items;
-    // if (this.items.length) {
-    // console.log(this.activity);
     if (this.activity) {
       if (this.activity?.activityitems?.length) {
         this.activityItems = this.activity.activityitems;
@@ -123,8 +121,6 @@ export class ActivityDetailsComponent implements OnInit {
         }
       } else {
         this.fetchTransactionItems();
-        // const items = JSON.parse(JSON.stringify(this.activity));
-        // this.activityItems = [items]
       }
 
     } else {
@@ -132,8 +128,6 @@ export class ActivityDetailsComponent implements OnInit {
     }
     if (this.activity?.iCustomerId) this.fetchCustomer(this.activity.iCustomerId, -1);
     this.getBusinessLocations();
-    // this.itemType = this.dialogRef.context.itemType;
-    // this.transaction = this.dialogRef.context.transaction;
     this.getListEmployees()
     this.getListSuppliers()
     this.getBusinessBrands();
@@ -230,9 +224,6 @@ export class ActivityDetailsComponent implements OnInit {
     console.log({ onBrandChange: e });
 
   }
-
-
-
 
   downloadOrder() { }
 
@@ -483,10 +474,8 @@ export class ActivityDetailsComponent implements OnInit {
       this.transactions = [];
       for (const obj of this.activityItems) {
         for (const item of obj.receipts) {
-          // if(!item.bRefund) item.eRepairStatus = obj.eRepairStatus;
           this.transactions.push({ ...item, ...obj });
         }
-        // this.transactions = this.transactions.concat(obj.receipts);
       }
       for (let i = 0; i < this.transactions.length; i++) {
         const obj = this.transactions[i];
@@ -512,7 +501,16 @@ export class ActivityDetailsComponent implements OnInit {
   }
 
   submit() {
-    console.log('Submit');
+    const oActivityItem = this.activityItems[0];
+    console.log('oActivityItem: ', oActivityItem);
+
+    oActivityItem.iBusinessId = this.iBusinessId;
+    this.apiService.putNew('cashregistry', '/api/v1/activities/items/' + oActivityItem?.iActivityItemId, oActivityItem)
+      .subscribe((result: any) => {
+        console.log('result: ', result);
+      }, (error) => {
+        console.log('error: ', error);
+      })
   }
 
 
@@ -542,19 +540,9 @@ export class ActivityDetailsComponent implements OnInit {
     var canvas = document.createElement("canvas");
     JsBarcode(canvas, data, { format: "CODE128", displayValue: displayValue });
     return canvas.toDataURL("image/png");
-    // this.getBase64FromUrl('')  
   }
 
-  // getBase64FromUrl(url: any): Observable<any> {
-  //   const oBody = {
-  //     iBusinessId: this.iBusinessId,
-
-  //   }
-  //   return this.apiService.getNew('cashregistry', `/api/v1/pdf/templates/generateBarcode/`, oBody);
-  // }
-
   async downloadReceipt(){
-    // console.log(this.activity);
     const oDataSource = JSON.parse(JSON.stringify(this.activity));
     const template = await this.getTemplate('activity').toPromise();
     if (!this.businessDetails) {

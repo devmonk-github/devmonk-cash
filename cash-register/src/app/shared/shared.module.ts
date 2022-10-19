@@ -46,6 +46,7 @@ import { JsonEditorModule } from "../json-editor/json-editor.module";
 import { CommonPrintSettingsService } from "./service/common-print-settings.service";
 import { AddEditWorkstationComponent } from './components/add-edit-workstation/add-edit-workstation.component';
 import { SortPipe } from "./directives/sort.pipe";
+import { ActionSettingsComponent } from "./components/actions-settings/action-settings.component";
 
 @NgModule({
   declarations: [
@@ -75,7 +76,8 @@ import { SortPipe } from "./directives/sort.pipe";
     SelectArticleDialogComponent,
     PrintSettingsEditorComponent,
     AddEditWorkstationComponent,
-    SortPipe
+    SortPipe,
+    ActionSettingsComponent
   ],
   imports: [
     CommonModule,
