@@ -89,9 +89,9 @@ export class TransactionDetailsComponent implements OnInit {
     let total = 0, totalAfterDisc = 0, totalVat = 0, totalDiscount = 0, totalSavingPoints = 0;
     dataObject.aTransactionItems.forEach((item: any, index: number) => {
       let name = '';
-      if (item && item.oArticleGroupMetaData && item.oArticleGroupMetaData.oName && item.oArticleGroupMetaData.oName[language]){
+      if (item && item.oArticleGroupMetaData && item.oArticleGroupMetaData.oName && item.oArticleGroupMetaData.oName[language]) {
         name = item?.oArticleGroupMetaData?.oName[language] + ' ';
-      } 
+      }
       item.description = name;
       if (item?.oBusinessProductMetaData?.sLabelDescription) item.description = item.description + item?.oBusinessProductMetaData?.sLabelDescription + ' ' + item?.sProductNumber;
       totalSavingPoints += item.nSavingsPoints;
@@ -174,7 +174,7 @@ export class TransactionDetailsComponent implements OnInit {
     this.dialogRef.close.emit(value);
   }
 
-  downloadWithVAT(print:boolean = false)  {
+  downloadWithVAT(print: boolean = false) {
     this.generatePDF(print);
   }
 
@@ -254,7 +254,7 @@ export class TransactionDetailsComponent implements OnInit {
       printSettings: this.printSettings,
       bPrint: print
     });
-    
+
     return;
     this.apiService.getNew('cashregistry', '/api/v1/pdf/templates/' + this.iBusinessId + '?sName=' + sName + '&eType=' + eType).subscribe(
       (result: any) => {
@@ -460,12 +460,32 @@ export class TransactionDetailsComponent implements OnInit {
     this.apiService.getNew('cashregistry', `/api/v1/print-template/business-receipt/${this.iBusinessId}/${this.iLocationId}`).subscribe((result: any) => {
       if (result?.data?.aTemplate?.length > 0) {
         let transactionDetails = { business: this.businessDetails, ...this.transaction };
-        let command = this.pn2escposService.generate(JSON.stringify(result.data.aTemplate), JSON.stringify(transactionDetails));
+        let command;
+        try {
+          command = this.pn2escposService.generate(JSON.stringify(result.data.aTemplate), JSON.stringify(transactionDetails));
+        } catch (e) {
+          this.toastService.show({ type: 'danger', text: 'Template not defined properly. Check browser console for more details' });
+          console.log(e);
+          return;
+        }
+
         this.printService.openDrawer(this.iBusinessId, command, this.thermalPrintSettings?.nPrinterId, this.thermalPrintSettings?.nComputerId).then((response: any) => {
-          if (response.deviceStatus == "disconnected") {
-            this.toastService.show({ type: 'warning', text: 'Your printer is offline' });
+          if (response.status == "PRINTJOB_NOT_CREATED") {
+            let message = '';
+            if (response.computerStatus != 'online') {
+              message = 'Your computer status is : ' + response.computerStatus + '.';
+            } else if (response.printerStatus != 'online') {
+              message = 'Your printer status is : ' + response.printerStatus + '.';
+            }
+            this.toastService.show({ type: 'warning', title: 'PRINTJOB_NOT_CREATED', text: message });
+          } else {
+            this.toastService.show({ type: 'success', text: 'PRINTJOB_CREATED', apiUrl: '/api/v1/printnode/print-job/' + response.id });
           }
         })
+      } else if (result?.data?.aTemplate?.length == 0) {
+        this.toastService.show({ type: 'danger', text: 'TEMPLATE_NOT_FOUND' });
+      } else {
+        this.toastService.show({ type: 'danger', text: 'Error while fetching print template' });
       }
     });
   }
@@ -495,4 +515,5 @@ export class TransactionDetailsComponent implements OnInit {
   //     console.log('error: ', error);
   //   }
   // }
+
 }
