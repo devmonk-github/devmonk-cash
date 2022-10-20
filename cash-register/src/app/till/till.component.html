@@ -1,7 +1,7 @@
 <div class="overlay-full d-flex flex-column justify-content-center align-items-center" *ngIf="!bIsDayStateOpened">
   <div *ngIf="bDayStateChecking">
     <div class="d-flex flex-column">
-      <h1>{{ 'Please wait while we are checking for day state' | translate}}</h1>
+      <h1>{{ 'PLEASE_WAIT_WHILE_CHECKING_FOR_DAY_STATE' | translate}}</h1>
       <div class="spinner-border mx-auto"></div>
     </div>
   </div>
@@ -21,10 +21,14 @@
     <div class="row mb-5">
       <div class="col-12">
         <div>
-          <button class="btn btn-primary btn-sm mx-2" (click)="openModal('T3162-111022-1546')">{{'TRANSACTION - T3162-111022-1546' | translate}}</button>
-          <button class="btn btn-primary btn-sm mx-2" (click)="openModal('A1627-071022-1753')">{{'ACTIVITY - A1627-071022-1753' | translate}}</button>
-          <button class="btn btn-primary btn-sm mx-2" (click)="openModal('AI2636-071022-1753')">{{'ACTIVITY ITEM - AI2636-071022-1753' | translate}}</button>
-          <button class="btn btn-primary btn-sm mx-2" (click)="openModal('G-1665569347132')">{{'Giftcard - G-1665569347132' | translate}}</button>
+          <button class="btn btn-primary btn-sm mx-2" (click)="openModal('T3162-111022-1546')">{{'TRANSACTION -
+            T3162-111022-1546' | translate}}</button>
+          <button class="btn btn-primary btn-sm mx-2" (click)="openModal('A1627-071022-1753')">{{'ACTIVITY -
+            A1627-071022-1753' | translate}}</button>
+          <button class="btn btn-primary btn-sm mx-2" (click)="openModal('AI2636-071022-1753')">{{'ACTIVITY ITEM -
+            AI2636-071022-1753' | translate}}</button>
+          <button class="btn btn-primary btn-sm mx-2" (click)="openModal('G-1665569347132')">{{'Giftcard -
+            G-1665569347132' | translate}}</button>
         </div>
       </div>
     </div>
@@ -36,7 +40,8 @@
             <div class="alert alert-warning" *ngIf="!bIsPreviousDayStateClosed">
               <p class="mb-0" style="font-size: 1.2rem;font-weight: bold;margin-left:1.3rem">
                 <span style="margin-right:1rem; font-weight:bolder">!</span>
-                The previous {{ settings.sDayClosurePeriod }} is not closed yet ({{ dOpenDate | date:'EEEE, dd-MM-YYYY
+                {{ "THE_PREVIOUS"}} {{ settings.sDayClosurePeriod }} {{"IS_NOT_CLOSED_YET"}} ({{ dOpenDate | date:'EEEE,
+                dd-MM-YYYY
                 hh:mm:ss aaa':'GMT'}})
               </p>
               <a class="btn btn-hover" routerLink="../day-closure">{{ "CLOSE_DAYSTATE" | translate}}</a>
@@ -276,11 +281,11 @@
               <div class="d-flex create-order p-5" *ngIf="searchKeyword && eKind === 'order'">
                 <fa-icon [icon]="faTimes" class="topright cursor-pointer" (click)="searchKeyword = ''"></fa-icon>
                 <div>
-                  <span class="text-danger">Use 'Enter' to search</span>
+                  <span class="text-danger"> {{"USE_ENTER_KEY_TO_SEARCH" | translate }} </span>
                   <div class="cursor-pointer mt-2" (click)="addOrder({ name: searchKeyword })">
                     <h4>{{searchKeyword}}</h4>
                     <span>
-                      Use this entry(no stock product).
+                      {{ "USE_THIS_INPUT" |translate}}
                     </span>
                   </div>
                 </div>
@@ -300,8 +305,8 @@
                             class="w-50">
                         </div>
                         <div class="px-2">
-                          <label class="business-bg-color rounded-full px-2 py-1 text-white text-sm">Business
-                            product</label>
+                          <label class="business-bg-color rounded-full px-2 py-1 text-white text-sm">{{
+                            "BUSINESS_PRODUCT"| translate}}</label>
                           <span>
                             <fa-icon icon="copy" aria-label="copy-article-number" class="ml-4"></fa-icon>
                           </span>
@@ -335,8 +340,9 @@
                             class="w-auto h-xxl-100px">
                         </div>
                         <div class="w-50 px-2">
-                          <label class="business-bg-color rounded-full px-2 py-1 text-white text-sm">Business
-                            product</label>
+                          <label
+                            class="business-bg-color rounded-full px-2 py-1 text-white text-sm">{{"BUSINESS_PRODUCT" |
+                            translate}}</label>
                           <span>
                             <fa-icon icon="copy" aria-label="copy-article-number" class="ml-4"></fa-icon>
                           </span>
@@ -347,7 +353,7 @@
                       </div>
                       <div class="absolute hover-product-option mt-n6" *ngIf="product['showOption']">
                         <div class="d-flex">
-                          <button class="btn btn-secondary w-50 mr-2 p-0">Add this article</button>
+                          <button class="btn btn-secondary w-50 mr-2 p-0">{{ "ADD_THIS_ARTICLE" | translate}}</button>
                         </div>
                       </div>
                     </div>
@@ -379,7 +385,7 @@
                 <div class="d-flex">
                   <div class="text-center" *ngIf="!quickButtons.length && !bSearchingProduct">
                     <button [routerLink]="['/business/settings/cash-register']" class="btn">
-                      Click here to add new favourite
+                      {{ "CLICK_HERE_TO_ADD_NEW_FAVOURITE" | translate}}
                     </button>
                   </div>
                   <!-- <div *ngIf="bSearchingProduct" class="spinner-border mx-auto"></div> -->
@@ -498,7 +504,7 @@
           </div>
         </div>
         <div class="d-flex">
-          <h5 *ngIf='!payMethods.length && !payMethodsLoading'> No payment method found!</h5>
+          <h5 *ngIf='!payMethods.length && !payMethodsLoading'> {{"NO_PAYMENT_METHOD_FOUND"}}</h5>
           <div *ngIf="payMethodsLoading" class="spinner-border mx-auto"></div>
         </div>
         <h1>{{ "CHANGE" | translate}}: {{getUsedPayMethods(true) - getTotals('price') | currency: '€'}}</h1>

@@ -10,7 +10,7 @@
           <div class="col" *ngIf="item.tType === 'refund'">
             <svg width="15" height="15" class="m-1">
               <rect width="15" height="15" style="fill: #f7422e; stroke-width: 1; stroke: rgb(0, 0, 0)" />
-              Sorry, your browser does not support inline SVG.
+              {{ "YOUR_BROWSER_DOES_NOT_SUPPORT_INLINE_SVG" | translate }}
             </svg>{{ item.quantity }}
           </div>
           <div class="col">{{ item.name }}</div>
@@ -63,16 +63,18 @@
           <div class="col-12 my-3">
             <div class="btn-group" role="group" aria-label="Basic example">
               <button [ngClass]="{active:item.eActivityItemStatus === 'new'}" type="button"
-                class="btn btn-primary fs-6 p-2" (click)="item.eActivityItemStatus ='new'">Price Agreed</button>
+                class="btn btn-primary fs-6 p-2" (click)="item.eActivityItemStatus ='new'"> {{ "PRICE_AGREED" |
+                translate}}</button>
               <button [ngClass]="{active:item.eActivityItemStatus === 'offer'}" type="button"
-                class="btn btn-primary fs-6 p-2 " (click)="item.eActivityItemStatus = 'offer'">Quotation</button>
+                class="btn btn-primary fs-6 p-2 " (click)="item.eActivityItemStatus = 'offer'">{{ "QUOTATION" |
+                translate}}</button>
             </div>
           </div>
           <!-- bShowServicePartnerRemark -->
           <div class="col-12 my-3">
             <button (click)="bShowServicePartnerRemark = !bShowServicePartnerRemark" type="button"
               class="btn btn-outline-primary fs-6 p-2 ">
-              {{bShowServicePartnerRemark?'Hide service partner remark':'Show service partner remark'}}
+              {{ (bShowServicePartnerRemark? 'HIDE' : 'SHOW') | translate}} {{ "SERVICE_PARTNER_REMARK" | translate }}
             </button>
             <ng-container *ngIf="bShowServicePartnerRemark">
 
@@ -184,8 +186,8 @@
           </div>
           <div class="col-12">
             <div class="form-group mb-4">
-              <label
-                class="form-control-label mb-3">{{item.eActivityItemStatus === 'new'?"ESTIMATED_DATE_READY":'ESTIMATED_QUOTE_DATE'
+              <label class="form-control-label mb-3">{{item.eActivityItemStatus ===
+                'new'?"ESTIMATED_DATE_READY":'ESTIMATED_QUOTE_DATE'
                 | translate}}</label>:
               <input type="date" class="form-control mb-3 mb-lg-0 datetimepicker-input" [ngModel]="item.dEstimatedDate"
                 (ngModelChange)="item.dEstimatedDate = $event" />
@@ -194,15 +196,18 @@
           <div class="col-12">
             <div class="row my-3">
               <div class="btn-group" role="group" aria-label="Basic example">
-                <button (click)="item.eEstimatedDateAction='call_on_ready'" [ngClass]="{active:item.eEstimatedDateAction==='call_on_ready'}" type="button"
+                <button (click)="item.eEstimatedDateAction='call_on_ready'"
+                  [ngClass]="{active:item.eEstimatedDateAction==='call_on_ready'}" type="button"
                   class="btn btn-primary fs-6 p-2">
                   <fa-icon [icon]="faPhone"></fa-icon>
                 </button>
-                <button (click)="item.eEstimatedDateAction='email_on_ready'" [ngClass]="{active:item.eEstimatedDateAction==='email_on_ready'}" type="button"
+                <button (click)="item.eEstimatedDateAction='email_on_ready'"
+                  [ngClass]="{active:item.eEstimatedDateAction==='email_on_ready'}" type="button"
                   class="btn btn-primary fs-6 p-2">
                   <fa-icon [icon]="faAt"></fa-icon>
                 </button>
-                <button (click)="item.eEstimatedDateAction='whatsapp_on_ready'" [ngClass]="{active:item.eEstimatedDateAction==='whatsapp_on_ready'}" type="button"
+                <button (click)="item.eEstimatedDateAction='whatsapp_on_ready'"
+                  [ngClass]="{active:item.eEstimatedDateAction==='whatsapp_on_ready'}" type="button"
                   class="btn btn-primary fs-6 p-2">
                   <i class="bi bi-whatsapp"></i>
                 </button>

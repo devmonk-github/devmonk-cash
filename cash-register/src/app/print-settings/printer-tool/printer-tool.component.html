@@ -13,19 +13,19 @@
         <div class="col-12 ">
         </div>
         <span class="fw-bolder">
-          Fax
+          {{ "FAX" | translate}}
         </span>
         <div class="col-12">op DESKTOP-GS49AV2</div>
       </div>
       <div class="row mb-3">
         <div class="col-12  text-end">
           <span class="fw-bolder">
-            Printer:{{labelPrintSettings?.nPrinterId}}
+            {{ "PRINTER" | translate}} :{{labelPrintSettings?.nPrinterId}}
           </span>
         </div>
         <div class="col-12  text-end">
           <span class="fw-bolder">
-            Device:{{labelPrintSettings?.nComputerId}}
+            {{"DEVICE" | translate}} :{{labelPrintSettings?.nComputerId}}
           </span>
         </div>
       </div>
@@ -33,7 +33,7 @@
     <div class="row mb-3">
       <div class="col-7 px-3">
         <div class="card text-start border">
-          <h4 class="card-title bg-gray-100 p-4">Title</h4>
+          <h4 class="card-title bg-gray-100 p-4"> {{ "TITLE" | translate}}</h4>
           <div class="card-body p-4">
             <div class="d-flex w-70 justify-content-start flex-wrap">
 
@@ -58,7 +58,7 @@
       </div>
       <div class="col-5 px-3">
         <div class="card text-start border">
-          <h4 class="card-title bg-gray-100 p-4">Title</h4>
+          <h4 class="card-title bg-gray-100 p-4">{{ "TITLE" | translate}}</h4>
           <div class="card-body p-4">
             <div class="d-flex justify-content-start flex-wrap">
               <button type="button" (click)="prefillCommand(commands.MediaDarkness)"
