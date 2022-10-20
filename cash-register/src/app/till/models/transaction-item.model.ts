@@ -27,6 +27,7 @@ export class TransactionItem {
     public nExtraLabel: number | null,
     public oEdiProduct: EdiProduct | null,
     public iBusinessPartnerId: string | null,
+    public sBusinessPartnerName: string | null,
     public iBusinessId: string,
     // 20
     public iArticleGroupId: string | null,
@@ -58,6 +59,7 @@ export class TransactionItem {
     public eStatus: string,
     public iWorkstationId: string,
     public iEmployeeId: string,
+    public iAssigneeId: string,
     public iLocationId: string,
     public sBagNumber: string,
     public iSupplierId: any,

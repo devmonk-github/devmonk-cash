@@ -5,10 +5,10 @@
     </section> -->
     <section class="d-flex product-row align-items-center">
       <div class="w-275px">
-        Points redeemed: {{item.redeemedLoyaltyPoints}}</div>
+        {{"POINTS_REDEEMED" | translate}}: {{item.redeemedLoyaltyPoints}}</div>
       <div class="w-100px"></div>
       <div class="w-90px"></div>
-      <div class="w-95px">Value</div>
+      <div class="w-95px">{{ "VALUE" | translate }}</div>
       <div class="w-100px">{{item.redeemedLoyaltyPoints | currency: '€'}}</div>
       <div class="w-100px"></div>
       <div class="w-75px"></div>

@@ -68,7 +68,7 @@ export class ServicesComponent implements OnInit, AfterViewInit {
     startDate: new Date('01-01-2015'),
   }
   paymentMethods: Array<any> = ['All', 'Cash', 'Credit', 'Card', 'Gift-Card'];
-  transactionTypes: Array<any> = ['All', 'Refund', 'Repair', 'Gold-purchase', 'Gold-sale'];
+  transactionTypes: Array<any> = ['All', 'Refund', 'Repair', 'Gold-purchase', 'Gold-sale', 'order', 'giftcard', 'offer'];
   transactionStatus: string = 'all';
   invoiceStatus: string = 'all';
   importStatus: string = 'all';
@@ -297,6 +297,8 @@ export class ServicesComponent implements OnInit, AfterViewInit {
   loadTransaction() {
     if (this.routes.url.includes('/business/webshop-orders')) {
       this.requestParams.eType = ['webshop-revenue', 'webshop-reservation']
+    } else {
+      this.requestParams.eType = ['cash-register-service', 'cash-register-revenue']
     }
     this.activities = [];
     this.requestParams.iBusinessId = this.businessDetails._id;

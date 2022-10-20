@@ -1,12 +1,15 @@
 <div class="container">
   <div class="row">
     <div class="col-12">
-      <button class="btn btn-primary btn-sm mx-2" (click)="openModal('AI2638-071022-1825')">{{'ACTIVITY ITEM - AI2638-071022-1825' | translate}}</button>
-      <button class="btn btn-primary btn-sm mx-2" (click)="openModal('A1627-071022-1753')">{{'ACTIVITY - A1627-071022-1753' | translate}}</button>
-      <button class="btn btn-primary btn-sm mx-2" (click)="openModal('G-1665569347132')">{{'Giftcard - G-1665569347132' |translate}}</button>
+      <button class="btn btn-primary btn-sm mx-2" (click)="openModal('AI2638-071022-1825')">{{'ACTIVITY ITEM -
+        AI2638-071022-1825' | translate}}</button>
+      <button class="btn btn-primary btn-sm mx-2" (click)="openModal('A1627-071022-1753')">{{'ACTIVITY -
+        A1627-071022-1753' | translate}}</button>
+      <button class="btn btn-primary btn-sm mx-2" (click)="openModal('G-1665569347132')">{{'Giftcard - G-1665569347132'
+        |translate}}</button>
     </div>
   </div>
-    
+
   <div class="my-4 px-2 py-4 bg-white">
     <div class="d-flex align-items-center">
       <div class="position-relative w-md-400px me-md-2">
@@ -34,13 +37,13 @@
           <div class="col-xxl-4">
             <div class="row g-8">
               <div class="col-lg-6">
-                <label class="fs-6 form-label fw-bolder text-dark">Min. Date</label>
+                <label class="fs-6 form-label fw-bolder text-dark">{{ "MIN_DATE" | translate}}</label>
                 <input type="date" class="form-control form-control form-control-solid" name="startDate"
                   [ngModel]="filterDates.startDate | date:'yyyy-MM-dd'"
                   (ngModelChange)="filterDates.startDate = $event" />
               </div>
               <div class="col-lg-6">
-                <label class="fs-6 form-label fw-bolder text-dark">Max. Date</label>
+                <label class="fs-6 form-label fw-bolder text-dark">{{ "MAX_DATE" | translate}}</label>
                 <input type="date" class="form-control form-control form-control-solid" name="endDate"
                   [ngModel]="filterDates.endDate | date:'yyyy-MM-dd'" (ngModelChange)="filterDates.endDate = $event" />
               </div>
@@ -49,13 +52,13 @@
           <div class="col-xxl-8">
             <div class="row g-2">
               <div class="col-lg-4">
-                <label class="fs-6 form-label fw-bolder text-dark">Payment methods</label>
+                <label class="fs-6 form-label fw-bolder text-dark">{{ "PAYMENT_METHOD" | translate}}</label>
                 <ng-select class="form-control form-control-solid p-0" [(ngModel)]="methodValue" [clearable]="false">
                   <ng-option *ngFor="let method of paymentMethods" [value]="method">{{method}}</ng-option>
                 </ng-select>
               </div>
               <div class="col-lg-4">
-                <label class="fs-6 form-label fw-bolder text-dark">Transaction type</label>
+                <label class="fs-6 form-label fw-bolder text-dark">{{ "TRANSACTION_TYPE" | translate}}</label>
                 <ng-select class="form-control form-control-solid p-0" [(ngModel)]="transactionValue"
                   [clearable]="false">
                   <ng-option *ngFor="let type of transactionTypes" [value]="type">{{type}}</ng-option>
@@ -96,7 +99,7 @@
           <div class="col-xxl-6">
             <div class="row g-4">
               <div class="col-lg-6">
-                <label class="fs-6 form-label fw-bolder text-dark">Invoice status</label>
+                <label class="fs-6 form-label fw-bolder text-dark">{{ "INVOICE_STATUS" | translate}}</label>
                 <div class="nav-group nav-group-fluid">
                   <label>
                     <input type="radio" class="btn-check" name="invoice" value="all" [(ngModel)]="invoiceStatus"
@@ -105,34 +108,35 @@
                   </label>
                   <label>
                     <input type="radio" class="btn-check" name="invoice" value="invoiced" [(ngModel)]="invoiceStatus" />
-                    <span
-                      class="btn btn-sm btn-color-muted btn-active btn-active-primary fw-bolder px-4">Invoiced</span>
+                    <span class="btn btn-sm btn-color-muted btn-active btn-active-primary fw-bolder px-4"> {{ "INVOICED"
+                      | translate}}</span>
                   </label>
                   <label>
                     <input type="radio" class="btn-check" name="invoice" value="uninvoiced"
                       [(ngModel)]="invoiceStatus" />
-                    <span
-                      class="btn btn-sm btn-color-muted btn-active btn-active-primary fw-bolder px-4">Uninvoiced</span>
+                    <span class="btn btn-sm btn-color-muted btn-active btn-active-primary fw-bolder px-4">{{
+                      "UNINVOICED" | translate}}</span>
                   </label>
                 </div>
               </div>
               <div class="col-lg-6">
-                <label class="fs-6 form-label fw-bolder text-dark">Import status</label>
+                <label class="fs-6 form-label fw-bolder text-dark">{{"IMPORT_STATUS" | translate}}</label>
                 <div class="nav-group nav-group-fluid">
                   <label>
                     <input type="radio" class="btn-check" name="import" value="all" [(ngModel)]="importStatus"
                       checked="checked" />
-                    <span class="btn btn-sm btn-color-muted btn-active btn-active-primary fw-bolder px-4">All</span>
+                    <span class="btn btn-sm btn-color-muted btn-active btn-active-primary fw-bolder px-4">{{ "ALL" |
+                      translate}}</span>
                   </label>
                   <label>
                     <input type="radio" class="btn-check" name="import" value="imported" [(ngModel)]="importStatus" />
-                    <span
-                      class="btn btn-sm btn-color-muted btn-active btn-active-primary fw-bolder px-4">Imported</span>
+                    <span class="btn btn-sm btn-color-muted btn-active btn-active-primary fw-bolder px-4">{{ "IMPORTED"
+                      | translate}}</span>
                   </label>
                   <label>
                     <input type="radio" class="btn-check" name="import" value="unimported" [(ngModel)]="importStatus" />
-                    <span
-                      class="btn btn-sm btn-color-muted btn-active btn-active-primary fw-bolder px-4">Unimported</span>
+                    <span class="btn btn-sm btn-color-muted btn-active btn-active-primary fw-bolder px-4">{{"UNIMPORTED"
+                      | translate}}</span>
                   </label>
                 </div>
               </div>
@@ -141,7 +145,7 @@
           <div class="col-xxl-6">
             <div class="row g-2">
               <div class="col-lg-4">
-                <label class="fs-6 form-label fw-bolder text-dark">Employees</label>
+                <label class="fs-6 form-label fw-bolder text-dark">{{ "EMPLOYEES" | translate}}</label>
                 <ng-select class="form-control form-control-solid p-0" [clearable]="false" [(ngModel)]="employee">
                   <ng-option *ngFor="let employeeObj of employees" [value]="employeeObj">{{employeeObj.sFirstName}}
                     {{employeeObj.sLastName || ''}}</ng-option>>
@@ -175,7 +179,7 @@
           <th scope="col" *ngFor="let th of tableHeaders"
             [ngClass]="{'fw-bolder': th.selected, 'cursor-pointer': !th.disabled, 'pe-none': th.disabled}"
             (click)="setSortOption(th)">
-            {{ th.key }}
+            {{ th.key | translate}}
             <fa-icon *ngIf="th.selected" [icon]=" th.sort ==='asc' ? faArrowDown : faArrowUp"></fa-icon>
           </th>
           <th scope="col"></th>
@@ -187,16 +191,16 @@
           <td>{{activity?.sReceiptNumber}}</td>
           <td>{{getTypes(activity.activityitems)}}</td>
           <td scope="row">{{activity?.dCreatedDate | date: 'yyyy-MM-dd HH:mm'}}</td>
-          <td scope="row">{{activity?.dPickedUp | date: 'yyyy-MM-dd HH:mm'}}</td>
-          <td>{{activity?.eActivityStatus || '-'}}</td>
-          <td>{{'-'}}</td>
+          <td scope="row">{{activity?.dEstimatedDate | date: 'yyyy-MM-dd HH:mm'}}</td>
+          <td>{{activity?.eActivityItemStatus || '-'}}</td>
+          <td>{{activity?.sBusinessPartnerName}}</td>
           <td>{{'-'}}</td>
           <td>{{activity?.oCustomer?.sFirstName}} {{activity?.oCustomer?.sLastName}}</td>
 
           <td>
             <div class="btn-group me-4">
               <span class="btn btn-primary fs-bold px-6" (click)="openActivities(activity)">
-                <span class="indicator-label">{{ "VIEW"}}</span>
+                <span class="indicator-label">{{ "VIEW" | translate}}</span>
               </span>
               <span class="btn btn-primary btn-icon fs-bold" role="button">
                 <div class="btn btn-icon" data-kt-menu-trigger="click" data-kt-menu-attach="parent"
@@ -213,7 +217,8 @@
                   class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold fs-7 w-200px py-4"
                   data-kt-menu="true">
                   <div class="menu-item px-3 text-center" *ngFor="let tMenu of transactionMenu">
-                    <div class="menu-link px-3" (click)="clickMenuOpt(tMenu.key, activity._id)">{{ tMenu.key}}</div>
+                    <div class="menu-link px-3" (click)="clickMenuOpt(tMenu.key, activity._id)">{{ tMenu.key |
+                      translate}}</div>
                   </div>
                 </div>
               </span>
@@ -223,7 +228,8 @@
       </tbody>
     </table>
     <div class="d-flex">
-      <h5 *ngIf='!activities?.length && !showLoader' style="text-align: center;"> No data found!</h5>
+      <h5 *ngIf='!activities?.length && !showLoader' style="text-align: center;"> {{ "NO_DATA_FOUND" | translate}} !
+      </h5>
       <div *ngIf="showLoader" class="spinner-border mx-auto"></div>
     </div>
     <div class="row">

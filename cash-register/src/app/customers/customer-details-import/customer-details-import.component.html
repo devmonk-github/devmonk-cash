@@ -7,25 +7,24 @@
         <button class="btn btn-secondary" (click)="gotoStep('previous')">
             {{"BACK" | translate}}
         </button>
-        <button class="btn btn-primary ml-2" (click)="gotoStep('import')"
-            [disabled]="validateCustomerHeaderLink()">
+        <button class="btn btn-primary ml-2" (click)="gotoStep('import')" [disabled]="validateCustomerHeaderLink()">
             {{"NEXT_STEP" | translate}}
         </button>
         <button class="btn btn-primary ml-auto pull-right" (click)="getDynamicFields(true)">
             <fa-icon [icon]="faSync"></fa-icon> &nbsp;
-            Reload default attributes
+            {{ "RELOAD_DEFAULT_ATTRIBUTES" | translate}}
         </button>
     </div>
     <h4>{{ 'CUSTOMER_DETAILS' | translate}}</h4>
     <div class="row mb-4">
         <div class="col-md-2 no-padding-left">
-            <h5>Found columns(CSV headers)</h5>
+            <h5>{{"FOUND_COLUMN(CSV_HEADERS)"}}</h5>
         </div>
         <div class="col-md-3 no-padding-left">
-            <h5>Attribute to set</h5>
+            <h5>{{ "ATTRIBUTE_TO_SET" | translate}}</h5>
         </div>
         <div class="col-md-7 no-padding-right">
-            <h5>Update Template</h5>
+            <h5>{{ "UPDATE_TEMPLATE" | translate}}</h5>
         </div>
     </div>
     <div class="row mb-4" *ngFor="let option of headerOptions">
@@ -34,7 +33,8 @@
         </div>
         <div class="col-md-3 no-padding-left">
             <select class="form-select" id="customer-attributes" [(ngModel)]="customerDetailsForm[option]">
-                <option *ngFor="let option of allFields.all" [value]="option.sKey">{{ option.value | translate}}</option>
+                <option *ngFor="let option of allFields.all" [value]="option.sKey">{{ option.value | translate}}
+                </option>
             </select>
         </div>
         <div class="col-md-7 no-padding-left flex">

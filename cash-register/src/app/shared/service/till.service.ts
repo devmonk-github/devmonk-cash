@@ -135,6 +135,7 @@ export class TillService {
         null,
         null,
         i.iBusinessPartnerId,
+        i.sBusinessPartnerName,
         this.getValueFromLocalStorage('currentBusiness'),
         // 20
         i.iArticleGroupId,
@@ -166,6 +167,7 @@ export class TillService {
         'y',
         this.getValueFromLocalStorage('currentWorkstation'),
         i.iEmployeeId || this.getValueFromLocalStorage('currentEmployee')._id,
+        i.iAssigneeId,
         this.getValueFromLocalStorage('currentLocation'),
         i.sBagNumber,
         i.iSupplierId, // repairer id
@@ -192,7 +194,6 @@ export class TillService {
         i.eEstimatedDateAction,
         i.eActivityItemStatus,
         i.bGiftcardTaxHandling,
-
       )
     });
     const originalTItemsLength = length = body.transactionItems.filter((i: any) => i.oType.eKind !== 'loyalty-points').length;

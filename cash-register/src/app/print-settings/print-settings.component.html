@@ -42,7 +42,7 @@
         <span>{{"PRINT_SETTINGS_LETTERPAPER" | translate}}</span>
       </div>
       <div class="">
-        <button class="btn btn-primary" (click)="createPrintSettings()">New</button>
+        <button class="btn btn-primary" (click)="createPrintSettings()"> {{ "NEW" | translate}}</button>
       </div>
 
     </div>
@@ -64,7 +64,7 @@
         <span> {{"LABEL" | translate}} {{"DEFINITIONS" | translate}}</span>
       </div>
       <div class="col-md-1">
-        <button class="btn btn-primary" (click)="openToolsModal()">Tools</button>
+        <button class="btn btn-primary" (click)="openToolsModal()"> {{ "TOOLS" | translate}}</button>
       </div>
     </div>
     <div class="card-body">
@@ -80,8 +80,8 @@
                   <thead>
                     <tr class="text-start text-gray-400 fw-bolder fs-7 text-uppercase gs-0">
                       <th class="mw-100px sorting" tabindex="0">#</th>
-                      <th class="mw-100px sorting" tabindex="0">Name</th>
-                      <th class="mw-100px sorting" tabindex="0">Action</th>
+                      <th class="mw-100px sorting" tabindex="0">{{ "NAME" | translate}}</th>
+                      <th class="mw-100px sorting" tabindex="0"> {{ "ACTION" | translate}}</th>
                     </tr>
                   </thead>
                   <tbody class="fw-bold text-gray-600">
@@ -105,9 +105,8 @@
                       </td>
                     </tr>
                     <div class="d-flex">
-                      <h5 *ngIf='!LabelTemplatesData.length && !isLoadingTemplatesLabel' style="text-align: center;"> No
-                        data
-                        found!</h5>
+                      <h5 *ngIf='!LabelTemplatesData.length && !isLoadingTemplatesLabel' style="text-align: center;"> {{
+                        "NO_DATA_FOUND" | translate}}!</h5>
                       <div class="row h-200px" *ngIf="isLoadingTemplatesLabel">
                         <div class="spinner-box h-200px">
                           <div class="three-quarter-spinner">
@@ -132,8 +131,8 @@
                   <thead>
                     <tr class="text-start text-gray-400 fw-bolder fs-7 text-uppercase gs-0">
                       <th class="mw-100px sorting" tabindex="0">#</th>
-                      <th class="mw-100px sorting" tabindex="0">Name</th>
-                      <th class="mw-100px sorting" tabindex="0">Action</th>
+                      <th class="mw-100px sorting" tabindex="0">{{ "NAME" | translate}}</th>
+                      <th class="mw-100px sorting" tabindex="0">{{ "ACTION" | translate}}</th>
                     </tr>
                   </thead>
                   <tbody class="fw-bold text-gray-600">
@@ -155,9 +154,8 @@
                       </td>
                     </tr>
                     <div class="d-flex">
-                      <h5 *ngIf='!defaultLabelsData.length && !isLoadingDefaultLabel' style="text-align: center;"> No
-                        data
-                        found!</h5>
+                      <h5 *ngIf='!defaultLabelsData.length && !isLoadingDefaultLabel' style="text-align: center;"> {{
+                        "NO_DATA_FOUND" | translate}}!</h5>
                       <div class="row h-200px" *ngIf="isLoadingDefaultLabel">
                         <div class="spinner-box h-200px">
                           <div class="three-quarter-spinner">
@@ -209,16 +207,18 @@
             <td class="border border-gray-400 text-center">{{item.eType}}</td>
             <td class="border border-gray-400 text-center">{{item.eSituation}}</td>
             <td class="border border-gray-400 text-center">
-                <span class="badge badge-success" *ngFor="let action of item.aActionToPerform">
-                  {{action}}
-                </span>
+              <span class="badge badge-success" *ngFor="let action of item.aActionToPerform">
+                {{action}}
+              </span>
             </td>
             <td class="border border-gray-400 text-center">
               <div class="d-flex justify-content-center">
                 <button class="btn btn-info btn-sm me-2" (click)="openActionSetting('update', index)">
-                  <fa-icon [icon]="faPencilAlt"></fa-icon></button>
+                  <fa-icon [icon]="faPencilAlt"></fa-icon>
+                </button>
                 <button class="btn btn-danger btn-sm" (click)="removeActionSetting(index)">
-                  <fa-icon [icon]="faXmark"></fa-icon></button>
+                  <fa-icon [icon]="faXmark"></fa-icon>
+                </button>
               </div>
             </td>
           </tr>

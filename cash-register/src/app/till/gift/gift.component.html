@@ -26,11 +26,12 @@
             <div class="col-12">
               <button class="btn btn-bg-light btn-active-color-primary mb-2 w-100" (click)="create()"
                 [disabled]="!item.nonEditable && numberIcon === faBan">
-                Print <fa-icon [icon]="faPrint"></fa-icon>
+                {{ "PRINT" | translate}} <fa-icon [icon]="faPrint"></fa-icon>
               </button>
             </div>
             <div class="col-12">
-              <button class="btn btn-bg-light btn-active-color-primary mb-2 w-100" (click)="duplicate()">Duplicate
+              <button class="btn btn-bg-light btn-active-color-primary mb-2 w-100" (click)="duplicate()">{{ "DUPLICATE"
+                | translate}}
                 <fa-icon [icon]="faClone">
                 </fa-icon>
               </button>
@@ -46,7 +47,7 @@
               <fa-icon [icon]="numberIcon" [ngClass]="checkingNumber ? 'fa-spin': ''"></fa-icon>
             </span>
             <span class="text-danger" *ngIf="!item.nonEditable && numberIcon === faBan">
-              Please enter valid giftcard number.
+              {{"ENTER_VALID_GIFTCARD_NUMBER" | translate}}
             </span>
           </div>
         </div>
@@ -59,13 +60,15 @@
           </div>
           <p>{{ "VAT_HANDLING" | translate}}</p>
           <div class="form-check form-check-custom form-check-solid">
-            <input class="form-check-input" type="radio" [(ngModel)]="item.bGiftcardTaxHandling" value="true" id="vatPaid1" />
+            <input class="form-check-input" type="radio" [(ngModel)]="item.bGiftcardTaxHandling" value="true"
+              id="vatPaid1" />
             <label class="form-check-label" for="vatPaid1">
               {{ "PAY_TAXES_WHEN_CREATE" | translate}}
             </label>
           </div>
           <div class="form-check form-check-custom form-check-solid">
-            <input class="form-check-input" type="radio" [(ngModel)]="item.bGiftcardTaxHandling" value="false" id="vatPaid2" />
+            <input class="form-check-input" type="radio" [(ngModel)]="item.bGiftcardTaxHandling" value="false"
+              id="vatPaid2" />
             <label class="form-check-label" for="vatPaid2">
               {{ "PAY_TAXES_WHEN_REDEEM" | translate}}
             </label>
