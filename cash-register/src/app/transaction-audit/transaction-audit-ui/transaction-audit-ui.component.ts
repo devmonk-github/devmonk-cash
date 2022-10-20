@@ -27,7 +27,7 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
   aStatistic: any = [];
   oUser: any = {};
   aSelectedLocation: any = [];
-  selectedWorkStation: any = {};
+  selectedWorkStation: any = [];
   selectedEmployee: any = {};
   propertyOptions: Array<any> = [];
   selectedProperties: any;
@@ -676,7 +676,7 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
     this.bStatisticLoading = true;
 
     let aLocation = this?.aSelectedLocation?.length ? this.aSelectedLocation : [];
-    let iWorkstationId = this.selectedWorkStation?._id;
+    let iWorkstationId = this.selectedWorkStation?.length ? this.selectedWorkStation : [];
     if (this.iStatisticId) {
       /* It's only for view purpose and we can only view for the current location and current workstation */
       aLocation = [this.iLocationId];
@@ -734,7 +734,7 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
     this.aStatistic = [];
     this.aPaymentMethods = [];
     let aLocation = this?.aSelectedLocation?.length ? this.aSelectedLocation : [];
-    let iWorkstationId = this.selectedWorkStation?._id;
+    let iWorkstationId = this.selectedWorkStation?.length ? this.selectedWorkStation :[];
     if (this.iStatisticId) {
       /* It's only for view purpose and we can only view for the current location and current workstation */
       aLocation = [this.iLocationId];
@@ -961,7 +961,7 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
       sOptionMenu: this.sOptionMenu,
       bIsDynamicState: this.IsDynamicState,
       aLocation: this.aLocation,
-      oSelectedWorkStation: this.selectedWorkStation,
+      oSelectedWorkStation: this.selectedWorkStation?.length ? this.selectedWorkStation : [],
       aWorkStation: this.aWorkStation,
       oFilterDates: this.filterDates,
       oBusinessDetails: this.businessDetails,
@@ -999,7 +999,7 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
         bIsArticleGroupLevel: this.bIsArticleGroupLevel,
         bIsSupplierMode: this.bIsSupplierMode,
         iLocationId: this?.aSelectedLocation?.length ? this.aSelectedLocation : [],
-        iWorkstationId: this.selectedWorkStation?._id,
+        iWorkstationId: this.selectedWorkStation?. length ? this.selectedWorkStation :[]
       },
       sTransactionType: this.optionMenu,
       iBusinessId: this.iBusinessId,
@@ -1060,7 +1060,7 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
       startDate: this.filterDates.startDate,
       endDate: this.filterDates.endDate,
       iBusinessId: this.iBusinessId,
-      selectedWorkstations: [this.iWorkstationId],
+      selectedWorkstations: this.selectedWorkStation?.length ? this.selectedWorkStation : [],
     };
 
     return this.apiService.postNew(
@@ -1293,7 +1293,7 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
         oFilter: {
           iLocationId: this.iLocationId,
           aLocationId: this?.aSelectedLocation?.length ? this.aSelectedLocation : [],
-          iWorkstationId: this.selectedWorkStation?._id,
+          iWorkstationId: this.selectedWorkStation?.length ? this.selectedWorkStation : []
         },
       }
       this.dayClosureListSubscription = this.apiService.postNew('cashregistry', `/api/v1/statistics/day-closure/list`, oBody).subscribe((result: any) => {

@@ -98,7 +98,7 @@ export class DayClosuresComponent implements OnInit, OnDestroy {
       oFilter: {
         iLocationId: this.iLocationId,
         aLocationId: this?.aSelectedLocation?.length ? this.aSelectedLocation : [],
-        iWorkstationId: this.oSelectedWorkStation?._id,
+        iWorkstationId: [this.oSelectedWorkStation?._id],
       },
       ...this.requestParams
     }
