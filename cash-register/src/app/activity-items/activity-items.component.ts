@@ -68,7 +68,6 @@ export class ActivityItemsComponent implements OnInit {
     { key: 'End date', selected: false, sort: 'asc' },
     { key: 'Status', disabled: true },
     { key: 'Supplier/Repairer', disabled: true },
-    { key: 'Partner supplier status', disabled: true },
     { key: 'Customer', disabled: true },
   ]
   
