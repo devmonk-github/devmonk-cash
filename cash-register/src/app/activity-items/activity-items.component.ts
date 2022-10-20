@@ -229,8 +229,8 @@ export class ActivityItemsComponent implements OnInit {
             _id: iActivityId
           }
         }
+        console.log({ oBody });
         const activityResult:any = await this.apiService.postNew('cashregistry', '/api/v1/activities', oBody).toPromise();
-        console.log({ activityResult });
         
         // const oActivityItem = activityItemResult?.data[0].result[0]._id;
         // console.log({ oActivityItem });
@@ -248,8 +248,8 @@ export class ActivityItemsComponent implements OnInit {
           sNumber: barcode
         }
       }
+      console.log({ oBody });
       const activityResult: any = await this.apiService.postNew('cashregistry', '/api/v1/activities', oBody).toPromise();
-      console.log({ activityResult });
 
       // const oActivityItem = activityItemResult?.data[0].result[0]._id;
       // console.log({ oActivityItem });

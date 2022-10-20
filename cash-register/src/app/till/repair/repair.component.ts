@@ -43,6 +43,10 @@ export class RepairComponent implements OnInit {
   showDeleteBtn: boolean = false;
   collapsedBtn: Boolean = false;
   repairer: any = null;
+  oRepairer: any = {
+    sName: '',
+    _id: ''
+  };
   // temporary variable
   supplier: any;
   sIsEstimatedDate: 'PriceAgreed' | 'Quotation' = 'PriceAgreed'
@@ -85,6 +89,7 @@ export class RepairComponent implements OnInit {
           this.supplier = supplier.sName;
           this.item.iSupplierId = supplier._id;
           this.item.iBusinessPartnerId = supplier._id;
+          this.item.sBusinessPartnerName = supplier.sName;
           this.item.nMargin = nMargin;
           this.brand = brand.sName;
           this.item.iBusinessBrandId = brand._id;
@@ -287,6 +292,20 @@ export class RepairComponent implements OnInit {
         return employee.sName && employee.sName.toLowerCase().includes(searchStr.toLowerCase());
       });
     }
+  }
+
+  selectAssignee(oRepairer: any, item:any) {
+    this.filteredEmployees = [];
+    this.oRepairer = {
+      sName: oRepairer?.sName,
+      iAssigneeId: oRepairer?._id
+    }
+    let oUser: any = localStorage.getItem('currentEmployee') || localStorage.getItem('currentUser') || null;
+    if (oUser) oUser = JSON.parse(oUser);
+    this.item.iEmployeeId = oUser?.userId || null;
+    this.item.iAssigneeId = oRepairer?._id;
+    console.log('selectAssignee item: ', this.item.iEmployeeId, this.item.iAssigneeId);
+    this.itemChanged.emit(this.item);
   }
 
   // Function for search suppliers
