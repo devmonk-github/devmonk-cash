@@ -520,46 +520,48 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   getRelatedTransactionItem(iActivityItemId: string, iTransactionItemId: string, index: number) {
-    this.apiService.getNew('cashregistry', `/api/v1/transaction/item/activityItem/${iActivityItemId}?iBusinessId=${this.business._id}&iTransactionItemId=${iTransactionItemId}`)
-      .subscribe(
-        (result: any) => {
-          this.transaction.aTransactionItems[index].related = result.data || [];
-        }, (error) => {
-          console.log(error);
-        })
+    // console.log("getRelatedTransactionItem", iActivityItemId, iTransactionItemId);
+    return this.apiService.getNew('cashregistry', `/api/v1/transaction/item/activityItem/${iActivityItemId}?iBusinessId=${this.business._id}&iTransactionItemId=${iTransactionItemId}`).toPromise();
+      // .subscribe(
+      //   (result: any) => {
+      //     this.transaction.aTransactionItems[index].related = result.data || [];
+      //   }, (error) => {
+      //     console.log(error);
+      //   })
   }
 
   getRelatedTransaction(iActivityId: string, iTransactionId: string) {
+    // console.log('getRelatedTransaction', iActivityId, iTransactionId);
     const body = {
       iBusinessId: this.business._id,
       iTransactionId: iTransactionId
     }
-    this.apiService.postNew('cashregistry', '/api/v1/transaction/activity/' + iActivityId, body)
-      .subscribe(
-        (result: any) => {
-          this.transaction.related = result.data || [];
-          this.transaction.related.forEach((obj: any) => {
-            obj.aPayments.forEach((obj: any) => {
-              obj.dCreatedDate = moment(obj.dCreatedDate).format('DD-MM-yyyy hh:mm');
-            });
-            this.transaction.aPayments = this.transaction.aPayments.concat(obj.aPayments);
-          })
-        }, (error) => {
-          console.log(error);
-        })
+    return this.apiService.postNew('cashregistry', '/api/v1/transaction/activity/' + iActivityId, body);
+      // .subscribe(
+      //   (result: any) => {
+      //     this.transaction.related = result.data || [];
+      //     this.transaction.related.forEach((obj: any) => {
+      //       obj.aPayments.forEach((obj: any) => {
+      //         obj.dCreatedDate = moment(obj.dCreatedDate).format('DD-MM-yyyy hh:mm');
+      //       });
+      //       this.transaction.aPayments = this.transaction.aPayments.concat(obj.aPayments);
+      //     })
+      //   }, (error) => {
+      //     console.log(error);
+      //   })
   }
 
   createTransaction(): void {
-    this.locationId = localStorage.getItem('currentLocation') || null;
+    // this.locationId = localStorage.getItem('currentLocation') || null;
     const isGoldForCash = this.checkUseForGold();
     if (this.transactionItems.length < 1 || !isGoldForCash) {
       return;
     }
-    if (!this.locationId) {
-      this.toastrService.show({ type: 'danger', text: 'Location is not selected' });
-      this.saveInProgress = false;
-      return;
-    }
+    // if (!this.locationId) {
+    //   this.toastrService.show({ type: 'danger', text: 'Location is not selected' });
+    //   this.saveInProgress = false;
+    //   return;
+    // }
 
     const giftCardPayment = this.allPaymentMethod.find((o) => o.sName === 'Giftcards');
     this.saveInProgress = true;
@@ -601,21 +603,24 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
               const { transaction, aTransactionItems } = data;
               transaction.aTransactionItems = aTransactionItems;
               this.transaction = transaction;
-              this.processTransactionForPdfReceipt();
+              
               // this.transaction.aTransactionItems.forEach((item: any, index: number) => {
               //   this.getRelatedTransactionItem(item?.iActivityItemId, item?._id, index)
               // })
               // this.getRelatedTransaction(this.transaction?.iActivityId, this.transaction?._id)
               // this.pdfService.generatePDF(this.transaction);
-              // this.updateFiskalyTransaction('FINISHED', body.payments);
-              // setTimeout(() => {
-              //   this.saveInProgress = false;
-              //   this.fetchBusinessPartnersProductCount(uniq);
-              //   this.clearAll();
-              // }, 100);
-              // if (this.selectedTransaction) {
-              //   this.deleteParkedTransaction();
-              // };
+              this.processTransactionForPdfReceipt();
+              
+              this.updateFiskalyTransaction('FINISHED', body.payments);
+              
+              setTimeout(() => {
+                this.saveInProgress = false;
+                this.fetchBusinessPartnersProductCount(uniq);
+                this.clearAll();
+              }, 100);
+              if (this.selectedTransaction) {
+                this.deleteParkedTransaction();
+              };
             }, err => {
               this.toastrService.show({ type: 'danger', text: err.message });
               this.saveInProgress = false;
@@ -625,7 +630,74 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   async processTransactionForPdfReceipt() {
-    await this.processTransactionData().toPromise();
+    // console.log('waiting for processTransactionData')
+
+
+    const relatedItemsPromises: any = [];
+    let language: any = localStorage.getItem('language')
+    let dataObject = JSON.parse(JSON.stringify(this.transaction));
+
+    dataObject.aPayments.forEach((obj: any) => {
+      obj.dCreatedDate = moment(dataObject.dCreatedDate).format('DD-MM-yyyy hh:mm');
+    });
+    dataObject.aTransactionItems = [];
+    this.transaction.aTransactionItems.forEach((item: any, index: number) => {
+      if (!(item.oType?.eKind == 'discount' || item?.oType?.eKind == 'loyalty-points-discount')) {
+        dataObject.aTransactionItems.push(item);
+      }
+    })
+    dataObject.total = 0;
+    let total = 0, totalAfterDisc = 0, totalVat = 0, totalDiscount = 0, totalSavingPoints = 0;
+    dataObject.aTransactionItems.forEach((item: any, index: number) => {
+      let name = '';
+      if (item && item.oArticleGroupMetaData && item.oArticleGroupMetaData.oName && item.oArticleGroupMetaData.oName[language]) name = item?.oArticleGroupMetaData?.oName[language] + ' ';
+      item.description = name;
+      if (item?.oBusinessProductMetaData?.sLabelDescription) item.description = item.description + item?.oBusinessProductMetaData?.sLabelDescription + ' ' + item?.sProductNumber;
+      totalSavingPoints += item.nSavingsPoints;
+      let disc = parseFloat(item.nDiscount);
+      if (item.bPaymentDiscountPercent) {
+        disc = (disc * parseFloat(item.nPriceIncVat) / (100 + parseFloat(item.nVatRate)));
+        item.nDiscountToShow = disc;
+      } else { item.nDiscountToShow = disc; }
+      item.priceAfterDiscount = (parseFloat(item.nPaymentAmount) - parseFloat(item.nDiscountToShow));
+      item.nPriceIncVatAfterDiscount = (parseFloat(item.nPriceIncVat) - parseFloat(item.nDiscountToShow));
+      item.totalPaymentAmount = parseFloat(item.nPaymentAmount) * parseFloat(item.nQuantity);
+      item.totalPaymentAmountAfterDisc = parseFloat(item.priceAfterDiscount) * parseFloat(item.nQuantity);
+      item.bPrepayment = item?.oType?.bPrepayment || false;
+      const vat = (item.nVatRate * item.priceAfterDiscount / (100 + parseFloat(item.nVatRate)));
+      item.vat = vat.toFixed(2);
+      totalVat += vat;
+      total = total + item.totalPaymentAmount;
+      totalAfterDisc += item.totalPaymentAmountAfterDisc;
+      totalDiscount += disc;
+      relatedItemsPromises[index] = this.getRelatedTransactionItem(item?.iActivityItemId, item?._id, index);
+    })
+    await Promise.all(relatedItemsPromises).then(result => {
+      // console.log(result);
+      result.forEach((item: any, index: number) => {
+        this.transaction.aTransactionItems[index].related = item.data || [];
+      })
+    });
+    dataObject.totalAfterDisc = parseFloat(totalAfterDisc.toFixed(2));
+    dataObject.total = parseFloat(total.toFixed(2));
+    dataObject.totalVat = parseFloat(totalVat.toFixed(2));
+    dataObject.totalDiscount = parseFloat(totalDiscount.toFixed(2));
+    dataObject.totalSavingPoints = totalSavingPoints;
+    dataObject.dCreatedDate = moment(dataObject.dCreatedDate).format('DD-MM-yyyy hh:mm');
+    const result: any = await this.getRelatedTransaction(dataObject?.iActivityId, dataObject?._id).toPromise();
+    dataObject.related = result.data || [];
+    dataObject.related.forEach((obj: any) => {
+      obj.aPayments.forEach((obj: any) => {
+        obj.dCreatedDate = moment(obj.dCreatedDate).format('DD-MM-yyyy hh:mm');
+      });
+      dataObject.aPayments = dataObject.aPayments.concat(obj.aPayments);
+    })
+
+    this.transaction = dataObject;
+
+    // this.processTransactionData();
+    
+    // console.log('processTransactionData is finished')
     if (!this.businessDetails) {
       const _result: any = await this.getBusinessDetails().toPromise();
 
@@ -636,6 +708,30 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     this.transaction.businessDetails = this.businessDetails;
     this.transaction.currentLocation = this.businessDetails.currentLocation;
     const oDataSource = JSON.parse(JSON.stringify(this.transaction));
+    let nTotalOriginalAmount = 0;
+    if (oDataSource.aTransactionItems?.length === 1 && oDataSource._id === oDataSource.aTransactionItems[0].iTransactionId) {
+      nTotalOriginalAmount = oDataSource.total;
+      oDataSource.bHasPrePayments = false;
+    } else {
+      oDataSource.aTransactionItems.forEach((item: any) => {
+        // console.log({item});
+        nTotalOriginalAmount += item.nPriceIncVat;
+        let description = `${item.description}\n`;
+        if (item.nPriceIncVat !== item.nPaymentAmount) {
+          description += `Original amount: ${item.nPriceIncVat}\n
+                          Already paid: \n${item.sTransactionNumber} | ${item.nPaymentAmount} (this receipt)\n`;
+
+          if (item?.related?.length) {
+            item.related.forEach((related: any) => {
+              description += `${related.sTransactionNumber}|${related.nPaymentAmount}\n`;
+            });
+          }
+        }
+
+        item.description = description;
+      });
+      oDataSource.bHasPrePayments = true;
+    }
 
     const template = await this.getTemplate('transaction').toPromise();
     oDataSource.sBusinessLogoUrl = (await this.getBase64FromUrl(oDataSource?.businessDetails?.sLogoLight).toPromise()).data;
@@ -659,60 +755,10 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     return this.apiService.getNew('cashregistry', `/api/v1/pdf/templates/${this.businessDetails._id}?eType=${type}`);
   }
 
-  processTransactionData(): Observable<any> {
-    return new Observable((observer: any) => {
-      let dataObject = JSON.parse(JSON.stringify(this.transaction));
-      dataObject.aPayments.forEach((obj: any) => {
-        obj.dCreatedDate = moment(dataObject.dCreatedDate).format('DD-MM-yyyy hh:mm');
-      });
-      dataObject.aTransactionItems = [];
-      this.transaction.aTransactionItems.forEach((item: any, index: number) => {
-        if (!(item.oType?.eKind == 'discount' || item?.oType?.eKind == 'loyalty-points-discount')) {
-          dataObject.aTransactionItems.push(item);
-        }
-      })
-      let language: any = localStorage.getItem('language')
-      dataObject.total = 0;
-      let total = 0, totalAfterDisc = 0, totalVat = 0, totalDiscount = 0, totalSavingPoints = 0;
-      dataObject.aTransactionItems.forEach((item: any, index: number) => {
-        let name = '';
-        if (item && item.oArticleGroupMetaData && item.oArticleGroupMetaData.oName && item.oArticleGroupMetaData.oName[language]) name = item?.oArticleGroupMetaData?.oName[language] + ' ';
-        item.description = name;
-        if (item?.oBusinessProductMetaData?.sLabelDescription) item.description = item.description + item?.oBusinessProductMetaData?.sLabelDescription + ' ' + item?.sProductNumber;
-        totalSavingPoints += item.nSavingsPoints;
-        let disc = parseFloat(item.nDiscount);
-        if (item.bPaymentDiscountPercent) {
-          disc = (disc * parseFloat(item.nPriceIncVat) / (100 + parseFloat(item.nVatRate)));
-          item.nDiscountToShow = disc;
-        } else { item.nDiscountToShow = disc; }
-        item.priceAfterDiscount = (parseFloat(item.nPaymentAmount) - parseFloat(item.nDiscountToShow));
-        item.nPriceIncVatAfterDiscount = (parseFloat(item.nPriceIncVat) - parseFloat(item.nDiscountToShow));
-        item.totalPaymentAmount = parseFloat(item.nPaymentAmount) * parseFloat(item.nQuantity);
-        item.totalPaymentAmountAfterDisc = parseFloat(item.priceAfterDiscount) * parseFloat(item.nQuantity);
-        item.bPrepayment = item?.oType?.bPrepayment || false;
-        const vat = (item.nVatRate * item.priceAfterDiscount / (100 + parseFloat(item.nVatRate)));
-        item.vat = vat.toFixed(2);
-        totalVat += vat;
-        total = total + item.totalPaymentAmount;
-        totalAfterDisc += item.totalPaymentAmountAfterDisc;
-        totalDiscount += disc;
-        this.getRelatedTransactionItem(item?.iActivityItemId, item?._id, index)
-      })
-      dataObject.totalAfterDisc = parseFloat(totalAfterDisc.toFixed(2));
-      dataObject.total = parseFloat(total.toFixed(2));
-      dataObject.totalVat = parseFloat(totalVat.toFixed(2));
-      dataObject.totalDiscount = parseFloat(totalDiscount.toFixed(2));
-      dataObject.totalSavingPoints = totalSavingPoints;
-      dataObject.dCreatedDate = moment(dataObject.dCreatedDate).format('DD-MM-yyyy hh:mm');
-      this.getRelatedTransaction(dataObject?.iActivityId, dataObject?._id)
-
-      this.transaction = dataObject;
-
-
-      observer.complete();
-
-    });
-  }
+  // async processTransactionData() {
+    
+      
+  // }
 
   getBusinessDetails() {
     return this.apiService.getNew('core', '/api/v1/business/' + this.business._id);
