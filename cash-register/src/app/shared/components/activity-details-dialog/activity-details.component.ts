@@ -111,6 +111,10 @@ export class ActivityDetailsComponent implements OnInit {
 
 
   ngOnInit(): void {
+
+    console.log("----------------------activity-------------------");
+    console.log(this.activity);
+    console.log(this.activityItems);
     if (this.activity) {
       if (this.activity?.activityitems?.length) {
         this.activityItems = this.activity.activityitems;
@@ -198,6 +202,8 @@ export class ActivityDetailsComponent implements OnInit {
         return employee.sName && employee.sName.toLowerCase().includes(searchStr.toLowerCase());
       });
     }
+    console.log("------------------fiter----------------");
+    console.log(this.filteredEmployees);
   }
 
   // Function for search suppliers
