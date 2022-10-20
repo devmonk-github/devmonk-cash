@@ -47,6 +47,7 @@ import { CommonPrintSettingsService } from "./service/common-print-settings.serv
 import { AddEditWorkstationComponent } from './components/add-edit-workstation/add-edit-workstation.component';
 import { SortPipe } from "./directives/sort.pipe";
 import { ActionSettingsComponent } from "./components/actions-settings/action-settings.component";
+import { FilterPipe } from "./pipes/filter.pipe";
 
 @NgModule({
   declarations: [
@@ -77,7 +78,8 @@ import { ActionSettingsComponent } from "./components/actions-settings/action-se
     PrintSettingsEditorComponent,
     AddEditWorkstationComponent,
     SortPipe,
-    ActionSettingsComponent
+    ActionSettingsComponent,
+    FilterPipe
   ],
   imports: [
     CommonModule,

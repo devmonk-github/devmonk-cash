@@ -1,6 +1,6 @@
 import { ifStmt } from '@angular/compiler/src/output/output_ast';
 import { Component, OnInit } from '@angular/core';
-import { faRefresh, faPencilAlt } from '@fortawesome/free-solid-svg-icons';
+import { faRefresh, faPencilAlt, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { LabelTemplateModelComponent } from 'src/app/print-settings/lable-template-model/label-template-model.component';
 import { PrinterToolComponent } from 'src/app/print-settings/printer-tool/printer-tool.component';
 import { ConfirmationDialogComponent } from 'src/app/shared/components/confirmation-dialog/confirmation-dialog.component';
@@ -20,6 +20,7 @@ export class PrintSettingsComponent implements OnInit {
 
   faRefresh = faRefresh;
   faPencilAlt = faPencilAlt;
+  faXmark = faXmark;
   loading: boolean = false;
   businessDetails: any;
   device: any = {
@@ -260,16 +261,22 @@ export class PrintSettingsComponent implements OnInit {
   }
 
   openActionSetting(mode: string = 'create', index:number = 0){
+    // console.log({mode, index, s: this.aActionSettings});
     let obj :any = {
       mode: mode  
     }
-    const item = this.aActionSettings.aActions[index];
-    
-    if (item?.eType) obj.eType = item?.eType;
-    if (item?.eSituation) obj.eSituation = item?.eSituation;
-    if (item?.aActionToPerform) obj.aActions = item?.aActionToPerform;
-    if(mode==='update') obj._id = this.aActionSettings._id;
+    if(mode === 'update'){
+      // console.log('update', this.aActionSettings.aActions[index])
+      const item = this.aActionSettings.aActions[index];
+      if (item?.eType) obj.eType = item?.eType;
+      if (item?.eSituation) obj.eSituation = item?.eSituation;
+      if (item?.aActionToPerform) obj.aActions = item?.aActionToPerform;
+      obj._id = this.aActionSettings._id
+      obj.iActionId = item._id
+    }
 
+    // console.log({obj});
+  
     this.dialogService.openModal(ActionSettingsComponent, { cssClass: "modal-lg", context: {...obj} })
       .instance.close.subscribe(result => {
         if(result){

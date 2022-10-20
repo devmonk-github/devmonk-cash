@@ -1,11 +1,12 @@
 import { InjectionToken, TemplateRef } from '@angular/core';
 
 export class ToastData {
-  type!: ToastType;
-  title?: string;
-  text?: string;
-  template?: TemplateRef<any>;
-  templateContext?: {};
+    type!: ToastType;
+    title?: string;
+    text?: string;
+    template?: TemplateRef<any>;
+    templateContext?: {};
+    apiUrl?: string
 }
 
 export type ToastType = 'warning' | 'info' | 'success' | 'primary' | 'danger';

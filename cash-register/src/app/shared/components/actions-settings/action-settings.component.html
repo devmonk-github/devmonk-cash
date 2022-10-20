@@ -17,7 +17,7 @@
                     <ng-container *ngIf="mode==='create'; else staticType">
                         <ng-select [(ngModel)]="eType" [clearable]="false">
                             <ng-option *ngFor="let option of aTypeOptions" [value]="option.key">
-                                {{ option.value | translate}}
+                                {{ option.key | translate}}
                             </ng-option>
                         </ng-select>
                     </ng-container>
@@ -33,8 +33,8 @@
                 <div class="col-6">
                     <ng-container *ngIf="mode==='create'; else staticSituation">
                     <ng-select [(ngModel)]="eSituation" [clearable]="false">
-                        <ng-option *ngFor="let option of aSituationOptions" [value]="option.key">
-                            {{ option.value | translate}}
+                        <ng-option *ngFor="let option of aTypeOptions | filter: eType" [value]="option">
+                            {{ option | translate}}
                         </ng-option>
                     </ng-select>
                     </ng-container>
@@ -48,7 +48,7 @@
                     <span>{{ 'ACTION_TO_PERFORM' | translate}}</span>
                 </div>
                 <div class="col-6">
-                    <ng-select [(ngModel)]="aActions" [clearable]="false" [multiple]="true">
+                    <ng-select [(ngModel)]="aActions" (ngModelChange)="checkActionToPerform()" [clearable]="false" [multiple]="true">
                         <ng-option *ngFor="let option of aActionToPerform" [value]="option">
                             {{ option | translate}}
                         </ng-option>
@@ -58,7 +58,7 @@
         </div>
     </div>
     <div class="card-footer d-flex justify-content-end">
-        <button class="btn btn-primary mx-2" (click)="saveSettings()">{{ 'SAVE' | translate}}</button>
+        <button class="btn btn-primary mx-2" (click)="saveSettings()" [disabled]="bDisableSubmit">{{ 'SAVE' | translate}}</button>
         <button class="btn btn-secondary" (click)="close(false)">{{ 'CANCEL' | translate}}</button>
     </div>
 </div>
