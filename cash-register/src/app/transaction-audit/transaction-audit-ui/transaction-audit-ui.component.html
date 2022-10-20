@@ -202,11 +202,26 @@
                                         <div class="col-md-6">
                                             <label class="fs-6 form-label fw-bolder text-dark">{{'WORK_STATION' |
                                                 translate}}</label>
-                                            <ng-select class="form-control form-control-solid p-0" [(ngModel)]="selectedWorkStation" [clearable]="false" (change)="fetchAuditStatistic()">
+
+                                                <ng-select [multiple]="true" [items]="aWorkStation" [(ngModel)]="selectedWorkStation"
+                                                name="selectedWorkStation" bindValue="_id" bindLabel="sName" placeholder="Select"
+                                                required [closeOnSelect]="false" (change)="fetchAuditStatistic()">
+    
+                                                <ng-template ng-option-tmp let-item="item" let-item$="item$"
+                                                    let-index="index">
+                                                    <input id="item-{{index}}" type="checkbox" name="item-{{index}}"
+                                                        [ngModel]="item$.selected" />
+                                                    {{item.sName}}
+                                                </ng-template>
+    
+                                            </ng-select>
+
+                                            
+                                            <!-- <ng-select class="form-control form-control-solid p-0"   [(ngModel)]="selectedWorkStation" [clearable]="false" (change)="fetchAuditStatistic()">
                                                 <ng-option *ngFor="let oWorkStation of aWorkStation" [value]="oWorkStation">
                                                     {{oWorkStation.sName}}
                                                 </ng-option>
-                                            </ng-select>
+                                            </ng-select> -->
                                         </div>
                                     </div>
                                 </div>
@@ -440,9 +455,9 @@
                                                         <h4 class="text-black">{{oSupplier.nProfit | number :'1.2-2'}}
                                                         </h4>
                                                     </th>
-                                                    <th class="w-150px"><span class="">{{"MARGIN" | translate}}</span>
+                                                    <!-- <th class="w-150px"><span class="">{{"MARGIN" | translate}}</span>
                                                         <h4 class="text-black">{{oSupplier.nMargin}}</h4>
-                                                    </th>
+                                                    </th> -->
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -475,8 +490,8 @@
                                                                     </th>
                                                                     <th scope="col" class="w-150px">
                                                                         {{oArticleGroup.nProfit| number :'1.2-2'}}</th>
-                                                                    <th scope="col" class="w-150px">
-                                                                        {{oArticleGroup.nMargin}}</th>
+                                                                    <!-- <th scope="col" class="w-150px">
+                                                                        {{oArticleGroup.nMargin}}</th> -->
                                                                 </tr>
                                                             </thead>
                                                             <!-- *ngIf="oArticleGroup.bIsCollapseItem" -->
@@ -538,12 +553,12 @@
                                                     </th>
                                                     <th class="w-150px"><span class="">{{"GROSS_PROFIT" |
                                                             translate}}</span>
-                                                        <h4 class="text-black">{{oSupplier.nProfit| number :'1.2-2' }}
+                                                        <h4 class="text-black">{{oSupplier.nProfit | number :'1.2-2' }}
                                                         </h4>
                                                     </th>
-                                                    <th class="w-150px"><span class="">{{"MARGIN" | translate}}</span>
+                                                    <!-- <th class="w-150px"><span class="">{{"MARGIN" | translate}}</span>
                                                         <h4 class="text-black">{{oSupplier.nMargin}}</h4>
-                                                    </th>
+                                                    </th> -->
                                                 </tr>
                                             </thead>
 
@@ -583,9 +598,9 @@
                                                                     </th>
                                                                     <th scope="col" class="w-150px">
                                                                         {{oArticleGroup.nProfit | number :'1.2-2'}}</th>
-                                                                    <th scope="col" class="w-150px">
+                                                                    <!-- <th scope="col" class="w-150px">
                                                                         {{oArticleGroup.nMargin}}
-                                                                    </th>
+                                                                    </th> -->
                                                                 </tr>
                                                                 <tr *ngIf="oArticleGroup.isLoading">
                                                                     <td colspan="6" class="text-center">
@@ -653,11 +668,11 @@
                                                         <h4 class="text-black">{{aStatistic[0]?.overall[0]?.nProfit |
                                                             number :'1.2-2'}}</h4>
                                                     </th>
-                                                    <th class="w-150px">
+                                                    <!-- <th class="w-150px">
                                                         <span class="">{{"MARGIN" | translate}}</span>
                                                         <h4 class="text-black">{{aStatistic[0]?.overall[0]?.nMargin}}
                                                         </h4>
-                                                    </th>
+                                                    </th> -->
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -684,8 +699,8 @@
                                                                         <th scope="col" class="w-150px">
                                                                             {{oArticleGroup.nProfit| number
                                                                             :'1.2-2'}}</th>
-                                                                        <th scope="col" class="w-150px">
-                                                                            {{oArticleGroup.nMargin}}</th>
+                                                                        <!-- <th scope="col" class="w-150px">
+                                                                            {{oArticleGroup.nMargin}}</th> -->
                                                                     </tr>
                                                                 </thead>
                                                                 <ng-container
@@ -706,7 +721,7 @@
                                                                             </td>
                                                                             <td>{{oRevenueByProperty.nProfit| number
                                                                                 :'1.2-2'}}</td>
-                                                                            <td>{{oRevenueByProperty.nMargin}}</td>
+                                                                            <!-- <td>{{oRevenueByProperty.nMargin}}</td> -->
                                                                         </tr>
                                                                     </tbody>
                                                                 </ng-container>
@@ -752,14 +767,14 @@
                                                     </th>
                                                     <th class="w-150px">
                                                         <span class="">{{"GROSS_PROFIT" | translate}}</span>
-                                                        <h4 class="text-black">{{aStatistic[0]?.overall[0]?.nProfit}}
+                                                        <h4 class="text-black">{{aStatistic[0]?.overall[0]?.nProfit | number :'1.2-2'}}
                                                         </h4>
                                                     </th>
-                                                    <th class="w-150px">
+                                                    <!-- <th class="w-150px">
                                                         <span class="">{{"MARGIN" | translate}}</span>
                                                         <h4 class="text-black">{{aStatistic[0]?.overall[0]?.nMargin}}
                                                         </h4>
-                                                    </th>
+                                                    </th> -->
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -801,8 +816,8 @@
                                                                     :'1.2-2'}}</th>
                                                                 <th class="w-150px">
                                                                     {{oRevenueByProperty.nProfit| number :'1.2-2'}}</th>
-                                                                <th class="w-150px">
-                                                                    {{oRevenueByProperty.nMargin}}</th>
+                                                                <!-- <th class="w-150px">
+                                                                    {{oRevenueByProperty.nMargin}}</th> -->
                                                             </tr>
                                                             <tr *ngIf="oRevenueByProperty.isLoading">
                                                                 <td colspan="6" class="text-center">
@@ -868,14 +883,15 @@
                                                     </th>
                                                     <th class="w-150px">
                                                         <span class="">{{"GROSS_PROFIT" | translate}}</span>
-                                                        <h4 class="text-black">{{aStatistic[0]?.overall[0]?.nProfit}}
+                                                        <h4 class="text-black">{{aStatistic[0]?.overall[0]?.nProfit | number
+                                                            :'1.2-2'}}
                                                         </h4>
                                                     </th>
-                                                    <th class="w-150px">
+                                                    <!-- <th class="w-150px">
                                                         <span class="">{{"MARGIN" | translate}}</span>
                                                         <h4 class="text-black">{{aStatistic[0]?.overall[0]?.nMargin}}
                                                         </h4>
-                                                    </th>
+                                                    </th> -->
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -910,7 +926,7 @@
                                                                     :'1.2-2'}}</td>
                                                                 <td class="w-150px">{{oArticleGroup.nProfit | number
                                                                     :'1.2-2'}}</td>
-                                                                <td class="w-150px">{{oArticleGroup.nMargin}}</td>
+                                                                <!-- <td class="w-150px">{{oArticleGroup.nMargin}}</td> -->
                                                             </tr>
                                                             <tr *ngIf="oArticleGroup.isLoading">
                                                                 <td colspan="6" class="text-center">

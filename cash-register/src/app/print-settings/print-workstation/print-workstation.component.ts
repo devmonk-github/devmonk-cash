@@ -4,6 +4,9 @@ import { AddEditWorkstationComponent } from 'src/app/shared/components/add-edit-
 import { PrintSettingsEditorComponent } from 'src/app/shared/components/print-settings-editor/print-settings-editor.component';
 import { ApiService } from 'src/app/shared/service/api.service';
 import { DialogService } from 'src/app/shared/service/dialog';
+import { ToastService } from 'src/app/shared/components/toast';
+import { Observable, observable, throwError } from 'rxjs';
+import { HttpResponse } from '@angular/common/http';
 
 @Component({
   selector: 'print-workstation',
@@ -14,7 +17,8 @@ export class PrintWorkstationComponent implements OnInit {
 
   constructor(
     private apiService: ApiService,
-    private dialogService: DialogService
+    private dialogService: DialogService,
+    private toastService: ToastService
   ) { }
 
   @Input() businessDetails: any;
@@ -108,7 +112,12 @@ export class PrintWorkstationComponent implements OnInit {
 
   // Function for get computers list
   getComputersList() {
-    let urlParams = `?id=187612`
+    let nAccountId = this.businessDetails?.oPrintNode?.nAccountId
+    if (!nAccountId) {
+      this.toastService.show({ type: 'warning', text: 'PrintNode not configured for you business contact admin.' });
+      return;
+    }
+    let urlParams = `?id=${nAccountId}`
     this.apiService.getNew('cashregistry', '/api/v1/printnode/computers' + urlParams).subscribe(
       (result: any) => {
         if (result?.length > 0) {
@@ -125,19 +134,30 @@ export class PrintWorkstationComponent implements OnInit {
 
   // Function for get computer details
   getComputerDetails(computerId: number) {
-    let urlParams = `?id=187612&deviceId=${computerId}`
+    let nAccountId = this.businessDetails?.oPrintNode?.nAccountId
+    if (!nAccountId) {
+      this.toastService.show({ type: 'warning', text: 'PrintNode not configured for you business contact admin.' });
+      return throwError('');
+    }
+    let urlParams = `?id=${nAccountId}&deviceId=${computerId}`
     return this.apiService.getNew('cashregistry', '/api/v1/printnode/computers' + urlParams);
   }
 
   // Function for get computers list
   getPrintersList(computerId: number) {
-    let urlParams = `?id=187612&deviceId=${computerId}`
+    let nAccountId = this.businessDetails?.oPrintNode?.nAccountId
+    let urlParams = `?id=${nAccountId}&deviceId=${computerId}`
     return this.apiService.getNew('cashregistry', '/api/v1/printnode/printers' + urlParams);
   }
 
   // Function for get all printers list
   getAllPrintersList() {
-    let urlParams = `?id=187612`
+    let nAccountId = this.businessDetails?.oPrintNode?.nAccountId
+    if (!nAccountId) {
+      this.toastService.show({ type: 'warning', text: 'PrintNode not configured for you business contact admin.' });
+      return
+    }
+    let urlParams = `?id=${nAccountId}`
     this.apiService.getNew('cashregistry', '/api/v1/printnode/printers' + urlParams).subscribe(
       (result: any) => {
         if (result?.length > 0) {

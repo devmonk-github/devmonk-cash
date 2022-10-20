@@ -495,7 +495,7 @@ export class Pn2escposService {
               if (String(providedData[variableStringFilteredIndex0]).length > 0) { // ..there's data
                 newtext = providedData[variableStringFilteredIndex0];
                 if (typeof (variableStringFilteredIndex1) == 'string' && String(providedData[variableStringFilteredIndex0][variableStringFilteredIndex1]).length > 0) {
-                  if (typeof (variableStringFilteredIndex2) == 'string' && String(providedData[variableStringFilteredIndex0][variableStringFilteredIndex1][variableStringFilteredIndex2]).length > 0) {
+                  if (typeof (variableStringFilteredIndex2) == 'string' && providedData[variableStringFilteredIndex0][variableStringFilteredIndex1][variableStringFilteredIndex2]) {
                     newtext = providedData[variableStringFilteredIndex0][variableStringFilteredIndex1][variableStringFilteredIndex2];
                   } else {
                     newtext = providedData[variableStringFilteredIndex0][variableStringFilteredIndex1];
@@ -825,7 +825,8 @@ export class Pn2escposService {
       }
     } catch (e) {
       console.error(e)
-      throw e
+      // throw e
+      return false
     }
   }
 

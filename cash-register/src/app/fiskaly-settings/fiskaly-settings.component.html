@@ -40,7 +40,7 @@
                         </div>
                         <div class="col-3">
                             <button *ngIf="!location.tssInfo" class="btn btn-primary"
-                                (click)="createTSS(location._id, i)">Create TSS</button>
+                                (click)="createTSS(location._id, i)">{{ "CREATE_TSS" |translate}}</button>
                             <label *ngIf="location.tssInfo"
                                 class="form-check form-switch form-check-custom form-check-solid">
                                 <input type="checkbox" [(ngModel)]="location.tssEnabled" name="loyaltyProgram"

@@ -10,7 +10,7 @@
             </div>
             <div class="stepper-label">
                 <h3 class="stepper-title">
-                    Import file
+                    {{ "IMPORT_FILE" | translate}}
                 </h3>
             </div>
         </div>
@@ -22,7 +22,7 @@
             </div>
             <div class="stepper-label">
                 <h3 class="stepper-title">
-                    Set customer details
+                    {{ "SET_CUSTOMER_DETAILS" | translate}}
                 </h3>
             </div>
         </div>
@@ -46,7 +46,7 @@
             </div>
             <div class="stepper-label">
                 <h3 class="stepper-title">
-                    Start customer import
+                    {{ "START_CUSTOMER_IMPORT" | translate}}
                 </h3>
             </div>
         </div>
@@ -54,10 +54,13 @@
     <form class="form mx-auto" novalidate="novalidate" id="kt_stepper_example_basic_form">
         <div class="mb-5">
             <div class="flex-column current" data-kt-stepper-element="content">
-                <import-file-import [(parsedCustomerData)]="parsedCustomerData" (moveToStep)="moveToStep($event)"></import-file-import>
+                <import-file-import [(parsedCustomerData)]="parsedCustomerData" (moveToStep)="moveToStep($event)">
+                </import-file-import>
             </div>
             <div class="flex-column" data-kt-stepper-element="content">
-                <app-customer-details-import [parsedCustomerData]="parsedCustomerData" [(customerDetailsForm)]="customerDetailsForm" [(updateTemplateForm)]="updateTemplateForm" (moveToStep)="moveToStep($event)"></app-customer-details-import>
+                <app-customer-details-import [parsedCustomerData]="parsedCustomerData"
+                    [(customerDetailsForm)]="customerDetailsForm" [(updateTemplateForm)]="updateTemplateForm"
+                    (moveToStep)="moveToStep($event)"></app-customer-details-import>
             </div>
             <!-- <div class="flex-column" data-kt-stepper-element="content">
                 <import-indicate-product-vat [parsedCustomerData]="parsedCustomerData" [(customerDetails)]="customerDetailsForm" (moveToStep)="moveToStep($event)"></import-indicate-product-vat>

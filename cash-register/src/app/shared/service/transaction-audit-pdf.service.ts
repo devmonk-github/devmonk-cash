@@ -117,9 +117,8 @@ export class TransactionAuditUiPdfService {
             'Quantity',
             'Price incl VAT',
             'Purchase price',
-            'Gross profit',
-            'Margin',
-        ];
+            'Gross profit'     
+           ];
 
         const date = moment(Date.now()).format('DD-MM-yyyy');
 
@@ -128,7 +127,7 @@ export class TransactionAuditUiPdfService {
             headerList.push({ text: singleHeader, bold: true });
         });
 
-        const columnWidths = ['*', 60, 60, 80, 100, 100];
+        const columnWidths = ['*', 60, 80, 80, 100];
         // const columnWidths = '*';
 
         const tableLayout = {
@@ -177,13 +176,28 @@ export class TransactionAuditUiPdfService {
 
         //get selected workstations
         let sWorkstation = '';
-        if (oSelectedWorkStation) {
-            sWorkstation = aWorkStation.find(
-                (el: any) => el?._id == oSelectedWorkStation?._id
-            )?.sName;
+        let aWorkstation: any = [];
+        if (oSelectedWorkStation?.length) {
+            oSelectedWorkStation.forEach((el: any) => {
+                aWorkstation.push(
+                    aWorkStation
+                        .filter((workstation: any) => workstation._id == el)
+                        .map((workstation: any) => workstation.sName)
+                );
+            });
+            sWorkstation = aWorkstation.join(', ');
         } else {
-            sWorkstation = aWorkStation.map((el: any) => el.sName).join(', ');
+            sWorkstation = aWorkstation
+                .map((location: any) => location.sName)
+                .join(', ');
         }
+        // if (oSelectedWorkStation) {
+        //     sWorkstation = aWorkStation.find(
+        //         (el: any) => el?._id == oSelectedWorkStation?._id
+        //     )?.sName;
+        // } else {
+        //     sWorkstation = aWorkStation.map((el: any) => el.sName).join(', ');
+        // }
 
         let dataFromTo =
             '(From : ' + moment(oFilterDates.startDate).format('DD-MM-yyyy hh:mm A') + ' TO ' +
@@ -311,7 +325,7 @@ export class TransactionAuditUiPdfService {
             { text: aStatistic[0].overall[0].nTotalRevenue, style: 'th' },
             { text: aStatistic[0].overall[0].nTotalPurchaseAmount, style: 'th' },
             { text: Math.round(aStatistic[0].overall[0].nProfit).toFixed(2), style: 'th' },
-            { text: Math.round(aStatistic[0].overall[0].nMargin).toFixed(2), style: 'th' },
+            // { text: Math.round(aStatistic[0].overall[0].nMargin).toFixed(2), style: 'th' },
         ];
 
         const overallData = {
@@ -816,7 +830,7 @@ export class TransactionAuditUiPdfService {
             obj['nTotalRevenue'] = el.nTotalRevenue;
             obj['nTotalPurchaseAmount'] = el.nTotalPurchaseAmount;
             obj['nProfit'] = el.nProfit;
-            obj['nMargin'] = el.nMargin;
+            // obj['nMargin'] = el.nMargin;
             obj['aArticleGroups'] =
                 el.aArticleGroups.map((article: any) => {
                     let data = {
@@ -825,7 +839,7 @@ export class TransactionAuditUiPdfService {
                         nTotalRevenue: article.nTotalRevenue,
                         nTotalPurchaseAmount: article.nTotalPurchaseAmount,
                         nProfit: article.nProfit,
-                        nMargin: article.nMargin,
+                        // nMargin: article.nMargin,
                         aRevenueByProperty: article?.aRevenueByProperty.map(
                             (property: any) => {
                                 let revenue = {
@@ -834,7 +848,7 @@ export class TransactionAuditUiPdfService {
                                     nTotalRevenue: property.nTotalRevenue,
                                     nTotalPurchaseAmount: property.nTotalPurchaseAmount,
                                     nProfit: property.nProfit || 0,
-                                    nMargin: property.nMargin || 0,
+                                    // nMargin: property.nMargin || 0,
                                 };
                                 return revenue;
                             }
@@ -852,7 +866,7 @@ export class TransactionAuditUiPdfService {
                 { text: singleRecord.nTotalRevenue, style: 'th' },
                 { text: singleRecord.nTotalPurchaseAmount, style: 'th' },
                 { text: singleRecord.nProfit, style: 'th' },
-                { text: singleRecord.nMargin, style: 'th' },
+                // { text: singleRecord.nMargin, style: 'th' },
             ];
             const data = {
                 table: {
@@ -874,7 +888,7 @@ export class TransactionAuditUiPdfService {
                         style: ['td', 'articleGroup'],
                     },
                     { text: articleGroup.nProfit, style: ['td', 'articleGroup'] },
-                    { text: articleGroup.nMargin, style: ['td', 'articleGroup'] },
+                    // { text: articleGroup.nMargin, style: ['td', 'articleGroup'] },
                 ];
                 const data = {
                     table: {
@@ -893,7 +907,7 @@ export class TransactionAuditUiPdfService {
                         { text: property.nTotalRevenue, style: ['td', 'property'] },
                         { text: property.nTotalPurchaseAmount, style: ['td', 'property'] },
                         { text: property.nProfit, style: ['td', 'property'] },
-                        { text: property.nMargin, style: ['td', 'property'] },
+                        // { text: property.nMargin, style: ['td', 'property'] },
                     ];
                     const data = {
                         table: {
@@ -927,7 +941,7 @@ export class TransactionAuditUiPdfService {
             obj['nTotalRevenue'] = el.nTotalRevenue;
             obj['nTotalPurchaseAmount'] = el.nTotalPurchaseAmount;
             obj['nProfit'] = el.nProfit;
-            obj['nMargin'] = el.nMargin;
+            // obj['nMargin'] = el.nMargin;
             obj['aRevenueByProperty'] =
                 el.aRevenueByProperty.map((property: any) => {
                     let revenue = {
@@ -936,7 +950,7 @@ export class TransactionAuditUiPdfService {
                         nTotalRevenue: property.nTotalRevenue,
                         nTotalPurchaseAmount: property.nTotalPurchaseAmount,
                         nProfit: property.nProfit || 0,
-                        nMargin: property.nMargin || 0,
+                        // nMargin: property.nMargin || 0,
                     };
                     return revenue;
                 }) || [];
@@ -953,7 +967,7 @@ export class TransactionAuditUiPdfService {
                     style: ['td', 'articleGroup'],
                 },
                 { text: singleRecord.nProfit, style: ['td', 'articleGroup'] },
-                { text: singleRecord.nMargin, style: ['td', 'articleGroup'] },
+                // { text: singleRecord.nMargin, style: ['td', 'articleGroup'] },
             ];
             const data = {
                 table: {
@@ -972,7 +986,7 @@ export class TransactionAuditUiPdfService {
                     { text: property.nTotalRevenue, style: ['td', 'property'] },
                     { text: property.nTotalPurchaseAmount, style: ['td', 'property'] },
                     { text: property.nProfit, style: ['td', 'property'] },
-                    { text: property.nMargin, style: ['td', 'property'] },
+                    // { text: property.nMargin, style: ['td', 'property'] },
                 ];
                 const data = {
                     table: {
@@ -1000,7 +1014,7 @@ export class TransactionAuditUiPdfService {
             obj['nTotalRevenue'] = el.nTotalRevenue;
             obj['nTotalPurchaseAmount'] = el.nTotalPurchaseAmount;
             obj['nProfit'] = el.nProfit;
-            obj['nMargin'] = el.nMargin;
+            // obj['nMargin'] = el.nMargin;
             obj['aArticleGroups'] =
                 el.aArticleGroups.map((article: any) => {
                     let data = {
@@ -1009,7 +1023,7 @@ export class TransactionAuditUiPdfService {
                         nTotalRevenue: article.nTotalRevenue,
                         nTotalPurchaseAmount: article.nTotalPurchaseAmount,
                         nProfit: article.nProfit,
-                        nMargin: article.nMargin,
+                        // nMargin: article.nMargin,
                     };
                     return data;
                 }) || [];
@@ -1023,7 +1037,7 @@ export class TransactionAuditUiPdfService {
                 { text: singleRecord.nTotalRevenue, style: 'th' },
                 { text: singleRecord.nTotalPurchaseAmount, style: 'th' },
                 { text: singleRecord.nProfit, style: 'th' },
-                { text: singleRecord.nMargin, style: 'th' },
+                // { text: singleRecord.nMargin, style: 'th' },
             ];
             const data = {
                 table: {
@@ -1045,7 +1059,7 @@ export class TransactionAuditUiPdfService {
                         style: ['td', 'articleGroup'],
                     },
                     { text: articleGroup.nProfit, style: ['td', 'articleGroup'] },
-                    { text: articleGroup.nMargin, style: ['td', 'articleGroup'] },
+                    // { text: articleGroup.nMargin, style: ['td', 'articleGroup'] },
                 ];
                 const data = {
                     table: {
@@ -1074,7 +1088,7 @@ export class TransactionAuditUiPdfService {
                 nTotalRevenue: property.nTotalRevenue,
                 nTotalPurchaseAmount: property.nTotalPurchaseAmount,
                 nProfit: property.nProfit || 0,
-                nMargin: property.nMargin || 0,
+                // nMargin: property.nMargin || 0,
             };
 
             arr.push(revenue);
@@ -1089,7 +1103,7 @@ export class TransactionAuditUiPdfService {
                 { text: property.nTotalRevenue, style: ['td', 'property'] },
                 { text: property.nTotalPurchaseAmount, style: ['td', 'property'] },
                 { text: property.nProfit, style: ['td', 'property'] },
-                { text: property.nMargin, style: ['td', 'property'] },
+                // { text: property.nMargin, style: ['td', 'property'] },
             ];
             const data = {
                 table: {
@@ -1116,7 +1130,7 @@ export class TransactionAuditUiPdfService {
             obj['nTotalRevenue'] = el.nTotalRevenue;
             obj['nTotalPurchaseAmount'] = el.nTotalPurchaseAmount;
             obj['nProfit'] = Math.round(el.nProfit).toFixed(2);
-            obj['nMargin'] = Math.round(el.nMargin).toFixed(2);
+            // obj['nMargin'] = Math.round(el.nMargin).toFixed(2);
 
             arr.push(obj);
         });
@@ -1130,7 +1144,7 @@ export class TransactionAuditUiPdfService {
                     style: ['td', 'articleGroup'],
                 },
                 { text: singleRecord.nProfit, style: ['td', 'articleGroup'] },
-                { text: singleRecord.nMargin, style: ['td', 'articleGroup'] },
+                // { text: singleRecord.nMargin, style: ['td', 'articleGroup'] },
             ];
             const data = {
                 table: {
