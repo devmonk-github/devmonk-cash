@@ -109,43 +109,39 @@ export class PdfService {
     return docDefinition;
   }
 
-  generatePdf(docDefinition: any, fileName: any, printSettings:any, bPrint:boolean = false) {
-    // const fonts = {
-    //   MyCustom: {
-    //     normal: 'GIL_____.ttf',
-    //     bold: 'GILB____.ttf',
-    //     italics: 'GILI___.ttf',
-    //     bolditalics: 'GILBI___.ttf'
-    //   }
-    // };
+  generatePdf(docDefinition: any) {
+    return pdfMake.createPdf(docDefinition);
     
-    // pdfMake.fonts = {
-    //   MyCustom: {
-    //     normal: 'GIL_____.ttf',
-    //     bold: 'GILB____.ttf',
-    //     italics: 'GILI___.ttf',
-    //     bolditalics: 'GILBI___.ttf'
-    //   }
-    // };
-    // console.log(pdfMake);
-
-    const pdfObject = pdfMake.createPdf(docDefinition);
-    if (bPrint){      
-      pdfObject.getBase64((data:any)=>{
-        this.printService.printPDF(
-          this.iBusinessId,
-          data,
-          printSettings.nPrinterId,
-          printSettings.nComputerId,
-          1,
-          fileName,
-          { title: fileName }
-        )
-      });
-    } else pdfObject.download(fileName);
   }
 
-  getPdfData(styles: any, content: any, orientation: string, pageSize: any, fileName: string, footer?: any, pageMargins?: any, defaultStyle?: any, printSettings?: any, bPrint?:boolean) {
-    this.generatePdf(this.getDocDefinition(styles, content, orientation, pageSize, footer, pageMargins, defaultStyle), fileName, printSettings, bPrint);
+  getPdfData({ styles, content, orientation, pageSize, fileName, footer, pageMargins, defaultStyle, 
+    printSettings, printActionSettings, aTransactionItemType, eSituation }:any) {
+    const docDefinition = this.getDocDefinition(styles, content, orientation, pageSize, footer, pageMargins, defaultStyle);
+    const pdfObject = this.generatePdf(docDefinition);
+    this.processPrintAction(pdfObject, fileName, printSettings, printActionSettings, aTransactionItemType, eSituation);
+  }
+
+
+  processPrintAction(pdfObject: any, fileName: any, printSettings: any, printActionSettings: any, aTransactionItemType: any, eSituation:any){
+    pdfObject.download(fileName);
+    console.log({ printActionSettings, printSettings, aTransactionItemType, eSituation });
+    // printActionSettings.forEach((actionSetting:any)=>{
+    //   if(aTransactionItemType.includes(actionSetting.eType)){
+
+    //   }
+    // })
+    return;
+    pdfObject.getBase64((data: any) => {
+      this.printService.printPDF(
+        this.iBusinessId,
+        data,
+        printSettings.nPrinterId,
+        printSettings.nComputerId,
+        1,
+        fileName,
+        { title: fileName }
+      )
+    });
+    pdfObject.download(fileName);
   }
 }
