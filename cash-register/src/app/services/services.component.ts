@@ -67,6 +67,13 @@ export class ServicesComponent implements OnInit, AfterViewInit {
     endDate: new Date(new Date().setHours(23, 59, 59)),
     startDate: new Date('01-01-2015'),
   }
+
+
+  endFilterDates: any = {
+    endDate: new Date(new Date().setHours(23, 59, 59)),
+    startDate: new Date('01-01-2015'),
+  }
+
   paymentMethods: Array<any> = ['All', 'Cash', 'Credit', 'Card', 'Gift-Card'];
   transactionTypes: Array<any> = ['All', 'Refund', 'Repair', 'Gold-purchase', 'Gold-sale', 'order', 'giftcard', 'offer'];
   transactionStatus: string = 'all';
@@ -90,7 +97,7 @@ export class ServicesComponent implements OnInit, AfterViewInit {
     { key: 'End date', selected: false, sort: 'asc' },
     { key: 'Status', disabled: true },
     { key: 'Supplier/Repairer', disabled: true },
-    { key: 'Partner supplier status', disabled: true },
+    // { key: 'Partner supplier status', disabled: true },
     { key: 'Customer', disabled: true },
     { key: 'Actions' },
   ]
