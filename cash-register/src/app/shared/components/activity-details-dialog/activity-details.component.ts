@@ -381,7 +381,7 @@ export class ActivityDetailsComponent implements OnInit {
     if (oDataSource?.activityitems){
       oDataSource = oDataSource.activityitems[index];
     }
-    const type = (oDataSource?.oType.eKind === 'regular') ? 'repair_alternative' : 'repair';
+    const type = (oDataSource?.oType.eKind === 'regular') ? 'order' : 'repair';
     const sBarcodeURI = this.generateBarcodeURI(false, oDataSource.sNumber);    
     if(!this.businessDetails){
       const result: any = await this.getBusinessDetails().toPromise();
@@ -547,7 +547,7 @@ export class ActivityDetailsComponent implements OnInit {
 
   async downloadReceipt(){
     const oDataSource = JSON.parse(JSON.stringify(this.activity));
-    const template = await this.getTemplate('activity').toPromise();
+    const template = await this.getTemplate('order').toPromise();
     if (!this.businessDetails) {
       const result: any = await this.getBusinessDetails().toPromise();
       this.businessDetails = result.data;

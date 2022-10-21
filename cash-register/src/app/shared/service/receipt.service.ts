@@ -105,7 +105,7 @@ export class ReceiptService {
         this.iWorkstationId = localStorage.getItem('currentWorkstation') || '';
     }
 
-    async exportToPdf({ oDataSource, templateData, pdfTitle, printSettings, bPrint }:any){
+    async exportToPdf({ oDataSource, templateData, pdfTitle, printSettings, printActionSettings, eSituation }:any){
         this.oOriginalDataSource = oDataSource;
         console.log(this.oOriginalDataSource);
         this.pdfService.getTranslations();
@@ -120,38 +120,32 @@ export class ReceiptService {
 
         // console.log(this.content);
 
-        this.pdfServiceNew.getPdfData(
-            this.styles,
-            this.content,
-            this.commonService.oCommonParameters.orientation,
-            this.commonService.oCommonParameters.pageSize,
-            this.commonService.pdfTitle,
-            this.commonService.footer,
-            this.commonService.oCommonParameters.pageMargins,
-            this.commonService.oCommonParameters.defaultStyle,
+        this.pdfServiceNew.getPdfData({
+            styles: this.styles,
+            content: this.content,
+            orientation: this.commonService.oCommonParameters.orientation,
+            pageSize: this.commonService.oCommonParameters.pageSize,
+            pdfTitle: this.commonService.pdfTitle,
+            footer: this.commonService.footer,
+            pageMargins: this.commonService.oCommonParameters.pageMargins,
+            defaultStyle: this.commonService.oCommonParameters.defaultStyle,
             printSettings,
-            bPrint
-        );
+            printActionSettings,
+            aTransactionItemType: this.oOriginalDataSource.aTransactionItemType,
+            eSituation
+        });
         this.cleanUp();
     }
 
     processTemplate(layout: any) {
-        /*
-          we have 3 tipes of data structures
-          1. column - like sections of header (ex. LEFT : business logo, CENTER: business details, RIGHT: receipt number)
-          2. simple - plain textual information like paragraph
-          3. table format
-        */
-
-        // console.log(layout);
         for (const item of layout) {
-            if (item.type === 'columns') { // parse column structure
+            if (item.type === 'columns') {
                 this.processColumns(item.row, item?.styles);
-            } else if (item.type === 'simple') { //parse simple data
+            } else if (item.type === 'simple') {
                 this.processSimpleData(item.row, item?.object);
-            } else if (item.type === 'table') { //parse table
+            } else if (item.type === 'table') {
                 this.content.push(this.processTableData(item));
-            } else if (item.type === 'absolute') { //parse table
+            } else if (item.type === 'absolute') { 
                 this.processAbsoluteData(item.absoluteElements);
             } else if (item.type === 'dashedLine'){
                 this.content.push(this.addDashedLine(item.coordinates, item.absolutePosition));
