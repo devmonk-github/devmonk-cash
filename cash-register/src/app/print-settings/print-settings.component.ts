@@ -96,7 +96,6 @@ export class PrintSettingsComponent implements OnInit {
     })
 
     dialogRef.instance.close.subscribe(async (result) => {
-      console.log(result)
       if (result) { }
     })
   }
@@ -134,7 +133,6 @@ export class PrintSettingsComponent implements OnInit {
           // this.toastService.show({ type: 'warning', text: 'TODO: add put api in backend' });
         }
       }
-      console.log(result);
 
     });
   }
@@ -143,7 +141,6 @@ export class PrintSettingsComponent implements OnInit {
     // await this.postLabelTemplate()
     return new Promise((resolve, reject) => {
       this.apiService.getNew('cashregistry', `/api/v1/label/templates/${this.iBusinessId}`).subscribe((result: any) => {
-        console.log({ LabelTemplates: result })
         this.defaultLabelsData = result.data.filter((lable: any) => lable.readOnly)
         this.LabelTemplatesData = result.data.filter((lable: any) => !lable.readOnly)
         this.isLoadingTemplatesLabel = false
@@ -168,7 +165,6 @@ export class PrintSettingsComponent implements OnInit {
     return new Promise(resolve => {
 
       this.apiService.postNew('cashregistry', `/api/v1/label/templates`, oBody).subscribe((result: any) => {
-        console.log(result);
         this.toastService.show({ type: 'success', text: 'label created successfully' });
         resolve(result);
       }, (error) => {
@@ -188,7 +184,6 @@ export class PrintSettingsComponent implements OnInit {
     return new Promise(resolve => {
 
       this.apiService.putNew('cashregistry', `/api/v1/label/templates/${id.toString()}`, oBody).subscribe((result: any) => {
-        console.log(result);
         this.toastService.show({ type: 'success', text: 'label updated successfully' });
         resolve(result);
       }, (error) => {
@@ -213,12 +208,10 @@ export class PrintSettingsComponent implements OnInit {
     })
       .instance.close.subscribe(
         (result) => {
-          console.log(result)
           if (result) {
             this.isLoadingTemplatesLabel = true
 
             this.apiService.deleteNew('cashregistry', `/api/v1/label/templates/${id.toString()}`).subscribe((result: any) => {
-              console.log(result);
               this.getLabelTemplate()
               this.toastService.show({ type: 'success', text: 'label deleted successfully' });
 
@@ -261,12 +254,10 @@ export class PrintSettingsComponent implements OnInit {
   }
 
   openActionSetting(mode: string = 'create', index:number = 0){
-    // console.log({mode, index, s: this.aActionSettings});
     let obj :any = {
       mode: mode  
     }
     if(mode === 'update'){
-      // console.log('update', this.aActionSettings.aActions[index])
       const item = this.aActionSettings.aActions[index];
       if (item?.eType) obj.eType = item?.eType;
       if (item?.eSituation) obj.eSituation = item?.eSituation;
@@ -275,8 +266,6 @@ export class PrintSettingsComponent implements OnInit {
       obj.iActionId = item._id
     }
 
-    // console.log({obj});
-  
     this.dialogService.openModal(ActionSettingsComponent, { cssClass: "modal-lg", context: {...obj} })
       .instance.close.subscribe(result => {
         if(result){
@@ -290,7 +279,6 @@ export class PrintSettingsComponent implements OnInit {
     const iPrintSettingsId = this.aActionSettings._id;
     const iActionId = this.aActionSettings.aActions[index]._id;
     await this.apiService.deleteNew('cashregistry', `/api/v1/print-settings/${this.iBusinessId}/${iPrintSettingsId}/${iActionId}`).toPromise();
-    // console.log(result);
     this.fetchActionSettings();
     // this.aActionSettings.splice(index, 1);
   }

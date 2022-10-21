@@ -78,7 +78,6 @@ export class ImageUploadComponent implements OnInit {
       this.file = event.target.files[0];
       this.webcamImage = URL.createObjectURL(event.target.files[0]);
     }
-    console.log(this.webcamImage);
   }
 
   randomString(fileName: string, length: number) {
@@ -92,8 +91,6 @@ export class ImageUploadComponent implements OnInit {
   }
 
   submit() {
-    console.log(this.showWebcam);
-    // if (!this.showWebcam && this.showUpload) { console.log(' Upload selected image!'); }
     if (this.showWebcam) {
       var content = this.webcamImage;
       const arr = this.webcamImage.imageAsDataUrl.split(",");

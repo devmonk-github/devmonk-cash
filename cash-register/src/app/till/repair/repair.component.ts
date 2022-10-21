@@ -304,7 +304,6 @@ export class RepairComponent implements OnInit {
     if (oUser) oUser = JSON.parse(oUser);
     this.item.iEmployeeId = oUser?.userId || null;
     this.item.iAssigneeId = oRepairer?._id;
-    console.log('selectAssignee item: ', this.item.iEmployeeId, this.item.iAssigneeId);
     this.itemChanged.emit(this.item);
   }
 

@@ -140,7 +140,6 @@ class MenuComponent {
       const menuItem = el as HTMLElement;
       let menuInstance = MenuComponent.getInstance(menuItem);
       if (!menuInstance) {
-        console.log();
         menuInstance = new MenuComponent(el as HTMLElement, defaultMenuOptions);
       }
     });
@@ -267,13 +266,11 @@ class MenuComponent {
   }
 
   public static bootstrap = () => {
-    // console.log("MenuComponent bootstrap");
     MenuComponent.initGlobalHandlers();
     MenuComponent.createInstances('[data-kt-menu="true"]');
   }
 
   public static reinitialization = () => {
-    // console.log("MenuComponent reinitializing");
 
     MenuComponent.createInstances('[data-kt-menu="true"]');
   }

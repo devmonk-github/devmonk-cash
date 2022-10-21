@@ -58,7 +58,6 @@ export class MorePaymentsDialogComponent implements OnInit {
     this.dialogRef.close.emit(data);
   }
   selectMethod(method: any) {
-    console.log(method);
   }
   submit() {
 

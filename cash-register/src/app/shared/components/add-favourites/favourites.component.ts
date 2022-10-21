@@ -159,7 +159,6 @@ export class AddFavouritesComponent implements OnInit {
   // }
 
   onSelectProduct(product: any, isFrom: string, isFor: string) {
-    console.log('selected product', product);
     this.newSelectedProduct.sName = product.oName ? product.oName['en'] : 'No name';
     this.newSelectedProduct.iBusinessProductId = product._id;
     this.newSelectedProduct.aImage = product.aImage;
@@ -168,8 +167,6 @@ export class AddFavouritesComponent implements OnInit {
     }
 
     this.shopProducts = null;
-    // this.commonProducts = null;
-    // console.log(this.shopProducts, this.commonProducts);
   }
 
   create(event: any) {

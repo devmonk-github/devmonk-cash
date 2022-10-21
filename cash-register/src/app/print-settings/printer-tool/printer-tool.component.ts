@@ -53,7 +53,6 @@ export class PrinterToolComponent implements OnInit {
       return;
     }
     const printRawContentResult: any = await this.printService.printRawContent(this.iBusinessId, this.zplCode, this.labelPrintSettings?.nPrinterId, this.labelPrintSettings?.nComputerId, 1, { title: 'Print label' })
-    console.log({ printRawContentResult });
     if (printRawContentResult) {
       this.toastService.show({
         type: 'success',
@@ -66,7 +65,6 @@ export class PrinterToolComponent implements OnInit {
     this.zplCode = ''
   }
   prefillCommand(command: string) {
-    // console.log({ command });
     this.zplCode = command;
   }
 

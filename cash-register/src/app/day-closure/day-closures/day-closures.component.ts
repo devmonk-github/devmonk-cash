@@ -126,6 +126,5 @@ export class DayClosuresComponent implements OnInit, OnDestroy {
   }
 
   // viewStatistics(oDayClosure: any) {
-  //   console.log('viewStatistics called: ', oDayClosure);
   // }
 }

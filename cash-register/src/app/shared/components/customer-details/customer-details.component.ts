@@ -654,12 +654,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
       },
       labels: this.aPaymentChartData.map((el: any) => `${el.sMethod} (${el.nAmount})`),
       options: {
-        // dataLabels: {
-        //   formatter: function (val: any) {
-        //     console.log('val: ', val);
-        //     return "\u20AC" + Number(val).toFixed(2);
-        //   },
-        // }
+   
       }
     };
   }

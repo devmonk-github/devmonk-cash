@@ -49,7 +49,6 @@ export class TranslationsService {
             translationsObject[lang[0]][element.sKeyword] = lang[1]
           }
         }
-        console.log(translationsObject);
         resolve(translationsObject);
       })
     }
@@ -94,10 +93,8 @@ export class TranslationsService {
   // initOld() {
   //   this.translateService.addLangs(this.languages);
   //   this.translateService.setDefaultLang('nl');
-  //   // console.log({ en });
   //   const currentLang: any = localStorage.getItem('language')?.toString() || 'nl';
   //   this.translateService.use(currentLang);
-  //   console.log(this.translateService.getLangs());
   //   if (currentLang === 'nl') {
   //     this.translateService.setTranslation('nl', {
   //       // ...nl

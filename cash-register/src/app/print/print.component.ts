@@ -39,7 +39,6 @@ export class PrintComponent implements OnInit {
     this.getPrintSetting();
 
     this.translateService.get(this.translationsKey).subscribe((result) => {
-      console.log(result);
       this.translationsResults = result;
     });
 

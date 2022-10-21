@@ -653,7 +653,6 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
   /* (Only, for Viewing statistic) Day-closure view whenever we will have the iStatisticId */
   fetchDayClosureData(sDisplayMethod?: string) {
     /* If not closed yet then we require both data static as well and dynamic */
-    console.log('-------fetchDayClosureData---->: ', this.oStatisticsData.bIsDayStateOpened, this.iStatisticId);
     if (this.oStatisticsData.bIsDayStateOpened) {
       this.getStaticData(sDisplayMethod);
       this.getDynamicData(sDisplayMethod);
@@ -1128,7 +1127,6 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
     const oCashPaymentMethod = this.allPaymentMethod.filter((el: any) => el.sName.toLowerCase() === 'cash')[0];
     const oBankPaymentMethod = this.allPaymentMethod.filter((el: any) => el.sName.toLowerCase() === 'bankpayment')[0];
 
-    console.log('nDifferenceAmount: ', nDifferenceAmount);
     if (nDifferenceAmount > 0) {
       //we have difference in cash, so add that as and expense
 

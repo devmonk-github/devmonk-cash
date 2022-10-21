@@ -222,10 +222,6 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
     });
   }
 
-  // updateSettings(): void {
-  //   console.log(this.settings);
-  // }
-
   updateSettings(event:any): void {
     const { nLastInvoiceNumber, nLastReceiptNumber, sDayClosurePeriod } = this.settings;
     const body = { nLastInvoiceNumber, nLastReceiptNumber, sDayClosurePeriod };
@@ -233,14 +229,11 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
     this.updatingSettings = true;
     this.updateSettingsSubscription = this.apiService.putNew('cashregistry', '/api/v1/settings/update/' + this.requestParams.iBusinessId, body)
       .subscribe((result: any) => {
-        // console.log(result);
         if (result){
           this.updatingSettings = false;
           event.target.disabled = false;
           this.toastService.show({ type: 'success', text: 'Saved Successfully' });
         } 
-        // this.getWebShopSettings()
-        // this.showLoader = false;
       }, (error) => {
         console.log(error);
       })
@@ -299,7 +292,6 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
   }
 
   removeQuickButton(button: any) {
-    console.log(button);
     try {
       this.removeQuickButtonSubscription = this.apiService.deleteNew('cashregistry', `/api/v1/quick-buttons/${button._id}/${this.requestParams.iBusinessId}`).subscribe((result: any) => {
         this.toastService.show({ type: 'success', text: `Quick button deleted successfully` });

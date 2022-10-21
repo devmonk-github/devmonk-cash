@@ -126,7 +126,6 @@ export class ServicesComponent implements OnInit, AfterViewInit {
   async ngOnInit(): Promise<void> {
 
     this.activatedRoute.queryParamMap.subscribe((params:any)=> {
-      console.log('params.params.isFor: ', params)
       this.isFor= params.params.isFor;
     })
     if (this.router.url.includes('/business/webshop-orders')) {
@@ -261,13 +260,10 @@ export class ServicesComponent implements OnInit, AfterViewInit {
 
   //  Function for set sort option on transaction table
   setSortOption(sortHeader: any) {
-    console.log('setSortOption: ', sortHeader);
     if (sortHeader.selected) {
       sortHeader.sort = sortHeader.sort == 'asc' ? 'desc' : 'asc';
-      console.log('iscoming here ', sortHeader.sort);
       this.sortAndLoadTransactions(sortHeader)
     } else {
-      console.log('in else');
       this.tableHeaders = this.tableHeaders.map((th: any) => {
         if (sortHeader.key == th.key) {
           th.selected = true;

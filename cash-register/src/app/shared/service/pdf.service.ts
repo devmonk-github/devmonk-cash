@@ -569,7 +569,6 @@ export class PdfService {
   }
 
   private createRows(cols: any, currentRow: any, printableArea: any, gutter: any, dataSourceObject?: any) {
-    // console.log('create rows called with', cols, currentRow, dataSourceObject);
     let rowsToBeCreated = 1;
     dataSourceObject = dataSourceObject || this.data;
     let createdRows = [];
@@ -587,7 +586,6 @@ export class PdfService {
       if (typeof dataSourceObject.length === 'number') {
         finalDataSourceObject = Object.values(dataSourceObject)[r];
       }
-      // console.log({ rowsToBeCreated, finalDataSourceObject, currentRow });
 
       let rowElement = (this.isDefined(currentRow.element)) ? currentRow.element : 'div';
       let newRow = document.createElement(rowElement);
@@ -605,7 +603,6 @@ export class PdfService {
 
       for (let i = 0; i < cols.length; i++) {
         const col = cols[i];
-        // console.log('col : ',col);
         let colsize = col.size;
         let gutterSize = this.calcColumnGutter(colsize, gutter);
         let newRowWidth = this.calcRowWidth(printableArea.width, colsize, gutterSize);
@@ -680,7 +677,6 @@ export class PdfService {
 
     for (let r = 0; r < this.layout.length; r++) {
       const currentRow = this.layout[r];
-      // console.log('currentRow : ',currentRow);
 
       currentSection = currentRow.section;
       let newSection = false;
@@ -698,7 +694,6 @@ export class PdfService {
       rowCounter++
 
       const cols = currentRow['row'];
-      // console.log('cols: ', cols);
       const gutterSize = 1;
       let totalRowHeight = 0;
 
@@ -808,7 +803,6 @@ export class PdfService {
       let sConditionalString = originalText.substring(originalText.indexOf('<if'), originalText.indexOf('/if>') + 4);
       let sCondition = sConditionalString.substring(sConditionalString.indexOf('<if') + 4, sConditionalString.indexOf('|') - 1).trim();
       let contentString = sConditionalString.substring(sConditionalString.indexOf('|') + 1, sConditionalString.indexOf('/if>'));
-        // console.log({ sConditionalString, sCondition, contentString }, dataSourceObject[sCondition]);
       if (dataSourceObject && dataSourceObject[sCondition]) return originalText.replace(sConditionalString, contentString);
       else return originalText.replace(sConditionalString, '');
     } else {
@@ -817,24 +811,19 @@ export class PdfService {
   }
 
   replaceVariables(originalText: string, dataSourceObject: any) {
-    // console.log('replace vars',{originalText,dataSourceObject});
     if (!this.isDefined(originalText)) {
       return;
     }
     
     originalText = this.processConditions(originalText, dataSourceObject);
-    // console.log('after process condition',originalText);
 
     let extractedVariables = this.getVariables(originalText);
-    // console.log({extractedVariables});
     let providedData = dataSourceObject;
     let finalString = originalText;
-    // console.log(829, {finalString});
 
     if (extractedVariables) {
       for (let a = 0; a < extractedVariables.length; a++) {
         let currentMatch = extractedVariables[a];
-        // console.log({ currentMatch });
 
 
         const matchedMatch = currentMatch.match(/\[/g)
@@ -925,7 +914,6 @@ export class PdfService {
 
           let matched = false;
           let newText = '';
-          // console.log({variableStringFiltered});
           if (this.isDefined(providedData)) {
             
             newText = providedData[variableStringFiltered] || this.translations[variableStringFiltered] || '';
@@ -935,12 +923,10 @@ export class PdfService {
             finalString = finalString.replace(currentMatch, newText);
 
             // for (const key of Object.keys(providedData)) {
-            //   console.log(key, variableStringFiltered);
             //   if (key === variableStringFiltered) {
             //     if (String(providedData[variableStringFiltered]).length > 0) {
             //       matched = true;
             //       newText = String(providedData[variableStringFiltered]);
-            //       console.log({newText});
 
             //       if (this.isDefined(format) && format !== '') {
             //         newText = this.formatContent(newText, format);
@@ -951,7 +937,6 @@ export class PdfService {
             // }
 
             // Object.keys(providedData).forEach((key, index) => {
-            //   console.log(key, variableStringFiltered);
             //   if (key === variableStringFiltered) {
             //     if (String(providedData[variableStringFiltered]).length > 0) {
             //       matched = true;
@@ -978,7 +963,6 @@ export class PdfService {
         }
       }
     }
-    // console.log({finalString});
     return finalString;
   }
 
@@ -1031,7 +1015,6 @@ export class PdfService {
   }
 
   private insertElementsInCol(col: any, html: any, newContent: any): any {
-    // console.log('insert elements', col, html, newContent);
     for (let a = 0; a < html.length; a++) {
       const part = html[a];
       if (!this.isDefined(part.element)) {
@@ -1126,26 +1109,21 @@ export class PdfService {
   }
 
   private createCol(i: number, nrOfCols: number, newRowWidth: number, gutterSize: string, colObject: any, dataSourceObject: any = null, currentSize: number = 12, printableArea: any) {
-    // console.log('create col called', {i,nrOfCols, colObject, dataSourceObject});
     let html = (colObject.html || '');
     let element = (colObject.element || 'div');
     let forEach = (colObject.forEach || '');
     let htmlBefore = (colObject.htmlBefore || '');
     let htmlAfter = (colObject.htmlAfter || '');
     let col = document.createElement(element);
-    // console.log('1088, col', col, 'element', element, 'html', html);
     let newContent = [];
     if (html.length > 0) {
       if (typeof html[0] === 'object') {
         for (let e = 0; e < html.length; e++) {
-          // console.log('html[e]',html[e]);
           if(this.isDefined(html[e].if) && !this.checkConditions(html[e].if, dataSourceObject)) {
             html.splice(e,1);
             e--; 
           } else {
-            // console.log('e=',e);
             html[e].content = typeof html[e].content !== 'undefined' ? html[e].content.replace('/>', '>') : "";
-            // console.log('html[e].content', html[e].content);
 
             if (this.isDefined(html[e].if)) {
               newContent.push([
@@ -1168,25 +1146,16 @@ export class PdfService {
             delete nestedRowObject.element;
             delete nestedRowObject.content;
 
-            // console.log('nestedRowObject', nestedRowObject);
-
             if (nestedRowObject?.forEach != '') {
               dataSourceObject = this.defineDataSource(nestedRowObject.forEach, dataSourceObject);
-              // console.log({ dataSourceObject });
-              // console.log('dataSourceObject.length=', dataSourceObject.length);
-              // let html2:any;
-              //for (let d = 0; d < dataSourceObject.length; d++) {
                 
                 for (let k = 0; k < nestedRowObject.row.length; k++) {
 
-                  // console.log('nestedRowObject.row', nestedRowObject.row);
                   let html2 = (nestedRowObject.row[k].html || '');
                   
                   if (typeof html2[0] === 'object') {
                     for (let e = 0; e < html2.length; e++) {
-                      // console.log('1146 html2', html2);
                       html2[e].content = typeof html2[e].content !== 'undefined' ? html2[e].content.replace('/>', '>') : "";
-                      // console.log('html2[e].content', html2[e].content);
                       
                       if (this.isDefined(html2[e].if)) {
                         newContent.push([
@@ -1203,27 +1172,17 @@ export class PdfService {
                       html.push(html2[e]);
                     }
                   } else {
-                    // console.log('else html2 is not object', html2);
                     let template = html2.replace('/>', '>');
                     html2 = this.replaceVariables(template, dataSourceObject[0]);
                   }
-                  // console.log({html2});
                   finalNestedContent.push(html2);
-                  // newContent.push(html2);
                 }
-              //}
             }
-            // console.log({finalNestedContent});
-            // html.push(finalNestedContent);
           }
         }
-        // html = html.filter((v:any, i:number, a:any) => a.findIndex((v2:any) => (JSON.stringify(v2) === JSON.stringify(v))) === i)
-        // console.log('1177 html',html);
         col = this.insertElementsInCol(col, html, newContent);
-        // console.log('after insertElementsInCol',col);
       } else {
         let template = html.replace('/>', '>');
-        // console.log('template: ', template);
         html = '';
         if (forEach !== '') {
           html += this.replaceVariables(template, dataSourceObject);
@@ -1234,7 +1193,6 @@ export class PdfService {
             let extractedVariables = this.getVariables(template);
             let htmlConcept = '';
             if (this.isDefined(colObject.forEach)) {
-              // let gutterSizeNew = this.calcColumnGutter(colsize, gutter);
               let newRows = this.createRows(colObject.row, colObject, printableArea, 12, relatedSourceObject);
               for (let i = 0; i < newRows.length; i++) {
                 let newRow = newRows[i];
@@ -1245,46 +1203,10 @@ export class PdfService {
                 html += newRow.outerHTML;
               }
             }
-            // if (extractedVariables) {
-            //   for (let v = 0; v < extractedVariables.length; v++) {
-            //     let matched = false;
-            //     let oldText = extractedVariables[v];
-            //     let newText = '';
-
-            //     let searchFor = this.removeBrackets(extractedVariables[v]);
-
-            //     let variableStringFiltered = searchFor;
-            //     let format = ''
-
-            //     if (searchFor.match(/\|/g) !== null) {
-            //       let stringAndFormat = searchFor.split('|');
-            //       variableStringFiltered = stringAndFormat[0];
-            //       format = stringAndFormat[1]
-            //     }
-
-            //     Object.keys(entry).forEach((key) => {
-            //       if (key === variableStringFiltered) {
-            //         if (String(entry[variableStringFiltered]).length > 0) {
-            //           matched = true;
-            //           newText = String(entry[variableStringFiltered]);
-
-            //           if (this.isDefined(format) && format !== 'null') {
-            //             newText += this.formatContent(newText, format);
-            //           }
-            //         }
-            //       }
-            //     });
-
-            //     if (matched) {
-            //       htmlConcept = htmlConcept.replace(oldText, newText);
-            //     }
-            //   }
-            // }
             html += htmlConcept
           }
         } else {
           html += this.replaceVariables(template, dataSourceObject);
-          // console.log('else foreach is empty - replacing variables got html = ', html);
         }
         col.innerHTML = html;
       }
@@ -1307,11 +1229,6 @@ export class PdfService {
     if (colObject.htmlBefore) {
       col.innerHTML = htmlBefore + col.innerHTML + htmlAfter;
     }
-    // if (this.isDefined(colObject.forEach)){
-    //   // let gutterSizeNew = this.calcColumnGutter(colsize, gutter);
-    //   this.createRows(colObject.row, colObject, printableArea, 12);
-    // }
-    // console.log('returning col', col);
     return col;
   }
 
@@ -1326,9 +1243,7 @@ export class PdfService {
     }
 
     const template = JSON.parse(templateString);
-    // console.log(template);
     const dataObject = JSON.parse(dataString);
-    console.log(dataObject);
 
     this.setProperties(template, dataObject);
     this.paperSize = this.definePaperSize(this.paperSize, this.margins);
@@ -1476,7 +1391,6 @@ export class PdfService {
       })
     });
     this.translations = translationsObj;
-    // console.log(this.translations);
     return translationsObj;
   }
 
@@ -1492,7 +1406,6 @@ export class PdfService {
   }
 
   logService(details: string) {
-    // console.log('Log service called: ' + details);
   }
 
 

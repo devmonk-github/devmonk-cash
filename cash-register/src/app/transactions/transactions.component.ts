@@ -166,7 +166,6 @@ export class TransactionsComponent implements OnInit {
     this.requestParams.iWorkstationId = undefined // we need to work on this once devides are available.\
     this.showLoader = true;
     this.requestParams.eTransactionType = this.eType;
-    console.log({ requestParams: this.requestParams })
     this.apiService.postNew('cashregistry', '/api/v1/transaction/cashRegister', this.requestParams).subscribe((result: any) => {
       if (result && result.data && result.data && result.data.result && result.data.result.length) {
         this.transactions = result.data.result;
@@ -283,13 +282,10 @@ export class TransactionsComponent implements OnInit {
   async openModal(barcode: any) {
     this.toastrService.show({ type: 'success', text: 'Barcode detected: ' + barcode })
     if (barcode.startsWith("T")) {
-      console.log('transaction', barcode);
       const result: any = await this.apiService.postNew('cashregistry', `/api/v1/transaction/detail/${barcode}`, {iBusinessId: this.iBusinessId}).toPromise();
-      // console.log(result);
       if (result?.data?._id) {
         this.showTransaction(result?.data);
       }
-      //transactions.find({sNumber: barcode})
     }
   }
 }

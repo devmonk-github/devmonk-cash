@@ -86,7 +86,6 @@ export class PrintSettingsEditorComponent implements OnInit {
   fetchSettings(){
     // this.apiService.getNew('cashregistry', `/api/v1/pdf/templates/getTemplate/${this.oTemplate._id}?iBusinessId=${this.iBusinessId}`).subscribe((result: any) => {
     this.apiService.getNew('cashregistry', `/api/v1/pdf/templates/${this.iBusinessId}?eType=${this.format.key}`).subscribe((result: any) => {
-      // console.log(result);
       if(result?.data){
         this.mode = 'update';
         this.oTemplate = result.data;
@@ -98,11 +97,9 @@ export class PrintSettingsEditorComponent implements OnInit {
         this.mode = 'create';
         this.oTemplate.aSettings = this.getDefaultSettings();
       }
-      // console.log(this.oTemplate.aSettings);
     });
   }
   mapWithDefaultSettings(){
-    // console.log('mapWithDefaultSettings', this.oTemplate.aSettings, this.aDefaultSettings);
     this.oTemplate.aSettings.map((setting:any)=>{
       this.aDefaultSettings.forEach((defaultSetting:any) => {
         if (setting.sParameter === defaultSetting.sParameter){

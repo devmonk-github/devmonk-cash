@@ -209,7 +209,6 @@ export class TransactionDetailsComponent implements OnInit {
 
     const template = await this.getTemplate('regular').toPromise();
     // const template = await this.getTemplate('single-activity').toPromise();
-    // console.log(this.transaction);
     let nTotalOriginalAmount = 0;
     const oDataSource = JSON.parse(JSON.stringify(this.transaction));
     if (oDataSource.aTransactionItems?.length === 1 && oDataSource._id === oDataSource.aTransactionItems[0].iTransactionId) {
@@ -217,7 +216,6 @@ export class TransactionDetailsComponent implements OnInit {
       oDataSource.bHasPrePayments = false;
     } else {
       oDataSource.aTransactionItems.forEach((item: any) => {
-        // console.log({item});
         nTotalOriginalAmount += item.nPriceIncVat;
         let description = `${item.description}\n`;
         if (item.nPriceIncVat !== item.nPaymentAmount) {
@@ -246,7 +244,6 @@ export class TransactionDetailsComponent implements OnInit {
     };
 
     oDataSource.nTotalOriginalAmount = nTotalOriginalAmount;
-    // console.log(oDataSource);
     this.receiptService.exportToPdf({
       oDataSource: oDataSource,
       pdfTitle: oDataSource.sNumber,
@@ -334,7 +331,6 @@ export class TransactionDetailsComponent implements OnInit {
   fetchCustomer(customerId: any) {
     this.apiService.getNew('customer', `/api/v1/customer/${customerId}?iBusinessId=${this.iBusinessId}`).subscribe(
       (result: any) => {
-        console.log('fetchCustomer', result);
         this.transaction.oCustomer = result;
       },
       (error: any) => {
@@ -499,20 +495,15 @@ export class TransactionDetailsComponent implements OnInit {
 
   // loadDynamicComponent() {
   //   try {
-  //     console.log('loadDynamicComponent called');
   //     import('supplierSlider/SupplierProductSliderModule').then(({ SupplierProductSliderModule }) => {
-  //     console.log('loadDynamicComponent called 1');
   //       this.compiler.compileModuleAsync(SupplierProductSliderModule).then(moduleFactory => {
   //         const moduleRef: NgModuleRef<typeof SupplierProductSliderModule> = moduleFactory.create(this.injector);
-  //         console.log('loadDynamicComponent called 2: ', moduleRef);
   //         const componentFactory = moduleRef.instance.resolveComponent();
   //         this.componentRef = this.container.createComponent(componentFactory, undefined, moduleRef.injector);
   //         this.componentRef.instance.title = 'My application';
-  //         console.log('loadDynamicComponent called 3');
   //       });
   //     });
   //   } catch (error) {
-  //     console.log('error: ', error);
   //   }
   // }
 

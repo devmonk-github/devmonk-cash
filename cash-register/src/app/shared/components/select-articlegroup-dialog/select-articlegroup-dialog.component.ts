@@ -71,7 +71,6 @@ export class SelectArticleDialogComponent implements OnInit, AfterViewInit {
       .subscribe((result: any) => {
         if (result && result.data && result.data[0] && result.data[0].result && result.data[0].result.length) {
           this.articleGroupsList = result.data[0].result;
-          console.log({ articleGroupsList: this.articleGroupsList });
           setTimeout(() => {
             this.articleGroupLoading = false;
             if (this.articleGroupRef)
