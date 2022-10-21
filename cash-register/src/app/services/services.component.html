@@ -191,9 +191,9 @@
           <td>{{activity?.sReceiptNumber}}</td>
           <td>{{getTypes(activity.activityitems)}}</td>
           <td scope="row">{{activity?.dCreatedDate | date: 'yyyy-MM-dd HH:mm'}}</td>
-          <td scope="row">{{activity?.dPickedUp | date: 'yyyy-MM-dd HH:mm'}}</td>
-          <td>{{activity?.eActivityStatus || '-'}}</td>
-          <td>{{'-'}}</td>
+          <td scope="row">{{activity?.dEstimatedDate | date: 'yyyy-MM-dd HH:mm'}}</td>
+          <td>{{activity?.eActivityItemStatus || '-'}}</td>
+          <td>{{activity?.sBusinessPartnerName}}</td>
           <td>{{'-'}}</td>
           <td>{{activity?.oCustomer?.sFirstName}} {{activity?.oCustomer?.sLastName}}</td>
 
@@ -254,7 +254,7 @@
   </div>
 
 
-  <pre>
+  <!-- <pre>
 	<code>
 
 		# User stories for repairs
@@ -340,4 +340,4 @@
 		As a retailer, I want to send an email to the repairer
 
 	</code>
-</pre>
+</pre> -->

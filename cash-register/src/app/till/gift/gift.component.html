@@ -47,7 +47,7 @@
               <fa-icon [icon]="numberIcon" [ngClass]="checkingNumber ? 'fa-spin': ''"></fa-icon>
             </span>
             <span class="text-danger" *ngIf="!item.nonEditable && numberIcon === faBan">
-              {{"ENTER_VALID_GIFTCARD_NUMBER"}}
+              {{"ENTER_VALID_GIFTCARD_NUMBER" | translate}}
             </span>
           </div>
         </div>

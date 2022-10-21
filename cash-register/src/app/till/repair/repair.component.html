@@ -247,19 +247,15 @@
           <div class="col-12">
             <div class="mb-4">
               <label class="form-control-label mb-3">{{ "REPAIRER" | translate }}</label>
-              <ng-select *ngIf="!employee" [(ngModel)]="employee" (search)="searchEmployees($event.term)"
-                class="form-control form-control-solid p-0 w-100 custom" placeholder="Search employee"
-                [minTermLength]="2" [clearable]="false" [isOpen]="filteredEmployees.length > 0" (change)="
-            employee = $event.sName;
-            item.iEmployeeId = $event._id;
-            filteredEmployees = []
-          ">
+              <ng-select *ngIf="!oRepairer.sName" [(ngModel)]="oRepairer.sName" (search)="searchEmployees($event.term)"
+                class="form-control form-control-solid p-0 w-100 custom" placeholder="Search employee" [minTermLength]="2"
+                [clearable]="false" [isOpen]="filteredEmployees.length > 0" (change)="selectAssignee($event, item)">
                 <ng-option *ngFor="let option of filteredEmployees" [value]="option">{{ option.sName || "Unknown" }}
                 </ng-option>
               </ng-select>
-              <div class="chip d-flex py-4 px-8" *ngIf="employee">
-                {{ employee }}
-                <div (click)="employee = null">
+              <div class="chip d-flex py-4 px-8" *ngIf="oRepairer.sName">
+                {{ oRepairer.sName }}
+                <div (click)="oRepairer.sName = null">
                   &nbsp;<i class="close fas fa-times cursor-pointer"></i>
                 </div>
               </div>

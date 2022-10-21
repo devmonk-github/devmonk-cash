@@ -101,6 +101,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     'sArticleNumber',
     'iArticleGroupId',
     'iBusinessPartnerId',
+    'sBusinessPartnerName',
     'iBusinessBrandId',
     'nPurchasePrice',
     'iBrandId',
@@ -367,17 +368,15 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   itemChanged(item: any, index: number): void {
+    console.log('itemChanged: ', item, index);
     switch (item) {
       case 'delete':
         this.transactionItems.splice(index, 1);
-        // this.updateFiskalyTransaction()
         this.updateFiskalyTransaction('ACTIVE', []);
         break;
       case 'update':
         let availableAmount = this.getUsedPayMethods(true);
         this.paymentDistributeService.distributeAmount(this.transactionItems, availableAmount);
-
-        // this.paymentDistributeService.updateAmount(this.transactionItems, availableAmount, index);
         break;
       case 'duplicate':
         const tItem = Object.create(this.transactionItems[index]);
@@ -595,7 +594,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
           let result = body.transactionItems.map((a: any) => a.iBusinessPartnerId);
           const uniq = [...new Set(_.compact(result))];
           if (this.appliedGiftCards?.length) this.tillService.createGiftcardTransactionItem(body, this.discountArticleGroup);
-          
+          console.log('transaction creation: ', body)
           this.apiService.postNew('cashregistry', '/api/v1/till/transaction', body)
             .subscribe((data: any) => {
               this.toastrService.show({ type: 'success', text: 'Transaction created.' });
@@ -884,6 +883,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       iBusinessBrandId: product.iBusinessBrandId || product.iBrandId,
       iBusinessProductId: product._id,
       iBusinessPartnerId: product.iBusinessPartnerId, //'6274d2fd8f38164d68186410',
+      sBusinessPartnerName: product.sBusinessPartnerName, //'6274d2fd8f38164d68186410',
       iSupplierId: product.iBusinessPartnerId,
       aImage: product.aImage,
       isExclude: false,
@@ -1363,6 +1363,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
                 nRedeemedLoyaltyPoints: transactionItem.nRedeemedLoyaltyPoints,
                 iArticleGroupId: transactionItem.iArticleGroupId,
                 iEmployeeId: transactionItem.iEmployeeId,
+                iAssigneeId: transactionItem.iAssigneeId,
                 iBusinessBrandId: transactionItem.iBusinessBrandId,
                 nDiscount: transactionItem.nDiscount || 0,
                 tax: transactionItem.nVatRate,
