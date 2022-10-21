@@ -11,7 +11,7 @@
         <div class="row">
             <div class="col-2"></div>
             <div class="col-10">
-                <h4>Activities</h4>
+                <h4> {{ "ACTIVITIES" | translate}}</h4>
             </div>
         </div>
         <div class="row">
@@ -30,7 +30,7 @@
                         </div>
                         <div class="d-flex flex-wrap py-5">
                             <div class="flex-equal me-5">
-                                Customer Details
+                                {{ "CUSTOMER_DETAILS" | translate}}
                                 <div class="fs-6 ms-1">
                                     <div class="align-items-center">
                                         <div class="text-gray-600">{{customer?.sFirstName || ''}} {{customer?.sLastName
@@ -81,8 +81,9 @@
                 <div class="accordion" id="kt_accordion_1">
                     <div class="accordion-item" *ngFor="let activity of activityItems; index as index">
                         <h2 class="accordion-header">
-                            <button class="accordion-button fs-4 fw-bold" (click)="activity.collapsedBtn = !activity.collapsedBtn"
-                                type="button" data-bs-toggle="collapse" [ngClass]="{'collapsed': activity.collapsedBtn }"
+                            <button class="accordion-button fs-4 fw-bold"
+                                (click)="activity.collapsedBtn = !activity.collapsedBtn" type="button"
+                                data-bs-toggle="collapse" [ngClass]="{'collapsed': activity.collapsedBtn }"
                                 #accordionBtn>
                                 <label>{{activity.sNumber}}</label>
                             </button>
@@ -93,7 +94,7 @@
                                 <div class="row">
                                     <div class="col-4">
                                         <div class="form-group mb-6">
-                                            <label class="form-control-label mb-3">Title {{ "NAME" | translate}}</label>
+                                            <label class="form-control-label mb-3">{{ "NAME" | translate}}</label>
                                             <input class="form-control form-control-solid mb-3 mb-lg-0" type="text"
                                                 name="activityName" [(ngModel)]="activity.sProductName">
                                         </div>
@@ -110,18 +111,19 @@
 
                                         <div class="form-group mb-6">
                                             <label class="form-control-label mb-3">{{ "STATUS" | translate}} </label>
-                                            <select name="status" id="status" class="form-control form-control-solid" [(ngModel)]="activity.eActivityItemStatus">
+                                            <select name="status" id="status" class="form-control form-control-solid"
+                                                [(ngModel)]="activity.eActivityItemStatus">
                                                 <option *ngFor="let type of repairStatus" [value]="type">{{type}}
                                                 </option>
                                             </select>
                                         </div>
 
                                         <div>
-                                            Inform the customer that the product can be picked up.
+                                            {{"INFORM_CUSTOMER_THAT_PRODUCT_CAN_BE_PICKED_UP" | translate}}
                                         </div>
                                         <div class="border p-3 mb-5">
                                             <div class="border p-1 my-3 px-4">
-                                                To be paid (excl. deposits/refunds/gold purchase/other fees)
+                                                {{ "TO_BE_PAID(EXCL_FEES)" | translate}}
                                             </div>
                                             <div class="row">
                                                 <div class="col-8">
@@ -129,25 +131,30 @@
                                                         [(ngModel)]="activity.nTotalAmount">
                                                 </div>
                                                 <div class="col-4">
-                                                    <button class="btn btn-primary">Mail customer</button>
+                                                    <button class="btn btn-primary">{{ "MAIL_CUSTOMER" |
+                                                        translate}}</button>
                                                 </div>
                                             </div>
                                             <div class="row mt-2">
                                                 <div class="col-6">
-                                                    Already paid: {{activity.nPaidAmount | currency: '€'}}
+                                                    {{"ALREADY_PAID" | translate}}: {{activity.nPaidAmount | currency:
+                                                    '€'}}
                                                 </div>
                                                 <div class="col-6">
-                                                    Still to pay: {{(activity.nTotalAmount - activity.nPaidAmount) |
+                                                    {{"STILL_TO_PAY"}}: {{(activity.nTotalAmount - activity.nPaidAmount)
+                                                    |
                                                     currency:
                                                     '€'}}
                                                 </div>
                                             </div>
                                             <div class="mt-2">
-                                                The advance payment could be spread over several products. Click on the
+                                                {{ "ADVANCE_PAYMENT_COULD_BE_SPREAD_OVER_PRODUCTS_CLICK_ON_RECEIPT" |
+                                                translate}}
+                                                <!-- The advance payment could be spread over several products. Click on the
                                                 receipt
                                                 to see the total amount of the transaction, so you know for which item
                                                 is
-                                                paid.
+                                                paid. -->
                                             </div>
                                         </div>
                                     </div>
@@ -156,9 +163,10 @@
                                             <span class="btn btn-primary fs-bold px-6"
                                                 (click)="downloadCustomerReceipt(index)">
                                                 <fa-icon class="mx-4" [icon]="faUser"></fa-icon>
-                                                <span class="indicator-label ">{{ "CUSTOMER_RECEIPT" | translate }}</span>
+                                                <span class="indicator-label ">{{ "CUSTOMER_RECEIPT" | translate
+                                                    }}</span>
                                             </span>
-                                            
+
                                             <span class="btn btn-primary btn-icon fs-bold" role="button">
                                                 <div class="btn btn-icon" data-kt-menu-trigger="click"
                                                     data-kt-menu-attach="parent" data-kt-menu-placement="bottom-end"
@@ -184,11 +192,13 @@
                                             </span>
                                         </div>
                                         <div class="btn-group me-4 w-100 my-3">
-                                            <span class="btn btn-primary fs-bold px-6" (click)="downloadCustomerReceipt(index, true)">
+                                            <span class="btn btn-primary fs-bold px-6"
+                                                (click)="downloadCustomerReceipt(index, true)">
                                                 <fa-icon class="mx-4" [icon]="faPrint"></fa-icon>
-                                                <span class="indicator-label ">{{ "CUSTOMER_RECEIPT_PRINT" | translate}}</span>
+                                                <span class="indicator-label ">{{ "CUSTOMER_RECEIPT_PRINT" |
+                                                    translate}}</span>
                                             </span>
-                                            
+
                                             <span class="btn btn-primary btn-icon fs-bold" role="button">
                                                 <div class="btn btn-icon" data-kt-menu-trigger="click"
                                                     data-kt-menu-attach="parent" data-kt-menu-placement="bottom-start"
@@ -213,7 +223,7 @@
                                         <div class="btn-group me-4 w-100 my-3">
                                             <span class="btn btn-primary fs-bold px-6">
                                                 <fa-icon class="mx-4" [icon]="faReceipt"></fa-icon>
-                                                <span class="indicator-label">{{ "RECEIPT_PARTNER"}}</span>
+                                                <span class="indicator-label">{{ "RECEIPT_PARTNER" | translate}}</span>
                                             </span>
                                             <span class="btn btn-primary btn-icon fs-bold" role="button">
                                                 <div class="btn btn-icon" data-kt-menu-trigger="click"
@@ -241,7 +251,7 @@
                                                 <span>
                                                     <fa-icon class="mx-4" [icon]="faReceipt"></fa-icon>
                                                 </span>
-                                                <span class="indicator-label">{{ "RECEIPT_FOR_BOTH"}}</span>
+                                                <span class="indicator-label">{{ "RECEIPT_FOR_BOTH" | translate}}</span>
                                             </span>
                                             <span class="btn btn-primary btn-icon fs-bold" role="button">
                                                 <div class="btn btn-icon" data-kt-menu-trigger="click"
@@ -267,14 +277,14 @@
                                         <div class="btn-group me-4 w-100 my-3">
                                             <span class="btn btn-primary fs-bold px-6">
                                                 <fa-icon class="mx-4" [icon]="faEnvelope"></fa-icon>
-                                                <span class="indicator-label">{{ "MAIL"}}</span>
+                                                <span class="indicator-label">{{ "MAIL" | translate}}</span>
                                             </span>
                                         </div>
                                         <div class="btn-group me-4 w-100 my-3">
                                             <span class="btn btn-primary fs-bold px-6"
                                                 (click)="loadCashRegister = true; openTransaction(activity, 'activity')">
                                                 <fa-icon class="mx-4" [icon]="faEuro"></fa-icon>
-                                                <span class="indicator-label">{{ "CHECKOUT"}}</span>
+                                                <span class="indicator-label">{{ "CHECKOUT" | translate}}</span>
                                             </span>
                                         </div>
                                     </div>
@@ -284,8 +294,8 @@
                                     <div class="col-md-8">
                                         <div class="">
                                             <span>{{ "SHIPPING_METHOD" | translate }} : </span>
-                                            <label class="form-control form-control-solid-solid">Standard
-                                                Shipping</label>
+                                            <label class="form-control form-control-solid-solid">{{ "STANDARD_SHIPPING"
+                                                | translate}}</label>
                                         </div>
                                         <div class="row">
                                             <div class="col-md-6">
@@ -302,25 +312,25 @@
                                                 placeholder="www.trackandtracelink.com">
                                         </div>
                                         <div class="row">
-                                            <label>Only place the tracking code here</label>
+                                            <label>{{ "PLACE_TRACKING_CODE" | translate}}</label>
                                         </div>
                                         <div class="row">
-                                            <label>Open tracking link</label>
+                                            <label>{{ "OPEN_TRACKING_LINK" | translate}}</label>
                                         </div>
                                     </div>
                                     <div class="col-md-4 gap-5">
                                         <button class="btn btn-primary w-100 d-flex">
-                                            <label class="mx-auto">Sent to customer</label>
+                                            <label class="mx-auto">{{ "SEND_TO_CUSTOMER" | translate}}</label>
                                         </button>
                                         <button class="btn btn-secondary w-100 d-flex">
-                                            <label class="mx-auto">Ready to pik up</label>
+                                            <label class="mx-auto"> {{ "READY_TO_PICKUP" | translate}}</label>
                                         </button>
                                         <button class="btn btn-secondary w-100 d-flex">
-                                            <label class="mx-auto">Deliver</label>
+                                            <label class="mx-auto">{{ "DELIVER" | translate}}</label>
                                         </button>
                                         <button *ngIf="webOrders" class="btn btn-primary w-100 d-flex"
                                             (click)="openTransaction(activity, 'activity')">
-                                            <label class="mx-auto">Open activity</label>
+                                            <label class="mx-auto"> {{ "OPEN_ACTIVITY" | translate}}</label>
                                         </button>
                                     </div>
                                 </div>
@@ -337,8 +347,8 @@
 
                                     <div class="col-5">
                                         <div class="row mb-6">
-                                            <label class="col-lg-4 col-form-label fw-bold fs-6">Intake
-                                                date</label>
+                                            <label class="col-lg-4 col-form-label fw-bold fs-6">{{ "INTAKE_DATE" |
+                                                translate}}</label>
                                             <div class="col-lg-8">
                                                 <div class="row">
                                                     <div class="col-lg-8 fv-row">
@@ -350,7 +360,8 @@
                                             </div>
                                         </div>
                                         <div class="row mb-6">
-                                            <label class="col-lg-4 col-form-label fw-bold fs-6">Location</label>
+                                            <label class="col-lg-4 col-form-label fw-bold fs-6">{{"LOCATION" |
+                                                translate}}</label>
                                             <div class="col-lg-8">
                                                 <div class="row">
                                                     <div class="col-lg-8 fv-row">
@@ -362,15 +373,17 @@
                                             </div>
                                         </div>
                                         <div class="row mb-6">
-                                            <label class="col-lg-4 col-form-label fw-bold fs-6">Estimated date
-                                                ready</label>
+                                            <label class="col-lg-4 col-form-label fw-bold fs-6">{{
+                                                "ESTIMATED_DATE_READY" | translate}}</label>
                                             <div class="col-lg-8">
                                                 <div class="row">
                                                     <div class="col-lg-8 fv-row">
 
-                                                        <input type="date" class="form-control form-control form-control-solid" name="dEstimatedDate"
-                                                        [ngModel]="activity.dEstimatedDate | date:'yyyy-MM-dd'"
-                                                        (ngModelChange)="activity.dEstimatedDate = $event" />
+                                                        <input type="date"
+                                                            class="form-control form-control form-control-solid"
+                                                            name="dEstimatedDate"
+                                                            [ngModel]="activity.dEstimatedDate | date:'yyyy-MM-dd'"
+                                                            (ngModelChange)="activity.dEstimatedDate = $event" />
                                                         <!-- <input type="text"
                                                             class="form-control form-control-lg form-control-solid mb-3 mb-lg-0 w-100"
                                                             [(ngModel)]="activity.dEstimatedDate" placeholder=""> -->
@@ -379,19 +392,19 @@
                                             </div>
                                         </div>
                                         <div class="row mb-6">
-                                            <label class="col-lg-4 col-form-label fw-bold fs-6">Contact when
-                                                ready</label>
+                                            <label class="col-lg-4 col-form-label fw-bold fs-6">{{ "CONTACT_WHEN_READY"
+                                                | translate}}</label>
                                             <div class="col-lg-8">
                                                 <div class="row">
                                                     <div class="col-lg-8 fv-row">
-                                                        Intake date
+                                                        {{ "INTAKE_DATE" | translate}}
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="row mb-6">
-                                            <label class="col-lg-4 col-form-label fw-bold fs-6">Estimated price
-                                                upon ingestion</label>
+                                            <label class="col-lg-4 col-form-label fw-bold fs-6"> {{
+                                                "ESTIMATED_PRICE_UPON_INGESTION" | translate}}</label>
                                             <div class="col-lg-8">
                                                 <div class="row">
                                                     <div class="col-lg-8 fv-row">
@@ -403,8 +416,8 @@
                                             </div>
                                         </div>
                                         <div class="row mb-6">
-                                            <label class="col-lg-4 col-form-label fw-bold fs-6">To be paid
-                                                (excl. deposits/refunds/gold purchse/other fees)</label>
+                                            <label class="col-lg-4 col-form-label fw-bold fs-6">
+                                                {{"TO_BE_PAID(EXCL_FEES)" | translate}}</label>
                                             <div class="col-lg-8">
                                                 <div class="row">
                                                     <div class="col-lg-8 fv-row">
@@ -425,11 +438,11 @@
                                                 <thead>
                                                     <tr
                                                         class="text-start text-gray-400 fw-bolder fs-7 text-uppercase gs-0">
-                                                        <th>Receipt number</th>
-                                                        <th>Created Date</th>
-                                                        <th>Amount</th>
+                                                        <th>{{ "RECEIPT_NUMBER" | translate}}</th>
+                                                        <th>{{ "CREATED_DATE" | translate}}</th>
+                                                        <th>{{ "AMOUNT" |translate}}</th>
                                                         <ng-container *ngIf="from != 'transaction-details'">
-                                                            <th>{{ 'ACTION' | translate }}</th>    
+                                                            <th>{{ 'ACTION' | translate }}</th>
                                                         </ng-container>
                                                     </tr>
                                                 </thead>
@@ -441,10 +454,12 @@
                                                         <ng-container *ngIf="from != 'transaction-details'">
                                                             <td>
                                                                 <div class="d-flex align-items-center">
-                                                                    <button class="btn btn-primary" (click)="showTransaction(receipt, $event)">
+                                                                    <button class="btn btn-primary"
+                                                                        (click)="showTransaction(receipt, $event)">
                                                                         {{ 'VIEW' | translate }}
                                                                     </button>
-                                                                    <div *ngIf="receipt.bFetchingTransaction" class="spinner-border mx-2"></div>
+                                                                    <div *ngIf="receipt.bFetchingTransaction"
+                                                                        class="spinner-border mx-2"></div>
                                                                 </div>
                                                             </td>
                                                         </ng-container>
@@ -455,7 +470,7 @@
                                     </div>
                                     <div class="col-3">
                                         <div *ngIf="!activity?.aImage?.length">
-                                            No Images
+                                            {{"NO_IMAGES" | translate}}
                                         </div>
                                         <div class="d-flex">
                                             <div class="image-input p-1 d-flex"
@@ -484,7 +499,8 @@
                                     </div>
                                     <div class="col-4">
                                         <div class="row mb-6">
-                                            <label class="col-lg-4 col-form-label fw-bold fs-6">Brand</label>
+                                            <label class="col-lg-4 col-form-label fw-bold fs-6"> {{ "BRAND" |
+                                                translate}}</label>
                                             <div class="col-lg-8">
                                                 <div class="row">
                                                     <div class="col-lg-8 fv-row">
@@ -496,7 +512,8 @@
                                             </div>
                                         </div>
                                         <div class="row mb-6">
-                                            <label class="col-lg-4 col-form-label fw-bold fs-6">Repair number</label>
+                                            <label class="col-lg-4 col-form-label fw-bold fs-6">{{ "REPAIR_NUMBER"
+                                                |translate}}</label>
                                             <div class="col-lg-8">
                                                 <div class="row">
                                                     <div class="col-lg-8 fv-row">
@@ -508,8 +525,8 @@
                                             </div>
                                         </div>
                                         <div class="row mb-6">
-                                            <label class="col-lg-4 col-form-label fw-bold fs-6">Costs incurred
-                                                (excluding VAT)</label>
+                                            <label class="col-lg-4 col-form-label fw-bold fs-6">{{
+                                                "COST_INCURRED(EXCL_VAT)" | translate}}</label>
                                             <div class="col-lg-8">
                                                 <div class="row">
                                                     <div class="col-lg-8 fv-row">
@@ -521,7 +538,8 @@
                                             </div>
                                         </div>
                                         <div class="row mb-6">
-                                            <label class="col-lg-4 col-form-label fw-bold fs-6">Product category</label>
+                                            <label class="col-lg-4 col-form-label fw-bold fs-6">{{ "PRODUCT_CATEGORY" |
+                                                translate}}</label>
                                             <div class="col-lg-8">
                                                 <div class="row">
                                                     <div class="col-lg-8 fv-row">
@@ -533,7 +551,8 @@
                                             </div>
                                         </div>
                                         <div class="row mb-6">
-                                            <label class="col-lg-4 col-form-label fw-bold fs-6">Product material</label>
+                                            <label class="col-lg-4 col-form-label fw-bold fs-6">{{ "PRODUCT_MATERIAL" |
+                                                translate}}</label>
                                             <div class="col-lg-8">
                                                 <div class="row">
                                                     <div class="col-lg-8 fv-row">
@@ -545,7 +564,8 @@
                                             </div>
                                         </div>
                                         <div class="row mb-6">
-                                            <label class="col-lg-4 col-form-label fw-bold fs-6">Supplier</label>
+                                            <label class="col-lg-4 col-form-label fw-bold fs-6"> {{ "SUPPLIER" |
+                                                translate}}</label>
                                             <div class="col-lg-8">
                                                 <div class="row">
                                                     <div class="col-lg-8 fv-row">
@@ -561,7 +581,7 @@
                                         <div class="row">
 
                                             <div class="fw-bold fs-6 my-2">
-                                                I repair this myself
+                                                {{ "I_REPAIR_THIS_MYSELF" | translate}}
                                             </div>
                                             <div class="col">
 
@@ -716,6 +736,6 @@
     </div>
 
     <div class="card-footer">
-        <button class="btn btn-primary" (click)="submit()" type="submit">Submit</button>
+        <button class="btn btn-primary" (click)="submit()" type="submit"> {{ "SUBMIT" | translate}}</button>
     </div>
 </div>

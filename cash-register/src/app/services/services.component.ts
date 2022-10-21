@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router  , ActivatedRoute} from '@angular/router';
 import { faLongArrowAltDown, faLongArrowAltUp, faMinusCircle, faPlus, faPlusCircle, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { ActivityDetailsComponent } from '../shared/components/activity-details-dialog/activity-details.component';
 import { CardsComponent } from '../shared/components/cards-dialog/cards-dialog.component';
@@ -24,7 +24,7 @@ export class ServicesComponent implements OnInit, AfterViewInit {
   faArrowDown = faLongArrowAltDown;
   cities = [
     { name: 'Amsterdam', code: 'AMS' },
-    { name: 'Bruxelles', code: 'BRU' },
+    { name: 'Bruxelles', code: 'BRU' }, 
     { name: 'Paris', code: 'PAR' },
     { name: 'Instanbul', code: 'INS' }
   ];
@@ -67,6 +67,13 @@ export class ServicesComponent implements OnInit, AfterViewInit {
     endDate: new Date(new Date().setHours(23, 59, 59)),
     startDate: new Date('01-01-2015'),
   }
+
+
+  endFilterDates: any = {
+    endDate: new Date(new Date().setHours(23, 59, 59)),
+    startDate: new Date('01-01-2015'),
+  }
+
   paymentMethods: Array<any> = ['All', 'Cash', 'Credit', 'Card', 'Gift-Card'];
   transactionTypes: Array<any> = ['All', 'Refund', 'Repair', 'Gold-purchase', 'Gold-sale', 'order', 'giftcard', 'offer'];
   transactionStatus: string = 'all';
@@ -80,6 +87,7 @@ export class ServicesComponent implements OnInit, AfterViewInit {
   selectedWorkstations: Array<any> = [];
   iLocationId: String | null | undefined;
   webOrders: Boolean = false;
+  isFor="";
 
   tableHeaders: Array<any> = [
     { key: 'Activity No.', selected: false, sort: '' },
@@ -89,7 +97,7 @@ export class ServicesComponent implements OnInit, AfterViewInit {
     { key: 'End date', selected: false, sort: 'desc', sValue: 'dEstimatedDate' },
     { key: 'Status', disabled: true },
     { key: 'Supplier/Repairer', disabled: true },
-    { key: 'Partner supplier status', disabled: true },
+    // { key: 'Partner supplier status', disabled: true },
     { key: 'Customer', disabled: true },
     { key: 'Actions' },
   ]
@@ -97,13 +105,22 @@ export class ServicesComponent implements OnInit, AfterViewInit {
   constructor(
     private apiService: ApiService,
     private dialogService: DialogService,
-    private routes: Router,
+    private router: Router,
+    private activatedRoute: ActivatedRoute,
     private toastrService: ToastService
-  ) { }
+  ) { 
+
+  }
 
 
   async ngOnInit(): Promise<void> {
-    if (this.routes.url.includes('/business/webshop-orders')) {
+
+    this.activatedRoute.queryParamMap.subscribe((params:any)=> {
+      this.isFor= params.params.isFor;
+    })
+    console.log(this.isFor);
+    console.log(typeof(this.isFor))
+    if (this.router.url.includes('/business/webshop-orders')) {
       this.webOrders = true;
       this.requestParams.eType = ['webshop-revenue', 'webshop-reservation']
     }
@@ -183,6 +200,7 @@ export class ServicesComponent implements OnInit, AfterViewInit {
   async setLocation(sLocationId: string = "") {
     return new Promise<void>(async (resolve, reject) => {
       this.iLocationId = sLocationId ?? (localStorage.getItem('currentLocation') ?? '')
+      console.log(185, this.iLocationId);
       try {
         const oBusinessLocation: any = await this.getBusinessLocations()
         let oNewLocation: any
@@ -203,6 +221,7 @@ export class ServicesComponent implements OnInit, AfterViewInit {
         }
         if (!bIsCurrentBIsWebshop) {
           this.iLocationId = oNewLocation._id.toString()
+          console.log(210, this.iLocationId)
         }
         resolve()
       } catch (error) {
@@ -282,18 +301,18 @@ export class ServicesComponent implements OnInit, AfterViewInit {
     if (this.webOrders) {
       this.dialogService.openModal(WebOrderDetailsComponent, { cssClass: 'w-fullscreen', context: { activity, from: 'web-orders' } })
         .instance.close.subscribe(result => {
-          if (this.webOrders && result) this.routes.navigate(['business/till']);
+          if (this.webOrders && result) this.router.navigate(['business/till']);
         });
     } else {
       this.dialogService.openModal(ActivityDetailsComponent, { cssClass: 'w-fullscreen', context: { activity, openActivityId, items: false, webOrders: this.webOrders, from: 'services' } })
         .instance.close.subscribe(result => {
-          if (this.webOrders && result) this.routes.navigate(['business/till']);
+          if (this.webOrders && result) this.router.navigate(['business/till']);
         });
     }
   }
 
   loadTransaction() {
-    if (this.routes.url.includes('/business/webshop-orders')) {
+    if (this.router.url.includes('/business/webshop-orders')) {
       this.requestParams.eType = ['webshop-revenue', 'webshop-reservation']
     } else {
       this.requestParams.eType = ['cash-register-service', 'cash-register-revenue']
@@ -303,9 +322,8 @@ export class ServicesComponent implements OnInit, AfterViewInit {
     this.requestParams.skip = this.requestParams.skip || 0;
     this.requestParams.limit = this.paginationConfig.itemsPerPage || 50;
     this.requestParams.importStatus = this.importStatus;
-    if (this.iLocationId) this.requestParams.iLocationId = this.iLocationId;
+    if (this.iLocationId) this.requestParams.iLocationId = localStorage.getItem('currentLocation')//this.iLocationId;
     this.showLoader = true;
-    console.log('loadTransaction: ', this.iLocationId);
     this.apiService.postNew('cashregistry', '/api/v1/activities', this.requestParams).subscribe((result: any) => {
       if (result?.data?.length)
         this.activities = result?.data;
@@ -353,7 +371,7 @@ export class ServicesComponent implements OnInit, AfterViewInit {
   }
 
   goToCashRegister() {
-    this.routes.navigate(['/business/till']);
+    this.router.navigate(['/business/till']);
   }
 
   async openModal(barcode: any) {

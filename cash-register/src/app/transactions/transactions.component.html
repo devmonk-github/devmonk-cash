@@ -1,6 +1,7 @@
 <div class="container">
   <div class="col-12">
-    <button class="btn btn-primary btn-sm mx-2" (click)="openModal('T3227-171022-1544')">{{'TRANSACTION -T3227-171022-1544' | translate}}</button>
+    <button class="btn btn-primary btn-sm mx-2" (click)="openModal('T3227-171022-1544')">{{'TRANSACTION
+      -T3227-171022-1544' | translate}}</button>
   </div>
 
   <!--begin::Main transaction list section-->
@@ -282,7 +283,8 @@
                   data-kt-menu="true">
                   <!--begin::Menu item-->
                   <div class="menu-item px-3 text-center" *ngFor="let tMenu of transactionMenu">
-                    <div class="menu-link px-3" (click)="clickMenuOpt(tMenu.key, transaction._id)">{{ tMenu.key}}</div>
+                    <div class="menu-link px-3" (click)="clickMenuOpt(tMenu.key, transaction._id)">{{ tMenu.key |
+                      translate}}</div>
                   </div>
                   <!--end::Menu item-->
                 </div>

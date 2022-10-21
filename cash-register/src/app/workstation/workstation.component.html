@@ -6,20 +6,21 @@
             </div>
             <div class="col-md-1">
                 <span>
-                    <button *ngIf="!addNew" class="btn btn-primary"  (click)="addNew = !addNew">New</button>
+                    <button *ngIf="!addNew" class="btn btn-primary" (click)="addNew = !addNew">New</button>
                 </span>
             </div>
         </div>
         <div *ngIf="addNew" class="card-body">
             <div class="row">
                 <div class="col-md-6 padding-top-10">
-                    <input class="form-control" placeholder="Name" [(ngModel)]="workstation.sName"/>
+                    <input class="form-control" [placeholder]="'NAME' | translate" [(ngModel)]="workstation.sName" />
                 </div>
                 <div class="col-md-6 padding-top-10">
-                    <input class="form-control" placeholder="Description" [(ngModel)]="workstation.sDescription"/>
+                    <input class="form-control" [placeholder]="'DESCRIPTION' | translate"
+                        [(ngModel)]="workstation.sDescription" />
                 </div>
                 <div class="row col-md-2 padding-top-10 d-flex">
-                    <button class="btn btn-primary" (click)="createWorkstation()">Create</button>
+                    <button class="btn btn-primary" (click)="createWorkstation()"> {{"CREATE" | translate}} </button>
                 </div>
             </div>
         </div>
@@ -29,11 +30,11 @@
 <div class="row">
     <div class="col-md-6" *ngFor="let workstation of workstations">
         <div class="card mb-5 mb-xl-10 d-flex">
-            <div class="card-header row" >
+            <div class="card-header row">
                 <div class="card-title">
                     <div class="col-md-10">
                         {{workstation.sName}}
-                    </div> 
+                    </div>
                     <div class="col-md-1">
                         <button class="btn ms-1" type="submit">
                             <fa-icon [icon]="faPencilAlt"></fa-icon>
@@ -59,11 +60,11 @@
             </div>
             <div class="card-body">
                 {{workstation.sDescription}}
-                <div class="card shadow-sm mb-5 mb-xl-10 d-flex">                
-                    <div class="card-header row" >
+                <div class="card shadow-sm mb-5 mb-xl-10 d-flex">
+                    <div class="card-header row">
                         <div class="card-title">
                             <div class="col-md-10">
-                                Repair customer
+                                {{ "REPAIR_FOR_CUSTOMER" | translate}}
                             </div>
                         </div>
                     </div>
@@ -71,26 +72,29 @@
                         <div *ngFor="let setting of workstation.settings">
                             <div class="row">
                                 <div class="col-md-3">
-                                    <label>Device</label>
+                                    <label>{{ "DEVICE" | translate}}</label>
                                 </div>
                                 <div class="col-md-9">
-                                    <input type="text" class="form-control form-control-solid w-250px ps-14" placeholder="Device" [(ngModel)]="setting.device" (value)="setting.device" >
+                                    <input type="text" class="form-control form-control-solid w-250px ps-14"
+                                        placeholder="Device" [(ngModel)]="setting.device" (value)="setting.device">
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-md-3">
-                                    <label>Device</label>
+                                    <label>{{ "DEVICE" | translate}}</label>
                                 </div>
                                 <div class="col-md-9">
-                                    <input type="text" class="form-control form-control-solid w-250px ps-14" placeholder="Device" [(ngModel)]="setting.device" (value)="setting.device" >
+                                    <input type="text" class="form-control form-control-solid w-250px ps-14"
+                                        placeholder="Device" [(ngModel)]="setting.device" (value)="setting.device">
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-md-3">
-                                    <label>Device</label>
+                                    <label>{{ "DEVICE" | translate}}</label>
                                 </div>
                                 <div class="col-md-9">
-                                    <input type="text" class="form-control form-control-solid w-250px ps-14" placeholder="Device" [(ngModel)]="setting.device" (value)="setting.device" >
+                                    <input type="text" class="form-control form-control-solid w-250px ps-14"
+                                        placeholder="Device" [(ngModel)]="setting.device" (value)="setting.device">
                                 </div>
                             </div>
                         </div>
@@ -102,6 +106,6 @@
 </div>
 
 <div class="card mb-5 mb-xl-10 d-flex">
-    <h5 *ngIf='!workstations.length && !loading' style="text-align: center;"> No data found!</h5>
+    <h5 *ngIf='!workstations.length && !loading' style="text-align: center;">{{ "NO_DATA_FOUND" | translate}}!</h5>
     <div *ngIf="loading" class="spinner-border mx-auto"></div>
 </div>

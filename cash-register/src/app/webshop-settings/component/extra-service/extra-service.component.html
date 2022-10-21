@@ -15,8 +15,8 @@
     </div>
     <div class="col-md-6">
         <div class="row mt-2" *ngIf="service.bGiftWrap">
-            <div class="col-md-6"> <label> Types</label></div>
-            <div class="col-md-6"> <label> Price</label></div>
+            <div class="col-md-6"> <label>{{ "TYPES" | translate}}</label></div>
+            <div class="col-md-6"> <label> {{ "PRICE" | translate}}</label></div>
             <div class="col-md-6 mt-2">
                 <div class="form-check form-check-solid">
                     <input name="input0" id="input0" type="checkbox" class="form-check-input"
@@ -54,8 +54,8 @@
     </div>
     <div class="col-md-6">
         <div class="row mt-2" *ngIf="service.bEngraving">
-            <div class="col-md-6"> <label> Types</label></div>
-            <div class="col-md-6"> <label> Price</label></div>
+            <div class="col-md-6"> <label> {{ "TYPES" | translate}}</label></div>
+            <div class="col-md-6"> <label> {{ "PRICE" | translate}}</label></div>
             <div class="col-md-6 mt-2">
                 <div class="form-check form-check-solid">
                     <input name="input0" id="input0" type="checkbox" class="form-check-input"
@@ -68,8 +68,8 @@
                     [(ngModel)]="service.oEngravingDetails.oFontDetails.nPrice" class="form-control" fullWidth
                     required="true">
             </div>
-            <div class="col-md-6 mt-2" *ngIf="service.oEngravingDetails.oFontDetails.bEnabled"> <label>Select
-                    fonts</label>
+            <div class="col-md-6 mt-2" *ngIf="service.oEngravingDetails.oFontDetails.bEnabled">
+                <label> {{"SELECT_FONT" | translate}} </label>
             </div>
             <div class="col-md-6 mt-2" *ngIf="service.oEngravingDetails.oFontDetails.bEnabled">
                 <span *ngFor="let font of fontList" class="d-none">

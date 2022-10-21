@@ -10,7 +10,7 @@
             </div>
             <div class="stepper-label">
                 <h3 class="stepper-title">
-                    Import file
+                    {{ "IMPORT_FILE" | translate}}
                 </h3>
             </div>
         </div>
@@ -22,7 +22,7 @@
             </div>
             <div class="stepper-label">
                 <h3 class="stepper-title">
-                    Set transaction details
+                    {{ "SET_TRANSACTION_DETAILS" | translate}}
                 </h3>
             </div>
         </div>
@@ -46,7 +46,7 @@
             </div>
             <div class="stepper-label">
                 <h3 class="stepper-title">
-                    Start transaction import
+                    {{ "START_TRANSACTION_IMPORT" | translate}}
                 </h3>
             </div>
         </div>
@@ -54,10 +54,13 @@
     <form class="form mx-auto" novalidate="novalidate" id="kt_stepper_example_basic_form">
         <div class="mb-5">
             <div class="flex-column current" data-kt-stepper-element="content">
-                <transaction-import-file-import [(parsedTransactionData)]="parsedTransactionData" (moveToStep)="moveToStep($event)"></transaction-import-file-import>
+                <transaction-import-file-import [(parsedTransactionData)]="parsedTransactionData"
+                    (moveToStep)="moveToStep($event)"></transaction-import-file-import>
             </div>
             <div class="flex-column" data-kt-stepper-element="content">
-                <app-transaction-details-import [parsedTransactionData]="parsedTransactionData" [(transactionDetailsForm)]="transactionDetailsForm" [(updateTemplateForm)]="updateTemplateForm" (moveToStep)="moveToStep($event)"></app-transaction-details-import>
+                <app-transaction-details-import [parsedTransactionData]="parsedTransactionData"
+                    [(transactionDetailsForm)]="transactionDetailsForm" [(updateTemplateForm)]="updateTemplateForm"
+                    (moveToStep)="moveToStep($event)"></app-transaction-details-import>
             </div>
             <div class="flex-column" data-kt-stepper-element="content">
                 <div class="flex">

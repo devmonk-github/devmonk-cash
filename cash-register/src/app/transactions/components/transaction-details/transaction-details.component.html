@@ -3,7 +3,7 @@
 
 <div class="card shadow-sm">
     <div class="card-header mt-5">
-        <h3>Transaction Details | {{transaction.sNumber}}</h3>
+        <h3>{{ "TRANSACTION_DETAIL" | translate}} | {{transaction.sNumber}}</h3>
         <button type="button" class="btn btn-sm btn-secondary h-50" (click)="close(false)">
             <fa-icon [icon]="faTimes"></fa-icon>
         </button>
@@ -26,7 +26,7 @@
                         transaction?.oCustomer?.sPrefix}} {{ transaction?.oCustomer?.sLastName }} </div>
                 </div>
                 <div class="col-md-6">
-                    <div class="mt-2 text-muted">Invoice Address</div>
+                    <div class="mt-2 text-muted">{{ "INVOVICE_ADDRESS" | translate}}</div>
                     <div class="text-gray-800 mt-2">
                         <span> {{ transaction?.oCustomer?.oInvoiceAddress?.sStreet }} {{
                             transaction?.oCustomer?.oInvoiceAddress?.sHouseNumber }} </span>
@@ -36,7 +36,7 @@
                     </div>
                 </div>
                 <div class="col-md-6">
-                    <div class="mt-2 text-muted">Shipping Address</div>
+                    <div class="mt-2 text-muted">{{ "SHIPPING_ADDRESS" | translate}}</div>
                     <div class="text-gray-800 mt-2">
                         <span> {{ transaction?.oCustomer?.oShippingAddress?.sStreet }} {{
                             transaction?.oCustomer?.oShippingAddress?.sHouseNumber }} </span>
@@ -89,7 +89,7 @@
             <div class="col-md-4">
                 <button class="btn btn-sm btn-secondary w-100 d-flex">
                     <fa-icon [icon]="faFileInvoice"></fa-icon>
-                    <label class="mx-auto">General Invoice</label>
+                    <label class="mx-auto">{{ "GENERAL_INVOICE" | translate}}</label>
                 </button>
                 <button [disabled]="!ableToDownload" class="btn btn-sm btn-secondary w-100 d-flex"
                     (click)="downloadWithVAT()">
@@ -97,7 +97,7 @@
                     <span *ngIf="downloadWithVATLoading">
                         <i class="fa fa-spinner fa-spin" [hidden]="!downloadWithVATLoading" style="font-size:15px;"></i>
                     </span>
-                    <label class="mx-auto">Download with VAT</label>
+                    <label class="mx-auto">{{ "DOWNLOAD_WITH_VAT" | translate}}</label>
                 </button>
                 <button class="btn btn-sm btn-secondary w-100 d-flex" (click)="downloadWithVAT(true)">
                     <fa-icon [icon]="faPrint"></fa-icon>
@@ -105,28 +105,28 @@
                 </button>
                 <button class="btn btn-sm btn-secondary w-100 d-flex">
                     <fa-icon [icon]="faDownload"></fa-icon>
-                    <label class="mx-auto">Download without VAT</label>
+                    <label class="mx-auto">{{ "DOWNLOAD_WITHOUT_VAT" | translate}}</label>
                 </button>
                 <button class="btn btn-sm btn-secondary w-100 d-flex" (click)="getThermalReceipt()">
                     <fa-icon [icon]="faReceipt"></fa-icon>
-                    <label class="mx-auto">Thermal receipt</label>
+                    <label class="mx-auto"> {{ "THERMAL_RECEIPT" | translate}}</label>
                 </button>
                 <button class="btn btn-sm btn-secondary w-100 d-flex">
                     <fa-icon [icon]="faAt"></fa-icon>
-                    <label class="mx-auto">Mail</label>
+                    <label class="mx-auto">{{ "MAIL" | translate}}</label>
                 </button>
                 <button class="btn btn-sm btn-secondary w-100 d-flex"
                     (click)="openTransaction(transaction, 'transaction')">
                     <fa-icon [icon]="faUndoAlt"></fa-icon>
-                    <label class="mx-auto">Refund</label>
+                    <label class="mx-auto">{{"REFUND" | translate}}</label>
                 </button>
                 <button class="btn btn-sm btn-secondary w-100 d-flex">
                     <fa-icon [icon]="faClipboard"></fa-icon>
-                    <label class="mx-auto">View log</label>
+                    <label class="mx-auto">{{"VIEW_LOG" | translate}}</label>
                 </button>
                 <button class="btn btn-sm btn-secondary w-100 d-flex">
                     <fa-icon [icon]="faTrashAlt"></fa-icon>
-                    <label class="mx-auto">Delete</label>
+                    <label class="mx-auto">{{ "DELETE" | translate}}</label>
                 </button>
             </div>
         </div>
@@ -145,28 +145,28 @@
                 </div>
                 <label class="col-md-4 mt-5 text-muted">{{"SHIPPING_METHOD" | translate}} : </label>
                 <div class="col-md-8 mt-5">
-                    <div class="text-gray-800">Completed</div>
+                    <div class="text-gray-800">{{ "COMPLETED" | translate}}</div>
                 </div>
                 <button class="btn btn-sm btn-primary w-100 d-flex mt-5">
-                    <label class="mx-auto">Track and trace the order</label>
+                    <label class="mx-auto">{{ "TRACK_AND_TRACE_ORDER" | translate}}</label>
                 </button>
             </div>
             <div class="col-md-4">
                 <button class="btn btn-sm btn-secondary w-100 d-flex">
                     <fa-icon [icon]="faDownload"></fa-icon>
-                    <label class="mx-auto">Receipt</label>
+                    <label class="mx-auto">{{ "RECEIPT" | translate}}</label>
                 </button>
                 <button class="btn btn-sm btn-secondary w-100 d-flex">
                     <fa-icon [icon]="faReceipt"></fa-icon>
-                    <label class="mx-auto">Print thermal</label>
+                    <label class="mx-auto">{{"THERMAL_RECEIPT" | translate}}</label>
                 </button>
                 <button class="btn btn-sm btn-secondary w-100 d-flex">
                     <!-- <fa-icon [icon]="faAt"></fa-icon> -->
-                    <label class="mx-auto">Exchange</label>
+                    <label class="mx-auto"> {{ "EXCHANGE" | translate}}</label>
                 </button>
                 <button class="btn btn-sm btn-secondary w-100 d-flex" (click)="downloadWebOrder()">
                     <fa-icon [icon]="faDownload"></fa-icon>
-                    <label class="mx-auto">Download pdf</label>
+                    <label class="mx-auto">{{ "DOWNLOAD_PDF" | translate}}</label>
                 </button>
             </div>
         </div>
@@ -198,9 +198,11 @@
                                     </td>
                                     <td>
                                         <div>
-                                            {{item.sProductName}} {{item.description}}<br />Original amount:
-                                            {{item.nPriceIncVat}}<br />Already paid:<br />{{item.sTransactionNumber}} |
-                                            {{item.nPaymentAmount}} (this receipt)<br />
+                                            {{item.sProductName}} {{item.description}}<br />{{ "ORIGINAL_AMOUNT" |
+                                            translate}}:
+                                            {{item.nPriceIncVat}}<br />{{ "ALREADY_PAID" |
+                                            translate}}:<br />{{item.sTransactionNumber}} |
+                                            {{item.nPaymentAmount}} ({{"THIS_RECEIPT"}})<br />
                                             <div *ngFor="let obj of item.related">
                                                 {{obj.sTransactionNumber}} | {{obj.nPaymentAmount}}<br />
                                             </div>
