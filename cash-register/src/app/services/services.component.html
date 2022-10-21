@@ -34,44 +34,125 @@
       <div class="col-12">
         <div class="separator separator-dashed mt-9 mb-6"></div>
         <div class="row g-4 mb-2">
-          <div class="col-xxl-4">
-            <div class="row g-8">
-              <div class="col-lg-6">
-                <label class="fs-6 form-label fw-bolder text-dark">{{ "MIN_DATE" | translate}}</label>
-                <input type="date" class="form-control form-control form-control-solid" name="startDate"
+          <!-- <div class="col-xxl-12"> -->
+            <!-- <div class="row g-8"> -->
+              <div class="col-lg-2">
+                <label class="fs-6 form-label fw-bolder text-dark">{{ "CREATED_MIN_DATE" | translate}}</label>
+                <input type="date" class="form-control form-control form-control-solid" name="startMinDate"
                   [ngModel]="filterDates.startDate | date:'yyyy-MM-dd'"
                   (ngModelChange)="filterDates.startDate = $event" />
               </div>
-              <div class="col-lg-6">
-                <label class="fs-6 form-label fw-bolder text-dark">{{ "MAX_DATE" | translate}}</label>
-                <input type="date" class="form-control form-control form-control-solid" name="endDate"
+              <div class="col-lg-2">
+                <label class="fs-6 form-label fw-bolder text-dark">{{ "CREATED_MAX_DATE" | translate}}</label>
+                <input type="date" class="form-control form-control form-control-solid" name="startMaxDate"
                   [ngModel]="filterDates.endDate | date:'yyyy-MM-dd'" (ngModelChange)="filterDates.endDate = $event" />
               </div>
-            </div>
-          </div>
-          <div class="col-xxl-8">
-            <div class="row g-2">
-              <div class="col-lg-4">
+
+              <div class="col-lg-2">
+                <label class="fs-6 form-label fw-bolder text-dark">{{ "ESTIMATED_MIN_DATE" | translate}}</label>
+                <input type="date" class="form-control form-control form-control-solid" name="endMinDate"
+                  [ngModel]="endFilterDates.startDate | date:'yyyy-MM-dd'"
+                  (ngModelChange)="endFilterDates.startDate = $event" />
+              </div>
+              <div class="col-lg-2">
+                <label class="fs-6 form-label fw-bolder text-dark">{{ "ESTIMATED_MAX_DATE" | translate}}</label>
+                <input type="date" class="form-control form-control form-control-solid" name="endMaxDate"
+                  [ngModel]="endFilterDates.endDate | date:'yyyy-MM-dd'" (ngModelChange)="endFilterDates.endDate = $event" />
+              </div>
+            <!-- </div> -->
+          <!-- </div> -->
+          <!-- <div class="col-xxl-8">
+            <div class="row g-2"> -->
+              <div class="col-lg-3" *ngIf="isFor != 'activity'">
                 <label class="fs-6 form-label fw-bolder text-dark">{{ "PAYMENT_METHOD" | translate}}</label>
                 <ng-select class="form-control form-control-solid p-0" [(ngModel)]="methodValue" [clearable]="false">
                   <ng-option *ngFor="let method of paymentMethods" [value]="method">{{method}}</ng-option>
                 </ng-select>
               </div>
-              <div class="col-lg-4">
+              <div class="col-lg-3">
                 <label class="fs-6 form-label fw-bolder text-dark">{{ "TRANSACTION_TYPE" | translate}}</label>
                 <ng-select class="form-control form-control-solid p-0" [(ngModel)]="transactionValue"
                   [clearable]="false">
                   <ng-option *ngFor="let type of transactionTypes" [value]="type">{{type}}</ng-option>
                 </ng-select>
               </div>
-              <div class="col-lg-4">
-                <label class="fs-6 form-label fw-bolder text-dark">{{ 'TRANSACTION_STATUS' | translate }}</label>
+              <div class="col-lg-3">
+                <label class="fs-6 form-label fw-bolder text-dark" *ngIf="isFor != 'activity'">{{'TRANSACTION_STATUS' | translate}}</label>
+                <label class="fs-6 form-label fw-bolder text-dark" *ngIf="isFor == 'activity'"> {{ 'ActivityStatus' | translate }}</label>
                 <ng-select class="form-control form-control-solid p-0" [multiple]="true"
                   [(ngModel)]="requestParams.selectedTransactionStatuses" [clearable]="false">
                   <ng-option *ngFor="let status of requestParams.transactionStatuses" [value]="status">{{status}}
                   </ng-option>
                 </ng-select>
               </div>
+              <!-- <div class="row g-4"> -->
+                <div class="col-lg-3" *ngIf="isFor != 'activity'">
+                  <label class="fs-6 form-label fw-bolder text-dark">{{ "INVOICE_STATUS" | translate}}</label>
+                  <div class="nav-group nav-group-fluid">
+                    <label>
+                      <input type="radio" class="btn-check" name="invoice" value="all" [(ngModel)]="invoiceStatus"
+                        checked="checked" />
+                      <span class="btn btn-sm btn-color-muted btn-active btn-active-primary fw-bolder px-4">All</span>
+                    </label>
+                    <label>
+                      <input type="radio" class="btn-check" name="invoice" value="invoiced" [(ngModel)]="invoiceStatus" />
+                      <span class="btn btn-sm btn-color-muted btn-active btn-active-primary fw-bolder px-4"> {{ "INVOICED"
+                        | translate}}</span>
+                    </label>
+                    <label>
+                      <input type="radio" class="btn-check" name="invoice" value="uninvoiced"
+                        [(ngModel)]="invoiceStatus" />
+                      <span class="btn btn-sm btn-color-muted btn-active btn-active-primary fw-bolder px-4">{{
+                        "UNINVOICED" | translate}}</span>
+                    </label>
+                  </div>
+                </div>
+                <div class="col-lg-3">
+                  <label class="fs-6 form-label fw-bolder text-dark">{{"IMPORT_STATUS" | translate}}</label>
+                  <div class="nav-group nav-group-fluid">
+                    <label>
+                      <input type="radio" class="btn-check" name="import" value="all" [(ngModel)]="importStatus"
+                        checked="checked" />
+                      <span class="btn btn-sm btn-color-muted btn-active btn-active-primary fw-bolder px-4">{{ "ALL" |
+                        translate}}</span>
+                    </label>
+                    <label>
+                      <input type="radio" class="btn-check" name="import" value="imported" [(ngModel)]="importStatus" />
+                      <span class="btn btn-sm btn-color-muted btn-active btn-active-primary fw-bolder px-4">{{ "IMPORTED"
+                        | translate}}</span>
+                    </label>
+                    <label>
+                      <input type="radio" class="btn-check" name="import" value="unimported" [(ngModel)]="importStatus" />
+                      <span class="btn btn-sm btn-color-muted btn-active btn-active-primary fw-bolder px-4">{{"UNIMPORTED"
+                        | translate}}</span>
+                    </label>
+                  </div>
+                </div>
+  
+                <div class="col-lg-2">
+                  <label class="fs-6 form-label fw-bolder text-dark">{{ "EMPLOYEES" | translate}}</label>
+                  <ng-select class="form-control form-control-solid p-0" [clearable]="false" [(ngModel)]="employee">
+                    <ng-option *ngFor="let employeeObj of employees" [value]="employeeObj">{{employeeObj.sFirstName}}
+                      {{employeeObj.sLastName || ''}}</ng-option>>
+                  </ng-select>
+                </div>
+                <div class="col-lg-2">
+                  <label class="fs-6 form-label fw-bolder text-dark">{{ 'WORKSTATION' | translate }}</label>
+                  <ng-select class="form-control form-control-solid p-0" [multiple]="true"
+                    [(ngModel)]="selectedWorkstations" [clearable]="false">
+                    <ng-option *ngFor="let workstation of workstations" [value]="workstation._id">{{workstation.sName}}
+                    </ng-option>
+                  </ng-select>
+                </div>
+                <div class="col-lg-2">
+                  <label class="fs-6 form-label fw-bolder text-dark">{{ 'LOCATION' | translate }}</label>
+                  <ng-select class="form-control form-control-solid p-0" [multiple]="true"
+                    [(ngModel)]="requestParams.selectedLocations" [clearable]="false">
+                    <ng-option *ngFor="let location of requestParams.locations" [value]="location._id">{{location.sName}}
+                    </ng-option>
+                  </ng-select>
+                </div>
+              <!-- </div> -->
               <!-- <div class="col-lg-4"> 
                 <label class="fs-6 form-label fw-bolder text-dark">Transaction status</label>
                 <div class="nav-group nav-group-fluid">
@@ -93,56 +174,13 @@
                 </div>
               </div> -->
             </div>
-          </div>
-        </div>
+          <!-- </div>
+        </div> -->
         <div class="row g-4">
-          <div class="col-xxl-6">
-            <div class="row g-4">
-              <div class="col-lg-6">
-                <label class="fs-6 form-label fw-bolder text-dark">{{ "INVOICE_STATUS" | translate}}</label>
-                <div class="nav-group nav-group-fluid">
-                  <label>
-                    <input type="radio" class="btn-check" name="invoice" value="all" [(ngModel)]="invoiceStatus"
-                      checked="checked" />
-                    <span class="btn btn-sm btn-color-muted btn-active btn-active-primary fw-bolder px-4">All</span>
-                  </label>
-                  <label>
-                    <input type="radio" class="btn-check" name="invoice" value="invoiced" [(ngModel)]="invoiceStatus" />
-                    <span class="btn btn-sm btn-color-muted btn-active btn-active-primary fw-bolder px-4"> {{ "INVOICED"
-                      | translate}}</span>
-                  </label>
-                  <label>
-                    <input type="radio" class="btn-check" name="invoice" value="uninvoiced"
-                      [(ngModel)]="invoiceStatus" />
-                    <span class="btn btn-sm btn-color-muted btn-active btn-active-primary fw-bolder px-4">{{
-                      "UNINVOICED" | translate}}</span>
-                  </label>
-                </div>
-              </div>
-              <div class="col-lg-6">
-                <label class="fs-6 form-label fw-bolder text-dark">{{"IMPORT_STATUS" | translate}}</label>
-                <div class="nav-group nav-group-fluid">
-                  <label>
-                    <input type="radio" class="btn-check" name="import" value="all" [(ngModel)]="importStatus"
-                      checked="checked" />
-                    <span class="btn btn-sm btn-color-muted btn-active btn-active-primary fw-bolder px-4">{{ "ALL" |
-                      translate}}</span>
-                  </label>
-                  <label>
-                    <input type="radio" class="btn-check" name="import" value="imported" [(ngModel)]="importStatus" />
-                    <span class="btn btn-sm btn-color-muted btn-active btn-active-primary fw-bolder px-4">{{ "IMPORTED"
-                      | translate}}</span>
-                  </label>
-                  <label>
-                    <input type="radio" class="btn-check" name="import" value="unimported" [(ngModel)]="importStatus" />
-                    <span class="btn btn-sm btn-color-muted btn-active btn-active-primary fw-bolder px-4">{{"UNIMPORTED"
-                      | translate}}</span>
-                  </label>
-                </div>
-              </div>
-            </div>
+          <div class="col-xxl-12">
+      
           </div>
-          <div class="col-xxl-6">
+          <!-- <div class="col-xxl-6">
             <div class="row g-2">
               <div class="col-lg-4">
                 <label class="fs-6 form-label fw-bolder text-dark">{{ "EMPLOYEES" | translate}}</label>
@@ -168,7 +206,7 @@
                 </ng-select>
               </div>
             </div>
-          </div>
+          </div> -->
         </div>
       </div>
     </div>
@@ -194,7 +232,7 @@
           <td scope="row">{{activity?.dEstimatedDate | date: 'yyyy-MM-dd HH:mm'}}</td>
           <td>{{activity?.eActivityItemStatus || '-'}}</td>
           <td>{{activity?.sBusinessPartnerName}}</td>
-          <td>{{'-'}}</td>
+          <!-- <td>{{'-'}}</td> -->
           <td>{{activity?.oCustomer?.sFirstName}} {{activity?.oCustomer?.sLastName}}</td>
 
           <td>

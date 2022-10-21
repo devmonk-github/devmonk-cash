@@ -1,19 +1,19 @@
 <h2 class="accordion-header">
-  <button class="accordion-button fs-4 fw-bold" type="button" data-bs-toggle="collapse"
+  <button class="accordion-button fs-4 fw-bold pe-0 ps-4" type="button" data-bs-toggle="collapse"
     data-bs-target="#kt_accordion_1_body_1" aria-expanded="true" aria-controls="kt_accordion_1_body_1">
     <section class="row product-row align-items-center w-100">
       <div class="col-12">
         <div class="row">
-          <div class="col" *ngIf="!item.tType || item.tType !== 'refund'">
+          <div class="col-1" *ngIf="!item.tType || item.tType !== 'refund'">
             {{ item.quantity }}
           </div>
-          <div class="col" *ngIf="item.tType === 'refund'">
+          <div class="col-1" *ngIf="item.tType === 'refund'">
             <svg width="15" height="15" class="m-1">
               <rect width="15" height="15" style="fill: #f7422e; stroke-width: 1; stroke: rgb(0, 0, 0)" />
               {{ "YOUR_BROWSER_DOES_NOT_SUPPORT_INLINE_SVG" | translate }}
             </svg>{{ item.quantity }}
           </div>
-          <div class="col">{{ item.name }}</div>
+          <div class="col-4 text-truncate">{{ item.name }}</div>
           <div class="col">{{ item.price | currency: "€" }}</div>
           <div class="col">
             {{ item.nDiscount * item.quantity | currency: "€" }}
@@ -248,8 +248,9 @@
             <div class="mb-4">
               <label class="form-control-label mb-3">{{ "REPAIRER" | translate }}</label>
               <ng-select *ngIf="!oRepairer.sName" [(ngModel)]="oRepairer.sName" (search)="searchEmployees($event.term)"
-                class="form-control form-control-solid p-0 w-100 custom" placeholder="Search employee" [minTermLength]="2"
-                [clearable]="false" [isOpen]="filteredEmployees.length > 0" (change)="selectAssignee($event, item)">
+                class="form-control form-control-solid p-0 w-100 custom" placeholder="Search employee"
+                [minTermLength]="2" [clearable]="false" [isOpen]="filteredEmployees.length > 0"
+                (change)="selectAssignee($event, item)">
                 <ng-option *ngFor="let option of filteredEmployees" [value]="option">{{ option.sName || "Unknown" }}
                 </ng-option>
               </ng-select>

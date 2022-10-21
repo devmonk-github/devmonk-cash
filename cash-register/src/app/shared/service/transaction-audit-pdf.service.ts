@@ -408,13 +408,13 @@ export class TransactionAuditUiPdfService {
         this.addGiftcardsToPdf();
         this.addGoldPurchasesToPdf();
 
-        this.pdf.getPdfData(
-            this.styles,
-            this.content,
-            'portrait',
-            'A4',
-            oBusinessDetails.sName + '-' + 'Transaction Audit Report'
-        );
+        this.pdf.getPdfData({
+            styles: this.styles,
+            content: this.content,
+            orientation: 'portrait',
+            pageSize: 'A4',
+            fileName: oBusinessDetails.sName + '-' + 'Transaction Audit Report'
+            });
     }
 
     addRefundToPdf() {
