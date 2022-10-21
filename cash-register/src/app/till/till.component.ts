@@ -1,7 +1,7 @@
 import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import {
   faScrewdriverWrench, faTruck, faBoxesStacked, faGifts, faUser, faTimes, faTimesCircle, faTrashAlt, faRing,
-  faCoins, faCalculator, faArrowRightFromBracket, faSpinner, faSearch, faMoneyBill
+  faCoins, faCalculator, faArrowRightFromBracket, faSpinner, faSearch, faMoneyBill, faCopy
 } from '@fortawesome/free-solid-svg-icons';
 import { Observable, Subscription } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
@@ -52,6 +52,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   faArrowRightFromBracket = faArrowRightFromBracket;
   faSpinner = faSpinner;
   faSearch = faSearch;
+  faCopy = faCopy;
   taxes: Array<any> = [];
   transactionItems: Array<any> = [];
   selectedTransaction: any = null;
@@ -521,12 +522,12 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   getRelatedTransactionItem(iActivityItemId: string, iTransactionItemId: string, index: number) {
     // console.log("getRelatedTransactionItem", iActivityItemId, iTransactionItemId);
     return this.apiService.getNew('cashregistry', `/api/v1/transaction/item/activityItem/${iActivityItemId}?iBusinessId=${this.business._id}&iTransactionItemId=${iTransactionItemId}`).toPromise();
-      // .subscribe(
-      //   (result: any) => {
-      //     this.transaction.aTransactionItems[index].related = result.data || [];
-      //   }, (error) => {
-      //     console.log(error);
-      //   })
+    // .subscribe(
+    //   (result: any) => {
+    //     this.transaction.aTransactionItems[index].related = result.data || [];
+    //   }, (error) => {
+    //     console.log(error);
+    //   })
   }
 
   getRelatedTransaction(iActivityId: string, iTransactionId: string) {
@@ -536,18 +537,18 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       iTransactionId: iTransactionId
     }
     return this.apiService.postNew('cashregistry', '/api/v1/transaction/activity/' + iActivityId, body);
-      // .subscribe(
-      //   (result: any) => {
-      //     this.transaction.related = result.data || [];
-      //     this.transaction.related.forEach((obj: any) => {
-      //       obj.aPayments.forEach((obj: any) => {
-      //         obj.dCreatedDate = moment(obj.dCreatedDate).format('DD-MM-yyyy hh:mm');
-      //       });
-      //       this.transaction.aPayments = this.transaction.aPayments.concat(obj.aPayments);
-      //     })
-      //   }, (error) => {
-      //     console.log(error);
-      //   })
+    // .subscribe(
+    //   (result: any) => {
+    //     this.transaction.related = result.data || [];
+    //     this.transaction.related.forEach((obj: any) => {
+    //       obj.aPayments.forEach((obj: any) => {
+    //         obj.dCreatedDate = moment(obj.dCreatedDate).format('DD-MM-yyyy hh:mm');
+    //       });
+    //       this.transaction.aPayments = this.transaction.aPayments.concat(obj.aPayments);
+    //     })
+    //   }, (error) => {
+    //     console.log(error);
+    //   })
   }
 
   createTransaction(): void {
@@ -602,16 +603,16 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
               const { transaction, aTransactionItems } = data;
               transaction.aTransactionItems = aTransactionItems;
               this.transaction = transaction;
-              
+
               // this.transaction.aTransactionItems.forEach((item: any, index: number) => {
               //   this.getRelatedTransactionItem(item?.iActivityItemId, item?._id, index)
               // })
               // this.getRelatedTransaction(this.transaction?.iActivityId, this.transaction?._id)
               // this.pdfService.generatePDF(this.transaction);
               this.processTransactionForPdfReceipt();
-              
+
               this.updateFiskalyTransaction('FINISHED', body.payments);
-              
+
               setTimeout(() => {
                 this.saveInProgress = false;
                 this.fetchBusinessPartnersProductCount(uniq);
@@ -695,7 +696,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     this.transaction = dataObject;
 
     // this.processTransactionData();
-    
+
     // console.log('processTransactionData is finished')
     if (!this.businessDetails) {
       const _result: any = await this.getBusinessDetails().toPromise();
@@ -755,8 +756,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   // async processTransactionData() {
-    
-      
+
+
   // }
 
   getBusinessDetails() {
@@ -1021,7 +1022,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       });
   }
 
-  openCardsModal(oGiftcard?:any) {
+  openCardsModal(oGiftcard?: any) {
     this.dialogService.openModal(CardsComponent, { cssClass: 'modal-lg', context: { customer: this.customer, oGiftcard } })
       .instance.close.subscribe(result => {
         console.log('When Redeem GiftCard closed: ', result, result?.giftCardInfo?.type);
@@ -1254,19 +1255,19 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       })
   }
 
-  async openModal(barcode:any){
+  async openModal(barcode: any) {
     this.toastrService.show({ type: 'success', text: 'Barcode detected: ' + barcode })
     if (barcode.startsWith("AI")) {
       console.log('activity item', barcode);
       // activityitem.find({sNumber: barcode},{eTransactionItem.eKind : 1})
-      let oBody:any = {
+      let oBody: any = {
         iBusinessId: this.business._id,
-        oFilterBy:{
-          sNumber:barcode
+        oFilterBy: {
+          sNumber: barcode
         }
       }
       const activityItemResult: any = await this.apiService.postNew('cashregistry', `/api/v1/activities/activity-item`, oBody).toPromise();
-      if(activityItemResult?.data[0]?.result?.length){
+      if (activityItemResult?.data[0]?.result?.length) {
 
         oBody = {
           iBusinessId: this.business._id,
@@ -1285,14 +1286,14 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
         iBusinessId: this.business._id,
         searchValue: barcode
       }
-      const result:any = await this.apiService.postNew('cashregistry', '/api/v1/transaction/search', oBody).toPromise();
-      if (result?.transactions?.records?.length){
+      const result: any = await this.apiService.postNew('cashregistry', '/api/v1/transaction/search', oBody).toPromise();
+      if (result?.transactions?.records?.length) {
         this.openTransaction(result?.transactions?.records[0], 'transaction');
       }
       //transactions.find({sNumber: barcode})
     } else if (barcode.startsWith("A")) {
       console.log('Fetching activity', barcode);
-      
+
       const oBody = {
         iBusinessId: this.business._id,
         searchValue: barcode
@@ -1319,10 +1320,10 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     } else if (barcode.startsWith("R")) {
       // activityitem.find({sRepairNumber: barcode},{eTransactionItem.eKind : 1})
     }
-    
+
   }
 
-  openTransaction(transaction: any, itemType: any, aSelectedIds ?:any) {
+  openTransaction(transaction: any, itemType: any, aSelectedIds?: any) {
     console.log('open transaction', transaction, itemType);
     this.dialogService.openModal(TransactionItemsDetailsComponent, { cssClass: "modal-xl", context: { transaction, itemType, aSelectedIds } })
       .instance.close.subscribe(result => {
@@ -1389,7 +1390,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       });
   }
 
-  handleTransactionResponse(data:any){
+  handleTransactionResponse(data: any) {
     this.clearAll();
     const { transactionItems, transaction } = data;
     this.transactionItems = transactionItems;

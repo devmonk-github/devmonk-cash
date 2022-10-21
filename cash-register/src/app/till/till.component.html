@@ -193,13 +193,11 @@
     </div>
     <div class="row">
       <div class="col-md-9 col-xs-12 column-auto till-body ps-0 pe-0">
-
-
         <div class="card card-flush mb-4">
           <div id="till-items-header" class="card-header p-3 lh-1 justify-content-start min-h-0">
             <div class="row w-100 fw-bold text-gray-600 align-items-center">
-              <span class="col">{{ "QUANTITY" | translate}}</span>
-              <span class="col">{{ "DESCRIPTION" | translate}}</span>
+              <span class="col-1">{{ "QUANTITY" | translate}}</span>
+              <span class="col-4">{{ "DESCRIPTION" | translate}}</span>
               <span class="col">{{ "PRICE" | translate}}</span>
               <span class="col">{{ "DISCOUNT" | translate}}</span>
               <span class="col">{{ "TAX" | translate}}</span>
@@ -249,8 +247,8 @@
                 </div>
               </ng-container>
               <section class="row product-row p-3 text-gray-600 align-items-center" *ngIf="getTotals('quantity') !== 0">
-                <div class="col">{{getTotals('quantity')}}</div>
-                <div class="col">&nbsp;</div>
+                <div class="col-1">{{getTotals('quantity')}}</div>
+                <div class="col-4">&nbsp;</div>
                 <div class="col">{{getTotals('price') | currency: '€'}}</div>
                 <div class="col">{{getTotals('discount')}}</div>
                 <div class="col"></div>
@@ -308,7 +306,7 @@
                           <label class="business-bg-color rounded-full px-2 py-1 text-white text-sm">{{
                             "BUSINESS_PRODUCT"| translate}}</label>
                           <span>
-                            <fa-icon icon="copy" aria-label="copy-article-number" class="ml-4"></fa-icon>
+                            <fa-icon [icon]="faCopy" aria-label="copy-article-number" class="ml-4"></fa-icon>
                           </span>
                           <p class="block mt-2">{{ product.oName? product.oName['en'] : 'No name' }}</p>
                           <p class="mt-2">{{ product.sEan }}</p>
@@ -334,17 +332,17 @@
                   <div class="card m-1 shadow-sm">
                     <div class="card-body">
                       <div class="d-flex">
-                        <div class="w-50 p-2">
+                        <div class="p-2">
                           <img
                             src="{{product.aImage[0]? product.aImage[0]: '../assets/images/no-photo-available.jpg' }}"
-                            class="w-auto h-xxl-100px">
+                            class="w-50">
                         </div>
                         <div class="w-50 px-2">
                           <label
                             class="business-bg-color rounded-full px-2 py-1 text-white text-sm">{{"BUSINESS_PRODUCT" |
                             translate}}</label>
                           <span>
-                            <fa-icon icon="copy" aria-label="copy-article-number" class="ml-4"></fa-icon>
+                            <fa-icon [icon]="faCopy" aria-label="copy-article-number" class="ml-4"></fa-icon>
                           </span>
                           <p class="block mt-2">{{ product.oName? product.oName['en'] : 'No name' }}</p>
                           <p class="mt-2">{{ product.sEan }}</p>
