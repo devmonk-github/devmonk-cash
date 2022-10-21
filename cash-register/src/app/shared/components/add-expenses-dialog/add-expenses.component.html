@@ -13,7 +13,7 @@
                 <label for="amount">{{ "AMOUNT" | translate}}</label>
                 <input type="number" name="amount" id="amount" class="form-control" formControlName="amount">
                 <div *ngIf="submitted && f.amount.errors">
-                    <span class="text-danger">Amount should be greater than €1.</span>
+                    <span class="text-danger">{{"AMOUNT_SHOULD_BE_GREATER_THAN" | translate}} €1.</span>
                 </div>
                 <label for="ledgerDescription">{{ "LEDGER_NUMBER_DESCRIPTION" | translate}}</label>
                 <select name="ledgerDescription" id="ledgerDescription" class="form-select"
@@ -22,17 +22,19 @@
                     </option>
                 </select>
                 <div *ngIf="submitted && f.expenseType.errors">
-                    <span class="text-danger">{{ "LEDGER_NUMBER_DESCRIPTION" | translate}} required.</span>
+                    <span class="text-danger">{{ "LEDGER_NUMBER_DESCRIPTION" | translate}} {{ "REQUIRED" |
+                        translate}}.</span>
                 </div>
                 <label for="description">{{ "DESCRIPTION" | translate}}</label>
                 <textarea class="form-control" name="description" placeholder="{{ 'DESCRIPTION' | translate}}"
                     lines="10" formControlName="description"></textarea>
                 <div *ngIf="submitted && f.description.errors">
-                    <span class="text-danger">Description is required.</span>
+                    <span class="text-danger">{{"DESCRIPTION_IS_REQUIRED"}}.</span>
                 </div>
             </div>
             <div class="card-footer">
-                <button class="btn btn-primary" type="submit" [disabled]="allArticleGroups.length === 0">Submit</button>
+                <button class="btn btn-primary" type="submit" [disabled]="allArticleGroups.length === 0">{{"SUBMIT" |
+                    translate}}</button>
             </div>
         </form>
     </div>

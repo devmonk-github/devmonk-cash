@@ -14,7 +14,8 @@
                     <button
                         class="nav-link d-flex justify-content-center flex-column flex-center overflow-hidden active w-85px h-85px py-4"
                         (click)="close(method)">
-                        <h4 class="nav-text text-gray-800 fw-bold fs-6 lh-1 text-center mb-0">{{method.sName}}</h4>
+                        <h4 class="nav-text text-gray-800 fw-bold fs-6 lh-1 text-center mb-0">{{method.sName |
+                            translate}}</h4>
                         <!-- <span class="text-gray-600">{{button.price | currency: '€'}}</span> -->
                     </button>
                 </li>
