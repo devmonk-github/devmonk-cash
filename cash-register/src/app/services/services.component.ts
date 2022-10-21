@@ -85,8 +85,8 @@ export class ServicesComponent implements OnInit, AfterViewInit {
     { key: 'Activity No.', selected: false, sort: '' },
     { key: 'Repair number', disabled: true },
     { key: 'Type', disabled: true },
-    { key: 'Intake date', selected: true, sort: 'asc' },
-    { key: 'End date', selected: false, sort: 'asc' },
+    { key: 'Intake date', selected: true, sort: 'desc' },
+    { key: 'End date', selected: false, sort: 'desc', sValue: 'dEstimatedDate' },
     { key: 'Status', disabled: true },
     { key: 'Supplier/Repairer', disabled: true },
     { key: 'Partner supplier status', disabled: true },
@@ -109,11 +109,12 @@ export class ServicesComponent implements OnInit, AfterViewInit {
     }
     this.businessDetails._id = localStorage.getItem('currentBusiness');
     this.iLocationId = localStorage.getItem('currentLocation');
+    console.log('this.iLocationId: ', this.iLocationId);
     this.userType = localStorage.getItem('type');
     this.iBusinessId = localStorage.getItem('currentBusiness');
 
     this.showLoader = true;
-    await this.setLocation()
+    await this.setLocation() /* For web-orders, we will switch to the web-order location otherwise keep current location */
     this.showLoader = false
     this.loadTransaction();
     this.listEmployee();
@@ -187,13 +188,9 @@ export class ServicesComponent implements OnInit, AfterViewInit {
         let oNewLocation: any
         let bIsCurrentBIsWebshop = false
         for (let k = 0; k < oBusinessLocation?.data?.aBusiness?.length; k++) {
-          const oAllLocations = oBusinessLocation?.data?.aBusiness[k]
-          // console.log({ oAllLocations });
-          //for (let i = 0; i < location?.data?.aLocation.length; i++) {
-          //  const l = location?.data?.aLocation[i];    
+          const oAllLocations = oBusinessLocation?.data?.aBusiness[k]  
           for (let i = 0; i < oAllLocations?.aLocation?.length; i++) {
             const l = oAllLocations?.aLocation[i];
-            // console.log({ aLocation: l });
             if (l.bIsWebshop) oNewLocation = l
             if (l._id.toString() === this.iLocationId) {
               if (l.bIsWebshop) {
@@ -242,8 +239,9 @@ export class ServicesComponent implements OnInit, AfterViewInit {
 
   //  Function for set sort option on transaction table
   setSortOption(sortHeader: any) {
+    console.log('setSortOption: ', sortHeader);
     if (sortHeader.selected) {
-      sortHeader.sort = sortHeader.sort == 'asc' ? 'desc' : 'asc';
+      sortHeader.sort = sortHeader.sort == 'desc' ? 'asc' : 'desc';
       this.sortAndLoadTransactions(sortHeader)
     } else {
       this.tableHeaders = this.tableHeaders.map((th: any) => {
@@ -261,7 +259,7 @@ export class ServicesComponent implements OnInit, AfterViewInit {
 
   sortAndLoadTransactions(sortHeader: any) {
     let sortBy = 'dCreatedDate';
-    if (sortHeader.key == 'End date') sortBy = 'dPickedUp';
+    if (sortHeader.key == 'End date') sortBy = 'dEstimatedDate';
     if (sortHeader.key == 'Intake date') sortBy = 'dCreatedDate';
     if (sortHeader.key == 'Activity No.') sortBy = 'sNumber';
     this.requestParams.sortBy = sortBy;
@@ -307,6 +305,7 @@ export class ServicesComponent implements OnInit, AfterViewInit {
     this.requestParams.importStatus = this.importStatus;
     if (this.iLocationId) this.requestParams.iLocationId = this.iLocationId;
     this.showLoader = true;
+    console.log('loadTransaction: ', this.iLocationId);
     this.apiService.postNew('cashregistry', '/api/v1/activities', this.requestParams).subscribe((result: any) => {
       if (result?.data?.length)
         this.activities = result?.data;
