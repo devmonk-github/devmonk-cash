@@ -51,7 +51,7 @@
           </div>
           <div class="col-xxl-8">
             <div class="row g-2">
-              <div class="col-lg-4">
+              <div class="col-lg-4" *ngIf="isFor != 'activity'">
                 <label class="fs-6 form-label fw-bolder text-dark">{{ "PAYMENT_METHOD" | translate}}</label>
                 <ng-select class="form-control form-control-solid p-0" [(ngModel)]="methodValue" [clearable]="false">
                   <ng-option *ngFor="let method of paymentMethods" [value]="method">{{method}}</ng-option>
@@ -65,7 +65,8 @@
                 </ng-select>
               </div>
               <div class="col-lg-4">
-                <label class="fs-6 form-label fw-bolder text-dark">{{ 'TRANSACTION_STATUS' | translate }}</label>
+                <label class="fs-6 form-label fw-bolder text-dark" *ngIf="isFor != 'activity'">{{'TRANSACTION_STATUS' | translate}}</label>
+                <label class="fs-6 form-label fw-bolder text-dark" *ngIf="isFor == 'activity'"> {{ 'ActivityStatus' | translate }}</label>
                 <ng-select class="form-control form-control-solid p-0" [multiple]="true"
                   [(ngModel)]="requestParams.selectedTransactionStatuses" [clearable]="false">
                   <ng-option *ngFor="let status of requestParams.transactionStatuses" [value]="status">{{status}}
@@ -96,9 +97,9 @@
           </div>
         </div>
         <div class="row g-4">
-          <div class="col-xxl-6">
+          <div class="col-xxl-12">
             <div class="row g-4">
-              <div class="col-lg-6">
+              <div class="col-lg-3" *ngIf="isFor != 'activity'">
                 <label class="fs-6 form-label fw-bolder text-dark">{{ "INVOICE_STATUS" | translate}}</label>
                 <div class="nav-group nav-group-fluid">
                   <label>
@@ -119,7 +120,7 @@
                   </label>
                 </div>
               </div>
-              <div class="col-lg-6">
+              <div class="col-lg-3">
                 <label class="fs-6 form-label fw-bolder text-dark">{{"IMPORT_STATUS" | translate}}</label>
                 <div class="nav-group nav-group-fluid">
                   <label>
@@ -140,9 +141,33 @@
                   </label>
                 </div>
               </div>
+
+              <div class="col-lg-2">
+                <label class="fs-6 form-label fw-bolder text-dark">{{ "EMPLOYEES" | translate}}</label>
+                <ng-select class="form-control form-control-solid p-0" [clearable]="false" [(ngModel)]="employee">
+                  <ng-option *ngFor="let employeeObj of employees" [value]="employeeObj">{{employeeObj.sFirstName}}
+                    {{employeeObj.sLastName || ''}}</ng-option>>
+                </ng-select>
+              </div>
+              <div class="col-lg-2">
+                <label class="fs-6 form-label fw-bolder text-dark">{{ 'WORKSTATION' | translate }}</label>
+                <ng-select class="form-control form-control-solid p-0" [multiple]="true"
+                  [(ngModel)]="selectedWorkstations" [clearable]="false">
+                  <ng-option *ngFor="let workstation of workstations" [value]="workstation._id">{{workstation.sName}}
+                  </ng-option>
+                </ng-select>
+              </div>
+              <div class="col-lg-2">
+                <label class="fs-6 form-label fw-bolder text-dark">{{ 'LOCATION' | translate }}</label>
+                <ng-select class="form-control form-control-solid p-0" [multiple]="true"
+                  [(ngModel)]="requestParams.selectedLocations" [clearable]="false">
+                  <ng-option *ngFor="let location of requestParams.locations" [value]="location._id">{{location.sName}}
+                  </ng-option>
+                </ng-select>
+              </div>
             </div>
           </div>
-          <div class="col-xxl-6">
+          <!-- <div class="col-xxl-6">
             <div class="row g-2">
               <div class="col-lg-4">
                 <label class="fs-6 form-label fw-bolder text-dark">{{ "EMPLOYEES" | translate}}</label>
@@ -168,7 +193,7 @@
                 </ng-select>
               </div>
             </div>
-          </div>
+          </div> -->
         </div>
       </div>
     </div>
