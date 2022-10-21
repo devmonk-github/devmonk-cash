@@ -40,7 +40,8 @@
             <div class="alert alert-warning" *ngIf="!bIsPreviousDayStateClosed">
               <p class="mb-0" style="font-size: 1.2rem;font-weight: bold;margin-left:1.3rem">
                 <span style="margin-right:1rem; font-weight:bolder">!</span>
-                {{ "THE_PREVIOUS"}} {{ settings.sDayClosurePeriod }} {{"IS_NOT_CLOSED_YET"}} ({{ dOpenDate | date:'EEEE,
+                {{ "THE_PREVIOUS" | translate }} {{ settings.sDayClosurePeriod }} {{"IS_NOT_CLOSED_YET" | translate }}
+                ({{ dOpenDate | date:'EEEE,
                 dd-MM-YYYY
                 hh:mm:ss aaa':'GMT'}})
               </p>
