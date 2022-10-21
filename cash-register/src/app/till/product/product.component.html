@@ -1,12 +1,12 @@
 <!-- <div class="row">
   <div class="col-11"> -->
 <h2 class="accordion-header">
-  <button class="accordion-button fs-4 fw-bold" type="button" data-bs-toggle="collapse"
+  <button class="accordion-button fs-4 fw-bold pe-0 ps-4" type="button" data-bs-toggle="collapse"
     data-bs-target="#kt_accordion_1_body_1" aria-expanded="true" aria-controls="kt_accordion_1_body_1">
     <section class="row product-row align-items-center w-100">
       <div class="col-12">
         <div class="row">
-          <div class="col">
+          <div class="col-1">
             <svg width="15" height="15" class="m-1">
               <rect width="15" height="15" [ngStyle]="{fill:getColorCode(item)}"
                 style="stroke-width:1;stroke:rgb(0,0,0)" />
@@ -14,7 +14,7 @@
             </svg>
             {{item.quantity}}
           </div>
-          <div class="col">{{item.name}}</div>
+          <div class="col-4 text-truncate">{{item.name}}</div>
           <div class="col">{{item.price | currency: '€'}}</div>
           <div class="col">{{totalDiscount}}</div>
           <!-- <div class="w-95px">{{item.discount | currency: '€'}}</div> -->

@@ -37,6 +37,9 @@ export class ServicesComponent implements OnInit, AfterViewInit {
     selectedTransactionStatuses: [],
     locations: [],
     selectedLocations: [],
+    aSelectedBusinessPartner: [],
+    iEmployeeId: '',
+    iAssigneeId: '',
     searchValue: '',
     sortBy: { key: '_id', selected: true, sort: 'asc' },
     sortOrder: 'asc'
@@ -60,18 +63,26 @@ export class ServicesComponent implements OnInit, AfterViewInit {
     { key: 'MARK_CONFIRMED' },
   ];
   iBusinessId: any = '';
+  aFilterBusinessPartner: any = [];
 
   // Advance search fields 
 
-  filterDates: any = {
-    endDate: new Date(new Date().setHours(23, 59, 59)),
-    startDate: new Date('01-01-2015'),
+  addDays(date: any, days: any) {
+    const inputDate = new Date(date);
+    return new Date(inputDate.setDate(inputDate.getDate() + days));
   }
 
-
-  endFilterDates: any = {
-    endDate: new Date(new Date().setHours(23, 59, 59)),
-    startDate: new Date('01-01-2015'),
+  filterDates: any = {
+    create: {
+      minDate: new Date('01-01-2015'),
+      maxDate: new Date(new Date().setHours(23, 59, 59)),
+    },
+    estimate: {
+      minDate:  undefined,
+      maxDate:  undefined
+      // minDate: new Date('01-01-2015'),
+      // maxDate: this.addDays(new Date(new Date().setHours(23, 59, 59)), 20),
+    }
   }
 
   paymentMethods: Array<any> = ['All', 'Cash', 'Credit', 'Card', 'Gift-Card'];
@@ -81,13 +92,12 @@ export class ServicesComponent implements OnInit, AfterViewInit {
   importStatus: string = 'all';
   methodValue: string = 'All';
   transactionValue: string = 'All';
-  employee: any = { sFirstName: 'All' };
-  employees: Array<any> = [this.employee];
+  employees: Array<any> = [];
   workstations: Array<any> = [];
   selectedWorkstations: Array<any> = [];
   iLocationId: String | null | undefined;
   webOrders: Boolean = false;
-  isFor="";
+  isFor = "";
 
   tableHeaders: Array<any> = [
     { key: 'Activity No.', selected: false, sort: '' },
@@ -116,6 +126,7 @@ export class ServicesComponent implements OnInit, AfterViewInit {
   async ngOnInit(): Promise<void> {
 
     this.activatedRoute.queryParamMap.subscribe((params:any)=> {
+      console.log('params.params.isFor: ', params)
       this.isFor= params.params.isFor;
     })
     if (this.router.url.includes('/business/webshop-orders')) {
@@ -283,9 +294,7 @@ export class ServicesComponent implements OnInit, AfterViewInit {
   listEmployee() {
     const oBody = { iBusinessId: this.iBusinessId }
     this.apiService.postNew('auth', '/api/v1/employee/list', oBody).subscribe((result: any) => {
-      if (result?.data?.length) {
-        this.employees = this.employees.concat(result.data[0].result);
-      }
+      if (result?.data?.length) this.employees = result.data[0].result
     }, (error) => {
     })
   }
@@ -315,13 +324,21 @@ export class ServicesComponent implements OnInit, AfterViewInit {
     this.requestParams.skip = this.requestParams.skip || 0;
     this.requestParams.limit = this.paginationConfig.itemsPerPage || 50;
     this.requestParams.importStatus = this.importStatus;
-    if (this.iLocationId) this.requestParams.iLocationId = localStorage.getItem('currentLocation')//this.iLocationId;
+    if (this.iLocationId) this.requestParams.iLocationId = localStorage.getItem('currentLocation')
     this.showLoader = true;
+    
+    this.requestParams.estimateDate = {
+      minDate: this.filterDates.estimate.minDate,
+      maxDate: this.filterDates.estimate.maxDate,
+    }
+    this.requestParams.createdDate = {
+      minDate: this.filterDates.create.minDate,
+      maxDate: this.filterDates.create.maxDate,
+    }
     this.apiService.postNew('cashregistry', '/api/v1/activities', this.requestParams).subscribe((result: any) => {
-      if (result?.data?.length)
-        this.activities = result?.data;
-      else
-        this.activities = [];
+      if (result?.data?.length) this.activities = result?.data;
+      else this.activities = [];
+      if (result?.aUniqueBusinessPartner && !this.aFilterBusinessPartner?.length) this.aFilterBusinessPartner = result.aUniqueBusinessPartner;
       this.paginationConfig.totalItems = result?.count;
       this.getCustomers();
       setTimeout(() => {

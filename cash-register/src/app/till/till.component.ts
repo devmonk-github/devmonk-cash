@@ -1,7 +1,7 @@
 import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import {
   faScrewdriverWrench, faTruck, faBoxesStacked, faGifts, faUser, faTimes, faTimesCircle, faTrashAlt, faRing,
-  faCoins, faCalculator, faArrowRightFromBracket, faSpinner, faSearch, faMoneyBill
+  faCoins, faCalculator, faArrowRightFromBracket, faSpinner, faSearch, faMoneyBill, faCopy
 } from '@fortawesome/free-solid-svg-icons';
 import { Observable, Subscription } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
@@ -52,6 +52,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   faArrowRightFromBracket = faArrowRightFromBracket;
   faSpinner = faSpinner;
   faSearch = faSearch;
+  faCopy = faCopy;
   taxes: Array<any> = [];
   transactionItems: Array<any> = [];
   selectedTransaction: any = null;
@@ -85,6 +86,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   dOpenDate: any = '';
   iWorkstationId!: any;
   transaction: any = {};
+  activityItems: any = {};
   amountDefined: any;
   aProjection: Array<any> = [
     'oName',
@@ -114,6 +116,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   dayClosureCheckSubscription !: Subscription;
   settings: any;
   businessDetails: any;
+  printActionSettings: any;
+  printSettings: any;
 
   randNumber(min: number, max: number): number {
     return Math.floor(Math.random() * (max - min + 1) + min);
@@ -138,7 +142,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
 
-  ngOnInit(): void {
+  async ngOnInit() {
     this.business._id = localStorage.getItem('currentBusiness');
     this.locationId = localStorage.getItem('currentLocation') || null;
     this.iWorkstationId = localStorage.getItem('currentWorkstation');
@@ -161,6 +165,13 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.getfiskalyInfo();
     this.cancelFiskalyTransaction();
+
+    const [_printActionSettings, _printSettings]: any = await Promise.all([
+      this.getPrintSettings({ oFilterBy: { sMethod: 'actions' } }),
+      this.getPrintSettings(),
+    ]);
+    this.printActionSettings = _printActionSettings?.data[0]?.result[0].aActions;
+    this.printSettings = _printSettings?.data[0]?.result;
   }
 
 
@@ -521,12 +532,12 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   getRelatedTransactionItem(iActivityItemId: string, iTransactionItemId: string, index: number) {
     // console.log("getRelatedTransactionItem", iActivityItemId, iTransactionItemId);
     return this.apiService.getNew('cashregistry', `/api/v1/transaction/item/activityItem/${iActivityItemId}?iBusinessId=${this.business._id}&iTransactionItemId=${iTransactionItemId}`).toPromise();
-      // .subscribe(
-      //   (result: any) => {
-      //     this.transaction.aTransactionItems[index].related = result.data || [];
-      //   }, (error) => {
-      //     console.log(error);
-      //   })
+    // .subscribe(
+    //   (result: any) => {
+    //     this.transaction.aTransactionItems[index].related = result.data || [];
+    //   }, (error) => {
+    //     console.log(error);
+    //   })
   }
 
   getRelatedTransaction(iActivityId: string, iTransactionId: string) {
@@ -536,18 +547,18 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       iTransactionId: iTransactionId
     }
     return this.apiService.postNew('cashregistry', '/api/v1/transaction/activity/' + iActivityId, body);
-      // .subscribe(
-      //   (result: any) => {
-      //     this.transaction.related = result.data || [];
-      //     this.transaction.related.forEach((obj: any) => {
-      //       obj.aPayments.forEach((obj: any) => {
-      //         obj.dCreatedDate = moment(obj.dCreatedDate).format('DD-MM-yyyy hh:mm');
-      //       });
-      //       this.transaction.aPayments = this.transaction.aPayments.concat(obj.aPayments);
-      //     })
-      //   }, (error) => {
-      //     console.log(error);
-      //   })
+    // .subscribe(
+    //   (result: any) => {
+    //     this.transaction.related = result.data || [];
+    //     this.transaction.related.forEach((obj: any) => {
+    //       obj.aPayments.forEach((obj: any) => {
+    //         obj.dCreatedDate = moment(obj.dCreatedDate).format('DD-MM-yyyy hh:mm');
+    //       });
+    //       this.transaction.aPayments = this.transaction.aPayments.concat(obj.aPayments);
+    //     })
+    //   }, (error) => {
+    //     console.log(error);
+    //   })
   }
 
   createTransaction(): void {
@@ -599,19 +610,20 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
             .subscribe((data: any) => {
               this.toastrService.show({ type: 'success', text: 'Transaction created.' });
               this.saveInProgress = false;
-              const { transaction, aTransactionItems } = data;
+              const { transaction, aTransactionItems, activityItems } = data;
               transaction.aTransactionItems = aTransactionItems;
               this.transaction = transaction;
-              
+              this.activityItems = activityItems;
+
               // this.transaction.aTransactionItems.forEach((item: any, index: number) => {
               //   this.getRelatedTransactionItem(item?.iActivityItemId, item?._id, index)
               // })
               // this.getRelatedTransaction(this.transaction?.iActivityId, this.transaction?._id)
               // this.pdfService.generatePDF(this.transaction);
               this.processTransactionForPdfReceipt();
-              
+
               this.updateFiskalyTransaction('FINISHED', body.payments);
-              
+
               setTimeout(() => {
                 this.saveInProgress = false;
                 this.fetchBusinessPartnersProductCount(uniq);
@@ -629,7 +641,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   async processTransactionForPdfReceipt() {
-    // console.log('waiting for processTransactionData')
+    console.log('this.activityItems', this.activityItems)
 
 
     const relatedItemsPromises: any = [];
@@ -693,9 +705,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     })
 
     this.transaction = dataObject;
-
     // this.processTransactionData();
-    
+
     // console.log('processTransactionData is finished')
     if (!this.businessDetails) {
       const _result: any = await this.getBusinessDetails().toPromise();
@@ -731,32 +742,88 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       });
       oDataSource.bHasPrePayments = true;
     }
+    oDataSource.nTotalOriginalAmount = nTotalOriginalAmount;
+    let _template: any, _oLogoData: any;
 
-    const template = await this.getTemplate('transaction').toPromise();
-    oDataSource.sBusinessLogoUrl = (await this.getBase64FromUrl(oDataSource?.businessDetails?.sLogoLight).toPromise()).data;
+    const aUniqueItemTypes = [...new Set(oDataSource.aTransactionItemType)];
 
-    this.receiptService.exportToPdf({
-      oDataSource: oDataSource,
-      pdfTitle: 'Transaction Receipt',
-      templateData: template.data
-    });
+
+    [_template, _oLogoData,] = await Promise.all([
+      this.getTemplate(aUniqueItemTypes),
+      this.getBase64FromUrl(oDataSource?.businessDetails?.sLogoLight),
+    ])
+    oDataSource.sBusinessLogoUrl = _oLogoData.data;
+
+    console.log(752, _template, _oLogoData);
+    const aTemplates = _template.data;
+    let title = '';
+    aTemplates.forEach((template: any) => {
+      if (template.eType === 'repair') {
+        const aFilterActivity = this.activityItems.filter((el: any) => el.oType.eKind === 'repair');
+        aFilterActivity.forEach((activity: any) => {
+          title = 'Repair' + activity.sNumber;
+          this.sendForReceipt(activity, template, title);
+        })
+      } else if (template.eType === 'regular') {
+        title = oDataSource.sNumber;
+        this.sendForReceipt(oDataSource, template, title);
+      }
+      // this.receiptService.exportToPdf({
+      //   oDataSource: oDataSource,
+      //   pdfTitle: 'Transaction Receipt',
+      //   templateData: template.data,
+      //   printSettings: this.printSettings,
+      //   printActionSettings: this.printActionSettings,
+      //   eSituation: 'is_created'
+      // });  
+    })
+    return;
+    // const template = await this.getTemplate('transaction').toPromise();
+    // oDataSource.sBusinessLogoUrl = (await this.getBase64FromUrl(oDataSource?.businessDetails?.sLogoLight).toPromise()).data;
+    // printSettings = await this.apiService.postNew('cashregistry', `/api/v1/print-settings/list/${this.iBusinessId}`, data).toPromise();
 
     this.clearAll();
 
     // this.receiptService.exportToPdf({ transaction: this.transaction });
   }
 
-  getBase64FromUrl(url: any): Observable<any> {
-    return this.apiService.getNew('cashregistry', `/api/v1/pdf/templates/getBase64/${this.businessDetails._id}?url=${url}`);
+  sendForReceipt(oDataSource: any, template: any, title: any) {
+    console.log('send for receipt', oDataSource, template, title);
+    this.receiptService.exportToPdf({
+      oDataSource: oDataSource,
+      pdfTitle: title,
+      templateData: template,
+      printSettings: this.printSettings,
+      printActionSettings: this.printActionSettings,
+      eSituation: 'is_created'
+    });
   }
 
-  getTemplate(type: string): Observable<any> {
-    return this.apiService.getNew('cashregistry', `/api/v1/pdf/templates/${this.businessDetails._id}?eType=${type}`);
+  getPrintSettings(oFilterBy?: any) {
+    const oBody = {
+      iLocationId: this.locationId,
+      ...oFilterBy
+    }
+    return this.apiService.postNew('cashregistry', `/api/v1/print-settings/list/${this.business._id}`, oBody).toPromise();
+  }
+
+  getBase64FromUrl(url: any) {
+    return this.apiService.getNew('cashregistry', `/api/v1/pdf/templates/getBase64/${this.business._id}?url=${url}`).toPromise();
+  }
+
+  getTemplate(types: any) {
+    const body = {
+      iBusinessId: this.business._id,
+      oFilterBy: {
+        eType: types
+      }
+    }
+    return this.apiService.postNew('cashregistry', `/api/v1/pdf/templates`, body).toPromise();
   }
 
   // async processTransactionData() {
-    
-      
+
+
   // }
 
   getBusinessDetails() {
@@ -1021,7 +1088,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       });
   }
 
-  openCardsModal(oGiftcard?:any) {
+  openCardsModal(oGiftcard?: any) {
     this.dialogService.openModal(CardsComponent, { cssClass: 'modal-lg', context: { customer: this.customer, oGiftcard } })
       .instance.close.subscribe(result => {
         console.log('When Redeem GiftCard closed: ', result, result?.giftCardInfo?.type);
@@ -1254,19 +1321,19 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       })
   }
 
-  async openModal(barcode:any){
+  async openModal(barcode: any) {
     this.toastrService.show({ type: 'success', text: 'Barcode detected: ' + barcode })
     if (barcode.startsWith("AI")) {
       console.log('activity item', barcode);
       // activityitem.find({sNumber: barcode},{eTransactionItem.eKind : 1})
-      let oBody:any = {
+      let oBody: any = {
         iBusinessId: this.business._id,
-        oFilterBy:{
-          sNumber:barcode
+        oFilterBy: {
+          sNumber: barcode
         }
       }
       const activityItemResult: any = await this.apiService.postNew('cashregistry', `/api/v1/activities/activity-item`, oBody).toPromise();
-      if(activityItemResult?.data[0]?.result?.length){
+      if (activityItemResult?.data[0]?.result?.length) {
 
         oBody = {
           iBusinessId: this.business._id,
@@ -1285,14 +1352,14 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
         iBusinessId: this.business._id,
         searchValue: barcode
       }
-      const result:any = await this.apiService.postNew('cashregistry', '/api/v1/transaction/search', oBody).toPromise();
-      if (result?.transactions?.records?.length){
+      const result: any = await this.apiService.postNew('cashregistry', '/api/v1/transaction/search', oBody).toPromise();
+      if (result?.transactions?.records?.length) {
         this.openTransaction(result?.transactions?.records[0], 'transaction');
       }
       //transactions.find({sNumber: barcode})
     } else if (barcode.startsWith("A")) {
       console.log('Fetching activity', barcode);
-      
+
       const oBody = {
         iBusinessId: this.business._id,
         searchValue: barcode
@@ -1319,10 +1386,10 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     } else if (barcode.startsWith("R")) {
       // activityitem.find({sRepairNumber: barcode},{eTransactionItem.eKind : 1})
     }
-    
+
   }
 
-  openTransaction(transaction: any, itemType: any, aSelectedIds ?:any) {
+  openTransaction(transaction: any, itemType: any, aSelectedIds?: any) {
     console.log('open transaction', transaction, itemType);
     this.dialogService.openModal(TransactionItemsDetailsComponent, { cssClass: "modal-xl", context: { transaction, itemType, aSelectedIds } })
       .instance.close.subscribe(result => {
@@ -1389,7 +1456,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       });
   }
 
-  handleTransactionResponse(data:any){
+  handleTransactionResponse(data: any) {
     this.clearAll();
     const { transactionItems, transaction } = data;
     this.transactionItems = transactionItems;
