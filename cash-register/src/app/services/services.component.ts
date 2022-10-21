@@ -38,7 +38,7 @@ export class ServicesComponent implements OnInit, AfterViewInit {
     locations: [],
     selectedLocations: [],
     searchValue: '',
-    sortBy: { key: 'Date', selected: true, sort: 'asc' },
+    sortBy: { key: '_id', selected: true, sort: 'asc' },
     sortOrder: 'asc'
   };
   showLoader: Boolean = false;
@@ -93,8 +93,8 @@ export class ServicesComponent implements OnInit, AfterViewInit {
     { key: 'Activity No.', selected: false, sort: '' },
     { key: 'Repair number', disabled: true },
     { key: 'Type', disabled: true },
-    { key: 'Intake date', selected: true, sort: 'desc' },
-    { key: 'End date', selected: false, sort: 'desc', sValue: 'dEstimatedDate' },
+    { key: 'Intake date', selected: false, sort: 'asc' },
+    { key: 'End date', selected: false, sort: 'asc' },
     { key: 'Status', disabled: true },
     { key: 'Supplier/Repairer', disabled: true },
     // { key: 'Partner supplier status', disabled: true },
@@ -118,20 +118,17 @@ export class ServicesComponent implements OnInit, AfterViewInit {
     this.activatedRoute.queryParamMap.subscribe((params:any)=> {
       this.isFor= params.params.isFor;
     })
-    console.log(this.isFor);
-    console.log(typeof(this.isFor))
     if (this.router.url.includes('/business/webshop-orders')) {
       this.webOrders = true;
       this.requestParams.eType = ['webshop-revenue', 'webshop-reservation']
     }
     this.businessDetails._id = localStorage.getItem('currentBusiness');
     this.iLocationId = localStorage.getItem('currentLocation');
-    console.log('this.iLocationId: ', this.iLocationId);
     this.userType = localStorage.getItem('type');
     this.iBusinessId = localStorage.getItem('currentBusiness');
 
     this.showLoader = true;
-    await this.setLocation() /* For web-orders, we will switch to the web-order location otherwise keep current location */
+    if (this.isFor !== "activity") await this.setLocation() /* For web-orders, we will switch to the web-order location otherwise keep current location */
     this.showLoader = false
     this.loadTransaction();
     this.listEmployee();
@@ -167,7 +164,6 @@ export class ServicesComponent implements OnInit, AfterViewInit {
 
       this.apiService.getNew('core', '/api/v1/business/user-business-and-location/list')
         .subscribe((result: any) => {
-          // console.log({ getBusinessLocations: result });
           if (result.message == "success" && result?.data) {
 
             resolve(result);
@@ -184,10 +180,8 @@ export class ServicesComponent implements OnInit, AfterViewInit {
     return new Promise<any>((resolve, reject) => {
       this.apiService.postNew('core', `/api/v1/business/${this.iBusinessId}/list-location`, {}).subscribe(
         (result: any) => {
-          // console.log({ getLocations: result });
           if (result.message == 'success') {
             this.requestParams.locations = result.data.aLocation;
-            // console.log({ requestParams: this.requestParams.locations });
           }
           resolve(result);
         }),
@@ -200,7 +194,6 @@ export class ServicesComponent implements OnInit, AfterViewInit {
   async setLocation(sLocationId: string = "") {
     return new Promise<void>(async (resolve, reject) => {
       this.iLocationId = sLocationId ?? (localStorage.getItem('currentLocation') ?? '')
-      console.log(185, this.iLocationId);
       try {
         const oBusinessLocation: any = await this.getBusinessLocations()
         let oNewLocation: any
@@ -221,7 +214,6 @@ export class ServicesComponent implements OnInit, AfterViewInit {
         }
         if (!bIsCurrentBIsWebshop) {
           this.iLocationId = oNewLocation._id.toString()
-          console.log(210, this.iLocationId)
         }
         resolve()
       } catch (error) {
@@ -260,9 +252,11 @@ export class ServicesComponent implements OnInit, AfterViewInit {
   setSortOption(sortHeader: any) {
     console.log('setSortOption: ', sortHeader);
     if (sortHeader.selected) {
-      sortHeader.sort = sortHeader.sort == 'desc' ? 'asc' : 'desc';
+      sortHeader.sort = sortHeader.sort == 'asc' ? 'desc' : 'asc';
+      console.log('iscoming here ', sortHeader.sort);
       this.sortAndLoadTransactions(sortHeader)
     } else {
+      console.log('in else');
       this.tableHeaders = this.tableHeaders.map((th: any) => {
         if (sortHeader.key == th.key) {
           th.selected = true;
@@ -297,7 +291,6 @@ export class ServicesComponent implements OnInit, AfterViewInit {
   }
 
   openActivities(activity: any, openActivityId?: any) {
-    console.log('opening ActivityDetailsComponent with', activity);
     if (this.webOrders) {
       this.dialogService.openModal(WebOrderDetailsComponent, { cssClass: 'w-fullscreen', context: { activity, from: 'web-orders' } })
         .instance.close.subscribe(result => {
@@ -377,7 +370,6 @@ export class ServicesComponent implements OnInit, AfterViewInit {
   async openModal(barcode: any) {
     this.toastrService.show({ type: 'success', text: 'Barcode detected: ' + barcode })
     if (barcode.startsWith("AI")) {
-      console.log('activity item', barcode);
       // activityitem.find({sNumber: barcode},{eTransactionItem.eKind : 1})
       let oBody: any = {
         iBusinessId: this.businessDetails._id,
@@ -397,18 +389,11 @@ export class ServicesComponent implements OnInit, AfterViewInit {
           }
         }
         const activityResult: any = await this.apiService.postNew('cashregistry', '/api/v1/activities', oBody).toPromise();
-        console.log({ activityResult });
-
-        // const oActivityItem = activityItemResult?.data[0].result[0]._id;
-        // console.log({ oActivityItem });
-        // const activityItemsResult: any = await this.apiService.postNew('cashregistry', `/api/v1/activities/items/${iActivityId}`, {iBusinessId: this.businessDetails._id}).toPromise();
-        // console.log({ activityItemsResult });
         if (activityResult.data?.length) {
           this.openActivities(activityResult.data[0], iActivityItemId);
         }
       }
     } else if (barcode.startsWith("A")) {
-      console.log('Fetching activity', barcode);
       let oBody = {
         iBusinessId: this.businessDetails._id,
         oFilterBy: {
@@ -416,12 +401,7 @@ export class ServicesComponent implements OnInit, AfterViewInit {
         }
       }
       const activityResult: any = await this.apiService.postNew('cashregistry', '/api/v1/activities', oBody).toPromise();
-      console.log({ activityResult });
 
-      // const oActivityItem = activityItemResult?.data[0].result[0]._id;
-      // console.log({ oActivityItem });
-      // const activityItemsResult: any = await this.apiService.postNew('cashregistry', `/api/v1/activities/items/${iActivityId}`, {iBusinessId: this.businessDetails._id}).toPromise();
-      // console.log({ activityItemsResult });
       if (activityResult.data?.length) {
         this.openActivities(activityResult.data[0]);
       }
@@ -435,7 +415,6 @@ export class ServicesComponent implements OnInit, AfterViewInit {
         }
       }
       let result: any = await this.apiService.postNew('cashregistry', `/api/v1/activities/activity-item`, oBody).toPromise();
-      // console.log(result);
       if (result?.data[0]?.result?.length) {
         const oGiftcard = result?.data[0]?.result[0];
         this.openCardsModal(oGiftcard)
@@ -450,7 +429,6 @@ export class ServicesComponent implements OnInit, AfterViewInit {
   openCardsModal(oGiftcard?: any, oCustomer?: any) {
     this.dialogService.openModal(CardsComponent, { cssClass: 'modal-lg', context: { customer: oCustomer, oGiftcard } })
       .instance.close.subscribe(result => {
-        console.log('When Redeem GiftCard closed: ', result, result?.giftCardInfo?.type);
         if (result) {
           // if (result.giftCardInfo.nAmount > 0) {
           //   this.appliedGiftCards.push(result.giftCardInfo);
