@@ -12,10 +12,11 @@
             <fa-icon [icon]="faSearch" class="text-gray-500 position-absolute top-50 translate-middle ms-6">
             </fa-icon>
             <input type="text" class="form-control form-control-solid ps-10" #inputElement
-                [(ngModel)]="requestParams.searchValue" name="search" value="" placeholder="Search"
+                [(ngModel)]="requestParams.searchValue" name="search" value="" [placeholder]="'SEARCH' | translate"
                 (keyup.enter)="findTransactions()" />
         </div>
-        <button type="submit" (click)="findTransactions()" class="btn btn-primary me-5">Search</button>
+        <button type="submit" (click)="findTransactions()" class="btn btn-primary me-5"> {{ "SEARCH" |
+            translate}}</button>
     </div>
     <div class="card-body pt-0">
         <app-pn-tabs class="tab-content">
@@ -25,9 +26,10 @@
                         <table class="table align-middle table-row-dashed fs-6 gy-5 dataTable no-footer">
                             <thead>
                                 <tr class="text-start text-gray-400 fw-bolder fs-7 text-uppercase gs-0">
-                                    <th class="min-w-100px sorting" tabindex="0">Transaction Number</th>
-                                    <th class="min-w-100px sorting" tabindex="0">Date</th>
-                                    <th class="min-w-100px sorting" tabindex="0">Actions</th>
+                                    <th class="min-w-100px sorting" tabindex="0">{{ "TRANSACTION_NUMBER" | translate}}
+                                    </th>
+                                    <th class="min-w-100px sorting" tabindex="0">{{"DATE" | translate}}</th>
+                                    <th class="min-w-100px sorting" tabindex="0">{{"ACTION" | translate}} </th>
                                 </tr>
                             </thead>
                             <tbody class="fw-bold text-gray-600">
@@ -36,14 +38,15 @@
                                     <td class="">{{ transaction.dCreatedDate | date: 'short'}}</td>
                                     <td>
                                         <button class="btn btn-primary"
-                                            (click)="openTransaction(transaction, 'transaction')">Open</button>
+                                            (click)="openTransaction(transaction, 'transaction')">{{ "OPEN" |
+                                            translate}}</button>
                                     </td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
                     <div class="d-flex">
-                        <h5 *ngIf='!transactions.length && !showLoader'> No data found!</h5>
+                        <h5 *ngIf='!transactions.length && !showLoader'> {{"NO_DATA_FOUND" | translate}}!</h5>
                         <div *ngIf="showLoader" class="spinner-border mx-auto"></div>
                     </div>
                 </div>
@@ -54,9 +57,9 @@
                         <table class="table align-middle table-row-dashed fs-6 gy-5 dataTable no-footer">
                             <thead>
                                 <tr class="text-start text-gray-400 fw-bolder fs-7 text-uppercase gs-0">
-                                    <th class="min-w-100px sorting" tabindex="0">Activity Number</th>
-                                    <th class="min-w-100px sorting" tabindex="0">Date</th>
-                                    <th class="min-w-100px sorting" tabindex="0">Actions</th>
+                                    <th class="min-w-100px sorting" tabindex="0"> {{"ACTIVITY_NUMBER" | translate}}</th>
+                                    <th class="min-w-100px sorting" tabindex="0"> {{"DATE" |translate}}</th>
+                                    <th class="min-w-100px sorting" tabindex="0">{{ "ACTION" | translate}}</th>
                                 </tr>
                             </thead>
                             <tbody class="fw-bold text-gray-600">
@@ -65,14 +68,15 @@
                                     <td class="">{{ transaction.dCreatedDate | date: 'short'}}</td>
                                     <td>
                                         <button class="btn btn-primary"
-                                            (click)="openTransaction(transaction, 'activity')">Open</button>
+                                            (click)="openTransaction(transaction, 'activity')">{{ "OPEN" |
+                                            translate}}</button>
                                     </td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
                     <div class="d-flex">
-                        <h5 *ngIf='!transactions.length && !showLoader'> No data found!</h5>
+                        <h5 *ngIf='!transactions.length && !showLoader'> {{"NO_DATA_FOUND" | translate}}!</h5>
                         <div *ngIf="showLoader" class="spinner-border mx-auto"></div>
                     </div>
                 </div>

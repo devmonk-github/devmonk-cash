@@ -79,7 +79,7 @@
                                     </div>
                                 </div>
                                 <div class="">
-                                    <h4 class="text-gray-700 fw-bolder mb-2">{{'Shipping Address' | translate}}</h4>
+                                    <h4 class="text-gray-700 fw-bolder mb-2">{{'SHIPPING_ADDRESS' | translate}}</h4>
                                     <div class="" *ngIf="customer.oShippingAddress">
                                         <p>
                                             {{ customer.oShippingAddress.sHouseNumber }}
@@ -91,7 +91,7 @@
                                 </div>
 
                                 <div class="">
-                                    <h4 class="text-gray-700 fw-bolder mb-2">{{'Invoice Address' | translate}}</h4>
+                                    <h4 class="text-gray-700 fw-bolder mb-2">{{'INVOICE_ADDRESS' | translate}}</h4>
                                     <div class="" *ngIf="customer.oInvoiceAddress">
                                         <p>
                                             {{ customer.oInvoiceAddress.sHouseNumber }} -
@@ -152,15 +152,15 @@
                         <div>
                             <div class="card panel-card mb-3">
                                 <div class="card-header">
-                                    <h3 class="card-title">Order Value</h3>
+                                    <h3 class="card-title"> {{ "ORDER_VALUE" | translate}}</h3>
                                 </div>
                                 <div class="card-body">
                                     <div class="row mb-7">
-                                        <label class="col-8">Total turnover Incl. VAT</label>
+                                        <label class="col-8">{{ "TOTAL_TURNOVER_INC_VAT" |translate}}</label>
                                         <label class="col-4">{{ '100' | currency: 'EUR'}}</label>
                                     </div>
                                     <div class="row mb-7">
-                                        <label class="col-8">Average order value Incl. VAT</label>
+                                        <label class="col-8">{{ "AVERAGE_ORDER_VALUE_INC_VAT" |translate }}</label>
                                         <label class="col-4">{{ '10' | currency: 'EUR'}}</label>
                                     </div>
                                 </div>
@@ -168,15 +168,15 @@
 
                             <div class="card panel-card">
                                 <div class="card-header">
-                                    <h3 class="card-title">Saving points</h3>
+                                    <h3 class="card-title"> {{"SAVING_POINTS" | translate}}</h3>
                                 </div>
                                 <div class="card-body">
                                     <div class="row mb-7">
-                                        <label class="col-7">Saved points</label>
+                                        <label class="col-7">{{"SAVED_POINTS" | translate}}</label>
                                         <label class="col-5">{{ customer.nLoyaltyPoints }}</label>
                                     </div>
                                     <div class="row mb-7">
-                                        <label class="col-7">Value of the points</label>
+                                        <label class="col-7">{{"VALUE_OF_SAVING_POINTS" | translate}}</label>
                                         <label class="col-5">{{ customer.nLoyaltyPointsValue | currency: 'EUR'}}
                                             <!-- <span class="mx-3">
                                                 <i class="fa fa-info-circle"></i>
@@ -184,11 +184,11 @@
                                         </label>
                                     </div>
                                     <div class="row mb-2">
-                                        <label class="col-12">Adding/reducing points</label>
+                                        <label class="col-12">{{"ADD_OR_REDUCE_SAVING_POINTS" | translate}}</label>
                                         <div class="col-12">
                                             <div class="d-flex">
                                                 <input type="text" class="form-control">
-                                                <button class="btn btn-secondary">Save</button>
+                                                <button class="btn btn-secondary">{{"SAVE" | translate}}</button>
                                             </div>
                                         </div>
                                     </div>
@@ -196,7 +196,8 @@
                                         <label
                                             class="col-12 form-check form-check-sm form-check-custom form-check-solid me-5">
                                             <input class="form-check-input" type="checkbox" value="1" />
-                                            <span class="form-check-label">Points never expire</span>
+                                            <span class="form-check-label">{{"SAVING_POINTS_NEVER_EXPIRED" |
+                                                translate}}</span>
                                         </label>
                                     </div>
                                 </div>
@@ -247,7 +248,7 @@
                                         </tr>
                                         <tr *ngIf="!bTransactionsLoader && !aTransactions?.length">
                                             <td colspan="5" class="text-center">
-                                                No Records Found
+                                                {{ "NO_DATA_FOUND" | translate}}
                                             </td>
                                         </tr>
                                     </tbody>
@@ -262,7 +263,8 @@
                                                     class="form-select form-select-sm form-select-solid"
                                                     [(ngModel)]="requestParams.limit"
                                                     (change)="changeItemsPerPage(requestParams.limit)">
-                                                    <option *ngFor="let pageNum of pageCounts" [value]="pageNum">{{ pageNum }}
+                                                    <option *ngFor="let pageNum of pageCounts" [value]="pageNum">{{
+                                                        pageNum }}
                                                     </option>
                                                 </select>
                                             </label>
@@ -273,7 +275,8 @@
                                         <pagination-controls (pageChange)="pageChanged($event)"
                                             (pageBoundsCorrection)="pageChanged($event)" [maxSize]="setPaginateSize"
                                             [previousLabel]="'PREVIOUS' | translate" [nextLabel]="'NEXT' | translate"
-                                            screenReaderPaginationLabel="Pagination" [screenReaderPageLabel]="'PAGE' | translate">
+                                            screenReaderPaginationLabel="Pagination"
+                                            [screenReaderPageLabel]="'PAGE' | translate">
                                         </pagination-controls>
                                     </div>
                                 </div>
@@ -306,7 +309,7 @@
                                         </tr>
                                         <tr *ngIf="!bActivitiesLoader && !aActivities?.length">
                                             <td colspan="7" class="text-center">
-                                                No Records Found
+                                                {{ "NO_DATA_FOUND" | translate}}
                                             </td>
                                         </tr>
                                     </tbody>
@@ -340,7 +343,7 @@
                                         </tr>
                                         <tr *ngIf="!bActivityItemsLoader && !aActivityItems?.length">
                                             <td colspan="7" class="text-center">
-                                                No Records Found
+                                                {{ "NO_DATA_FOUND" | translate}}
                                             </td>
                                         </tr>
                                     </tbody>
@@ -370,7 +373,7 @@
                                         <ng-container
                                             *ngIf="!aStatisticsChartData.length && !aStatisticsChartDataLoading">
                                             <div class="d-flex my-20">
-                                                <div class="mx-auto">No Data Found </div>
+                                                <div class="mx-auto">{{ "NO_DATA_FOUND" | translate}} </div>
                                             </div>
                                         </ng-container>
                                     </div>
@@ -380,8 +383,8 @@
                                         <table class="table table-hover table-rounded table-striped border gs-7">
                                             <thead>
                                                 <tr class="fw-bold fs-6 text-gray-800 border-bottom-2 border-gray-200">
-                                                    <th>{{ 'Employee Name' }}</th>
-                                                    <th>{{ 'Revenue' }}</th>
+                                                    <th>{{ 'EMPLOYEE_NAME' |translate }}</th>
+                                                    <th>{{ 'REVENUE' | translate }}</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -408,7 +411,7 @@
                                 </div>
                             </app-pn-tab>
                             <app-pn-tab tabTitle="{{ tabTitles[4] | translate}}" #general>
-                                General
+                                {{ "GENERAL" |translate }}
                             </app-pn-tab>
                         </app-pn-tabs>
                     </div>
