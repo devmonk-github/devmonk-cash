@@ -118,8 +118,6 @@ export class ServicesComponent implements OnInit, AfterViewInit {
     this.activatedRoute.queryParamMap.subscribe((params:any)=> {
       this.isFor= params.params.isFor;
     })
-    console.log(this.isFor);
-    console.log(typeof(this.isFor))
     if (this.router.url.includes('/business/webshop-orders')) {
       this.webOrders = true;
       this.requestParams.eType = ['webshop-revenue', 'webshop-reservation']
@@ -130,7 +128,10 @@ export class ServicesComponent implements OnInit, AfterViewInit {
     this.iBusinessId = localStorage.getItem('currentBusiness');
 
     this.showLoader = true;
-    await this.setLocation()
+    if(this.isFor == 'activity')
+    {
+      await this.setLocation();
+    }
     this.showLoader = false
     this.loadTransaction();
     this.listEmployee();
@@ -199,7 +200,6 @@ export class ServicesComponent implements OnInit, AfterViewInit {
   async setLocation(sLocationId: string = "") {
     return new Promise<void>(async (resolve, reject) => {
       this.iLocationId = sLocationId ?? (localStorage.getItem('currentLocation') ?? '')
-      console.log(185, this.iLocationId);
       try {
         const oBusinessLocation: any = await this.getBusinessLocations()
         let oNewLocation: any
@@ -224,7 +224,6 @@ export class ServicesComponent implements OnInit, AfterViewInit {
         }
         if (!bIsCurrentBIsWebshop) {
           this.iLocationId = oNewLocation._id.toString()
-          console.log(210, this.iLocationId)
         }
         resolve()
       } catch (error) {
