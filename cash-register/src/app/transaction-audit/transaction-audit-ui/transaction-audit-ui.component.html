@@ -23,51 +23,61 @@
                                 <div class="col-md-6">
                                     <!-- For Dynamic, Start Date and End Date -->
                                     <div class="row mb-5" *ngIf="IsDynamicState">
-                                            <!-- START_DATE -->
-                                            <div class="col-md-6">
-                                                <label class="fs-6 form-label fw-bolder text-dark">{{'START_DATE' |
-                                                    translate}}</label>
-                                                <input type="datetime-local" class="form-control form-control form-control-solid" name="startDate"
-                                                    [ngModel]="filterDates.startDate" (ngModelChange)="filterDates.startDate = $event;" />
-                                            </div>
-                                            <!-- END_DATE -->
-                                            <div class="col-md-6">
-                                                <label class="fs-6 form-label fw-bolder text-dark">{{'END_DATE' |
-                                                    translate}}</label>
-                                                <input type="datetime-local" class="form-control form-control-solid" name="endDate"
-                                                    [ngModel]="filterDates.endDate" (ngModelChange)="filterDates.endDate = $event;" />
-                                            </div>
+                                        <!-- START_DATE -->
+                                        <div class="col-md-6">
+                                            <label class="fs-6 form-label fw-bolder text-dark">{{'START_DATE' |
+                                                translate}}</label>
+                                            <input type="datetime-local"
+                                                class="form-control form-control form-control-solid" name="startDate"
+                                                [ngModel]="filterDates.startDate"
+                                                (ngModelChange)="filterDates.startDate = $event;" />
+                                        </div>
+                                        <!-- END_DATE -->
+                                        <div class="col-md-6">
+                                            <label class="fs-6 form-label fw-bolder text-dark">{{'END_DATE' |
+                                                translate}}</label>
+                                            <input type="datetime-local" class="form-control form-control-solid"
+                                                name="endDate" [ngModel]="filterDates.endDate"
+                                                (ngModelChange)="filterDates.endDate = $event;" />
+                                        </div>
                                     </div>
 
-                                        <!-- For Static, FROM-STATE to TO-STATE -->
-                                        <div class="row mb-5" *ngIf="!IsDynamicState">
+                                    <!-- For Static, FROM-STATE to TO-STATE -->
+                                    <div class="row mb-5" *ngIf="!IsDynamicState">
 
-                                            <div class="col-md-6">
-                                                <label class="fs-6 form-label fw-bolder text-dark">{{'FROM_STATE' |
-                                                    translate}}</label>
-                                                <ng-select class="form-control form-control-solid p-0" [(ngModel)]="statisticFilter.dFromState"
-                                                    [clearable]="false" (change)="onStateChange($event, true, aDayClosure)">
-                                                    <ng-option *ngFor="let oDayClosure of aDayClosure" [value]="oDayClosure.dOpenDate">
-                                                        {{oDayClosure?.dOpenDate | date: 'yyyy-MM-dd HH:mm'}} | {{oDayClosure?.sWorkStationName}}
-                                                    </ng-option>
-                                                </ng-select>
-                                            </div>
-
-                                            <div class="col-md-6">
-                                                <label class="fs-6 form-label fw-bolder text-dark">{{'TO_STATE' |
-                                                    translate}}</label>
-                                                <ng-select class="form-control form-control-solid p-0" [(ngModel)]="statisticFilter.dToState"
-                                                    [clearable]="false" (change)="onStateChange($event, false, aDayClosure)">
-                                                    <ng-option *ngFor="let oDayClosure of aDayClosure" [value]="oDayClosure.dCloseDate" [disabled]="oDayClosure?.isDisable ? true : false">
-                                                        {{oDayClosure?.dCloseDate | date: 'yyyy-MM-dd HH:mm' }} | {{oDayClosure?.sWorkStationName}}
-                                                    </ng-option>
-                                                </ng-select>
-                                            </div>
-
+                                        <div class="col-md-6">
+                                            <label class="fs-6 form-label fw-bolder text-dark">{{'FROM_STATE' |
+                                                translate}}</label>
+                                            <ng-select class="form-control form-control-solid p-0"
+                                                [(ngModel)]="statisticFilter.dFromState" [clearable]="false"
+                                                (change)="onStateChange($event, true, aDayClosure)">
+                                                <ng-option *ngFor="let oDayClosure of aDayClosure"
+                                                    [value]="oDayClosure.dOpenDate">
+                                                    {{oDayClosure?.dOpenDate | date: 'yyyy-MM-dd HH:mm'}} |
+                                                    {{oDayClosure?.sWorkStationName}}
+                                                </ng-option>
+                                            </ng-select>
                                         </div>
 
+                                        <div class="col-md-6">
+                                            <label class="fs-6 form-label fw-bolder text-dark">{{'TO_STATE' |
+                                                translate}}</label>
+                                            <ng-select class="form-control form-control-solid p-0"
+                                                [(ngModel)]="statisticFilter.dToState" [clearable]="false"
+                                                (change)="onStateChange($event, false, aDayClosure)">
+                                                <ng-option *ngFor="let oDayClosure of aDayClosure"
+                                                    [value]="oDayClosure.dCloseDate"
+                                                    [disabled]="oDayClosure?.isDisable ? true : false">
+                                                    {{oDayClosure?.dCloseDate | date: 'yyyy-MM-dd HH:mm' }} |
+                                                    {{oDayClosure?.sWorkStationName}}
+                                                </ng-option>
+                                            </ng-select>
+                                        </div>
+
+                                    </div>
+
                                 </div>
-  
+
                                 <!-- VIEW -->
                                 <div class="col-md-3">
                                     <label class="fs-6 form-label fw-bolder text-dark">{{'VIEW' | translate}}</label>
@@ -96,7 +106,7 @@
                                                             <span class="menu-icon">
                                                                 <i class="bi bi-bar-chart fs-3"></i>
                                                             </span>
-                                                            <span class="menu-title">{{parent.sKey}}</span>
+                                                            <span class="menu-title">{{parent.sKey | translate}}</span>
                                                             <span class="menu-arrow"></span>
                                                         </a>
                                                         <!--end::Menu link-->
@@ -115,7 +125,7 @@
                                                                                 <i class="bi bi-bar-chart fs-3"></i>
                                                                             </span>
                                                                             <span
-                                                                                class="menu-title">{{child1.sKey}}</span>
+                                                                                class="menu-title">{{child1.sValue}}</span>
                                                                             <span class="menu-arrow"></span>
                                                                         </a>
                                                                         <!--end::Menu link-->
@@ -192,7 +202,9 @@
                                         <div class="col-md-6">
                                             <label class="fs-6 form-label fw-bolder text-dark">{{'EMPLOYEE' |
                                                 translate}}</label>
-                                            <ng-select class="form-control form-control-solid p-0" [(ngModel)]="selectedEmployee" (ngModelChange)="checkShowDownload()" [clearable]="false">
+                                            <ng-select class="form-control form-control-solid p-0"
+                                                [(ngModel)]="selectedEmployee" (ngModelChange)="checkShowDownload()"
+                                                [clearable]="false">
                                                 <ng-option *ngFor="let oEmployee of aEmployee" [value]="oEmployee">
                                                     {{oEmployee.sFirstName + ' ' +oEmployee.sLastName}}
                                                 </ng-option>
@@ -203,20 +215,21 @@
                                             <label class="fs-6 form-label fw-bolder text-dark">{{'WORK_STATION' |
                                                 translate}}</label>
 
-                                                <ng-select [multiple]="true" [items]="aWorkStation" [(ngModel)]="selectedWorkStation"
-                                                name="selectedWorkStation" bindValue="_id" bindLabel="sName" placeholder="Select"
-                                                required [closeOnSelect]="false" (change)="fetchAuditStatistic()">
-    
+                                            <ng-select [multiple]="true" [items]="aWorkStation"
+                                                [(ngModel)]="selectedWorkStation" name="selectedWorkStation"
+                                                bindValue="_id" bindLabel="sName" placeholder="Select" required
+                                                [closeOnSelect]="false" (change)="fetchAuditStatistic()">
+
                                                 <ng-template ng-option-tmp let-item="item" let-item$="item$"
                                                     let-index="index">
                                                     <input id="item-{{index}}" type="checkbox" name="item-{{index}}"
                                                         [ngModel]="item$.selected" />
                                                     {{item.sName}}
                                                 </ng-template>
-    
+
                                             </ng-select>
 
-                                            
+
                                             <!-- <ng-select class="form-control form-control-solid p-0"   [(ngModel)]="selectedWorkStation" [clearable]="false" (change)="fetchAuditStatistic()">
                                                 <ng-option *ngFor="let oWorkStation of aWorkStation" [value]="oWorkStation">
                                                     {{oWorkStation.sName}}
@@ -225,32 +238,39 @@
                                         </div>
                                     </div>
                                 </div>
-                     
+
                                 <ng-container>
                                     <!-- PROPERTIES -->
                                     <div class="col-md-6" *ngIf="bShowProperty">
                                         <label class="fs-6 form-label fw-bolder text-dark">{{ "PROPERTIES" |
                                             translate}}</label>
                                         <div class="overflow-scroll py-1 h-200px">
-                    
+
                                             <div *ngFor="let property of aProperty; let pIndex = index">
                                                 <div class="row align-items-center">
-                                                    <div class="col-md-4" >
-                                                        <div>{{property?.sPropertyName}}</div>
+                                                    <div class="col-md-4">
+                                                        <div>{{property?.sPropertyName | translate}}</div>
                                                     </div>
                                                     <div class="col-md-8">
                                                         <div *ngIf="propertyOptions[property.iPropertyId]?.length">
-                                                            <ng-select class="w-100" [multiple]="true" [items]="propertyOptions[property.iPropertyId]"
-                                                                [(ngModel)]="selectedProperties[property.iPropertyId]" name="propertyId" bindValue="sName" bindLabel="sName"
-                                                                placeholder="Select" (click)="onProperties(property.iPropertyId)" required [closeOnSelect]="false">
-                                                    
-                                                                <ng-template ng-option-tmp let-item="item" let-item$="item$" let-index="index">
-                                                                    <input id="item-{{index}}" type="checkbox" name="item-{{index}}" [ngModel]="item$.selected" />
+                                                            <ng-select class="w-100" [multiple]="true"
+                                                                [items]="propertyOptions[property.iPropertyId]"
+                                                                [(ngModel)]="selectedProperties[property.iPropertyId]"
+                                                                name="propertyId" bindValue="sName" bindLabel="sName"
+                                                                placeholder="Select"
+                                                                (click)="onProperties(property.iPropertyId)" required
+                                                                [closeOnSelect]="false">
+
+                                                                <ng-template ng-option-tmp let-item="item"
+                                                                    let-item$="item$" let-index="index">
+                                                                    <input id="item-{{index}}" type="checkbox"
+                                                                        name="item-{{index}}"
+                                                                        [ngModel]="item$.selected" />
                                                                     {{item.sName}}
                                                                 </ng-template>
-                                                    
+
                                                             </ng-select>
-                                                    
+
                                                         </div>
                                                     </div>
                                                 </div>
@@ -311,7 +331,8 @@
                                     <label
                                         class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20">
                                         <input class="form-check-input" type="checkbox" [(ngModel)]="IsDynamicState"
-                                            name="IsDynamicState" [disabled]="iStatisticId ? true : false" (click)="IsDynamicState = !IsDynamicState; fetchAuditStatistic()" />
+                                            name="IsDynamicState" [disabled]="iStatisticId ? true : false"
+                                            (click)="IsDynamicState = !IsDynamicState; fetchAuditStatistic()" />
                                         <span class="form-check-label"> {{ "SHOW_DYNAMIC" | translate}} </span>
                                     </label>
                                 </div>
@@ -336,27 +357,27 @@
 
                                 <div class="col-6 m-0 p-0">
                                     <p class="row">
-                                        <span class="col-4 fw-bolder">Start Date : </span>
+                                        <span class="col-4 fw-bolder">{{ "START_DATE" | translate}} : </span>
                                         <span class="col-8"> {{ oStatisticsData.dStartDate | date:'medium' }}
                                         </span>
                                     </p>
                                     <p class="row">
-                                        <span class="col-4 fw-bolder" >End Date : </span>
+                                        <span class="col-4 fw-bolder">{{ "END_DATE" | translate}} : </span>
                                         <span class="col-8"> {{ oStatisticsData.dEndDate | date:'medium' }} </span>
                                     </p>
                                     <p class="row">
-                                        <span class="col-4 fw-bolder">Display Method : </span>
+                                        <span class="col-4 fw-bolder">{{ "DISPLAY_METHOD" | translate}} : </span>
                                         <span class="col-8"> {{ sSelectedOptionMenu }} </span>
                                     </p>
                                 </div>
 
                                 <div class="col-6 m-0 p-0">
                                     <p class="row">
-                                        <span class="col-4 fw-bolder">Location : </span>
+                                        <span class="col-4 fw-bolder">{{ "LOCATION" | translate}} : </span>
                                         <span class="col-8"> {{ sCurrentLocation }} </span>
                                     </p>
                                     <p class="row">
-                                        <span class="col-4 fw-bolder">Workstation : </span>
+                                        <span class="col-4 fw-bolder">{{ "WORKSTATION" | translate}} : </span>
                                         <span class="col-8"> {{ sCurrentWorkstation }} </span>
                                     </p>
                                 </div>
@@ -416,7 +437,8 @@
                                         <ng-container *ngIf="pdfGenerationInProgress">
                                             <div class="spinner-border mx-2"></div>
                                         </ng-container>
-                                        <button class="btn btn-primary" (click)="exportToPDF($event)">{{ 'DOWNLOAD' }}</button>
+                                        <button class="btn btn-primary" (click)="exportToPDF($event)">{{ 'DOWNLOAD'
+                                            }}</button>
                                     </div>
                                 </div>
                             </div>
@@ -471,10 +493,12 @@
                                                                 <tr class="fw-bold fs-6 text-gray-800">
                                                                     <th scope="col">{{oArticleGroup.sName}}
                                                                         <div class="mx-5">
-                                                                            <i *ngIf="!oArticleGroup.bIsCollapseItem" class="px-sm-2 cursor-pointer bi bi-chevron-down"
+                                                                            <i *ngIf="!oArticleGroup.bIsCollapseItem"
+                                                                                class="px-sm-2 cursor-pointer bi bi-chevron-down"
                                                                                 (click)="oArticleGroup.bIsCollapseItem = true;">
                                                                             </i>
-                                                                            <i *ngIf="oArticleGroup.bIsCollapseItem" class="px-sm-2 cursor-pointer bi bi-chevron-up"
+                                                                            <i *ngIf="oArticleGroup.bIsCollapseItem"
+                                                                                class="px-sm-2 cursor-pointer bi bi-chevron-up"
                                                                                 (click)="oArticleGroup.bIsCollapseItem = false;"></i>
                                                                         </div>
                                                                     </th>
@@ -496,7 +520,7 @@
                                                             </thead>
                                                             <!-- *ngIf="oArticleGroup.bIsCollapseItem" -->
                                                             <ng-container
-                                                                *ngIf="oArticleGroup.aRevenueByProperty.length && oArticleGroup.bIsCollapseItem" >
+                                                                *ngIf="oArticleGroup.aRevenueByProperty.length && oArticleGroup.bIsCollapseItem">
                                                                 <tbody class="p-2"
                                                                     *ngFor="let oRevenueByProperty of oArticleGroup.aRevenueByProperty; let revenuePropertyIndex = index">
                                                                     <!--start of dyamic property -->
@@ -767,7 +791,8 @@
                                                     </th>
                                                     <th class="w-150px">
                                                         <span class="">{{"GROSS_PROFIT" | translate}}</span>
-                                                        <h4 class="text-black">{{aStatistic[0]?.overall[0]?.nProfit | number :'1.2-2'}}
+                                                        <h4 class="text-black">{{aStatistic[0]?.overall[0]?.nProfit |
+                                                            number :'1.2-2'}}
                                                         </h4>
                                                     </th>
                                                     <!-- <th class="w-150px">
@@ -838,7 +863,8 @@
                                                                 </tr>
                                                                 <tr
                                                                     *ngIf="!oRevenueByProperty?.aTransactionItems?.length && !oRevenueByProperty.isLoading">
-                                                                    <td colspan="6" class="text-center">No Records found
+                                                                    <td colspan="6" class="text-center"> {{
+                                                                        "NO_DATA_FOUND" | translate}}
                                                                     </td>
                                                                 </tr>
                                                             </ng-container>
@@ -883,7 +909,8 @@
                                                     </th>
                                                     <th class="w-150px">
                                                         <span class="">{{"GROSS_PROFIT" | translate}}</span>
-                                                        <h4 class="text-black">{{aStatistic[0]?.overall[0]?.nProfit | number
+                                                        <h4 class="text-black">{{aStatistic[0]?.overall[0]?.nProfit |
+                                                            number
                                                             :'1.2-2'}}
                                                         </h4>
                                                     </th>
@@ -988,7 +1015,7 @@
                                                             <tr>
                                                                 <td class="text-center fw-bolder bg-gray-100"
                                                                     colspan="5">
-                                                                    {{"VAT_RATE"}} - {{oVatRate?.nVat}}
+                                                                    {{"VAT_RATE" | translate}} - {{oVatRate?.nVat}}
                                                                 </td>
                                                             </tr>
                                                             <tr>
@@ -1043,7 +1070,7 @@
                                 :'1.2-2' }}</span>
                         </td>
                         <td class="w-150px"><span class="">{{ data?.oVatRate[data?.sVatMethod].nPurchaseValue | number
-                            :'1.2-2' }}</span>
+                                :'1.2-2' }}</span>
                         </td>
                         <td class="w-150px"><span class="">{{ data?.oVatRate[data?.sVatMethod].nProfit| number :'1.2-2'
                                 }}</span></td>
@@ -1058,7 +1085,8 @@
                     <div class="container">
                         <div class="d-flex justify-content-between">
                             <strong> {{ 'PAYMENT_METHODS' | translate}} </strong>
-                            <ng-container *ngIf="iStatisticId && oStatisticsDocument?.bIsDayState && aPaymentMethods?.length">
+                            <ng-container
+                                *ngIf="iStatisticId && oStatisticsDocument?.bIsDayState && aPaymentMethods?.length">
                                 <button class="btn" (click)="toggleEditPaymentMode()">
                                     <i class="fa fa-edit"></i>
                                 </button>
@@ -1067,7 +1095,8 @@
                         <p *ngIf="!aPaymentMethods?.length">{{ 'PAYMENT_METHODS_NOT_FOUND' | translate}}</p>
                         <div *ngIf="aPaymentMethods?.length">
                             <div class="card-body">
-                                <table class="table table-row-bordered table-row-gray-300 gy-5 gs-5 mb-0 text-gray-600 fw-bold border">
+                                <table
+                                    class="table table-row-bordered table-row-gray-300 gy-5 gs-5 mb-0 text-gray-600 fw-bold border">
                                     <thead class="bg-gray-100">
                                         <tr class="fw-bold fs-6 text-gray-800">
                                             <th>{{ 'METHOD' | translate}}</th>
@@ -1082,7 +1111,8 @@
                                             <td class="ps-9">{{oPayment.sMethod}}</td>
                                             <td>{{oPayment.nAmount}}</td>
                                             <td *ngIf="paymentEditMode">
-                                                <input class="form-control" type="number" [(ngModel)]="oPayment.nNewAmount"
+                                                <input class="form-control" type="number"
+                                                    [(ngModel)]="oPayment.nNewAmount"
                                                     (ngModelChange)="reCalculateTotal()">
                                             </td>
                                             <td>{{oPayment.nQuantity}}</td>
@@ -1091,8 +1121,10 @@
                                             <tr *ngFor="let oPayment of aNewSelectedPaymentMethods; let i = index">
                                                 <td>
                                                     <div>
-                                                        <ng-select [(ngModel)]="aNewSelectedPaymentMethods[i]" [clearable]="false">
-                                                            <ng-option [value]="option" *ngFor="let option of payMethods">
+                                                        <ng-select [(ngModel)]="aNewSelectedPaymentMethods[i]"
+                                                            [clearable]="false">
+                                                            <ng-option [value]="option"
+                                                                *ngFor="let option of payMethods">
                                                                 {{ option.sName | translate }}
                                                             </ng-option>
                                                         </ng-select>
@@ -1100,14 +1132,15 @@
                                                 </td>
                                                 <td></td>
                                                 <td>
-                                                    <input class="form-control" type="number" [(ngModel)]="oPayment.nAmount"
+                                                    <input class="form-control" type="number"
+                                                        [(ngModel)]="oPayment.nAmount"
                                                         (ngModelChange)="reCalculateTotal()">
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <td colspan="3" class="text-start">
                                                     <span class="cursor-pointer text-gray-800" (click)="addRow()"> +
-                                                        Click here to add more</span>
+                                                        {{ "CLICK_HERE_TO_ADD_MORE" | translate}}</span>
                                                 </td>
                                             </tr>
                                         </ng-container>
@@ -1124,7 +1157,8 @@
                                                 </th>
                                                 <th class="w-150px">
                                                     <button class="btn btn-sm btn-primary"
-                                                        (click)="saveUpdatedPayments($event)">Save</button>
+                                                        (click)="saveUpdatedPayments($event)"> {{ "SAVE" |
+                                                        translate}}</button>
                                                 </th>
                                             </ng-container>
                                         </tr>
@@ -1145,11 +1179,13 @@
                         <p *ngIf="!oStockPerLocation.aHistory">{{ 'STOCK_HISTORY_NOT_FOUND' | translate}}</p>
                         <div *ngIf="oStockPerLocation.aHistory">
                             <div class="card-body">
-                                <table class="table table-row-bordered table-row-gray-300 gy-5 gs-5 mb-0 text-gray-600 fw-bold border">
+                                <table
+                                    class="table table-row-bordered table-row-gray-300 gy-5 gs-5 mb-0 text-gray-600 fw-bold border">
                                     <thead class="bg-gray-100">
                                         <tr class="fw-bold fs-6 text-gray-800">
                                             <th>{{ 'LOCATION_NAME' | translate}}</th>
-                                            <th class="w-150px">{{ 'PURCHASE_PRICE' | translate}} - {{oStockPerLocation.nTotalPurchasePrice}}</th>
+                                            <th class="w-150px">{{ 'PURCHASE_PRICE' | translate}} -
+                                                {{oStockPerLocation.nTotalPurchasePrice}}</th>
                                         </tr>
                                     </thead>
                                     <tbody class="p-2">
@@ -1190,7 +1226,7 @@
                                     <tbody class="fw-bold text-gray-600">
                                         <tr class="even">
                                             <td>
-                                                <span>Total Revenue</span>
+                                                <span>{{ "TOTAL_REVENUE" | translate}}</span>
                                             </td>
                                             <td>
                                             </td>
@@ -1199,7 +1235,7 @@
                                         </tr>
                                         <tr class="even">
                                             <td>
-                                                <span>Quantity</span>
+                                                <span>{{ "QUANTITY" | translate}}</span>
                                             </td>
                                             <td>
                                             </td>
@@ -1210,7 +1246,7 @@
                                 </table>
 
                                 <hr>
-                                <h4>Transactions</h4>
+                                <h4>{{ "TRANSACTIONS" | translate}}</h4>
                                 <table
                                     class="table table-green align-middle table-row-dashed fs-6 gy-5 dataTable no-footer">
                                     <thead style="position: sticky;">
@@ -1246,7 +1282,7 @@
                                     <tfoot style="position: sticky;">
                                         <tr class="even">
                                             <td>
-                                                <span>Total</span>
+                                                <span>{{ "TOTAL" | translate}}</span>
                                             </td>
                                             <td>
                                                 <span>-</span>
@@ -1261,7 +1297,7 @@
                                     </tfoot>
                                 </table>
                                 <hr>
-                                <h4>Payments</h4>
+                                <h4>{{ "PAYMENTS" | translate}}</h4>
                                 <table
                                     class="table table-green align-middle table-row-dashed fs-6 gy-5 dataTable no-footer">
                                     <thead style="position: sticky;">
@@ -1297,7 +1333,7 @@
                                     <tfoot style="position: sticky;">
                                         <tr class="even">
                                             <td>
-                                                <span>Total</span>
+                                                <span>{{ "TOTAL" | translate}}</span>
                                             </td>
                                             <td>
                                                 <span>-</span>
@@ -1328,7 +1364,7 @@
                     <div class="col-md-6">
                         <div class="card-header align-items-center p-5">
                             <div class="card-title col-md-12">
-                                <h4> Counting</h4>
+                                <h4>{{ "COUNTING" | translate}}</h4>
                             </div>
                         </div>
                         <div class="card-body p-5">
@@ -1344,7 +1380,8 @@
                                             <td class="mx-2">
                                                 <input type="number" class="form-control p-2"
                                                     [(ngModel)]="amount.nQuantity"
-                                                    (ngModelChange)="calculateTotalCounting()" [disabled]="bDisableCountings">
+                                                    (ngModelChange)="calculateTotalCounting()"
+                                                    [disabled]="bDisableCountings">
                                             </td>
                                             <td class="w-50">
                                                 <label class="currency">{{ (amount.nQuantity * amount.nValue) |
@@ -1366,7 +1403,8 @@
                                 <div class="d-flex flex-wrap">
                                     <label>{{'NOTES' | translate}}</label>
                                     <div class="flex-grow-1 ms-5">
-                                        <textarea class="form-control" rows="5" [disabled]="bDisableCountings" [(ngModel)]="oStatisticsDocument.sComment"></textarea>
+                                        <textarea class="form-control" rows="5" [disabled]="bDisableCountings"
+                                            [(ngModel)]="oStatisticsDocument.sComment"></textarea>
                                     </div>
                                 </div>
                             </ng-container>
@@ -1376,46 +1414,48 @@
                     <div class="col-md-6">
                         <div class="card-header align-items-center p-5">
                             <div class="card-title col-md-12">
-                                <h4> Earnings </h4>
+                                <h4> {{ "EARNINGS" | translate}} </h4>
                             </div>
                         </div>
                         <div class="card-body">
 
                             <div class="earnings-section">
                                 <div>
-                                    <label>Cash at opening day state</label>
+                                    <label>{{ "CASH_LEFTOVER" | translate}}</label>
                                     <label class="">{{ oCountings.nCashAtStart | currency:"EUR":"symbol" }}</label>
                                 </div>
                                 <div>
-                                    <label>Cash mutations</label>
+                                    <label>{{ "CASH_MUTATION" | translate}}</label>
                                     <label class="">{{ '0.00' | currency:"EUR":"symbol" }}</label>
                                 </div>
                                 <div>
-                                    <label>Cash in Till</label>
+                                    <label>{{ "CASH_IN_TILL" | translate}}</label>
                                     <label class="">{{ oCountings.nCashInTill | currency:"EUR":"symbol" }}</label>
                                 </div>
                                 <div>
-                                    <label>Cash Counted</label>
+                                    <label>{{ "CASH_COUNTED" | translate}}</label>
                                     <input type="number" class="form-control p-2 w-30"
                                         [(ngModel)]="oCountings.nCashCounted" [disabled]="bDisableCountings">
                                 </div>
                                 <div>
-                                    <label>Difference in Cash</label>
+                                    <label>{{ "TREASURY_DIFFERENCE" | translate}}</label>
                                     <label class="bold">
                                         {{ (oCountings.nCashAtStart + oCountings.nCashInTill - oCountings.nCashCounted)
                                         | currency:"EUR":"symbol" }}
                                     </label>
                                 </div>
                                 <div>
-                                    <label>Skim</label>
+                                    <label>{{ "SKIM" | translate}}</label>
                                     <input type="number" class="form-control p-2 w-30" [(ngModel)]="oCountings.nSkim"
-                                        (ngModelChange)="oCountings.nCashRemain = oCountings.nCashCounted - oCountings.nSkim" [disabled]="bDisableCountings">
+                                        (ngModelChange)="oCountings.nCashRemain = oCountings.nCashCounted - oCountings.nSkim"
+                                        [disabled]="bDisableCountings">
                                 </div>
                                 <div>
-                                    <label>Amount to be kept in cash register</label>
+                                    <label>{{ "AMOUNT_TO_LEFT_IN_CASH" | translate}}</label>
                                     <input type="number" class="form-control p-2 w-30"
                                         [(ngModel)]="oCountings.nCashRemain"
-                                        (ngModelChange)="oCountings.nSkim = oCountings.nCashCounted - oCountings.nCashRemain" [disabled]="bDisableCountings">
+                                        (ngModelChange)="oCountings.nSkim = oCountings.nCashCounted - oCountings.nCashRemain"
+                                        [disabled]="bDisableCountings">
                                 </div>
                                 <!-- <div>
                                     <label>Remaining Cash</label>
@@ -1426,13 +1466,14 @@
                                 <br>
                                 <ng-container *ngIf="oStatisticsDocument?.bIsDayState">
                                     <div class="d-flex justify-content-start">
-                                        <button type="button" class="btn btn-primary" data-kt-roles-modal-action="submit"
-                                        (click)="closeDayState()" [class.disabled]="closingDayState">
-                                        <span class="indicator-label">{{ "CLOSE_DAYSTATE" | translate}}</span>
-                                    </button>
-                                    <div *ngIf="closingDayState" class="spinner-border mx-5"></div>
-                                </div>
-                            </ng-container>
+                                        <button type="button" class="btn btn-primary"
+                                            data-kt-roles-modal-action="submit" (click)="closeDayState()"
+                                            [class.disabled]="closingDayState">
+                                            <span class="indicator-label">{{ "CLOSE_DAYSTATE" | translate}}</span>
+                                        </button>
+                                        <div *ngIf="closingDayState" class="spinner-border mx-5"></div>
+                                    </div>
+                                </ng-container>
 
                             </div>
                         </div>

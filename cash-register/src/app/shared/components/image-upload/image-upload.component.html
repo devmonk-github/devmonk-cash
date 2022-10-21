@@ -9,8 +9,10 @@
   </div>
   <div class="card-body pt-0 row">
     <div>
-      <button class="btn btn-secondary" (click)="webcamImage = null; useCamera()">Use camera/webcam</button>
-      <label for="file1" class="btn btn-secondary" (click)="webcamImage = null; useUpload()">Upload file</label>
+      <button class="btn btn-secondary" (click)="webcamImage = null; useCamera()"> {{ "USE_CAMERA_OR_WEBCAM" |
+        translate}}</button>
+      <label for="file1" class="btn btn-secondary" (click)="webcamImage = null; useUpload()">{{ "UPLOAD_FILE" |
+        translate}}</label>
       <input id="file1" type="file" class="form-control" (change)="onFileChange($event)" #fileHandler hidden>
     </div>
     <div class="col-md-12">
@@ -28,7 +30,7 @@
         <!-- <img class="img-thumbnail" height="241" width="430" [src]="webcamImage.imageAsDataUrl" /> -->
       </div>
 
-      <button class="btn btn-primary" (click)="submit()" type="submit">Submit</button>
+      <button class="btn btn-primary" (click)="submit()" type="submit"> {{ "SUBMIT" | translate}}</button>
     </div>
   </div>
 </div>

@@ -243,7 +243,7 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
   setOptionMenu() {
     this.aOptionMenu = [
       {
-        sKey: 'Sales',
+        sKey: 'SALES',
         sValue: 'cash-registry',
         children: [
           {
@@ -345,7 +345,7 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
         ],
       },
       {
-        sKey: 'Purchases',
+        sKey: 'PURCHASE',
         sValue: 'purchase-order',
         children: [
           {
@@ -447,7 +447,7 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
         ],
       },
       {
-        sKey: 'Sales orders',
+        sKey: 'SALES_ORDERS',
         sValue: 'sales-order',
         children: [
           // ArticleGroup
@@ -716,7 +716,7 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
           if (oData?.oStatistic?._id) {
             if (oData?.oStatistic?.aPaymentMethods?.length) this.aPaymentMethods = oData?.oStatistic?.aPaymentMethods;
             this.oStatisticsDocument = oData?.oStatistic;
-            if(!this.oStatisticsDocument?.sComment) this.oStatisticsDocument.sComment = '';
+            if (!this.oStatisticsDocument?.sComment) this.oStatisticsDocument.sComment = '';
             this.processCounting();
           }
         }
@@ -734,7 +734,7 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
     this.aStatistic = [];
     this.aPaymentMethods = [];
     let aLocation = this?.aSelectedLocation?.length ? this.aSelectedLocation : [];
-    let iWorkstationId = this.selectedWorkStation?.length ? this.selectedWorkStation :[];
+    let iWorkstationId = this.selectedWorkStation?.length ? this.selectedWorkStation : [];
     if (this.iStatisticId) {
       /* It's only for view purpose and we can only view for the current location and current workstation */
       aLocation = [this.iLocationId];
@@ -999,7 +999,7 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
         bIsArticleGroupLevel: this.bIsArticleGroupLevel,
         bIsSupplierMode: this.bIsSupplierMode,
         iLocationId: this?.aSelectedLocation?.length ? this.aSelectedLocation : [],
-        iWorkstationId: this.selectedWorkStation?. length ? this.selectedWorkStation :[]
+        iWorkstationId: this.selectedWorkStation?.length ? this.selectedWorkStation : []
       },
       sTransactionType: this.optionMenu,
       iBusinessId: this.iBusinessId,
@@ -1368,4 +1368,3 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
     if (this.dayClosureListSubscription) this.dayClosureListSubscription.unsubscribe();
   }
 }
-
