@@ -90,14 +90,12 @@ export class CommonPrintSettingsService {
             } else {
                 this.pageWidth = this.pageSizes[this.oCommonParameters['pageSize']].pageHeight;
             }
-            // console.log(this.oCommonParameters);
     }
 
     calcColumnWidth(size: number): number {
         size = (size === null || size > 12 || size === undefined) ? 12 : size;
         let totalMargin = this.oCommonParameters['pageMargins'][0] + this.oCommonParameters['pageMargins'][2];
         let num = size * ((this.pageWidth * this.MM_TO_PT_CONVERSION_FACTOR - totalMargin) / 12);
-        // console.log({ pageWidth: this.pageWidth, size, width: parseFloat(num.toFixed(2)) - 9, totalMargin: totalMargin });
         return parseFloat(num.toFixed(2)) - 9;
     }
 }

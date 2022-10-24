@@ -59,9 +59,6 @@ export class LabelTemplateModelComponent implements OnInit {
   ngOnInit() {
   }
   saveLabelTemplate() {
-    console.log(
-      { json: this.jsonEditor.jsonData }
-    );
     if (this.validateTemplateJson(this.jsonEditor.jsonData))
       this.close(this.jsonEditor.jsonData)
   }
@@ -106,11 +103,6 @@ export class LabelTemplateModelComponent implements OnInit {
     })
 
     let isMissingAnyKey = jsonKeys.sort().join() !== jsonDataKeys.sort().join();
-    console.log({
-      jsonKeys,
-      jsonDataKeys,
-      isMissingAnyKey
-    })
     if (isMissingAnyKey) {
       this.toastService.show({ type: 'warning', text: 'Invalid Json Template' });
 
@@ -120,14 +112,8 @@ export class LabelTemplateModelComponent implements OnInit {
       if (!ele.sType || !ele.x || !ele.y) {
         isMissingAnyKey = true
         this.toastService.show({ type: 'warning', text: 'Invalid Json Template Element ' + (i + 1) });
-        console.log({
-          ele
-        });
       }
     })
-    console.log({
-      isMissingAnyKey
-    });
     return !isMissingAnyKey
   }
   preview() {
@@ -157,10 +143,6 @@ export class LabelTemplateModelComponent implements OnInit {
       index: 0,
       dpmm: 8
     }
-
-    console.log({
-      zpl: oBody
-    });
 
     function convertToInches(mmValue: any) {
       return Number(mmValue / 25.4).toFixed(2);

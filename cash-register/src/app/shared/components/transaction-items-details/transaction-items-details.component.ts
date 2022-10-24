@@ -81,7 +81,6 @@ export class TransactionItemsDetailsComponent implements OnInit {
       const discountRecords = this.transactionItems.filter(o => o.oType.eKind === 'discount' || o.oType.eKind === 'loyalty-points-discount');
       // const loyaltyPoints = this.transactionItems.filter(o => o.oType.eKind === 'loyalty-points' || o.oType.eKind === 'loyalty-points');
       this.bIsAnyGiftCardDiscount = this.transactionItems.find((el: any) => el?.oType?.eKind === 'giftcard-discount')
-      console.log('fetchTransactionItems: ', this.transactionItems, this.bIsAnyGiftCardDiscount);
       this.transactionItems = this.transactionItems.filter(o => o.oType.eKind !== 'discount' && o.oType.eKind !== 'loyalty-points' && o.oType.eKind !== 'loyalty-points-discount' && o.oType.eKind !== 'giftcard-discount');
       this.transactionItems.forEach(element => {
         const elementDiscount = discountRecords.filter(o => o.sUniqueIdentifier === element.sUniqueIdentifier);

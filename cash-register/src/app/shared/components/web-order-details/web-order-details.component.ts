@@ -421,7 +421,6 @@ export class WebOrderDetailsComponent implements OnInit {
   }
 
   submit() {
-    console.log('Submit');
   }
 
 }

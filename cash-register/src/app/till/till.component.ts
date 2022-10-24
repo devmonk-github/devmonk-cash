@@ -379,7 +379,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   itemChanged(item: any, index: number): void {
-    console.log('itemChanged: ', item, index);
     switch (item) {
       case 'delete':
         this.transactionItems.splice(index, 1);
@@ -530,35 +529,15 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   getRelatedTransactionItem(iActivityItemId: string, iTransactionItemId: string, index: number) {
-    // console.log("getRelatedTransactionItem", iActivityItemId, iTransactionItemId);
     return this.apiService.getNew('cashregistry', `/api/v1/transaction/item/activityItem/${iActivityItemId}?iBusinessId=${this.business._id}&iTransactionItemId=${iTransactionItemId}`).toPromise();
-    // .subscribe(
-    //   (result: any) => {
-    //     this.transaction.aTransactionItems[index].related = result.data || [];
-    //   }, (error) => {
-    //     console.log(error);
-    //   })
   }
 
   getRelatedTransaction(iActivityId: string, iTransactionId: string) {
-    // console.log('getRelatedTransaction', iActivityId, iTransactionId);
     const body = {
       iBusinessId: this.business._id,
       iTransactionId: iTransactionId
     }
     return this.apiService.postNew('cashregistry', '/api/v1/transaction/activity/' + iActivityId, body);
-    // .subscribe(
-    //   (result: any) => {
-    //     this.transaction.related = result.data || [];
-    //     this.transaction.related.forEach((obj: any) => {
-    //       obj.aPayments.forEach((obj: any) => {
-    //         obj.dCreatedDate = moment(obj.dCreatedDate).format('DD-MM-yyyy hh:mm');
-    //       });
-    //       this.transaction.aPayments = this.transaction.aPayments.concat(obj.aPayments);
-    //     })
-    //   }, (error) => {
-    //     console.log(error);
-    //   })
   }
 
   createTransaction(): void {
@@ -605,7 +584,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
           let result = body.transactionItems.map((a: any) => a.iBusinessPartnerId);
           const uniq = [...new Set(_.compact(result))];
           if (this.appliedGiftCards?.length) this.tillService.createGiftcardTransactionItem(body, this.discountArticleGroup);
-          console.log('transaction creation: ', body)
           this.apiService.postNew('cashregistry', '/api/v1/till/transaction', body)
             .subscribe((data: any) => {
               this.toastrService.show({ type: 'success', text: 'Transaction created.' });
@@ -641,7 +619,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   async processTransactionForPdfReceipt() {
-    console.log('this.activityItems', this.activityItems)
 
 
     const relatedItemsPromises: any = [];
@@ -684,7 +661,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       relatedItemsPromises[index] = this.getRelatedTransactionItem(item?.iActivityItemId, item?._id, index);
     })
     await Promise.all(relatedItemsPromises).then(result => {
-      // console.log(result);
       result.forEach((item: any, index: number) => {
         this.transaction.aTransactionItems[index].related = item.data || [];
       })
@@ -705,9 +681,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     })
 
     this.transaction = dataObject;
-    // this.processTransactionData();
 
-    // console.log('processTransactionData is finished')
     if (!this.businessDetails) {
       const _result: any = await this.getBusinessDetails().toPromise();
 
@@ -724,7 +698,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       oDataSource.bHasPrePayments = false;
     } else {
       oDataSource.aTransactionItems.forEach((item: any) => {
-        // console.log({item});
         nTotalOriginalAmount += item.nPriceIncVat;
         let description = `${item.description}\n`;
         if (item.nPriceIncVat !== item.nPaymentAmount) {
@@ -754,7 +727,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     ])
     oDataSource.sBusinessLogoUrl = _oLogoData.data;
 
-    console.log(752, _template, _oLogoData);
     const aTemplates = _template.data;
     let title = '';
     aTemplates.forEach((template: any) => {
@@ -788,7 +760,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   sendForReceipt(oDataSource: any, template: any, title: any) {
-    console.log('send for receipt', oDataSource, template, title);
     this.receiptService.exportToPdf({
       oDataSource: oDataSource,
       pdfTitle: title,
@@ -1084,14 +1055,12 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     const paymentMethod = this.payMethods.find((o: any) => o.sName.toLowerCase() === 'cash');
     this.dialogService.openModal(AddExpensesComponent, { cssClass: 'modal-m', context: { paymentMethod } })
       .instance.close.subscribe(result => {
-        // console.log(result);
       });
   }
 
   openCardsModal(oGiftcard?: any) {
     this.dialogService.openModal(CardsComponent, { cssClass: 'modal-lg', context: { customer: this.customer, oGiftcard } })
       .instance.close.subscribe(result => {
-        console.log('When Redeem GiftCard closed: ', result, result?.giftCardInfo?.type);
         if (result) {
           if (result.giftCardInfo.nAmount > 0) {
             this.appliedGiftCards.push(result.giftCardInfo);
@@ -1255,9 +1224,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
   /* When doing */
   assignAllAmount(index: number) {
-    console.log('amount: ', this.payMethods[index].amount);
     this.payMethods[index].amount = -(this.getUsedPayMethods(true) - this.getTotals('price'));
-    console.log('index: ', this.payMethods[index], this.payMethods);
     this.changeInPayment();
     this.createTransaction();
   }
@@ -1317,15 +1284,12 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   openWarningPopup(urls: any): void {
     this.dialogService.openModal(SupplierWarningDialogComponent, { cssClass: 'modal-lg', context: { urls } })
       .instance.close.subscribe((data) => {
-        console.log(data);
       })
   }
 
   async openModal(barcode: any) {
     this.toastrService.show({ type: 'success', text: 'Barcode detected: ' + barcode })
     if (barcode.startsWith("AI")) {
-      console.log('activity item', barcode);
-      // activityitem.find({sNumber: barcode},{eTransactionItem.eKind : 1})
       let oBody: any = {
         iBusinessId: this.business._id,
         oFilterBy: {
@@ -1340,14 +1304,10 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
         }
         const iActivityId = activityItemResult?.data[0].result[0].iActivityId;
         const iActivityItemId = activityItemResult?.data[0].result[0]._id;
-        // const activityResult: any = await this.apiService.postNew('cashregistry', `/api/v1/activities/items/${iActivityId}`, oBody).toPromise();
-        // console.log(activityResult);
-        // if (activityResult.data[0]?.result?.length)
         this.openTransaction({ _id: iActivityId }, 'activity', [iActivityItemId]);
       }
     } else if (barcode.startsWith("T")) {
 
-      console.log('transaction', barcode);
       const oBody = {
         iBusinessId: this.business._id,
         searchValue: barcode
@@ -1358,7 +1318,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       }
       //transactions.find({sNumber: barcode})
     } else if (barcode.startsWith("A")) {
-      console.log('Fetching activity', barcode);
 
       const oBody = {
         iBusinessId: this.business._id,
@@ -1377,7 +1336,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
         }
       }
       let result: any = await this.apiService.postNew('cashregistry', `/api/v1/activities/activity-item`, oBody).toPromise();
-      // console.log(result);
       if (result?.data[0]?.result?.length) {
         const oGiftcard = result?.data[0]?.result[0];
         this.openCardsModal(oGiftcard)
@@ -1390,7 +1348,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   openTransaction(transaction: any, itemType: any, aSelectedIds?: any) {
-    console.log('open transaction', transaction, itemType);
     this.dialogService.openModal(TransactionItemsDetailsComponent, { cssClass: "modal-xl", context: { transaction, itemType, aSelectedIds } })
       .instance.close.subscribe(result => {
         const transactionItems: any = [];

@@ -48,7 +48,6 @@ export class SavingPointsComponent implements OnInit {
   // /api/v1/points-settings
   fetchSetting() {
     this.apiService.getNew('cashregistry', `/api/v1/points-settings?iBusinessId=${this.iBusinessId}`).subscribe((result: any) => {
-      console.log(result);
       this.savingPointsSettings = result;
       // if (result.data && result.data.length > 0) {
       // this.brandsList = result.data[0].result;
@@ -61,9 +60,7 @@ export class SavingPointsComponent implements OnInit {
   }
 
   updateSettings() {
-    console.log(this.savingPointsSettings);
     this.apiService.putNew('cashregistry', `/api/v1/points-settings/${this.savingPointsSettings._id}?iBusinessId=${this.iBusinessId}`, this.savingPointsSettings).subscribe((result: any) => {
-      console.log(result);
     });
   }
 

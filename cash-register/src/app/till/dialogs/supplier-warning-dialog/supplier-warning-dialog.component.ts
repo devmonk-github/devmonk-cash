@@ -36,6 +36,5 @@ export class SupplierWarningDialogComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
-    console.log(this.urls);
   }
 }

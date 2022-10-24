@@ -107,18 +107,11 @@ export class ReceiptService {
 
     async exportToPdf({ oDataSource, templateData, pdfTitle, printSettings, printActionSettings, eSituation }:any){
         this.oOriginalDataSource = oDataSource;
-        console.log(this.oOriginalDataSource);
         this.pdfService.getTranslations();
-        // console.log(this.translations);
-        // if (this.oOriginalDataSource?.businessDetails?.sLogoLight){
-        //     const result = await this.getBase64FromUrl(this.oOriginalDataSource.businessDetails.sLogoLight).toPromise();
-        //     this.logoUri = result.data;
-        // }
+    
         this.commonService.pdfTitle = pdfTitle;
         this.commonService.mapCommonParams(templateData.aSettings);
         this.processTemplate(templateData.layout);
-
-        // console.log(this.content);
 
         this.pdfServiceNew.getPdfData({
             styles: this.styles,
@@ -163,7 +156,6 @@ export class ReceiptService {
         let tables:any = [];
         let nSize = 0;
         rows.forEach((row: any) => {
-            // console.log('process row', row);
             if (row?.type === 'dashedLine'){
                 this.content.push(this.addDashedLine(row.coordinates, row.absolutePosition));
             } else if(row?.type === 'rect'){
@@ -178,7 +170,6 @@ export class ReceiptService {
                 tableWidths.push(this.getWidth(row.size));
 
                 nSize += Number(row.size);
-                // console.log('size is', nSize);
                 if (nSize >= 12) {
                     let data: any = {
                         table: {
@@ -188,7 +179,6 @@ export class ReceiptService {
                         layout: (layout) ? this.getLayout(layout) : 'noBorders'
                     };
                     tables.push(data);
-                    // console.log('pushing current table', data);
                     tableWidths = [];
                     nSize = 0;
                     texts = [];
@@ -208,8 +198,6 @@ export class ReceiptService {
             tables.push(data);
         }
         
-        // console.log({tables});
-        // if (layout) data.layout = this.getLayout(layout);
         return tables;
     }
 
@@ -218,45 +206,14 @@ export class ReceiptService {
     }
 
     processAbsoluteData(absoluteElements: any) {
-        // console.log('absoluteElements: ', absoluteElements);
-        // absoluteElements.forEach(async (el: any) => {
-        //     if(el.type==='text'){
-        //         let text = this.pdfService.replaceVariables(el.html, this.oOriginalDataSource);
-        //         this.content.push({ text: text, absolutePosition: { x: el.position.x * this.commonService.MM_TO_PT_CONVERSION_FACTOR, y: el.position.y * this.commonService.MM_TO_PT_CONVERSION_FACTOR } })
-        //     } else if(el.type==='image'){
-        //         let l = (await this.getBase64FromUrl(this.oOriginalDataSource[el.url]).toPromise()).data;
-        //         console.log(l);
-        //         this.content.push({
-        //             image: l,
-        //             width: el.size || 150,
-        //             absolutePosition: { x: el.position.x, y: el.position.y }
-        //         });
-                
-        //     }
-        // });
-
         for (const el of absoluteElements) {
             if (el.type === 'text') {
                 let text = this.pdfService.replaceVariables(el.html, this.oOriginalDataSource);
                 this.content.push({ text: text, absolutePosition: { x: el.position.x * this.commonService.MM_TO_PT_CONVERSION_FACTOR, y: el.position.y * this.commonService.MM_TO_PT_CONVERSION_FACTOR } })
             } else if (el.type === 'image') {
                 const img = this.addImage(el);
-                // console.log(188, img);
                 this.content.push(img);
-                // console.log(this.oOriginalDataSource);
-                // const result:any = await this.getBase64FromUrl(this.oOriginalDataSource[el.url]).toPromise();
-                // const img = result.data;
-                // console.log(img);
-                
-                
-                // this.content.push({
-                //     image: this.oOriginalDataSource[el.url],
-                //     width: el.size || 150,
-                //     absolutePosition: { x: el.position.x * this.commonService.MM_TO_PT_CONVERSION_FACTOR, y: el.position.y * this.commonService.MM_TO_PT_CONVERSION_FACTOR }
-                // });
-
             }
-            // });
         }
     }
 
@@ -271,13 +228,10 @@ export class ReceiptService {
         let tableHeadersList:any = [];
         let bWidthsPushedFromColumns = false;
         if(columns){ // parsing columns if present
-            // console.log('columns.foreach', columns);
             columns.forEach((column:any)=>{
-                // console.log('column: ',column);
                 let bInclude:boolean = true;
                 if(column?.condition){
                     bInclude = this.checkCondition(column.condition, this.oOriginalDataSource);
-                    // console.log(bInclude, column.condition);
                 }
                 if (bInclude){
                     let text = this.pdfService.removeBrackets(column.html);//removes [[ ]] from placeholders
@@ -289,35 +243,24 @@ export class ReceiptService {
                     tableHeadersList.push(obj); 
                     tableWidths.push(this.getWidth(column.size));
                 }
-                // console.log(obj);
             });
             bWidthsPushedFromColumns = true;
         }
-        // console.log(tableHeadersList);
         let currentDataSource = this.oOriginalDataSource;
         let texts:any = [];
 
         if(forEach){ //if we have forEach (nested array) then loop through it
             currentDataSource = this.oOriginalDataSource[forEach]; //take nested array as currentDataSource
-            // console.log('if foreach currentDataSource', currentDataSource);
-            // if(!currentDataSource){
-            //     console.log('307 if');
-            //     currentDataSource = [];
-            //     currentDataSource[0] = this.oOriginalDataSource;
-            // }
             
-            // console.log(311, currentDataSource); 
             let bWidthPushed = false;
             if (currentDataSource?.length) {
                 currentDataSource.forEach((dataSource: any) => {
 
                     let dataRow: any = [];
                     rows.forEach((row: any) => {
-                        // console.log(301, row);
                         let bInclude: boolean = true;
                         if (row?.condition) {
                             bInclude = this.checkCondition(row.condition, dataSource);
-                            // console.log(bInclude, row.condition, dataSource);
                         }
 
                         if (bInclude) {
@@ -328,7 +271,6 @@ export class ReceiptService {
                         }
 
                     });
-                    // console.log(310, dataRow);
                     texts.push(dataRow);
                     bWidthPushed = true;
 
@@ -342,31 +284,21 @@ export class ReceiptService {
                     dataRow.push(img);
                     tableWidths.push(this.getWidth(row.size));
                 } else {
-                    // console.log(row, this.getWidth(row.size));
                     currentDataSource = (row?.object) ? this.oOriginalDataSource[row.object] : this.oOriginalDataSource;
 
                     let bInclude: boolean = true;
                     if (row?.condition) {
                         bInclude = this.checkCondition(row.condition, currentDataSource);
-                        // console.log(bInclude, row.condition);
                     }
 
                     if (bInclude) {
-                        // console.log('calling add row', currentDataSource);
                         this.addRow(dataRow,row,currentDataSource, tableWidths);
-                        // let text = this.pdfService.replaceVariables(row.html, currentDataSource);
-                        // let obj = { text: text };
-                        // if (row?.styles) obj = { ...obj, ...row.styles };
-                        // dataRow.push(obj);
-                        // // console.log('328 ', obj)
                         tableWidths.push(this.getWidth(row.size));
                     }
                 }               
             });
-            // console.log(dataRow, tableWidths);
             texts.push(dataRow);
         }
-        // let totalRow: any = [];
         let finalData:any = [];
         if (tableHeadersList?.length)
             finalData = [[...tableHeadersList], ...texts];
@@ -375,44 +307,34 @@ export class ReceiptService {
 
         let data:any = {
             table: {
-                // headerRows: 1,
                 widths: tableWidths,
                 body: finalData,
                 dontBreakRows: true,
-                // keepWithHeaderRows: 1,
             },
         };
         if (styles) {
             data = { ...data, ...styles };
-            // styles.forEach((style: any) => {
-            // });
         }
         
         if (layout){
-            //pdfmake provides 3 built-in layouts so we can use them directly, otherwise we can use custom layout from common service
             data.layout = (['noBorders', 'headerLineOnly', 'lightHorizontalLines'].includes(layout)) ? data.layout = layout : this.commonService.layouts[layout];
         } 
-        // console.log('finalData in content', data);
         return data;
     }
     
     processSimpleData(row:any, object?:any){
-        // console.log(row, object);
         row.forEach((el: any) => {
             if (el?.html) {
 
                 let html = el.html || '';
                 if (typeof html === 'string') {
                     let text = this.pdfService.replaceVariables(html, (object) ? this.oOriginalDataSource[object] : this.oOriginalDataSource) || html;
-                    // console.log({ el, text });
-                    // text = this.pdfService.removeBrackets(text);
                     let obj:any = { text: text};
                     if (el?.alignment) obj.alignment = el.alignment;
                     if(el?.size) obj.width = this.getWidth(el.size);
                     if (el?.styles) {
                         obj = { ...obj, ...el.styles}
                     }
-                    // console.log(obj);
                     this.content.push(obj);
                 }
             } else if(el?.type === 'image'){
@@ -428,9 +350,7 @@ export class ReceiptService {
             let columnData: any;
             if (el?.type === 'image') {
                 let img = this.addImage(el);
-                // console.log(372, img);
                 columnData = img;
-                // columns.push(img);
             } else if(el?.type === 'dashedLine'){
                 columnData = this.addDashedLine(el.coordinates, el?.absolutePosition);
                 // columns.push()
@@ -447,19 +367,14 @@ export class ReceiptService {
                     "stack":this.processStack(el)
                 };
                 if (el?.width) obj.width = el.width;
-                // console.log(obj);
                 columnData = obj;
-                // columns.push(obj);
             } else {
                 let html = el.html || '';
-                // console.log(360, html);
                 let object = el?.object;
                 let text = this.pdfService.replaceVariables(html, (object) ? this.oOriginalDataSource[object] : this.oOriginalDataSource);
-                // console.log(459, text, el);
                 columnData = { text: text };
                 if (el?.width) columnData.width = el?.width;
                 if (el?.alignment) columnData.alignment = el?.alignment;
-                // columns.push(columnData);
             }
             if (el?.alignment) columnData.alignment = el?.alignment;
             if (el?.styles) columnData = { ...columnData, ...el.styles }
@@ -469,7 +384,6 @@ export class ReceiptService {
         });
         let obj = {columns: columns};
         if (styles) obj = {...obj, ...styles };
-        // console.log({obj});
         this.content.push(obj);
     }
 
@@ -478,7 +392,6 @@ export class ReceiptService {
     }
 
     addImage(el:any){
-        // console.log(el);
         let img: any = {
             image: this.oOriginalDataSource[el.url],// this.logoUri,
         };
@@ -541,13 +454,10 @@ export class ReceiptService {
         return aConditions.every((condition:any) => {
             switch(condition.operator){
                 case '>':
-                    // console.log('checking for >', dataSource[condition.field]);
                     return dataSource[condition.field] > condition.value;
                 case '===':
-                    // console.log('checking for ===', condition, dataSource);
                     return dataSource[condition.field1] === dataSource[condition.field2];
                 default:
-                    // console.log('default return false');
                     return false; 
             }
         });
@@ -558,7 +468,6 @@ export class ReceiptService {
         if (row?.conditionalHtml){
             const bCheck = this.checkCondition(row.conditions,dataSource);
             html = (bCheck) ? row.htmlIf : row.htmlElse
-            // console.log(row.conditionalHtml, bCheck, {html});
         }
 
         let text = this.pdfService.replaceVariables(html, dataSource);
@@ -566,11 +475,9 @@ export class ReceiptService {
         if(row?.alignment) obj.alignment = row.alignment;
         if (row?.styles) obj = { ...obj, ...row.styles };
         dataRow.push(obj);
-        // tableWidths.push(this.getWidth(row.size));
     }
 
     processStack(item:any, object?:any){
-        // console.log('processStack',item);
         const stack:any = [];
         item.elements.forEach((el:any)=>{
             if(el?.type === 'image'){

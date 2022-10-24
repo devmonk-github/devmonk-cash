@@ -214,18 +214,12 @@ export class ActivityDetailsComponent implements OnInit {
 
   onEmployeeChange(e: any) {
     this.employee = e.sName
-    console.log({ onSupplierChange: e });
-
   }
   onSupplierChange(e: any) {
     this.supplier = e.sName
-    console.log({ onSupplierChange: e });
-
   }
   onBrandChange(e: any) {
     this.brand = e.sName
-    console.log({ onBrandChange: e });
-
   }
 
   downloadOrder() { }
@@ -376,7 +370,6 @@ export class ActivityDetailsComponent implements OnInit {
   }
 
   async downloadCustomerReceipt(index: number, bPrint: boolean = false) {
-    // console.log('downloading customer receipt', index, this.activity);
     let oDataSource = JSON.parse(JSON.stringify(this.activity));
     if (oDataSource?.activityitems){
       oDataSource = oDataSource.activityitems[index];
@@ -388,8 +381,6 @@ export class ActivityDetailsComponent implements OnInit {
       this.businessDetails = result.data;
     }
     oDataSource.businessDetails = this.businessDetails;
-    // const template = await this.getTemplate('activity').toPromise();
-    // console.log(oDataSource);
     
     const template = await this.getTemplate(type).toPromise();
 
@@ -458,10 +449,8 @@ export class ActivityDetailsComponent implements OnInit {
   fetchCustomer(customerId: any, index: number) {
     this.apiService.getNew('customer', `/api/v1/customer/${customerId}?iBusinessId=${this.iBusinessId}`).subscribe(
       (result: any) => {
-        // console.log(result);
         if (index > -1) this.transactions[index].customer = result;
         else this.customer = result;
-        // this.close({ action: true });
       },
       (error: any) => {
         console.error(error)
@@ -487,7 +476,6 @@ export class ActivityDetailsComponent implements OnInit {
         if (obj.iStockLocationId) this.setSelectedBusinessLocation(obj.iStockLocationId, i)
         this.fetchCustomer(obj.iCustomerId, i);
       }
-      // console.log(this.transactions);
       setTimeout(() => {
         MenuComponent.reinitialization();
       }, 200);
@@ -505,12 +493,10 @@ export class ActivityDetailsComponent implements OnInit {
 
   submit() {
     const oActivityItem = this.activityItems[0];
-    console.log('oActivityItem: ', oActivityItem);
 
     oActivityItem.iBusinessId = this.iBusinessId;
     this.apiService.putNew('cashregistry', '/api/v1/activities/items/' + oActivityItem?.iActivityItemId, oActivityItem)
       .subscribe((result: any) => {
-        console.log('result: ', result);
       }, (error) => {
         console.log('error: ', error);
       })

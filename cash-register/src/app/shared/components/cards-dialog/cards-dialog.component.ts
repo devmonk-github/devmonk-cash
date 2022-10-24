@@ -111,12 +111,6 @@ export class CardsComponent implements OnInit, AfterViewInit {
         this.fetchInProgress = false;
       });
   }
-  // useThisCard(card: any) {
-
-  //   console.log(card);
-  //   this.appliedGiftCards.push(card);
-  //   console.log(this.appliedGiftCards)
-  // }
 
   fetchLoyaltyPoints() {
     if (this.customer) {

@@ -150,7 +150,6 @@ export class GiftComponent implements OnInit {
     const oDataSource = JSON.parse(JSON.stringify(this.item));
     oDataSource.sBarcodeURI = this.generateBarcodeURI('G-'+oDataSource.sGiftCardNumber);
 
-    console.log(oDataSource);
     this.receiptService.exportToPdf({
       oDataSource: oDataSource,
       templateData: template.data,

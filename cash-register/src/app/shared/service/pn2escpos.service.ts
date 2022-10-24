@@ -140,7 +140,6 @@ export class Pn2escposService {
       // 	"CP874"]
 
       // for(var c in encodings) {
-      // 	console.log('C', c, encodings[c])
       // 	commandString += this.epSetEncoding(encodings[c]) + encodings[c] + " : " + this.helperSanitizeCommand("€") + this.epBreak()
       // }
 
@@ -1163,7 +1162,6 @@ export class Pn2escposService {
       switch (type) {
         case "log":
           if (this.debug) {
-            console.log(message)
             if (dataObject) { console.log(dataObject) }
           }
           break;
@@ -1183,7 +1181,6 @@ export class Pn2escposService {
 
         default:
           if (this.debug) {
-            console.log(message)
             if (dataObject) { console.log(dataObject) }
           }
           break;

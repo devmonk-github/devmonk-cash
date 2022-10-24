@@ -118,8 +118,6 @@ export class ActivityItemsComponent implements OnInit {
   }
 
   openActivities(activity: any, openActivityId?:any) {
-    console.log('opening ActivityDetailsComponent with',activity);
-    
     this.dialogService.openModal(ActivityDetailsComponent, { cssClass: 'w-fullscreen', context: { activity: activity, openActivityId, items: true, from: 'activity-items' } })
       .instance.close.subscribe((result: any) => {
         if (result) this.routes.navigate(['business/till']);
@@ -209,7 +207,6 @@ export class ActivityItemsComponent implements OnInit {
   async openModal(barcode: any) {
     this.toastrService.show({ type: 'success', text: 'Barcode detected: ' + barcode })
     if (barcode.startsWith("AI")) {
-      console.log('activity item', barcode);
       // activityitem.find({sNumber: barcode},{eTransactionItem.eKind : 1})
       let oBody: any = {
         iBusinessId: this.businessDetails._id,
@@ -228,32 +225,25 @@ export class ActivityItemsComponent implements OnInit {
             _id: iActivityId
           }
         }
-        console.log({ oBody });
         const activityResult:any = await this.apiService.postNew('cashregistry', '/api/v1/activities', oBody).toPromise();
         
         // const oActivityItem = activityItemResult?.data[0].result[0]._id;
-        // console.log({ oActivityItem });
         // const activityItemsResult: any = await this.apiService.postNew('cashregistry', `/api/v1/activities/items/${iActivityId}`, {iBusinessId: this.businessDetails._id}).toPromise();
-        // console.log({ activityItemsResult });
         if (activityResult.data?.length){
           this.openActivities(activityResult.data[0], iActivityItemId);
         }
       }
     } else if (barcode.startsWith("A")) {
-      console.log('Fetching activity', barcode);
       let oBody = {
         iBusinessId: this.businessDetails._id,
         oFilterBy: {
           sNumber: barcode
         }
       }
-      console.log({ oBody });
       const activityResult: any = await this.apiService.postNew('cashregistry', '/api/v1/activities', oBody).toPromise();
 
       // const oActivityItem = activityItemResult?.data[0].result[0]._id;
-      // console.log({ oActivityItem });
       // const activityItemsResult: any = await this.apiService.postNew('cashregistry', `/api/v1/activities/items/${iActivityId}`, {iBusinessId: this.businessDetails._id}).toPromise();
-      // console.log({ activityItemsResult });
       if (activityResult.data?.length) {
         this.openActivities(activityResult.data[0]);
       }
@@ -267,7 +257,6 @@ export class ActivityItemsComponent implements OnInit {
         }
       }
       let result: any = await this.apiService.postNew('cashregistry', `/api/v1/activities/activity-item`, oBody).toPromise();
-      // console.log(result);
       if (result?.data[0]?.result?.length) {
         const oGiftcard = result?.data[0]?.result[0];
         this.openCardsModal(oGiftcard)
@@ -282,7 +271,6 @@ export class ActivityItemsComponent implements OnInit {
   openCardsModal(oGiftcard?: any, oCustomer?:any ) {
     this.dialogService.openModal(CardsComponent, { cssClass: 'modal-lg', context: { customer: oCustomer, oGiftcard } })
       .instance.close.subscribe(result => {
-        console.log('When Redeem GiftCard closed: ', result, result?.giftCardInfo?.type);
         if (result) {
           // if (result.giftCardInfo.nAmount > 0) {
           //   this.appliedGiftCards.push(result.giftCardInfo);
@@ -310,7 +298,6 @@ export class ActivityItemsComponent implements OnInit {
   
       this.propertyListSubscription = this.apiService.postNew('core', '/api/v1/properties/list', data).subscribe((result: any) => {
         if (result?.data && result?.data[0]?.result?.length) {
-          console.log('aProperty length: ', result?.data[0]?.result)
           result.data[0].result.map((property: any) => {
             if (typeof this.propertyOptions[property._id] == 'undefined') {
               this.propertyOptions[property._id] = [];
@@ -357,7 +344,6 @@ export class ActivityItemsComponent implements OnInit {
           }
         }
       }
-      console.log('aPropertyOptionIds: ', this.aPropertyOptionIds);
     }
   
     ngOnDestroy(): void {

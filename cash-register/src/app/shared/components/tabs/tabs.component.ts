@@ -38,7 +38,6 @@ export class TabsComponent implements AfterContentInit {
   // contentChildren are set
   ngAfterContentInit() {
     // get all active tabs
-    // console.log(this.tabs);
     
     if (this.activeTabIndex){
       this.selectTab(this.tabs.get(this.activeTabIndex));

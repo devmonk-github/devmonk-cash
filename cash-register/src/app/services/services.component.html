@@ -34,36 +34,32 @@
       <div class="col-12">
         <div class="separator separator-dashed mt-9 mb-6"></div>
         <div class="row g-4 mb-2">
-          <!-- <div class="col-xxl-12"> -->
-            <!-- <div class="row g-8"> -->
+
               <div class="col-lg-2">
-                <label class="fs-6 form-label fw-bolder text-dark">{{ "CREATED_MIN_DATE" | translate}}</label>
-                <input type="date" class="form-control form-control form-control-solid" name="startMinDate"
-                  [ngModel]="filterDates.startDate | date:'yyyy-MM-dd'"
-                  (ngModelChange)="filterDates.startDate = $event" />
+                <label class="fs-6 form-label fw-bolder text-dark">{{ "CREATE_MIN_DATE" | translate}}</label>
+                <input type="date" class="form-control form-control form-control-solid" name="createMinDate"
+                  [ngModel]="filterDates.create.minDate | date:'yyyy-MM-dd'"
+                  (ngModelChange)="filterDates.create.minDate = $event" />
               </div>
               <div class="col-lg-2">
-                <label class="fs-6 form-label fw-bolder text-dark">{{ "CREATED_MAX_DATE" | translate}}</label>
-                <input type="date" class="form-control form-control form-control-solid" name="startMaxDate"
-                  [ngModel]="filterDates.endDate | date:'yyyy-MM-dd'" (ngModelChange)="filterDates.endDate = $event" />
+                <label class="fs-6 form-label fw-bolder text-dark">{{ "CREATE_MAX_DATE" | translate}}</label>
+                <input type="date" class="form-control form-control form-control-solid" name="createMaxDate"
+                  [ngModel]="filterDates.create.maxDate | date:'yyyy-MM-dd'" (ngModelChange)="filterDates.create.maxDate = $event" />
               </div>
 
               <div class="col-lg-2">
-                <label class="fs-6 form-label fw-bolder text-dark">{{ "ESTIMATED_MIN_DATE" | translate}}</label>
-                <input type="date" class="form-control form-control form-control-solid" name="endMinDate"
-                  [ngModel]="endFilterDates.startDate | date:'yyyy-MM-dd'"
-                  (ngModelChange)="endFilterDates.startDate = $event" />
+                <label class="fs-6 form-label fw-bolder text-dark">{{ "ESTIMATE_MIN_DATE" | translate}}</label>
+                <input type="date" class="form-control form-control form-control-solid" name="estimateMinDate"
+                  [ngModel]="filterDates.estimate.minDate | date:'yyyy-MM-dd'"
+                  (ngModelChange)="filterDates.estimate.minDate = $event" />
               </div>
               <div class="col-lg-2">
-                <label class="fs-6 form-label fw-bolder text-dark">{{ "ESTIMATED_MAX_DATE" | translate}}</label>
-                <input type="date" class="form-control form-control form-control-solid" name="endMaxDate"
-                  [ngModel]="endFilterDates.endDate | date:'yyyy-MM-dd'" (ngModelChange)="endFilterDates.endDate = $event" />
+                <label class="fs-6 form-label fw-bolder text-dark">{{ "ESTIMATE_MAX_DATE" | translate}}</label>
+                <input type="date" class="form-control form-control form-control-solid" name="estimateMaxDate"
+                  [ngModel]="filterDates.estimate.maxDate | date:'yyyy-MM-dd'" (ngModelChange)="filterDates.estimate.maxDate = $event" />
               </div>
-            <!-- </div> -->
-          <!-- </div> -->
-          <!-- <div class="col-xxl-8">
-            <div class="row g-2"> -->
-              <div class="col-lg-3" *ngIf="isFor != 'activity'">
+
+              <div class="col-lg-3" *ngIf="isFor !== 'activity'">
                 <label class="fs-6 form-label fw-bolder text-dark">{{ "PAYMENT_METHOD" | translate}}</label>
                 <ng-select class="form-control form-control-solid p-0" [(ngModel)]="methodValue" [clearable]="false">
                   <ng-option *ngFor="let method of paymentMethods" [value]="method">{{method}}</ng-option>
@@ -77,8 +73,8 @@
                 </ng-select>
               </div>
               <div class="col-lg-3">
-                <label class="fs-6 form-label fw-bolder text-dark" *ngIf="isFor != 'activity'">{{'TRANSACTION_STATUS' | translate}}</label>
-                <label class="fs-6 form-label fw-bolder text-dark" *ngIf="isFor == 'activity'"> {{ 'ActivityStatus' | translate }}</label>
+                <label class="fs-6 form-label fw-bolder text-dark" *ngIf="isFor !== 'activity'">{{'TRANSACTION_STATUS' | translate}}</label>
+                <label class="fs-6 form-label fw-bolder text-dark" *ngIf="isFor == 'activity'"> {{ 'ACTIVITY_STATUS' | translate }}</label>
                 <ng-select class="form-control form-control-solid p-0" [multiple]="true"
                   [(ngModel)]="requestParams.selectedTransactionStatuses" [clearable]="false">
                   <ng-option *ngFor="let status of requestParams.transactionStatuses" [value]="status">{{status}}
@@ -86,7 +82,7 @@
                 </ng-select>
               </div>
               <!-- <div class="row g-4"> -->
-                <div class="col-lg-3" *ngIf="isFor != 'activity'">
+                <div class="col-lg-3" *ngIf="isFor !== 'activity'">
                   <label class="fs-6 form-label fw-bolder text-dark">{{ "INVOICE_STATUS" | translate}}</label>
                   <div class="nav-group nav-group-fluid">
                     <label>
@@ -128,14 +124,30 @@
                     </label>
                   </div>
                 </div>
-  
+                <div class="col-lg-2">
+                  <label class="fs-6 form-label fw-bolder text-dark">{{ 'BUSINESS_PARTNER' | translate }}</label>
+                  <ng-select class="form-control form-control-solid p-0" [multiple]="true" [(ngModel)]="requestParams.aSelectedBusinessPartner"
+                    [clearable]="false">
+                    <ng-option *ngFor="let oBusinessPartner of aFilterBusinessPartner" [value]="oBusinessPartner.iBusinessPartnerId">{{oBusinessPartner.sBusinessPartnerName}}
+                    </ng-option>
+                  </ng-select>
+                </div>
                 <div class="col-lg-2">
                   <label class="fs-6 form-label fw-bolder text-dark">{{ "EMPLOYEES" | translate}}</label>
-                  <ng-select class="form-control form-control-solid p-0" [clearable]="false" [(ngModel)]="employee">
-                    <ng-option *ngFor="let employeeObj of employees" [value]="employeeObj">{{employeeObj.sFirstName}}
+                  <ng-select class="form-control form-control-solid p-0" [clearable]="false" [(ngModel)]="requestParams.iEmployeeId">
+                    <ng-option *ngFor="let employeeObj of employees" [value]="employeeObj._id">{{employeeObj.sFirstName}}
                       {{employeeObj.sLastName || ''}}</ng-option>>
                   </ng-select>
                 </div>
+
+                <div class="col-lg-2">
+                  <label class="fs-6 form-label fw-bolder text-dark">{{ "ASSIGNEE" | translate}}</label>
+                  <ng-select class="form-control form-control-solid p-0" [clearable]="false" [(ngModel)]="requestParams.iAssigneeId">
+                    <ng-option *ngFor="let employeeObj of employees" [value]="employeeObj._id">{{employeeObj.sFirstName}}
+                      {{employeeObj.sLastName || ''}}</ng-option>>
+                  </ng-select>
+                </div>
+
                 <div class="col-lg-2">
                   <label class="fs-6 form-label fw-bolder text-dark">{{ 'WORKSTATION' | translate }}</label>
                   <ng-select class="form-control form-control-solid p-0" [multiple]="true"
@@ -152,61 +164,13 @@
                     </ng-option>
                   </ng-select>
                 </div>
-              <!-- </div> -->
-              <!-- <div class="col-lg-4"> 
-                <label class="fs-6 form-label fw-bolder text-dark">Transaction status</label>
-                <div class="nav-group nav-group-fluid">
-                  <label>
-                    <input type="radio" class="btn-check" name="status" value="all" [(ngModel)]="transactionStatus"
-                      checked="checked" />
-                    <span class="btn btn-sm btn-color-muted btn-active btn-active-primary fw-bolder px-4">All</span>
-                  </label>
-                  <label>
-                    <input type="radio" class="btn-check" name="status" value="new" [(ngModel)]="transactionStatus" />
-                    <span class="btn btn-sm btn-color-muted btn-active btn-active-primary fw-bolder px-4">New</span>
-                  </label>
-                  <label>
-                    <input type="radio" class="btn-check" name="status" value="completed"
-                      [(ngModel)]="transactionStatus" />
-                    <span
-                      class="btn btn-sm btn-color-muted btn-active btn-active-primary fw-bolder px-4">Completed</span>
-                  </label>
-                </div>
-              </div> -->
             </div>
-          <!-- </div>
-        </div> -->
+        
         <div class="row g-4">
           <div class="col-xxl-12">
       
           </div>
-          <!-- <div class="col-xxl-6">
-            <div class="row g-2">
-              <div class="col-lg-4">
-                <label class="fs-6 form-label fw-bolder text-dark">{{ "EMPLOYEES" | translate}}</label>
-                <ng-select class="form-control form-control-solid p-0" [clearable]="false" [(ngModel)]="employee">
-                  <ng-option *ngFor="let employeeObj of employees" [value]="employeeObj">{{employeeObj.sFirstName}}
-                    {{employeeObj.sLastName || ''}}</ng-option>>
-                </ng-select>
-              </div>
-              <div class="col-lg-4">
-                <label class="fs-6 form-label fw-bolder text-dark">{{ 'WORKSTATION' | translate }}</label>
-                <ng-select class="form-control form-control-solid p-0" [multiple]="true"
-                  [(ngModel)]="selectedWorkstations" [clearable]="false">
-                  <ng-option *ngFor="let workstation of workstations" [value]="workstation._id">{{workstation.sName}}
-                  </ng-option>
-                </ng-select>
-              </div>
-              <div class="col-lg-4">
-                <label class="fs-6 form-label fw-bolder text-dark">{{ 'LOCATION' | translate }}</label>
-                <ng-select class="form-control form-control-solid p-0" [multiple]="true"
-                  [(ngModel)]="requestParams.selectedLocations" [clearable]="false">
-                  <ng-option *ngFor="let location of requestParams.locations" [value]="location._id">{{location.sName}}
-                  </ng-option>
-                </ng-select>
-              </div>
-            </div>
-          </div> -->
+
         </div>
       </div>
     </div>

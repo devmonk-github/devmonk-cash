@@ -37,8 +37,11 @@ export class ServicesComponent implements OnInit, AfterViewInit {
     selectedTransactionStatuses: [],
     locations: [],
     selectedLocations: [],
+    aSelectedBusinessPartner: [],
+    iEmployeeId: '',
+    iAssigneeId: '',
     searchValue: '',
-    sortBy: { key: 'Date', selected: true, sort: 'asc' },
+    sortBy: { key: '_id', selected: true, sort: 'asc' },
     sortOrder: 'asc'
   };
   showLoader: Boolean = false;
@@ -60,18 +63,26 @@ export class ServicesComponent implements OnInit, AfterViewInit {
     { key: 'MARK_CONFIRMED' },
   ];
   iBusinessId: any = '';
+  aFilterBusinessPartner: any = [];
 
   // Advance search fields 
 
-  filterDates: any = {
-    endDate: new Date(new Date().setHours(23, 59, 59)),
-    startDate: new Date('01-01-2015'),
+  addDays(date: any, days: any) {
+    const inputDate = new Date(date);
+    return new Date(inputDate.setDate(inputDate.getDate() + days));
   }
 
-
-  endFilterDates: any = {
-    endDate: new Date(new Date().setHours(23, 59, 59)),
-    startDate: new Date('01-01-2015'),
+  filterDates: any = {
+    create: {
+      minDate: new Date('01-01-2015'),
+      maxDate: new Date(new Date().setHours(23, 59, 59)),
+    },
+    estimate: {
+      minDate:  undefined,
+      maxDate:  undefined
+      // minDate: new Date('01-01-2015'),
+      // maxDate: this.addDays(new Date(new Date().setHours(23, 59, 59)), 20),
+    }
   }
 
   paymentMethods: Array<any> = ['All', 'Cash', 'Credit', 'Card', 'Gift-Card'];
@@ -81,19 +92,18 @@ export class ServicesComponent implements OnInit, AfterViewInit {
   importStatus: string = 'all';
   methodValue: string = 'All';
   transactionValue: string = 'All';
-  employee: any = { sFirstName: 'All' };
-  employees: Array<any> = [this.employee];
+  employees: Array<any> = [];
   workstations: Array<any> = [];
   selectedWorkstations: Array<any> = [];
   iLocationId: String | null | undefined;
   webOrders: Boolean = false;
-  isFor="";
+  isFor = "";
 
   tableHeaders: Array<any> = [
     { key: 'Activity No.', selected: false, sort: '' },
     { key: 'Repair number', disabled: true },
     { key: 'Type', disabled: true },
-    { key: 'Intake date', selected: true, sort: 'asc' },
+    { key: 'Intake date', selected: false, sort: 'asc' },
     { key: 'End date', selected: false, sort: 'asc' },
     { key: 'Status', disabled: true },
     { key: 'Supplier/Repairer', disabled: true },
@@ -128,10 +138,7 @@ export class ServicesComponent implements OnInit, AfterViewInit {
     this.iBusinessId = localStorage.getItem('currentBusiness');
 
     this.showLoader = true;
-    if(this.isFor == 'activity')
-    {
-      await this.setLocation();
-    }
+    if (this.isFor !== "activity") await this.setLocation() /* For web-orders, we will switch to the web-order location otherwise keep current location */
     this.showLoader = false
     this.loadTransaction();
     this.listEmployee();
@@ -167,7 +174,6 @@ export class ServicesComponent implements OnInit, AfterViewInit {
 
       this.apiService.getNew('core', '/api/v1/business/user-business-and-location/list')
         .subscribe((result: any) => {
-          // console.log({ getBusinessLocations: result });
           if (result.message == "success" && result?.data) {
 
             resolve(result);
@@ -184,10 +190,8 @@ export class ServicesComponent implements OnInit, AfterViewInit {
     return new Promise<any>((resolve, reject) => {
       this.apiService.postNew('core', `/api/v1/business/${this.iBusinessId}/list-location`, {}).subscribe(
         (result: any) => {
-          // console.log({ getLocations: result });
           if (result.message == 'success') {
             this.requestParams.locations = result.data.aLocation;
-            // console.log({ requestParams: this.requestParams.locations });
           }
           resolve(result);
         }),
@@ -205,13 +209,9 @@ export class ServicesComponent implements OnInit, AfterViewInit {
         let oNewLocation: any
         let bIsCurrentBIsWebshop = false
         for (let k = 0; k < oBusinessLocation?.data?.aBusiness?.length; k++) {
-          const oAllLocations = oBusinessLocation?.data?.aBusiness[k]
-          // console.log({ oAllLocations });
-          //for (let i = 0; i < location?.data?.aLocation.length; i++) {
-          //  const l = location?.data?.aLocation[i];    
+          const oAllLocations = oBusinessLocation?.data?.aBusiness[k]  
           for (let i = 0; i < oAllLocations?.aLocation?.length; i++) {
             const l = oAllLocations?.aLocation[i];
-            // console.log({ aLocation: l });
             if (l.bIsWebshop) oNewLocation = l
             if (l._id.toString() === this.iLocationId) {
               if (l.bIsWebshop) {
@@ -279,7 +279,7 @@ export class ServicesComponent implements OnInit, AfterViewInit {
 
   sortAndLoadTransactions(sortHeader: any) {
     let sortBy = 'dCreatedDate';
-    if (sortHeader.key == 'End date') sortBy = 'dPickedUp';
+    if (sortHeader.key == 'End date') sortBy = 'dEstimatedDate';
     if (sortHeader.key == 'Intake date') sortBy = 'dCreatedDate';
     if (sortHeader.key == 'Activity No.') sortBy = 'sNumber';
     this.requestParams.sortBy = sortBy;
@@ -290,15 +290,12 @@ export class ServicesComponent implements OnInit, AfterViewInit {
   listEmployee() {
     const oBody = { iBusinessId: this.iBusinessId }
     this.apiService.postNew('auth', '/api/v1/employee/list', oBody).subscribe((result: any) => {
-      if (result?.data?.length) {
-        this.employees = this.employees.concat(result.data[0].result);
-      }
+      if (result?.data?.length) this.employees = result.data[0].result
     }, (error) => {
     })
   }
 
   openActivities(activity: any, openActivityId?: any) {
-    console.log('opening ActivityDetailsComponent with', activity);
     if (this.webOrders) {
       this.dialogService.openModal(WebOrderDetailsComponent, { cssClass: 'w-fullscreen', context: { activity, from: 'web-orders' } })
         .instance.close.subscribe(result => {
@@ -323,14 +320,21 @@ export class ServicesComponent implements OnInit, AfterViewInit {
     this.requestParams.skip = this.requestParams.skip || 0;
     this.requestParams.limit = this.paginationConfig.itemsPerPage || 50;
     this.requestParams.importStatus = this.importStatus;
-    if (this.iLocationId) this.requestParams.iLocationId = localStorage.getItem('currentLocation')//this.iLocationId;
+    if (this.iLocationId) this.requestParams.iLocationId = localStorage.getItem('currentLocation')
     this.showLoader = true;
-    console.log(310, this.iLocationId, this.requestParams)
+    
+    this.requestParams.estimateDate = {
+      minDate: this.filterDates.estimate.minDate,
+      maxDate: this.filterDates.estimate.maxDate,
+    }
+    this.requestParams.createdDate = {
+      minDate: this.filterDates.create.minDate,
+      maxDate: this.filterDates.create.maxDate,
+    }
     this.apiService.postNew('cashregistry', '/api/v1/activities', this.requestParams).subscribe((result: any) => {
-      if (result?.data?.length)
-        this.activities = result?.data;
-      else
-        this.activities = [];
+      if (result?.data?.length) this.activities = result?.data;
+      else this.activities = [];
+      if (result?.aUniqueBusinessPartner && !this.aFilterBusinessPartner?.length) this.aFilterBusinessPartner = result.aUniqueBusinessPartner;
       this.paginationConfig.totalItems = result?.count;
       this.getCustomers();
       setTimeout(() => {
@@ -379,7 +383,6 @@ export class ServicesComponent implements OnInit, AfterViewInit {
   async openModal(barcode: any) {
     this.toastrService.show({ type: 'success', text: 'Barcode detected: ' + barcode })
     if (barcode.startsWith("AI")) {
-      console.log('activity item', barcode);
       // activityitem.find({sNumber: barcode},{eTransactionItem.eKind : 1})
       let oBody: any = {
         iBusinessId: this.businessDetails._id,
@@ -399,18 +402,11 @@ export class ServicesComponent implements OnInit, AfterViewInit {
           }
         }
         const activityResult: any = await this.apiService.postNew('cashregistry', '/api/v1/activities', oBody).toPromise();
-        console.log({ activityResult });
-
-        // const oActivityItem = activityItemResult?.data[0].result[0]._id;
-        // console.log({ oActivityItem });
-        // const activityItemsResult: any = await this.apiService.postNew('cashregistry', `/api/v1/activities/items/${iActivityId}`, {iBusinessId: this.businessDetails._id}).toPromise();
-        // console.log({ activityItemsResult });
         if (activityResult.data?.length) {
           this.openActivities(activityResult.data[0], iActivityItemId);
         }
       }
     } else if (barcode.startsWith("A")) {
-      console.log('Fetching activity', barcode);
       let oBody = {
         iBusinessId: this.businessDetails._id,
         oFilterBy: {
@@ -418,12 +414,7 @@ export class ServicesComponent implements OnInit, AfterViewInit {
         }
       }
       const activityResult: any = await this.apiService.postNew('cashregistry', '/api/v1/activities', oBody).toPromise();
-      console.log({ activityResult });
 
-      // const oActivityItem = activityItemResult?.data[0].result[0]._id;
-      // console.log({ oActivityItem });
-      // const activityItemsResult: any = await this.apiService.postNew('cashregistry', `/api/v1/activities/items/${iActivityId}`, {iBusinessId: this.businessDetails._id}).toPromise();
-      // console.log({ activityItemsResult });
       if (activityResult.data?.length) {
         this.openActivities(activityResult.data[0]);
       }
@@ -437,7 +428,6 @@ export class ServicesComponent implements OnInit, AfterViewInit {
         }
       }
       let result: any = await this.apiService.postNew('cashregistry', `/api/v1/activities/activity-item`, oBody).toPromise();
-      // console.log(result);
       if (result?.data[0]?.result?.length) {
         const oGiftcard = result?.data[0]?.result[0];
         this.openCardsModal(oGiftcard)
@@ -452,7 +442,6 @@ export class ServicesComponent implements OnInit, AfterViewInit {
   openCardsModal(oGiftcard?: any, oCustomer?: any) {
     this.dialogService.openModal(CardsComponent, { cssClass: 'modal-lg', context: { customer: oCustomer, oGiftcard } })
       .instance.close.subscribe(result => {
-        console.log('When Redeem GiftCard closed: ', result, result?.giftCardInfo?.type);
         if (result) {
           // if (result.giftCardInfo.nAmount > 0) {
           //   this.appliedGiftCards.push(result.giftCardInfo);

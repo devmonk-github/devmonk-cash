@@ -87,7 +87,6 @@ export class ExtraServiceComponent implements OnInit {
     }
     this.apiService.postNew('cashregistry', '/api/v1/extra-services', details).subscribe(
       (result : any) =>{
-        console.log(result);
       }
     );
   }
@@ -95,7 +94,6 @@ export class ExtraServiceComponent implements OnInit {
   updateExtraService(){
     this.apiService.putNew('cashregistry', '/api/v1/extra-services/'+this.service._id, this.service).subscribe(
       (result : any) =>{
-        console.log(result);
       }
     );
   }  

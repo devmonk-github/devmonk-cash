@@ -105,7 +105,6 @@ export class PdfService {
     if(footer) docDefinition.footer = footer;
     if(pageMargins) docDefinition.pageMargins = pageMargins;
     if(defaultStyle) docDefinition.defaultStyle = defaultStyle;
-    // console.log(docDefinition);
     return docDefinition;
   }
 
@@ -124,12 +123,6 @@ export class PdfService {
 
   processPrintAction(pdfObject: any, fileName: any, printSettings: any, printActionSettings: any, aTransactionItemType: any, eSituation:any){
     pdfObject.download(fileName);
-    console.log({ printActionSettings, printSettings, aTransactionItemType, eSituation });
-    // printActionSettings.forEach((actionSetting:any)=>{
-    //   if(aTransactionItemType.includes(actionSetting.eType)){
-
-    //   }
-    // })
     return;
     pdfObject.getBase64((data: any) => {
       this.printService.printPDF(
