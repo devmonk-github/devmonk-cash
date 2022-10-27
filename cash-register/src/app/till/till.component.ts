@@ -1288,6 +1288,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   async openModal(barcode: any) {
+    if (barcode.startsWith('0002'))
+      barcode = barcode.substring(4)
     this.toastrService.show({ type: 'success', text: 'Barcode detected: ' + barcode })
     if (barcode.startsWith("AI")) {
       let oBody: any = {
