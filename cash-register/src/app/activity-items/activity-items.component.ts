@@ -38,7 +38,10 @@ export class ActivityItemsComponent implements OnInit {
     locations: [],
     selectedLocations: [],
     selectedKind: [],
-    employee: { sFirstName: 'All' }
+    // employee: { sFirstName: 'All' },
+    aSelectedBusinessPartner: [],
+    iEmployeeId: '',
+    iAssigneeId: '',
   };
   activityItems: Array<any> = [];
   showLoader: Boolean = false;
@@ -51,7 +54,7 @@ export class ActivityItemsComponent implements OnInit {
   showAdvanceSearch = false;
 
   workstations: Array<any> = [];
-  employees: Array<any> = [this.requestParams.employee];
+  employees: Array<any> = [];
   repairStatuses: Array<any> = ['new', 'info', 'processing', 'cancelled', 'inspection', 'completed', 'refund',
     'refundInCashRegister', 'offer', 'offer-is-ok', 'to-repair', 'part-are-order', 'shipped-to-repair', 'delivered'
   ]
@@ -59,6 +62,7 @@ export class ActivityItemsComponent implements OnInit {
   aKind: Array<any> = ['reservation', 'repair', 'giftcard', 'order', 'gold-purchase', 'gold-sell']
   methodValue: string = 'All';
   transactionValue: string = 'All';
+  aFilterBusinessPartner: any = [];
 
   tableHeaders: Array<any> = [
     { key: 'Activity No.', selected: false, sort: '' },
@@ -108,9 +112,10 @@ export class ActivityItemsComponent implements OnInit {
     oBody.aPropertyOptionIds = this.aPropertyOptionIds;
     this.apiService.postNew('cashregistry', '/api/v1/activities/items', oBody).subscribe(
       (result: any) => {
-        this.activityItems = result.data
+        this.activityItems = result.data;
         this.paginationConfig.totalItems = result.count;
         this.showLoader = false;
+        if (result?.aUniqueBusinessPartner?.length && !this.aFilterBusinessPartner?.length) this.aFilterBusinessPartner = result.aUniqueBusinessPartner;
       },
       (error: any) => {
         this.showLoader = false;
@@ -128,7 +133,7 @@ export class ActivityItemsComponent implements OnInit {
     const oBody = { iBusinessId: this.businessDetails._id }
     this.apiService.postNew('auth', '/api/v1/employee/list', oBody).subscribe((result: any) => {
       if (result?.data?.length) {
-        this.employees = this.employees.concat(result.data[0].result);
+        if (result?.data?.length && result.data[0].result?.length) this.employees = result.data[0].result
       }
     }, (error) => {
     })
@@ -207,7 +212,6 @@ export class ActivityItemsComponent implements OnInit {
   async openModal(barcode: any) {
     this.toastrService.show({ type: 'success', text: 'Barcode detected: ' + barcode })
     if (barcode.startsWith("AI")) {
-      // activityitem.find({sNumber: barcode},{eTransactionItem.eKind : 1})
       let oBody: any = {
         iBusinessId: this.businessDetails._id,
         oFilterBy: {
@@ -227,8 +231,6 @@ export class ActivityItemsComponent implements OnInit {
         }
         const activityResult:any = await this.apiService.postNew('cashregistry', '/api/v1/activities', oBody).toPromise();
         
-        // const oActivityItem = activityItemResult?.data[0].result[0]._id;
-        // const activityItemsResult: any = await this.apiService.postNew('cashregistry', `/api/v1/activities/items/${iActivityId}`, {iBusinessId: this.businessDetails._id}).toPromise();
         if (activityResult.data?.length){
           this.openActivities(activityResult.data[0], iActivityItemId);
         }
@@ -242,8 +244,6 @@ export class ActivityItemsComponent implements OnInit {
       }
       const activityResult: any = await this.apiService.postNew('cashregistry', '/api/v1/activities', oBody).toPromise();
 
-      // const oActivityItem = activityItemResult?.data[0].result[0]._id;
-      // const activityItemsResult: any = await this.apiService.postNew('cashregistry', `/api/v1/activities/items/${iActivityId}`, {iBusinessId: this.businessDetails._id}).toPromise();
       if (activityResult.data?.length) {
         this.openActivities(activityResult.data[0]);
       }
@@ -261,9 +261,7 @@ export class ActivityItemsComponent implements OnInit {
         const oGiftcard = result?.data[0]?.result[0];
         this.openCardsModal(oGiftcard)
       }
-      // activityitem.find({sGiftcardNumber: barcode},{eTransactionItem.eKind : 1})
     } else if (barcode.startsWith("R")) {
-      // activityitem.find({sRepairNumber: barcode},{eTransactionItem.eKind : 1})
     }
 
   }
@@ -271,15 +269,6 @@ export class ActivityItemsComponent implements OnInit {
   openCardsModal(oGiftcard?: any, oCustomer?:any ) {
     this.dialogService.openModal(CardsComponent, { cssClass: 'modal-lg', context: { customer: oCustomer, oGiftcard } })
       .instance.close.subscribe(result => {
-        if (result) {
-          // if (result.giftCardInfo.nAmount > 0) {
-          //   this.appliedGiftCards.push(result.giftCardInfo);
-          //   this.changeInPayment();
-          // }
-          // if (result.redeemedLoyaltyPoints && result.redeemedLoyaltyPoints > 0) {
-          //   this.addReedemedPoints(result.redeemedLoyaltyPoints);
-          // }
-        }
       });
   }
 

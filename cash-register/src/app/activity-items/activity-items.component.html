@@ -64,6 +64,15 @@
                     {{employeeObj.sLastName || ''}}</ng-option>>
                 </ng-select>
               </div>
+
+              <div class="col-lg-3">
+                <label class="fs-6 form-label fw-bolder text-dark">{{ "ASSIGNEE" | translate}}</label>
+                <ng-select class="form-control form-control-solid p-0" [clearable]="false" [(ngModel)]="requestParams.iAssigneeId">
+                  <ng-option *ngFor="let employeeObj of employees" [value]="employeeObj._id">{{employeeObj.sFirstName}}
+                    {{employeeObj.sLastName || ''}}</ng-option>>
+                </ng-select>
+              </div>
+
               <div class="col-lg-3">
                 <label class="fs-6 form-label fw-bolder text-dark">{{ 'WORKSTATION' | translate }}</label>
                 <ng-select class="form-control form-control-solid p-0" [multiple]="true"
@@ -72,20 +81,23 @@
                   </ng-option>
                 </ng-select>
               </div>
-              <div class="col-lg-3">
-                <label class="fs-6 form-label fw-bolder text-dark">{{ 'LOCATION' | translate }}</label>
-                <ng-select class="form-control form-control-solid p-0" [multiple]="true"
-                  [(ngModel)]="requestParams.selectedLocations" [clearable]="false">
-                  <ng-option *ngFor="let location of requestParams.locations" [value]="location._id">{{location.sName}}
-                  </ng-option>
-                </ng-select>
-              </div>
+       
             </div>
           </div>
         </div>
         <div class="row g-4 mb-2">
           <div class="col-xxl-9">
             <div class="row g-2">
+
+              <div class="col-lg-3">
+                <label class="fs-6 form-label fw-bolder text-dark">{{ 'LOCATION' | translate }}</label>
+                <ng-select class="form-control form-control-solid p-0" [multiple]="true" [(ngModel)]="requestParams.selectedLocations"
+                  [clearable]="false">
+                  <ng-option *ngFor="let location of requestParams.locations" [value]="location._id">{{location.sName}}
+                  </ng-option>
+                </ng-select>
+              </div>
+
               <div class="col-lg-3">
                 <label class="fs-6 form-label fw-bolder text-dark">{{ 'E_KIND' | translate }}</label>
                 <ng-select class="form-control form-control-solid p-0" [multiple]="true" [(ngModel)]="requestParams.selectedKind"
@@ -94,9 +106,18 @@
                 </ng-select>
               </div>
               
+              <div class="col-lg-3">
+                <label class="fs-6 form-label fw-bolder text-dark">{{ 'BUSINESS_PARTNER' | translate }}</label>
+                <ng-select class="form-control form-control-solid p-0" [multiple]="true"
+                  [(ngModel)]="requestParams.aSelectedBusinessPartner" [clearable]="false">
+                  <ng-option *ngFor="let oBusinessPartner of aFilterBusinessPartner" [value]="oBusinessPartner.iBusinessPartnerId">
+                    {{oBusinessPartner.sBusinessPartnerName}}
+                  </ng-option>
+                </ng-select>
+              </div>
 
               <!-- Property Filter -->
-              <div class="col-lg-9">
+              <div class="col-lg-3">
                 <ng-container>
                   <div class="col-md-6">
                     <label class="fs-6 form-label fw-bolder text-dark">{{ "PROPERTIES" |
