@@ -1392,13 +1392,6 @@
                                 </table>
 
                             </div>
-                            <!-- <div class="countingTotal">
-                                <div class="d-flex justify-content-start align-items-center">
-                                    <label>Total Counted : </label>
-                                    <input type="number" class="form-control mx-1 p-2"
-                                        [(ngModel)]="oCountings.nCashCounted">
-                                </div>
-                            </div> -->
                             <ng-container *ngIf="oStatisticsDocument">
                                 <div class="d-flex flex-wrap">
                                     <label>{{'NOTES' | translate}}</label>
@@ -1457,12 +1450,6 @@
                                         (ngModelChange)="oCountings.nSkim = oCountings.nCashCounted - oCountings.nCashRemain"
                                         [disabled]="bDisableCountings">
                                 </div>
-                                <!-- <div>
-                                    <label>Remaining Cash</label>
-                                    <label class="bold">
-                                        {{ (oCountings.nCashCounted - oCountings.nSkim) | currency:"EUR":"symbol" }}
-                                    </label>
-                                </div> -->
                                 <br>
                                 <ng-container *ngIf="oStatisticsDocument?.bIsDayState">
                                     <div class="d-flex justify-content-start">
