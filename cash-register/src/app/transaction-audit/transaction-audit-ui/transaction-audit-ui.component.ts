@@ -679,7 +679,7 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
     if (this.iStatisticId) {
       /* It's only for view purpose and we can only view for the current location and current workstation */
       aLocation = [this.iLocationId];
-      iWorkstationId = this.iWorkstationId
+      iWorkstationId = [this.iWorkstationId]
     }
 
     const oBody: any = {
@@ -705,7 +705,6 @@ export class TransactionAuditUiComponent implements OnInit, AfterViewInit, OnDes
 
     this.checkShowDownload();
     this.fetchDayClosureList();
-
     this.getStatisticSubscription = this.apiService.postNew('cashregistry', `/api/v1/statistics/list`, oBody).
       subscribe((result: any) => {
         this.bStatisticLoading = false;
