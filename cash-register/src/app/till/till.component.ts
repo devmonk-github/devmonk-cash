@@ -269,6 +269,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   getTotals(type: string): number {
+  
     this.amountDefined = this.payMethods.find((pay) => pay.amount || pay.amount?.toString() === '0');
     if (!type) {
       return 0
@@ -466,6 +467,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
   /* A payment which made */
   getUsedPayMethods(total: boolean): any {
+
     if (!this.payMethods) {
       return 0
     }
@@ -1221,6 +1223,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       this.toastrService.show({ type: 'warning', text: `Day-state is not closed` });
     })
   }
+
+ 
 
   /* When doing */
   assignAllAmount(index: number) {
