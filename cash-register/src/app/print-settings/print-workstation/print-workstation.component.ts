@@ -33,7 +33,7 @@ export class PrintWorkstationComponent implements OnInit {
     {
       name: 'PDF',
       typeList: [
-        { name: 'BUSINESS_RECEIPT', key: 'transaction', enabled: true },
+        { name: 'BUSINESS_RECEIPT', key: 'regular', enabled: true },
         { name: 'ORDER_RECEIPT', key: 'order', enabled: true },
         { name: 'REPAIR_RECEIPT', key: 'repair', enabled: true },
         { name: 'GIFTCARD_RECEIPT', key: 'giftCard', enabled: true },
@@ -43,7 +43,7 @@ export class PrintWorkstationComponent implements OnInit {
     {
       name: 'THERMAL',
       typeList: [
-        { name: 'BUSINESS_RECEIPT', key: 'transaction', enabled: false },
+        { name: 'BUSINESS_RECEIPT', key: 'regular', enabled: false },
         { name: 'REPAIR_RECEIPT', key: 'repair', enabled: false }
       ]
     },
