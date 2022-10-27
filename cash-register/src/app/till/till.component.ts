@@ -30,6 +30,7 @@ import { SupplierWarningDialogComponent } from './dialogs/supplier-warning-dialo
 import * as _moment from 'moment';
 import { ReceiptService } from '../shared/service/receipt.service';
 import { TransactionItemsDetailsComponent } from '../shared/components/transaction-items-details/transaction-items-details.component';
+import * as JsBarcode from 'jsbarcode';
 const moment = (_moment as any).default ? (_moment as any).default : _moment;
 @Component({
   selector: 'app-till',
@@ -118,6 +119,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   businessDetails: any;
   printActionSettings: any;
   printSettings: any;
+  activity: any;
 
   randNumber(min: number, max: number): number {
     return Math.floor(Math.random() * (max - min + 1) + min);
@@ -588,10 +590,11 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
             .subscribe((data: any) => {
               this.toastrService.show({ type: 'success', text: 'Transaction created.' });
               this.saveInProgress = false;
-              const { transaction, aTransactionItems, activityItems } = data;
+              const { transaction, aTransactionItems, activityItems, activity } = data;
               transaction.aTransactionItems = aTransactionItems;
               this.transaction = transaction;
               this.activityItems = activityItems;
+              // this.activity = activity;
 
               // this.transaction.aTransactionItems.forEach((item: any, index: number) => {
               //   this.getRelatedTransactionItem(item?.iActivityItemId, item?._id, index)
@@ -719,14 +722,15 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     let _template: any, _oLogoData: any;
 
     const aUniqueItemTypes = [...new Set(oDataSource.aTransactionItemType)];
-
+    if (aUniqueItemTypes.includes('repair') && aUniqueItemTypes.includes('order'))
+      aUniqueItemTypes.splice(aUniqueItemTypes.indexOf('repair'),1);
 
     [_template, _oLogoData,] = await Promise.all([
       this.getTemplate(aUniqueItemTypes),
       this.getBase64FromUrl(oDataSource?.businessDetails?.sLogoLight),
     ])
     oDataSource.sBusinessLogoUrl = _oLogoData.data;
-
+    oDataSource.sBarcodeURI = this.generateBarcodeURI(false, oDataSource.sNumber);
     const aTemplates = _template.data;
     let title = '';
     aTemplates.forEach((template: any) => {
@@ -736,7 +740,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
           title = 'Repair' + activity.sNumber;
           this.sendForReceipt(activity, template, title);
         })
-      } else if (template.eType === 'regular') {
+      } else if (template.eType === 'regular' || template.eType === 'order') {
         title = oDataSource.sNumber;
         this.sendForReceipt(oDataSource, template, title);
       }
@@ -760,6 +764,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   sendForReceipt(oDataSource: any, template: any, title: any) {
+    // console.log('sendForReceipt', oDataSource, template, title);
+    // return;
     this.receiptService.exportToPdf({
       oDataSource: oDataSource,
       pdfTitle: title,
@@ -1423,6 +1429,12 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     if (transaction.iCustomerId) {
       this.fetchCustomer(transaction.iCustomerId);
     }
+  }
+
+  generateBarcodeURI(displayValue: boolean = true, data: any) {
+    var canvas = document.createElement("canvas");
+    JsBarcode(canvas, data, { format: "CODE128", displayValue: displayValue });
+    return canvas.toDataURL("image/png");
   }
 
   ngOnDestroy() {
