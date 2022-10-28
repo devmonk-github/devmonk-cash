@@ -592,10 +592,19 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
             .subscribe((data: any) => {
               this.toastrService.show({ type: 'success', text: 'Transaction created.' });
               this.saveInProgress = false;
-              const { transaction, aTransactionItems, activityItems, activity } = data;
+              const { transaction, aTransactionItems, activityItems } = data;
               transaction.aTransactionItems = aTransactionItems;
               this.transaction = transaction;
               this.activityItems = activityItems;
+
+              this.transaction.aTransactionItems.map((tItem:any)=>{
+                for (const aItem of this.activityItems){
+                  if(aItem.iTransactionItemId === tItem._id){
+                    tItem.sActivityItemNumber = aItem.sNumber;
+                    break;
+                  }
+                }
+              });
               // this.activity = activity;
 
               // this.transaction.aTransactionItems.forEach((item: any, index: number) => {
@@ -703,6 +712,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       oDataSource.bHasPrePayments = false;
     } else {
       oDataSource.aTransactionItems.forEach((item: any) => {
+        item.sOrderDescription = item.sProductName + '\n' + item.sDescription;
         nTotalOriginalAmount += item.nPriceIncVat;
         let description = `${item.description}\n`;
         if (item.nPriceIncVat !== item.nPaymentAmount) {
@@ -721,11 +731,12 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       oDataSource.bHasPrePayments = true;
     }
     oDataSource.nTotalOriginalAmount = nTotalOriginalAmount;
+    
     let _template: any, _oLogoData: any;
 
     const aUniqueItemTypes = [...new Set(oDataSource.aTransactionItemType)];
-    if (aUniqueItemTypes.includes('repair') && aUniqueItemTypes.includes('order'))
-      aUniqueItemTypes.splice(aUniqueItemTypes.indexOf('repair'),1);
+    // if (aUniqueItemTypes.includes('repair') && aUniqueItemTypes.includes('order'))
+    //   aUniqueItemTypes.splice(aUniqueItemTypes.indexOf('repair'),1);
 
     [_template, _oLogoData,] = await Promise.all([
       this.getTemplate(aUniqueItemTypes),
@@ -735,11 +746,22 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     oDataSource.sBarcodeURI = this.generateBarcodeURI(false, oDataSource.sNumber);
     const aTemplates = _template.data;
     let title = '';
+
+    const nRepairCount = oDataSource.aTransactionItemType.filter((e:any) => e === 'repair')?.length;
+    const nOrderCount = oDataSource.aTransactionItemType.filter((e: any) => e === 'order')?.length;
+    console.log(nRepairCount, nOrderCount);
+    if(nOrderCount) {
+      const orderTemplate = aTemplates.filter((template: any) => template.eType === 'order')[0];
+      title = oDataSource.sReceiptNumber;
+      this.sendForReceipt(oDataSource, orderTemplate, title);
+    }
+    return;
+
     aTemplates.forEach((template: any) => {
       if (template.eType === 'repair') {
         const aFilterActivity = this.activityItems.filter((el: any) => el.oType.eKind === 'repair');
         aFilterActivity.forEach((activity: any) => {
-          title = 'Repair' + activity.sNumber;
+          title = 'Repair ' + activity.sNumber;
           this.sendForReceipt(activity, template, title);
         })
       } else if (template.eType === 'regular' || template.eType === 'order') {
@@ -766,7 +788,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   sendForReceipt(oDataSource: any, template: any, title: any) {
-    // console.log('sendForReceipt', oDataSource, template, title);
+    console.log('sendForReceipt', oDataSource, template, title);
     // return;
     this.receiptService.exportToPdf({
       oDataSource: oDataSource,
