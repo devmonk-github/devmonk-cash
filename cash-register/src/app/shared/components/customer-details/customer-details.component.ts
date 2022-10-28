@@ -96,7 +96,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
       sFax: '',
       bWhatsApp: true
     },
-    note: '',
+    sNote: '',
     dDateOfBirth: '',
     oIdentity: {
       documentName: '',
