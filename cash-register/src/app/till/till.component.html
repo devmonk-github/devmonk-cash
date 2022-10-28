@@ -474,7 +474,7 @@
             <input type="number" class="form-control col-5" [(ngModel)]="payment.amount"
               placeholder="{{'AMOUNT' | translate}}" (ngModelChange)="changeInPayment()">
             <button class="btn btn-primary col-7" [disabled]="payment.isDisabled"
-              (click)="assignAllAmount(i)">{{payment.sName | translate}}</button>
+              (click)="assignAllAmount(i)">{{ payment.sName | uppercase | translate}}</button>
           </div>
         </ng-container>
         <div class="input-group till-padding mt-2">
