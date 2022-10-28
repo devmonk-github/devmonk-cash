@@ -25,11 +25,20 @@ export class ActivityItemsComponent implements OnInit {
     currentPage: 1,
     totalItems: 0
   };
+  importStatus: string = 'all';
   businessDetails: any = {};
   iLocationId: String | null | undefined;
   requestParams: any = {
-    endDate: new Date(new Date().setHours(23, 59, 59)),
-    startDate: new Date('01-01-2015'),
+    // endDate: new Date(new Date().setHours(23, 59, 59)),
+    // startDate: new Date('01-01-2015'),
+    create: {
+      minDate: new Date('01-01-2015'),
+      maxDate: new Date(new Date().setHours(23, 59, 59)),
+    },
+    estimate: {
+      minDate:  undefined,
+      maxDate:  undefined
+    },
     searchValue: '',
     sortBy: { key: 'Date', selected: true, sort: 'asc' },
     sortOrder: 'asc',
@@ -59,7 +68,7 @@ export class ActivityItemsComponent implements OnInit {
     'refundInCashRegister', 'offer', 'offer-is-ok', 'to-repair', 'part-are-order', 'shipped-to-repair', 'delivered'
   ]
 
-  aKind: Array<any> = ['reservation', 'repair', 'giftcard', 'order', 'gold-purchase', 'gold-sell']
+  aKind: Array<any> = ['reservation', 'repair', 'giftcard', 'order', 'gold-purchase', 'gold-sell', 'offer', 'refund']
   methodValue: string = 'All';
   transactionValue: string = 'All';
   aFilterBusinessPartner: any = [];
@@ -102,14 +111,13 @@ export class ActivityItemsComponent implements OnInit {
     this.activityItems = [];
     this.requestParams.iBusinessId = this.businessDetails._id;
     this.requestParams.limit = this.paginationConfig.itemsPerPage || 50;
-    if(this.requestParams.selectedKind.length){
-      this.requestParams.selectedKind= this.requestParams.selectedKind
-    }
-    
+    if (this.requestParams?.selectedKind?.length) this.requestParams.selectedKind = this.requestParams.selectedKind
+
     if (this.iLocationId) this.requestParams.iLocationId = this.iLocationId;
     this.showLoader = true;
     const oBody = { ... this.requestParams }
     oBody.aPropertyOptionIds = this.aPropertyOptionIds;
+    oBody.importStatus = this.importStatus == 'all' ? undefined : this.importStatus;
     this.apiService.postNew('cashregistry', '/api/v1/activities/items', oBody).subscribe(
       (result: any) => {
         this.activityItems = result.data;

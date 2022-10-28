@@ -86,7 +86,7 @@ export class ServicesComponent implements OnInit, AfterViewInit {
   }
 
   paymentMethods: Array<any> = ['All', 'Cash', 'Credit', 'Card', 'Gift-Card'];
-  transactionTypes: Array<any> = ['All', 'Refund', 'Repair', 'Gold-purchase', 'Gold-sale', 'order', 'giftcard', 'offer'];
+  transactionTypes: Array<any> = ['All', 'Refund', 'Repair', 'Gold-purchase', 'Gold-sale', 'order', 'giftcard', 'offer', 'reservation'];
   transactionStatus: string = 'all';
   invoiceStatus: string = 'all';
   importStatus: string = 'all';
@@ -316,7 +316,7 @@ export class ServicesComponent implements OnInit, AfterViewInit {
     this.requestParams.iBusinessId = this.businessDetails._id;
     this.requestParams.skip = this.requestParams.skip || 0;
     this.requestParams.limit = this.paginationConfig.itemsPerPage || 50;
-    this.requestParams.importStatus = this.importStatus;
+    this.requestParams.importStatus = this.importStatus == 'all' ? undefined : this.importStatus;
     if (this.iLocationId) this.requestParams.iLocationId = localStorage.getItem('currentLocation')
     // if (this.iLocationId && !this.requestParams.selectedLocations?.length) this.requestParams.selectedLocations.push(this.requestParams.selectedLocations);
     this.showLoader = true;
