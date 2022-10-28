@@ -113,12 +113,12 @@
                         translate}}</span>
                     </label>
                     <label>
-                      <input type="radio" class="btn-check" name="import" value="imported" [(ngModel)]="importStatus" />
+                      <input type="radio" class="btn-check" name="import" value="true" [(ngModel)]="importStatus" />
                       <span class="btn btn-sm btn-color-muted btn-active btn-active-primary fw-bolder px-4">{{ "IMPORTED"
                         | translate}}</span>
                     </label>
                     <label>
-                      <input type="radio" class="btn-check" name="import" value="unimported" [(ngModel)]="importStatus" />
+                      <input type="radio" class="btn-check" name="import" value="false" [(ngModel)]="importStatus" />
                       <span class="btn btn-sm btn-color-muted btn-active btn-active-primary fw-bolder px-4">{{"UNIMPORTED"
                         | translate}}</span>
                     </label>
