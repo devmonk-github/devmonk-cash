@@ -113,12 +113,12 @@
                         translate}}</span>
                     </label>
                     <label>
-                      <input type="radio" class="btn-check" name="import" value="imported" [(ngModel)]="importStatus" />
+                      <input type="radio" class="btn-check" name="import" value="true" [(ngModel)]="importStatus" />
                       <span class="btn btn-sm btn-color-muted btn-active btn-active-primary fw-bolder px-4">{{ "IMPORTED"
                         | translate}}</span>
                     </label>
                     <label>
-                      <input type="radio" class="btn-check" name="import" value="unimported" [(ngModel)]="importStatus" />
+                      <input type="radio" class="btn-check" name="import" value="false" [(ngModel)]="importStatus" />
                       <span class="btn btn-sm btn-color-muted btn-active btn-active-primary fw-bolder px-4">{{"UNIMPORTED"
                         | translate}}</span>
                     </label>
@@ -190,14 +190,14 @@
       <tbody>
         <tr *ngFor="let activity of activities | paginate: paginationConfig, let i = index;">
           <td>{{activity?.sNumber}}</td>
-          <td>{{activity?.sReceiptNumber}}</td>
+          <td>{{activity?.sReceiptNumber || '-'}}</td>
           <td>{{getTypes(activity.activityitems)}}</td>
           <td scope="row">{{activity?.dCreatedDate | date: 'yyyy-MM-dd HH:mm'}}</td>
           <td scope="row">{{activity?.dEstimatedDate | date: 'yyyy-MM-dd HH:mm'}}</td>
           <td>{{activity?.eActivityItemStatus || '-'}}</td>
-          <td>{{activity?.sBusinessPartnerName}}</td>
+          <td>{{activity?.sBusinessPartnerName || '-'}}</td>
           <!-- <td>{{'-'}}</td> -->
-          <td>{{activity?.oCustomer?.sFirstName}} {{activity?.oCustomer?.sLastName}}</td>
+          <td>{{activity?.oCustomer?.sFirstName}} {{activity?.oCustomer?.sLastName || '-'}}</td>
 
           <td>
             <div class="btn-group me-4">

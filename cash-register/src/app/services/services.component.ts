@@ -86,7 +86,7 @@ export class ServicesComponent implements OnInit, AfterViewInit {
   }
 
   paymentMethods: Array<any> = ['All', 'Cash', 'Credit', 'Card', 'Gift-Card'];
-  transactionTypes: Array<any> = ['All', 'Refund', 'Repair', 'Gold-purchase', 'Gold-sale', 'order', 'giftcard', 'offer'];
+  transactionTypes: Array<any> = ['All', 'Refund', 'Repair', 'Gold-purchase', 'Gold-sale', 'order', 'giftcard', 'offer', 'reservation'];
   transactionStatus: string = 'all';
   invoiceStatus: string = 'all';
   importStatus: string = 'all';
@@ -118,9 +118,7 @@ export class ServicesComponent implements OnInit, AfterViewInit {
     private router: Router,
     private activatedRoute: ActivatedRoute,
     private toastrService: ToastService
-  ) { 
-
-  }
+  ) { }
 
 
   async ngOnInit(): Promise<void> {
@@ -143,7 +141,7 @@ export class ServicesComponent implements OnInit, AfterViewInit {
     this.loadTransaction();
     this.listEmployee();
     this.getWorkstations();
-
+    this.getLocations();
   }
   ngAfterViewInit(): void {
     setTimeout(() => {
@@ -154,7 +152,6 @@ export class ServicesComponent implements OnInit, AfterViewInit {
 
   // Function for handle event of transaction menu
   clickMenuOpt(key: string, transactionId: string) {
-
   }
 
   getTypes(arr: any) {
@@ -169,13 +166,12 @@ export class ServicesComponent implements OnInit, AfterViewInit {
     }
     return str;
   }
+
   getBusinessLocations() {
     return new Promise<any>((resolve, reject) => {
-
       this.apiService.getNew('core', '/api/v1/business/user-business-and-location/list')
         .subscribe((result: any) => {
           if (result.message == "success" && result?.data) {
-
             resolve(result);
           }
           resolve(null);
@@ -184,16 +180,16 @@ export class ServicesComponent implements OnInit, AfterViewInit {
           console.error('error: ', error);
         })
     })
-
   }
+
   async getLocations() {
     return new Promise<any>((resolve, reject) => {
       this.apiService.postNew('core', `/api/v1/business/${this.iBusinessId}/list-location`, {}).subscribe(
         (result: any) => {
-          if (result.message == 'success') {
+          if (result?.data?.aLocation?.length) {
             this.requestParams.locations = result.data.aLocation;
+            resolve(result);
           }
-          resolve(result);
         }),
         (error: any) => {
           reject(error);
@@ -201,6 +197,7 @@ export class ServicesComponent implements OnInit, AfterViewInit {
         }
     })
   }
+
   async setLocation(sLocationId: string = "") {
     return new Promise<void>(async (resolve, reject) => {
       this.iLocationId = sLocationId ?? (localStorage.getItem('currentLocation') ?? '')
@@ -319,8 +316,9 @@ export class ServicesComponent implements OnInit, AfterViewInit {
     this.requestParams.iBusinessId = this.businessDetails._id;
     this.requestParams.skip = this.requestParams.skip || 0;
     this.requestParams.limit = this.paginationConfig.itemsPerPage || 50;
-    this.requestParams.importStatus = this.importStatus;
+    this.requestParams.importStatus = this.importStatus == 'all' ? undefined : this.importStatus;
     if (this.iLocationId) this.requestParams.iLocationId = localStorage.getItem('currentLocation')
+    // if (this.iLocationId && !this.requestParams.selectedLocations?.length) this.requestParams.selectedLocations.push(this.requestParams.selectedLocations);
     this.showLoader = true;
     
     this.requestParams.estimateDate = {

@@ -30,6 +30,7 @@ import { SupplierWarningDialogComponent } from './dialogs/supplier-warning-dialo
 import * as _moment from 'moment';
 import { ReceiptService } from '../shared/service/receipt.service';
 import { TransactionItemsDetailsComponent } from '../shared/components/transaction-items-details/transaction-items-details.component';
+import * as JsBarcode from 'jsbarcode';
 const moment = (_moment as any).default ? (_moment as any).default : _moment;
 @Component({
   selector: 'app-till',
@@ -118,6 +119,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   businessDetails: any;
   printActionSettings: any;
   printSettings: any;
+  activity: any;
 
   randNumber(min: number, max: number): number {
     return Math.floor(Math.random() * (max - min + 1) + min);
@@ -269,6 +271,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   getTotals(type: string): number {
+  
     this.amountDefined = this.payMethods.find((pay) => pay.amount || pay.amount?.toString() === '0');
     if (!type) {
       return 0
@@ -466,6 +469,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
   /* A payment which made */
   getUsedPayMethods(total: boolean): any {
+
     if (!this.payMethods) {
       return 0
     }
@@ -588,10 +592,22 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
             .subscribe((data: any) => {
               this.toastrService.show({ type: 'success', text: 'Transaction created.' });
               this.saveInProgress = false;
-              const { transaction, aTransactionItems, activityItems } = data;
+              const { transaction, aTransactionItems, activityItems, activity } = data;
               transaction.aTransactionItems = aTransactionItems;
+              transaction.activity = activity;
               this.transaction = transaction;
               this.activityItems = activityItems;
+              this.activity = activity;
+
+              this.transaction.aTransactionItems.map((tItem:any)=>{
+                for (const aItem of this.activityItems){
+                  if(aItem.iTransactionItemId === tItem._id){
+                    tItem.sActivityItemNumber = aItem.sNumber;
+                    break;
+                  }
+                }
+              });
+              // this.activity = activity;
 
               // this.transaction.aTransactionItems.forEach((item: any, index: number) => {
               //   this.getRelatedTransactionItem(item?.iActivityItemId, item?._id, index)
@@ -619,8 +635,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   async processTransactionForPdfReceipt() {
-
-
     const relatedItemsPromises: any = [];
     let language: any = localStorage.getItem('language')
     let dataObject = JSON.parse(JSON.stringify(this.transaction));
@@ -679,9 +693,14 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       });
       dataObject.aPayments = dataObject.aPayments.concat(obj.aPayments);
     })
-
     this.transaction = dataObject;
 
+    this.handleReceiptPrinting();
+    
+    // this.receiptService.exportToPdf({ transaction: this.transaction });
+  }
+
+  async handleReceiptPrinting(){
     if (!this.businessDetails) {
       const _result: any = await this.getBusinessDetails().toPromise();
 
@@ -691,13 +710,14 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.transaction.businessDetails = this.businessDetails;
     this.transaction.currentLocation = this.businessDetails.currentLocation;
-    const oDataSource = JSON.parse(JSON.stringify(this.transaction));
+    let oDataSource = JSON.parse(JSON.stringify(this.transaction));
     let nTotalOriginalAmount = 0;
     if (oDataSource.aTransactionItems?.length === 1 && oDataSource._id === oDataSource.aTransactionItems[0].iTransactionId) {
       nTotalOriginalAmount = oDataSource.total;
       oDataSource.bHasPrePayments = false;
     } else {
       oDataSource.aTransactionItems.forEach((item: any) => {
+        item.sOrderDescription = item.sProductName + '\n' + item.sDescription;
         nTotalOriginalAmount += item.nPriceIncVat;
         let description = `${item.description}\n`;
         if (item.nPriceIncVat !== item.nPaymentAmount) {
@@ -716,10 +736,21 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       oDataSource.bHasPrePayments = true;
     }
     oDataSource.nTotalOriginalAmount = nTotalOriginalAmount;
+    oDataSource.sBarcodeURI = this.generateBarcodeURI(false, oDataSource.sNumber);
+
     let _template: any, _oLogoData: any;
 
-    const aUniqueItemTypes = [...new Set(oDataSource.aTransactionItemType)];
+    const aUniqueItemTypes = [];
 
+    if (oDataSource.total > 0.02 || oDataSource.total < -0.02) aUniqueItemTypes.push('regular')
+
+    const nRepairCount = oDataSource.aTransactionItemType.filter((e: any) => e === 'repair')?.length;
+    const nOrderCount = oDataSource.aTransactionItemType.filter((e: any) => e === 'order')?.length;
+
+    if(nRepairCount || nOrderCount) aUniqueItemTypes.push('order');
+
+    if (nRepairCount > 1) aUniqueItemTypes.push('repair_alternative');
+    else if (nRepairCount === 1) aUniqueItemTypes.push('repair');
 
     [_template, _oLogoData,] = await Promise.all([
       this.getTemplate(aUniqueItemTypes),
@@ -728,38 +759,50 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     oDataSource.sBusinessLogoUrl = _oLogoData.data;
 
     const aTemplates = _template.data;
-    let title = '';
-    aTemplates.forEach((template: any) => {
-      if (template.eType === 'repair') {
-        const aFilterActivity = this.activityItems.filter((el: any) => el.oType.eKind === 'repair');
-        aFilterActivity.forEach((activity: any) => {
-          title = 'Repair' + activity.sNumber;
-          this.sendForReceipt(activity, template, title);
-        })
-      } else if (template.eType === 'regular') {
-        title = oDataSource.sNumber;
-        this.sendForReceipt(oDataSource, template, title);
-      }
-      // this.receiptService.exportToPdf({
-      //   oDataSource: oDataSource,
-      //   pdfTitle: 'Transaction Receipt',
-      //   templateData: template.data,
-      //   printSettings: this.printSettings,
-      //   printActionSettings: this.printActionSettings,
-      //   eSituation: 'is_created'
-      // });  
-    })
-    return;
-    // const template = await this.getTemplate('transaction').toPromise();
-    // oDataSource.sBusinessLogoUrl = (await this.getBase64FromUrl(oDataSource?.businessDetails?.sLogoLight).toPromise()).data;
-    // printSettings = await this.apiService.postNew('cashregistry', `/api/v1/print-settings/list/${this.iBusinessId}`, data).toPromise();
+    
+    if (nOrderCount === 1 && nRepairCount === 1 || nRepairCount > 1 || nOrderCount > 1) {
+      console.log('print order receipt')
+      // print order receipt
+      const orderTemplate = aTemplates.filter((template: any) => template.eType === 'order')[0];
+      oDataSource.sActivityNumber = oDataSource.activity.sNumber;
+      this.sendForReceipt(oDataSource, orderTemplate, oDataSource.activity.sNumber);
+    }
+    if (oDataSource.total > 0.02 || oDataSource.total < -0.02) {
+      console.log('print proof of payments receipt')
+      //print proof of payments receipt
+      const template = aTemplates.filter((template: any) => template.eType === 'regular')[0];
+      this.sendForReceipt(oDataSource, template, oDataSource.sNumber);
+    }
+
+    if (nRepairCount === 1 && nOrderCount === 0) {
+      //use two column layout
+      console.log('use two column layout');
+      const template = aTemplates.filter((template: any) => template.eType === 'repair')[0];
+      oDataSource = this.activityItems.filter((item:any) => item.oType.eKind === 'repair')[0];
+      const aTemp = oDataSource.sNumber.split("-");
+      oDataSource.sPartRepairNumber = aTemp[aTemp.length - 1];
+      oDataSource.sBarcodeURI = this.generateBarcodeURI(false, oDataSource.sNumber);
+      this.sendForReceipt(oDataSource, template, oDataSource.sNumber);
+
+    } else if (nRepairCount >= 1 && nOrderCount >= 1) {
+      // use repair_alternative laYout
+      console.log('use repair_alternative laYout');
+      const template = aTemplates.filter((template: any) => template.eType === 'repair_alternative')[0];
+      oDataSource = this.activityItems.filter((item: any) => item.oType.eKind === 'repair');
+      oDataSource.forEach((data:any)=> {
+        data.sBarcodeURI = this.generateBarcodeURI(false, data.sNumber);
+        data.sBusinessLogoUrl = _oLogoData.data;
+        data.businessDetails = this.businessDetails;
+        this.sendForReceipt(data, template, data.sNumber);
+      })
+    }
 
     this.clearAll();
-
-    // this.receiptService.exportToPdf({ transaction: this.transaction });
   }
 
   sendForReceipt(oDataSource: any, template: any, title: any) {
+    console.log('sendForReceipt', oDataSource, template, title);
+    // return;
     this.receiptService.exportToPdf({
       oDataSource: oDataSource,
       pdfTitle: title,
@@ -1222,6 +1265,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     })
   }
 
+ 
+
   /* When doing */
   assignAllAmount(index: number) {
     this.payMethods[index].amount = -(this.getUsedPayMethods(true) - this.getTotals('price'));
@@ -1288,6 +1333,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   async openModal(barcode: any) {
+    if (barcode.startsWith('0002'))
+      barcode = barcode.substring(4)
     this.toastrService.show({ type: 'success', text: 'Barcode detected: ' + barcode })
     if (barcode.startsWith("AI")) {
       let oBody: any = {
@@ -1421,6 +1468,12 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     if (transaction.iCustomerId) {
       this.fetchCustomer(transaction.iCustomerId);
     }
+  }
+
+  generateBarcodeURI(displayValue: boolean = true, data: any) {
+    var canvas = document.createElement("canvas");
+    JsBarcode(canvas, data, { format: "CODE128", displayValue: displayValue });
+    return canvas.toDataURL("image/png");
   }
 
   ngOnDestroy() {
