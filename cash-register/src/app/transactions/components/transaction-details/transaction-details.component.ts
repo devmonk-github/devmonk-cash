@@ -56,6 +56,8 @@ export class TransactionDetailsComponent implements OnInit {
 
   private pn2escposService = new Pn2escposService();
   printSettings: any;
+  printActionSettings:any;
+
   constructor(
     private viewContainerRef: ViewContainerRef,
     private apiService: ApiService,
@@ -70,7 +72,7 @@ export class TransactionDetailsComponent implements OnInit {
     this.dialogRef = _injector.get<DialogComponent>(DialogComponent);
   }
 
-  ngOnInit(): void {
+  async ngOnInit() {
     this.iBusinessId = localStorage.getItem("currentBusiness") || '';
     this.iLocationId = localStorage.getItem("currentLocation") || '';
     this.iWorkstationId = localStorage.getItem("currentWorkstation") || '';
@@ -127,7 +129,12 @@ export class TransactionDetailsComponent implements OnInit {
     this.fetchCustomer(this.transaction.oCustomer._id);
     this.fetchTransaction(this.transaction.sNumber)
     this.getPrintSetting();
-    this.getPdfPrintSetting();
+    const [_printActionSettings, _printSettings]: any = await Promise.all([
+      this.getPdfPrintSetting({ oFilterBy: { sMethod: 'actions' } }),
+      this.getPdfPrintSetting(),
+    ]);
+    this.printActionSettings = _printActionSettings?.data[0]?.result[0].aActions;
+    this.printSettings = _printSettings?.data[0]?.result;
   }
 
   fetchBusinessDetails() {
@@ -182,19 +189,12 @@ export class TransactionDetailsComponent implements OnInit {
     this.generatePDF(false);
   }
 
-  getPdfPrintSetting() {
-    this.apiService.getNew('cashregistry', `/api/v1/print-settings/${this.iBusinessId}/${this.iWorkstationId}/pdf/transaction`).subscribe(
-      (result: any) => {
-        if (result?.data?._id) {
-          this.printSettings = result?.data;
-        } else {
-          this.toastService.show({ type: 'danger', text: 'Check your business -> printer settings' });
-        }
-      },
-      (error: any) => {
-        console.error(error)
-      }
-    );
+  getPdfPrintSetting(oFilterBy?: any) {
+    const oBody = {
+      iLocationId: this.iLocationId,
+      ...oFilterBy
+    }
+    return this.apiService.postNew('cashregistry', `/api/v1/print-settings/list/${this.iBusinessId}`, oBody).toPromise();
   }
 
   async generatePDF(print: boolean) {
@@ -249,7 +249,8 @@ export class TransactionDetailsComponent implements OnInit {
       pdfTitle: oDataSource.sNumber,
       templateData: template.data,
       printSettings: this.printSettings,
-      bPrint: print
+      printActionSettings: this.printActionSettings,
+      eSituation: 'is_created'
     });
 
     return;
@@ -416,7 +417,7 @@ export class TransactionDetailsComponent implements OnInit {
   }
 
   getPrintSetting() {
-    this.apiService.getNew('cashregistry', `/api/v1/print-settings/${this.iBusinessId}/${this.iWorkstationId}/thermal/transaction`).subscribe(
+    this.apiService.getNew('cashregistry', `/api/v1/print-settings/${this.iBusinessId}/${this.iWorkstationId}/thermal/regular`).subscribe(
       (result: any) => {
         if (result?.data?._id) {
           this.thermalPrintSettings = result?.data;
