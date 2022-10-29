@@ -295,8 +295,16 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
     if (this.mode == 'create') {
       this.apiService.postNew('customer', '/api/v1/customer/create', this.customer).subscribe(
         (result: any) => {
+          if(result.message == 'success'){
           this.toastService.show({ type: 'success', text: this.translations[`Successfully added!`] });
           this.close({ action: true, customer: this.customer });
+          }else{
+            let errorMessage = ""
+            this.translateService.get(result.message).subscribe(
+              result=> errorMessage =result
+            )
+            this.toastService.show({type:'warning' , text:errorMessage})
+          }
         },
         (error: any) => {
           let errorMessage=""
