@@ -109,7 +109,7 @@ export class ServicesComponent implements OnInit, AfterViewInit {
     { key: 'Supplier/Repairer', disabled: true },
     // { key: 'Partner supplier status', disabled: true },
     { key: 'Customer', disabled: true },
-    { key: 'Actions' },
+    { key: 'Actions' , disabled:true},
   ]
 
   constructor(
