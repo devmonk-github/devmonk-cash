@@ -29,8 +29,6 @@ export class ActivityItemsComponent implements OnInit {
   businessDetails: any = {};
   iLocationId: String | null | undefined;
   requestParams: any = {
-    // endDate: new Date(new Date().setHours(23, 59, 59)),
-    // startDate: new Date('01-01-2015'),
     create: {
       minDate: new Date('01-01-2015'),
       maxDate: new Date(new Date().setHours(23, 59, 59)),
@@ -39,15 +37,14 @@ export class ActivityItemsComponent implements OnInit {
       minDate:  undefined,
       maxDate:  undefined
     },
-    searchValue: '',
-    sortBy: { key: 'Date', selected: true, sort: 'asc' },
-    sortOrder: 'asc',
+    // sortBy: { key: 'dCreatedDate', selected: true, sort: 'asc' },
+    sortBy: 'dCreatedDate',
+    sortOrder: 'desc',
     selectedRepairStatuses: [],
     selectedWorkstations: [],
     locations: [],
     selectedLocations: [],
     selectedKind: [],
-    // employee: { sFirstName: 'All' },
     aSelectedBusinessPartner: [],
     iEmployeeId: '',
     iAssigneeId: '',
@@ -74,14 +71,13 @@ export class ActivityItemsComponent implements OnInit {
   aFilterBusinessPartner: any = [];
 
   tableHeaders: Array<any> = [
-    { key: 'Activity No.', selected: false, sort: '' },
-    { key: 'Repair number', disabled: true },
-    // { key: 'Type', disabled: true },
-    { key: 'Intake date', selected: true, sort: 'asc' },
-    { key: 'End date', selected: false, sort: 'asc' },
-    { key: 'Status', disabled: true },
-    { key: 'Supplier/Repairer', disabled: true },
-    { key: 'Customer', disabled: true },
+    { key: 'ACTIVITY_NO', selected: false, sort: 'asc' },
+    { key: 'REPAIR_NUMBER', selected: false, sort: 'asc'  },
+    { key: 'INTAKE_DATE', selected: true, sort: 'asc' },
+    { key: 'ESTIMATED_DATE', selected: false, sort: 'asc' },
+    { key: 'STATUS',  selected: false, sort: 'asc' },
+    { key: 'SUPPLIER_REPAIR', disabled: true },
+    { key: 'CUSTOMER', disabled: true },
   ]
   
   selectedProperties: any;
@@ -187,9 +183,10 @@ export class ActivityItemsComponent implements OnInit {
 
   sortAndLoadTransactions(sortHeader: any) {
     let sortBy = 'dCreatedDate';
-    if (sortHeader.key == 'End date') sortBy = 'dPickedUp';
-    if (sortHeader.key == 'Intake date') sortBy = 'dCreatedDate';
-    if (sortHeader.key == 'Activity No.') sortBy = 'sNumber';
+    if (sortHeader.key == 'ESTIMATED_DATE') sortBy = 'dEstimatedDate'
+    else if (sortHeader.key == 'ACTIVITY_NO') sortBy = 'sNumber'
+    else if (sortHeader.key == 'REPAIR_NUMBER') sortBy = 'sBagNumber'
+    else if (sortHeader.key == 'STATUS') sortBy = 'eActivityItemStatus'
     this.requestParams.sortBy = sortBy;
     this.requestParams.sortOrder = sortHeader.sort;
     this.loadTransaction();
@@ -197,6 +194,7 @@ export class ActivityItemsComponent implements OnInit {
 
   //  Function for set sort option on transaction table
   setSortOption(sortHeader: any) {
+    console.log('setSortOption: ', sortHeader);
     if (sortHeader.selected) {
       sortHeader.sort = sortHeader.sort == 'asc' ? 'desc' : 'asc';
       this.sortAndLoadTransactions(sortHeader)
@@ -204,7 +202,7 @@ export class ActivityItemsComponent implements OnInit {
       this.tableHeaders = this.tableHeaders.map((th: any) => {
         if (sortHeader.key == th.key) {
           th.selected = true;
-          th.sort = 'asc';
+          th.sort = 'desc';
         } else {
           th.selected = false;
         }
