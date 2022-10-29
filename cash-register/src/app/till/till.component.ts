@@ -741,16 +741,23 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     let _template: any, _oLogoData: any;
 
     const aUniqueItemTypes = [];
-
-    if (oDataSource.total > 0.02 || oDataSource.total < -0.02) aUniqueItemTypes.push('regular')
-
+    
     const nRepairCount = oDataSource.aTransactionItemType.filter((e: any) => e === 'repair')?.length;
     const nOrderCount = oDataSource.aTransactionItemType.filter((e: any) => e === 'order')?.length;
 
-    if(nRepairCount || nOrderCount) aUniqueItemTypes.push('order');
+    const bRegularCondition = oDataSource.total > 0.02 || oDataSource.total < -0.02;
+    const bOrderCondition = nOrderCount === 1 && nRepairCount === 1 || nRepairCount > 1 || nOrderCount > 1;
+    const bRepairCondition = nRepairCount === 1 && nOrderCount === 0;
+    const bRepairAlternativeCondition = nRepairCount >= 1 && nOrderCount >= 1;
 
-    if (nRepairCount > 1) aUniqueItemTypes.push('repair_alternative');
-    else if (nRepairCount === 1) aUniqueItemTypes.push('repair');
+    if (bRegularCondition) aUniqueItemTypes.push('regular')
+
+    if (bOrderCondition) aUniqueItemTypes.push('order');
+    
+    if (bRepairCondition) aUniqueItemTypes.push('repair');
+
+    if (bRepairAlternativeCondition) aUniqueItemTypes.push('repair_alternative');
+    
 
     [_template, _oLogoData,] = await Promise.all([
       this.getTemplate(aUniqueItemTypes),
@@ -760,21 +767,21 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
     const aTemplates = _template.data;
     
-    if (nOrderCount === 1 && nRepairCount === 1 || nRepairCount > 1 || nOrderCount > 1) {
+    if (bOrderCondition) {
       console.log('print order receipt')
       // print order receipt
       const orderTemplate = aTemplates.filter((template: any) => template.eType === 'order')[0];
       oDataSource.sActivityNumber = oDataSource.activity.sNumber;
       this.sendForReceipt(oDataSource, orderTemplate, oDataSource.activity.sNumber);
     }
-    if (oDataSource.total > 0.02 || oDataSource.total < -0.02) {
-      console.log('print proof of payments receipt')
+    if (bRegularCondition) {
+      console.log('print proof of payments (regular) receipt')
       //print proof of payments receipt
       const template = aTemplates.filter((template: any) => template.eType === 'regular')[0];
       this.sendForReceipt(oDataSource, template, oDataSource.sNumber);
     }
 
-    if (nRepairCount === 1 && nOrderCount === 0) {
+    if (bRepairCondition) {
       //use two column layout
       console.log('use two column layout');
       const template = aTemplates.filter((template: any) => template.eType === 'repair')[0];
@@ -784,9 +791,11 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       oDataSource.sBarcodeURI = this.generateBarcodeURI(false, oDataSource.sNumber);
       this.sendForReceipt(oDataSource, template, oDataSource.sNumber);
 
-    } else if (nRepairCount >= 1 && nOrderCount >= 1) {
+    } 
+    
+    if (bRepairAlternativeCondition) {
       // use repair_alternative laYout
-      console.log('use repair_alternative laYout');
+      console.log('use repair_alternative layout');
       const template = aTemplates.filter((template: any) => template.eType === 'repair_alternative')[0];
       oDataSource = this.activityItems.filter((item: any) => item.oType.eKind === 'repair');
       oDataSource.forEach((data:any)=> {
