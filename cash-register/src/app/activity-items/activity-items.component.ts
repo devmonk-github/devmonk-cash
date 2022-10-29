@@ -59,13 +59,13 @@ export class ActivityItemsComponent implements OnInit {
   faDecrease = faMinusCircle;
   faArrowUp = faLongArrowAltUp;
   faArrowDown = faLongArrowAltDown;
-
+  sSearchValue: string = '';
   showAdvanceSearch = false;
 
   workstations: Array<any> = [];
   employees: Array<any> = [];
   repairStatuses: Array<any> = ['new', 'info', 'processing', 'cancelled', 'inspection', 'completed', 'refund',
-    'refundInCashRegister', 'offer', 'offer-is-ok', 'to-repair', 'part-are-order', 'shipped-to-repair', 'delivered'
+    'refundInCashRegister', 'offer', 'offer-is-ok', 'offer-is-not-ok', 'to-repair', 'part-are-order', 'shipped-to-repair', 'delivered'
   ]
 
   aKind: Array<any> = ['reservation', 'repair', 'giftcard', 'order', 'gold-purchase', 'gold-sell', 'offer', 'refund']
@@ -118,6 +118,7 @@ export class ActivityItemsComponent implements OnInit {
     const oBody = { ... this.requestParams }
     oBody.aPropertyOptionIds = this.aPropertyOptionIds;
     oBody.importStatus = this.importStatus == 'all' ? undefined : this.importStatus;
+    oBody.sSearchValue = this.sSearchValue;
     this.apiService.postNew('cashregistry', '/api/v1/activities/items', oBody).subscribe(
       (result: any) => {
         this.activityItems = result.data;
