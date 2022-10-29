@@ -115,21 +115,21 @@ export class PdfService {
     
   }
 
-  getPdfData({ styles, content, orientation, pageSize, fileName, footer, pageMargins, defaultStyle, 
+  getPdfData({ styles, content, orientation, pageSize, pdfTitle, footer, pageMargins, defaultStyle, 
     printSettings, printActionSettings, eType, eSituation }:any) {
     const docDefinition = this.getDocDefinition(styles, content, orientation, pageSize, footer, pageMargins, defaultStyle);
     const pdfObject = this.generatePdf(docDefinition);
-    this.processPrintAction(pdfObject, fileName, printSettings, printActionSettings, eType, eSituation);
+    this.processPrintAction(pdfObject, pdfTitle, printSettings, printActionSettings, eType, eSituation);
   }
 
 
-  processPrintAction(pdfObject: any, fileName: any, printSettings: any, printActionSettings: any, eType: any, eSituation: any) {
-    // pdfObject.download(fileName);
+  processPrintAction(pdfObject: any, pdfTitle: any, printSettings: any, printActionSettings: any, eType: any, eSituation: any) {
+    // pdfObject.download(pdfTitle);
     // console.log({ printSettings, printActionSettings })
     printActionSettings = printActionSettings.filter((s: any) => s.eType === eType && s.eSituation === eSituation);
     if (!printActionSettings?.length){
       // console.log(`No print actions found for ${eType} with situation ${eSituation}, so downloading receipt`);
-      pdfObject.download(fileName);
+      pdfObject.download(pdfTitle);
       return;
     } 
     printSettings = printSettings.filter((s: any) => s.sType === eType && s.iWorkstationId === this.iWorkstationId);
@@ -141,40 +141,40 @@ export class PdfService {
           printSettings = printSettings.filter((s: any) => s.sMethod === 'pdf')[0];
           // console.log('141 PRINT_PDF')
           pdfObject.getBase64((data: any) => {
-            // console.log('handlePrint base64 generated', data, printSettings, fileName);
+            // console.log('handlePrint base64 generated', data, printSettings, pdfTitle);
             this.printService.printPDF(
               this.iBusinessId,
               data,
               printSettings.nPrinterId,
               printSettings.nComputerId,
               1,
-              fileName,
-              { title: fileName }
+              pdfTitle,
+              { title: pdfTitle }
             )
           });
           break;
         case 'DOWNLOAD':
-          pdfObject.download(fileName);
+          pdfObject.download(pdfTitle);
           break;
         case 'PRINT_THERMAL':
           printSettings = printSettings.filter((s: any) => s.sMethod === 'thermal')[0];
-          this.handlePrint(pdfObject, printSettings, fileName);
+          this.handlePrint(pdfObject, printSettings, pdfTitle);
           break;
       }
     });
   }
 
-  handlePrint(pdfObject:any, printSettings:any, fileName:any){
+  handlePrint(pdfObject:any, printSettings:any, pdfTitle:any){
     pdfObject.getBase64((data: any) => {
-      console.log('handlePrint base64 generated', data, printSettings, fileName);
+      // console.log('handlePrint base64 generated', data, printSettings, pdfTitle);
       this.printService.printPDF(
         this.iBusinessId,
         data,
         printSettings.nPrinterId,
         printSettings.nComputerId,
         1,
-        fileName,
-        { title: fileName }
+        pdfTitle,
+        { title: pdfTitle }
       )
     });
   }

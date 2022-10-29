@@ -252,7 +252,7 @@ export class ReceiptService {
 
         if(forEach){ //if we have forEach (nested array) then loop through it
             currentDataSource = this.oOriginalDataSource[forEach]; //take nested array as currentDataSource
-            
+            // console.log({currentDataSource});
             let bWidthPushed = false;
             if (currentDataSource?.length) {
                 currentDataSource.forEach((dataSource: any) => {
