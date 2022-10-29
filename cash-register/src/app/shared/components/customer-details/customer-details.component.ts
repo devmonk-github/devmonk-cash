@@ -3,6 +3,7 @@ import { DialogComponent, DialogService } from '../../service/dialog';
 import { ViewContainerRef } from '@angular/core';
 import { ApiService } from 'src/app/shared/service/api.service';
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
+import { TranslateService } from '@ngx-translate/core';
 import {
   ApexAxisChartSeries,
   ApexChart,
@@ -72,7 +73,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
   faTimes = faTimes;
   aPaymentChartData: any = [];
   aEmployeeStatistic: any = [];
-
+  translations:any;
   pageCounts: Array<number> = [10, 25, 50, 100]
   pageNumber: number = 1;
   setPaginateSize: number = 10;
@@ -215,12 +216,17 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
     private cdr: ChangeDetectorRef,
     private toastService: ToastService,
     private dialogService: DialogService,
+    private translateService: TranslateService ,
   ) {
     const _injector = this.viewContainerRef.parentInjector;
     this.dialogRef = _injector.get<DialogComponent>(DialogComponent);
   }
 
   ngOnInit(): void {
+    const translations = ['Successfully added!', 'Successfully updated!']
+    this.translateService.get(translations).subscribe(
+      result => this.translations = result
+    )
     this.requestParams.iBusinessId = localStorage.getItem('currentBusiness');
     this.requestParams.iLocationid = localStorage.getItem('currentLocation');
     this.requestParams.oFilterBy = {
@@ -289,10 +295,15 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
     if (this.mode == 'create') {
       this.apiService.postNew('customer', '/api/v1/customer/create', this.customer).subscribe(
         (result: any) => {
+          this.toastService.show({ type: 'success', text: this.translations[`Successfully added!`] });
           this.close({ action: true, customer: this.customer });
         },
         (error: any) => {
-          console.error(error)
+          let errorMessage=""
+          this.translateService.get(error.error.message).subscribe(
+            result => errorMessage = result
+          )
+          this.toastService.show({ type: 'warning', text:errorMessage });
         }
       );
     }
@@ -300,7 +311,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
       this.apiService.putNew('customer', '/api/v1/customer/update/' + this.requestParams.iBusinessId + '/' + this.customer._id, this.customer).subscribe(
         (result: any) => {
           if (result?.message === 'success') {
-            this.toastService.show({ type: 'success', text: `Successfully updated!` });
+            this.toastService.show({ type: 'success', text: this.translations[`Successfully updated!`] });
             this.fetchUpdatedDetails();
           }
           // this.close({ action: true });
