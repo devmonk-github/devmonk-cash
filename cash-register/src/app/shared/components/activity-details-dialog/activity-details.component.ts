@@ -514,11 +514,10 @@ export class ActivityDetailsComponent implements OnInit {
     this.dialogRef.close.emit(data);
   }
 
-  submit() {
-    const oActivityItem = this.activityItems[0];
-
+  submit(activityItemId:any, index:any) {
+    const oActivityItem = this.activityItems[index]; 
     oActivityItem.iBusinessId = this.iBusinessId;
-    this.apiService.putNew('cashregistry', '/api/v1/activities/items/' + oActivityItem?.iActivityItemId, oActivityItem)
+    this.apiService.putNew('cashregistry', '/api/v1/activities/items/' + activityItemId, oActivityItem)
       .subscribe((result: any) => {
       }, (error) => {
         console.log('error: ', error);
