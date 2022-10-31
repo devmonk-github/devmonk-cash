@@ -764,7 +764,13 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       this.getBase64FromUrl(oDataSource?.businessDetails?.sLogoLight),
     ])
     oDataSource.sBusinessLogoUrl = _oLogoData.data;
-
+    oDataSource.oCustomer = {
+      sFirstName: oDataSource.oCustomer.sFirstName,
+      sLastName: oDataSource.oCustomer.sLastName,
+      sEmail: oDataSource.oCustomer.sEmail,
+      sMobile: oDataSource.oCustomer.oPhone?.sCountryCode + oDataSource.oCustomer.oPhone?.sMobile,
+      sLandLine: oDataSource.oCustomer.oPhone?.sLandLine,
+    };
     const aTemplates = _template.data;
     
     if (bOrderCondition) {
