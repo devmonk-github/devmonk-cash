@@ -55,6 +55,7 @@ export class ActivityDetailsComponent implements OnInit {
   quantity: Number = 0;
   userDetail: any;
   business: any;
+  _oActivity: any;
   businessDetails: any;
   iLocationId: String = '';
   showDetails: Boolean = true;
@@ -116,7 +117,7 @@ export class ActivityDetailsComponent implements OnInit {
 
   async ngOnInit() {
 
-
+    this._oActivity = this.activity;
     if (this.activity) {
       if (this.activity?.activityitems?.length) {
         this.activityItems = this.activity.activityitems;
