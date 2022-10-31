@@ -357,11 +357,7 @@
                                                         name="dCreatedDate"
                                                         [ngModel]="activity.dCreatedDate | date:'yyyy-MM-dd'"
                                                         (ngModelChange)="activity.dCreatedDate = $event" />
-                                                        <!-- <input type="date"
-                                                            class="form-control form-control-lg form-control-solid mb-3 mb-lg-0 w-100"
-                                                            [(ngModel)]="activity.dCreatedDate | date:'yyyy-MM-dd'"
-                                                            (ngModelChange)="activity.dCreatedDate = $event" 
-                                                            placeholder=""> -->
+                                                   
                                                     </div>
                                                 </div>
                                             </div>
@@ -374,7 +370,7 @@
                                                     <div class="col-lg-8 fv-row">
                                                         <input type="text"
                                                             class="form-control form-control-lg form-control-solid mb-3 mb-lg-0 w-100"
-                                                            [(ngModel)]="activity.iLocationId" placeholder="">
+                                                            [(ngModel)]="_oActivity.oLocationName" placeholder="">
                                                     </div>
                                                 </div>
                                             </div>
