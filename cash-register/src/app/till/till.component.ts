@@ -712,29 +712,27 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     this.transaction.currentLocation = this.businessDetails.currentLocation;
     let oDataSource = JSON.parse(JSON.stringify(this.transaction));
     let nTotalOriginalAmount = 0;
-    if (oDataSource.aTransactionItems?.length === 1 && oDataSource._id === oDataSource.aTransactionItems[0].iTransactionId) {
-      nTotalOriginalAmount = oDataSource.total;
-      oDataSource.bHasPrePayments = false;
-    } else {
+    // if (oDataSource.aTransactionItems?.length === 1 && oDataSource._id === oDataSource.aTransactionItems[0].iTransactionId) {
+    //   nTotalOriginalAmount = oDataSource.total;
+    //   oDataSource.bHasPrePayments = false;
+    // } else {
       oDataSource.aTransactionItems.forEach((item: any) => {
         item.sOrderDescription = item.sProductName + '\n' + item.sDescription;
         nTotalOriginalAmount += item.nPriceIncVat;
-        let description = `${item.description}\n`;
-        if (item.nPriceIncVat !== item.nPaymentAmount) {
+        let description = `${item.sProductName}\n${item.sDescription}`;
+        if (item?.related?.length) { //item.nPriceIncVat !== item.nPaymentAmount
           description += `Original amount: ${item.nPriceIncVat}\n
                           Already paid: \n${item.sTransactionNumber} | ${item.nPaymentAmount} (this receipt)\n`;
 
-          if (item?.related?.length) {
-            item.related.forEach((related: any) => {
-              description += `${related.sTransactionNumber}|${related.nPaymentAmount}\n`;
-            });
-          }
+          item.related.forEach((related: any) => {
+            description += `${related.sTransactionNumber}|${related.nPaymentAmount}\n`;
+          });
         }
 
         item.description = description;
       });
       oDataSource.bHasPrePayments = true;
-    }
+    // }
     oDataSource.nTotalOriginalAmount = nTotalOriginalAmount;
     oDataSource.sBarcodeURI = this.generateBarcodeURI(false, oDataSource.sNumber);
 
@@ -788,6 +786,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     if (bRepairCondition) {
+      if (oDataSource.aTransactionItems.filter((item: any) => item.oType.eKind === 'repair')[0]?.iActivityItemId) return;
       //use two column layout
       console.log('use two column layout');
       const template = aTemplates.filter((template: any) => template.eType === 'repair')[0];
