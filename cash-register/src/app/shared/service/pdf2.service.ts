@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
+import { ToastService } from '../components/toast/toast.service';
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 import { CanvasService } from './canvas.service';
 import { PrintService } from './print.service';
@@ -12,7 +13,7 @@ export class PdfService {
   iBusinessId: string;
   iWorkstationId: any;
 
-  constructor(private printService: PrintService) {
+  constructor(private printService: PrintService, private toastrService: ToastService) {
     this.iBusinessId = localStorage.getItem('currentBusiness') || '';
     this.iWorkstationId = localStorage.getItem('currentWorkstation') || ''
    }
@@ -131,7 +132,8 @@ export class PdfService {
       // console.log(`No print actions found for ${eType} with situation ${eSituation}, so downloading receipt`);
       pdfObject.download(pdfTitle);
       return;
-    } 
+    }
+    // if(eType === 'regular') eType = 'transaction'; 
     printSettings = printSettings.filter((s: any) => s.sType === eType && s.iWorkstationId === this.iWorkstationId);
     const aActionToPerform = printActionSettings[0].aActionToPerform;
     // console.log(137, aActionToPerform)
@@ -139,19 +141,12 @@ export class PdfService {
       switch(action){
         case 'PRINT_PDF':
           printSettings = printSettings.filter((s: any) => s.sMethod === 'pdf')[0];
-          // console.log('141 PRINT_PDF')
-          pdfObject.getBase64((data: any) => {
-            // console.log('handlePrint base64 generated', data, printSettings, pdfTitle);
-            this.printService.printPDF(
-              this.iBusinessId,
-              data,
-              printSettings.nPrinterId,
-              printSettings.nComputerId,
-              1,
-              pdfTitle,
-              { title: pdfTitle }
-            )
-          });
+          // console.log('141 PRINT_PDF', printSettings);
+          if (!printSettings?.nPrinterId) {
+            this.toastrService.show({ type: 'danger', text: `Printer is not selected for ${printSettings.sType}` });
+            return;
+          }
+          this.handlePrint(pdfObject, printSettings, pdfTitle);
           break;
         case 'DOWNLOAD':
           pdfObject.download(pdfTitle);

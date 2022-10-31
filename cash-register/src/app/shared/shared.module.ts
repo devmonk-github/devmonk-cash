@@ -48,6 +48,8 @@ import { AddEditWorkstationComponent } from './components/add-edit-workstation/a
 import { SortPipe } from "./directives/sort.pipe";
 import { ActionSettingsComponent } from "./components/actions-settings/action-settings.component";
 import { FilterPipe } from "./pipes/filter.pipe";
+import { PdfService } from "./service/pdf2.service";
+import { ReceiptService } from "./service/receipt.service";
 
 @NgModule({
   declarations: [
@@ -121,7 +123,7 @@ import { FilterPipe } from "./pipes/filter.pipe";
     AddEditWorkstationComponent,
     SortPipe
   ],
-  providers: [CurrencyPipe, CommonPrintSettingsService]
+  providers: [CurrencyPipe, CommonPrintSettingsService, PdfService, ReceiptService]
 })
 
 export class SharedModule {

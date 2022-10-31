@@ -193,7 +193,7 @@
                                         </div>
                                         <div class="btn-group me-4 w-100 my-3">
                                             <span class="btn btn-primary fs-bold px-6"
-                                                (click)="downloadCustomerReceipt(index, true)">
+                                                (click)="downloadCustomerReceipt(index)">
                                                 <fa-icon class="mx-4" [icon]="faPrint"></fa-icon>
                                                 <span class="indicator-label ">{{ "CUSTOMER_RECEIPT_PRINT" |
                                                     translate}}</span>
@@ -352,9 +352,12 @@
                                             <div class="col-lg-8">
                                                 <div class="row">
                                                     <div class="col-lg-8 fv-row">
-                                                        <input type="text"
-                                                            class="form-control form-control-lg form-control-solid mb-3 mb-lg-0 w-100"
-                                                            [(ngModel)]="activity.dCreatedDate" placeholder="">
+                                                        <input type="date"
+                                                        class="form-control form-control form-control-solid"
+                                                        name="dCreatedDate"
+                                                        [ngModel]="activity.dCreatedDate | date:'yyyy-MM-dd'"
+                                                        (ngModelChange)="activity.dCreatedDate = $event" />
+                                                   
                                                     </div>
                                                 </div>
                                             </div>
@@ -367,7 +370,7 @@
                                                     <div class="col-lg-8 fv-row">
                                                         <input type="text"
                                                             class="form-control form-control-lg form-control-solid mb-3 mb-lg-0 w-100"
-                                                            [(ngModel)]="activity.iLocationId" placeholder="">
+                                                            [(ngModel)]="_oActivity.oLocationName" placeholder="">
                                                     </div>
                                                 </div>
                                             </div>
@@ -720,6 +723,11 @@
                                     </div>
 
                                 </div>
+                                <div class="row">
+                                <div class="col-3">
+                                    <button class="btn btn-primary" (click)="submit(activity._id , index)" type="submit"> {{ "SUBMIT" | translate}}</button>
+                                </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -730,12 +738,12 @@
                     </h5>
                     <div *ngIf="loading" class="spinner-border mx-auto"></div>
                 </div>
+
+               
             </div>
         </div>
 
     </div>
 
-    <div class="card-footer">
-        <button class="btn btn-primary" (click)="submit()" type="submit"> {{ "SUBMIT" | translate}}</button>
-    </div>
+
 </div>

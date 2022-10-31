@@ -55,6 +55,7 @@ export class ActivityDetailsComponent implements OnInit {
   quantity: Number = 0;
   userDetail: any;
   business: any;
+  _oActivity: any;
   businessDetails: any;
   iLocationId: String = '';
   showDetails: Boolean = true;
@@ -93,7 +94,9 @@ export class ActivityDetailsComponent implements OnInit {
   bFetchingTransaction: boolean = false;
   px2mmFactor !: number;
   printSettings: any;
+  printActionSettings: any;
   iWorkstationId: string;
+  aTemplates: any;
 
   constructor(
     private viewContainerRef: ViewContainerRef,
@@ -107,12 +110,14 @@ export class ActivityDetailsComponent implements OnInit {
     const _injector = this.viewContainerRef.injector;
     this.dialogRef = _injector.get<DialogComponent>(DialogComponent); 
     this.iWorkstationId = localStorage.getItem("currentWorkstation") || '';
+    this.iBusinessId = localStorage.getItem('currentBusiness') || '';
+    this.iLocationId = localStorage.getItem('currentLocation') || '';
   }
 
 
-  ngOnInit(): void {
+  async ngOnInit() {
 
-
+    this._oActivity = this.activity;
     if (this.activity) {
       if (this.activity?.activityitems?.length) {
         this.activityItems = this.activity.activityitems;
@@ -133,6 +138,15 @@ export class ActivityDetailsComponent implements OnInit {
     this.getListEmployees()
     this.getListSuppliers()
     this.getBusinessBrands();
+
+    const [_printActionSettings, _printSettings, _template]: any = await Promise.all([
+      this.getPdfPrintSetting({ oFilterBy: { sMethod: 'actions' } }),
+      this.getPdfPrintSetting({ oFilterBy: { sType: ['repair', 'order', 'repair_alternative'] } }),
+      this.getTemplate(['repair','order','repair_alternative'])
+    ]);
+    this.printActionSettings = _printActionSettings?.data[0]?.result[0].aActions;
+    this.printSettings = _printSettings?.data[0]?.result;
+    this.aTemplates = _template.data;
   }
 
   getListEmployees() {
@@ -369,12 +383,12 @@ export class ActivityDetailsComponent implements OnInit {
     return this.apiService.getNew('core', '/api/v1/business/' + this.business._id);
   }
 
-  async downloadCustomerReceipt(index: number, bPrint: boolean = false) {
+  async downloadCustomerReceipt(index: number) {
     let oDataSource = JSON.parse(JSON.stringify(this.activity));
     if (oDataSource?.activityitems){
       oDataSource = oDataSource.activityitems[index];
     }
-    const type = (oDataSource?.oType.eKind === 'regular') ? 'order' : 'repair';
+    const type = (oDataSource?.oType.eKind === 'regular') ? 'repair_alternative' : 'repair';
     const sBarcodeURI = this.generateBarcodeURI(false, oDataSource.sNumber);    
     if(!this.businessDetails){
       const result: any = await this.getBusinessDetails().toPromise();
@@ -382,7 +396,8 @@ export class ActivityDetailsComponent implements OnInit {
     }
     oDataSource.businessDetails = this.businessDetails;
     
-    const template = await this.getTemplate(type).toPromise();
+    const template = this.aTemplates.filter((t:any)=> t.eType === type)[0];
+    // console.log(template);
 
     oDataSource.oCustomer = {
       sFirstName: this.customer?.sFirstName || '',
@@ -395,17 +410,20 @@ export class ActivityDetailsComponent implements OnInit {
     const aTemp = oDataSource.sNumber.split("-");
     oDataSource.sPartRepairNumber = aTemp[aTemp.length - 1];
     oDataSource.sBusinessLogoUrl = (await this.getBase64FromUrl(oDataSource?.businessDetails?.sLogoLight).toPromise()).data;
+    // console.log({ oDataSource });
+    // return;
+    // this.printSettings = this.getPdfPrintSetting(type);
 
-    if (bPrint)
-      this.printSettings = this.getPdfPrintSetting(type);
+    this.sendForReceipt(oDataSource, template, oDataSource.sNumber);
 
-    this.receiptService.exportToPdf({
-      oDataSource: oDataSource,
-      templateData: template.data,
-      pdfTitle: oDataSource.sNumber,
-      printSettings: this.printSettings,
-      bPrint: bPrint
-    })
+    // this.receiptService.exportToPdf({
+    //   oDataSource: oDataSource,
+    //   templateData: template.data,
+    //   pdfTitle: oDataSource.sNumber,
+    //   printSettings: this.printSettings,
+    //   printActionSettings: this.printActionSettings,
+    //   eSituation: 'is_created'
+    // })
     return;
     const data = this.activity.activityitems[index];
     const sName = 'Sample', eType = 'completed';
@@ -442,8 +460,14 @@ export class ActivityDetailsComponent implements OnInit {
     return this.apiService.getNew('cashregistry', `/api/v1/pdf/templates/getBase64/${this.iBusinessId}?url=${url}`);
   }
 
-  getTemplate(type: string): Observable<any> {
-    return this.apiService.getNew('cashregistry', `/api/v1/pdf/templates/${this.iBusinessId}?eType=${type}`);
+  getTemplate(types: any) {
+    const body = {
+      iBusinessId: this.iBusinessId,
+      oFilterBy: {
+        eType: types
+      }
+    }
+    return this.apiService.postNew('cashregistry', `/api/v1/pdf/templates`, body).toPromise();
   }
 
   fetchCustomer(customerId: any, index: number) {
@@ -491,11 +515,10 @@ export class ActivityDetailsComponent implements OnInit {
     this.dialogRef.close.emit(data);
   }
 
-  submit() {
-    const oActivityItem = this.activityItems[0];
-
+  submit(activityItemId:any, index:any) {
+    const oActivityItem = this.activityItems[index]; 
     oActivityItem.iBusinessId = this.iBusinessId;
-    this.apiService.putNew('cashregistry', '/api/v1/activities/items/' + oActivityItem?.iActivityItemId, oActivityItem)
+    this.apiService.putNew('cashregistry', '/api/v1/activities/items/' + activityItemId, oActivityItem)
       .subscribe((result: any) => {
       }, (error) => {
         console.log('error: ', error);
@@ -533,7 +556,7 @@ export class ActivityDetailsComponent implements OnInit {
 
   async downloadReceipt(){
     const oDataSource = JSON.parse(JSON.stringify(this.activity));
-    const template = await this.getTemplate('order').toPromise();
+    const template = this.aTemplates.filter((t:any)=> t.eType === 'order')[0];
     if (!this.businessDetails) {
       const result: any = await this.getBusinessDetails().toPromise();
       this.businessDetails = result.data;
@@ -553,16 +576,42 @@ export class ActivityDetailsComponent implements OnInit {
     oDataSource.sBarcodeURI = sBarcodeURI;
     
     oDataSource.sBusinessLogoUrl = (await this.getBase64FromUrl(oDataSource?.businessDetails?.sLogoLight).toPromise()).data;
+    oDataSource.aTransactionItems = oDataSource.activityitems;
+    oDataSource.sActivityNumber = oDataSource.sNumber;
+    oDataSource.aTransactionItems.forEach((item:any)=>{
+      item.sActivityItemNumber = item.sNumber;
+      item.sOrderDescription = item.sProductName + '\n' + item.sDescription;
+    });
 
-    this.receiptService.exportToPdf({
-      oDataSource: oDataSource,
-      templateData: template.data,
-      pdfTitle: this.activity.sNumber
-    })
+    this.sendForReceipt(oDataSource, template, oDataSource.sNumber);
+
+    // this.receiptService.exportToPdf({
+    //   oDataSource: oDataSource,
+    //   templateData: template,
+    //   pdfTitle: this.activity.sNumber,
+
+    // })
 
   }
 
-  getPdfPrintSetting(eType:any) {
-    return this.apiService.getNew('cashregistry', `/api/v1/print-settings/${this.iBusinessId}/${this.iWorkstationId}/pdf/${eType}`);
+  sendForReceipt(oDataSource: any, template: any, title: any) {
+    // console.log('sendForReceipt', oDataSource, template, title);
+    // return;
+    this.receiptService.exportToPdf({
+      oDataSource: oDataSource,
+      pdfTitle: title,
+      templateData: template,
+      printSettings: this.printSettings,
+      printActionSettings: this.printActionSettings,
+      eSituation: 'is_created'
+    });
+  }
+
+  getPdfPrintSetting(oFilterBy?: any) {
+    const oBody = {
+      iLocationId: this.iLocationId,
+      ...oFilterBy
+    }
+    return this.apiService.postNew('cashregistry', `/api/v1/print-settings/list/${this.iBusinessId}`, oBody).toPromise();
   }
 }
