@@ -1,9 +1,7 @@
 import { EventEmitter, Injectable } from '@angular/core';
 declare const onScan: any;
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 export class BarcodeService {
 
   barcodeScanned = new EventEmitter<String>()
