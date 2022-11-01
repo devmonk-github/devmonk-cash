@@ -788,9 +788,11 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
               this.aPaymentMethods.map((item: any) => {
                 item.nNewAmount = item.nAmount;
                 this.nPaymentMethodTotal += parseFloat(item.nAmount);
+                console.log('item.nAmount: ', item.nAmount, this.nPaymentMethodTotal);
                 return item;
               });
               this.nNewPaymentMethodTotal = this.nPaymentMethodTotal;
+              console.log('nPaymentMethodTotal: ', this.nPaymentMethodTotal);
               this.filterDuplicatePaymentMethods();
             }
           }
@@ -978,6 +980,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
       oFilterBy: {
         dStartDate: this.filterDates.startDate,
         dEndDate: this.filterDates.endDate,
+        // IsDynamicState
         bIsArticleGroupLevel: this.bIsArticleGroupLevel,
         bIsSupplierMode: this.bIsSupplierMode,
         iLocationId: this?.aSelectedLocation?.length ? this.aSelectedLocation : [],
@@ -986,6 +989,10 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
       sTransactionType: this.optionMenu,
       iBusinessId: this.iBusinessId,
     };
+    if (!this.IsDynamicState) {
+      data.oFilterBy.dStartDate = this.statisticFilter.dFromState,
+        data.oFilterBy.dEndDate = this.statisticFilter.dToState
+    }
     if (
       this.sDisplayMethod.toString() === 'revenuePerBusinessPartner' ||
       this.sDisplayMethod.toString() === 'revenuePerSupplierAndArticleGroup' ||
