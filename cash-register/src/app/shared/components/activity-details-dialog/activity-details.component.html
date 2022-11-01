@@ -80,6 +80,7 @@
 
                 <div class="accordion" id="kt_accordion_1">
                     <div class="accordion-item" *ngFor="let activity of activityItems; index as index">
+                        <div *ngIf="!eKindValue.includes(activity.oType.eKind)">
                         <h2 class="accordion-header">
                             <button class="accordion-button fs-4 fw-bold"
                                 (click)="activity.collapsedBtn = !activity.collapsedBtn" type="button"
@@ -730,7 +731,8 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                </div>
+                </div>
                 </div>
                 <div class="d-flex mt-100">
                     <h5 *ngIf='!activityItems.length && !loading' style="text-align: center">{{'NO_DATA_FOUND' |
