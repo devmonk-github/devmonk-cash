@@ -36,6 +36,7 @@ const moment = (_moment as any).default ? (_moment as any).default : _moment;
   selector: 'app-till',
   templateUrl: './till.component.html',
   styleUrls: ['./till.component.scss'],
+  providers:[BarcodeService]
 })
 export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   faScrewdriverWrench = faScrewdriverWrench;
@@ -156,8 +157,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     this.getPaymentMethods();
     this.getParkedTransactions();
     this.barcodeService.barcodeScanned.subscribe((barcode: string) => {
+      console.log('barcode scanned ', barcode);
       this.openModal(barcode);
-
     });
     this.loadTransaction();
 
@@ -786,7 +787,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     if (bRepairCondition) {
-      if (oDataSource.aTransactionItems.filter((item: any) => item.oType.eKind === 'repair')[0]?.iActivityItemId) return;
+      // if (oDataSource.aTransactionItems.filter((item: any) => item.oType.eKind === 'repair')[0]?.iActivityItemId) return;
       //use two column layout
       console.log('use two column layout');
       const template = aTemplates.filter((template: any) => template.eType === 'repair')[0];

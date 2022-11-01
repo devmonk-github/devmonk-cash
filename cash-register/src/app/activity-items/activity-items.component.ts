@@ -6,13 +6,15 @@ import { ActivityDetailsComponent } from '../shared/components/activity-details-
 import { CardsComponent } from '../shared/components/cards-dialog/cards-dialog.component';
 import { ToastService } from '../shared/components/toast';
 import { ApiService } from '../shared/service/api.service';
+import { BarcodeService } from '../shared/service/barcode.service';
 import { DialogService } from '../shared/service/dialog';
 import { MenuComponent } from '../shared/_layout/components/common';
 
 @Component({
   selector: 'app-activity-items',
   templateUrl: './activity-items.component.html',
-  styleUrls: ['./activity-items.component.sass']
+  styleUrls: ['./activity-items.component.sass'],
+  providers: [BarcodeService]
 })
 export class ActivityItemsComponent implements OnInit {
 
@@ -90,17 +92,39 @@ export class ActivityItemsComponent implements OnInit {
     private apiService: ApiService,
     private dialogService: DialogService,
     private routes: Router,
-    private toastrService: ToastService
+    private toastrService: ToastService,
+    private barcodeService: BarcodeService,
   ) { }
 
-  ngOnInit(): void {
+  async ngOnInit() {
     this.businessDetails._id = localStorage.getItem('currentBusiness');
     this.iLocationId = localStorage.getItem('currentLocation');
     this.loadTransaction();
-    this.getLocations();
-    this.getWorkstations();
-    this.listEmployee();
+
+    const [_locationData, _workstationData, _employeeData]:any = await Promise.all([
+      this.getLocations(),
+      this.getWorkstations(),
+      this.listEmployee()
+    ]);
+
+    if (_locationData.message == 'success'){
+      this.requestParams.locations = _locationData.data.aLocation;
+    }
+
+    if (_workstationData && _workstationData.data) {
+      this.workstations = _workstationData.data;
+    }
+
+    if (_employeeData?.data?.length && _employeeData.data[0]?._employeeData?.length) {
+      this.employees = _employeeData.data[0].result
+    }
+
     this.getProperties();
+
+    this.barcodeService.barcodeScanned.subscribe((barcode: string) => {
+      console.log('barcode scanned ', barcode);
+      this.openModal(barcode);
+    });
   }
 
   loadTransaction() {
@@ -135,37 +159,36 @@ export class ActivityItemsComponent implements OnInit {
   }
 
   listEmployee() {
-    const oBody = { iBusinessId: this.businessDetails._id }
-    this.apiService.postNew('auth', '/api/v1/employee/list', oBody).subscribe((result: any) => {
-      if (result?.data?.length) {
-        if (result?.data?.length && result.data[0].result?.length) this.employees = result.data[0].result
-      }
-    }, (error) => {
-    })
+    return this.apiService.postNew('auth', '/api/v1/employee/list', { iBusinessId: this.businessDetails._id }).toPromise();
+    //   if (result?.data?.length) {
+    //     if (result?.data?.length && result.data[0].result?.length) this.employees = result.data[0].result
+    //   }
+    // }, (error) => {
+    // })
   }
 
   getLocations() {
-    this.apiService.postNew('core', `/api/v1/business/${this.businessDetails._id}/list-location`, {}).subscribe(
-      (result: any) => {
-        if (result.message == 'success') {
-          this.requestParams.locations = result.data.aLocation;
-        }
-      }),
-      (error: any) => {
-        console.error(error)
-      }
+    return this.apiService.postNew('core', `/api/v1/business/${this.businessDetails._id}/list-location`, {}).toPromise();
+      // (result: any) => {
+      //   if (result.message == 'success') {
+      //     this.requestParams.locations = result.data.aLocation;
+      //   }
+      // }),
+      // (error: any) => {
+      //   console.error(error)
+      // }
   }
 
   getWorkstations() {
-    this.apiService.getNew('cashregistry', `/api/v1/workstations/list/${this.businessDetails._id}/${this.iLocationId}`).subscribe(
-      (result: any) => {
-        if (result && result.data) {
-          this.workstations = result.data;
-        }
-      }),
-      (error: any) => {
-        console.error(error)
-      }
+    return this.apiService.getNew('cashregistry', `/api/v1/workstations/list/${this.businessDetails._id}/${this.iLocationId}`).toPromise();
+      // (result: any) => {
+      //   if (result && result.data) {
+      //     this.workstations = result.data;
+      //   }
+      // }),
+      // (error: any) => {
+      //   console.error(error)
+      // }
   }
 
   // Function for update item's per page
