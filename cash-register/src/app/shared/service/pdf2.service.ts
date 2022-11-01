@@ -120,7 +120,11 @@ export class PdfService {
     printSettings, printActionSettings, eType, eSituation }:any) {
     const docDefinition = this.getDocDefinition(styles, content, orientation, pageSize, footer, pageMargins, defaultStyle);
     const pdfObject = this.generatePdf(docDefinition);
-    this.processPrintAction(pdfObject, pdfTitle, printSettings, printActionSettings, eType, eSituation);
+    if(printSettings?.length && printActionSettings?.length){
+      this.processPrintAction(pdfObject, pdfTitle, printSettings, printActionSettings, eType, eSituation);
+    } else {
+      pdfObject.download(pdfTitle);
+    }
   }
 
 
