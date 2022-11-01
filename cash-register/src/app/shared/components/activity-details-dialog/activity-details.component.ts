@@ -97,6 +97,7 @@ export class ActivityDetailsComponent implements OnInit {
   printActionSettings: any;
   iWorkstationId: string;
   aTemplates: any;
+  eKindValue=['discount' , 'loyalty-points-discount'];
 
   constructor(
     private viewContainerRef: ViewContainerRef,
