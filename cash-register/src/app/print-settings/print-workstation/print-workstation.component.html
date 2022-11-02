@@ -16,7 +16,15 @@
                     {{ workstation.sName }}
                     <div class="badge" *ngIf="workstation?.computer"
                         [ngClass]="workstation?.computer?.state == 'connected' ? 'badge-light-success' : 'badge-light-danger'">
-                        {{ workstation?.computer?.name }}
+                        {{ workstation?.computer?.name }} 
+
+                    </div>
+                    
+                    <div class="badge" *ngIf="workstation?.computer?.state == 'disconnected'" style="color:red ; white-space:initial;">
+                        <span>
+                            This workstation/computer seems to be offline, check if it's ON and check if the 'PrintHelper' software is running by searching 'PrintHelper' in the windows start menu.
+                        </span>
+                    
                     </div>
                     <div class="badge badge-light-info" *ngIf="!workstation?.computer">
                         {{ "INSTALL_PRINT_HELPER_AND_CONFIG_WORKSTATION" | translate}}

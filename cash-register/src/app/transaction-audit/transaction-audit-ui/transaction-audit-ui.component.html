@@ -1185,13 +1185,13 @@
                                         <tr class="fw-bold fs-6 text-gray-800">
                                             <th>{{ 'LOCATION_NAME' | translate}}</th>
                                             <th class="w-150px">{{ 'PURCHASE_PRICE' | translate}} -
-                                                {{oStockPerLocation.nTotalPurchasePrice}}</th>
+                                                {{oStockPerLocation.nTotalPurchasePrice | number:'1.2-2'}}</th>
                                         </tr>
                                     </thead>
                                     <tbody class="p-2">
                                         <tr *ngFor="let oHistory of oStockPerLocation.aHistory; let i = index">
                                             <td class="ps-9">{{oHistory.sName ? oHistory.sName : '-' }}</td>
-                                            <td>{{oHistory.nPurchasePrice}}</td>
+                                            <td>{{oHistory.nPurchasePrice | number:'1.2-2'}}</td>
                                         </tr>
                                     </tbody>
                                 </table>
