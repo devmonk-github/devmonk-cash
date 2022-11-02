@@ -10,6 +10,21 @@
       </div>
     </div>
     <div class="card-body">
+      <p *ngIf="businessDetails?.oPrintNode" class="my-2">
+        <p *ngIf="businessDetails?.oPrintNode?.nAccountId" class="my-2">
+          <label>Account ID: </label> {{businessDetails?.oPrintNode?.nAccountId}}
+      </p>
+      <p *ngIf="businessDetails?.oPrintNode" class="my-2">
+          <strong class="py-2"> Log in op PrintNode met deze gegevens: </strong>
+          <span class="d-block border bg-gray-300 p-2">
+              <label> Gebruikersnaam : </label> {{businessDetails?.oPrintNode?.sEmail}}
+              <br>
+              <label> Wachtwoord : </label> {{businessDetails?.oPrintNode?.sPassword}}
+              <br>
+              <label> API Key : </label> {{businessDetails?.oPrintNode?.sApiKey}}
+          </span>
+      </p>
+
       <p>
         {{"INSTALL_A_HELP_PROGRAM_TO_SET_YOUR_PRINTERS" | translate}} &nbsp;
         <a href="https://support.prismanote.com/nl/support/solutions/articles/101000096958-prismanote-printhelper-installeren"
