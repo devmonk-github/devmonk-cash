@@ -86,7 +86,7 @@ export class ReceiptService {
             // color: "#ccc",
         },
     };
-    
+
 
 
     oOriginalDataSource: any;
@@ -105,15 +105,13 @@ export class ReceiptService {
         this.iWorkstationId = localStorage.getItem('currentWorkstation') || '';
     }
 
-    async exportToPdf({ oDataSource, templateData, pdfTitle, printSettings, printActionSettings, eSituation }:any){
+    async exportToPdf({ oDataSource, templateData, pdfTitle, printSettings, printActionSettings, eSituation }: any) {
         this.oOriginalDataSource = oDataSource;
-        // console.log(this.oOriginalDataSource);
         this.pdfService.getTranslations();
-    
+
         this.commonService.pdfTitle = pdfTitle;
         this.commonService.mapCommonParams(templateData.aSettings);
         this.processTemplate(templateData.layout);
-        // console.log(this.content);
         this.pdfServiceNew.getPdfData({
             styles: this.styles,
             content: this.content,
@@ -139,32 +137,32 @@ export class ReceiptService {
                 this.processSimpleData(item.row, item?.object);
             } else if (item.type === 'table') {
                 this.content.push(this.processTableData(item));
-            } else if (item.type === 'absolute') { 
+            } else if (item.type === 'absolute') {
                 this.processAbsoluteData(item.absoluteElements);
-            } else if (item.type === 'dashedLine'){
+            } else if (item.type === 'dashedLine') {
                 this.content.push(this.addDashedLine(item.coordinates, item.absolutePosition));
-            } else if (item.type === 'textAsTables'){
+            } else if (item.type === 'textAsTables') {
                 this.content.push(this.processTextAsTableData(item));
             }
         }
     }
 
-    processTextAsTableData(item:any){
+    processTextAsTableData(item: any) {
         const rows = item.rows;
         const layout = item?.layout;
         let tableWidths: any = [];
         let texts: any = [];
-        let tables:any = [];
+        let tables: any = [];
         let nSize = 0;
         rows.forEach((row: any) => {
-            if (row?.type === 'dashedLine'){
+            if (row?.type === 'dashedLine') {
                 this.content.push(this.addDashedLine(row.coordinates, row.absolutePosition));
-            } else if(row?.type === 'rect'){
+            } else if (row?.type === 'rect') {
                 texts.push(this.addRect(row.coordinates, row?.absolutePosition));
                 tableWidths.push(this.getWidth(row.size));
             } else {
                 let object = row?.object;
-                let text = this.pdfService.replaceVariables(row.html, (object) ? this.oOriginalDataSource[object] : this.oOriginalDataSource); 
+                let text = this.pdfService.replaceVariables(row.html, (object) ? this.oOriginalDataSource[object] : this.oOriginalDataSource);
                 let obj = { text: text };
                 if (row?.styles) obj = { ...obj, ...row.styles };
                 texts.push(obj);
@@ -185,10 +183,10 @@ export class ReceiptService {
                     texts = [];
                 }
             }
-            
+
 
         });
-        if(tableWidths?.length){ //we have table, so push it
+        if (tableWidths?.length) { //we have table, so push it
             let data: any = {
                 table: {
                     widths: tableWidths,
@@ -198,11 +196,11 @@ export class ReceiptService {
             };
             tables.push(data);
         }
-        
+
         return tables;
     }
 
-    getLayout(layout:any){
+    getLayout(layout: any) {
         return (['noBorders', 'headerLineOnly', 'lightHorizontalLines'].includes(layout)) ? layout : this.commonService.layouts[layout];
     }
 
@@ -218,41 +216,40 @@ export class ReceiptService {
         }
     }
 
-    processTableData(element:any){
+    processTableData(element: any) {
         const rows = element.rows;
         const columns = element.columns;
         const forEach = element.forEach;
         const layout = element.layout;
         const styles = element.styles;
-        
-        let tableWidths:any = [];
-        let tableHeadersList:any = [];
+
+        let tableWidths: any = [];
+        let tableHeadersList: any = [];
         let bWidthsPushedFromColumns = false;
-        if(columns){ // parsing columns if present
-            columns.forEach((column:any)=>{
-                let bInclude:boolean = true;
-                if(column?.condition){
+        if (columns) { // parsing columns if present
+            columns.forEach((column: any) => {
+                let bInclude: boolean = true;
+                if (column?.condition) {
                     bInclude = this.checkCondition(column.condition, this.oOriginalDataSource);
                 }
-                if (bInclude){
+                if (bInclude) {
                     let text = this.pdfService.removeBrackets(column.html);//removes [[ ]] from placeholders
                     let obj: any = { text: this.pdfService.translations[text] || text };
-                    if(column?.alignment) obj.alignment = column.alignment;
-                    if(column?.styles) {
-                        obj = { ...obj, ...column.styles};
+                    if (column?.alignment) obj.alignment = column.alignment;
+                    if (column?.styles) {
+                        obj = { ...obj, ...column.styles };
                     }
-                    tableHeadersList.push(obj); 
+                    tableHeadersList.push(obj);
                     tableWidths.push(this.getWidth(column.size));
                 }
             });
             bWidthsPushedFromColumns = true;
         }
         let currentDataSource = this.oOriginalDataSource;
-        let texts:any = [];
+        let texts: any = [];
 
-        if(forEach){ //if we have forEach (nested array) then loop through it
+        if (forEach) { //if we have forEach (nested array) then loop through it
             currentDataSource = this.oOriginalDataSource[forEach]; //take nested array as currentDataSource
-            // console.log({currentDataSource});
             let bWidthPushed = false;
             if (currentDataSource?.length) {
                 currentDataSource.forEach((dataSource: any) => {
@@ -280,7 +277,7 @@ export class ReceiptService {
         } else { //we don't have foreach so only parsing single row
             let dataRow: any = [];
             rows.forEach((row: any) => { //parsing rows
-                if(row?.type === 'image'){
+                if (row?.type === 'image') {
                     let img = this.addImage(row);
                     dataRow.push(img);
                     tableWidths.push(this.getWidth(row.size));
@@ -293,20 +290,20 @@ export class ReceiptService {
                     }
 
                     if (bInclude) {
-                        this.addRow(dataRow,row,currentDataSource, tableWidths);
+                        this.addRow(dataRow, row, currentDataSource, tableWidths);
                         tableWidths.push(this.getWidth(row.size));
                     }
-                }               
+                }
             });
             texts.push(dataRow);
         }
-        let finalData:any = [];
+        let finalData: any = [];
         if (tableHeadersList?.length)
             finalData = [[...tableHeadersList], ...texts];
-        else 
+        else
             finalData = texts;
 
-        let data:any = {
+        let data: any = {
             table: {
                 widths: tableWidths,
                 body: finalData,
@@ -316,46 +313,46 @@ export class ReceiptService {
         if (styles) {
             data = { ...data, ...styles };
         }
-        
-        if (layout){
+
+        if (layout) {
             data.layout = (['noBorders', 'headerLineOnly', 'lightHorizontalLines'].includes(layout)) ? data.layout = layout : this.commonService.layouts[layout];
-        } 
+        }
         return data;
     }
-    
-    processSimpleData(row:any, object?:any){
+
+    processSimpleData(row: any, object?: any) {
         row.forEach((el: any) => {
             if (el?.html) {
 
                 let html = el.html || '';
                 if (typeof html === 'string') {
                     let text = this.pdfService.replaceVariables(html, (object) ? this.oOriginalDataSource[object] : this.oOriginalDataSource) || html;
-                    let obj:any = { text: text};
+                    let obj: any = { text: text };
                     if (el?.alignment) obj.alignment = el.alignment;
-                    if(el?.size) obj.width = this.getWidth(el.size);
+                    if (el?.size) obj.width = this.getWidth(el.size);
                     if (el?.styles) {
-                        obj = { ...obj, ...el.styles}
+                        obj = { ...obj, ...el.styles }
                     }
                     this.content.push(obj);
                 }
-            } else if(el?.type === 'image'){
+            } else if (el?.type === 'image') {
                 let img = this.addImage(el);
                 this.content.push(img);
             }
         });
     }
 
-    processColumns(row:any, styles ?:any){
+    processColumns(row: any, styles?: any) {
         let columns: any = [];
         row.forEach((el: any) => {
             let columnData: any;
             if (el?.type === 'image') {
                 let img = this.addImage(el);
                 columnData = img;
-            } else if(el?.type === 'dashedLine'){
+            } else if (el?.type === 'dashedLine') {
                 columnData = this.addDashedLine(el.coordinates, el?.absolutePosition);
                 // columns.push()
-            } else if(el?.type === 'table'){
+            } else if (el?.type === 'table') {
                 columnData = this.processTableData(el);
                 // columns.push();
             } else if (el?.type === 'textAsTables') {
@@ -364,8 +361,8 @@ export class ReceiptService {
                 columnData = this.processTextAsTableData(el);
                 this.DIVISON_FACTOR = 1;
             } else if (el?.type === 'stack') {
-                let obj:any = {
-                    "stack":this.processStack(el)
+                let obj: any = {
+                    "stack": this.processStack(el)
                 };
                 if (el?.width) obj.width = el.width;
                 columnData = obj;
@@ -379,12 +376,12 @@ export class ReceiptService {
             }
             if (el?.alignment) columnData.alignment = el?.alignment;
             if (el?.styles) columnData = { ...columnData, ...el.styles }
-            if(el?.width) columnData.width = el?.width;
+            if (el?.width) columnData.width = el?.width;
 
             columns.push(columnData)
         });
-        let obj = {columns: columns};
-        if (styles) obj = {...obj, ...styles };
+        let obj = { columns: columns };
+        if (styles) obj = { ...obj, ...styles };
         this.content.push(obj);
     }
 
@@ -392,7 +389,7 @@ export class ReceiptService {
         return this.apiService.getNew('cashregistry', `/api/v1/pdf/templates/getBase64/${this.iBusinessId}?url=${url}`);
     }
 
-    addImage(el:any){
+    addImage(el: any) {
         let img: any = {
             image: this.oOriginalDataSource[el.url],// this.logoUri,
         };
@@ -401,33 +398,33 @@ export class ReceiptService {
         if (el?.alignment) img.alignment = el.alignment;
         if (el?.width) img.width = el.width;
         if (el?.absolutePosition) img.absolutePosition = { x: el.position.x * this.commonService.MM_TO_PT_CONVERSION_FACTOR, y: el.position.y * this.commonService.MM_TO_PT_CONVERSION_FACTOR };
-        if(el?.styles) img = { ...img, ...el.styles};
+        if (el?.styles) img = { ...img, ...el.styles };
         return img;
     }
 
-    addDashedLine(coordinates: any, absolutePosition?:any ,config ?: any){
-        let obj:any = {
+    addDashedLine(coordinates: any, absolutePosition?: any, config?: any) {
+        let obj: any = {
             canvas: [
-                { 
-                    type: 'line', 
-                    x1: coordinates.x1, y1: coordinates.y1, x2: coordinates.x2, y2: coordinates.y2, 
-                    dash: { 
-                        length: config?.dashLength || 2, 
+                {
+                    type: 'line',
+                    x1: coordinates.x1, y1: coordinates.y1, x2: coordinates.x2, y2: coordinates.y2,
+                    dash: {
+                        length: config?.dashLength || 2,
                         space: config?.dashSpace || 4
-                    }, 
-                    lineWidth: config?.lineWidth || 1, 
-                    lineColor: config?.lineColor || '#ccc' 
+                    },
+                    lineWidth: config?.lineWidth || 1,
+                    lineColor: config?.lineColor || '#ccc'
                 }
             ]
         };
-        if(absolutePosition){
+        if (absolutePosition) {
             obj.absolutePosition = absolutePosition;
         }
         return obj;
     }
 
-    addRect(coordinates: any, absolutePosition?:any, config ?:any){
-        let obj:any = {
+    addRect(coordinates: any, absolutePosition?: any, config?: any) {
+        let obj: any = {
             canvas: [
                 {
                     type: 'rect',
@@ -447,41 +444,41 @@ export class ReceiptService {
         return obj;
     }
 
-    getWidth(size:any){
+    getWidth(size: any) {
         return ['auto', '*'].includes(size) ? size : this.commonService.calcColumnWidth(size / this.DIVISON_FACTOR);
     }
 
-    checkCondition(aConditions:any, dataSource:any){
-        return aConditions.every((condition:any) => {
-            switch(condition.operator){
+    checkCondition(aConditions: any, dataSource: any) {
+        return aConditions.every((condition: any) => {
+            switch (condition.operator) {
                 case '>':
                     return dataSource[condition.field] > condition.value;
                 case '===':
                     return dataSource[condition.field1] === dataSource[condition.field2];
                 default:
-                    return false; 
+                    return false;
             }
         });
     }
 
-    addRow(dataRow:any, row:any, dataSource:any, tableWidths:any ){
+    addRow(dataRow: any, row: any, dataSource: any, tableWidths: any) {
         let html = row.html;
-        if (row?.conditionalHtml){
-            const bCheck = this.checkCondition(row.conditions,dataSource);
+        if (row?.conditionalHtml) {
+            const bCheck = this.checkCondition(row.conditions, dataSource);
             html = (bCheck) ? row.htmlIf : row.htmlElse
         }
 
         let text = this.pdfService.replaceVariables(html, dataSource);
-        let obj:any = { text: text };
-        if(row?.alignment) obj.alignment = row.alignment;
+        let obj: any = { text: text };
+        if (row?.alignment) obj.alignment = row.alignment;
         if (row?.styles) obj = { ...obj, ...row.styles };
         dataRow.push(obj);
     }
 
-    processStack(item:any, object?:any){
-        const stack:any = [];
-        item.elements.forEach((el:any)=>{
-            if(el?.type === 'image'){
+    processStack(item: any, object?: any) {
+        const stack: any = [];
+        item.elements.forEach((el: any) => {
+            if (el?.type === 'image') {
                 stack.push(this.addImage(el))
             } else {
                 let html = el.html;
@@ -498,7 +495,7 @@ export class ReceiptService {
         return stack;
     }
 
-    cleanUp(){
+    cleanUp() {
         this.oOriginalDataSource = null;
         this.content = [];
         this.styles = {};

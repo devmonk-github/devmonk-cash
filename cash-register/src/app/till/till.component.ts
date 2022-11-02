@@ -36,7 +36,7 @@ const moment = (_moment as any).default ? (_moment as any).default : _moment;
   selector: 'app-till',
   templateUrl: './till.component.html',
   styleUrls: ['./till.component.scss'],
-  providers:[BarcodeService]
+  providers: [BarcodeService]
 })
 export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   faScrewdriverWrench = faScrewdriverWrench;
@@ -157,7 +157,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     this.getPaymentMethods();
     this.getParkedTransactions();
     this.barcodeService.barcodeScanned.subscribe((barcode: string) => {
-      console.log('barcode scanned ', barcode);
       this.openModal(barcode);
     });
     this.loadTransaction();
@@ -272,7 +271,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   getTotals(type: string): number {
-  
+
     this.amountDefined = this.payMethods.find((pay) => pay.amount || pay.amount?.toString() === '0');
     if (!type) {
       return 0
@@ -600,9 +599,9 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
               this.activityItems = activityItems;
               this.activity = activity;
 
-              this.transaction.aTransactionItems.map((tItem:any)=>{
-                for (const aItem of this.activityItems){
-                  if(aItem.iTransactionItemId === tItem._id){
+              this.transaction.aTransactionItems.map((tItem: any) => {
+                for (const aItem of this.activityItems) {
+                  if (aItem.iTransactionItemId === tItem._id) {
                     tItem.sActivityItemNumber = aItem.sNumber;
                     break;
                   }
@@ -697,11 +696,11 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     this.transaction = dataObject;
 
     this.handleReceiptPrinting();
-    
+
     // this.receiptService.exportToPdf({ transaction: this.transaction });
   }
 
-  async handleReceiptPrinting(){
+  async handleReceiptPrinting() {
     if (!this.businessDetails) {
       const _result: any = await this.getBusinessDetails().toPromise();
 
@@ -717,22 +716,22 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     //   nTotalOriginalAmount = oDataSource.total;
     //   oDataSource.bHasPrePayments = false;
     // } else {
-      oDataSource.aTransactionItems.forEach((item: any) => {
-        item.sOrderDescription = item.sProductName + '\n' + item.sDescription;
-        nTotalOriginalAmount += item.nPriceIncVat;
-        let description = `${item.sProductName}\n${item.sDescription}`;
-        if (item?.related?.length) { //item.nPriceIncVat !== item.nPaymentAmount
-          description += `Original amount: ${item.nPriceIncVat}\n
+    oDataSource.aTransactionItems.forEach((item: any) => {
+      item.sOrderDescription = item.sProductName + '\n' + item.sDescription;
+      nTotalOriginalAmount += item.nPriceIncVat;
+      let description = `${item.sProductName}\n${item.sDescription}`;
+      if (item?.related?.length) { //item.nPriceIncVat !== item.nPaymentAmount
+        description += `Original amount: ${item.nPriceIncVat}\n
                           Already paid: \n${item.sTransactionNumber} | ${item.nPaymentAmount} (this receipt)\n`;
 
-          item.related.forEach((related: any) => {
-            description += `${related.sTransactionNumber}|${related.nPaymentAmount}\n`;
-          });
-        }
+        item.related.forEach((related: any) => {
+          description += `${related.sTransactionNumber}|${related.nPaymentAmount}\n`;
+        });
+      }
 
-        item.description = description;
-      });
-      oDataSource.bHasPrePayments = true;
+      item.description = description;
+    });
+    oDataSource.bHasPrePayments = true;
     // }
     oDataSource.nTotalOriginalAmount = nTotalOriginalAmount;
     oDataSource.sBarcodeURI = this.generateBarcodeURI(false, oDataSource.sNumber);
@@ -740,7 +739,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     let _template: any, _oLogoData: any;
 
     const aUniqueItemTypes = [];
-    
+
     const nRepairCount = oDataSource.aTransactionItemType.filter((e: any) => e === 'repair')?.length;
     const nOrderCount = oDataSource.aTransactionItemType.filter((e: any) => e === 'order')?.length;
 
@@ -752,11 +751,11 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     if (bRegularCondition) aUniqueItemTypes.push('regular')
 
     if (bOrderCondition) aUniqueItemTypes.push('order');
-    
+
     if (bRepairCondition) aUniqueItemTypes.push('repair');
 
     if (bRepairAlternativeCondition) aUniqueItemTypes.push('repair_alternative');
-    
+
 
     [_template, _oLogoData,] = await Promise.all([
       this.getTemplate(aUniqueItemTypes),
@@ -771,16 +770,14 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       sLandLine: oDataSource.oCustomer.oPhone?.sLandLine,
     };
     const aTemplates = _template.data;
-    
+
     if (bOrderCondition) {
-      console.log('print order receipt')
       // print order receipt
       const orderTemplate = aTemplates.filter((template: any) => template.eType === 'order')[0];
       oDataSource.sActivityNumber = oDataSource.activity.sNumber;
       this.sendForReceipt(oDataSource, orderTemplate, oDataSource.activity.sNumber);
     }
     if (bRegularCondition) {
-      console.log('print proof of payments (regular) receipt')
       //print proof of payments receipt
       const template = aTemplates.filter((template: any) => template.eType === 'regular')[0];
       this.sendForReceipt(oDataSource, template, oDataSource.sNumber);
@@ -789,22 +786,20 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     if (bRepairCondition) {
       // if (oDataSource.aTransactionItems.filter((item: any) => item.oType.eKind === 'repair')[0]?.iActivityItemId) return;
       //use two column layout
-      console.log('use two column layout');
       const template = aTemplates.filter((template: any) => template.eType === 'repair')[0];
-      oDataSource = this.activityItems.filter((item:any) => item.oType.eKind === 'repair')[0];
+      oDataSource = this.activityItems.filter((item: any) => item.oType.eKind === 'repair')[0];
       const aTemp = oDataSource.sNumber.split("-");
       oDataSource.sPartRepairNumber = aTemp[aTemp.length - 1];
       oDataSource.sBarcodeURI = this.generateBarcodeURI(false, oDataSource.sNumber);
       this.sendForReceipt(oDataSource, template, oDataSource.sNumber);
 
-    } 
-    
+    }
+
     if (bRepairAlternativeCondition) {
       // use repair_alternative laYout
-      console.log('use repair_alternative layout');
       const template = aTemplates.filter((template: any) => template.eType === 'repair_alternative')[0];
       oDataSource = this.activityItems.filter((item: any) => item.oType.eKind === 'repair');
-      oDataSource.forEach((data:any)=> {
+      oDataSource.forEach((data: any) => {
         data.sBarcodeURI = this.generateBarcodeURI(false, data.sNumber);
         data.sBusinessLogoUrl = _oLogoData.data;
         data.businessDetails = this.businessDetails;
@@ -816,7 +811,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   sendForReceipt(oDataSource: any, template: any, title: any) {
-    console.log('sendForReceipt', oDataSource, template, title);
     // return;
     this.receiptService.exportToPdf({
       oDataSource: oDataSource,
@@ -1280,7 +1274,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     })
   }
 
- 
+
 
   /* When doing */
   assignAllAmount(index: number) {
