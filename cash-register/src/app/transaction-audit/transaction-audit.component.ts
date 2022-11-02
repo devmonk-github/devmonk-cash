@@ -719,7 +719,10 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
           const oData = result?.data;
           if (oData.aStatistic?.length) this.aStatistic = oData.aStatistic;
           if (oData?.oStatistic?._id) {
-            if (oData?.oStatistic?.aPaymentMethods?.length) this.aPaymentMethods = oData?.oStatistic?.aPaymentMethods;
+            if (oData?.oStatistic?.aPaymentMethods?.length) {
+              this.mappingThePaymentMethod(oData?.oStatistic);
+              // this.aPaymentMethods = oData?.oStatistic?.aPaymentMethods; /* old approach */
+            }
             this.oStatisticsDocument = oData?.oStatistic;
             if (!this.oStatisticsDocument?.sComment) this.oStatisticsDocument.sComment = '';
             this.processCounting();
@@ -731,6 +734,22 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
       });
   }
 
+  mappingThePaymentMethod(oData: any) {
+    if (oData.aPaymentMethods?.length) {
+      this.nPaymentMethodTotal = 0;
+      this.nNewPaymentMethodTotal = 0;
+
+      this.aPaymentMethods = oData.aPaymentMethods;
+      this.aPaymentMethods.map((item: any) => {
+        item.nNewAmount = item.nAmount;
+        this.nPaymentMethodTotal += parseFloat(item.nAmount);
+        return item;
+      });
+      this.nNewPaymentMethodTotal = this.nPaymentMethodTotal;
+      this.filterDuplicatePaymentMethods();
+    }
+  }
+
   /* Dynamic Data for statistic (from transaction-item) */
   getDynamicData(sDisplayMethod?: string) {
 
@@ -739,7 +758,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
     this.aStatistic = [];
     this.aPaymentMethods = [];
     let aLocation = this?.aSelectedLocation?.length ? this.aSelectedLocation : [];
-    let iWorkstationId = this.selectedWorkStation?.length ? this.selectedWorkStation : [];
+    let iWorkstationId = this.selectedWorkStation?.length ? this.selectedWorkStation : undefined;
     if (this.iStatisticId) {
       /* It's only for view purpose and we can only view for the current location and current workstation */
       aLocation = [this.iLocationId];
@@ -770,9 +789,6 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
       .postNew('cashregistry', `/api/v1/statistics/transaction/audit`, oBody)
       .subscribe(
         (result: any) => {
-
-          this.nPaymentMethodTotal = 0;
-          this.nNewPaymentMethodTotal = 0;
           this.bStatisticLoading = false;
           if (result?.data) {
 
@@ -782,17 +798,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
             if (this.aStatistic?.length && this.aStatistic[0]?.overall?.length) {
               this.oCountings.nCashInTill = this.aStatistic[0].overall[0].nTotalRevenue;
             }
-
-            if (result.data?.aPaymentMethods?.length) {
-              this.aPaymentMethods = result.data.aPaymentMethods;
-              this.aPaymentMethods.map((item: any) => {
-                item.nNewAmount = item.nAmount;
-                this.nPaymentMethodTotal += parseFloat(item.nAmount);
-                return item;
-              });
-              this.nNewPaymentMethodTotal = this.nPaymentMethodTotal;
-              this.filterDuplicatePaymentMethods();
-            }
+            this.mappingThePaymentMethod(result?.data);
           }
         },
         (error) => {
@@ -978,6 +984,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
       oFilterBy: {
         dStartDate: this.filterDates.startDate,
         dEndDate: this.filterDates.endDate,
+        // IsDynamicState
         bIsArticleGroupLevel: this.bIsArticleGroupLevel,
         bIsSupplierMode: this.bIsSupplierMode,
         iLocationId: this?.aSelectedLocation?.length ? this.aSelectedLocation : [],
@@ -986,6 +993,10 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
       sTransactionType: this.optionMenu,
       iBusinessId: this.iBusinessId,
     };
+    if (!this.IsDynamicState) {
+      data.oFilterBy.dStartDate = this.statisticFilter.dFromState,
+        data.oFilterBy.dEndDate = this.statisticFilter.dToState
+    }
     if (
       this.sDisplayMethod.toString() === 'revenuePerBusinessPartner' ||
       this.sDisplayMethod.toString() === 'revenuePerSupplierAndArticleGroup' ||
