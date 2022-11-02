@@ -256,6 +256,7 @@ export class PrintWorkstationComponent implements OnInit {
 
   // Function for get selected print setting for workstation
   getSelectedValue(event: any) {
+    console.log(259, 'this.getSelectedValue called')
     let computerId = event.workstation && event.workstation[event.name] && event.workstation[event.name][event.type] ? event.workstation[event.name][event.type]?.nComputerId : '';
     let printerId = event.workstation && event.workstation[event.name] && event.workstation[event.name][event.type] ? event.workstation[event.name][event.type]?.nPrinterId : '';
     if ((computerId == '' || printerId == '') && this.businessPrintSettings?.length > 0) {
