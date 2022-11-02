@@ -951,6 +951,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   async onSelectProduct(product: any, isFrom: string = '', isFor: string = '') {
     let price: any = {};
     if (isFrom === 'quick-button') {
+      this.onSelectRegular();
       let selectedQuickButton = product;
       this.bSearchingProduct = true;
       this.bSearchingProduct = false;
