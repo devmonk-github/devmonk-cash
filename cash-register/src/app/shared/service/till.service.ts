@@ -187,7 +187,7 @@ export class TillService {
         i.nDiscount,
         i.redeemedLoyaltyPoints,
         i.sUniqueIdentifier || uuidv4(),
-        i.paymentAmount,
+        i.paymentAmount / i.quantity,
         i.description,
         // 60
         i.sServicePartnerRemark,
