@@ -943,6 +943,10 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     return this.apiService.getNew('core', `/api/v1/business/products/${iBusinessProductId}?iBusinessId=${this.business._id}`)
   }
 
+  getBaseProduct(iProductId: string): Observable<any> {
+    return this.apiService.getNew('core', `/api/v1/products/${iProductId}?iBusinessId=${this.business._id}`)
+  }
+
   // Add selected product into purchase order
   async onSelectProduct(product: any, isFrom: string = '', isFor: string = '') {
     let price: any = {};
@@ -955,12 +959,18 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     } else {
       price = product.aLocation ? product.aLocation.find((o: any) => o._id === this.locationId) : 0;
     }
-    const _oBusinessProductDetail = await this.getBusinessProduct(product?.iBusinessProductId || product?._id).toPromise();
-    product = _oBusinessProductDetail.data;
+    if (isFor == 'commonProducts') {
+      const _oBaseProductDetail = await this.getBaseProduct(product?._id).toPromise();
+      product = _oBaseProductDetail.data;
+    } else {
+      const _oBusinessProductDetail = await this.getBusinessProduct(product?.iBusinessProductId || product?._id).toPromise();
+      product = _oBusinessProductDetail.data;
+    }
+
     let name = '';
     name = (product?.oArticleGroup?.oName) ? ((product.oArticleGroup?.oName[this.selectedLanguage]) ? product.oArticleGroup?.oName[this.selectedLanguage] : product.oArticleGroup.oName['en']) : '';
-    name += ' ' + product?.sLabelDescription || '';
-    name += ' ' + product?.sProductNumber || '';
+    name += ' ' + (product?.sLabelDescription || '');
+    name += ' ' + (product?.sProductNumber || '');
 
     this.transactionItems.push({
       name: name,
@@ -981,7 +991,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       iArticleGroupId: product.iArticleGroupId,
       oArticleGroupMetaData: { aProperty: product.aProperty || [], sCategory: '', sSubCategory: '', oName: {}, oNameOriginal: {} },
       iBusinessBrandId: product.iBusinessBrandId || product.iBrandId,
-      iBusinessProductId: product._id,
+      iBusinessProductId: isFor == 'commonProducts' ? undefined : product._id,
+      iProductId: isFor == 'commonProducts' ? product._id : undefined,
       iBusinessPartnerId: product.iBusinessPartnerId, //'6274d2fd8f38164d68186410',
       sBusinessPartnerName: product.sBusinessPartnerName, //'6274d2fd8f38164d68186410',
       iSupplierId: product.iBusinessPartnerId,
@@ -992,6 +1003,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       isFor,
       oBusinessProductMetaData: this.tillService.createProductMetadata(product),
     });
+    console.log(this.transactionItems);
     this.resetSearch();
   }
 
