@@ -215,8 +215,6 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
   from !: string;
 
   customerNotesChangedSubject : Subject<string> = new Subject<string>();
-
-
   
   constructor(
     private viewContainerRef: ViewContainerRef,

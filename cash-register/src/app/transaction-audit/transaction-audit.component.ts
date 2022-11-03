@@ -1091,20 +1091,18 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
         bDiscount: false,
       },
     };
-    return this.apiService.postNew('cashregistry',`/api/v1/till/add-expenses`,transactionItem);
+    return this.apiService.postNew('cashregistry', `/api/v1/till/add-expenses`, transactionItem);
   }
 
   async closeDayState() {
     this.closingDayState = true;
     this.aAmount.filter((item: any) => item.nQuantity > 0).forEach((item: any) => (this.oCountings.oCountingsCashDetails[item.key] = item.nQuantity));
-    const nDifferenceAmount = this.oCountings.nCashInTill - this.oCountings.nCashCounted;
+    const nDifferenceAmount = this.oCountings?.nCashAtStart + this.oCountings?.nCashInTill - this.oCountings?.nCashCounted;
 
     const oCashPaymentMethod = this.allPaymentMethod.filter((el: any) => el.sName.toLowerCase() === 'cash')[0];
     const oBankPaymentMethod = this.allPaymentMethod.filter((el: any) => el.sName.toLowerCase() === 'bankpayment')[0];
-
     if (nDifferenceAmount > 0) {
       //we have difference in cash, so add that as and expense
-
       await this.addExpenses(
         {
           amount: -(nDifferenceAmount),
