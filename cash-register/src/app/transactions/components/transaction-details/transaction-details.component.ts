@@ -12,6 +12,7 @@ import { Pn2escposService } from 'src/app/shared/service/pn2escpos.service';
 import { PrintService } from 'src/app/shared/service/print.service';
 import { Observable } from 'rxjs';
 import { ToastService } from 'src/app/shared/components/toast';
+import * as JsBarcode from 'jsbarcode';
 const moment = (_moment as any).default ? (_moment as any).default : _moment;
 // import { faMagnifyingGlassPlus } from '@fortawesome/free-solid-svg-icons';
 
@@ -233,6 +234,7 @@ export class TransactionDetailsComponent implements OnInit {
       });
       oDataSource.bHasPrePayments = true;
     }
+    oDataSource.sBarcodeURI = this.generateBarcodeURI(false, oDataSource.sNumber);
     oDataSource.sBusinessLogoUrl = (await this.getBase64FromUrl(oDataSource?.businessDetails?.sLogoLight).toPromise()).data;
     oDataSource.oCustomer = {
       sFirstName: this.transaction.oCustomer.sFirstName,
@@ -319,6 +321,12 @@ export class TransactionDetailsComponent implements OnInit {
         this.downloadWithVATLoading = false;
         console.log('printing error', error);
       })
+  }
+
+  generateBarcodeURI(displayValue: boolean = true, data: any) {
+    var canvas = document.createElement("canvas");
+    JsBarcode(canvas, data, { format: "CODE128", displayValue: displayValue });
+    return canvas.toDataURL("image/png");
   }
 
   getBase64FromUrl(url: any): Observable<any> {

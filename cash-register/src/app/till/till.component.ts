@@ -121,6 +121,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   printActionSettings: any;
   printSettings: any;
   activity: any;
+  selectedLanguage: any = localStorage.getItem('language') ? localStorage.getItem('language') : 'en';
 
   randNumber(min: number, max: number): number {
     return Math.floor(Math.random() * (max - min + 1) + min);
@@ -944,6 +945,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   async onSelectProduct(product: any, isFrom: string = '', isFor: string = '') {
     let price: any = {};
     if (isFrom === 'quick-button') {
+      this.onSelectRegular();
       let selectedQuickButton = product;
       this.bSearchingProduct = true;
       this.bSearchingProduct = false;
@@ -953,8 +955,13 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     const _oBusinessProductDetail = await this.getBusinessProduct(product?.iBusinessProductId || product?._id).toPromise();
     product = _oBusinessProductDetail.data;
+    let name = '';
+    name = (product?.oArticleGroup?.oName) ? ((product.oArticleGroup?.oName[this.selectedLanguage]) ? product.oArticleGroup?.oName[this.selectedLanguage] : product.oArticleGroup.oName['en']) : '';
+    name += ' ' + product?.sLabelDescription || '';
+    name += ' ' + product?.sProductNumber || '';
+    
     this.transactionItems.push({
-      name: product.oName ? product.oName['en'] : this.searchKeyword,
+      name: name,
       eTransactionItemType: 'regular',
       type: this.eKind,
       quantity: 1,

@@ -18,7 +18,7 @@ import {
 } from "ng-apexcharts";
 import { ToastService } from '../toast';
 import { TransactionDetailsComponent } from '../../../transactions/components/transaction-details/transaction-details.component';
-import { fromEvent } from 'rxjs';
+import { fromEvent, Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, tap } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
 export interface BarChartOptions {
@@ -214,6 +214,10 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
   totalActivities: number = 0;
   from !: string;
 
+  customerNotesChangedSubject : Subject<string> = new Subject<string>();
+
+
+  
   constructor(
     private viewContainerRef: ViewContainerRef,
     private apiService: ApiService,
@@ -271,40 +275,57 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
     this.loadStatisticsTabData();
   }
 
+  customerNotesChanged(event:any){
+    this.customerNotesChangedSubject.next(event);
+  }
 
-  ngAfterViewInit() {
-    this.cdr.detectChanges();
-    // server-side search
-    fromEvent(this.customerNote.nativeElement, 'keyup')
-      .pipe(
-        filter(Boolean),
-        debounceTime(500),
-        distinctUntilChanged(),
-        tap((text) => {
-        
+  handleCustomerNotesUpdate(){
+
+    // const sub = fromEvent(this.customerNote.nativeElement, 'keyup')
+    //   // console.log(278, data); 
+    //   .pipe(
+    //     filter(Boolean),
+    //     debounceTime(500),
+    //     distinctUntilChanged(),
+    //     tap((text) => {
           if (this.mode == 'details') {
             this.apiService.putNew('customer', '/api/v1/customer/update/' + this.requestParams.iBusinessId + '/' + this.customer._id, this.customer).subscribe(
               (result: any) => {
                 if (result?.message === 'success') {
+                  // sub.unsubscribe();
                   this.toastService.show({ type: 'success', text: this.translations[`Successfully updated!`] });
                 }
                 // this.close({ action: true });
               },
               (error: any) => {
-                let errorMessage=""
+                let errorMessage = ""
                 this.translateService.get(error.error.message).subscribe(
                   result => errorMessage = result
                 )
-                this.toastService.show({ type: 'warning', text:errorMessage });
+                this.toastService.show({ type: 'warning', text: errorMessage });
                 // console.error(error)
               }
             );
           }
           // this.updateNote();
           // this.updatesInvoiceNumber(this.partnerComment.nativeElement.value)
-        })
-      )
-      .subscribe();
+        // })
+      // )
+      // .subscribe();
+  }
+
+  ngAfterViewInit() {
+    this.cdr.detectChanges();
+
+    this.customerNotesChangedSubject.pipe(
+      filter(Boolean),
+        debounceTime(500),
+        distinctUntilChanged(),
+    ).subscribe(()=>{
+      this.handleCustomerNotesUpdate();
+    });
+    // server-side search
+    // this.handleCustomerNotesUpdate();
     // if (!this.sNumber)
     // this.DeliveredDate = this.eTransactionStatus === 'inspection' ? new Date().toISOString().slice(0, 10) : null
 

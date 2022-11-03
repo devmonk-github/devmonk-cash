@@ -16,9 +16,9 @@
      */
     attachTo: function(oDomElement, oOptions) {
 
-      if(oDomElement.scannerDetectionData !== undefined){
-        throw new Error("onScan.js is already initialized for DOM element " + oDomElement);
-      }
+      // if(oDomElement.scannerDetectionData !== undefined){
+      //   throw new Error("onScan.js is already initialized for DOM element ", {oDomElement});
+      // }
 
       var oDefaults = {
         onScan: function(sScanned, iQty){}, // Callback after detection of a successful scanning:  function(){sScancode, iCount)}()
