@@ -16,7 +16,7 @@ export class PdfService {
   constructor(private printService: PrintService, private toastrService: ToastService) {
     this.iBusinessId = localStorage.getItem('currentBusiness') || '';
     this.iWorkstationId = localStorage.getItem('currentWorkstation') || ''
-   }
+  }
 
   /** Method to set PDF Title */
   setTitle(logo: any, title: string, page: any, pageSize: string): any {
@@ -95,7 +95,7 @@ export class PdfService {
       contentFont = 10;
       pageMargin = [10, 10, 10, 10];
     }
-    const docDefinition:any = {
+    const docDefinition: any = {
       pageOrientation: orientation,
       pageSize,
       pageMargins: pageMargin,
@@ -105,22 +105,22 @@ export class PdfService {
         fontSize: 6
       },
     };
-    if(footer) docDefinition.footer = footer;
-    if(pageMargins) docDefinition.pageMargins = pageMargins;
-    if(defaultStyle) docDefinition.defaultStyle = defaultStyle;
+    if (footer) docDefinition.footer = footer;
+    if (pageMargins) docDefinition.pageMargins = pageMargins;
+    if (defaultStyle) docDefinition.defaultStyle = defaultStyle;
     return docDefinition;
   }
 
   generatePdf(docDefinition: any) {
     return pdfMake.createPdf(docDefinition);
-    
+
   }
 
-  getPdfData({ styles, content, orientation, pageSize, pdfTitle, footer, pageMargins, defaultStyle, 
-    printSettings, printActionSettings, eType, eSituation }:any) {
+  getPdfData({ styles, content, orientation, pageSize, pdfTitle, footer, pageMargins, defaultStyle,
+    printSettings, printActionSettings, eType, eSituation }: any) {
     const docDefinition = this.getDocDefinition(styles, content, orientation, pageSize, footer, pageMargins, defaultStyle);
     const pdfObject = this.generatePdf(docDefinition);
-    if(printSettings?.length && printActionSettings?.length){
+    if (printSettings?.length && printActionSettings?.length) {
       this.processPrintAction(pdfObject, pdfTitle, printSettings, printActionSettings, eType, eSituation);
     } else {
       pdfObject.download(pdfTitle);
@@ -130,22 +130,18 @@ export class PdfService {
 
   processPrintAction(pdfObject: any, pdfTitle: any, printSettings: any, printActionSettings: any, eType: any, eSituation: any) {
     // pdfObject.download(pdfTitle);
-    // console.log({ printSettings, printActionSettings })
     printActionSettings = printActionSettings.filter((s: any) => s.eType === eType && s.eSituation === eSituation);
-    if (!printActionSettings?.length){
-      // console.log(`No print actions found for ${eType} with situation ${eSituation}, so downloading receipt`);
+    if (!printActionSettings?.length) {
       pdfObject.download(pdfTitle);
       return;
     }
     // if(eType === 'regular') eType = 'transaction'; 
     printSettings = printSettings.filter((s: any) => s.sType === eType && s.iWorkstationId === this.iWorkstationId);
     const aActionToPerform = printActionSettings[0].aActionToPerform;
-    // console.log(137, aActionToPerform)
     aActionToPerform.forEach((action: any) => {
-      switch(action){
+      switch (action) {
         case 'PRINT_PDF':
           printSettings = printSettings.filter((s: any) => s.sMethod === 'pdf')[0];
-          // console.log('141 PRINT_PDF', printSettings);
           if (!printSettings?.nPrinterId) {
             this.toastrService.show({ type: 'danger', text: `Printer is not selected for ${printSettings.sType}` });
             return;
@@ -163,9 +159,8 @@ export class PdfService {
     });
   }
 
-  handlePrint(pdfObject:any, printSettings:any, pdfTitle:any){
+  handlePrint(pdfObject: any, printSettings: any, pdfTitle: any) {
     pdfObject.getBase64((data: any) => {
-      // console.log('handlePrint base64 generated', data, printSettings, pdfTitle);
       this.printService.printPDF(
         this.iBusinessId,
         data,
