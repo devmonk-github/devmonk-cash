@@ -36,7 +36,7 @@ const moment = (_moment as any).default ? (_moment as any).default : _moment;
   selector: 'app-till',
   templateUrl: './till.component.html',
   styleUrls: ['./till.component.scss'],
-  providers:[BarcodeService]
+  providers: [BarcodeService]
 })
 export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   faScrewdriverWrench = faScrewdriverWrench;
@@ -158,7 +158,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     this.getPaymentMethods();
     this.getParkedTransactions();
     this.barcodeService.barcodeScanned.subscribe((barcode: string) => {
-      console.log('barcode scanned ', barcode);
       this.openModal(barcode);
     });
     this.loadTransaction();
@@ -273,7 +272,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   getTotals(type: string): number {
-  
+
     this.amountDefined = this.payMethods.find((pay) => pay.amount || pay.amount?.toString() === '0');
     if (!type) {
       return 0
@@ -286,7 +285,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
             if (i.tType === 'refund') {
               result -= i.prePaidAmount;
             } else {
-              i.nTotal = i.quantity * (i.price - i.nDiscount);
+              let discountPrice = i.bDiscountOnPercentage ? (i.price - (i.price * ((i.nDiscount || 0) / 100))) : (i.price - i.nDiscount);
+              i.nTotal = i.quantity * discountPrice;
               i.nTotal = i.type === 'gold-purchase' ? -1 * i.nTotal : i.nTotal;
               result += i.nTotal - (i.prePaidAmount || 0);
             }
@@ -301,7 +301,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       case 'discount':
         let sum = 0;
         this.transactionItems.forEach(element => {
-          sum += element.quantity * element.nDiscount;
+          let discountPrice = element.bDiscountOnPercentage ? (element.price * ((element.nDiscount || 0) / 100)) : element.nDiscount;
+          sum += element.quantity * discountPrice;
         });
         result = sum;
         break;
@@ -601,9 +602,9 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
               this.activityItems = activityItems;
               this.activity = activity;
 
-              this.transaction.aTransactionItems.map((tItem:any)=>{
-                for (const aItem of this.activityItems){
-                  if(aItem.iTransactionItemId === tItem._id){
+              this.transaction.aTransactionItems.map((tItem: any) => {
+                for (const aItem of this.activityItems) {
+                  if (aItem.iTransactionItemId === tItem._id) {
                     tItem.sActivityItemNumber = aItem.sNumber;
                     break;
                   }
@@ -698,11 +699,11 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     this.transaction = dataObject;
 
     this.handleReceiptPrinting();
-    
+
     // this.receiptService.exportToPdf({ transaction: this.transaction });
   }
 
-  async handleReceiptPrinting(){
+  async handleReceiptPrinting() {
     if (!this.businessDetails) {
       const _result: any = await this.getBusinessDetails().toPromise();
 
@@ -718,22 +719,22 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     //   nTotalOriginalAmount = oDataSource.total;
     //   oDataSource.bHasPrePayments = false;
     // } else {
-      oDataSource.aTransactionItems.forEach((item: any) => {
-        item.sOrderDescription = item.sProductName + '\n' + item.sDescription;
-        nTotalOriginalAmount += item.nPriceIncVat;
-        let description = `${item.sProductName}\n${item.sDescription}`;
-        if (item?.related?.length) { //item.nPriceIncVat !== item.nPaymentAmount
-          description += `Original amount: ${item.nPriceIncVat}\n
+    oDataSource.aTransactionItems.forEach((item: any) => {
+      item.sOrderDescription = item.sProductName + '\n' + item.sDescription;
+      nTotalOriginalAmount += item.nPriceIncVat;
+      let description = `${item.sProductName}\n${item.sDescription}`;
+      if (item?.related?.length) { //item.nPriceIncVat !== item.nPaymentAmount
+        description += `Original amount: ${item.nPriceIncVat}\n
                           Already paid: \n${item.sTransactionNumber} | ${item.nPaymentAmount} (this receipt)\n`;
 
-          item.related.forEach((related: any) => {
-            description += `${related.sTransactionNumber}|${related.nPaymentAmount}\n`;
-          });
-        }
+        item.related.forEach((related: any) => {
+          description += `${related.sTransactionNumber}|${related.nPaymentAmount}\n`;
+        });
+      }
 
-        item.description = description;
-      });
-      oDataSource.bHasPrePayments = true;
+      item.description = description;
+    });
+    oDataSource.bHasPrePayments = true;
     // }
     oDataSource.nTotalOriginalAmount = nTotalOriginalAmount;
     oDataSource.sBarcodeURI = this.generateBarcodeURI(false, oDataSource.sNumber);
@@ -741,7 +742,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     let _template: any, _oLogoData: any;
 
     const aUniqueItemTypes = [];
-    
+
     const nRepairCount = oDataSource.aTransactionItemType.filter((e: any) => e === 'repair')?.length;
     const nOrderCount = oDataSource.aTransactionItemType.filter((e: any) => e === 'order')?.length;
 
@@ -753,11 +754,11 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     if (bRegularCondition) aUniqueItemTypes.push('regular')
 
     if (bOrderCondition) aUniqueItemTypes.push('order');
-    
+
     if (bRepairCondition) aUniqueItemTypes.push('repair');
 
     if (bRepairAlternativeCondition) aUniqueItemTypes.push('repair_alternative');
-    
+
 
     [_template, _oLogoData,] = await Promise.all([
       this.getTemplate(aUniqueItemTypes),
@@ -772,16 +773,14 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       sLandLine: oDataSource.oCustomer.oPhone?.sLandLine,
     };
     const aTemplates = _template.data;
-    
+
     if (bOrderCondition) {
-      console.log('print order receipt')
       // print order receipt
       const orderTemplate = aTemplates.filter((template: any) => template.eType === 'order')[0];
       oDataSource.sActivityNumber = oDataSource.activity.sNumber;
       this.sendForReceipt(oDataSource, orderTemplate, oDataSource.activity.sNumber);
     }
     if (bRegularCondition) {
-      console.log('print proof of payments (regular) receipt')
       //print proof of payments receipt
       const template = aTemplates.filter((template: any) => template.eType === 'regular')[0];
       this.sendForReceipt(oDataSource, template, oDataSource.sNumber);
@@ -790,22 +789,20 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     if (bRepairCondition) {
       // if (oDataSource.aTransactionItems.filter((item: any) => item.oType.eKind === 'repair')[0]?.iActivityItemId) return;
       //use two column layout
-      console.log('use two column layout');
       const template = aTemplates.filter((template: any) => template.eType === 'repair')[0];
-      oDataSource = this.activityItems.filter((item:any) => item.oType.eKind === 'repair')[0];
+      oDataSource = this.activityItems.filter((item: any) => item.oType.eKind === 'repair')[0];
       const aTemp = oDataSource.sNumber.split("-");
       oDataSource.sPartRepairNumber = aTemp[aTemp.length - 1];
       oDataSource.sBarcodeURI = this.generateBarcodeURI(false, oDataSource.sNumber);
       this.sendForReceipt(oDataSource, template, oDataSource.sNumber);
 
-    } 
-    
+    }
+
     if (bRepairAlternativeCondition) {
       // use repair_alternative laYout
-      console.log('use repair_alternative layout');
       const template = aTemplates.filter((template: any) => template.eType === 'repair_alternative')[0];
       oDataSource = this.activityItems.filter((item: any) => item.oType.eKind === 'repair');
-      oDataSource.forEach((data:any)=> {
+      oDataSource.forEach((data: any) => {
         data.sBarcodeURI = this.generateBarcodeURI(false, data.sNumber);
         data.sBusinessLogoUrl = _oLogoData.data;
         data.businessDetails = this.businessDetails;
@@ -817,7 +814,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   sendForReceipt(oDataSource: any, template: any, title: any) {
-    console.log('sendForReceipt', oDataSource, template, title);
     // return;
     this.receiptService.exportToPdf({
       oDataSource: oDataSource,
@@ -947,6 +943,10 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     return this.apiService.getNew('core', `/api/v1/business/products/${iBusinessProductId}?iBusinessId=${this.business._id}`)
   }
 
+  getBaseProduct(iProductId: string): Observable<any> {
+    return this.apiService.getNew('core', `/api/v1/products/${iProductId}?iBusinessId=${this.business._id}`)
+  }
+
   // Add selected product into purchase order
   async onSelectProduct(product: any, isFrom: string = '', isFor: string = '') {
     let price: any = {};
@@ -959,13 +959,19 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     } else {
       price = product.aLocation ? product.aLocation.find((o: any) => o._id === this.locationId) : 0;
     }
-    const _oBusinessProductDetail = await this.getBusinessProduct(product?.iBusinessProductId || product?._id).toPromise();
-    product = _oBusinessProductDetail.data;
+    if (isFor == 'commonProducts') {
+      const _oBaseProductDetail = await this.getBaseProduct(product?._id).toPromise();
+      product = _oBaseProductDetail.data;
+    } else {
+      const _oBusinessProductDetail = await this.getBusinessProduct(product?.iBusinessProductId || product?._id).toPromise();
+      product = _oBusinessProductDetail.data;
+    }
+
     let name = '';
     name = (product?.oArticleGroup?.oName) ? ((product.oArticleGroup?.oName[this.selectedLanguage]) ? product.oArticleGroup?.oName[this.selectedLanguage] : product.oArticleGroup.oName['en']) : '';
-    name += ' ' + product?.sLabelDescription || '';
-    name += ' ' + product?.sProductNumber || '';
-    
+    name += ' ' + (product?.sLabelDescription || '');
+    name += ' ' + (product?.sProductNumber || '');
+
     this.transactionItems.push({
       name: name,
       eTransactionItemType: 'regular',
@@ -977,6 +983,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       paymentAmount: 0,
       oType: { bRefund: false, bDiscount: false, bPrepayment: false },
       nDiscount: product.nDiscount || 0,
+      bDiscountOnPercentage: product.bDiscountOnPercentage || false,
       tax: product.nVatRate || 0,
       sProductNumber: product.sProductNumber,
       sArticleNumber: product.sArticleNumber,
@@ -984,7 +991,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       iArticleGroupId: product.iArticleGroupId,
       oArticleGroupMetaData: { aProperty: product.aProperty || [], sCategory: '', sSubCategory: '', oName: {}, oNameOriginal: {} },
       iBusinessBrandId: product.iBusinessBrandId || product.iBrandId,
-      iBusinessProductId: product._id,
+      iBusinessProductId: isFor == 'commonProducts' ? undefined : product._id,
+      iProductId: isFor == 'commonProducts' ? product._id : undefined,
       iBusinessPartnerId: product.iBusinessPartnerId, //'6274d2fd8f38164d68186410',
       sBusinessPartnerName: product.sBusinessPartnerName, //'6274d2fd8f38164d68186410',
       iSupplierId: product.iBusinessPartnerId,
@@ -995,6 +1003,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       isFor,
       oBusinessProductMetaData: this.tillService.createProductMetadata(product),
     });
+    console.log(this.transactionItems);
     this.resetSearch();
   }
 
@@ -1020,6 +1029,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       quantity: 1,
       price: 0,
       nDiscount: 0,
+      bDiscountOnPercentage: false,
       tax: 0,
       description: '',
       open: true,
@@ -1179,6 +1189,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       redeemedLoyaltyPoints,
       price: 0,
       nDiscount: 0,
+      bDiscountOnPercentage: false,
       tax: 0,
       description: '',
       oArticleGroupMetaData: { aProperty: [], sCategory: '', sSubCategory: '', oName: {}, oNameOriginal: {} },
@@ -1287,7 +1298,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     })
   }
 
- 
+
 
   /* When doing */
   assignAllAmount(index: number) {
@@ -1459,6 +1470,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
                 iAssigneeId: transactionItem.iAssigneeId,
                 iBusinessBrandId: transactionItem.iBusinessBrandId,
                 nDiscount: transactionItem.nDiscount || 0,
+                bDiscountOnPercentage: transactionItem.nDiscount || 0,
                 tax: transactionItem.nVatRate,
                 oGoldFor: transactionItem.oGoldFor,
                 iSupplierId: transactionItem.iSupplierId,
