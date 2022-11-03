@@ -285,7 +285,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
             if (i.tType === 'refund') {
               result -= i.prePaidAmount;
             } else {
-              i.nTotal = i.quantity * (i.price - i.nDiscount);
+              let discountPrice = i.bDiscountOnPercentage ? (i.price - (i.price * ((i.nDiscount || 0) / 100))) : (i.price - i.nDiscount);
+              i.nTotal = i.quantity * discountPrice;
               i.nTotal = i.type === 'gold-purchase' ? -1 * i.nTotal : i.nTotal;
               result += i.nTotal - (i.prePaidAmount || 0);
             }
@@ -300,7 +301,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       case 'discount':
         let sum = 0;
         this.transactionItems.forEach(element => {
-          sum += element.quantity * element.nDiscount;
+          let discountPrice = element.bDiscountOnPercentage ? (element.price * ((element.nDiscount || 0) / 100)) : element.nDiscount;
+          sum += element.quantity * discountPrice;
         });
         result = sum;
         break;
@@ -959,7 +961,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     name = (product?.oArticleGroup?.oName) ? ((product.oArticleGroup?.oName[this.selectedLanguage]) ? product.oArticleGroup?.oName[this.selectedLanguage] : product.oArticleGroup.oName['en']) : '';
     name += ' ' + product?.sLabelDescription || '';
     name += ' ' + product?.sProductNumber || '';
-    
+
     this.transactionItems.push({
       name: name,
       eTransactionItemType: 'regular',
@@ -971,6 +973,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       paymentAmount: 0,
       oType: { bRefund: false, bDiscount: false, bPrepayment: false },
       nDiscount: product.nDiscount || 0,
+      bDiscountOnPercentage: product.bDiscountOnPercentage || false,
       tax: product.nVatRate || 0,
       sProductNumber: product.sProductNumber,
       sArticleNumber: product.sArticleNumber,
@@ -1014,6 +1017,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       quantity: 1,
       price: 0,
       nDiscount: 0,
+      bDiscountOnPercentage: false,
       tax: 0,
       description: '',
       open: true,
@@ -1173,6 +1177,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       redeemedLoyaltyPoints,
       price: 0,
       nDiscount: 0,
+      bDiscountOnPercentage: false,
       tax: 0,
       description: '',
       oArticleGroupMetaData: { aProperty: [], sCategory: '', sSubCategory: '', oName: {}, oNameOriginal: {} },
@@ -1453,6 +1458,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
                 iAssigneeId: transactionItem.iAssigneeId,
                 iBusinessBrandId: transactionItem.iBusinessBrandId,
                 nDiscount: transactionItem.nDiscount || 0,
+                bDiscountOnPercentage: transactionItem.nDiscount || 0,
                 tax: transactionItem.nVatRate,
                 oGoldFor: transactionItem.oGoldFor,
                 iSupplierId: transactionItem.iSupplierId,
