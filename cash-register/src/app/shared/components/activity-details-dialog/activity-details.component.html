@@ -415,7 +415,7 @@
                                                         <input type="text"
                                                             class="form-control form-control-lg form-control-solid mb-3 mb-lg-0 w-100"
                                                             [(ngModel)]="activity.nPriceIncVat" placeholder="">
-                                                            <p>Discount price {{activity.nTotalAmount - activity.nPaidAmount  | currency:'€' }} </p>
+                                                            <p *ngIf="activity?.oType?.bDiscount">Discount price {{activity.nPriceIncVat - activity.nTotalAmount  | currency:'€' }} </p>
                                                     </div>
                                                 </div>
                                             </div>
@@ -429,8 +429,7 @@
                                                         <input type="text"
                                                             class="form-control form-control-lg form-control-solid mb-3 mb-lg-0 w-100"
                                                             [(ngModel)]="activity.nPriceIncVat" placeholder="">
-                                                            <p>Discount price {{activity.nTotalAmount - activity.nPaidAmount  | currency:'€' }} </p>
-
+                                                            <p *ngIf="activity?.oType?.bDiscount">Discount price {{activity.nPriceIncVat - activity.nTotalAmount  | currency:'€' }} </p>
                                                     </div>
                                                 </div>
                                             </div>
@@ -540,8 +539,7 @@
                                                         <input type="text"
                                                             class="form-control form-control-lg form-control-solid mb-3 mb-lg-0 w-100"
                                                             [(ngModel)]="activity.nPriceIncVat" placeholder="">
-                                                            <p>Discount price {{activity.nTotalAmount - activity.nPaidAmount  | currency:'€'}} </p>
-                                                    </div>
+                                                            <p *ngIf="activity?.oType?.bDiscount">Discount price {{activity.nPriceIncVat - activity.nTotalAmount  | currency:'€' }} </p>
                                                 </div>
                                             </div>
                                         </div>

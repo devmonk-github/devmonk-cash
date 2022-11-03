@@ -127,6 +127,7 @@ export class ActivityDetailsComponent implements OnInit {
             if (item._id === this.openActivityId) item.collapsedBtn = true;
           });
         }
+        
       } else {
         this.fetchTransactionItems();
       }
@@ -149,6 +150,8 @@ export class ActivityDetailsComponent implements OnInit {
     this.printSettings = _printSettings?.data[0]?.result;
     this.aTemplates = _template.data;
   }
+
+ 
 
   getListEmployees() {
     const oBody = {
