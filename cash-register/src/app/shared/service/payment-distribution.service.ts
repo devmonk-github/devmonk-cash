@@ -22,10 +22,7 @@ export class PaymentDistributionService {
         i.amountToBePaid = -1 * i.amountToBePaid;
       }
       if (i.tType && i.tType === 'refund') {
-        // availableAmount += i.prePaidAmount;
-        // if (i.amountToBePaid === 0) {
         i.amountToBePaid = -1 * i.prePaidAmount;
-        // }
       }
       if (i.paymentAmount > i.amountToBePaid) {
         i.paymentAmount = i.amountToBePaid;
@@ -53,6 +50,7 @@ export class PaymentDistributionService {
         element.paymentAmount = element.nTotal;
       }
     });
+    console.log('transactionItems: ', transactionItems);
     return transactionItems;
   }
 

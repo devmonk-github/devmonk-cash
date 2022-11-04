@@ -80,6 +80,7 @@
 
                 <div class="accordion" id="kt_accordion_1">
                     <div class="accordion-item" *ngFor="let activity of activityItems; index as index">
+                        <div *ngIf="!eKindValue.includes(activity.oType.eKind)">
                         <h2 class="accordion-header">
                             <button class="accordion-button fs-4 fw-bold"
                                 (click)="activity.collapsedBtn = !activity.collapsedBtn" type="button"
@@ -414,6 +415,7 @@
                                                         <input type="text"
                                                             class="form-control form-control-lg form-control-solid mb-3 mb-lg-0 w-100"
                                                             [(ngModel)]="activity.nPriceIncVat" placeholder="">
+                                                            <p *ngIf="activity?.oType?.bDiscount">Discount price {{activity.nPriceIncVat - activity.nTotalAmount  | currency:'€' }} </p>
                                                     </div>
                                                 </div>
                                             </div>
@@ -427,6 +429,7 @@
                                                         <input type="text"
                                                             class="form-control form-control-lg form-control-solid mb-3 mb-lg-0 w-100"
                                                             [(ngModel)]="activity.nPriceIncVat" placeholder="">
+                                                            <p *ngIf="activity?.oType?.bDiscount">Discount price {{activity.nPriceIncVat - activity.nTotalAmount  | currency:'€' }} </p>
                                                     </div>
                                                 </div>
                                             </div>
@@ -501,7 +504,7 @@
                                         </div>
                                     </div>
                                     <div class="col-4">
-                                        <div class="row mb-6">
+                                        <!-- <div class="row mb-6">
                                             <label class="col-lg-4 col-form-label fw-bold fs-6"> {{ "BRAND" |
                                                 translate}}</label>
                                             <div class="col-lg-8">
@@ -513,7 +516,7 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
+                                        </div> -->
                                         <div class="row mb-6">
                                             <label class="col-lg-4 col-form-label fw-bold fs-6">{{ "REPAIR_NUMBER"
                                                 |translate}}</label>
@@ -536,11 +539,11 @@
                                                         <input type="text"
                                                             class="form-control form-control-lg form-control-solid mb-3 mb-lg-0 w-100"
                                                             [(ngModel)]="activity.nPriceIncVat" placeholder="">
-                                                    </div>
+                                                            <p *ngIf="activity?.oType?.bDiscount">Discount price {{activity.nPriceIncVat - activity.nTotalAmount  | currency:'€' }} </p>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="row mb-6">
+                                        <!-- <div class="row mb-6">
                                             <label class="col-lg-4 col-form-label fw-bold fs-6">{{ "PRODUCT_CATEGORY" |
                                                 translate}}</label>
                                             <div class="col-lg-8">
@@ -565,8 +568,8 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div class="row mb-6">
+                                        </div> -->
+                                        <!-- <div class="row mb-6">
                                             <label class="col-lg-4 col-form-label fw-bold fs-6"> {{ "SUPPLIER" |
                                                 translate}}</label>
                                             <div class="col-lg-8">
@@ -578,7 +581,7 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
+                                        </div> -->
 
 
                                         <div class="row">
@@ -730,7 +733,8 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                </div>
+                </div>
                 </div>
                 <div class="d-flex mt-100">
                     <h5 *ngIf='!activityItems.length && !loading' style="text-align: center">{{'NO_DATA_FOUND' |

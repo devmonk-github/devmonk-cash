@@ -3,6 +3,7 @@ import { Router, NavigationEnd, ActivatedRoute } from '@angular/router';
 import { faLongArrowAltDown, faLongArrowAltUp, faMinusCircle, faPlus, faPlusCircle, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { ToastService } from '../shared/components/toast';
 import { ApiService } from '../shared/service/api.service';
+import { BarcodeService } from '../shared/service/barcode.service';
 import { DialogService } from '../shared/service/dialog';
 import { MenuComponent } from '../shared/_layout/components/common';
 
@@ -11,7 +12,8 @@ import { TransactionDetailsComponent } from './components/transaction-details/tr
 @Component({
   selector: 'app-transactions',
   templateUrl: './transactions.component.html',
-  styleUrls: ['./transactions.component.sass']
+  styleUrls: ['./transactions.component.sass'],
+  providers: [BarcodeService]
 })
 export class TransactionsComponent implements OnInit {
   option: boolean = true;
@@ -95,7 +97,8 @@ export class TransactionsComponent implements OnInit {
     private apiService: ApiService,
     private dialogService: DialogService,
     private routes: Router,
-    private toastrService: ToastService
+    private toastrService: ToastService,
+    private barcodeService: BarcodeService,
   ) {  }
 
   async ngOnInit() {
@@ -108,10 +111,36 @@ export class TransactionsComponent implements OnInit {
     this.loadTransaction();
     this.iBusinessId = localStorage.getItem('currentBusiness');
     this.iLocationId = localStorage.getItem('currentLocation');
-    this.listEmployee();
-    this.getWorkstations();
-    this.getLocations();
+
+    const [_locationData, _workstationData, _employeeData]: any = await Promise.all([
+      this.getLocations(),
+      this.getWorkstations(),
+      this.listEmployee()
+    ]);
+
+    if (_locationData.message == 'success') {
+      this.locations = _locationData.data.aLocation;
+    }
+
+    if (_workstationData && _workstationData.data) {
+      this.workstations = _workstationData.data;
+    }
+
+    if (_employeeData?.data?.length) {
+      this.employees = this.employees.concat(_employeeData.data[0].result);
+    }
+
+
+    // this.listEmployee();
+    // this.getWorkstations();
+    // this.getLocations();
     this.getPaymentMethods();
+
+    this.barcodeService.barcodeScanned.subscribe((barcode: string) => {
+      // console.log('barcode scanned ', barcode);
+      this.openModal(barcode);
+    });
+
   }
 
   getPaymentMethods() {
@@ -181,37 +210,36 @@ export class TransactionsComponent implements OnInit {
   }
 
   getLocations() {
-    this.apiService.postNew('core', `/api/v1/business/${this.iBusinessId}/list-location`, {}).subscribe(
-      (result: any) => {
-        if (result.message == 'success') {
-          this.locations = result.data.aLocation;
-        }
-      }),
-      (error: any) => {
-        console.error(error)
-      }
+    return this.apiService.postNew('core', `/api/v1/business/${this.iBusinessId}/list-location`, {}).toPromise();
+      // (result: any) => {
+      //   if (result.message == 'success') {
+      //     this.locations = result.data.aLocation;
+      //   }
+      // }),
+      // (error: any) => {
+      //   console.error(error)
+      // }
   }
 
   getWorkstations() {
-    this.apiService.getNew('cashregistry', `/api/v1/workstations/list/${this.iBusinessId}/${this.iLocationId}`).subscribe(
-      (result: any) => {
-        if (result && result.data) {
-          this.workstations = result.data;
-        }
-      }),
-      (error: any) => {
-        console.error(error)
-      }
+    return this.apiService.getNew('cashregistry', `/api/v1/workstations/list/${this.iBusinessId}/${this.iLocationId}`).toPromise();
+      // (result: any) => {
+      //   if (result && result.data) {
+      //     this.workstations = result.data;
+      //   }
+      // }),
+      // (error: any) => {
+      //   console.error(error)
+      // }
   }
 
   listEmployee() {
-    const oBody = { iBusinessId: this.iBusinessId }
-    this.apiService.postNew('auth', '/api/v1/employee/list', oBody).subscribe((result: any) => {
-      if (result?.data?.length) {
-        this.employees = this.employees.concat(result.data[0].result);
-      }
-    }, (error) => {
-    })
+    return this.apiService.postNew('auth', '/api/v1/employee/list', { iBusinessId: this.iBusinessId }).toPromise();
+    //   if (result?.data?.length) {
+    //     this.employees = this.employees.concat(result.data[0].result);
+    //   }
+    // }, (error) => {
+    // })
   }
 
   openChat(): void {

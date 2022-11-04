@@ -6,13 +6,15 @@ import { CardsComponent } from '../shared/components/cards-dialog/cards-dialog.c
 import { ToastService } from '../shared/components/toast';
 import { WebOrderDetailsComponent } from '../shared/components/web-order-details/web-order-details.component';
 import { ApiService } from '../shared/service/api.service';
+import { BarcodeService } from '../shared/service/barcode.service';
 import { DialogService } from '../shared/service/dialog';
 import { MenuComponent } from '../shared/_layout/components/common';
 
 @Component({
   selector: 'app-services',
   templateUrl: './services.component.html',
-  styleUrls: ['./services.component.sass']
+  styleUrls: ['./services.component.sass'],
+  providers: [BarcodeService]
 })
 export class ServicesComponent implements OnInit, AfterViewInit {
 
@@ -117,11 +119,17 @@ export class ServicesComponent implements OnInit, AfterViewInit {
     private dialogService: DialogService,
     private router: Router,
     private activatedRoute: ActivatedRoute,
-    private toastrService: ToastService
+    private toastrService: ToastService,
+    private barcodeService: BarcodeService,
   ) { }
 
 
   async ngOnInit(): Promise<void> {
+    
+    this.barcodeService.barcodeScanned.subscribe((barcode: string) => {
+      console.log('barcode scanned ', barcode);
+      this.openModal(barcode);
+    });
 
     this.activatedRoute.queryParamMap.subscribe((params:any)=> {
       this.isFor= params.params.isFor;
@@ -139,9 +147,29 @@ export class ServicesComponent implements OnInit, AfterViewInit {
     if (this.isFor !== "activity") await this.setLocation() /* For web-orders, we will switch to the web-order location otherwise keep current location */
     this.showLoader = false
     this.loadTransaction();
-    this.listEmployee();
-    this.getWorkstations();
-    this.getLocations();
+
+    const [_locationData, _workstationData, _employeeData]: any = await Promise.all([
+      this.getLocations(),
+      this.getWorkstations(),
+      this.listEmployee()
+    ]);
+
+    if (_locationData.message == 'success') {
+      this.requestParams.locations = _locationData.data.aLocation;
+    }
+
+    if (_workstationData && _workstationData.data) {
+      this.workstations = _workstationData.data;
+    }
+
+    if (_employeeData?.data?.length && _employeeData.data[0]?._employeeData?.length) {
+      this.employees = _employeeData.data[0].result
+    }
+
+
+    // this.listEmployee();
+    // this.getWorkstations();
+    // this.getLocations();
   }
   ngAfterViewInit(): void {
     setTimeout(() => {
@@ -182,20 +210,16 @@ export class ServicesComponent implements OnInit, AfterViewInit {
     })
   }
 
-  async getLocations() {
-    return new Promise<any>((resolve, reject) => {
-      this.apiService.postNew('core', `/api/v1/business/${this.iBusinessId}/list-location`, {}).subscribe(
-        (result: any) => {
-          if (result?.data?.aLocation?.length) {
-            this.requestParams.locations = result.data.aLocation;
-            resolve(result);
-          }
-        }),
-        (error: any) => {
-          reject(error);
-          console.error(error)
-        }
-    })
+  getLocations() {
+    return this.apiService.postNew('core', `/api/v1/business/${this.businessDetails._id}/list-location`, {}).toPromise();
+    // (result: any) => {
+    //   if (result.message == 'success') {
+    //     this.requestParams.locations = result.data.aLocation;
+    //   }
+    // }),
+    // (error: any) => {
+    //   console.error(error)
+    // }
   }
 
   async setLocation(sLocationId: string = "") {
@@ -230,15 +254,15 @@ export class ServicesComponent implements OnInit, AfterViewInit {
   }
 
   getWorkstations() {
-    this.apiService.getNew('cashregistry', `/api/v1/workstations/list/${this.businessDetails._id}/${this.iLocationId}`).subscribe(
-      (result: any) => {
-        if (result && result.data) {
-          this.workstations = result.data;
-        }
-      }),
-      (error: any) => {
-        console.error(error)
-      }
+    return this.apiService.getNew('cashregistry', `/api/v1/workstations/list/${this.businessDetails._id}/${this.iLocationId}`).toPromise();
+    // (result: any) => {
+    //   if (result && result.data) {
+    //     this.workstations = result.data;
+    //   }
+    // }),
+    // (error: any) => {
+    //   console.error(error)
+    // }
   }
 
   // Function for update item's per page
@@ -285,11 +309,12 @@ export class ServicesComponent implements OnInit, AfterViewInit {
   }
 
   listEmployee() {
-    const oBody = { iBusinessId: this.iBusinessId }
-    this.apiService.postNew('auth', '/api/v1/employee/list', oBody).subscribe((result: any) => {
-      if (result?.data?.length) this.employees = result.data[0].result
-    }, (error) => {
-    })
+    return this.apiService.postNew('auth', '/api/v1/employee/list', { iBusinessId: this.businessDetails._id }).toPromise();
+    //   if (result?.data?.length) {
+    //     if (result?.data?.length && result.data[0].result?.length) this.employees = result.data[0].result
+    //   }
+    // }, (error) => {
+    // })
   }
 
   openActivities(activity: any, openActivityId?: any) {

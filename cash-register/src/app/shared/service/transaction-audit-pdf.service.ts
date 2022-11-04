@@ -1,6 +1,6 @@
 import { PdfService } from 'src/app/shared/service/pdf2.service';
 import * as _moment from 'moment';
-import { ChildChild, DisplayMethod, eDisplayMethodKeysEnum, View, ViewMenuChild } from '../../transaction-audit/transaction-audit-ui.model';
+import { ChildChild, DisplayMethod, eDisplayMethodKeysEnum, View, ViewMenuChild } from '../../transaction-audit/transaction-audit.model';
 import { Observable } from 'rxjs';
 import { ApiService } from './api.service';
 import { Injectable } from '@angular/core';
@@ -100,7 +100,7 @@ export class TransactionAuditUiPdfService {
         sOptionMenu, 
         bIsDynamicState, 
         aLocation, 
-        oSelectedWorkStation, 
+        aSelectedWorkStation, 
         aWorkStation, 
         oFilterDates, 
         oBusinessDetails, 
@@ -176,20 +176,15 @@ export class TransactionAuditUiPdfService {
 
         //get selected workstations
         let sWorkstation = '';
-        let aWorkstation: any = [];
-        if (oSelectedWorkStation?.length) {
-            oSelectedWorkStation.forEach((el: any) => {
-                aWorkstation.push(
-                    aWorkStation
-                        .filter((workstation: any) => workstation._id == el)
-                        .map((workstation: any) => workstation.sName)
-                );
-            });
-            sWorkstation = aWorkstation.join(', ');
-        } else {
-            sWorkstation = aWorkstation
-                .map((location: any) => location.sName)
+        
+        if (aSelectedWorkStation?.length) {
+            // aWorkStation = [];
+            sWorkstation = aWorkStation
+                .filter((workstation: any) => aSelectedWorkStation.includes(workstation._id))
+                .map((workstation: any) => workstation.sName)
                 .join(', ');
+        } else {
+            sWorkstation = aWorkStation.map((location: any) => location.sName).join(', ');
         }
         // if (oSelectedWorkStation) {
         //     sWorkstation = aWorkStation.find(
@@ -254,7 +249,11 @@ export class TransactionAuditUiPdfService {
             },
         ];
 
-        const _aTransactionItems = await this.fetchTransactionItems(oFilterDates,bIsArticleGroupLevel,bIsSupplierMode).toPromise();
+        const [_aTransactionItems, _aActivityItems, _aGoldPurchases]:any = await Promise.all([
+            this.fetchTransactionItems(oFilterDates,bIsArticleGroupLevel,bIsSupplierMode),
+            this.fetchActivityItems(oFilterDates),
+            this.fetchGoldPurchaseItems(oFilterDates)
+        ]);
 
         const aTransactionItems = _aTransactionItems?.data[0]?.result;
 
@@ -265,52 +264,28 @@ export class TransactionAuditUiPdfService {
             (item: any) => item.oType.bDiscount
         );
 
-        const _aActivityItems = await this.fetchActivityItems(oFilterDates).toPromise();
         if (_aActivityItems?.data?.length) {
-            this.aRepairItems = _aActivityItems?.data.filter(
-                (item: any) => item.oType.eKind == 'repair'
-            );
-            this.aGiftItems = _aActivityItems?.data.filter(
-                (item: any) => item.oType.eKind == 'giftcard'
-            );
+            this.aRepairItems = _aActivityItems?.data.filter((item: any) => item.oType.eKind == 'repair');
+            this.aGiftItems = _aActivityItems?.data.filter((item: any) => item.oType.eKind == 'giftcard');
         }
 
-        const _aGoldPurchases = await this.fetchGoldPurchaseItems(oFilterDates).toPromise();
-        this.aGoldPurchases = _aGoldPurchases?.data[0]?.result.filter(
-            (item: any) => item.oType.eKind == 'gold-purchase'
-        );
+        this.aGoldPurchases = _aGoldPurchases?.data[0]?.result.filter((item: any) => item.oType.eKind == 'gold-purchase');
 
         switch (sDisplayMethod.toString()) {
             case 'revenuePerBusinessPartner':
-                this.processPdfByRevenuePerBusinessPartner(
-                    columnWidths,
-                    tableLayout,
-                    aStatistic
-                );
+                this.processPdfByRevenuePerBusinessPartner(columnWidths,tableLayout,aStatistic);
                 break;
             case 'revenuePerSupplierAndArticleGroup':
-                this.processPdfByRevenuePerSupplierAndArticleGroup(
-                    columnWidths,
-                    tableLayout,
-                    aStatistic
-                );
+                this.processPdfByRevenuePerSupplierAndArticleGroup(columnWidths,tableLayout,aStatistic);
                 break;
             case 'revenuePerArticleGroupAndProperty':
-                this.processPdfByRevenuePerArticleGroupAndProperty(
-                    columnWidths,
-                    tableLayout,
-                    aStatistic
-                );
+                this.processPdfByRevenuePerArticleGroupAndProperty(columnWidths,tableLayout,aStatistic);
                 break;
             case 'revenuePerProperty':
                 this.processPdfByRevenuePerProperty(columnWidths, tableLayout, aStatistic);
                 break;
             case 'revenuePerArticleGroup':
-                this.processPdfByRevenuePerArticleGroup(
-                    columnWidths,
-                    tableLayout,
-                    aStatistic
-                );
+                this.processPdfByRevenuePerArticleGroup(columnWidths,tableLayout,aStatistic);
                 break;
         }
 
@@ -413,8 +388,8 @@ export class TransactionAuditUiPdfService {
             content: this.content,
             orientation: 'portrait',
             pageSize: 'A4',
-            fileName: oBusinessDetails.sName + '-' + 'Transaction Audit Report'
-            });
+            pdfTitle: oBusinessDetails.sName + '-' + 'Transaction Audit Report'
+        });
     }
 
     addRefundToPdf() {
@@ -795,17 +770,7 @@ export class TransactionAuditUiPdfService {
             const data = {
                 table: {
                     widths: widths,
-                    body: [
-                        [
-                            { text: 'No records found', colSpan: 7, alignment: 'center' },
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                            {},
-                        ],
-                    ],
+                    body: [[{ text: 'No records found', colSpan: 7, alignment: 'center' }, {}, {}, {}, {}, {}, {},],],
                 },
                 layout: {
                     hLineWidth: function (i: any) {
@@ -817,10 +782,7 @@ export class TransactionAuditUiPdfService {
         }
     }
 
-    processPdfByRevenuePerBusinessPartner(
-        columnWidths: any,
-        tableLayout: any,
-        aStatistic:any) {
+    processPdfByRevenuePerBusinessPartner(columnWidths: any,tableLayout: any,aStatistic:any) {
         let arr: Array<any> = [];
 
         aStatistic[0].individual.forEach((el: any) => {
@@ -927,11 +889,7 @@ export class TransactionAuditUiPdfService {
         });
     }
 
-    processPdfByRevenuePerArticleGroupAndProperty(
-        columnWidths: any,
-        tableLayout: any,
-        aStatistic:any
-    ) {
+    processPdfByRevenuePerArticleGroupAndProperty(columnWidths: any,tableLayout: any,aStatistic:any) {
         let arr: Array<any> = [];
 
         aStatistic[0].individual.forEach((el: any) => {
@@ -1000,11 +958,7 @@ export class TransactionAuditUiPdfService {
         });
     }
 
-    processPdfByRevenuePerSupplierAndArticleGroup(
-        columnWidths: any,
-        tableLayout: any,
-        aStatistic: any
-    ) {
+    processPdfByRevenuePerSupplierAndArticleGroup(columnWidths: any,tableLayout: any,aStatistic: any) {
         let arr: Array<any> = [];
 
         aStatistic[0].individual.forEach((el: any) => {
@@ -1074,11 +1028,7 @@ export class TransactionAuditUiPdfService {
         });
     }
 
-    processPdfByRevenuePerProperty(
-        columnWidths: any,
-        tableLayout: any,
-        aStatistic: any
-    ) {
+    processPdfByRevenuePerProperty(columnWidths: any,tableLayout: any,aStatistic: any) {
         let arr: Array<any> = [];
 
         aStatistic[0].individual.forEach((property: any) => {
@@ -1116,11 +1066,7 @@ export class TransactionAuditUiPdfService {
         });
     }
 
-    processPdfByRevenuePerArticleGroup(
-        columnWidths: any,
-        tableLayout: any,
-        aStatistic: any
-    ) {
+    processPdfByRevenuePerArticleGroup(columnWidths: any,tableLayout: any,aStatistic: any) {
         let arr: Array<any> = [];
 
         aStatistic[0].individual.forEach((el: any) => {
@@ -1159,7 +1105,7 @@ export class TransactionAuditUiPdfService {
         });
     }
 
-    fetchTransactionItems(oFilterDates: any, bIsArticleGroupLevel: boolean, bIsSupplierMode:boolean): Observable<any> {
+    fetchTransactionItems(oFilterDates: any, bIsArticleGroupLevel: boolean, bIsSupplierMode:boolean){
         let data = {
             iTransactionId: 'all',
             oFilterBy: {
@@ -1173,14 +1119,10 @@ export class TransactionAuditUiPdfService {
             iWorkstationId: this.iWorkstationId,
         };
 
-        return this.apiService.postNew(
-            'cashregistry',
-            '/api/v1/transaction/item/list',
-            data
-        );
+        return this.apiService.postNew('cashregistry','/api/v1/transaction/item/list',data).toPromise();
     }
 
-    fetchActivityItems(oFilterDates: any): Observable<any> {
+    fetchActivityItems(oFilterDates: any) {
         let data = {
             startDate: oFilterDates.startDate,
             endDate: oFilterDates.endDate,
@@ -1188,14 +1130,10 @@ export class TransactionAuditUiPdfService {
             selectedWorkstations: [this.iWorkstationId],
         };
 
-        return this.apiService.postNew(
-            'cashregistry',
-            '/api/v1/activities/items',
-            data
-        );
+        return this.apiService.postNew('cashregistry','/api/v1/activities/items',data).toPromise();
     }
 
-    fetchGoldPurchaseItems(oFilterDates: any): Observable<any> {
+    fetchGoldPurchaseItems(oFilterDates: any) {
         let data = {
             oFilterBy: {
                 startDate: oFilterDates.startDate,
@@ -1203,11 +1141,6 @@ export class TransactionAuditUiPdfService {
             },
             iBusinessId: this.iBusinessId,
         };
-
-        return this.apiService.postNew(
-            'cashregistry',
-            '/api/v1/activities/gold-purchases-payments/list',
-            data
-        );
+        return this.apiService.postNew('cashregistry','/api/v1/activities/gold-purchases-payments/list',data).toPromise();
     }
 }

@@ -112,8 +112,10 @@ export class TillService {
         sCocNumber: customer.sCocNumber,
       }
     };
+    console.log('length 115: ', transactionItems?.length);
     body.transactionItems = transactionItems.map((i: any) => {
       const bRefund = i.oType?.bRefund || i.nDiscount.quantity < 0 || i.price < 0;
+      console.log('iPayment: ', i,  i.paymentAmount / i.quantity);
       return new TransactionItem(
         i.name,
         i.comment,
@@ -196,6 +198,7 @@ export class TillService {
         i.bGiftcardTaxHandling,
       )
     });
+    console.log('iPayment 201: ', JSON.parse(JSON.stringify(body?.transactionItems)));
     const originalTItemsLength = length = body.transactionItems.filter((i: any) => i.oType.eKind !== 'loyalty-points').length;
     body.transactionItems.map((i: any) => {
       let discountRecords: any = localStorage.getItem('discountRecords');
@@ -203,10 +206,12 @@ export class TillService {
         discountRecords = JSON.parse(discountRecords);
       }
       if (i.oType.bRefund && i.nDiscount !== 0) {
+        console.log('IN IF CONDITION: ');
         i.nPaymentAmount -= i.nDiscount * i.nQuantity;
         i.nRevenueAmount = i.nPaymentAmount;
         const records = discountRecords.filter((o: any) => o.sUniqueIdentifier === i.sUniqueIdentifier);
         records.forEach((record: any) => {
+          console.log('IN IF CONDITION record: ', record);
           i.nPaymentAmount += record.nPaymentAmount;
           record.nPaymentAmount = -1 * record.nPaymentAmount;
           record.nRevenueAmount = -1 * record.nRevenueAmount;
@@ -220,6 +225,7 @@ export class TillService {
         });
       } else {
         if (i.nDiscount && i.nDiscount > 0 && !i.oType.bRefund && !i.iActivityItemId) {
+          console.log('IN ELSE: ', i.nDiscount, i.nQuantity);
           i.nPaymentAmount += i.nDiscount * i.nQuantity;
           i.nRevenueAmount += i.nDiscount * i.nQuantity;
           const tItem1 = JSON.parse(JSON.stringify(i));
@@ -239,6 +245,7 @@ export class TillService {
     });
     localStorage.removeItem('discountRecords');
     if (redeemedLoyaltyPoints && redeemedLoyaltyPoints > 0) {
+      console.log('redeemedLoyaltyPoints: 248: ', redeemedLoyaltyPoints)
       let nDiscount = Math.round(redeemedLoyaltyPoints / originalTItemsLength);
       const reedemedTItem = body.transactionItems.find((o: any) => o.oType.eTransactionType === "loyalty-points");
       body.transactionItems.map((i: any) => {

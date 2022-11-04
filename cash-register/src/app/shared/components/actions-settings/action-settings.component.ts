@@ -13,9 +13,9 @@ export class ActionSettingsComponent implements OnInit {
   dialogRef: DialogComponent;
   faTimes = faTimes;
   oTemplate: any = {
-    layout:{}
+    layout: {}
   };
-  
+
   iBusinessId: any = '';
   iLocationId: any = '';
   layout: any;
@@ -30,10 +30,10 @@ export class ActionSettingsComponent implements OnInit {
   ];
 
   aActionToPerform: any = [
-    'DOWNLOAD', 
-    'PRINT_PDF', 
-    'PRINT_PDF_ALTERNATIVE', 
-    'PRINT_THERMAL', 
+    'DOWNLOAD',
+    'PRINT_PDF',
+    'PRINT_PDF_ALTERNATIVE',
+    'PRINT_THERMAL',
     'EMAIL'
   ];
 
@@ -42,14 +42,14 @@ export class ActionSettingsComponent implements OnInit {
   aActions: Array<string> = ['DOWNLOAD'];
   iWorkstationId: string | null;
   _id: any;
-  iActionId:any;
+  iActionId: any;
   bDisableSubmit: boolean = false;
 
   constructor(
     private viewContainerRef: ViewContainerRef,
     private apiService: ApiService,
     private toastService: ToastService,
-  ) { 
+  ) {
     const _injector = this.viewContainerRef.parentInjector;
     this.dialogRef = _injector.get<DialogComponent>(DialogComponent);
     this.iBusinessId = localStorage.getItem('currentBusiness')
@@ -58,27 +58,27 @@ export class ActionSettingsComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    
+
   }
 
-  async saveSettings(){
+  async saveSettings() {
     const data = {
       eType: this.eType,
       eSituation: this.eSituation,
       aActionToPerform: this.aActions
-    } 
-    let oBody:any = {
+    }
+    let oBody: any = {
       iBusinessId: this.iBusinessId,
       iLocationId: this.iLocationId,
       iWorkstationId: this.iWorkstationId,
       sMethod: 'actions',
-      aActions:[
-        {...data}
+      aActions: [
+        { ...data }
       ]
     }
-    try{
+    try {
       if (this.mode === 'create') {
-        await this.apiService.postNew('cashregistry', '/api/v1/print-settings/create', oBody).toPromise()        
+        await this.apiService.postNew('cashregistry', '/api/v1/print-settings/create', oBody).toPromise()
         this.toastService.show({ type: 'success', text: 'New setting created successfully' });
       } else {
         oBody._id = this._id;
@@ -88,16 +88,13 @@ export class ActionSettingsComponent implements OnInit {
       }
       this.reset()
       this.close(true);
-    } catch (error:any) {
+    } catch (error: any) {
       if (error.status === 409) {
         this.toastService.show({ type: 'warning', text: 'Already exists. Please choose different combination' });
       }
-      // console.log(99, error);
     }
-    
-    
   }
-  reset(){
+  reset() {
     this.eType = 'repair';
     this.eSituation = 'is_created';
     this.aActionToPerform = ['DOWNLOAD']
@@ -107,7 +104,7 @@ export class ActionSettingsComponent implements OnInit {
     this.dialogRef.close.emit(data);
   }
 
-  checkActionToPerform(){
-    this.bDisableSubmit =  (this.aActions?.length) ? false : true;
+  checkActionToPerform() {
+    this.bDisableSubmit = (this.aActions?.length) ? false : true;
   }
 }

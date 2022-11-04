@@ -1,10 +1,10 @@
-import { EventEmitter, Injectable } from '@angular/core';
+import { EventEmitter, Injectable, OnDestroy } from '@angular/core';
 declare const onScan: any;
 
 @Injectable({
   providedIn: 'root'
 })
-export class BarcodeService {
+export class BarcodeService implements OnDestroy {
 
   barcodeScanned = new EventEmitter<String>()
 
@@ -25,5 +25,9 @@ export class BarcodeService {
         return onScan.decodeKeyEvent(oEvent);
       }
     });
+  }
+
+  ngOnDestroy(): void {
+    onScan.detachFrom(document);
   }
 }

@@ -6,13 +6,15 @@ import { ActivityDetailsComponent } from '../shared/components/activity-details-
 import { CardsComponent } from '../shared/components/cards-dialog/cards-dialog.component';
 import { ToastService } from '../shared/components/toast';
 import { ApiService } from '../shared/service/api.service';
+import { BarcodeService } from '../shared/service/barcode.service';
 import { DialogService } from '../shared/service/dialog';
 import { MenuComponent } from '../shared/_layout/components/common';
 
 @Component({
   selector: 'app-activity-items',
   templateUrl: './activity-items.component.html',
-  styleUrls: ['./activity-items.component.sass']
+  styleUrls: ['./activity-items.component.sass'],
+  providers: [BarcodeService]
 })
 export class ActivityItemsComponent implements OnInit {
 
@@ -34,8 +36,8 @@ export class ActivityItemsComponent implements OnInit {
       maxDate: new Date(new Date().setHours(23, 59, 59)),
     },
     estimate: {
-      minDate:  undefined,
-      maxDate:  undefined
+      minDate: undefined,
+      maxDate: undefined
     },
     // sortBy: { key: 'dCreatedDate', selected: true, sort: 'asc' },
     sortBy: 'dCreatedDate',
@@ -72,14 +74,14 @@ export class ActivityItemsComponent implements OnInit {
 
   tableHeaders: Array<any> = [
     { key: 'ACTIVITY_NO', selected: false, sort: 'asc' },
-    { key: 'REPAIR_NUMBER', selected: false, sort: 'asc'  },
+    { key: 'REPAIR_NUMBER', selected: false, sort: 'asc' },
     { key: 'INTAKE_DATE', selected: true, sort: 'asc' },
     { key: 'ESTIMATED_DATE', selected: false, sort: 'asc' },
-    { key: 'STATUS',  selected: false, sort: 'asc' },
+    { key: 'STATUS', selected: false, sort: 'asc' },
     { key: 'SUPPLIER_REPAIR', disabled: true },
     { key: 'CUSTOMER', disabled: true },
   ]
-  
+
   selectedProperties: any;
   propertyOptions: Array<any> = [];
   aPropertyOptionIds: Array<any> = [];
@@ -90,17 +92,39 @@ export class ActivityItemsComponent implements OnInit {
     private apiService: ApiService,
     private dialogService: DialogService,
     private routes: Router,
-    private toastrService: ToastService
+    private toastrService: ToastService,
+    private barcodeService: BarcodeService,
   ) { }
 
-  ngOnInit(): void {
+  async ngOnInit() {
     this.businessDetails._id = localStorage.getItem('currentBusiness');
     this.iLocationId = localStorage.getItem('currentLocation');
     this.loadTransaction();
-    this.getLocations();
-    this.getWorkstations();
-    this.listEmployee();
+
+    const [_locationData, _workstationData, _employeeData]: any = await Promise.all([
+      this.getLocations(),
+      this.getWorkstations(),
+      this.listEmployee()
+    ]);
+
+    if (_locationData.message == 'success') {
+      this.requestParams.locations = _locationData.data.aLocation;
+    }
+
+    if (_workstationData && _workstationData.data) {
+      this.workstations = _workstationData.data;
+    }
+
+    if (_employeeData?.data?.length && _employeeData.data[0]?._employeeData?.length) {
+      this.employees = _employeeData.data[0].result
+    }
+
     this.getProperties();
+
+    this.barcodeService.barcodeScanned.subscribe((barcode: string) => {
+      console.log('barcode scanned ', barcode);
+      this.openModal(barcode);
+    });
   }
 
   loadTransaction() {
@@ -127,7 +151,7 @@ export class ActivityItemsComponent implements OnInit {
       })
   }
 
-  openActivities(activity: any, openActivityId?:any) {
+  openActivities(activity: any, openActivityId?: any) {
     this.dialogService.openModal(ActivityDetailsComponent, { cssClass: 'w-fullscreen', context: { activity: activity, openActivityId, items: true, from: 'activity-items' } })
       .instance.close.subscribe((result: any) => {
         if (result) this.routes.navigate(['business/till']);
@@ -135,37 +159,36 @@ export class ActivityItemsComponent implements OnInit {
   }
 
   listEmployee() {
-    const oBody = { iBusinessId: this.businessDetails._id }
-    this.apiService.postNew('auth', '/api/v1/employee/list', oBody).subscribe((result: any) => {
-      if (result?.data?.length) {
-        if (result?.data?.length && result.data[0].result?.length) this.employees = result.data[0].result
-      }
-    }, (error) => {
-    })
+    return this.apiService.postNew('auth', '/api/v1/employee/list', { iBusinessId: this.businessDetails._id }).toPromise();
+    //   if (result?.data?.length) {
+    //     if (result?.data?.length && result.data[0].result?.length) this.employees = result.data[0].result
+    //   }
+    // }, (error) => {
+    // })
   }
 
   getLocations() {
-    this.apiService.postNew('core', `/api/v1/business/${this.businessDetails._id}/list-location`, {}).subscribe(
-      (result: any) => {
-        if (result.message == 'success') {
-          this.requestParams.locations = result.data.aLocation;
-        }
-      }),
-      (error: any) => {
-        console.error(error)
-      }
+    return this.apiService.postNew('core', `/api/v1/business/${this.businessDetails._id}/list-location`, {}).toPromise();
+    // (result: any) => {
+    //   if (result.message == 'success') {
+    //     this.requestParams.locations = result.data.aLocation;
+    //   }
+    // }),
+    // (error: any) => {
+    //   console.error(error)
+    // }
   }
 
   getWorkstations() {
-    this.apiService.getNew('cashregistry', `/api/v1/workstations/list/${this.businessDetails._id}/${this.iLocationId}`).subscribe(
-      (result: any) => {
-        if (result && result.data) {
-          this.workstations = result.data;
-        }
-      }),
-      (error: any) => {
-        console.error(error)
-      }
+    return this.apiService.getNew('cashregistry', `/api/v1/workstations/list/${this.businessDetails._id}/${this.iLocationId}`).toPromise();
+    // (result: any) => {
+    //   if (result && result.data) {
+    //     this.workstations = result.data;
+    //   }
+    // }),
+    // (error: any) => {
+    //   console.error(error)
+    // }
   }
 
   // Function for update item's per page
@@ -217,6 +240,8 @@ export class ActivityItemsComponent implements OnInit {
   }
 
   async openModal(barcode: any) {
+    if (barcode.startsWith('0002'))
+      barcode = barcode.substring(4)
     this.toastrService.show({ type: 'success', text: 'Barcode detected: ' + barcode })
     if (barcode.startsWith("AI")) {
       let oBody: any = {
@@ -236,9 +261,9 @@ export class ActivityItemsComponent implements OnInit {
             _id: iActivityId
           }
         }
-        const activityResult:any = await this.apiService.postNew('cashregistry', '/api/v1/activities', oBody).toPromise();
-        
-        if (activityResult.data?.length){
+        const activityResult: any = await this.apiService.postNew('cashregistry', '/api/v1/activities', oBody).toPromise();
+
+        if (activityResult.data?.length) {
           this.openActivities(activityResult.data[0], iActivityItemId);
         }
       }
@@ -254,7 +279,7 @@ export class ActivityItemsComponent implements OnInit {
       if (activityResult.data?.length) {
         this.openActivities(activityResult.data[0]);
       }
-      
+
       //activity.find({sNumber: barcode})
     } else if (barcode.startsWith("G")) {
       let oBody: any = {
@@ -273,76 +298,76 @@ export class ActivityItemsComponent implements OnInit {
 
   }
 
-  openCardsModal(oGiftcard?: any, oCustomer?:any ) {
+  openCardsModal(oGiftcard?: any, oCustomer?: any) {
     this.dialogService.openModal(CardsComponent, { cssClass: 'modal-lg', context: { customer: oCustomer, oGiftcard } })
       .instance.close.subscribe(result => {
       });
   }
 
-    /* Property filter */
-    getProperties() {
-      this.selectedProperties = [];
-      let data = {
-        skip: 0,
-        limit: 100,
-        sortBy: '',
-        sortOrder: '',
-        searchValue: '',
-        oFilterBy: {},
-        iBusinessId: localStorage.getItem('currentBusiness'),
-      };
-  
-      this.propertyListSubscription = this.apiService.postNew('core', '/api/v1/properties/list', data).subscribe((result: any) => {
-        if (result?.data && result?.data[0]?.result?.length) {
-          result.data[0].result.map((property: any) => {
-            if (typeof this.propertyOptions[property._id] == 'undefined') {
-              this.propertyOptions[property._id] = [];
-  
-              property.aOptions.map((option: any) => {
-                if (option?.sCode?.trim() != '') {
-                  const opt: any = {
-                    iPropertyId: property._id,
-                    sPropertyName: property.sName,
-                    iPropertyOptionId: option?._id,
-                    sPropertyOptionName: option?.value,
-                    sCode: option.sCode,
-                    sName: option.sKey,
-                    selected: false
-                  };
-                  this.propertyOptions[property._id].push(opt);
-                  const propertyIndex = this.aProperty.findIndex(
-                    (prop: any) => prop.iPropertyId == property._id
-                  );
-                  if (propertyIndex === -1) this.aProperty.push(opt);
-                }
-              });
-            }
-          });
-        }
-      });
-    }
-  
-    onProperties(value?: any) {
-      if (this.selectedProperties && this.selectedProperties[value]) {
-        this.aPropertyOptionIds = [];
-        for (const oProperty of this.aProperty) {
-          if (this.selectedProperties[oProperty?.iPropertyId]?.length) {
-            const aOption = this.propertyOptions[oProperty?.iPropertyId].filter(
-              (opt: any) => {
-                return this.selectedProperties[oProperty?.iPropertyId].includes(
-                  opt.sName
+  /* Property filter */
+  getProperties() {
+    this.selectedProperties = [];
+    let data = {
+      skip: 0,
+      limit: 100,
+      sortBy: '',
+      sortOrder: '',
+      searchValue: '',
+      oFilterBy: {},
+      iBusinessId: localStorage.getItem('currentBusiness'),
+    };
+
+    this.propertyListSubscription = this.apiService.postNew('core', '/api/v1/properties/list', data).subscribe((result: any) => {
+      if (result?.data && result?.data[0]?.result?.length) {
+        result.data[0].result.map((property: any) => {
+          if (typeof this.propertyOptions[property._id] == 'undefined') {
+            this.propertyOptions[property._id] = [];
+
+            property.aOptions.map((option: any) => {
+              if (option?.sCode?.trim() != '') {
+                const opt: any = {
+                  iPropertyId: property._id,
+                  sPropertyName: property.sName,
+                  iPropertyOptionId: option?._id,
+                  sPropertyOptionName: option?.value,
+                  sCode: option.sCode,
+                  sName: option.sKey,
+                  selected: false
+                };
+                this.propertyOptions[property._id].push(opt);
+                const propertyIndex = this.aProperty.findIndex(
+                  (prop: any) => prop.iPropertyId == property._id
                 );
+                if (propertyIndex === -1) this.aProperty.push(opt);
               }
-            );
-            for (const oOption of aOption) {
-              this.aPropertyOptionIds.push(oOption?.iPropertyOptionId);
+            });
+          }
+        });
+      }
+    });
+  }
+
+  onProperties(value?: any) {
+    if (this.selectedProperties && this.selectedProperties[value]) {
+      this.aPropertyOptionIds = [];
+      for (const oProperty of this.aProperty) {
+        if (this.selectedProperties[oProperty?.iPropertyId]?.length) {
+          const aOption = this.propertyOptions[oProperty?.iPropertyId].filter(
+            (opt: any) => {
+              return this.selectedProperties[oProperty?.iPropertyId].includes(
+                opt.sName
+              );
             }
+          );
+          for (const oOption of aOption) {
+            this.aPropertyOptionIds.push(oOption?.iPropertyOptionId);
           }
         }
       }
     }
-  
-    ngOnDestroy(): void {
-      if (this.propertyListSubscription) this.propertyListSubscription.unsubscribe();
-    }
+  }
+
+  ngOnDestroy(): void {
+    if (this.propertyListSubscription) this.propertyListSubscription.unsubscribe();
+  }
 }

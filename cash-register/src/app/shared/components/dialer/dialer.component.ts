@@ -49,11 +49,7 @@ export class DialerComponent implements OnChanges, OnInit {
 
   decrease(): void {
     if (this.qty <= 1) return;
-
     this.qty--
-    // if (this.qty === 0) {
-    //   this.qty = -1;
-    // }
     this.quantityChange.emit(this.qty)
   }
 

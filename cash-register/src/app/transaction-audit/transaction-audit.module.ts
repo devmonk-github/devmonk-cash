@@ -7,14 +7,12 @@ import { TranslateModule } from '@ngx-translate/core';
 
 // import { TillProductSectionComponent } from './component/till-product-section/till-product-section.component';
 import { TransactionAuditComponent } from './transaction-audit.component';
-import { TransactionAuditUiComponent } from './transaction-audit-ui/transaction-audit-ui.component';
 import { FormsModule } from '@angular/forms';
 
 
 @NgModule({
   declarations: [
-    TransactionAuditComponent,
-    TransactionAuditUiComponent,
+    TransactionAuditComponent
   ],
   imports: [
     CommonModule,

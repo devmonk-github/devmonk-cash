@@ -10,6 +10,21 @@
       </div>
     </div>
     <div class="card-body">
+      <p *ngIf="businessDetails?.oPrintNode" class="my-2">
+      <p *ngIf="businessDetails?.oPrintNode?.nAccountId" class="my-2">
+        <label>Account ID: </label> {{businessDetails?.oPrintNode?.nAccountId}}
+      </p>
+      <p *ngIf="businessDetails?.oPrintNode" class="my-2">
+        <strong class="py-2"> Log in op PrintNode met deze gegevens: </strong>
+        <span class="d-block border bg-gray-300 p-2">
+          <label> Gebruikersnaam : </label> {{businessDetails?.oPrintNode?.sEmail}}
+          <br>
+          <label> Wachtwoord : </label> {{businessDetails?.oPrintNode?.sPassword}}
+          <br>
+          <label> API Key : </label> {{businessDetails?.oPrintNode?.sApiKey}}
+        </span>
+      </p>
+
       <p>
         {{"INSTALL_A_HELP_PROGRAM_TO_SET_YOUR_PRINTERS" | translate}} &nbsp;
         <a href="https://support.prismanote.com/nl/support/solutions/articles/101000096958-prismanote-printhelper-installeren"
@@ -229,7 +244,7 @@
 </div>
 
 
-<div class="card mb-5 mb-xl-10 d-flex" data-kt-scroll-section="thermal-printer">
+<!-- <div class="card mb-5 mb-xl-10 d-flex" data-kt-scroll-section="thermal-printer">
   <div class="card-header row">
     <div class="card-title">
       {{"THERMAL_PRINTER" | translate}}
@@ -239,7 +254,6 @@
       <br>
       <div *ngIf="!newPrinter" class="custom-margin-t10">
         <form name="thermalPrinterForm">
-          <!-- <nb-toggle class="toggle-btn" name='printerEnable' id="printerEnable" labelPosition="right">{{"ENABLE" | translate}}</nb-toggle>  -->
           <diV class="row">
             <div class="col-md-4">
               <label class="form-label">{{"ENABLE" | translate}}</label>
@@ -270,7 +284,6 @@
       </div>
       <div *ngIf="newPrinter" class="custom-margin-t10">
         <form name="thermalPrinterForm">
-          <!-- <nb-toggle class="toggle-btn" name='printerEnable' id="printerEnable" labelPosition="right">{{"ENABLE" | translate}}</nb-toggle> -->
           <diV class="row">
             <div class="col-md-4">
               <label class="form-label">{{"ENABLE" | translate}}</label>
@@ -287,7 +300,6 @@
           <select class="form-select" id="thermalPrinterName" required="true" name="thermalPrinterName">
             <option *ngFor="let p of printers" [value]="p">{{ p }}</option>
           </select>
-          <!-- <nb-toggle class="toggle-btn" name='starSyntax' id="starSyntax" labelPosition="right">{{"USE_STAR_SYNTAX" | translate}}</nb-toggle> -->
           <diV class="row">
             <div class="col-md-4">
               <label class="form-label">{{"USE_STAR_SYNTAX" | translate}}</label>
@@ -321,4 +333,4 @@
       </div>
     </div>
   </div>
-</div>
+</div> -->
