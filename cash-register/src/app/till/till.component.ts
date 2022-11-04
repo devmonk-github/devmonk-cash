@@ -403,6 +403,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
         this.transactionItems[index] = item
         break;
     }
+    // console.log({ transactionItems: this.transactionItems });
   }
 
   createGiftCard(item: any, index: number): void {
@@ -637,10 +638,14 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       });
   }
 
-  async processTransactionForPdfReceipt() {
+  async processTransactionForPdfReceipt(data?:any) {
     const relatedItemsPromises: any = [];
     let language: any = localStorage.getItem('language')
     let dataObject = JSON.parse(JSON.stringify(this.transaction));
+    if(data){
+      this.transaction = data;
+      dataObject = JSON.parse(JSON.stringify(this.transaction))
+    }    
 
     dataObject.aPayments.forEach((obj: any) => {
       obj.dCreatedDate = moment(dataObject.dCreatedDate).format('DD-MM-yyyy hh:mm');
@@ -1008,7 +1013,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       isFor,
       oBusinessProductMetaData: this.tillService.createProductMetadata(product),
     });
-    console.log(this.transactionItems);
+    // console.log({transactionItems: this.transactionItems});
     this.resetSearch();
   }
 
