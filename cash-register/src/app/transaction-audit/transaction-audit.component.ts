@@ -1021,6 +1021,10 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
       item.isLoading = false;
       if (result?.data[0]?.result?.length) {
         item.aTransactionItems = result.data[0].result;
+        item.aTransactionItems.map((oTI: any) => {
+          oTI.nRevenueAmount = oTI.nRevenueAmount * oTI.nQuantity
+          return oTI;
+        })
       }
     });
   }

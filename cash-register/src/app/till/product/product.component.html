@@ -1,5 +1,3 @@
-<!-- <div class="row">
-  <div class="col-11"> -->
 <h2 class="accordion-header">
   <button class="accordion-button fs-4 fw-bold pe-0 ps-4" type="button" data-bs-toggle="collapse"
     data-bs-target="#kt_accordion_1_body_1" aria-expanded="true" aria-controls="kt_accordion_1_body_1">
@@ -17,9 +15,7 @@
           <div class="col-4 text-truncate">{{item.name}}</div>
           <div class="col">{{item.price | currency: '€'}}</div>
           <div class="col">{{totalDiscount}}</div>
-          <!-- <div class="w-95px">{{item.discount | currency: '€'}}</div> -->
           <div class="col">{{item.tax}}%</div>
-          <!-- <div class="col">{{getTotalPrice(item)}}</div> -->
           <div class="col">{{(item.price - item.nDiscount) * item.quantity | currency: '€' }}
           </div>
           <div class="col">{{item.paymentAmount | currency: '€'}}</div>
@@ -28,11 +24,7 @@
     </section>
   </button>
 </h2>
-<!-- </div>
-  <div class="col-1">
-    <h5>2</h5>
-  </div>
-</div> -->
+
 <div id="kt_accordion_1_body_1" class="accordion-collapse collapse show rounded-0"
   aria-labelledby="kt_accordion_1_header_1" data-bs-parent="#kt_accordion_1">
   <div class="accordion-body px-3 py-4">
@@ -41,7 +33,7 @@
         <div class="row">
 
           <div class="col-12">
-            <app-dialer [(quantity)]="item.quantity"></app-dialer>
+            <app-dialer [(quantity)]="item.quantity" (quantityChange)="quantityChangeHandler($event)"></app-dialer>
           </div>
 
           <div class="col-12">
