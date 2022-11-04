@@ -385,6 +385,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   itemChanged(item: any, index: number): void {
+    console.log('itemChanged: ', item, index);
     switch (item) {
       case 'delete':
         this.transactionItems.splice(index, 1);
@@ -483,6 +484,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   changeInPayment() {
+    console.log('changeInPayment: ', this.transactionItems);
     let availableAmount = this.getUsedPayMethods(true);
     this.paymentDistributeService.distributeAmount(this.transactionItems, availableAmount);
     this.allPaymentMethod = this.allPaymentMethod.map((v: any) => ({ ...v, isDisabled: true }));
@@ -548,17 +550,10 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   createTransaction(): void {
-    // this.locationId = localStorage.getItem('currentLocation') || null;
     const isGoldForCash = this.checkUseForGold();
     if (this.transactionItems.length < 1 || !isGoldForCash) {
       return;
     }
-    // if (!this.locationId) {
-    //   this.toastrService.show({ type: 'danger', text: 'Location is not selected' });
-    //   this.saveInProgress = false;
-    //   return;
-    // }
-
     const giftCardPayment = this.allPaymentMethod.find((o) => o.sName === 'Giftcards');
     this.saveInProgress = true;
     const changeAmount = this.getUsedPayMethods(true) - this.getTotals('price')
@@ -574,6 +569,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
             }
           });
           payMethods = payMethods.filter((o: any) => o.amount !== 0);
+          console.log('this.transactionItems: ', JSON.parse(JSON.stringify(this.transactionItems)));
           const body = this.tillService.createTransactionBody(this.transactionItems, payMethods, this.discountArticleGroup, this.redeemedLoyaltyPoints, this.customer);
           if (giftCardPayment && this.appliedGiftCards.length > 0) {
             this.appliedGiftCards.forEach(element => {
@@ -591,6 +587,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
           let result = body.transactionItems.map((a: any) => a.iBusinessPartnerId);
           const uniq = [...new Set(_.compact(result))];
           if (this.appliedGiftCards?.length) this.tillService.createGiftcardTransactionItem(body, this.discountArticleGroup);
+          console.log('body: ', body);
           this.apiService.postNew('cashregistry', '/api/v1/till/transaction', body)
             .subscribe((data: any) => {
               this.toastrService.show({ type: 'success', text: 'Transaction created.' });
@@ -723,7 +720,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       item.sOrderDescription = item.sProductName + '\n' + item.sDescription;
       nTotalOriginalAmount += item.nPriceIncVat;
       let description = `${item.sProductName}\n${item.sDescription}`;
-      if (item?.related?.length) { //item.nPriceIncVat !== item.nPaymentAmount
+      if (item?.related?.length) {
         description += `Original amount: ${item.nPriceIncVat}\n
                           Already paid: \n${item.sTransactionNumber} | ${item.nPaymentAmount} (this receipt)\n`;
 
@@ -971,7 +968,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     name = (product?.oArticleGroup?.oName) ? ((product.oArticleGroup?.oName[this.selectedLanguage]) ? product.oArticleGroup?.oName[this.selectedLanguage] : product.oArticleGroup.oName['en']) : '';
     name += ' ' + (product?.sLabelDescription || '');
     name += ' ' + (product?.sProductNumber || '');
-
+    console.log('onSelectProduct: ', product);
     this.transactionItems.push({
       name: name,
       eTransactionItemType: 'regular',
@@ -1436,6 +1433,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
             if (transactionItem.isSelected) {
               const { tType } = transactionItem;
               let paymentAmount = transactionItem.nQuantity * transactionItem.nPriceIncVat - transactionItem.nPaidAmount;
+              console.log('paymentAmount: ', paymentAmount, transactionItem.nQuantity, transactionItem.nPriceIncVat, transactionItem.nPaidAmount)
               if (tType === 'refund') {
                 // paymentAmount = -1 * transactionItem.nPaidAmount;
                 paymentAmount = 0;
