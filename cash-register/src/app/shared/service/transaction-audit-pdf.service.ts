@@ -100,7 +100,7 @@ export class TransactionAuditUiPdfService {
         sOptionMenu, 
         bIsDynamicState, 
         aLocation, 
-        oSelectedWorkStation, 
+        aSelectedWorkStation, 
         aWorkStation, 
         oFilterDates, 
         oBusinessDetails, 
@@ -176,20 +176,15 @@ export class TransactionAuditUiPdfService {
 
         //get selected workstations
         let sWorkstation = '';
-        let aWorkstation: any = [];
-        if (oSelectedWorkStation?.length) {
-            oSelectedWorkStation.forEach((el: any) => {
-                aWorkstation.push(
-                    aWorkStation
-                        .filter((workstation: any) => workstation._id == el)
-                        .map((workstation: any) => workstation.sName)
-                );
-            });
-            sWorkstation = aWorkstation.join(', ');
-        } else {
-            sWorkstation = aWorkstation
-                .map((location: any) => location.sName)
+        
+        if (aSelectedWorkStation?.length) {
+            // aWorkStation = [];
+            sWorkstation = aWorkStation
+                .filter((workstation: any) => aSelectedWorkStation.includes(workstation._id))
+                .map((workstation: any) => workstation.sName)
                 .join(', ');
+        } else {
+            sWorkstation = aWorkStation.map((location: any) => location.sName).join(', ');
         }
         // if (oSelectedWorkStation) {
         //     sWorkstation = aWorkStation.find(
