@@ -227,7 +227,7 @@
                                                 </ng-template>
 
                                             </ng-select>
-                              
+
                                         </div>
                                     </div>
                                 </div>
@@ -503,7 +503,7 @@
                                                                     </th>
                                                                     <th scope="col" class="w-150px">
                                                                         {{oArticleGroup.nProfit| number :'1.2-2'}}</th>
-                                                             
+
                                                                 </tr>
                                                             </thead>
                                                             <ng-container
@@ -567,7 +567,7 @@
                                                         <h4 class="text-black">{{oSupplier.nProfit | number :'1.2-2' }}
                                                         </h4>
                                                     </th>
-                                               
+
                                                 </tr>
                                             </thead>
 
@@ -607,7 +607,7 @@
                                                                     </th>
                                                                     <th scope="col" class="w-150px">
                                                                         {{oArticleGroup.nProfit | number :'1.2-2'}}</th>
-                                                              
+
                                                                 </tr>
                                                                 <tr *ngIf="oArticleGroup.isLoading">
                                                                     <td colspan="6" class="text-center">
@@ -675,7 +675,7 @@
                                                         <h4 class="text-black">{{aStatistic[0]?.overall[0]?.nProfit |
                                                             number :'1.2-2'}}</h4>
                                                     </th>
-                                            
+
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -702,7 +702,7 @@
                                                                         <th scope="col" class="w-150px">
                                                                             {{oArticleGroup.nProfit| number
                                                                             :'1.2-2'}}</th>
-                                                                 
+
                                                                     </tr>
                                                                 </thead>
                                                                 <ng-container
@@ -772,7 +772,7 @@
                                                             number :'1.2-2'}}
                                                         </h4>
                                                     </th>
-                                                 
+
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -814,7 +814,7 @@
                                                                     :'1.2-2'}}</th>
                                                                 <th class="w-150px">
                                                                     {{oRevenueByProperty.nProfit| number :'1.2-2'}}</th>
-                                                       
+
                                                             </tr>
                                                             <tr *ngIf="oRevenueByProperty.isLoading">
                                                                 <td colspan="6" class="text-center">
@@ -886,7 +886,7 @@
                                                             :'1.2-2'}}
                                                         </h4>
                                                     </th>
-                                             
+
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -1396,7 +1396,9 @@
                                 <div>
                                     <label>{{ "CASH_COUNTED" | translate}}</label>
                                     <input type="number" class="form-control p-2 w-30"
-                                        [(ngModel)]="oCountings.nCashCounted" [disabled]="bDisableCountings">
+                                        [(ngModel)]="oCountings.nCashCounted"
+                                        (ngModelChange)="oCountings.nCashRemain = oCountings.nCashCounted - oCountings.nSkim"
+                                        [disabled]="bDisableCountings">
                                 </div>
                                 <div>
                                     <label>{{ "TREASURY_DIFFERENCE" | translate}}</label>
@@ -1414,7 +1416,7 @@
                                 <div>
                                     <label>{{ "AMOUNT_TO_LEFT_IN_CASH" | translate}}</label>
                                     <input type="number" class="form-control p-2 w-30"
-                                        [(ngModel)]="oCountings.nCashCounted"
+                                        [(ngModel)]="oCountings.nCashRemain"
                                         (ngModelChange)="oCountings.nSkim = oCountings.nCashCounted - oCountings.nCashRemain"
                                         [disabled]="bDisableCountings">
                                 </div>
