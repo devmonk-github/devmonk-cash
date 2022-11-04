@@ -82,6 +82,7 @@ export class TransactionDetailsComponent implements OnInit {
       obj.dCreatedDate = moment(dataObject.dCreatedDate).format('DD-MM-yyyy hh:mm');
     });
     dataObject.aTransactionItems = [];
+    const relatedItemsPromises: any = [];
     this.transaction.aTransactionItems.forEach((item: any, index: number) => {
       if (!(item.oType?.eKind == 'discount' || item?.oType?.eKind == 'loyalty-points-discount')) {
         dataObject.aTransactionItems.push(item);
@@ -114,28 +115,43 @@ export class TransactionDetailsComponent implements OnInit {
       total = total + item.totalPaymentAmount;
       totalAfterDisc += item.totalPaymentAmountAfterDisc;
       totalDiscount += disc;
-      this.getRelatedTransactionItem(item?.iActivityItemId, item?._id, index)
+      relatedItemsPromises[index] = this.getRelatedTransactionItem(item?.iActivityItemId, item?._id, index);
     })
+    await Promise.all(relatedItemsPromises).then(result => {
+      result.forEach((item: any, index: number) => {
+        this.transaction.aTransactionItems[index].related = item.data || [];
+      })
+    });
+
     dataObject.totalAfterDisc = parseFloat(totalAfterDisc.toFixed(2));
     dataObject.total = parseFloat(total.toFixed(2));
     dataObject.totalVat = parseFloat(totalVat.toFixed(2));
     dataObject.totalDiscount = parseFloat(totalDiscount.toFixed(2));
     dataObject.totalSavingPoints = totalSavingPoints;
+    dataObject.totalQty = this.transaction.aTransactionItems?.length || 0;
     dataObject.dCreatedDate = moment(dataObject.dCreatedDate).format('DD-MM-yyyy hh:mm');
     this.getRelatedTransaction(dataObject?.iActivityId, dataObject?._id)
 
     this.transaction = dataObject;
-
+    
+    this.loading = false;
     this.fetchBusinessDetails();
     this.fetchCustomer(this.transaction.oCustomer._id);
-    this.fetchTransaction(this.transaction.sNumber)
-    this.getPrintSetting();
-    const [_printActionSettings, _printSettings]: any = await Promise.all([
+    // this.fetchTransaction(this.transaction.sNumber)
+    const [_thermalSettings, _printActionSettings, _printSettings]: any = await Promise.all([
+      this.getThermalPrintSetting(),
       this.getPdfPrintSetting({ oFilterBy: { sMethod: 'actions' } }),
       this.getPdfPrintSetting(),
     ]);
+
+    if (_thermalSettings?.data?._id) {
+      this.thermalPrintSettings = _thermalSettings?.data;
+    }
+
     this.printActionSettings = _printActionSettings?.data[0]?.result[0].aActions;
     this.printSettings = _printSettings?.data[0]?.result;
+
+    // console.log(80, this.transaction);
   }
 
   fetchBusinessDetails() {
@@ -149,14 +165,19 @@ export class TransactionDetailsComponent implements OnInit {
   }
 
   getRelatedTransactionItem(iActivityItemId: string, iTransactionItemId: string, index: number) {
-    this.apiService.getNew('cashregistry', `/api/v1/transaction/item/activityItem/${iActivityItemId}?iBusinessId=${this.iBusinessId}&iTransactionItemId=${iTransactionItemId}`)
-      .subscribe(
-        (result: any) => {
-          this.transaction.aTransactionItems[index].related = result.data || [];
-        }, (error) => {
-          console.log(error);
-        })
+    return this.apiService.getNew('cashregistry', `/api/v1/transaction/item/activityItem/${iActivityItemId}?iBusinessId=${this.iBusinessId}&iTransactionItemId=${iTransactionItemId}`).toPromise();
   }
+
+
+  // getRelatedTransactionItem(iActivityItemId: string, iTransactionItemId: string, index: number) {
+  //   this.apiService.getNew('cashregistry', `/api/v1/transaction/item/activityItem/${iActivityItemId}?iBusinessId=${this.iBusinessId}&iTransactionItemId=${iTransactionItemId}`)
+  //     .subscribe(
+  //       (result: any) => {
+  //         this.transaction.aTransactionItems[index].related = result.data || [];
+  //       }, (error) => {
+  //         console.log(error);
+  //       })
+  // }
 
   getRelatedTransaction(iActivityId: string, iTransactionId: string) {
     const body = {
@@ -348,21 +369,21 @@ export class TransactionDetailsComponent implements OnInit {
     );
   }
 
-  fetchTransaction(sNumber: any) {
-    if (!sNumber) return;
-    this.loading = true;
-    let body: any = {
-      iBusinessId: this.iBusinessId
-    }
-    if (this.eType === 'webshop-reservation') body.eKind = 'reservation';
-    this.apiService.postNew('cashregistry', '/api/v1/transaction/detail/' + sNumber, body).subscribe((result: any) => {
-      if (!result?.data?.oCustomer) result.data.oCustomer = this.transaction.oCustomer;
-      this.transaction = result.data;
-      this.loading = false;
-    }, (error) => {
-      this.loading = false;
-    });
-  }
+  // fetchTransaction(sNumber: any) {
+  //   if (!sNumber) return;
+  //   this.loading = true;
+  //   let body: any = {
+  //     iBusinessId: this.iBusinessId
+  //   }
+  //   if (this.eType === 'webshop-reservation') body.eKind = 'reservation';
+  //   this.apiService.postNew('cashregistry', '/api/v1/transaction/detail/' + sNumber, body).subscribe((result: any) => {
+  //     if (!result?.data?.oCustomer) result.data.oCustomer = this.transaction.oCustomer;
+  //     this.transaction = result.data;
+  //     this.loading = false;
+  //   }, (error) => {
+  //     this.loading = false;
+  //   });
+  // }
 
   openTransaction(transaction: any, itemType: any) {
     this.dialogService.openModal(TransactionItemsDetailsComponent, { cssClass: "modal-xl", context: { transaction, itemType } })
@@ -424,17 +445,18 @@ export class TransactionDetailsComponent implements OnInit {
       });
   }
 
-  getPrintSetting() {
-    this.apiService.getNew('cashregistry', `/api/v1/print-settings/${this.iBusinessId}/${this.iWorkstationId}/thermal/regular`).subscribe(
-      (result: any) => {
-        if (result?.data?._id) {
-          this.thermalPrintSettings = result?.data;
-        }
-      },
-      (error: any) => {
-        console.error(error)
-      }
-    );
+  getThermalPrintSetting() {
+    return this.apiService.getNew('cashregistry', `/api/v1/print-settings/${this.iBusinessId}/${this.iWorkstationId}/thermal/regular`).toPromise();
+    // .subscribe(
+    //   (result: any) => {
+    //     if (result?.data?._id) {
+    //       this.thermalPrintSettings = result?.data;
+    //     }
+    //   },
+    //   (error: any) => {
+    //     console.error(error)
+    //   }
+    // );
   }
 
   openCustomer(customer: any) {
