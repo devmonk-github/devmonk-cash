@@ -664,10 +664,10 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
         disc = (disc * parseFloat(item.nPriceIncVat) / (100 + parseFloat(item.nVatRate)));
         item.nDiscountToShow = disc;
       } else { item.nDiscountToShow = disc; }
-      item.priceAfterDiscount = (parseFloat(item.nPaymentAmount) - parseFloat(item.nDiscountToShow));
-      item.nPriceIncVatAfterDiscount = (parseFloat(item.nPriceIncVat) - parseFloat(item.nDiscountToShow));
-      item.totalPaymentAmount = parseFloat(item.nPaymentAmount) * parseFloat(item.nQuantity);
-      item.totalPaymentAmountAfterDisc = parseFloat(item.priceAfterDiscount) * parseFloat(item.nQuantity);
+      item.priceAfterDiscount = parseFloat(item.nPaymentAmount.toFixed(2)) - parseFloat(item.nDiscountToShow);
+      item.nPriceIncVatAfterDiscount = parseFloat(item.nPriceIncVat) - parseFloat(item.nDiscountToShow);
+      item.totalPaymentAmount = parseFloat(item.nPaymentAmount.toFixed(2)) * parseFloat(item.nQuantity);
+      item.totalPaymentAmountAfterDisc = parseFloat(item.priceAfterDiscount.toFixed(2)) * parseFloat(item.nQuantity);
       item.bPrepayment = item?.oType?.bPrepayment || false;
       const vat = (item.nVatRate * item.priceAfterDiscount / (100 + parseFloat(item.nVatRate)));
       item.vat = vat.toFixed(2);
@@ -776,12 +776,14 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
     if (bOrderCondition) {
       // print order receipt
+      // console.log('print order receipt')
       const orderTemplate = aTemplates.filter((template: any) => template.eType === 'order')[0];
       oDataSource.sActivityNumber = oDataSource.activity.sNumber;
       this.sendForReceipt(oDataSource, orderTemplate, oDataSource.activity.sNumber);
     }
     if (bRegularCondition) {
       //print proof of payments receipt
+      // console.log('print proof of payments receipt')
       const template = aTemplates.filter((template: any) => template.eType === 'regular')[0];
       this.sendForReceipt(oDataSource, template, oDataSource.sNumber);
     }
@@ -789,6 +791,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     if (bRepairCondition) {
       // if (oDataSource.aTransactionItems.filter((item: any) => item.oType.eKind === 'repair')[0]?.iActivityItemId) return;
       //use two column layout
+      // console.log('use two column layout')
       const template = aTemplates.filter((template: any) => template.eType === 'repair')[0];
       oDataSource = this.activityItems.filter((item: any) => item.oType.eKind === 'repair')[0];
       const aTemp = oDataSource.sNumber.split("-");
@@ -800,6 +803,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
     if (bRepairAlternativeCondition) {
       // use repair_alternative laYout
+      // console.log('use repair_alternative laYout')
       const template = aTemplates.filter((template: any) => template.eType === 'repair_alternative')[0];
       oDataSource = this.activityItems.filter((item: any) => item.oType.eKind === 'repair');
       oDataSource.forEach((data: any) => {
@@ -815,6 +819,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
   sendForReceipt(oDataSource: any, template: any, title: any) {
     // return;
+    // console.log('sendForReceipt', title, oDataSource, template);
     this.receiptService.exportToPdf({
       oDataSource: oDataSource,
       pdfTitle: title,
