@@ -949,7 +949,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
       sOptionMenu: this.sOptionMenu,
       bIsDynamicState: this.IsDynamicState,
       aLocation: this.aLocation,
-      oSelectedWorkStation: this.selectedWorkStation?.length ? this.selectedWorkStation : [],
+      aSelectedWorkStation: this.selectedWorkStation?.length ? this.selectedWorkStation : [],
       aWorkStation: this.aWorkStation,
       oFilterDates: this.filterDates,
       oBusinessDetails: this.businessDetails,

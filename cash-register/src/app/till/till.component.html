@@ -506,23 +506,18 @@
           <h5 *ngIf='!payMethods.length && !payMethodsLoading'> {{"NO_PAYMENT_METHOD_FOUND"}}</h5>
           <div *ngIf="payMethodsLoading" class="spinner-border mx-auto"></div>
         </div>
-        <!-- <h1>{{ "CHANGE" | translate}}: {{getUsedPayMethods(true) - getTotals('price') | currency: '€'}}</h1> -->
 
         <h1 *ngIf="(getUsedPayMethods(true) - getTotals('price')) <0">{{ "Yet to Pay" | translate}}:
           {{getUsedPayMethods(true) - getTotals('price') | currency: '€'}}</h1>
         <h1 *ngIf="(getUsedPayMethods(true) - getTotals('price')) >=0">{{ "Change" | translate}}:
           {{getUsedPayMethods(true) - getTotals('price') | currency: '€'}}</h1>
 
-        <!-- {{(getTotals('price') > 0.0099)}}{{ -0.0099 > getTotals('price')}} {{(getTotals('price') > 0.0099) && (-0.0099 >
-        getTotals('price'))}} -->
         <h4 *ngIf="(getUsedPayMethods(true) - getTotals('price')) <0">{{ "PREPAYMENT" | translate}}: {{totalPrepayment()
           | currency: '€'}} {{'from total' | translate}} {{getTotals('price') | currency:'€'}}</h4>
         <h4 *ngIf="(getUsedPayMethods(true) - getTotals('price')) ==0">{{ "PAYMENT" | translate}}: {{totalPrepayment() |
           currency: '€'}}</h4>
         <h4 *ngIf="(getUsedPayMethods(true) - getTotals('price')) >0">{{ "PREPAYMENT" | translate}}: {{totalPrepayment()
           | currency: '€'}}</h4>
-
-        <!-- <h4>{{ "PREPAYMENT" | translate}}: {{totalPrepayment() | currency: '€'}}</h4> -->
 
         <button class="btn btn-primary till-save-button" (click)="createTransaction()"
           [disabled]="saveInProgress || 1 > transactionItems.length || !amountDefined">
