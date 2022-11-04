@@ -1414,7 +1414,7 @@
                                 <div>
                                     <label>{{ "AMOUNT_TO_LEFT_IN_CASH" | translate}}</label>
                                     <input type="number" class="form-control p-2 w-30"
-                                        [(ngModel)]="oCountings.nCashRemain"
+                                        [(ngModel)]="oCountings.nCashCounted"
                                         (ngModelChange)="oCountings.nSkim = oCountings.nCashCounted - oCountings.nCashRemain"
                                         [disabled]="bDisableCountings">
                                 </div>
