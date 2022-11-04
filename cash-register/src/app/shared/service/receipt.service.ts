@@ -107,11 +107,13 @@ export class ReceiptService {
 
     async exportToPdf({ oDataSource, templateData, pdfTitle, printSettings, printActionSettings, eSituation }: any) {
         this.oOriginalDataSource = oDataSource;
+        // console.log(this.oOriginalDataSource);
         this.pdfService.getTranslations();
 
         this.commonService.pdfTitle = pdfTitle;
         this.commonService.mapCommonParams(templateData.aSettings);
         this.processTemplate(templateData.layout);
+        // console.log(this.content);
         this.pdfServiceNew.getPdfData({
             styles: this.styles,
             content: this.content,
@@ -452,7 +454,9 @@ export class ReceiptService {
         return aConditions.every((condition: any) => {
             switch (condition.operator) {
                 case '>':
-                    return dataSource[condition.field] > condition.value;
+                    if (dataSource[condition.field])
+                        return dataSource[condition.field] > condition.value;
+                    else return this.oOriginalDataSource[condition.field] > condition.value;
                 case '===':
                     return dataSource[condition.field1] === dataSource[condition.field2];
                 default:

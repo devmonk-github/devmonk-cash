@@ -112,6 +112,8 @@ export class TransactionAuditUiPdfService {
         bIsSupplierMode
     }:any) {
 
+        console.log(sDisplayMethod, aStatistic);
+
         const header: Array<any> = [
             'Supplier',
             'Quantity',
@@ -228,25 +230,7 @@ export class TransactionAuditUiPdfService {
                     { text: sType, style: ['right', 'normal'], width: 150 },
                 ],
             },
-            {
-                canvas: [{ type: 'line', x1: 0, y1: 0, x2: 575, y2: 0, lineWidth: 1 }],
-                margin: [0, 0, 20, 0],
-                style: 'afterLine',
-            },
-            {
-                style: 'headerStyle',
-                table: {
-                    headerRows: 1,
-                    widths: columnWidths,
-                    body: [headerList],
-                },
-                layout: tableLayout,
-            },
-            {
-                canvas: [{ type: 'line', x1: 0, y1: 0, x2: 575, y2: 0, lineWidth: 1 }],
-                margin: [0, 0, 20, 0],
-                style: 'afterLine',
-            },
+            
         ];
 
         const [_aTransactionItems, _aActivityItems, _aGoldPurchases]:any = await Promise.all([
@@ -287,6 +271,8 @@ export class TransactionAuditUiPdfService {
             case 'revenuePerArticleGroup':
                 this.processPdfByRevenuePerArticleGroup(columnWidths,tableLayout,aStatistic);
                 break;
+            case 'aVatRates':
+                this.processPdfByVatRates(columnWidths, tableLayout, aStatistic);
         }
 
         this.content.push({
@@ -294,35 +280,55 @@ export class TransactionAuditUiPdfService {
             margin: [0, 0, 20, 0],
             style: 'afterLine',
         });
-        let texts: any = [
-            { text: 'Total', style: 'th' },
-            { text: aStatistic[0].overall[0].nQuantity, style: 'th' },
-            { text: aStatistic[0].overall[0].nTotalRevenue, style: 'th' },
-            { text: aStatistic[0].overall[0].nTotalPurchaseAmount, style: 'th' },
-            { text: Math.round(aStatistic[0].overall[0].nProfit).toFixed(2), style: 'th' },
-            // { text: Math.round(aStatistic[0].overall[0].nMargin).toFixed(2), style: 'th' },
-        ];
 
-        const overallData = {
-            table: {
-                widths: columnWidths,
-                body: [texts],
-            },
-            layout: tableLayout,
-        };
-        this.content.push(
-            overallData,
-            {
-                canvas: [{ type: 'line', x1: 0, y1: 0, x2: 575, y2: 0, lineWidth: 1 }],
-                margin: [0, 0, 20, 10],
-                style: 'afterLine',
-            },
-            {
-                text: 'Payment Methods',
-                style: ['left', 'normal'],
-                margin: [0, 30, 0, 10],
-            }
-        );
+        if (sDisplayMethod !== 'aVatRates') {
+
+            let texts: any = [
+                { text: 'Total', style: 'th' },
+                { text: aStatistic[0].overall[0].nQuantity, style: 'th' },
+                { text: aStatistic[0].overall[0].nTotalRevenue, style: 'th' },
+                { text: aStatistic[0].overall[0].nTotalPurchaseAmount, style: 'th' },
+                { text: Math.round(aStatistic[0].overall[0].nProfit).toFixed(2), style: 'th' },
+                // { text: Math.round(aStatistic[0].overall[0].nMargin).toFixed(2), style: 'th' },
+            ];
+
+            const overallData = {
+                table: {
+                    widths: columnWidths,
+                    body: [texts],
+                },
+                layout: tableLayout,
+            };
+            this.content.push(
+                {
+                    canvas: [{ type: 'line', x1: 0, y1: 0, x2: 575, y2: 0, lineWidth: 1 }],
+                    margin: [0, 0, 20, 0],
+                    style: 'afterLine',
+                },
+                {
+                    style: 'headerStyle',
+                    table: {
+                        headerRows: 1,
+                        widths: columnWidths,
+                        body: [headerList],
+                    },
+                    layout: tableLayout,
+                },
+                {
+                    canvas: [{ type: 'line', x1: 0, y1: 0, x2: 575, y2: 0, lineWidth: 1 }],
+                    margin: [0, 0, 20, 0],
+                    style: 'afterLine',
+                },
+                overallData,
+                {
+                    canvas: [{ type: 'line', x1: 0, y1: 0, x2: 575, y2: 0, lineWidth: 1 }],
+                    margin: [0, 0, 20, 10],
+                    style: 'afterLine',
+                }
+            );
+        }
+
+        this.content.push({text: 'Payment Methods',style: ['left', 'normal'],margin: [0, 30, 0, 10],});
 
         const paymentHeaders = ['Method', 'Total Amount', 'Quantity'];
 
@@ -390,6 +396,10 @@ export class TransactionAuditUiPdfService {
             pageSize: 'A4',
             pdfTitle: oBusinessDetails.sName + '-' + 'Transaction Audit Report'
         });
+    }
+
+    processPdfByVatRates(columnWidths:any, tableLayout:any, aStatistic:any){
+        console.log(aStatistic);
     }
 
     addRefundToPdf() {

@@ -198,7 +198,7 @@ export class PdfService {
   private convertStringToMoney(val: any): any {
     if (val % 1 === 0) {
       //no decimals
-      return String(val + ',00');
+      return (val) ? String(val + ',00') : '';
     } else {
       val = String(val);
       let parts = val.split('.');
