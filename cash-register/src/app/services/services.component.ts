@@ -102,16 +102,16 @@ export class ServicesComponent implements OnInit, AfterViewInit {
   isFor = "";
 
   tableHeaders: Array<any> = [
-    { key: 'Activity No.', selected: false, sort: '' },
-    { key: 'Repair number', disabled: true },
-    { key: 'Type', disabled: true },
-    { key: 'Intake date', selected: false, sort: 'asc' },
-    { key: 'End date', selected: false, sort: 'asc' },
-    { key: 'Status', disabled: true },
-    { key: 'Supplier/Repairer', disabled: true },
+    { key: 'ACTIVITY_NUMBER', selected: false, sort: '' },
+    { key: 'REPAIR_NUMBER', disabled: true },
+    { key: 'TYPE', disabled: true },
+    { key: 'INTAKE_DATE', selected: false, sort: 'asc' },
+    { key: 'END_DATE', selected: false, sort: 'asc' },
+    { key: 'STATUS', disabled: true },
+    { key: 'SUPPLIER / REPAIRER', disabled: true },
     // { key: 'Partner supplier status', disabled: true },
-    { key: 'Customer', disabled: true },
-    { key: 'Actions' , disabled:true},
+    { key: 'CUSTOMER', disabled: true },
+    { key: 'ACTIONS' , disabled:true},
   ]
 
   constructor(

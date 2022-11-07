@@ -198,13 +198,15 @@
                                     </td>
                                     <td>
                                         <div>
-                                            {{item.sProductName}} {{item.description}}<br />{{ "ORIGINAL_AMOUNT" |
-                                            translate}}:
-                                            {{item.nPriceIncVat}}<br />{{ "ALREADY_PAID" |
-                                            translate}}:<br />{{item.sTransactionNumber}} |
-                                            {{item.nPaymentAmount}} ({{"THIS_RECEIPT"}})<br />
-                                            <div *ngFor="let obj of item.related">
-                                                {{obj.sTransactionNumber}} | {{obj.nPaymentAmount}}<br />
+                                            {{item.sProductName}} <br /> {{item.description}} <br />
+                                            
+                                            <div *ngIf="item.related?.length">
+                                                {{ "ORIGINAL_AMOUNT" | translate}}:
+                                                {{item.nPriceIncVat}}<br />{{ "ALREADY_PAID" | translate}}:<br />
+                                                {{item.sTransactionNumber}} | {{item.nPaymentAmount}} ({{"THIS_RECEIPT"}})<br />
+                                                <div *ngFor="let obj of item.related">
+                                                    {{obj.sTransactionNumber}} | {{obj.nPaymentAmount}}<br />
+                                                </div>
                                             </div>
                                         </div>
                                         <br>
@@ -223,17 +225,17 @@
                                             </div>
                                         </div>
                                     </td>
-                                    <td>{{item.nPriceIncVat}}</td>
+                                    <td>{{item.nPaymentAmount}}</td>
                                     <td>{{item.nQuantity}}</td>
                                     <td>{{item.nDiscountToShow}}</td>
-                                    <td>{{item.nVatRate || 0}} %</td>
+                                    <td>{{item.nVatRate}} % ({{item.vat || 0 | currency:'EUR' }})</td>
                                     <td>
-                                        <div>
+                                        <div class="d-flex align-items-center justify-content-between">
                                             <div>
                                                 {{item.totalPriceIncVatAfterDisc || 0}}
                                             </div>
                                             <ng-container *ngIf="from != 'activity-details'">
-                                                <div>
+                                                <div class="">
                                                     <div class="d-flex align-items-center">
                                                         <button class="btn btn-primary"
                                                             (click)="showActivityItem(item,$event)">
@@ -256,6 +258,14 @@
                                     <!-- <td>
                                         <ng-template #supplierSliderTemplate></ng-template>
                                     </td> -->
+                                </tr>
+                                <tr class="fw-bolder">
+                                    <td colspan="2">{{ 'TOTAL' | translate }}</td>
+                                    <td>{{ transaction.total }}</td>
+                                    <td>{{ transaction.totalQty }}</td>
+                                    <td>{{ transaction.totalDiscount }}</td>
+                                    <td>{{ transaction.totalVat | currency:'EUR' }}</td>
+                                    <td></td>
                                 </tr>
                             </tbody>
                         </table>

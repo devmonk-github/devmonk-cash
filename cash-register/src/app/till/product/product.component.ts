@@ -67,7 +67,9 @@ export class ProductComponent implements OnInit {
   }
 
   getTotalDiscount(item: any): string {
-    return this.totalDiscount = this.priceService.getDiscountValue(item);
+    this.totalDiscount = this.priceService.getDiscountValue(item);
+    // console.log("getTotalDiscount", this.totalDiscount, item)
+    return String(this.totalDiscount);
   }
 
   getTotalPrice(item: any): string {
@@ -112,6 +114,9 @@ export class ProductComponent implements OnInit {
         if (data.item && data.item.nDiscount) {
           this.item.nDiscount = data.item.nDiscount;
           this.item.bDiscountOnPercentage = data.item?.discount?.percent || false;
+          this.getTotalDiscount(data.item)
+          this.itemChanged.emit(this.item);
+          // console.log({data, item: this.item});
         }
         console.log('After openDiscountDialog item: ', JSON.parse(JSON.stringify(this.item)), data?.item?.discount);
         console.log('After openDiscountDialog data: ', data);
