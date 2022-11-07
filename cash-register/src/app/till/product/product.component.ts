@@ -113,6 +113,8 @@ export class ProductComponent implements OnInit {
           this.item.nDiscount = data.item.nDiscount;
           this.item.bDiscountOnPercentage = data.item?.discount?.percent || false;
         }
+        console.log('After openDiscountDialog item: ', JSON.parse(JSON.stringify(this.item)), data?.item?.discount);
+        console.log('After openDiscountDialog data: ', data);
       })
   }
 

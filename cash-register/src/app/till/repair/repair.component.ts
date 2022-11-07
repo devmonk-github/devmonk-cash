@@ -15,6 +15,7 @@ import { ImageUploadComponent } from '../../shared/components/image-upload/image
   styleUrls: ['./repair.component.scss'],
   encapsulation: ViewEncapsulation.None
 })
+
 export class RepairComponent implements OnInit {
   @Input() item: any
   @Input() taxes: any

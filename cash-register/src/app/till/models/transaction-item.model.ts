@@ -85,6 +85,8 @@ export class TransactionItem {
     public sServicePartnerRemark: string,
     public eEstimatedDateAction: string,
     public eActivityItemStatus: string,
-    public bGiftcardTaxHandling: string,) { }
+    public bGiftcardTaxHandling: string,
+    public bDiscountOnPercentage: boolean
+    ) { }
 
 }
