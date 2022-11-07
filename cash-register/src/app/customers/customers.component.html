@@ -10,8 +10,8 @@
                             </span>
                             <input type="text" class="form-control form-control-solid w-250px ps-14 me-4" #inputElement
                                 (keyup.enter)="getCustomers()" [(ngModel)]="requestParams.searchValue" name="search"
-                                placeholder="SEARCH">
-                            <button class="btn btn-primary" (click)="getCustomers()">{{"SEARCH" | translate}}</button>
+                                placeholder="{{'SEARCH' | translate}}">
+                            <button class="btn btn-primary" (click)="getCustomers()">{{'SEARCH' | translate}} </button>
                         </div>
                     </div>
                     <div class="card-toolbar flex-row-fluid justify-content-end gap-5">
@@ -27,7 +27,7 @@
                                 <thead>
                                     <tr class="text-start text-gray-400 fw-bolder fs-7 text-uppercase gs-0">
                                         <th *ngFor="let column of allColumns" class="min-w-100px sorting" tabindex="0">
-                                            {{column}}
+                                            {{column | translate}}
                                         </th>
                                     </tr>
                                 </thead>

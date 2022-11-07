@@ -84,13 +84,13 @@ export class TransactionsComponent implements OnInit {
   eType: string = '';
 
   tableHeaders: Array<any> = [
-    { key: 'Date', selected: true, sort: 'desc' },
-    { key: 'Transaction no.', selected: false, sort: '' },
-    { key: 'Receipt number', selected: false, sort: '' },
-    { key: 'Customer', selected: false, sort: '' },
-    { key: 'Methods', disabled: true },
-    { key: 'Total', disabled: true },
-    { key: 'Type', disabled: true }
+    { key: 'DATE', selected: true, sort: 'desc' },
+    { key: 'TRANSACTION_NUMBER', selected: false, sort: '' },
+    { key: 'RECEIPT_NUMBER', selected: false, sort: '' },
+    { key: 'CUSTOMER', selected: false, sort: '' },
+    { key: 'METHOD', disabled: true },
+    { key: 'TOTAL', disabled: true },
+    { key: 'TYPE', disabled: true }
   ]
 
   constructor(

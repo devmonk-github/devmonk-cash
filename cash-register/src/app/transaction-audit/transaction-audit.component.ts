@@ -222,7 +222,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
     this.businessDetails._id = localStorage.getItem('currentBusiness');
     this.setOptionMenu()
 
-    const [_businessData, _workstationData, _employeeData]:any = await Promise.all([
+    const [_businessData, _workstationData, _employeeData]: any = await Promise.all([
       this.fetchBusinessDetails(),
       this.getWorkstations(),
       this.getEmployees()
@@ -956,6 +956,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
       sDisplayMethod: this.sDisplayMethod,
       sDisplayMethodString: this.sSelectedOptionMenu,
       aStatistic: this.aStatistic,
+      oStatisticsDocument: this.oStatisticsDocument,
       aPaymentMethods: this.aPaymentMethods,
       bIsArticleGroupLevel: this.bIsArticleGroupLevel,
       bIsSupplierMode: this.bIsSupplierMode
@@ -1042,7 +1043,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
       iLocationId: this.iLocationId,
       iWorkstationId: this.iWorkstationId,
     };
-    return this.apiService.postNew('cashregistry','/api/v1/transaction/item/list',data);
+    return this.apiService.postNew('cashregistry', '/api/v1/transaction/item/list', data);
   }
 
   fetchActivityItems(): Observable<any> {
@@ -1053,7 +1054,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
       selectedWorkstations: this.selectedWorkStation?.length ? this.selectedWorkStation : [],
     };
 
-    return this.apiService.postNew('cashregistry','/api/v1/activities/items',data);
+    return this.apiService.postNew('cashregistry', '/api/v1/activities/items', data);
   }
 
   fetchGoldPurchaseItems(): Observable<any> {
@@ -1065,7 +1066,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
       iBusinessId: this.iBusinessId,
     };
 
-    return this.apiService.postNew('cashregistry','/api/v1/activities/gold-purchases-payments/list',data);
+    return this.apiService.postNew('cashregistry', '/api/v1/activities/gold-purchases-payments/list', data);
   }
 
   addExpenses(data: any): Observable<any> {

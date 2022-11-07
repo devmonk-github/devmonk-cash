@@ -122,6 +122,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   printSettings: any;
   activity: any;
   selectedLanguage: any = localStorage.getItem('language') ? localStorage.getItem('language') : 'en';
+  bHasIActivityItemId: boolean = false;
 
   randNumber(min: number, max: number): number {
     return Math.floor(Math.random() * (max - min + 1) + min);
@@ -286,6 +287,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
               result -= i.prePaidAmount;
             } else {
               let discountPrice = i.bDiscountOnPercentage ? (i.price - (i.price * ((i.nDiscount || 0) / 100))) : (i.price - i.nDiscount);
+              // console.log('discountPrice: 289: ', discountPrice, i.quantity);
               i.nTotal = i.quantity * discountPrice;
               i.nTotal = i.type === 'gold-purchase' ? -1 * i.nTotal : i.nTotal;
               result += i.nTotal - (i.prePaidAmount || 0);
@@ -302,6 +304,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
         let sum = 0;
         this.transactionItems.forEach(element => {
           let discountPrice = element.bDiscountOnPercentage ? (element.price * ((element.nDiscount || 0) / 100)) : element.nDiscount;
+          // console.log('discountPrice: 306: ', element.price, element.nDiscount, (element.price * ((element.nDiscount || 0) / 100)), discountPrice, element.quantity, element.bDiscountOnPercentage);
           sum += element.quantity * discountPrice;
         });
         result = sum;
@@ -572,6 +575,9 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
           payMethods = payMethods.filter((o: any) => o.amount !== 0);
           console.log('this.transactionItems: ', JSON.parse(JSON.stringify(this.transactionItems)));
           const body = this.tillService.createTransactionBody(this.transactionItems, payMethods, this.discountArticleGroup, this.redeemedLoyaltyPoints, this.customer);
+          if (body.transactionItems.filter((item: any) => item.oType.eKind === 'repair')[0]?.iActivityItemId){
+            this.bHasIActivityItemId = true
+          }
           if (giftCardPayment && this.appliedGiftCards.length > 0) {
             this.appliedGiftCards.forEach(element => {
               const cardPaymethod = _.clone(giftCardPayment);
@@ -716,6 +722,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     this.transaction.businessDetails = this.businessDetails;
     this.transaction.currentLocation = this.businessDetails.currentLocation;
     let oDataSource = JSON.parse(JSON.stringify(this.transaction));
+    // console.log(oDataSource);
     let nTotalOriginalAmount = 0;
     // if (oDataSource.aTransactionItems?.length === 1 && oDataSource._id === oDataSource.aTransactionItems[0].iTransactionId) {
     //   nTotalOriginalAmount = oDataSource.total;
@@ -791,6 +798,10 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     if (bRepairCondition) {
+      if (this.bHasIActivityItemId){
+        this.bHasIActivityItemId = false;
+        return;
+      } 
       // if (oDataSource.aTransactionItems.filter((item: any) => item.oType.eKind === 'repair')[0]?.iActivityItemId) return;
       //use two column layout
       // console.log('use two column layout')
