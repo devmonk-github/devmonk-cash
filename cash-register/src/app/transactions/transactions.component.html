@@ -14,7 +14,7 @@
         <fa-icon [icon]="faSearch" class="text-gray-500 position-absolute top-50 translate-middle ms-6"></fa-icon>
         <!--end::Svg Icon-->
         <input type="text" class="form-control form-control-solid ps-10" (keyup.enter)="loadTransaction()"
-          [(ngModel)]="requestParams.searchValue" name="search" value="" placeholder="Search" />
+          [(ngModel)]="requestParams.searchValue" name="search" value="" placeholder="{{'SEARCH' | translate}}" />
       </div>
       <!--end::Input group-->
       <!--begin:Action-->
@@ -241,7 +241,7 @@
           <th scope="col" *ngFor="let th of tableHeaders"
             [ngClass]="{'fw-bolder': th.selected, 'cursor-pointer': !th.disabled, 'pe-none': th.disabled}"
             (click)="setSortOption(th)">
-            {{ th.key }}
+            {{ th.key | translate }}
             <fa-icon *ngIf="th.selected" [icon]="th.sort === 'asc' ? faArrowDown : faArrowUp"></fa-icon>
           </th>
           <th scope="col"></th>
