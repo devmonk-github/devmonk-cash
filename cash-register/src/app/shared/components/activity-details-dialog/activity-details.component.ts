@@ -12,6 +12,7 @@ import * as JsBarcode /* , { Options as jsBarcodeOptions } */ from 'jsbarcode';
 import { ReceiptService } from '../../service/receipt.service';
 import { Observable } from 'rxjs';
 import { ToastService } from '../toast';
+import { TranslateService } from '@ngx-translate/core';
 @Component({
   selector: 'app-activity-details',
   templateUrl: './activity-details.component.html',
@@ -98,6 +99,7 @@ export class ActivityDetailsComponent implements OnInit {
   iWorkstationId: string;
   aTemplates: any;
   eKindValue = ['discount', 'loyalty-points-discount'];
+  translation:any=[];
 
   constructor(
     private viewContainerRef: ViewContainerRef,
@@ -106,7 +108,8 @@ export class ActivityDetailsComponent implements OnInit {
     private dialogService: DialogService,
     private routes: Router,
     private receiptService: ReceiptService,
-    private toastService: ToastService
+    private toastService: ToastService ,
+    private translationService:TranslateService
   ) {
     const _injector = this.viewContainerRef.injector;
     this.dialogRef = _injector.get<DialogComponent>(DialogComponent);
@@ -117,6 +120,11 @@ export class ActivityDetailsComponent implements OnInit {
 
 
   async ngOnInit() {
+
+    let tranlationKey=['successfully updated']
+    this.translationService.get(tranlationKey).subscribe((res:any)=>{
+      this.translation = res;
+    })
 
     this._oActivity = this.activity;
     if (this.activity) {
@@ -522,8 +530,24 @@ export class ActivityDetailsComponent implements OnInit {
     oActivityItem.iBusinessId = this.iBusinessId;
     this.apiService.putNew('cashregistry', '/api/v1/activities/items/' + activityItemId, oActivityItem)
       .subscribe((result: any) => {
+        if(result.message == 'success'){
+          this.toastService.show({type:"success" , text:this.translation['successfully updated']});
+        }
+        else
+        {
+          let errorMessage = "";
+          this.translationService.get(result.message).subscribe((res:any)=>{
+            errorMessage =res;
+          })
+          this.toastService.show({type:"danger" , text:errorMessage});
+        }
       }, (error) => {
         console.log('error: ', error);
+        let errorMessage = "";
+        this.translationService.get(error.error.message).subscribe((res:any)=>{
+          errorMessage =res;
+        })
+        this.toastService.show({type:"danger" , text:errorMessage});
       })
   }
 
