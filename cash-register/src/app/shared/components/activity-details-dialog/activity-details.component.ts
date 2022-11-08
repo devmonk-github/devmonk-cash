@@ -13,6 +13,7 @@ import { ReceiptService } from '../../service/receipt.service';
 import { Observable } from 'rxjs';
 import { ToastService } from '../toast';
 import { TranslateService } from '@ngx-translate/core';
+import {BehaviorSubject} from 'rxjs';
 @Component({
   selector: 'app-activity-details',
   templateUrl: './activity-details.component.html',
@@ -101,6 +102,7 @@ export class ActivityDetailsComponent implements OnInit {
   eKindValue = ['discount', 'loyalty-points-discount'];
   // eKindForLayoutHide =['giftcard'];
   translation:any=[];
+
 
   constructor(
     private viewContainerRef: ViewContainerRef,
@@ -538,9 +540,11 @@ export class ActivityDetailsComponent implements OnInit {
   submit(activityItemId: any, index: any) {
     const oActivityItem = this.activityItems[index];
     oActivityItem.iBusinessId = this.iBusinessId;
+
     this.apiService.putNew('cashregistry', '/api/v1/activities/items/' + activityItemId, oActivityItem)
       .subscribe((result: any) => {
         if(result.message == 'success'){
+          this.apiService.activityItemDetails.next(oActivityItem);
           this.toastService.show({type:"success" , text:this.translation['SUCCESSFULLY_UPDATED']});
         }
         else
