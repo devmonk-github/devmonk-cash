@@ -25,7 +25,7 @@
           <div class="d-flex align-items-center me-2">
             <div class="form-check form-check-custom form-check-solid form-check-primary me-6">
               <input class="form-check-input" type="radio" name="discount" [disabled]="discount.disabled"
-                [value]="discount.amount" [(ngModel)]="selectedDiscount" (change)="setDiscount()" />
+                [value]="discount.amount" [(ngModel)]="selectedDiscount" (change)="setDiscount(discount)" />
             </div>
             <div class="flex-grow-1">
               <h2 class="d-flex align-items-center fs-3 fw-bolder flex-wrap">

@@ -956,6 +956,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
       sDisplayMethod: this.sDisplayMethod,
       sDisplayMethodString: this.sSelectedOptionMenu,
       aStatistic: this.aStatistic,
+      oStatisticsDocument: this.oStatisticsDocument,
       aPaymentMethods: this.aPaymentMethods,
       bIsArticleGroupLevel: this.bIsArticleGroupLevel,
       bIsSupplierMode: this.bIsSupplierMode

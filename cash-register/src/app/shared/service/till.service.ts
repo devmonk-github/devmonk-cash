@@ -196,6 +196,7 @@ export class TillService {
         i.eEstimatedDateAction,
         i.eActivityItemStatus,
         i.bGiftcardTaxHandling,
+        i.bDiscountOnPercentage || false
       )
     });
     console.log('iPayment 201: ', JSON.parse(JSON.stringify(body?.transactionItems)));
@@ -205,9 +206,11 @@ export class TillService {
       if (discountRecords) {
         discountRecords = JSON.parse(discountRecords);
       }
-      if (i.oType.bRefund && i.nDiscount !== 0) {
+      let _nDiscount = i?.bDiscountOnPercentage ? (i.nPriceIncVat * (i.nDiscount / 100)) : i.nDiscount;
+      console.log('-------------------_nDiscount-----------------------------------: ', _nDiscount);
+      if (i.oType.bRefund && _nDiscount !== 0) {
         console.log('IN IF CONDITION: ');
-        i.nPaymentAmount -= i.nDiscount * i.nQuantity;
+        i.nPaymentAmount -= _nDiscount * i.nQuantity;
         i.nRevenueAmount = i.nPaymentAmount;
         const records = discountRecords.filter((o: any) => o.sUniqueIdentifier === i.sUniqueIdentifier);
         records.forEach((record: any) => {
@@ -224,10 +227,10 @@ export class TillService {
           }
         });
       } else {
-        if (i.nDiscount && i.nDiscount > 0 && !i.oType.bRefund && !i.iActivityItemId) {
-          console.log('IN ELSE: ', i.nDiscount, i.nQuantity);
-          i.nPaymentAmount += i.nDiscount * i.nQuantity;
-          i.nRevenueAmount += i.nDiscount;
+        if (_nDiscount && _nDiscount > 0 && !i.oType.bRefund && !i.iActivityItemId) {
+          console.log('IN ELSE: ', i, _nDiscount, i.nQuantity);
+          i.nPaymentAmount += _nDiscount * i.nQuantity;
+          i.nRevenueAmount += _nDiscount;
           const tItem1 = JSON.parse(JSON.stringify(i));
           tItem1.iArticleGroupId = discountArticleGroup._id;
           tItem1.iArticleGroupOriginalId = i.iArticleGroupId;
@@ -235,8 +238,8 @@ export class TillService {
           tItem1.oArticleGroupMetaData.sSubCategory = discountArticleGroup.sSubCategory;
           tItem1.oType.eTransactionType = 'cash-registry';
           tItem1.oType.eKind = 'discount';
-          tItem1.nPaymentAmount = -1 * tItem1.nDiscount * i.nQuantity;
-          tItem1.nRevenueAmount = -1 * tItem1.nDiscount;
+          tItem1.nPaymentAmount = -1 * _nDiscount * i.nQuantity;
+          tItem1.nRevenueAmount = -1 * _nDiscount;
           tItem1.nPriceIncVat = tItem1.nPaymentAmount;
           tItem1.nPurchasePrice = tItem1.nPriceIncVat * i.nPurchasePrice / i.nPriceIncVat;
           body.transactionItems.push(tItem1);

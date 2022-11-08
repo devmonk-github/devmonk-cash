@@ -118,6 +118,8 @@ export class ProductComponent implements OnInit {
           this.itemChanged.emit(this.item);
           // console.log({data, item: this.item});
         }
+        console.log('After openDiscountDialog item: ', JSON.parse(JSON.stringify(this.item)), data?.item?.discount);
+        console.log('After openDiscountDialog data: ', data);
       })
   }
 

@@ -13,13 +13,14 @@ export class PriceService {
   }
 
   getDiscount(discount: { value: number, percent: boolean, itemPrice: number }, format = true): any {
-    if (discount.percent) {
+    console.log('getDiscount 16: ', discount);
+    if (discount?.percent) {
       return this.roundPrice(discount.value) + '%'
     } else {
       if (!format) {
-        return this.roundPrice(discount.value)
+        return this.roundPrice(discount?.value)
       } else {
-        return formatCurrency(this.roundPrice(discount.value), 'en-GB', '€')
+        return formatCurrency(this.roundPrice(discount?.value), 'en-GB', '€')
       }
     }
   }
