@@ -55,7 +55,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   faSpinner = faSpinner;
   faSearch = faSearch;
   faCopy = faCopy;
-  taxes: Array<any> = [];
+  taxes: any = [];
   transactionItems: Array<any> = [];
   selectedTransaction: any = null;
   customer: any = null;
@@ -155,7 +155,15 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     this.checkDayState();
 
     this.requestParams.iBusinessId = this.business._id;
-    this.taxes = this.taxService.getTaxRates();
+    let taxDetails: any = await this.taxService.getLocationTax({ iLocationId: this.locationId });
+    if (taxDetails) {
+      this.taxes = taxDetails?.aRates || [];
+    } else {
+      setTimeout(async () => {
+        taxDetails = await this.taxService.getLocationTax({ iLocationId: this.locationId });
+        this.taxes = taxDetails?.aRates || [];
+      }, 1000);
+    }
     this.getPaymentMethods();
     this.getParkedTransactions();
     this.barcodeService.barcodeScanned.subscribe((barcode: string) => {
@@ -573,7 +581,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
           payMethods = payMethods.filter((o: any) => o.amount !== 0);
           console.log('this.transactionItems: ', JSON.parse(JSON.stringify(this.transactionItems)));
           const body = this.tillService.createTransactionBody(this.transactionItems, payMethods, this.discountArticleGroup, this.redeemedLoyaltyPoints, this.customer);
-          if (body.transactionItems.filter((item: any) => item.oType.eKind === 'repair')[0]?.iActivityItemId){
+          if (body.transactionItems.filter((item: any) => item.oType.eKind === 'repair')[0]?.iActivityItemId) {
             this.bHasIActivityItemId = true
           }
           if (giftCardPayment && this.appliedGiftCards.length > 0) {
@@ -639,14 +647,14 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       });
   }
 
-  async processTransactionForPdfReceipt(data?:any) {
+  async processTransactionForPdfReceipt(data?: any) {
     const relatedItemsPromises: any = [];
     let language: any = localStorage.getItem('language')
     let dataObject = JSON.parse(JSON.stringify(this.transaction));
-    if(data){
+    if (data) {
       this.transaction = data;
       dataObject = JSON.parse(JSON.stringify(this.transaction))
-    }    
+    }
 
     dataObject.aPayments.forEach((obj: any) => {
       obj.dCreatedDate = moment(dataObject.dCreatedDate).format('DD-MM-yyyy hh:mm');
@@ -796,10 +804,10 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     if (bRepairCondition) {
-      if (this.bHasIActivityItemId){
+      if (this.bHasIActivityItemId) {
         this.bHasIActivityItemId = false;
         return;
-      } 
+      }
       // if (oDataSource.aTransactionItems.filter((item: any) => item.oType.eKind === 'repair')[0]?.iActivityItemId) return;
       //use two column layout
       // console.log('use two column layout')
