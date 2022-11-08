@@ -668,13 +668,13 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       if (item?.oBusinessProductMetaData?.sLabelDescription) item.description = item.description + item?.oBusinessProductMetaData?.sLabelDescription + ' ' + item?.sProductNumber;
       totalSavingPoints += item.nSavingsPoints;
       let disc = parseFloat(item.nDiscount);
-      if (item.bPaymentDiscountPercent) {
-        disc = (disc * parseFloat(item.nPriceIncVat) / (100 + parseFloat(item.nVatRate)));
-        item.nDiscountToShow = disc;
+      if (item.bDiscountOnPercentage) {
+        disc = (disc * parseFloat(item.nPriceIncVat) / 100);
+        item.nDiscountToShow = disc;//.toFixed(2);
       } else { item.nDiscountToShow = disc; }
-      item.priceAfterDiscount = parseFloat(item.nPaymentAmount.toFixed(2)) - parseFloat(item.nDiscountToShow);
+      item.priceAfterDiscount = parseFloat(item.nRevenueAmount.toFixed(2)) - parseFloat(item.nDiscountToShow);
       item.nPriceIncVatAfterDiscount = parseFloat(item.nPriceIncVat) - parseFloat(item.nDiscountToShow);
-      item.totalPaymentAmount = parseFloat(item.nPaymentAmount.toFixed(2)) * parseFloat(item.nQuantity);
+      item.totalPaymentAmount = parseFloat(item.nRevenueAmount.toFixed(2)) * parseFloat(item.nQuantity);
       item.totalPaymentAmountAfterDisc = parseFloat(item.priceAfterDiscount.toFixed(2)) * parseFloat(item.nQuantity);
       item.bPrepayment = item?.oType?.bPrepayment || false;
       const vat = (item.nVatRate * item.priceAfterDiscount / (100 + parseFloat(item.nVatRate)));
