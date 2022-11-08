@@ -287,6 +287,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
               result -= i.prePaidAmount;
             } else {
               let discountPrice = i.bDiscountOnPercentage ? (i.price - (i.price * ((i.nDiscount || 0) / 100))) : (i.price - i.nDiscount);
+              // console.log('discountPrice: 289: ', discountPrice, i.quantity);
               i.nTotal = i.quantity * discountPrice;
               i.nTotal = i.type === 'gold-purchase' ? -1 * i.nTotal : i.nTotal;
               result += i.nTotal - (i.prePaidAmount || 0);
@@ -303,6 +304,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
         let sum = 0;
         this.transactionItems.forEach(element => {
           let discountPrice = element.bDiscountOnPercentage ? (element.price * ((element.nDiscount || 0) / 100)) : element.nDiscount;
+          // console.log('discountPrice: 306: ', element.price, element.nDiscount, (element.price * ((element.nDiscount || 0) / 100)), discountPrice, element.quantity, element.bDiscountOnPercentage);
           sum += element.quantity * discountPrice;
         });
         result = sum;
