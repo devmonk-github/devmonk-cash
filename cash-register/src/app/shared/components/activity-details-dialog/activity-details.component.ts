@@ -13,6 +13,7 @@ import { ReceiptService } from '../../service/receipt.service';
 import { Observable } from 'rxjs';
 import { ToastService } from '../toast';
 import { TranslateService } from '@ngx-translate/core';
+import {BehaviorSubject} from 'rxjs';
 @Component({
   selector: 'app-activity-details',
   templateUrl: './activity-details.component.html',
@@ -99,7 +100,9 @@ export class ActivityDetailsComponent implements OnInit {
   iWorkstationId: string;
   aTemplates: any;
   eKindValue = ['discount', 'loyalty-points-discount'];
+  // eKindForLayoutHide =['giftcard'];
   translation:any=[];
+
 
   constructor(
     private viewContainerRef: ViewContainerRef,
@@ -121,8 +124,8 @@ export class ActivityDetailsComponent implements OnInit {
 
   async ngOnInit() {
 
-    let tranlationKey=['successfully updated']
-    this.translationService.get(tranlationKey).subscribe((res:any)=>{
+    let translationKey=['SUCCESSFULLY_UPDATED']
+    this.translationService.get(translationKey).subscribe((res:any)=>{
       this.translation = res;
     })
 
@@ -152,7 +155,7 @@ export class ActivityDetailsComponent implements OnInit {
     const [_printActionSettings, _printSettings, _template]: any = await Promise.all([
       this.getPdfPrintSetting({ oFilterBy: { sMethod: 'actions' } }),
       this.getPdfPrintSetting({ oFilterBy: { sType: ['repair', 'order', 'repair_alternative'] } }),
-      this.getTemplate(['repair', 'order', 'repair_alternative'])
+      this.getTemplate(['repair', 'order', 'repair_alternative' , 'giftcard'])
     ]);
     this.printActionSettings = _printActionSettings?.data[0]?.result[0].aActions;
     this.printSettings = _printSettings?.data[0]?.result;
@@ -400,8 +403,17 @@ export class ActivityDetailsComponent implements OnInit {
     if (oDataSource?.activityitems) {
       oDataSource = oDataSource.activityitems[index];
     }
-    const type = (oDataSource?.oType.eKind === 'regular') ? 'repair_alternative' : 'repair';
-    const sBarcodeURI = this.generateBarcodeURI(false, oDataSource.sNumber);
+    let type:any;
+    let sBarcodeURI:any;
+    if(oDataSource?.oType?.eKind === 'giftcard'){
+      type = oDataSource.oType.eKind;
+      oDataSource.nTotal = oDataSource.nPriceIncVat;
+      sBarcodeURI = this.generateBarcodeURI(true, 'G-'+oDataSource.sGiftCardNumber);
+    } 
+    else {
+      type = (oDataSource?.oType.eKind === 'regular') ? 'repair_alternative' : 'repair';
+      sBarcodeURI = this.generateBarcodeURI(false, oDataSource.sNumber);
+    } 
     if (!this.businessDetails) {
       const result: any = await this.getBusinessDetails().toPromise();
       this.businessDetails = result.data;
@@ -528,10 +540,12 @@ export class ActivityDetailsComponent implements OnInit {
   submit(activityItemId: any, index: any) {
     const oActivityItem = this.activityItems[index];
     oActivityItem.iBusinessId = this.iBusinessId;
+
     this.apiService.putNew('cashregistry', '/api/v1/activities/items/' + activityItemId, oActivityItem)
       .subscribe((result: any) => {
         if(result.message == 'success'){
-          this.toastService.show({type:"success" , text:this.translation['successfully updated']});
+          this.apiService.activityItemDetails.next(oActivityItem);
+          this.toastService.show({type:"success" , text:this.translation['SUCCESSFULLY_UPDATED']});
         }
         else
         {
@@ -621,6 +635,10 @@ export class ActivityDetailsComponent implements OnInit {
   }
 
   sendForReceipt(oDataSource: any, template: any, title: any) {
+    console.log("------------------------export pdf----------------------------");
+    console.log(oDataSource);
+    console.log(template);
+    console.log(title);
     // return;
     this.receiptService.exportToPdf({
       oDataSource: oDataSource,
