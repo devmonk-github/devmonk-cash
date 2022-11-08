@@ -107,6 +107,13 @@ export class ActivityItemsComponent implements OnInit {
       this.listEmployee()
     ]);
 
+    this.apiService.activityItemDetails.subscribe((res:any)=>{
+      let updatedActivityIndex= this.activityItems.findIndex((activity)=> activity._id == res._id)
+      if(updatedActivityIndex != -1){
+        this.activityItems[updatedActivityIndex] = res;
+      }
+    })
+
     if (_locationData.message == 'success') {
       this.requestParams.locations = _locationData.data.aLocation;
     }
@@ -115,7 +122,7 @@ export class ActivityItemsComponent implements OnInit {
       this.workstations = _workstationData.data;
     }
 
-    if (_employeeData?.data?.length && _employeeData.data[0]?._employeeData?.length) {
+    if (_employeeData?.data?.length && _employeeData.data[0]?.result?.length) {
       this.employees = _employeeData.data[0].result
     }
 

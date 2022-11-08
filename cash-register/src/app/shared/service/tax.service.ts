@@ -1,4 +1,6 @@
 import { Injectable } from '@angular/core';
+import { liveQuery } from 'dexie';
+import { db } from '../../indexDB/db';
 
 @Injectable({
   providedIn: 'root'
@@ -23,5 +25,14 @@ export class TaxService {
         name: 'Geen BTW'
       }
     ]
+  }
+
+  // Function for get location specific tax 
+  async getLocationTax(request?: any) {
+    if (request) {
+      return await db.taxRates.get({ iLocationId: request.iLocationId });
+    } else {
+      return liveQuery(() => db.taxRates.toArray());
+    }
   }
 }

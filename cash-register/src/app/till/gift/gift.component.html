@@ -77,9 +77,9 @@
 
         <div class="col-3">
           <div class="form-floating till-padding">
-            <select name="taxRate" id="taxRate" class="form-select" [(ngModel)]="item.tax">
-              <option *ngFor="let rate of taxes" [ngValue]="rate.rate">{{rate.name}}</option>
-            </select>
+            <ng-select name="taxRate" id="taxRate" class="form-select" [(ngModel)]="item.tax">
+              <ng-option *ngFor="let rate of taxes" [value]="rate.nRate">{{rate.sName}}</ng-option>
+            </ng-select>
             <label for="taxRate">{{"TAX" | translate}}</label>
           </div>
         </div>

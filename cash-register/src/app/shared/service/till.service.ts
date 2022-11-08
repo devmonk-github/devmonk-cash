@@ -115,7 +115,8 @@ export class TillService {
     console.log('length 115: ', transactionItems?.length);
     body.transactionItems = transactionItems.map((i: any) => {
       const bRefund = i.oType?.bRefund || i.nDiscount.quantity < 0 || i.price < 0;
-      console.log('iPayment: ', i,  i.paymentAmount / i.quantity);
+      const bPrepayment = (bRefund && i.oType?.bPrepayment) || (i.paymentAmount > 0 || this.getUsedPayMethods(true, payMethods) - this.getTotals('price', transactionItems) < 0) && (i.paymentAmount !== i.amountToBePaid)
+      console.log('bPrepayment: ', bPrepayment, bRefund && i.oType?.bPrepayment, (i.paymentAmount > 0 || this.getUsedPayMethods(true, payMethods) - this.getTotals('price', transactionItems) < 0), (i.paymentAmount !== i.amountToBePaid));
       return new TransactionItem(
         i.name,
         i.comment,
@@ -182,7 +183,7 @@ export class TillService {
           nStockCorrection: i.eTransactionItemType === 'regular' ? i.quantity : i.quantity - (i.nBrokenProduct || 0),
           eKind: i.type, // TODO // repair
           bDiscount: i.nDiscount > 0,
-          bPrepayment: (bRefund && i.oType?.bPrepayment) || (i.paymentAmount > 0 || this.getUsedPayMethods(true, payMethods) - this.getTotals('price', transactionItems) < 0) && (i.paymentAmount !== i.amountToBePaid),
+          bPrepayment: bPrepayment,
         },
         i.iActivityItemId,
         i.oGoldFor,

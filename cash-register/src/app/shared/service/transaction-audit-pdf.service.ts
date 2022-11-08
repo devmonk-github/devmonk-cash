@@ -114,7 +114,7 @@ export class TransactionAuditUiPdfService {
         bIsSupplierMode
     }:any) {
 
-        console.log(sDisplayMethod, aStatistic);
+        console.log(aSelectedWorkStation, aWorkStation);
 
         
         const date = moment(Date.now()).format('DD-MM-yyyy');
@@ -177,6 +177,7 @@ export class TransactionAuditUiPdfService {
                 .filter((workstation: any) => aSelectedWorkStation.includes(workstation._id))
                 .map((workstation: any) => workstation.sName)
                 .join(', ');
+            if (!sWorkstation) sWorkstation = aSelectedWorkStation;
         } else {
             sWorkstation = aWorkStation.map((location: any) => location.sName).join(', ');
         }

@@ -162,14 +162,9 @@ export class ServicesComponent implements OnInit, AfterViewInit {
       this.workstations = _workstationData.data;
     }
 
-    if (_employeeData?.data?.length && _employeeData.data[0]?._employeeData?.length) {
+    if (_employeeData?.data?.length && _employeeData.data[0]?.result?.length) {
       this.employees = _employeeData.data[0].result
     }
-
-
-    // this.listEmployee();
-    // this.getWorkstations();
-    // this.getLocations();
   }
   ngAfterViewInit(): void {
     setTimeout(() => {
@@ -404,6 +399,8 @@ export class ServicesComponent implements OnInit, AfterViewInit {
   }
 
   async openModal(barcode: any) {
+    if (barcode.startsWith('0002'))
+      barcode = barcode.substring(4)
     this.toastrService.show({ type: 'success', text: 'Barcode detected: ' + barcode })
     if (barcode.startsWith("AI")) {
       // activityitem.find({sNumber: barcode},{eTransactionItem.eKind : 1})
