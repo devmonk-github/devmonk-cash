@@ -179,9 +179,9 @@
           <div class="col-12">
             <div class="form-group mb-4">
               <label class="form-control-label mb-3">{{ "TAX" | translate}}</label>:
-              <select name="taxRate" id="taxRate" class="form-control  mb-3 mb-lg-0" [(ngModel)]="item.tax">
-                <option *ngFor="let rate of taxes" [ngValue]="rate.nRate">{{rate.sName}}</option>
-              </select>
+              <ng-select name="taxRate" id="taxRate" class="form-control  mb-3 mb-lg-0" [(ngModel)]="item.tax">
+                <ng-option *ngFor="let rate of taxes" [value]="rate.nRate">{{rate.sName}}</ng-option>
+              </ng-select>
             </div>
           </div>
           <div class="col-12">

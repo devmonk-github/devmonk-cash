@@ -15,12 +15,17 @@
                 <div *ngIf="submitted && f.amount.errors">
                     <span class="text-danger">{{"AMOUNT_SHOULD_BE_GREATER_THAN" | translate}} €1.</span>
                 </div>
+                <label for="taxRate">{{ "TAX" | translate}}</label>
+                <ng-select name="tax" id="taxRate" class="form-control" formControlName="tax" [clearable]="false">
+                    <ng-option *ngFor="let option of taxes" [value]="option.nRate">{{option.sName}} - {{option.nRate}}%
+                    </ng-option>
+                </ng-select>
                 <label for="ledgerDescription">{{ "LEDGER_NUMBER_DESCRIPTION" | translate}}</label>
-                <select name="ledgerDescription" id="ledgerDescription" class="form-select"
-                    formControlName="expenseType" (change)="assignArticleGroup()">
-                    <option *ngFor="let option of ledgerDescriptions" [ngValue]="option">{{option| titlecase}}
-                    </option>
-                </select>
+                <ng-select name="ledgerDescription" id="ledgerDescription" class="form-control"
+                    formControlName="expenseType" (change)="assignArticleGroup()" [clearable]="false">
+                    <ng-option *ngFor="let option of ledgerDescriptions" [value]="option">{{option| titlecase}}
+                    </ng-option>
+                </ng-select>
                 <div *ngIf="submitted && f.expenseType.errors">
                     <span class="text-danger">{{ "LEDGER_NUMBER_DESCRIPTION" | translate}} {{ "REQUIRED" |
                         translate}}.</span>
