@@ -399,6 +399,8 @@ export class ServicesComponent implements OnInit, AfterViewInit {
   }
 
   async openModal(barcode: any) {
+    if (barcode.startsWith('0002'))
+      barcode = barcode.substring(4)
     this.toastrService.show({ type: 'success', text: 'Barcode detected: ' + barcode })
     if (barcode.startsWith("AI")) {
       // activityitem.find({sNumber: barcode},{eTransactionItem.eKind : 1})
