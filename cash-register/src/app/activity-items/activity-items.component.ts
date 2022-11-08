@@ -107,6 +107,13 @@ export class ActivityItemsComponent implements OnInit {
       this.listEmployee()
     ]);
 
+    this.apiService.activityItemDetails.subscribe((res:any)=>{
+      let updatedActivityIndex= this.activityItems.findIndex((activity)=> activity._id == res._id)
+      if(updatedActivityIndex != -1){
+        this.activityItems[updatedActivityIndex] = res;
+      }
+    })
+
     if (_locationData.message == 'success') {
       this.requestParams.locations = _locationData.data.aLocation;
     }

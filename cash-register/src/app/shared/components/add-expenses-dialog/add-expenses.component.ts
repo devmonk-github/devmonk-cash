@@ -15,6 +15,7 @@ import { CreateArticleGroupService } from '../../service/create-article-groups.s
 export class AddExpensesComponent implements OnInit {
 
   @Input() public country = 'NL';
+  @Input() public taxes: Array<any> = [];
   @Output() countryChanged = new EventEmitter<string>();
   @Output() customerCountryChanged = new EventEmitter<string>();
 

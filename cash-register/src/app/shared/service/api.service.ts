@@ -21,6 +21,7 @@ export class ApiService {
 
   public userDetails: BehaviorSubject<any> = new BehaviorSubject<any>({});
   public businessDetails: BehaviorSubject<any> = new BehaviorSubject<any>({});
+  public activityItemDetails:BehaviorSubject<any> = new BehaviorSubject<any>({});
 
   constructor(
     private httpClient: HttpClient,
