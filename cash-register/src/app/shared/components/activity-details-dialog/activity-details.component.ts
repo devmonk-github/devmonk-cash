@@ -170,10 +170,6 @@ export class ActivityDetailsComponent implements OnInit {
       if (result && result.data && result.data.length) {
         this.employeesList = result.data[0].result;
         this.employeesList.map(o => o.sName = `${o.sFirstName} ${o.sLastName}`);
-        // if (this.item.iEmployeeId) {
-        //   const tempsupp = this.employeesList.find(o => o._id === this.item.iSupplierId);
-        //   this.employee = tempsupp.sName;
-        // }
       }
     }, (error) => {
     });
