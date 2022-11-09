@@ -45,7 +45,7 @@ export class ApiService {
       //Server side error
       msg = error.message
     }
-    console.error('HttpClient throws error', msg)
+    // console.error('HttpClient throws error', msg)
     return throwError(new Error(msg))
   }
 
@@ -202,7 +202,7 @@ export class ApiService {
     let httpHeaders = {
       headers: new HttpHeaders(finalHeaders),
     }
-    return this.httpClient.post<any>(finalUrl, data, httpHeaders);
+    return this.httpClient.post<any>(finalUrl, data, httpHeaders).pipe(catchError(this.httpError));
   }
 
   fileUpload(apiType: ApiTypes, url: string, data: any, header?: any): Observable<HttpResponse<any>> {
