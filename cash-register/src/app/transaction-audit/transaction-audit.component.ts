@@ -20,7 +20,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
   iBusinessId: any = '';
   sUserType: any = '';
   iLocationId: any = '';
-  iStatisticId: any = '';
+  iStatisticId: any;
   aLocation: any = [];
   aStatistic: any = [];
   oUser: any = {};
@@ -51,8 +51,10 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
   statisticFilter = {
     isArticleGroupLevel: true,
     isProductLevel: false,
-    dFromState: new Date(new Date().setHours(0, 0, 0)),
-    dToState: new Date(new Date().setHours(23, 59, 59))
+    dFromState: '',
+    dToState: '',
+    // dFromState: new Date(new Date().setHours(0, 0, 0)),
+    // dToState: new Date(new Date().setHours(23, 59, 59))
   };
   filterDates = {
     startDate: new Date(new Date().setHours(0, 0, 0)),
@@ -710,7 +712,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
       oBody.oFilter.bIsSupplierMode = this.bIsSupplierMode;
     }
 
-    this.checkShowDownload();
+    // this.checkShowDownload();
     this.fetchDayClosureList();
     this.getStatisticSubscription = this.apiService.postNew('cashregistry', `/api/v1/statistics/list`, oBody).
       subscribe((result: any) => {
@@ -950,7 +952,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
       bIsDynamicState: this.IsDynamicState,
       aLocation: this.aLocation,
       aSelectedWorkStation: (this.iStatisticId) ? this.sCurrentWorkstation : (this.selectedWorkStation?.length ? this.selectedWorkStation : []),
-      aWorkStation: (this.iStatisticId) ? [] : this.aWorkStation,
+      aWorkStation: this.aWorkStation,
       oFilterDates: this.filterDates,
       oBusinessDetails: this.businessDetails,
       sDisplayMethod: this.sDisplayMethod,
@@ -1162,6 +1164,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
       this.closingDayState = false;
       this.bDisableCountings = true;
       this.oStatisticsDocument.bIsDayState = false;
+      this.checkShowDownload();
     }, (error) => {
       console.log('Error: ', error);
       this.toastService.show({ type: 'warning', text: 'Something went wrong or open the day-state first' });
@@ -1274,6 +1277,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
             return oData;
           });
           this.aDayClosure = _aDayClosure;
+          this.checkShowDownload();
         }
         // this.showLoader = false;
       }, (error) => {
@@ -1294,11 +1298,45 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
       const dDayClosureDateTime = new Date(aDayClosure[i].dCloseDate).getTime();
       if (dFromStateTime > dDayClosureDateTime) aDayClosure[i].isDisable = true;
     }
+    
+    this.checkShowDownload();
   }
 
   checkShowDownload() {
-    this.bShowDownload = (this.oStatisticsDocument && this.oStatisticsDocument?.bIsDayState === false) ||
-      (!this.IsDynamicState && !this.selectedEmployee?._id && !this.selectedWorkStation?._id && !(this.aSelectedLocation?.length > 1));
+    const bCondition1 = this.IsDynamicState;
+    // = (this.oStatisticsDocument && this.oStatisticsDocument?.bIsDayState === false);
+      
+    const bCondition2 = (!this.selectedEmployee?._id &&
+      !this.selectedWorkStation?._id &&
+      !(this.aSelectedLocation?.length > 1) &&
+      this.statisticFilter.dFromState != '' &&
+      this.statisticFilter.dToState != '');
+    
+    const bCondition3 = (this.iStatisticId && this.iStatisticId != '' && this.oStatisticsDocument && this.oStatisticsDocument?.bIsDayState === false) || false ;
+
+    this.bShowDownload = bCondition1 || bCondition2 || bCondition3;
+
+    // console.log({ bCondition1, bCondition2, bCondition3, iStatisticId: this.iStatisticId })
+    // this.bShowDownload = (this.oStatisticsDocument && this.oStatisticsDocument?.bIsDayState === false) &&
+    //   (!this.IsDynamicState &&
+    //   !this.selectedEmployee?._id &&
+    //   !this.selectedWorkStation?._id &&
+    //   !(this.aSelectedLocation?.length > 1) &&
+    //   this.statisticFilter.dFromState != '' &&
+    //   this.statisticFilter.dToState != '');
+
+    // console.log('checkShowDownload', { 
+    //   oStatisticsDocument: this.oStatisticsDocument, 
+    //   dFromState: this.statisticFilter.dFromState, 
+    //   dToState: this.statisticFilter.dToState,
+    //   IsDynamicState: this.IsDynamicState,
+    //   selectedEmployee:this.selectedEmployee,
+    //   selectedWorkStation:this.selectedWorkStation,
+    //   aSelectedLocation:this.aSelectedLocation
+    // })
+    // console.log('this.bShowDownload', this.bShowDownload, '!this.IsDynamicState', !this.IsDynamicState, '!this.selectedEmployee?._id', !this.selectedEmployee?._id,
+    //   '!this.selectedWorkStation?._id', !this.selectedWorkStation?._id, '!(this.aSelectedLocation?.length > 1)', !(this.aSelectedLocation?.length > 1),
+    //   'this.statisticFilter.dFromState != "" ', this.statisticFilter.dFromState != '', 'this.statisticFilter.dToState != ""', this.statisticFilter.dToState != '');
   }
 
   fetchStockValuePerLocation() {
