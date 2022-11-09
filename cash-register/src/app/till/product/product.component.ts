@@ -130,4 +130,22 @@ export class ProductComponent implements OnInit {
   quantityChangeHandler(nQuantity: number) {
     console.log('changeQuantity: ', nQuantity, this.item?.paymentAmount, this.item);
   }
+
+  changePrePayment(item: any) {
+    console.log('changePrePayment: ', item);
+    /* 
+      nTotal: 10
+      nPaymentAmt: 5
+
+      nTotal: -10
+      nPaymentAmt: -5
+
+      nTotal: 10
+      nPaymentAmt: -5
+    */
+   if (item.paymentAmount < 0 && item.paymentAmount > item.nTotal) item.oType.bPrepayment = true;
+   else if (item.paymentAmount >= 0 && item.nTotal > item.paymentAmount) item.oType.bPrepayment = true;
+   else if (item.nTotal > 0 && item.paymentAmount < 0) throw ('strange transaction A');
+   else if (item.nTotal <= 0 && item.paymentAmount > 0) throw ('strange transaction B');
+  }
 }
