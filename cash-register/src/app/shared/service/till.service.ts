@@ -30,6 +30,7 @@ export class TillService {
       return 0
     }
     let result = 0
+    console.log('result: ', result);
     switch (type) {
       case 'price':
         transactionItems.forEach((i: any) => {
@@ -37,7 +38,11 @@ export class TillService {
             if (i.tType === 'refund') {
               result -= i.prePaidAmount;
             } else {
-              result += i.quantity * i.price - (i.prePaidAmount || 0);
+              let _nDiscount = 0;
+              if (i.nDiscount > 0 && !i.bDiscountOnPercentage) _nDiscount = i.nDiscount
+              else if (i.nDiscount > 0 && i.bDiscountOnPercentage) _nDiscount = i.price * (i.nDiscount / 100)
+
+              result += i.quantity * (i.price - _nDiscount) - (i.prePaidAmount || 0);
               // result += type === 'price' ? i.quantity * i.price - i.prePaidAmount || 0 : i[type]
             }
           } else {
@@ -114,8 +119,24 @@ export class TillService {
     };
     console.log('length 115: ', transactionItems?.length);
     body.transactionItems = transactionItems.map((i: any) => {
-      const bRefund = i.oType?.bRefund || i.nDiscount.quantity < 0 || i.price < 0;
-      console.log('iPayment: ', i,  i.paymentAmount / i.quantity);
+      console.log('i.nDiscount: ', i.nDiscount, i.price, i.oType);
+      const bRefund = 
+         i.oType?.bRefund /* Indication from the User */
+      || i.nDiscount.quantity < 0 /* Minus Discount (e.g. -10 discount) [TODO: Remove the quantity as its not exist at all] */
+      || i.price < 0; /* PriceIncVat is minus; Should we not add the nQuantity as a required the positive number here */
+      const bPrepayment =
+      (bRefund && i.oType?.bPrepayment) /* User indicates it is refund or negative amount */
+      // || (i.paymentAmount > 0 /* Whenever the prepayment-field is filled */
+      || (this.getUsedPayMethods(true, payMethods) - this.getTotals('price', transactionItems) < 0)
+      && (i.paymentAmount !== i.amountToBePaid)
+
+      console.log('i.paymentAmount: ', i.paymentAmount);
+      console.log('i.bRefund: ', bRefund, i.oType?.bPrepayment);
+      console.log('i.bRefund: ', bRefund, i.oType?.bPrepayment);
+      console.log('UsedPaymentMethod: ', this.getUsedPayMethods(true, payMethods));
+      console.log('getTotal: ', this.getTotals('price', transactionItems));
+      console.log('Last condition: ', i.paymentAmount, i.amountToBePaid);
+      console.log('bPrepayment: ', bPrepayment, bRefund && i.oType?.bPrepayment, (this.getUsedPayMethods(true, payMethods) - this.getTotals('price', transactionItems) < 0), (i.paymentAmount !== i.amountToBePaid));
       return new TransactionItem(
         i.name,
         i.comment,
@@ -182,7 +203,7 @@ export class TillService {
           nStockCorrection: i.eTransactionItemType === 'regular' ? i.quantity : i.quantity - (i.nBrokenProduct || 0),
           eKind: i.type, // TODO // repair
           bDiscount: i.nDiscount > 0,
-          bPrepayment: (bRefund && i.oType?.bPrepayment) || (i.paymentAmount > 0 || this.getUsedPayMethods(true, payMethods) - this.getTotals('price', transactionItems) < 0) && (i.paymentAmount !== i.amountToBePaid),
+          bPrepayment: bPrepayment,
         },
         i.iActivityItemId,
         i.oGoldFor,

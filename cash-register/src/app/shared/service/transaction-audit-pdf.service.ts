@@ -177,9 +177,9 @@ export class TransactionAuditUiPdfService {
                 .filter((workstation: any) => aSelectedWorkStation.includes(workstation._id))
                 .map((workstation: any) => workstation.sName)
                 .join(', ');
-            if (!sWorkstation) sWorkstation = aSelectedWorkStation;
+            if (!sWorkstation) sWorkstation = aWorkStation.filter((workstation:any)=> workstation._id === aSelectedWorkStation)[0].sName;
         } else {
-            sWorkstation = aWorkStation.map((location: any) => location.sName).join(', ');
+            sWorkstation = aWorkStation.map((workstation: any) => workstation.sName).join(', ');
         }
         // if (oSelectedWorkStation) {
         //     sWorkstation = aWorkStation.find(
