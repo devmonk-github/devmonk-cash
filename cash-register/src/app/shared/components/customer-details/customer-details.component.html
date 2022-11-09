@@ -225,7 +225,7 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr *ngFor="let transaction of aTransactions, let i = index;"
+                                        <tr *ngFor="let transaction of aTransactions | paginate: purchasePaginationConfig, let i = index;"
                                             data-bs-toggle="tooltip" data-bs-placement="top">
                                             <td>{{transaction.dCreatedDate | date: 'medium'}}</td>
                                             <td>{{transaction.sNumber}}</td>
@@ -256,13 +256,13 @@
                                 <div class="row">
                                     <div
                                         class="col-sm-12 col-md-3 d-flex align-items-center justify-content-center justify-content-md-start">
-                                        <div class="dataTables_length" id="kt_ecommerce_sales_table_length">
+                                        <div class="dataTables_length" id="kt_purchases_table_length">
                                             <label>
-                                                <select name="kt_ecommerce_sales_table_length"
-                                                    aria-controls="kt_ecommerce_sales_table"
+                                                <select name="kt_purchases_table_length"
+                                                    aria-controls="kt_purchases_table"
                                                     class="form-select form-select-sm form-select-solid"
-                                                    [(ngModel)]="requestParams.limit"
-                                                    (change)="changeItemsPerPage(requestParams.limit)">
+                                                    [(ngModel)]="purchaseRequestParams.limit"
+                                                    (change)="changeItemsPerPage(purchaseRequestParams.limit , 'purchases')">
                                                     <option *ngFor="let pageNum of pageCounts" [value]="pageNum">{{
                                                         pageNum }}
                                                     </option>
@@ -272,12 +272,18 @@
                                     </div>
                                     <div
                                         class="col-sm-12 col-md-9 d-flex align-items-center justify-content-center justify-content-md-end">
-                                        <pagination-controls (pageChange)="pageChanged($event)"
+                                      
+                                        <pagination-controls id="purchases_paginate"  (pageChange)="pageChanged($event ,'purchases')"
+                                        (pageBoundsCorrection)="pageChanged($event , 'purchases')" [maxSize]="setPaginateSize"
+                                        [previousLabel]="'PREVIOUS' | translate" [nextLabel]="'NEXT' | translate"
+                                        screenReaderPaginationLabel="Pagination" [screenReaderPageLabel]="'PAGE' | translate">
+                                    </pagination-controls>
+                                        <!-- <pagination-controls (pageChange)="pageChanged($event)"
                                             (pageBoundsCorrection)="pageChanged($event)" [maxSize]="setPaginateSize"
                                             [previousLabel]="'PREVIOUS' | translate" [nextLabel]="'NEXT' | translate"
                                             screenReaderPaginationLabel="Pagination"
                                             [screenReaderPageLabel]="'PAGE' | translate">
-                                        </pagination-controls>
+                                        </pagination-controls> -->
                                     </div>
                                 </div>
                             </app-pn-tab>
@@ -293,7 +299,7 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr *ngFor="let activity of aActivities, let i = index;">
+                                        <tr *ngFor="let activity of aActivities | paginate: activitiesPaginationConfig , let i = index;">
                                             <td class="mw-200">{{activity?.sNumber}}</td>
                                             <td>{{activity?.sReceiptNumber}}</td>
                                             <td>{{getTypes(activity.activityitems)}}</td>
@@ -314,6 +320,33 @@
                                         </tr>
                                     </tbody>
                                 </table>
+
+                                <div class="row">
+                                    <div
+                                        class="col-sm-12 col-md-3 d-flex align-items-center justify-content-center justify-content-md-start">
+                                        <div class="dataTables_length" id="kt_activities_table_length">
+                                            <label>
+                                                <select name="kt_activities_table_length"
+                                                    aria-controls="kt_activities_table"
+                                                    class="form-select form-select-sm form-select-solid"
+                                                    [(ngModel)]="activitiesRequestParams.limit"
+                                                    (change)="changeItemsPerPage(activitiesRequestParams.limit , 'activities')">
+                                                    <option *ngFor="let pageNum of pageCounts" [value]="pageNum">{{
+                                                        pageNum }}
+                                                    </option>
+                                                </select>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div
+                                        class="col-sm-12 col-md-9 d-flex align-items-center justify-content-center justify-content-md-end">              
+                                        <pagination-controls id="activities_paginate" (pageChange)="pageChanged($event , 'activities')" (pageBoundsCorrection)="pageChanged($event , 'activities')"
+                                            [maxSize]="setPaginateSize" [previousLabel]="'PREVIOUS' | translate" [nextLabel]="'NEXT' | translate"
+                                            screenReaderPaginationLabel="Pagination" [screenReaderPageLabel]="'PAGE' | translate">
+                                        </pagination-controls>
+                                    
+                                    </div>
+                                </div>
                             </app-pn-tab>
                             <app-pn-tab tabTitle="{{ tabTitles[2] | translate}}" #activityItems>
                                 <table class="table table-hover table-rounded table-striped border gs-7">
@@ -327,7 +360,7 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr *ngFor="let activity of aActivityItems, let i = index;">
+                                        <tr *ngFor="let activity of aActivityItems | paginate: itemsPaginationConfig , let i = index;">
                                             <td>{{activity?.sNumber}}</td>
                                             <td>{{activity?.sReceiptNumber}}</td>
                                             <td>{{activity?.oType?.eTransactionType}}</td>
@@ -348,6 +381,32 @@
                                         </tr>
                                     </tbody>
                                 </table>
+                                    <div class="row">
+                                        <div
+                                            class="col-sm-12 col-md-3 d-flex align-items-center justify-content-center justify-content-md-start">
+                                            <div class="dataTables_length" id="kt_ecommerce_sales_table_length">
+                                                <label>
+                                                    <select name="kt_ecommerce_sales_table_length"
+                                                        aria-controls="kt_ecommerce_sales_table"
+                                                        class="form-select form-select-sm form-select-solid"
+                                                        [(ngModel)]="itemsRequestParams.limit"
+                                                        (change)="changeItemsPerPage(itemsRequestParams.limit , 'activityItems')">
+                                                        <option *ngFor="let pageNum of pageCounts" [value]="pageNum">{{
+                                                            pageNum }}
+                                                        </option>
+                                                    </select>
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div  class="col-sm-12 col-md-9 d-flex align-items-center justify-content-center justify-content-md-end">
+                                          
+                                            <pagination-controls id= "items_paginate" (pageChange)="pageChanged($event , 'activityItems')" (pageBoundsCorrection)="pageChanged($event , 'activityItems')"
+                                                [maxSize]="setPaginateSize" [previousLabel]="'PREVIOUS' | translate" [nextLabel]="'NEXT' | translate"
+                                                screenReaderPaginationLabel="Pagination" [screenReaderPageLabel]="'PAGE' | translate">
+                                            </pagination-controls>
+                                        
+                                        </div>
+                                    </div>
                             </app-pn-tab>
                             <app-pn-tab tabTitle="{{ tabTitles[3] | translate}}" #statistics>
                                 <div class="row mb-5">
