@@ -166,7 +166,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
     iBusinessId: "",
     aProjection: ['sSalutation', 'sFirstName', 'sPrefix', 'sLastName', 'dDateOfBirth', 'dDateOfBirth', 'nClientId', 'sGender', 'bIsEmailVerified',
       'bCounter', 'sEmail', 'oPhone', 'oShippingAddress', 'oInvoiceAddress', 'iBusinessId', 'sComment', 'bNewsletter', 'sCompanyName', 'oPoints',
-      'sCompanyName', 'oIdentity', 'sVatNumber', 'sCocNumber', 'nPaymentTermDays', 'nDiscount', 'bWhatsApp', 'nMatchingCode' , 'sNote'],
+      'sCompanyName', 'oIdentity', 'sVatNumber', 'sCocNumber', 'nPaymentTermDays', 'nDiscount', 'bWhatsApp', 'nMatchingCode' , 'sNote' , 'sBagNumber' ,'dEstimatedDate' , 'eRepairStatus' ,'eType'],
 
   };
   
@@ -417,19 +417,20 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
           this.toastService.show({ type: 'success', text: this.translations[`SUCCESSFULLY_ADDED`] });
           this.close({ action: true, customer: this.customer });
           }else{
+           
             let errorMessage = ""
             this.translateService.get(result.message).subscribe(
               result=> errorMessage =result
             )
-            this.toastService.show({type:'danger' , text:errorMessage})
+            this.toastService.show({type:'warning' , text:errorMessage})
           }
         },
         (error: any) => {
           let errorMessage=""
-          this.translateService.get(error.error.message).subscribe(
+          this.translateService.get(error.message).subscribe(
             result => errorMessage = result
           )
-          this.toastService.show({ type: 'danger', text:errorMessage });
+          this.toastService.show({ type: 'warning', text:errorMessage });
         }
       );
     }
@@ -446,16 +447,15 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
              this.translateService.get(result.message).subscribe((res:any)=>{
               errorMessage = res;
              })
-             this.toastService.show({type:'danger' , text:errorMessage});
+             this.toastService.show({type:'warning' , text:errorMessage});
           }
         },
         (error: any) => {
-          console.error(error)
           let errorMessage = "";
-          this.translateService.get(error.error.message).subscribe((res:any)=>{
+          this.translateService.get(error.message).subscribe((res:any)=>{
            errorMessage = res;
           })
-          this.toastService.show({type:'danger' , text:errorMessage});
+          this.toastService.show({type:'warning' , text:errorMessage});
         }
       );
     }
