@@ -79,11 +79,37 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
   pageCounts: Array<number> = [10, 25, 50, 100]
   pageNumber: number = 1;
   setPaginateSize: number = 10;
-  paginationConfig: any = {
+
+  purchasePaginationConfig: any = {
+    id: 'purchases_paginate',
     itemsPerPage: 10,
     currentPage: 1,
-    totalItems: 20
+    totalItems: 0
   };
+  activitiesPaginationConfig: any = {
+    id: 'activities_paginate',
+    itemsPerPage: 10,
+    currentPage: 1,
+    totalItems: 0
+  };
+  itemsPaginationConfig: any = {
+    id:'items_paginate',
+    itemsPerPage: 10,
+    currentPage: 1,
+    totalItems: 0
+  };
+ purchaseRequestParams:any ={
+  skip:0,
+  limit:10
+ }
+ activitiesRequestParams:any ={
+  skip:0,
+  limit:10
+ }
+ itemsRequestParams:any ={
+  skip:0,
+  limit:10
+ }
   customer: any = {
     _id: '',
     bNewsletter: true,
@@ -140,8 +166,10 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
     iBusinessId: "",
     aProjection: ['sSalutation', 'sFirstName', 'sPrefix', 'sLastName', 'dDateOfBirth', 'dDateOfBirth', 'nClientId', 'sGender', 'bIsEmailVerified',
       'bCounter', 'sEmail', 'oPhone', 'oShippingAddress', 'oInvoiceAddress', 'iBusinessId', 'sComment', 'bNewsletter', 'sCompanyName', 'oPoints',
-      'sCompanyName', 'oIdentity', 'sVatNumber', 'sCocNumber', 'nPaymentTermDays', 'nDiscount', 'bWhatsApp', 'nMatchingCode' , 'sNote'],
+      'sCompanyName', 'oIdentity', 'sVatNumber', 'sCocNumber', 'nPaymentTermDays', 'nDiscount', 'bWhatsApp', 'nMatchingCode' , 'sNote' , 'sBagNumber' ,'dEstimatedDate' , 'eRepairStatus' ,'eType'],
+
   };
+  
   bTransactionsLoader: boolean = false;
   bActivitiesLoader: boolean = false;
   bActivityItemsLoader: boolean = false;
@@ -229,7 +257,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
-    const translations = ['Successfully added!', 'Successfully updated!']
+    const translations = ['SUCCESSFULLY_ADDED', 'SUCCESSFULLY_UPDATED']
     this.translateService.get(translations).subscribe(
       result => this.translations = result
     )
@@ -329,18 +357,50 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
 
   }
 
-  changeItemsPerPage(pageCount: any) {
-    this.paginationConfig.itemsPerPage = pageCount;
-    this.requestParams.skip = this.paginationConfig.itemsPerPage * (this.paginationConfig.currentPage - 1);
-    this.requestParams.limit = this.paginationConfig.itemsPerPage;
-    this.loadTransactions()
+  changeItemsPerPage(pageCount: any , tab:any) {
+    if(tab == 'purchases'){
+      this.purchasePaginationConfig.itemsPerPage = parseInt(pageCount);
+      this.purchaseRequestParams.skip = this.purchasePaginationConfig.itemsPerPage * (this.purchasePaginationConfig.currentPage - 1);
+      this.purchaseRequestParams.limit = this.purchasePaginationConfig.itemsPerPage;
+      this.loadTransactions()
+    }
+    if(tab == 'activities'){
+      this.activitiesPaginationConfig.itemsPerPage = parseInt(pageCount);
+      this.activitiesRequestParams.skip = this.activitiesPaginationConfig.itemsPerPage * (this.activitiesPaginationConfig.currentPage - 1);
+      this.activitiesRequestParams.limit = this.activitiesPaginationConfig.itemsPerPage;
+      this.loadActivities()
+    }
+
+    if(tab == 'activityItems'){
+      this.itemsPaginationConfig.itemsPerPage = parseInt(pageCount);
+      this.itemsRequestParams.skip = this.itemsPaginationConfig.itemsPerPage * (this.itemsPaginationConfig.currentPage - 1);
+      this.itemsRequestParams.limit = this.itemsPaginationConfig.itemsPerPage;
+      this.loadActivityItems()
+    }
+    
   }
 
-  pageChanged(page: any) {
-    this.paginationConfig.currentPage = page;
-    this.requestParams.skip = this.paginationConfig.itemsPerPage * (page - 1);
-    this.requestParams.limit = this.paginationConfig.itemsPerPage;
-    this.loadTransactions()
+  pageChanged(page: any , tab:any) {
+    if(tab == 'purchases'){
+      this.purchasePaginationConfig.currentPage = parseInt(page);
+      this.purchaseRequestParams.skip = this.purchasePaginationConfig.itemsPerPage * (page - 1);
+      this.purchaseRequestParams.limit = this.purchasePaginationConfig.itemsPerPage;
+      this.loadTransactions()
+    }
+    if(tab == 'activities'){
+      this.activitiesPaginationConfig.currentPage = parseInt(page);
+      this.activitiesRequestParams.skip = this.activitiesPaginationConfig.itemsPerPage * (page - 1);
+      this.activitiesRequestParams.limit = this.activitiesPaginationConfig.itemsPerPage;
+      this.loadActivities()
+    }
+    if(tab == 'activityItems'){
+      this.itemsPaginationConfig.currentPage = parseInt(page);
+      this.itemsRequestParams.skip = this.itemsPaginationConfig.itemsPerPage * (page - 1);
+      this.itemsRequestParams.limit = this.itemsPaginationConfig.itemsPerPage;
+      this.loadActivityItems()
+    }
+  
+  
   }
 
   customerCountryChanged(type: string, event: any) {
@@ -354,9 +414,10 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
       this.apiService.postNew('customer', '/api/v1/customer/create', this.customer).subscribe(
         (result: any) => {
           if(result.message == 'success'){
-          this.toastService.show({ type: 'success', text: this.translations[`Successfully added!`] });
+          this.toastService.show({ type: 'success', text: this.translations[`SUCCESSFULLY_ADDED`] });
           this.close({ action: true, customer: this.customer });
           }else{
+           
             let errorMessage = ""
             this.translateService.get(result.message).subscribe(
               result=> errorMessage =result
@@ -366,7 +427,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
         },
         (error: any) => {
           let errorMessage=""
-          this.translateService.get(error.error.message).subscribe(
+          this.translateService.get(error.message).subscribe(
             result => errorMessage = result
           )
           this.toastService.show({ type: 'warning', text:errorMessage });
@@ -377,13 +438,24 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
       this.apiService.putNew('customer', '/api/v1/customer/update/' + this.requestParams.iBusinessId + '/' + this.customer._id, this.customer).subscribe(
         (result: any) => {
           if (result?.message === 'success') {
-            this.toastService.show({ type: 'success', text: this.translations[`Successfully updated!`] });
+            this.toastService.show({ type: 'success', text: this.translations[`SUCCESSFULLY_UPDATED`] });
             this.fetchUpdatedDetails();
+            this.close({ action: true });
           }
-          // this.close({ action: true });
+          else{
+             let errorMessage = "";
+             this.translateService.get(result.message).subscribe((res:any)=>{
+              errorMessage = res;
+             })
+             this.toastService.show({type:'warning' , text:errorMessage});
+          }
         },
         (error: any) => {
-          console.error(error)
+          let errorMessage = "";
+          this.translateService.get(error.message).subscribe((res:any)=>{
+           errorMessage = res;
+          })
+          this.toastService.show({type:'warning' , text:errorMessage});
         }
       );
     }
@@ -520,12 +592,15 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
     this.bTransactionsLoader = true;
     const body = {
       iCustomerId: this.customer._id,
-      iBusinessId: this.requestParams.iBusinessId
+      iBusinessId: this.requestParams.iBusinessId,
+      skip:this.purchaseRequestParams.skip,
+      limit:this.purchaseRequestParams.limit
     }
+
     this.apiService.postNew('cashregistry', '/api/v1/transaction/cashRegister', body).subscribe((result: any) => {
       if (result?.data?.result) {
         this.aTransactions = result.data.result || [];
-        this.paginationConfig.totalItems = this.aTransactions.length;
+        this.purchasePaginationConfig.totalItems = this.aTransactions.length;
         this.aTransactions.forEach(transaction => {
           transaction.sTotal = 0;
           transaction.aTransactionItems.forEach((item: any) => {
@@ -571,7 +646,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
             // }
           })
         });
-        // this.paginationConfig.totalItems = result.data.totalCount;
+        this.purchasePaginationConfig.totalItems = result.data.totalCount;
         this.activitiesChartOptions = {
           series: this.aActivityTitles.map((el: any) => el.value),
           colors: this.aActivityTitles.map((el: any) => el.color),
@@ -606,12 +681,12 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
     if (this.customer.bCounter) return;
     this.aActivities = [];
     this.bActivitiesLoader = true;
-    let oBody: any = { ...this.requestParams };
+    let oBody:any ={... this.requestParams , ... this.activitiesRequestParams};
     delete oBody.oFilterBy._id;
+   
     this.apiService.postNew('cashregistry', '/api/v1/activities', oBody).subscribe((result: any) => {
       this.aActivities = result.data || [];
-      // this.paginationConfig.totalItems = result.count;
-
+      this.activitiesPaginationConfig.totalItems = result.count;
       this.bActivitiesLoader = false;
     }, (error) => {
       this.bActivitiesLoader = false;
@@ -622,12 +697,12 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
   loadActivityItems() {
     if (this.customer.bCounter) return;
     this.bActivityItemsLoader = true;
-    let oBody: any = { ...this.requestParams };
+    let oBody: any = { ... this.requestParams , ...this.itemsRequestParams };
     delete oBody.oFilterBy._id;
     this.apiService.postNew('cashregistry', '/api/v1/activities/items', oBody).subscribe(
       (result: any) => {
         this.aActivityItems = result.data || [];
-        // this.paginationConfig.totalItems = result.count;
+        this.itemsPaginationConfig.totalItems = result.count;
         this.bActivityItemsLoader = false;
       },
       (error: any) => {
@@ -636,6 +711,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
   }
 
   activeTabsChanged(tab: any) {
+
     switch (tab) {
       case this.tabTitles[0]:
         if (!this.aTransactions) this.loadTransactions();
