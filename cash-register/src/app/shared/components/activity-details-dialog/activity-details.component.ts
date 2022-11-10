@@ -635,10 +635,7 @@ export class ActivityDetailsComponent implements OnInit {
   }
 
   sendForReceipt(oDataSource: any, template: any, title: any) {
-    console.log("------------------------export pdf----------------------------");
-    console.log(oDataSource);
-    console.log(template);
-    console.log(title);
+  
     // return;
     this.receiptService.exportToPdf({
       oDataSource: oDataSource,
