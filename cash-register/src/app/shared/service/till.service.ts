@@ -299,10 +299,10 @@ export class TillService {
 
   createGiftcardTransactionItem(body: any, discountArticleGroup: any) {
     const originalTItems = length = body.transactionItems.filter((i: any) => i.oType.eKind !== 'loyalty-points-discount' && i.oType.eKind !== 'discount' && i.oType.eKind !== 'loyalty-points' && i.oType.eKind !== 'giftcard-discount');
-    const gCard = body.payments.find((o: any) => o.sName === 'Giftcards' && o.type === 'custom');
+    const gCard = body.payments.find((payment: any) => payment.sName === 'Giftcards' && payment.type === 'custom');
     let nDiscount = 0;
     if (gCard?.amount) nDiscount = (Math.round((gCard?.amount || 0) / (originalTItems?.length || 1))) || 0;
-    originalTItems.map((i: any) => {
+    originalTItems.map((item: any) => {
       if (gCard) {
         if (nDiscount > gCard.amount) {
           nDiscount = gCard.amount;
@@ -311,12 +311,14 @@ export class TillService {
           gCard.amount = gCard.amount - nDiscount;
         }
       }
-      const tItem1 = JSON.parse(JSON.stringify(i));
+      const tItem1 = JSON.parse(JSON.stringify(item));
       tItem1.iArticleGroupId = discountArticleGroup._id;
       tItem1.oArticleGroupMetaData.sCategory = discountArticleGroup.sCategory;
       tItem1.oArticleGroupMetaData.sSubCategory = discountArticleGroup.sSubCategory;
       tItem1.oType.eTransactionType = 'cash-registry';
       tItem1.oType.eKind = 'giftcard-discount';
+      tItem1.sProductName = 'Giftcard redeemed';
+      tItem1.sDescription = '';
       tItem1.nPaymentAmount = -1 * nDiscount;
       tItem1.nRevenueAmount = -1 * nDiscount;
       tItem1.nPriceIncVat = -1 * nDiscount;
@@ -324,9 +326,9 @@ export class TillService {
       tItem1.nDiscount = 0;
       body.transactionItems.push(tItem1);
     });
-
-
+    console.log(329, body);
   }
+
   checkArticleGroups(): Observable<any> {
     let data = {
       skip: 0,
