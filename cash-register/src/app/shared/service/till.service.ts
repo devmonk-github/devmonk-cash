@@ -293,6 +293,7 @@ export class TillService {
         }
       });
     }
+    console.log('finaly body: ', body);
     return body;
   }
 
