@@ -118,10 +118,10 @@ export class TransactionAuditUiPdfService {
         const columnWidths = ['*', 60, 80, 80, 100];
         const tableLayout = {
             hLineWidth: function (i: number, node: any) {
-                return i === 0 || i === node.table.body.length ? 0 : 0.5;
+                return i === 0 || i === node.table.body.length ? 0.5 : 0.5;
             },
             vLineWidth: function (i: number, node: any) {
-                return i === 0 || i === node.table.widths.length ? 0 : 0;
+                return i === 0 || i === node.table.widths.length ? 0 : 0.5;
             },
             hLineColor: function (i: number, node: any) {
                 return i === 0 || i === node.table.body.length ? '#999' : '#999';
@@ -223,6 +223,8 @@ export class TransactionAuditUiPdfService {
 
         this.processCashCountings(tableLayout, oStatisticsDocument, aStatistic);
 
+        this.processPdfByVatRates(columnWidths, tableLayout, aStatistic);
+
         switch (sDisplayMethod.toString()) {
             case 'revenuePerBusinessPartner':
                 this.processPdfByRevenuePerBusinessPartner(columnWidths,tableLayout,aStatistic);
@@ -308,8 +310,8 @@ export class TransactionAuditUiPdfService {
         const oCountings = oStatisticsDocument.oCountings;
 
         const tableHeadersList: any = [
-            { text: 'PARTICULARS', style: ['th'] },
-            { text: 'AMOUNT', style: ['th'], }
+            { text: 'PARTICULARS', style: ['th', 'articleGroup'] },
+            { text: 'AMOUNT', style: ['th', 'articleGroup'], }
         ];
 
         let texts: any = [
@@ -343,13 +345,16 @@ export class TransactionAuditUiPdfService {
             ],
         ];
 
+        // this.pushSeparatorLine();
+
         this.content.push(
             {
                 table: {
                     widths: '*',
                     body: [[...tableHeadersList], ...texts],
                 },
-                margin:[0,10]
+                margin:[0,20],
+                layout: tableLayout,
             }
         );
 
@@ -367,11 +372,14 @@ export class TransactionAuditUiPdfService {
         tableHeaders.forEach((header: any) => {
             tableHeadersList.push({
                 text: header,
-                style: ['th'],
+                style: ['th', 'articleGroup'],
             });
         });
         let texts: any = [];
         const aFieldsToInclude = ['oShopPurchase', 'oWebShop'];
+
+        // this.pushSeparatorLine();
+
         if (aStatistic[0]?.aVatRates?.length) {
             aStatistic[0].aVatRates.forEach((oItem: any) => {
                 texts.push([{ text: 'VAT_RATE - ' + ((oItem?.nVat) ? oItem?.nVat : ''), colSpan: 5, style: ['articleGroup', 'center', 'td'] }, {}, {}, {}, {}]);
@@ -387,39 +395,36 @@ export class TransactionAuditUiPdfService {
             });
 
             const finalData = [[...tableHeadersList], ...texts];
-            this.content.push(
-                {
-                    canvas: [{ type: 'line', x1: 0, y1: 0, x2: 575, y2: 0, lineWidth: 1 }],
-                    margin: [0, 0, 20, 0],
-                    style: ['afterLine', 'separatorLine'],
+            this.content.push({
+                table: {
+                    widths: columnWidths,
+                    body: finalData,
                 },
-                {
-                    table: {
-                        widths: columnWidths,
-                        body: finalData,
-                    },
-                    layout: tableLayout
-                }
-            );
+                margin: [0, 0,0,20],
+                layout: tableLayout,
+            });
         } else {
-            this.content.push(
-                {
-                    table: {
-                        widths: columnWidths,
-                        body: [
-                            [...tableHeadersList],
-                            [
-                                { text: 'No records found', colSpan: 5, alignment: 'center', style: ['td'] },
-                                {},
-                                {},
-                                {},
-                                {},
-                            ],
-                        ],
-                    },
-                }
-            );
+            this.content.push({
+                table: {
+                    widths: columnWidths,
+                    body: [
+                        [...tableHeadersList],
+                        [{ text: 'No records found', colSpan: 5, alignment: 'center', style: ['td'] }, {}, {}, {}, {}]
+                    ],
+                },
+                margin: [0, 0, 0, 20],
+                layout: tableLayout,
+            });
         }
+        // this.pushSeparatorLine();
+    }
+
+    pushSeparatorLine() {
+        this.content.push({
+            canvas: [{ type: 'line', x1: 0, y1: 0, x2: 575, y2: 0, lineWidth: 1 }],
+            margin: [0, 0, 20, 0],
+            style: ['afterLine'],
+        });
     }
 
     addRefundToPdf() {
@@ -937,40 +942,25 @@ export class TransactionAuditUiPdfService {
             // { text: Math.round(aStatistic[0].overall[0].nMargin).toFixed(2), style: 'th' },
         ];
 
-        const overallData = {
+        this.pushSeparatorLine();
+        this.content.push({
+            style: 'headerStyle',
+            table: {
+                headerRows: 1,
+                widths: columnWidths,
+                body: [headerList],
+            },
+            layout: tableLayout,
+        });
+        this.pushSeparatorLine();
+        this.content.push({
             table: {
                 widths: columnWidths,
                 body: [texts],
             },
             layout: tableLayout,
-        };
-        this.content.push(
-            {
-                canvas: [{ type: 'line', x1: 0, y1: 0, x2: 575, y2: 0, lineWidth: 1 }],
-                margin: [0, 0, 20, 0],
-                style: 'afterLine',
-            },
-            {
-                style: 'headerStyle',
-                table: {
-                    headerRows: 1,
-                    widths: columnWidths,
-                    body: [headerList],
-                },
-                layout: tableLayout,
-            },
-            {
-                canvas: [{ type: 'line', x1: 0, y1: 0, x2: 575, y2: 0, lineWidth: 1 }],
-                margin: [0, 0, 20, 0],
-                style: 'afterLine',
-            },
-            overallData,
-            {
-                canvas: [{ type: 'line', x1: 0, y1: 0, x2: 575, y2: 0, lineWidth: 1 }],
-                margin: [0, 0, 20, 10],
-                style: 'afterLine',
-            }
-        );
+        });
+        this.pushSeparatorLine();
     }
 
     processPdfByRevenuePerArticleGroupAndProperty(columnWidths: any,tableLayout: any,aStatistic:any) {
@@ -1193,22 +1183,17 @@ export class TransactionAuditUiPdfService {
                 // { text: singleRecord.nMargin, style: ['td', 'articleGroup'] },
             ]);
         });
-        const data = {
-            table: {
-                headerRows: 1,
-                widths: columnWidths,
-                // heights: [30],
-                body: [[...tableHeadersList],...texts],
-            },
-            layout: tableLayout,
-        };
         this.content.push(
             {
-                canvas: [{ type: 'line', x1: 0, y1: 0, x2: 575, y2: 0, lineWidth: 1 }],
-                margin: [0, 0, 20, 0],
-                style: 'afterLine',
-            }, 
-            data);
+                table: {
+                    headerRows: 1,
+                    widths: columnWidths,
+                    // heights: [30],
+                    body: [[...tableHeadersList], ...texts],
+                },
+                margin: [0, 20],
+                layout: tableLayout,
+            });
     }
 
     fetchTransactionItems(oFilterDates: any, bIsArticleGroupLevel: boolean, bIsSupplierMode:boolean){

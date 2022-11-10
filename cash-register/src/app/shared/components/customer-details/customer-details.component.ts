@@ -166,7 +166,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
     iBusinessId: "",
     aProjection: ['sSalutation', 'sFirstName', 'sPrefix', 'sLastName', 'dDateOfBirth', 'dDateOfBirth', 'nClientId', 'sGender', 'bIsEmailVerified',
       'bCounter', 'sEmail', 'oPhone', 'oShippingAddress', 'oInvoiceAddress', 'iBusinessId', 'sComment', 'bNewsletter', 'sCompanyName', 'oPoints',
-      'sCompanyName', 'oIdentity', 'sVatNumber', 'sCocNumber', 'nPaymentTermDays', 'nDiscount', 'bWhatsApp', 'nMatchingCode' , 'sNote' , 'sBagNumber' ,'dEstimatedDate' , 'eRepairStatus' ,'eType'],
+      'sCompanyName', 'oIdentity', 'sVatNumber', 'sCocNumber', 'nPaymentTermDays', 'nDiscount', 'bWhatsApp', 'nMatchingCode' , 'sNote' , 'sBagNumber' ,'dEstimatedDate' , 'eActivityItemStatus' ,'sBusinessPartnerName'],
 
   };
   
@@ -272,8 +272,6 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
       this.aTransctionTableHeaders.push({ key: 'Action', disabled: true });
     }
     this.fetchLoyaltyPoints();
-    this.getCoreStatistics();
-
     this.activitiesChartOptions = {
       series: this.aActivityTitles.map((el: any) => el.value),
       colors: this.aActivityTitles.map((el: any) => el.color),
@@ -702,6 +700,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
         if (!this.aActivityItems) this.loadActivityItems();
         break;
       case this.tabTitles[3]:
+        this.getCoreStatistics();
         this.loadStatisticsTabData();
         break;
     }
@@ -709,7 +708,6 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
 
   loadStatisticsTabData() {
     if (this.customer.bCounter) return;
-
     this.statisticsChartOptions = {
       series: this.aStatisticsChartData.map((el: any) => el.item.element),
       colors: this.aStatisticsChartData.map((el: any) => el.item.color),

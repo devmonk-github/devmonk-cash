@@ -400,8 +400,8 @@ export class ServicesComponent implements OnInit, AfterViewInit {
   async openModal(barcode: any) {
     if (barcode.startsWith('0002'))
       barcode = barcode.substring(4)
-    this.toastrService.show({ type: 'success', text: 'Barcode detected: ' + barcode })
     if (barcode.startsWith("AI")) {
+      this.toastrService.show({ type: 'success', text: 'Barcode detected: ' + barcode })
       // activityitem.find({sNumber: barcode},{eTransactionItem.eKind : 1})
       let oBody: any = {
         iBusinessId: this.businessDetails._id,
@@ -426,6 +426,7 @@ export class ServicesComponent implements OnInit, AfterViewInit {
         }
       }
     } else if (barcode.startsWith("A")) {
+      this.toastrService.show({ type: 'success', text: 'Barcode detected: ' + barcode })
       let oBody = {
         iBusinessId: this.businessDetails._id,
         oFilterBy: {
@@ -440,6 +441,7 @@ export class ServicesComponent implements OnInit, AfterViewInit {
 
       //activity.find({sNumber: barcode})
     } else if (barcode.startsWith("G")) {
+      this.toastrService.show({ type: 'success', text: 'Barcode detected: ' + barcode })
       let oBody: any = {
         iBusinessId: this.businessDetails._id,
         oFilterBy: {
@@ -454,8 +456,10 @@ export class ServicesComponent implements OnInit, AfterViewInit {
       // activityitem.find({sGiftcardNumber: barcode},{eTransactionItem.eKind : 1})
     } else if (barcode.startsWith("R")) {
       // activityitem.find({sRepairNumber: barcode},{eTransactionItem.eKind : 1})
+    } else if (barcode.startsWith("T")) {
+      this.toastrService.show({ type: 'warning', text: 'Please go to different page to process this barcode !' })
     }
-
+    console.log('barcode ', barcode);
   }
 
   openCardsModal(oGiftcard?: any, oCustomer?: any) {

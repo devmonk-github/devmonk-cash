@@ -247,8 +247,8 @@ export class ActivityItemsComponent implements OnInit {
   async openModal(barcode: any) {
     if (barcode.startsWith('0002'))
       barcode = barcode.substring(4)
-    this.toastrService.show({ type: 'success', text: 'Barcode detected: ' + barcode })
     if (barcode.startsWith("AI")) {
+      this.toastrService.show({ type: 'success', text: 'Barcode detected: ' + barcode })
       let oBody: any = {
         iBusinessId: this.businessDetails._id,
         oFilterBy: {
@@ -273,6 +273,7 @@ export class ActivityItemsComponent implements OnInit {
         }
       }
     } else if (barcode.startsWith("A")) {
+      this.toastrService.show({ type: 'success', text: 'Barcode detected: ' + barcode })
       let oBody = {
         iBusinessId: this.businessDetails._id,
         oFilterBy: {
@@ -287,6 +288,7 @@ export class ActivityItemsComponent implements OnInit {
 
       //activity.find({sNumber: barcode})
     } else if (barcode.startsWith("G")) {
+      this.toastrService.show({ type: 'success', text: 'Barcode detected: ' + barcode })
       let oBody: any = {
         iBusinessId: this.businessDetails._id,
         oFilterBy: {
@@ -299,6 +301,8 @@ export class ActivityItemsComponent implements OnInit {
         this.openCardsModal(oGiftcard)
       }
     } else if (barcode.startsWith("R")) {
+    } else if (barcode.startsWith("T")) {
+      this.toastrService.show({ type: 'warning', text: 'Please go to different page to process this barcode !' })
     }
 
   }

@@ -309,12 +309,16 @@ export class TransactionsComponent implements OnInit {
   async openModal(barcode: any) {
     if (barcode.startsWith('0002'))
       barcode = barcode.substring(4)
-    this.toastrService.show({ type: 'success', text: 'Barcode detected: ' + barcode })
+      
     if (barcode.startsWith("T")) {
+      this.toastrService.show({ type: 'success', text: 'Barcode detected: ' + barcode })
       const result: any = await this.apiService.postNew('cashregistry', `/api/v1/transaction/detail/${barcode}`, {iBusinessId: this.iBusinessId}).toPromise();
       if (result?.data?._id) {
         this.showTransaction(result?.data);
       }
+    } else if (barcode.startsWith("A") || barcode.startsWith("AI" || barcode.startsWith("G"))){
+      this.toastrService.show({ type: 'warning', text: 'Please go to different page to process this barcode !' })
     }
+
   }
 }

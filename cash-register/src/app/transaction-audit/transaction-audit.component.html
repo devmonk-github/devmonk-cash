@@ -429,8 +429,7 @@
                                         <ng-container *ngIf="pdfGenerationInProgress">
                                             <div class="spinner-border mx-2"></div>
                                         </ng-container>
-                                        <button class="btn btn-primary" (click)="exportToPDF($event)">{{ 'DOWNLOAD'
-                                            }}</button>
+                                        <button class="btn btn-primary" (click)="exportToPDF()">{{ 'DOWNLOAD' | translate}}</button>
                                     </div>
                                 </div>
                             </div>

@@ -696,7 +696,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
       iStatisticId: this.iStatisticId,
       oFilter: {
         aLocationId: aLocation,
-        iWorkstationId: iWorkstationId,
+        // iWorkstationId: iWorkstationId,
         sTransactionType: this.optionMenu,
         sDisplayMethod: sDisplayMethod || this.sDisplayMethod.toString(),
         dStartDate: this.statisticFilter.dFromState,
@@ -726,6 +726,10 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
               // this.aPaymentMethods = oData?.oStatistic?.aPaymentMethods; /* old approach */
             }
             this.oStatisticsDocument = oData?.oStatistic;
+            this.iWorkstationId = this.oStatisticsDocument.iWorkstationId;
+            // console.log('this.iWorkstationId', this.iWorkstationId, this.oStatisticsDocument.iWorkstationId, this.oStatisticsDocument)
+            this.sCurrentWorkstation = this.aWorkStation.filter((el: any) => el._id === this.iWorkstationId)[0]?.sName;
+            // console.log('current=', this.sCurrentWorkstation);
             if (!this.oStatisticsDocument?.sComment) this.oStatisticsDocument.sComment = '';
             this.processCounting();
           }
@@ -942,9 +946,8 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
     return this.apiService.getNew('core', '/api/v1/business/' + this.businessDetails._id).toPromise();
   }
 
-  async exportToPDF(event: any) {
+  async exportToPDF() {
     this.pdfGenerationInProgress = true;
-    event.target.disabled = true;
     await this.transactionAuditPdfService.exportToPDF({
       // aDisplayMethod: this.aDisplayMethod,
       aSelectedLocation: this.aSelectedLocation,
@@ -963,7 +966,6 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
       bIsArticleGroupLevel: this.bIsArticleGroupLevel,
       bIsSupplierMode: this.bIsSupplierMode
     });
-    event.target.disabled = false;
     this.pdfGenerationInProgress = false;
   }
 
