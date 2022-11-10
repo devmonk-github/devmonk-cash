@@ -89,7 +89,6 @@ export class DiscountDialogComponent implements OnInit, AfterViewInit {
 
   save(): void {
     const _nDiscount  = (this.mode === 'fixed') ? this.selectedDiscount : (this.item.price * (this.selectedDiscount / 100));
-    console.log('save discount: ', this.selectedDiscount, this.discount);
     this.item.discount = {
       percent: this.mode === 'percent',
       itemPrice: this.calculateDiscountPrice(),
@@ -125,7 +124,6 @@ export class DiscountDialogComponent implements OnInit, AfterViewInit {
   }
 
   calculateDiscountPrice(): number {
-    // console.log('calculateDiscountPrice: ', this.item?.price, this.discount, this.mode);
     if (this.mode === 'fixed') {
       return this.priceService.roundPrice(this.item.price - this.discount)
     } else {
@@ -166,7 +164,6 @@ export class DiscountDialogComponent implements OnInit, AfterViewInit {
 
   setDiscount(_nDiscount?: any): void {
     this.showDiscountAlert = false
-    console.log('setDiscount _nDiscount: ', _nDiscount, this.selectedDiscount);
     if (this.selectedDiscount !== 'custom') {
       this.discount = this.selectedDiscount
       this.customDiscount = 0
@@ -181,7 +178,6 @@ export class DiscountDialogComponent implements OnInit, AfterViewInit {
       value: this.discount,
       percent: this.mode === 'percent'
     }
-    console.log('this.item.discount: ', this.item.discount, this.selectedDiscount);
   }
 
   getTotalPrice(): any {

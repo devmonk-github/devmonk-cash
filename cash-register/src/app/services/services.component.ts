@@ -127,7 +127,6 @@ export class ServicesComponent implements OnInit, AfterViewInit {
   async ngOnInit(): Promise<void> {
     
     this.barcodeService.barcodeScanned.subscribe((barcode: string) => {
-      console.log('barcode scanned ', barcode);
       this.openModal(barcode);
     });
 

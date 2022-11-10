@@ -306,22 +306,12 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
   }
 
   handleCustomerNotesUpdate(){
-
-    // const sub = fromEvent(this.customerNote.nativeElement, 'keyup')
-    //   // console.log(278, data); 
-    //   .pipe(
-    //     filter(Boolean),
-    //     debounceTime(500),
-    //     distinctUntilChanged(),
-    //     tap((text) => {
           if (this.mode == 'details') {
             this.apiService.putNew('customer', '/api/v1/customer/update/' + this.requestParams.iBusinessId + '/' + this.customer._id, this.customer).subscribe(
               (result: any) => {
                 if (result?.message === 'success') {
-                  // sub.unsubscribe();
                   this.toastService.show({ type: 'success', text: this.translations[`Successfully updated!`] });
                 }
-                // this.close({ action: true });
               },
               (error: any) => {
                 let errorMessage = ""
@@ -329,15 +319,9 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
                   result => errorMessage = result
                 )
                 this.toastService.show({ type: 'warning', text: errorMessage });
-                // console.error(error)
               }
             );
           }
-          // this.updateNote();
-          // this.updatesInvoiceNumber(this.partnerComment.nativeElement.value)
-        // })
-      // )
-      // .subscribe();
   }
 
   ngAfterViewInit() {
@@ -350,11 +334,6 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
     ).subscribe(()=>{
       this.handleCustomerNotesUpdate();
     });
-    // server-side search
-    // this.handleCustomerNotesUpdate();
-    // if (!this.sNumber)
-    // this.DeliveredDate = this.eTransactionStatus === 'inspection' ? new Date().toISOString().slice(0, 10) : null
-
   }
 
   changeItemsPerPage(pageCount: any , tab:any) {

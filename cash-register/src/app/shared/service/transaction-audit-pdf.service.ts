@@ -114,16 +114,8 @@ export class TransactionAuditUiPdfService {
         bIsSupplierMode
     }:any) {
 
-        console.log(aSelectedWorkStation, aWorkStation);
-
-        
         const date = moment(Date.now()).format('DD-MM-yyyy');
-        
-        
-
         const columnWidths = ['*', 60, 80, 80, 100];
-        // const columnWidths = '*';
-
         const tableLayout = {
             hLineWidth: function (i: number, node: any) {
                 return i === 0 || i === node.table.body.length ? 0 : 0.5;
@@ -134,19 +126,7 @@ export class TransactionAuditUiPdfService {
             hLineColor: function (i: number, node: any) {
                 return i === 0 || i === node.table.body.length ? '#999' : '#999';
             },
-            // paddingLeft: function (i: number, node: any) {
-            //     return i === 0 ? 0 : 20;
-            // },
-            // paddingRight: function (i: number, node: any) {
-            //     return i === node.table.widths.length ? 20 : 0;
-            // },
         };
-        // let sDisplayMethodString =
-        //     aDisplayMethod[aDisplayMethod.findIndex((el: DisplayMethod) => el.sKey.toString() == sDisplayMethod.toString())].sValue;
-        // let sType =
-        //   this.aOptionMenu[
-        //     this.aOptionMenu.findIndex((el: any) => el.sKey == this.optionMenu)
-        //   ].sValue;
         let sType = sOptionMenu.parent.sValue
         let dataType = bIsDynamicState ? 'Dynamic Data' : 'Static Data';
 
@@ -181,13 +161,6 @@ export class TransactionAuditUiPdfService {
         } else {
             sWorkstation = aWorkStation.map((workstation: any) => workstation.sName).join(', ');
         }
-        // if (oSelectedWorkStation) {
-        //     sWorkstation = aWorkStation.find(
-        //         (el: any) => el?._id == oSelectedWorkStation?._id
-        //     )?.sName;
-        // } else {
-        //     sWorkstation = aWorkStation.map((el: any) => el.sName).join(', ');
-        // }
 
         let dataFromTo =
             '(From : ' + moment(oFilterDates.startDate).format('DD-MM-yyyy hh:mm A') + ' TO ' +
@@ -270,12 +243,6 @@ export class TransactionAuditUiPdfService {
                 this.processPdfByVatRates(columnWidths, tableLayout, aStatistic);
         }
 
-        // this.content.push({
-        //     canvas: [{ type: 'line', x1: 0, y1: 0, x2: 575, y2: 0, lineWidth: 1 }],
-        //     margin: [0, 0, 20, 0],
-        //     style: 'afterLine',
-        // });
-
         this.content.push({text: 'Payment Methods',style: ['left', 'normal'],margin: [0, 30, 0, 10],});
 
         const tableHeaders = ['Method', 'Total Amount', 'Quantity'];
@@ -287,13 +254,7 @@ export class TransactionAuditUiPdfService {
                 style: ['th', 'articleGroup'],
             });
         });
-        // const paymentHeaderData = {
-            //     table: {
-                //         widths: '*',
-                //         body: [paymentHeaderList],
-                //     },
-                // };
-                // this.content.push(paymentHeaderData);
+
         if (aPaymentMethods?.length) {
             let texts: any = [];
             aPaymentMethods.forEach((paymentMethod: any) => {
@@ -310,7 +271,6 @@ export class TransactionAuditUiPdfService {
                     widths: '*',
                     body: finalData,
                 },
-                // layout: tableLayout
             });
 
         } else {
@@ -345,7 +305,6 @@ export class TransactionAuditUiPdfService {
     }
 
     processCashCountings(tableLayout: any, oStatisticsDocument:any, aStatistic:any){
-        console.log(oStatisticsDocument);
         const oCountings = oStatisticsDocument.oCountings;
 
         const tableHeadersList: any = [
@@ -397,7 +356,6 @@ export class TransactionAuditUiPdfService {
     }
 
     processPdfByVatRates(columnWidths:any, tableLayout:any, aStatistic:any){
-        // console.log(aStatistic);
         const tableHeaders = [
             'VAT_TYPE',
             'PRICE_WITH_VAT',
@@ -562,8 +520,6 @@ export class TransactionAuditUiPdfService {
         this.content.push(oHeaderData);
         if (this.aDiscountItems?.length) {
             this.aDiscountItems.forEach((item: any) => {
-                // let itemDescription = (item.sComment) ? item.sComment : ' (not available) ';
-
                 let texts: any = [
                     { text: item.sProductName, style: 'td' },
                     { text: item.nQuantity, style: 'td' },

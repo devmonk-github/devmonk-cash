@@ -137,7 +137,6 @@ export class TransactionsComponent implements OnInit {
     this.getPaymentMethods();
 
     this.barcodeService.barcodeScanned.subscribe((barcode: string) => {
-      // console.log('barcode scanned ', barcode);
       this.openModal(barcode);
     });
 

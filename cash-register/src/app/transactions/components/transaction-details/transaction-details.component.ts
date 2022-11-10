@@ -151,7 +151,6 @@ export class TransactionDetailsComponent implements OnInit {
     this.printActionSettings = _printActionSettings?.data[0]?.result[0].aActions;
     this.printSettings = _printSettings?.data[0]?.result;
 
-    // console.log(80, this.transaction);
   }
 
   fetchBusinessDetails() {

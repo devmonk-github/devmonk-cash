@@ -54,7 +54,6 @@ export class PaymentDistributionService {
         element.paymentAmount = element.nTotal;
       }
     });
-    console.log('transactionItems: ', transactionItems);
     return transactionItems;
   }
 

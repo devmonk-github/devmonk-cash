@@ -68,7 +68,6 @@ export class ProductComponent implements OnInit {
 
   getTotalDiscount(item: any): string {
     this.totalDiscount = this.priceService.getDiscountValue(item);
-    // console.log("getTotalDiscount", this.totalDiscount, item)
     return String(this.totalDiscount);
   }
 
@@ -116,10 +115,7 @@ export class ProductComponent implements OnInit {
           this.item.bDiscountOnPercentage = data.item?.discount?.percent || false;
           this.getTotalDiscount(data.item)
           this.itemChanged.emit(this.item);
-          // console.log({data, item: this.item});
         }
-        console.log('After openDiscountDialog item: ', JSON.parse(JSON.stringify(this.item)), data?.item?.discount);
-        console.log('After openDiscountDialog data: ', data);
       })
   }
 
@@ -128,21 +124,10 @@ export class ProductComponent implements OnInit {
   }
 
   quantityChangeHandler(nQuantity: number) {
-    console.log('changeQuantity: ', nQuantity, this.item?.paymentAmount, this.item);
+    // console.log('changeQuantity: ', nQuantity, this.item?.paymentAmount, this.item);
   }
 
   changePrePayment(item: any) {
-    console.log('changePrePayment: ', item);
-    /* 
-      nTotal: 10
-      nPaymentAmt: 5
-
-      nTotal: -10
-      nPaymentAmt: -5
-
-      nTotal: 10
-      nPaymentAmt: -5
-    */
    if (item.paymentAmount < 0 && item.paymentAmount > item.nTotal) item.oType.bPrepayment = true;
    else if (item.paymentAmount >= 0 && item.nTotal > item.paymentAmount) item.oType.bPrepayment = true;
    else if (item.nTotal > 0 && item.paymentAmount < 0) throw ('strange transaction A');

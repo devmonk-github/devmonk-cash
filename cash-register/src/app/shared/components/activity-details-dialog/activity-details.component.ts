@@ -620,22 +620,9 @@ export class ActivityDetailsComponent implements OnInit {
     });
 
     this.sendForReceipt(oDataSource, template, oDataSource.sNumber);
-
-    // this.receiptService.exportToPdf({
-    //   oDataSource: oDataSource,
-    //   templateData: template,
-    //   pdfTitle: this.activity.sNumber,
-
-    // })
-
   }
 
   sendForReceipt(oDataSource: any, template: any, title: any) {
-    console.log("------------------------export pdf----------------------------");
-    console.log(oDataSource);
-    console.log(template);
-    console.log(title);
-    // return;
     this.receiptService.exportToPdf({
       oDataSource: oDataSource,
       pdfTitle: title,
