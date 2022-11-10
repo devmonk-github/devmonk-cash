@@ -132,7 +132,7 @@
                 <div class="form-group mb-4">
                   <label class="form-control-label mb-3">{{ "PREPAYMENT" | translate}}</label>:
                   <input class="form-control  mb-3 mb-lg-0" type="text" name="prepayment"
-                    placeholder="{{ 'PREPAYMENT' | translate}}" [(ngModel)]="item.paymentAmount">
+                    placeholder="{{ 'PREPAYMENT' | translate}}" [(ngModel)]="item.paymentAmount" (change)="changePrePayment(item)">
                 </div>
               </div>
               <div class="row" *ngIf="item.nDiscount > 0">

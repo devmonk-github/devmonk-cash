@@ -301,10 +301,10 @@
                                     <tbody>
                                         <tr *ngFor="let activity of aActivities | paginate: activitiesPaginationConfig , let i = index;">
                                             <td class="mw-200">{{activity?.sNumber}}</td>
-                                            <td>{{activity?.sReceiptNumber}}</td>
+                                            <td>{{activity?.sBagNumber}}</td>
                                             <td>{{getTypes(activity.activityitems)}}</td>
                                             <td scope="row">{{activity?.dCreatedDate | date: 'yyyy-MM-dd HH:mm'}}</td>
-                                            <td scope="row">{{activity?.dPickedUp | date: 'yyyy-MM-dd HH:mm'}}</td>
+                                            <td scope="row">{{activity?.dEstimatedDate | date: 'yyyy-MM-dd HH:mm'}}</td>
                                             <td>{{activity?.eRepairStatus}}</td>
                                             <td>{{activity?.eType}}</td>
                                         </tr>
