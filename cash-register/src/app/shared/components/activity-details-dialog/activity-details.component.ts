@@ -56,7 +56,7 @@ export class ActivityDetailsComponent implements OnInit {
   quantity: Number = 0;
   userDetail: any;
   business: any;
-  _oActivity: any;
+  oLocationName: any;
   businessDetails: any;
   iLocationId: String = '';
   showDetails: Boolean = true;
@@ -99,6 +99,25 @@ export class ActivityDetailsComponent implements OnInit {
   iWorkstationId: string;
   aTemplates: any;
   eKindValue = ['discount', 'loyalty-points-discount'];
+  eKindValueForLayout = [
+    'regular',
+    'expenses',
+    'reservation',
+    // below types used in cash register and webshop
+    'empty-line',
+    // below types only used in cash register
+    'repair',
+    'order',
+    'gold-sell',
+    'loyalty-points-discount',
+    'giftcard-discount',
+
+    'loyalty-points',
+    'discount',
+    'payment-discount',
+    'offer',
+    'refund'
+  ];
   // eKindForLayoutHide =['giftcard'];
   translation:any=[];
 
@@ -127,8 +146,8 @@ export class ActivityDetailsComponent implements OnInit {
     this.translationService.get(translationKey).subscribe((res:any)=>{
       this.translation = res;
     })
+    this.oLocationName = this.activity.oLocationName;
 
-    this._oActivity = this.activity;
     if (this.activity) {
       if (this.activity?.activityitems?.length) {
         this.activityItems = this.activity.activityitems;
@@ -494,6 +513,7 @@ export class ActivityDetailsComponent implements OnInit {
     this.loading = true;
     this.apiService.postNew('cashregistry', `/api/v1/activities/activity-item/${this.activity._id}`, this.requestParams).subscribe((result: any) => {
       this.activityItems = result.data[0].result;
+      this.oLocationName = this.activityItems[0].oLocationName;   
       if (this.activityItems.length == 1) this.activityItems[0].collapsedBtn = true;
       this.transactions = [];
       for (const obj of this.activityItems) {
