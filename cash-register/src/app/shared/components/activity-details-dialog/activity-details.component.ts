@@ -13,7 +13,6 @@ import { ReceiptService } from '../../service/receipt.service';
 import { Observable } from 'rxjs';
 import { ToastService } from '../toast';
 import { TranslateService } from '@ngx-translate/core';
-import {BehaviorSubject} from 'rxjs';
 @Component({
   selector: 'app-activity-details',
   templateUrl: './activity-details.component.html',
@@ -433,15 +432,6 @@ export class ActivityDetailsComponent implements OnInit {
     // this.printSettings = this.getPdfPrintSetting(type);
 
     this.sendForReceipt(oDataSource, template, oDataSource.sNumber);
-
-    // this.receiptService.exportToPdf({
-    //   oDataSource: oDataSource,
-    //   templateData: template.data,
-    //   pdfTitle: oDataSource.sNumber,
-    //   printSettings: this.printSettings,
-    //   printActionSettings: this.printActionSettings,
-    //   eSituation: 'is_created'
-    // })
     return;
     const data = this.activity.activityitems[index];
     const sName = 'Sample', eType = 'completed';
@@ -620,22 +610,9 @@ export class ActivityDetailsComponent implements OnInit {
     });
 
     this.sendForReceipt(oDataSource, template, oDataSource.sNumber);
-
-    // this.receiptService.exportToPdf({
-    //   oDataSource: oDataSource,
-    //   templateData: template,
-    //   pdfTitle: this.activity.sNumber,
-
-    // })
-
   }
 
   sendForReceipt(oDataSource: any, template: any, title: any) {
-    console.log("------------------------export pdf----------------------------");
-    console.log(oDataSource);
-    console.log(template);
-    console.log(title);
-    // return;
     this.receiptService.exportToPdf({
       oDataSource: oDataSource,
       pdfTitle: title,

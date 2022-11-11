@@ -1115,7 +1115,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
       await this.addExpenses(
         {
           amount: -(nDifferenceAmount),
-          comment: 'Lost money',
+          comment: 'LOST_MONEY',
           oPayment: {
             iPaymentMethodId: oCashPaymentMethod._id,
             nAmount: nDifferenceAmount,
@@ -1316,29 +1316,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
     
     const bCondition3 = (this.iStatisticId && this.iStatisticId != '' && this.oStatisticsDocument && this.oStatisticsDocument?.bIsDayState === false) || false ;
 
-    this.bShowDownload = bCondition1 || bCondition2 || bCondition3;    
-
-    // console.log({ bCondition1, bCondition2, bCondition3, iStatisticId: this.iStatisticId })
-    // this.bShowDownload = (this.oStatisticsDocument && this.oStatisticsDocument?.bIsDayState === false) &&
-    //   (!this.IsDynamicState &&
-    //   !this.selectedEmployee?._id &&
-    //   !this.selectedWorkStation?._id &&
-    //   !(this.aSelectedLocation?.length > 1) &&
-    //   this.statisticFilter.dFromState != '' &&
-    //   this.statisticFilter.dToState != '');
-
-    // console.log('checkShowDownload', { 
-    //   oStatisticsDocument: this.oStatisticsDocument, 
-    //   dFromState: this.statisticFilter.dFromState, 
-    //   dToState: this.statisticFilter.dToState,
-    //   IsDynamicState: this.IsDynamicState,
-    //   selectedEmployee:this.selectedEmployee,
-    //   selectedWorkStation:this.selectedWorkStation,
-    //   aSelectedLocation:this.aSelectedLocation
-    // })
-    // console.log('this.bShowDownload', this.bShowDownload, '!this.IsDynamicState', !this.IsDynamicState, '!this.selectedEmployee?._id', !this.selectedEmployee?._id,
-    //   '!this.selectedWorkStation?._id', !this.selectedWorkStation?._id, '!(this.aSelectedLocation?.length > 1)', !(this.aSelectedLocation?.length > 1),
-    //   'this.statisticFilter.dFromState != "" ', this.statisticFilter.dFromState != '', 'this.statisticFilter.dToState != ""', this.statisticFilter.dToState != '');
+    this.bShowDownload = bCondition1 || bCondition2 || bCondition3;
   }
 
   fetchStockValuePerLocation() {

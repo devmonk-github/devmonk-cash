@@ -751,14 +751,15 @@
                         </div>
                         <div class="col-5">
 
-                            <!-- <div class="form-group mb-6">
-                                <label class="form-control-label mb-3">{{ "STATUS" | translate}} </label>
-                                <select name="status" id="status" class="form-control form-control-solid"
+                            <div class="form-group mb-6">
+                                <label class="form-control-label mb-3">{{ "GIFT_CARD_NUMBER" | translate}} </label>
+                                 <input type="text" name="giftCardNumber" class="form-control form-control-solid mb-3 mb-lg-0" [(ngModel)]="activity.sGiftCardNumber" readonly/>
+                                <!-- <select name="giftCardNumber" id="giftCardNumber" class="form-control form-control-solid"
                                     [(ngModel)]="activity.eActivityItemStatus">
                                     <option *ngFor="let type of repairStatus" [value]="type">{{type}}
                                     </option>
-                                </select>
-                            </div> -->
+                                </select> -->
+                            </div>
 
                             <div>
                                 {{"INFORM_CUSTOMER_THAT_PRODUCT_CAN_BE_PICKED_UP" | translate}}
@@ -987,7 +988,7 @@
                     </div>
                     <div class="row">
 
-                        <div class="col-5">
+                        <div class="col-6">
                             <div class="row mb-6">
                                 <label class="col-lg-4 col-form-label fw-bold fs-6">{{ "INTAKE_DATE" |
                                     translate}}</label>
@@ -998,7 +999,7 @@
                                             class="form-control form-control form-control-solid"
                                             name="dCreatedDate"
                                             [ngModel]="activity.dCreatedDate | date:'yyyy-MM-dd'"
-                                            (ngModelChange)="activity.dCreatedDate = $event" />
+                                            (ngModelChange)="activity.dCreatedDate = $event"  readonly/>
                                        
                                         </div>
                                     </div>
@@ -1113,7 +1114,7 @@
                                 </table>
                             </div>
                         </div>
-                        <div class="col-3">
+                        <!-- <div class="col-3">
                             <div *ngIf="!activity?.aImage?.length">
                                 {{"NO_IMAGES" | translate}}
                             </div>
@@ -1141,8 +1142,8 @@
 
                                 </div>
                             </div>
-                        </div>
-                        <div class="col-4">
+                        </div> -->
+                        <div class="col-6">
                             <!-- <div class="row mb-6">
                                 <label class="col-lg-4 col-form-label fw-bold fs-6"> {{ "BRAND" |
                                     translate}}</label>

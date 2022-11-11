@@ -129,7 +129,6 @@ export class ActivityItemsComponent implements OnInit {
     this.getProperties();
 
     this.barcodeService.barcodeScanned.subscribe((barcode: string) => {
-      console.log('barcode scanned ', barcode);
       this.openModal(barcode);
     });
   }
@@ -224,7 +223,6 @@ export class ActivityItemsComponent implements OnInit {
 
   //  Function for set sort option on transaction table
   setSortOption(sortHeader: any) {
-    console.log('setSortOption: ', sortHeader);
     if (sortHeader.selected) {
       sortHeader.sort = sortHeader.sort == 'asc' ? 'desc' : 'asc';
       this.sortAndLoadTransactions(sortHeader)

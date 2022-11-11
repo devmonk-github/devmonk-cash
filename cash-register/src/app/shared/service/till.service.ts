@@ -275,7 +275,6 @@ export class TillService {
     });
     localStorage.removeItem('discountRecords');
     if (redeemedLoyaltyPoints && redeemedLoyaltyPoints > 0) {
-      console.log('redeemedLoyaltyPoints: 248: ', redeemedLoyaltyPoints)
       let nDiscount = Math.round(redeemedLoyaltyPoints / originalTItemsLength);
       const reedemedTItem = body.transactionItems.find((o: any) => o.oType.eTransactionType === "loyalty-points");
       body.transactionItems.map((i: any) => {
@@ -300,6 +299,7 @@ export class TillService {
         }
       });
     }
+    console.log('finaly body: ', body);
     return body;
   }
 

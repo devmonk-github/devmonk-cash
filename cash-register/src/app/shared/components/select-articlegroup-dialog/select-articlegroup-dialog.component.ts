@@ -46,13 +46,6 @@ export class SelectArticleDialogComponent implements OnInit, AfterViewInit {
     this.from = this.dialogRef.context.from;
   }
   ngAfterViewInit(): void {
-    // let articleGroupFocusedInterval = setInterval(() => {
-    //   if (this.articleGroupRefFocused)
-    //     clearInterval(articleGroupFocusedInterval);
-    //   if (this.articleGroupRef)
-    //     this.articleGroupRef.focus()
-    //   console.count(`${this.articleGroupRef.focused}`);
-    // }, 100)
 
   }
 
