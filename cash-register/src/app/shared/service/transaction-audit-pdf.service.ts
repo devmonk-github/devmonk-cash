@@ -114,6 +114,8 @@ export class TransactionAuditUiPdfService {
         bIsSupplierMode
     }:any) {
 
+        // console.log({ aStatistic, oStatisticsDocument, aSelectedWorkStation, aWorkStation });
+
         const date = moment(Date.now()).format('DD-MM-yyyy');
         const columnWidths = ['*', 60, 80, 80, 100];
         const tableLayout = {
@@ -157,7 +159,14 @@ export class TransactionAuditUiPdfService {
                 .filter((workstation: any) => aSelectedWorkStation.includes(workstation._id))
                 .map((workstation: any) => workstation.sName)
                 .join(', ');
-            if (!sWorkstation) sWorkstation = aWorkStation.filter((workstation:any)=> workstation._id === aSelectedWorkStation)[0].sName;
+            if (!sWorkstation){
+                const temp = aWorkStation.filter((workstation: any) => workstation._id === aSelectedWorkStation);
+                if(temp?.length){
+                    sWorkstation = temp[0].sName;
+                } else {
+                    sWorkstation = aSelectedWorkStation;
+                }
+            }
         } else {
             sWorkstation = aWorkStation.map((workstation: any) => workstation.sName).join(', ');
         }
@@ -221,9 +230,11 @@ export class TransactionAuditUiPdfService {
 
         this.aGoldPurchases = _aGoldPurchases?.data[0]?.result.filter((item: any) => item.oType.eKind == 'gold-purchase');
 
-        this.processCashCountings(tableLayout, oStatisticsDocument, aStatistic);
+        if (sDisplayMethod != "aVatRates"){
+            this.processCashCountings(tableLayout, oStatisticsDocument, aStatistic);
+            this.processVatRates(columnWidths, tableLayout, oStatisticsDocument?.aVatRates);
+        }
 
-        this.processPdfByVatRates(columnWidths, tableLayout, aStatistic);
 
         switch (sDisplayMethod.toString()) {
             case 'revenuePerBusinessPartner':
@@ -242,7 +253,9 @@ export class TransactionAuditUiPdfService {
                 this.processPdfByRevenuePerArticleGroup(columnWidths,tableLayout,aStatistic);
                 break;
             case 'aVatRates':
-                this.processPdfByVatRates(columnWidths, tableLayout, aStatistic);
+                aStatistic.forEach((oStatistic:any)=> {
+                    this.processVatRates(columnWidths, tableLayout, oStatistic?.aVatRates);
+                })
         }
 
         this.content.push({text: 'Payment Methods',style: ['left', 'normal'],margin: [0, 30, 0, 10],});
@@ -360,7 +373,7 @@ export class TransactionAuditUiPdfService {
 
     }
 
-    processPdfByVatRates(columnWidths:any, tableLayout:any, aStatistic:any){
+    processVatRates(columnWidths: any, tableLayout: any, aVatRates:any){
         const tableHeaders = [
             'VAT_TYPE',
             'PRICE_WITH_VAT',
@@ -380,8 +393,8 @@ export class TransactionAuditUiPdfService {
 
         // this.pushSeparatorLine();
 
-        if (aStatistic[0]?.aVatRates?.length) {
-            aStatistic[0].aVatRates.forEach((oItem: any) => {
+        if (aVatRates?.length) {
+            aVatRates.forEach((oItem: any) => {
                 texts.push([{ text: 'VAT_RATE - ' + ((oItem?.nVat) ? oItem?.nVat : ''), colSpan: 5, style: ['articleGroup', 'center', 'td'] }, {}, {}, {}, {}]);
                 aFieldsToInclude.forEach((field: any) => {
                     texts.push([

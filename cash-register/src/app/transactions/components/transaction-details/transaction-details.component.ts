@@ -13,6 +13,7 @@ import { PrintService } from 'src/app/shared/service/print.service';
 import { Observable } from 'rxjs';
 import { ToastService } from 'src/app/shared/components/toast';
 import * as JsBarcode from 'jsbarcode';
+import { TillService } from 'src/app/shared/service/till.service';
 const moment = (_moment as any).default ? (_moment as any).default : _moment;
 // import { faMagnifyingGlassPlus } from '@fortawesome/free-solid-svg-icons';
 
@@ -61,7 +62,10 @@ export class TransactionDetailsComponent implements OnInit {
     private dialogService: DialogService,
     private receiptService: ReceiptService,
     private printService: PrintService,
-    private toastService: ToastService
+    private toastService: ToastService,
+    private tillService: TillService,
+    // private compiler: Compiler,
+    // private injector: Injector,
   ) {
     const _injector = this.viewContainerRef.parentInjector;
     this.dialogRef = _injector.get<DialogComponent>(DialogComponent);
@@ -71,62 +75,64 @@ export class TransactionDetailsComponent implements OnInit {
     this.iBusinessId = localStorage.getItem("currentBusiness") || '';
     this.iLocationId = localStorage.getItem("currentLocation") || '';
     this.iWorkstationId = localStorage.getItem("currentWorkstation") || '';
-    let dataObject = JSON.parse(JSON.stringify(this.transaction));
-    dataObject.aPayments.forEach((obj: any) => {
-      obj.dCreatedDate = moment(dataObject.dCreatedDate).format('DD-MM-yyyy hh:mm');
-    });
-    dataObject.aTransactionItems = [];
-    const relatedItemsPromises: any = [];
-    this.transaction.aTransactionItems.forEach((item: any, index: number) => {
-      if (!(item.oType?.eKind == 'discount' || item?.oType?.eKind == 'loyalty-points-discount')) {
-        dataObject.aTransactionItems.push(item);
-      }
-    })
-    let language: any = localStorage.getItem('language')
-    dataObject.total = 0;
-    let total = 0, totalAfterDisc = 0, totalVat = 0, totalDiscount = 0, totalSavingPoints = 0;
-    dataObject.aTransactionItems.forEach((item: any, index: number) => {
-      let name = '';
-      if (item && item.oArticleGroupMetaData && item.oArticleGroupMetaData.oName && item.oArticleGroupMetaData.oName[language]) {
-        name = item?.oArticleGroupMetaData?.oName[language] + ' ';
-      }
-      item.description = name;
-      if (item?.oBusinessProductMetaData?.sLabelDescription) item.description = item.description + item?.oBusinessProductMetaData?.sLabelDescription + ' ' + item?.sProductNumber;
-      totalSavingPoints += item.nSavingsPoints;
-      let disc = parseFloat(item.nDiscount);
-      if (item.bPaymentDiscountPercent) {
-        disc = (disc * parseFloat(item.nPriceIncVat) / (100 + parseFloat(item.nVatRate)));
-        item.nDiscountToShow = parseFloat(disc.toFixed(2));
-      } else { item.nDiscountToShow = disc; }
-      item.priceAfterDiscount = (parseFloat(item.nPaymentAmount) - parseFloat(item.nDiscountToShow));
-      item.nPriceIncVatAfterDiscount = (parseFloat(item.nPriceIncVat) - parseFloat(item.nDiscountToShow));
-      item.totalPaymentAmount = parseFloat(item.nPaymentAmount) * parseFloat(item.nQuantity);
-      item.totalPaymentAmountAfterDisc = parseFloat(item.priceAfterDiscount) * parseFloat(item.nQuantity);
-      item.bPrepayment = item?.oType?.bPrepayment || false;
-      const vat = (item.nVatRate * item.priceAfterDiscount / (100 + parseFloat(item.nVatRate)));
-      item.vat = vat.toFixed(2);
-      totalVat += vat;
-      total = total + item.totalPaymentAmount;
-      totalAfterDisc += item.totalPaymentAmountAfterDisc;
-      totalDiscount += disc;
-      relatedItemsPromises[index] = this.getRelatedTransactionItem(item?.iActivityItemId, item?._id, index);
-    })
-    await Promise.all(relatedItemsPromises).then(result => {
-      result.forEach((item: any, index: number) => {
-        this.transaction.aTransactionItems[index].related = item.data || [];
-      })
-    });
+    // let language: any = localStorage.getItem('language')
+    this.transaction = await this.tillService.processTransactionForPdfReceipt(this.transaction);
+    // console.log('after processing', this.transaction);
+    // let dataObject = JSON.parse(JSON.stringify(this.transaction));
+    // dataObject.aPayments.forEach((obj: any) => {
+    //   obj.dCreatedDate = moment(dataObject.dCreatedDate).format('DD-MM-yyyy hh:mm');
+    // });
+    // dataObject.aTransactionItems = [];
+    // const relatedItemsPromises: any = [];
+    // this.transaction.aTransactionItems.forEach((item: any, index: number) => {
+    //   if (!(item.oType?.eKind == 'discount' || item?.oType?.eKind == 'loyalty-points-discount')) {
+    //     dataObject.aTransactionItems.push(item);
+    //   }
+    // })
+    // dataObject.total = 0;
+    // let total = 0, totalAfterDisc = 0, totalVat = 0, totalDiscount = 0, totalSavingPoints = 0;
+    // dataObject.aTransactionItems.forEach((item: any, index: number) => {
+    //   let name = '';
+    //   if (item && item.oArticleGroupMetaData && item.oArticleGroupMetaData.oName && item.oArticleGroupMetaData.oName[language]) {
+    //     name = item?.oArticleGroupMetaData?.oName[language] + ' ';
+    //   }
+    //   item.description = name;
+    //   if (item?.oBusinessProductMetaData?.sLabelDescription) item.description = item.description + item?.oBusinessProductMetaData?.sLabelDescription + ' ' + item?.sProductNumber;
+    //   totalSavingPoints += item.nSavingsPoints;
+    //   let disc = parseFloat(item.nDiscount);
+    //   if (item.bPaymentDiscountPercent) {
+    //     disc = (disc * parseFloat(item.nPriceIncVat) / (100 + parseFloat(item.nVatRate)));
+    //     item.nDiscountToShow = parseFloat(disc.toFixed(2));
+    //   } else { item.nDiscountToShow = disc; }
+    //   item.priceAfterDiscount = (parseFloat(item.nPaymentAmount) - parseFloat(item.nDiscountToShow));
+    //   item.nPriceIncVatAfterDiscount = (parseFloat(item.nPriceIncVat) - parseFloat(item.nDiscountToShow));
+    //   item.totalPaymentAmount = parseFloat(item.nPaymentAmount) * parseFloat(item.nQuantity);
+    //   item.totalPaymentAmountAfterDisc = parseFloat(item.priceAfterDiscount) * parseFloat(item.nQuantity);
+    //   item.bPrepayment = item?.oType?.bPrepayment || false;
+    //   const vat = (item.nVatRate * item.priceAfterDiscount / (100 + parseFloat(item.nVatRate)));
+    //   item.vat = vat.toFixed(2);
+    //   totalVat += vat;
+    //   total = total + item.totalPaymentAmount;
+    //   totalAfterDisc += item.totalPaymentAmountAfterDisc;
+    //   totalDiscount += disc;
+    //   relatedItemsPromises[index] = this.getRelatedTransactionItem(item?.iActivityItemId, item?._id, index);
+    // })
+    // await Promise.all(relatedItemsPromises).then(result => {
+    //   result.forEach((item: any, index: number) => {
+    //     this.transaction.aTransactionItems[index].related = item.data || [];
+    //   })
+    // });
 
-    dataObject.totalAfterDisc = parseFloat(totalAfterDisc.toFixed(2));
-    dataObject.total = parseFloat(total.toFixed(2));
-    dataObject.totalVat = parseFloat(totalVat.toFixed(2));
-    dataObject.totalDiscount = parseFloat(totalDiscount.toFixed(2));
-    dataObject.totalSavingPoints = totalSavingPoints;
-    dataObject.totalQty = this.transaction.aTransactionItems?.length || 0;
-    dataObject.dCreatedDate = moment(dataObject.dCreatedDate).format('DD-MM-yyyy hh:mm');
-    this.getRelatedTransaction(dataObject?.iActivityId, dataObject?._id)
+    // dataObject.totalAfterDisc = parseFloat(totalAfterDisc.toFixed(2));
+    // dataObject.total = parseFloat(total.toFixed(2));
+    // dataObject.totalVat = parseFloat(totalVat.toFixed(2));
+    // dataObject.totalDiscount = parseFloat(totalDiscount.toFixed(2));
+    // dataObject.totalSavingPoints = totalSavingPoints;
+    // dataObject.totalQty = this.transaction.aTransactionItems?.length || 0;
+    // dataObject.dCreatedDate = moment(dataObject.dCreatedDate).format('DD-MM-yyyy hh:mm');
+    // this.getRelatedTransaction(dataObject?.iActivityId, dataObject?._id)
 
-    this.transaction = dataObject;
+    // this.transaction = dataObject;
     
     this.loading = false;
     this.fetchBusinessDetails();
@@ -213,28 +219,27 @@ export class TransactionDetailsComponent implements OnInit {
     const template = await this.getTemplate('regular').toPromise();
     let nTotalOriginalAmount = 0;
     const oDataSource = JSON.parse(JSON.stringify(this.transaction));
-    if (oDataSource.aTransactionItems?.length === 1 && oDataSource._id === oDataSource.aTransactionItems[0].iTransactionId) {
-      nTotalOriginalAmount = oDataSource.total;
-      oDataSource.bHasPrePayments = false;
-    } else {
+    // if (oDataSource.aTransactionItems?.length === 1 && oDataSource._id === oDataSource.aTransactionItems[0].iTransactionId) {
+    //   nTotalOriginalAmount = oDataSource.total;
+    //   oDataSource.bHasPrePayments = false;
+    // } else {
       oDataSource.aTransactionItems.forEach((item: any) => {
-        nTotalOriginalAmount += item.nPriceIncVat;
         let description = `${item.description}\n`;
-        if (item.nPriceIncVat !== item.nPaymentAmount) {
-          description += `Original amount: ${item.nPriceIncVat}\n
-                          Already paid: \n${item.sTransactionNumber} | ${item.nPaymentAmount} (this receipt)\n`;
+        if (item?.nDiscountToShow > 0) description += `Original amount: ${item.nPriceIncVat}\n`;
+        if (item?.related?.length) {
+          nTotalOriginalAmount += item.nPriceIncVat;
+          if (item.nPriceIncVat !== item.nPaymentAmount) {
+            description += `Already paid: \n${item.sTransactionNumber} | ${item.nPaymentAmount} (this receipt)\n`;
 
-          if (item?.related?.length) {
             item.related.forEach((related: any) => {
               description += `${related.sTransactionNumber}|${related.nPaymentAmount}\n`;
             });
           }
         }
-
         item.description = description;
       });
-      oDataSource.bHasPrePayments = true;
-    }
+      // oDataSource.bHasPrePayments = true;
+    // }
     oDataSource.sBarcodeURI = this.generateBarcodeURI(false, oDataSource.sNumber);
     oDataSource.sBusinessLogoUrl = (await this.getBase64FromUrl(oDataSource?.businessDetails?.sLogoLight).toPromise()).data;
     oDataSource.oCustomer = {

@@ -1167,7 +1167,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
       this.toastService.show({ type: 'success', text: `Day-state is close now` });
       this.closingDayState = false;
       this.bDisableCountings = true;
-      this.oStatisticsDocument.bIsDayState = false;
+      this.oStatisticsDocument = result?.data;
       this.checkShowDownload();
     }, (error) => {
       console.log('Error: ', error);
