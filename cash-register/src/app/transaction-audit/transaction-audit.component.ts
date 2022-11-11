@@ -1081,7 +1081,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
       currentEmployeeId = JSON.parse(value)._id;
     }
     const transactionItem = {
-      sProductName: 'Expenses',
+      sProductName: data?._eType || 'Expenses',
       sComment: data.comment,
       nPriceIncVat: data.amount,
       nPurchasePrice: data.amount,
@@ -1094,9 +1094,9 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
       iLocationId: this.iLocationId,
       oPayment: data?.oPayment,
       oType: {
-        eTransactionType: 'expenses',
+        eTransactionType: data?._eType || 'Expenses',
         bRefund: false,
-        eKind: 'expenses',
+        eKind: data?._eType || 'Expenses',
         bDiscount: false,
       },
     };
@@ -1110,17 +1110,19 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
 
     const oCashPaymentMethod = this.allPaymentMethod.filter((el: any) => el.sName.toLowerCase() === 'cash')[0];
     const oBankPaymentMethod = this.allPaymentMethod.filter((el: any) => el.sName.toLowerCase() === 'bankpayment')[0];
-    if (nDifferenceAmount > 0) {
+    console.log('nDifferenceAmount: ', nDifferenceAmount);
+    if (nDifferenceAmount !== 0) {
       //we have difference in cash, so add that as and expense
       await this.addExpenses(
         {
           amount: -(nDifferenceAmount),
-          comment: 'LOST_MONEY',
+          comment: 'DIFF_IN_CASH_COUNTING',
           oPayment: {
             iPaymentMethodId: oCashPaymentMethod._id,
             nAmount: nDifferenceAmount,
             sMethod: oCashPaymentMethod.sName.toLowerCase()
-          }
+          },
+          _eType: 'diff-counting'
         }
       ).toPromise();
     }

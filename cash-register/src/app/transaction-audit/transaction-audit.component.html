@@ -354,7 +354,7 @@
                                         <span class="col-8"> {{ oStatisticsData.dStartDate | date:'medium' }}
                                         </span>
                                     </p>
-                                    <p class="row">
+                                    <p class="row" *ngIf="bDisableCountings">
                                         <span class="col-4 fw-bolder">{{ "END_DATE" | translate}} : </span>
                                         <span class="col-8"> {{ oStatisticsData.dEndDate | date:'medium' }} </span>
                                     </p>

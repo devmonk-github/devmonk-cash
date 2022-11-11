@@ -175,26 +175,10 @@ export class ActivityItemsComponent implements OnInit {
 
   getLocations() {
     return this.apiService.postNew('core', `/api/v1/business/${this.businessDetails._id}/list-location`, {}).toPromise();
-    // (result: any) => {
-    //   if (result.message == 'success') {
-    //     this.requestParams.locations = result.data.aLocation;
-    //   }
-    // }),
-    // (error: any) => {
-    //   console.error(error)
-    // }
   }
 
   getWorkstations() {
     return this.apiService.getNew('cashregistry', `/api/v1/workstations/list/${this.businessDetails._id}/${this.iLocationId}`).toPromise();
-    // (result: any) => {
-    //   if (result && result.data) {
-    //     this.workstations = result.data;
-    //   }
-    // }),
-    // (error: any) => {
-    //   console.error(error)
-    // }
   }
 
   // Function for update item's per page

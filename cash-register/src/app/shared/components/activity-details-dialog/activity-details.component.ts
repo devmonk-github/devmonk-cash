@@ -101,7 +101,7 @@ export class ActivityDetailsComponent implements OnInit {
   eKindValue = ['discount', 'loyalty-points-discount'];
   // eKindForLayoutHide =['giftcard'];
   translation:any=[];
-
+  bActivityNumber: boolean = false;
 
   constructor(
     private viewContainerRef: ViewContainerRef,
@@ -132,6 +132,7 @@ export class ActivityDetailsComponent implements OnInit {
     if (this.activity) {
       if (this.activity?.activityitems?.length) {
         this.activityItems = this.activity.activityitems;
+        if (this.activityItems?.length == 1) this.activityItems[0].collapsedBtn = true; /* only item there then we will always open it */
         if (this.openActivityId) {
           this.activityItems.forEach((item: any) => {
             if (item._id === this.openActivityId) item.collapsedBtn = true;
@@ -326,6 +327,7 @@ export class ActivityDetailsComponent implements OnInit {
   }
 
   openTransaction(transaction: any, itemType: any) {
+    console.log('openTransaction: ', JSON.parse(JSON.stringify(transaction)), itemType);
     transaction.iActivityId = this.activity._id;
     this.dialogService.openModal(TransactionItemsDetailsComponent, { cssClass: "modal-xl", context: { transaction, itemType, selectedId: transaction._id } })
       .instance.close.subscribe((result: any) => {
@@ -387,6 +389,8 @@ export class ActivityDetailsComponent implements OnInit {
             this.close(true);
           }, 100);
         }
+      }, (error) => {
+        console.log('error: ', error);
       });
   }
   getBusinessDetails(): Observable<any> {
@@ -629,5 +633,9 @@ export class ActivityDetailsComponent implements OnInit {
       ...oFilterBy
     }
     return this.apiService.postNew('cashregistry', `/api/v1/print-settings/list/${this.iBusinessId}`, oBody).toPromise();
+  }
+
+  changeTotalAmount(activity: any) {
+    activity.nTotalAmount = activity.nPriceIncVat * activity.nQuantity;
   }
 }

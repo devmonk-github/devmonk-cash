@@ -206,14 +206,6 @@ export class ServicesComponent implements OnInit, AfterViewInit {
 
   getLocations() {
     return this.apiService.postNew('core', `/api/v1/business/${this.businessDetails._id}/list-location`, {}).toPromise();
-    // (result: any) => {
-    //   if (result.message == 'success') {
-    //     this.requestParams.locations = result.data.aLocation;
-    //   }
-    // }),
-    // (error: any) => {
-    //   console.error(error)
-    // }
   }
 
   async setLocation(sLocationId: string = "") {
@@ -249,14 +241,6 @@ export class ServicesComponent implements OnInit, AfterViewInit {
 
   getWorkstations() {
     return this.apiService.getNew('cashregistry', `/api/v1/workstations/list/${this.businessDetails._id}/${this.iLocationId}`).toPromise();
-    // (result: any) => {
-    //   if (result && result.data) {
-    //     this.workstations = result.data;
-    //   }
-    // }),
-    // (error: any) => {
-    //   console.error(error)
-    // }
   }
 
   // Function for update item's per page
@@ -304,11 +288,6 @@ export class ServicesComponent implements OnInit, AfterViewInit {
 
   listEmployee() {
     return this.apiService.postNew('auth', '/api/v1/employee/list', { iBusinessId: this.businessDetails._id }).toPromise();
-    //   if (result?.data?.length) {
-    //     if (result?.data?.length && result.data[0].result?.length) this.employees = result.data[0].result
-    //   }
-    // }, (error) => {
-    // })
   }
 
   openActivities(activity: any, openActivityId?: any) {
@@ -466,13 +445,7 @@ export class ServicesComponent implements OnInit, AfterViewInit {
     this.dialogService.openModal(CardsComponent, { cssClass: 'modal-lg', context: { customer: oCustomer, oGiftcard } })
       .instance.close.subscribe(result => {
         if (result) {
-          // if (result.giftCardInfo.nAmount > 0) {
-          //   this.appliedGiftCards.push(result.giftCardInfo);
-          //   this.changeInPayment();
-          // }
-          // if (result.redeemedLoyaltyPoints && result.redeemedLoyaltyPoints > 0) {
-          //   this.addReedemedPoints(result.redeemedLoyaltyPoints);
-          // }
+
         }
       });
   }
