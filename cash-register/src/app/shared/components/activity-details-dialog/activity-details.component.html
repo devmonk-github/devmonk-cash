@@ -352,7 +352,7 @@
                                                         class="form-control form-control form-control-solid"
                                                         name="dCreatedDate"
                                                         [ngModel]="activity.dCreatedDate | date:'yyyy-MM-dd'"
-                                                        (ngModelChange)="activity.dCreatedDate = $event" />
+                                                        (ngModelChange)="activity.dCreatedDate = $event" readonly />
                                                    
                                                     </div>
                                                 </div>
@@ -592,22 +592,22 @@
                                                     <div class="col-lg-8">
                                                         <div class="row ">
                                                             <div class="col-lg-8 fv-row">
-                                                                <ng-select *ngIf="!employee" [(ngModel)]="employee"
+                                                                <ng-select *ngIf="!activity.iAssigneeId" [(ngModel)]="activity.iAssigneeId"
                                                                     (search)="searchEmployees($event.term)"
                                                                     class="form-control form-control-solid p-0 w-100 custom"
                                                                     placeholder="Search employee" [minTermLength]="2"
                                                                     [clearable]="false"
                                                                     [isOpen]="filteredEmployees.length > 0"
-                                                                    (change)="onEmployeeChange($event)">
+                                                                    (change)="onEmployeeChange($event , index)">
                                                                     <ng-option *ngFor="let option of filteredEmployees"
                                                                         [value]="option">
                                                                         {{option.sName ||
                                                                         'Unknown'}}</ng-option>
                                                                 </ng-select>
 
-                                                                <div class="chip d-flex" *ngIf="employee">
-                                                                    {{employee}}
-                                                                    <div (click)="employee=null">
+                                                                <div class="chip d-flex" *ngIf="activity.iAssigneeId">
+                                                                    {{activity.employeeName}}
+                                                                    <div (click)="removeEmployeees(index)">
                                                                         &nbsp;<i
                                                                             class="close fas fa-times cursor-pointer"></i>
                                                                     </div>
@@ -622,21 +622,21 @@
                                                         </div>
                                                         <div class="row">
                                                             <div class="col-lg-8 fv-row">
-                                                                <ng-select *ngIf="!supplier" [(ngModel)]="supplier"
+                                                                <ng-select *ngIf="!activity.iBusinessPartnerId" [(ngModel)]="activity.iBusinessPartnerId"
                                                                     (search)="searchSuppliers($event.term)"
                                                                     class="form-control form-control-solid p-0 w-100 custom"
                                                                     placeholder="Search repairer" [minTermLength]="2"
                                                                     [clearable]="false"
                                                                     [isOpen]="supplierOptions.length > 0"
-                                                                    (change)="onSupplierChange($event)">
+                                                                    (change)="onSupplierChange($event,index)">
                                                                     <ng-option *ngFor="let option of supplierOptions"
                                                                         [value]="option">
                                                                         {{option.sName ||
                                                                         'Unknown'}}</ng-option>
                                                                 </ng-select>
-                                                                <div class="chip d-flex" *ngIf="supplier">
-                                                                    {{supplier}}
-                                                                    <div (click)="supplier=null">
+                                                                <div class="chip d-flex" *ngIf="activity.iBusinessPartnerId">
+                                                                    {{activity.sBusinessPartnerName}}
+                                                                    <div (click)="removeSuppliers(index)">
                                                                         &nbsp;<i
                                                                             class="close fas fa-times cursor-pointer"></i>
                                                                     </div>
@@ -652,21 +652,21 @@
                                                     <div class="col-lg-8">
                                                         <div class="row">
                                                             <div class="col-lg-8 fv-row">
-                                                                <ng-select *ngIf="!brand" [(ngModel)]="brand"
+                                                                <ng-select *ngIf="!activity.iBusinessBrandId" [(ngModel)]="activity.iBusinessBrandId"
                                                                     (search)="searchBrands($event.term)"
                                                                     class="form-control form-control-solid p-0 w-100 custom"
                                                                     placeholder="Search brand" [minTermLength]="2"
                                                                     [clearable]="false"
                                                                     [isOpen]="filteredBrands.length > 0"
-                                                                    (change)="onBrandChange($event)">
+                                                                    (change)="onBrandChange($event, index)">
                                                                     <ng-option *ngFor="let option of filteredBrands"
                                                                         [value]="option">
                                                                         {{option.sName ||
                                                                         'Unknown'}}</ng-option>
                                                                 </ng-select>
-                                                                <div class="chip d-flex" *ngIf="brand">
-                                                                    {{brand}}
-                                                                    <div (click)="brand=null">
+                                                                <div class="chip d-flex" *ngIf="activity.iBusinessBrandId">
+                                                                    {{activity.brandName}}
+                                                                    <div (click)="removeBrands(index)">
                                                                         &nbsp;<i
                                                                             class="close fas fa-times cursor-pointer"></i>
                                                                     </div>
@@ -1876,22 +1876,22 @@
                                         <div class="col-lg-8">
                                             <div class="row ">
                                                 <div class="col-lg-8 fv-row">
-                                                    <ng-select *ngIf="!employee" [(ngModel)]="employee"
+                                                    <ng-select *ngIf="!activity.iAssigneeId" [(ngModel)]="activity.iAssigneeId"
                                                         (search)="searchEmployees($event.term)"
                                                         class="form-control form-control-solid p-0 w-100 custom"
                                                         placeholder="Search employee" [minTermLength]="2"
                                                         [clearable]="false"
                                                         [isOpen]="filteredEmployees.length > 0"
-                                                        (change)="onEmployeeChange($event)">
+                                                        (change)="onEmployeeChange($event , index)">
                                                         <ng-option *ngFor="let option of filteredEmployees"
                                                             [value]="option">
                                                             {{option.sName ||
                                                             'Unknown'}}</ng-option>
                                                     </ng-select>
 
-                                                    <div class="chip d-flex" *ngIf="employee">
-                                                        {{employee}}
-                                                        <div (click)="employee=null">
+                                                    <div class="chip d-flex" *ngIf="activity.iAssigneeId">
+                                                        {{activity.employeeName}}
+                                                        <div (click)="removeEmployeees(index)">
                                                             &nbsp;<i
                                                                 class="close fas fa-times cursor-pointer"></i>
                                                         </div>
@@ -1904,23 +1904,25 @@
                                                     <label>{{ "OR" | translate}}</label>
                                                 </div>
                                             </div>
+
+                                            
                                             <div class="row">
                                                 <div class="col-lg-8 fv-row">
-                                                    <ng-select *ngIf="!supplier" [(ngModel)]="supplier"
+                                                    <ng-select *ngIf="!activity.iBusinessPartnerId" [(ngModel)]="activity.iBusinessPartnerId"
                                                         (search)="searchSuppliers($event.term)"
                                                         class="form-control form-control-solid p-0 w-100 custom"
                                                         placeholder="Search repairer" [minTermLength]="2"
                                                         [clearable]="false"
                                                         [isOpen]="supplierOptions.length > 0"
-                                                        (change)="onSupplierChange($event)">
+                                                        (change)="onSupplierChange($event,index)">
                                                         <ng-option *ngFor="let option of supplierOptions"
                                                             [value]="option">
                                                             {{option.sName ||
                                                             'Unknown'}}</ng-option>
                                                     </ng-select>
-                                                    <div class="chip d-flex" *ngIf="supplier">
-                                                        {{supplier}}
-                                                        <div (click)="supplier=null">
+                                                    <div class="chip d-flex" *ngIf="activity.iBusinessPartnerId">
+                                                        {{activity.sBusinessPartnerName}}
+                                                        <div (click)="removeSuppliers(index)">
                                                             &nbsp;<i
                                                                 class="close fas fa-times cursor-pointer"></i>
                                                         </div>
@@ -1936,21 +1938,21 @@
                                         <div class="col-lg-8">
                                             <div class="row">
                                                 <div class="col-lg-8 fv-row">
-                                                    <ng-select *ngIf="!brand" [(ngModel)]="brand"
+                                                    <ng-select *ngIf="!activity.iBusinessBrandId" [(ngModel)]="activity.iBusinessBrandId"
                                                         (search)="searchBrands($event.term)"
                                                         class="form-control form-control-solid p-0 w-100 custom"
                                                         placeholder="Search brand" [minTermLength]="2"
                                                         [clearable]="false"
                                                         [isOpen]="filteredBrands.length > 0"
-                                                        (change)="onBrandChange($event)">
+                                                        (change)="onBrandChange($event, index)">
                                                         <ng-option *ngFor="let option of filteredBrands"
                                                             [value]="option">
                                                             {{option.sName ||
                                                             'Unknown'}}</ng-option>
                                                     </ng-select>
-                                                    <div class="chip d-flex" *ngIf="brand">
-                                                        {{brand}}
-                                                        <div (click)="brand=null">
+                                                    <div class="chip d-flex" *ngIf="activity.iBusinessBrandId">
+                                                        {{activity.brandName}}
+                                                        <div (click)="removeBrands(index)">
                                                             &nbsp;<i
                                                                 class="close fas fa-times cursor-pointer"></i>
                                                         </div>
@@ -1959,9 +1961,6 @@
                                             </div>
                                         </div>
                                     </div>
-
-
-
                                 </div>
                             </div>
                         </div>
