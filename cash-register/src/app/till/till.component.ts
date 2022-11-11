@@ -650,69 +650,13 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   async processTransactionForPdfReceipt(data?: any) {
-    const relatedItemsPromises: any = [];
-    let language: any = localStorage.getItem('language')
-    let dataObject = JSON.parse(JSON.stringify(this.transaction));
-    if (data) {
-      this.transaction = data;
-      dataObject = JSON.parse(JSON.stringify(this.transaction))
-    }
 
-    dataObject.aPayments.forEach((obj: any) => {
-      obj.dCreatedDate = moment(dataObject.dCreatedDate).format('DD-MM-yyyy hh:mm');
-    });
-    dataObject.aTransactionItems = [];
-    this.transaction.aTransactionItems.forEach((item: any, index: number) => {
-      if (!(item.oType?.eKind == 'discount' || item?.oType?.eKind == 'loyalty-points-discount')) {
-        dataObject.aTransactionItems.push(item);
-      }
-    })
-    dataObject.total = 0;
-    let total = 0, totalAfterDisc = 0, totalVat = 0, totalDiscount = 0, totalSavingPoints = 0;
-    dataObject.aTransactionItems.forEach((item: any, index: number) => {
-      let name = '';
-      if (item && item.oArticleGroupMetaData && item.oArticleGroupMetaData.oName && item.oArticleGroupMetaData.oName[language]) name = item?.oArticleGroupMetaData?.oName[language] + ' ';
-      item.description = name;
-      if (item?.oBusinessProductMetaData?.sLabelDescription) item.description = item.description + item?.oBusinessProductMetaData?.sLabelDescription + ' ' + item?.sProductNumber;
-      totalSavingPoints += item.nSavingsPoints;
-      let disc = parseFloat(item.nDiscount);
-      if (item.bDiscountOnPercentage) {
-        disc = (disc * parseFloat(item.nPriceIncVat) / 100);
-        item.nDiscountToShow = disc;//.toFixed(2);
-      } else { item.nDiscountToShow = disc; }
-      item.priceAfterDiscount = parseFloat(item.nRevenueAmount.toFixed(2)) - parseFloat(item.nDiscountToShow);
-      item.nPriceIncVatAfterDiscount = parseFloat(item.nPriceIncVat) - parseFloat(item.nDiscountToShow);
-      item.totalPaymentAmount = parseFloat(item.nRevenueAmount.toFixed(2)) * parseFloat(item.nQuantity);
-      item.totalPaymentAmountAfterDisc = parseFloat(item.priceAfterDiscount.toFixed(2)) * parseFloat(item.nQuantity);
-      item.bPrepayment = item?.oType?.bPrepayment || false;
-      const vat = (item.nVatRate * item.priceAfterDiscount / (100 + parseFloat(item.nVatRate)));
-      item.vat = vat.toFixed(2);
-      totalVat += vat;
-      total = total + item.totalPaymentAmount;
-      totalAfterDisc += item.totalPaymentAmountAfterDisc;
-      totalDiscount += disc;
-      relatedItemsPromises[index] = this.getRelatedTransactionItem(item?.iActivityItemId, item?._id, index);
-    })
-    await Promise.all(relatedItemsPromises).then(result => {
-      result.forEach((item: any, index: number) => {
-        this.transaction.aTransactionItems[index].related = item.data || [];
-      })
-    });
-    dataObject.totalAfterDisc = parseFloat(totalAfterDisc.toFixed(2));
-    dataObject.total = parseFloat(total.toFixed(2));
-    dataObject.totalVat = parseFloat(totalVat.toFixed(2));
-    dataObject.totalDiscount = parseFloat(totalDiscount.toFixed(2));
-    dataObject.totalSavingPoints = totalSavingPoints;
-    dataObject.dCreatedDate = moment(dataObject.dCreatedDate).format('DD-MM-yyyy hh:mm');
-    const result: any = await this.getRelatedTransaction(dataObject?.iActivityId, dataObject?._id).toPromise();
-    dataObject.related = result.data || [];
-    dataObject.related.forEach((obj: any) => {
-      obj.aPayments.forEach((obj: any) => {
-        obj.dCreatedDate = moment(obj.dCreatedDate).format('DD-MM-yyyy hh:mm');
-      });
-      dataObject.aPayments = dataObject.aPayments.concat(obj.aPayments);
-    })
-    this.transaction = dataObject;
+    this.transaction = await this.tillService.processTransactionForPdfReceipt(this.transaction);
+    
+    // if (data) {
+    //   this.transaction = data;
+    //   dataObject = JSON.parse(JSON.stringify(this.transaction))
+    // }
 
     this.handleReceiptPrinting();
 
@@ -738,7 +682,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     // } else {
     oDataSource.aTransactionItems.forEach((item: any) => {
       item.sOrderDescription = item.sProductName + '\n' + item.sDescription;
-      nTotalOriginalAmount += item.nPriceIncVat;
+      nTotalOriginalAmount += item.nPriceIncVatAfterDiscount;
       let description = `${item.sProductName}\n${item.sDescription}`;
       if (item?.related?.length) {
         description += `Original amount: ${item.nPriceIncVat}\n

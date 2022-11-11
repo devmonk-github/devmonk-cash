@@ -6,11 +6,14 @@ import { Transaction } from 'src/app/till/models/transaction.model';
 import { ApiService } from './api.service';
 import * as _ from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
+import * as _moment from 'moment';
+const moment = (_moment as any).default ? (_moment as any).default : _moment;
 @Injectable({
   providedIn: 'root'
 })
 export class TillService {
 
+  iBusinessId = localStorage.getItem('currentBusiness'); 
   constructor(
     private apiService: ApiService) { }
 
@@ -42,7 +45,10 @@ export class TillService {
               if (i.nDiscount > 0 && !i.bDiscountOnPercentage) _nDiscount = i.nDiscount
               else if (i.nDiscount > 0 && i.bDiscountOnPercentage) _nDiscount = i.price * (i.nDiscount / 100)
 
+              
+              // console.log(46, i)
               result += i.quantity * (i.price - _nDiscount) - (i.prePaidAmount || 0);
+              // console.log(48, result);
               // result += type === 'price' ? i.quantity * i.price - i.prePaidAmount || 0 : i[type]
             }
           } else {
@@ -371,5 +377,83 @@ export class TillService {
       sProductNumber: product.sProductNumber,
     }
     return metadata
+  }
+
+  async processTransactionForPdfReceipt(transaction:any){
+    const relatedItemsPromises: any = [];
+    let language: any = localStorage.getItem('language')
+    let dataObject = JSON.parse(JSON.stringify(transaction));
+
+    dataObject.aPayments.forEach((obj: any) => {
+      obj.dCreatedDate = moment(dataObject.dCreatedDate).format('DD-MM-yyyy hh:mm');
+    });
+
+    dataObject.aTransactionItems = [];
+    transaction.aTransactionItems.forEach((item: any, index: number) => {
+      if (!(item.oType?.eKind == 'discount' || item?.oType?.eKind == 'loyalty-points-discount')) {
+        dataObject.aTransactionItems.push(item);
+      }
+    })
+
+
+    dataObject.total = 0;
+    let total = 0, totalAfterDisc = 0, totalVat = 0, totalDiscount = 0, totalSavingPoints = 0;
+    dataObject.aTransactionItems.forEach((item: any, index: number) => {
+      let name = '';
+      if (item && item.oArticleGroupMetaData && item.oArticleGroupMetaData.oName && item.oArticleGroupMetaData.oName[language]) name = item?.oArticleGroupMetaData?.oName[language] + ' ';
+      item.description = name;
+      if (item?.oBusinessProductMetaData?.sLabelDescription) item.description = item.description + item?.oBusinessProductMetaData?.sLabelDescription + ' ' + item?.sProductNumber;
+      totalSavingPoints += item.nSavingsPoints;
+      let disc = parseFloat(item.nDiscount);
+      if (item.bDiscountOnPercentage) {
+        disc = (disc * parseFloat(item.nPriceIncVat) / 100);
+        item.nDiscountToShow = disc;//.toFixed(2);
+      } else { item.nDiscountToShow = disc; }
+      // item.priceAfterDiscount = parseFloat(item.nRevenueAmount.toFixed(2)) - parseFloat(item.nDiscountToShow);
+      item.nPriceIncVatAfterDiscount = parseFloat(item.nPriceIncVat) - parseFloat(item.nDiscountToShow);
+      item.totalPaymentAmount = (parseFloat(item.nRevenueAmount.toFixed(2)) - parseFloat(item.nDiscountToShow)) * parseFloat(item.nQuantity);
+      // item.totalPaymentAmountAfterDisc = parseFloat(item.priceAfterDiscount.toFixed(2)) * parseFloat(item.nQuantity);
+      item.bPrepayment = item?.oType?.bPrepayment || false;
+      const vat = (item.nVatRate * item.nRevenueAmount / (100 + parseFloat(item.nVatRate)));
+      item.vat = vat.toFixed(2);
+      totalVat += vat;
+      total = total + item.totalPaymentAmount;
+      totalAfterDisc += item.nPriceIncVatAfterDiscount;
+      totalDiscount += disc;
+      relatedItemsPromises[index] = this.getRelatedTransactionItem(item?.iActivityItemId, item?._id, index);
+    })
+    await Promise.all(relatedItemsPromises).then(result => {
+      result.forEach((item: any, index: number) => {
+        transaction.aTransactionItems[index].related = item.data || [];
+      })
+    });
+    dataObject.totalAfterDisc = parseFloat(totalAfterDisc.toFixed(2));
+    dataObject.total = parseFloat(total.toFixed(2));
+    dataObject.totalVat = parseFloat(totalVat.toFixed(2));
+    dataObject.totalDiscount = parseFloat(totalDiscount.toFixed(2));
+    dataObject.totalSavingPoints = totalSavingPoints;
+    dataObject.dCreatedDate = moment(dataObject.dCreatedDate).format('DD-MM-yyyy hh:mm');
+    const result: any = await this.getRelatedTransaction(dataObject?.iActivityId, dataObject?._id).toPromise();
+    dataObject.related = result.data || [];
+    dataObject.related.forEach((obj: any) => {
+      obj.aPayments.forEach((obj: any) => {
+        obj.dCreatedDate = moment(obj.dCreatedDate).format('DD-MM-yyyy hh:mm');
+      });
+      dataObject.aPayments = dataObject.aPayments.concat(obj.aPayments);
+    })
+    transaction = dataObject;
+    return transaction;
+  }
+
+  getRelatedTransactionItem(iActivityItemId: string, iTransactionItemId: string, index: number) {
+    return this.apiService.getNew('cashregistry', `/api/v1/transaction/item/activityItem/${iActivityItemId}?iBusinessId=${this.iBusinessId}&iTransactionItemId=${iTransactionItemId}`).toPromise();
+  }
+
+  getRelatedTransaction(iActivityId: string, iTransactionId: string) {
+    const body = {
+      iBusinessId: this.iBusinessId,
+      iTransactionId: iTransactionId
+    }
+    return this.apiService.postNew('cashregistry', '/api/v1/transaction/activity/' + iActivityId, body);
   }
 }
