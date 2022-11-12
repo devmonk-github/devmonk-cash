@@ -158,18 +158,6 @@ export class GiftComponent implements OnInit {
     })
 
     return;
-    //   this.pdfService.createPdf(JSON.stringify(result.data), this.item, filename, print, printData, this.iBusinessId, this.item?._id)
-    //     .then(() => {
-    //       this.downloading = false;
-    //     })
-    //     .catch((e: any) => {
-    //       this.downloading = false;
-    //       console.error('err', e)
-    //     })
-    // }, (error) => {
-    //   this.downloading = false;
-    //   console.error('printing error', error);
-    // })
   }
 
   duplicate(): void {

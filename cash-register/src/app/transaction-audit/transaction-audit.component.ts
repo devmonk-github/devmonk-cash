@@ -20,7 +20,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
   iBusinessId: any = '';
   sUserType: any = '';
   iLocationId: any = '';
-  iStatisticId: any = '';
+  iStatisticId: any;
   aLocation: any = [];
   aStatistic: any = [];
   oUser: any = {};
@@ -51,8 +51,10 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
   statisticFilter = {
     isArticleGroupLevel: true,
     isProductLevel: false,
-    dFromState: new Date(new Date().setHours(0, 0, 0)),
-    dToState: new Date(new Date().setHours(23, 59, 59))
+    dFromState: '',
+    dToState: '',
+    // dFromState: new Date(new Date().setHours(0, 0, 0)),
+    // dToState: new Date(new Date().setHours(23, 59, 59))
   };
   filterDates = {
     startDate: new Date(new Date().setHours(0, 0, 0)),
@@ -694,7 +696,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
       iStatisticId: this.iStatisticId,
       oFilter: {
         aLocationId: aLocation,
-        iWorkstationId: iWorkstationId,
+        // iWorkstationId: iWorkstationId,
         sTransactionType: this.optionMenu,
         sDisplayMethod: sDisplayMethod || this.sDisplayMethod.toString(),
         dStartDate: this.statisticFilter.dFromState,
@@ -710,7 +712,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
       oBody.oFilter.bIsSupplierMode = this.bIsSupplierMode;
     }
 
-    this.checkShowDownload();
+    // this.checkShowDownload();
     this.fetchDayClosureList();
     this.getStatisticSubscription = this.apiService.postNew('cashregistry', `/api/v1/statistics/list`, oBody).
       subscribe((result: any) => {
@@ -724,6 +726,10 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
               // this.aPaymentMethods = oData?.oStatistic?.aPaymentMethods; /* old approach */
             }
             this.oStatisticsDocument = oData?.oStatistic;
+            this.iWorkstationId = this.oStatisticsDocument.iWorkstationId;
+            // console.log('this.iWorkstationId', this.iWorkstationId, this.oStatisticsDocument.iWorkstationId, this.oStatisticsDocument)
+            this.sCurrentWorkstation = this.aWorkStation.filter((el: any) => el._id === this.iWorkstationId)[0]?.sName;
+            // console.log('current=', this.sCurrentWorkstation);
             if (!this.oStatisticsDocument?.sComment) this.oStatisticsDocument.sComment = '';
             this.processCounting();
           }
@@ -940,9 +946,8 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
     return this.apiService.getNew('core', '/api/v1/business/' + this.businessDetails._id).toPromise();
   }
 
-  async exportToPDF(event: any) {
+  async exportToPDF() {
     this.pdfGenerationInProgress = true;
-    event.target.disabled = true;
     await this.transactionAuditPdfService.exportToPDF({
       // aDisplayMethod: this.aDisplayMethod,
       aSelectedLocation: this.aSelectedLocation,
@@ -950,7 +955,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
       bIsDynamicState: this.IsDynamicState,
       aLocation: this.aLocation,
       aSelectedWorkStation: (this.iStatisticId) ? this.sCurrentWorkstation : (this.selectedWorkStation?.length ? this.selectedWorkStation : []),
-      aWorkStation: (this.iStatisticId) ? [] : this.aWorkStation,
+      aWorkStation: this.aWorkStation,
       oFilterDates: this.filterDates,
       oBusinessDetails: this.businessDetails,
       sDisplayMethod: this.sDisplayMethod,
@@ -961,7 +966,6 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
       bIsArticleGroupLevel: this.bIsArticleGroupLevel,
       bIsSupplierMode: this.bIsSupplierMode
     });
-    event.target.disabled = false;
     this.pdfGenerationInProgress = false;
   }
 
@@ -1077,7 +1081,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
       currentEmployeeId = JSON.parse(value)._id;
     }
     const transactionItem = {
-      sProductName: 'Expenses',
+      sProductName: data?._eType || 'Expenses',
       sComment: data.comment,
       nPriceIncVat: data.amount,
       nPurchasePrice: data.amount,
@@ -1090,9 +1094,9 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
       iLocationId: this.iLocationId,
       oPayment: data?.oPayment,
       oType: {
-        eTransactionType: 'expenses',
+        eTransactionType: data?._eType || 'Expenses',
         bRefund: false,
-        eKind: 'expenses',
+        eKind: data?._eType || 'Expenses',
         bDiscount: false,
       },
     };
@@ -1106,17 +1110,19 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
 
     const oCashPaymentMethod = this.allPaymentMethod.filter((el: any) => el.sName.toLowerCase() === 'cash')[0];
     const oBankPaymentMethod = this.allPaymentMethod.filter((el: any) => el.sName.toLowerCase() === 'bankpayment')[0];
-    if (nDifferenceAmount > 0) {
+    console.log('nDifferenceAmount: ', nDifferenceAmount);
+    if (nDifferenceAmount !== 0) {
       //we have difference in cash, so add that as and expense
       await this.addExpenses(
         {
           amount: -(nDifferenceAmount),
-          comment: 'Lost money',
+          comment: 'DIFF_IN_CASH_COUNTING',
           oPayment: {
             iPaymentMethodId: oCashPaymentMethod._id,
             nAmount: nDifferenceAmount,
             sMethod: oCashPaymentMethod.sName.toLowerCase()
-          }
+          },
+          _eType: 'diff-counting'
         }
       ).toPromise();
     }
@@ -1161,7 +1167,8 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
       this.toastService.show({ type: 'success', text: `Day-state is close now` });
       this.closingDayState = false;
       this.bDisableCountings = true;
-      this.oStatisticsDocument.bIsDayState = false;
+      this.oStatisticsDocument = result?.data;
+      this.checkShowDownload();
     }, (error) => {
       console.log('Error: ', error);
       this.toastService.show({ type: 'warning', text: 'Something went wrong or open the day-state first' });
@@ -1274,6 +1281,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
             return oData;
           });
           this.aDayClosure = _aDayClosure;
+          this.checkShowDownload();
         }
         // this.showLoader = false;
       }, (error) => {
@@ -1294,11 +1302,23 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
       const dDayClosureDateTime = new Date(aDayClosure[i].dCloseDate).getTime();
       if (dFromStateTime > dDayClosureDateTime) aDayClosure[i].isDisable = true;
     }
+    
+    this.checkShowDownload();
   }
 
   checkShowDownload() {
-    this.bShowDownload = (this.oStatisticsDocument && this.oStatisticsDocument?.bIsDayState === false) ||
-      (!this.IsDynamicState && !this.selectedEmployee?._id && !this.selectedWorkStation?._id && !(this.aSelectedLocation?.length > 1));
+    const bCondition1 = this.IsDynamicState;
+    // = (this.oStatisticsDocument && this.oStatisticsDocument?.bIsDayState === false);
+      
+    const bCondition2 = (!this.selectedEmployee?._id &&
+      !this.selectedWorkStation?._id &&
+      !(this.aSelectedLocation?.length > 1) &&
+      this.statisticFilter.dFromState != '' &&
+      this.statisticFilter.dToState != '');
+    
+    const bCondition3 = (this.iStatisticId && this.iStatisticId != '' && this.oStatisticsDocument && this.oStatisticsDocument?.bIsDayState === false) || false ;
+
+    this.bShowDownload = bCondition1 || bCondition2 || bCondition3;
   }
 
   fetchStockValuePerLocation() {

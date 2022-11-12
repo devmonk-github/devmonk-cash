@@ -13,6 +13,7 @@ import { PrintService } from 'src/app/shared/service/print.service';
 import { Observable } from 'rxjs';
 import { ToastService } from 'src/app/shared/components/toast';
 import * as JsBarcode from 'jsbarcode';
+import { TillService } from 'src/app/shared/service/till.service';
 const moment = (_moment as any).default ? (_moment as any).default : _moment;
 // import { faMagnifyingGlassPlus } from '@fortawesome/free-solid-svg-icons';
 
@@ -50,10 +51,6 @@ export class TransactionDetailsComponent implements OnInit {
   ableToDownload: Boolean = false;
   from !: string;
   thermalPrintSettings !: any;
-  // faMagnifyingGlassPlus = faMagnifyingGlassPlus;
-  // SupplierStockProductSliderData = new BehaviorSubject<any>({});
-  // @ViewChild('supplierSliderTemplate', { read: ViewContainerRef }) container!: ViewContainerRef;
-  // componentRef: any;
 
   private pn2escposService = new Pn2escposService();
   printSettings: any;
@@ -65,7 +62,8 @@ export class TransactionDetailsComponent implements OnInit {
     private dialogService: DialogService,
     private receiptService: ReceiptService,
     private printService: PrintService,
-    private toastService: ToastService
+    private toastService: ToastService,
+    private tillService: TillService,
     // private compiler: Compiler,
     // private injector: Injector,
   ) {
@@ -77,67 +75,68 @@ export class TransactionDetailsComponent implements OnInit {
     this.iBusinessId = localStorage.getItem("currentBusiness") || '';
     this.iLocationId = localStorage.getItem("currentLocation") || '';
     this.iWorkstationId = localStorage.getItem("currentWorkstation") || '';
-    let dataObject = JSON.parse(JSON.stringify(this.transaction));
-    dataObject.aPayments.forEach((obj: any) => {
-      obj.dCreatedDate = moment(dataObject.dCreatedDate).format('DD-MM-yyyy hh:mm');
-    });
-    dataObject.aTransactionItems = [];
-    const relatedItemsPromises: any = [];
-    this.transaction.aTransactionItems.forEach((item: any, index: number) => {
-      if (!(item.oType?.eKind == 'discount' || item?.oType?.eKind == 'loyalty-points-discount')) {
-        dataObject.aTransactionItems.push(item);
-      }
-    })
-    let language: any = localStorage.getItem('language')
-    dataObject.total = 0;
-    let total = 0, totalAfterDisc = 0, totalVat = 0, totalDiscount = 0, totalSavingPoints = 0;
-    dataObject.aTransactionItems.forEach((item: any, index: number) => {
-      let name = '';
-      if (item && item.oArticleGroupMetaData && item.oArticleGroupMetaData.oName && item.oArticleGroupMetaData.oName[language]) {
-        name = item?.oArticleGroupMetaData?.oName[language] + ' ';
-      }
-      item.description = name;
-      if (item?.oBusinessProductMetaData?.sLabelDescription) item.description = item.description + item?.oBusinessProductMetaData?.sLabelDescription + ' ' + item?.sProductNumber;
-      totalSavingPoints += item.nSavingsPoints;
-      let disc = parseFloat(item.nDiscount);
-      if (item.bPaymentDiscountPercent) {
-        disc = (disc * parseFloat(item.nPriceIncVat) / (100 + parseFloat(item.nVatRate)));
-        item.nDiscountToShow = parseFloat(disc.toFixed(2));
-      } else { item.nDiscountToShow = disc; }
-      item.priceAfterDiscount = (parseFloat(item.nPaymentAmount) - parseFloat(item.nDiscountToShow));
-      item.nPriceIncVatAfterDiscount = (parseFloat(item.nPriceIncVat) - parseFloat(item.nDiscountToShow));
-      item.totalPaymentAmount = parseFloat(item.nPaymentAmount) * parseFloat(item.nQuantity);
-      item.totalPaymentAmountAfterDisc = parseFloat(item.priceAfterDiscount) * parseFloat(item.nQuantity);
-      item.bPrepayment = item?.oType?.bPrepayment || false;
-      const vat = (item.nVatRate * item.priceAfterDiscount / (100 + parseFloat(item.nVatRate)));
-      item.vat = vat.toFixed(2);
-      totalVat += vat;
-      total = total + item.totalPaymentAmount;
-      totalAfterDisc += item.totalPaymentAmountAfterDisc;
-      totalDiscount += disc;
-      relatedItemsPromises[index] = this.getRelatedTransactionItem(item?.iActivityItemId, item?._id, index);
-    })
-    await Promise.all(relatedItemsPromises).then(result => {
-      result.forEach((item: any, index: number) => {
-        this.transaction.aTransactionItems[index].related = item.data || [];
-      })
-    });
+    // let language: any = localStorage.getItem('language')
+    this.transaction = await this.tillService.processTransactionForPdfReceipt(this.transaction);
+    // console.log('after processing', this.transaction);
+    // let dataObject = JSON.parse(JSON.stringify(this.transaction));
+    // dataObject.aPayments.forEach((obj: any) => {
+    //   obj.dCreatedDate = moment(dataObject.dCreatedDate).format('DD-MM-yyyy hh:mm');
+    // });
+    // dataObject.aTransactionItems = [];
+    // const relatedItemsPromises: any = [];
+    // this.transaction.aTransactionItems.forEach((item: any, index: number) => {
+    //   if (!(item.oType?.eKind == 'discount' || item?.oType?.eKind == 'loyalty-points-discount')) {
+    //     dataObject.aTransactionItems.push(item);
+    //   }
+    // })
+    // dataObject.total = 0;
+    // let total = 0, totalAfterDisc = 0, totalVat = 0, totalDiscount = 0, totalSavingPoints = 0;
+    // dataObject.aTransactionItems.forEach((item: any, index: number) => {
+    //   let name = '';
+    //   if (item && item.oArticleGroupMetaData && item.oArticleGroupMetaData.oName && item.oArticleGroupMetaData.oName[language]) {
+    //     name = item?.oArticleGroupMetaData?.oName[language] + ' ';
+    //   }
+    //   item.description = name;
+    //   if (item?.oBusinessProductMetaData?.sLabelDescription) item.description = item.description + item?.oBusinessProductMetaData?.sLabelDescription + ' ' + item?.sProductNumber;
+    //   totalSavingPoints += item.nSavingsPoints;
+    //   let disc = parseFloat(item.nDiscount);
+    //   if (item.bPaymentDiscountPercent) {
+    //     disc = (disc * parseFloat(item.nPriceIncVat) / (100 + parseFloat(item.nVatRate)));
+    //     item.nDiscountToShow = parseFloat(disc.toFixed(2));
+    //   } else { item.nDiscountToShow = disc; }
+    //   item.priceAfterDiscount = (parseFloat(item.nPaymentAmount) - parseFloat(item.nDiscountToShow));
+    //   item.nPriceIncVatAfterDiscount = (parseFloat(item.nPriceIncVat) - parseFloat(item.nDiscountToShow));
+    //   item.totalPaymentAmount = parseFloat(item.nPaymentAmount) * parseFloat(item.nQuantity);
+    //   item.totalPaymentAmountAfterDisc = parseFloat(item.priceAfterDiscount) * parseFloat(item.nQuantity);
+    //   item.bPrepayment = item?.oType?.bPrepayment || false;
+    //   const vat = (item.nVatRate * item.priceAfterDiscount / (100 + parseFloat(item.nVatRate)));
+    //   item.vat = vat.toFixed(2);
+    //   totalVat += vat;
+    //   total = total + item.totalPaymentAmount;
+    //   totalAfterDisc += item.totalPaymentAmountAfterDisc;
+    //   totalDiscount += disc;
+    //   relatedItemsPromises[index] = this.getRelatedTransactionItem(item?.iActivityItemId, item?._id, index);
+    // })
+    // await Promise.all(relatedItemsPromises).then(result => {
+    //   result.forEach((item: any, index: number) => {
+    //     this.transaction.aTransactionItems[index].related = item.data || [];
+    //   })
+    // });
 
-    dataObject.totalAfterDisc = parseFloat(totalAfterDisc.toFixed(2));
-    dataObject.total = parseFloat(total.toFixed(2));
-    dataObject.totalVat = parseFloat(totalVat.toFixed(2));
-    dataObject.totalDiscount = parseFloat(totalDiscount.toFixed(2));
-    dataObject.totalSavingPoints = totalSavingPoints;
-    dataObject.totalQty = this.transaction.aTransactionItems?.length || 0;
-    dataObject.dCreatedDate = moment(dataObject.dCreatedDate).format('DD-MM-yyyy hh:mm');
-    this.getRelatedTransaction(dataObject?.iActivityId, dataObject?._id)
+    // dataObject.totalAfterDisc = parseFloat(totalAfterDisc.toFixed(2));
+    // dataObject.total = parseFloat(total.toFixed(2));
+    // dataObject.totalVat = parseFloat(totalVat.toFixed(2));
+    // dataObject.totalDiscount = parseFloat(totalDiscount.toFixed(2));
+    // dataObject.totalSavingPoints = totalSavingPoints;
+    // dataObject.totalQty = this.transaction.aTransactionItems?.length || 0;
+    // dataObject.dCreatedDate = moment(dataObject.dCreatedDate).format('DD-MM-yyyy hh:mm');
+    // this.getRelatedTransaction(dataObject?.iActivityId, dataObject?._id)
 
-    this.transaction = dataObject;
+    // this.transaction = dataObject;
     
     this.loading = false;
     this.fetchBusinessDetails();
     this.fetchCustomer(this.transaction.oCustomer._id);
-    // this.fetchTransaction(this.transaction.sNumber)
     const [_thermalSettings, _printActionSettings, _printSettings]: any = await Promise.all([
       this.getThermalPrintSetting(),
       this.getPdfPrintSetting({ oFilterBy: { sMethod: 'actions' } }),
@@ -151,7 +150,6 @@ export class TransactionDetailsComponent implements OnInit {
     this.printActionSettings = _printActionSettings?.data[0]?.result[0].aActions;
     this.printSettings = _printSettings?.data[0]?.result;
 
-    // console.log(80, this.transaction);
   }
 
   fetchBusinessDetails() {
@@ -167,17 +165,6 @@ export class TransactionDetailsComponent implements OnInit {
   getRelatedTransactionItem(iActivityItemId: string, iTransactionItemId: string, index: number) {
     return this.apiService.getNew('cashregistry', `/api/v1/transaction/item/activityItem/${iActivityItemId}?iBusinessId=${this.iBusinessId}&iTransactionItemId=${iTransactionItemId}`).toPromise();
   }
-
-
-  // getRelatedTransactionItem(iActivityItemId: string, iTransactionItemId: string, index: number) {
-  //   this.apiService.getNew('cashregistry', `/api/v1/transaction/item/activityItem/${iActivityItemId}?iBusinessId=${this.iBusinessId}&iTransactionItemId=${iTransactionItemId}`)
-  //     .subscribe(
-  //       (result: any) => {
-  //         this.transaction.aTransactionItems[index].related = result.data || [];
-  //       }, (error) => {
-  //         console.log(error);
-  //       })
-  // }
 
   getRelatedTransaction(iActivityId: string, iTransactionId: string) {
     const body = {
@@ -230,31 +217,29 @@ export class TransactionDetailsComponent implements OnInit {
     }
 
     const template = await this.getTemplate('regular').toPromise();
-    // const template = await this.getTemplate('single-activity').toPromise();
     let nTotalOriginalAmount = 0;
     const oDataSource = JSON.parse(JSON.stringify(this.transaction));
-    if (oDataSource.aTransactionItems?.length === 1 && oDataSource._id === oDataSource.aTransactionItems[0].iTransactionId) {
-      nTotalOriginalAmount = oDataSource.total;
-      oDataSource.bHasPrePayments = false;
-    } else {
+    // if (oDataSource.aTransactionItems?.length === 1 && oDataSource._id === oDataSource.aTransactionItems[0].iTransactionId) {
+    //   nTotalOriginalAmount = oDataSource.total;
+    //   oDataSource.bHasPrePayments = false;
+    // } else {
       oDataSource.aTransactionItems.forEach((item: any) => {
-        nTotalOriginalAmount += item.nPriceIncVat;
         let description = `${item.description}\n`;
-        if (item.nPriceIncVat !== item.nPaymentAmount) {
-          description += `Original amount: ${item.nPriceIncVat}\n
-                          Already paid: \n${item.sTransactionNumber} | ${item.nPaymentAmount} (this receipt)\n`;
+        if (item?.nDiscountToShow > 0) description += `Original amount: ${item.nPriceIncVat}\n`;
+        if (item?.related?.length) {
+          nTotalOriginalAmount += item.nPriceIncVat;
+          if (item.nPriceIncVat !== item.nPaymentAmount) {
+            description += `Already paid: \n${item.sTransactionNumber} | ${item.nPaymentAmount} (this receipt)\n`;
 
-          if (item?.related?.length) {
             item.related.forEach((related: any) => {
               description += `${related.sTransactionNumber}|${related.nPaymentAmount}\n`;
             });
           }
         }
-
         item.description = description;
       });
-      oDataSource.bHasPrePayments = true;
-    }
+      // oDataSource.bHasPrePayments = true;
+    // }
     oDataSource.sBarcodeURI = this.generateBarcodeURI(false, oDataSource.sNumber);
     oDataSource.sBusinessLogoUrl = (await this.getBase64FromUrl(oDataSource?.businessDetails?.sLogoLight).toPromise()).data;
     oDataSource.oCustomer = {
@@ -275,73 +260,6 @@ export class TransactionDetailsComponent implements OnInit {
       printActionSettings: this.printActionSettings,
       eSituation: 'is_created'
     });
-
-    return;
-    this.apiService.getNew('cashregistry', '/api/v1/pdf/templates/' + this.iBusinessId + '?sName=' + sName + '&eType=' + eType).subscribe(
-      (result: any) => {
-        const filename = new Date().getTime().toString()
-        let printData = null
-        if (print) {
-          printData = {
-            computerId: this.thermalPrintSettings?.nComputerId,
-            printerId: this.thermalPrintSettings?.nPrinterId,
-            title: filename,
-            quantity: 1
-          }
-        }
-
-        // let dataObject = JSON.parse(JSON.stringify(this.transaction));
-        // dataObject.aTransactionItems = [];
-        // this.transaction.aTransactionItems.forEach((item: any)=>{
-        //   if(!(item.oType?.eKind == 'discount' || item?.oType?.eKind == 'loyalty-points-discount')) {
-        //     dataObject.aTransactionItems.push(item);
-        //   }
-        // })
-        // let language: any = localStorage.getItem('language')
-        // dataObject.total = 0;
-        // let total = 0, totalAfterDisc = 0, totalVat = 0, totalDiscount = 0, totalSavingPoints = 0;
-        // dataObject.aTransactionItems.forEach((item: any)=>{
-        //   total = total + item.nPriceIncVat;
-        //   let name = '';
-        //   if(item && item.oArticleGroupMetaData && item.oArticleGroupMetaData.oName && item.oArticleGroupMetaData.oName[language]) name = item?.oArticleGroupMetaData?.oName[language] + ' ';
-        //   item.description = name;
-        //   if(item?.oBusinessProductMetaData?.sLabelDescription) item.description = item.description + item?.oBusinessProductMetaData?.sLabelDescription + ' ' + item?.sProductNumber;
-        //   totalSavingPoints += item.nSavingsPoints;
-        //   let disc = item.nDiscount;
-        //   if(item.bPaymentDiscountPercent){ 
-        //     disc = (item.nDiscount * item.nPriceIncVat/100)
-        //     item.nDiscount = `${item.nDiscount}`
-        //   } else {
-        //     item.nDiscount = `€ ${item.nDiscount}`
-        //   }
-        //   item.priceAfterDiscount = (item.nPriceIncVat -  item.nDiscount);
-        //   if(item.bPaymentDiscountPercent) item.nDiscount = `${item.nDiscount} %`
-        //   const vat = (item.nVatRate * item.priceAfterDiscount/100);
-        //   item.vat = `${item.nVatRate}% (${vat})`
-        //   totalVat += vat;
-        //   totalAfterDisc += (parseFloat(item.nPriceIncVat) -  parseFloat(item.nDiscount))
-        //   totalDiscount += disc;
-        // })
-        // dataObject.totalAfterDisc = totalAfterDisc;
-        // dataObject.total = total;
-        // dataObject.totalVat = totalVat;
-        // dataObject.totalDiscount = totalDiscount;
-        // dataObject.totalSavingPoints = totalSavingPoints;
-        // dataObject.dCreatedDate = moment(dataObject.dCreatedDate).format('DD-MM-yyyy hh:mm');
-        delete this.transaction.related;
-
-        // this.pdfService.createPdf(JSON.stringify(result.data), this.transaction, filename, print, printData, this.iBusinessId, this.transaction?._id)
-        //   .then(() => {
-        //     this.downloadWithVATLoading = false;
-        //   })
-        //   .catch((e: any) => {
-        //     this.downloadWithVATLoading = false;
-        //     console.error('err', e)
-        //   })
-      }, (error) => {
-        this.downloadWithVATLoading = false;
-        console.log('printing error', error);
-      })
   }
 
   generateBarcodeURI(displayValue: boolean = true, data: any) {
@@ -368,22 +286,6 @@ export class TransactionDetailsComponent implements OnInit {
       }
     );
   }
-
-  // fetchTransaction(sNumber: any) {
-  //   if (!sNumber) return;
-  //   this.loading = true;
-  //   let body: any = {
-  //     iBusinessId: this.iBusinessId
-  //   }
-  //   if (this.eType === 'webshop-reservation') body.eKind = 'reservation';
-  //   this.apiService.postNew('cashregistry', '/api/v1/transaction/detail/' + sNumber, body).subscribe((result: any) => {
-  //     if (!result?.data?.oCustomer) result.data.oCustomer = this.transaction.oCustomer;
-  //     this.transaction = result.data;
-  //     this.loading = false;
-  //   }, (error) => {
-  //     this.loading = false;
-  //   });
-  // }
 
   openTransaction(transaction: any, itemType: any) {
     this.dialogService.openModal(TransactionItemsDetailsComponent, { cssClass: "modal-xl", context: { transaction, itemType } })
@@ -447,16 +349,6 @@ export class TransactionDetailsComponent implements OnInit {
 
   getThermalPrintSetting() {
     return this.apiService.getNew('cashregistry', `/api/v1/print-settings/${this.iBusinessId}/${this.iWorkstationId}/thermal/regular`).toPromise();
-    // .subscribe(
-    //   (result: any) => {
-    //     if (result?.data?._id) {
-    //       this.thermalPrintSettings = result?.data;
-    //     }
-    //   },
-    //   (error: any) => {
-    //     console.error(error)
-    //   }
-    // );
   }
 
   openCustomer(customer: any) {
@@ -516,26 +408,5 @@ export class TransactionDetailsComponent implements OnInit {
       }
     });
   }
-
-  // onOpenProductSlider(data: any) {
-  //   // data.bCanRightSliderTurnOnSupplier = this.oSupplierDetail?.bCanRightSliderTurnOn;
-  //   data.bCanRightSliderTurnOnRetailer = this.businessDetails?.bCanRightSliderTurnOn;
-  //   this.SupplierStockProductSliderData.next(data);
-  //   this.loadDynamicComponent();
-  // }
-
-  // loadDynamicComponent() {
-  //   try {
-  //     import('supplierSlider/SupplierProductSliderModule').then(({ SupplierProductSliderModule }) => {
-  //       this.compiler.compileModuleAsync(SupplierProductSliderModule).then(moduleFactory => {
-  //         const moduleRef: NgModuleRef<typeof SupplierProductSliderModule> = moduleFactory.create(this.injector);
-  //         const componentFactory = moduleRef.instance.resolveComponent();
-  //         this.componentRef = this.container.createComponent(componentFactory, undefined, moduleRef.injector);
-  //         this.componentRef.instance.title = 'My application';
-  //       });
-  //     });
-  //   } catch (error) {
-  //   }
-  // }
 
 }

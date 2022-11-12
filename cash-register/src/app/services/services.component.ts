@@ -127,7 +127,6 @@ export class ServicesComponent implements OnInit, AfterViewInit {
   async ngOnInit(): Promise<void> {
     
     this.barcodeService.barcodeScanned.subscribe((barcode: string) => {
-      console.log('barcode scanned ', barcode);
       this.openModal(barcode);
     });
 
@@ -207,14 +206,6 @@ export class ServicesComponent implements OnInit, AfterViewInit {
 
   getLocations() {
     return this.apiService.postNew('core', `/api/v1/business/${this.businessDetails._id}/list-location`, {}).toPromise();
-    // (result: any) => {
-    //   if (result.message == 'success') {
-    //     this.requestParams.locations = result.data.aLocation;
-    //   }
-    // }),
-    // (error: any) => {
-    //   console.error(error)
-    // }
   }
 
   async setLocation(sLocationId: string = "") {
@@ -250,14 +241,6 @@ export class ServicesComponent implements OnInit, AfterViewInit {
 
   getWorkstations() {
     return this.apiService.getNew('cashregistry', `/api/v1/workstations/list/${this.businessDetails._id}/${this.iLocationId}`).toPromise();
-    // (result: any) => {
-    //   if (result && result.data) {
-    //     this.workstations = result.data;
-    //   }
-    // }),
-    // (error: any) => {
-    //   console.error(error)
-    // }
   }
 
   // Function for update item's per page
@@ -305,11 +288,6 @@ export class ServicesComponent implements OnInit, AfterViewInit {
 
   listEmployee() {
     return this.apiService.postNew('auth', '/api/v1/employee/list', { iBusinessId: this.businessDetails._id }).toPromise();
-    //   if (result?.data?.length) {
-    //     if (result?.data?.length && result.data[0].result?.length) this.employees = result.data[0].result
-    //   }
-    // }, (error) => {
-    // })
   }
 
   openActivities(activity: any, openActivityId?: any) {
@@ -401,8 +379,8 @@ export class ServicesComponent implements OnInit, AfterViewInit {
   async openModal(barcode: any) {
     if (barcode.startsWith('0002'))
       barcode = barcode.substring(4)
-    this.toastrService.show({ type: 'success', text: 'Barcode detected: ' + barcode })
     if (barcode.startsWith("AI")) {
+      this.toastrService.show({ type: 'success', text: 'Barcode detected: ' + barcode })
       // activityitem.find({sNumber: barcode},{eTransactionItem.eKind : 1})
       let oBody: any = {
         iBusinessId: this.businessDetails._id,
@@ -427,6 +405,7 @@ export class ServicesComponent implements OnInit, AfterViewInit {
         }
       }
     } else if (barcode.startsWith("A")) {
+      this.toastrService.show({ type: 'success', text: 'Barcode detected: ' + barcode })
       let oBody = {
         iBusinessId: this.businessDetails._id,
         oFilterBy: {
@@ -441,6 +420,7 @@ export class ServicesComponent implements OnInit, AfterViewInit {
 
       //activity.find({sNumber: barcode})
     } else if (barcode.startsWith("G")) {
+      this.toastrService.show({ type: 'success', text: 'Barcode detected: ' + barcode })
       let oBody: any = {
         iBusinessId: this.businessDetails._id,
         oFilterBy: {
@@ -455,21 +435,17 @@ export class ServicesComponent implements OnInit, AfterViewInit {
       // activityitem.find({sGiftcardNumber: barcode},{eTransactionItem.eKind : 1})
     } else if (barcode.startsWith("R")) {
       // activityitem.find({sRepairNumber: barcode},{eTransactionItem.eKind : 1})
+    } else if (barcode.startsWith("T")) {
+      this.toastrService.show({ type: 'warning', text: 'Please go to different page to process this barcode !' })
     }
-
+    console.log('barcode ', barcode);
   }
 
   openCardsModal(oGiftcard?: any, oCustomer?: any) {
     this.dialogService.openModal(CardsComponent, { cssClass: 'modal-lg', context: { customer: oCustomer, oGiftcard } })
       .instance.close.subscribe(result => {
         if (result) {
-          // if (result.giftCardInfo.nAmount > 0) {
-          //   this.appliedGiftCards.push(result.giftCardInfo);
-          //   this.changeInPayment();
-          // }
-          // if (result.redeemedLoyaltyPoints && result.redeemedLoyaltyPoints > 0) {
-          //   this.addReedemedPoints(result.redeemedLoyaltyPoints);
-          // }
+
         }
       });
   }

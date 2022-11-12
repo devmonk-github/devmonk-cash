@@ -114,39 +114,21 @@ export class TransactionAuditUiPdfService {
         bIsSupplierMode
     }:any) {
 
-        console.log(aSelectedWorkStation, aWorkStation);
+        // console.log({ aStatistic, oStatisticsDocument, aSelectedWorkStation, aWorkStation });
 
-        
         const date = moment(Date.now()).format('DD-MM-yyyy');
-        
-        
-
         const columnWidths = ['*', 60, 80, 80, 100];
-        // const columnWidths = '*';
-
         const tableLayout = {
             hLineWidth: function (i: number, node: any) {
-                return i === 0 || i === node.table.body.length ? 0 : 0.5;
+                return i === 0 || i === node.table.body.length ? 0.5 : 0.5;
             },
             vLineWidth: function (i: number, node: any) {
-                return i === 0 || i === node.table.widths.length ? 0 : 0;
+                return i === 0 || i === node.table.widths.length ? 0 : 0.5;
             },
             hLineColor: function (i: number, node: any) {
                 return i === 0 || i === node.table.body.length ? '#999' : '#999';
             },
-            // paddingLeft: function (i: number, node: any) {
-            //     return i === 0 ? 0 : 20;
-            // },
-            // paddingRight: function (i: number, node: any) {
-            //     return i === node.table.widths.length ? 20 : 0;
-            // },
         };
-        // let sDisplayMethodString =
-        //     aDisplayMethod[aDisplayMethod.findIndex((el: DisplayMethod) => el.sKey.toString() == sDisplayMethod.toString())].sValue;
-        // let sType =
-        //   this.aOptionMenu[
-        //     this.aOptionMenu.findIndex((el: any) => el.sKey == this.optionMenu)
-        //   ].sValue;
         let sType = sOptionMenu.parent.sValue
         let dataType = bIsDynamicState ? 'Dynamic Data' : 'Static Data';
 
@@ -177,17 +159,17 @@ export class TransactionAuditUiPdfService {
                 .filter((workstation: any) => aSelectedWorkStation.includes(workstation._id))
                 .map((workstation: any) => workstation.sName)
                 .join(', ');
-            if (!sWorkstation) sWorkstation = aSelectedWorkStation;
+            if (!sWorkstation){
+                const temp = aWorkStation.filter((workstation: any) => workstation._id === aSelectedWorkStation);
+                if(temp?.length){
+                    sWorkstation = temp[0].sName;
+                } else {
+                    sWorkstation = aSelectedWorkStation;
+                }
+            }
         } else {
-            sWorkstation = aWorkStation.map((location: any) => location.sName).join(', ');
+            sWorkstation = aWorkStation.map((workstation: any) => workstation.sName).join(', ');
         }
-        // if (oSelectedWorkStation) {
-        //     sWorkstation = aWorkStation.find(
-        //         (el: any) => el?._id == oSelectedWorkStation?._id
-        //     )?.sName;
-        // } else {
-        //     sWorkstation = aWorkStation.map((el: any) => el.sName).join(', ');
-        // }
 
         let dataFromTo =
             '(From : ' + moment(oFilterDates.startDate).format('DD-MM-yyyy hh:mm A') + ' TO ' +
@@ -248,7 +230,11 @@ export class TransactionAuditUiPdfService {
 
         this.aGoldPurchases = _aGoldPurchases?.data[0]?.result.filter((item: any) => item.oType.eKind == 'gold-purchase');
 
-        this.processCashCountings(tableLayout, oStatisticsDocument, aStatistic);
+        if (sDisplayMethod != "aVatRates"){
+            this.processCashCountings(tableLayout, oStatisticsDocument, aStatistic);
+            this.processVatRates(columnWidths, tableLayout, oStatisticsDocument?.aVatRates);
+        }
+
 
         switch (sDisplayMethod.toString()) {
             case 'revenuePerBusinessPartner':
@@ -267,14 +253,10 @@ export class TransactionAuditUiPdfService {
                 this.processPdfByRevenuePerArticleGroup(columnWidths,tableLayout,aStatistic);
                 break;
             case 'aVatRates':
-                this.processPdfByVatRates(columnWidths, tableLayout, aStatistic);
+                aStatistic.forEach((oStatistic:any)=> {
+                    this.processVatRates(columnWidths, tableLayout, oStatistic?.aVatRates);
+                })
         }
-
-        // this.content.push({
-        //     canvas: [{ type: 'line', x1: 0, y1: 0, x2: 575, y2: 0, lineWidth: 1 }],
-        //     margin: [0, 0, 20, 0],
-        //     style: 'afterLine',
-        // });
 
         this.content.push({text: 'Payment Methods',style: ['left', 'normal'],margin: [0, 30, 0, 10],});
 
@@ -287,13 +269,7 @@ export class TransactionAuditUiPdfService {
                 style: ['th', 'articleGroup'],
             });
         });
-        // const paymentHeaderData = {
-            //     table: {
-                //         widths: '*',
-                //         body: [paymentHeaderList],
-                //     },
-                // };
-                // this.content.push(paymentHeaderData);
+
         if (aPaymentMethods?.length) {
             let texts: any = [];
             aPaymentMethods.forEach((paymentMethod: any) => {
@@ -310,7 +286,6 @@ export class TransactionAuditUiPdfService {
                     widths: '*',
                     body: finalData,
                 },
-                // layout: tableLayout
             });
 
         } else {
@@ -345,12 +320,11 @@ export class TransactionAuditUiPdfService {
     }
 
     processCashCountings(tableLayout: any, oStatisticsDocument:any, aStatistic:any){
-        console.log(oStatisticsDocument);
         const oCountings = oStatisticsDocument.oCountings;
 
         const tableHeadersList: any = [
-            { text: 'PARTICULARS', style: ['th'] },
-            { text: 'AMOUNT', style: ['th'], }
+            { text: 'PARTICULARS', style: ['th', 'articleGroup'] },
+            { text: 'AMOUNT', style: ['th', 'articleGroup'], }
         ];
 
         let texts: any = [
@@ -384,20 +358,22 @@ export class TransactionAuditUiPdfService {
             ],
         ];
 
+        // this.pushSeparatorLine();
+
         this.content.push(
             {
                 table: {
                     widths: '*',
                     body: [[...tableHeadersList], ...texts],
                 },
-                margin:[0,10]
+                margin:[0,20],
+                layout: tableLayout,
             }
         );
 
     }
 
-    processPdfByVatRates(columnWidths:any, tableLayout:any, aStatistic:any){
-        // console.log(aStatistic);
+    processVatRates(columnWidths: any, tableLayout: any, aVatRates:any){
         const tableHeaders = [
             'VAT_TYPE',
             'PRICE_WITH_VAT',
@@ -409,13 +385,16 @@ export class TransactionAuditUiPdfService {
         tableHeaders.forEach((header: any) => {
             tableHeadersList.push({
                 text: header,
-                style: ['th'],
+                style: ['th', 'articleGroup'],
             });
         });
         let texts: any = [];
         const aFieldsToInclude = ['oShopPurchase', 'oWebShop'];
-        if (aStatistic[0]?.aVatRates?.length) {
-            aStatistic[0].aVatRates.forEach((oItem: any) => {
+
+        // this.pushSeparatorLine();
+
+        if (aVatRates?.length) {
+            aVatRates.forEach((oItem: any) => {
                 texts.push([{ text: 'VAT_RATE - ' + ((oItem?.nVat) ? oItem?.nVat : ''), colSpan: 5, style: ['articleGroup', 'center', 'td'] }, {}, {}, {}, {}]);
                 aFieldsToInclude.forEach((field: any) => {
                     texts.push([
@@ -429,39 +408,36 @@ export class TransactionAuditUiPdfService {
             });
 
             const finalData = [[...tableHeadersList], ...texts];
-            this.content.push(
-                {
-                    canvas: [{ type: 'line', x1: 0, y1: 0, x2: 575, y2: 0, lineWidth: 1 }],
-                    margin: [0, 0, 20, 0],
-                    style: ['afterLine', 'separatorLine'],
+            this.content.push({
+                table: {
+                    widths: columnWidths,
+                    body: finalData,
                 },
-                {
-                    table: {
-                        widths: columnWidths,
-                        body: finalData,
-                    },
-                    layout: tableLayout
-                }
-            );
+                margin: [0, 0,0,20],
+                layout: tableLayout,
+            });
         } else {
-            this.content.push(
-                {
-                    table: {
-                        widths: columnWidths,
-                        body: [
-                            [...tableHeadersList],
-                            [
-                                { text: 'No records found', colSpan: 5, alignment: 'center', style: ['td'] },
-                                {},
-                                {},
-                                {},
-                                {},
-                            ],
-                        ],
-                    },
-                }
-            );
+            this.content.push({
+                table: {
+                    widths: columnWidths,
+                    body: [
+                        [...tableHeadersList],
+                        [{ text: 'No records found', colSpan: 5, alignment: 'center', style: ['td'] }, {}, {}, {}, {}]
+                    ],
+                },
+                margin: [0, 0, 0, 20],
+                layout: tableLayout,
+            });
         }
+        // this.pushSeparatorLine();
+    }
+
+    pushSeparatorLine() {
+        this.content.push({
+            canvas: [{ type: 'line', x1: 0, y1: 0, x2: 575, y2: 0, lineWidth: 1 }],
+            margin: [0, 0, 20, 0],
+            style: ['afterLine'],
+        });
     }
 
     addRefundToPdf() {
@@ -562,8 +538,6 @@ export class TransactionAuditUiPdfService {
         this.content.push(oHeaderData);
         if (this.aDiscountItems?.length) {
             this.aDiscountItems.forEach((item: any) => {
-                // let itemDescription = (item.sComment) ? item.sComment : ' (not available) ';
-
                 let texts: any = [
                     { text: item.sProductName, style: 'td' },
                     { text: item.nQuantity, style: 'td' },
@@ -981,40 +955,25 @@ export class TransactionAuditUiPdfService {
             // { text: Math.round(aStatistic[0].overall[0].nMargin).toFixed(2), style: 'th' },
         ];
 
-        const overallData = {
+        this.pushSeparatorLine();
+        this.content.push({
+            style: 'headerStyle',
+            table: {
+                headerRows: 1,
+                widths: columnWidths,
+                body: [headerList],
+            },
+            layout: tableLayout,
+        });
+        this.pushSeparatorLine();
+        this.content.push({
             table: {
                 widths: columnWidths,
                 body: [texts],
             },
             layout: tableLayout,
-        };
-        this.content.push(
-            {
-                canvas: [{ type: 'line', x1: 0, y1: 0, x2: 575, y2: 0, lineWidth: 1 }],
-                margin: [0, 0, 20, 0],
-                style: 'afterLine',
-            },
-            {
-                style: 'headerStyle',
-                table: {
-                    headerRows: 1,
-                    widths: columnWidths,
-                    body: [headerList],
-                },
-                layout: tableLayout,
-            },
-            {
-                canvas: [{ type: 'line', x1: 0, y1: 0, x2: 575, y2: 0, lineWidth: 1 }],
-                margin: [0, 0, 20, 0],
-                style: 'afterLine',
-            },
-            overallData,
-            {
-                canvas: [{ type: 'line', x1: 0, y1: 0, x2: 575, y2: 0, lineWidth: 1 }],
-                margin: [0, 0, 20, 10],
-                style: 'afterLine',
-            }
-        );
+        });
+        this.pushSeparatorLine();
     }
 
     processPdfByRevenuePerArticleGroupAndProperty(columnWidths: any,tableLayout: any,aStatistic:any) {
@@ -1237,22 +1196,17 @@ export class TransactionAuditUiPdfService {
                 // { text: singleRecord.nMargin, style: ['td', 'articleGroup'] },
             ]);
         });
-        const data = {
-            table: {
-                headerRows: 1,
-                widths: columnWidths,
-                // heights: [30],
-                body: [[...tableHeadersList],...texts],
-            },
-            layout: tableLayout,
-        };
         this.content.push(
             {
-                canvas: [{ type: 'line', x1: 0, y1: 0, x2: 575, y2: 0, lineWidth: 1 }],
-                margin: [0, 0, 20, 0],
-                style: 'afterLine',
-            }, 
-            data);
+                table: {
+                    headerRows: 1,
+                    widths: columnWidths,
+                    // heights: [30],
+                    body: [[...tableHeadersList], ...texts],
+                },
+                margin: [0, 20],
+                layout: tableLayout,
+            });
     }
 
     fetchTransactionItems(oFilterDates: any, bIsArticleGroupLevel: boolean, bIsSupplierMode:boolean){

@@ -354,7 +354,7 @@
                                         <span class="col-8"> {{ oStatisticsData.dStartDate | date:'medium' }}
                                         </span>
                                     </p>
-                                    <p class="row">
+                                    <p class="row" *ngIf="bDisableCountings">
                                         <span class="col-4 fw-bolder">{{ "END_DATE" | translate}} : </span>
                                         <span class="col-8"> {{ oStatisticsData.dEndDate | date:'medium' }} </span>
                                     </p>
@@ -429,8 +429,7 @@
                                         <ng-container *ngIf="pdfGenerationInProgress">
                                             <div class="spinner-border mx-2"></div>
                                         </ng-container>
-                                        <button class="btn btn-primary" (click)="exportToPDF($event)">{{ 'DOWNLOAD'
-                                            }}</button>
+                                        <button class="btn btn-primary" (click)="exportToPDF()">{{ 'DOWNLOAD' | translate}}</button>
                                     </div>
                                 </div>
                             </div>

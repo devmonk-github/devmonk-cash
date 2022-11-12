@@ -6,11 +6,14 @@ import { Transaction } from 'src/app/till/models/transaction.model';
 import { ApiService } from './api.service';
 import * as _ from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
+import * as _moment from 'moment';
+const moment = (_moment as any).default ? (_moment as any).default : _moment;
 @Injectable({
   providedIn: 'root'
 })
 export class TillService {
 
+  iBusinessId = localStorage.getItem('currentBusiness'); 
   constructor(
     private apiService: ApiService) { }
 
@@ -30,6 +33,7 @@ export class TillService {
       return 0
     }
     let result = 0
+    console.log('result: ', result);
     switch (type) {
       case 'price':
         transactionItems.forEach((i: any) => {
@@ -37,7 +41,14 @@ export class TillService {
             if (i.tType === 'refund') {
               result -= i.prePaidAmount;
             } else {
-              result += i.quantity * i.price - (i.prePaidAmount || 0);
+              let _nDiscount = 0;
+              if (i.nDiscount > 0 && !i.bDiscountOnPercentage) _nDiscount = i.nDiscount
+              else if (i.nDiscount > 0 && i.bDiscountOnPercentage) _nDiscount = i.price * (i.nDiscount / 100)
+
+              
+              // console.log(46, i)
+              result += i.quantity * (i.price - _nDiscount) - (i.prePaidAmount || 0);
+              // console.log(48, result);
               // result += type === 'price' ? i.quantity * i.price - i.prePaidAmount || 0 : i[type]
             }
           } else {
@@ -114,9 +125,24 @@ export class TillService {
     };
     console.log('length 115: ', transactionItems?.length);
     body.transactionItems = transactionItems.map((i: any) => {
-      const bRefund = i.oType?.bRefund || i.nDiscount.quantity < 0 || i.price < 0;
-      const bPrepayment = (bRefund && i.oType?.bPrepayment) || (i.paymentAmount > 0 || this.getUsedPayMethods(true, payMethods) - this.getTotals('price', transactionItems) < 0) && (i.paymentAmount !== i.amountToBePaid)
-      console.log('bPrepayment: ', bPrepayment, bRefund && i.oType?.bPrepayment, (i.paymentAmount > 0 || this.getUsedPayMethods(true, payMethods) - this.getTotals('price', transactionItems) < 0), (i.paymentAmount !== i.amountToBePaid));
+      console.log('i.nDiscount: ', i.nDiscount, i.price, i.oType);
+      const bRefund = 
+         i.oType?.bRefund /* Indication from the User */
+      || i.nDiscount.quantity < 0 /* Minus Discount (e.g. -10 discount) [TODO: Remove the quantity as its not exist at all] */
+      || i.price < 0; /* PriceIncVat is minus; Should we not add the nQuantity as a required the positive number here */
+      const bPrepayment =
+      (bRefund && i.oType?.bPrepayment) /* User indicates it is refund or negative amount */
+      // || (i.paymentAmount > 0 /* Whenever the prepayment-field is filled */
+      || (this.getUsedPayMethods(true, payMethods) - this.getTotals('price', transactionItems) < 0)
+      && (i.paymentAmount !== i.amountToBePaid)
+
+      console.log('i.paymentAmount: ', i.paymentAmount);
+      console.log('i.bRefund: ', bRefund, i.oType?.bPrepayment);
+      console.log('i.bRefund: ', bRefund, i.oType?.bPrepayment);
+      console.log('UsedPaymentMethod: ', this.getUsedPayMethods(true, payMethods));
+      console.log('getTotal: ', this.getTotals('price', transactionItems));
+      console.log('Last condition: ', i.paymentAmount, i.amountToBePaid);
+      console.log('bPrepayment: ', bPrepayment, bRefund && i.oType?.bPrepayment, (this.getUsedPayMethods(true, payMethods) - this.getTotals('price', transactionItems) < 0), (i.paymentAmount !== i.amountToBePaid));
       return new TransactionItem(
         i.name,
         i.comment,
@@ -249,7 +275,6 @@ export class TillService {
     });
     localStorage.removeItem('discountRecords');
     if (redeemedLoyaltyPoints && redeemedLoyaltyPoints > 0) {
-      console.log('redeemedLoyaltyPoints: 248: ', redeemedLoyaltyPoints)
       let nDiscount = Math.round(redeemedLoyaltyPoints / originalTItemsLength);
       const reedemedTItem = body.transactionItems.find((o: any) => o.oType.eTransactionType === "loyalty-points");
       body.transactionItems.map((i: any) => {
@@ -274,15 +299,16 @@ export class TillService {
         }
       });
     }
+    console.log('finaly body: ', body);
     return body;
   }
 
   createGiftcardTransactionItem(body: any, discountArticleGroup: any) {
     const originalTItems = length = body.transactionItems.filter((i: any) => i.oType.eKind !== 'loyalty-points-discount' && i.oType.eKind !== 'discount' && i.oType.eKind !== 'loyalty-points' && i.oType.eKind !== 'giftcard-discount');
-    const gCard = body.payments.find((o: any) => o.sName === 'Giftcards' && o.type === 'custom');
+    const gCard = body.payments.find((payment: any) => payment.sName === 'Giftcards' && payment.type === 'custom');
     let nDiscount = 0;
     if (gCard?.amount) nDiscount = (Math.round((gCard?.amount || 0) / (originalTItems?.length || 1))) || 0;
-    originalTItems.map((i: any) => {
+    originalTItems.map((item: any) => {
       if (gCard) {
         if (nDiscount > gCard.amount) {
           nDiscount = gCard.amount;
@@ -291,12 +317,14 @@ export class TillService {
           gCard.amount = gCard.amount - nDiscount;
         }
       }
-      const tItem1 = JSON.parse(JSON.stringify(i));
+      const tItem1 = JSON.parse(JSON.stringify(item));
       tItem1.iArticleGroupId = discountArticleGroup._id;
       tItem1.oArticleGroupMetaData.sCategory = discountArticleGroup.sCategory;
       tItem1.oArticleGroupMetaData.sSubCategory = discountArticleGroup.sSubCategory;
       tItem1.oType.eTransactionType = 'cash-registry';
       tItem1.oType.eKind = 'giftcard-discount';
+      tItem1.sProductName = 'Giftcard redeemed';
+      tItem1.sDescription = '';
       tItem1.nPaymentAmount = -1 * nDiscount;
       tItem1.nRevenueAmount = -1 * nDiscount;
       tItem1.nPriceIncVat = -1 * nDiscount;
@@ -304,9 +332,9 @@ export class TillService {
       tItem1.nDiscount = 0;
       body.transactionItems.push(tItem1);
     });
-
-
+    console.log(329, body);
   }
+
   checkArticleGroups(): Observable<any> {
     let data = {
       skip: 0,
@@ -349,5 +377,83 @@ export class TillService {
       sProductNumber: product.sProductNumber,
     }
     return metadata
+  }
+
+  async processTransactionForPdfReceipt(transaction:any){
+    const relatedItemsPromises: any = [];
+    let language: any = localStorage.getItem('language')
+    let dataObject = JSON.parse(JSON.stringify(transaction));
+
+    dataObject.aPayments.forEach((obj: any) => {
+      obj.dCreatedDate = moment(dataObject.dCreatedDate).format('DD-MM-yyyy hh:mm');
+    });
+
+    dataObject.aTransactionItems = [];
+    transaction.aTransactionItems.forEach((item: any, index: number) => {
+      if (!(item.oType?.eKind == 'discount' || item?.oType?.eKind == 'loyalty-points-discount')) {
+        dataObject.aTransactionItems.push(item);
+      }
+    })
+
+
+    dataObject.total = 0;
+    let total = 0, totalAfterDisc = 0, totalVat = 0, totalDiscount = 0, totalSavingPoints = 0;
+    dataObject.aTransactionItems.forEach((item: any, index: number) => {
+      let name = '';
+      if (item && item.oArticleGroupMetaData && item.oArticleGroupMetaData.oName && item.oArticleGroupMetaData.oName[language]) name = item?.oArticleGroupMetaData?.oName[language] + ' ';
+      item.description = name;
+      if (item?.oBusinessProductMetaData?.sLabelDescription) item.description = item.description + item?.oBusinessProductMetaData?.sLabelDescription + ' ' + item?.sProductNumber;
+      totalSavingPoints += item.nSavingsPoints;
+      let disc = parseFloat(item.nDiscount);
+      if (item.bDiscountOnPercentage) {
+        disc = (disc * parseFloat(item.nPriceIncVat) / 100);
+        item.nDiscountToShow = disc;//.toFixed(2);
+      } else { item.nDiscountToShow = disc; }
+      // item.priceAfterDiscount = parseFloat(item.nRevenueAmount.toFixed(2)) - parseFloat(item.nDiscountToShow);
+      item.nPriceIncVatAfterDiscount = parseFloat(item.nPriceIncVat) - parseFloat(item.nDiscountToShow);
+      item.totalPaymentAmount = (parseFloat(item.nRevenueAmount.toFixed(2)) - parseFloat(item.nDiscountToShow)) * parseFloat(item.nQuantity);
+      // item.totalPaymentAmountAfterDisc = parseFloat(item.priceAfterDiscount.toFixed(2)) * parseFloat(item.nQuantity);
+      item.bPrepayment = item?.oType?.bPrepayment || false;
+      const vat = (item.nVatRate * item.nRevenueAmount / (100 + parseFloat(item.nVatRate)));
+      item.vat = vat.toFixed(2);
+      totalVat += vat;
+      total = total + item.totalPaymentAmount;
+      totalAfterDisc += item.nPriceIncVatAfterDiscount;
+      totalDiscount += disc;
+      relatedItemsPromises[index] = this.getRelatedTransactionItem(item?.iActivityItemId, item?._id, index);
+    })
+    await Promise.all(relatedItemsPromises).then(result => {
+      result.forEach((item: any, index: number) => {
+        transaction.aTransactionItems[index].related = item.data || [];
+      })
+    });
+    dataObject.totalAfterDisc = parseFloat(totalAfterDisc.toFixed(2));
+    dataObject.total = parseFloat(total.toFixed(2));
+    dataObject.totalVat = parseFloat(totalVat.toFixed(2));
+    dataObject.totalDiscount = parseFloat(totalDiscount.toFixed(2));
+    dataObject.totalSavingPoints = totalSavingPoints;
+    dataObject.dCreatedDate = moment(dataObject.dCreatedDate).format('DD-MM-yyyy hh:mm');
+    const result: any = await this.getRelatedTransaction(dataObject?.iActivityId, dataObject?._id).toPromise();
+    dataObject.related = result.data || [];
+    dataObject.related.forEach((obj: any) => {
+      obj.aPayments.forEach((obj: any) => {
+        obj.dCreatedDate = moment(obj.dCreatedDate).format('DD-MM-yyyy hh:mm');
+      });
+      dataObject.aPayments = dataObject.aPayments.concat(obj.aPayments);
+    })
+    transaction = dataObject;
+    return transaction;
+  }
+
+  getRelatedTransactionItem(iActivityItemId: string, iTransactionItemId: string, index: number) {
+    return this.apiService.getNew('cashregistry', `/api/v1/transaction/item/activityItem/${iActivityItemId}?iBusinessId=${this.iBusinessId}&iTransactionItemId=${iTransactionItemId}`).toPromise();
+  }
+
+  getRelatedTransaction(iActivityId: string, iTransactionId: string) {
+    const body = {
+      iBusinessId: this.iBusinessId,
+      iTransactionId: iTransactionId
+    }
+    return this.apiService.postNew('cashregistry', '/api/v1/transaction/activity/' + iActivityId, body);
   }
 }

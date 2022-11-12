@@ -72,10 +72,7 @@ export class RepairComponent implements OnInit {
       this.selectArticleGroup();
       this.item.new = false;
     }
-  }
-
-  onContactButtonClick(): void {
-
+    this.processProperty()
   }
 
   selectArticleGroup() {
@@ -323,6 +320,16 @@ export class RepairComponent implements OnInit {
       let option = this.propertyOptions[property.iPropertyId].filter((opt: any) => opt.sCode == this.selectedProperties[property.iPropertyId]);
       if (option?.length > 0) {
         this.item.oArticleGroupMetaData.aProperty[index] = option[0];
+      }
+    }
+  }
+
+  /* setting a property if item already having the property */
+  processProperty() {
+    if (this.item?.oArticleGroupMetaData?.aProperty?.length) {
+      const aProperty = this.item.oArticleGroupMetaData.aProperty;
+      for (const oProperty of aProperty) {
+        this.selectedProperties[oProperty.iPropertyId] = oProperty.sCode
       }
     }
   }

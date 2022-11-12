@@ -107,13 +107,11 @@ export class ReceiptService {
 
     async exportToPdf({ oDataSource, templateData, pdfTitle, printSettings, printActionSettings, eSituation }: any) {
         this.oOriginalDataSource = oDataSource;
-        // console.log(this.oOriginalDataSource);
         this.pdfService.getTranslations();
 
         this.commonService.pdfTitle = pdfTitle;
         this.commonService.mapCommonParams(templateData.aSettings);
         this.processTemplate(templateData.layout);
-        // console.log(this.content);
         this.pdfServiceNew.getPdfData({
             styles: this.styles,
             content: this.content,

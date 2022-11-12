@@ -13,7 +13,6 @@ import { ReceiptService } from '../../service/receipt.service';
 import { Observable } from 'rxjs';
 import { ToastService } from '../toast';
 import { TranslateService } from '@ngx-translate/core';
-import {BehaviorSubject} from 'rxjs';
 @Component({
   selector: 'app-activity-details',
   templateUrl: './activity-details.component.html',
@@ -57,7 +56,7 @@ export class ActivityDetailsComponent implements OnInit {
   quantity: Number = 0;
   userDetail: any;
   business: any;
-  _oActivity: any;
+  oLocationName: any;
   businessDetails: any;
   iLocationId: String = '';
   showDetails: Boolean = true;
@@ -81,16 +80,18 @@ export class ActivityDetailsComponent implements OnInit {
       'sArticleNumber',
       'dCreatedDate',
       'dUpdatedDate',
-      'iActivityItemId'
+      'iActivityItemId',
+      'sBusinessPartnerName',
+      'iBusinessPartnerId',
+      'iBusinessBrandId',
+      'iBrand',
+      'iAssigneeId'
     ]
   };
-  employee: any = null;
   filteredEmployees: Array<any> = [];
   employeesList: Array<any> = [];
-  brand: any = null;
   brandsList: Array<any> = [];
   filteredBrands: Array<any> = [];
-  supplier: any;
   supplierOptions: Array<any> = [];
   suppliersList: Array<any> = [];
   bFetchingTransaction: boolean = false;
@@ -100,9 +101,28 @@ export class ActivityDetailsComponent implements OnInit {
   iWorkstationId: string;
   aTemplates: any;
   eKindValue = ['discount', 'loyalty-points-discount'];
+  eKindValueForLayout = [
+    'regular',
+    'expenses',
+    'reservation',
+    // below types used in cash register and webshop
+    'empty-line',
+    // below types only used in cash register
+    'repair',
+    'order',
+    'gold-sell',
+    'loyalty-points-discount',
+    'giftcard-discount',
+
+    'loyalty-points',
+    'discount',
+    'payment-discount',
+    'offer',
+    'refund'
+  ];
   // eKindForLayoutHide =['giftcard'];
   translation:any=[];
-
+  bActivityNumber: boolean = false;
 
   constructor(
     private viewContainerRef: ViewContainerRef,
@@ -123,16 +143,16 @@ export class ActivityDetailsComponent implements OnInit {
 
 
   async ngOnInit() {
-
     let translationKey=['SUCCESSFULLY_UPDATED']
     this.translationService.get(translationKey).subscribe((res:any)=>{
       this.translation = res;
     })
-
-    this._oActivity = this.activity;
+    this.oLocationName = this.activity.oLocationName;
+    let _transactionItemData:any;
     if (this.activity) {
       if (this.activity?.activityitems?.length) {
         this.activityItems = this.activity.activityitems;
+        if (this.activityItems?.length == 1) this.activityItems[0].collapsedBtn = true; /* only item there then we will always open it */
         if (this.openActivityId) {
           this.activityItems.forEach((item: any) => {
             if (item._id === this.openActivityId) item.collapsedBtn = true;
@@ -140,12 +160,16 @@ export class ActivityDetailsComponent implements OnInit {
         }
         
       } else {
-        this.fetchTransactionItems();
+        _transactionItemData = await this.fetchTransactionItems();
+        this.processTransactionItems(_transactionItemData);
       }
 
     } else {
-      this.fetchTransactionItems();
+      _transactionItemData = await this.fetchTransactionItems();
+      this.processTransactionItems(_transactionItemData);
     }
+    
+
     if (this.activity?.iCustomerId) this.fetchCustomer(this.activity.iCustomerId, -1);
     this.getBusinessLocations();
     this.getListEmployees()
@@ -173,6 +197,12 @@ export class ActivityDetailsComponent implements OnInit {
       if (result && result.data && result.data.length) {
         this.employeesList = result.data[0].result;
         this.employeesList.map(o => o.sName = `${o.sFirstName} ${o.sLastName}`);
+        this.activityItems.forEach((items:any , index:any)=>{
+          let employeeIndex= this.employeesList.findIndex((employee:any)=> employee._id == items.iAssigneeId);
+          if(employeeIndex != -1){
+              this.activityItems[index] = { ... items , "employeeName":this.employeesList[employeeIndex].sName }
+          }
+        })
       }
     }, (error) => {
     });
@@ -202,6 +232,12 @@ export class ActivityDetailsComponent implements OnInit {
     this.apiService.postNew('core', '/api/v1/business/brands/list', oBody).subscribe((result: any) => {
       if (result.data && result.data.length > 0) {
         this.brandsList = result.data[0].result;
+        this.activityItems.forEach((items:any , index:any)=>{
+          let brandIndex= this.brandsList.findIndex((brand:any)=> brand._id == items.iBusinessBrandId);
+          if(brandIndex != -1){
+              this.activityItems[index] = { ... items , "brandName":this.brandsList[brandIndex].sName }
+          }
+        })
         // if (this.item.iBusinessBrandId) {
         //   const tempsupp = this.brandsList.find(o => o._id === this.item.iBusinessBrandId);
         //   this.brand = tempsupp.sName;
@@ -237,14 +273,34 @@ export class ActivityDetailsComponent implements OnInit {
     }
   }
 
-  onEmployeeChange(e: any) {
-    this.employee = e.sName
+  removeBrands(index:any){
+   this.activityItems[index].brandName=null;
+   this.activityItems[index].iBusinessBrandId = null; 
   }
-  onSupplierChange(e: any) {
-    this.supplier = e.sName
+
+  removeSuppliers(index:any){
+    this.activityItems[index].iBusinessPartnerId = null;
+    this.activityItems[index].sBusinessPartnerName = null;
   }
-  onBrandChange(e: any) {
-    this.brand = e.sName
+
+  removeEmployeees(index:any){
+    this.activityItems[index].iAssigneeId = null;
+    this.activityItems[index].employeeName = null;
+  }
+  onEmployeeChange(e: any , index:any) {
+    this.activityItems[index].iAssigneeId = e._id;
+    this.activityItems[index].employeeName = e.sName;
+    // this.employee = e.sName
+  }
+  onSupplierChange(e: any , index:any) {
+    this.activityItems[index].iBusinessPartnerId = e._id;
+    this.activityItems[index].sBusinessPartnerName = e.sName;
+    // this.supplier = e.sName
+  }
+  onBrandChange(e: any , index:any) {
+    this.activityItems[index].brandName = e.sName;
+    this.activityItems[index].iBusinessBrandId = e._id;
+    this.activityItems[index].iBrand = e.iBrandId;
   }
 
   downloadOrder() { }
@@ -327,6 +383,7 @@ export class ActivityDetailsComponent implements OnInit {
   }
 
   openTransaction(transaction: any, itemType: any) {
+    console.log('openTransaction: ', JSON.parse(JSON.stringify(transaction)), itemType);
     transaction.iActivityId = this.activity._id;
     this.dialogService.openModal(TransactionItemsDetailsComponent, { cssClass: "modal-xl", context: { transaction, itemType, selectedId: transaction._id } })
       .instance.close.subscribe((result: any) => {
@@ -388,6 +445,8 @@ export class ActivityDetailsComponent implements OnInit {
             this.close(true);
           }, 100);
         }
+      }, (error) => {
+        console.log('error: ', error);
       });
   }
   getBusinessDetails(): Observable<any> {
@@ -433,15 +492,6 @@ export class ActivityDetailsComponent implements OnInit {
     // this.printSettings = this.getPdfPrintSetting(type);
 
     this.sendForReceipt(oDataSource, template, oDataSource.sNumber);
-
-    // this.receiptService.exportToPdf({
-    //   oDataSource: oDataSource,
-    //   templateData: template.data,
-    //   pdfTitle: oDataSource.sNumber,
-    //   printSettings: this.printSettings,
-    //   printActionSettings: this.printActionSettings,
-    //   eSituation: 'is_created'
-    // })
     return;
     const data = this.activity.activityitems[index];
     const sName = 'Sample', eType = 'completed';
@@ -500,33 +550,42 @@ export class ActivityDetailsComponent implements OnInit {
     );
   }
 
+  processTransactionItems(result:any){
+    this.activityItems = result.data[0].result;
+    this.oLocationName = this.activityItems[0].oLocationName;   
+    if (this.activityItems.length == 1) this.activityItems[0].collapsedBtn = true;
+    this.transactions = [];
+    for (const obj of this.activityItems) {
+      for (const item of obj.receipts) {
+        this.transactions.push({ ...item, ...obj });
+      }
+    }
+    for (let i = 0; i < this.transactions.length; i++) {
+      const obj = this.transactions[i];
+      this.totalPrice += obj.nPaymentAmount;
+      this.quantity += obj.bRefund ? (- obj.nQuantity) : obj.nQuantity
+      if (obj.iStockLocationId) this.setSelectedBusinessLocation(obj.iStockLocationId, i)
+      this.fetchCustomer(obj.iCustomerId, i);
+    }
+    setTimeout(() => {
+      MenuComponent.reinitialization();
+    }, 200);
+    this.loading = false;
+  }
+
   fetchTransactionItems() {
+    console.log('fetchTItem');
     this.loading = true;
-    this.apiService.postNew('cashregistry', `/api/v1/activities/activity-item/${this.activity._id}`, this.requestParams).subscribe((result: any) => {
-      this.activityItems = result.data[0].result;
-      if (this.activityItems.length == 1) this.activityItems[0].collapsedBtn = true;
-      this.transactions = [];
-      for (const obj of this.activityItems) {
-        for (const item of obj.receipts) {
-          this.transactions.push({ ...item, ...obj });
-        }
-      }
-      for (let i = 0; i < this.transactions.length; i++) {
-        const obj = this.transactions[i];
-        this.totalPrice += obj.nPaymentAmount;
-        this.quantity += obj.bRefund ? (- obj.nQuantity) : obj.nQuantity
-        if (obj.iStockLocationId) this.setSelectedBusinessLocation(obj.iStockLocationId, i)
-        this.fetchCustomer(obj.iCustomerId, i);
-      }
-      setTimeout(() => {
-        MenuComponent.reinitialization();
-      }, 200);
-      this.loading = false;
-    }, (error) => {
-      this.loading = false;
-      alert(error.error.message);
-      this.dialogRef.close.emit('data');
-    });
+    return this.apiService.postNew('cashregistry', `/api/v1/activities/activity-item/${this.activity._id}`, this.requestParams).toPromise();
+
+    // .subscribe((result: any) => {
+      
+    // }
+    // , (error) => {
+    //   this.loading = false;
+    //   alert(error.error.message);
+    //   this.dialogRef.close.emit('data');
+    // });
   }
 
   close(data: any) {
@@ -536,7 +595,6 @@ export class ActivityDetailsComponent implements OnInit {
   submit(activityItemId: any, index: any) {
     const oActivityItem = this.activityItems[index];
     oActivityItem.iBusinessId = this.iBusinessId;
-
     this.apiService.putNew('cashregistry', '/api/v1/activities/items/' + activityItemId, oActivityItem)
       .subscribe((result: any) => {
         if(result.message == 'success'){
@@ -620,22 +678,9 @@ export class ActivityDetailsComponent implements OnInit {
     });
 
     this.sendForReceipt(oDataSource, template, oDataSource.sNumber);
-
-    // this.receiptService.exportToPdf({
-    //   oDataSource: oDataSource,
-    //   templateData: template,
-    //   pdfTitle: this.activity.sNumber,
-
-    // })
-
   }
 
   sendForReceipt(oDataSource: any, template: any, title: any) {
-    console.log("------------------------export pdf----------------------------");
-    console.log(oDataSource);
-    console.log(template);
-    console.log(title);
-    // return;
     this.receiptService.exportToPdf({
       oDataSource: oDataSource,
       pdfTitle: title,
@@ -652,5 +697,9 @@ export class ActivityDetailsComponent implements OnInit {
       ...oFilterBy
     }
     return this.apiService.postNew('cashregistry', `/api/v1/print-settings/list/${this.iBusinessId}`, oBody).toPromise();
+  }
+
+  changeTotalAmount(activity: any) {
+    activity.nTotalAmount = activity.nPriceIncVat * activity.nQuantity;
   }
 }

@@ -225,14 +225,21 @@
                                             </div>
                                         </div>
                                     </td>
-                                    <td>{{item.nPaymentAmount}}</td>
+                                    <td>{{item.nPriceIncVatAfterDiscount | currency:'EUR'}}</td>
                                     <td>{{item.nQuantity}}</td>
-                                    <td>{{item.nDiscountToShow}}</td>
+                                    <td>
+                                        <span *ngIf="item.bDiscountOnPercentage">
+                                            {{ item.nDiscount }}% ({{item.nDiscountToShow | currency:'EUR'}})
+                                        </span>
+                                        <span *ngIf="!item.bDiscountOnPercentage">
+                                            {{item.nDiscountToShow | currency:'EUR'}}
+                                        </span>
+                                    </td>
                                     <td>{{item.nVatRate}} % ({{item.vat || 0 | currency:'EUR' }})</td>
                                     <td>
                                         <div class="d-flex align-items-center justify-content-between">
                                             <div>
-                                                {{item.totalPriceIncVatAfterDisc || 0}}
+                                                {{item.totalPaymentAmount || 0}}
                                             </div>
                                             <ng-container *ngIf="from != 'activity-details'">
                                                 <div class="">
@@ -261,11 +268,11 @@
                                 </tr>
                                 <tr class="fw-bolder">
                                     <td colspan="2">{{ 'TOTAL' | translate }}</td>
-                                    <td>{{ transaction.total }}</td>
+                                    <td>{{ transaction.totalAfterDisc | currency:'EUR' }}</td>
                                     <td>{{ transaction.totalQty }}</td>
-                                    <td>{{ transaction.totalDiscount }}</td>
+                                    <td>{{ transaction.totalDiscount | currency:'EUR' }}</td>
                                     <td>{{ transaction.totalVat | currency:'EUR' }}</td>
-                                    <td></td>
+                                    <td>{{ transaction.total | currency:'EUR'}}</td>
                                 </tr>
                             </tbody>
                         </table>

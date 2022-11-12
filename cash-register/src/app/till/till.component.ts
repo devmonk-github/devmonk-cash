@@ -295,7 +295,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
               result -= i.prePaidAmount;
             } else {
               let discountPrice = i.bDiscountOnPercentage ? (i.price - (i.price * ((i.nDiscount || 0) / 100))) : (i.price - i.nDiscount);
-              // console.log('discountPrice: 289: ', discountPrice, i.quantity);
               i.nTotal = i.quantity * discountPrice;
               i.nTotal = i.type === 'gold-purchase' ? -1 * i.nTotal : i.nTotal;
               result += i.nTotal - (i.prePaidAmount || 0);
@@ -312,7 +311,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
         let sum = 0;
         this.transactionItems.forEach(element => {
           let discountPrice = element.bDiscountOnPercentage ? (element.price * ((element.nDiscount || 0) / 100)) : element.nDiscount;
-          // console.log('discountPrice: 306: ', element.price, element.nDiscount, (element.price * ((element.nDiscount || 0) / 100)), discountPrice, element.quantity, element.bDiscountOnPercentage);
           sum += element.quantity * discountPrice;
         });
         result = sum;
@@ -396,7 +394,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   itemChanged(item: any, index: number): void {
-    console.log('itemChanged: ', item, index);
     switch (item) {
       case 'delete':
         this.transactionItems.splice(index, 1);
@@ -415,7 +412,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
         this.transactionItems[index] = item
         break;
     }
-    // console.log({ transactionItems: this.transactionItems });
   }
 
   createGiftCard(item: any, index: number): void {
@@ -496,7 +492,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   changeInPayment() {
-    console.log('changeInPayment: ', this.transactionItems);
     let availableAmount = this.getUsedPayMethods(true);
     this.paymentDistributeService.distributeAmount(this.transactionItems, availableAmount);
     this.allPaymentMethod = this.allPaymentMethod.map((v: any) => ({ ...v, isDisabled: true }));
@@ -581,7 +576,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
             }
           });
           payMethods = payMethods.filter((o: any) => o.amount !== 0);
-          console.log('this.transactionItems: ', JSON.parse(JSON.stringify(this.transactionItems)));
           const body = this.tillService.createTransactionBody(this.transactionItems, payMethods, this.discountArticleGroup, this.redeemedLoyaltyPoints, this.customer);
           if (body.transactionItems.filter((item: any) => item.oType.eKind === 'repair')[0]?.iActivityItemId) {
             this.bHasIActivityItemId = true
@@ -602,7 +596,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
           let result = body.transactionItems.map((a: any) => a.iBusinessPartnerId);
           const uniq = [...new Set(_.compact(result))];
           if (this.appliedGiftCards?.length) this.tillService.createGiftcardTransactionItem(body, this.discountArticleGroup);
-          console.log('body: ', body);
           this.apiService.postNew('cashregistry', '/api/v1/till/transaction', body)
             .subscribe((data: any) => {
               this.toastrService.show({ type: 'success', text: 'Transaction created.' });
@@ -650,69 +643,13 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   async processTransactionForPdfReceipt(data?: any) {
-    const relatedItemsPromises: any = [];
-    let language: any = localStorage.getItem('language')
-    let dataObject = JSON.parse(JSON.stringify(this.transaction));
-    if (data) {
-      this.transaction = data;
-      dataObject = JSON.parse(JSON.stringify(this.transaction))
-    }
 
-    dataObject.aPayments.forEach((obj: any) => {
-      obj.dCreatedDate = moment(dataObject.dCreatedDate).format('DD-MM-yyyy hh:mm');
-    });
-    dataObject.aTransactionItems = [];
-    this.transaction.aTransactionItems.forEach((item: any, index: number) => {
-      if (!(item.oType?.eKind == 'discount' || item?.oType?.eKind == 'loyalty-points-discount')) {
-        dataObject.aTransactionItems.push(item);
-      }
-    })
-    dataObject.total = 0;
-    let total = 0, totalAfterDisc = 0, totalVat = 0, totalDiscount = 0, totalSavingPoints = 0;
-    dataObject.aTransactionItems.forEach((item: any, index: number) => {
-      let name = '';
-      if (item && item.oArticleGroupMetaData && item.oArticleGroupMetaData.oName && item.oArticleGroupMetaData.oName[language]) name = item?.oArticleGroupMetaData?.oName[language] + ' ';
-      item.description = name;
-      if (item?.oBusinessProductMetaData?.sLabelDescription) item.description = item.description + item?.oBusinessProductMetaData?.sLabelDescription + ' ' + item?.sProductNumber;
-      totalSavingPoints += item.nSavingsPoints;
-      let disc = parseFloat(item.nDiscount);
-      if (item.bDiscountOnPercentage) {
-        disc = (disc * parseFloat(item.nPriceIncVat) / 100);
-        item.nDiscountToShow = disc;//.toFixed(2);
-      } else { item.nDiscountToShow = disc; }
-      item.priceAfterDiscount = parseFloat(item.nRevenueAmount.toFixed(2)) - parseFloat(item.nDiscountToShow);
-      item.nPriceIncVatAfterDiscount = parseFloat(item.nPriceIncVat) - parseFloat(item.nDiscountToShow);
-      item.totalPaymentAmount = parseFloat(item.nRevenueAmount.toFixed(2)) * parseFloat(item.nQuantity);
-      item.totalPaymentAmountAfterDisc = parseFloat(item.priceAfterDiscount.toFixed(2)) * parseFloat(item.nQuantity);
-      item.bPrepayment = item?.oType?.bPrepayment || false;
-      const vat = (item.nVatRate * item.priceAfterDiscount / (100 + parseFloat(item.nVatRate)));
-      item.vat = vat.toFixed(2);
-      totalVat += vat;
-      total = total + item.totalPaymentAmount;
-      totalAfterDisc += item.totalPaymentAmountAfterDisc;
-      totalDiscount += disc;
-      relatedItemsPromises[index] = this.getRelatedTransactionItem(item?.iActivityItemId, item?._id, index);
-    })
-    await Promise.all(relatedItemsPromises).then(result => {
-      result.forEach((item: any, index: number) => {
-        this.transaction.aTransactionItems[index].related = item.data || [];
-      })
-    });
-    dataObject.totalAfterDisc = parseFloat(totalAfterDisc.toFixed(2));
-    dataObject.total = parseFloat(total.toFixed(2));
-    dataObject.totalVat = parseFloat(totalVat.toFixed(2));
-    dataObject.totalDiscount = parseFloat(totalDiscount.toFixed(2));
-    dataObject.totalSavingPoints = totalSavingPoints;
-    dataObject.dCreatedDate = moment(dataObject.dCreatedDate).format('DD-MM-yyyy hh:mm');
-    const result: any = await this.getRelatedTransaction(dataObject?.iActivityId, dataObject?._id).toPromise();
-    dataObject.related = result.data || [];
-    dataObject.related.forEach((obj: any) => {
-      obj.aPayments.forEach((obj: any) => {
-        obj.dCreatedDate = moment(obj.dCreatedDate).format('DD-MM-yyyy hh:mm');
-      });
-      dataObject.aPayments = dataObject.aPayments.concat(obj.aPayments);
-    })
-    this.transaction = dataObject;
+    this.transaction = await this.tillService.processTransactionForPdfReceipt(this.transaction);
+    
+    // if (data) {
+    //   this.transaction = data;
+    //   dataObject = JSON.parse(JSON.stringify(this.transaction))
+    // }
 
     this.handleReceiptPrinting();
 
@@ -730,15 +667,10 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     this.transaction.businessDetails = this.businessDetails;
     this.transaction.currentLocation = this.businessDetails.currentLocation;
     let oDataSource = JSON.parse(JSON.stringify(this.transaction));
-    // console.log(oDataSource);
     let nTotalOriginalAmount = 0;
-    // if (oDataSource.aTransactionItems?.length === 1 && oDataSource._id === oDataSource.aTransactionItems[0].iTransactionId) {
-    //   nTotalOriginalAmount = oDataSource.total;
-    //   oDataSource.bHasPrePayments = false;
-    // } else {
     oDataSource.aTransactionItems.forEach((item: any) => {
       item.sOrderDescription = item.sProductName + '\n' + item.sDescription;
-      nTotalOriginalAmount += item.nPriceIncVat;
+      nTotalOriginalAmount += item.nPriceIncVatAfterDiscount;
       let description = `${item.sProductName}\n${item.sDescription}`;
       if (item?.related?.length) {
         description += `Original amount: ${item.nPriceIncVat}\n
@@ -752,7 +684,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       item.description = description;
     });
     oDataSource.bHasPrePayments = true;
-    // }
     oDataSource.nTotalOriginalAmount = nTotalOriginalAmount;
     oDataSource.sBarcodeURI = this.generateBarcodeURI(false, oDataSource.sNumber);
 
@@ -793,14 +724,12 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
     if (bOrderCondition) {
       // print order receipt
-      // console.log('print order receipt')
       const orderTemplate = aTemplates.filter((template: any) => template.eType === 'order')[0];
       oDataSource.sActivityNumber = oDataSource.activity.sNumber;
       this.sendForReceipt(oDataSource, orderTemplate, oDataSource.activity.sNumber);
     }
     if (bRegularCondition) {
       //print proof of payments receipt
-      // console.log('print proof of payments receipt')
       const template = aTemplates.filter((template: any) => template.eType === 'regular')[0];
       this.sendForReceipt(oDataSource, template, oDataSource.sNumber);
     }
@@ -810,9 +739,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
         this.bHasIActivityItemId = false;
         return;
       }
-      // if (oDataSource.aTransactionItems.filter((item: any) => item.oType.eKind === 'repair')[0]?.iActivityItemId) return;
       //use two column layout
-      // console.log('use two column layout')
       const template = aTemplates.filter((template: any) => template.eType === 'repair')[0];
       oDataSource = this.activityItems.filter((item: any) => item.oType.eKind === 'repair')[0];
       const aTemp = oDataSource.sNumber.split("-");
@@ -824,7 +751,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
     if (bRepairAlternativeCondition) {
       // use repair_alternative laYout
-      // console.log('use repair_alternative laYout')
       const template = aTemplates.filter((template: any) => template.eType === 'repair_alternative')[0];
       oDataSource = this.activityItems.filter((item: any) => item.oType.eKind === 'repair');
       oDataSource.forEach((data: any) => {
@@ -839,8 +765,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   sendForReceipt(oDataSource: any, template: any, title: any) {
-    // return;
-    // console.log('sendForReceipt', title, oDataSource, template);
     this.receiptService.exportToPdf({
       oDataSource: oDataSource,
       pdfTitle: title,
@@ -997,7 +921,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     name = (product?.oArticleGroup?.oName) ? ((product.oArticleGroup?.oName[this.selectedLanguage]) ? product.oArticleGroup?.oName[this.selectedLanguage] : product.oArticleGroup.oName['en']) : '';
     name += ' ' + (product?.sLabelDescription || '');
     name += ' ' + (product?.sProductNumber || '');
-    console.log('onSelectProduct: ', product);
     this.transactionItems.push({
       name: name,
       eTransactionItemType: 'regular',
@@ -1029,7 +952,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       isFor,
       oBusinessProductMetaData: this.tillService.createProductMetadata(product),
     });
-    // console.log({transactionItems: this.transactionItems});
     this.resetSearch();
   }
 
@@ -1462,9 +1384,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
             if (transactionItem.isSelected) {
               const { tType } = transactionItem;
               let paymentAmount = transactionItem.nQuantity * transactionItem.nPriceIncVat - transactionItem.nPaidAmount;
-              console.log('paymentAmount: ', paymentAmount, transactionItem.nQuantity, transactionItem.nPriceIncVat, transactionItem.nPaidAmount)
               if (tType === 'refund') {
-                // paymentAmount = -1 * transactionItem.nPaidAmount;
                 paymentAmount = 0;
                 transactionItem.oType.bRefund = true;
               } else if (tType === 'revert') {

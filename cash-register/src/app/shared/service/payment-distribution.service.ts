@@ -17,7 +17,11 @@ export class PaymentDistributionService {
 
   distributeAmount(transactionItems: any[], availableAmount: any): any[] {
     transactionItems.map((i: any) => {
-      i.amountToBePaid = i.price * i.quantity - (i.prePaidAmount || 0) - (i.nDiscount * i.quantity || 0);
+      let _nDiscount = 0;
+      if (i.nDiscount > 0 && !i.bDiscountOnPercentage) _nDiscount = i.nDiscount
+      else if (i.nDiscount > 0 && i.bDiscountOnPercentage) _nDiscount = i.price * (i.nDiscount / 100)
+      
+      i.amountToBePaid = i.price * i.quantity - (i.prePaidAmount || 0) - (_nDiscount * i.quantity || 0);
       if (i.type === 'gold-purchase') {
         i.amountToBePaid = -1 * i.amountToBePaid;
       }
@@ -50,7 +54,6 @@ export class PaymentDistributionService {
         element.paymentAmount = element.nTotal;
       }
     });
-    console.log('transactionItems: ', transactionItems);
     return transactionItems;
   }
 
@@ -85,11 +88,6 @@ export class PaymentDistributionService {
         element.paymentAmount = element.nTotal;
       }
     });
-
-    // const totalAmountToBePaid = arrToUpdate.reduce((n, { amountToBePaid }) => n + amountToBePaid, 0);
-    // arrToUpdate.map(i => (i.paymentAmount = this.roundToXDigits(i.amountToBePaid * availableAmount / Math.abs(totalAmountToBePaid))));
-    // const assignedAmount = arrToUpdate.reduce((n, { paymentAmount }) => n + paymentAmount, 0);
-    // arrToUpdate[arrToUpdate.length - 1].paymentAmount += (availableAmount - assignedAmount);
     return transactionItems;
   }
 }
