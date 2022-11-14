@@ -100,7 +100,7 @@ export class ActivityDetailsComponent implements OnInit {
   printActionSettings: any;
   iWorkstationId: string;
   aTemplates: any;
-  eKindValue = ['discount', 'loyalty-points-discount'];
+  eKindValue = ['discount', 'loyalty-points-discount' , 'loyalty-points'];
   eKindValueForLayout = [
     'regular',
     'expenses',
@@ -462,7 +462,7 @@ export class ActivityDetailsComponent implements OnInit {
     let sBarcodeURI:any;
     if(oDataSource?.oType?.eKind === 'giftcard'){
       type = oDataSource.oType.eKind;
-      oDataSource.nTotal = oDataSource.nPriceIncVat;
+      oDataSource.nTotal = oDataSource.nPaidAmount;
       sBarcodeURI = this.generateBarcodeURI(true, 'G-'+oDataSource.sGiftCardNumber);
     } 
     else {
