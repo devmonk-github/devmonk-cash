@@ -499,8 +499,8 @@
                         </div>
                         <div class="col-4">
                             <div>
-                                <input class="form-control" id="sFirstName" placeholder="{{'MALE' | translate}}"
-                                    [(ngModel)]="customer.sFirstName" />
+                                <input class="form-control capitalize-first" id="sFirstName" placeholder="{{'FIRST_NAME' | translate}}"
+                                    [(ngModel)]="customer.sFirstName" (ngModelChange)="convertFirstNameUpper($event)" />
                             </div>
                         </div>
                         <div class="col-2">
@@ -510,8 +510,8 @@
                             </div>
                         </div>
                         <div class="col-4">
-                            <div><input class="form-control" id="sLastName" placeholder="{{'LAST_NAME' | translate}}"
-                                    [(ngModel)]="customer.sLastName" required /></div>
+                            <div><input class="form-control capitalize-first" id="sLastName" placeholder="{{'LAST_NAME' | translate}}"
+                                    [(ngModel)]="customer.sLastName" (ngModelChange)="convertLastNameUpper($event)" required /></div>
                         </div>
                     </div>
                     <div class="row">

@@ -251,12 +251,12 @@
                   [(ngModel)]="searchKeyword"
                   (ngModelChange)="searchKeyword? shopProducts = shopProducts: shopProducts = []"
                   (keyup.enter)="search()" (focus)="switchMode()" #searchField>
-                <button class="btn btn-secondary me-3 d-flex" (click)="openTransactionSearchDialog()">
+                <button class="btn btn-secondary me-3 d-flex search-button" (click)="openTransactionSearchDialog()">
                   <fa-icon [icon]="faSearch"></fa-icon> {{ "TRANSACTION" |
                   translate}}
                 </button>
-                <button class="btn btn-secondary me-3" (click)="addNewLine()">{{ "TEXT_LINE" | translate}}</button>
-                <button class="btn btn-secondary me-3" (click)="addNewLine()">{{ "EMPTY_LINE" | translate}}</button>
+                <button class="btn btn-secondary me-3 search-button" (click)="addNewLine()">{{ "TEXT_LINE" | translate}}</button>
+                <button class="btn btn-secondary me-3 search-button" (click)="addNewLine()">{{ "EMPTY_LINE" | translate}}</button>
                 <button class="btn btn-icon btn-secondary w-85px" (click)="cancelItems()"
                   [disabled]="transactionItems.length === 0">
                   <i class="fa fa-trash"></i>

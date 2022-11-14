@@ -13,7 +13,10 @@
 .overlay {
 	grid-area: 1 / 1;
 }
-
+.search-button{
+	min-width:140px;
+}
+ 
 .create-order {
 	position: relative;
 	border: 1px solid #EFF2F5;
