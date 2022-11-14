@@ -4,6 +4,7 @@ import { ViewContainerRef } from '@angular/core';
 import { ApiService } from 'src/app/shared/service/api.service';
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import * as _ from 'lodash';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-transaction-items-details',
@@ -27,6 +28,7 @@ export class TransactionItemsDetailsComponent implements OnInit {
   status = true;
   bIsAnyGiftCardDiscount: boolean = false;
   aSelectedIds:any = [];
+  isFor: any;
 
   requestParams: any = {
     iBusinessId: "",
@@ -52,9 +54,12 @@ export class TransactionItemsDetailsComponent implements OnInit {
   constructor(
     private viewContainerRef: ViewContainerRef,
     private apiService: ApiService,
+    private route: ActivatedRoute,
+    private router: Router,
   ) {
     const _injector = this.viewContainerRef.parentInjector;
     this.dialogRef = _injector.get<DialogComponent>(DialogComponent);
+    this.isFor = this.route?.snapshot?.queryParams?.isFor;
   }
 
   ngOnInit(): void {
@@ -69,15 +74,23 @@ export class TransactionItemsDetailsComponent implements OnInit {
     this.requestParams.iTransactionId = this.transaction._id;
     let url = `/api/v1/transaction/item/transaction-items`;
 
+    console.log(' this.transaction.iActivityId: ',  this.transaction.iActivityId);
+    console.log(' this.transaction._id: ',  this.transaction._id);
+    console.log(' this.transaction.iActivityItemId: ',  this.transaction.iActivityItemId);
+  
     if (this.itemType === 'activity') {
       delete this.requestParams.iTransactionId;
       let id;
       if (this.transaction?.iActivityId) id = this.transaction.iActivityId
       else id = this.transaction._id
       url = `/api/v1/activities/items/${id}`;
+
+      /* If comes from the Activity-item then URL will change and it will fetch the AI */
+      if (this.isFor !== 'activity' && this.transaction?.iActivityItemId) url = `/api/v1/activities/activity-item/${this.transaction.iActivityItemId}`;
     };
     this.apiService.postNew('cashregistry', url, this.requestParams).subscribe((result: any) => {
       this.transactionItems = result.data[0].result;
+      console.log('this.transactionItems: ', this.transactionItems, url, this.requestParams);
       const discountRecords = this.transactionItems.filter(o => o.oType.eKind === 'discount' || o.oType.eKind === 'loyalty-points-discount');
       // const loyaltyPoints = this.transactionItems.filter(o => o.oType.eKind === 'loyalty-points' || o.oType.eKind === 'loyalty-points');
       this.bIsAnyGiftCardDiscount = this.transactionItems.find((el: any) => el?.oType?.eKind === 'giftcard-discount')
