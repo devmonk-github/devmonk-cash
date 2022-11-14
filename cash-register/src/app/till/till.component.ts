@@ -669,12 +669,10 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     let oDataSource = JSON.parse(JSON.stringify(this.transaction));
     let nTotalOriginalAmount = 0;
     oDataSource.aTransactionItems.forEach((item: any) => {
-      item.sOrderDescription = item.sProductName + '\n' + item.sDescription;
       nTotalOriginalAmount += item.nPriceIncVatAfterDiscount;
-      let description = `${item.sProductName}\n${item.sDescription}`;
+      let description = (item?.nDiscountToShow > 0) ? `Original amount: ${item.nPriceIncVat}\n` : '';
       if (item?.related?.length) {
-        description += `Original amount: ${item.nPriceIncVat}\n
-                          Already paid: \n${item.sTransactionNumber} | ${item.nPaymentAmount} (this receipt)\n`;
+        description += `Already paid: \n${item.sTransactionNumber} | ${item.nPaymentAmount} (this receipt)\n`;
 
         item.related.forEach((related: any) => {
           description += `${related.sTransactionNumber}|${related.nPaymentAmount}\n`;
@@ -683,7 +681,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
       item.description = description;
     });
-    oDataSource.bHasPrePayments = true;
+    // oDataSource.bHasPrePayments = true;
     oDataSource.nTotalOriginalAmount = nTotalOriginalAmount;
     oDataSource.sBarcodeURI = this.generateBarcodeURI(false, oDataSource.sNumber);
 

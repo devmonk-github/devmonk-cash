@@ -198,10 +198,9 @@
                                     </td>
                                     <td>
                                         <div>
-                                            {{item.sProductName}} <br /> {{item.description}} <br />
-                                            
+                                            {{item.sArticleGroupName}} {{item.sProductName}} <br /> {{ item.sDescription}} <br />
+                                            {{ item.description }}
                                             <div *ngIf="item.related?.length">
-                                                {{ "ORIGINAL_AMOUNT" | translate}}:
                                                 {{item.nPriceIncVat}}<br />{{ "ALREADY_PAID" | translate}}:<br />
                                                 {{item.sTransactionNumber}} | {{item.nPaymentAmount}} ({{"THIS_RECEIPT"}})<br />
                                                 <div *ngFor="let obj of item.related">
@@ -209,7 +208,6 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <br>
                                         <div *ngIf="item?.aProductVariant?.length > 0">
                                             <div *ngFor="let variant of item.aProductVariant" class="d-flex">
                                                 <div class="w-25">
