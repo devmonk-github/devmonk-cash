@@ -68,11 +68,12 @@ export class CustomerDetailsImportComponent implements OnInit, OnChanges {
   getDynamicFields(isResetAttributes: boolean) {
     let filter = {
       oFilterBy: {
-        "sName": "import customer details"
+        "sName": "IMPORT_CUSTOMER_DETAILS"
       }
     };
 
     this.apiService.postNew('core', '/api/v1/properties/list', filter).subscribe((result: any) => {
+      console.log('result', result)
       if (result && result.data && result.data.length > 0) {
         this.allFields['all'] = result.data[0].aOptions;
         if (isResetAttributes) {
