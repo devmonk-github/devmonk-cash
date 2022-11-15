@@ -643,6 +643,10 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
     this.oCountings.nSkim = this.oStatisticsDocument?.oCountings?.nSkim || 0;
     this.oCountings.nCashRemain = this.oStatisticsDocument?.oCountings?.nCashRemain || 0;
     this.bDisableCountings = !this.oStatisticsDocument.bIsDayState;
+    if (this.aStatistic?.length && this.aStatistic[0]?.overall?.length) {
+      this.oCountings.nCashInTill = this.aStatistic[0].overall[0].nTotalRevenue;
+    }
+    
     let aKeys: any = [];
     if (this.oStatisticsDocument?.oCountings?.oCountingsCashDetails) aKeys = Object.keys(this.oStatisticsDocument?.oCountings?.oCountingsCashDetails);
     if (aKeys?.length) {
@@ -1099,6 +1103,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
         eKind: data?._eType || 'expenses',
         bDiscount: false,
       },
+      nVatRate: data?.nVatRate || 21
     };
     return this.apiService.postNew('cashregistry', `/api/v1/till/add-expenses`, transactionItem);
   }
@@ -1111,9 +1116,10 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
     const oCashPaymentMethod = this.allPaymentMethod.filter((el: any) => el.sName.toLowerCase() === 'cash')[0];
     const oBankPaymentMethod = this.allPaymentMethod.filter((el: any) => el.sName.toLowerCase() === 'bankpayment')[0];
     console.log('nDifferenceAmount: ', nDifferenceAmount);
+    const aPromises:any = [];
     if (nDifferenceAmount !== 0) {
       //we have difference in cash, so add that as and expense
-      await this.addExpenses(
+      aPromises.push(this.addExpenses(
         {
           amount: -(nDifferenceAmount),
           comment: 'DIFF_IN_CASH_COUNTING',
@@ -1124,15 +1130,14 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
           },
           _eType: 'diff-counting'
         }
-      ).toPromise();
+      ).toPromise());
     }
 
     if (this.oCountings.nSkim > 0) {
       //amount to put in bank - so add create new expense with positive amount to add it as bank payment, and negative amount as cash
       // so increase bank payment amount and equally decrease cash payment amount
 
-
-      await this.addExpenses({
+      aPromises.push(this.addExpenses({
         amount: this.oCountings.nSkim,
         comment: 'Transfer to the bank (increase bank amount)',
         oPayment: {
@@ -1140,9 +1145,9 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
           nAmount: this.oCountings.nSkim,
           sMethod: oBankPaymentMethod.sName.toLowerCase()
         }
-      }).toPromise();
+      }).toPromise());
 
-      await this.addExpenses({
+      aPromises.push(this.addExpenses({
         amount: -this.oCountings.nSkim,
         comment: 'Transfered to the bank (decrease cash amount)',
         oPayment: {
@@ -1150,9 +1155,10 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
           nAmount: -this.oCountings.nSkim,
           sMethod: oCashPaymentMethod.sName.toLowerCase()
         }
-      }).toPromise();
-
+      }).toPromise());
     }
+
+    await Promise.all(aPromises)
 
     const oBody = {
       iBusinessId: this.iBusinessId,
