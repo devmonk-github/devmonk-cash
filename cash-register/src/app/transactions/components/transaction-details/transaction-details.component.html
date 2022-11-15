@@ -186,6 +186,7 @@
                                     <td class="text-muted">{{'PRICE' | translate}}</td>
                                     <td class="text-muted">{{'QUANTITY' | translate}}</td>
                                     <td class="text-muted">{{'DISCOUNT_PER_ITEM' | translate}}</td>
+                                    <td class="text-muted"> {{'SAVING_POINTS' | translate}}</td>
                                     <td class="text-muted">{{'TAX' | translate}}</td>
                                     <td class="text-muted">{{'TOTAL_PRICE' | translate}}</td>
                                 </tr>
@@ -233,6 +234,7 @@
                                             {{item.nDiscountToShow | currency:'EUR'}}
                                         </span>
                                     </td>
+                                    <td>{{item.nSavingsPoints}} </td>
                                     <td>{{item.nVatRate}} % ({{item.vat || 0 | currency:'EUR' }})</td>
                                     <td>
                                         <div class="d-flex align-items-center justify-content-between">

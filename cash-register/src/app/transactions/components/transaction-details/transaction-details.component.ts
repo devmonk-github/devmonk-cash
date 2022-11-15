@@ -302,11 +302,11 @@ export class TransactionDetailsComponent implements OnInit {
     }
     activityItem.bFetchingActivityItem = true;
     event.target.disabled = true;
-    const _oActivityitem: any = await this.apiService.postNew('cashregistry', `/api/v1/activities/items/${activityItem.iActivityItemId}`, oBody).toPromise();
-    const oActivityItem = _oActivityitem?.data[0]?.result[0];
+    // const _oActivityitem: any = await this.apiService.postNew('cashregistry', `/api/v1/activities/items/${activityItem.iActivityItemId}`, oBody).toPromise();
+    // const oActivityItem = _oActivityitem?.data[0]?.result[0];
     activityItem.bFetchingActivityItem = false;
     event.target.disabled = false;
-    this.dialogService.openModal(ActivityDetailsComponent, { cssClass: 'w-fullscreen', context: { activity: oActivityItem, items: true, from: 'transaction-details' } })
+    this.dialogService.openModal(ActivityDetailsComponent, { cssClass: 'w-fullscreen', context: { activity:{_id:activityItem.iActivityItemId}, items: true, from: 'transaction-details' } })
       .instance.close.subscribe((result: any) => {
 
       });

@@ -251,12 +251,12 @@
                   [(ngModel)]="searchKeyword"
                   (ngModelChange)="searchKeyword? shopProducts = shopProducts: shopProducts = []"
                   (keyup.enter)="search()" (focus)="switchMode()" #searchField>
-                <button class="btn btn-secondary me-3 d-flex" (click)="openTransactionSearchDialog()">
+                <button class="btn btn-secondary me-3 d-flex search-button" (click)="openTransactionSearchDialog()">
                   <fa-icon [icon]="faSearch"></fa-icon> {{ "TRANSACTION" |
                   translate}}
                 </button>
-                <button class="btn btn-secondary me-3" (click)="addNewLine()">{{ "TEXT_LINE" | translate}}</button>
-                <button class="btn btn-secondary me-3" (click)="addNewLine()">{{ "EMPTY_LINE" | translate}}</button>
+                <button class="btn btn-secondary me-3 search-button" (click)="addNewLine()">{{ "TEXT_LINE" | translate}}</button>
+                <button class="btn btn-secondary me-3 search-button" (click)="addNewLine()">{{ "EMPTY_LINE" | translate}}</button>
                 <button class="btn btn-icon btn-secondary w-85px" (click)="cancelItems()"
                   [disabled]="transactionItems.length === 0">
                   <i class="fa fa-trash"></i>
@@ -418,15 +418,14 @@
           </div>
           <div>
             <p class="mt-5 mb-0 text-gray-800">
-              {{customer.number}}
-              <br>
-              {{customer.NAME}}
-              <br>
-              {{customer.oShippingAddress?.street}} {{customer.oShippingAddress?.number}}
-              <br>
-              {{customer.oShippingAddress?.zip}} {{customer.oShippingAddress?.city}}
-              <br>
-              {{customer.sEmail}}
+              <span *ngIf="customer.number">{{customer.number}} <br> </span>
+              <span *ngIf="customer.NAME">{{customer.NAME}}  <br> </span>
+              <span *ngIf="customer.oShippingAddress?.street || customer.oShippingAddress?.number"> {{customer.oShippingAddress?.street}} {{customer.oShippingAddress?.number}} 
+                <br>
+              </span>
+              <span *ngIf="customer.oShippingAddress?.zip || customer.oShippingAddress?.city"> {{customer.oShippingAddress?.zip}} {{customer.oShippingAddress?.city}}<br>
+              </span>
+              <span *ngIf="customer.sEmail"> {{customer.sEmail}} </span>
             </p>
           </div>
         </div>

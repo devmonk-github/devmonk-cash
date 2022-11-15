@@ -1081,7 +1081,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
       currentEmployeeId = JSON.parse(value)._id;
     }
     const transactionItem = {
-      sProductName: data?._eType || 'Expenses',
+      sProductName: data?._eType || 'expenses',
       sComment: data.comment,
       nPriceIncVat: data.amount,
       nPurchasePrice: data.amount,
@@ -1094,9 +1094,9 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
       iLocationId: this.iLocationId,
       oPayment: data?.oPayment,
       oType: {
-        eTransactionType: data?._eType || 'Expenses',
+        eTransactionType: data?._eType || 'expenses',
         bRefund: false,
-        eKind: data?._eType || 'Expenses',
+        eKind: data?._eType || 'expenses',
         bDiscount: false,
       },
     };

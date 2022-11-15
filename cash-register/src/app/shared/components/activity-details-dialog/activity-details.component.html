@@ -694,6 +694,9 @@
                                     placeholder="{{ 'DESCRIPTION' | translate}}" lines="10"
                                     [(ngModel)]="activity.sDescription"></textarea>
                             </div>
+                            <div class="form-group mb-6">
+                            {{'REMAINING_AMOUNT' | translate}} : {{activity.nPaidAmount | currency:'€'}}
+                            </div>
 
                         </div>
                         <div class="col-5">
