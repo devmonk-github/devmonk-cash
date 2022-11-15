@@ -70,8 +70,8 @@ export class TillService {
   }
 
   getValueFromLocalStorage(key: string): any {
-    if (key === 'currentEmployee') {
-      const value = localStorage.getItem('currentEmployee');
+    if (key === 'currentUser') {
+      const value = localStorage.getItem('currentUser');
       if (value) {
         return JSON.parse(value)
       } else {
@@ -92,7 +92,7 @@ export class TillService {
       'cash-register-revenue',
       'y',
       this.getValueFromLocalStorage('currentWorkstation'),
-      this.getValueFromLocalStorage('currentEmployee')._id,
+      this.getValueFromLocalStorage('currentUser').userId,
       this.getValueFromLocalStorage('currentLocation'),
       null,
       null,
@@ -143,6 +143,8 @@ export class TillService {
       console.log('getTotal: ', this.getTotals('price', transactionItems));
       console.log('Last condition: ', i.paymentAmount, i.amountToBePaid);
       console.log('bPrepayment: ', bPrepayment, bRefund && i.oType?.bPrepayment, (this.getUsedPayMethods(true, payMethods) - this.getTotals('price', transactionItems) < 0), (i.paymentAmount !== i.amountToBePaid));
+      
+   
       return new TransactionItem(
         i.name,
         i.comment,
@@ -195,7 +197,7 @@ export class TillService {
         i.oBusinessProductMetaData,
         'y',
         this.getValueFromLocalStorage('currentWorkstation'),
-        i.iEmployeeId || this.getValueFromLocalStorage('currentEmployee')._id,
+        i.iEmployeeId || this.getValueFromLocalStorage('currentUser').userId,
         i.iAssigneeId,
         this.getValueFromLocalStorage('currentLocation'),
         i.sBagNumber,
