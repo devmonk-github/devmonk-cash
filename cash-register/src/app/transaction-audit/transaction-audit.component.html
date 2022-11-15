@@ -1402,8 +1402,7 @@
                                 <div>
                                     <label>{{ "TREASURY_DIFFERENCE" | translate}}</label>
                                     <label class="bold">
-                                        {{ (oCountings.nCashAtStart + oCountings.nCashInTill - oCountings.nCashCounted)
-                                        | currency:"EUR":"symbol" }}
+                                        {{ oCountings.nCashCounted - (oCountings.nCashAtStart + oCountings.nCashInTill) | currency:"EUR":"symbol" }}
                                     </label>
                                 </div>
                                 <div>
