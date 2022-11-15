@@ -73,7 +73,6 @@ export class CustomerDetailsImportComponent implements OnInit, OnChanges {
     };
 
     this.apiService.postNew('core', '/api/v1/properties/list', filter).subscribe((result: any) => {
-      console.log('result', result)
       if (result && result.data && result.data.length > 0) {
         this.allFields['all'] = result.data[0].aOptions;
         if (isResetAttributes) {
