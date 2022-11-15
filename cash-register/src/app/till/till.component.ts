@@ -253,6 +253,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   addOrder(product: any): void {
+    let tax = Math.max(...this.taxes.map((tax: any) => tax.nRate), 0);
     this.transactionItems.push({
       eTransactionItemType: 'regular',
       manualUpdate: false,
@@ -267,7 +268,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       nPurchasePrice: 0,
       nMargin: 1,
       nDiscount: 0,
-      tax: 21,
+      tax: tax,
       paymentAmount: 0,
       oArticleGroupMetaData: { aProperty: [], sCategory: '', sSubCategory: '', oName: {}, oNameOriginal: {} },
       description: '',
@@ -334,6 +335,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   async addItem(type: string) {
     // const price = this.randNumber(5, 200);
     const price = 1;
+    let tax = Math.max(...this.taxes.map((tax: any) => tax.nRate), 0);
     this.transactionItems.push({
       isExclude: type === 'repair' ? true : false,
       eTransactionItemType: 'regular',
@@ -351,7 +353,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       nPurchasePrice: 0,
       nTotal: type === 'gold-purchase' ? -1 * price : price,
       nDiscount: 0,
-      tax: 21,
+      tax: tax,
       paymentAmount: type === 'gold-purchase' ? -1 * price : 0,
       description: '',
       sServicePartnerRemark: '',
@@ -646,7 +648,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   async processTransactionForPdfReceipt(data?: any) {
 
     this.transaction = await this.tillService.processTransactionForPdfReceipt(this.transaction);
-    
+
     // if (data) {
     //   this.transaction = data;
     //   dataObject = JSON.parse(JSON.stringify(this.transaction))
@@ -1284,7 +1286,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
         localStorage.setItem('fiskalyTransaction', JSON.stringify(result));
       }
     } catch (error: any) {
-      if (error.error.code === 'E_UNAUTHORIZED') {
+      if (error?.error?.code === 'E_UNAUTHORIZED') {
         localStorage.removeItem('fiskalyAuth');
         await this.updateFiskalyTransaction(state, payments);
       }
