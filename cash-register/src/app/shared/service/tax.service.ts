@@ -35,4 +35,20 @@ export class TaxService {
       return liveQuery(() => db.taxRates.toArray());
     }
   }
+
+  async fetchDefaultVatRate(oBody: any) {
+    let nVatRate = 21;
+    const oTax: any = await this.getLocationTax({ iLocationId: oBody.iLocationId });
+    if (oTax?.aRates?.length === 1) {
+      nVatRate = oTax.aRates[0].nRate;
+    } else if (oTax?.aRates?.length) {
+      const _aVatRate = oTax?.aRates.map((oVat: any) => oVat.nRate);
+      let nLargestVat = 0;
+      for (let i = 0; i < _aVatRate?.length; i++) {
+        if (_aVatRate[i] > nLargestVat) nLargestVat = _aVatRate[i]
+      }
+      if (nLargestVat) nVatRate = nLargestVat;
+    }
+    return nVatRate;
+  }
 }
