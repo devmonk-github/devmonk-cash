@@ -100,7 +100,10 @@
                     <label class="mx-auto">{{ "DOWNLOAD_WITH_VAT" | translate}}</label>
                 </button>
                 <button class="btn btn-sm btn-secondary w-100 d-flex" (click)="downloadWithVAT(true)">
-                    <fa-icon [icon]="faPrint"></fa-icon>
+                    <fa-icon [hidden]="printWithVATLoading" [icon]="faPrint"></fa-icon>
+                    <span *ngIf="printWithVATLoading">
+                        <i class="fa fa-spinner fa-spin" [hidden]="!printWithVATLoading" style="font-size:15px;"></i>
+                    </span>
                     <label class="mx-auto">{{ "PRINT" | translate }}</label>
                 </button>
                 <button class="btn btn-sm btn-secondary w-100 d-flex">
@@ -199,10 +202,9 @@
                                     </td>
                                     <td>
                                         <div>
-                                            {{item.sProductName}} <br /> {{item.description}} <br />
-                                            
+                                            {{item.sArticleGroupName}} {{item.sProductName}} <br /> {{ item.sDescription}} <br />
+                                            {{ item.description }}
                                             <div *ngIf="item.related?.length">
-                                                {{ "ORIGINAL_AMOUNT" | translate}}:
                                                 {{item.nPriceIncVat}}<br />{{ "ALREADY_PAID" | translate}}:<br />
                                                 {{item.sTransactionNumber}} | {{item.nPaymentAmount}} ({{"THIS_RECEIPT"}})<br />
                                                 <div *ngFor="let obj of item.related">
@@ -210,7 +212,6 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <br>
                                         <div *ngIf="item?.aProductVariant?.length > 0">
                                             <div *ngFor="let variant of item.aProductVariant" class="d-flex">
                                                 <div class="w-25">

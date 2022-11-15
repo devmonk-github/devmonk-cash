@@ -18,6 +18,7 @@ export class TransactionAuditUiPdfService {
     iLocationId: any = '';
     iWorkstationId: any = '';
     content: any = [];
+    currency: string = "€";
 
     styles:any = {
         right: {
@@ -330,31 +331,31 @@ export class TransactionAuditUiPdfService {
         let texts: any = [
             [
                 { text: 'CASH_LEFTOVER', style: ['td'] },
-                { text: oCountings.nCashAtStart, style: ['td'] },
+                { text: this.convertToMoney(oCountings.nCashAtStart), style: ['td'] },
             ],
             [
                 { text: 'CASH_MUTATION', style: ['td'] },
-                { text: 0, style: ['td'] },
+                { text: this.convertToMoney(0), style: ['td'] },
             ],
             [
                 { text: 'CASH_IN_TILL', style: ['td'] },
-                { text: aStatistic[0].overall[0].nTotalRevenue, style: ['td'] },
+                { text: this.convertToMoney(aStatistic[0].overall[0].nTotalRevenue), style: ['td'] },
             ],
             [
                 { text: 'CASH_COUNTED', style: ['td'] },
-                { text: oCountings.nCashCounted, style: ['td'] },
+                { text: this.convertToMoney(oCountings.nCashCounted), style: ['td'] },
             ],
             [
                 { text: 'TREASURY_DIFFERENCE', style: ['td'] },
-                { text: oCountings.nCashAtStart + aStatistic[0].overall[0].nTotalRevenue - oCountings.nCashCounted, style: ['td'] }
+                { text: this.convertToMoney(oCountings.nCashCounted - (oCountings.nCashAtStart + aStatistic[0].overall[0].nTotalRevenue)) , style: ['td'] }
             ],
             [
                 { text: 'SKIM', style: ['td'] },
-                { text: oCountings.nSkim, style: ['td'] },
+                { text: this.convertToMoney(oCountings.nSkim), style: ['td'] },
             ],
             [
                 { text: 'AMOUNT_TO_LEFT_IN_CASH', style: ['td'] },
-                { text: oCountings.nCashRemain, style: ['td'] }
+                { text: this.convertToMoney(oCountings.nCashRemain), style: ['td'] }
             ],
         ];
 
@@ -1246,5 +1247,23 @@ export class TransactionAuditUiPdfService {
             iBusinessId: this.iBusinessId,
         };
         return this.apiService.postNew('cashregistry','/api/v1/activities/gold-purchases-payments/list',data).toPromise();
+    }
+
+    convertToMoney(val: any) {
+        let value;
+        if (val % 1 === 0) {
+            //no decimals
+            value = (val) ? String(val + ',00') : '0,00';
+        } else {
+            val = String(val);
+            let parts = val.split('.');
+
+            if (parts[1].length === 1) {
+                val = val + '0';
+            }
+            value = val.replace('.', ',')
+        }
+
+        return this.currency + value;
     }
 }
