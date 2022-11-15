@@ -332,7 +332,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     return result;
   }
   async addItem(type: string) {
-    const price = this.randNumber(5, 200);
+    // const price = this.randNumber(5, 200);
+    const price = 1;
     this.transactionItems.push({
       isExclude: type === 'repair' ? true : false,
       eTransactionItemType: 'regular',
