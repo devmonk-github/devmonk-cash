@@ -84,8 +84,8 @@ export class TransactionAuditUiPdfService {
         articleGroup: {
             fillColor: '#F5F8FA',
         },
-        property: {
-            // color: "#ccc",
+        bgGray:{
+            fillColor: '#F5F8FA',
         },
     };
 
@@ -132,6 +132,27 @@ export class TransactionAuditUiPdfService {
         };
         let sType = sOptionMenu.parent.sValue
         let dataType = bIsDynamicState ? 'Dynamic Data' : 'Static Data';
+
+        const _aLocation = oBusinessDetails?.aLocation?.forEach((location:any)=> location._id===this.iLocationId);
+        if (_aLocation?.length) {
+            const oCurrentLocation = _aLocation[0];
+            if (oCurrentLocation?.eCurrency){
+                switch (oCurrentLocation?.eCurrency){
+                    case 'euro':
+                        this.currency = "€";
+                        break;
+                    case 'pound':
+                        this.currency = "£";
+                        break;
+                    case 'swiss':
+                        this.currency = "₣";
+                        break;
+                    default:
+                        this.currency = "€";
+                        break;
+                }
+            }
+        }
 
         // get selected locaions
         let sLocations = '';
@@ -273,7 +294,12 @@ export class TransactionAuditUiPdfService {
 
         if (aPaymentMethods?.length) {
             let texts: any = [];
+            let nTotalAmount = 0, nTotalQuantity = 0;
             aPaymentMethods.forEach((paymentMethod: any) => {
+                console.log({paymentMethod});
+                nTotalAmount += parseFloat(paymentMethod.nAmount);
+                nTotalQuantity += parseFloat(paymentMethod.nQuantity);
+
                 texts.push([
                     { text: paymentMethod.sMethod, style: ['td'] },
                     { text: paymentMethod.nAmount, style: ['td'] },
@@ -281,11 +307,17 @@ export class TransactionAuditUiPdfService {
                 ]);
                 
             });
+            texts.push([
+                {text: 'TOTAL', style:['td', 'bold','bgGray']},
+                {text: nTotalAmount, style:['td', 'bold','bgGray']},
+                {text: nTotalQuantity, style:['td', 'bold','bgGray']},
+            ])
             const finalData = [[...tableHeadersList], ...texts];
             this.content.push({
                 table: {
                     widths: '*',
                     body: finalData,
+                    dontBreakRows: true,
                 },
             });
 
@@ -1184,19 +1216,30 @@ export class TransactionAuditUiPdfService {
             arr.push(obj);
         });
         let texts:any = [];
-        arr.forEach((singleRecord: any) => {
+        let nTotalRevenue=0, nTotalQuantity=0, nTotalPurchaseAmount=0, nTotalProfit = 0;
+        arr.forEach((item: any) => {
+            nTotalRevenue += item.nTotalRevenue;
+            nTotalQuantity += item.nQuantity;
+            nTotalPurchaseAmount += item.nTotalPurchaseAmount;
+            nTotalProfit += parseFloat(item.nProfit);
             texts.push([
-                { text: singleRecord.sName, style: ['td'] },
-                { text: singleRecord.nQuantity, style: ['td'] },
-                { text: singleRecord.nTotalRevenue, style: ['td'] },
+                { text: item.sName, style: ['td'] },
+                { text: item.nQuantity, style: ['td'] },
+                { text: item.nTotalRevenue, style: ['td'] },
                 {
-                    text: singleRecord.nTotalPurchaseAmount,
+                    text: item.nTotalPurchaseAmount,
                     style: ['td'],
                 },
-                { text: singleRecord.nProfit, style: ['td'] },
-                // { text: singleRecord.nMargin, style: ['td', 'articleGroup'] },
+                { text: item.nProfit, style: ['td'] },
             ]);
         });
+        texts.push([
+            { text: 'TOTAL', style: ['td', 'bold','bgGray'] },
+            { text: nTotalRevenue, style:['td', 'bold','bgGray'] },
+            { text: nTotalQuantity, style:['td', 'bold','bgGray'] },
+            { text: nTotalPurchaseAmount, style:['td', 'bold','bgGray'] },
+            { text: nTotalProfit, style:['td', 'bold','bgGray'] },
+        ]);
         this.content.push(
             {
                 table: {
