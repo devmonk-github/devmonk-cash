@@ -1116,6 +1116,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
     const oBankPaymentMethod = this.allPaymentMethod.filter((el: any) => el.sName.toLowerCase() === 'bankpayment')[0];
     const nVatRate = await this.taxService.fetchDefaultVatRate({ iLocationId: this.iLocationId });
 
+    console.log('nVatRate: ', nVatRate);
     console.log('nDifferenceAmount: ', nDifferenceAmount);
     const aPromises:any = [];
     
