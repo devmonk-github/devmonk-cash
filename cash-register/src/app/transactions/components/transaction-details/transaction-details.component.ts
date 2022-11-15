@@ -55,6 +55,7 @@ export class TransactionDetailsComponent implements OnInit {
   private pn2escposService = new Pn2escposService();
   printSettings: any;
   printActionSettings:any;
+  printWithVATLoading: boolean = false;
 
   constructor(
     private viewContainerRef: ViewContainerRef,
@@ -168,7 +169,11 @@ export class TransactionDetailsComponent implements OnInit {
 
   async generatePDF(print: boolean) {
     const sName = 'Sample', eType = this.transaction.eType;
-    this.downloadWithVATLoading = true;
+    if(print)
+      this.printWithVATLoading = true;
+    else 
+      this.downloadWithVATLoading = true;
+
     this.transaction.businessDetails = this.businessDetails;
     for (let i = 0; i < this.businessDetails?.aLocation.length; i++) {
       if (this.businessDetails.aLocation[i]?._id.toString() == this.iLocationId.toString()) {
@@ -198,8 +203,13 @@ export class TransactionDetailsComponent implements OnInit {
       templateData: template.data,
       printSettings: this.printSettings,
       printActionSettings: this.printActionSettings,
-      eSituation: 'is_created'
+      eSituation: 'is_created',
+      sAction: (print) ? 'print': 'download'
     });
+    if(print)
+      this.printWithVATLoading = false
+    else 
+      this.downloadWithVATLoading = false;
   }
 
   generateBarcodeURI(displayValue: boolean = true, data: any) {
