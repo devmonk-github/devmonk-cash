@@ -574,7 +574,6 @@ export class ActivityDetailsComponent implements OnInit {
   }
 
   fetchTransactionItems() {
-    console.log('fetchTItem');
     this.loading = true;
     return this.apiService.postNew('cashregistry', `/api/v1/activities/activity-item/${this.activity._id}`, this.requestParams).toPromise();
 
@@ -655,8 +654,12 @@ export class ActivityDetailsComponent implements OnInit {
       const result: any = await this.getBusinessDetails().toPromise();
       this.businessDetails = result.data;
     }
-
     oDataSource.businessDetails = this.businessDetails;
+    oDataSource.businessDetails.sMobile = this.businessDetails.oPhone.sMobile;
+    const locationIndex = this.businessDetails.aLocation.findIndex((location:any)=>location._id == this.iLocationId);
+    const currentLocation = this.businessDetails.aLocation[locationIndex];
+    oDataSource.sAddressline1 = currentLocation.oAddress.street + " " + currentLocation.oAddress.houseNumber + " " + currentLocation.oAddress.houseNumberSuffix + " ,  " + currentLocation.oAddress.postalCode + " " + currentLocation.oAddress.city;
+    oDataSource.sAddressline2 = currentLocation.oAddress.country; 
 
     oDataSource.oCustomer = {
       sFirstName: this.customer?.sFirstName || '',
