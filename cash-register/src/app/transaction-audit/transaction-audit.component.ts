@@ -1111,7 +1111,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
   async closeDayState() {
     this.closingDayState = true;
     this.aAmount.filter((item: any) => item.nQuantity > 0).forEach((item: any) => (this.oCountings.oCountingsCashDetails[item.key] = item.nQuantity));
-    const nDifferenceAmount = this.oCountings?.nCashAtStart + this.oCountings?.nCashInTill - this.oCountings?.nCashCounted;
+    const nDifferenceAmount = this.oCountings?.nCashCounted - (this.oCountings?.nCashAtStart + this.oCountings?.nCashInTill);
 
     const oCashPaymentMethod = this.allPaymentMethod.filter((el: any) => el.sName.toLowerCase() === 'cash')[0];
     const oBankPaymentMethod = this.allPaymentMethod.filter((el: any) => el.sName.toLowerCase() === 'bankpayment')[0];
@@ -1121,7 +1121,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
       //we have difference in cash, so add that as and expense
       aPromises.push(this.addExpenses(
         {
-          amount: -(nDifferenceAmount),
+          amount: nDifferenceAmount,
           comment: 'DIFF_IN_CASH_COUNTING',
           oPayment: {
             iPaymentMethodId: oCashPaymentMethod._id,
@@ -1173,7 +1173,8 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
       this.toastService.show({ type: 'success', text: `Day-state is close now` });
       this.closingDayState = false;
       this.bDisableCountings = true;
-      this.oStatisticsDocument = result?.data;
+      // this.oStatisticsDocument = result?.data;
+      this.getStaticData();
       this.checkShowDownload();
     }, (error) => {
       console.log('Error: ', error);
