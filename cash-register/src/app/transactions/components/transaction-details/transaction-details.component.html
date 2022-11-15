@@ -100,7 +100,10 @@
                     <label class="mx-auto">{{ "DOWNLOAD_WITH_VAT" | translate}}</label>
                 </button>
                 <button class="btn btn-sm btn-secondary w-100 d-flex" (click)="downloadWithVAT(true)">
-                    <fa-icon [icon]="faPrint"></fa-icon>
+                    <fa-icon [hidden]="printWithVATLoading" [icon]="faPrint"></fa-icon>
+                    <span *ngIf="printWithVATLoading">
+                        <i class="fa fa-spinner fa-spin" [hidden]="!printWithVATLoading" style="font-size:15px;"></i>
+                    </span>
                     <label class="mx-auto">{{ "PRINT" | translate }}</label>
                 </button>
                 <button class="btn btn-sm btn-secondary w-100 d-flex">

@@ -117,18 +117,18 @@ export class PdfService {
   }
 
   getPdfData({ styles, content, orientation, pageSize, pdfTitle, footer, pageMargins, defaultStyle,
-    printSettings, printActionSettings, eType, eSituation }: any) {
+    printSettings, printActionSettings, eType, eSituation, sAction }: any) {
     const docDefinition = this.getDocDefinition(styles, content, orientation, pageSize, footer, pageMargins, defaultStyle);
     const pdfObject = this.generatePdf(docDefinition);
     if (printSettings?.length && printActionSettings?.length) {
-      this.processPrintAction(pdfObject, pdfTitle, printSettings, printActionSettings, eType, eSituation);
+      this.processPrintAction(pdfObject, pdfTitle, printSettings, printActionSettings, eType, eSituation, sAction);
     } else {
       pdfObject.download(pdfTitle);
     }
   }
 
 
-  processPrintAction(pdfObject: any, pdfTitle: any, printSettings: any, printActionSettings: any, eType: any, eSituation: any) {
+  processPrintAction(pdfObject: any, pdfTitle: any, printSettings: any, printActionSettings: any, eType: any, eSituation: any, sAction: any) {
     // pdfObject.download(pdfTitle);
     printActionSettings = printActionSettings.filter((s: any) => s.eType === eType && s.eSituation === eSituation);
     if (!printActionSettings?.length) {
@@ -137,26 +137,34 @@ export class PdfService {
     }
     // if(eType === 'regular') eType = 'transaction'; 
     printSettings = printSettings.filter((s: any) => s.sType === eType && s.iWorkstationId === this.iWorkstationId);
-    const aActionToPerform = printActionSettings[0].aActionToPerform;
-    aActionToPerform.forEach((action: any) => {
-      switch (action) {
-        case 'PRINT_PDF':
-          printSettings = printSettings.filter((s: any) => s.sMethod === 'pdf')[0];
-          if (!printSettings?.nPrinterId) {
-            this.toastrService.show({ type: 'danger', text: `Printer is not selected for ${printSettings.sType}` });
-            return;
-          }
-          this.handlePrint(pdfObject, printSettings, pdfTitle);
-          break;
-        case 'DOWNLOAD':
-          pdfObject.download(pdfTitle);
-          break;
-        case 'PRINT_THERMAL':
-          printSettings = printSettings.filter((s: any) => s.sMethod === 'thermal')[0];
-          this.handlePrint(pdfObject, printSettings, pdfTitle);
-          break;
-      }
-    });
+    if (sAction && sAction === 'print') {
+      printSettings = printSettings.filter((s: any) => s.sMethod === 'pdf')[0];
+      this.handlePrint(pdfObject, printSettings, pdfTitle);
+    } else if (sAction && sAction === 'download') {
+      pdfObject.download(pdfTitle);
+      return;
+    } else {
+      const aActionToPerform = printActionSettings[0].aActionToPerform;
+      aActionToPerform.forEach((action: any) => {
+        switch (action) {
+          case 'PRINT_PDF':
+            printSettings = printSettings.filter((s: any) => s.sMethod === 'pdf')[0];
+            if (!printSettings?.nPrinterId) {
+              this.toastrService.show({ type: 'danger', text: `Printer is not selected for ${printSettings.sType}` });
+              return;
+            }
+            this.handlePrint(pdfObject, printSettings, pdfTitle);
+            break;
+          case 'DOWNLOAD':
+            pdfObject.download(pdfTitle);
+            break;
+          case 'PRINT_THERMAL':
+            printSettings = printSettings.filter((s: any) => s.sMethod === 'thermal')[0];
+            this.handlePrint(pdfObject, printSettings, pdfTitle);
+            break;
+        }
+      });
+    }
   }
 
   handlePrint(pdfObject: any, printSettings: any, pdfTitle: any) {

@@ -399,7 +399,7 @@ export class TillService {
     dataObject.total = 0;
     let total = 0, totalAfterDisc = 0, totalVat = 0, totalDiscount = 0, totalSavingPoints = 0;
     dataObject.aTransactionItems.forEach((item: any, index: number) => {
-      if (Object.keys(item?.oArticleGroupMetaData?.oName)?.length){
+      if (item?.oArticleGroupMetaData?.oName && Object.keys(item?.oArticleGroupMetaData?.oName)?.length){
         item.sArticleGroupName = (item?.oArticleGroupMetaData?.oName[language] || item?.oArticleGroupMetaData?.oName['en'] || item?.oArticleGroupMetaData?.oName['nl'] || '') + ' ';
       }
       // if (item?.oBusinessProductMetaData?.sLabelDescription){
@@ -417,7 +417,7 @@ export class TillService {
       // item.totalPaymentAmountAfterDisc = parseFloat(item.priceAfterDiscount.toFixed(2)) * parseFloat(item.nQuantity);
       item.bPrepayment = item?.oType?.bPrepayment || false;
       const vat = (item.nVatRate * item.nRevenueAmount / (100 + parseFloat(item.nVatRate)));
-      item.vat = vat.toFixed(2);
+      item.vat = (item.nVatRate > 0) ? parseFloat(vat.toFixed(2)) : 0;
       totalVat += vat;
       total = total + item.totalPaymentAmount;
       totalAfterDisc += item.nPriceIncVatAfterDiscount;
