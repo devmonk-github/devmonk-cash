@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
-import { Router  , ActivatedRoute} from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { faLongArrowAltDown, faLongArrowAltUp, faMinusCircle, faPlus, faPlusCircle, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { ActivityDetailsComponent } from '../shared/components/activity-details-dialog/activity-details.component';
 import { CardsComponent } from '../shared/components/cards-dialog/cards-dialog.component';
@@ -26,7 +26,7 @@ export class ServicesComponent implements OnInit, AfterViewInit {
   faArrowDown = faLongArrowAltDown;
   cities = [
     { name: 'Amsterdam', code: 'AMS' },
-    { name: 'Bruxelles', code: 'BRU' }, 
+    { name: 'Bruxelles', code: 'BRU' },
     { name: 'Paris', code: 'PAR' },
     { name: 'Instanbul', code: 'INS' }
   ];
@@ -80,8 +80,8 @@ export class ServicesComponent implements OnInit, AfterViewInit {
       maxDate: new Date(new Date().setHours(23, 59, 59)),
     },
     estimate: {
-      minDate:  undefined,
-      maxDate:  undefined
+      minDate: undefined,
+      maxDate: undefined
       // minDate: new Date('01-01-2015'),
       // maxDate: this.addDays(new Date(new Date().setHours(23, 59, 59)), 20),
     }
@@ -108,10 +108,10 @@ export class ServicesComponent implements OnInit, AfterViewInit {
     { key: 'INTAKE_DATE', selected: false, sort: 'asc' },
     { key: 'END_DATE', selected: false, sort: 'asc' },
     { key: 'STATUS', disabled: true },
-    { key: 'SUPPLIER / REPAIRER', disabled: true },
+    { key: 'SUPPLIER_REPAIRER', disabled: true },
     // { key: 'Partner supplier status', disabled: true },
     { key: 'CUSTOMER', disabled: true },
-    { key: 'ACTIONS' , disabled:true},
+    { key: 'ACTIONS', disabled: true },
   ]
 
   constructor(
@@ -125,13 +125,13 @@ export class ServicesComponent implements OnInit, AfterViewInit {
 
 
   async ngOnInit(): Promise<void> {
-    
+
     this.barcodeService.barcodeScanned.subscribe((barcode: string) => {
       this.openModal(barcode);
     });
 
-    this.activatedRoute.queryParamMap.subscribe((params:any)=> {
-      this.isFor= params.params.isFor;
+    this.activatedRoute.queryParamMap.subscribe((params: any) => {
+      this.isFor = params.params.isFor;
     })
     if (this.router.url.includes('/business/webshop-orders')) {
       this.webOrders = true;
@@ -216,7 +216,7 @@ export class ServicesComponent implements OnInit, AfterViewInit {
         let oNewLocation: any
         let bIsCurrentBIsWebshop = false
         for (let k = 0; k < oBusinessLocation?.data?.aBusiness?.length; k++) {
-          const oAllLocations = oBusinessLocation?.data?.aBusiness[k]  
+          const oAllLocations = oBusinessLocation?.data?.aBusiness[k]
           for (let i = 0; i < oAllLocations?.aLocation?.length; i++) {
             const l = oAllLocations?.aLocation[i];
             if (l.bIsWebshop) oNewLocation = l
@@ -318,7 +318,7 @@ export class ServicesComponent implements OnInit, AfterViewInit {
     if (this.iLocationId) this.requestParams.iLocationId = localStorage.getItem('currentLocation')
     // if (this.iLocationId && !this.requestParams.selectedLocations?.length) this.requestParams.selectedLocations.push(this.requestParams.selectedLocations);
     this.showLoader = true;
-    
+
     this.requestParams.estimateDate = {
       minDate: this.filterDates.estimate.minDate,
       maxDate: this.filterDates.estimate.maxDate,

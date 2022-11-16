@@ -36,7 +36,7 @@ export class PrintWorkstationComponent implements OnInit {
         { name: 'BUSINESS_RECEIPT', key: 'regular', enabled: true },
         { name: 'ORDER_RECEIPT', key: 'order', enabled: true },
         { name: 'REPAIR_RECEIPT', key: 'repair', enabled: true },
-        { name: 'GIFTCARD_RECEIPT', key: 'giftCard', enabled: true },
+        { name: 'GIFTCARD_RECEIPT', key: 'giftcard', enabled: true },
         { name: 'REPAIR_ALTERNATIVE_RECEIPT', key: 'repair_alternative', enabled: true }
       ]
     },
