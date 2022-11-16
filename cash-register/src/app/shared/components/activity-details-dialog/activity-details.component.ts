@@ -143,7 +143,7 @@ export class ActivityDetailsComponent implements OnInit {
 
 
   async ngOnInit() {
-    let translationKey=['SUCCESSFULLY_UPDATED']
+    let translationKey=['SUCCESSFULLY_UPDATED' , 'NO_DATE_SELECTED'];
     this.translationService.get(translationKey).subscribe((res:any)=>{
       this.translation = res;
     })
@@ -483,7 +483,18 @@ export class ActivityDetailsComponent implements OnInit {
       sEmail: this.customer?.sEmail || '',
       sMobile: this.customer?.oPhone?.sCountryCode || '' + this.customer?.oPhone?.sMobile || '',
       sLandLine: this.customer?.oPhone?.sLandLine || '',
+      sAddressLine1:this.customer?.oShippingAddress?.sStreet + " " + this.customer?.oShippingAddress?.sHouseNumber + " " + this.customer?.oShippingAddress?.sHouseNumberSuffix + " , " + this.customer?.oShippingAddress?.sPostalCode + " " + this.customer?.oShippingAddress?.sCity ,
+      sAddressLine2:this.customer?.oShippingAddress?.sCountry
     };
+    if(!oDataSource.dEstimatedDate){
+        oDataSource.dEstimatedDate = this.translation['NO_DATE_SELECTED'];
+    }
+    if(oDataSource?.iEmployeeId){
+      const employeeIndex:any = this.employeesList.findIndex((employee:any)=> employee._id == oDataSource.iEmployeeId);
+      if(employeeIndex != -1){
+          oDataSource.sEmployeeName= this.employeesList[employeeIndex]['sName'];
+      }
+    }
     oDataSource.sBarcodeURI = sBarcodeURI;
     const aTemp = oDataSource.sNumber.split("-");
     oDataSource.sPartRepairNumber = aTemp[aTemp.length - 1];

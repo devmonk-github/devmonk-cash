@@ -68,7 +68,7 @@ export class CustomerDetailsImportComponent implements OnInit, OnChanges {
   getDynamicFields(isResetAttributes: boolean) {
     let filter = {
       oFilterBy: {
-        "sName": "import customer details"
+        "sName": "IMPORT_CUSTOMER_DETAILS"
       }
     };
 
