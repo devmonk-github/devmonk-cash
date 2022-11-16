@@ -1382,7 +1382,8 @@ export class PdfService {
       'ISSUED_AT',
       'VALID_UNTIL',
       'EXPECTED_PRICE_PER_PIECE',
-      'ACTIVITY_ITEM_NUMBER'
+      'ACTIVITY_ITEM_NUMBER',
+      'LOYALTY_POINTS_REDEEMED'
     ];
 
     this.translateService.get(translationsKey).subscribe((result) => {

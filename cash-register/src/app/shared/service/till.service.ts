@@ -391,15 +391,21 @@ export class TillService {
     });
 
     dataObject.aTransactionItems = [];
-    transaction.aTransactionItems.forEach((item: any, index: number) => {
-      if (!(item.oType?.eKind == 'discount' || item?.oType?.eKind == 'loyalty-points-discount')) {
-        dataObject.aTransactionItems.push(item);
+    transaction.aTransactionItems.map((item: any) => {
+      if (item?.oType?.eKind == 'loyalty-points-discount') {
+        const oOriginalItem = transaction.aTransactionItems.filter((oItem: any) => oItem.iBusinessProductId === item.iBusinessProductId)[0]
+        oOriginalItem.nRedeemedLoyaltyPoints = item.nRedeemedLoyaltyPoints;
+        oOriginalItem.nDiscount = item.nDiscount;
+        dataObject.aTransactionItems.push(oOriginalItem);
       }
     })
+    
+    dataObject.aTransactionItems = dataObject.aTransactionItems.filter((item: any) => 
+      !(item.oType?.eKind == 'discount' || item?.oType?.eKind == 'loyalty-points-discount'));    
 
 
     dataObject.total = 0;
-    let total = 0, totalAfterDisc = 0, totalVat = 0, totalDiscount = 0, totalSavingPoints = 0;
+    let total = 0, totalAfterDisc = 0, totalVat = 0, totalDiscount = 0, totalSavingPoints = 0, totalRedeemedLoyaltyPoints = 0;
     dataObject.aTransactionItems.forEach((item: any, index: number) => {
       if (item?.oArticleGroupMetaData?.oName && Object.keys(item?.oArticleGroupMetaData?.oName)?.length){
         item.sArticleGroupName = (item?.oArticleGroupMetaData?.oName[language] || item?.oArticleGroupMetaData?.oName['en'] || item?.oArticleGroupMetaData?.oName['nl'] || '') + ' ';
@@ -408,6 +414,7 @@ export class TillService {
       //   item.description = item.description + item?.oBusinessProductMetaData?.sLabelDescription + ' ' + item?.sProductNumber;
       // }
       totalSavingPoints += item.nSavingsPoints;
+      totalRedeemedLoyaltyPoints += item?.nRedeemedLoyaltyPoints || 0;
       let disc = parseFloat(item.nDiscount);
       if (item.bDiscountOnPercentage) {
         disc = (disc * parseFloat(item.nPriceIncVat) / 100);
@@ -436,6 +443,7 @@ export class TillService {
     dataObject.totalVat = parseFloat(totalVat.toFixed(2));
     dataObject.totalDiscount = parseFloat(totalDiscount.toFixed(2));
     dataObject.totalSavingPoints = totalSavingPoints;
+    dataObject.totalRedeemedLoyaltyPoints = totalRedeemedLoyaltyPoints;
     dataObject.dCreatedDate = moment(dataObject.dCreatedDate).format('DD-MM-yyyy hh:mm');
     const result: any = await this.getRelatedTransaction(dataObject?.iActivityId, dataObject?._id).toPromise();
     dataObject.related = result.data || [];
