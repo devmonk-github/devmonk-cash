@@ -70,8 +70,8 @@ export class TillService {
   }
 
   getValueFromLocalStorage(key: string): any {
-    if (key === 'currentEmployee') {
-      const value = localStorage.getItem('currentEmployee');
+    if (key === 'currentUser') {
+      const value = localStorage.getItem('currentUser');
       if (value) {
         return JSON.parse(value)
       } else {
@@ -92,7 +92,7 @@ export class TillService {
       'cash-register-revenue',
       'y',
       this.getValueFromLocalStorage('currentWorkstation'),
-      this.getValueFromLocalStorage('currentEmployee')._id,
+      this.getValueFromLocalStorage('currentUser').userId,
       this.getValueFromLocalStorage('currentLocation'),
       null,
       null,
@@ -143,6 +143,8 @@ export class TillService {
       console.log('getTotal: ', this.getTotals('price', transactionItems));
       console.log('Last condition: ', i.paymentAmount, i.amountToBePaid);
       console.log('bPrepayment: ', bPrepayment, bRefund && i.oType?.bPrepayment, (this.getUsedPayMethods(true, payMethods) - this.getTotals('price', transactionItems) < 0), (i.paymentAmount !== i.amountToBePaid));
+      
+   
       return new TransactionItem(
         i.name,
         i.comment,
@@ -195,7 +197,7 @@ export class TillService {
         i.oBusinessProductMetaData,
         'y',
         this.getValueFromLocalStorage('currentWorkstation'),
-        i.iEmployeeId || this.getValueFromLocalStorage('currentEmployee')._id,
+        i.iEmployeeId || this.getValueFromLocalStorage('currentUser').userId,
         i.iAssigneeId,
         this.getValueFromLocalStorage('currentLocation'),
         i.sBagNumber,
@@ -388,16 +390,27 @@ export class TillService {
       obj.dCreatedDate = moment(dataObject.dCreatedDate).format('DD-MM-yyyy hh:mm');
     });
 
+    const aLoyaltyPointsItems = transaction.aTransactionItems.filter((item: any) => item?.oType?.eKind == 'loyalty-points-discount');
+    
     dataObject.aTransactionItems = [];
-    transaction.aTransactionItems.forEach((item: any, index: number) => {
-      if (!(item.oType?.eKind == 'discount' || item?.oType?.eKind == 'loyalty-points-discount')) {
-        dataObject.aTransactionItems.push(item);
+    transaction.aTransactionItems.map((item: any) => {
+      if (item.oType?.eKind != 'discount' || item?.oType?.eKind != 'loyalty-points-discount') {
+        item.nRedeemedLoyaltyPoints = 0;
+        for (let i = 0; i < aLoyaltyPointsItems.length; i++) {
+          if (aLoyaltyPointsItems[i].iBusinessProductId === item.iBusinessProductId) {
+            item.nRedeemedLoyaltyPoints = aLoyaltyPointsItems[i].nRedeemedLoyaltyPoints;
+            item.nDiscount = aLoyaltyPointsItems[i].nDiscount;
+            break;
+          }
+        }
       }
     })
-
+    
+    dataObject.aTransactionItems = transaction.aTransactionItems.filter((item: any) => 
+      !(item.oType?.eKind == 'discount' || item?.oType?.eKind == 'loyalty-points-discount'));    
 
     dataObject.total = 0;
-    let total = 0, totalAfterDisc = 0, totalVat = 0, totalDiscount = 0, totalSavingPoints = 0;
+    let total = 0, totalAfterDisc = 0, totalVat = 0, totalDiscount = 0, totalSavingPoints = 0, totalRedeemedLoyaltyPoints = 0;
     dataObject.aTransactionItems.forEach((item: any, index: number) => {
       if (item?.oArticleGroupMetaData?.oName && Object.keys(item?.oArticleGroupMetaData?.oName)?.length){
         item.sArticleGroupName = (item?.oArticleGroupMetaData?.oName[language] || item?.oArticleGroupMetaData?.oName['en'] || item?.oArticleGroupMetaData?.oName['nl'] || '') + ' ';
@@ -406,14 +419,15 @@ export class TillService {
       //   item.description = item.description + item?.oBusinessProductMetaData?.sLabelDescription + ' ' + item?.sProductNumber;
       // }
       totalSavingPoints += item.nSavingsPoints;
+      totalRedeemedLoyaltyPoints += item?.nRedeemedLoyaltyPoints || 0;
       let disc = parseFloat(item.nDiscount);
       if (item.bDiscountOnPercentage) {
         disc = (disc * parseFloat(item.nPriceIncVat) / 100);
         item.nDiscountToShow = disc;//.toFixed(2);
       } else { item.nDiscountToShow = disc; }
       // item.priceAfterDiscount = parseFloat(item.nRevenueAmount.toFixed(2)) - parseFloat(item.nDiscountToShow);
-      item.nPriceIncVatAfterDiscount = parseFloat(item.nPriceIncVat) - parseFloat(item.nDiscountToShow);
-      item.totalPaymentAmount = (parseFloat(item.nRevenueAmount.toFixed(2)) - parseFloat(item.nDiscountToShow)) * parseFloat(item.nQuantity);
+      item.nPriceIncVatAfterDiscount = parseFloat(item.nPriceIncVat) - parseFloat(item.nDiscountToShow) - item.nRedeemedLoyaltyPoints;
+      item.totalPaymentAmount = ((parseFloat(item.nRevenueAmount.toFixed(2)) - parseFloat(item.nDiscountToShow)) * parseFloat(item.nQuantity)) - item.nRedeemedLoyaltyPoints;
       // item.totalPaymentAmountAfterDisc = parseFloat(item.priceAfterDiscount.toFixed(2)) * parseFloat(item.nQuantity);
       item.bPrepayment = item?.oType?.bPrepayment || false;
       const vat = (item.nVatRate * item.nRevenueAmount / (100 + parseFloat(item.nVatRate)));
@@ -434,6 +448,7 @@ export class TillService {
     dataObject.totalVat = parseFloat(totalVat.toFixed(2));
     dataObject.totalDiscount = parseFloat(totalDiscount.toFixed(2));
     dataObject.totalSavingPoints = totalSavingPoints;
+    dataObject.totalRedeemedLoyaltyPoints = totalRedeemedLoyaltyPoints;
     dataObject.dCreatedDate = moment(dataObject.dCreatedDate).format('DD-MM-yyyy hh:mm');
     const result: any = await this.getRelatedTransaction(dataObject?.iActivityId, dataObject?._id).toPromise();
     dataObject.related = result.data || [];

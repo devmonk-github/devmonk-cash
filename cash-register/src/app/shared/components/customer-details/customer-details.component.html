@@ -60,10 +60,12 @@
                                     <h4 class="text-gray-700 fw-bolder mb-2">{{'CONTACT' | translate}}</h4>
                                     <div class="d-flex flex-column block-buttons">
                                         <p>
-                                            <a href="mailto:{{customer.sEmail}}"
+                                            <a *ngIf="customer.sEmail" href="mailto:{{customer.sEmail}}"
                                                 class="text-gray-800 text-hover-primary btn btn-light">
                                                 <i class="fa fa-envelope"></i>
                                                 {{customer.sEmail}}</a>
+                                            <a *ngIf="!customer.sEmail" href="#" class="text-gray-800 text-hover-primary btn btn-light" style="text-align:start ;">
+                                                <i class="fa fa-envelope"></i>{{'EMAIL' | translate}} </a>
                                         </p>
                                         <p>
                                             <a href="https://wa.me/{{customer.oPhone.sMobile}}" target="_blank"
@@ -73,7 +75,7 @@
                                                 {{customer.oPhone.sMobile}}</a>
                                         </p>
                                         <p>
-                                            <span class="text-muted me-5">{{'PHONE_LANDLINE' | translate}} :- </span>
+                                            <span class="text-muted me-5">{{'PHONE_LANDLINE' | translate}} :</span>
                                             <span> {{ customer.oPhone.sLandLine }}</span>
                                         </p>
                                     </div>

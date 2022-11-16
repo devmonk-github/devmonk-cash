@@ -1,9 +1,8 @@
-import { PdfService } from 'src/app/shared/service/pdf2.service';
-import * as _moment from 'moment';
-import { ChildChild, DisplayMethod, eDisplayMethodKeysEnum, View, ViewMenuChild } from '../../transaction-audit/transaction-audit.model';
-import { Observable } from 'rxjs';
-import { ApiService } from './api.service';
 import { Injectable } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
+import * as _moment from 'moment';
+import { PdfService } from 'src/app/shared/service/pdf2.service';
+import { ApiService } from './api.service';
 const moment = (_moment as any).default ? (_moment as any).default : _moment;
 
 @Injectable()
@@ -84,17 +83,36 @@ export class TransactionAuditUiPdfService {
         articleGroup: {
             fillColor: '#F5F8FA',
         },
-        property: {
-            // color: "#ccc",
+        bgGray:{
+            fillColor: '#F5F8FA',
         },
     };
+    translations: any;
 
     constructor(
         private pdf: PdfService,
-        private apiService: ApiService) {
+        private apiService: ApiService,
+        private translateService: TranslateService,
+        ) {
         this.iBusinessId = localStorage.getItem('currentBusiness') || '';
         this.iLocationId = localStorage.getItem('currentLocation') || '';
         this.iWorkstationId = localStorage.getItem('currentWorkstation') || '';
+
+        const aKeywords: any = [
+            'CASH_LEFTOVER', 
+            'CASH_MUTATION', 
+            'CASH_IN_TILL', 
+            'CASH_COUNTED',
+            'TREASURY_DIFFERENCE',
+            'SKIM',
+            'AMOUNT_TO_LEFT_IN_CASH'
+        ]
+        this.translateService.get(aKeywords).subscribe(
+            (result: any) => {aKeywords
+                this.translations = result
+            }
+        )
+
     }
 
     async exportToPDF({ 
@@ -132,6 +150,27 @@ export class TransactionAuditUiPdfService {
         };
         let sType = sOptionMenu.parent.sValue
         let dataType = bIsDynamicState ? 'Dynamic Data' : 'Static Data';
+
+        const _aLocation = oBusinessDetails?.aLocation?.forEach((location:any)=> location._id===this.iLocationId);
+        if (_aLocation?.length) {
+            const oCurrentLocation = _aLocation[0];
+            if (oCurrentLocation?.eCurrency){
+                switch (oCurrentLocation?.eCurrency){
+                    case 'euro':
+                        this.currency = "€";
+                        break;
+                    case 'pound':
+                        this.currency = "£";
+                        break;
+                    case 'swiss':
+                        this.currency = "₣";
+                        break;
+                    default:
+                        this.currency = "€";
+                        break;
+                }
+            }
+        }
 
         // get selected locaions
         let sLocations = '';
@@ -273,7 +312,12 @@ export class TransactionAuditUiPdfService {
 
         if (aPaymentMethods?.length) {
             let texts: any = [];
+            let nTotalAmount = 0, nTotalQuantity = 0;
             aPaymentMethods.forEach((paymentMethod: any) => {
+                console.log({paymentMethod});
+                nTotalAmount += parseFloat(paymentMethod.nAmount);
+                nTotalQuantity += parseFloat(paymentMethod.nQuantity);
+
                 texts.push([
                     { text: paymentMethod.sMethod, style: ['td'] },
                     { text: paymentMethod.nAmount, style: ['td'] },
@@ -281,11 +325,17 @@ export class TransactionAuditUiPdfService {
                 ]);
                 
             });
+            texts.push([
+                {text: 'TOTAL', style:['td', 'bold','bgGray']},
+                {text: nTotalAmount, style:['td', 'bold','bgGray']},
+                {text: nTotalQuantity, style:['td', 'bold','bgGray']},
+            ])
             const finalData = [[...tableHeadersList], ...texts];
             this.content.push({
                 table: {
                     widths: '*',
                     body: finalData,
+                    dontBreakRows: true,
                 },
             });
 
@@ -330,31 +380,31 @@ export class TransactionAuditUiPdfService {
 
         let texts: any = [
             [
-                { text: 'CASH_LEFTOVER', style: ['td'] },
+                { text: this.translations['CASH_LEFTOVER'], style: ['td'] },
                 { text: this.convertToMoney(oCountings.nCashAtStart), style: ['td'] },
             ],
             [
-                { text: 'CASH_MUTATION', style: ['td'] },
+                { text: this.translations['CASH_MUTATION'], style: ['td'] },
                 { text: this.convertToMoney(0), style: ['td'] },
             ],
             [
-                { text: 'CASH_IN_TILL', style: ['td'] },
+                { text: this.translations['CASH_IN_TILL'], style: ['td'] },
                 { text: this.convertToMoney(aStatistic[0].overall[0].nTotalRevenue), style: ['td'] },
             ],
             [
-                { text: 'CASH_COUNTED', style: ['td'] },
+                { text: this.translations['CASH_COUNTED'], style: ['td'] },
                 { text: this.convertToMoney(oCountings.nCashCounted), style: ['td'] },
             ],
             [
-                { text: 'TREASURY_DIFFERENCE', style: ['td'] },
-                { text: this.convertToMoney(oCountings.nCashCounted - (oCountings.nCashAtStart + aStatistic[0].overall[0].nTotalRevenue)) , style: ['td'] }
+                { text: this.translations['TREASURY_DIFFERENCE'], style: ['td'] },
+                { text: this.convertToMoney(oCountings.nCashDifference) , style: ['td'] }
             ],
             [
-                { text: 'SKIM', style: ['td'] },
+                { text: this.translations['SKIM'], style: ['td'] },
                 { text: this.convertToMoney(oCountings.nSkim), style: ['td'] },
             ],
             [
-                { text: 'AMOUNT_TO_LEFT_IN_CASH', style: ['td'] },
+                { text: this.translations['AMOUNT_TO_LEFT_IN_CASH'], style: ['td'] },
                 { text: this.convertToMoney(oCountings.nCashRemain), style: ['td'] }
             ],
         ];
@@ -1184,19 +1234,30 @@ export class TransactionAuditUiPdfService {
             arr.push(obj);
         });
         let texts:any = [];
-        arr.forEach((singleRecord: any) => {
+        let nTotalRevenue=0, nTotalQuantity=0, nTotalPurchaseAmount=0, nTotalProfit = 0;
+        arr.forEach((item: any) => {
+            nTotalRevenue += item.nTotalRevenue;
+            nTotalQuantity += item.nQuantity;
+            nTotalPurchaseAmount += item.nTotalPurchaseAmount;
+            nTotalProfit += parseFloat(item.nProfit);
             texts.push([
-                { text: singleRecord.sName, style: ['td'] },
-                { text: singleRecord.nQuantity, style: ['td'] },
-                { text: singleRecord.nTotalRevenue, style: ['td'] },
+                { text: item.sName, style: ['td'] },
+                { text: item.nQuantity, style: ['td'] },
+                { text: item.nTotalRevenue, style: ['td'] },
                 {
-                    text: singleRecord.nTotalPurchaseAmount,
+                    text: item.nTotalPurchaseAmount,
                     style: ['td'],
                 },
-                { text: singleRecord.nProfit, style: ['td'] },
-                // { text: singleRecord.nMargin, style: ['td', 'articleGroup'] },
+                { text: item.nProfit, style: ['td'] },
             ]);
         });
+        texts.push([
+            { text: 'TOTAL', style: ['td', 'bold','bgGray'] },
+            { text: nTotalRevenue, style:['td', 'bold','bgGray'] },
+            { text: nTotalQuantity, style:['td', 'bold','bgGray'] },
+            { text: nTotalPurchaseAmount, style:['td', 'bold','bgGray'] },
+            { text: nTotalProfit, style:['td', 'bold','bgGray'] },
+        ]);
         this.content.push(
             {
                 table: {
@@ -1250,20 +1311,21 @@ export class TransactionAuditUiPdfService {
     }
 
     convertToMoney(val: any) {
-        let value;
+        const nNum = val; 
         if (val % 1 === 0) {
             //no decimals
-            value = (val) ? String(val + ',00') : '0,00';
+            return (val) ? ((val < 0) ? String('-' + this.currency + Math.abs(val) + ',00') : String(this.currency + val + ',00')) : this.currency + '0,00';
         } else {
             val = String(val);
             let parts = val.split('.');
 
             if (parts[1].length === 1) {
-                val = val + '0';
+                val = (nNum < 0) ? ('-' + this.currency + Math.abs(nNum) + '0') : (this.currency + val + '0');
             }
-            value = val.replace('.', ',')
-        }
+            val = (nNum < 0) ? '-' + this.currency + Math.abs(nNum) : this.currency + nNum
 
-        return this.currency + value;
+            const t = val.replace('.', ',')
+            return t
+        }
     }
 }

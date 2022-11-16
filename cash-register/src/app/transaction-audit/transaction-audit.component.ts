@@ -8,6 +8,7 @@ import { ApiService } from '../shared/service/api.service';
 import { TransactionAuditUiPdfService } from '../shared/service/transaction-audit-pdf.service';
 import { MenuComponent } from '../shared/_layout/components/common';
 import { ChildChild, DisplayMethod, eDisplayMethodKeysEnum, View, ViewMenuChild } from './transaction-audit.model';
+import { TaxService } from '../shared/service/tax.service';
 
 @Component({
   selector: 'app-transaction-audit',
@@ -173,6 +174,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
     nCashCounted: 0,
     nCashInTill: 0,
     nSkim: 0,
+    nCashDifference:0,
     nCashRemain: 0,
     nCashAtStart: 0,
     oCountingsCashDetails: {},
@@ -193,6 +195,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
     private toastService: ToastService,
     private location: Location,
     private transactionAuditPdfService: TransactionAuditUiPdfService,
+    private taxService: TaxService
 
   ) {
     MenuComponent.reinitialization()
@@ -1078,12 +1081,9 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
   }
 
   addExpenses(data: any): Observable<any> {
-
     const value = localStorage.getItem('currentEmployee');
     let currentEmployeeId;
-    if (value) {
-      currentEmployeeId = JSON.parse(value)._id;
-    }
+    if (value) currentEmployeeId = JSON.parse(value)._id;
     const transactionItem = {
       sProductName: data?._eType || 'expenses',
       sComment: data.comment,
@@ -1103,7 +1103,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
         eKind: data?._eType || 'expenses',
         bDiscount: false,
       },
-      nVatRate: data?.nVatRate || 21
+      nVatRate: data?.nVatRate
     };
     return this.apiService.postNew('cashregistry', `/api/v1/till/add-expenses`, transactionItem);
   }
@@ -1111,24 +1111,29 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
   async closeDayState() {
     this.closingDayState = true;
     this.aAmount.filter((item: any) => item.nQuantity > 0).forEach((item: any) => (this.oCountings.oCountingsCashDetails[item.key] = item.nQuantity));
-    const nDifferenceAmount = this.oCountings?.nCashCounted - (this.oCountings?.nCashAtStart + this.oCountings?.nCashInTill);
+    this.oCountings.nCashDifference = this.oCountings?.nCashCounted - (this.oCountings?.nCashAtStart + this.oCountings?.nCashInTill);
 
     const oCashPaymentMethod = this.allPaymentMethod.filter((el: any) => el.sName.toLowerCase() === 'cash')[0];
     const oBankPaymentMethod = this.allPaymentMethod.filter((el: any) => el.sName.toLowerCase() === 'bankpayment')[0];
-    console.log('nDifferenceAmount: ', nDifferenceAmount);
+    const nVatRate = await this.taxService.fetchDefaultVatRate({ iLocationId: this.iLocationId });
+
+    console.log('nVatRate: ', nVatRate);
+    console.log('nDifferenceAmount: ', this.oCountings.nCashDifference);
     const aPromises:any = [];
-    if (nDifferenceAmount !== 0) {
+    
+    if (this.oCountings.nCashDifference !== 0) {
       //we have difference in cash, so add that as and expense
       aPromises.push(this.addExpenses(
         {
-          amount: nDifferenceAmount,
+          amount: this.oCountings.nCashDifference,
           comment: 'DIFF_IN_CASH_COUNTING',
           oPayment: {
             iPaymentMethodId: oCashPaymentMethod._id,
-            nAmount: nDifferenceAmount,
+            nAmount: this.oCountings.nCashDifference,
             sMethod: oCashPaymentMethod.sName.toLowerCase()
           },
-          _eType: 'diff-counting'
+          _eType: 'diff-counting',
+          nVatRate: nVatRate
         }
       ).toPromise());
     }
@@ -1144,7 +1149,8 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
           iPaymentMethodId: oBankPaymentMethod._id,
           nAmount: this.oCountings.nSkim,
           sMethod: oBankPaymentMethod.sName.toLowerCase()
-        }
+        },
+        nVatRate: nVatRate
       }).toPromise());
 
       aPromises.push(this.addExpenses({
@@ -1154,7 +1160,8 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
           iPaymentMethodId: oCashPaymentMethod._id,
           nAmount: -this.oCountings.nSkim,
           sMethod: oCashPaymentMethod.sName.toLowerCase()
-        }
+        },
+        nVatRate: nVatRate
       }).toPromise());
     }
 
@@ -1228,6 +1235,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
 
   async saveUpdatedPayments(event: any) {
     event.target.disabled = true;
+    const nVatRate = await this.taxService.fetchDefaultVatRate({ iLocationId: this.iLocationId });
     for (const item of this.aPaymentMethods) {
       if (item.nAmount != item.nNewAmount) {
         await this.addExpenses({
@@ -1237,7 +1245,8 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
             iPaymentMethodId: item.iPaymentMethodId,
             nAmount: item.nNewAmount - item.nAmount,
             sMethod: item.sMethod
-          }
+          },
+          nVatRate: nVatRate
         }).toPromise();
       }
     }
@@ -1252,7 +1261,8 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
               iPaymentMethodId: item._id,
               nAmount: item.nAmount,
               sMethod: item.sName.toLowerCase()
-            }
+            },
+            nVatRate: nVatRate
           }).toPromise();
         }
       }
