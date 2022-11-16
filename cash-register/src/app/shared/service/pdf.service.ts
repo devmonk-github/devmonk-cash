@@ -1382,7 +1382,10 @@ export class PdfService {
       'ISSUED_AT',
       'VALID_UNTIL',
       'EXPECTED_PRICE_PER_PIECE',
-      'ACTIVITY_ITEM_NUMBER'
+      'ACTIVITY_ITEM_NUMBER',
+      'DATE',
+      'BONNUMMER',
+      'TRANSACTION_NUMBER'
     ];
 
     this.translateService.get(translationsKey).subscribe((result) => {
