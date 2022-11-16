@@ -1,9 +1,8 @@
-import { PdfService } from 'src/app/shared/service/pdf2.service';
-import * as _moment from 'moment';
-import { ChildChild, DisplayMethod, eDisplayMethodKeysEnum, View, ViewMenuChild } from '../../transaction-audit/transaction-audit.model';
-import { Observable } from 'rxjs';
-import { ApiService } from './api.service';
 import { Injectable } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
+import * as _moment from 'moment';
+import { PdfService } from 'src/app/shared/service/pdf2.service';
+import { ApiService } from './api.service';
 const moment = (_moment as any).default ? (_moment as any).default : _moment;
 
 @Injectable()
@@ -88,13 +87,32 @@ export class TransactionAuditUiPdfService {
             fillColor: '#F5F8FA',
         },
     };
+    translations: any;
 
     constructor(
         private pdf: PdfService,
-        private apiService: ApiService) {
+        private apiService: ApiService,
+        private translateService: TranslateService,
+        ) {
         this.iBusinessId = localStorage.getItem('currentBusiness') || '';
         this.iLocationId = localStorage.getItem('currentLocation') || '';
         this.iWorkstationId = localStorage.getItem('currentWorkstation') || '';
+
+        const aKeywords: any = [
+            'CASH_LEFTOVER', 
+            'CASH_MUTATION', 
+            'CASH_IN_TILL', 
+            'CASH_COUNTED',
+            'TREASURY_DIFFERENCE',
+            'SKIM',
+            'AMOUNT_TO_LEFT_IN_CASH'
+        ]
+        this.translateService.get(aKeywords).subscribe(
+            (result: any) => {aKeywords
+                this.translations = result
+            }
+        )
+
     }
 
     async exportToPDF({ 
@@ -362,31 +380,31 @@ export class TransactionAuditUiPdfService {
 
         let texts: any = [
             [
-                { text: 'CASH_LEFTOVER', style: ['td'] },
+                { text: this.translations['CASH_LEFTOVER'], style: ['td'] },
                 { text: this.convertToMoney(oCountings.nCashAtStart), style: ['td'] },
             ],
             [
-                { text: 'CASH_MUTATION', style: ['td'] },
+                { text: this.translations['CASH_MUTATION'], style: ['td'] },
                 { text: this.convertToMoney(0), style: ['td'] },
             ],
             [
-                { text: 'CASH_IN_TILL', style: ['td'] },
+                { text: this.translations['CASH_IN_TILL'], style: ['td'] },
                 { text: this.convertToMoney(aStatistic[0].overall[0].nTotalRevenue), style: ['td'] },
             ],
             [
-                { text: 'CASH_COUNTED', style: ['td'] },
+                { text: this.translations['CASH_COUNTED'], style: ['td'] },
                 { text: this.convertToMoney(oCountings.nCashCounted), style: ['td'] },
             ],
             [
-                { text: 'TREASURY_DIFFERENCE', style: ['td'] },
-                { text: this.convertToMoney(oCountings.nCashCounted - (oCountings.nCashAtStart + aStatistic[0].overall[0].nTotalRevenue)) , style: ['td'] }
+                { text: this.translations['TREASURY_DIFFERENCE'], style: ['td'] },
+                { text: this.convertToMoney(oCountings.nCashDifference) , style: ['td'] }
             ],
             [
-                { text: 'SKIM', style: ['td'] },
+                { text: this.translations['SKIM'], style: ['td'] },
                 { text: this.convertToMoney(oCountings.nSkim), style: ['td'] },
             ],
             [
-                { text: 'AMOUNT_TO_LEFT_IN_CASH', style: ['td'] },
+                { text: this.translations['AMOUNT_TO_LEFT_IN_CASH'], style: ['td'] },
                 { text: this.convertToMoney(oCountings.nCashRemain), style: ['td'] }
             ],
         ];
@@ -1293,20 +1311,21 @@ export class TransactionAuditUiPdfService {
     }
 
     convertToMoney(val: any) {
-        let value;
+        const nNum = val; 
         if (val % 1 === 0) {
             //no decimals
-            value = (val) ? String(val + ',00') : '0,00';
+            return (val) ? ((val < 0) ? String('-' + this.currency + Math.abs(val) + ',00') : String(this.currency + val + ',00')) : this.currency + '0,00';
         } else {
             val = String(val);
             let parts = val.split('.');
 
             if (parts[1].length === 1) {
-                val = val + '0';
+                val = (nNum < 0) ? ('-' + this.currency + Math.abs(nNum) + '0') : (this.currency + val + '0');
             }
-            value = val.replace('.', ',')
-        }
+            val = (nNum < 0) ? '-' + this.currency + Math.abs(nNum) : this.currency + nNum
 
-        return this.currency + value;
+            const t = val.replace('.', ',')
+            return t
+        }
     }
 }
