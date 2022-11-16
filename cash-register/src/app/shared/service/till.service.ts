@@ -390,19 +390,24 @@ export class TillService {
       obj.dCreatedDate = moment(dataObject.dCreatedDate).format('DD-MM-yyyy hh:mm');
     });
 
+    const aLoyaltyPointsItems = transaction.aTransactionItems.filter((item: any) => item?.oType?.eKind == 'loyalty-points-discount');
+    
     dataObject.aTransactionItems = [];
     transaction.aTransactionItems.map((item: any) => {
-      if (item?.oType?.eKind == 'loyalty-points-discount') {
-        const oOriginalItem = transaction.aTransactionItems.filter((oItem: any) => oItem.iBusinessProductId === item.iBusinessProductId)[0]
-        oOriginalItem.nRedeemedLoyaltyPoints = item.nRedeemedLoyaltyPoints;
-        oOriginalItem.nDiscount = item.nDiscount;
-        dataObject.aTransactionItems.push(oOriginalItem);
+      if (item.oType?.eKind != 'discount' || item?.oType?.eKind != 'loyalty-points-discount') {
+        item.nRedeemedLoyaltyPoints = 0;
+        for (let i = 0; i < aLoyaltyPointsItems.length; i++) {
+          if (aLoyaltyPointsItems[i].iBusinessProductId === item.iBusinessProductId) {
+            item.nRedeemedLoyaltyPoints = aLoyaltyPointsItems[i].nRedeemedLoyaltyPoints;
+            item.nDiscount = aLoyaltyPointsItems[i].nDiscount;
+            break;
+          }
+        }
       }
     })
     
-    dataObject.aTransactionItems = dataObject.aTransactionItems.filter((item: any) => 
+    dataObject.aTransactionItems = transaction.aTransactionItems.filter((item: any) => 
       !(item.oType?.eKind == 'discount' || item?.oType?.eKind == 'loyalty-points-discount'));    
-
 
     dataObject.total = 0;
     let total = 0, totalAfterDisc = 0, totalVat = 0, totalDiscount = 0, totalSavingPoints = 0, totalRedeemedLoyaltyPoints = 0;
@@ -421,8 +426,8 @@ export class TillService {
         item.nDiscountToShow = disc;//.toFixed(2);
       } else { item.nDiscountToShow = disc; }
       // item.priceAfterDiscount = parseFloat(item.nRevenueAmount.toFixed(2)) - parseFloat(item.nDiscountToShow);
-      item.nPriceIncVatAfterDiscount = parseFloat(item.nPriceIncVat) - parseFloat(item.nDiscountToShow);
-      item.totalPaymentAmount = (parseFloat(item.nRevenueAmount.toFixed(2)) - parseFloat(item.nDiscountToShow)) * parseFloat(item.nQuantity);
+      item.nPriceIncVatAfterDiscount = parseFloat(item.nPriceIncVat) - parseFloat(item.nDiscountToShow) - item.nRedeemedLoyaltyPoints;
+      item.totalPaymentAmount = ((parseFloat(item.nRevenueAmount.toFixed(2)) - parseFloat(item.nDiscountToShow)) * parseFloat(item.nQuantity)) - item.nRedeemedLoyaltyPoints;
       // item.totalPaymentAmountAfterDisc = parseFloat(item.priceAfterDiscount.toFixed(2)) * parseFloat(item.nQuantity);
       item.bPrepayment = item?.oType?.bPrepayment || false;
       const vat = (item.nVatRate * item.nRevenueAmount / (100 + parseFloat(item.nVatRate)));
