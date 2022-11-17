@@ -38,7 +38,7 @@
                 </div>
             </div>
             <div class="card-footer">
-                <button class="btn btn-primary" type="submit" [disabled]="allArticleGroups.length === 0">{{"SUBMIT" |
+                <button class="btn btn-primary" type="submit" [disabled]="!expenseForm.valid">{{"SUBMIT" |
                     translate}}</button>
             </div>
         </form>
