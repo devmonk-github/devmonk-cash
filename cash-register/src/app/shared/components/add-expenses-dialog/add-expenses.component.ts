@@ -53,6 +53,7 @@ export class AddExpensesComponent implements OnInit {
       amount: new FormControl('', [Validators.required, Validators.min(1)]),
       expenseType: new FormControl('', [Validators.required]),
       description: new FormControl('', [Validators.required]),
+      tax:new FormControl('' ,[Validators.required])
     });
   }
 
@@ -92,10 +93,11 @@ export class AddExpensesComponent implements OnInit {
   }
 
   submit() {
+ 
     if (this.expenseForm.invalid) {
       return;
     }
-    const { amount, expenseType, description } = this.expenseForm.value;
+    const { amount, expenseType, description , tax } = this.expenseForm.value;
 
     const oArticleGroupMetaData = {
       aProperty: this.selectedArticleGroup.aProperty,

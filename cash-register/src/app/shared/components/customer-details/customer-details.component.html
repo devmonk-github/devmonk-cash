@@ -64,13 +64,11 @@
                                                 class="text-gray-800 text-hover-primary btn btn-light">
                                                 <i class="fa fa-envelope"></i>
                                                 {{customer.sEmail}}</a>
-                                            <a *ngIf="!customer.sEmail" href="#" class="text-gray-800 text-hover-primary btn btn-light" style="text-align:start ;">
-                                                <i class="fa fa-envelope"></i>{{'EMAIL' | translate}} </a>
                                         </p>
                                         <p>
-                                            <a href="https://wa.me/{{customer.oPhone.sMobile}}" target="_blank"
+                                            <a href="https://wa.me/{{customer.oPhone.sMobile}}" *ngIf="customer.oPhone.bWhatsApp" target="_blank"
                                                 class="text-gray-800 text-hover-primary btn btn-light">
-                                                <i class="fab fa-whatsapp ms-1" *ngIf="customer.oPhone.bWhatsApp"
+                                                <i class="fab fa-whatsapp ms-1" 
                                                     style="color: #1CB39B;"></i>
                                                 {{customer.oPhone.sMobile}}</a>
                                         </p>
