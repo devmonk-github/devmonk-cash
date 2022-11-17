@@ -43,7 +43,7 @@ export class ApiService {
       msg = error.error.message
     } else {
       //Server side error
-      msg = error.message
+      msg = error.error.message
     }
     // console.error('HttpClient throws error', msg)
     return throwError(new Error(msg))
