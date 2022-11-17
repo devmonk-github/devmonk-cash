@@ -6,6 +6,8 @@ import * as _ from 'lodash';
 import { ApiService } from '../../service/api.service';
 import { DialogComponent } from '../../service/dialog';
 import { TerminalService } from '../../service/terminal.service';
+import { ToastService } from '../toast';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-cards-dialog',
@@ -36,17 +38,24 @@ export class CardsComponent implements OnInit, AfterViewInit {
   giftCardInfo = { sGiftCardNumber: '', pincode: '', nAmount: 0, profileIconUrl: '', type: 'custom', nPaidAmount: 0, iArticleGroupId: '' };
   oGiftcard:any;
   activeTabIndex:number = 0;
+  translation:any=[];
   // elem ref
   constructor(
     private viewContainerRef: ViewContainerRef,
     private apiService: ApiService,
     private terminalService: TerminalService,
+    private toastService:ToastService , 
+    private translateService:TranslateService
   ) {
     const _injector = this.viewContainerRef.injector;;
     this.dialogRef = _injector.get<DialogComponent>(DialogComponent);
   }
 
   ngOnInit() {
+    const translation = ["GIFT_CARD_APPLIED_SUCCESSFULLY"];
+    this.translateService.get(translation).subscribe((res:any)=>{
+      this.translation=res;
+    })
     this.customer = this.dialogRef.context.customer;
     this.iBusinessId = localStorage.getItem('currentBusiness');
     this.fetchLoyaltyPoints();
@@ -105,8 +114,16 @@ export class CardsComponent implements OnInit, AfterViewInit {
     this.terminalService.getGiftCardInformation({ sGiftCardNumber, pincode: this.pincode })
       .subscribe(res => {
         this.externalGiftCardDetails = res;
+        if(res?.message == 'success'){
+          this.toastService.show({type:'success' , text:this.translation['GIFT_CARD_APPLIED_SUCCESSFULLY']})
+        }
       }, (error) => {
-        alert(error.error.message);
+        let errorMessage:any;
+        this.translateService.get(error.message).subscribe((res:any)=>{
+          errorMessage = res;
+        })
+        this.toastService.show({type:'warning' , text:errorMessage});
+        // alert(error.error);
         this.dialogRef.close.emit(false);
         this.fetchInProgress = false;
       });
