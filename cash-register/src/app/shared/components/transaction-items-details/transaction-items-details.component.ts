@@ -74,10 +74,6 @@ export class TransactionItemsDetailsComponent implements OnInit {
     this.requestParams.iTransactionId = this.transaction._id;
     let url = `/api/v1/transaction/item/transaction-items`;
 
-    console.log(' this.transaction.iActivityId: ',  this.transaction.iActivityId);
-    console.log(' this.transaction._id: ',  this.transaction._id);
-    console.log(' this.transaction.iActivityItemId: ',  this.transaction.iActivityItemId);
-  
     if (this.itemType === 'activity') {
       delete this.requestParams.iTransactionId;
       let id;
@@ -90,22 +86,22 @@ export class TransactionItemsDetailsComponent implements OnInit {
     };
     this.apiService.postNew('cashregistry', url, this.requestParams).subscribe((result: any) => {
       this.transactionItems = result.data[0].result;
-      console.log('this.transactionItems: ', this.transactionItems, url, this.requestParams);
       const discountRecords = this.transactionItems.filter(o => o.oType.eKind === 'discount' || o.oType.eKind === 'loyalty-points-discount');
-      // const loyaltyPoints = this.transactionItems.filter(o => o.oType.eKind === 'loyalty-points' || o.oType.eKind === 'loyalty-points');
       this.bIsAnyGiftCardDiscount = this.transactionItems.find((el: any) => el?.oType?.eKind === 'giftcard-discount')
       this.transactionItems = this.transactionItems.filter(o => o.oType.eKind !== 'discount' && o.oType.eKind !== 'loyalty-points' && o.oType.eKind !== 'loyalty-points-discount' && o.oType.eKind !== 'giftcard-discount');
       this.transactionItems.forEach(element => {
         const elementDiscount = discountRecords.filter(o => o.sUniqueIdentifier === element.sUniqueIdentifier);
         let nRedeemedLoyaltyPoints = 0;
+        let nDiscountnPaymentAmount  = 0;
         elementDiscount.forEach(dElement => {
-          if (dElement.oType.eKind === 'loyalty-points-discount') {
-            nRedeemedLoyaltyPoints += dElement.nRedeemedLoyaltyPoints || 0;
-          }
+          if (dElement.oType.eKind === 'loyalty-points-discount') nRedeemedLoyaltyPoints += dElement.nRedeemedLoyaltyPoints || 0;
+          if (dElement.oType.eKind === "discount") nDiscountnPaymentAmount += dElement.nPaymentAmount || 0;
         });
+        
         element.nRedeemedLoyaltyPoints = nRedeemedLoyaltyPoints;
         element.nPaymentAmount += _.sumBy(elementDiscount, 'nPaymentAmount');
         element.nPaidAmount += _.sumBy(elementDiscount, 'nPaymentAmount');
+        element.nPriceIncVat += nDiscountnPaymentAmount;
       });
       this.transactionItems = this.transactionItems.map(v => ({ ...v, isSelected: false }));
       this.transactionItems.forEach(transactionItem => {
@@ -122,10 +118,7 @@ export class TransactionItemsDetailsComponent implements OnInit {
           transactionItem.isSelected = true;
         }
       });
-      if (discountRecords.length > 0) {
-        localStorage.setItem('discountRecords', JSON.stringify(discountRecords));
-      }
-
+      if (discountRecords?.length) localStorage.setItem('discountRecords', JSON.stringify(discountRecords));
     }, (error) => {
       alert(error.error.message);
       this.dialogRef.close.emit(false);

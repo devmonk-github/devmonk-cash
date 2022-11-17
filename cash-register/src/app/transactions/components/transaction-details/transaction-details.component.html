@@ -270,10 +270,12 @@
                                     </td> -->
                                 </tr>
                                 <tr class="fw-bolder">
-                                    <td colspan="2">{{ 'TOTAL' | translate }}</td>
+                                    <td></td>
+                                    <td>{{ 'TOTAL' | translate }}</td>
                                     <td>{{ transaction.totalAfterDisc | currency:'EUR' }}</td>
                                     <td>{{ transaction.totalQty }}</td>
                                     <td>{{ transaction.totalDiscount | currency:'EUR' }}</td>
+                                    <td>{{ transaction.totalSavingPoints }}</td>
                                     <td>{{ transaction.totalVat | currency:'EUR' }}</td>
                                     <td>{{ transaction.total | currency:'EUR'}}</td>
                                 </tr>

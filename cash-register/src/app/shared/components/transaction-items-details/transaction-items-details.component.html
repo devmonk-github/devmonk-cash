@@ -74,23 +74,6 @@
                                         [ngClass]="transactionItem.tType === 'refund'? 'btn-primary active': ''"
                                         [disabled]="transactionItem.bIsRefunded">{{ "REFUND" | translate}}</button>
                                 </div>
-                                <!-- <div class="row mb-4">
-                                    <div class="btn-group btn-toggle">
-                                        <button class="btn btn-lg btn-default"
-                                            *ngIf="transactionItem.nPaymentAmount < transactionItem.nTotalAmount"
-                                            (click)="transactionItem.tType = 'refund'"
-                                            [ngClass]="transactionItem.tType === 'pay'? 'btn-primary active': ''">Rest
-                                            payment</button>
-                                        <button class="btn btn-lg btn-default"
-                                            *ngIf="transactionItem.nPaymentAmount === transactionItem.nTotalAmount"
-                                            [ngClass]="transactionItem.tType === 'refund'? 'btn-primary active': ''">Refund
-                                            payment</button>
-                                        <button class="btn btn-lg"
-                                            *ngIf="transactionItem.nPaymentAmount < transactionItem.nTotalAmount"
-                                            (click)="transactionItem.tType = 'pay'"
-                                            [ngClass]="transactionItem.tType === 'refund'? 'btn-primary active': ''">Refund</button>
-                                    </div>
-                                </div> -->
                             </td>
                         </tr>
                     </tbody>
