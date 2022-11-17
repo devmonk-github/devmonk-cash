@@ -407,7 +407,7 @@ export class TillService {
     })
     
     dataObject.aTransactionItems = transaction.aTransactionItems.filter((item: any) => 
-      !(item.oType?.eKind == 'discount' || item?.oType?.eKind == 'loyalty-points-discount'));    
+      !(item.oType?.eKind == 'discount' || item?.oType?.eKind == 'loyalty-points-discount' || item.oType.eKind == 'loyalty-points'));    
 
     dataObject.total = 0;
     let total = 0, totalAfterDisc = 0, totalVat = 0, totalDiscount = 0, totalSavingPoints = 0, totalRedeemedLoyaltyPoints = 0;

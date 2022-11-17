@@ -1384,9 +1384,9 @@ export class PdfService {
       'EXPECTED_PRICE_PER_PIECE',
       'ACTIVITY_ITEM_NUMBER',
       'LOYALTY_POINTS_REDEEMED',
-      'DATE',
       'BONNUMMER',
-      'TRANSACTION_NUMBER'
+      'TRANSACTION_NUMBER',
+      'DATE',
     ];
 
     this.translateService.get(translationsKey).subscribe((result) => {

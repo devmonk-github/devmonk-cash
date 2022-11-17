@@ -476,15 +476,20 @@
         <h4 *ngIf="(getUsedPayMethods(true) - getTotals('price')) >0">{{ "PREPAYMENT" | translate}}: {{totalPrepayment()
           | currency: '€'}}</h4>
 
-        <button class="btn btn-primary till-save-button" (click)="createTransaction()"
-          [disabled]="saveInProgress || 1 > transactionItems.length || !amountDefined">
-          <span class="d-flex" *ngIf="saveInProgress">
-            <fa-icon [icon]="faSpinner" class="fa-spin"></fa-icon>
-          </span>
-          <span *ngIf="!saveInProgress">
-            {{ "CHECKOUT" | translate}}
-          </span>
-        </button>
+          <div class="d-flex flex-wrap">
+            <button class="btn btn-primary till-save-button flex-grow-1 me-2" (click)="createTransaction()"
+            [disabled]="saveInProgress || 1 > transactionItems.length || !amountDefined">
+            <span class="d-flex" *ngIf="saveInProgress">
+              <fa-icon [icon]="faSpinner" class="fa-spin"></fa-icon>
+            </span>
+            <span *ngIf="!saveInProgress">
+              {{ "CHECKOUT" | translate}}
+            </span>
+          </button>
+          <button class="btn btn-primary" (click)="clearPaymentAmounts()" [disabled]="!amountDefined">
+            <fa-icon [icon]="faRotateLeft" class="fa-spin"></fa-icon>
+          </button>
+        </div>
       </div>
     </div>
   </div>

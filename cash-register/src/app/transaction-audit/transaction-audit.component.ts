@@ -174,6 +174,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
     nCashCounted: 0,
     nCashInTill: 0,
     nSkim: 0,
+    nCashDifference:0,
     nCashRemain: 0,
     nCashAtStart: 0,
     oCountingsCashDetails: {},
@@ -1110,25 +1111,25 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
   async closeDayState() {
     this.closingDayState = true;
     this.aAmount.filter((item: any) => item.nQuantity > 0).forEach((item: any) => (this.oCountings.oCountingsCashDetails[item.key] = item.nQuantity));
-    const nDifferenceAmount = this.oCountings?.nCashCounted - (this.oCountings?.nCashAtStart + this.oCountings?.nCashInTill);
+    this.oCountings.nCashDifference = this.oCountings?.nCashCounted - (this.oCountings?.nCashAtStart + this.oCountings?.nCashInTill);
 
     const oCashPaymentMethod = this.allPaymentMethod.filter((el: any) => el.sName.toLowerCase() === 'cash')[0];
     const oBankPaymentMethod = this.allPaymentMethod.filter((el: any) => el.sName.toLowerCase() === 'bankpayment')[0];
     const nVatRate = await this.taxService.fetchDefaultVatRate({ iLocationId: this.iLocationId });
 
     console.log('nVatRate: ', nVatRate);
-    console.log('nDifferenceAmount: ', nDifferenceAmount);
+    console.log('nDifferenceAmount: ', this.oCountings.nCashDifference);
     const aPromises:any = [];
     
-    if (nDifferenceAmount !== 0) {
+    if (this.oCountings.nCashDifference !== 0) {
       //we have difference in cash, so add that as and expense
       aPromises.push(this.addExpenses(
         {
-          amount: nDifferenceAmount,
+          amount: this.oCountings.nCashDifference,
           comment: 'DIFF_IN_CASH_COUNTING',
           oPayment: {
             iPaymentMethodId: oCashPaymentMethod._id,
-            nAmount: nDifferenceAmount,
+            nAmount: this.oCountings.nCashDifference,
             sMethod: oCashPaymentMethod.sName.toLowerCase()
           },
           _eType: 'diff-counting',
