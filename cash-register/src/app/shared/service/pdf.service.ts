@@ -1383,7 +1383,10 @@ export class PdfService {
       'VALID_UNTIL',
       'EXPECTED_PRICE_PER_PIECE',
       'ACTIVITY_ITEM_NUMBER',
-      'LOYALTY_POINTS_REDEEMED'
+      'LOYALTY_POINTS_REDEEMED',
+      'DATE',
+      'BONNUMMER',
+      'TRANSACTION_NUMBER'
     ];
 
     this.translateService.get(translationsKey).subscribe((result) => {
