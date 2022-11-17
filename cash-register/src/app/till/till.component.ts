@@ -521,6 +521,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
   clearPaymentAmounts(){
     this.payMethods.map(o => { o.amount = null, o.isDisabled = false });
+    let availableAmount = this.getUsedPayMethods(true);
+    this.paymentDistributeService.distributeAmount(this.transactionItems, availableAmount);
   }
 
 
@@ -534,6 +536,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
               pay.amount = 0;
             }
           });
+        } else {
+          this.clearPaymentAmounts();
         }
       })
   }
