@@ -280,6 +280,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       isFor: 'create',
     });
     this.searchKeyword = '';
+    this.clearPaymentAmounts();
   }
 
   getTotals(type: string): number {
@@ -368,7 +369,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       ...(type === 'giftcard') && { isGiftCardNumberValid: false },
       ...(type === 'gold-purchase') && { oGoldFor: { name: 'stock', type: 'goods' } }
     });
-
+    this.clearPaymentAmounts();
     await this.updateFiskalyTransaction('ACTIVE', []);
   }
 
@@ -384,36 +385,41 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
           bodyText: 'ARE_YOU_SURE_TO_CLEAR_THIS_TRANSACTION',
           buttonDetails: buttons
         }
-      })
-        .instance.close.subscribe(
-          result => {
-            if (result) {
-              this.transactionItems = []
-            }
-          }
-        )
+      }).instance.close.subscribe(result => {
+        if (result) {
+          this.transactionItems = []
+          this.clearPaymentAmounts();
+        }
+      }
+      )
     }
-
     this.resetSearch();
   }
 
   itemChanged(item: any, index: number): void {
     switch (item) {
       case 'delete':
+        // console.log('itemChanged delete')
         this.transactionItems.splice(index, 1);
+        this.clearPaymentAmounts();
         this.updateFiskalyTransaction('ACTIVE', []);
         break;
       case 'update':
-        let availableAmount = this.getUsedPayMethods(true);
-        this.paymentDistributeService.distributeAmount(this.transactionItems, availableAmount);
+        // console.log('itemChanged update')
+        this.clearPaymentAmounts();
+        // let availableAmount = this.getUsedPayMethods(true);
+        // this.paymentDistributeService.distributeAmount(this.transactionItems, availableAmount);
         break;
       case 'duplicate':
         const tItem = Object.create(this.transactionItems[index]);
         tItem.sGiftCardNumber = Date.now();
         this.transactionItems.push(tItem);
+        this.clearPaymentAmounts();
         break;
       default:
+        // console.log('itemChanged default')
         this.transactionItems[index] = item
+        this.clearPaymentAmounts();
         break;
     }
   }
@@ -536,9 +542,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
               pay.amount = 0;
             }
           });
-        } else {
-          this.clearPaymentAmounts();
-        }
+        } 
       })
   }
 
@@ -580,6 +584,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       .instance.close.subscribe((payMethods) => {
         if (!payMethods) {
           this.saveInProgress = false;
+          this.clearPaymentAmounts();
         } else {
           payMethods.forEach((pay: any) => {
             if (pay.sName === 'Card' && pay.status !== 'SUCCESS') {
@@ -963,6 +968,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       oBusinessProductMetaData: this.tillService.createProductMetadata(product),
     });
     this.resetSearch();
+    this.clearPaymentAmounts();
   }
 
   resetSearch() {
@@ -1154,6 +1160,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       open: true,
     });
     this.redeemedLoyaltyPoints = redeemedLoyaltyPoints;
+    this.clearPaymentAmounts();
   }
 
   openDayState() {

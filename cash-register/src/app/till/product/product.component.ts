@@ -124,6 +124,7 @@ export class ProductComponent implements OnInit {
   }
 
   quantityChangeHandler(nQuantity: number) {
+    this.itemChanged.emit('update');
     // console.log('changeQuantity: ', nQuantity, this.item?.paymentAmount, this.item);
   }
 
