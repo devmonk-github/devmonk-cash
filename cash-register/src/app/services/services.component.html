@@ -1,5 +1,5 @@
 <div class="container">
-  <div class="my-4 px-2 py-4 bg-white">
+  <div class="my-4 px-7 py-7 card card-flush">
     <div class="d-flex align-items-center my-3">
       <div class="position-relative w-md-400px me-md-2">
         <fa-icon [icon]="faSearch" class="text-gray-500 position-absolute top-50 translate-middle ms-6"></fa-icon>
@@ -18,7 +18,7 @@
         <button class="btn btn-primary" (click)="goToCashRegister()">{{ 'NEW' | translate }}</button>
       </div>
     </div>
-    <div class="collapse row mt-4" id="kt_advanced_search_form" data-kt-search-minimize="on"
+    <div class="collapse row" id="kt_advanced_search_form" data-kt-search-minimize="on"
       [ngClass]="{'show' : showAdvanceSearch}">
       <div class="col-12">
         <!-- <div class="separator separator-dashed"></div> -->
@@ -163,8 +163,8 @@
         </div>
       </div>
     </div>
-    <div class="mt-9 mb-6"></div>
-    <table class="table table-hover table-rounded table-striped  gy-7">
+    <!-- <div class="mt-3 mb-6"></div> -->
+    <table class="table table-hover table-rounded table-striped gy-7 gs-7">
       <thead>
         <tr class="fw-bold fs-6 text-gray-400 text-uppercase border-gray-200">
           <th scope="col" *ngFor="let th of tableHeaders"
@@ -189,7 +189,7 @@
           <td>{{activity?.oCustomer?.sFirstName}} {{activity?.oCustomer?.sLastName || '-'}}</td>
 
           <td>
-            <div class="btn-group me-4">
+            <div class="btn-group">
               <span class="btn btn-primary fs-bold px-6" (click)="openActivities(activity)">
                 <span class="indicator-label">{{ "VIEW" | translate}}</span>
               </span>
