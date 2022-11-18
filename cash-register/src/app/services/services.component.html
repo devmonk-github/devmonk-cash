@@ -1,6 +1,6 @@
 <div class="container">
   <div class="my-4 px-2 py-4 bg-white">
-    <div class="d-flex align-items-center">
+    <div class="d-flex align-items-center my-3">
       <div class="position-relative w-md-400px me-md-2">
         <fa-icon [icon]="faSearch" class="text-gray-500 position-absolute top-50 translate-middle ms-6"></fa-icon>
         <!--end::Svg Icon-->
@@ -18,10 +18,10 @@
         <button class="btn btn-primary" (click)="goToCashRegister()">{{ 'NEW' | translate }}</button>
       </div>
     </div>
-    <div class="collapse row" id="kt_advanced_search_form" data-kt-search-minimize="on"
+    <div class="collapse row mt-4" id="kt_advanced_search_form" data-kt-search-minimize="on"
       [ngClass]="{'show' : showAdvanceSearch}">
       <div class="col-12">
-        <div class="separator separator-dashed mt-9 mb-6"></div>
+        <!-- <div class="separator separator-dashed"></div> -->
         <div class="row g-4 mb-2">
 
               <div class="col-lg-2">
@@ -164,9 +164,9 @@
       </div>
     </div>
     <div class="mt-9 mb-6"></div>
-    <table class="table table-hover table-rounded table-striped border gy-7 gs-7">
+    <table class="table table-hover table-rounded table-striped  gy-7">
       <thead>
-        <tr class="fw-bold fs-6 text-gray-400 border-bottom-2 border-gray-200">
+        <tr class="fw-bold fs-6 text-gray-400 text-uppercase border-gray-200">
           <th scope="col" *ngFor="let th of tableHeaders"
             [ngClass]="{'fw-bolder': th.selected, 'cursor-pointer': !th.disabled, 'pe-none': th.disabled}"
             (click)="setSortOption(th)">
@@ -176,7 +176,7 @@
           <th scope="col"></th>
         </tr>
       </thead>
-      <tbody>
+      <tbody class="fw-bold text-gray-600">
         <tr *ngFor="let activity of activities | paginate: paginationConfig, let i = index;">
           <td>{{activity?.sNumber}}</td>
           <td>{{activity?.sReceiptNumber || '-'}}</td>
