@@ -983,62 +983,84 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
     });
   }
 
-  expandItem(item: any, iBusinessPartnerId: string = '') {
+  async expandItem(item: any, iBusinessPartnerId: string = '', from:string = 'articlegroup') {
     item.bIsCollapseItem = !item.bIsCollapseItem;
-    if (item.aTransactionItems) return;
-    let data: any = {
-      skip: 0,
-      limit: 100,
-      sortBy: '',
-      sortOrder: '',
-      searchValue: '',
-      iTransactionId: 'all',
-      oFilterBy: {
-        dStartDate: this.filterDates.startDate,
-        dEndDate: this.filterDates.endDate,
-        // IsDynamicState
-        bIsArticleGroupLevel: this.bIsArticleGroupLevel,
-        bIsSupplierMode: this.bIsSupplierMode,
-        iLocationId: this?.aSelectedLocation?.length ? this.aSelectedLocation : [],
-        iWorkstationId: this.selectedWorkStation?.length ? this.selectedWorkStation : []
-      },
-      sTransactionType: this.optionMenu,
-      iBusinessId: this.iBusinessId,
-    };
-    if (!this.IsDynamicState) {
-      data.oFilterBy.dStartDate = this.statisticFilter.dFromState,
+
+    if (from === 'articlegroup') {
+
+      if (item.aTransactionItems) return;
+      let data: any = {
+        skip: 0,
+        limit: 100,
+        sortBy: '',
+        sortOrder: '',
+        searchValue: '',
+        iTransactionId: 'all',
+        oFilterBy: {
+          dStartDate: this.filterDates.startDate,
+          dEndDate: this.filterDates.endDate,
+          // IsDynamicState
+          bIsArticleGroupLevel: this.bIsArticleGroupLevel,
+          bIsSupplierMode: this.bIsSupplierMode,
+          iLocationId: this?.aSelectedLocation?.length ? this.aSelectedLocation : [],
+          iWorkstationId: this.selectedWorkStation?.length ? this.selectedWorkStation : []
+        },
+        sTransactionType: this.optionMenu,
+        iBusinessId: this.iBusinessId,
+      };
+      if (!this.IsDynamicState && this.oStatisticsData.bIsDayStateOpened) {
+        data.oFilterBy.dStartDate = this.statisticFilter.dFromState
         data.oFilterBy.dEndDate = this.statisticFilter.dToState
-    }
-    if (
-      this.sDisplayMethod.toString() === 'revenuePerBusinessPartner' ||
-      this.sDisplayMethod.toString() === 'revenuePerSupplierAndArticleGroup' ||
-      this.sDisplayMethod.toString() === 'revenuePerArticleGroupAndProperty' ||
-      this.sDisplayMethod.toString() === 'revenuePerArticleGroup'
-    ) {
-      data.oFilterBy.iArticleGroupOriginalId = item._id;
-    }
-    if (
-      this.sDisplayMethod.toString() === 'revenuePerBusinessPartner' ||
-      this.sDisplayMethod.toString() === 'revenuePerSupplierAndArticleGroup'
-    ) {
-      data.oFilterBy.iBusinessPartnerId = iBusinessPartnerId;
-    }
+      }
+      if (
+        this.sDisplayMethod.toString() === 'revenuePerBusinessPartner' ||
+        this.sDisplayMethod.toString() === 'revenuePerSupplierAndArticleGroup' ||
+        this.sDisplayMethod.toString() === 'revenuePerArticleGroupAndProperty' ||
+        this.sDisplayMethod.toString() === 'revenuePerArticleGroup'
+      ) {
+        data.oFilterBy.iArticleGroupOriginalId = item._id;
+      }
+      if (
+        this.sDisplayMethod.toString() === 'revenuePerBusinessPartner' ||
+        this.sDisplayMethod.toString() === 'revenuePerSupplierAndArticleGroup'
+      ) {
+        data.oFilterBy.iBusinessPartnerId = iBusinessPartnerId;
+      }
 
-    if (this.sDisplayMethod.toString() === 'revenuePerProperty') {
-      data.oFilterBy.aPropertyOptionIds = item.aPropertyOptionIds;
-    }
+      if (this.sDisplayMethod.toString() === 'revenuePerProperty') {
+        data.oFilterBy.aPropertyOptionIds = item.aPropertyOptionIds;
+      }
 
-    item.isLoading = true;
-    this.transactionItemListSubscription = this.apiService.postNew('cashregistry', '/api/v1/transaction/item/list', data).subscribe((result: any) => {
+      item.isLoading = true;
+      const _result: any = await this.apiService.postNew('cashregistry', '/api/v1/transaction/item/list', data).toPromise();
       item.isLoading = false;
-      if (result?.data[0]?.result?.length) {
-        item.aTransactionItems = result.data[0].result;
+      if (_result?.data[0]?.result?.length) {
+        item.aTransactionItems = _result.data[0].result;
         item.aTransactionItems.map((oTI: any) => {
           oTI.nRevenueAmount = oTI.nRevenueAmount * oTI.nQuantity
           return oTI;
         })
+        }      
+    } else if (from === 'payments') {
+      if (item?.aItems) return;
+      item.isLoading = true;
+      const data = {
+        iBusinessId: this.iBusinessId,
+        iWorkstationId: this.iWorkstationId,
+        iLocationId: this.iLocationId,
+        oFilterBy: {
+          dStartDate: this.oStatisticsData.dStartDate,
+          dEndDate: this.oStatisticsData.dEndDate,
+          iPaymentMethodId: item.iPaymentMethodId
+        }
       }
-    });
+      const _result: any = await this.apiService.postNew('cashregistry', '/api/v1/payments/list', data).toPromise()
+      if (_result.data?.length && _result.data[0]?.result?.length){
+        item.aItems = _result.data[0]?.result;
+      }
+      item.isLoading = false;
+
+    }
   }
 
   fetchTransactionItems(): Observable<any> {
