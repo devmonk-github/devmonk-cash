@@ -6,6 +6,7 @@ import { DialogComponent } from '../../service/dialog';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { ToastService } from '../toast';
 import { CreateArticleGroupService } from '../../service/create-article-groups.service';
+import { TaxService } from '../../service/tax.service';
 
 @Component({
   selector: 'app-add-expenses',
@@ -30,6 +31,7 @@ export class AddExpensesComponent implements OnInit {
   allArticleGroups: any = [];
   currentEmployeeId: any;
   paymentMethod: any;
+  // nVatRate: any;
 
   constructor(
     private viewContainerRef: ViewContainerRef,
@@ -37,14 +39,17 @@ export class AddExpensesComponent implements OnInit {
     private toastrService: ToastService,
     private createArticleGroupService: CreateArticleGroupService,
     private fb: FormBuilder,
+    // private taxService: TaxService
   ) {
     const _injector = this.viewContainerRef.injector;;
     this.dialogRef = _injector.get<DialogComponent>(DialogComponent);
     this.paymentMethod = this.dialogRef.context.paymentMethod;
   }
 
-  ngOnInit() {
+  async ngOnInit() {
     const value = localStorage.getItem('currentEmployee');
+    const iLocationId: any = localStorage.getItem('currentLocation');
+    // this.nVatRate = await this.taxService.fetchDefaultVatRate({ iLocationId: iLocationId });
     if (value) {
       this.currentEmployeeId = JSON.parse(value)._id;
     }
@@ -52,6 +57,7 @@ export class AddExpensesComponent implements OnInit {
     this.expenseForm = this.fb.group({
       amount: new FormControl('', [Validators.required, Validators.min(1)]),
       expenseType: new FormControl('', [Validators.required]),
+      tax: new FormControl('', [Validators.required]),
       description: new FormControl('', [Validators.required]),
     });
   }
@@ -92,10 +98,11 @@ export class AddExpensesComponent implements OnInit {
   }
 
   submit() {
+ 
     if (this.expenseForm.invalid) {
       return;
     }
-    const { amount, expenseType, description } = this.expenseForm.value;
+    const { amount, expenseType, description, tax } = this.expenseForm.value;
 
     const oArticleGroupMetaData = {
       aProperty: this.selectedArticleGroup.aProperty,
@@ -123,7 +130,7 @@ export class AddExpensesComponent implements OnInit {
       iWorkstationId: localStorage.getItem('currentWorkstation'),
       iEmployeeId: this.currentEmployeeId,
       iLocationId: localStorage.getItem('currentLocation'),
-
+      nVatRate: tax,
       oType: {
         eTransactionType: 'expenses',
         bRefund: false,

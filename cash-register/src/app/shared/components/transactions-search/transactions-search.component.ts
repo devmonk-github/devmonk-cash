@@ -60,14 +60,6 @@ export class TransactionsSearchComponent implements OnInit, AfterViewInit {
     this.activities = [];
     this.totalActivities = 0;
     this.requestParams.type = 'transaction';
-    // this.requestParams.searchValue = '202',
-    // this.requestParams.filterDates = this.filterDates;
-    // this.requestParams.transactionStatus = this.transactionStatuses;
-    // this.requestParams.invoiceStatus = this.invoiceStatus;
-    // this.requestParams.importStatus = this.importStatus;
-    // this.requestParams.methodValue = this.methodValue;
-    // this.requestParams.transactionValue = this.transactionValue;
-    // this.requestParams.iEmployeeId = this.employee && this.employee._id ? this.employee._id : '';
     this.requestParams.iWorkstationId = undefined // we need to work on this once devides are available.
     this.requestParams.workstations = this.selectedWorkstations;
     this.requestParams.locations = this.selectedLocations;
