@@ -37,7 +37,7 @@
         <div class="row">
           <!-- quantity  -->
           <div class="col-12">
-            <app-dialer [(quantity)]="item.quantity"></app-dialer>
+            <app-dialer [(quantity)]="item.quantity" (quantityChange)="updatePayments()"></app-dialer>
           </div>
         </div>
       </div>
@@ -144,7 +144,7 @@
                     !item.oType.bDiscount &&
                     !item.oType.bPrepayment
                   " type="number" step="any" name="discount" class="form-control mb-3 mb-lg-0"
-                      [(ngModel)]="item.nDiscount" />
+                      [(ngModel)]="item.nDiscount" (ngModelChange)="updatePayments()"/>
                     <input *ngIf="
                     item.oType.bRefund ||
                     item.oType.bDiscount ||
@@ -323,7 +323,7 @@
             <div class="form-group mb-4">
               <label class="form-control-label mb-3">{{ "EXCLUDE_ITEM" | translate}}</label>:
               <label class="form-check form-switch form-check-custom form-check-solid mb-3 mb-lg-0">
-                <input type="checkbox" class="form-check-input" [(ngModel)]="item.isExclude">
+                <input type="checkbox" class="form-check-input" [(ngModel)]="item.isExclude" (ngModelChange)="updatePayments()">
               </label>
             </div>
           </div>
