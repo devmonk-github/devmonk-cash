@@ -16,7 +16,7 @@
           <div class="col">{{item.price | currency: '€'}}</div>
           <div class="col">{{totalDiscount}}</div>
           <div class="col">{{item.tax}}%</div>
-          <div class="col">{{(item.price - item.nDiscount) * item.quantity | currency: '€' }}
+          <div class="col">{{ item.amountToBePaid | currency: '€' }}
           </div>
           <div class="col">{{item.paymentAmount | currency: '€'}}</div>
         </div>

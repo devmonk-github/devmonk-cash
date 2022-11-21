@@ -5,6 +5,7 @@ import { DiscountDialogComponent } from "../dialogs/discount-dialog/discount-dia
 import { PriceService } from '../../shared/service/price.service';
 import { ApiService } from 'src/app/shared/service/api.service';
 import { ToastService } from 'src/app/shared/components/toast';
+import { formatCurrency } from '@angular/common';
 
 @Component({
   // eslint-disable-next-line @angular-eslint/component-selector
@@ -67,7 +68,7 @@ export class ProductComponent implements OnInit {
   }
 
   getTotalDiscount(item: any): string {
-    this.totalDiscount = this.priceService.getDiscountValue(item);
+    this.totalDiscount = (item?.discount) ? this.priceService.getDiscountValue(item) : formatCurrency(item.nDiscount, 'en-GB', '€') ;
     return String(this.totalDiscount);
   }
 
@@ -105,6 +106,7 @@ export class ProductComponent implements OnInit {
     if (!this.item.oType.refund) {
       this.item.price = -this.item.price;
     }
+    this.updatePayments();
   }
 
   openDiscountDialog(): void {
@@ -124,6 +126,7 @@ export class ProductComponent implements OnInit {
   }
 
   quantityChangeHandler(nQuantity: number) {
+    this.itemChanged.emit('update');
     // console.log('changeQuantity: ', nQuantity, this.item?.paymentAmount, this.item);
   }
 

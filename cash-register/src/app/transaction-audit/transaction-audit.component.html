@@ -585,11 +585,11 @@
                                                                             <div class="mx-5">
                                                                                 <i *ngIf="!oArticleGroup.bIsCollapseItem"
                                                                                     class="px-sm-2 cursor-pointer bi bi-chevron-down"
-                                                                                    (click)="expandItem(oArticleGroup, oSupplier.iBusinessPartnerId)">
+                                                                                    (click)="expandItem(oArticleGroup, oSupplier.iBusinessPartnerId, 'articlegroup')">
                                                                                 </i>
                                                                                 <i *ngIf="oArticleGroup.bIsCollapseItem"
                                                                                     class="px-sm-2 cursor-pointer bi bi-chevron-up"
-                                                                                    (click)="expandItem(oArticleGroup,oSupplier.iBusinessPartnerId)"></i>
+                                                                                    (click)="oArticleGroup.bIsCollapseItem = !oArticleGroup.bIsCollapseItem"></i>
                                                                             </div>
                                                                         </div>
 
@@ -1074,24 +1074,45 @@
                                         </tr>
                                     </thead>
                                     <tbody class="p-2">
-                                        <tr *ngFor="let oPayment of aPaymentMethods; let i = index">
-                                            <td class="ps-9">{{oPayment.sMethod}}</td>
-                                            <td>{{oPayment.nAmount}}</td>
-                                            <td *ngIf="paymentEditMode">
-                                                <input class="form-control" type="number"
-                                                    [(ngModel)]="oPayment.nNewAmount"
-                                                    (ngModelChange)="reCalculateTotal()">
-                                            </td>
-                                            <td>{{oPayment.nQuantity}}</td>
-                                        </tr>
+                                        <ng-container *ngFor="let oPayment of aPaymentMethods; let i = index">
+                                            <tr>
+                                                <td class="ps-9 d-flex justify-content-between">
+                                                    {{oPayment.sMethod}}
+                                                    <div class="">
+                                                        <i *ngIf="!oPayment.bIsCollapseItem" class="px-sm-2 cursor-pointer bi bi-chevron-down"
+                                                            (click)="expandItem(oPayment, oPayment.iStatisticsId, 'payments')">
+                                                        </i>
+                                                        <i *ngIf="oPayment.bIsCollapseItem" class="px-sm-2 cursor-pointer bi bi-chevron-up"
+                                                            (click)="oPayment.bIsCollapseItem = !oPayment.bIsCollapseItem"></i>
+                                                    </div>
+                                                </td>
+                                                <td>{{oPayment.nAmount}}</td>
+                                                <td *ngIf="paymentEditMode">
+                                                    <input class="form-control" type="number" [(ngModel)]="oPayment.nNewAmount"
+                                                        (ngModelChange)="reCalculateTotal()">
+                                                </td>
+                                                <td>{{oPayment.nQuantity}}</td>
+                                            </tr>
+                                            <tr *ngIf="oPayment.isLoading">
+                                                <td colspan="6" class="text-center">
+                                                    <div class="spinner-border mx-auto">
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <ng-container *ngIf="oPayment.bIsCollapseItem">
+                                                <tr class="bg-gray-100" *ngFor="let item of oPayment.aItems">
+                                                    <td class="ps-9"> {{ item.sMethod }}</td>
+                                                    <td> {{ item.nAmount }}</td>
+                                                    <td> {{ item.nQuantity }}</td>
+                                                </tr>
+                                            </ng-container>
+                                        </ng-container>
                                         <ng-container *ngIf="paymentEditMode">
                                             <tr *ngFor="let oPayment of aNewSelectedPaymentMethods; let i = index">
                                                 <td>
                                                     <div>
-                                                        <ng-select [(ngModel)]="aNewSelectedPaymentMethods[i]"
-                                                            [clearable]="false">
-                                                            <ng-option [value]="option"
-                                                                *ngFor="let option of payMethods">
+                                                        <ng-select [(ngModel)]="aNewSelectedPaymentMethods[i]" [clearable]="false">
+                                                            <ng-option [value]="option" *ngFor="let option of payMethods">
                                                                 {{ option.sName | translate }}
                                                             </ng-option>
                                                         </ng-select>
@@ -1099,8 +1120,7 @@
                                                 </td>
                                                 <td></td>
                                                 <td>
-                                                    <input class="form-control" type="number"
-                                                        [(ngModel)]="oPayment.nAmount"
+                                                    <input class="form-control" type="number" [(ngModel)]="oPayment.nAmount"
                                                         (ngModelChange)="reCalculateTotal()">
                                                 </td>
                                             </tr>

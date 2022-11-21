@@ -440,6 +440,15 @@ export class TillService {
     })
     await Promise.all(relatedItemsPromises).then(result => {
       result.forEach((item: any, index: number) => {
+        if(item?.data?.length) {
+          item.data.forEach((singleRelatedItem:any)=> {
+            if (singleRelatedItem?.bDiscountOnPercentage) {
+              singleRelatedItem.nRevenueAmount = singleRelatedItem.nRevenueAmount - (singleRelatedItem.nRevenueAmount * singleRelatedItem.nDiscount / 100);
+            } else {
+              singleRelatedItem.nRevenueAmount = singleRelatedItem.nRevenueAmount - singleRelatedItem.nDiscount;
+            }
+          })          
+        }
         transaction.aTransactionItems[index].related = item.data || [];
       })
     });

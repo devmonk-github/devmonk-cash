@@ -189,6 +189,9 @@
                                     <td class="text-muted">{{'PRICE' | translate}}</td>
                                     <td class="text-muted">{{'QUANTITY' | translate}}</td>
                                     <td class="text-muted">{{'DISCOUNT_PER_ITEM' | translate}}</td>
+                                    <ng-container *ngIf="transaction.totalRedeemedLoyaltyPoints > 0">
+                                        <td class="text-muted">{{'LOYALTY_POINTS_REDEEMED' | translate}}</td>
+                                    </ng-container>
                                     <td class="text-muted"> {{'SAVING_POINTS' | translate}}</td>
                                     <td class="text-muted">{{'TAX' | translate}}</td>
                                     <td class="text-muted">{{'TOTAL_PRICE' | translate}}</td>
@@ -202,13 +205,19 @@
                                     </td>
                                     <td>
                                         <div>
-                                            {{item.sArticleGroupName}} {{item.sProductName}} <br /> {{ item.sDescription}} <br />
-                                            {{ item.description }}
+                                            {{ item.sArticleGroupName }} {{ item.sProductName }} <br /> 
+                                            <ng-container *ngIf="item.sDescription">
+                                                {{ item.sDescription}} <br />
+                                            </ng-container>
+                                            <ng-container *ngIf="item?.nDiscountToShow > 0">
+                                                Original amount: {{ item.nPriceIncVat }} <br />
+                                            </ng-container>
+                                            
                                             <div *ngIf="item.related?.length">
-                                                {{item.nPriceIncVat}}<br />{{ "ALREADY_PAID" | translate}}:<br />
-                                                {{item.sTransactionNumber}} | {{item.nPaymentAmount}} ({{"THIS_RECEIPT"}})<br />
+                                                {{ "ALREADY_PAID" | translate}}:<br />
+                                                {{item.sTransactionNumber}} | {{item.nPaymentAmount}} ({{"THIS_RECEIPT" | translate }})<br />
                                                 <div *ngFor="let obj of item.related">
-                                                    {{obj.sTransactionNumber}} | {{obj.nPaymentAmount}}<br />
+                                                    {{obj.sTransactionNumber}} | {{obj.nRevenueAmount }}<br />
                                                 </div>
                                             </div>
                                         </div>
@@ -237,19 +246,20 @@
                                             {{item.nDiscountToShow | currency:'EUR'}}
                                         </span>
                                     </td>
+                                    <ng-container *ngIf="item.nRedeemedLoyaltyPoints > 0">
+                                        <td>{{ item.nRedeemedLoyaltyPoints }} </td>
+                                    </ng-container>
                                     <td>{{item.nSavingsPoints}} </td>
                                     <td>{{item.nVatRate}} % ({{item.vat || 0 | currency:'EUR' }})</td>
                                     <td>
                                         <div class="d-flex align-items-center justify-content-between">
-                                            <div>
-                                                {{item.totalPaymentAmount || 0}}
-                                            </div>
+                                            <div>{{item.totalPaymentAmount || 0}}</div>
                                             <ng-container *ngIf="from != 'activity-details'">
-                                                <div class="">
+                                                <div class="mx-2">
                                                     <div class="d-flex align-items-center">
-                                                        <button class="btn btn-primary"
+                                                        <button class="btn btn-primary btn-sm"
                                                             (click)="showActivityItem(item,$event)">
-                                                            {{ 'VIEW' | translate }}
+                                                            <i class="fa fa-eye"></i>
                                                         </button>
                                                         <!-- <button id="kt_supplier_stock_product_toggle"
                                                             class="btn btn-secondary btn-flex h-35px shadow-sm fs-6 px-4 rounded-top-0" title="" data-bs-toggle="tooltip"
@@ -275,6 +285,9 @@
                                     <td>{{ transaction.totalAfterDisc | currency:'EUR' }}</td>
                                     <td>{{ transaction.totalQty }}</td>
                                     <td>{{ transaction.totalDiscount | currency:'EUR' }}</td>
+                                    <ng-container *ngIf="transaction.totalRedeemedLoyaltyPoints > 0">
+                                        <td>{{transaction.totalRedeemedLoyaltyPoints}}</td>
+                                    </ng-container>
                                     <td>{{ transaction.totalSavingPoints }}</td>
                                     <td>{{ transaction.totalVat | currency:'EUR' }}</td>
                                     <td>{{ transaction.total | currency:'EUR'}}</td>
