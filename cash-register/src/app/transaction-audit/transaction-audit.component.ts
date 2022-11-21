@@ -763,13 +763,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
     }
   }
 
-  /* Dynamic Data for statistic (from transaction-item) */
-  getDynamicData(sDisplayMethod?: string) {
-
-    /* Below for Dynamic-data */
-    this.checkShowDownload();
-    this.aStatistic = [];
-    this.aPaymentMethods = [];
+  processingDynamicDataRequest(sDisplayMethod?: string) {
     let aLocation = this?.aSelectedLocation?.length ? this.aSelectedLocation : [];
     let iWorkstationId = this.selectedWorkStation?.length ? this.selectedWorkStation : undefined;
     if (this.iStatisticId) {
@@ -797,23 +791,31 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
       oBody.oFilter.bIsArticleGroupLevel = this.bIsArticleGroupLevel;
       oBody.oFilter.bIsSupplierMode = this.bIsSupplierMode;
     }
+
+    return oBody;
+  }
+
+  /* Dynamic Data for statistic (from transaction-item) */
+  getDynamicData(sDisplayMethod?: string) {
+
+    /* Below for Dynamic-data */
+    this.checkShowDownload();
+    const oBody = this.processingDynamicDataRequest(sDisplayMethod);
     this.bStatisticLoading = true;
     this.statisticAuditSubscription = this.apiService
-      .postNew('cashregistry', `/api/v1/statistics/transaction/audit`, oBody)
-      .subscribe(
-        (result: any) => {
-          this.bStatisticLoading = false;
-          if (result?.data) {
+      .postNew('cashregistry', `/api/v1/statistics/transaction/audit`, oBody).subscribe((result: any) => {
+        this.bStatisticLoading = false;
+        if (result?.data) {
 
-            if (result.data?.oTransactionAudit?.length)
-              this.aStatistic = result.data.oTransactionAudit;
+          if (result.data?.oTransactionAudit?.length)
+            this.aStatistic = result.data.oTransactionAudit;
 
-            if (this.aStatistic?.length && this.aStatistic[0]?.overall?.length) {
-              this.oCountings.nCashInTill = this.aStatistic[0].overall[0].nTotalRevenue;
-            }
-            this.mappingThePaymentMethod(result?.data);
+          if (this.aStatistic?.length && this.aStatistic[0]?.overall?.length) {
+            this.oCountings.nCashInTill = this.aStatistic[0].overall[0].nTotalRevenue;
           }
-        },
+          this.mappingThePaymentMethod(result?.data);
+        }
+      },
         (error) => {
           this.bStatisticLoading = false;
           this.aStatistic = [];
@@ -1108,8 +1110,29 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
     return this.apiService.postNew('cashregistry', `/api/v1/till/add-expenses`, transactionItem);
   }
 
+  getDynamicAuditDetail() {
+    const _oBody = this.processingDynamicDataRequest();
+    _oBody.oFilter.dEndDate = new Date();
+    return this.apiService.postNew('cashregistry', `/api/v1/statistics/transaction/audit`, _oBody).toPromise();
+  }
+
   async closeDayState() {
     this.closingDayState = true;
+
+    /* fetching Audit detail for checking if day-state is changed or not */
+    const oStatisticDetail: any = await this.getDynamicAuditDetail();
+    if (!oStatisticDetail?.data?.oTransactionAudit?.length || !oStatisticDetail?.data?.oTransactionAudit[0]?.overall?.length) {
+      this.toastService.show({ type: 'warning', text: 'Something went wrong' });
+      return;
+    }
+  
+     /* This is to check if day-state is not changed already (in mean-time) */
+    if (oStatisticDetail?.data?.oTransactionAudit[0]?.overall[0]?.nTotalRevenue != this.aStatistic[0].overall[0].nTotalRevenue ||
+      oStatisticDetail?.data?.oTransactionAudit[0]?.overall[0]?.nQuantity != this.aStatistic[0].overall[0].nQuantity) {
+        this.toastService.show({ type: 'warning', text: 'Someone modified the transaction in this workstation. Please refresh the page' });
+        return;
+    }
+
     this.aAmount.filter((item: any) => item.nQuantity > 0).forEach((item: any) => (this.oCountings.oCountingsCashDetails[item.key] = item.nQuantity));
     this.oCountings.nCashDifference = this.oCountings?.nCashCounted - (this.oCountings?.nCashAtStart + this.oCountings?.nCashInTill);
 

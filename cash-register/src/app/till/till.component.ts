@@ -122,6 +122,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   printActionSettings: any;
   printSettings: any;
   activity: any;
+  bIsOpeningDayState: boolean = false;
   selectedLanguage: any = localStorage.getItem('language') ? localStorage.getItem('language') : 'en';
   bHasIActivityItemId: boolean = false;
 
@@ -1162,13 +1163,16 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       iLocationId: this.locationId,
       iWorkstationId: this.iWorkstationId
     }
+    this.bIsOpeningDayState = true;
     this.apiService.postNew('cashregistry', `/api/v1/statistics/open/day-state`, oBody).subscribe((result: any) => {
+      this.bIsOpeningDayState = false;
       if (result?.message === 'success') {
         this.bIsDayStateOpened = true;
         if (this.bIsDayStateOpened) this.fetchQuickButtons();
         this.toastrService.show({ type: 'success', text: `Day-state is open now` });
       }
     }, (error) => {
+      this.bIsOpeningDayState = false;
       this.toastrService.show({ type: 'warning', text: `Day-state is not open` });
     })
   }
