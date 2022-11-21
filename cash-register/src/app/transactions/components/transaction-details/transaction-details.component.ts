@@ -87,7 +87,7 @@ export class TransactionDetailsComponent implements OnInit {
           description += `Already paid: \n${item.sTransactionNumber} | ${item.nPaymentAmount} (this receipt)\n`;
 
           item.related.forEach((related: any) => {
-            description += `${related.sTransactionNumber}|${related.nPaymentAmount}\n`;
+            description += `${related.sTransactionNumber}|${related.nRevenueAmount}\n`;
           });
         }
       }

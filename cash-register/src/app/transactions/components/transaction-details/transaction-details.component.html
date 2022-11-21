@@ -217,7 +217,7 @@
                                                 {{ "ALREADY_PAID" | translate}}:<br />
                                                 {{item.sTransactionNumber}} | {{item.nPaymentAmount}} ({{"THIS_RECEIPT" | translate }})<br />
                                                 <div *ngFor="let obj of item.related">
-                                                    {{obj.sTransactionNumber}} | {{obj.nPaymentAmount}}<br />
+                                                    {{obj.sTransactionNumber}} | {{obj.nRevenueAmount }}<br />
                                                 </div>
                                             </div>
                                         </div>
