@@ -50,6 +50,7 @@ import { ActionSettingsComponent } from "./components/actions-settings/action-se
 import { FilterPipe } from "./pipes/filter.pipe";
 import { PdfService } from "./service/pdf2.service";
 import { ReceiptService } from "./service/receipt.service";
+import { TransactionActionDialogComponent } from "./components/transaction-action-dialog/transaction-action-dialog.component";
 
 @NgModule({
   declarations: [
@@ -81,7 +82,8 @@ import { ReceiptService } from "./service/receipt.service";
     AddEditWorkstationComponent,
     SortPipe,
     ActionSettingsComponent,
-    FilterPipe
+    FilterPipe,
+    TransactionActionDialogComponent
   ],
   imports: [
     CommonModule,

@@ -26,9 +26,7 @@
               <p class="mb-0" style="font-size: 1.2rem;font-weight: bold;margin-left:1.3rem">
                 <span style="margin-right:1rem; font-weight:bolder">!</span>
                 {{ "THE_PREVIOUS" | translate }} {{ settings.sDayClosurePeriod }} {{"IS_NOT_CLOSED_YET" | translate }}
-                ({{ dOpenDate | date:'EEEE,
-                dd-MM-YYYY
-                hh:mm:ss aaa':'GMT'}})
+                ({{ dOpenDate | date:'EEEE, dd-MM-YYYYhh:mm:ss aaa':'GMT'}})
               </p>
               <a class="btn btn-hover" routerLink="../day-closure">{{ "CLOSE_DAYSTATE" | translate}}</a>
             </div>
@@ -220,8 +218,7 @@
                   (ngModelChange)="searchKeyword? shopProducts = shopProducts: shopProducts = []"
                   (keyup.enter)="search()" (focus)="switchMode()" #searchField>
                 <button class="btn btn-secondary me-3 d-flex search-button" (click)="openTransactionSearchDialog()">
-                  <fa-icon [icon]="faSearch"></fa-icon> {{ "TRANSACTION" |
-                  translate}}
+                  <fa-icon [icon]="faSearch"></fa-icon> {{ "TRANSACTION" | translate}}
                 </button>
                 <button class="btn btn-secondary me-3 search-button" (click)="addNewLine()">{{ "TEXT_LINE" |
                   translate}}</button>

@@ -1,0 +1,66 @@
+<div class="card shadow-sm">
+    <div class="card-header" style="margin-top: 20px;">
+        <h4>{{"TRANSACTION_COMPLETED" | translate}}</h4>
+        <div>
+            <button type="button" class="btn btn-sm btn-light" (click)="close(false)">
+                <fa-icon [icon]="faTimes"></fa-icon>
+            </button>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <ng-container *ngFor="let type of aTypes">
+                <ng-container *ngIf="aUniqueTypes.includes(type)"> <!-- && type !== 'repair' -->
+                    <div class="col-4 d-flex flex-column align-items-center">
+                        {{ type }}
+                        <ng-container *ngFor="let action of aActionSettings">
+                            <div class="d-flex flex-column">
+                                <span class="cursor-pointer badge badge-success my-2">
+                                    {{action}}
+                                </span>
+                            </div>
+                        </ng-container>
+                    </div>
+                </ng-container>
+            </ng-container>
+        </div>
+        <div class="row mt-5" *ngIf="nRepairCount > 1">
+            <div class="col-12">
+                <table class="table table-row-bordered table-row-gray-300 gy-5 gs-5 mb-0 text-gray-600 fw-bold border">
+                    <thead class="bg-gray-100">
+                        <tr class="fw-bold fs-6 text-gray-800">
+                            <th class="ps-9">{{'REPAIR_TITLE' | translate}}</th>
+                            <th class="text-center">{{'FOR_REPAIR' | translate}}</th>
+                            <th class="text-center">{{'FOR_REPAIR_ALTERNATIVE' | translate}}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="p-2" *ngFor="let item of aRepairItems, let i = index">
+                            <td class="ps-9">{{item.sProductName}}</td>
+                            <td class="ps-9 text-center">
+                                <ng-container *ngFor="let action of aActionSettings">
+                                    <span class="cursor-pointer badge badge-success mx-2 my-2">
+                                        {{action}}
+                                    </span>
+                                </ng-container>
+                            </td>
+                            <td class="ps-9 text-center">
+                                <ng-container *ngFor="let action of aActionSettings">
+                                    <span class="cursor-pointer badge badge-success mx-2 my-2">
+                                        {{action}}
+                                    </span>
+                                </ng-container>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-footer">
+        <div class="btn-holder">
+            <button type="button" class="btn btn-primary" (click)="close(false)">{{"FINISH" | translate}}</button>
+        </div>
+    </div>
+</div>
