@@ -141,19 +141,6 @@ export class TransactionsComponent implements OnInit {
     this.barcodeService.barcodeScanned.subscribe((barcode: string) => {
       this.openModal(barcode);
     });
-
-    
-
-  }
-
-  ngAfterViewInit() {
-    console.log('ngAfterViewInit')
-    this.things.changes.subscribe(t => {
-      console.log('NgFor is Rendered');
-      setTimeout(() => {
-        MenuComponent.reinitialization();
-      }, 200);
-    })
   }
 
   getPaymentMethods() {
@@ -213,6 +200,9 @@ export class TransactionsComponent implements OnInit {
         this.transactions = result.data.result;
         this.paginationConfig.totalItems = result.data.totalCount;
       }
+      setTimeout(() => {
+        MenuComponent.bootstrap();
+      }, 200);
       
       this.showLoader = false;
     }, (error) => {

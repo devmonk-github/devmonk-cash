@@ -331,7 +331,7 @@ export class ServicesComponent implements OnInit {
       this.paginationConfig.totalItems = result?.count;
       this.getCustomers();
       setTimeout(() => {
-        MenuComponent.reinitialization();
+        MenuComponent.bootstrap();
         this.showLoader = false;
       }, 200);
     }, (error) => {
