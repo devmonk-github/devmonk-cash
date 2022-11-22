@@ -73,7 +73,7 @@ export class AddExpensesComponent implements OnInit {
     }
   }
   getArticleGroup() {
-    this.createArticleGroupService.checkArticleGroups('Expenses')
+    this.createArticleGroupService.checkArticleGroups('expenses')
       .subscribe((res: any) => {
         if (res.data[0]) {
           this.allArticleGroups = res.data[0].result;
@@ -87,7 +87,7 @@ export class AddExpensesComponent implements OnInit {
   }
 
   async createArticleGroup(sSubCategory: string) {
-    const articleBody = { name: 'Expenses', sCategory: 'expenses', sSubCategory };
+    const articleBody = { name: 'expenses', sCategory: 'expenses', sSubCategory };
     const result: any = await this.createArticleGroupService.createArticleGroup(articleBody);
     this.allArticleGroups.push(result.data);
     this.selectedArticleGroup = result.data;
