@@ -136,11 +136,17 @@ class MenuComponent {
   // Global handlers
   public static createInstances = (selector: string) => {
     // Initialize menus
+    console.log('createInstances selector', selector);
     document.querySelectorAll(selector).forEach((el) => {
+      console.log('createInstances el', el);
+
       const menuItem = el as HTMLElement;
+      console.log({menuItem})
       let menuInstance = MenuComponent.getInstance(menuItem);
+      console.log({menuInstance})
       if (!menuInstance) {
         menuInstance = new MenuComponent(el as HTMLElement, defaultMenuOptions);
+        console.log('creating new', {menuInstance})
       }
     });
   }

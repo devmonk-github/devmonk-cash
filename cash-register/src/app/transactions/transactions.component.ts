@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, QueryList, ViewChildren } from '@angular/core';
 import { Router, NavigationEnd, ActivatedRoute } from '@angular/router';
 import { faLongArrowAltDown, faLongArrowAltUp, faMinusCircle, faPlus, faPlusCircle, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { ToastService } from '../shared/components/toast';
@@ -93,6 +93,8 @@ export class TransactionsComponent implements OnInit {
     { key: 'TYPE', disabled: true }
   ]
 
+  @ViewChildren('transactionItems') things: QueryList<any>;
+
   constructor(
     private apiService: ApiService,
     private dialogService: DialogService,
@@ -140,6 +142,18 @@ export class TransactionsComponent implements OnInit {
       this.openModal(barcode);
     });
 
+    
+
+  }
+
+  ngAfterViewInit() {
+    console.log('ngAfterViewInit')
+    this.things.changes.subscribe(t => {
+      console.log('NgFor is Rendered');
+      setTimeout(() => {
+        MenuComponent.reinitialization();
+      }, 200);
+    })
   }
 
   getPaymentMethods() {
@@ -198,10 +212,8 @@ export class TransactionsComponent implements OnInit {
       if (result && result.data && result.data && result.data.result && result.data.result.length) {
         this.transactions = result.data.result;
         this.paginationConfig.totalItems = result.data.totalCount;
-        setTimeout(() => {
-          MenuComponent.bootstrap();
-        }, 1000);
       }
+      
       this.showLoader = false;
     }, (error) => {
       this.showLoader = false;

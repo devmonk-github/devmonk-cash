@@ -95,13 +95,16 @@ export class TransactionItemsDetailsComponent implements OnInit {
         let nDiscountnPaymentAmount  = 0;
         elementDiscount.forEach(dElement => {
           if (dElement.oType.eKind === 'loyalty-points-discount') nRedeemedLoyaltyPoints += dElement.nRedeemedLoyaltyPoints || 0;
-          if (dElement.oType.eKind === "discount") nDiscountnPaymentAmount += dElement.nPaymentAmount || 0;
+          if (dElement.oType.eKind === "discount"){
+            nDiscountnPaymentAmount += dElement.nPaymentAmount || 0;
+            // element.nDiscount += dElement.nDiscount || 0;
+          } 
         });
         
         element.nRedeemedLoyaltyPoints = nRedeemedLoyaltyPoints;
         element.nPaymentAmount += _.sumBy(elementDiscount, 'nPaymentAmount');
         element.nPaidAmount += _.sumBy(elementDiscount, 'nPaymentAmount');
-        element.nPriceIncVat += nDiscountnPaymentAmount;
+        element.nPriceIncVat += nDiscountnPaymentAmount;// + element.nDiscount;
       });
       this.transactionItems = this.transactionItems.map(v => ({ ...v, isSelected: false }));
       this.transactionItems.forEach(transactionItem => {

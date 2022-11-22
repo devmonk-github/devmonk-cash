@@ -31,6 +31,7 @@ import * as _moment from 'moment';
 import { ReceiptService } from '../shared/service/receipt.service';
 import { TransactionItemsDetailsComponent } from '../shared/components/transaction-items-details/transaction-items-details.component';
 import * as JsBarcode from 'jsbarcode';
+import { MenuComponent } from '../shared/_layout/components/common';
 const moment = (_moment as any).default ? (_moment as any).default : _moment;
 @Component({
   selector: 'app-till',
@@ -185,6 +186,11 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     ]);
     this.printActionSettings = _printActionSettings?.data[0]?.result[0].aActions;
     this.printSettings = _printSettings?.data[0]?.result;
+    setTimeout(() => {
+      console.log('ngOnInit of header reinitialization')
+      MenuComponent.reinitialization();
+    }, 300);
+
   }
 
 
@@ -609,6 +615,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
             });
             body.giftCards = this.appliedGiftCards;
           }
+          console.log('creating transaction this.iActivityId', this.iActivityId)
           body.oTransaction.iActivityId = this.iActivityId;
           let result = body.transactionItems.map((a: any) => a.iBusinessPartnerId);
           const uniq = [...new Set(_.compact(result))];
