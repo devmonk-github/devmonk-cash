@@ -382,12 +382,13 @@ export class TillService {
   }
 
   async processTransactionForPdfReceipt(transaction:any){
+    // console.log('processTransactionForPdfReceipt original', transaction);
     const relatedItemsPromises: any = [];
     let language: any = localStorage.getItem('language')
     let dataObject = JSON.parse(JSON.stringify(transaction));
 
     dataObject.aPayments.forEach((obj: any) => {
-      obj.dCreatedDate = moment(dataObject.dCreatedDate).format('DD-MM-yyyy hh:mm');
+      obj.dCreatedDate = moment(dataObject.dCreatedDate).format('DD-MM-yyyy hh:mm:ss');
     });
 
     const aLoyaltyPointsItems = transaction.aTransactionItems.filter((item: any) => item?.oType?.eKind == 'loyalty-points-discount');
@@ -422,7 +423,7 @@ export class TillService {
       totalRedeemedLoyaltyPoints += item?.nRedeemedLoyaltyPoints || 0;
       let disc = parseFloat(item.nDiscount);
       if (item.bDiscountOnPercentage) {
-        disc = (disc * parseFloat(item.nPriceIncVat) / 100);
+        disc = this.getPercentOf(disc, item.nPriceIncVat);
         item.nDiscountToShow = disc;//.toFixed(2);
       } else { item.nDiscountToShow = disc; }
       // item.priceAfterDiscount = parseFloat(item.nRevenueAmount.toFixed(2)) - parseFloat(item.nDiscountToShow);
@@ -439,36 +440,53 @@ export class TillService {
       relatedItemsPromises[index] = this.getRelatedTransactionItem(item?.iActivityItemId, item?._id, index);
     })
     await Promise.all(relatedItemsPromises).then(result => {
+      // console.log(result);
       result.forEach((item: any, index: number) => {
-        if(item?.data?.length) {
-          item.data.forEach((singleRelatedItem:any)=> {
-            if (singleRelatedItem?.bDiscountOnPercentage) {
-              singleRelatedItem.nRevenueAmount = singleRelatedItem.nRevenueAmount - (singleRelatedItem.nRevenueAmount * singleRelatedItem.nDiscount / 100);
-            } else {
-              singleRelatedItem.nRevenueAmount = singleRelatedItem.nRevenueAmount - singleRelatedItem.nDiscount;
-            }
-          })          
-        }
         transaction.aTransactionItems[index].related = item.data || [];
       })
     });
+    transaction.aTransactionItems.forEach((item:any)=> {
+      if(item?.related?.length){
+        item.related.forEach((relatedItem:any)=> {
+          if (relatedItem.nPriceIncVat > item.nPriceIncVat) item.nPriceIncVat = relatedItem.nPriceIncVat;
+          item.nDiscount = relatedItem.nDiscount || 0;
+          item.bDiscountOnPercentage = relatedItem?.bDiscountOnPercentage || false;
+          
+          if (relatedItem?.bDiscountOnPercentage) {
+            item.nDiscountToShow = (relatedItem.nDiscount) ? this.getPercentOf(relatedItem.nPriceIncVat, relatedItem.nDiscount) : 0;
+            totalDiscount += item.nDiscountToShow;
+            relatedItem.nRevenueAmount = relatedItem.nRevenueAmount - this.getPercentOf(relatedItem.nPriceIncVat,relatedItem.nDiscount);
+          } else {
+            item.nDiscountToShow = relatedItem.nDiscount;
+            totalDiscount += item.nDiscountToShow;
+            relatedItem.nRevenueAmount = relatedItem.nRevenueAmount - relatedItem.nDiscount;
+          }
+        })          
+      }
+    })
     dataObject.totalAfterDisc = parseFloat(totalAfterDisc.toFixed(2));
     dataObject.total = parseFloat(total.toFixed(2));
     dataObject.totalVat = parseFloat(totalVat.toFixed(2));
     dataObject.totalDiscount = parseFloat(totalDiscount.toFixed(2));
     dataObject.totalSavingPoints = totalSavingPoints;
     dataObject.totalRedeemedLoyaltyPoints = totalRedeemedLoyaltyPoints;
-    dataObject.dCreatedDate = moment(dataObject.dCreatedDate).format('DD-MM-yyyy hh:mm');
+    dataObject.dCreatedDate = moment(dataObject.dCreatedDate).format('DD-MM-yyyy hh:mm:ss');
     const result: any = await this.getRelatedTransaction(dataObject?.iActivityId, dataObject?._id).toPromise();
     dataObject.related = result.data || [];
-    dataObject.related.forEach((obj: any) => {
-      obj.aPayments.forEach((obj: any) => {
-        obj.dCreatedDate = moment(obj.dCreatedDate).format('DD-MM-yyyy hh:mm');
+    dataObject.related.forEach((relatedobj: any) => {
+      relatedobj.aPayments.forEach((obj: any) => {
+        obj.dCreatedDate = moment(obj.dCreatedDate).format('DD-MM-yyyy hh:mm:ss');
       });
-      dataObject.aPayments = dataObject.aPayments.concat(obj.aPayments);
+      dataObject.aPayments = dataObject.aPayments.concat(relatedobj.aPayments);
     })
     transaction = dataObject;
+    // console.log('processTransactionForPdfReceipt after processing', transaction);
     return transaction;
+  }
+
+
+  getPercentOf(nNumber:any, nPercent:any){
+    return parseFloat(nNumber) * parseFloat(nPercent) / 100;
   }
 
   getRelatedTransactionItem(iActivityItemId: string, iTransactionItemId: string, index: number) {

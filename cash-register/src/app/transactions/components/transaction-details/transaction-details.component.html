@@ -209,8 +209,8 @@
                                             <ng-container *ngIf="item.sDescription">
                                                 {{ item.sDescription}} <br />
                                             </ng-container>
-                                            <ng-container *ngIf="item?.nDiscountToShow > 0">
-                                                Original amount: {{ item.nPriceIncVat }} <br />
+                                            <ng-container><!-- *ngIf="item?.nDiscountToShow > 0" -->
+                                                Original amount: {{ item.nPriceIncVatAfterDiscount }} <br />
                                             </ng-container>
                                             
                                             <div *ngIf="item.related?.length">
@@ -317,7 +317,7 @@
                             </thead>
                             <tbody>
                                 <tr *ngFor="let item of transaction.aPayments">
-                                    <td>{{item.sMethod}}</td>
+                                    <td>{{item.sMethod}} <br/> ({{ item.dCreatedDate }})</td>
                                     <td>{{item.nAmount || 0}}</td>
                                 </tr>
                             </tbody>
