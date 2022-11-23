@@ -118,9 +118,10 @@ export class PdfService {
 
   getPdfData({ styles, content, orientation, pageSize, pdfTitle, footer, pageMargins, defaultStyle,
     printSettings, printActionSettings, eType, eSituation, sAction }: any) {
+    // console.log('getPdfData', { orientation, pageSize, pdfTitle, pageMargins, printSettings, printActionSettings, sAction, eType })
     const docDefinition = this.getDocDefinition(styles, content, orientation, pageSize, footer, pageMargins, defaultStyle);
     const pdfObject = this.generatePdf(docDefinition);
-    if (printSettings?.length && printActionSettings?.length) {
+    if ((printSettings?.length && printActionSettings?.length) || sAction) {
       this.processPrintAction(pdfObject, pdfTitle, printSettings, printActionSettings, eType, eSituation, sAction);
     } else {
       pdfObject.download(pdfTitle);
@@ -130,18 +131,28 @@ export class PdfService {
 
   processPrintAction(pdfObject: any, pdfTitle: any, printSettings: any, printActionSettings: any, eType: any, eSituation: any, sAction: any) {
     // pdfObject.download(pdfTitle);
-    printActionSettings = printActionSettings.filter((s: any) => s.eType === eType && s.eSituation === eSituation);
-    if (!printActionSettings?.length) {
+    if (!printActionSettings?.length && !sAction) {
       pdfObject.download(pdfTitle);
       return;
+    } else if (printActionSettings?.length){
+      printActionSettings = printActionSettings.filter((s: any) => s.eType === eType && s.eSituation === eSituation);
     }
     // if(eType === 'regular') eType = 'transaction'; 
     printSettings = printSettings.filter((s: any) => s.sType === eType && s.iWorkstationId === this.iWorkstationId);
+    // console.log('filtered actions', printSettings)
     if (sAction && sAction === 'print') {
+      // console.log('if sAction= print')
       printSettings = printSettings.filter((s: any) => s.sMethod === 'pdf')[0];
+      // console.log('if filter', printSettings)
       this.handlePrint(pdfObject, printSettings, pdfTitle);
     } else if (sAction && sAction === 'download') {
+      // console.log('else if saction=download')
       pdfObject.download(pdfTitle);
+      return;
+    } else if (sAction && sAction === 'thermal') {
+      // console.log('else if saction=thermal')
+      printSettings = printSettings.filter((s: any) => s.sMethod === 'thermal')[0];
+      this.handlePrint(pdfObject, printSettings, pdfTitle);
       return;
     } else {
       const aActionToPerform = printActionSettings[0].aActionToPerform;

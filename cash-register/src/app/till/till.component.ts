@@ -182,372 +182,21 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     this.getfiskalyInfo();
     this.cancelFiskalyTransaction();
 
-    const [_printActionSettings, _printSettings]: any = await Promise.all([
+    const [_printActionSettings, _printSettings, _businessResult]: any = await Promise.all([
       this.getPrintSettings({ oFilterBy: { sMethod: 'actions' } }),
       this.getPrintSettings(),
+      this.getBusinessDetails().toPromise()
     ]);
     this.printActionSettings = _printActionSettings?.data[0]?.result[0].aActions;
     this.printSettings = _printSettings?.data[0]?.result;
+    
+    this.businessDetails = _businessResult.data;
+    this.businessDetails.currentLocation = this.businessDetails?.aLocation?.filter((location: any) => location?._id.toString() == this.locationId.toString())[0];
+
     setTimeout(() => {
-      console.log('ngOnInit of header reinitialization')
       MenuComponent.reinitialization();
-    }, 300);
-
-    this.transactionItems = [
-      {
-        "name": "Prisma127 Test horloge woo! P1500",
-        "eTransactionItemType": "regular",
-        "type": "regular",
-        "quantity": 1,
-        "price": 150,
-        "nMargin": 2,
-        "nPurchasePrice": 50,
-        "paymentAmount": 135,
-        "oType": {
-          "bRefund": false,
-          "bDiscount": false,
-          "bPrepayment": false
-        },
-        "nDiscount": 15,
-        "bDiscountOnPercentage": false,
-        "tax": 21,
-        "sProductNumber": "P1500",
-        "sArticleNumber": "00017027985",
-        "description": "Test horloge woo!",
-        "iArticleGroupId": "635bef4a420b7d0810f222b4",
-        "oArticleGroupMetaData": {
-          "aProperty": [
-            {
-              "iPropertyId": "61160712ae3cbb7453177f98",
-              "sPropertyName": "CATEGORY",
-              "sPropertyOptionName": "WATCH",
-              "iPropertyOptionId": "61f01aa45fc7504de957b258",
-              "sCode": "WA",
-              "eStatusProperty": "requiredNotDivergent",
-              "eStatusPropertyOption": "requiredButDivergent"
-            },
-            {
-              "iPropertyId": "6261a5f76d3ec230f0886eee",
-              "sPropertyName": "WATCH_CASE_MATERIAL",
-              "sPropertyOptionName": "TITANIUM",
-              "iPropertyOptionId": "62e8bd09c2910b2073515bad",
-              "sCode": "TI",
-              "eStatusProperty": "requiredButDivergent",
-              "eStatusPropertyOption": "advisedDivergentRemovable"
-            }
-          ],
-          "oName": {
-            "nl": "Prisma127",
-            "en": "Prisma127",
-            "de": "Prisma127",
-            "fr": "Prisma127",
-            "es": "Prisma127",
-            "da": "Prisma127"
-          },
-          "oNameOriginal": {
-            "nl": "Prisma127",
-            "en": "Prisma127",
-            "de": "Prisma127",
-            "fr": "Prisma127",
-            "es": "Prisma127",
-            "da": "Prisma127"
-          }
-        },
-        "iBusinessProductId": "635bf162420b7d0810f22401",
-        "iBusinessPartnerId": "6275661d5732a79bf0e3f449",
-        "iSupplierId": "6275661d5732a79bf0e3f449",
-        "aImage": [
-          "https://prismanote.s3.amazonaws.com/products/prisma-p1500-heren-slimline-rosegoud-l.jpg",
-          "https://prismanote.s3.amazonaws.com/products/prisma-p1500-heren-horloge-edelstaal-rosegoud-bruin-lederen-band-schuin.jpg",
-          "https://prismanote.s3.amazonaws.com/products/prisma-p1500-heren-horloge-edelstaal-rosegoud-bruin-lederen-band-achterkant.jpg"
-        ],
-        "isExclude": false,
-        "open": true,
-        "new": true,
-        "isFor": "",
-        "oBusinessProductMetaData": {
-          "iSupplierId": "6275661d5732a79bf0e3f449",
-          "iBusinessPartnerId": "6275661d5732a79bf0e3f449",
-          "sLabelDescription": "Test horloge woo!",
-          "bBestseller": false,
-          "bHasStock": false,
-          "bShowSuggestion": false,
-          "aProperty": [
-            {
-              "iPropertyId": "6262fc7c25f45755f3d648bd",
-              "sPropertyName": "WATCH_TYPE",
-              "iPropertyOptionId": "62e8bd0ac2910b2073515c3c",
-              "sPropertyOptionName": "WRIST"
-            },
-            {
-              "iPropertyId": "61160712ae3cbb7453177f98",
-              "sPropertyName": "CATEGORY",
-              "iPropertyOptionId": "61f01aa45fc7504de957b258",
-              "sPropertyOptionName": "WATCH"
-            },
-            {
-              "iPropertyId": "6262ff0d25f45755f3d648cf",
-              "sPropertyName": "HAS_DATE_FUNCTION",
-              "iPropertyOptionId": "62e8bd0bc2910b2073515c5e",
-              "sPropertyOptionName": "YES"
-            },
-            {
-              "iPropertyId": "6262fba225f45755f3d648bb",
-              "sPropertyName": "WATCH_STRAP_COLOR",
-              "iPropertyOptionId": "62e8bd0ac2910b2073515c25",
-              "sPropertyOptionName": "BLACK"
-            },
-            {
-              "iPropertyId": "6261a5f76d3ec230f0886eee",
-              "sPropertyName": "WATCH_CASE_MATERIAL",
-              "iPropertyOptionId": "61165be3ae3cbb7453178016",
-              "sPropertyOptionName": "STAINLESS_STEEL"
-            },
-            {
-              "iPropertyId": "626aa07aa137e37b7cdcad9b",
-              "sPropertyName": "WATCH_STRAP_WIDTH",
-              "sPropertyOptionName": "200"
-            },
-            {
-              "iPropertyId": "620a1b4f0e120b64943db9ff",
-              "sPropertyName": "WEIGHT",
-              "sPropertyOptionName": "100"
-            },
-            {
-              "iPropertyId": "635fa9e5210bf01d5cba69b4",
-              "sPropertyName": "AGE-MIN",
-              "sPropertyOptionName": "4"
-            },
-            {
-              "iPropertyId": "63609cabeb41ff57b479c741",
-              "sPropertyName": "AGE-MAX",
-              "sPropertyOptionName": "10"
-            }
-          ],
-          "aImage": [
-            "https://prismanote.s3.amazonaws.com/products/prisma-p1500-heren-slimline-rosegoud-l.jpg",
-            "https://prismanote.s3.amazonaws.com/products/prisma-p1500-heren-horloge-edelstaal-rosegoud-bruin-lederen-band-schuin.jpg",
-            "https://prismanote.s3.amazonaws.com/products/prisma-p1500-heren-horloge-edelstaal-rosegoud-bruin-lederen-band-achterkant.jpg"
-          ],
-          "oName": {
-            "nl": "Prisma P.1500",
-            "en": "Prisma watch P.1500 gents stainless steel",
-            "de": "Prisma Uhr P.1500 Herren Edelstahl",
-            "fr": "Prisma montre P.1500 hommes acier trempi",
-            "es": "Prisma P.1500"
-          },
-          "oShortDescription": {
-            "nl": "Great watches for an awesome quality",
-            "en": "",
-            "de": "",
-            "fr": ""
-          },
-          "eGender": "female",
-          "eOwnerShip": "possession",
-          "sProductNumber": "P1500"
-        },
-        "amountToBePaid": 135,
-        "nTotal": 135
-      },
-      {
-        "isExclude": false,
-        "eTransactionItemType": "regular",
-        "manualUpdate": false,
-        "index": 1,
-        "name": "REPAIR1",
-        "type": "repair",
-        "oType": {
-          "bRefund": false,
-          "bDiscount": false,
-          "bPrepayment": false
-        },
-        "oArticleGroupMetaData": {
-          "aProperty": [
-            {
-              "iPropertyId": "61160712ae3cbb7453177f98",
-              "iPropertyOptionId": "61f01aa45fc7504de957b258",
-              "sPropertyOptionName": "WATCH",
-              "sPropertyName": "CATEGORY",
-              "oProperty": {
-                "WATCH": "WATCH"
-              },
-              "sCode": "WA",
-              "sName": "WATCH"
-            },
-            {
-              "iPropertyId": "6261a5f76d3ec230f0886eee",
-              "iPropertyOptionId": "62e8bd09c2910b2073515bad",
-              "sPropertyOptionName": "TITANIUM",
-              "sPropertyName": "WATCH_CASE_MATERIAL",
-              "oProperty": {
-                "TITANIUM": "TITANIUM"
-              },
-              "sCode": "TI",
-              "sName": "TITANIUM"
-            }
-          ],
-          "sCategory": "Repair",
-          "sSubCategory": "Repair",
-          "oName": {
-            "nl": "Repair",
-            "en": "Repair",
-            "de": "Repair",
-            "fr": "Repair"
-          },
-          "oNameOriginal": {
-            "nl": "Repair",
-            "en": "Repair",
-            "de": "Repair",
-            "fr": "Repair"
-          }
-        },
-        "aImage": [],
-        "quantity": 1,
-        "nBrokenProduct": 0,
-        "price": "100",
-        "nMargin": 2,
-        "nPurchasePrice": 50,
-        "nTotal": 100,
-        "nDiscount": 0,
-        "tax": 21,
-        "paymentAmount": 100,
-        "description": "",
-        "sServicePartnerRemark": "",
-        "eActivityItemStatus": "new",
-        "eEstimatedDateAction": "call_on_ready",
-        "open": true,
-        "new": false,
-        "iBusinessId": "6182a52f1949ab0a59ff4e7b",
-        "amountToBePaid": 100,
-        "iArticleGroupId": "635bef50420b7d0810f222c7",
-        "iArticleGroupOriginalId": "635bef50420b7d0810f222c7",
-        "supplier": "Excellent Prisma (Asperen)",
-        "iSupplierId": "6275661d5732a79bf0e3f449",
-        "iBusinessPartnerId": "6275661d5732a79bf0e3f449",
-        "sBusinessPartnerName": "Excellent Prisma (Asperen)"
-      },
-      {
-        "isExclude": false,
-        "eTransactionItemType": "regular",
-        "manualUpdate": false,
-        "index": 2,
-        "name": "REPAIR2",
-        "type": "repair",
-        "oType": {
-          "bRefund": false,
-          "bDiscount": false,
-          "bPrepayment": false
-        },
-        "oArticleGroupMetaData": {
-          "aProperty": [
-            {
-              "iPropertyId": "61160712ae3cbb7453177f98",
-              "iPropertyOptionId": "61f01aa45fc7504de957b25a",
-              "sPropertyOptionName": "JEWEL",
-              "sPropertyName": "CATEGORY",
-              "oProperty": {
-                "JEWEL": "JEWEL"
-              },
-              "sCode": "JW",
-              "sName": "JEWEL"
-            },
-            {
-              "iPropertyId": "61165be3ae3cbb7453178015",
-              "iPropertyOptionId": "61165be3ae3cbb7453178016",
-              "sPropertyOptionName": "GOLD",
-              "sPropertyName": "JEWEL_MATERIAL",
-              "oProperty": {
-                "GOLD": "GOLD"
-              },
-              "sCode": "GO",
-              "sName": "GOLD"
-            }
-          ],
-          "sCategory": "Repair",
-          "sSubCategory": "Repair",
-          "oName": {
-            "nl": "Repair",
-            "en": "Repair",
-            "de": "Repair",
-            "fr": "Repair"
-          },
-          "oNameOriginal": {
-            "nl": "Repair",
-            "en": "Repair",
-            "de": "Repair",
-            "fr": "Repair"
-          }
-        },
-        "aImage": [],
-        "quantity": 1,
-        "nBrokenProduct": 0,
-        "price": "200",
-        "nMargin": 7,
-        "nPurchasePrice": 28.571428571428573,
-        "nTotal": 200,
-        "nDiscount": 0,
-        "tax": 21,
-        "paymentAmount": 200,
-        "description": "",
-        "sServicePartnerRemark": "",
-        "eActivityItemStatus": "new",
-        "eEstimatedDateAction": "call_on_ready",
-        "open": true,
-        "new": false,
-        "iBusinessId": "6182a52f1949ab0a59ff4e7b",
-        "amountToBePaid": 200,
-        "iArticleGroupId": "635bef50420b7d0810f222c7",
-        "iArticleGroupOriginalId": "635bef50420b7d0810f222c7",
-        "supplier": "Excellent Prisma (Asperen)",
-        "iSupplierId": "6275661d5732a79bf0e3f449",
-        "iBusinessPartnerId": "6275661d5732a79bf0e3f449",
-        "sBusinessPartnerName": "Excellent Prisma (Asperen)"
-      },
-      {
-        "isExclude": false,
-        "eTransactionItemType": "regular",
-        "manualUpdate": false,
-        "index": 3,
-        "name": "GIFTCARD",
-        "type": "giftcard",
-        "oType": {
-          "bRefund": false,
-          "bDiscount": false,
-          "bPrepayment": false
-        },
-        "oArticleGroupMetaData": {
-          "aProperty": [],
-          "sCategory": "Giftcard",
-          "sSubCategory": "Repair",
-          "oName": {},
-          "oNameOriginal": {}
-        },
-        "aImage": [],
-        "quantity": 1,
-        "nBrokenProduct": 0,
-        "price": 1000,
-        "nMargin": 1,
-        "nPurchasePrice": 826.4462809917355,
-        "nTotal": 1000,
-        "nDiscount": 0,
-        "tax": 21,
-        "paymentAmount": 1000,
-        "description": "",
-        "sServicePartnerRemark": "",
-        "eActivityItemStatus": "new",
-        "eEstimatedDateAction": "call_on_ready",
-        "open": true,
-        "new": true,
-        "iBusinessId": "6182a52f1949ab0a59ff4e7b",
-        "sGiftCardNumber": 1669114772829,
-        "bGiftcardTaxHandling": "true",
-        "isGiftCardNumberValid": true,
-        "amountToBePaid": 1000,
-        "iArticleGroupId": "635cd1f3d82c4631fe1d9585"
-      }
-    ];
-
-  }
+    });
+}
 
 
 
@@ -934,7 +583,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     return this.apiService.postNew('cashregistry', '/api/v1/transaction/activity/' + iActivityId, body);
   }
 
-  createTransaction(): void {
+  createTransaction() {
     const isGoldForCash = this.checkUseForGold();
     if (this.transactionItems.length < 1 || !isGoldForCash) {
       return;
@@ -978,9 +627,9 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
           const uniq = [...new Set(_.compact(result))];
           if (this.appliedGiftCards?.length) this.tillService.createGiftcardTransactionItem(body, this.discountArticleGroup);
           this.apiService.postNew('cashregistry', '/api/v1/till/transaction', body)
-            .subscribe((data: any) => {
+            .subscribe(async(data: any) => {
 
-              this.toastrService.show({ type: 'success', text: 'Transaction created.' });
+              // this.toastrService.show({ type: 'success', text: 'Transaction created.' });
               this.saveInProgress = false;
               const { transaction, aTransactionItems, activityItems, activity } = data;
               transaction.aTransactionItems = aTransactionItems;
@@ -999,24 +648,17 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
                 }
               });
               
-              this.dialogService.openModal(TransactionActionDialogComponent, { cssClass: 'modal-lg', 
-              context: { 
-                transaction: this.transaction, 
-                printActionSettings: this.printActionSettings 
-              } }).instance.close.subscribe((data) => {
-                  console.log(data)
-                  this.processTransactionForPdfReceipt();
-
-                  this.updateFiskalyTransaction('FINISHED', body.payments);
-                  setTimeout(() => {
-                    this.saveInProgress = false;
-                    this.fetchBusinessPartnersProductCount(uniq);
-                    this.clearAll();
-                  }, 100);
-                  if (this.selectedTransaction) {
-                    this.deleteParkedTransaction();
-                  };
-                });
+              this.handleReceiptPrinting();
+              this.updateFiskalyTransaction('FINISHED', body.payments);
+              setTimeout(() => {
+                this.saveInProgress = false;
+                this.fetchBusinessPartnersProductCount(uniq);
+              }, 100);
+              if (this.selectedTransaction) {
+                this.deleteParkedTransaction();
+              };
+              
+              
             }, err => {
               this.toastrService.show({ type: 'danger', text: err.message });
               this.saveInProgress = false;
@@ -1025,21 +667,9 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       });
   }
 
-  async processTransactionForPdfReceipt(data?: any) {
-    this.transaction = await this.tillService.processTransactionForPdfReceipt(this.transaction);
-    this.handleReceiptPrinting();
-  }
-
   async handleReceiptPrinting() {
-    if (!this.businessDetails) {
-      const _result: any = await this.getBusinessDetails().toPromise();
-
-      this.businessDetails = _result.data;
-      this.businessDetails.currentLocation = this.businessDetails?.aLocation?.filter((location: any) => location?._id.toString() == this.locationId.toString())[0];
-    }
-
-    this.transaction.businessDetails = this.businessDetails;
-    this.transaction.currentLocation = this.businessDetails.currentLocation;
+    this.transaction = await this.tillService.processTransactionForPdfReceipt(this.transaction);
+    
     let oDataSource = JSON.parse(JSON.stringify(this.transaction));
     let nTotalOriginalAmount = 0;
     oDataSource.aTransactionItems.forEach((item: any) => {
@@ -1059,8 +689,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     oDataSource.nTotalOriginalAmount = nTotalOriginalAmount;
     oDataSource.sBarcodeURI = this.generateBarcodeURI(false, oDataSource.sNumber);
 
-    let _template: any, _oLogoData: any;
-
     const aUniqueItemTypes = [];
 
     const nRepairCount = oDataSource.aTransactionItemType.filter((e: any) => e === 'repair')?.length;
@@ -1075,15 +703,22 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
     if (bOrderCondition) aUniqueItemTypes.push('order');
 
-    if (bRepairCondition) aUniqueItemTypes.push('repair');
+    // if (bRepairCondition) 
+    aUniqueItemTypes.push('repair');
 
-    if (bRepairAlternativeCondition) aUniqueItemTypes.push('repair_alternative');
+    // if (bRepairAlternativeCondition) 
+    aUniqueItemTypes.push('repair_alternative');
+    
+    oDataSource.businessDetails = this.businessDetails;
+    oDataSource.currentLocation = this.businessDetails.currentLocation;
 
-
-    [_template, _oLogoData,] = await Promise.all([
+    const [_template, _oLogoData]:any = await Promise.all([
       this.getTemplate(aUniqueItemTypes),
-      this.getBase64FromUrl(oDataSource?.businessDetails?.sLogoLight),
-    ])
+      this.getBase64FromUrl(oDataSource?.businessDetails?.sLogoLight)
+    ]);
+    
+
+
     oDataSource.sBusinessLogoUrl = _oLogoData.data;
     oDataSource.oCustomer = {
       sFirstName: oDataSource.oCustomer.sFirstName,
@@ -1094,45 +729,62 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     };
     const aTemplates = _template.data;
 
-    if (bOrderCondition) {
-      // print order receipt
-      const orderTemplate = aTemplates.filter((template: any) => template.eType === 'order')[0];
-      oDataSource.sActivityNumber = oDataSource.activity.sNumber;
-      this.sendForReceipt(oDataSource, orderTemplate, oDataSource.activity.sNumber);
-    }
-    if (bRegularCondition) {
-      //print proof of payments receipt
-      const template = aTemplates.filter((template: any) => template.eType === 'regular')[0];
-      this.sendForReceipt(oDataSource, template, oDataSource.sNumber);
-    }
 
-    if (bRepairCondition) {
-      if (this.bHasIActivityItemId) {
-        this.bHasIActivityItemId = false;
-        return;
+
+    this.dialogService.openModal(TransactionActionDialogComponent, { cssClass: 'modal-lg',
+      context: {
+        transaction: oDataSource,
+        printActionSettings: this.printActionSettings,
+        printSettings: this.printSettings,
+        aUniqueItemTypes: aUniqueItemTypes,
+        nRepairCount: nRepairCount,
+        nOrderCount: nOrderCount,
+        activityItems: this.activityItems,
+        aTemplates: aTemplates
       }
-      //use two column layout
-      const template = aTemplates.filter((template: any) => template.eType === 'repair')[0];
-      oDataSource = this.activityItems.filter((item: any) => item.oType.eKind === 'repair')[0];
-      const aTemp = oDataSource.sNumber.split("-");
-      oDataSource.sPartRepairNumber = aTemp[aTemp.length - 1];
-      oDataSource.sBarcodeURI = this.generateBarcodeURI(false, oDataSource.sNumber);
-      this.sendForReceipt(oDataSource, template, oDataSource.sNumber);
-
-    }
-
-    if (bRepairAlternativeCondition) {
-      // use repair_alternative laYout
-      const template = aTemplates.filter((template: any) => template.eType === 'repair_alternative')[0];
-      oDataSource = this.activityItems.filter((item: any) => item.oType.eKind === 'repair');
-      oDataSource.forEach((data: any) => {
-        data.sBarcodeURI = this.generateBarcodeURI(false, data.sNumber);
-        data.sBusinessLogoUrl = _oLogoData.data;
-        data.businessDetails = this.businessDetails;
-        this.sendForReceipt(data, template, data.sNumber);
-      })
-    }
-
+    }).instance.close.subscribe((data) => {
+      console.log(data)
+      if(!data){
+        if (bOrderCondition) {
+          // print order receipt
+          const orderTemplate = aTemplates.filter((template: any) => template.eType === 'order')[0];
+          oDataSource.sActivityNumber = oDataSource.activity.sNumber;
+          this.sendForReceipt(oDataSource, orderTemplate, oDataSource.activity.sNumber);
+        }
+        if (bRegularCondition) {
+          //print proof of payments receipt
+          const template = aTemplates.filter((template: any) => template.eType === 'regular')[0];
+          this.sendForReceipt(oDataSource, template, oDataSource.sNumber);
+        }
+    
+        if (bRepairCondition) {
+          if (this.bHasIActivityItemId) {
+            this.bHasIActivityItemId = false;
+            return;
+          }
+          //use two column layout
+          const template = aTemplates.filter((template: any) => template.eType === 'repair')[0];
+          oDataSource = this.activityItems.filter((item: any) => item.oType.eKind === 'repair')[0];
+          const aTemp = oDataSource.sNumber.split("-");
+          oDataSource.sPartRepairNumber = aTemp[aTemp.length - 1];
+          oDataSource.sBarcodeURI = this.generateBarcodeURI(false, oDataSource.sNumber);
+          this.sendForReceipt(oDataSource, template, oDataSource.sNumber);
+    
+        }
+    
+        if (bRepairAlternativeCondition) {
+          // use repair_alternative laYout
+          const template = aTemplates.filter((template: any) => template.eType === 'repair_alternative')[0];
+          oDataSource = this.activityItems.filter((item: any) => item.oType.eKind === 'repair');
+          oDataSource.forEach((data: any) => {
+            data.sBarcodeURI = this.generateBarcodeURI(false, data.sNumber);
+            data.sBusinessLogoUrl = _oLogoData.data;
+            data.businessDetails = this.businessDetails;
+            this.sendForReceipt(data, template, data.sNumber);
+          })
+        }
+      }
+    });
     this.clearAll();
   }
 
