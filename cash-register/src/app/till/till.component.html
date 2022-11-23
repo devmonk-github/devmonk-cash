@@ -8,7 +8,7 @@
 
   <div *ngIf="!bDayStateChecking && !bIsDayStateOpened" class="d-flex flex-column align-items-center">
     <h1>{{ 'NO_OPEN_DAY_STATE_FOUND' | translate}}</h1>
-    <button class="btn btn-white" (click)="openDayState()">{{ 'OPEN_CASH_REGISTRY' | translate}}</button>
+    <button class="btn btn-white" (click)="openDayState()" [disabled]="bIsOpeningDayState">{{ 'OPEN_CASH_REGISTRY' | translate}}</button>
     <div>
       <button class="btn btn-dark mt-5" routerLink="../">{{ 'GO_TO_DASHBOARD' | translate}}</button>
     </div>
@@ -26,9 +26,7 @@
               <p class="mb-0" style="font-size: 1.2rem;font-weight: bold;margin-left:1.3rem">
                 <span style="margin-right:1rem; font-weight:bolder">!</span>
                 {{ "THE_PREVIOUS" | translate }} {{ settings.sDayClosurePeriod }} {{"IS_NOT_CLOSED_YET" | translate }}
-                ({{ dOpenDate | date:'EEEE,
-                dd-MM-YYYY
-                hh:mm:ss aaa':'GMT'}})
+                ({{ dOpenDate | date:'EEEE, dd-MM-YYYYhh:mm:ss aaa':'GMT'}})
               </p>
               <a class="btn btn-hover" routerLink="../day-closure">{{ "CLOSE_DAYSTATE" | translate}}</a>
             </div>
@@ -49,7 +47,6 @@
                 <span class="symbol-label">
                   <span class="svg-icon svg-icon-1qx me-0">
                     <fa-icon [icon]="faBoxesStacked"></fa-icon>
-                    <!-- <div *ngIf="showItemLoading" class="spinner-border mx-5"></div> -->
                   </span>
                 </span>
               </div>
@@ -221,8 +218,7 @@
                   (ngModelChange)="searchKeyword? shopProducts = shopProducts: shopProducts = []"
                   (keyup.enter)="search()" (focus)="switchMode()" #searchField>
                 <button class="btn btn-secondary me-3 d-flex search-button" (click)="openTransactionSearchDialog()">
-                  <fa-icon [icon]="faSearch"></fa-icon> {{ "TRANSACTION" |
-                  translate}}
+                  <fa-icon [icon]="faSearch"></fa-icon> {{ "TRANSACTION" | translate}}
                 </button>
                 <button class="btn btn-secondary me-3 search-button" (click)="addNewLine()">{{ "TEXT_LINE" |
                   translate}}</button>
@@ -249,7 +245,6 @@
             <div class="row bg-light py-5" *ngIf="shopProducts && shopProducts.length > 0">
               <div class="col-md-6 cursor-pointer py-5 px-2" *ngFor="let product of shopProducts"
                 (mouseenter)="product['showOption'] = true" (mouseleave)="product['showOption'] = false">
-                <!-- <a (click)="eKind === 'order'? addOrder(product): onSelectProduct(product, 'business', 'same-article')"> -->
                 <a (click)="onSelectProduct(product, 'business', 'shopProducts')">
                   <div class="card m-1 shadow-sm h-100">
                     <div class="card-body">
@@ -270,11 +265,6 @@
                           <p class="mt-2">{{ product.sProductNumber }}</p>
                         </div>
                       </div>
-                      <!-- <div class="absolute hover-product-option mt-n6" *ngIf="product['showOption']">
-                        <div class="d-flex">
-                          <button class="btn btn-secondary w-50 mr-2 p-0">Add this article</button>
-                        </div>
-                      </div> -->
                     </div>
                   </div>
                 </a>
@@ -285,7 +275,6 @@
               <div class="col-md-6 cursor-pointer" *ngFor="let product of commonProducts"
                 (mouseenter)="product['showOption'] = true" (mouseleave)="product['showOption'] = false">
                 <a (click)="onSelectProduct(product, 'business', 'commonProducts')">
-                  <!-- <a (click)="eKind === 'order'? addOrder(product): onSelectProduct(product, 'business', 'same-article')"> -->
                   <div class="card m-1 shadow-sm">
                     <div class="card-body">
                       <div class="d-flex">
@@ -343,7 +332,6 @@
                       {{ "CLICK_HERE_TO_ADD_NEW_FAVOURITE" | translate}}
                     </button>
                   </div>
-                  <!-- <div *ngIf="bSearchingProduct" class="spinner-border mx-auto"></div> -->
                 </div>
               </div>
             </div>
@@ -404,7 +392,6 @@
         </div>
 
         <div class="form-floating input-group mb-5 py-0 ">
-          <!-- <label for="parkedTransactions">{{"PARKED_TRANSACTIONS" | translate}}</label> -->
           <select class="form-select" [(ngModel)]="selectedTransaction" (ngModelChange)="fetchParkedTransactionInfo()">
             <option [ngValue]="null" disabled selected>
               {{"PARKED_TRANSACTIONS" | translate}}

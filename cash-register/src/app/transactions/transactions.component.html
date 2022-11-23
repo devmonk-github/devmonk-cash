@@ -243,7 +243,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let transaction of transactions | paginate: paginationConfig, let i = index;"
+        <tr *ngFor="let transaction of transactions | paginate: paginationConfig, let i = index"
           data-bs-toggle="tooltip" data-bs-placement="top" title={{toolTipData(transaction)}}>
           <td scope="row">{{transaction.dCreatedDate | date: 'medium'}}</td>
           <td>{{transaction.sNumber}}</td>
@@ -260,7 +260,7 @@
               <!--end::Submit-->
               <!--begin::Send options-->
               <span class="btn btn-primary btn-icon fs-bold" role="button">
-                <div class="btn btn-icon" data-kt-menu-trigger="click" data-kt-menu-attach="parent"
+                <div class="btn btn-icon menu-dropdown" data-kt-menu-trigger="hover" data-kt-menu-attach="parent"
                   data-kt-menu-placement="bottom-end" data-kt-menu-flip="bottom">
                   <!--begin::Svg Icon | path: icons/duotune/arrows/arr072.svg-->
                   <span class="svg-icon svg-icon-2 m-0">

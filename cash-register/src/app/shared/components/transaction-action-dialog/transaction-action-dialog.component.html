@@ -1,0 +1,93 @@
+<div class="card shadow-sm">
+    <div class="card-header" style="margin-top: 20px;">
+        <h4>{{"TRANSACTION_COMPLETED" | translate}}</h4>
+        <div>
+            <button type="button" class="btn btn-sm btn-light" (click)="close(false)">
+                <fa-icon [icon]="faTimes"></fa-icon>
+            </button>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div>
+                <div class="success-checkmark">
+                    <div class="check-icon">
+                        <span class="icon-line line-tip"></span>
+                        <span class="icon-line line-long"></span>
+                        <div class="icon-circle"></div>
+                        <div class="icon-fix"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="text-center">
+                <h3>{{'TRANSACTION_COMPLETED_SUCCESSFULLY' | translate }} !</h3>
+            </div>
+            <hr>
+        </div>
+        <div class="row">
+            <ng-container *ngFor="let type of aTypes">
+                <ng-container *ngIf="aUniqueTypes.includes(type) && type !== 'repair'"> <!-- && type !== 'repair' -->
+                    <div class="col-4 d-flex flex-column align-items-center">
+                        <span *ngIf="type==='regular'">
+                            {{ 'PROOF_OF_PAYMENT' }}
+                        </span>
+                        <span *ngIf="type==='order'">
+                            {{ 'OVERVIEW_OF_PROJECT' }}
+                        </span>
+                        <span *ngIf="type==='giftcard'">
+                            {{ 'GIFTCARD' }}
+                        </span>
+                        <ng-container *ngFor="let action of aActionSettings">
+                            <div class="d-flex flex-column">
+                                <span [ngClass]="{'badge-info': action=='PRINT_THERMAL', 'badge-dark': action=='PRINT_PDF', 'badge-success': action=='DOWNLOAD' }" 
+                                class="badge cursor-pointer my-2" (click)="performAction(type, action)">
+                                    {{action}}
+                                </span>
+                            </div>
+                        </ng-container>
+                    </div>
+                </ng-container>
+            </ng-container>
+        </div>
+        <div class="row mt-5" *ngIf="nRepairCount > 0">
+            <div class="col-12">
+                <table class="table table-row-bordered table-row-gray-300 gy-5 gs-5 mb-0 text-gray-600 fw-bold border">
+                    <thead class="bg-gray-100">
+                        <tr class="fw-bold fs-6 text-gray-800">
+                            <th class="ps-9">{{'REPAIR_TITLE' | translate}}</th>
+                            <th class="text-center">{{'FOR_REPAIR' | translate}}</th>
+                            <th class="text-center">{{'FOR_REPAIR_ALTERNATIVE' | translate}}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="p-2" *ngFor="let item of aRepairItems, let i = index">
+                            <td class="ps-9">{{item.sProductName}}</td>
+                            <td class="ps-9 text-center">
+                                <ng-container *ngFor="let action of aActionSettings">
+                                    <span [ngClass]="{'badge-info': action=='PRINT_THERMAL', 'badge-dark': action=='PRINT_PDF', 'badge-success': action=='DOWNLOAD' }"
+                                     class="badge cursor-pointer mx-2 my-2" (click)="performAction('repair', action, i)">
+                                        {{action}}
+                                    </span>
+                                </ng-container>
+                            </td>
+                            <td class="ps-9 text-center">
+                                <ng-container *ngFor="let action of aActionSettings">
+                                    <span [ngClass]="{'badge-info': action=='PRINT_THERMAL', 'badge-dark': action=='PRINT_PDF', 'badge-success': action=='DOWNLOAD' }"
+                                    class="badge cursor-pointer mx-2 my-2" (click)="performAction('repair_alternative', action)">
+                                        {{action}}
+                                    </span>
+                                </ng-container>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-footer">
+        <div class="btn-holder">
+            <button type="button" class="btn btn-primary" (click)="close(false)">{{"FINISH" | translate}}</button>
+        </div>
+    </div>
+</div>

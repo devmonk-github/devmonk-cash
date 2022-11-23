@@ -209,15 +209,15 @@
                                             <ng-container *ngIf="item.sDescription">
                                                 {{ item.sDescription}} <br />
                                             </ng-container>
-                                            <ng-container *ngIf="item?.nDiscountToShow > 0">
-                                                Original amount: {{ item.nPriceIncVat }} <br />
+                                            <ng-container><!-- *ngIf="item?.nDiscountToShow > 0" -->
+                                                Original amount: {{ item.nPriceIncVatAfterDiscount }} <br />
                                             </ng-container>
                                             
                                             <div *ngIf="item.related?.length">
                                                 {{ "ALREADY_PAID" | translate}}:<br />
                                                 {{item.sTransactionNumber}} | {{item.nPaymentAmount}} ({{"THIS_RECEIPT" | translate }})<br />
                                                 <div *ngFor="let obj of item.related">
-                                                    {{obj.sTransactionNumber}} | {{obj.nPaymentAmount}}<br />
+                                                    {{obj.sTransactionNumber}} | {{obj.nRevenueAmount }}<br />
                                                 </div>
                                             </div>
                                         </div>
@@ -317,7 +317,7 @@
                             </thead>
                             <tbody>
                                 <tr *ngFor="let item of transaction.aPayments">
-                                    <td>{{item.sMethod}}</td>
+                                    <td>{{item.sMethod}} <br/> ({{ item.dCreatedDate }})</td>
                                     <td>{{item.nAmount || 0}}</td>
                                 </tr>
                             </tbody>

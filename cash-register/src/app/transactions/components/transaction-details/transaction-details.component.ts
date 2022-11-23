@@ -80,14 +80,15 @@ export class TransactionDetailsComponent implements OnInit {
     this.transaction = await this.tillService.processTransactionForPdfReceipt(this.transaction);
     let nTotalOriginalAmount = 0;
     this.transaction.aTransactionItems.forEach((item: any) => {
-      let description = (item?.nDiscountToShow > 0) ? `Original amount: ${item.nPriceIncVat}\n` : '';
+      // let description = (item?.nDiscountToShow > 0) ? `Original amount: ${item.nPriceIncVat}\n` : '';
+      let description = `Original amount: ${item.nPriceIncVatAfterDiscount}\n`;
       if (item?.related?.length) {
-        nTotalOriginalAmount += item.nPriceIncVat;
-        if (item.nPriceIncVat !== item.nPaymentAmount) {
-          description += `Already paid: \n${item.sTransactionNumber} | ${item.nPaymentAmount} (this receipt)\n`;
+        nTotalOriginalAmount += item.nPriceIncVatAfterDiscount;
+        if (item.nPriceIncVatAfterDiscount !== item.nRevenueAmount) {
+          description += `Already paid: \n${item.sTransactionNumber} | ${item.nRevenueAmount} (this receipt)\n`;
 
           item.related.forEach((related: any) => {
-            description += `${related.sTransactionNumber}|${related.nPaymentAmount}\n`;
+            description += `${related.sTransactionNumber} | ${related.nRevenueAmount}\n`;
           });
         }
       }

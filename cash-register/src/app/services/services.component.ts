@@ -16,7 +16,7 @@ import { MenuComponent } from '../shared/_layout/components/common';
   styleUrls: ['./services.component.sass'],
   providers: [BarcodeService]
 })
-export class ServicesComponent implements OnInit, AfterViewInit {
+export class ServicesComponent implements OnInit {
 
   option: boolean = true;
   faSearch = faSearch;
@@ -164,13 +164,10 @@ export class ServicesComponent implements OnInit, AfterViewInit {
     if (_employeeData?.data?.length && _employeeData.data[0]?.result?.length) {
       this.employees = _employeeData.data[0].result
     }
+    // setTimeout(() => { 
+    //   MenuComponent.bootstrap();
+    // }, 200);
   }
-  ngAfterViewInit(): void {
-    setTimeout(() => {
-      MenuComponent.reinitialization();
-    }, 200);
-  }
-
 
   // Function for handle event of transaction menu
   clickMenuOpt(key: string, transactionId: string) {
