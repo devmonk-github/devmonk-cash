@@ -629,7 +629,7 @@
                             <div class="row mb-3">
                                 <div class="col-4">
                                     <input class="form-control" placeholder="{{'PSOTAL_CODE' | translate}}"
-                                        [(ngModel)]="customer.oInvoiceAddress.sPostalCode" />
+                                        [(ngModel)]="customer.oInvoiceAddress.sPostalCode" (ngModelChange)="customer.oInvoiceAddress.sPostalCode = $event.toUpperCase()" />
                                 </div>
                                 <div class="col-8">
                                     <input class="form-control" placeholder="{{'CITY' | translate}}"
@@ -668,7 +668,7 @@
                             <div class="row mb-3">
                                 <div class="col-4">
                                     <input class="form-control" placeholder="{{'POSTAL_CODE' | translate}}"
-                                        [(ngModel)]="customer.oShippingAddress.sPostalCode" />
+                                        [(ngModel)]="customer.oShippingAddress.sPostalCode" (ngModelChange)="customer.oShippingAddress.sPostalCode = $event.toUpperCase()" />
                                 </div>
                                 <div class="col-8">
                                     <input class="form-control" placeholder="{{'CITY' | translate}}"
