@@ -1361,7 +1361,7 @@
                                         <tr *ngFor="let amount of aAmount">
                                             <td class="w-50">
                                                 <label class="currency">
-                                                    {{ amount.sLabel | currency:"EUR":"symbol"}} x
+                                                    {{ amount.sLabel | currency: transactionAuditPdfService.currency }} x
                                                 </label>
                                             </td>
                                             <td class="mx-2">
@@ -1371,8 +1371,7 @@
                                                     [disabled]="bDisableCountings">
                                             </td>
                                             <td class="w-50">
-                                                <label class="currency">{{ (amount.nQuantity * amount.nValue) |
-                                                    currency:"EUR":"symbol"}}</label>
+                                                <label class="currency">{{ (amount.nQuantity * amount.nValue) | currency: transactionAuditPdfService.currency}}</label>
                                             </td>
                                         </tr>
                                     </tbody>
@@ -1402,20 +1401,20 @@
                             <div class="earnings-section">
                                 <div>
                                     <label>{{ "CASH_LEFTOVER" | translate}}</label>
-                                    <label class="">{{ oCountings.nCashAtStart | currency:"EUR":"symbol" }}</label>
+                                    <label class="">{{ oCountings.nCashAtStart | currency: transactionAuditPdfService.currency }}</label>
                                 </div>
                                 <div>
                                     <label>{{ "CASH_MUTATION" | translate}}</label>
-                                    <label class="">{{ '0.00' | currency:"EUR":"symbol" }}</label>
+                                    <label class="">{{ '0.00' | currency: transactionAuditPdfService.currency }}</label>
                                 </div>
                                 <div>
                                     <label>{{ "CASH_IN_TILL" | translate}}</label>
                                     <label class="">
                                         <ng-container *ngIf="bDisableCountings">
-                                            {{ oCountings.nCashInTill + (-oCountings.nCashDifference) | currency:"EUR":"symbol" }}
+                                            {{ oCountings.nCashInTill + (-oCountings.nCashDifference) | currency: transactionAuditPdfService.currency }}
                                         </ng-container>
                                         <ng-container *ngIf="!bDisableCountings">
-                                            {{ oCountings.nCashInTill | currency:"EUR":"symbol" }}
+                                            {{ oCountings.nCashInTill | currency: transactionAuditPdfService.currency }}
                                         </ng-container>
                                     </label>
                                 </div>
@@ -1430,10 +1429,10 @@
                                     <label>{{ "TREASURY_DIFFERENCE" | translate}}</label>
                                     <label class="bold">
                                         <ng-container *ngIf="bDisableCountings">
-                                            {{ oCountings.nCashDifference | currency:"EUR":"symbol" }}
+                                            {{ oCountings.nCashDifference | currency: transactionAuditPdfService.currency }}
                                         </ng-container>
                                         <ng-container *ngIf="!bDisableCountings">
-                                            {{ oCountings.nCashCounted - (oCountings.nCashAtStart + oCountings.nCashInTill) | currency:"EUR":"symbol" }}
+                                            {{ oCountings.nCashCounted - (oCountings.nCashAtStart + oCountings.nCashInTill) | currency: transactionAuditPdfService.currency }}
                                         </ng-container>
                                     </label>
                                 </div>

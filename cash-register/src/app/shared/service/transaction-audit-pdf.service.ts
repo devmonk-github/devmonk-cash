@@ -115,6 +115,25 @@ export class TransactionAuditUiPdfService {
 
     }
 
+    selectCurrency(oLocation: any) {
+        if (oLocation?.eCurrency) {
+            switch (oLocation?.eCurrency) {
+                case 'euro':
+                    this.currency = "€";
+                    break;
+                case 'pound':
+                    this.currency = "£";
+                    break;
+                case 'swiss':
+                    this.currency = "₣";
+                    break;
+                default:
+                    this.currency = "€";
+                    break;
+            }
+        }
+    }
+
     async exportToPDF({ 
         aSelectedLocation, 
         sOptionMenu, 
@@ -150,27 +169,6 @@ export class TransactionAuditUiPdfService {
         };
         let sType = sOptionMenu.parent.sValue
         let dataType = bIsDynamicState ? 'Dynamic Data' : 'Static Data';
-
-        const _aLocation = oBusinessDetails?.aLocation?.forEach((location:any)=> location._id===this.iLocationId);
-        if (_aLocation?.length) {
-            const oCurrentLocation = _aLocation[0];
-            if (oCurrentLocation?.eCurrency){
-                switch (oCurrentLocation?.eCurrency){
-                    case 'euro':
-                        this.currency = "€";
-                        break;
-                    case 'pound':
-                        this.currency = "£";
-                        break;
-                    case 'swiss':
-                        this.currency = "₣";
-                        break;
-                    default:
-                        this.currency = "€";
-                        break;
-                }
-            }
-        }
 
         // get selected locaions
         let sLocations = '';
@@ -1202,15 +1200,15 @@ export class TransactionAuditUiPdfService {
                     text: parseFloat(item.nTotalPurchaseAmount.toFixed(2)),
                     style: ['td'],
                 },
-                { text: item.nProfit, style: ['td'] },
+                { text: parseFloat(item.nProfit.toFixed(2)), style: ['td'] },
             ]);
         });
         texts.push([
             { text: 'TOTAL', style: ['td', 'bold','bgGray'] },
-            { text: nTotalRevenue, style:['td', 'bold','bgGray'] },
             { text: nTotalQuantity, style:['td', 'bold','bgGray'] },
-            { text: nTotalPurchaseAmount, style:['td', 'bold','bgGray'] },
-            { text: nTotalProfit, style:['td', 'bold','bgGray'] },
+            { text: parseFloat(nTotalRevenue.toFixed(2)), style:['td', 'bold','bgGray'] },
+            { text: parseFloat(nTotalPurchaseAmount.toFixed(2)), style:['td', 'bold','bgGray'] },
+            { text: parseFloat(nTotalProfit.toFixed(2)), style:['td', 'bold','bgGray'] },
         ]);
         this.content.push(
             {
