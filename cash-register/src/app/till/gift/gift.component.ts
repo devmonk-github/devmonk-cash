@@ -8,6 +8,7 @@ import { ApiService } from 'src/app/shared/service/api.service';
 import { CreateArticleGroupService } from 'src/app/shared/service/create-article-groups.service';
 import { PdfService } from 'src/app/shared/service/pdf.service';
 import { ReceiptService } from 'src/app/shared/service/receipt.service';
+import { TillService } from 'src/app/shared/service/till.service';
 // import { TaxService } from "../../shared/service/tax.service";
 
 @Component({
@@ -39,6 +40,7 @@ export class GiftComponent implements OnInit {
     private receiptService: ReceiptService,
     private pdfService: PdfService,
     private toastrService: ToastService,
+    public tillService: TillService,
     private createArticleGroupService: CreateArticleGroupService) { }
 
   ngOnInit(): void {

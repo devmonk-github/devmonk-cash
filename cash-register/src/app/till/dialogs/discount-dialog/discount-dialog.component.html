@@ -31,7 +31,7 @@
               <h2 class="d-flex align-items-center fs-3 fw-bolder flex-wrap">
                 <div *ngIf="mode === 'fixed'; then fixed else percent"></div>
 
-                <ng-template #fixed>{{discount.amount | currency: '€' }}</ng-template>
+                <ng-template #fixed>{{discount.amount | currency: tillService.currency }}</ng-template>
                 <ng-template #percent>{{discount.amount}}%</ng-template>
 
               </h2>
@@ -39,7 +39,7 @@
             </div>
           </div>
           <div class="ms-5">
-            <span class="mb-2">&euro;</span>
+            <span class="mb-2">{{ tillService.currency }}</span>
             <span class="fs-2x fw-bolder">
               {{discount.price}}
             </span>

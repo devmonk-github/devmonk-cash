@@ -139,7 +139,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     private paymentDistributeService: PaymentDistributionService,
     private apiService: ApiService,
     private toastrService: ToastService,
-    private tillService: TillService,
+    public tillService: TillService,
     private barcodeService: BarcodeService,
     private terminalService: TerminalService,
     private createArticleGroupService: CreateArticleGroupService,
@@ -192,6 +192,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     
     this.businessDetails = _businessResult.data;
     this.businessDetails.currentLocation = this.businessDetails?.aLocation?.filter((location: any) => location?._id.toString() == this.locationId.toString())[0];
+    this.tillService.selectCurrency(this.businessDetails.currentLocation);
 
     setTimeout(() => {
       MenuComponent.reinitialization();

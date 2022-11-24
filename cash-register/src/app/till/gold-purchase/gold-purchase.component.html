@@ -12,13 +12,13 @@
                     </div>
 
                     <div class="col-4 text-truncate">{{item.name}}</div>
-                    <div class="col">{{item.price | currency: '€'}}</div>
-                    <div class="col">{{item.nDiscount | currency: '€'}}</div>
+                    <div class="col">{{item.price | currency: tillService.currency}}</div>
+                    <div class="col">{{item.nDiscount | currency: tillService.currency}}</div>
                     <div class="col">{{item.tax}}%</div>
                     <!-- <div class="w-100px">{{getTotalPrice(item)}}</div> -->
-                    <div class="col">{{(item.price - item.nDiscount) * item.quantity | currency: '€' }}
+                    <div class="col">{{(item.price - item.nDiscount) * item.quantity | currency: tillService.currency }}
                     </div>
-                    <div class="col">{{item.paymentAmount | currency: '€'}}</div>
+                    <div class="col">{{item.paymentAmount | currency: tillService.currency}}</div>
                 </div>
             </div>
         </section>

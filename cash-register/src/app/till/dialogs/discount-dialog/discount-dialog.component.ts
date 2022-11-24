@@ -3,6 +3,7 @@ import { DialogComponent } from "../../../shared/service/dialog";
 import { faTimes, faTriangleExclamation } from "@fortawesome/free-solid-svg-icons";
 import { PriceService } from "../../../shared/service/price.service";
 import { StringService } from "../../../shared/service/string.service";
+import { TillService } from 'src/app/shared/service/till.service';
 
 @Component({
   selector: 'app-discount-dialog',
@@ -72,7 +73,8 @@ export class DiscountDialogComponent implements OnInit, AfterViewInit {
   constructor(
     private viewContainer: ViewContainerRef,
     private priceService: PriceService,
-    private stringService: StringService
+    private stringService: StringService,
+    public tillService: TillService
   ) {
     const _injector = this.viewContainer.parentInjector
     this.dialogRef = _injector.get<DialogComponent>(DialogComponent)

@@ -6,6 +6,7 @@ import { ApiService } from 'src/app/shared/service/api.service';
 import { CreateArticleGroupService } from 'src/app/shared/service/create-article-groups.service';
 import { DialogService } from 'src/app/shared/service/dialog';
 import { PriceService } from 'src/app/shared/service/price.service';
+import { TillService } from 'src/app/shared/service/till.service';
 import { ImageUploadComponent } from '../../shared/components/image-upload/image-upload.component';
 
 @Component({
@@ -58,6 +59,7 @@ export class RepairComponent implements OnInit {
     private apiService: ApiService,
     private dialogService: DialogService,
     private toastrService: ToastService,
+    public tillService: TillService,
     private createArticleGroupService: CreateArticleGroupService) { }
 
   ngOnInit(): void {

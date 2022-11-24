@@ -13,9 +13,30 @@ const moment = (_moment as any).default ? (_moment as any).default : _moment;
 })
 export class TillService {
 
+  currency: string = "€";
+
   iBusinessId = localStorage.getItem('currentBusiness'); 
   constructor(
     private apiService: ApiService) { }
+
+  selectCurrency(oLocation:any){
+    if (oLocation?.eCurrency) {
+      switch (oLocation?.eCurrency) {
+        case 'euro':
+          this.currency = "€";
+          break;
+        case 'pound':
+          this.currency = "£";
+          break;
+        case 'swiss':
+          this.currency = "₣";
+          break;
+        default:
+          this.currency = "€";
+          break;
+      }
+    }
+  }
 
 
   getUsedPayMethods(total: boolean, payMethods: any): any {
