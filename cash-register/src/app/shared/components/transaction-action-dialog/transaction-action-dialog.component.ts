@@ -47,7 +47,6 @@ export class TransactionActionDialogComponent implements OnInit {
   }
 
   ngOnInit(): void {
-
     this.aRepairItems = this.activityItems.filter((item:any)=> item.oType.eKind === 'repair');
     
     const bRegularCondition = this.transaction.total > 0.02 || this.transaction.total < -0.02;
@@ -55,6 +54,8 @@ export class TransactionActionDialogComponent implements OnInit {
     
     if(bRegularCondition) this.aUniqueTypes.push('regular');
     if(bOrderCondition) this.aUniqueTypes.push('order');
+    // console.log(this.transaction)
+    if (this.transaction.aTransactionItemType.includes('giftcard')) this.aUniqueTypes.push('giftcard')
     this.aUniqueTypes = [...new Set(this.aUniqueTypes)]
     // console.log(this.transaction, this.aUniqueTypes);
   }
@@ -64,18 +65,20 @@ export class TransactionActionDialogComponent implements OnInit {
   }
 
   performAction(type:any, action:any, index?:number){
+    
     this.usedActions = true;
     // console.log(type, action, this.printSettings, this.aTemplates)
 
-    if(index != undefined && type==='repair'){
+    if (index != undefined && (type === 'repair' || type === 'repair_alternative')){
       // console.log('repair items index=', index, this.aRepairItems[index], this.activityItems);
       const oDataSource = this.aRepairItems[index];
       const aTemp = oDataSource.sNumber.split("-");
       oDataSource.sPartRepairNumber = aTemp[aTemp.length - 1];
 
-      const template = this.aTemplates.filter((template: any) => template.eType === 'repair')[0];
+      const template = this.aTemplates.filter((template: any) => template.eType === type)[0];
       oDataSource.sBarcodeURI = this.generateBarcodeURI(false, oDataSource.sNumber);
       oDataSource.oCustomer = this.transaction.oCustomer
+      oDataSource.sBusinessLogoUrl = this.transaction.sBusinessLogoUrl
       // console.log(oDataSource)
       // console.log('sending for receipt, ', oDataSource)
       this.receiptService.exportToPdf({
@@ -90,6 +93,19 @@ export class TransactionActionDialogComponent implements OnInit {
       this.receiptService.exportToPdf({
         oDataSource: this.transaction,
         pdfTitle: this.transaction.sNumber,
+        templateData: template,
+        printSettings: this.printSettings.filter((s: any) => s.sType === type),
+        sAction: (action === 'DOWNLOAD') ? 'download' : (action === 'PRINT_PDF') ? 'print' : 'thermal',
+      });
+    } else if(type==='giftcard') {
+      const template = this.aTemplates.filter((template: any) => template.eType === 'giftcard')[0];
+      const oDataSource = this.activityItems.filter((item:any) => item.oType.eKind === 'giftcard')[0];
+      oDataSource.nTotal = oDataSource.nPaidAmount;
+      oDataSource.sBarcodeURI = this.generateBarcodeURI(true, 'G-' + oDataSource.sGiftCardNumber);
+
+      this.receiptService.exportToPdf({
+        oDataSource: oDataSource,
+        pdfTitle: oDataSource.sGiftCardNumber,
         templateData: template,
         printSettings: this.printSettings.filter((s: any) => s.sType === type),
         sAction: (action === 'DOWNLOAD') ? 'download' : (action === 'PRINT_PDF') ? 'print' : 'thermal',

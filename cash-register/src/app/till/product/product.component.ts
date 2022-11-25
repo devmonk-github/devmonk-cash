@@ -6,6 +6,7 @@ import { PriceService } from '../../shared/service/price.service';
 import { ApiService } from 'src/app/shared/service/api.service';
 import { ToastService } from 'src/app/shared/components/toast';
 import { formatCurrency } from '@angular/common';
+import { TillService } from 'src/app/shared/service/till.service';
 
 @Component({
   // eslint-disable-next-line @angular-eslint/component-selector
@@ -28,7 +29,8 @@ export class ProductComponent implements OnInit {
   constructor(private dialogService: DialogService,
     private priceService: PriceService,
     private apiService: ApiService,
-    private toastrService: ToastService) { }
+    private toastrService: ToastService,
+    public tillService: TillService) { }
 
   ngOnInit(): void {
     this.fetchArticleGroupInfo();
@@ -68,7 +70,7 @@ export class ProductComponent implements OnInit {
   }
 
   getTotalDiscount(item: any): string {
-    this.totalDiscount = (item?.discount) ? this.priceService.getDiscountValue(item) : formatCurrency(item.nDiscount, 'en-GB', '€') ;
+    this.totalDiscount = (item?.discount) ? this.priceService.getDiscountValue(item) : formatCurrency(item.nDiscount, 'en-GB', this.tillService.currency) ;
     return String(this.totalDiscount);
   }
 

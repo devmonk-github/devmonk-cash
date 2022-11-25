@@ -194,7 +194,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
     private router: Router,
     private toastService: ToastService,
     private location: Location,
-    private transactionAuditPdfService: TransactionAuditUiPdfService,
+    public transactionAuditPdfService: TransactionAuditUiPdfService,
     private taxService: TaxService
 
   ) {
@@ -622,6 +622,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
         this.sCurrentLocation = result?.data?.sName;
         this.aLocation.forEach((oLocation: any) => {
           if (oLocation._id === this.iLocationId) {
+            this.transactionAuditPdfService.selectCurrency(oLocation);
             this.sCurrentLocation += " (" + oLocation?.sName + ")";
             this.aSelectedLocation.push(oLocation._id);
           }

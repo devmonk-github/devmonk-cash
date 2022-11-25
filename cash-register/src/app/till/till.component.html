@@ -201,8 +201,8 @@
               <section class="row product-row p-3 text-gray-600 align-items-center" *ngIf="getTotals('quantity') !== 0">
                 <div class="col-1">{{getTotals('quantity')}}</div>
                 <div class="col-4">&nbsp;</div>
-                <div class="col">{{getTotals('price') | currency: '€'}}</div>
-                <div class="col">{{getTotals('discount') | currency: '€'}}</div>
+                <div class="col">{{getTotals('price') | currency: tillService.currency}}</div>
+                <div class="col">{{getTotals('discount') | currency: tillService.currency}}</div>
                 <div class="col"></div>
               </section>
             </div>
@@ -320,7 +320,7 @@
                       class="nav-link d-flex justify-content-center flex-column flex-center overflow-hidden w-85px h-85px py-4"
                       (click)="onSelectProduct(button, 'quick-button')">
                       <h4 class="nav-text text-gray-800 fw-bold fs-6 lh-1 text-center mb-2">{{button.sName}}</h4>
-                      <span class="text-gray-600">{{button.nPrice | currency: '€'}}</span>
+                      <span class="text-gray-600">{{button.nPrice | currency: tillService.currency}}</span>
                     </button>
                   </div>
                 </li>
@@ -430,7 +430,7 @@
         </div>
         <div class="mt-2" *ngIf="appliedGiftCards.length || redeemedLoyaltyPoints > 0">
           <div class="chip d-flex" *ngFor="let giftcard of appliedGiftCards; index as i">
-            {{giftcard.sGiftCardNumber}}, {{giftcard.nAmount | currency: '€'}}
+            {{giftcard.sGiftCardNumber}}, {{giftcard.nAmount | currency: tillService.currency}}
             <div *ngIf="giftcard.profileIconUrl">
               <img class="ml-1" src="{{giftcard.profileIconUrl}}" alt="" height="20px" width="20px">
             </div>
@@ -439,7 +439,7 @@
             </div>
           </div>
           <div class="chip d-flex">
-            {{ "LOYALTY_POINTS" | translate }}, {{redeemedLoyaltyPoints | currency: '€'}}
+            {{ "LOYALTY_POINTS" | translate }}, {{redeemedLoyaltyPoints | currency: tillService.currency}}
             <img class="ml-1" src="../assets/images/loyalty_points.png" alt="" height="20px" width="20px">
             <div (click)="redeemedLoyaltyPoints = 0">
               &nbsp;<i class="close fas fa-times cursor-pointer"></i>
@@ -452,16 +452,16 @@
         </div>
 
         <h1 *ngIf="(getUsedPayMethods(true) - getTotals('price')) <0">{{ "Yet to Pay" | translate}}:
-          {{getUsedPayMethods(true) - getTotals('price') | currency: '€'}}</h1>
+          {{getUsedPayMethods(true) - getTotals('price') | currency: tillService.currency}}</h1>
         <h1 *ngIf="(getUsedPayMethods(true) - getTotals('price')) >=0">{{ "Change" | translate}}:
-          {{getUsedPayMethods(true) - getTotals('price') | currency: '€'}}</h1>
+          {{getUsedPayMethods(true) - getTotals('price') | currency: tillService.currency}}</h1>
 
         <h4 *ngIf="(getUsedPayMethods(true) - getTotals('price')) <0">{{ "PREPAYMENT" | translate}}: {{totalPrepayment()
-          | currency: '€'}} {{'from total' | translate}} {{getTotals('price') | currency:'€'}}</h4>
+          | currency: tillService.currency}} {{'from total' | translate}} {{getTotals('price') | currency: tillService.currency}}</h4>
         <h4 *ngIf="(getUsedPayMethods(true) - getTotals('price')) ==0">{{ "PAYMENT" | translate}}: {{totalPrepayment() |
-          currency: '€'}}</h4>
+          currency: tillService.currency}}</h4>
         <h4 *ngIf="(getUsedPayMethods(true) - getTotals('price')) >0">{{ "PREPAYMENT" | translate}}: {{totalPrepayment()
-          | currency: '€'}}</h4>
+          | currency: tillService.currency}}</h4>
 
           <div class="d-flex flex-wrap">
             <button class="btn btn-primary till-save-button flex-grow-1 me-2" (click)="createTransaction()"

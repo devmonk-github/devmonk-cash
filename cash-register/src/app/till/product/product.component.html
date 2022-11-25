@@ -13,12 +13,12 @@
             {{item.quantity}}
           </div>
           <div class="col-4 text-truncate">{{item.name}}</div>
-          <div class="col">{{item.price | currency: '€'}}</div>
+          <div class="col">{{item.price | currency: tillService.currency }}</div>
           <div class="col">{{totalDiscount}}</div>
           <div class="col">{{item.tax}}%</div>
-          <div class="col">{{ item.amountToBePaid | currency: '€' }}
+          <div class="col">{{ item.amountToBePaid | currency: tillService.currency }}
           </div>
-          <div class="col">{{item.paymentAmount | currency: '€'}}</div>
+          <div class="col">{{item.paymentAmount | currency: tillService.currency }}</div>
         </div>
       </div>
     </section>

@@ -139,7 +139,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     private paymentDistributeService: PaymentDistributionService,
     private apiService: ApiService,
     private toastrService: ToastService,
-    private tillService: TillService,
+    public tillService: TillService,
     private barcodeService: BarcodeService,
     private terminalService: TerminalService,
     private createArticleGroupService: CreateArticleGroupService,
@@ -192,6 +192,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     
     this.businessDetails = _businessResult.data;
     this.businessDetails.currentLocation = this.businessDetails?.aLocation?.filter((location: any) => location?._id.toString() == this.locationId.toString())[0];
+    this.tillService.selectCurrency(this.businessDetails.currentLocation);
 
     setTimeout(() => {
       MenuComponent.reinitialization();
@@ -704,10 +705,10 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     if (bOrderCondition) aUniqueItemTypes.push('order');
 
     // if (bRepairCondition) 
-    aUniqueItemTypes.push('repair');
-
+    aUniqueItemTypes.push(...['repair', 'repair_alternative', 'giftcard']);
+    // console.log(aUniqueItemTypes)
     // if (bRepairAlternativeCondition) 
-    aUniqueItemTypes.push('repair_alternative');
+    // aUniqueItemTypes.push('repair_alternative');
     
     oDataSource.businessDetails = this.businessDetails;
     oDataSource.currentLocation = this.businessDetails.currentLocation;
@@ -729,8 +730,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     };
     const aTemplates = _template.data;
 
-
-
     this.dialogService.openModal(TransactionActionDialogComponent, { cssClass: 'modal-lg',
       context: {
         transaction: oDataSource,
@@ -742,49 +741,47 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
         activityItems: this.activityItems,
         aTemplates: aTemplates
       }
-    }).instance.close.subscribe((data) => {
-      console.log(data)
-      if(!data){
-        if (bOrderCondition) {
-          // print order receipt
-          const orderTemplate = aTemplates.filter((template: any) => template.eType === 'order')[0];
-          oDataSource.sActivityNumber = oDataSource.activity.sNumber;
-          this.sendForReceipt(oDataSource, orderTemplate, oDataSource.activity.sNumber);
-        }
-        if (bRegularCondition) {
-          //print proof of payments receipt
-          const template = aTemplates.filter((template: any) => template.eType === 'regular')[0];
-          this.sendForReceipt(oDataSource, template, oDataSource.sNumber);
-        }
-    
-        if (bRepairCondition) {
-          if (this.bHasIActivityItemId) {
-            this.bHasIActivityItemId = false;
-            return;
-          }
-          //use two column layout
-          const template = aTemplates.filter((template: any) => template.eType === 'repair')[0];
-          oDataSource = this.activityItems.filter((item: any) => item.oType.eKind === 'repair')[0];
-          const aTemp = oDataSource.sNumber.split("-");
-          oDataSource.sPartRepairNumber = aTemp[aTemp.length - 1];
-          oDataSource.sBarcodeURI = this.generateBarcodeURI(false, oDataSource.sNumber);
-          this.sendForReceipt(oDataSource, template, oDataSource.sNumber);
-    
-        }
-    
-        if (bRepairAlternativeCondition) {
-          // use repair_alternative laYout
-          const template = aTemplates.filter((template: any) => template.eType === 'repair_alternative')[0];
-          oDataSource = this.activityItems.filter((item: any) => item.oType.eKind === 'repair');
-          oDataSource.forEach((data: any) => {
-            data.sBarcodeURI = this.generateBarcodeURI(false, data.sNumber);
-            data.sBusinessLogoUrl = _oLogoData.data;
-            data.businessDetails = this.businessDetails;
-            this.sendForReceipt(data, template, data.sNumber);
-          })
-        }
+    }).instance.close.subscribe((data) => {});
+
+    if (bOrderCondition) {
+      // print order receipt
+      const orderTemplate = aTemplates.filter((template: any) => template.eType === 'order')[0];
+      oDataSource.sActivityNumber = oDataSource.activity.sNumber;
+      this.sendForReceipt(oDataSource, orderTemplate, oDataSource.activity.sNumber);
+    }
+    if (bRegularCondition) {
+      //print proof of payments receipt
+      const template = aTemplates.filter((template: any) => template.eType === 'regular')[0];
+      this.sendForReceipt(oDataSource, template, oDataSource.sNumber);
+    }
+
+    if (bRepairCondition) {
+      if (this.bHasIActivityItemId) {
+        this.bHasIActivityItemId = false;
+        return;
       }
-    });
+      //use two column layout
+      const template = aTemplates.filter((template: any) => template.eType === 'repair')[0];
+      oDataSource = this.activityItems.filter((item: any) => item.oType.eKind === 'repair')[0];
+      const aTemp = oDataSource.sNumber.split("-");
+      oDataSource.sPartRepairNumber = aTemp[aTemp.length - 1];
+      oDataSource.sBarcodeURI = this.generateBarcodeURI(false, oDataSource.sNumber);
+      this.sendForReceipt(oDataSource, template, oDataSource.sNumber);
+
+    }
+
+    if (bRepairAlternativeCondition) {
+      // use repair_alternative laYout
+      const template = aTemplates.filter((template: any) => template.eType === 'repair_alternative')[0];
+      oDataSource = this.activityItems.filter((item: any) => item.oType.eKind === 'repair');
+      oDataSource.forEach((data: any) => {
+        data.sBarcodeURI = this.generateBarcodeURI(false, data.sNumber);
+        data.sBusinessLogoUrl = _oLogoData.data;
+        data.businessDetails = this.businessDetails;
+        this.sendForReceipt(data, template, data.sNumber);
+      })
+    }
+
     this.clearAll();
   }
 

@@ -73,7 +73,7 @@
                             <td class="ps-9 text-center">
                                 <ng-container *ngFor="let action of aActionSettings">
                                     <span [ngClass]="{'badge-info': action=='PRINT_THERMAL', 'badge-dark': action=='PRINT_PDF', 'badge-success': action=='DOWNLOAD' }"
-                                    class="badge cursor-pointer mx-2 my-2" (click)="performAction('repair_alternative', action)">
+                                    class="badge cursor-pointer mx-2 my-2" (click)="performAction('repair_alternative', action, i)">
                                         {{action}}
                                     </span>
                                 </ng-container>

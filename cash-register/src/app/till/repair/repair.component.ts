@@ -6,6 +6,7 @@ import { ApiService } from 'src/app/shared/service/api.service';
 import { CreateArticleGroupService } from 'src/app/shared/service/create-article-groups.service';
 import { DialogService } from 'src/app/shared/service/dialog';
 import { PriceService } from 'src/app/shared/service/price.service';
+import { TillService } from 'src/app/shared/service/till.service';
 import { ImageUploadComponent } from '../../shared/components/image-upload/image-upload.component';
 
 @Component({
@@ -58,6 +59,7 @@ export class RepairComponent implements OnInit {
     private apiService: ApiService,
     private dialogService: DialogService,
     private toastrService: ToastService,
+    public tillService: TillService,
     private createArticleGroupService: CreateArticleGroupService) { }
 
   ngOnInit(): void {
@@ -66,13 +68,13 @@ export class RepairComponent implements OnInit {
     this.getBusinessBrands();
     this.checkArticleGroups();
     this.getProperties();
-    this.listSuppliers();
-    this.getBusinessBrands();
+    // this.listSuppliers();
+    // this.getBusinessBrands();
     if (this.item.new) {
       this.selectArticleGroup();
       this.item.new = false;
     }
-    this.processProperty()
+    this.processProperty();
   }
 
   selectArticleGroup() {
@@ -140,7 +142,9 @@ export class RepairComponent implements OnInit {
         this.employeesList.map(o => o.sName = `${o.sFirstName} ${o.sLastName}`);
         if (this.item.iEmployeeId) {
           const tempsupp = this.employeesList.find(o => o._id === this.item.iSupplierId);
-          this.employee = tempsupp.sName;
+          if (tempsupp && tempsupp?.sName){
+            this.employee = tempsupp.sName;
+          }
         }
       }
     }, (error) => {
@@ -176,9 +180,10 @@ export class RepairComponent implements OnInit {
   }
 
   constisEqualsJson(obj1: any, obj2: any) {
-    const keys1 = Object.keys(obj1);
-    const keys2 = Object.keys(obj2);
-    return keys1.length === keys2.length && Object.keys(obj1).every(key => obj1[key] == obj2[key]);
+    // const keys1 = Object.keys(obj1);
+    // const keys2 = Object.keys(obj2);
+    // return keys1.length === keys2.length && Object.keys(obj1).every(key => obj1[key] == obj2[key]);
+    return obj1===obj2;
   }
 
   listSuppliers() {
@@ -262,7 +267,7 @@ export class RepairComponent implements OnInit {
           );
 
           data.forEach((element: any) => {
-            const toReplace = this.propertyOptions[element.iPropertyId].find((o: any) => this.constisEqualsJson(o.oProperty, element.oProperty));
+            const toReplace = this.propertyOptions[element.iPropertyId].find((o: any) => o.sPropertyOptionName === element.sPropertyOptionName);
             if (toReplace) {
               element = toReplace;
               this.selectedProperties[toReplace.iPropertyId] = toReplace.sCode;
