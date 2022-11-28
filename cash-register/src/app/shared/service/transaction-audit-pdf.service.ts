@@ -238,6 +238,8 @@ export class TransactionAuditUiPdfService {
             },
             {
                 columns: [
+                    { text: 'Comment: ', style: ['left', 'normal'], width: 100 },
+                    { text: oStatisticsDocument.sComment, style: ['left', 'normal'], width: 200 },
                     { width: '*', text: '' },
                     { text: 'Type: ', style: ['right', 'normal'], width: 100 },
                     { text: sType, style: ['right', 'normal'], width: 150 },
@@ -1157,6 +1159,7 @@ export class TransactionAuditUiPdfService {
     }
 
     processPdfByRevenuePerArticleGroup(columnWidths: any,tableLayout: any,aStatistic: any) {
+        console.log(aStatistic);
         let arr: Array<any> = [];
 
         const tableHeaders = [
@@ -1188,6 +1191,7 @@ export class TransactionAuditUiPdfService {
         let texts:any = [];
         let nTotalRevenue=0, nTotalQuantity=0, nTotalPurchaseAmount=0, nTotalProfit = 0;
         arr.forEach((item: any) => {
+            console.log(item?.nProfit)
             nTotalRevenue += item.nTotalRevenue;
             nTotalQuantity += item.nQuantity;
             nTotalPurchaseAmount += item.nTotalPurchaseAmount;
@@ -1200,7 +1204,7 @@ export class TransactionAuditUiPdfService {
                     text: parseFloat(item.nTotalPurchaseAmount.toFixed(2)),
                     style: ['td'],
                 },
-                { text: parseFloat(item.nProfit.toFixed(2)), style: ['td'] },
+                { text: parseFloat(item.nProfit), style: ['td'] },
             ]);
         });
         texts.push([
