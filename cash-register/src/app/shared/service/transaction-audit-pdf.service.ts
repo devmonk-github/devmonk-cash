@@ -314,7 +314,6 @@ export class TransactionAuditUiPdfService {
             let texts: any = [];
             let nTotalAmount = 0, nTotalQuantity = 0;
             aPaymentMethods.forEach((paymentMethod: any) => {
-                console.log({paymentMethod});
                 nTotalAmount += parseFloat(paymentMethod.nAmount);
                 nTotalQuantity += parseFloat(paymentMethod.nQuantity);
 
@@ -1159,7 +1158,6 @@ export class TransactionAuditUiPdfService {
     }
 
     processPdfByRevenuePerArticleGroup(columnWidths: any,tableLayout: any,aStatistic: any) {
-        console.log(aStatistic);
         let arr: Array<any> = [];
 
         const tableHeaders = [
@@ -1191,7 +1189,6 @@ export class TransactionAuditUiPdfService {
         let texts:any = [];
         let nTotalRevenue=0, nTotalQuantity=0, nTotalPurchaseAmount=0, nTotalProfit = 0;
         arr.forEach((item: any) => {
-            console.log(item?.nProfit)
             nTotalRevenue += item.nTotalRevenue;
             nTotalQuantity += item.nQuantity;
             nTotalPurchaseAmount += item.nTotalPurchaseAmount;
