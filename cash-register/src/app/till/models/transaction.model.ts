@@ -12,6 +12,7 @@ export class Transaction {
     public eStatus: string,
     public iWorkstationId: string,
     public iEmployeeId: string,
+    public iCreatedBy: string , 
     public iLocationId: string,
     public items: TransactionItem[] | null,
     public iCustomerId: any,
