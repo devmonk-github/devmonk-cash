@@ -90,7 +90,8 @@ export class TransactionsComponent implements OnInit {
     { key: 'CUSTOMER', selected: false, sort: '' },
     { key: 'METHOD', disabled: true },
     { key: 'TOTAL', disabled: true },
-    { key: 'TYPE', disabled: true }
+    { key: 'TYPE', disabled: true },
+    {key:'ACTION' , disabled:true }
   ]
 
   @ViewChildren('transactionItems') things: QueryList<any>;

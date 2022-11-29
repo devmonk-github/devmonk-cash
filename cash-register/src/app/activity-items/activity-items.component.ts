@@ -80,6 +80,7 @@ export class ActivityItemsComponent implements OnInit {
     { key: 'STATUS', selected: false, sort: 'asc' },
     { key: 'SUPPLIER_REPAIR', disabled: true },
     { key: 'CUSTOMER', disabled: true },
+    { key: 'ACTION' , disabled:true }
   ]
 
   selectedProperties: any;
