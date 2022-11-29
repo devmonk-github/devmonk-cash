@@ -72,6 +72,22 @@
                                 </div>
                             </div>
                         </div>
+
+                        <div class="d-flex flex-wrap py-5">
+                            <div class="flex-equal me-5">
+                             {{ 'CREATER_DETAIL' | translate}}
+                      
+                             <div class="d-flex fs-6 ms-1 my-1">
+                                <div class="align-items-center">                                 
+                                    <img alt="Logo"
+                                    *ngIf="createrDetail?.sFirstName && (!createrDetail?.sAvatar  || createrDetail.sAvatar == '')"
+                                    src="https://prismanote.com/public/prismanote.png" class="createrImage">
+                                  <img alt="Logo" *ngIf="createrDetail?.sAvatar" [src]="createrDetail.sAvatar" class="createrImage">                                                      
+                                  <span> {{createrDetail?.sFirstName || ''}} {{createrDetail?.sLastName || ''}} </span>
+                                    </div>   
+                                    </div>                                   
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
