@@ -63,11 +63,11 @@ export class TransactionItemsDetailsComponent implements OnInit {
       const _injector = this.viewContainerRef.parentInjector;
       this.dialogRef = _injector.get<DialogComponent>(DialogComponent);
       this.isFor = this.route?.snapshot?.queryParams?.isFor;
-      console.log('TransactionItemsDetailsComponent');
+      // console.log('TransactionItemsDetailsComponent');
     }
     
     ngOnInit(): void {
-      console.log('TransactionItemsDetailsComponent 1');
+      // console.log('TransactionItemsDetailsComponent 1');
       this.itemType = this.dialogRef.context.itemType;
       this.transaction = this.dialogRef.context.transaction;
       this.selectedId = this.dialogRef.context.selectedId;
@@ -80,10 +80,10 @@ export class TransactionItemsDetailsComponent implements OnInit {
   }
 
   async fetchTransactionItems() {
-    console.log('TransactionItemsDetailsComponent 3');
+    // console.log('TransactionItemsDetailsComponent 3');
     this.requestParams.iTransactionId = this.transaction._id;
     let url = `/api/v1/transaction/item/transaction-items`;
-    console.log('fetchTransactionItems: ', url, this.transaction);
+    // console.log('fetchTransactionItems: ', url, this.transaction);
     if (this.itemType === 'activity') {
       delete this.requestParams.iTransactionId;
       let id;
@@ -96,9 +96,9 @@ export class TransactionItemsDetailsComponent implements OnInit {
     } else {
       /* fetching the related transaction-item detail if there is any mutiple pre-payment then need to change the payment-amount */
       const aRelatedTransactionItem: any = await this.getRelatedTransactionItem(this.transaction?._id);
-      console.log('aRelatedTransactionItem: ', aRelatedTransactionItem);
+      // console.log('aRelatedTransactionItem: ', aRelatedTransactionItem);
       if (aRelatedTransactionItem?.data?.length > 1) {
-        console.log('oShowWarning: ', this.oShowWarning);
+        // console.log('oShowWarning: ', this.oShowWarning);
         this.oShowWarning.bIsMoreTransaction = true;
         this.oShowWarning.sMessage = `THERE_IS_MORE_PREPAYMENT`;
       }

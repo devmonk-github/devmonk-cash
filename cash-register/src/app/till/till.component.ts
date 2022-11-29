@@ -68,6 +68,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   businessId!: string;
   supplierId!: string;
   iActivityId!: string;
+  sNumber !: string;
   isStockSelected = true;
   payMethods: Array<any> = [];
   allPaymentMethod: Array<any> = [];
@@ -221,15 +222,20 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   loadTransaction() {
     let fromTransactionPage: any = localStorage.getItem('fromTransactionPage');
     if (fromTransactionPage) {
-      fromTransactionPage = JSON.parse(fromTransactionPage);
-      this.clearAll();
-      const { transactionItems, transaction } = fromTransactionPage;
-      this.transactionItems = transactionItems;
-      this.iActivityId = transaction.iActivityId || transaction._id;
-      if (transaction.iCustomerId) {
-        this.fetchCustomer(transaction.iCustomerId);
-      }
-      this.changeInPayment();
+      // const parsed = JSON.parse(fromTransactionPage);
+      // console.log('sending to service, ', parsed)
+      // const data = this.tillService.processTransactionSearchResult(parsed);
+      // console.log('225 return of processing', data);
+      this.handleTransactionResponse(JSON.parse(fromTransactionPage));
+      // fromTransactionPage = JSON.parse(fromTransactionPage);
+      // this.clearAll();
+      // const { transactionItems, transaction } = fromTransactionPage;
+      // this.transactionItems = transactionItems;
+      // this.iActivityId = transaction.iActivityId || transaction._id;
+      // if (transaction.iCustomerId) {
+      //   this.fetchCustomer(transaction.iCustomerId);
+      // }
+      // this.changeInPayment();
     }
   }
 
@@ -400,7 +406,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       }).instance.close.subscribe(result => {
         if (result) {
           this.transactionItems = []
-          this.clearPaymentAmounts();
+          this.clearAll();
         }
       }
       )
@@ -470,7 +476,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
         if (data.transaction) {
           this.handleTransactionResponse(data);
         }
-        this.changeInPayment();
+        // this.changeInPayment();
       });
   }
 
@@ -534,7 +540,10 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     this.appliedGiftCards = [];
     this.redeemedLoyaltyPoints = 0;
     this.iActivityId = '';
+    this.sNumber = '';
     this.customer = null;
+    this.clearPaymentAmounts();
+    // console.log('clearAll called, iActivityId = ', this.iActivityId);
   }
 
   clearPaymentAmounts(){
@@ -937,7 +946,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       const _oBusinessProductDetail = await this.getBusinessProduct(product?.iBusinessProductId || product?._id).toPromise();
       product = _oBusinessProductDetail.data;
     }
-
     let name = '';
     name = (product?.oArticleGroup?.oName) ? ((product.oArticleGroup?.oName[this.selectedLanguage]) ? product.oArticleGroup?.oName[this.selectedLanguage] : product.oArticleGroup.oName['en']) : '';
     name += ' ' + (product?.sLabelDescription || '');
@@ -954,7 +962,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       oType: { bRefund: false, bDiscount: false, bPrepayment: false },
       nDiscount: product.nDiscount || 0,
       bDiscountOnPercentage: product.bDiscountOnPercentage || false,
-      tax: product.nVatRate || 0,
+      tax: product.aLocation.find((l: any) => l._id === this.locationId)?.nVatRate || 0,
       sProductNumber: product.sProductNumber,
       sArticleNumber: product.sArticleNumber,
       description: product.sLabelDescription,
@@ -1462,7 +1470,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
           });
           result.transactionItems = transactionItems;
           this.handleTransactionResponse(result);
-          this.changeInPayment();
         }
       });
   }
@@ -1472,9 +1479,11 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     const { transactionItems, transaction } = data;
     this.transactionItems = transactionItems;
     this.iActivityId = transaction.iActivityId || transaction._id;
+    this.sNumber = transaction?.sNumber;
     if (transaction.iCustomerId) {
       this.fetchCustomer(transaction.iCustomerId);
     }
+    this.changeInPayment();
   }
 
   generateBarcodeURI(displayValue: boolean = true, data: any) {

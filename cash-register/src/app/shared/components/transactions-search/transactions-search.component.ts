@@ -5,6 +5,7 @@ import { DialogService } from '../../service/dialog';
 import { ApiService } from '../../service/api.service';
 import { TranslateService } from '@ngx-translate/core';
 import { TransactionItemsDetailsComponent } from '../transaction-items-details/transaction-items-details.component';
+import { TillService } from '../../service/till.service';
 
 @Component({
   selector: 'app-transactions-search',
@@ -40,6 +41,7 @@ export class TransactionsSearchComponent implements OnInit, AfterViewInit {
     private viewContainer: ViewContainerRef,
     private dialogService: DialogService,
     private apiService: ApiService,
+    private tillService: TillService,
     private translateService: TranslateService) {
     const _injector = this.viewContainer.injector
     this.dialogRef = _injector.get<DialogComponent>(DialogComponent);
@@ -81,67 +83,10 @@ export class TransactionsSearchComponent implements OnInit, AfterViewInit {
   }
 
   openTransaction(transaction: any, itemType: any) {
-    this.dialogService.openModal(TransactionItemsDetailsComponent, { cssClass: "modal-xl", context: { transaction, itemType } })
-      .instance.close.subscribe(result => {
-        const transactionItems: any = [];
-        if (result.transaction) {
-          result.transactionItems.forEach((transactionItem: any) => {
-            if (transactionItem.isSelected) {
-              const { tType } = transactionItem;
-              let paymentAmount = transactionItem.nQuantity * transactionItem.nPriceIncVat - transactionItem.nPaidAmount;
-              if (tType === 'refund') {
-                // paymentAmount = -1 * transactionItem.nPaidAmount;
-                paymentAmount = 0;
-                transactionItem.oType.bRefund = true;
-              } else if (tType === 'revert') {
-                paymentAmount = transactionItem.nPaidAmount;
-                transactionItem.oType.bRefund = false;
-              };
-              transactionItems.push({
-                name: transactionItem.sProductName || transactionItem.sProductNumber,
-                iActivityItemId: transactionItem.iActivityItemId,
-                nRefundAmount: transactionItem.nPaidAmount,
-                iLastTransactionItemId: transactionItem.iTransactionItemId,
-                prePaidAmount: tType === 'refund' ? transactionItem.nPaidAmount : transactionItem.nPaymentAmount,
-                type: transactionItem.sGiftCardNumber ? 'giftcard' : transactionItem.oType.eKind,
-                eTransactionItemType: 'regular',
-                nBrokenProduct: 0,
-                tType,
-                oType: transactionItem.oType,
-                sUniqueIdentifier: transactionItem.sUniqueIdentifier,
-                aImage: transactionItem.aImage,
-                nonEditable: transactionItem.sGiftCardNumber ? true : false,
-                sGiftCardNumber: transactionItem.sGiftCardNumber,
-                quantity: transactionItem.nQuantity,
-                iBusinessProductId: transactionItem.iBusinessProductId,
-                price: transactionItem.nPriceIncVat,
-                iRepairerId: transactionItem.iRepairerId,
-                oArticleGroupMetaData: transactionItem.oArticleGroupMetaData,
-                nRedeemedLoyaltyPoints: transactionItem.nRedeemedLoyaltyPoints,
-                iArticleGroupId: transactionItem.iArticleGroupId,
-                iEmployeeId: transactionItem.iEmployeeId,
-                iBusinessBrandId: transactionItem.iBusinessBrandId,
-                nDiscount: transactionItem.nDiscount || 0,
-                tax: transactionItem.nVatRate,
-                oGoldFor: transactionItem.oGoldFor,
-                iSupplierId: transactionItem.iSupplierId,
-                paymentAmount,
-                description: transactionItem.sDescription,
-                open: true,
-                nMargin: transactionItem.nMargin,
-                nPurchasePrice: transactionItem.nPurchasePrice,
-                oBusinessProductMetaData: transactionItem.oBusinessProductMetaData,
-                sServicePartnerRemark: transactionItem.sServicePartnerRemark,
-                eActivityItemStatus: transactionItem.eActivityItemStatus,
-                eEstimatedDateAction: transactionItem.eEstimatedDateAction,
-                bGiftcardTaxHandling: transactionItem.bGiftcardTaxHandling,
-              });
-            }
-          });
-          result.transactionItems = transactionItems;
-          this.close(result);
-        }
-      });
+    this.dialogService.openModal(TransactionItemsDetailsComponent, { cssClass: "modal-xl", context: { transaction, itemType } }).instance.close.subscribe(result => {
+      const data = this.tillService.processTransactionSearchResult(result);
+      this.close(data);
+    });
   }
 
   close(data: any): void {

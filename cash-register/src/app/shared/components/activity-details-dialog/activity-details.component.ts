@@ -13,6 +13,7 @@ import { ReceiptService } from '../../service/receipt.service';
 import { Observable } from 'rxjs';
 import { ToastService } from '../toast';
 import { TranslateService } from '@ngx-translate/core';
+import { TillService } from '../../service/till.service';
 @Component({
   selector: 'app-activity-details',
   templateUrl: './activity-details.component.html',
@@ -132,7 +133,8 @@ export class ActivityDetailsComponent implements OnInit {
     private routes: Router,
     private receiptService: ReceiptService,
     private toastService: ToastService ,
-    private translationService:TranslateService
+    private translationService:TranslateService,
+    private tillService: TillService,
   ) {
     const _injector = this.viewContainerRef.injector;
     this.dialogRef = _injector.get<DialogComponent>(DialogComponent);
@@ -387,56 +389,60 @@ export class ActivityDetailsComponent implements OnInit {
     transaction.iActivityId = this.activity._id;
     this.dialogService.openModal(TransactionItemsDetailsComponent, { cssClass: "modal-xl", context: { transaction, itemType, selectedId: transaction._id } })
       .instance.close.subscribe((result: any) => {
-        const transactionItems: any = [];
-        if (result.transaction) {
-          result.transactionItems.forEach((transactionItem: any) => {
-            if (transactionItem.isSelected) {
-              const { tType } = transactionItem;
-              let paymentAmount = transactionItem.nQuantity * transactionItem.nPriceIncVat - transactionItem.nPaidAmount;
-              if (tType === 'refund') {
-                paymentAmount = -1 * transactionItem.nPaidAmount;
-                transactionItem.oType.bRefund = true;
-              } else if (tType === 'revert') {
-                paymentAmount = transactionItem.nPaidAmount;
-                transactionItem.oType.bRefund = false;
-              };
-              transactionItems.push({
-                name: transactionItem.sProductName || transactionItem.sProductNumber,
-                iActivityItemId: transactionItem.iActivityItemId,
-                iArticleGroupId: transactionItem.iArticleGroupId,
-                nRefundAmount: transactionItem.nPaidAmount,
-                iLastTransactionItemId: transactionItem.iTransactionItemId,
-                prePaidAmount: tType === 'refund' ? transactionItem.nPaidAmount : transactionItem.nPaymentAmount,
-                type: transactionItem.sGiftCardNumber ? 'giftcard' : transactionItem.oType.eKind,
-                eTransactionItemType: 'regular',
-                nBrokenProduct: 0,
-                tType,
-                oType: transactionItem.oType,
-                aImage: transactionItem.aImage,
-                nonEditable: transactionItem.sGiftCardNumber ? true : false,
-                sGiftCardNumber: transactionItem.sGiftCardNumber,
-                quantity: transactionItem.nQuantity,
-                price: transactionItem.nPriceIncVat,
-                iRepairerId: transactionItem.iRepairerId,
-                oArticleGroupMetaData: transactionItem.oArticleGroupMetaData,
-                iEmployeeId: transactionItem.iEmployeeId,
-                iBusinessBrandId: transactionItem.iBusinessBrandId,
-                discount: 0,
-                tax: transactionItem.nVatRate,
-                paymentAmount,
-                description: '',
-                open: true,
-                nMargin: transactionItem.nMargin,
-                nPurchasePrice: transactionItem.nPurchasePrice,
-                sServicePartnerRemark: transactionItem.sServicePartnerRemark,
-                eActivityItemStatus: transactionItem.eActivityItemStatus,
-                eEstimatedDateAction: transactionItem.eEstimatedDateAction,
-                bGiftcardTaxHandling: transactionItem.bGiftcardTaxHandling,
-              });
-            }
-          });
-          result.transactionItems = transactionItems;
-          localStorage.setItem('fromTransactionPage', JSON.stringify(result));
+        const data = this.tillService.processTransactionSearchResult(result);
+        // const transactionItems: any = [];
+        //if (result.transaction) {
+          // result.transactionItems.forEach((transactionItem: any) => {
+          //   if (transactionItem.isSelected) {
+          //     const { tType } = transactionItem;
+          //     let paymentAmount = transactionItem.nQuantity * transactionItem.nPriceIncVat - transactionItem.nPaidAmount;
+          //     if (tType === 'refund') {
+          //       paymentAmount = -1 * transactionItem.nPaidAmount;
+          //       transactionItem.oType.bRefund = true;
+          //     } else if (tType === 'revert') {
+          //       paymentAmount = transactionItem.nPaidAmount;
+          //       transactionItem.oType.bRefund = false;
+          //     };
+          //     transactionItems.push({
+          //       name: transactionItem.sProductName || transactionItem.sProductNumber,
+          //       iActivityItemId: transactionItem.iActivityItemId,
+          //       nRefundAmount: transactionItem.nPaidAmount,
+          //       iLastTransactionItemId: transactionItem.iTransactionItemId,
+          //       iArticleGroupId: transactionItem.iArticleGroupId,
+          //       prePaidAmount: tType === 'refund' ? transactionItem.nPaidAmount : transactionItem.nPaymentAmount,
+          //       type: transactionItem.sGiftCardNumber ? 'giftcard' : transactionItem.oType.eKind,
+          //       eTransactionItemType: 'regular',
+          //       nBrokenProduct: 0,
+          //       tType,
+          //       oType: transactionItem.oType,
+          //       sUniqueIdentifier: transactionItem.sUniqueIdentifier,
+          //       aImage: transactionItem.aImage,
+          //       nonEditable: transactionItem.sGiftCardNumber ? true : false,
+          //       sGiftCardNumber: transactionItem.sGiftCardNumber,
+          //       quantity: transactionItem.nQuantity,
+          //       price: transactionItem.nPriceIncVat,
+          //       iRepairerId: transactionItem.iRepairerId,
+          //       oArticleGroupMetaData: transactionItem.oArticleGroupMetaData,
+          //       nRedeemedLoyaltyPoints: transactionItem.nRedeemedLoyaltyPoints,
+          //       iEmployeeId: transactionItem.iEmployeeId,
+          //       iBusinessBrandId: transactionItem.iBusinessBrandId,
+          //       discount: 0,
+          //       tax: transactionItem.nVatRate,
+          //       paymentAmount,
+          //       description: '',
+          //       open: true,
+          //       nMargin: transactionItem.nMargin,
+          //       nPurchasePrice: transactionItem.nPurchasePrice,
+          //       sServicePartnerRemark: transactionItem.sServicePartnerRemark,
+          //       eActivityItemStatus: transactionItem.eActivityItemStatus,
+          //       eEstimatedDateAction: transactionItem.eEstimatedDateAction,
+          //       bGiftcardTaxHandling: transactionItem.bGiftcardTaxHandling,
+          //     });
+          //   }
+          // });
+          // result.transactionItems = transactionItems;
+
+          localStorage.setItem('fromTransactionPage', JSON.stringify(data));
           localStorage.setItem('recentUrl', '/business/transactions');
           setTimeout(() => {
             if (this.loadCashRegister) {
@@ -444,7 +450,7 @@ export class ActivityDetailsComponent implements OnInit {
             }
             this.close(true);
           }, 100);
-        }
+        //}
       }, (error) => {
         console.log('error: ', error);
       });
