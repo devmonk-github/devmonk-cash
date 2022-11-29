@@ -5,6 +5,7 @@ import { NgxCsvParser, NgxCSVParserError } from 'ngx-csv-parser';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { ToastService } from 'src/app/shared/components/toast';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'import-file-import',
@@ -25,7 +26,8 @@ export class FileImportComponent implements OnInit, OnDestroy {
 
   constructor(
     private csvParser: NgxCsvParser,
-    private toasterService : ToastService
+    private toasterService : ToastService ,
+    private translation:TranslateService
   ) { }
 
   
@@ -42,11 +44,34 @@ export class FileImportComponent implements OnInit, OnDestroy {
   );
 
   ngOnInit(): void {
+    console.log("---------------------file import component--------------------");
     this.subscription = this.control.valueChanges.subscribe((values: Array<File>) => {
+      console.log(values);
       if(values && values.length > 0){
         this.csvParser.parse(values[0], { header: true, delimiter: this.delimiter})
           .pipe().subscribe((result: any) => {
-            this.parsedCustomerData = result;
+            console.log("--------------customer result---------------------");
+            console.log(result.length);
+            let customerData :any =[];
+             result.map((customer:any , index:any)=>{
+              let newCustomer = {};
+              for (let [key, value] of Object.entries(customer)) {
+                this.translation.get([key]).subscribe((res:any)=>{
+                  key = res[key];
+                 let oop = {
+                  [key] : value
+                 }
+                 newCustomer = {... newCustomer , ... oop}
+                 
+                })
+              }
+           
+              customerData.push(newCustomer);
+            })
+       
+              console.log(customerData);
+            this.parsedCustomerData = customerData;
+            // console.log(this.parsedCustomerData);
             this.parsedCustomerDataChange.emit(this.parsedCustomerData);
           }, (error: NgxCSVParserError) => {
             this.toasterService.show({ type: 'danger', text: 'Upload csv file'});

@@ -9,8 +9,9 @@ import { FileImportComponent } from '../file-import/file-import.component';
 import { CustomerDetailsImportComponent } from '../customer-details-import/customer-details-import.component';
 import { CustomerImportRoutingModule } from './customer-import-routing.module';
 import { NgxPaginationModule } from 'ngx-pagination';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService, TranslateStore } from '@ngx-translate/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { TranslationsService } from 'src/app/shared/service/translation.service';
 
 @NgModule({
   declarations: [
@@ -29,6 +30,11 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
     FileUploadModule,
     // BrowserAnimationsModule,
     FontAwesomeModule
-  ]
+  ],
+  providers:[
+    TranslationsService,
+    TranslateService,
+    TranslateStore
+]
 })
 export class CustomerImportModule { }

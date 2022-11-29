@@ -1,6 +1,8 @@
 import { Component, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { ApiService } from 'src/app/shared/service/api.service';
 import { ImportService } from 'src/app/shared/service/import.service';
+import { TranslationsService } from 'src/app/shared/service/translation.service';
 import { StepperComponent } from 'src/app/shared/_layout/components/common';
 @Component({
   selector: 'app-customer-import',
@@ -20,11 +22,18 @@ export class CustomerImportComponent implements OnInit {
 
   constructor(
     private importService: ImportService,
-    private apiService: ApiService
-  ) { }
+    private apiService: ApiService,
+    private activatedRoute: ActivatedRoute,
+    private translationsService: TranslationsService
+  ) { 
+    this.translationsService.setTranslationsObject(this.activatedRoute.snapshot.data.translations);
+    console.log('set translation obj', this.translationsService.getTranslationsObject())
+  }
 
   ngOnInit(): void {
-    this.businessDetails._id = localStorage.getItem('currentBusiness')
+    console.log("---------------------customer import-----------------------");
+    this.businessDetails._id = localStorage.getItem('currentBusiness');
+    console.log(this.parsedCustomerData);
   }
 
   ngAfterContentInit(): void {
@@ -35,6 +44,8 @@ export class CustomerImportComponent implements OnInit {
   }
 
   public moveToStep(step: any) {
+    console.log("--------------------move to step----------------");
+    console.log(this.parsedCustomerData);
     if (step == 'next') {
       this.stepperInstatnce.goNext();
     } else if (step == 'previous') {
@@ -46,6 +57,9 @@ export class CustomerImportComponent implements OnInit {
   }
 
   importCustomer() {
+    console.log("-------------------import customer-----------------");
+    console.log(this.updateTemplateForm);
+    console.log(this.customerDetailsForm);
     this.importInprogress = true;
     let data: any = {
       iBusinessId: this.businessDetails._id,
