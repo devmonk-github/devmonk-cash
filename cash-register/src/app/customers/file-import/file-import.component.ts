@@ -44,14 +44,10 @@ export class FileImportComponent implements OnInit, OnDestroy {
   );
 
   ngOnInit(): void {
-    console.log("---------------------file import component--------------------");
     this.subscription = this.control.valueChanges.subscribe((values: Array<File>) => {
-      console.log(values);
       if(values && values.length > 0){
         this.csvParser.parse(values[0], { header: true, delimiter: this.delimiter})
           .pipe().subscribe((result: any) => {
-            console.log("--------------customer result---------------------");
-            console.log(result.length);
             let customerData :any =[];
              result.map((customer:any , index:any)=>{
               let newCustomer = {};
@@ -69,9 +65,7 @@ export class FileImportComponent implements OnInit, OnDestroy {
               customerData.push(newCustomer);
             })
        
-              console.log(customerData);
             this.parsedCustomerData = customerData;
-            // console.log(this.parsedCustomerData);
             this.parsedCustomerDataChange.emit(this.parsedCustomerData);
           }, (error: NgxCSVParserError) => {
             this.toasterService.show({ type: 'danger', text: 'Upload csv file'});

@@ -27,13 +27,10 @@ export class CustomerImportComponent implements OnInit {
     private translationsService: TranslationsService
   ) { 
     this.translationsService.setTranslationsObject(this.activatedRoute.snapshot.data.translations);
-    console.log('set translation obj', this.translationsService.getTranslationsObject())
   }
 
   ngOnInit(): void {
-    console.log("---------------------customer import-----------------------");
-    this.businessDetails._id = localStorage.getItem('currentBusiness');
-    console.log(this.parsedCustomerData);
+    this.businessDetails._id = localStorage.getItem('currentBusiness')
   }
 
   ngAfterContentInit(): void {
@@ -44,8 +41,6 @@ export class CustomerImportComponent implements OnInit {
   }
 
   public moveToStep(step: any) {
-    console.log("--------------------move to step----------------");
-    console.log(this.parsedCustomerData);
     if (step == 'next') {
       this.stepperInstatnce.goNext();
     } else if (step == 'previous') {
@@ -57,9 +52,6 @@ export class CustomerImportComponent implements OnInit {
   }
 
   importCustomer() {
-    console.log("-------------------import customer-----------------");
-    console.log(this.updateTemplateForm);
-    console.log(this.customerDetailsForm);
     this.importInprogress = true;
     let data: any = {
       iBusinessId: this.businessDetails._id,
