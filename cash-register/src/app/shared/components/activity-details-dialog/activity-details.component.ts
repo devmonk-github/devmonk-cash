@@ -134,7 +134,7 @@ export class ActivityDetailsComponent implements OnInit {
     private receiptService: ReceiptService,
     private toastService: ToastService ,
     private translationService:TranslateService,
-    private tillService: TillService,
+    public tillService: TillService,
   ) {
     const _injector = this.viewContainerRef.injector;
     this.dialogRef = _injector.get<DialogComponent>(DialogComponent);
@@ -347,6 +347,7 @@ export class ActivityDetailsComponent implements OnInit {
               (business: any) => {
                 if (business._id == this.iBusinessId) {
                   this.business = business;
+                  this.tillService.selectCurrency(this.business?.aInLocation?.filter((location: any) => location?._id.toString() == this.iLocationId.toString())[0]);
                 }
               })
           }
