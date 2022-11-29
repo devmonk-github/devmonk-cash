@@ -152,7 +152,7 @@ export class PdfService {
     } else if (sAction && sAction === 'thermal') {
       // console.log('else if saction=thermal')
       printSettings = printSettings.filter((s: any) => s.sMethod === 'thermal')[0];
-      this.handlePrintThermal(pdfObject, printSettings, pdfTitle);
+      this.handlePrint(pdfObject, printSettings, pdfTitle);
       return;
     } else {
       const aActionToPerform = printActionSettings[0].aActionToPerform;
@@ -188,19 +188,6 @@ export class PdfService {
         1,
         pdfTitle,
         { title: pdfTitle }
-      )
-    });
-  }
-
-  handlePrintThermal(pdfObject: any, printSettings: any, pdfTitleRaw: any,) {
-    pdfObject.getBase64((data: any) => {
-      this.printService.printRawContent(
-        this.iBusinessId,
-        data,
-        printSettings.nPrinterId,
-        printSettings.nComputerId,
-        1,
-        pdfTitleRaw,
       )
     });
   }
