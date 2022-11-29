@@ -28,6 +28,24 @@ export class TranslationsService {
     private toastService: ToastService,
 
   ) { }
+
+  setTranslationsObject(translationsObject: any){
+    this.translateService.setDefaultLang('nl');
+    const currentLang: any = localStorage.getItem('language')?.toString() || 'nl';
+    this.translateService.use(currentLang);
+
+    this.translationsObject = translationsObject;
+    this.translateService.addLangs(Object.keys(this.translationsObject));
+    Object.keys(this.translationsObject).map((language: any) => {
+      this.translateService.setTranslation(language, {
+        ...this.translationsObject[language]
+      });
+    })
+  }
+  getTranslationsObject(){
+    return this.translationsObject;
+  }
+  
   getTranslations() {
     const getLanguageTranslations = (lang: string, translations: any[]) => {
       return new Promise((resolve, reject) => {
