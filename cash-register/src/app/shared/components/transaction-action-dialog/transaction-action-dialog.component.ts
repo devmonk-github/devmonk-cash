@@ -32,7 +32,7 @@ export class TransactionActionDialogComponent implements OnInit {
   nOrderCount: number = 0;
   aTypes = ['regular', 'order', 'repair', 'giftcard', 'repair_alternative'];
   aActionSettings = ['DOWNLOAD', 'PRINT_THERMAL', 'PRINT_PDF']
-  aUniqueTypes:any = [];
+  aUniqueTypes: any = [];
   aRepairItems: any = [];
   aTemplates: any = [];
   aRepairActionSettings: any;
@@ -47,13 +47,13 @@ export class TransactionActionDialogComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.aRepairItems = this.activityItems.filter((item:any)=> item.oType.eKind === 'repair');
-    
+    this.aRepairItems = this.activityItems.filter((item: any) => item.oType.eKind === 'repair');
+
     const bRegularCondition = this.transaction.total > 0.02 || this.transaction.total < -0.02;
     const bOrderCondition = this.nOrderCount === 1 && this.nRepairCount === 1 || this.nRepairCount > 1 || this.nOrderCount > 1;
-    
-    if(bRegularCondition) this.aUniqueTypes.push('regular');
-    if(bOrderCondition) this.aUniqueTypes.push('order');
+
+    if (bRegularCondition) this.aUniqueTypes.push('regular');
+    if (bOrderCondition) this.aUniqueTypes.push('order');
     // console.log(this.transaction)
     if (this.transaction.aTransactionItemType.includes('giftcard')) this.aUniqueTypes.push('giftcard')
     this.aUniqueTypes = [...new Set(this.aUniqueTypes)]
@@ -64,54 +64,50 @@ export class TransactionActionDialogComponent implements OnInit {
     this.dialogRef.close.emit(this.usedActions)
   }
 
-  performAction(type:any, action:any, index?:number){
-    
+  performAction(type: any, action: any, index?: number) {
     this.usedActions = true;
-    // console.log(type, action, this.printSettings, this.aTemplates)
+    let oDataSource = undefined;
+    let template = undefined;
+    let pdfTitle = '';
 
-    if (index != undefined && (type === 'repair' || type === 'repair_alternative')){
+    if (index != undefined && (type === 'repair' || type === 'repair_alternative')) {
       // console.log('repair items index=', index, this.aRepairItems[index], this.activityItems);
-      const oDataSource = this.aRepairItems[index];
+      oDataSource = this.aRepairItems[index];
       const aTemp = oDataSource.sNumber.split("-");
       oDataSource.sPartRepairNumber = aTemp[aTemp.length - 1];
 
-      const template = this.aTemplates.filter((template: any) => template.eType === type)[0];
+      template = this.aTemplates.filter((template: any) => template.eType === type)[0];
       oDataSource.sBarcodeURI = this.generateBarcodeURI(false, oDataSource.sNumber);
       oDataSource.oCustomer = this.transaction.oCustomer
       oDataSource.sBusinessLogoUrl = this.transaction.sBusinessLogoUrl
-      // console.log(oDataSource)
-      // console.log('sending for receipt, ', oDataSource)
-      this.receiptService.exportToPdf({
-        oDataSource: oDataSource,
-        pdfTitle: oDataSource.sNumber,
-        templateData: template,
-        printSettings: this.printSettings.filter((s:any) => s.sType === type),
-        sAction: (action === 'DOWNLOAD') ? 'download' : (action === 'PRINT_PDF') ? 'print' : 'thermal',
-      });
-    } else if(type==='regular') {
-      const template = this.aTemplates.filter((template: any) => template.eType === 'regular')[0];
-      this.receiptService.exportToPdf({
-        oDataSource: this.transaction,
-        pdfTitle: this.transaction.sNumber,
-        templateData: template,
-        printSettings: this.printSettings.filter((s: any) => s.sType === type),
-        sAction: (action === 'DOWNLOAD') ? 'download' : (action === 'PRINT_PDF') ? 'print' : 'thermal',
-      });
-    } else if(type==='giftcard') {
-      const template = this.aTemplates.filter((template: any) => template.eType === 'giftcard')[0];
-      const oDataSource = this.activityItems.filter((item:any) => item.oType.eKind === 'giftcard')[0];
+      pdfTitle = oDataSource.sNumber
+    } else if (type === 'regular') {
+      oDataSource = this.transaction;
+      pdfTitle = this.transaction.sNumber;
+      template = this.aTemplates.filter((template: any) => template.eType === 'regular')[0];
+    } else if (type === 'giftcard') {
+      oDataSource = this.activityItems.filter((item: any) => item.oType.eKind === 'giftcard')[0];
       oDataSource.nTotal = oDataSource.nPaidAmount;
       oDataSource.sBarcodeURI = this.generateBarcodeURI(true, 'G-' + oDataSource.sGiftCardNumber);
+      pdfTitle = oDataSource.sGiftCardNumber;
+      template = this.aTemplates.filter((template: any) => template.eType === 'giftcard')[0];
+    }
 
+    if (action == 'PRINT_THERMAL') {
+      this.receiptService.printThermalReceipt({
+        oDataSource: oDataSource,
+        printSettings: this.printSettings.filter((s: any) => s.sType === type),
+        sAction: 'thermal',
+      });
+    } else {
       this.receiptService.exportToPdf({
         oDataSource: oDataSource,
-        pdfTitle: oDataSource.sGiftCardNumber,
+        pdfTitle: pdfTitle,
         templateData: template,
         printSettings: this.printSettings.filter((s: any) => s.sType === type),
-        sAction: (action === 'DOWNLOAD') ? 'download' : (action === 'PRINT_PDF') ? 'print' : 'thermal',
+        sAction: (action === 'DOWNLOAD') ? 'download' : 'print',
       });
     }
-      
   }
 
   generateBarcodeURI(displayValue: boolean = true, data: any) {
@@ -119,5 +115,4 @@ export class TransactionActionDialogComponent implements OnInit {
     JsBarcode(canvas, data, { format: "CODE128", displayValue: displayValue });
     return canvas.toDataURL("image/png");
   }
-
 }

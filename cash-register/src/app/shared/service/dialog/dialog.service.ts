@@ -37,7 +37,17 @@ export class DialogService {
     dialogComponentRef.instance.template = templateRef;
     dialogComponentRef.instance.context = userConfig.context;
     dialogComponentRef.instance.cssClass = userConfig.cssClass;
+    dialogComponentRef.instance.hasBackdrop = userConfig.hasBackdrop;
+    dialogComponentRef.instance.closeOnBackdropClick = userConfig.closeOnBackdropClick;
+    dialogComponentRef.instance.closeOnEsc = userConfig.closeOnEsc;
 
+    dialogComponentRef.instance.triggerEvent.subscribe((data: any) => {
+      if (data == 'close') {
+        document?.body?.removeChild(popup);
+        this.applicationRef.detachView(dialogComponentRef.hostView);
+      }
+    });
+    
     // Add to the DOM
     document.body.appendChild(popup);
     return dialogComponentRef;

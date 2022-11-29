@@ -51,6 +51,7 @@ export class TransactionDetailsComponent implements OnInit {
   ableToDownload: Boolean = false;
   from !: string;
   thermalPrintSettings !: any;
+  employeesList:any =[];
 
   private pn2escposService = new Pn2escposService();
   printSettings: any;
@@ -64,7 +65,7 @@ export class TransactionDetailsComponent implements OnInit {
     private receiptService: ReceiptService,
     private printService: PrintService,
     private toastService: ToastService,
-    private tillService: TillService,
+    public tillService: TillService,
     // private compiler: Compiler,
     // private injector: Injector,
   ) {
@@ -99,6 +100,7 @@ export class TransactionDetailsComponent implements OnInit {
     this.loading = false;
     this.fetchBusinessDetails();
     this.fetchCustomer(this.transaction.oCustomer._id);
+    this.getListEmployees();
     const [_thermalSettings, _printActionSettings, _printSettings]: any = await Promise.all([
       this.getThermalPrintSetting(),
       this.getPdfPrintSetting({ oFilterBy: { sMethod: 'actions' } }),
@@ -120,9 +122,33 @@ export class TransactionDetailsComponent implements OnInit {
         (result: any) => {
           this.businessDetails = result.data;
           this.businessDetails.currentLocation = this.businessDetails?.aLocation?.filter((location: any) => location?._id.toString() == this.iLocationId.toString())[0];
+          this.tillService.selectCurrency(this.businessDetails.currentLocation);
           this.ableToDownload = true;
         })
   }
+
+  getListEmployees() {
+    const oBody = {
+      iBusinessId: localStorage.getItem('currentBusiness') || '',
+    }
+    let url = '/api/v1/employee/list';
+    this.apiService.postNew('auth', url, oBody).subscribe((result: any) => {
+      if (result && result.data && result.data.length) {
+        this.employeesList = result.data[0].result;
+        if(this.transaction?.iCreatedBy){
+           let createerIndex =  this.employeesList.findIndex((employee:any)=> employee._id == this.transaction.iCreatedBy);
+           if(createerIndex != -1){
+            this.transaction.createrDetail = this.employeesList[createerIndex];
+           }
+          }
+
+     
+
+      }
+    }, (error) => {
+    });
+  }
+
 
   getRelatedTransactionItem(iActivityItemId: string, iTransactionItemId: string, index: number) {
     return this.apiService.getNew('cashregistry', `/api/v1/transaction/item/activityItem/${iActivityItemId}?iBusinessId=${this.iBusinessId}&iTransactionItemId=${iTransactionItemId}`).toPromise();

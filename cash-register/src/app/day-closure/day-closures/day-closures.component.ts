@@ -20,6 +20,7 @@ export class DayClosuresComponent implements OnInit, OnDestroy {
 
   iWorkstationId: any;
   aWorkStation: any = [];
+  aWorkStationList: any = [];
   oSelectedWorkStation: any;
 
   oUser: any = {};
@@ -70,9 +71,9 @@ export class DayClosuresComponent implements OnInit, OnDestroy {
   }
 
   getWorkstations() {
-    this.workstationListSubscription = this.apiService.getNew('cashregistry', `/api/v1/workstations/list/${this.iBusinessId}/${this.iLocationId}`).subscribe(
+    this.workstationListSubscription = this.apiService.getNew('cashregistry', `/api/v1/workstations/list/${this.iBusinessId}`).subscribe(
       (result: any) => {
-        if (result && result.data?.length) this.aWorkStation = result.data;
+        if (result && result.data?.length) this.aWorkStationList = result.data;
       }),
       (error: any) => {
         console.error(error)
@@ -113,6 +114,10 @@ export class DayClosuresComponent implements OnInit, OnDestroy {
       console.log('error: ', error);
       this.showLoader = false;
     })
+  }
+
+  selectedLocationChanged(){
+    this.aWorkStation = this.aWorkStationList.filter((workstation:any)=> this.aSelectedLocation.includes(workstation.iLocationId));
   }
 
   goToView(iStatisticsId: any, dOpenDate: any, dCloseDate:any){

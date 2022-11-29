@@ -51,6 +51,26 @@
                         transaction?.oCustomer?.oPhone?.sLandLine }}</div>
                 </div>
             </div>
+
+            <div class="d-flex justify-content-between align-items-center">
+              <h3 class="fw-bolder mb-4">
+               <span>{{"CREATER_DETAIL" | translate}} </span>  
+            </h3> 
+            </div>
+
+            <div class="row fw-bold gy-1">
+            <div class="col-md-12">
+                <div class="d-flex fs-6 ms-1 my-1">
+                    <div class="align-items-center">                                 
+                        <img alt="Logo"
+                        *ngIf="transaction?.createrDetail?.sFirstName && (!transaction?.createrDetail?.sAvatar  || transaction?.createrDetail?.sAvatar == '')"
+                        src="https://prismanote.com/public/prismanote.png" class="createrImage">
+                      <img alt="Logo" *ngIf="transaction?.createrDetail?.sAvatar" [src]="transaction?.createrDetail?.sAvatar" class="createrImage">                                                      
+                      <span> {{transaction?.createrDetail?.sFirstName || ''}} {{transaction?.createrDetail?.sLastName || ''}} </span>
+                        </div>   
+                        </div>        
+            </div>
+            </div>
         </div>
         <div class="col-md-8 row" *ngIf="eType === 'cash-register-revenue'">
             <h3 class="fw-bolder mb-4">
@@ -236,21 +256,21 @@
                                             </div>
                                         </div>
                                     </td>
-                                    <td>{{item.nPriceIncVatAfterDiscount | currency:'EUR'}}</td>
+                                    <td>{{item.nPriceIncVatAfterDiscount | currency: tillService.currency}}</td>
                                     <td>{{item.nQuantity}}</td>
                                     <td>
                                         <span *ngIf="item.bDiscountOnPercentage">
-                                            {{ item.nDiscount }}% ({{item.nDiscountToShow | currency:'EUR'}})
+                                            {{ item.nDiscount }}% ({{item.nDiscountToShow | currency: tillService.currency}})
                                         </span>
                                         <span *ngIf="!item.bDiscountOnPercentage">
-                                            {{item.nDiscountToShow | currency:'EUR'}}
+                                            {{item.nDiscountToShow | currency: tillService.currency}}
                                         </span>
                                     </td>
                                     <ng-container *ngIf="item.nRedeemedLoyaltyPoints > 0">
                                         <td>{{ item.nRedeemedLoyaltyPoints }} </td>
                                     </ng-container>
                                     <td>{{item.nSavingsPoints}} </td>
-                                    <td>{{item.nVatRate}} % ({{item.vat || 0 | currency:'EUR' }})</td>
+                                    <td>{{item.nVatRate}} % ({{item.vat || 0 | currency: tillService.currency }})</td>
                                     <td>
                                         <div class="d-flex align-items-center justify-content-between">
                                             <div>{{item.totalPaymentAmount || 0}}</div>
@@ -282,15 +302,15 @@
                                 <tr class="fw-bolder">
                                     <td></td>
                                     <td>{{ 'TOTAL' | translate }}</td>
-                                    <td>{{ transaction.totalAfterDisc | currency:'EUR' }}</td>
+                                    <td>{{ transaction.totalAfterDisc | currency: tillService.currency }}</td>
                                     <td>{{ transaction.totalQty }}</td>
-                                    <td>{{ transaction.totalDiscount | currency:'EUR' }}</td>
+                                    <td>{{ transaction.totalDiscount | currency: tillService.currency }}</td>
                                     <ng-container *ngIf="transaction.totalRedeemedLoyaltyPoints > 0">
                                         <td>{{transaction.totalRedeemedLoyaltyPoints}}</td>
                                     </ng-container>
                                     <td>{{ transaction.totalSavingPoints }}</td>
-                                    <td>{{ transaction.totalVat | currency:'EUR' }}</td>
-                                    <td>{{ transaction.total | currency:'EUR'}}</td>
+                                    <td>{{ transaction.totalVat | currency: tillService.currency }}</td>
+                                    <td>{{ transaction.total | currency: tillService.currency}}</td>
                                 </tr>
                             </tbody>
                         </table>
