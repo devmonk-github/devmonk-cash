@@ -1,8 +1,8 @@
 <div class="container">
   <!--begin::Main transaction list section-->
-  <div class="my-4 px-2 py-4 bg-white">
+  <div class="my-4 px-7 py-7 card card-flush">
     <!--begin::Advance form-->
-    <div class="d-flex align-items-center">
+    <div class="d-flex align-items-center my-3">
       <!--begin::Input group-->
       <div class="position-relative w-md-400px me-md-2">
         <!--begin::Svg Icon | path: icons/duotune/general/gen021.svg-->
@@ -30,7 +30,7 @@
       <!--begin::column-->
       <div class="col-12">
         <!--begin::Separator-->
-        <div class="separator separator-dashed mt-9 mb-6"></div>
+        <!-- <div class="separator separator-dashed mt-9 mb-6"></div> -->
         <!--end::Separator-->
         <!--begin::Row-->
         <div class="row g-4 mb-2">
@@ -229,20 +229,20 @@
       <!--end::column-->
     </div>
     <!--end::Advance form-->
-    <div class="separator separator-dashed mt-9 mb-6"></div>
-    <table class="table table-hover table-rounded table-striped border gy-7 gs-7">
+    <!-- <div class="separator separator-dashed mt-9 mb-6"></div> -->
+    <table class="table table-hover table-rounded table-striped gy-7 gs-7">
       <thead>
-        <tr class="fw-bold fs-6 text-gray-400 border-bottom-2 border-gray-200">
+        <tr class="fw-bold fs-6 text-gray-400 text-uppercase border-gray-200">
           <th scope="col" *ngFor="let th of tableHeaders"
             [ngClass]="{'fw-bolder': th.selected, 'cursor-pointer': !th.disabled, 'pe-none': th.disabled}"
             (click)="setSortOption(th)">
             {{ th.key | translate }}
             <fa-icon *ngIf="th.selected" [icon]="th.sort === 'asc' ? faArrowDown : faArrowUp"></fa-icon>
           </th>
-          <th scope="col"></th>
+          <!-- <th scope="col"></th> -->
         </tr>
       </thead>
-      <tbody>
+      <tbody class="fw-bold text-gray-600">
         <tr *ngFor="let transaction of transactions | paginate: paginationConfig, let i = index"
           data-bs-toggle="tooltip" data-bs-placement="top" title={{toolTipData(transaction)}}>
           <td scope="row">{{transaction.dCreatedDate | date: 'medium'}}</td>
@@ -250,6 +250,7 @@
           <td>{{transaction.sReceiptNumber}}</td>
           <td>{{transaction?.oCustomer?.sFirstName || ''}} {{transaction?.oCustomer?.sLastName || ''}}</td>
           <td>{{getMethods(transaction.aPayments)}}</td>
+          <td> - </td>
           <td>{{transaction.eType}}</td>
           <td>
             <div class="btn-group me-4">

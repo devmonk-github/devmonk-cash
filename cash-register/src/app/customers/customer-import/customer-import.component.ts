@@ -1,6 +1,8 @@
 import { Component, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { ApiService } from 'src/app/shared/service/api.service';
 import { ImportService } from 'src/app/shared/service/import.service';
+import { TranslationsService } from 'src/app/shared/service/translation.service';
 import { StepperComponent } from 'src/app/shared/_layout/components/common';
 @Component({
   selector: 'app-customer-import',
@@ -20,8 +22,12 @@ export class CustomerImportComponent implements OnInit {
 
   constructor(
     private importService: ImportService,
-    private apiService: ApiService
-  ) { }
+    private apiService: ApiService,
+    private activatedRoute: ActivatedRoute,
+    private translationsService: TranslationsService
+  ) { 
+    this.translationsService.setTranslationsObject(this.activatedRoute.snapshot.data.translations);
+  }
 
   ngOnInit(): void {
     this.businessDetails._id = localStorage.getItem('currentBusiness')
