@@ -9,7 +9,7 @@
                 <div class="col-md-4">
                     <label class="fs-6 form-label fw-bolder text-dark">{{'LOCATION' | translate}}</label>
                     <div class="w-100" *ngIf="aLocation?.length">
-                        <ng-select [multiple]="true" [items]="aLocation" [(ngModel)]="aSelectedLocation"
+                        <ng-select [multiple]="true" [items]="aLocation" [(ngModel)]="aSelectedLocation" (ngModelChange)="selectedLocationChanged()"
                             name="iLocationId" bindValue="_id" bindLabel="sName" placeholder="Select" required
                             [closeOnSelect]="false">
                             <ng-template ng-option-tmp let-item="item" let-item$="item$" let-index="index">

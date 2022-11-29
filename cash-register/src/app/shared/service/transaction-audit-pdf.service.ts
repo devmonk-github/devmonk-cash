@@ -238,6 +238,8 @@ export class TransactionAuditUiPdfService {
             },
             {
                 columns: [
+                    { text: 'Comment: ', style: ['left', 'normal'], width: 100 },
+                    { text: oStatisticsDocument.sComment, style: ['left', 'normal'], width: 200 },
                     { width: '*', text: '' },
                     { text: 'Type: ', style: ['right', 'normal'], width: 100 },
                     { text: sType, style: ['right', 'normal'], width: 150 },
@@ -312,7 +314,6 @@ export class TransactionAuditUiPdfService {
             let texts: any = [];
             let nTotalAmount = 0, nTotalQuantity = 0;
             aPaymentMethods.forEach((paymentMethod: any) => {
-                console.log({paymentMethod});
                 nTotalAmount += parseFloat(paymentMethod.nAmount);
                 nTotalQuantity += parseFloat(paymentMethod.nQuantity);
 
@@ -1200,7 +1201,7 @@ export class TransactionAuditUiPdfService {
                     text: parseFloat(item.nTotalPurchaseAmount.toFixed(2)),
                     style: ['td'],
                 },
-                { text: parseFloat(item.nProfit.toFixed(2)), style: ['td'] },
+                { text: parseFloat(item.nProfit), style: ['td'] },
             ]);
         });
         texts.push([

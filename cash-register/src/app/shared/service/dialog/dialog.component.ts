@@ -15,7 +15,8 @@ import {
 
 @Component({
   selector: 'app-dialog',
-  templateUrl: './dialog.component.html'
+  templateUrl: './dialog.component.html',
+  styleUrls: ['./dialog.component.sass']
 })
 export class DialogComponent implements OnInit, AfterViewInit, OnDestroy {
 
@@ -28,6 +29,10 @@ export class DialogComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input() context: any;
   @Input() cssClass: any;
   @Input() hasBackdrop: boolean | undefined;
+  @Input() closeOnBackdropClick: boolean | undefined;
+  @Input() closeOnEsc: boolean | undefined;
+
+  @Output() triggerEvent: EventEmitter<any> = new EventEmitter();
 
   @ViewChild('backdrop', { read: ViewContainerRef }) backdrop!: ViewContainerRef;
   @ViewChild('dialogContainer', { read: ViewContainerRef }) container!: ViewContainerRef;
@@ -61,6 +66,10 @@ export class DialogComponent implements OnInit, AfterViewInit, OnDestroy {
     } else if (!this.cssClass?.includes('top-spacing') && this.backdrop.element?.nativeElement?.parentElement?.className) {
       this.backdrop.element.nativeElement.parentElement.className = `${this.backdrop.element.nativeElement.parentElement.className} top-spacing`;
     }
+  }
+
+  clickOnBackdrop() {
+    this.triggerEvent.emit('close');
   }
 
   ngOnDestroy(): void {

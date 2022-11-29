@@ -64,7 +64,7 @@ export class TransactionDetailsComponent implements OnInit {
     private receiptService: ReceiptService,
     private printService: PrintService,
     private toastService: ToastService,
-    private tillService: TillService,
+    public tillService: TillService,
     // private compiler: Compiler,
     // private injector: Injector,
   ) {
@@ -120,6 +120,7 @@ export class TransactionDetailsComponent implements OnInit {
         (result: any) => {
           this.businessDetails = result.data;
           this.businessDetails.currentLocation = this.businessDetails?.aLocation?.filter((location: any) => location?._id.toString() == this.iLocationId.toString())[0];
+          this.tillService.selectCurrency(this.businessDetails.currentLocation);
           this.ableToDownload = true;
         })
   }

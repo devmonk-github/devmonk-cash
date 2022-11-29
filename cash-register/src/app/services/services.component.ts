@@ -294,7 +294,7 @@ export class ServicesComponent implements OnInit {
           if (this.webOrders && result) this.router.navigate(['business/till']);
         });
     } else {
-      this.dialogService.openModal(ActivityDetailsComponent, { cssClass: 'w-fullscreen', context: { activity, openActivityId, items: false, webOrders: this.webOrders, from: 'services' } })
+      this.dialogService.openModal(ActivityDetailsComponent, { cssClass: 'w-fullscreen mt--5', hasBackdrop: true, closeOnBackdropClick: true, closeOnEsc: true, context: { activity, openActivityId, items: false, webOrders: this.webOrders, from: 'services' } })
         .instance.close.subscribe(result => {
           if (this.webOrders && result) this.router.navigate(['business/till']);
         });
