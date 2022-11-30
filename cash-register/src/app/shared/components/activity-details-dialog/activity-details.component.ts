@@ -197,16 +197,16 @@ export class ActivityDetailsComponent implements OnInit {
     this.apiService.postNew('auth', url, oBody).subscribe((result: any) => {
       if (result && result.data && result.data.length) {
         this.employeesList = result.data[0].result;
-        if(this.activity?.iCreatedBy){
-           let createerIndex =  this.employeesList.findIndex((employee:any)=> employee._id == this.activity.iCreatedBy);
+        if(this.activity?.iEmployeeId){
+           let createerIndex =  this.employeesList.findIndex((employee:any)=> employee._id == this.activity.iEmployeeId);
            if(this.createrDetail != -1){
            this.createrDetail = this.employeesList[createerIndex];
            }
           }
 
         this.employeesList.map(o => o.sName = `${o.sFirstName} ${o.sLastName}`);
-        if(this.activityItems[0]?.iCreatedBy){
-          let createerIndex = this.employeesList.findIndex((employee:any) => employee._id == this.activityItems[0].iCreatedBy);
+        if(this.activityItems[0]?.iEmployeeId){
+          let createerIndex = this.employeesList.findIndex((employee:any) => employee._id == this.activityItems[0].iEmployeeId);
           if(createerIndex != -1){
              this.createrDetail = this.employeesList[createerIndex]
            }
