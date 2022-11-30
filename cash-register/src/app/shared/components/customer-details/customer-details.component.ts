@@ -21,6 +21,7 @@ import { TransactionDetailsComponent } from '../../../transactions/components/tr
 import { fromEvent, Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, tap } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
+import { result } from 'lodash';
 export interface BarChartOptions {
   series: ApexAxisChartSeries;
   chart: ApexChart;
@@ -79,6 +80,8 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
   pageCounts: Array<number> = [10, 25, 50, 100]
   pageNumber: number = 1;
   setPaginateSize: number = 10;
+  iEmployeeId:any;
+  employeesList:any;
 
   purchasePaginationConfig: any = {
     id: 'purchases_paginate',
@@ -159,7 +162,9 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
     sCocNumber: '',
     nPaymentTermDays: '',
     nLoyaltyPoints: 0,
-    nLoyaltyPointsValue: 0
+    nLoyaltyPointsValue: 0 ,
+    createrDetail:{},
+    iEmployeeId:''
   }
 
   requestParams: any = {
@@ -263,6 +268,8 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
     )
     this.requestParams.iBusinessId = localStorage.getItem('currentBusiness');
     this.requestParams.iLocationid = localStorage.getItem('currentLocation');
+    this.iEmployeeId = localStorage.getItem('currentUser') ?JSON.parse(localStorage.getItem('currentUser') || '') : "";
+
     this.requestParams.oFilterBy = {
       _id: this.customer._id,
       iCustomerId: this.customer._id
@@ -272,6 +279,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
       this.aTransctionTableHeaders.push({ key: 'Action', disabled: true });
     }
     this.fetchLoyaltyPoints();
+    this.getListEmployees();
     this.activitiesChartOptions = {
       series: this.aActivityTitles.map((el: any) => el.value),
       colors: this.aActivityTitles.map((el: any) => el.color),
@@ -303,6 +311,24 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
     this.customerNotesChangedSubject.next(event);
   }
 
+  getListEmployees() {
+    const oBody = {
+      iBusinessId: localStorage.getItem('currentBusiness') || '',
+    }
+    let url = '/api/v1/employee/list';
+    this.apiService.postNew('auth', url, oBody).subscribe((result: any) => {
+      if (result && result.data && result.data.length) {
+        this.employeesList = result.data[0].result;
+        if(this.customer?.iEmployeeId){
+           let createerIndex =  this.employeesList.findIndex((employee:any)=> employee._id == this.customer.iEmployeeId);
+           if(createerIndex != -1){
+            this.customer.createrDetail = this.employeesList[createerIndex];
+           }
+          }
+      }
+    }, (error) => {
+    });
+  }
   convertFirstNameUpper(event:any){
     if(this.customer.sFirstName.length ==1){
       this.customer.sFirstName = this.customer.sFirstName.toUpperCase();
@@ -319,7 +345,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
             this.apiService.putNew('customer', '/api/v1/customer/update/' + this.requestParams.iBusinessId + '/' + this.customer._id, this.customer).subscribe(
               (result: any) => {
                 if (result?.message === 'success') {
-                  this.toastService.show({ type: 'success', text: this.translations[`Successfully updated!`] });
+                  this.toastService.show({ type: 'success', text: this.translations[`SUCCESSFULLY_UPDATED`] });
                 }
               },
               (error: any) => {
@@ -398,6 +424,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
 
   EditOrCreateCustomer() {
     this.customer.iBusinessId = this.requestParams.iBusinessId;
+    this.customer.iEmployeeId = this.iEmployeeId?.userId;
     if (this.mode == 'create') {
       this.apiService.postNew('customer', '/api/v1/customer/create', this.customer).subscribe(
         (result: any) => {
