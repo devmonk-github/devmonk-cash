@@ -517,7 +517,7 @@ export class ReceiptService {
     async printThermalReceipt({ oDataSource, printSettings, sAction }: any) {
         let thermalPrintSettings: any;
         if (printSettings?.length > 0) {
-            thermalPrintSettings = printSettings.filter((p: any) => p.iWorkstationId == this.iWorkstationId)[0];
+            thermalPrintSettings = printSettings.filter((p: any) => p.iWorkstationId == this.iWorkstationId && p.sMethod == 'thermal' && p.sType == 'regular')[0];
         }
         if (!thermalPrintSettings?.nPrinterId || !thermalPrintSettings?.nComputerId) {
             this.toastService.show({ type: 'danger', text: 'Check your business -> printer settings' });
