@@ -114,7 +114,6 @@ export class TillService {
       'y',
       this.getValueFromLocalStorage('currentWorkstation'),
       this.getValueFromLocalStorage('currentUser').userId,
-      this.getValueFromLocalStorage('currentUser').userId,
       this.getValueFromLocalStorage('currentLocation'),
       null,
       null,
