@@ -5,12 +5,16 @@ import { ApiService } from "./api.service";
 import { CommonPrintSettingsService } from "./common-print-settings.service";
 import { PdfService as PdfServiceNew } from "./pdf2.service";
 import { PdfService as PdfService } from "./pdf.service";
+import { ToastService } from "../components/toast";
+import { Pn2escposService } from "./pn2escpos.service";
+import { PrintService } from "./print.service";
 
 @Injectable({
     providedIn: 'root'
 })
 export class ReceiptService {
     iBusinessId: string;
+    businessDetails: any;
     iLocationId: string;
     iWorkstationId: string;
     DIVISON_FACTOR: number = 1;
@@ -95,21 +99,25 @@ export class ReceiptService {
     orientation: string = 'portrait';
     translations: any;
 
+    private pn2escposService = new Pn2escposService();
     constructor(
         private pdfServiceNew: PdfServiceNew,
         private apiService: ApiService,
         private commonService: CommonPrintSettingsService,
-        private pdfService: PdfService) {
+        private pdfService: PdfService,
+        private toastService: ToastService,
+        private printService: PrintService) {
+
         this.iBusinessId = localStorage.getItem('currentBusiness') || '';
         this.iLocationId = localStorage.getItem('currentLocation') || '';
         this.iWorkstationId = localStorage.getItem('currentWorkstation') || '';
+        this.fetchBusinessDetails();
     }
 
     async exportToPdf({ oDataSource, templateData, pdfTitle, printSettings, printActionSettings, eSituation, sAction }: any) {
         this.oOriginalDataSource = oDataSource;
         this.pdfService.getTranslations();
         // console.log(this.oOriginalDataSource, sAction)
-
         this.commonService.pdfTitle = pdfTitle;
         this.commonService.mapCommonParams(templateData.aSettings);
         this.processTemplate(templateData.layout);
@@ -504,5 +512,56 @@ export class ReceiptService {
         this.oOriginalDataSource = null;
         this.content = [];
         this.styles = {};
+    }
+
+    async printThermalReceipt({ oDataSource, printSettings, sAction }: any) {
+        let thermalPrintSettings: any;
+        if (printSettings?.length > 0) {
+            thermalPrintSettings = printSettings.filter((p: any) => p.iWorkstationId == this.iWorkstationId && p.sMethod == 'thermal' && p.sType == 'regular')[0];
+        }
+        if (!thermalPrintSettings?.nPrinterId || !thermalPrintSettings?.nComputerId) {
+            this.toastService.show({ type: 'danger', text: 'Check your business -> printer settings' });
+            return;
+        }
+        this.apiService.getNew('cashregistry', `/api/v1/print-template/business-receipt/${this.iBusinessId}/${this.iLocationId}`).subscribe((result: any) => {
+            if (result?.data?.aTemplate?.length > 0) {
+                let transactionDetails = { business: this.businessDetails, ...oDataSource };
+                let command;
+                try {
+                    command = this.pn2escposService.generate(JSON.stringify(result.data.aTemplate), JSON.stringify(transactionDetails));
+                } catch (e) {
+                    this.toastService.show({ type: 'danger', text: 'Template not defined properly. Check browser console for more details' });
+                    console.log(e);
+                    return;
+                }
+
+                this.printService.openDrawer(this.iBusinessId, command, thermalPrintSettings?.nPrinterId, thermalPrintSettings?.nComputerId).then((response: any) => {
+                    if (response.status == "PRINTJOB_NOT_CREATED") {
+                        let message = '';
+                        if (response.computerStatus != 'online') {
+                            message = 'Your computer status is : ' + response.computerStatus + '.';
+                        } else if (response.printerStatus != 'online') {
+                            message = 'Your printer status is : ' + response.printerStatus + '.';
+                        }
+                        this.toastService.show({ type: 'warning', title: 'PRINTJOB_NOT_CREATED', text: message });
+                    } else {
+                        this.toastService.show({ type: 'success', text: 'PRINTJOB_CREATED', apiUrl: '/api/v1/printnode/print-job/' + response.id });
+                    }
+                })
+            } else if (result?.data?.aTemplate?.length == 0) {
+                this.toastService.show({ type: 'danger', text: 'TEMPLATE_NOT_FOUND' });
+            } else {
+                this.toastService.show({ type: 'danger', text: 'Error while fetching print template' });
+            }
+        });
+    }
+
+    fetchBusinessDetails() {
+        this.apiService.getNew('core', '/api/v1/business/' + this.iBusinessId)
+            .subscribe(
+                (result: any) => {
+                    this.businessDetails = result.data;
+                    this.businessDetails.currentLocation = this.businessDetails?.aLocation?.filter((location: any) => location?._id.toString() == this.iLocationId.toString())[0];
+                })
     }
 }
