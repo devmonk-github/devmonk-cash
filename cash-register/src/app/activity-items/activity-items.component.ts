@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { faLongArrowAltDown, faLongArrowAltUp, faMinusCircle, faPlusCircle, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { Subscription } from 'rxjs';
@@ -16,7 +16,7 @@ import { MenuComponent } from '../shared/_layout/components/common';
   styleUrls: ['./activity-items.component.sass'],
   providers: [BarcodeService]
 })
-export class ActivityItemsComponent implements OnInit {
+export class ActivityItemsComponent implements OnInit, OnDestroy {
 
   pageCounts: Array<number> = [10, 25, 50, 100]
   pageCount: number = 10;
@@ -151,6 +151,9 @@ export class ActivityItemsComponent implements OnInit {
         this.activityItems = result.data;
         this.paginationConfig.totalItems = result.count;
         this.showLoader = false;
+        setTimeout(() => {
+          MenuComponent.bootstrap();
+        }, 200);
         if (result?.aUniqueBusinessPartner?.length && !this.aFilterBusinessPartner?.length) this.aFilterBusinessPartner = result.aUniqueBusinessPartner;
       },
       (error: any) => {
@@ -362,6 +365,8 @@ export class ActivityItemsComponent implements OnInit {
   }
 
   ngOnDestroy(): void {
+    console.log('ondestroy activity items')
     if (this.propertyListSubscription) this.propertyListSubscription.unsubscribe();
+    MenuComponent.clearEverything();
   }
 }

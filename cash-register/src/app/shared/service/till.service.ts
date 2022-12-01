@@ -441,7 +441,7 @@ export class TillService {
             iArticleGroupId: transactionItem.iArticleGroupId,
             iEmployeeId: transactionItem.iEmployeeId,
             iBusinessBrandId: transactionItem.iBusinessBrandId,
-            nDiscount: transactionItem.nDiscount || 0,
+            nDiscount: 0, //transactionItem.nDiscount ||
             tax: transactionItem.nVatRate,
             oGoldFor: transactionItem.oGoldFor,
             iSupplierId: transactionItem.iSupplierId,
