@@ -1,6 +1,7 @@
 import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { faLongArrowAltDown, faLongArrowAltUp, faMinusCircle, faPlus, faPlusCircle, faSearch } from '@fortawesome/free-solid-svg-icons';
+import { filter, map } from 'rxjs/operators';
 import { ActivityDetailsComponent } from '../shared/components/activity-details-dialog/activity-details.component';
 import { CardsComponent } from '../shared/components/cards-dialog/cards-dialog.component';
 import { ToastService } from '../shared/components/toast';
@@ -16,7 +17,7 @@ import { MenuComponent } from '../shared/_layout/components/common';
   styleUrls: ['./services.component.sass'],
   providers: [BarcodeService]
 })
-export class ServicesComponent implements OnInit {
+export class ServicesComponent implements OnInit, OnDestroy {
 
   option: boolean = true;
   faSearch = faSearch;
@@ -121,7 +122,15 @@ export class ServicesComponent implements OnInit {
     private activatedRoute: ActivatedRoute,
     private toastrService: ToastService,
     private barcodeService: BarcodeService,
-  ) { }
+  ) {
+
+    
+      
+   }
+  ngOnDestroy(): void {
+    console.log('ondestroy services' )
+    MenuComponent.clearEverything();
+  }
 
 
   async ngOnInit(): Promise<void> {
@@ -330,9 +339,10 @@ export class ServicesComponent implements OnInit {
       if (result?.aUniqueBusinessPartner && !this.aFilterBusinessPartner?.length) this.aFilterBusinessPartner = result.aUniqueBusinessPartner;
       this.paginationConfig.totalItems = result?.count;
       this.getCustomers();
+      this.showLoader = false;
       setTimeout(() => {
         MenuComponent.bootstrap();
-        this.showLoader = false;
+        // MenuComponent.reinitialization();
       }, 200);
     }, (error) => {
       this.showLoader = false;

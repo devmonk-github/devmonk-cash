@@ -135,8 +135,8 @@ export class TransactionDetailsComponent implements OnInit {
     this.apiService.postNew('auth', url, oBody).subscribe((result: any) => {
       if (result && result.data && result.data.length) {
         this.employeesList = result.data[0].result;
-        if(this.transaction?.iCreatedBy){
-           let createerIndex =  this.employeesList.findIndex((employee:any)=> employee._id == this.transaction.iCreatedBy);
+        if(this.transaction?.iEmployeeId){
+           let createerIndex =  this.employeesList.findIndex((employee:any)=> employee._id == this.transaction.iEmployeeId);
            if(createerIndex != -1){
             this.transaction.createrDetail = this.employeesList[createerIndex];
            }

@@ -146,10 +146,10 @@ class MenuComponent {
     });
   }
 
-  public static initGlobalHandlers = () => {
+  public static initGlobalHandlers = () => {    
     // Dropdown handler
     document.addEventListener('click', (e) => {
-      const menuItems = document.querySelectorAll('.show.menu-dropdown[data-kt-menu-trigger]');
+      const menuItems = document.querySelectorAll('[data-kt-menu-trigger]');
       if (menuItems && menuItems.length > 0) {
         for (let i = 0; i < menuItems.length; i++) {
           const item = menuItems[i] as HTMLElement;
@@ -269,10 +269,16 @@ class MenuComponent {
   public static bootstrap = () => {
     MenuComponent.initGlobalHandlers();
     MenuComponent.createInstances('[data-kt-menu="true"]');
+    MenuComponent.initGlobalHandlers();
   }
 
-  public static reinitialization = () => {
+  public static clearEverything = () => {    
+    DataUtil.store.clear();
+    DOMEventHandlerUtil.store.clear();
+  }
 
+  public static reinitialization = () => {    // console.log('reinitialization size before =', DataUtil.store.size);
+    DataUtil.store.clear();
     MenuComponent.createInstances('[data-kt-menu="true"]');
   }
 

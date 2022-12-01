@@ -164,16 +164,10 @@
                                                 </div>
                                                 <div class="row mt-2">
                                                     <div class="col-6">
-                                                        {{"ALREADY_PAID" | translate}}: {{activity.nPaidAmount |
-                                                        currency:
-                                                        '€'}}
+                                                        {{"ALREADY_PAID" | translate}}: {{activity.nPaidAmount | currency:tillService.currency}}
                                                     </div>
                                                     <div class="col-6">
-                                                        {{"STILL_TO_PAY"}}: {{(activity.nTotalAmount -
-                                                        activity.nPaidAmount)
-                                                        |
-                                                        currency:
-                                                        '€'}}
+                                                        {{"STILL_TO_PAY"}}: {{(activity.nTotalAmount - activity.nPaidAmount) | currency:tillService.currency}}
                                                     </div>
                                                 </div>
                                             </div>
@@ -448,7 +442,7 @@
                                                                 [(ngModel)]="activity.nPriceIncVat" placeholder="">
                                                             <p *ngIf="activity?.oType?.bDiscount">Discount price
                                                                 {{activity.nPriceIncVat - activity.nTotalAmount |
-                                                                currency:'€' }} </p>
+                                                                currency:tillService.currency }} </p>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -465,7 +459,7 @@
                                                                 (input)="changeTotalAmount(activity)">
                                                             <p *ngIf="activity?.oType?.bDiscount">Discount price
                                                                 {{activity.nPriceIncVat - activity.nTotalAmount |
-                                                                currency:'€' }} </p>
+                                                                currency:tillService.currency }} </p>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -489,7 +483,7 @@
                                                         <tr *ngFor='let receipt of activity.receipts'>
                                                             <td>{{receipt.sTransactionNumber}}</td>
                                                             <td>{{receipt.dCreatedDate | date: 'medium'}}</td>
-                                                            <td>{{receipt.nPaymentAmount | currency: '€'}}</td>
+                                                            <td>{{receipt.nPaymentAmount | currency: tillService.currency}}</td>
                                                             <ng-container *ngIf="from != 'transaction-details'">
                                                                 <td>
                                                                     <div class="d-flex align-items-center">
@@ -561,7 +555,7 @@
                                                                 [(ngModel)]="activity.nPriceIncVat" placeholder="">
                                                             <p *ngIf="activity?.oType?.bDiscount">Discount price
                                                                 {{activity.nPriceIncVat - activity.nTotalAmount |
-                                                                currency:'€' }} </p>
+                                                                currency:tillService.currency }} </p>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -747,7 +741,7 @@
                                             </div>
                                             <div class="form-group mb-6">
                                                 {{'REMAINING_AMOUNT' | translate}} : {{activity.nPaidAmount |
-                                                currency:'€'}}
+                                                currency:tillService.currency}}
                                             </div>
 
                                         </div>
@@ -782,14 +776,14 @@
                                                     <div class="col-6">
                                                         {{"ALREADY_PAID" | translate}}: {{activity.nPaidAmount |
                                                         currency:
-                                                        '€'}}
+                                                        tillService.currency}}
                                                     </div>
                                                     <div class="col-6">
                                                         {{"STILL_TO_PAY"}}: {{(activity.nTotalAmount -
                                                         activity.nPaidAmount)
                                                         |
                                                         currency:
-                                                        '€'}}
+                                                        tillService.currency}}
                                                     </div>
                                                 </div>
                                             </div>
@@ -1061,7 +1055,7 @@
                                                                 [(ngModel)]="activity.nPriceIncVat" placeholder="">
                                                             <p *ngIf="activity?.oType?.bDiscount">Discount price
                                                                 {{activity.nPriceIncVat - activity.nTotalAmount |
-                                                                currency:'€' }} </p>
+                                                                currency:tillService.currency }} </p>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -1077,7 +1071,7 @@
                                                                 [(ngModel)]="activity.nPriceIncVat" placeholder="">
                                                             <p *ngIf="activity?.oType?.bDiscount">Discount price
                                                                 {{activity.nPriceIncVat - activity.nTotalAmount |
-                                                                currency:'€' }} </p>
+                                                                currency:tillService.currency }} </p>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -1104,7 +1098,7 @@
                                                         <tr *ngFor='let receipt of activity.receipts'>
                                                             <td>{{receipt.sTransactionNumber}}</td>
                                                             <td>{{receipt.dCreatedDate | date: 'medium'}}</td>
-                                                            <td>{{receipt.nPaymentAmount | currency: '€'}}</td>
+                                                            <td>{{receipt.nPaymentAmount | currency: tillService.currency}}</td>
                                                             <ng-container *ngIf="from != 'transaction-details'">
                                                                 <td>
                                                                     <div class="d-flex align-items-center">
@@ -1189,7 +1183,7 @@
                                                                 [(ngModel)]="activity.nPriceIncVat" placeholder="">
                                                             <p *ngIf="activity?.oType?.bDiscount">Discount price
                                                                 {{activity.nPriceIncVat - activity.nTotalAmount |
-                                                                currency:'€' }} </p>
+                                                                currency:tillService.currency }} </p>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -1438,14 +1432,14 @@
                                                     <div class="col-6">
                                                         {{"ALREADY_PAID" | translate}}: {{activity.nPaidAmount |
                                                         currency:
-                                                        '€'}}
+                                                        tillService.currency}}
                                                     </div>
                                                     <div class="col-6">
                                                         {{"STILL_TO_PAY"}}: {{(activity.nTotalAmount -
                                                         activity.nPaidAmount)
                                                         |
                                                         currency:
-                                                        '€'}}
+                                                        tillService.currency}}
                                                     </div>
                                                 </div>
                                             </div>
@@ -1717,7 +1711,7 @@
                                                                 [(ngModel)]="activity.nPriceIncVat" placeholder="">
                                                             <p *ngIf="activity?.oType?.bDiscount">Discount price
                                                                 {{activity.nPriceIncVat - activity.nTotalAmount |
-                                                                currency:'€' }} </p>
+                                                                currency:tillService.currency }} </p>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -1733,7 +1727,7 @@
                                                                 [(ngModel)]="activity.nPriceIncVat" placeholder="">
                                                             <p *ngIf="activity?.oType?.bDiscount">Discount price
                                                                 {{activity.nPriceIncVat - activity.nTotalAmount |
-                                                                currency:'€' }} </p>
+                                                                currency:tillService.currency }} </p>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -1760,7 +1754,7 @@
                                                         <tr *ngFor='let receipt of activity.receipts'>
                                                             <td>{{receipt.sTransactionNumber}}</td>
                                                             <td>{{receipt.dCreatedDate | date: 'medium'}}</td>
-                                                            <td>{{receipt.nPaymentAmount | currency: '€'}}</td>
+                                                            <td>{{receipt.nPaymentAmount | currency: tillService.currency}}</td>
                                                             <ng-container *ngIf="from != 'transaction-details'">
                                                                 <td>
                                                                     <div class="d-flex align-items-center">
@@ -1845,7 +1839,7 @@
                                                                 [(ngModel)]="activity.nPriceIncVat" placeholder="">
                                                             <p *ngIf="activity?.oType?.bDiscount">Discount price
                                                                 {{activity.nPriceIncVat - activity.nTotalAmount |
-                                                                currency:'€' }} </p>
+                                                                currency:tillService.currency }} </p>
                                                         </div>
                                                     </div>
                                                 </div>
