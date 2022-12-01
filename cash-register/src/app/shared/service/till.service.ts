@@ -553,8 +553,18 @@ export class TillService {
     dataObject.totalSavingPoints = totalSavingPoints;
     dataObject.totalRedeemedLoyaltyPoints = totalRedeemedLoyaltyPoints;
     dataObject.dCreatedDate = moment(dataObject.dCreatedDate).format('DD-MM-yyyy hh:mm:ss');
-    const result: any = await this.getRelatedTransaction(dataObject?.iActivityId, dataObject?._id).toPromise();
-    dataObject.related = result.data || [];
+    console.log({dataObject})
+    const [_relatedResult, _empResult]:any = await Promise.all([
+      this.getRelatedTransaction(dataObject?.iActivityId, dataObject?._id).toPromise(),
+      this.getEmployee(dataObject.iEmployeeId).toPromise()
+    ])
+
+    if (_empResult?.data?.length && _empResult?.data[0]?.result?.length) {
+      dataObject.sEmpFirstName = 'Advised By: '+ _empResult?.data[0]?.result[0].sFirstName;
+    }
+    // console.log(dataObject);
+
+    dataObject.related = _relatedResult.data || [];
     dataObject.related.forEach((relatedobj: any) => {
       relatedobj.aPayments.forEach((obj: any) => {
         obj.dCreatedDate = moment(obj.dCreatedDate).format('DD-MM-yyyy hh:mm:ss');
@@ -564,6 +574,16 @@ export class TillService {
     transaction = dataObject;
     // console.log('processTransactionForPdfReceipt after processing', transaction);
     return transaction;
+  }
+
+  getEmployee(id:any){
+    const oBody:any = {
+      iBusinessId: this.iBusinessId,
+      oFilterBy:{
+        _id: id
+      }
+    }
+    return this.apiService.postNew('auth', `/api/v1/employee/list`, oBody);
   }
 
 
