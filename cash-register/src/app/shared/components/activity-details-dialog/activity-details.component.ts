@@ -405,59 +405,8 @@ export class ActivityDetailsComponent implements OnInit {
     transaction.iActivityId = this.activity._id;
     this.dialogService.openModal(TransactionItemsDetailsComponent, { cssClass: "modal-xl", context: { transaction, itemType, selectedId: transaction._id } })
       .instance.close.subscribe((result: any) => {
-        const data = this.tillService.processTransactionSearchResult(result);
-        // const transactionItems: any = [];
-        //if (result.transaction) {
-          // result.transactionItems.forEach((transactionItem: any) => {
-          //   if (transactionItem.isSelected) {
-          //     const { tType } = transactionItem;
-          //     let paymentAmount = transactionItem.nQuantity * transactionItem.nPriceIncVat - transactionItem.nPaidAmount;
-          //     if (tType === 'refund') {
-          //       paymentAmount = -1 * transactionItem.nPaidAmount;
-          //       transactionItem.oType.bRefund = true;
-          //     } else if (tType === 'revert') {
-          //       paymentAmount = transactionItem.nPaidAmount;
-          //       transactionItem.oType.bRefund = false;
-          //     };
-          //     transactionItems.push({
-          //       name: transactionItem.sProductName || transactionItem.sProductNumber,
-          //       iActivityItemId: transactionItem.iActivityItemId,
-          //       nRefundAmount: transactionItem.nPaidAmount,
-          //       iLastTransactionItemId: transactionItem.iTransactionItemId,
-          //       iArticleGroupId: transactionItem.iArticleGroupId,
-          //       prePaidAmount: tType === 'refund' ? transactionItem.nPaidAmount : transactionItem.nPaymentAmount,
-          //       type: transactionItem.sGiftCardNumber ? 'giftcard' : transactionItem.oType.eKind,
-          //       eTransactionItemType: 'regular',
-          //       nBrokenProduct: 0,
-          //       tType,
-          //       oType: transactionItem.oType,
-          //       sUniqueIdentifier: transactionItem.sUniqueIdentifier,
-          //       aImage: transactionItem.aImage,
-          //       nonEditable: transactionItem.sGiftCardNumber ? true : false,
-          //       sGiftCardNumber: transactionItem.sGiftCardNumber,
-          //       quantity: transactionItem.nQuantity,
-          //       price: transactionItem.nPriceIncVat,
-          //       iRepairerId: transactionItem.iRepairerId,
-          //       oArticleGroupMetaData: transactionItem.oArticleGroupMetaData,
-          //       nRedeemedLoyaltyPoints: transactionItem.nRedeemedLoyaltyPoints,
-          //       iEmployeeId: transactionItem.iEmployeeId,
-          //       iBusinessBrandId: transactionItem.iBusinessBrandId,
-          //       discount: 0,
-          //       tax: transactionItem.nVatRate,
-          //       paymentAmount,
-          //       description: '',
-          //       open: true,
-          //       nMargin: transactionItem.nMargin,
-          //       nPurchasePrice: transactionItem.nPurchasePrice,
-          //       sServicePartnerRemark: transactionItem.sServicePartnerRemark,
-          //       eActivityItemStatus: transactionItem.eActivityItemStatus,
-          //       eEstimatedDateAction: transactionItem.eEstimatedDateAction,
-          //       bGiftcardTaxHandling: transactionItem.bGiftcardTaxHandling,
-          //     });
-          //   }
-          // });
-          // result.transactionItems = transactionItems;
-
+        if(result?.action !== false){
+          const data = this.tillService.processTransactionSearchResult(result);
           localStorage.setItem('fromTransactionPage', JSON.stringify(data));
           localStorage.setItem('recentUrl', '/business/transactions');
           setTimeout(() => {
@@ -466,7 +415,7 @@ export class ActivityDetailsComponent implements OnInit {
             }
             this.close(true);
           }, 100);
-        //}
+        }
       }, (error) => {
         console.log('error: ', error);
       });

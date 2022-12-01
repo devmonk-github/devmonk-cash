@@ -1,4 +1,4 @@
-import { Component, OnInit, QueryList, ViewChildren } from '@angular/core';
+import { Component, OnDestroy, OnInit, QueryList, ViewChildren } from '@angular/core';
 import { Router, NavigationEnd, ActivatedRoute } from '@angular/router';
 import { faLongArrowAltDown, faLongArrowAltUp, faMinusCircle, faPlus, faPlusCircle, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { ToastService } from '../shared/components/toast';
@@ -15,7 +15,7 @@ import { TransactionDetailsComponent } from './components/transaction-details/tr
   styleUrls: ['./transactions.component.sass'],
   providers: [BarcodeService]
 })
-export class TransactionsComponent implements OnInit {
+export class TransactionsComponent implements OnInit, OnDestroy {
   option: boolean = true;
   faSearch = faSearch;
   faIncrease = faPlusCircle;
@@ -103,6 +103,7 @@ export class TransactionsComponent implements OnInit {
     private toastrService: ToastService,
     private barcodeService: BarcodeService,
   ) {  }
+  
 
   async ngOnInit() {
     if (this.routes.url.includes('/business/web-orders')) this.eType = 'webshop-revenue';
@@ -323,5 +324,10 @@ export class TransactionsComponent implements OnInit {
       this.toastrService.show({ type: 'warning', text: 'Please go to different page to process this barcode !' })
     }
 
+  }
+
+  ngOnDestroy(): void {
+    console.log('ondestroy transactions')
+    MenuComponent.clearEverything();
   }
 }

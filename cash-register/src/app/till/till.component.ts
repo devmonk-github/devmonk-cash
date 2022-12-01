@@ -196,7 +196,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     this.tillService.selectCurrency(this.businessDetails.currentLocation);
 
     setTimeout(() => {
-      MenuComponent.reinitialization();
+      MenuComponent.bootstrap();
     });
 }
 
@@ -1497,5 +1497,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     this.cancelFiskalyTransaction();
     if (this.getSettingsSubscription) this.getSettingsSubscription.unsubscribe();
     if (this.dayClosureCheckSubscription) this.dayClosureCheckSubscription.unsubscribe();
+    MenuComponent.clearEverything();
   }
 }
