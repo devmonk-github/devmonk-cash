@@ -553,16 +553,9 @@ export class TillService {
     dataObject.totalSavingPoints = totalSavingPoints;
     dataObject.totalRedeemedLoyaltyPoints = totalRedeemedLoyaltyPoints;
     dataObject.dCreatedDate = moment(dataObject.dCreatedDate).format('DD-MM-yyyy hh:mm:ss');
-    console.log({dataObject})
-    const [_relatedResult, _empResult]:any = await Promise.all([
+    const [_relatedResult]: any = await Promise.all([ //_empResult
       this.getRelatedTransaction(dataObject?.iActivityId, dataObject?._id).toPromise(),
-      this.getEmployee(dataObject.iEmployeeId).toPromise()
     ])
-
-    if (_empResult?.data?.length && _empResult?.data[0]?.result?.length) {
-      dataObject.sEmpFirstName = 'Advised By: '+ _empResult?.data[0]?.result[0].sFirstName;
-    }
-    // console.log(dataObject);
 
     dataObject.related = _relatedResult.data || [];
     dataObject.related.forEach((relatedobj: any) => {
@@ -575,17 +568,6 @@ export class TillService {
     // console.log('processTransactionForPdfReceipt after processing', transaction);
     return transaction;
   }
-
-  getEmployee(id:any){
-    const oBody:any = {
-      iBusinessId: this.iBusinessId,
-      oFilterBy:{
-        _id: id
-      }
-    }
-    return this.apiService.postNew('auth', `/api/v1/employee/list`, oBody);
-  }
-
 
   getPercentOf(nNumber:any, nPercent:any){
     return parseFloat(nNumber) * parseFloat(nPercent) / 100;

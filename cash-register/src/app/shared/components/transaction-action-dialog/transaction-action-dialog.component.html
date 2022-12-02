@@ -25,29 +25,36 @@
             <hr>
         </div>
         <div class="row">
-            <ng-container *ngFor="let type of aTypes">
-                <ng-container *ngIf="aUniqueTypes.includes(type) && type !== 'repair'"> <!-- && type !== 'repair' -->
-                    <div class="col-4 d-flex flex-column align-items-center">
-                        <span *ngIf="type==='regular'">
-                            {{ 'PROOF_OF_PAYMENT' }}
-                        </span>
-                        <span *ngIf="type==='order'">
-                            {{ 'OVERVIEW_OF_PROJECT' }}
-                        </span>
-                        <span *ngIf="type==='giftcard'">
-                            {{ 'GIFTCARD' }}
-                        </span>
-                        <ng-container *ngFor="let action of aActionSettings">
-                            <div class="d-flex flex-column">
-                                <span [ngClass]="{'badge-info': action=='PRINT_THERMAL', 'badge-dark': action=='PRINT_PDF', 'badge-success': action=='DOWNLOAD' }" 
-                                class="badge cursor-pointer my-2" (click)="performAction(type, action)">
-                                    {{action}}
-                                </span>
-                            </div>
-                        </ng-container>
-                    </div>
-                </ng-container>
-            </ng-container>
+            <div class="col-4 d-flex flex-column align-items-center" *ngIf="bRegularCondition">
+                <span>{{ 'PROOF_OF_PAYMENT' }}</span>
+                <div class="d-flex flex-column" *ngFor="let action of aActionSettings">
+                    <span
+                        [ngClass]="{'badge-info': action=='PRINT_THERMAL', 'badge-dark': action=='PRINT_PDF', 'badge-success': action=='DOWNLOAD' }"
+                        class="badge cursor-pointer my-2" (click)="performAction('regular', action)">
+                        {{action}}
+                    </span>
+                </div>
+            </div>
+            <div class="col-4 d-flex flex-column align-items-center" *ngIf="bOrderCondition">
+                <span>{{ 'OVERVIEW_OF_PROJECT' }}</span>
+                <div class="d-flex flex-column" *ngFor="let action of aActionSettings">
+                    <span
+                        [ngClass]="{'badge-info': action=='PRINT_THERMAL', 'badge-dark': action=='PRINT_PDF', 'badge-success': action=='DOWNLOAD' }"
+                        class="badge cursor-pointer my-2" (click)="performAction('order', action)">
+                        {{action}}
+                    </span>
+                </div>
+            </div>
+            <div class="col-4 d-flex flex-column align-items-center" *ngIf="bGiftcardCondition">
+                <span>{{ 'GIFTCARD' }}</span>
+                <div class="d-flex flex-column" *ngFor="let action of aActionSettings">
+                    <span
+                        [ngClass]="{'badge-info': action=='PRINT_THERMAL', 'badge-dark': action=='PRINT_PDF', 'badge-success': action=='DOWNLOAD' }"
+                        class="badge cursor-pointer my-2" (click)="performAction('giftcard', action)">
+                        {{action}}
+                    </span>
+                </div>
+            </div>
         </div>
         <div class="row mt-5" *ngIf="nRepairCount > 0">
             <div class="col-12">

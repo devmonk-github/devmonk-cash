@@ -155,26 +155,31 @@ export class PdfService {
       this.handlePrint(pdfObject, printSettings, pdfTitle);
       return;
     } else {
-      const aActionToPerform = printActionSettings[0].aActionToPerform;
-      aActionToPerform.forEach((action: any) => {
-        switch (action) {
-          case 'PRINT_PDF':
-            printSettings = printSettings.filter((s: any) => s.sMethod === 'pdf')[0];
-            if (!printSettings?.nPrinterId) {
-              this.toastrService.show({ type: 'danger', text: `Printer is not selected for ${printSettings.sType}` });
-              return;
-            }
-            this.handlePrint(pdfObject, printSettings, pdfTitle);
-            break;
-          case 'DOWNLOAD':
-            pdfObject.download(pdfTitle);
-            break;
-          case 'PRINT_THERMAL':
-            printSettings = printSettings.filter((s: any) => s.sMethod === 'thermal')[0];
-            this.handlePrint(pdfObject, printSettings, pdfTitle);
-            break;
-        }
-      });
+      if (printActionSettings?.length) {
+        const aActionToPerform = printActionSettings[0].aActionToPerform;
+        aActionToPerform.forEach((action: any) => {
+          switch (action) {
+            case 'PRINT_PDF':
+              printSettings = printSettings.filter((s: any) => s.sMethod === 'pdf')[0];
+              if (!printSettings?.nPrinterId) {
+                this.toastrService.show({ type: 'danger', text: `Printer is not selected for ${printSettings.sType}` });
+                return;
+              }
+              this.handlePrint(pdfObject, printSettings, pdfTitle);
+              break;
+            case 'DOWNLOAD':
+              pdfObject.download(pdfTitle);
+              break;
+            case 'PRINT_THERMAL':
+              printSettings = printSettings.filter((s: any) => s.sMethod === 'thermal')[0];
+              this.handlePrint(pdfObject, printSettings, pdfTitle);
+              break;
+          }
+        });
+      } else {
+        pdfObject.download(pdfTitle);
+        return;
+      }
     }
   }
 

@@ -128,6 +128,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   bIsOpeningDayState: boolean = false;
   selectedLanguage: any = localStorage.getItem('language') ? localStorage.getItem('language') : 'en';
   bHasIActivityItemId: boolean = false;
+  employee: any;
 
   randNumber(min: number, max: number): number {
     return Math.floor(Math.random() * (max - min + 1) + min);
@@ -182,12 +183,19 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.getfiskalyInfo();
     this.cancelFiskalyTransaction();
+    const currentEmployeeId = JSON.parse(localStorage.getItem('currentUser') || '')['userId'];
 
-    const [_printActionSettings, _printSettings, _businessResult]: any = await Promise.all([
+    const [_printActionSettings, _printSettings, _businessResult, _empResult]: any = await Promise.all([
       this.getPrintSettings({ oFilterBy: { sMethod: 'actions' } }),
       this.getPrintSettings(),
-      this.getBusinessDetails().toPromise()
+      this.getBusinessDetails().toPromise(),
+      this.getEmployee(currentEmployeeId).toPromise()
     ]);
+
+    if (_empResult?.data) {
+      this.employee = _empResult?.data;
+    }
+
     this.printActionSettings = _printActionSettings?.data[0]?.result[0].aActions;
     this.printSettings = _printSettings?.data[0]?.result;
     
@@ -199,8 +207,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       MenuComponent.bootstrap();
     });
 }
-
-
 
   ngAfterViewInit() {
     if (this.searchField)
@@ -631,7 +637,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
             });
             body.giftCards = this.appliedGiftCards;
           }
-          console.log('creating transaction this.iActivityId', this.iActivityId)
           body.oTransaction.iActivityId = this.iActivityId;
           let result = body.transactionItems.map((a: any) => a.iBusinessPartnerId);
           const uniq = [...new Set(_.compact(result))];
@@ -676,6 +681,11 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
         }
       });
   }
+
+  getEmployee(id:any){
+    return this.apiService.getNew('auth', `/api/v1/employee/${id}?iBusinessId=${this.business._id}`);
+  }
+
 
   async handleReceiptPrinting() {
     this.transaction = await this.tillService.processTransactionForPdfReceipt(this.transaction);
@@ -726,9 +736,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       this.getTemplate(aUniqueItemTypes),
       this.getBase64FromUrl(oDataSource?.businessDetails?.sLogoLight)
     ]);
-    
 
-
+    oDataSource.sAdvisedEmpFirstName = this.employee.sFirstName;
     oDataSource.sBusinessLogoUrl = _oLogoData.data;
     oDataSource.oCustomer = {
       sFirstName: oDataSource.oCustomer.sFirstName,
@@ -739,7 +748,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     };
     const aTemplates = _template.data;
 
-    this.dialogService.openModal(TransactionActionDialogComponent, { cssClass: 'modal-lg',
+    this.dialogService.openModal(TransactionActionDialogComponent, {
+      cssClass: 'modal-lg', hasBackdrop: true, closeOnBackdropClick: true, closeOnEsc: true, 
       context: {
         transaction: oDataSource,
         printActionSettings: this.printActionSettings,
@@ -748,7 +758,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
         nRepairCount: nRepairCount,
         nOrderCount: nOrderCount,
         activityItems: this.activityItems,
-        aTemplates: aTemplates
+        aTemplates: aTemplates,
+        businessDetails: this.businessDetails
       }
     }).instance.close.subscribe((data) => {});
 
@@ -772,6 +783,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       //use two column layout
       const template = aTemplates.filter((template: any) => template.eType === 'repair')[0];
       oDataSource = this.activityItems.filter((item: any) => item.oType.eKind === 'repair')[0];
+      oDataSource.sAdvisedEmpFirstName = this.employee.sFirstName;
       const aTemp = oDataSource.sNumber.split("-");
       oDataSource.sPartRepairNumber = aTemp[aTemp.length - 1];
       oDataSource.sBarcodeURI = this.generateBarcodeURI(false, oDataSource.sNumber);
@@ -783,6 +795,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       // use repair_alternative laYout
       const template = aTemplates.filter((template: any) => template.eType === 'repair_alternative')[0];
       oDataSource = this.activityItems.filter((item: any) => item.oType.eKind === 'repair');
+      oDataSource.sAdvisedEmpFirstName = this.employee.sFirstName;
       oDataSource.forEach((data: any) => {
         data.sBarcodeURI = this.generateBarcodeURI(false, data.sNumber);
         data.sBusinessLogoUrl = _oLogoData.data;

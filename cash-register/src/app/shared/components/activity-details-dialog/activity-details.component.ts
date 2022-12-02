@@ -189,36 +189,33 @@ export class ActivityDetailsComponent implements OnInit {
     this.aTemplates = _template.data;
   }
 
- 
-
   getListEmployees() {
     const oBody = {
       iBusinessId: localStorage.getItem('currentBusiness') || '',
     }
-    let url = '/api/v1/employee/list';
-    this.apiService.postNew('auth', url, oBody).subscribe((result: any) => {
+    this.apiService.postNew('auth', `/api/v1/employee/list`, oBody).subscribe((result: any) => {
       if (result && result.data && result.data.length) {
         this.employeesList = result.data[0].result;
-        if(this.activity?.iEmployeeId){
-           let createerIndex =  this.employeesList.findIndex((employee:any)=> employee._id == this.activity.iEmployeeId);
-           if(this.createrDetail != -1){
-           this.createrDetail = this.employeesList[createerIndex];
-           }
+        if (this.activity?.iEmployeeId) {
+          let createerIndex = this.employeesList.findIndex((employee: any) => employee._id == this.activity.iEmployeeId);
+          if (this.createrDetail != -1) {
+            this.createrDetail = this.employeesList[createerIndex];
+            this.activity.sEmpFirstName = `Advised By: ${this.createrDetail.sFirstName}`;
           }
+        }
 
         this.employeesList.map(o => o.sName = `${o.sFirstName} ${o.sLastName}`);
         if(this.activityItems[0]?.iEmployeeId){
           let createerIndex = this.employeesList.findIndex((employee:any) => employee._id == this.activityItems[0].iEmployeeId);
           if(createerIndex != -1){
-             this.createrDetail = this.employeesList[createerIndex]
+             this.createrDetail = this.employeesList[createerIndex] 
            }
         }
         this.activityItems.forEach((items:any , index:any)=>{
           let employeeIndex= this.employeesList.findIndex((employee:any)=> employee._id == items.iAssigneeId);
           if(employeeIndex != -1){
-              this.activityItems[index] = { ... items , "employeeName":this.employeesList[employeeIndex].sName }
+            this.activityItems[index] = { ...items, "employeeName": this.employeesList[employeeIndex].sName}
           }
-      
         })
       }
     }, (error) => {
@@ -454,16 +451,20 @@ export class ActivityDetailsComponent implements OnInit {
       sEmail: this.customer?.sEmail || '',
       sMobile: this.customer?.oPhone?.sCountryCode || '' + this.customer?.oPhone?.sMobile || '',
       sLandLine: this.customer?.oPhone?.sLandLine || '',
-      sAddressLine1:this.customer?.oShippingAddress?.sStreet + " " + this.customer?.oShippingAddress?.sHouseNumber + " " + this.customer?.oShippingAddress?.sHouseNumberSuffix + " , " + this.customer?.oShippingAddress?.sPostalCode + " " + this.customer?.oShippingAddress?.sCity ,
-      sAddressLine2:this.customer?.oShippingAddress?.sCountry
+      sAddressLine1: this.customer?.oShippingAddress?.sStreet + " " + this.customer?.oShippingAddress?.sHouseNumber + " " + this.customer?.oShippingAddress?.sHouseNumberSuffix + " , " + this.customer?.oShippingAddress?.sPostalCode + " " + this.customer?.oShippingAddress?.sCity,
+      sAddressLine2: this.customer?.oShippingAddress?.sCountry
     };
-    if(!oDataSource.dEstimatedDate){
-        oDataSource.dEstimatedDate = this.translation['NO_DATE_SELECTED'];
+    if (!oDataSource.dEstimatedDate) {
+      oDataSource.dEstimatedDate = this.translation['NO_DATE_SELECTED'];
     }
-    if(oDataSource?.iEmployeeId){
-      const employeeIndex:any = this.employeesList.findIndex((employee:any)=> employee._id == oDataSource.iEmployeeId);
-      if(employeeIndex != -1){
-          oDataSource.sEmployeeName= this.employeesList[employeeIndex]['sName'];
+    if (oDataSource?.iEmployeeId) {
+      const employeeIndex: any = this.employeesList.findIndex((employee: any) => employee._id == oDataSource.iEmployeeId);
+      if (employeeIndex != -1) {
+        oDataSource.sEmployeeName = this.employeesList[employeeIndex]['sName'];
+        if(type==='repair')
+          oDataSource.sAdvisedEmpFirstName = `${this.employeesList[employeeIndex]['sFirstName']}`;
+        else
+          oDataSource.sAdvisedEmpFirstName = `Advised By: ${this.employeesList[employeeIndex]['sFirstName']}`;
       }
     }
     oDataSource.sBarcodeURI = sBarcodeURI;
