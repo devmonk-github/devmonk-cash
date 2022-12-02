@@ -152,7 +152,7 @@ export class ActivityItemsComponent implements OnInit, OnDestroy {
         this.paginationConfig.totalItems = result.count;
         this.showLoader = false;
         setTimeout(() => {
-          MenuComponent.bootstrap();
+          MenuComponent.reinitialization();
         }, 200);
         if (result?.aUniqueBusinessPartner?.length && !this.aFilterBusinessPartner?.length) this.aFilterBusinessPartner = result.aUniqueBusinessPartner;
       },

@@ -202,11 +202,12 @@ export class TransactionsComponent implements OnInit, OnDestroy {
         this.transactions = result.data.result;
         this.paginationConfig.totalItems = result.data.totalCount;
       }
+
+      this.showLoader = false;
+
       setTimeout(() => {
         MenuComponent.bootstrap();
       }, 200);
-      
-      this.showLoader = false;
     }, (error) => {
       this.showLoader = false;
     })

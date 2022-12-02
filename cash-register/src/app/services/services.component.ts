@@ -341,8 +341,8 @@ export class ServicesComponent implements OnInit, OnDestroy {
       this.getCustomers();
       this.showLoader = false;
       setTimeout(() => {
-        MenuComponent.bootstrap();
-        // MenuComponent.reinitialization();
+        // MenuComponent.bootstrap();
+        MenuComponent.reinitialization();
       }, 200);
     }, (error) => {
       this.showLoader = false;

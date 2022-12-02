@@ -204,7 +204,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     this.tillService.selectCurrency(this.businessDetails.currentLocation);
 
     setTimeout(() => {
-      MenuComponent.bootstrap();
+      MenuComponent.reinitialization();
     });
 }
 
