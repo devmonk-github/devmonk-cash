@@ -6,7 +6,7 @@ import { faTimes, faMessage, faEnvelope, faEnvelopeSquare, faUser, faReceipt, fa
 import { PdfService } from '../../service/pdf.service';
 import { TransactionItemsDetailsComponent } from '../transaction-items-details/transaction-items-details.component';
 import { MenuComponent } from '../../_layout/components/common';
-import { Router } from '@angular/router';
+import { NavigationEnd, Router } from '@angular/router';
 import { TransactionDetailsComponent } from 'src/app/transactions/components/transaction-details/transaction-details.component';
 import * as JsBarcode /* , { Options as jsBarcodeOptions } */ from 'jsbarcode';
 import { ReceiptService } from '../../service/receipt.service';
@@ -125,6 +125,8 @@ export class ActivityDetailsComponent implements OnInit {
   // eKindForLayoutHide =['giftcard'];
   translation:any=[];
   bActivityNumber: boolean = false;
+  bShowOrderDownload: boolean = false;
+  routerSub: any;
 
   constructor(
     private viewContainerRef: ViewContainerRef,
@@ -141,19 +143,30 @@ export class ActivityDetailsComponent implements OnInit {
     this.dialogRef = _injector.get<DialogComponent>(DialogComponent);
     this.iWorkstationId = localStorage.getItem("currentWorkstation") || '';
     this.iBusinessId = localStorage.getItem('currentBusiness') || '';
-    this.iLocationId = localStorage.getItem('currentLocation') || '';
+    this.iLocationId = localStorage.getItem('currentLocation') || '';  
   }
 
 
   async ngOnInit() {
+
+    this.routerSub = this.routes.events.subscribe((event) => {
+      if (event instanceof NavigationEnd && !(event.url.startsWith('/business/activity-items') || event.url.startsWith('/business/services'))) {
+        this.routerSub.unsubscribe();
+        this.close(false);
+      }
+    });
+
+
     let translationKey=['SUCCESSFULLY_UPDATED' , 'NO_DATE_SELECTED'];
     this.translationService.get(translationKey).subscribe((res:any)=>{
       this.translation = res;
     })
     this.oLocationName = this.activity.oLocationName;
     let _transactionItemData:any;
+    
     if (this.activity) {
       if (this.activity?.activityitems?.length) {
+        this.bShowOrderDownload = true;
         this.activityItems = this.activity.activityitems;
         if (this.activityItems?.length == 1) this.activityItems[0].collapsedBtn = true; /* only item there then we will always open it */
         if (this.openActivityId) {

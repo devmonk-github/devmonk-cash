@@ -164,7 +164,7 @@ export class ActivityItemsComponent implements OnInit, OnDestroy {
   openActivities(activity: any, openActivityId?: any) {
     this.dialogService.openModal(ActivityDetailsComponent, { cssClass: 'w-fullscreen mt--5', hasBackdrop: true, closeOnBackdropClick: true, closeOnEsc: true, context: { activity: activity, openActivityId, items: true, from: 'activity-items' } })
       .instance.close.subscribe((result: any) => {
-        if (result) this.routes.navigate(['business/till']);
+        // if (result) this.routes.navigate(['business/till']);
       });
   }
 

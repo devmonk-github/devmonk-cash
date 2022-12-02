@@ -28,7 +28,7 @@ export class DialogService {
     this.applicationRef.attachView(dialogComponentRef.hostView);
 
     // Listen to the close event
-    dialogComponentRef.instance.close.subscribe(() => {
+    dialogComponentRef.instance.close.subscribe(() => {      
       document.body.removeChild(popup);
       this.applicationRef.detachView(dialogComponentRef.hostView);
     });
