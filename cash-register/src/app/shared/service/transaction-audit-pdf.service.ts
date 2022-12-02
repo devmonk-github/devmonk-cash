@@ -389,7 +389,7 @@ export class TransactionAuditUiPdfService {
             ],
             [
                 { text: this.translations['CASH_IN_TILL'], style: ['td'] },
-                { text: this.convertToMoney(aStatistic[0].overall[0].nTotalRevenue), style: ['td'] },
+                { text: this.convertToMoney(aStatistic[0].overall[0].nTotalRevenue + (-oCountings.nCashDifference)), style: ['td'] },
             ],
             [
                 { text: this.translations['CASH_COUNTED'], style: ['td'] },
