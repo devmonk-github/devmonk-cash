@@ -48,24 +48,8 @@ export class FileImportComponent implements OnInit, OnDestroy {
       if(values && values.length > 0){
         this.csvParser.parse(values[0], { header: true, delimiter: this.delimiter})
           .pipe().subscribe((result: any) => {
-            let customerData :any =[];
-             result.map((customer:any , index:any)=>{
-              let newCustomer = {};
-              for (let [key, value] of Object.entries(customer)) {
-                this.translation.get([key]).subscribe((res:any)=>{
-                  key = res[key];
-                 let oop = {
-                  [key] : value
-                 }
-                 newCustomer = {... newCustomer , ... oop}
-                 
-                })
-              }
-           
-              customerData.push(newCustomer);
-            })
        
-            this.parsedCustomerData = customerData;
+            this.parsedCustomerData = result;
             this.parsedCustomerDataChange.emit(this.parsedCustomerData);
           }, (error: NgxCSVParserError) => {
             this.toasterService.show({ type: 'danger', text: 'Upload csv file'});
