@@ -100,11 +100,11 @@ export class TransactionDetailsComponent implements OnInit {
     this.loading = false;
     this.fetchBusinessDetails();
     this.fetchCustomer(this.transaction.oCustomer._id);
-    this.getListEmployees();
-    const [_thermalSettings, _printActionSettings, _printSettings]: any = await Promise.all([
+    const [_thermalSettings, _printActionSettings, _printSettings, _empResult]: any = await Promise.all([
       this.getThermalPrintSetting(),
       this.getPdfPrintSetting({ oFilterBy: { sMethod: 'actions' } }),
       this.getPdfPrintSetting(),
+      this.apiService.getNew('auth', `/api/v1/employee/${this.transaction?.iEmployeeId}?iBusinessId=${this.iBusinessId}`).toPromise(),
     ]);
 
     if (_thermalSettings?.data?._id) {
@@ -114,6 +114,11 @@ export class TransactionDetailsComponent implements OnInit {
     this.printActionSettings = _printActionSettings?.data[0]?.result[0].aActions;
     this.printSettings = _printSettings?.data[0]?.result;
 
+
+    if (_empResult?.data) {
+      this.transaction.createrDetail = _empResult.data;
+      this.transaction.sAdvisedEmpFirstName = `${this.transaction.createrDetail.sFirstName}`;
+    }
   }
 
   fetchBusinessDetails() {
@@ -126,29 +131,6 @@ export class TransactionDetailsComponent implements OnInit {
           this.ableToDownload = true;
         })
   }
-
-  getListEmployees() {
-    const oBody = {
-      iBusinessId: localStorage.getItem('currentBusiness') || '',
-    }
-    let url = '/api/v1/employee/list';
-    this.apiService.postNew('auth', url, oBody).subscribe((result: any) => {
-      if (result && result.data && result.data.length) {
-        this.employeesList = result.data[0].result;
-        if(this.transaction?.iEmployeeId){
-           let createerIndex =  this.employeesList.findIndex((employee:any)=> employee._id == this.transaction.iEmployeeId);
-           if(createerIndex != -1){
-            this.transaction.createrDetail = this.employeesList[createerIndex];
-           }
-          }
-
-     
-
-      }
-    }, (error) => {
-    });
-  }
-
 
   getRelatedTransactionItem(iActivityItemId: string, iTransactionItemId: string, index: number) {
     return this.apiService.getNew('cashregistry', `/api/v1/transaction/item/activityItem/${iActivityItemId}?iBusinessId=${this.iBusinessId}&iTransactionItemId=${iTransactionItemId}`).toPromise();
