@@ -137,7 +137,7 @@ class MenuComponent {
   public static createInstances = (selector: string) => {
     // Initialize menus
     document.querySelectorAll(selector).forEach((el) => {
-
+      // console.log('cash createInstances', el)
       const menuItem = el as HTMLElement;
       let menuInstance = MenuComponent.getInstance(menuItem);
       if (!menuInstance) {

@@ -6,7 +6,7 @@ import { faTimes, faMessage, faEnvelope, faEnvelopeSquare, faUser, faReceipt, fa
 import { PdfService } from '../../service/pdf.service';
 import { TransactionItemsDetailsComponent } from '../transaction-items-details/transaction-items-details.component';
 import { MenuComponent } from '../../_layout/components/common';
-import { Router } from '@angular/router';
+import { NavigationEnd, Router } from '@angular/router';
 import { TransactionDetailsComponent } from 'src/app/transactions/components/transaction-details/transaction-details.component';
 import * as JsBarcode /* , { Options as jsBarcodeOptions } */ from 'jsbarcode';
 import { ReceiptService } from '../../service/receipt.service';
@@ -125,6 +125,8 @@ export class ActivityDetailsComponent implements OnInit {
   // eKindForLayoutHide =['giftcard'];
   translation:any=[];
   bActivityNumber: boolean = false;
+  bShowOrderDownload: boolean = false;
+  routerSub: any;
 
   constructor(
     private viewContainerRef: ViewContainerRef,
@@ -141,19 +143,30 @@ export class ActivityDetailsComponent implements OnInit {
     this.dialogRef = _injector.get<DialogComponent>(DialogComponent);
     this.iWorkstationId = localStorage.getItem("currentWorkstation") || '';
     this.iBusinessId = localStorage.getItem('currentBusiness') || '';
-    this.iLocationId = localStorage.getItem('currentLocation') || '';
+    this.iLocationId = localStorage.getItem('currentLocation') || '';  
   }
 
 
   async ngOnInit() {
+
+    this.routerSub = this.routes.events.subscribe((event) => {
+      if (event instanceof NavigationEnd && !(event.url.startsWith('/business/activity-items') || event.url.startsWith('/business/services'))) {
+        this.routerSub.unsubscribe();
+        this.close(false);
+      }
+    });
+
+
     let translationKey=['SUCCESSFULLY_UPDATED' , 'NO_DATE_SELECTED'];
     this.translationService.get(translationKey).subscribe((res:any)=>{
       this.translation = res;
     })
     this.oLocationName = this.activity.oLocationName;
     let _transactionItemData:any;
+    
     if (this.activity) {
       if (this.activity?.activityitems?.length) {
+        this.bShowOrderDownload = true;
         this.activityItems = this.activity.activityitems;
         if (this.activityItems?.length == 1) this.activityItems[0].collapsedBtn = true; /* only item there then we will always open it */
         if (this.openActivityId) {
@@ -189,36 +202,33 @@ export class ActivityDetailsComponent implements OnInit {
     this.aTemplates = _template.data;
   }
 
- 
-
   getListEmployees() {
     const oBody = {
       iBusinessId: localStorage.getItem('currentBusiness') || '',
     }
-    let url = '/api/v1/employee/list';
-    this.apiService.postNew('auth', url, oBody).subscribe((result: any) => {
+    this.apiService.postNew('auth', `/api/v1/employee/list`, oBody).subscribe((result: any) => {
       if (result && result.data && result.data.length) {
         this.employeesList = result.data[0].result;
-        if(this.activity?.iEmployeeId){
-           let createerIndex =  this.employeesList.findIndex((employee:any)=> employee._id == this.activity.iEmployeeId);
-           if(this.createrDetail != -1){
-           this.createrDetail = this.employeesList[createerIndex];
-           }
+        if (this.activity?.iEmployeeId) {
+          let createerIndex = this.employeesList.findIndex((employee: any) => employee._id == this.activity.iEmployeeId);
+          if (this.createrDetail != -1) {
+            this.createrDetail = this.employeesList[createerIndex];
+            this.activity.sEmpFirstName = `Advised By: ${this.createrDetail.sFirstName}`;
           }
+        }
 
         this.employeesList.map(o => o.sName = `${o.sFirstName} ${o.sLastName}`);
         if(this.activityItems[0]?.iEmployeeId){
           let createerIndex = this.employeesList.findIndex((employee:any) => employee._id == this.activityItems[0].iEmployeeId);
           if(createerIndex != -1){
-             this.createrDetail = this.employeesList[createerIndex]
+             this.createrDetail = this.employeesList[createerIndex] 
            }
         }
         this.activityItems.forEach((items:any , index:any)=>{
           let employeeIndex= this.employeesList.findIndex((employee:any)=> employee._id == items.iAssigneeId);
           if(employeeIndex != -1){
-              this.activityItems[index] = { ... items , "employeeName":this.employeesList[employeeIndex].sName }
+            this.activityItems[index] = { ...items, "employeeName": this.employeesList[employeeIndex].sName}
           }
-      
         })
       }
     }, (error) => {
@@ -454,16 +464,20 @@ export class ActivityDetailsComponent implements OnInit {
       sEmail: this.customer?.sEmail || '',
       sMobile: this.customer?.oPhone?.sCountryCode || '' + this.customer?.oPhone?.sMobile || '',
       sLandLine: this.customer?.oPhone?.sLandLine || '',
-      sAddressLine1:this.customer?.oShippingAddress?.sStreet + " " + this.customer?.oShippingAddress?.sHouseNumber + " " + this.customer?.oShippingAddress?.sHouseNumberSuffix + " , " + this.customer?.oShippingAddress?.sPostalCode + " " + this.customer?.oShippingAddress?.sCity ,
-      sAddressLine2:this.customer?.oShippingAddress?.sCountry
+      sAddressLine1: this.customer?.oShippingAddress?.sStreet + " " + this.customer?.oShippingAddress?.sHouseNumber + " " + this.customer?.oShippingAddress?.sHouseNumberSuffix + " , " + this.customer?.oShippingAddress?.sPostalCode + " " + this.customer?.oShippingAddress?.sCity,
+      sAddressLine2: this.customer?.oShippingAddress?.sCountry
     };
-    if(!oDataSource.dEstimatedDate){
-        oDataSource.dEstimatedDate = this.translation['NO_DATE_SELECTED'];
+    if (!oDataSource.dEstimatedDate) {
+      oDataSource.dEstimatedDate = this.translation['NO_DATE_SELECTED'];
     }
-    if(oDataSource?.iEmployeeId){
-      const employeeIndex:any = this.employeesList.findIndex((employee:any)=> employee._id == oDataSource.iEmployeeId);
-      if(employeeIndex != -1){
-          oDataSource.sEmployeeName= this.employeesList[employeeIndex]['sName'];
+    if (oDataSource?.iEmployeeId) {
+      const employeeIndex: any = this.employeesList.findIndex((employee: any) => employee._id == oDataSource.iEmployeeId);
+      if (employeeIndex != -1) {
+        oDataSource.sEmployeeName = this.employeesList[employeeIndex]['sName'];
+        if(type==='repair')
+          oDataSource.sAdvisedEmpFirstName = `${this.employeesList[employeeIndex]['sFirstName']}`;
+        else
+          oDataSource.sAdvisedEmpFirstName = `Advised By: ${this.employeesList[employeeIndex]['sFirstName']}`;
       }
     }
     oDataSource.sBarcodeURI = sBarcodeURI;

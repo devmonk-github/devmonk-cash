@@ -52,7 +52,7 @@ export class PrinterToolComponent implements OnInit {
       this.toastService.show({ type: 'danger', text: 'Check your business -> printer settings' });
       return;
     }
-    const printRawContentResult: any = await this.printService.printRawContent(this.iBusinessId, this.zplCode, this.labelPrintSettings?.nPrinterId, this.labelPrintSettings?.nComputerId, 1, { title: 'Print label' })
+    const printRawContentResult: any = await this.printService.printRawContent(this.iBusinessId, this.zplCode, this.labelPrintSettings?.nPrinterId, this.labelPrintSettings?.nComputerId, 1, { title: 'Print label' }, '')
     if (printRawContentResult) {
       this.toastService.show({
         type: 'success',

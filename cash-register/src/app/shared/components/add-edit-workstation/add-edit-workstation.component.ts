@@ -16,6 +16,7 @@ export class AddEditWorkstationComponent implements OnInit {
   workstation !: any;
   printNodeAccountId !: number;
   computers !: Array<any>;
+  apikey: any;
   constructor(
     private viewContainerRef: ViewContainerRef,
     private apiService: ApiService
@@ -34,7 +35,7 @@ export class AddEditWorkstationComponent implements OnInit {
 
   // Function for get computers list
   getComputersList() {
-    let urlParams = `?id=${this.printNodeAccountId}`
+    let urlParams = `?id=${this.printNodeAccountId}&APIKEY=${this.apikey}`
     this.apiService.getNew('cashregistry', '/api/v1/printnode/computers' + urlParams).subscribe(
       (result: any) => {
         if (result?.length > 0) {

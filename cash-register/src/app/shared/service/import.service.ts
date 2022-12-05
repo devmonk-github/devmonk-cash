@@ -12,50 +12,50 @@ export class ImportService {
     processImportCustomer(data: any) {
         const { customer } = data;
 
-        const processCustomer = {
-            sSalutation: customer?.['Salutation'] ? customer['Salutation'] : "do-nothing",
-            sFirstName: customer?.['Firstname'] ? customer['Firstname'] : "do-nothing",
-            sPrefix: customer?.['Prefix'] ? customer['Prefix'] : "do-nothing",
-            sLastName: customer?.['Surname'] ? customer['Surname'] : "do-nothing",
-            sGender: customer?.['Gender'] ? customer['Gender'] : "do-nothing",
-            sEmail: customer?.['Email'] ? customer['Email'] : "do-nothing",
+        const processCustomer = {   
+            sSalutation: customer?.['sSalutation'] ? customer['sSalutation'] : "do-nothing",
+            sFirstName: customer?.['sFirstName'] ? customer['sFirstName'] : "do-nothing",
+            sPrefix: customer?.['sPrefix'] ? customer['sPrefix'] : "do-nothing",
+            sLastName: customer?.['sLastName'] ? customer['sLastName'] : "do-nothing",
+            sGender: customer?.['sGender'] ? customer['sGender'] : "do-nothing",
+            sEmail: customer?.['sEmail'] ? customer['sEmail'] : "do-nothing",
 
             oPhone: {
-                sMobile: customer?.['Phone mobile'] ? customer['Phone mobile'] : "do-nothing",
-                sLandLine: customer?.['Phone landline'] ? customer['Phone landline'] : "do-nothing",
+                sMobile: customer?.['sMobile'] ? customer['sMobile'] : "do-nothing",
+                sLandLine: customer?.['sLandLine'] ? customer['sLandLine'] : "do-nothing",
             },
 
             oShippingAddress: {
                 attn: {
-                    sSalutation: customer?.['Salutation'] ? customer['Salutation'] : "do-nothing",
-                    sFirstName: customer?.['Firstname'] ? customer['Firstname'] : "do-nothing",
-                    sLastName: customer?.['Surname'] ? customer['Surname'] : "do-nothing",
+                    sSalutation: customer?.['sSalutation'] ? customer['sSalutation'] : "do-nothing",
+                    sFirstName: customer?.['sFirstName'] ? customer['sFirstName'] : "do-nothing",
+                    sLastName: customer?.['sLastName'] ? customer['sLastName'] : "do-nothing",
                 },
-                sStreet: customer?.['Street'] ? customer['Street'] : "do-nothing",
-                sHouseNumber: customer?.['House number'] ? customer['House number'] : "do-nothing",
-                sHouseNumberSuffix: customer?.['House number addition'] ? customer['House number addition'] : "do-nothing",
-                sPostalCode: customer?.['Zip code'] ? customer['Zip code'] : "do-nothing",
-                sCity: customer?.['City'] ? customer['City'] : "do-nothing",
-                sCountry: customer?.['Country'] ? customer['Country'] : "do-nothing",
+                sStreet: customer?.['sStreet'] ? customer['sStreet'] : "do-nothing",
+                sHouseNumber: customer?.['sHouseNumber'] ? customer['sHouseNumber'] : "do-nothing",
+                sHouseNumberSuffix: customer?.['sHouseNumberSuffix'] ? customer['sHouseNumberSuffix'] : "do-nothing",
+                sPostalCode: customer?.['sPostalCode'] ? customer['sPostalCode'] : "do-nothing",
+                sCity: customer?.['sCity'] ? customer['sCity'] : "do-nothing",
+                sCountry: customer?.['sCountry'] ? customer['sCountry'] : "do-nothing",
             },
 
             oInvoiceAddress: {
                 attn: {
-                    sSalutation: customer?.['Salutation'] ? customer['Salutation'] : "do-nothing",
-                    sFirstName: customer?.['Firstname'] ? customer['Firstname'] : "do-nothing",
-                    sLastName: customer?.['Surname'] ? customer['Surname'] : "do-nothing",
+                    sSalutation: customer?.['sSalutation'] ? customer['sSalutation'] : "do-nothing",
+                    sFirstName: customer?.['sFirstName'] ? customer['sFirstName'] : "do-nothing",
+                    sLastName: customer?.['sLastName'] ? customer['sLastName'] : "do-nothing",
                 },
-                sStreet: customer?.['Street'] ? customer['Street'] : "do-nothing",
-                sHouseNumber: customer?.['House number'] ? customer['House number'] : "do-nothing",
-                sHouseNumberSuffix: customer?.['House number addition'] ? customer['House number addition'] : "do-nothing",
-                sPostalCode: customer?.['Zip code'] ? customer['Zip code'] : "do-nothing",
-                sCity: customer?.['City'] ? customer['City'] : "do-nothing",
-                sCountry: customer?.['Country'] ? customer['Country'] : "do-nothing",
+                sStreet: customer?.['sStreet'] ? customer['sStreet'] : "do-nothing",
+                sHouseNumber: customer?.['sHouseNumber'] ? customer['sHouseNumber'] : "do-nothing",
+                sHouseNumberSuffix: customer?.['sHouseNumberSuffix'] ? customer['sHouseNumberSuffix'] : "do-nothing",
+                sPostalCode: customer?.['sPostalCode'] ? customer['sPostalCode'] : "do-nothing",
+                sCity: customer?.['sCity'] ? customer['sCity'] : "do-nothing",
+                sCountry: customer?.['sCountry'] ? customer['sCountry'] : "do-nothing",
             },
 
-            sComment: customer?.['Comment'] ? customer['Comment'] : "do-nothing",
-            nMatchingCode: customer?.['Customer number'] ? customer['Customer number'] : "do-nothing",
-            bNewsletter: customer?.['Newsletter'] ? customer['Newsletter'] : "do-nothing"
+            sComment: customer?.['sComment'] ? customer['sComment'] : "do-nothing",
+            nMatchingCode: customer?.['nMatchingCode'] ? customer['nMatchingCode'] : "do-nothing",
+            bNewsletter: customer?.['bNewsletter'] ? customer['bNewsletter'] : "do-nothing"
         }
 
         return processCustomer;

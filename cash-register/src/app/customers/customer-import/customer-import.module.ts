@@ -31,10 +31,6 @@ import { TranslationsService } from 'src/app/shared/service/translation.service'
     // BrowserAnimationsModule,
     FontAwesomeModule
   ],
-  providers:[
-    TranslationsService,
-    TranslateService,
-    TranslateStore
-]
+
 })
 export class CustomerImportModule { }

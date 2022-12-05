@@ -5,8 +5,10 @@ import { ApiService } from "./api.service";
   providedIn: 'root'
 })
 export class PrintService {
+  businessDetails: any;
+  iBusinessId: string;
 
-  constructor(private apiService: ApiService) { }
+  constructor(private apiService: ApiService) { this.iBusinessId = localStorage.getItem('currentBusiness') || ''; this.fetchBusinessDetails(); }
 
   /**
    * Get all connected devices for this printNode account
@@ -24,6 +26,14 @@ export class PrintService {
         }
       );
     })
+  }
+
+  // Function for fetch business details
+  fetchBusinessDetails() {
+    this.apiService.getNew('core', '/api/v1/business/' + this.iBusinessId)
+      .subscribe((result: any) => {
+        this.businessDetails = result.data;
+      });
   }
 
   /**
@@ -82,7 +92,8 @@ export class PrintService {
         printerId: printer,
         computerId: computer,
         quantity: qty,
-        options: options
+        options: options,
+        APIKEY: this.businessDetails?.oPrintNode?.sApiKey
       }).subscribe(
         (result: any) => {
           if (result?.data?.deviceStatus === 'disconnected') {
@@ -109,7 +120,7 @@ export class PrintService {
    * @param {Number} qty
    * @param {Object|null} options
    */
-  printRawContent(businessId: string, doc: any, printer: any, computer: any, qty: number, options: any | null) {
+  printRawContent(businessId: string, doc: any, printer: any, computer: any, qty: number, options: any | null, apikey:any ) {
     return new Promise((onSuccess, onError) => {
       this.apiService.postNew('cashregistry', '/api/v1/printnode', {
         id: businessId,
@@ -119,7 +130,8 @@ export class PrintService {
         printerId: printer,
         computerId: computer,
         quantity: qty,
-        options: options
+        options: options, 
+        APIKEY: apikey
       }).subscribe((result: any) => {
         if (result?.data?.deviceStatus === 'disconnected') {
           //TODO: make warning about offline device
@@ -142,7 +154,7 @@ export class PrintService {
    * @param {String} printer
    * @param {String} computer
    */
-  openDrawer(businessId: string, command: any, printer: any, computer: any) {
-    return this.printRawContent(businessId, command, printer, computer, 1, { title: 'Open drawer' })
+  openDrawer(businessId: string, command: any, printer: any, computer: any, apikey: any) {
+    return this.printRawContent(businessId, command, printer, computer, 1, { title: 'Open drawer' }, apikey)
   }
 }

@@ -646,6 +646,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
     this.oCountings.nCashCounted = this.oStatisticsDocument?.oCountings?.nCashCounted || 0;
     this.oCountings.nSkim = this.oStatisticsDocument?.oCountings?.nSkim || 0;
     this.oCountings.nCashRemain = this.oStatisticsDocument?.oCountings?.nCashRemain || 0;
+    this.oCountings.nCashDifference = this.oStatisticsDocument?.oCountings?.nCashDifference || 0;
     this.bDisableCountings = !this.oStatisticsDocument.bIsDayState;
     if (this.aStatistic?.length && this.aStatistic[0]?.overall?.length) {
       this.oCountings.nCashInTill = this.aStatistic[0].overall[0].nTotalRevenue;

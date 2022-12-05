@@ -553,8 +553,11 @@ export class TillService {
     dataObject.totalSavingPoints = totalSavingPoints;
     dataObject.totalRedeemedLoyaltyPoints = totalRedeemedLoyaltyPoints;
     dataObject.dCreatedDate = moment(dataObject.dCreatedDate).format('DD-MM-yyyy hh:mm:ss');
-    const result: any = await this.getRelatedTransaction(dataObject?.iActivityId, dataObject?._id).toPromise();
-    dataObject.related = result.data || [];
+    const [_relatedResult]: any = await Promise.all([ //_empResult
+      this.getRelatedTransaction(dataObject?.iActivityId, dataObject?._id).toPromise(),
+    ])
+
+    dataObject.related = _relatedResult.data || [];
     dataObject.related.forEach((relatedobj: any) => {
       relatedobj.aPayments.forEach((obj: any) => {
         obj.dCreatedDate = moment(obj.dCreatedDate).format('DD-MM-yyyy hh:mm:ss');
@@ -565,7 +568,6 @@ export class TillService {
     // console.log('processTransactionForPdfReceipt after processing', transaction);
     return transaction;
   }
-
 
   getPercentOf(nNumber:any, nPercent:any){
     return parseFloat(nNumber) * parseFloat(nPercent) / 100;

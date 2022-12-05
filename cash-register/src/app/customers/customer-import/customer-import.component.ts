@@ -24,9 +24,7 @@ export class CustomerImportComponent implements OnInit {
     private importService: ImportService,
     private apiService: ApiService,
     private activatedRoute: ActivatedRoute,
-    private translationsService: TranslationsService
   ) { 
-    this.translationsService.setTranslationsObject(this.activatedRoute.snapshot.data.translations);
   }
 
   ngOnInit(): void {
@@ -52,11 +50,30 @@ export class CustomerImportComponent implements OnInit {
   }
 
   importCustomer() {
+    let newParsedCustomer:any =[];
+    let updatedTemplate ={};
+    
+    for(let[key , value] of Object.entries(this.parsedCustomerData[0])){
+ 
+      let updateTem = this.customerDetailsForm[key];
+      updatedTemplate ={ ... updatedTemplate , [updateTem]:this.updateTemplateForm[key]}
+    }
+
+    this.parsedCustomerData.forEach((customer:any)=>{
+        let newCustomer={}
+         for (let [key, value] of Object.entries(customer)) {
+             let cus = this.customerDetailsForm[key];
+             newCustomer ={ ... newCustomer , [cus]:value}
+         }
+      
+         newParsedCustomer.push(newCustomer);
+    })
+
     this.importInprogress = true;
     let data: any = {
       iBusinessId: this.businessDetails._id,
-      oTemplate: this.importService.processImportCustomer({ customer: this.updateTemplateForm }),
-      aCustomer: this.parsedCustomerData,
+      oTemplate: this.importService.processImportCustomer({ customer:updatedTemplate }),
+      aCustomer: newParsedCustomer,
       sDefaultLanguage: localStorage.getItem('language') || 'n;'
     };
 
