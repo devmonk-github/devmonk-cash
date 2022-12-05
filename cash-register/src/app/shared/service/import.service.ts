@@ -12,7 +12,7 @@ export class ImportService {
     processImportCustomer(data: any) {
         const { customer } = data;
 
-        const processCustomer = {
+        const processCustomer = {   
             sSalutation: customer?.['sSalutation'] ? customer['sSalutation'] : "do-nothing",
             sFirstName: customer?.['sFirstName'] ? customer['sFirstName'] : "do-nothing",
             sPrefix: customer?.['sPrefix'] ? customer['sPrefix'] : "do-nothing",
@@ -21,8 +21,8 @@ export class ImportService {
             sEmail: customer?.['sEmail'] ? customer['sEmail'] : "do-nothing",
 
             oPhone: {
-                sMobile: customer?.['oPhone.sMobile'] ? customer['oPhone.sMobile'] : "do-nothing",
-                sLandLine: customer?.['oPhone.sLandLine'] ? customer['oPhone.sLandLine'] : "do-nothing",
+                sMobile: customer?.['sMobile'] ? customer['sMobile'] : "do-nothing",
+                sLandLine: customer?.['sLandLine'] ? customer['sLandLine'] : "do-nothing",
             },
 
             oShippingAddress: {
