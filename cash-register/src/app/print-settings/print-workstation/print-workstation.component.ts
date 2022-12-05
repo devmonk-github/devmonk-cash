@@ -117,7 +117,7 @@ export class PrintWorkstationComponent implements OnInit {
       this.toastService.show({ type: 'warning', text: 'PrintNode not configured for you business contact admin.' });
       return;
     }
-    let urlParams = `?id=${nAccountId}`
+    let urlParams = `?id=${nAccountId}&APIKEY=${this.businessDetails?.oPrintNode?.sApiKey}`
     this.apiService.getNew('cashregistry', '/api/v1/printnode/computers' + urlParams).subscribe(
       (result: any) => {
         if (result?.length > 0) {
@@ -139,14 +139,14 @@ export class PrintWorkstationComponent implements OnInit {
       this.toastService.show({ type: 'warning', text: 'PrintNode not configured for you business contact admin.' });
       return throwError('');
     }
-    let urlParams = `?id=${nAccountId}&deviceId=${computerId}`
+    let urlParams = `?id=${nAccountId}&deviceId=${computerId}&APIKEY=${this.businessDetails?.oPrintNode?.sApiKey}`
     return this.apiService.getNew('cashregistry', '/api/v1/printnode/computers' + urlParams);
   }
 
   // Function for get computers list
   getPrintersList(computerId: number) {
     let nAccountId = this.businessDetails?.oPrintNode?.nAccountId
-    let urlParams = `?id=${nAccountId}&deviceId=${computerId}`
+    let urlParams = `?id=${nAccountId}&deviceId=${computerId}&APIKEY=${this.businessDetails?.oPrintNode?.sApiKey}`
     return this.apiService.getNew('cashregistry', '/api/v1/printnode/printers' + urlParams);
   }
 
@@ -157,7 +157,7 @@ export class PrintWorkstationComponent implements OnInit {
       this.toastService.show({ type: 'warning', text: 'PrintNode not configured for you business contact admin.' });
       return
     }
-    let urlParams = `?id=${nAccountId}`
+    let urlParams = `?id=${nAccountId}&APIKEY=${this.businessDetails?.oPrintNode?.sApiKey}`
     this.apiService.getNew('cashregistry', '/api/v1/printnode/printers' + urlParams).subscribe(
       (result: any) => {
         if (result?.length > 0) {
@@ -195,7 +195,7 @@ export class PrintWorkstationComponent implements OnInit {
       }
     }
     workstation = JSON.parse(JSON.stringify(workstation));
-    this.dialogService.openModal(AddEditWorkstationComponent, { cssClass: "modal-xl", context: { workstation, printNodeAccountId: 187612 } })
+    this.dialogService.openModal(AddEditWorkstationComponent, { cssClass: "modal-xl", context: { workstation, printNodeAccountId: this.businessDetails?.oPrintNode?.nAccountId, apikey: this.businessDetails?.oPrintNode?.sApiKey  } })
       .instance.close.subscribe(result => {
         if (result == "fetchWorkstations") {
           this.getWorkstations();

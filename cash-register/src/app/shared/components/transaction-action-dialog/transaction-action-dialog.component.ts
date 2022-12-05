@@ -114,6 +114,7 @@ export class TransactionActionDialogComponent implements OnInit {
         oDataSource: oDataSource,
         printSettings: this.printSettings.filter((s: any) => s.sType === type),
         sAction: 'thermal',
+        apikey: this.businessDetails.oPrintNode.sApiKey
       });
     } else {
       this.receiptService.exportToPdf({
