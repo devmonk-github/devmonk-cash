@@ -15,11 +15,12 @@ export class TillService {
 
   currency: string = "€";
 
-  iBusinessId = localStorage.getItem('currentBusiness'); 
+  iBusinessId = localStorage.getItem('currentBusiness');
   constructor(
     private apiService: ApiService) { }
 
-  selectCurrency(oLocation:any){
+  selectCurrency(oLocation: any) {
+    console.log('oLocation? currency selection', oLocation?.eCurrency)
     if (oLocation?.eCurrency) {
       switch (oLocation?.eCurrency) {
         case 'euro':
@@ -36,6 +37,7 @@ export class TillService {
           break;
       }
     }
+    console.log('this.currency succesfully selected', this.currency)
   }
 
 
@@ -66,7 +68,7 @@ export class TillService {
               if (i.nDiscount > 0 && !i.bDiscountOnPercentage) _nDiscount = i.nDiscount
               else if (i.nDiscount > 0 && i.bDiscountOnPercentage) _nDiscount = i.price * (i.nDiscount / 100)
 
-              
+
               // console.log(46, i)
               result += i.quantity * (i.price - _nDiscount) - (i.prePaidAmount || 0);
               // console.log(48, result);
@@ -147,15 +149,15 @@ export class TillService {
     console.log('length 115: ', transactionItems?.length);
     body.transactionItems = transactionItems.map((i: any) => {
       console.log('i.nDiscount: ', i.nDiscount, i.price, i.oType);
-      const bRefund = 
-         i.oType?.bRefund /* Indication from the User */
-      || i.nDiscount.quantity < 0 /* Minus Discount (e.g. -10 discount) [TODO: Remove the quantity as its not exist at all] */
-      || i.price < 0; /* PriceIncVat is minus; Should we not add the nQuantity as a required the positive number here */
+      const bRefund =
+        i.oType?.bRefund /* Indication from the User */
+        || i.nDiscount.quantity < 0 /* Minus Discount (e.g. -10 discount) [TODO: Remove the quantity as its not exist at all] */
+        || i.price < 0; /* PriceIncVat is minus; Should we not add the nQuantity as a required the positive number here */
       const bPrepayment =
-      (bRefund && i.oType?.bPrepayment) /* User indicates it is refund or negative amount */
-      // || (i.paymentAmount > 0 /* Whenever the prepayment-field is filled */
-      || (this.getUsedPayMethods(true, payMethods) - this.getTotals('price', transactionItems) < 0)
-      && (i.paymentAmount !== i.amountToBePaid)
+        (bRefund && i.oType?.bPrepayment) /* User indicates it is refund or negative amount */
+        // || (i.paymentAmount > 0 /* Whenever the prepayment-field is filled */
+        || (this.getUsedPayMethods(true, payMethods) - this.getTotals('price', transactionItems) < 0)
+        && (i.paymentAmount !== i.amountToBePaid)
 
       console.log('i.paymentAmount: ', i.paymentAmount);
       console.log('i.bRefund: ', bRefund, i.oType?.bPrepayment);
@@ -164,8 +166,8 @@ export class TillService {
       console.log('getTotal: ', this.getTotals('price', transactionItems));
       console.log('Last condition: ', i.paymentAmount, i.amountToBePaid);
       console.log('bPrepayment: ', bPrepayment, bRefund && i.oType?.bPrepayment, (this.getUsedPayMethods(true, payMethods) - this.getTotals('price', transactionItems) < 0), (i.paymentAmount !== i.amountToBePaid));
-      
-   
+
+
       return new TransactionItem(
         i.name,
         i.comment,
@@ -463,7 +465,7 @@ export class TillService {
     }
   }
 
-  async processTransactionForPdfReceipt(transaction:any){
+  async processTransactionForPdfReceipt(transaction: any) {
     // console.log('processTransactionForPdfReceipt original', transaction);
     const relatedItemsPromises: any = [];
     let language: any = localStorage.getItem('language')
@@ -474,7 +476,7 @@ export class TillService {
     });
 
     const aLoyaltyPointsItems = transaction.aTransactionItems.filter((item: any) => item?.oType?.eKind == 'loyalty-points-discount');
-    
+
     dataObject.aTransactionItems = [];
     transaction.aTransactionItems.map((item: any) => {
       if (item.oType?.eKind != 'discount' || item?.oType?.eKind != 'loyalty-points-discount') {
@@ -488,14 +490,14 @@ export class TillService {
         }
       }
     })
-    
-    dataObject.aTransactionItems = transaction.aTransactionItems.filter((item: any) => 
-      !(item.oType?.eKind == 'discount' || item?.oType?.eKind == 'loyalty-points-discount' || item.oType.eKind == 'loyalty-points'));    
+
+    dataObject.aTransactionItems = transaction.aTransactionItems.filter((item: any) =>
+      !(item.oType?.eKind == 'discount' || item?.oType?.eKind == 'loyalty-points-discount' || item.oType.eKind == 'loyalty-points'));
 
     dataObject.total = 0;
     let total = 0, totalAfterDisc = 0, totalVat = 0, totalDiscount = 0, totalSavingPoints = 0, totalRedeemedLoyaltyPoints = 0;
     dataObject.aTransactionItems.forEach((item: any, index: number) => {
-      if (item?.oArticleGroupMetaData?.oName && Object.keys(item?.oArticleGroupMetaData?.oName)?.length){
+      if (item?.oArticleGroupMetaData?.oName && Object.keys(item?.oArticleGroupMetaData?.oName)?.length) {
         item.sArticleGroupName = (item?.oArticleGroupMetaData?.oName[language] || item?.oArticleGroupMetaData?.oName['en'] || item?.oArticleGroupMetaData?.oName['nl'] || '') + ' ';
       }
       // if (item?.oBusinessProductMetaData?.sLabelDescription){
@@ -527,23 +529,23 @@ export class TillService {
         transaction.aTransactionItems[index].related = item.data || [];
       })
     });
-    transaction.aTransactionItems.forEach((item:any)=> {
-      if(item?.related?.length){
-        item.related.forEach((relatedItem:any)=> {
+    transaction.aTransactionItems.forEach((item: any) => {
+      if (item?.related?.length) {
+        item.related.forEach((relatedItem: any) => {
           if (relatedItem.nPriceIncVat > item.nPriceIncVat) item.nPriceIncVat = relatedItem.nPriceIncVat;
           item.nDiscount = relatedItem.nDiscount || 0;
           item.bDiscountOnPercentage = relatedItem?.bDiscountOnPercentage || false;
-          
+
           if (relatedItem?.bDiscountOnPercentage) {
             item.nDiscountToShow = (relatedItem.nDiscount) ? this.getPercentOf(relatedItem.nPriceIncVat, relatedItem.nDiscount) : 0;
             totalDiscount += item.nDiscountToShow;
-            relatedItem.nRevenueAmount = relatedItem.nRevenueAmount - this.getPercentOf(relatedItem.nPriceIncVat,relatedItem.nDiscount);
+            relatedItem.nRevenueAmount = relatedItem.nRevenueAmount - this.getPercentOf(relatedItem.nPriceIncVat, relatedItem.nDiscount);
           } else {
             item.nDiscountToShow = relatedItem.nDiscount;
             totalDiscount += item.nDiscountToShow;
             relatedItem.nRevenueAmount = relatedItem.nRevenueAmount - relatedItem.nDiscount;
           }
-        })          
+        })
       }
     })
     dataObject.totalAfterDisc = parseFloat(totalAfterDisc.toFixed(2));
@@ -569,7 +571,7 @@ export class TillService {
     return transaction;
   }
 
-  getPercentOf(nNumber:any, nPercent:any){
+  getPercentOf(nNumber: any, nPercent: any) {
     return parseFloat(nNumber) * parseFloat(nPercent) / 100;
   }
 
