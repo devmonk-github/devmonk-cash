@@ -350,7 +350,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
               },
               (error: any) => {
                 let errorMessage = ""
-                this.translateService.get(error.error.message).subscribe(
+                this.translateService.get(error.message).subscribe(
                   result => errorMessage = result
                 )
                 this.toastService.show({ type: 'warning', text: errorMessage });
