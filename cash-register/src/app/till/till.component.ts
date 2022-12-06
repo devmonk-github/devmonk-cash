@@ -738,10 +738,12 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       // this.getPrintSettings(),
       this.getBusinessDetails().toPromise(),
     ]);
-
-    oDataSource.businessDetails = this.businessDetails;
     console.log('here before this.businessDetails.currentLocation', this.businessDetails)
     console.log('_businessResult.data', _businessResult.data)
+    if (this.businessDetails === undefined) this.businessDetails = _businessResult.data
+    console.log('here before this.businessDetails.currentLocation after it', this.businessDetails)
+    oDataSource.businessDetails = this.businessDetails;
+
     oDataSource.currentLocation = this.businessDetails.currentLocation;
 
     const [_template, _oLogoData]: any = await Promise.all([
