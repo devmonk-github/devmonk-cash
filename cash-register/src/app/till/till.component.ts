@@ -740,12 +740,22 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     console.log('here before this.businessDetails.currentLocation after it', this.businessDetails)
     oDataSource.businessDetails = this.businessDetails;
 
-    oDataSource.currentLocation = this.businessDetails.currentLocation;
+    oDataSource.currentLocation = this.businessDetails.currentLocation ? this.businessDetails.currentLocation : this.getValueFromLocalStorage('currentLocation');
 
-    const [_template, _oLogoData]: any = await Promise.all([
+    const currentEmployeeId = JSON.parse(localStorage.getItem('currentUser') || '')['userId'];
+
+    const [_template, _oLogoData, _empResult]: any = await Promise.all([
       this.getTemplate(aUniqueItemTypes),
-      this.getBase64FromUrl(oDataSource?.businessDetails?.sLogoLight)
+      // if no logo is there, use a default logo. or show a message: please upload your shop logo
+      this.getBase64FromUrl(oDataSource?.businessDetails?.sLogoLight),
+      this.getEmployee(currentEmployeeId).toPromise()
     ]);
+
+    if (_empResult?.data) {
+      this.employee = _empResult?.data;
+    }
+
+    console.log('this.employee', this.employee)
 
     oDataSource.sAdvisedEmpFirstName = this.employee.sFirstName;
     oDataSource.sBusinessLogoUrl = _oLogoData.data;
