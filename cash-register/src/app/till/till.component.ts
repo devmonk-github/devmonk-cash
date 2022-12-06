@@ -732,15 +732,11 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     // console.log(aUniqueItemTypes)
     // if (bRepairAlternativeCondition) 
     // aUniqueItemTypes.push('repair_alternative');
-
-    const [_printActionSettings, _printSettings, _businessResult, _empResult]: any = await Promise.all([
-      // this.getPrintSettings({ oFilterBy: { sMethod: 'actions' } }),
-      // this.getPrintSettings(),
-      this.getBusinessDetails().toPromise(),
-    ]);
     console.log('here before this.businessDetails.currentLocation', this.businessDetails)
-    console.log('_businessResult.data', _businessResult.data)
-    if (this.businessDetails === undefined) this.businessDetails = _businessResult.data
+    if (!this.businessDetails) {
+      const result: any = await this.getBusinessDetails().toPromise();
+      this.businessDetails = result.data;
+    }
     console.log('here before this.businessDetails.currentLocation after it', this.businessDetails)
     oDataSource.businessDetails = this.businessDetails;
 
