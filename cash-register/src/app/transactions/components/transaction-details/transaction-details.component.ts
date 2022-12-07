@@ -82,7 +82,7 @@ export class TransactionDetailsComponent implements OnInit {
     let nTotalOriginalAmount = 0;
     this.transaction.aTransactionItems.forEach((item: any) => {
       // let description = (item?.nDiscountToShow > 0) ? `Original amount: ${item.nPriceIncVat}\n` : '';
-      let description = `Original amount: ${item.nPriceIncVatAfterDiscount}\n`;
+      let description = (item?.nDiscountToShow > 0) ? `Original amount (inc. discounts): ${item.nPriceIncVatAfterDiscount}\n` : '';
       if (item?.related?.length) {
         nTotalOriginalAmount += item.nPriceIncVatAfterDiscount;
         if (item.nPriceIncVatAfterDiscount !== item.nRevenueAmount) {

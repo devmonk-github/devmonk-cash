@@ -470,7 +470,7 @@ export class TillService {
     let dataObject = JSON.parse(JSON.stringify(transaction));
 
     dataObject.aPayments.forEach((obj: any) => {
-      obj.dCreatedDate = moment(dataObject.dCreatedDate).format('DD-MM-yyyy hh:mm:ss');
+      obj.dCreatedDate = moment(obj.dCreatedDate).format('DD-MM-yyyy hh:mm:ss');
     });
 
     const aLoyaltyPointsItems = transaction.aTransactionItems.filter((item: any) => item?.oType?.eKind == 'loyalty-points-discount');
@@ -510,7 +510,8 @@ export class TillService {
       } else { item.nDiscountToShow = disc; }
       // item.priceAfterDiscount = parseFloat(item.nRevenueAmount.toFixed(2)) - parseFloat(item.nDiscountToShow);
       item.nPriceIncVatAfterDiscount = parseFloat(item.nPriceIncVat) - parseFloat(item.nDiscountToShow) - item.nRedeemedLoyaltyPoints;
-      item.totalPaymentAmount = ((parseFloat(item.nRevenueAmount.toFixed(2)) - parseFloat(item.nDiscountToShow)) * parseFloat(item.nQuantity)) - item.nRedeemedLoyaltyPoints;
+      item.totalPaymentAmount = ((parseFloat(item.nRevenueAmount) - parseFloat(item.nDiscountToShow)) * parseFloat(item.nQuantity)) - item.nRedeemedLoyaltyPoints;
+      item.totalPaymentAmount = parseFloat(item.totalPaymentAmount.toFixed(2));
       // item.totalPaymentAmountAfterDisc = parseFloat(item.priceAfterDiscount.toFixed(2)) * parseFloat(item.nQuantity);
       item.bPrepayment = item?.oType?.bPrepayment || false;
       const vat = (item.nVatRate * item.nRevenueAmount / (100 + parseFloat(item.nVatRate)));
@@ -537,12 +538,14 @@ export class TillService {
           if (relatedItem?.bDiscountOnPercentage) {
             item.nDiscountToShow = (relatedItem.nDiscount) ? this.getPercentOf(relatedItem.nPriceIncVat, relatedItem.nDiscount) : 0;
             totalDiscount += item.nDiscountToShow;
-            relatedItem.nRevenueAmount = relatedItem.nRevenueAmount - this.getPercentOf(relatedItem.nPriceIncVat,relatedItem.nDiscount);
+            relatedItem.nRevenueAmount = relatedItem.nRevenueAmount.toFixed(2) - this.getPercentOf(relatedItem.nPriceIncVat,relatedItem.nDiscount);
           } else {
             item.nDiscountToShow = relatedItem.nDiscount;
             totalDiscount += item.nDiscountToShow;
-            relatedItem.nRevenueAmount = relatedItem.nRevenueAmount - relatedItem.nDiscount;
+            relatedItem.nRevenueAmount = relatedItem.nRevenueAmount.toFixed(2) - relatedItem.nDiscount;
           }
+
+          relatedItem.nRevenueAmount = relatedItem.nRevenueAmount.toFixed(2);
         })          
       }
     })
