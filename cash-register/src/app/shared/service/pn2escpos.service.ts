@@ -16,8 +16,8 @@ export class Pn2escposService {
   syntaxname: string;
   syntax: any
   data: any;
-  constructor(parameters: any = Object) {
-    this.debug = (this.isDefined(parameters.debug)) ? parameters.debug : false;
+  constructor(parameters: any = Object) {    
+    this.debug = (this.isDefined(parameters.debug)) ? parameters.debug : true;
     this.default_spacing = (this.isDefined(parameters.default_spacing)) ? parameters.default_spacing : 6;
     this.divider_gutter = (this.isDefined(parameters.divider_gutter)) ? parameters.divider_gutter : 4;
     this.drawerpin = (this.isDefined(parameters.drawerpin)) ? parameters.drawerpin : 2;
@@ -67,6 +67,7 @@ export class Pn2escposService {
       if (this.helperValidateJSON(dataObject)) {
         this.data = JSON.parse(dataObject);
       }
+      // console.log(this.data);
 
       var commandString = "";
 
@@ -79,13 +80,17 @@ export class Pn2escposService {
         var action: any = this.createObjectFromTemplateLine(template[key]);
         if (action.do) {
           //this.clog('EXECUTING {"'+action.do+'":"'+action.data+'"}')
-
+          let a;
           if (action.if) {
             if (this.checkConditions(action.if, dataObject)) {
-              commandString += this.doAction(action, key);
+              a = this.doAction(action, key)
+              // console.log('after process if', a)
+              commandString += a;
             }
           } else {
-            commandString += this.doAction(action, key);
+            a = this.doAction(action, key)
+            // console.log('after process else', a)
+            commandString += a;
           }
 
         } else {
