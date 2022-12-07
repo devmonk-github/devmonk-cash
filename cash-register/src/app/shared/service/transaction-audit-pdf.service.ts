@@ -444,9 +444,9 @@ export class TransactionAuditUiPdfService {
         const aFieldsToInclude = ['oShopPurchase', 'oWebShop'];
 
         if (aVatRates?.length) {
-            let nTotalRevenue = 0, nTotalPurchaseValue =0, nTotalProfit=0, nTotalVatAmount=0;
             let nOverallTotalRevenue = 0, nOverallTotalPurchaseValue =0, nOverallTotalProfit=0, nOverallTotalVatAmount=0;
-            aVatRates.forEach((oItem: any) => {                
+            aVatRates.forEach((oItem: any) => {
+                let nTotalRevenue = 0, nTotalPurchaseValue =0, nTotalProfit=0, nTotalVatAmount=0;
                 texts.push([{ text: 'VAT_RATE - ' + ((oItem?.nVat) ? oItem?.nVat : ''), colSpan: 5, style: ['articleGroup', 'center', 'td'] }, {}, {}, {}, {}]);
                 aFieldsToInclude.forEach((field: any) => {
                     nTotalRevenue += oItem[field].nTotalRevenue;

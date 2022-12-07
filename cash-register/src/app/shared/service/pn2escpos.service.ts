@@ -16,14 +16,14 @@ export class Pn2escposService {
   syntaxname: string;
   syntax: any
   data: any;
-  constructor(parameters: any = Object) {    
+  constructor(parameters: any = Object) {
     this.debug = (this.isDefined(parameters.debug)) ? parameters.debug : true;
     this.default_spacing = (this.isDefined(parameters.default_spacing)) ? parameters.default_spacing : 6;
     this.divider_gutter = (this.isDefined(parameters.divider_gutter)) ? parameters.divider_gutter : 4;
     this.drawerpin = (this.isDefined(parameters.drawerpin)) ? parameters.drawerpin : 2;
     this.paper_cut = (this.isDefined(parameters.paper_cut)) ? parameters.paper_cut : 2;
-    this.max_line_length_n = (this.isDefined(parameters.linelength_n)) ? parameters.linelength_n : 42;
-    this.max_line_length_l = (this.isDefined(parameters.linelength_l)) ? parameters.linelength_l : 21;
+    this.max_line_length_n = (this.isDefined(parameters.linelength_n)) ? parameters.linelength_n : 48;
+    this.max_line_length_l = (this.isDefined(parameters.linelength_l)) ? parameters.linelength_l : 24;
     this.default_line_length = this.max_line_length_n;
     this.encoding = (this.isDefined(parameters.encoding)) ? this.epSetEncoding(parameters.encoding) : this.epSetEncoding("CP1253"); //ESC t 16 = Cp1253
     this.excerpt_suffix = (this.isDefined(parameters.excerpt_suffix)) ? parameters.excerpt_suffix : "..";
