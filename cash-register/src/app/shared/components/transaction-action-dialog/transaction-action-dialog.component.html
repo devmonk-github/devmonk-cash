@@ -26,7 +26,7 @@
         </div>
         <div class="row">
             <div class="col-4 d-flex flex-column align-items-center" *ngIf="bRegularCondition">
-                <span>{{ 'PROOF_OF_PAYMENT' }}</span>
+                <span>{{ 'PROOF_OF_PAYMENT' | translate }}</span>
                 <div class="d-flex flex-column" *ngFor="let action of aActionSettings">
                     <span
                         [ngClass]="{'badge-info': action=='PRINT_THERMAL', 'badge-dark': action=='PRINT_PDF', 'badge-success': action=='DOWNLOAD' }"
@@ -36,7 +36,7 @@
                 </div>
             </div>
             <div class="col-4 d-flex flex-column align-items-center" *ngIf="bOrderCondition">
-                <span>{{ 'OVERVIEW_OF_PROJECT' }}</span>
+                <span>{{ 'OVERVIEW_OF_PROJECT' | translate }}</span>
                 <div class="d-flex flex-column" *ngFor="let action of aActionSettings">
                     <span
                         [ngClass]="{'badge-info': action=='PRINT_THERMAL', 'badge-dark': action=='PRINT_PDF', 'badge-success': action=='DOWNLOAD' }"
@@ -46,12 +46,12 @@
                 </div>
             </div>
             <div class="col-4 d-flex flex-column align-items-center" *ngIf="bGiftcardCondition">
-                <span>{{ 'GIFTCARD' }}</span>
+                <span>{{ 'GIFTCARD' | translate }}</span>
                 <div class="d-flex flex-column" *ngFor="let action of aActionSettings">
                     <span
                         [ngClass]="{'badge-info': action=='PRINT_THERMAL', 'badge-dark': action=='PRINT_PDF', 'badge-success': action=='DOWNLOAD' }"
                         class="badge cursor-pointer my-2" (click)="performAction('giftcard', action)">
-                        {{action}}
+                        {{action | translate }}
                     </span>
                 </div>
             </div>
@@ -71,17 +71,21 @@
                             <td class="ps-9">{{item.sProductName}}</td>
                             <td class="ps-9 text-center">
                                 <ng-container *ngFor="let action of aActionSettings">
-                                    <span [ngClass]="{'badge-info': action=='PRINT_THERMAL', 'badge-dark': action=='PRINT_PDF', 'badge-success': action=='DOWNLOAD' }"
-                                     class="badge cursor-pointer mx-2 my-2" (click)="performAction('repair', action, i)">
-                                        {{action}}
+                                    <span
+                                        [ngClass]="{'badge-info': action=='PRINT_THERMAL', 'badge-dark': action=='PRINT_PDF', 'badge-success': action=='DOWNLOAD' }"
+                                        class="badge cursor-pointer mx-2 my-2"
+                                        (click)="performAction('repair', action, i)">
+                                        {{action | translate }}
                                     </span>
                                 </ng-container>
                             </td>
                             <td class="ps-9 text-center">
                                 <ng-container *ngFor="let action of aActionSettings">
-                                    <span [ngClass]="{'badge-info': action=='PRINT_THERMAL', 'badge-dark': action=='PRINT_PDF', 'badge-success': action=='DOWNLOAD' }"
-                                    class="badge cursor-pointer mx-2 my-2" (click)="performAction('repair_alternative', action, i)">
-                                        {{action}}
+                                    <span
+                                        [ngClass]="{'badge-info': action=='PRINT_THERMAL', 'badge-dark': action=='PRINT_PDF', 'badge-success': action=='DOWNLOAD' }"
+                                        class="badge cursor-pointer mx-2 my-2"
+                                        (click)="performAction('repair_alternative', action, i)">
+                                        {{action | translate }}
                                     </span>
                                 </ng-container>
                             </td>
