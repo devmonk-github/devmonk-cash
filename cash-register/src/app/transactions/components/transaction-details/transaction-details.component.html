@@ -273,7 +273,11 @@
                                     <td>{{item.nVatRate}} % ({{item.vat || 0 | currency: tillService.currency }})</td>
                                     <td>
                                         <div class="d-flex align-items-center justify-content-between">
-                                            <div>{{item.totalPaymentAmount || 0}}</div>
+                                            <div>
+                                                <span *ngIf="item.totalPaymentAmount != item.nPriceIncVat">
+                                                    <s>({{item.nPriceIncVat}})</s>
+                                                </span>
+                                                 {{item.totalPaymentAmount || 0}}</div>
                                             <ng-container *ngIf="from != 'activity-details'">
                                                 <div class="mx-2">
                                                     <div class="d-flex align-items-center">
