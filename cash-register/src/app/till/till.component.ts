@@ -201,10 +201,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     this.printSettings = _printSettings?.data[0]?.result;
 
     this.businessDetails = _businessResult.data;
-    console.log('this.locationId current location', this.businessDetails)
-    console.log('which location i am?', this.locationId)
     this.businessDetails.currentLocation = this.businessDetails?.aLocation?.filter((location: any) => location?._id.toString() == this.locationId.toString())[0];
-    console.log('which location i am?', this.businessDetails.currentLocation)
     this.tillService.selectCurrency(this.businessDetails.currentLocation);
 
     setTimeout(() => {
@@ -727,35 +724,16 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
     if (bOrderCondition) aUniqueItemTypes.push('order');
 
-    // if (bRepairCondition) 
     aUniqueItemTypes.push(...['repair', 'repair_alternative', 'giftcard']);
-    // console.log(aUniqueItemTypes)
-    // if (bRepairAlternativeCondition) 
-    // aUniqueItemTypes.push('repair_alternative');
-    console.log('here before this.businessDetails.currentLocation', this.businessDetails)
-    if (!this.businessDetails) {
-      const result: any = await this.getBusinessDetails().toPromise();
-      this.businessDetails = result.data;
-    }
-    console.log('here before this.businessDetails.currentLocation after it', this.businessDetails)
+    
     oDataSource.businessDetails = this.businessDetails;
+    oDataSource.currentLocation = this.businessDetails.currentLocation;// ? this.businessDetails.currentLocation : this.getValueFromLocalStorage('currentLocation');    
 
-    oDataSource.currentLocation = this.businessDetails.currentLocation ? this.businessDetails.currentLocation : this.getValueFromLocalStorage('currentLocation');
-
-    const currentEmployeeId = JSON.parse(localStorage.getItem('currentUser') || '')['userId'];
-
-    const [_template, _oLogoData, _empResult]: any = await Promise.all([
+    const [_template, _oLogoData]: any = await Promise.all([
       this.getTemplate(aUniqueItemTypes),
       // if no logo is there, use a default logo. or show a message: please upload your shop logo
       this.getBase64FromUrl(oDataSource?.businessDetails?.sLogoLight),
-      this.getEmployee(currentEmployeeId).toPromise()
     ]);
-
-    if (_empResult?.data) {
-      this.employee = _empResult?.data;
-    }
-
-    console.log('this.employee', this.employee)
 
     oDataSource.sAdvisedEmpFirstName = this.employee.sFirstName;
     oDataSource.sBusinessLogoUrl = _oLogoData.data;
@@ -765,6 +743,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       sEmail: oDataSource.oCustomer.sEmail,
       sMobile: oDataSource.oCustomer.oPhone?.sCountryCode + oDataSource.oCustomer.oPhone?.sMobile,
       sLandLine: oDataSource.oCustomer.oPhone?.sLandLine,
+      oInvoiceAddress: oDataSource.oCustomer?.oInvoiceAddress
     };
     const aTemplates = _template.data;
 
@@ -792,7 +771,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     if (bRegularCondition) {
       //print proof of payments receipt
       const template = aTemplates.filter((template: any) => template.eType === 'regular')[0];
-      this.sendForReceipt(oDataSource, template, oDataSource.sNumber);
+      this.sendForReceipt(oDataSource, template, oDataSource.sNumber, 'regular');
     }
 
     if (bRepairCondition) {
@@ -827,15 +806,50 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     this.clearAll();
   }
 
-  sendForReceipt(oDataSource: any, template: any, title: any) {
-    this.receiptService.exportToPdf({
-      oDataSource: oDataSource,
-      pdfTitle: title,
-      templateData: template,
-      printSettings: this.printSettings,
-      printActionSettings: this.printActionSettings,
-      eSituation: 'is_created'
-    });
+  sendForReceipt(oDataSource: any, template: any, title: any, type?: any) {
+    const printActionSettings = this.printActionSettings.filter((pas: any) => pas.eType === type);
+    if (printActionSettings?.length) {
+      const aActionToPerform = printActionSettings[0].aActionToPerform;
+      aActionToPerform.forEach((action: any) => {
+        switch (action) {
+          case 'PRINT_PDF':
+            this.printSettings = this.printSettings.filter((s: any) => s.sMethod === 'pdf')[0];
+            if (!this.printSettings?.nPrinterId) {
+              this.toastrService.show({ type: 'danger', text: `Printer is not selected for ${this.printSettings.sType}` });
+              return;
+            }
+            this.receiptService.exportToPdf({
+              oDataSource: oDataSource,
+              pdfTitle: title,
+              templateData: template,
+              printSettings: this.printSettings,
+              printActionSettings: this.printActionSettings,
+              eSituation: 'is_created'
+            });
+            break;
+          case 'DOWNLOAD':
+            this.receiptService.exportToPdf({
+              oDataSource: oDataSource,
+              pdfTitle: title,
+              templateData: template,
+              printSettings: this.printSettings,
+              printActionSettings: this.printActionSettings,
+              eSituation: 'is_created'
+            });
+            break;
+          case 'PRINT_THERMAL':
+            // const thermalPrintSettings = this.printSettings.filter((s: any) => s.sMethod === 'thermal' && s.sType === type);
+            // console.log({ thermalPrintSettings })
+            this.receiptService.printThermalReceipt({
+              oDataSource: oDataSource,
+              printSettings: this.printSettings,
+              sAction: 'thermal',
+              apikey: this.businessDetails.oPrintNode.sApiKey
+            });
+            break;
+        }
+      });
+    }
   }
 
   getPrintSettings(oFilterBy?: any) {
