@@ -182,33 +182,20 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
     if (this.bIsDayStateOpened) this.fetchQuickButtons();
 
+    const currentEmployeeId = JSON.parse(localStorage.getItem('currentUser') || '')['userId'];
+    
+    this.getBusinessDetails()
+    this.getPrintSettings(true)
+    this.getPrintSettings()
+    this.getEmployee(currentEmployeeId)
+    
+    setTimeout(() => {
+      MenuComponent.bootstrap();
+    });
     this.getfiskalyInfo();
     this.cancelFiskalyTransaction();
-    const currentEmployeeId = JSON.parse(localStorage.getItem('currentUser') || '')['userId'];
-
-    const [_printActionSettings, _printSettings, _businessResult, _empResult]: any = await Promise.all([
-      this.getPrintSettings({ oFilterBy: { sMethod: 'actions' } }),
-      this.getPrintSettings(),
-      this.getBusinessDetails().toPromise(),
-      this.getEmployee(currentEmployeeId).toPromise()
-    ]);
-
-    if (_empResult?.data) {
-      this.employee = _empResult?.data;
-    }
-
-    this.printActionSettings = _printActionSettings?.data[0]?.result[0].aActions;
-    this.printSettings = _printSettings?.data[0]?.result;
-
-    this.businessDetails = _businessResult.data;
-    this.businessDetails.currentLocation = this.businessDetails?.aLocation?.filter((location: any) => location?._id.toString() == this.locationId.toString())[0];
-    this.tillService.selectCurrency(this.businessDetails.currentLocation);
-
-    setTimeout(() => {
-      MenuComponent.reinitialization();
-    });
   }
-
+  
   ngAfterViewInit() {
     if (this.searchField)
       this.searchField.nativeElement.focus();
@@ -684,7 +671,11 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   getEmployee(id: any) {
-    return this.apiService.getNew('auth', `/api/v1/employee/${id}?iBusinessId=${this.business._id}`);
+    if(id != '') {
+      this.apiService.getNew('auth', `/api/v1/employee/${id}?iBusinessId=${this.business._id}`).subscribe((result:any)=> {
+        this.employee = result?.data;
+      });
+    }
   }
 
 
@@ -852,12 +843,21 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  getPrintSettings(oFilterBy?: any) {
-    const oBody = {
+  getPrintSettings(action?: any) {
+    let oBody = {
       iLocationId: this.locationId,
-      ...oFilterBy
+      oFilterBy: {}
     }
-    return this.apiService.postNew('cashregistry', `/api/v1/print-settings/list/${this.business._id}`, oBody).toPromise();
+    if(action) {
+      oBody.oFilterBy = { sMethod: 'actions' };
+    }
+    this.apiService.postNew('cashregistry', `/api/v1/print-settings/list/${this.business._id}`, oBody).subscribe((result:any)=>{
+      if(action) {
+        this.printActionSettings = result?.data[0]?.result[0].aActions;
+      } else {
+        this.printSettings = result?.data[0]?.result;
+      }
+    });
   }
 
   getBase64FromUrl(url: any) {
@@ -880,7 +880,11 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   // }
 
   getBusinessDetails() {
-    return this.apiService.getNew('core', '/api/v1/business/' + this.business._id);
+    this.apiService.getNew('core', '/api/v1/business/' + this.business._id).subscribe((result:any)=> {
+      this.businessDetails = result.data;
+      this.businessDetails.currentLocation = this.businessDetails?.aLocation?.filter((location: any) => location?._id.toString() == this.locationId.toString())[0];
+      this.tillService.selectCurrency(this.businessDetails.currentLocation);
+    });
   }
 
 
@@ -1544,6 +1548,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     this.cancelFiskalyTransaction();
     if (this.getSettingsSubscription) this.getSettingsSubscription.unsubscribe();
     if (this.dayClosureCheckSubscription) this.dayClosureCheckSubscription.unsubscribe();
+    console.log('cashregister destroy')
     MenuComponent.clearEverything();
   }
 }

@@ -20,7 +20,7 @@ export class TillService {
     private apiService: ApiService) { }
 
   selectCurrency(oLocation: any) {
-    console.log('oLocation? currency selection', oLocation?.eCurrency)
+    // console.log('oLocation? currency selection', oLocation?.eCurrency)
     if (oLocation?.eCurrency) {
       switch (oLocation?.eCurrency) {
         case 'euro':
@@ -37,7 +37,7 @@ export class TillService {
           break;
       }
     }
-    console.log('this.currency succesfully selected', this.currency)
+    // console.log('this.currency succesfully selected', this.currency)
   }
 
 

@@ -31,7 +31,7 @@
                     <span
                         [ngClass]="{'badge-info': action=='PRINT_THERMAL', 'badge-dark': action=='PRINT_PDF', 'badge-success': action=='DOWNLOAD' }"
                         class="badge cursor-pointer my-2" (click)="performAction('regular', action)">
-                        {{action}}
+                        {{ action | translate }}
                     </span>
                 </div>
             </div>
@@ -41,7 +41,7 @@
                     <span
                         [ngClass]="{'badge-info': action=='PRINT_THERMAL', 'badge-dark': action=='PRINT_PDF', 'badge-success': action=='DOWNLOAD' }"
                         class="badge cursor-pointer my-2" (click)="performAction('order', action)">
-                        {{action}}
+                        {{action | translate }}
                     </span>
                 </div>
             </div>
