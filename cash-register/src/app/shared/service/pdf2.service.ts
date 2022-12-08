@@ -3,7 +3,6 @@ import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
 import { ToastService } from '../components/toast/toast.service';
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
-import { CanvasService } from './canvas.service';
 import { PrintService } from './print.service';
 
 @Injectable({
@@ -137,9 +136,7 @@ export class PdfService {
     } else if (printActionSettings?.length){
       printActionSettings = printActionSettings.filter((s: any) => s.eType === eType && s.eSituation === eSituation);
     }
-    // if(eType === 'regular') eType = 'transaction'; 
     printSettings = printSettings.filter((s: any) => s.sType === eType && s.iWorkstationId === this.iWorkstationId);
-    // console.log('filtered actions', printSettings)
     if (sAction && sAction === 'print') {
       // console.log('if sAction= print')
       printSettings = printSettings.filter((s: any) => s.sMethod === 'pdf')[0];
@@ -149,7 +146,7 @@ export class PdfService {
       // console.log('else if saction=download')
       pdfObject.download(pdfTitle);
       return;
-    } else if (sAction && sAction === 'thermal') {
+    } else if ((sAction && sAction === 'thermal')) {
       // console.log('else if saction=thermal')
       printSettings = printSettings.filter((s: any) => s.sMethod === 'thermal')[0];
       this.handlePrint(pdfObject, printSettings, pdfTitle);
@@ -170,10 +167,10 @@ export class PdfService {
             case 'DOWNLOAD':
               pdfObject.download(pdfTitle);
               break;
-            case 'PRINT_THERMAL':
-              printSettings = printSettings.filter((s: any) => s.sMethod === 'thermal')[0];
-              this.handlePrint(pdfObject, printSettings, pdfTitle);
-              break;
+            // case 'PRINT_THERMAL':
+            //   printSettings = printSettings.filter((s: any) => s.sMethod === 'thermal')[0];
+            //   this.handlePrint(pdfObject, printSettings, pdfTitle);
+            //   break;
           }
         });
       } else {
@@ -193,7 +190,20 @@ export class PdfService {
         1,
         pdfTitle,
         { title: pdfTitle }
-      )
+      ).then((response:any) => {
+        if (response.status == "PRINTJOB_NOT_CREATED") {
+          let message = '';
+          if (response.computerStatus != 'online') {
+            message = 'Your computer status is : ' + response.computerStatus + '.';
+          } else if (response.printerStatus != 'online') {
+            message = 'Your printer status is : ' + response.printerStatus + '.';
+          }
+          this.toastrService.show({ type: 'warning', title: 'PRINTJOB_NOT_CREATED', text: message });
+        } else {
+          this.toastrService.show({ type: 'success', text: 'PRINTJOB_CREATED', apiUrl: '/api/v1/printnode/print-job/' + response.id });
+        }
+
+      })
     });
   }
 }

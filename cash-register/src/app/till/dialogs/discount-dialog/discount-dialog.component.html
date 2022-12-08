@@ -53,7 +53,7 @@
         <div class="d-flex align-items-center me-2 flex-row-fluid">
           <div class="form-check form-check-custom form-check-solid form-check-primary me-6 flex-row-auto w-50px">
             <input class="form-check-input" type="radio" name="discount" value="custom" [(ngModel)]="selectedDiscount"
-              (change)="setCustomDiscount()" />
+              (change)="setCustomDiscount()" (click)="enterCustomDiscount()" />
           </div>
           <div class="flex-grow-1 flex-row-fluid">
             {{ "CUSTOM_DISCOUNT" | translate}}
