@@ -651,7 +651,7 @@
                             <div class="row mb-3">
                                 <div>
                                     <label class="required" for="country">{{'COUNTRY' | translate}}</label>
-                                    <country-list id="country" [country]="customer.oInvoiceAddress.country"
+                                    <country-list id="country" [country]="customer.oInvoiceAddress.sCountryCode"
                                         [(ngModel)]="customer.oInvoiceAddress.sCountry" ngDefaultControl
                                         (customerCountryChanged)="customerCountryChanged('oInvoiceAddress', $event)"
                                         name="country"></country-list>
@@ -690,9 +690,9 @@
                             <div class="row mb-3">
                                 <div>
                                     <label class="required" for="s_country">{{'COUNTRY' | translate}}</label>
-                                    <country-list id="s_country" [country]="customer.oShippingAddress.sCountry"
+                                    <country-list id="s_country" [country]="customer.oShippingAddress.sCountryCode"
                                         [(ngModel)]="customer.oShippingAddress.sCountry" ngDefaultControl
-                                        (customerCountryChanged)="customerCountryChanged('oInvoiceAddress', $event)"
+                                        (customerCountryChanged)="customerCountryChanged('oShippingAddress', $event)"
                                         name="country"></country-list>
                                 </div>
                             </div>
