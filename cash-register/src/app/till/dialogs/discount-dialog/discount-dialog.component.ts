@@ -171,7 +171,7 @@ export class DiscountDialogComponent implements OnInit, AfterViewInit {
       this.customDiscount = 0
     }
 
-    if (this.discount <= 0) {
+    if (this.discount < 0) {
       this.showAlert(this.discountIsTooLow);
       return
     }

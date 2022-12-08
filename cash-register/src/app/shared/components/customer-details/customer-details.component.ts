@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild , SimpleChanges} from '@angular/core';
 import { DialogComponent, DialogService } from '../../service/dialog';
 import { ViewContainerRef } from '@angular/core';
 import { ApiService } from 'src/app/shared/service/api.service';
@@ -64,7 +64,7 @@ export const ChartColors = {
   styleUrls: ['./customer-details.component.sass']
 })
 
-export class CustomerDetailsComponent implements OnInit, AfterViewInit {
+export class CustomerDetailsComponent implements OnInit, AfterViewInit{
 
   dialogRef: DialogComponent;
   salutations: Array<any> = ['Mr', 'Mrs', 'Mr/Mrs', 'Family', 'Firm']
@@ -262,6 +262,9 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
+      if(this.customer._id == ""){
+        this.getBusinessDetails();
+      }
     const translations = ['SUCCESSFULLY_ADDED', 'SUCCESSFULLY_UPDATED']
     this.translateService.get(translations).subscribe(
       result => this.translations = result
@@ -307,9 +310,30 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
     this.loadStatisticsTabData();
   }
 
+
   customerNotesChanged(event:any){
     this.customerNotesChangedSubject.next(event);
   }
+
+  getBusinessDetails() {
+    this.apiService.getNew('core', '/api/v1/business/' + localStorage.getItem('currentBusiness')).subscribe((response:any)=>{
+      const currentLocation = localStorage.getItem('currentLocation');
+      if(response?.data?.aLocation?.length){
+        const locationIndex = response.data.aLocation.findIndex((location:any)=> location._id == currentLocation);
+        if(locationIndex != -1){
+         const currentLocationDetail = response?.data?.aLocation[locationIndex];
+         if(currentLocationDetail?.oAddress?.country && currentLocationDetail?.oAddress?.countryCode){
+         this.customer.oInvoiceAddress.sCountry = currentLocationDetail?.oAddress?.country;
+         this.customer.oInvoiceAddress.sCountryCode = currentLocationDetail?.oAddress?.countryCode;
+         this.customer.oShippingAddress.sCountry = currentLocationDetail?.oAddress?.country;
+         this.customer.oShippingAddress.sCountryCode = currentLocationDetail?.oAddress?.countryCode;
+         }
+        }
+      }
+     
+    });
+  }
+  
 
   getListEmployees() {
     const oBody = {
@@ -346,6 +370,12 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
               (result: any) => {
                 if (result?.message === 'success') {
                   this.toastService.show({ type: 'success', text: this.translations[`SUCCESSFULLY_UPDATED`] });
+                }else{
+                  let errorMessage = ""
+                  this.translateService.get(result?.message).subscribe(
+                    result => errorMessage = result
+                  )
+                  this.toastService.show({ type: 'warning', text: errorMessage });
                 }
               },
               (error: any) => {
@@ -418,8 +448,8 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit {
   }
 
   customerCountryChanged(type: string, event: any) {
-    this.customer[type].countryCode = event.key;
-    this.customer[type].country = event.value;
+    this.customer[type].sCountryCode = event.key;
+    this.customer[type].sCountry = event.value;
   }
 
   EditOrCreateCustomer() {

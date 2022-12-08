@@ -1,4 +1,4 @@
-import {Component, OnInit, Input, Output, EventEmitter} from '@angular/core';
+import {Component, OnInit, Input, Output, EventEmitter , OnChanges, SimpleChanges} from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { Observable, of } from 'rxjs';
 
@@ -12,7 +12,7 @@ import countryList from '../../../../assets/json/list.json'
   templateUrl: './country-list.component.html',
   styleUrls: ['./country-list.component.sass']
 })
-export class CountryListComponent implements OnInit {
+export class CountryListComponent implements OnInit , OnChanges{
 
   @Input() public country = 'NL';
   @Output() countryChanged = new EventEmitter<string>();
@@ -66,6 +66,12 @@ export class CountryListComponent implements OnInit {
     }
   }
 
+  ngOnChanges(changes: SimpleChanges): void {
+    const country = _.find(this.countryListByLang, {key: this.country});
+    if (country) {
+      this.value = country.value;
+    }
+  }
   private filter(value: string): {key: '', value: ''}[] {
     const filterValue = value.toLowerCase();
     const filteredList = this.countryListByLang.filter((optionValue: any) => optionValue.value.toLowerCase().includes(filterValue));
