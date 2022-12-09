@@ -516,7 +516,7 @@ export class ReceiptService {
         this.styles = {};
     }
 
-    async printThermalReceipt({ oDataSource, printSettings, sAction, apikey }: any) {
+    async printThermalReceipt({ oDataSource, printSettings, sAction, apikey, title }: any) {
         let thermalPrintSettings: any;
         if (printSettings?.length > 0) {
             thermalPrintSettings = printSettings.filter((p: any) => p.iWorkstationId == this.iWorkstationId && p.sMethod == 'thermal' && p.sType == 'regular')[0];
@@ -537,7 +537,7 @@ export class ReceiptService {
                     return;
                 }
 
-                this.printService.openDrawer(this.iBusinessId, command, thermalPrintSettings?.nPrinterId, thermalPrintSettings?.nComputerId, apikey).then((response: any) => {
+                this.printService.openDrawer(this.iBusinessId, command, thermalPrintSettings?.nPrinterId, thermalPrintSettings?.nComputerId, apikey, title).then((response: any) => {
                     if (response.status == "PRINTJOB_NOT_CREATED") {
                         let message = '';
                         if (response.computerStatus != 'online') {
