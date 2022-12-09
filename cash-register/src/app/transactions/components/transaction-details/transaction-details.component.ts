@@ -14,6 +14,7 @@ import { Observable } from 'rxjs';
 import { ToastService } from 'src/app/shared/components/toast';
 import * as JsBarcode from 'jsbarcode';
 import { TillService } from 'src/app/shared/service/till.service';
+import { TranslateService } from '@ngx-translate/core';
 const moment = (_moment as any).default ? (_moment as any).default : _moment;
 // import { faMagnifyingGlassPlus } from '@fortawesome/free-solid-svg-icons';
 
@@ -66,6 +67,7 @@ export class TransactionDetailsComponent implements OnInit {
     private printService: PrintService,
     private toastService: ToastService,
     public tillService: TillService,
+    private translateService: TranslateService,
     // private compiler: Compiler,
     // private injector: Injector,
   ) {
@@ -82,11 +84,11 @@ export class TransactionDetailsComponent implements OnInit {
     let nTotalOriginalAmount = 0;
     this.transaction.aTransactionItems.forEach((item: any) => {
       // let description = (item?.nDiscountToShow > 0) ? `Original amount: ${item.nPriceIncVat}\n` : '';
-      let description = (item?.nDiscountToShow > 0) ? `Original amount (inc. discounts): ${item.nPriceIncVatAfterDiscount}\n` : '';
+      let description = (item?.nDiscountToShow > 0) ? `${this.translateService.instant('ORIGINAL_AMOUNT_INC_DISC')}: ${item.nPriceIncVatAfterDiscount}\n` : '';
       if (item?.related?.length) {
         nTotalOriginalAmount += item.nPriceIncVatAfterDiscount;
         if (item.nPriceIncVatAfterDiscount !== item.nRevenueAmount) {
-          description += `Already paid: \n${item.sTransactionNumber} | ${item.nRevenueAmount} (this receipt)\n`;
+          description += `${this.translateService.instant('ALREADY_PAID')}: \n${item.sTransactionNumber} | ${item.nRevenueAmount} (${this.translateService.instant('THIS_RECEIPT')})\n`;
 
           item.related.forEach((related: any) => {
             description += `${related.sTransactionNumber} | ${related.nRevenueAmount}\n`;
@@ -337,7 +339,7 @@ export class TransactionDetailsComponent implements OnInit {
     }
     this.apiService.getNew('cashregistry', `/api/v1/print-template/business-receipt/${this.iBusinessId}/${this.iLocationId}`).subscribe((result: any) => {
       if (result?.data?.aTemplate?.length > 0) {
-        let transactionDetails = { business: this.businessDetails, ...this.transaction };
+        let transactionDetails = { businessDetails: this.businessDetails, ...this.transaction };
         let command;
         try {
           command = this.pn2escposService.generate(JSON.stringify(result.data.aTemplate), JSON.stringify(transactionDetails));
@@ -347,7 +349,7 @@ export class TransactionDetailsComponent implements OnInit {
           return;
         }
 
-        this.printService.openDrawer(this.iBusinessId, command, this.thermalPrintSettings?.nPrinterId, this.thermalPrintSettings?.nComputerId, this.businessDetails.oPrintNode.sApiKey).then((response: any) => {
+        this.printService.openDrawer(this.iBusinessId, command, this.thermalPrintSettings?.nPrinterId, this.thermalPrintSettings?.nComputerId, this.businessDetails.oPrintNode.sApiKey, this.transaction.sNumber).then((response: any) => {
           if (response.status == "PRINTJOB_NOT_CREATED") {
             let message = '';
             if (response.computerStatus != 'online') {

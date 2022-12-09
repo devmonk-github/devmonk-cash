@@ -78,6 +78,7 @@ export class Pn2escposService {
 
       Object.keys(template).forEach((key: any) => {
         var action: any = this.createObjectFromTemplateLine(template[key]);
+        // console.log({action});
         if (action.do) {
           //this.clog('EXECUTING {"'+action.do+'":"'+action.data+'"}')
           let a;

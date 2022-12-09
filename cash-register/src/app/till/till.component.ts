@@ -686,9 +686,9 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     let nTotalOriginalAmount = 0;
     oDataSource.aTransactionItems.forEach((item: any) => {
       nTotalOriginalAmount += item.nPriceIncVatAfterDiscount;
-      let description = (item?.nDiscountToShow > 0) ? `Original amount (inc. discounts): ${item.nPriceIncVatAfterDiscount}\n` : '';
+      let description = (item?.nDiscountToShow > 0) ? `${this.translateService.instant('ORIGINAL_AMOUNT_INC_DISC') }: ${item.nPriceIncVatAfterDiscount}\n` : '';
       if (item?.related?.length) {
-        description += `Already paid: \n${item.sTransactionNumber} | ${item.nRevenueAmount} (this receipt)\n`;
+        description += `${this.translateService.instant('ALREADY_PAID')}: \n${item.sTransactionNumber} | ${item.nRevenueAmount} (${this.translateService.instant('THIS_RECEIPT')})\n`;
 
         item.related.forEach((related: any) => {
           description += `${related.sTransactionNumber} | ${related.nRevenueAmount}\n`;
@@ -835,7 +835,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
               oDataSource: oDataSource,
               printSettings: this.printSettings,
               sAction: 'thermal',
-              apikey: this.businessDetails.oPrintNode.sApiKey
+              apikey: this.businessDetails.oPrintNode.sApiKey,
+              title: oDataSource.sNumber
             });
             break;
         }
@@ -1006,14 +1007,14 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       eTransactionItemType: 'regular',
       type: this.eKind,
       quantity: 1,
-      price: price ? price.nPriceIncludesVat : 0,
+      price: (isFor == 'commonProducts') ? product.nSuggestedRetailPrice : (price ? price.nPriceIncludesVat : 0),
       nMargin: 1,
       nPurchasePrice: product.nPurchasePrice,
       paymentAmount: 0,
       oType: { bRefund: false, bDiscount: false, bPrepayment: false },
       nDiscount: product.nDiscount || 0,
       bDiscountOnPercentage: product.bDiscountOnPercentage || false,
-      tax: product.aLocation.find((l: any) => l._id === this.locationId)?.nVatRate || 0,
+      tax: (product?.aLocation?.length) ? product.aLocation.find((l: any) => l._id === this.locationId)?.nVatRate || 0 : 0 ,
       sProductNumber: product.sProductNumber,
       sArticleNumber: product.sArticleNumber,
       description: product.sLabelDescription,

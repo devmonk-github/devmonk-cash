@@ -10,6 +10,7 @@ import { ActionSettingsComponent } from '../shared/components/actions-settings/a
 import { PrintSettingsDetailsComponent } from '../shared/components/print-settings-details/print-settings-details.component';
 import { PrintSettingsEditorComponent } from '../shared/components/print-settings-editor/print-settings-editor.component';
 import { DialogService } from '../shared/service/dialog';
+import { MenuComponent } from '../shared/_layout/components/common';
 
 @Component({
   selector: 'app-print-settings',
@@ -72,6 +73,12 @@ export class PrintSettingsComponent implements OnInit {
     this.getLabelTemplate();
     this.fetchBusinessDetails();
     this.fetchActionSettings();
+
+    setTimeout(() => {
+      MenuComponent.reinitialization();
+    }, 200);
+
+    
   }
 
   createPrintSettings() {

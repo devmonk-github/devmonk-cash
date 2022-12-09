@@ -154,7 +154,7 @@ export class PrintService {
    * @param {String} printer
    * @param {String} computer
    */
-  openDrawer(businessId: string, command: any, printer: any, computer: any, apikey: any) {
-    return this.printRawContent(businessId, command, printer, computer, 1, { title: 'Open drawer' }, apikey)
+  openDrawer(businessId: string, command: any, printer: any, computer: any, apikey: any, title?:any) {
+    return this.printRawContent(businessId, command, printer, computer, 1, { title: title }, apikey)
   }
 }
