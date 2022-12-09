@@ -915,8 +915,14 @@ export class PdfService {
           let matched = false;
           let newText = '';
           if (this.isDefined(providedData)) {
+            if (providedData[variableStringFiltered]) {
+              newText = providedData[variableStringFiltered];
+            } else if (variableStringFiltered.startsWith("__")) {
+              newText = this.translateService.instant(variableStringFiltered.substring(2));
+            } else {
+              newText = '';
+            }
             
-            newText = providedData[variableStringFiltered] || this.translations[variableStringFiltered] || '';
             if (this.isDefined(format) && format !== '') {
               newText = this.formatContent(newText, format);
             }
@@ -1399,7 +1405,7 @@ export class PdfService {
   }
 
   async createPdf(templateString: string, dataString: any, fileName: string, print: boolean, printData: any, businessId: string | null, transactionId: string | null): Promise<any> {
-    const transactions = await this.getTranslations();
+    const transactions:any = [];//await this.getTranslations();
     const data = { ...dataString, ...transactions }
     let pdfGenerator = document.createElement('div')
     pdfGenerator.style.display = 'none'
