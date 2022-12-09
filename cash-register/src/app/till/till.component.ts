@@ -686,9 +686,9 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     let nTotalOriginalAmount = 0;
     oDataSource.aTransactionItems.forEach((item: any) => {
       nTotalOriginalAmount += item.nPriceIncVatAfterDiscount;
-      let description = (item?.nDiscountToShow > 0) ? `Original amount (inc. discounts): ${item.nPriceIncVatAfterDiscount}\n` : '';
+      let description = (item?.nDiscountToShow > 0) ? `${this.translateService.instant('ORIGINAL_AMOUNT_INC_DISC') }: ${item.nPriceIncVatAfterDiscount}\n` : '';
       if (item?.related?.length) {
-        description += `Already paid: \n${item.sTransactionNumber} | ${item.nRevenueAmount} (this receipt)\n`;
+        description += `${this.translateService.instant('ALREADY_PAID')}: \n${item.sTransactionNumber} | ${item.nRevenueAmount} (${this.translateService.instant('THIS_RECEIPT')})\n`;
 
         item.related.forEach((related: any) => {
           description += `${related.sTransactionNumber} | ${related.nRevenueAmount}\n`;
