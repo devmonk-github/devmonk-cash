@@ -337,7 +337,7 @@ export class TransactionDetailsComponent implements OnInit {
     }
     this.apiService.getNew('cashregistry', `/api/v1/print-template/business-receipt/${this.iBusinessId}/${this.iLocationId}`).subscribe((result: any) => {
       if (result?.data?.aTemplate?.length > 0) {
-        let transactionDetails = { business: this.businessDetails, ...this.transaction };
+        let transactionDetails = { businessDetails: this.businessDetails, ...this.transaction };
         let command;
         try {
           command = this.pn2escposService.generate(JSON.stringify(result.data.aTemplate), JSON.stringify(transactionDetails));
@@ -347,7 +347,7 @@ export class TransactionDetailsComponent implements OnInit {
           return;
         }
 
-        this.printService.openDrawer(this.iBusinessId, command, this.thermalPrintSettings?.nPrinterId, this.thermalPrintSettings?.nComputerId, this.businessDetails.oPrintNode.sApiKey).then((response: any) => {
+        this.printService.openDrawer(this.iBusinessId, command, this.thermalPrintSettings?.nPrinterId, this.thermalPrintSettings?.nComputerId, this.businessDetails.oPrintNode.sApiKey, this.transaction.sNumber).then((response: any) => {
           if (response.status == "PRINTJOB_NOT_CREATED") {
             let message = '';
             if (response.computerStatus != 'online') {
