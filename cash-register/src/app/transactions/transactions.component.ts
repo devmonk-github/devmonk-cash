@@ -304,7 +304,7 @@ export class TransactionsComponent implements OnInit, OnDestroy {
 
   // Function for show transaction details
   showTransaction(transaction: any) {
-    this.dialogService.openModal(TransactionDetailsComponent, { cssClass: "w-fullscreen mt--3", context: { transaction: transaction, eType: this.eType, from: 'transactions' }, hasBackdrop: true, closeOnBackdropClick: false, closeOnEsc: false })
+    this.dialogService.openModal(TransactionDetailsComponent, { cssClass: "w-fullscreen mt--5", context: { transaction: transaction, eType: this.eType, from: 'transactions' }, hasBackdrop: true, closeOnBackdropClick: false, closeOnEsc: false })
       .instance.close.subscribe(
         res => {
           if (res) this.routes.navigate(['business/till']);

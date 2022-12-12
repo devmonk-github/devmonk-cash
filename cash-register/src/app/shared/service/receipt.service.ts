@@ -99,19 +99,21 @@ export class ReceiptService {
     orientation: string = 'portrait';
     translations: any;
 
-    private pn2escposService = new Pn2escposService();
+    pn2escposService:any;
     constructor(
         private pdfServiceNew: PdfServiceNew,
         private apiService: ApiService,
         private commonService: CommonPrintSettingsService,
         private pdfService: PdfService,
         private toastService: ToastService,
-        private printService: PrintService) {
+        private printService: PrintService,
+        private translateService: TranslateService,) {
 
         this.iBusinessId = localStorage.getItem('currentBusiness') || '';
         this.iLocationId = localStorage.getItem('currentLocation') || '';
         this.iWorkstationId = localStorage.getItem('currentWorkstation') || '';
         this.fetchBusinessDetails();
+        this.pn2escposService = new Pn2escposService(Object, this.translateService);
     }
 
     async exportToPdf({ oDataSource, templateData, pdfTitle, printSettings, printActionSettings, eSituation, sAction }: any) {
@@ -483,8 +485,20 @@ export class ReceiptService {
             html = (bCheck) ? row.htmlIf : row.htmlElse
         }
 
-        let text = this.pdfService.replaceVariables(html, dataSource);
+
+        let text = this.pdfService.replaceVariables(html, dataSource) || html;
+        // console.log({html, text})
         let obj: any = { text: text };
+        if(text?.indexOf('<strike>') != -1) {
+            let testResult = text.match('<strike>(.*)</strike>');
+            obj = {
+                columns: [
+                    { text: testResult[1], decoration: 'lineThrough', alignment: row.alignment },
+                    { text: ' ', width: 5 },
+                    { text: text.replace(testResult[0], ""), width: 'auto' },
+                ]
+            }
+        }
         if (row?.alignment) obj.alignment = row.alignment;
         if (row?.styles) obj = { ...obj, ...row.styles };
         dataRow.push(obj);

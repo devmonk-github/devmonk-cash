@@ -1,3 +1,5 @@
+import { TranslateService } from "@ngx-translate/core";
+
 export class Pn2escposService {
 
   debug: any
@@ -16,7 +18,9 @@ export class Pn2escposService {
   syntaxname: string;
   syntax: any
   data: any;
-  constructor(parameters: any = Object) {
+  translateService: any;
+  constructor(parameters: any = Object, translateService: TranslateService) {
+    this.translateService = translateService;
     this.debug = (this.isDefined(parameters.debug)) ? parameters.debug : true;
     this.default_spacing = (this.isDefined(parameters.default_spacing)) ? parameters.default_spacing : 6;
     this.divider_gutter = (this.isDefined(parameters.divider_gutter)) ? parameters.divider_gutter : 4;
@@ -494,37 +498,80 @@ export class Pn2escposService {
 
           var matched = false;
           var newtext: any = "";
-
-          Object.keys(providedData).forEach((key, index) => {
-            if (key == variableStringFilteredIndex0) { //a match on key
-              if (String(providedData[variableStringFilteredIndex0]).length > 0) { // ..there's data
-                newtext = providedData[variableStringFilteredIndex0];
-                if (typeof (variableStringFilteredIndex1) == 'string' && String(providedData[variableStringFilteredIndex0][variableStringFilteredIndex1]).length > 0) {
-                  if (typeof (variableStringFilteredIndex2) == 'string' && providedData[variableStringFilteredIndex0][variableStringFilteredIndex1][variableStringFilteredIndex2]) {
-                    newtext = providedData[variableStringFilteredIndex0][variableStringFilteredIndex1][variableStringFilteredIndex2];
-                  } else {
-                    newtext = providedData[variableStringFilteredIndex0][variableStringFilteredIndex1];
-                  }
+          
+          
+          if (providedData[variableStringFilteredIndex0]) { //a match on key
+            if (String(providedData[variableStringFilteredIndex0]).length > 0) { // ..there's data
+              newtext = providedData[variableStringFilteredIndex0];
+              
+              if (typeof (variableStringFilteredIndex1) == 'string' && String(providedData[variableStringFilteredIndex0][variableStringFilteredIndex1]).length > 0) {
+                if (typeof (variableStringFilteredIndex2) == 'string' && providedData[variableStringFilteredIndex0][variableStringFilteredIndex1][variableStringFilteredIndex2]) {
+                  newtext = providedData[variableStringFilteredIndex0][variableStringFilteredIndex1][variableStringFilteredIndex2];
+                  
+                } else {
+                  newtext = providedData[variableStringFilteredIndex0][variableStringFilteredIndex1];
+                  
                 }
-
-                if (!multiple_vars_in_column)
-                  newtext = this.helperJustifyInColumn(newtext, colcount, colwidth, colpos, pullright);
-
-                finalString = finalString.replace(currentMatch, newtext, 0);
-
-                matched = true;
-              } else {
-
-                if (!multiple_vars_in_column)
-                  finalString = this.helperJustifyInColumn(finalString, colcount, colwidth, colpos, pullright);
-
-                if (placeholder)
-                  finalString = placeholder;
-
-                finalString = finalString.replace(currentMatch, newtext, 0);
               }
+
+              if (!multiple_vars_in_column)
+                newtext = this.helperJustifyInColumn(newtext, colcount, colwidth, colpos, pullright);
+
+              // finalString = finalString.replace(currentMatch, newtext, 0);
+              matched = true;
+            } else {
+              if (!multiple_vars_in_column)
+                finalString = this.helperJustifyInColumn(finalString, colcount, colwidth, colpos, pullright);
+
+              if (placeholder)
+                finalString = placeholder;
+
             }
-          });
+          } else if (variableStringFilteredIndex0.startsWith("__")) {
+            newtext = this.translateService.instant(variableStringFilteredIndex0.substring(2));
+            matched = true;
+            
+          }
+
+          finalString = finalString.replace(currentMatch, newtext, 0);
+
+          // backup code for some time
+
+          // Object.keys(providedData).forEach((key, index) => {
+          //   if (key == variableStringFilteredIndex0) { //a match on key
+          //     if (String(providedData[variableStringFilteredIndex0]).length > 0) { // ..there's data
+          //       newtext = providedData[variableStringFilteredIndex0];
+          //       console.log(502, { newtext, variableStringFilteredIndex0 })
+          //       if (typeof (variableStringFilteredIndex1) == 'string' && String(providedData[variableStringFilteredIndex0][variableStringFilteredIndex1]).length > 0) {
+          //         if (typeof (variableStringFilteredIndex2) == 'string' && providedData[variableStringFilteredIndex0][variableStringFilteredIndex1][variableStringFilteredIndex2]) {
+          //           newtext = providedData[variableStringFilteredIndex0][variableStringFilteredIndex1][variableStringFilteredIndex2];
+          //           console.log(506, { newtext, variableStringFilteredIndex0, variableStringFilteredIndex1, variableStringFilteredIndex2 })
+          //         } else {
+          //           newtext = providedData[variableStringFilteredIndex0][variableStringFilteredIndex1];
+          //           console.log(509, { newtext, variableStringFilteredIndex0, variableStringFilteredIndex1 })
+          //         }
+          //       }
+
+          //       if (!multiple_vars_in_column)
+          //         newtext = this.helperJustifyInColumn(newtext, colcount, colwidth, colpos, pullright);
+
+          //       finalString = finalString.replace(currentMatch, newtext, 0);
+
+          //       matched = true;
+          //     } else if (variableStringFilteredIndex0.startsWith("__")) {
+          //       newtext = this.translateService.instant(variableStringFilteredIndex0.substring(2));
+          //     }
+          //     else {
+          //       if (!multiple_vars_in_column)
+          //         finalString = this.helperJustifyInColumn(finalString, colcount, colwidth, colpos, pullright);
+
+          //       if (placeholder)
+          //         finalString = placeholder;
+
+          //       finalString = finalString.replace(currentMatch, newtext, 0);
+          //     }
+          //   }
+          // });
 
           if (!matched) {
             if (placeholder) {

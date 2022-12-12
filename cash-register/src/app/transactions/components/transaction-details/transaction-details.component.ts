@@ -54,7 +54,7 @@ export class TransactionDetailsComponent implements OnInit {
   thermalPrintSettings !: any;
   employeesList:any =[];
 
-  private pn2escposService = new Pn2escposService();
+  private pn2escposService = new Pn2escposService(Object, this.translateService);
   printSettings: any;
   printActionSettings:any;
   printWithVATLoading: boolean = false;
@@ -179,7 +179,6 @@ export class TransactionDetailsComponent implements OnInit {
   }
 
   async generatePDF(print: boolean) {
-    const sName = 'Sample', eType = this.transaction.eType;
     if(print)
       this.printWithVATLoading = true;
     else 
@@ -198,14 +197,14 @@ export class TransactionDetailsComponent implements OnInit {
       
     oDataSource.sBarcodeURI = this.generateBarcodeURI(false, oDataSource.sNumber);
     oDataSource.sBusinessLogoUrl = (await this.getBase64FromUrl(oDataSource?.businessDetails?.sLogoLight).toPromise()).data;
-    oDataSource.oCustomer = {
-      sFirstName: this.transaction.oCustomer.sFirstName,
-      sLastName: this.transaction.oCustomer.sLastName,
-      sEmail: this.transaction.oCustomer.sEmail,
-      sMobile: this.transaction.oCustomer.oPhone?.sCountryCode + this.transaction.oCustomer.oPhone?.sMobile,
-      sLandLine: this.transaction.oCustomer.oPhone?.sLandLine,
+    // oDataSource.oCustomer = {
+    //   sFirstName: this.transaction.oCustomer.sFirstName,
+    //   sLastName: this.transaction.oCustomer.sLastName,
+    //   sEmail: this.transaction.oCustomer.sEmail,
+    //   sMobile: this.transaction.oCustomer.oPhone?.sCountryCode + this.transaction.oCustomer.oPhone?.sMobile,
+    //   sLandLine: this.transaction.oCustomer.oPhone?.sLandLine,
 
-    };
+    // };
 
     
     this.receiptService.exportToPdf({
@@ -240,7 +239,18 @@ export class TransactionDetailsComponent implements OnInit {
   fetchCustomer(customerId: any) {
     this.apiService.getNew('customer', `/api/v1/customer/${customerId}?iBusinessId=${this.iBusinessId}`).subscribe(
       (result: any) => {
-        this.transaction.oCustomer = result;
+        // this.transaction.oCustomer = result;
+        this.transaction.oCustomer = {
+          sFirstName: result?.sFirstName,
+          sPrefix: result?.sPrefix,
+          sLastName: result?.sLastName,
+          sEmail: result?.sEmail,
+          sMobile: result?.oPhone?.sCountryCode + result?.oPhone?.sMobile,
+          sLandLine: result?.oPhone?.sLandLine,
+          oInvoiceAddress: result?.oInvoiceAddress,
+          oShippingAddress: result?.oShippingAddress
+        };
+
       },
       (error: any) => {
         console.error(error)
@@ -337,6 +347,8 @@ export class TransactionDetailsComponent implements OnInit {
     if (!this.thermalPrintSettings?.nPrinterId || !this.thermalPrintSettings?.nComputerId) {
       this.toastService.show({ type: 'danger', text: 'Check your business -> printer settings' });
     }
+    
+
     this.apiService.getNew('cashregistry', `/api/v1/print-template/business-receipt/${this.iBusinessId}/${this.iLocationId}`).subscribe((result: any) => {
       if (result?.data?.aTemplate?.length > 0) {
         let transactionDetails = { businessDetails: this.businessDetails, ...this.transaction };
