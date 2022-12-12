@@ -99,10 +99,10 @@
                         <fa-icon [icon]="faDownload"></fa-icon>
                         <label class="mx-auto">{{ "RECEIPT" | translate}}</label>
                     </button>
-                    <button class="btn btn-sm btn-secondary w-100 d-flex">
+                    <!-- <button class="btn btn-sm btn-secondary w-100 d-flex" (click)="thermalPrintWebOrder()">
                         <fa-icon [icon]="faReceipt"></fa-icon>
                         <label class="mx-auto">{{ "THERMAL_PRINT" | translate}}</label>
-                    </button>
+                    </button> -->
                     <button class="btn btn-sm btn-secondary w-100 d-flex"
                         (click)="openTransaction(activity, 'activity')">
                         <label class="mx-auto"> {{"EXCHANGE" | translate}}</label>
@@ -228,10 +228,10 @@
                                         </div>
                                     </td>
                                     <td>{{item.dCreatedDate | date: 'short'}}</td>
-                                    <td>0</td>
+                                    <td>{{item?.nDiscount || 0}}</td>
                                     <td>{{item?.nVatRate || 0}}</td>
                                     <td>
-                                        <div>{{item?.nPriceIncVat || 0}}</div>
+                                        <div>{{item?.nPaymentAmount || 0}}</div>
                                         <div *ngIf="item.receipts.length > 1"
                                             class="fw-bold fs-6 text-gray-800 border-bottom-2 border-gray-200 text-muted">
                                             <button class="btn btn-primary-sm" (click)="item.showMore = !item.showMore">
