@@ -485,8 +485,20 @@ export class ReceiptService {
             html = (bCheck) ? row.htmlIf : row.htmlElse
         }
 
-        let text = this.pdfService.replaceVariables(html, dataSource);
+
+        let text = this.pdfService.replaceVariables(html, dataSource) || html;
+        // console.log({html, text})
         let obj: any = { text: text };
+        if(text?.indexOf('<strike>') != -1) {
+            let testResult = text.match('<strike>(.*)</strike>');
+            obj = {
+                columns: [
+                    { text: testResult[1], decoration: 'lineThrough', alignment: row.alignment },
+                    { text: ' ', width: 5 },
+                    { text: text.replace(testResult[0], ""), width: 'auto' },
+                ]
+            }
+        }
         if (row?.alignment) obj.alignment = row.alignment;
         if (row?.styles) obj = { ...obj, ...row.styles };
         dataRow.push(obj);
