@@ -99,19 +99,21 @@ export class ReceiptService {
     orientation: string = 'portrait';
     translations: any;
 
-    private pn2escposService = new Pn2escposService();
+    pn2escposService:any;
     constructor(
         private pdfServiceNew: PdfServiceNew,
         private apiService: ApiService,
         private commonService: CommonPrintSettingsService,
         private pdfService: PdfService,
         private toastService: ToastService,
-        private printService: PrintService) {
+        private printService: PrintService,
+        private translateService: TranslateService,) {
 
         this.iBusinessId = localStorage.getItem('currentBusiness') || '';
         this.iLocationId = localStorage.getItem('currentLocation') || '';
         this.iWorkstationId = localStorage.getItem('currentWorkstation') || '';
         this.fetchBusinessDetails();
+        this.pn2escposService = new Pn2escposService(Object, this.translateService);
     }
 
     async exportToPdf({ oDataSource, templateData, pdfTitle, printSettings, printActionSettings, eSituation, sAction }: any) {
