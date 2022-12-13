@@ -100,8 +100,9 @@ export class TransactionDetailsComponent implements OnInit {
     this.transaction.nTotalOriginalAmount = nTotalOriginalAmount;
     
     this.loading = false;
-    this.fetchBusinessDetails();
-    this.fetchCustomer(this.transaction.oCustomer._id);
+    // this.fetchBusinessDetails();
+    // console.log('ngoninit customer', this.transaction.oCustomer, this.businessDetails)
+    // this.fetchCustomer(this.transaction.oCustomer._id);
     const [_thermalSettings, _printActionSettings, _printSettings, _empResult]: any = await Promise.all([
       this.getThermalPrintSetting(),
       this.getPdfPrintSetting({ oFilterBy: { sMethod: 'actions' } }),
@@ -123,16 +124,16 @@ export class TransactionDetailsComponent implements OnInit {
     }
   }
 
-  fetchBusinessDetails() {
-    this.apiService.getNew('core', '/api/v1/business/' + this.iBusinessId)
-      .subscribe(
-        (result: any) => {
-          this.businessDetails = result.data;
-          this.businessDetails.currentLocation = this.businessDetails?.aLocation?.filter((location: any) => location?._id.toString() == this.iLocationId.toString())[0];
-          this.tillService.selectCurrency(this.businessDetails.currentLocation);
-          this.ableToDownload = true;
-        })
-  }
+  // fetchBusinessDetails() {
+  //   this.apiService.getNew('core', '/api/v1/business/' + this.iBusinessId)
+  //     .subscribe(
+  //       (result: any) => {
+  //         this.businessDetails = result.data;
+  //         this.businessDetails.currentLocation = this.businessDetails?.aLocation?.filter((location: any) => location?._id.toString() == this.iLocationId.toString())[0];
+  //         this.tillService.selectCurrency(this.businessDetails.currentLocation);
+  //         this.ableToDownload = true;
+  //       })
+  // }
 
   getRelatedTransactionItem(iActivityItemId: string, iTransactionItemId: string, index: number) {
     return this.apiService.getNew('cashregistry', `/api/v1/transaction/item/activityItem/${iActivityItemId}?iBusinessId=${this.iBusinessId}&iTransactionItemId=${iTransactionItemId}`).toPromise();
@@ -239,6 +240,8 @@ export class TransactionDetailsComponent implements OnInit {
   fetchCustomer(customerId: any) {
     this.apiService.getNew('customer', `/api/v1/customer/${customerId}?iBusinessId=${this.iBusinessId}`).subscribe(
       (result: any) => {
+
+        // console.log('fetch customer result', result)
         // this.transaction.oCustomer = result;
         this.transaction.oCustomer = {
           sFirstName: result?.sFirstName,
