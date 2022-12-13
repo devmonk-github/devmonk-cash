@@ -27,7 +27,9 @@ export class TranslationsService {
     private apiService: ApiService,
     private toastService: ToastService,
 
-  ) { }
+  ) {
+    console.log('cash register translation service constructor')
+   }
 
   setTranslationsObject(translationsObject: any){
     this.translateService.setDefaultLang('nl');
@@ -88,6 +90,7 @@ export class TranslationsService {
   }
 
   init() {
+    console.log('cash register init translations')
     this.translateService.setDefaultLang('nl');
     const currentLang: any = localStorage.getItem('language')?.toString() || 'nl';
     this.translateService.use(currentLang);

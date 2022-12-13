@@ -146,11 +146,6 @@ export class PdfService {
       // console.log('else if saction=download')
       pdfObject.download(pdfTitle);
       return;
-    } else if ((sAction && sAction === 'thermal')) {
-      // console.log('else if saction=thermal')
-      printSettings = printSettings.filter((s: any) => s.sMethod === 'thermal')[0];
-      this.handlePrint(pdfObject, printSettings, pdfTitle);
-      return;
     } else {
       if (printActionSettings?.length) {
         const aActionToPerform = printActionSettings[0].aActionToPerform;
@@ -167,10 +162,6 @@ export class PdfService {
             case 'DOWNLOAD':
               pdfObject.download(pdfTitle);
               break;
-            // case 'PRINT_THERMAL':
-            //   printSettings = printSettings.filter((s: any) => s.sMethod === 'thermal')[0];
-            //   this.handlePrint(pdfObject, printSettings, pdfTitle);
-            //   break;
           }
         });
       } else {
@@ -181,6 +172,11 @@ export class PdfService {
   }
 
   handlePrint(pdfObject: any, printSettings: any, pdfTitle: any) {
+    if (!printSettings?.nPrinterId) {
+      this.toastrService.show({ type: 'danger', text: `Printer is not selected for ${printSettings.sType}` });
+      return;
+    }
+
     pdfObject.getBase64((data: any) => {
       this.printService.printPDF(
         this.iBusinessId,

@@ -1,10 +1,11 @@
 import { Component, OnDestroy, OnInit, QueryList, ViewChildren } from '@angular/core';
-import { Router, NavigationEnd, ActivatedRoute } from '@angular/router';
-import { faLongArrowAltDown, faLongArrowAltUp, faMinusCircle, faPlus, faPlusCircle, faSearch } from '@fortawesome/free-solid-svg-icons';
+import { Router } from '@angular/router';
+import { faLongArrowAltDown, faLongArrowAltUp, faMinusCircle, faPlusCircle, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { ToastService } from '../shared/components/toast';
 import { ApiService } from '../shared/service/api.service';
 import { BarcodeService } from '../shared/service/barcode.service';
 import { DialogService } from '../shared/service/dialog';
+import { TillService } from '../shared/service/till.service';
 import { MenuComponent } from '../shared/_layout/components/common';
 
 import { TransactionDetailsComponent } from './components/transaction-details/transaction-details.component';
@@ -48,7 +49,7 @@ export class TransactionsComponent implements OnInit, OnDestroy {
     sortBy: 'dCreatedDate',
     sortOrder: 'desc'
   };
-  showLoader: Boolean = false;
+  showLoader: boolean = false;
   widgetLog: string[] = [];
   pageCounts: Array<number> = [10, 25, 50, 100]
   pageNumber: number = 1;
@@ -95,6 +96,7 @@ export class TransactionsComponent implements OnInit, OnDestroy {
   ]
 
   @ViewChildren('transactionItems') things: QueryList<any>;
+  businessDetailsLoaded: boolean = false;
 
   constructor(
     private apiService: ApiService,
@@ -102,42 +104,26 @@ export class TransactionsComponent implements OnInit, OnDestroy {
     private routes: Router,
     private toastrService: ToastService,
     private barcodeService: BarcodeService,
+    public tillService: TillService
   ) {  }
   
 
   async ngOnInit() {
+    this.iBusinessId = localStorage.getItem('currentBusiness');
+    this.iLocationId = localStorage.getItem('currentLocation');
+    this.userType = localStorage.getItem("type");
+    
     if (this.routes.url.includes('/business/web-orders')) this.eType = 'webshop-revenue';
     else if (this.routes.url.includes('/business/reservations')) this.eType = 'webshop-reservation';
     else this.eType = 'cash-register-revenue';
 
-    this.businessDetails._id = localStorage.getItem("currentBusiness");
-    this.userType = localStorage.getItem("type");
+    // this.businessDetails._id = localStorage.getItem("currentBusiness");
+    this.fetchBusinessDetails();
     this.loadTransaction();
-    this.iBusinessId = localStorage.getItem('currentBusiness');
-    this.iLocationId = localStorage.getItem('currentLocation');
-
-    const [_locationData, _workstationData, _employeeData]: any = await Promise.all([
-      this.getLocations(),
-      this.getWorkstations(),
-      this.listEmployee()
-    ]);
-
-    if (_locationData.message == 'success') {
-      this.locations = _locationData.data.aLocation;
-    }
-
-    if (_workstationData && _workstationData.data) {
-      this.workstations = _workstationData.data;
-    }
-
-    if (_employeeData?.data?.length) {
-      this.employees = this.employees.concat(_employeeData.data[0].result);
-    }
-
-
-    // this.listEmployee();
-    // this.getWorkstations();
-    // this.getLocations();
+    
+    this.listEmployee();
+    this.getWorkstations();
+    this.getLocations();
     this.getPaymentMethods();
 
     this.barcodeService.barcodeScanned.subscribe((barcode: string) => {
@@ -145,8 +131,20 @@ export class TransactionsComponent implements OnInit, OnDestroy {
     });
   }
 
+  fetchBusinessDetails() {
+    this.apiService.getNew('core', '/api/v1/business/' + this.iBusinessId).subscribe((result: any) => {
+      this.businessDetails = result.data;
+      this.businessDetails.currentLocation = this.businessDetails?.aLocation?.filter((location: any) => location?._id.toString() == this.iLocationId.toString())[0];
+      this.tillService.selectCurrency(this.businessDetails.currentLocation);
+      this.businessDetailsLoaded = true;
+      setTimeout(() => {
+        MenuComponent.reinitialization();
+      }, 200);
+    })
+  }
+
   getPaymentMethods() {
-    this.apiService.getNew('cashregistry', '/api/v1/payment-methods/' + this.requestParams.iBusinessId).subscribe((result: any) => {
+    this.apiService.getNew('cashregistry', '/api/v1/payment-methods/' + this.iBusinessId).subscribe((result: any) => {
       if (result && result.data && result.data.length) {
         this.paymentMethods = [ ...result.data.map((v: any) => ({ ...v, isDisabled: false })) ]
         this.paymentMethods.forEach((element: any) => {
@@ -189,7 +187,7 @@ export class TransactionsComponent implements OnInit, OnDestroy {
 
   loadTransaction() {
     this.transactions = [];
-    this.requestParams.iBusinessId = this.businessDetails._id;
+    this.requestParams.iBusinessId = this.iBusinessId;
     this.requestParams.type = 'transaction';
     this.requestParams.filterDates = this.filterDates;
     this.requestParams.transactionStatus = this.transactionStatuses;
@@ -202,7 +200,6 @@ export class TransactionsComponent implements OnInit, OnDestroy {
         this.transactions = result.data.result;
         this.paginationConfig.totalItems = result.data.totalCount;
       }
-
       this.showLoader = false;
 
       setTimeout(() => {
@@ -214,36 +211,27 @@ export class TransactionsComponent implements OnInit, OnDestroy {
   }
 
   getLocations() {
-    return this.apiService.postNew('core', `/api/v1/business/${this.iBusinessId}/list-location`, {}).toPromise();
-      // (result: any) => {
-      //   if (result.message == 'success') {
-      //     this.locations = result.data.aLocation;
-      //   }
-      // }),
-      // (error: any) => {
-      //   console.error(error)
-      // }
+    this.apiService.postNew('core', `/api/v1/business/${this.iBusinessId}/list-location`, {}).subscribe((result: any) => {      
+        if (result.message == 'success') {
+          this.locations = result.data.aLocation;
+        }
+      })
   }
 
   getWorkstations() {
-    return this.apiService.getNew('cashregistry', `/api/v1/workstations/list/${this.iBusinessId}/${this.iLocationId}`).toPromise();
-      // (result: any) => {
-      //   if (result && result.data) {
-      //     this.workstations = result.data;
-      //   }
-      // }),
-      // (error: any) => {
-      //   console.error(error)
-      // }
+    this.apiService.getNew('cashregistry', `/api/v1/workstations/list/${this.iBusinessId}/${this.iLocationId}`).subscribe((result: any) => {
+        if (result && result.data) {
+          this.workstations = result.data;
+        }
+      });
   }
 
   listEmployee() {
-    return this.apiService.postNew('auth', '/api/v1/employee/list', { iBusinessId: this.iBusinessId }).toPromise();
-    //   if (result?.data?.length) {
-    //     this.employees = this.employees.concat(result.data[0].result);
-    //   }
-    // }, (error) => {
-    // })
+    this.apiService.postNew('auth', '/api/v1/employee/list', { iBusinessId: this.iBusinessId }).subscribe((result:any)=>{
+      if (result?.data?.length) {
+        this.employees = this.employees.concat(result.data[0].result);
+      }
+    })
   }
 
   openChat(): void {
@@ -304,7 +292,7 @@ export class TransactionsComponent implements OnInit, OnDestroy {
 
   // Function for show transaction details
   showTransaction(transaction: any) {
-    this.dialogService.openModal(TransactionDetailsComponent, { cssClass: "w-fullscreen mt--3", context: { transaction: transaction, eType: this.eType, from: 'transactions' }, hasBackdrop: true, closeOnBackdropClick: false, closeOnEsc: false })
+    this.dialogService.openModal(TransactionDetailsComponent, { cssClass: "w-fullscreen mt--5", context: { transaction: transaction, businessDetails: this.businessDetails, eType: this.eType, from: 'transactions' }, hasBackdrop: true, closeOnBackdropClick: false, closeOnEsc: false })
       .instance.close.subscribe(
         res => {
           if (res) this.routes.navigate(['business/till']);
