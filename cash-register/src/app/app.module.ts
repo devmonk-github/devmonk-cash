@@ -42,6 +42,7 @@ export class AppModule {
 
 
   ) {
-    this.translationsService.init()
+    console.log('cash register app module constructor')
+    // this.translationsService.init()
   }
 }
