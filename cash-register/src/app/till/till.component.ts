@@ -1,38 +1,34 @@
 import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import {
-  faScrewdriverWrench, faTruck, faBoxesStacked, faGifts, faUser, faTimes, faTimesCircle, faTrashAlt, faRing,
-  faCoins, faCalculator, faArrowRightFromBracket, faSpinner, faSearch, faMoneyBill, faCopy, faRotateLeft
-} from '@fortawesome/free-solid-svg-icons';
-import { Observable, Subscription } from 'rxjs';
+import { faArrowRightFromBracket, faBoxesStacked, faCalculator, faCoins, faCopy, faGifts, faMoneyBill, faRing, faRotateLeft, faScrewdriverWrench, faSearch, faSpinner, faTimes, faTimesCircle, faTrashAlt, faTruck, faUser } from '@fortawesome/free-solid-svg-icons';
 import { TranslateService } from '@ngx-translate/core';
 import * as _ from 'lodash';
+import { Observable, Subscription } from 'rxjs';
 
-import { DialogService } from '../shared/service/dialog'
-import { CustomerDialogComponent } from '../shared/components/customer-dialog/customer-dialog.component';
-import { TaxService } from '../shared/service/tax.service';
-import { ApiService } from '../shared/service/api.service';
-import { ConfirmationDialogComponent } from '../shared/components/confirmation-dialog/confirmation-dialog.component';
-import { ToastService } from '../shared/components/toast';
-import { TransactionsSearchComponent } from '../shared/components/transactions-search/transactions-search.component';
-import { PaymentDistributionService } from '../shared/service/payment-distribution.service';
-import { TillService } from '../shared/service/till.service';
+import * as JsBarcode from 'jsbarcode';
+import * as _moment from 'moment';
 import { AddExpensesComponent } from '../shared/components/add-expenses-dialog/add-expenses.component';
 import { CardsComponent } from '../shared/components/cards-dialog/cards-dialog.component';
+import { ConfirmationDialogComponent } from '../shared/components/confirmation-dialog/confirmation-dialog.component';
+import { CustomerDialogComponent } from '../shared/components/customer-dialog/customer-dialog.component';
 import { MorePaymentsDialogComponent } from '../shared/components/more-payments-dialog/more-payments-dialog.component';
-import { BarcodeService } from "../shared/service/barcode.service";
-import { TerminalService } from '../shared/service/terminal.service';
 import { TerminalDialogComponent } from '../shared/components/terminal-dialog/terminal-dialog.component';
+import { ToastService } from '../shared/components/toast';
+import { TransactionActionDialogComponent } from '../shared/components/transaction-action-dialog/transaction-action-dialog.component';
+import { TransactionItemsDetailsComponent } from '../shared/components/transaction-items-details/transaction-items-details.component';
+import { TransactionsSearchComponent } from '../shared/components/transactions-search/transactions-search.component';
+import { ApiService } from '../shared/service/api.service';
+import { BarcodeService } from "../shared/service/barcode.service";
 import { CreateArticleGroupService } from '../shared/service/create-article-groups.service';
 import { CustomerStructureService } from '../shared/service/customer-structure.service';
+import { DialogService } from '../shared/service/dialog';
 import { FiskalyService } from '../shared/service/fiskaly.service';
-import { PdfService } from '../shared/service/pdf.service';
-import { SupplierWarningDialogComponent } from './dialogs/supplier-warning-dialog/supplier-warning-dialog.component';
-import * as _moment from 'moment';
+import { PaymentDistributionService } from '../shared/service/payment-distribution.service';
 import { ReceiptService } from '../shared/service/receipt.service';
-import { TransactionItemsDetailsComponent } from '../shared/components/transaction-items-details/transaction-items-details.component';
-import * as JsBarcode from 'jsbarcode';
+import { TaxService } from '../shared/service/tax.service';
+import { TerminalService } from '../shared/service/terminal.service';
+import { TillService } from '../shared/service/till.service';
 import { MenuComponent } from '../shared/_layout/components/common';
-import { TransactionActionDialogComponent } from '../shared/components/transaction-action-dialog/transaction-action-dialog.component';
+import { SupplierWarningDialogComponent } from './dialogs/supplier-warning-dialog/supplier-warning-dialog.component';
 const moment = (_moment as any).default ? (_moment as any).default : _moment;
 @Component({
   selector: 'app-till',
@@ -147,7 +143,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     private createArticleGroupService: CreateArticleGroupService,
     private customerStructureService: CustomerStructureService,
     private fiskalyService: FiskalyService,
-    private pdfService: PdfService,
     private receiptService: ReceiptService,
   ) {
   }
@@ -156,7 +151,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   async ngOnInit() {
     this.business._id = localStorage.getItem('currentBusiness');
     this.locationId = localStorage.getItem('currentLocation') || null;
-    console.log('onInit locationid', this.locationId)
     this.iWorkstationId = localStorage.getItem('currentWorkstation');
 
     this.checkDayState();
@@ -801,46 +795,27 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     const printActionSettings = this.printActionSettings.filter((pas: any) => pas.eType === type);
     if (printActionSettings?.length) {
       const aActionToPerform = printActionSettings[0].aActionToPerform;
-      aActionToPerform.forEach((action: any) => {
-        switch (action) {
-          case 'PRINT_PDF':
-            this.printSettings = this.printSettings.filter((s: any) => s.sMethod === 'pdf')[0];
-            if (!this.printSettings?.nPrinterId) {
-              this.toastrService.show({ type: 'danger', text: `Printer is not selected for ${this.printSettings.sType}` });
-              return;
-            }
-            this.receiptService.exportToPdf({
-              oDataSource: oDataSource,
-              pdfTitle: title,
-              templateData: template,
-              printSettings: this.printSettings,
-              printActionSettings: this.printActionSettings,
-              eSituation: 'is_created'
-            });
-            break;
-          case 'DOWNLOAD':
-            this.receiptService.exportToPdf({
-              oDataSource: oDataSource,
-              pdfTitle: title,
-              templateData: template,
-              printSettings: this.printSettings,
-              printActionSettings: this.printActionSettings,
-              eSituation: 'is_created'
-            });
-            break;
-          case 'PRINT_THERMAL':
-            // const thermalPrintSettings = this.printSettings.filter((s: any) => s.sMethod === 'thermal' && s.sType === type);
-            // console.log({ thermalPrintSettings })
-            this.receiptService.printThermalReceipt({
-              oDataSource: oDataSource,
-              printSettings: this.printSettings,
-              sAction: 'thermal',
-              apikey: this.businessDetails.oPrintNode.sApiKey,
-              title: oDataSource.sNumber
-            });
-            break;
-        }
-      });
+      if (aActionToPerform.includes('PRINT_THERMAL')) {
+        this.receiptService.printThermalReceipt({
+          oDataSource: oDataSource,
+          printSettings: this.printSettings,
+          sAction: 'thermal',
+          apikey: this.businessDetails.oPrintNode.sApiKey,
+          title: oDataSource.sNumber
+        });
+      }
+      if (aActionToPerform.includes('DOWNLOAD') || aActionToPerform.includes('PRINT_PDF')) {
+        const settings = this.printSettings.filter((s: any) => s.sMethod === 'pdf' && s.sType === type && s.iWorkstationId === this.iWorkstationId);
+        
+        this.receiptService.exportToPdf({
+          oDataSource: oDataSource,
+          pdfTitle: title,
+          templateData: template,
+          printSettings: settings,
+          printActionSettings: this.printActionSettings,
+          eSituation: 'is_created'
+        });
+      }
     }
   }
 
