@@ -557,6 +557,7 @@ export class TillService {
     dataObject.totalDiscount = parseFloat(totalDiscount.toFixed(2));
     dataObject.totalSavingPoints = totalSavingPoints;
     dataObject.totalRedeemedLoyaltyPoints = totalRedeemedLoyaltyPoints;
+    dataObject.nTotalExcVat = dataObject.totalAfterDisc - dataObject.totalVat;
     dataObject.dCreatedDate = moment(dataObject.dCreatedDate).format('DD-MM-yyyy hh:mm:ss');
     const [_relatedResult]: any = await Promise.all([ //_empResult
       this.getRelatedTransaction(dataObject?.iActivityId, dataObject?._id).toPromise(),

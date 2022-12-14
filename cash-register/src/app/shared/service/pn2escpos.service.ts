@@ -457,8 +457,16 @@ export class Pn2escposService {
           currentMatch = currentMatch.replace(/\s/g, '').replace(' ', '');
 
           //remove brackets
-          var variableStringFilteredIndex0 = currentMatch.replace('[[', '').replace(']]', '');
-
+          let variableStringFilteredIndex0 = currentMatch.replace('[[', '').replace(']]', '');
+          const hasFormat = variableStringFilteredIndex0.includes('|');
+          let aFormatParts;
+          let format;
+          if(hasFormat) {
+            aFormatParts = variableStringFilteredIndex0.split('|');
+            variableStringFilteredIndex0 = aFormatParts[0]
+            format = aFormatParts[1];
+          }
+          
           //check for "|"
           if (commandText.match(/~/g) && commandText.match(/~/g).length > -1) {
             var variableParameters = commandText.split('~');
@@ -532,7 +540,11 @@ export class Pn2escposService {
             matched = true;
             
           }
-
+          if(hasFormat) {
+            if(format=='invert') {
+              newtext = this.epInverted(true) + newtext + this.epInverted(false);
+            }
+          }
           finalString = finalString.replace(currentMatch, newtext, 0);
 
           // backup code for some time

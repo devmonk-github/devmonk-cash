@@ -602,15 +602,15 @@ export class ActivityDetailsComponent implements OnInit {
           this.translationService.get(result.message).subscribe((res:any)=>{
             errorMessage =res;
           })
-          this.toastService.show({type:"danger" , text:errorMessage});
+          this.toastService.show({type:"warning" , text:errorMessage});
         }
       }, (error) => {
         console.log('error: ', error);
         let errorMessage = "";
-        this.translationService.get(error.error.message).subscribe((res:any)=>{
+        this.translationService.get(error.message).subscribe((res:any)=>{
           errorMessage =res;
         })
-        this.toastService.show({type:"danger" , text:errorMessage});
+        this.toastService.show({type:"warning" , text:errorMessage});
       })
   }
 

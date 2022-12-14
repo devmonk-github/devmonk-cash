@@ -1,5 +1,7 @@
 import { Component, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { TranslateService } from '@ngx-translate/core';
+import { ToastService } from 'src/app/shared/components/toast';
 import { ApiService } from 'src/app/shared/service/api.service';
 import { ImportService } from 'src/app/shared/service/import.service';
 import { TranslationsService } from 'src/app/shared/service/translation.service';
@@ -18,17 +20,24 @@ export class CustomerImportComponent implements OnInit {
   importInprogress: boolean = false;
   businessDetails: any = {};
   stepperInstatnce: any;
+  translate:any =[];
   @ViewChild('stepperContainer', { read: ViewContainerRef }) stepperContainer!: ViewContainerRef;
 
   constructor(
     private importService: ImportService,
     private apiService: ApiService,
     private activatedRoute: ActivatedRoute,
+    private toastService:ToastService ,
+    private translationService:TranslateService
   ) { 
   }
 
   ngOnInit(): void {
     this.businessDetails._id = localStorage.getItem('currentBusiness')
+    const translate = ['SUCCESSFULLY_IMPORTED'];
+    this.translationService.get(translate).subscribe((res:any)=>{
+      this.translate = res;
+    })
   }
 
   ngAfterContentInit(): void {
@@ -80,8 +89,12 @@ export class CustomerImportComponent implements OnInit {
 
     this.apiService.postNew('customer', '/api/v1/customer/import', data).subscribe((result: any) => {
       this.importInprogress = false;
+      if(result?.message == 'success'){
+        this.toastService.show({type:'success' , text:this.translate['SUCCESSFULLY_IMPORTED']})
+      }
     }, (error) => {
-      console.error(error);
+      console.log(error);
+      this.toastService.show({type:'warning' , text:error.message});
     });
   }
 
