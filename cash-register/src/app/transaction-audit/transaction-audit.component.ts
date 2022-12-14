@@ -198,7 +198,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
     private taxService: TaxService
 
   ) {
-    MenuComponent.reinitialization()
+    
     this.iBusinessId = localStorage.getItem('currentBusiness') || '';
     this.iLocationId = localStorage.getItem('currentLocation') || '';
     this.iWorkstationId = localStorage.getItem('currentWorkstation') || '';
@@ -249,12 +249,13 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
     this.fetchBusinessLocation();
     this.getProperties();
     this.getPaymentMethods();
+    
+    setTimeout(() => {
+      MenuComponent.bootstrap();
+    }, 200);
   }
 
   ngAfterViewInit(): void {
-    setTimeout(() => {
-      MenuComponent.reinitialization();
-    }, 200);
   }
 
   setOptionMenu() {
@@ -1404,22 +1405,16 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
   }
 
   ngOnDestroy(): void {
-    if (this.listBusinessSubscription)
-      this.listBusinessSubscription.unsubscribe();
-    if (this.getStatisticSubscription)
-      this.getStatisticSubscription.unsubscribe();
-    if (this.statisticAuditSubscription)
-      this.statisticAuditSubscription.unsubscribe();
-    if (this.greenRecordsSubscription)
-      this.greenRecordsSubscription.unsubscribe();
-    if (this.propertyListSubscription)
-      this.propertyListSubscription.unsubscribe();
-    if (this.workstationListSubscription)
-      this.workstationListSubscription.unsubscribe();
-    if (this.employeeListSubscription)
-      this.employeeListSubscription.unsubscribe();
-    if (this.transactionItemListSubscription)
-      this.transactionItemListSubscription.unsubscribe();
+    console.log('destroy audit page')
+    MenuComponent.clearEverything();
+    if (this.listBusinessSubscription) this.listBusinessSubscription.unsubscribe();
+    if (this.getStatisticSubscription) this.getStatisticSubscription.unsubscribe();
+    if (this.statisticAuditSubscription) this.statisticAuditSubscription.unsubscribe();
+    if (this.greenRecordsSubscription) this.greenRecordsSubscription.unsubscribe();
+    if (this.propertyListSubscription) this.propertyListSubscription.unsubscribe();
+    if (this.workstationListSubscription) this.workstationListSubscription.unsubscribe();
+    if (this.employeeListSubscription) this.employeeListSubscription.unsubscribe();
+    if (this.transactionItemListSubscription) this.transactionItemListSubscription.unsubscribe();
     if (this.dayClosureListSubscription) this.dayClosureListSubscription.unsubscribe();
   }
 
