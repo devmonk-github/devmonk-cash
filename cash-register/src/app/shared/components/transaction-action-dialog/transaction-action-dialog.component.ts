@@ -108,14 +108,14 @@ export class TransactionActionDialogComponent implements OnInit {
       oDataSource.sActivityNumber = this.transaction.activity.sNumber;
       pdfTitle = oDataSource.sActivityNumber;
     }
-
+    console.log(111, this.transaction.sNumber)
     if (action == 'PRINT_THERMAL') {
       this.receiptService.printThermalReceipt({
         oDataSource: oDataSource,
         printSettings: this.printSettings.filter((s: any) => s.sType === type),
         sAction: 'thermal',
         apikey: this.businessDetails.oPrintNode.sApiKey,
-        title: oDataSource.pdfTitle
+        title: this.transaction.sNumber
       });
     } else {
       this.receiptService.exportToPdf({
