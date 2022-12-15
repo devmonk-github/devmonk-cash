@@ -24,6 +24,7 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
     iBusinessId: ''
   }
   updatingSettings: boolean = false;
+  iLocationId:any;
   
   settings: any = { nLastReceiptNumber: 0, nLastInvoiceNumber: 0, id: null };
   overviewColumns = [
@@ -60,6 +61,7 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.requestParams.iBusinessId = localStorage.getItem('currentBusiness');
+    this.iLocationId = localStorage.getItem('currentLocation');
     this.getPaymentMethods();
     this.getBookkeepingSetting();
     this.getSettings();
@@ -250,7 +252,7 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
   fetchQuickButtons() {
     this.quickButtonsLoading = true;
     try {
-      this.fetchQuickButtonsSubscription = this.apiService.getNew('cashregistry', '/api/v1/quick-buttons/' + this.requestParams.iBusinessId).subscribe((result: any) => {
+      this.fetchQuickButtonsSubscription = this.apiService.getNew('cashregistry', `/api/v1/quick-buttons/${this.requestParams.iBusinessId}?iLocationId=${this.iLocationId}`).subscribe((result: any) => {
         this.quickButtonsLoading = false;
         if (result?.length) this.quickButtons = result;
       }, (error) => {
