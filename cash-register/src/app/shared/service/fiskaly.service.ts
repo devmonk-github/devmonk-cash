@@ -21,12 +21,14 @@ export class FiskalyService {
 
 
   async loginToFiskaly() {
-    const result = await this.apiService.postNew('fiskaly', '/api/v1/fiskaly/login', {}).toPromise();
+    const iBusinessId = localStorage.getItem('currentBusiness');
+    const result = await this.apiService.postNew('fiskaly', '/api/v1/fiskaly/login', {iBusinessId}).toPromise();
     localStorage.setItem('fiskalyAuth', JSON.stringify(result));
     return result;
   }
 
   async startTransaction() {
+    console.log("-----------service fiskaly----------------");
     let fiskalyAuth: any = localStorage.getItem('fiskalyAuth');
     if (!fiskalyAuth) {
       fiskalyAuth = await this.loginToFiskaly();
