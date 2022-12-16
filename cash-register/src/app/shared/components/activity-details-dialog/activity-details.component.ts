@@ -14,6 +14,7 @@ import { Observable } from 'rxjs';
 import { ToastService } from '../toast';
 import { TranslateService } from '@ngx-translate/core';
 import { TillService } from '../../service/till.service';
+import {AddFavouritesComponent} from '../add-favourites/favourites.component';
 @Component({
   selector: 'app-activity-details',
   templateUrl: './activity-details.component.html',
@@ -201,6 +202,8 @@ export class ActivityDetailsComponent implements OnInit {
     this.printSettings = _printSettings?.data[0]?.result;
     this.aTemplates = _template.data;
   }
+
+
 
   getListEmployees() {
     const oBody = {
@@ -407,7 +410,15 @@ export class ActivityDetailsComponent implements OnInit {
       (location: any) => {
         if (location._id == locationId)
           this.transactions[index].locationName = location.sName;
-      })
+      })  
+  }
+
+  AssignOrderProduct(activity:any){
+    this.dialogService.openModal(AddFavouritesComponent , {cssClass:'modal-lg' , context:{"mode":"assign" , "oActivityItem":activity} ,hasBackdrop: true, closeOnBackdropClick: true, closeOnEsc: true}).instance.close.subscribe((result:any)=>{
+      console.log("-------------favourite item ---------------------------");
+    } , (error)=>{
+      console.log(error);
+    })
   }
 
   openTransaction(transaction: any, itemType: any) {

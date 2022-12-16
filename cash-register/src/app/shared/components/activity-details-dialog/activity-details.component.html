@@ -503,6 +503,8 @@
                                             </div>
                                         </div>
                                         <div class="col-3">
+                                            <div class="row mb-6">
+                                                <div class="col-12">
                                             <div *ngIf="!activity?.aImage?.length">
                                                 {{"NO_IMAGES" | translate}}
                                             </div>
@@ -530,6 +532,26 @@
 
                                                 </div>
                                             </div>
+                                            </div>
+                                            </div>
+                                            <div class="row mb-6" *ngIf="activity.oType.eKind == 'order'">
+                                                <div class="col-12">
+                                                {{'PRODUCT_SELECTED' | translate}}
+                                                </div>
+                                                <div class="col-12">
+                                                    <label>product id: </label>
+                                                 <span *ngIf="activity?.iBusinessProductId">{{activity?.iBusinessProductId}} </span>
+                                                 <span *ngIf="activity?.iBusinessProductId == undefined">{{'NO_PRODUCT_SELECTED' | translate}} </span>
+                                                </div>
+                                                <div class="col-12">
+                                                <label>article id :</label>
+                                                 {{activity?.iArticleGroupId}}
+                                                </div>
+                                             <div class="col-12">
+                                               <button class="btn btn-success" (click)="AssignOrderProduct(activity)"> {{'ADD / CHANGE' | translate}}</button>
+                                            </div>
+                                            </div>
+
                                         </div>
                                         <div class="col-4">
                                             <div class="row mb-6">
