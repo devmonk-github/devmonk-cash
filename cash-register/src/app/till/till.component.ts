@@ -1246,7 +1246,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   fetchQuickButtons() {
     this.bSearchingProduct = true;
     try {
-      this.apiService.getNew('cashregistry', '/api/v1/quick-buttons/' + this.requestParams.iBusinessId).subscribe((result: any) => {
+      this.apiService.getNew('cashregistry', `/api/v1/quick-buttons/${this.requestParams.iBusinessId}?iLocationId=${this.locationId}`).subscribe((result: any) => {
 
         this.bSearchingProduct = false;
         if (result?.length) {

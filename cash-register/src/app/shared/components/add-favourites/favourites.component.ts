@@ -2,6 +2,7 @@ import { Component, OnInit, ViewContainerRef } from '@angular/core';
 import { DialogComponent } from '../../service/dialog';
 import { ApiService } from '../../service/api.service';
 import { ToastService } from '../toast';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-favourites',
@@ -12,6 +13,7 @@ export class AddFavouritesComponent implements OnInit {
 
   dialogRef: DialogComponent;
   searchKeyword: any;
+  oActivityItem:any;
   shopProducts: any;
   // commonProducts: any;
   business: any = {};
@@ -49,11 +51,13 @@ export class AddFavouritesComponent implements OnInit {
     'iBusinessBrandId',
   ];
   iLocationId: string = '';
+  translation:any =[];
 
   constructor(
     private viewContainer: ViewContainerRef,
     private apiService: ApiService,
     private toastService: ToastService,
+    private translationService: TranslateService
   ) {
     const _injector = this.viewContainer.parentInjector;
     this.dialogRef = _injector.get<DialogComponent>(DialogComponent);
@@ -62,6 +66,10 @@ export class AddFavouritesComponent implements OnInit {
   ngOnInit(): void {
     this.business._id = localStorage.getItem('currentBusiness');
     this.iLocationId = localStorage.getItem('currentLocation') || '';
+    const translate=['SUCCESSFULLY_UPDATED'];
+    this.translationService.get(translate).subscribe((res:any)=>{
+      this.translation = res;
+    })
   } 
 
   async search() {
@@ -167,6 +175,31 @@ export class AddFavouritesComponent implements OnInit {
     }
 
     this.shopProducts = null;
+  }
+
+  assignProduct(){
+    this.oActivityItem.iBusinessId = this.business._id;
+    this.oActivityItem.sProductName = this.newSelectedProduct.sName;
+    this.oActivityItem.nPriceIncVat = this.newSelectedProduct.nPrice
+    this.oActivityItem.aImage = this.newSelectedProduct.aImage
+    this.oActivityItem.iBusinessProductId = this.newSelectedProduct.iBusinessProductId
+    this.apiService.putNew('cashregistry', '/api/v1/activities/items/' + this.oActivityItem._id, this.oActivityItem)
+      .subscribe((result: any) => {
+        if(result.message == 'success'){
+          this.apiService.activityItemDetails.next(this.oActivityItem);
+          this.toastService.show({type:"success" , text:this.translation['SUCCESSFULLY_UPDATED']});
+          this.close(this.oActivityItem);
+        }
+        else
+        {
+          this.toastService.show({type:"warning" , text:result.message});
+        }
+      }, (error) => {
+        console.log('error: ', error);
+        this.toastService.show({type:"warning" , text:error.message});
+      })
+
+
   }
 
   create(event: any) {

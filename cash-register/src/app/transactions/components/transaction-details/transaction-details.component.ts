@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewContainerRef } from '@angular/core';
+import { AfterContentInit, ChangeDetectorRef, Component, OnInit, ViewContainerRef } from '@angular/core';
 import { faTimes, faSync, faFileInvoice, faDownload, faReceipt, faAt, faUndoAlt, faClipboard, faTrashAlt, faPrint } from '@fortawesome/free-solid-svg-icons';
 import { TransactionItemsDetailsComponent } from 'src/app/shared/components/transaction-items-details/transaction-items-details.component';
 import { ApiService } from 'src/app/shared/service/api.service';
@@ -23,7 +23,7 @@ const moment = (_moment as any).default ? (_moment as any).default : _moment;
   templateUrl: './transaction-details.component.html',
   styleUrls: ['./transaction-details.component.sass']
 })
-export class TransactionDetailsComponent implements OnInit {
+export class TransactionDetailsComponent implements OnInit, AfterContentInit {
 
   dialogRef: DialogComponent;
   faTimes = faTimes;
@@ -68,6 +68,7 @@ export class TransactionDetailsComponent implements OnInit {
     private toastService: ToastService,
     public tillService: TillService,
     private translateService: TranslateService,
+    private cdr: ChangeDetectorRef
     // private compiler: Compiler,
     // private injector: Injector,
   ) {
@@ -124,6 +125,9 @@ export class TransactionDetailsComponent implements OnInit {
     }
   }
 
+  ngAfterContentInit(): void {
+    this.cdr.detectChanges();
+  }
   // fetchBusinessDetails() {
   //   this.apiService.getNew('core', '/api/v1/business/' + this.iBusinessId)
   //     .subscribe(
@@ -135,29 +139,29 @@ export class TransactionDetailsComponent implements OnInit {
   //       })
   // }
 
-  getRelatedTransactionItem(iActivityItemId: string, iTransactionItemId: string, index: number) {
-    return this.apiService.getNew('cashregistry', `/api/v1/transaction/item/activityItem/${iActivityItemId}?iBusinessId=${this.iBusinessId}&iTransactionItemId=${iTransactionItemId}`).toPromise();
-  }
+  // getRelatedTransactionItem(iActivityItemId: string, iTransactionItemId: string, index: number) {
+  //   return this.apiService.getNew('cashregistry', `/api/v1/transaction/item/activityItem/${iActivityItemId}?iBusinessId=${this.iBusinessId}&iTransactionItemId=${iTransactionItemId}`).toPromise();
+  // }
 
-  getRelatedTransaction(iActivityId: string, iTransactionId: string) {
-    const body = {
-      iBusinessId: this.iBusinessId,
-      iTransactionId: iTransactionId
-    }
-    this.apiService.postNew('cashregistry', '/api/v1/transaction/activity/' + iActivityId, body)
-      .subscribe(
-        (result: any) => {
-          this.transaction.related = result.data || [];
-          this.transaction.related.forEach((obj: any) => {
-            obj.aPayments.forEach((obj: any) => {
-              obj.dCreatedDate = moment(obj.dCreatedDate).format('DD-MM-yyyy hh:mm');
-            });
-            this.transaction.aPayments = this.transaction.aPayments.concat(obj.aPayments);
-          })
-        }, (error) => {
-          console.log(error);
-        })
-  }
+  // getRelatedTransaction(iActivityId: string, iTransactionId: string) {
+  //   const body = {
+  //     iBusinessId: this.iBusinessId,
+  //     iTransactionId: iTransactionId
+  //   }
+  //   this.apiService.postNew('cashregistry', '/api/v1/transaction/activity/' + iActivityId, body)
+  //     .subscribe(
+  //       (result: any) => {
+  //         this.transaction.related = result.data || [];
+  //         this.transaction.related.forEach((obj: any) => {
+  //           obj.aPayments.forEach((obj: any) => {
+  //             obj.dCreatedDate = moment(obj.dCreatedDate).format('DD-MM-yyyy hh:mm');
+  //           });
+  //           this.transaction.aPayments = this.transaction.aPayments.concat(obj.aPayments);
+  //         })
+  //       }, (error) => {
+  //         console.log(error);
+  //       })
+  // }
 
   close(value: boolean) {
     this.dialogRef.close.emit(value);
@@ -206,6 +210,10 @@ export class TransactionDetailsComponent implements OnInit {
     //   sLandLine: this.transaction.oCustomer.oPhone?.sLandLine,
 
     // };
+
+    if(oDataSource?.oCustomer?.bCounter === true) {
+      oDataSource.oCustomer = {};
+    }
 
     
     this.receiptService.exportToPdf({

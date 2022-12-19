@@ -14,6 +14,7 @@ import { Observable } from 'rxjs';
 import { ToastService } from '../toast';
 import { TranslateService } from '@ngx-translate/core';
 import { TillService } from '../../service/till.service';
+import {AddFavouritesComponent} from '../add-favourites/favourites.component';
 @Component({
   selector: 'app-activity-details',
   templateUrl: './activity-details.component.html',
@@ -61,6 +62,7 @@ export class ActivityDetailsComponent implements OnInit {
   oLocationName: any;
   businessDetails: any;
   iLocationId: String = '';
+  language:any;
   showDetails: Boolean = true;
   loadCashRegister: Boolean = false;
   openActivityId: any;
@@ -87,7 +89,8 @@ export class ActivityDetailsComponent implements OnInit {
       'iBusinessPartnerId',
       'iBusinessBrandId',
       'iBrand',
-      'iAssigneeId'
+      'iAssigneeId',
+      'iBusinessProductId'
     ]
   };
   filteredEmployees: Array<any> = [];
@@ -144,6 +147,7 @@ export class ActivityDetailsComponent implements OnInit {
     this.iWorkstationId = localStorage.getItem("currentWorkstation") || '';
     this.iBusinessId = localStorage.getItem('currentBusiness') || '';
     this.iLocationId = localStorage.getItem('currentLocation') || '';  
+    this.language = localStorage.getItem('language') || 'en';
   }
 
 
@@ -169,8 +173,19 @@ export class ActivityDetailsComponent implements OnInit {
         this.bShowOrderDownload = true;
         this.activityItems = this.activity.activityitems;
         if (this.activityItems?.length == 1) this.activityItems[0].collapsedBtn = true; /* only item there then we will always open it */
+         this.activityItems.forEach((item:any , index)=>{
+          if(item.oType.eKind == 'order' && item?.iBusinessProductId){
+            this.getBusinessProduct(item.iBusinessProductId).subscribe((res:any)=>{
+             const productDetail = res.data;
+             this.activityItems[index].sArticleNumber = productDetail.sArticleNumber
+             this.activityItems[index].sProductNumber = productDetail.sProductNumber
+             this.activityItems[index].sArticleName = productDetail?.oArticleGroup?.oName[this.language]
+            });
+        
+           }
+         })
         if (this.openActivityId) {
-          this.activityItems.forEach((item: any) => {
+          this.activityItems.forEach((item: any, index) => {
             if (item._id === this.openActivityId) item.collapsedBtn = true;
           });
         }
@@ -191,7 +206,6 @@ export class ActivityDetailsComponent implements OnInit {
     this.getListEmployees()
     this.getListSuppliers()
     this.getBusinessBrands();
-
     const [_printActionSettings, _printSettings, _template]: any = await Promise.all([
       this.getPdfPrintSetting({ oFilterBy: { sMethod: 'actions' } }),
       this.getPdfPrintSetting({ oFilterBy: { sType: ['repair', 'order', 'repair_alternative'] } }),
@@ -200,6 +214,11 @@ export class ActivityDetailsComponent implements OnInit {
     this.printActionSettings = _printActionSettings?.data[0]?.result[0].aActions;
     this.printSettings = _printSettings?.data[0]?.result;
     this.aTemplates = _template.data;
+  }
+
+
+  getBusinessProduct(iProductId:any){
+   return this.apiService.getNew('core' , `/api/v1/business/products/${iProductId}?iBusinessId=${this.iBusinessId}`);
   }
 
   getListEmployees() {
@@ -407,7 +426,23 @@ export class ActivityDetailsComponent implements OnInit {
       (location: any) => {
         if (location._id == locationId)
           this.transactions[index].locationName = location.sName;
-      })
+      })  
+  }
+
+  AssignOrderProduct(activity:any , index:any){
+    this.dialogService.openModal(AddFavouritesComponent , {cssClass:'modal-lg' , context:{"mode":"assign" , "oActivityItem":activity} ,hasBackdrop: true, closeOnBackdropClick: true, closeOnEsc: true}).instance.close.subscribe((result:any)=>{
+      if(result?.action != false)
+      {
+      this.getBusinessProduct(result.action.iBusinessProductId).subscribe((res:any)=>{
+        const productDetail = res.data;
+        this.activityItems[index].sArticleNumber = productDetail.sArticleNumber
+        this.activityItems[index].sProductNumber = productDetail.sProductNumber
+        this.activityItems[index].sArticleName = productDetail?.oArticleGroup?.oName[this.language]
+       });
+      }
+    } , (error)=>{
+      console.log(error);
+    })
   }
 
   openTransaction(transaction: any, itemType: any) {
@@ -552,6 +587,14 @@ export class ActivityDetailsComponent implements OnInit {
     if (this.activityItems.length == 1) this.activityItems[0].collapsedBtn = true;
     this.transactions = [];
     for (const obj of this.activityItems) {
+      if(obj.oType.eKind == 'order' && obj?.iBusinessProductId){
+       this.getBusinessProduct(obj.iBusinessProductId).subscribe((res:any)=>{
+        const productDetail = res.data;
+        obj.sArticleNumber = productDetail.sArticleNumber
+        obj.sProductNumber = productDetail.sProductNumber
+       });
+  
+      }
       for (const item of obj.receipts) {
         this.transactions.push({ ...item, ...obj });
       }
