@@ -188,7 +188,7 @@ export class AddFavouritesComponent implements OnInit {
         if(result.message == 'success'){
           this.apiService.activityItemDetails.next(this.oActivityItem);
           this.toastService.show({type:"success" , text:this.translation['SUCCESSFULLY_UPDATED']});
-          this.close(true);
+          this.close(this.oActivityItem);
         }
         else
         {
