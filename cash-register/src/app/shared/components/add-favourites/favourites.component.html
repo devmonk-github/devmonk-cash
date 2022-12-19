@@ -114,6 +114,10 @@
             <button *ngIf="mode === 'create'" class="btn btn-primary" (click)="create($event)">{{
                 'CREATE' | translate}}</button>
             <div *ngIf="creating" class="mx-2 spinner-border mx-auto"></div>
+
+            <button *ngIf="mode == 'assign'" class="btn btn-primary" (click)="assignProduct()">
+             {{'ASSIGN' | translate}}    
+            </button>
         </div>
         <div class="col-md-2">
             <button class="btn btn-secondary" (click)="close(false)">{{ 'CLOSE' | translate}}</button>
