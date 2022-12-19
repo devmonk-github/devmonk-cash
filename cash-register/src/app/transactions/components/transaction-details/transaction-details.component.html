@@ -260,10 +260,10 @@
                                     <td>{{item.nQuantity}}</td>
                                     <td>
                                         <span *ngIf="item.bDiscountOnPercentage">
-                                            {{ item.nDiscount }}% ({{item.nDiscountToShow | currency: tillService.currency}})
+                                            {{ item.nDiscount }}% ({{item.nDiscountToShow * item.nQuantity | currency: tillService.currency}})
                                         </span>
                                         <span *ngIf="!item.bDiscountOnPercentage">
-                                            {{item.nDiscountToShow | currency: tillService.currency}}
+                                            {{ item.nDiscountToShow * item.nQuantity | currency: tillService.currency}}
                                         </span>
                                     </td>
                                     <ng-container *ngIf="item.nRedeemedLoyaltyPoints > 0">
@@ -275,7 +275,7 @@
                                         <div class="d-flex align-items-center justify-content-between">
                                             <div>
                                                 <span *ngIf="item.totalPaymentAmount != item.nPriceIncVat">
-                                                    <s>({{item.nPriceIncVat}})</s>
+                                                    <s>({{item.nPriceIncVat * item.nQuantity}})</s>
                                                 </span>
                                                  {{item.totalPaymentAmount || 0}}</div>
                                             <ng-container *ngIf="from != 'activity-details'">

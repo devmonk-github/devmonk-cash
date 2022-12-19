@@ -384,7 +384,10 @@ export class ReceiptService {
             } else {
                 let html = el.html || '';
                 let object = el?.object;
-                let text = this.pdfService.replaceVariables(html, (object) ? this.oOriginalDataSource[object] : this.oOriginalDataSource);
+                 let text = '';
+                if (object && Object.keys(object)?.length) {
+                    text = this.pdfService.replaceVariables(html, (object) ? this.oOriginalDataSource[object] : this.oOriginalDataSource) || '';
+                }
                 columnData = { text: text };
                 if (el?.width) columnData.width = el?.width;
                 if (el?.alignment) columnData.alignment = el?.alignment;
@@ -471,7 +474,11 @@ export class ReceiptService {
                         return dataSource[condition.field] > condition.value;
                     else return this.oOriginalDataSource[condition.field] > condition.value;
                 case '===':
-                    return dataSource[condition.field1] === dataSource[condition.field2];
+                    if(condition?.value) {
+                        return dataSource[condition.field] === condition.value;
+                    } else {
+                        return dataSource[condition.field1] === dataSource[condition.field2];
+                    }
                 default:
                     return false;
             }
