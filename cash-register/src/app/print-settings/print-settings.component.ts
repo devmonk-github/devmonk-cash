@@ -1,6 +1,5 @@
-import { ifStmt } from '@angular/compiler/src/output/output_ast';
 import { Component, OnInit } from '@angular/core';
-import { faRefresh, faPencilAlt, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { faPencilAlt, faRefresh, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { LabelTemplateModelComponent } from 'src/app/print-settings/lable-template-model/label-template-model.component';
 import { PrinterToolComponent } from 'src/app/print-settings/printer-tool/printer-tool.component';
 import { ConfirmationDialogComponent } from 'src/app/shared/components/confirmation-dialog/confirmation-dialog.component';
@@ -11,7 +10,8 @@ import { PrintSettingsDetailsComponent } from '../shared/components/print-settin
 import { PrintSettingsEditorComponent } from '../shared/components/print-settings-editor/print-settings-editor.component';
 import { DialogService } from '../shared/service/dialog';
 import { MenuComponent } from '../shared/_layout/components/common';
-
+import { Js2zplService } from 'src/app/shared/service/js2zpl.service';
+import { PrintService } from '../shared/service/print.service';
 @Component({
   selector: 'app-print-settings',
   templateUrl: './print-settings.component.html',
@@ -57,22 +57,26 @@ export class PrintSettingsComponent implements OnInit {
   defaultLabelsData: Array<TemplateJSON> = []
   LabelTemplatesData: Array<TemplateJSON> = []
   bShowActionSettingsLoader: boolean = false;
+  labelPrintSettings: any;
+  iWorkstationId: any;
 
   constructor(
     private dialogService: DialogService,
     private toastService: ToastService,
     private apiService: ApiService,
-
+    private printService: PrintService,
   ) { }
 
   ngOnInit(): void {
     this.iBusinessId = localStorage.getItem('currentBusiness') || '';
     this.iLocationId = localStorage.getItem('currentLocation') || '';
+    this.iWorkstationId = localStorage.getItem('currentWorkstation') || '';
     this.isLoadingDefaultLabel = true
     this.isLoadingTemplatesLabel = true
     this.getLabelTemplate();
     this.fetchBusinessDetails();
     this.fetchActionSettings();
+    this.getLabelPrintSetting();
 
     setTimeout(() => {
       MenuComponent.reinitialization();
@@ -288,6 +292,101 @@ export class PrintSettingsComponent implements OnInit {
     await this.apiService.deleteNew('cashregistry', `/api/v1/print-settings/${this.iBusinessId}/${iPrintSettingsId}/${iActionId}`).toPromise();
     this.fetchActionSettings();
     // this.aActionSettings.splice(index, 1);
+  }
+
+  getLabelPrintSetting() {
+    this.apiService.getNew('cashregistry', `/api/v1/print-settings/${this.iBusinessId}/${this.iWorkstationId}/labelDefinition/default`).subscribe(
+      (result: any) => {
+        if (result?.data?._id) {
+          this.labelPrintSettings = result?.data;
+        } else {
+          this.toastService.show({ type: 'danger', text: 'Check your business -> printer settings' });
+        }
+      },
+      (error: any) => {
+        console.error(error)
+      }
+    );
+  }
+
+  async sentToLayout(template:any){
+    const js2zplService = new Js2zplService(template);
+    let layoutCommand: any = js2zplService.generateCommand(template, {}, false)
+    const response: any = await this.printService.printRawContent(
+      this.iBusinessId,
+      layoutCommand,
+      this.labelPrintSettings?.nPrinterId,
+      this.labelPrintSettings?.nComputerId,
+      1,
+      { title: 'Set layout' },
+      this.businessDetails.oPrintNode.sApiKey
+    )
+
+    if (response.status == "PRINTJOB_NOT_CREATED") {
+      let message = '';
+      if (response.computerStatus != 'online') {
+        message = 'Your computer status is : ' + response.computerStatus + '.';
+      } else if (response.printerStatus != 'online') {
+        message = 'Your printer status is : ' + response.printerStatus + '.';
+      }
+      this.toastService.show({ type: 'warning', title: 'PRINTJOB_NOT_CREATED', text: message });
+    } else {
+      this.toastService.show({ type: 'success', text: 'PRINTJOB_CREATED', apiUrl: '/api/v1/printnode/print-job/' + response.id });
+    }
+  }
+
+  async printSample(template:any){
+    const js2zplService = new Js2zplService(template);
+    
+    const sampleObject = {
+      '%%PRODUCT_NAME%%': 'Ring Diamant',
+      '%%SELLING_PRICE%%': '1234',
+      '%%PRODUCT_NUMBER%%': 'KA123456',
+      '%%ARTICLE_NUMBER%%': '000001234',
+      '%%BRAND_NAME%%': 'Kasius',
+      '%%EAN%%': '8718834442003',
+      '%%DIAMONDINFO%%': 'DI,SI2,H,0.13',
+      '%%PRODUCT_WEIGHT%%': '3.02',
+      '%%DESCRIPTION%%': 'Ring diamant 0.13ct',
+      '%%MY_OWN_COLLECTION%%': 'Ringen',
+      '%%VARIANTS_COLLECTION%%': 'Ringen',
+      '%%BRAND_COLLECTION1%%': 'Ringen',
+      '%%BRAND_COLLECTION2%%': 'Goud',
+      '%%TOTALCARATWEIGHT%%': '0.13',
+      '%%LAST_DELIVIERY_DATE%%': '08-05-2020',
+      '%%SUPPLIER_NAME%%': 'Kasius NL',
+      '%%SUPPLIER_CODE%%': 'KAS',
+      '%%SUGGESTED_RETAIL_PRICE%%': '5678',
+      '%%PRODUCT_CATEGORY%%': 'RINGEN',
+      '%%PRODUCT_SIZE%%': '20',
+      '%%JEWEL_TYPE%%': 'RING',
+      '%%JEWEL_MATERIAL%%': 'Goud',
+      '%%STRAP_WIDTH%%': '30mm',
+      '%%STRAP_MATERIAL%%': 'Staal'
+    }
+
+    let layoutCommand: any = js2zplService.generateCommand(template, sampleObject, true)
+    const response: any = await this.printService.printRawContent(
+      this.iBusinessId,
+      layoutCommand,
+      this.labelPrintSettings?.nPrinterId,
+      this.labelPrintSettings?.nComputerId,
+      1,
+      { title: 'Sample print' },
+      this.businessDetails.oPrintNode.sApiKey
+    )
+
+    if (response.status == "PRINTJOB_NOT_CREATED") {
+      let message = '';
+      if (response.computerStatus != 'online') {
+        message = 'Your computer status is : ' + response.computerStatus + '.';
+      } else if (response.printerStatus != 'online') {
+        message = 'Your printer status is : ' + response.printerStatus + '.';
+      }
+      this.toastService.show({ type: 'warning', title: 'PRINTJOB_NOT_CREATED', text: message });
+    } else {
+      this.toastService.show({ type: 'success', text: 'PRINTJOB_CREATED', apiUrl: '/api/v1/printnode/print-job/' + response.id });
+    }
   }
 
 
