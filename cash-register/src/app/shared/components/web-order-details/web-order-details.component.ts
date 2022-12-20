@@ -304,15 +304,14 @@ export class WebOrderDetailsComponent implements OnInit {
         oDataSource.aTransactionItems.forEach((item: any) => {
           item.sProductName = item?.receipts[0]?.sProductNumber || this.getName(item);
           item.sArticleGroupName = item.oArticleGroupMetaData.oName[this.selectedLanguage] || '';
-          item.vat = (parseFloat(item.nPriceIncVat) / 100) * parseFloat(item.nVatRate);
+          item.vat = ((parseFloat(item.nPriceIncVat) / 100) * parseFloat(item.nVatRate)).toFixed(2);
           item.sActivityItemNumber = item.sNumber;
           item.nSavingsPoints = this.getSavingPoint(item);
           item.sOrderDescription = item.sProductName + '\n' + item.sDescription;
-
-          oDataSource.totalVat += item.vat;
+          oDataSource.totalVat += parseFloat(item.vat);
           oDataSource.totalDiscount += item.nDiscount;
           oDataSource.totalRedeemedLoyaltyPoints += item.nRedeemedLoyaltyPoints || 0;
-          oDataSource.totalSavingPoints += item.nSavingsPoints;
+          oDataSource.totalSavingPoints += parseFloat(item.nSavingsPoints);
           oDataSource.total += item.nPriceIncVat;
           oDataSource.totalAfterDisc += item.nTotalAmount;
         });
@@ -528,7 +527,7 @@ export class WebOrderDetailsComponent implements OnInit {
 
   getSavingPoint(item: any) {
     let activityDetails = this.activity.activityitems.filter((aItem: any) => aItem._id == item._id)[0];
-    return activityDetails.nSavingsPoints || '';
+    return activityDetails.nSavingsPoints || '0';
   }
 
   async thermalPrintWebOrder() {
