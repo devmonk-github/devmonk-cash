@@ -85,7 +85,7 @@
     <div class="card-body">
 
       <div class="row my-3">
-        <div class="col-sm-12 col-md-6 col-lg-6">
+        <div class="col-12">
           <div class="d-flex flex-column">
             <div class="h5">{{"LABEL_TEMPLATE"|translate}}</div>
             <div class="dataTables_wrapper dt-bootstrap4 no-footer">
@@ -100,29 +100,40 @@
                     </tr>
                   </thead>
                   <tbody class="fw-bold text-gray-600">
-                    <tr *ngFor='let label of LabelTemplatesData; let i = index'>
-                      <td class="mw-100px text-truncate">
-                        {{i+1}}
-                      </td>
-                      <td class="mw-100px text-truncate" [title]="label.name || ''">
-                        {{label.name || ''}}
-                      </td>
-
-                      <td>
-
-                        <button (click)="openLabelTemplateModal(label,'edit')" class="btn btn-primary">
-                          {{'EDIT'| translate}}
-                        </button>
-
-                        <button class="btn btn-icon btn-secondary" (click)="deleteLabelTemplate(label._id)">
-                          <i class="fa fa-trash"></i>
-                        </button>
-                      </td>
-                    </tr>
+                    <ng-container *ngIf="!isLoadingTemplatesLabel && businessDetails?._id">
+                      <tr *ngFor='let label of LabelTemplatesData; let i = index'>
+                        <td class="mw-100px text-truncate">
+                          {{i+1}}
+                        </td>
+                        <td class="mw-200px text-truncate" [title]="label.name || ''">
+                          {{label.name || ''}}
+                        </td>
+                  
+                        <td>
+                          <div class="d-flex">
+                            <button (click)="openLabelTemplateModal(label,'edit')" class="btn btn-primary btn-sm">
+                              {{'EDIT'| translate}}
+                            </button>
+                  
+                            <button class="btn btn-icon btn-secondary btn-sm mx-2" (click)="deleteLabelTemplate(label._id)">
+                              <i class="fa fa-trash"></i>
+                            </button>
+                  
+                            <button (click)="sentToLayout(label)" class="btn btn-primary btn-sm">
+                              {{'SENT_TO_LAYOUT'| translate}}
+                            </button>
+                  
+                            <button (click)="printSample(label)" class="btn btn-primary btn-sm ms-2">
+                              {{'PRINT_SAMPLE'| translate}}
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    </ng-container>
                     <div class="d-flex">
                       <h5 *ngIf='!LabelTemplatesData.length && !isLoadingTemplatesLabel' style="text-align: center;"> {{
                         "NO_DATA_FOUND" | translate}}!</h5>
-                      <div class="row h-200px" *ngIf="isLoadingTemplatesLabel">
+                      <div class="row h-200px" *ngIf="isLoadingTemplatesLabel || !businessDetails?._id">
                         <div class="spinner-box h-200px">
                           <div class="three-quarter-spinner">
                           </div>
@@ -136,7 +147,7 @@
             </div>
           </div>
         </div>
-        <div class="col-sm-12 col-md-6 col-lg-6">
+        <div class="col-12">
           <div class="d-flex flex-column">
             <div class="h5">{{"DEFAULT_LABEL"|translate}}</div>
             <div class="dataTables_wrapper dt-bootstrap4 no-footer">
@@ -155,13 +166,13 @@
                       <td class="mw-100px text-truncate">
                         {{i+1}}
                       </td>
-                      <td class="mw-100px text-truncate" [title]="label.name || ''">
+                      <td class="mw-200px text-truncate" [title]="label.name || ''">
                         {{label.name || ''}}
                       </td>
 
                       <td>
 
-                        <button (click)="openLabelTemplateModal(label,'create')" class="btn btn-primary">
+                        <button (click)="openLabelTemplateModal(label,'create')" class="btn btn-primary btn-sm">
                           {{'CREATE'| translate}}
 
                         </button>
