@@ -1,3 +1,4 @@
+import { HttpClient } from '@angular/common/http';
 import { Component, OnDestroy, OnInit, QueryList, ViewChildren } from '@angular/core';
 import { Router } from '@angular/router';
 import { faLongArrowAltDown, faLongArrowAltUp, faMinusCircle, faPlusCircle, faSearch } from '@fortawesome/free-solid-svg-icons';
@@ -104,7 +105,8 @@ export class TransactionsComponent implements OnInit, OnDestroy {
     private routes: Router,
     private toastrService: ToastService,
     private barcodeService: BarcodeService,
-    public tillService: TillService
+    public tillService: TillService,
+    private http: HttpClient
   ) {  }
   
 
@@ -140,7 +142,13 @@ export class TransactionsComponent implements OnInit, OnDestroy {
       setTimeout(() => {
         MenuComponent.reinitialization();
       }, 200);
+      this.http.get<any>(this.businessDetails.sLogoLight).subscribe((data:any)=> {
+        // console.log(data)
+      }, (error:any)=> {
+        this.businessDetails.sLogoLight = "local";
+      })
     })
+
   }
 
   getPaymentMethods() {
