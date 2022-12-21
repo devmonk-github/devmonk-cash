@@ -142,11 +142,12 @@ export class TransactionsComponent implements OnInit, OnDestroy {
       setTimeout(() => {
         MenuComponent.reinitialization();
       }, 200);
-      this.http.get<any>(this.businessDetails.sLogoLight).subscribe((data:any)=> {
-        // console.log(data)
-      }, (error:any)=> {
-        this.businessDetails.sLogoLight = "local";
-      })
+      // this.http.get<any>(this.businessDetails.sLogoLight).subscribe((data:any)=> {
+      //   console.log(data)
+      // }, (error:any)=> {
+      //   console.log(error)
+      //   this.businessDetails.sLogoLight = "local";
+      // })
     })
 
   }
