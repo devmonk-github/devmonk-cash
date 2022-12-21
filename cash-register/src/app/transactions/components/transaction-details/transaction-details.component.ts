@@ -190,11 +190,11 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
       this.downloadWithVATLoading = true;
 
     this.transaction.businessDetails = this.businessDetails;
-    for (let i = 0; i < this.businessDetails?.aLocation.length; i++) {
-      if (this.businessDetails.aLocation[i]?._id.toString() == this.iLocationId.toString()) {
-        this.transaction.currentLocation = this.businessDetails.aLocation[i];
-      }
-    }
+    this.transaction.currentLocation = this.businessDetails.currentLocation;
+    // for (let i = 0; i < this.businessDetails?.aLocation.length; i++) {
+    //   if (this.businessDetails.aLocation[i]?._id.toString() == this.iLocationId.toString()) {
+    //   }
+    // }
 
     const template = await this.getTemplate('regular').toPromise();
     // const template = await this.getTemplate('single-activity').toPromise();
@@ -210,6 +210,7 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
     //   sLandLine: this.transaction.oCustomer.oPhone?.sLandLine,
 
     // };
+    console.log(oDataSource)
 
     if(oDataSource?.oCustomer?.bCounter === true) {
       oDataSource.oCustomer = {};

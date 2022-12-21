@@ -724,14 +724,18 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
     oDataSource.sAdvisedEmpFirstName = this.employee.sFirstName;
     oDataSource.sBusinessLogoUrl = _oLogoData.data;
-    oDataSource.oCustomer = {
-      sFirstName: oDataSource.oCustomer.sFirstName,
-      sLastName: oDataSource.oCustomer.sLastName,
-      sEmail: oDataSource.oCustomer.sEmail,
-      sMobile: oDataSource.oCustomer.oPhone?.sCountryCode + oDataSource.oCustomer.oPhone?.sMobile,
-      sLandLine: oDataSource.oCustomer.oPhone?.sLandLine,
-      oInvoiceAddress: oDataSource.oCustomer?.oInvoiceAddress
-    };
+    if (oDataSource.oCustomer && oDataSource.oCustomer.bCounter === true) {
+      oDataSource.oCustomer = {};  
+    } else {
+      oDataSource.oCustomer = {
+        sFirstName: oDataSource.oCustomer.sFirstName,
+        sLastName: oDataSource.oCustomer.sLastName,
+        sEmail: oDataSource.oCustomer.sEmail,
+        sMobile: oDataSource.oCustomer.oPhone?.sCountryCode + oDataSource.oCustomer.oPhone?.sMobile,
+        sLandLine: oDataSource.oCustomer.oPhone?.sLandLine,
+        oInvoiceAddress: oDataSource.oCustomer?.oInvoiceAddress
+      };
+    }
     const aTemplates = _template.data;
 
     this.dialogService.openModal(TransactionActionDialogComponent, {
