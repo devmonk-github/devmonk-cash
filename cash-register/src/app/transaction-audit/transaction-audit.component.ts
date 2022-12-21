@@ -1014,8 +1014,8 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
         iBusinessId: this.iBusinessId,
       };
       if (!this.IsDynamicState && this.oStatisticsData.bIsDayStateOpened) {
-        data.oFilterBy.dStartDate = this.statisticFilter.dFromState
-        data.oFilterBy.dEndDate = this.statisticFilter.dToState
+        data.oFilterBy.dStartDate = this.statisticFilter.dFromState || this.filterDates.startDate
+        data.oFilterBy.dEndDate = this.statisticFilter.dToState || this.filterDates.endDate
       }
       if (
         this.sDisplayMethod.toString() === 'revenuePerBusinessPartner' ||
