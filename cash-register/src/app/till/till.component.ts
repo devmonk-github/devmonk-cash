@@ -29,6 +29,7 @@ import { TerminalService } from '../shared/service/terminal.service';
 import { TillService } from '../shared/service/till.service';
 import { MenuComponent } from '../shared/_layout/components/common';
 import { SupplierWarningDialogComponent } from './dialogs/supplier-warning-dialog/supplier-warning-dialog.component';
+import { HttpClient } from '@angular/common/http';
 const moment = (_moment as any).default ? (_moment as any).default : _moment;
 @Component({
   selector: 'app-till',
@@ -144,6 +145,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     private customerStructureService: CustomerStructureService,
     private fiskalyService: FiskalyService,
     private receiptService: ReceiptService,
+    private http: HttpClient
   ) {
   }
 
@@ -860,6 +862,12 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       this.businessDetails = result.data;
       this.businessDetails.currentLocation = this.businessDetails?.aLocation?.filter((location: any) => location?._id.toString() == this.locationId.toString())[0];
       this.tillService.selectCurrency(this.businessDetails.currentLocation);
+
+      this.http.get<any>(this.businessDetails.sLogoLight).subscribe((data: any) => {
+        // console.log(data)
+      }, (error: any) => {
+        this.businessDetails.sLogoLight = "local";
+      })
     });
   }
 
