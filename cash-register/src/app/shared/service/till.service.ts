@@ -510,24 +510,24 @@ export class TillService {
         disc = this.getPercentOf(disc, item.nPriceIncVat)
         item.nDiscountToShow = disc;//.toFixed(2);
       } else { item.nDiscountToShow = disc }
-      console.log('item.nDiscountToShow', item.nDiscountToShow)
+      // console.log('item.nDiscountToShow', item.nDiscountToShow)
       // item.priceAfterDiscount = parseFloat(item.nRevenueAmount.toFixed(2)) - parseFloat(item.nDiscountToShow);
       item.nPriceIncVatAfterDiscount = (parseFloat(item.nPriceIncVat) - parseFloat(item.nDiscountToShow)) * item.nQuantity - item.nRedeemedLoyaltyPoints;
-      console.log('item.nPriceIncVatAfterDiscount', item.nPriceIncVatAfterDiscount)
+      // console.log('item.nPriceIncVatAfterDiscount', item.nPriceIncVatAfterDiscount)
       item.totalPaymentAmount = (parseFloat(item.nRevenueAmount) - parseFloat(item.nDiscountToShow)) * item.nQuantity - item.nRedeemedLoyaltyPoints;
       // item.totalPaymentAmount = parseFloat(item.totalPaymentAmount.toFixed(2));
-      console.log('item.totalPaymentAmount', item.totalPaymentAmount)
+      // console.log('item.totalPaymentAmount', item.totalPaymentAmount)
       // item.totalPaymentAmountAfterDisc = parseFloat(item.priceAfterDiscount.toFixed(2)) * parseFloat(item.nQuantity);
       item.bPrepayment = item?.oType?.bPrepayment || false;
       const vat = (item.nVatRate * item.nRevenueAmount / (100 + parseFloat(item.nVatRate)));
       item.vat = (item.nVatRate > 0) ? parseFloat(vat.toFixed(2)) : 0;
       totalVat += vat;
       total = total + item.totalPaymentAmount;
-      console.log('total', total)
+      // console.log('total', total)
       totalAfterDisc += item.nPriceIncVatAfterDiscount;
-      console.log('totalAfterDisc', totalAfterDisc)
+      // console.log('totalAfterDisc', totalAfterDisc)
       totalDiscount += (item.nDiscountToShow * item.nQuantity);
-      console.log('totalDiscount', totalDiscount)
+      // console.log('totalDiscount', totalDiscount)
 
       relatedItemsPromises[index] = this.getRelatedTransactionItem(item?.iActivityItemId, item?._id, index);
     })
@@ -571,7 +571,7 @@ export class TillService {
       this.apiService.getNew('cashregistry', `/api/v1/points-settings?iBusinessId=${this.iBusinessId}`).toPromise()
     ])
     dataObject.bSavingPointsSettings = _loyaltyPointSettings?.bEnabled;
-
+    dataObject.aTransactionItems.forEach((item:any)=>item.bSavingPointsSettings = _loyaltyPointSettings?.bEnabled)
     dataObject.related = _relatedResult.data || [];
     dataObject.related.forEach((relatedobj: any) => {
       relatedobj.aPayments.forEach((obj: any) => {
