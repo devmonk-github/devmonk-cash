@@ -29,6 +29,7 @@ import { TerminalService } from '../shared/service/terminal.service';
 import { TillService } from '../shared/service/till.service';
 import { MenuComponent } from '../shared/_layout/components/common';
 import { SupplierWarningDialogComponent } from './dialogs/supplier-warning-dialog/supplier-warning-dialog.component';
+import { HttpClient } from '@angular/common/http';
 const moment = (_moment as any).default ? (_moment as any).default : _moment;
 @Component({
   selector: 'app-till',
@@ -144,6 +145,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     private customerStructureService: CustomerStructureService,
     private fiskalyService: FiskalyService,
     private receiptService: ReceiptService,
+    private http: HttpClient
   ) {
   }
 
@@ -560,7 +562,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     let isGoldForPayment = true;
     const goldTransactionPayments = this.transactionItems.filter(o => o.oGoldFor?.name === 'cash' || o.oGoldFor?.name === 'bankpayment');
     goldTransactionPayments.forEach(element => {
-      const paymentMethod = this.payMethods.findIndex(o => o.sName.toLowerCase() === element.oGoldFor.name && o.amount === element.nTotal);
+      const paymentMethod = this.payMethods.findIndex(o => o.sName.toLowerCase() === element.oGoldFor.name && o.amount === element.amountToBePaid);
       if (paymentMethod < 0) {
         isGoldForPayment = false;
         this.toastrService.show({ type: 'danger', text: `The amount paid for '${element.oGoldFor.name}' does not match.` });
@@ -722,14 +724,18 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
     oDataSource.sAdvisedEmpFirstName = this.employee.sFirstName;
     oDataSource.sBusinessLogoUrl = _oLogoData.data;
-    oDataSource.oCustomer = {
-      sFirstName: oDataSource.oCustomer.sFirstName,
-      sLastName: oDataSource.oCustomer.sLastName,
-      sEmail: oDataSource.oCustomer.sEmail,
-      sMobile: oDataSource.oCustomer.oPhone?.sCountryCode + oDataSource.oCustomer.oPhone?.sMobile,
-      sLandLine: oDataSource.oCustomer.oPhone?.sLandLine,
-      oInvoiceAddress: oDataSource.oCustomer?.oInvoiceAddress
-    };
+    if (oDataSource.oCustomer && oDataSource.oCustomer.bCounter === true) {
+      oDataSource.oCustomer = {};  
+    } else {
+      oDataSource.oCustomer = {
+        sFirstName: oDataSource.oCustomer.sFirstName,
+        sLastName: oDataSource.oCustomer.sLastName,
+        sEmail: oDataSource.oCustomer.sEmail,
+        sMobile: oDataSource.oCustomer.oPhone?.sCountryCode + oDataSource.oCustomer.oPhone?.sMobile,
+        sLandLine: oDataSource.oCustomer.oPhone?.sLandLine,
+        oInvoiceAddress: oDataSource.oCustomer?.oInvoiceAddress
+      };
+    }
     const aTemplates = _template.data;
 
     this.dialogService.openModal(TransactionActionDialogComponent, {
@@ -745,7 +751,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
         aTemplates: aTemplates,
         businessDetails: this.businessDetails
       }
-    }).instance.close.subscribe((data) => { });
+    }).instance.close.subscribe((data) => { this.clearAll();  });
 
     if (bOrderCondition) {
       // print order receipt
@@ -788,7 +794,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       })
     }
 
-    this.clearAll();
+    
   }
 
   sendForReceipt(oDataSource: any, template: any, title: any, type?: any) {
@@ -796,6 +802,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     if (printActionSettings?.length) {
       const aActionToPerform = printActionSettings[0].aActionToPerform;
       if (aActionToPerform.includes('PRINT_THERMAL')) {
+        console.log({ oDataSource , b: oDataSource.businessDetails})
         this.receiptService.printThermalReceipt({
           oDataSource: oDataSource,
           printSettings: this.printSettings,
@@ -860,6 +867,12 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       this.businessDetails = result.data;
       this.businessDetails.currentLocation = this.businessDetails?.aLocation?.filter((location: any) => location?._id.toString() == this.locationId.toString())[0];
       this.tillService.selectCurrency(this.businessDetails.currentLocation);
+
+      // this.http.get<any>(this.businessDetails.sLogoLight).subscribe((data: any) => {
+      //   // console.log(data)
+      // }, (error: any) => {
+      //   this.businessDetails.sLogoLight = "local";
+      // })
     });
   }
 

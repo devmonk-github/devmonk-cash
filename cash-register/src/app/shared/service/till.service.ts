@@ -167,89 +167,74 @@ export class TillService {
       console.log('Last condition: ', i.paymentAmount, i.amountToBePaid);
       console.log('bPrepayment: ', bPrepayment, bRefund && i.oType?.bPrepayment, (this.getUsedPayMethods(true, payMethods) - this.getTotals('price', transactionItems) < 0), (i.paymentAmount !== i.amountToBePaid));
 
-
-      return new TransactionItem(
-        i.name,
-        i.comment,
-        i.sProductNumber,
-        i.price,
-        i.nPurchasePrice, // TODO
-        i.price - i.nPurchasePrice, // TODO
-        null,
-        i.tax,
-        i.quantity,
-        null,
-        // 10
-        null,
-        i._id,
-        i.ean,
-        i.sArticleNumber,
-        i.aImage,
-        i.nMargin, // TODO
-        null,
-        null,
-        i.iBusinessPartnerId,
-        i.sBusinessPartnerName,
-        this.getValueFromLocalStorage('currentBusiness'),
-        // 20
-        i.iArticleGroupId,
-        i.iArticleGroupOriginalId || i.iArticleGroupId,
-        i.oArticleGroupMetaData || null, //oArticleGroupMetaData
-        null,
-        false, // TODO
-        false, // TODO
-        'CATEGORY', // TODO
-        i.sGiftCardNumber, // TODO sGiftCardNumber
-        null, // TODO
-        null, //TODO
-        // 30
-        i.nTotal, // TODO?
-        i.paymentAmount || 0,
-        0, // TODO
-        i.nDiscount.value > 0,
-        i.nDiscount.percent,
-        i.nDiscount.value,
-        i.nRefundAmount,
-        null,
-        null,
-        i.dEstimatedDate, // estimated date
-        // 40
-        null, // TODO
-        i.iBusinessBrandId,
-        i.iBusinessProductId,
-        i.oBusinessProductMetaData,
-        'y',
-        this.getValueFromLocalStorage('currentWorkstation'),
-        i.iEmployeeId || this.getValueFromLocalStorage('currentUser').userId,
-        i.iAssigneeId,
-        this.getValueFromLocalStorage('currentLocation'),
-        i.sBagNumber,
-        i.iSupplierId, // repairer id
+      const oItem = new TransactionItem();
+      oItem.sProductName = i.name;
+      oItem.sComment = i.comment;
+      oItem.sProductNumber = i.sProductNumber;
+      oItem.nPriceIncVat = (i.type === 'gold-purchase') ? - (i.price) : i.price;
+      oItem.nPurchasePrice = i.nPurchasePrice;
+      oItem.nProfit = i.price - i.nPurchasePrice;
+      oItem.nVatRate = i.tax;
+      oItem.nQuantity = i.quantity;
+      oItem.iProductId = i._id;
+      oItem.sEan = i.ean;
+      oItem.sArticleNumber = i.sArticleNumber;
+      oItem.aImage = i.aImage;
+      oItem.nMargin = i.nMargin;
+      oItem.iBusinessPartnerId = i.iBusinessPartnerId;
+      oItem.sBusinessPartnerName = i.sBusinessPartnerName;
+      oItem.iBusinessId = this.getValueFromLocalStorage('currentBusiness');
+      oItem.iArticleGroupId = i.iArticleGroupId;
+      oItem.iArticleGroupOriginalId = i.iArticleGroupOriginalId || i.iArticleGroupId;
+      oItem.oArticleGroupMetaData = i?.oArticleGroupMetaData;
+      oItem.bPayLater = false;
+      oItem.bDeposit = false;
+      oItem.sProductCategory = 'CATEGORY';
+      oItem.sGiftCardNumber = i?.sGiftCardNumber;
+      oItem.sGiftCardNumber = i?.sGiftCardNumber;
+      oItem.nEstimatedTotal = i?.nTotal;
+      oItem.nPaymentAmount = i?.paymentAmount || 0;
+      oItem.nPaidLaterAmount = 0;
+      oItem.bDiscount = i.nDiscount.value > 0;
+      oItem.bDiscountPercent = i.nDiscount.percent;
+      oItem.nDiscountValue = i.nDiscount.value;
+      oItem.nRefundAmount = i.nRefundAmount;
+      oItem.dEstimatedDate = i.dEstimatedDate;
+      oItem.iBusinessBrandId = i.iBusinessBrandId;
+      oItem.iBusinessProductId = i.iBusinessProductId;
+      oItem.oBusinessProductMetaData = i.oBusinessProductMetaData;
+      oItem.eStatus = 'y';
+      oItem.iWorkstationId = this.getValueFromLocalStorage('currentWorkstation');
+      oItem.iEmployeeId = i.iEmployeeId || this.getValueFromLocalStorage('currentUser').userId;
+      oItem.iAssigneeId = i.iAssigneeId;
+      oItem.iLocationId = this.getValueFromLocalStorage('currentLocation');
+      oItem.sBagNumber = i.sBagNumber;
+      oItem.iSupplierId = i.iSupplierId; // repairer id
         // 50
-        i.iLastTransactionItemId,
-        null,
-        {
+      oItem.iLastTransactionItemId = i.iLastTransactionItemId;
+      oItem.oType = {
           eTransactionType: i.eTransactionType || 'cash-registry', // TODO
           bRefund,
           nStockCorrection: i.eTransactionItemType === 'regular' ? i.quantity : i.quantity - (i.nBrokenProduct || 0),
-          eKind: i.type, // TODO // repair
+          eKind: i.type, // TODO // repai
           bDiscount: i.nDiscount > 0,
-          bPrepayment: bPrepayment,
-        },
-        i.iActivityItemId,
-        i.oGoldFor,
-        i.nDiscount,
-        i.redeemedLoyaltyPoints,
-        i.sUniqueIdentifier || uuidv4(),
-        i.paymentAmount / i.quantity,
-        i.description,
+          bPrepayment: bPrepayment
+        };
+      oItem.iActivityItemId = i.iActivityItemId;
+      oItem.oGoldFor = i.oGoldFor;
+      oItem.nDiscount = i.nDiscount;
+      oItem.nRedeemedLoyaltyPoints = i.redeemedLoyaltyPoints;
+      oItem.sUniqueIdentifier =  i.sUniqueIdentifier || uuidv4();
+      oItem.nRevenueAmount =  i.paymentAmount / i.quantity;
+      oItem.sDescription = i.description;
         // 60
-        i.sServicePartnerRemark,
-        i.eEstimatedDateAction,
-        i.eActivityItemStatus,
-        i.bGiftcardTaxHandling,
-        i.bDiscountOnPercentage || false
-      )
+      oItem.sServicePartnerRemark = i.sServicePartnerRemark;
+      oItem.eEstimatedDateAction = i.eEstimatedDateAction;
+      oItem.eActivityItemStatus = i.eActivityItemStatus;
+      oItem.bGiftcardTaxHandling = i.bGiftcardTaxHandling;
+      oItem.bDiscountOnPercentage = i.bDiscountOnPercentage || false
+      
+      return oItem;
     });
     console.log('iPayment 201: ', JSON.parse(JSON.stringify(body?.transactionItems)));
     const originalTItemsLength = length = body.transactionItems.filter((i: any) => i.oType.eKind !== 'loyalty-points').length;
@@ -510,24 +495,24 @@ export class TillService {
         disc = this.getPercentOf(disc, item.nPriceIncVat)
         item.nDiscountToShow = disc;//.toFixed(2);
       } else { item.nDiscountToShow = disc }
-      console.log('item.nDiscountToShow', item.nDiscountToShow)
+      // console.log('item.nDiscountToShow', item.nDiscountToShow)
       // item.priceAfterDiscount = parseFloat(item.nRevenueAmount.toFixed(2)) - parseFloat(item.nDiscountToShow);
       item.nPriceIncVatAfterDiscount = (parseFloat(item.nPriceIncVat) - parseFloat(item.nDiscountToShow)) * item.nQuantity - item.nRedeemedLoyaltyPoints;
-      console.log('item.nPriceIncVatAfterDiscount', item.nPriceIncVatAfterDiscount)
+      // console.log('item.nPriceIncVatAfterDiscount', item.nPriceIncVatAfterDiscount)
       item.totalPaymentAmount = (parseFloat(item.nRevenueAmount) - parseFloat(item.nDiscountToShow)) * item.nQuantity - item.nRedeemedLoyaltyPoints;
       // item.totalPaymentAmount = parseFloat(item.totalPaymentAmount.toFixed(2));
-      console.log('item.totalPaymentAmount', item.totalPaymentAmount)
+      // console.log('item.totalPaymentAmount', item.totalPaymentAmount)
       // item.totalPaymentAmountAfterDisc = parseFloat(item.priceAfterDiscount.toFixed(2)) * parseFloat(item.nQuantity);
       item.bPrepayment = item?.oType?.bPrepayment || false;
       const vat = (item.nVatRate * item.nRevenueAmount / (100 + parseFloat(item.nVatRate)));
       item.vat = (item.nVatRate > 0) ? parseFloat(vat.toFixed(2)) : 0;
       totalVat += vat;
       total = total + item.totalPaymentAmount;
-      console.log('total', total)
+      // console.log('total', total)
       totalAfterDisc += item.nPriceIncVatAfterDiscount;
-      console.log('totalAfterDisc', totalAfterDisc)
+      // console.log('totalAfterDisc', totalAfterDisc)
       totalDiscount += (item.nDiscountToShow * item.nQuantity);
-      console.log('totalDiscount', totalDiscount)
+      // console.log('totalDiscount', totalDiscount)
 
       relatedItemsPromises[index] = this.getRelatedTransactionItem(item?.iActivityItemId, item?._id, index);
     })
@@ -571,7 +556,7 @@ export class TillService {
       this.apiService.getNew('cashregistry', `/api/v1/points-settings?iBusinessId=${this.iBusinessId}`).toPromise()
     ])
     dataObject.bSavingPointsSettings = _loyaltyPointSettings?.bEnabled;
-
+    dataObject.aTransactionItems.forEach((item:any)=>item.bSavingPointsSettings = _loyaltyPointSettings?.bEnabled)
     dataObject.related = _relatedResult.data || [];
     dataObject.related.forEach((relatedobj: any) => {
       relatedobj.aPayments.forEach((obj: any) => {

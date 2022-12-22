@@ -153,7 +153,12 @@ export class PrintSettingsComponent implements OnInit {
     return new Promise((resolve, reject) => {
       this.apiService.getNew('cashregistry', `/api/v1/label/templates/${this.iBusinessId}`).subscribe((result: any) => {
         this.defaultLabelsData = result.data.filter((lable: any) => lable.readOnly)
-        this.LabelTemplatesData = result.data.filter((lable: any) => !lable.readOnly)
+        this.LabelTemplatesData = result.data.filter((lable: any) => !lable.readOnly).map((template:any)=> {
+          template.elements.map((element: any, i: number) => {
+            template.elements[i]['type'] = element.sType
+          })
+          return template
+        })
         this.isLoadingTemplatesLabel = false
         this.isLoadingDefaultLabel = false
 
@@ -362,7 +367,8 @@ export class PrintSettingsComponent implements OnInit {
       '%%JEWEL_TYPE%%': 'RING',
       '%%JEWEL_MATERIAL%%': 'Goud',
       '%%STRAP_WIDTH%%': '30mm',
-      '%%STRAP_MATERIAL%%': 'Staal'
+      '%%STRAP_MATERIAL%%': 'Staal',
+      '%%QUANTITY%%' :'1'
     }
 
     let layoutCommand: any = js2zplService.generateCommand(template, sampleObject, true)

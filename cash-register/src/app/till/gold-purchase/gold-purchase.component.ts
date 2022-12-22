@@ -73,6 +73,10 @@ export class GoldPurchaseComponent implements OnInit {
 
   getColorCode(item: any): string {
     const { eTransactionItemType } = item;
+    if (item.tType === 'refund') {
+      return '#f7422e';
+    }
+    
     switch (eTransactionItemType) {
       case 'regular':
         return '#4ab69c';

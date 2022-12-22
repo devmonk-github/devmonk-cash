@@ -87,7 +87,7 @@ export class Pn2escposService {
           //this.clog('EXECUTING {"'+action.do+'":"'+action.data+'"}')
           let a;
           if (action.if) {
-            if (this.checkConditions(action.if, dataObject)) {
+            if (this.checkConditions(action.if, this.data)) {
               a = this.doAction(action, key)
               // console.log('after process if', a)
               commandString += a;
@@ -873,7 +873,7 @@ export class Pn2escposService {
   }
 
   checkConditions(conditions: any, dataSourceObject: any) {
-    dataSourceObject = JSON.parse(dataSourceObject);
+    // dataSourceObject = JSON.parse(dataSourceObject);
 
     var item = dataSourceObject; //Used for the eval() function
 

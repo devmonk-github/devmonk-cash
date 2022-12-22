@@ -1014,8 +1014,8 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
         iBusinessId: this.iBusinessId,
       };
       if (!this.IsDynamicState && this.oStatisticsData.bIsDayStateOpened) {
-        data.oFilterBy.dStartDate = this.statisticFilter.dFromState
-        data.oFilterBy.dEndDate = this.statisticFilter.dToState
+        data.oFilterBy.dStartDate = this.statisticFilter.dFromState || this.filterDates.startDate
+        data.oFilterBy.dEndDate = this.statisticFilter.dToState || this.filterDates.endDate
       }
       if (
         this.sDisplayMethod.toString() === 'revenuePerBusinessPartner' ||
@@ -1054,8 +1054,8 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
         iWorkstationId: this.iWorkstationId,
         iLocationId: this.iLocationId,
         oFilterBy: {
-          dStartDate: this.oStatisticsData.dStartDate,
-          dEndDate: this.oStatisticsData.dEndDate,
+          dStartDate: this.oStatisticsDocument?.dOpenDate,
+          dEndDate: (this.oStatisticsDocument?.dCloseDate) ? this.oStatisticsDocument?.dCloseDate : this.oStatisticsData.dEndDate,
           iPaymentMethodId: item.iPaymentMethodId
         }
       }
@@ -1178,7 +1178,8 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
           oPayment: {
             iPaymentMethodId: oCashPaymentMethod._id,
             nAmount: this.oCountings.nCashDifference,
-            sMethod: oCashPaymentMethod.sName.toLowerCase()
+            sMethod: oCashPaymentMethod.sName.toLowerCase(),
+            sComment: 'DIFF_IN_CASH_COUNTING',
           },
           _eType: 'diff-counting',
           nVatRate: nVatRate
@@ -1196,7 +1197,8 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
         oPayment: {
           iPaymentMethodId: oBankPaymentMethod._id,
           nAmount: this.oCountings.nSkim,
-          sMethod: oBankPaymentMethod.sName.toLowerCase()
+          sMethod: oBankPaymentMethod.sName.toLowerCase(),
+          sComment: 'Transfer to the bank (increase bank amount)',
         },
         nVatRate: nVatRate
       }).toPromise());
@@ -1207,7 +1209,8 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
         oPayment: {
           iPaymentMethodId: oCashPaymentMethod._id,
           nAmount: -this.oCountings.nSkim,
-          sMethod: oCashPaymentMethod.sName.toLowerCase()
+          sMethod: oCashPaymentMethod.sName.toLowerCase(),
+          sComment: 'Transfered to the bank (decrease cash amount)',
         },
         nVatRate: nVatRate
       }).toPromise());

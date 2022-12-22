@@ -228,7 +228,7 @@
                                         </div>
                                     </td>
                                     <td>{{item.dCreatedDate | date: 'short'}}</td>
-                                    <td>{{item?.nDiscount || 0}}</td>
+                                    <td>{{item?.nDiscount || 0}} {{ item?.bDiscountOnPercentage ? '%' : ''}}</td>
                                     <td>{{item?.nVatRate || 0}}</td>
                                     <td>
                                         <div>{{item?.nPaymentAmount || 0}}</div>
