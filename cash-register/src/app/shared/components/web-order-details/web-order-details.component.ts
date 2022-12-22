@@ -308,8 +308,13 @@ export class WebOrderDetailsComponent implements OnInit {
           item.sActivityItemNumber = item.sNumber;
           item.nSavingsPoints = this.getSavingPoint(item);
           item.sOrderDescription = item.sProductName + '\n' + item.sDescription;
+          item.nDiscountPrice = item.nDiscount > 0 ?
+            (item.bDiscountOnPercentage ?
+              (item.nPriceIncVat * ((item.nDiscount || 0) / 100))
+              : item.nDiscount)
+            : 0
           oDataSource.totalVat += parseFloat(item.vat);
-          oDataSource.totalDiscount += item.nDiscount;
+          oDataSource.totalDiscount += item.nDiscountPrice;
           oDataSource.totalRedeemedLoyaltyPoints += item.nRedeemedLoyaltyPoints || 0;
           oDataSource.totalSavingPoints += parseFloat(item.nSavingsPoints);
           oDataSource.total += item.nPriceIncVat;
