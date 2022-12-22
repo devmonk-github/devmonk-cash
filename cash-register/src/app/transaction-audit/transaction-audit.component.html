@@ -1101,7 +1101,7 @@
                                             </tr>
                                             <ng-container *ngIf="oPayment.bIsCollapseItem">
                                                 <tr class="bg-gray-100" *ngFor="let item of oPayment.aItems">
-                                                    <td class="ps-9"> {{ item.sMethod }}</td>
+                                                    <td class="ps-9"> {{ item.sComment}} {{ (!item?.sComment || item.sComment === '') ? item.sMethod : '' }}</td>
                                                     <td> {{ item.nAmount }}</td>
                                                     <td> {{ item.nQuantity }}</td>
                                                 </tr>
