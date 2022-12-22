@@ -5,88 +5,87 @@ import { Payment } from "./payment.model";
 import { BusinessProductMetadata } from "./business-product-metadata.model";
 
 export class TransactionItem {
-  constructor(
-    // TODO: Check which properties should be optional
-    public sProductName: string,
-    public sComment: string,
-    public sProductNumber: string,
-    public nPriceIncVat: number,
-    public nPurchasePrice: number,
-    public nProfit: number,
-    public bEntryMethodCustomerValue: boolean | null,
-    public nVatRate: number,
-    public nQuantity: number,
-    public nReceivedQuantity: number | null,
-    // 10
-    public aExtraServices: [ExtraService] | null,
-    public iProductId: string,
-    public sEan: string,
-    public sArticleNumber: string,
-    public aImage: [string],
-    public nMargin: number,
-    public nExtraLabel: number | null,
-    public oEdiProduct: EdiProduct | null,
-    public iBusinessPartnerId: string | null,
-    public sBusinessPartnerName: string | null,
-    public iBusinessId: string,
-    // 20
-    public iArticleGroupId: string | null,
-    public iArticleGroupOriginalId: string | null,
-    public oArticleGroupMetaData: { aProperty: [Property] } | null,
-    public aPayments: [Payment] | null,
-    public bPayLater: boolean,
-    public bDeposit: boolean,
-    public sProductCategory: string,
-    public sGiftCardNumber: string | null,
-    public iParentTransactionDetailId: string | null,
-    public iGiftCardTransaction: string | null,
-    // 30
-    public nEstimatedTotal: number,
-    public nPaymentAmount: number,
-    public nPaidLaterAmount: number,
-    public bDiscount: boolean,
-    public bDiscountPercent: boolean,
-    public nDiscountValue: number,
-    public nRefundAmount: number,
-    public nProductSize: number | null,
-    public nProductSizeFor: string | null,
-    public dEstimatedDate: Date | null,
-    // 40
-    public dEstimatedDateString: string | null,
-    public iBusinessBrandId: string | null,
-    public iBusinessProductId: string | null,
-    public oBusinessProductMetaData: BusinessProductMetadata | null,
-    public eStatus: string,
-    public iWorkstationId: string,
-    public iEmployeeId: string,
-    public iAssigneeId: string,
-    public iLocationId: string,
-    public sBagNumber: string,
-    public iSupplierId: any,
-    //Optional here, since we don't know the transaction id when we create one (50)
-    public iLastTransactionItemId: string | null,
-    public iTransactionId: string | null,
-    public oType: {
-      eTransactionType: string,
-      bRefund: boolean,
-      nStockCorrection: number,
-      eKind: string,
-      bDiscount: boolean,
-      bPrepayment: boolean,
-    },
-    public iActivityItemId: any,
-    public oGoldFor: any,
-    public nDiscount: number,
-    public nRedeemedLoyaltyPoints: number,
-    public sUniqueIdentifier: string,
-    public nRevenueAmount: number,
-    public sDescription: string,
-    // 60
-    public sServicePartnerRemark: string,
-    public eEstimatedDateAction: string,
-    public eActivityItemStatus: string,
-    public bGiftcardTaxHandling: string,
-    public bDiscountOnPercentage: boolean
-    ) { }
+  
+  sProductName: string;
+  sComment: string;
+  sProductNumber: string;
+  nPriceIncVat: number;
+  nPurchasePrice: number;
+  nProfit: number;
+  bEntryMethodCustomerValue: boolean| null;
+  nVatRate: number;
+  nQuantity: number;
+  nReceivedQuantity: number| null;
+  // 10
+  aExtraServices: [ExtraService | null];
+  iProductId: string;
+  sEan: string;
+  sArticleNumber: string;
+  aImage: [string];
+  nMargin: number;
+  nExtraLabel: number| null;
+  oEdiProduct: EdiProduct| null;
+  iBusinessPartnerId: string| null;
+  sBusinessPartnerName: string| null;
+  iBusinessId: string;
+  // 20
+  iArticleGroupId: string| null;
+  iArticleGroupOriginalId: string| null;
+  oArticleGroupMetaData: {aProperty: [Property] } | null;
+  aPayments: [Payment] | null;
+  bPayLater: boolean;
+  bDeposit: boolean;
+  sProductCategory: string;
+  sGiftCardNumber: string| null;
+  iParentTransactionDetailId: string| null;
+  iGiftCardTransaction: string| null;
+  // 30
+  nEstimatedTotal: number;
+  nPaymentAmount: number;
+  nPaidLaterAmount: number;
+  bDiscount: boolean;
+  bDiscountPercent: boolean;
+  nDiscountValue: number;
+  nRefundAmount: number;
+  nProductSize: number| null;
+  nProductSizeFor: string| null;
+  dEstimatedDate: Date| null;
+  // 40
+  dEstimatedDateString: string| null;
+  iBusinessBrandId: string| null;
+  iBusinessProductId: string| null;
+  oBusinessProductMetaData: BusinessProductMetadata| null;
+  eStatus: string;
+  iWorkstationId: string;
+  iEmployeeId: string;
+  iAssigneeId: string;
+  iLocationId: string;
+  sBagNumber: string;
+  iSupplierId: any;
+  //Optional here, since we don't know the transaction id when we create one (50)
+  iLastTransactionItemId: string| null;
+  iTransactionId: string| null;
+  oType: {
+    eTransactionType: string,
+    bRefund: boolean,
+    nStockCorrection: number,
+    eKind: string,
+    bDiscount: boolean,
+    bPrepayment: boolean,
+  };
+  iActivityItemId: any;
+  oGoldFor: any;
+  nDiscount: number;
+  nRedeemedLoyaltyPoints: number;
+  sUniqueIdentifier: string;
+  nRevenueAmount: number;
+  sDescription: string;
+  // 60
+  sServicePartnerRemark: string;
+  eEstimatedDateAction: string;
+  eActivityItemStatus: string;
+  bGiftcardTaxHandling: string;
+  bDiscountOnPercentage: boolean;  
+  constructor() {}
 
 }

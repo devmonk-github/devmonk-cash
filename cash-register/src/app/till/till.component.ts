@@ -868,11 +868,11 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       this.businessDetails.currentLocation = this.businessDetails?.aLocation?.filter((location: any) => location?._id.toString() == this.locationId.toString())[0];
       this.tillService.selectCurrency(this.businessDetails.currentLocation);
 
-      this.http.get<any>(this.businessDetails.sLogoLight).subscribe((data: any) => {
-        // console.log(data)
-      }, (error: any) => {
-        this.businessDetails.sLogoLight = "local";
-      })
+      // this.http.get<any>(this.businessDetails.sLogoLight).subscribe((data: any) => {
+      //   // console.log(data)
+      // }, (error: any) => {
+      //   this.businessDetails.sLogoLight = "local";
+      // })
     });
   }
 
