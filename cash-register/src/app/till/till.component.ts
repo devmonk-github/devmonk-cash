@@ -562,7 +562,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     let isGoldForPayment = true;
     const goldTransactionPayments = this.transactionItems.filter(o => o.oGoldFor?.name === 'cash' || o.oGoldFor?.name === 'bankpayment');
     goldTransactionPayments.forEach(element => {
-      const paymentMethod = this.payMethods.findIndex(o => o.sName.toLowerCase() === element.oGoldFor.name && o.amount === element.nTotal);
+      const paymentMethod = this.payMethods.findIndex(o => o.sName.toLowerCase() === element.oGoldFor.name && o.amount === element.amountToBePaid);
       if (paymentMethod < 0) {
         isGoldForPayment = false;
         this.toastrService.show({ type: 'danger', text: `The amount paid for '${element.oGoldFor.name}' does not match.` });
