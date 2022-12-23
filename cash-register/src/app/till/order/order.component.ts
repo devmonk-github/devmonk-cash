@@ -30,7 +30,10 @@ export class OrderComponent implements OnInit {
   faUpload = faUpload;
   faPhone = faPhone;
   faAt = faAt;
-  typeArray = ['regular', 'return'];
+  typeArray = [
+    { key: 'regular', value: false },
+    { key: 'return', value: true }
+  ];
   propertyOptions: Array<any> = [];
   selectedProperties: Array<any> = [];
   articleGroupDetails: any = {

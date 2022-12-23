@@ -123,7 +123,7 @@ export class TransactionItemsDetailsComponent implements OnInit {
         element.nRedeemedLoyaltyPoints = nRedeemedLoyaltyPoints;
         element.nPaymentAmount += _.sumBy(elementDiscount, 'nPaymentAmount');
         element.nPaidAmount += _.sumBy(elementDiscount, 'nPaymentAmount');
-        element.nPriceIncVat += nDiscountnPaymentAmount;// + element.nDiscount;
+        element.nPriceIncVat += (nDiscountnPaymentAmount / element.nQuantity)
       });
       this.transactionItems = this.transactionItems.map(v => ({ ...v, isSelected: false }));
       this.transactionItems.forEach(transactionItem => {

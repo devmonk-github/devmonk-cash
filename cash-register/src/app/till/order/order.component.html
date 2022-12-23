@@ -40,8 +40,8 @@
           <div class="col-12">
             <div class="form-group mb-4">
               <select name="status" id="status" class="form-control form-control-solid"
-                [(ngModel)]="item.eTransactionItemType">
-                <option *ngFor="let type of typeArray" [ngValue]="type">{{type}}</option>
+                [(ngModel)]="item.oType.bRefund">
+                <option *ngFor="let type of typeArray" [ngValue]="type.value">{{type.key}}</option>
               </select>
             </div>
           </div>
