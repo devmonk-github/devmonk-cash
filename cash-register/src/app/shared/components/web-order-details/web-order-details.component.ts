@@ -308,8 +308,13 @@ export class WebOrderDetailsComponent implements OnInit {
           item.sActivityItemNumber = item.sNumber;
           item.nSavingsPoints = this.getSavingPoint(item);
           item.sOrderDescription = item.sProductName + '\n' + item.sDescription;
+          item.nDiscountPrice = item.nDiscount > 0 ?
+            (item.bDiscountOnPercentage ?
+              (item.nPriceIncVat * ((item.nDiscount || 0) / 100))
+              : item.nDiscount)
+            : 0
           oDataSource.totalVat += parseFloat(item.vat);
-          oDataSource.totalDiscount += item.nDiscount;
+          oDataSource.totalDiscount += item.nDiscountPrice;
           oDataSource.totalRedeemedLoyaltyPoints += item.nRedeemedLoyaltyPoints || 0;
           oDataSource.totalSavingPoints += parseFloat(item.nSavingsPoints);
           oDataSource.total += item.nPriceIncVat;
@@ -346,7 +351,7 @@ export class WebOrderDetailsComponent implements OnInit {
     let url = `/api/v1/activities/items/${this.activity._id}`;
     this.loading = true;
     this.apiService.postNew('cashregistry', url, this.requestParams).subscribe((result: any) => {
-      this.activityItems = result.data[0].result;
+      this.activityItems = result.data[0].result.sort((item1: any, item2: any) => !item1?.iBusinessProductId ? -1 : (!item2?.iBusinessProductId ? -1 : (item2.iBusinessProductId - item1.iBusinessProductId)));
       this.loading = false;
       let completed = 0, refunded = 0;
       // this.transactions = [];
