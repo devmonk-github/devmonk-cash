@@ -33,6 +33,7 @@ export class CustomerImportComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.apiService.setToastService(this.toastService);
     this.businessDetails._id = localStorage.getItem('currentBusiness')
     const translate = ['SUCCESSFULLY_IMPORTED'];
     this.translationService.get(translate).subscribe((res:any)=>{

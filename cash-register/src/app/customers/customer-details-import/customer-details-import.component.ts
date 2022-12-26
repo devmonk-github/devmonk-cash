@@ -50,7 +50,7 @@ export class CustomerDetailsImportComponent implements OnInit, OnChanges {
   ) { }
 
   ngOnInit(): void {
-
+    this.apiService.setToastService(this.toasterService);
     // if (this.customerDetailsForm?.isTransaction) this.getDynamicFields(false); // FOR TESTING AND DYNAMIC DATA(TRANSACTION)
   }
 

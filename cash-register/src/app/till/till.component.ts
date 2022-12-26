@@ -148,9 +148,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     private http: HttpClient
   ) {
   }
-
-
   async ngOnInit() {
+    this.apiService.setToastService(this.toastrService)
     this.business._id = localStorage.getItem('currentBusiness');
     this.locationId = localStorage.getItem('currentLocation') || null;
     this.iWorkstationId = localStorage.getItem('currentWorkstation');

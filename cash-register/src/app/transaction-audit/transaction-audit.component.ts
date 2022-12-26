@@ -224,6 +224,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
   }
 
   async ngOnInit() {
+    this.apiService.setToastService(this.toastService);
     this.businessDetails._id = localStorage.getItem('currentBusiness');
     this.setOptionMenu()
 
