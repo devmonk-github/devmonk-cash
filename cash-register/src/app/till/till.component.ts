@@ -417,6 +417,9 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
         // let availableAmount = this.getUsedPayMethods(true);
         // this.paymentDistributeService.distributeAmount(this.transactionItems, availableAmount);
         break;
+      case 'prepaymentChange':
+        this.paymentDistributeService.distributeAmount(this.transactionItems, this.getUsedPayMethods(true));
+        break;
       case 'duplicate':
         const tItem = Object.create(this.transactionItems[index]);
         tItem.sGiftCardNumber = Date.now();
@@ -517,6 +520,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     if (paidAmount === 0) {
       this.payMethods.map(o => o.isDisabled = false);
     }
+    // console.log('change in payment in cash ')
+    this.transactionItems = [...this.transactionItems]
   }
 
   clearAll() {
@@ -536,6 +541,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   clearPaymentAmounts() {
+    // console.log(this.transactionItems);
     this.payMethods.map(o => { o.amount = null, o.isDisabled = false });
     let availableAmount = this.getUsedPayMethods(true);
     this.paymentDistributeService.distributeAmount(this.transactionItems, availableAmount);

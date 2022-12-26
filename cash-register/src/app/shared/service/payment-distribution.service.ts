@@ -35,14 +35,23 @@ export class PaymentDistributionService {
     });
     const setAmount = transactionItems.filter(item => item.isExclude);
     setAmount.map(i => (i.paymentAmount = 0));
+    
+    const arrToUpdate = transactionItems.filter(item => (!item.manualUpdate && !item.isExclude) || item?.prepaymentTouched===false);
+    const arrNotToUpdate = transactionItems.filter(item => (item.manualUpdate && !item.isExclude) || item?.prepaymentTouched===true);
+    
+    // console.log({update: arrToUpdate, notUPdate: arrNotToUpdate})
 
-    const arrToUpdate = transactionItems.filter(item => !item.manualUpdate && !item.isExclude);
-    const arrNotToUpdate = transactionItems.filter(item => item.manualUpdate && !item.isExclude);
     const assignedAmountToManual = arrNotToUpdate.reduce((n, { paymentAmount }) => n + paymentAmount, 0);
-    availableAmount -= assignedAmountToManual;
+    
+    availableAmount += assignedAmountToManual
+    
+
+    // console.log('assignedAmountToManual', assignedAmountToManual)
+    // console.log('availableAmount', availableAmount)
 
     if (arrToUpdate.length > 0) {
       const totalAmountToBePaid = arrToUpdate.reduce((n, { amountToBePaid }) => n + amountToBePaid, 0);
+      // console.log('totalAmountToBePaid', totalAmountToBePaid)
       if (totalAmountToBePaid !== 0) {
         arrToUpdate.map(i => (i.paymentAmount = this.roundToXDigits(i.amountToBePaid * availableAmount / totalAmountToBePaid)));
       }
@@ -53,6 +62,8 @@ export class PaymentDistributionService {
       if (element.paymentAmount > element.nTotal) {
         element.paymentAmount = element.nTotal;
       }
+      if (element.paymentAmount < element.nTotal) element.oType.bPrepayment = true;
+      else if (element.paymentAmount == element.nTotal) element.oType.bPrepayment = false;
     });
     return transactionItems;
   }
