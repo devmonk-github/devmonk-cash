@@ -33,9 +33,9 @@
                     <h3>1</h3>
                     <div class="col-12">
                         <div class="form-group mb-4">
-                            <select class="form-control " [(ngModel)]="item.eTransactionItemType"
+                            <select class="form-control" [(ngModel)]="item.oType.bRefund"
                                 (ngModelChange)="changeTypeArray()">
-                                <option *ngFor="let type of typeArray" [ngValue]="type">{{type}}</option>
+                                <option *ngFor="let type of typeArray" [ngValue]="type.value">{{type.key}}</option>
                             </select>
                         </div>
                     </div>
@@ -71,14 +71,14 @@
                                 (change)="changeTotalAmount()">
                         </div>
                     </div>
-                    <div class="col-12">
+                    <!-- <div class="col-12">
                         <div class="form-group mb-4">
-                            <label class="form-control-label mb-3">{{ "PRICE" | translate}}</label>:
+                            <label class="form-control-label mb-3">{{ "DISCOUNT" | translate}}</label>:
                             <input type="number" name="discount" class="form-control  mb-3 mb-lg-0"
                                 (keyup)="item.nDiscount < 0 ? item.nDiscount = 0: item.nDiscount"
                                 [(ngModel)]="item.nDiscount">
                         </div>
-                    </div>
+                    </div> -->
 
 
                 </div>

@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders, HttpResponse } from "@angular/common/http";
 import { environment } from '../../../environments/environment';
 import { BehaviorSubject, Observable, of, throwError } from "rxjs";
 import { catchError, retry } from "rxjs/operators";
+import { ToastService } from '../components/toast';
 
 type ApiTypes = 'auth' | 'organization' | 'core' | 'cashregistry' | 'customer' | 'bookkeeping' | 'website-builder' | 'backup' | 'oldplatform' | 'log' | 'fiskaly'
 
@@ -22,10 +23,15 @@ export class ApiService {
   public userDetails: BehaviorSubject<any> = new BehaviorSubject<any>({});
   public businessDetails: BehaviorSubject<any> = new BehaviorSubject<any>({});
   public activityItemDetails:BehaviorSubject<any> = new BehaviorSubject<any>({});
+  toastService:ToastService;
 
   constructor(
     private httpClient: HttpClient,
   ) { }
+
+  setToastService(toastService: ToastService){
+    this.toastService = toastService;
+  }
 
   httpHeaders = {
     headers: new HttpHeaders({
@@ -46,9 +52,10 @@ export class ApiService {
       msg = error.error.message
     }
     // console.error('HttpClient throws error', msg)
+    this.toastService.show({type: 'danger', text: msg || 'Something went wrong!' })
     return throwError(new Error(msg))
   }
-
+  
   //  Function for set headers
   setAPIHeaders() {
     if (localStorage.getItem('authorization') && localStorage.getItem('authorization')?.trim() != '') {
@@ -89,7 +96,7 @@ export class ApiService {
       .get<any>(this.endPoint + route, headerObject)
       .pipe(
         retry(1),
-        catchError(this.httpError)
+        catchError(this.httpError.bind(this))
       )
   }
 
@@ -110,7 +117,7 @@ export class ApiService {
     return this.httpClient.post<any>(this.endPoint + route, data, headerObject)
       .pipe(
         retry(1),
-        catchError(this.httpError)
+        catchError(this.httpError.bind(this))
       )
   }
 
@@ -130,7 +137,7 @@ export class ApiService {
     return this.httpClient.put<any>(this.endPoint + route, data, headerObject)
       .pipe(
         retry(1),
-        catchError(this.httpError)
+        catchError(this.httpError.bind(this))
       )
   }
 
@@ -149,7 +156,7 @@ export class ApiService {
     return this.httpClient.delete<any>(this.endPoint + route, headerObject)
       .pipe(
         retry(1),
-        catchError(this.httpError)
+        catchError(this.httpError.bind(this))
       )
   }
 
@@ -191,7 +198,7 @@ export class ApiService {
 
     return this.httpClient.get<any>(finalUrl, httpHeaders)
       .pipe(
-        catchError(this.httpError)
+        catchError(this.httpError.bind(this)),
       );
   }
 
@@ -202,7 +209,7 @@ export class ApiService {
     let httpHeaders = {
       headers: new HttpHeaders(finalHeaders),
     }
-    return this.httpClient.post<any>(finalUrl, data, httpHeaders).pipe(catchError(this.httpError));
+    return this.httpClient.post<any>(finalUrl, data, httpHeaders).pipe(catchError(this.httpError.bind(this)));
   }
 
   fileUpload(apiType: ApiTypes, url: string, data: any, header?: any): Observable<HttpResponse<any>> {
@@ -224,7 +231,7 @@ export class ApiService {
       headers: new HttpHeaders(finalHeaders),
     }
     return this.httpClient.put<any>(finalUrl, data, httpHeaders)
-      .pipe(catchError(this.httpError))
+      .pipe(catchError(this.httpError.bind(this)))
   }
 
   deleteNew(apiType: ApiTypes, url: string, header?: any): Observable<HttpResponse<any>> {
@@ -236,7 +243,7 @@ export class ApiService {
     }
     return this.httpClient.delete<any>(finalUrl, httpHeaders)
       .pipe(
-        catchError(this.httpError)
+        catchError(this.httpError.bind(this))
       );
   }
 }

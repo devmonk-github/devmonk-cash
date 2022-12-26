@@ -159,7 +159,11 @@
                 <!-- PREPAYMENT -->
                 <div class="col-6">
                   <div class="form-group mb-1">
-                    <label class="form-control-label mb-1">{{ "PREPAYMENT" | translate}}</label>:
+                    <label class="form-control-label mb-1">
+                      <span *ngIf="item.oType.bPrepayment===true">{{ "PREPAYMENT" | translate}}</span>
+                      <span *ngIf="item.oType.bPrepayment===false">{{ "FULL_PAYMENT" | translate}}</span>
+                    </label>:
+                    <span style="color:red;font-weight:bolder">Don't touch this field untill you filled in the payments on the right side</span>
                     <input class="form-control mb-3 mb-lg-0" type="number" step="any" name="bagNumber" id="bagNumber"
                       (keyup)="updatePayments()" [(ngModel)]="item.paymentAmount" [disabled]="item.isExclude" />
                   </div>

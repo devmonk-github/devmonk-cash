@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
+import { ToastService } from 'src/app/shared/components/toast';
 import { ApiService } from 'src/app/shared/service/api.service';
 
 @Component({
@@ -44,6 +45,7 @@ export class DayClosuresComponent implements OnInit, OnDestroy {
   constructor(private apiService: ApiService,
     private route: ActivatedRoute,
     private router: Router,
+    private toastrService: ToastService
   ) {
     this.iBusinessId = localStorage.getItem('currentBusiness') || '';
     this.iLocationId = localStorage.getItem('currentLocation') || '';
@@ -56,6 +58,7 @@ export class DayClosuresComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.apiService.setToastService(this.toastrService);
     this.fetchDayClosureList();
     this.fetchBusinessLocation();
     this.getWorkstations();

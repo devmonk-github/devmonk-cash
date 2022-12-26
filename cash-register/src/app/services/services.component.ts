@@ -1,7 +1,6 @@
-import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
-import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
-import { faLongArrowAltDown, faLongArrowAltUp, faMinusCircle, faPlus, faPlusCircle, faSearch } from '@fortawesome/free-solid-svg-icons';
-import { filter, map } from 'rxjs/operators';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { faLongArrowAltDown, faLongArrowAltUp, faMinusCircle, faPlusCircle, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { ActivityDetailsComponent } from '../shared/components/activity-details-dialog/activity-details.component';
 import { CardsComponent } from '../shared/components/cards-dialog/cards-dialog.component';
 import { ToastService } from '../shared/components/toast';
@@ -134,7 +133,7 @@ export class ServicesComponent implements OnInit, OnDestroy {
 
 
   async ngOnInit(): Promise<void> {
-
+    this.apiService.setToastService(this.toastrService);
     this.barcodeService.barcodeScanned.subscribe((barcode: string) => {
       this.openModal(barcode);
     });

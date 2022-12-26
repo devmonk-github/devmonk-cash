@@ -98,6 +98,7 @@ export class ActivityItemsComponent implements OnInit, OnDestroy {
   ) { }
 
   async ngOnInit() {
+    this.apiService.setToastService(this.toastrService);
     this.businessDetails._id = localStorage.getItem('currentBusiness');
     this.iLocationId = localStorage.getItem('currentLocation');
     this.loadTransaction();

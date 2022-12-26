@@ -53,7 +53,10 @@ export class GoldPurchaseComponent implements OnInit {
   suppliersList: Array<any> = [];
   showDeleteBtn: boolean = false;
   aProperty: any = [];
-  typeArray = ['regular', 'return'];
+  typeArray = [
+    {key: 'regular', value: false}, 
+    { key: 'return', value:true }
+  ];
   constructor(
     private priceService: PriceService,
     private createArticleGroupService: CreateArticleGroupService,

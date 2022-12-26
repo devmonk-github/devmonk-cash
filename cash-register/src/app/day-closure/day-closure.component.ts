@@ -39,6 +39,7 @@ export class DayClosureComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.apiService.setToastService(this.toastService);
     this.iBusinessId = localStorage.getItem('currentBusiness');
     this.iLocationId = localStorage.getItem('currentLocation');
     this.iWorkstationId = localStorage.getItem('currentWorkstation');

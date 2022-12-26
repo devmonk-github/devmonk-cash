@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { faArrowDown, faArrowUp, faMinus } from '@fortawesome/free-solid-svg-icons'
 import { DialogService } from '../../shared/service/dialog';
 import { DiscountDialogComponent } from "../dialogs/discount-dialog/discount-dialog.component";
@@ -14,7 +14,7 @@ import { TillService } from 'src/app/shared/service/till.service';
   templateUrl: './product.component.html',
   styleUrls: ['./product.component.sass'],
 })
-export class ProductComponent implements OnInit {
+export class ProductComponent implements OnInit, OnChanges{
   @Input() item: any
   @Input() taxes: any
   @Output() itemChanged = new EventEmitter<any>();
@@ -22,7 +22,10 @@ export class ProductComponent implements OnInit {
   faMinus = faMinus;
   faArrowDown = faArrowDown;
   faArrowUp = faArrowUp;
-  typeArray = ['regular', 'return'];
+  typeArray = [
+    { key: 'regular', value: false },
+    { key: 'return', value: true }
+  ];
   collapsedBtn: Boolean = false;
   totalDiscount = 0;
 
@@ -31,11 +34,15 @@ export class ProductComponent implements OnInit {
     private apiService: ApiService,
     private toastrService: ToastService,
     public tillService: TillService) { }
-
-  ngOnInit(): void {
-    this.fetchArticleGroupInfo();
-    this.getTotalDiscount(this.item)
-  }
+    
+    ngOnInit(): void {
+      this.fetchArticleGroupInfo();
+      this.getTotalDiscount(this.item)
+    }
+    
+    ngOnChanges(changes: SimpleChanges): void {
+      console.log(changes)
+    }
 
   fetchArticleGroupInfo() {
     const iBusinessId = localStorage.getItem('currentBusiness');
@@ -133,8 +140,9 @@ export class ProductComponent implements OnInit {
   }
 
   changePrePayment(item: any) {
+    console.log('changePrePayment',item)
    if (item.paymentAmount < 0 && item.paymentAmount > item.nTotal) item.oType.bPrepayment = true;
-   else if (item.paymentAmount >= 0 && item.nTotal > item.paymentAmount) item.oType.bPrepayment = true;
+   else if (item.paymentAmount >= 0 && item.nTotal > item.paymentAmount) item.oType.bPrepayment = false;
    else if (item.nTotal > 0 && item.paymentAmount < 0) throw ('strange transaction A');
    else if (item.nTotal <= 0 && item.paymentAmount > 0) throw ('strange transaction B');
   }
