@@ -198,13 +198,13 @@ export class TransactionsComponent implements OnInit, OnDestroy {
   loadTransaction() {
     this.transactions = [];
     this.requestParams.iBusinessId = this.iBusinessId;
-    this.requestParams.type = 'transactions';
+    this.requestParams.type = 'transaction';
     this.requestParams.filterDates = this.filterDates;
     this.requestParams.transactionStatus = this.transactionStatuses;
     this.requestParams.iEmployeeId = this.employee && this.employee._id ? this.employee._id : '';
     this.requestParams.iWorkstationId = undefined // we need to work on this once devides are available.\
     this.showLoader = true;
-    this.requestParams.eTransactionType = this.eType+'s';
+    this.requestParams.eTransactionType = this.eType;
     this.apiService.postNew('cashregistry', '/api/v1/transaction/cashRegister', this.requestParams).subscribe((result: any) => {
       if (result && result.data && result.data && result.data.result && result.data.result.length) {
         this.transactions = result.data.result;
