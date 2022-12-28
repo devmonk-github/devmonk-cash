@@ -1,6 +1,6 @@
 <div class="card shadow-sm">
     <div class="card-header" style="margin-top: 20px;">
-        <h4>{{ 'WEB_ORDER_DETAILS' | translate}}</h4>
+        <h4>{{ (from == 'web-orders' ? 'WEB_ORDER_DETAILS' : 'WEB_RESERVATION_DETAILS') | translate}}</h4>
         <div mat-dialog-actions>
             <button mat-dialog-close type="button" class="btn btn-sm btn-light" (click)="close(false)">
                 <fa-icon [icon]="faTimes"></fa-icon>

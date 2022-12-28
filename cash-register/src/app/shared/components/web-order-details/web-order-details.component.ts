@@ -88,7 +88,7 @@ export class WebOrderDetailsComponent implements OnInit {
   async ngOnInit() {
     this.activity = this.dialogRef.context.activity;
     this.selectedLanguage = localStorage.getItem('language')?.toString() || navigator.language.substring(0, 2);
-    if (this.from == 'web-orders') {
+    if (this.from == 'web-orders' || this.from == 'web-reservations') {
       const index = this.statuses.indexOf('cancelled');
       if (index > -1) this.statuses.splice(index, 1);
 
@@ -98,7 +98,6 @@ export class WebOrderDetailsComponent implements OnInit {
     this.iLocationId = localStorage.getItem("currentLocation") || '';
     if (this.activity?.iCustomerId) this.fetchCustomer(this.activity.iCustomerId, -1);
     if (this.activity?.eActivityStatus != 'completed') this.showDeliverBtn = true;
-    this.fetchBusinessDetails();
     this.getPrintSetting();
     this.getBusinessLocations();
     this.fetchTransactionItems();
@@ -141,7 +140,8 @@ export class WebOrderDetailsComponent implements OnInit {
   }
 
   getPrintSetting() {
-    this.apiService.getNew('cashregistry', '/api/v1/print-settings/' + '6182a52f1949ab0a59ff4e7b' + '/' + '624c98415e537564184e5614').subscribe(
+    let iWorkstationId = localStorage.getItem("currentWorkstation");
+    this.apiService.getNew('cashregistry', `/api/v1/print-settings/${this.iBusinessId}/${iWorkstationId}`).subscribe(
       (result: any) => {
         this.computerId = result?.data?.nComputerId;
         this.printerId = result?.data?.nPrinterId;
@@ -250,7 +250,7 @@ export class WebOrderDetailsComponent implements OnInit {
   }
 
   generatePDF(print: boolean): void {
-    const sName = 'Sample', eType = this.activity.eType;
+    const sName = 'Sample', eType = this.activity.eType == 'webshop-reservation' ? 'webshop-revenue' : this.activity.eType;
     this.downloading = true;
     this.activity.businessDetails = this.businessDetails;
     for (let i = 0; i < this.businessDetails?.aLocation.length; i++) {
