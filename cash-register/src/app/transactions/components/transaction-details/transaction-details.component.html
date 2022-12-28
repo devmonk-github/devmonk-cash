@@ -275,9 +275,9 @@
                                         <div class="d-flex align-items-center justify-content-between">
                                             <div>
                                                 <span *ngIf="item.totalPaymentAmount != item.nPriceIncVat">
-                                                    <s>({{item.nPriceIncVat * item.nQuantity}})</s>
+                                                    <s>({{(item.nPriceIncVat * item.nQuantity) | currency: tillService.currency}})</s>
                                                 </span>
-                                                 {{item.totalPaymentAmount || 0}}</div>
+                                                 {{item.totalPaymentAmount || 0 | currency: tillService.currency}}</div>
                                             <ng-container *ngIf="from != 'activity-details'">
                                                 <div class="mx-2">
                                                     <div class="d-flex align-items-center">
