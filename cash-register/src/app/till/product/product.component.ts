@@ -140,10 +140,16 @@ export class ProductComponent implements OnInit, OnChanges{
   }
 
   changePrePayment(item: any) {
-    console.log('changePrePayment',item)
-   if (item.paymentAmount < 0 && item.paymentAmount > item.nTotal) item.oType.bPrepayment = true;
-   else if (item.paymentAmount >= 0 && item.nTotal > item.paymentAmount) item.oType.bPrepayment = false;
-   else if (item.nTotal > 0 && item.paymentAmount < 0) throw ('strange transaction A');
-   else if (item.nTotal <= 0 && item.paymentAmount > 0) throw ('strange transaction B');
+    // console.log('changePrePayment', item)
+    if (item.paymentAmount < 0 && item.paymentAmount > item.nTotal) item.oType.bPrepayment = true;
+    else if (item.paymentAmount >= 0 && item.nTotal > item.paymentAmount) item.oType.bPrepayment = true;
+    else if (item.paymentAmount >= 0 && item.nTotal == item.paymentAmount) item.oType.bPrepayment = false;
+    else if (item.nTotal > 0 && item.paymentAmount < 0) throw ('strange transaction A');
+    else if (item.nTotal <= 0 && item.paymentAmount > 0) throw ('strange transaction B');
+
+    item.prepaymentTouched = true;
+    // item.manualUpdate = true;
+    //  this.updatePayments();
+    this.itemChanged.emit('prepaymentChange');
   }
 }

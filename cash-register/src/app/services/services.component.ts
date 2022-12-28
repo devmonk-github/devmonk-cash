@@ -123,11 +123,11 @@ export class ServicesComponent implements OnInit, OnDestroy {
     private barcodeService: BarcodeService,
   ) {
 
-    
-      
-   }
+
+
+  }
   ngOnDestroy(): void {
-    console.log('ondestroy services' )
+    console.log('ondestroy services')
     MenuComponent.clearEverything();
   }
 
@@ -143,7 +143,7 @@ export class ServicesComponent implements OnInit, OnDestroy {
     })
     if (this.router.url.includes('/business/webshop-orders')) {
       this.webOrders = true;
-      this.requestParams.eType = ['webshop-revenue', 'webshop-reservation']
+      this.requestParams.eType = ['webshop-revenue'] //, 'webshop-reservation'
     }
     this.businessDetails._id = localStorage.getItem('currentBusiness');
     this.iLocationId = localStorage.getItem('currentLocation');
@@ -154,6 +154,7 @@ export class ServicesComponent implements OnInit, OnDestroy {
     if (this.isFor !== "activity") await this.setLocation() /* For web-orders, we will switch to the web-order location otherwise keep current location */
     this.showLoader = false
     this.loadTransaction();
+    this.fetchBusinessDetails();
 
     const [_locationData, _workstationData, _employeeData]: any = await Promise.all([
       this.getLocations(),
@@ -297,7 +298,8 @@ export class ServicesComponent implements OnInit, OnDestroy {
 
   openActivities(activity: any, openActivityId?: any) {
     if (this.webOrders) {
-      this.dialogService.openModal(WebOrderDetailsComponent, { cssClass: 'w-fullscreen', context: { activity, from: 'web-orders' } })
+      let isFrom = this.router.url.includes('/business/webshop-orders') ? 'web-orders' : 'web-reservations';
+      this.dialogService.openModal(WebOrderDetailsComponent, { cssClass: 'w-fullscreen', context: { activity, businessDetails: this.businessDetails, from: isFrom } })
         .instance.close.subscribe(result => {
           if (this.webOrders && result) this.router.navigate(['business/till']);
         });
@@ -311,16 +313,20 @@ export class ServicesComponent implements OnInit, OnDestroy {
 
   loadTransaction() {
     if (this.router.url.includes('/business/webshop-orders')) {
-      this.requestParams.eType = ['webshop-revenue', 'webshop-reservation']
+      this.webOrders = true;
+      this.requestParams.eType = ['webshop-revenue']
+    } else if (this.router.url.includes('/business/reservations')) {
+      this.webOrders = true;
+      this.requestParams.eType = ['webshop-reservation']
     } else {
       this.requestParams.eType = ['cash-register-service', 'cash-register-revenue']
+      if (this.iLocationId) this.requestParams.iLocationId = this.iLocationId
     }
     this.activities = [];
     this.requestParams.iBusinessId = this.businessDetails._id;
     this.requestParams.skip = this.requestParams.skip || 0;
     this.requestParams.limit = this.paginationConfig.itemsPerPage || 50;
     this.requestParams.importStatus = this.importStatus == 'all' ? undefined : this.importStatus;
-    if (this.iLocationId) this.requestParams.iLocationId = localStorage.getItem('currentLocation')
     // if (this.iLocationId && !this.requestParams.selectedLocations?.length) this.requestParams.selectedLocations.push(this.requestParams.selectedLocations);
     this.showLoader = true;
 
@@ -454,5 +460,13 @@ export class ServicesComponent implements OnInit, OnDestroy {
 
         }
       });
+  }
+
+  fetchBusinessDetails() {
+    this.apiService.getNew('core', '/api/v1/business/' + this.iBusinessId)
+      .subscribe(
+        (result: any) => {
+          this.businessDetails = result.data;
+        })
   }
 }

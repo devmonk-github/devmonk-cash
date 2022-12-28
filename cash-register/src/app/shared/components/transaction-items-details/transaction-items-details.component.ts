@@ -112,11 +112,13 @@ export class TransactionItemsDetailsComponent implements OnInit {
         const elementDiscount = discountRecords.filter(o => o.sUniqueIdentifier === element.sUniqueIdentifier);
         let nRedeemedLoyaltyPoints = 0;
         let nDiscountnPaymentAmount  = 0;
+        console.log(elementDiscount)
         elementDiscount.forEach(dElement => {
+          console.log(dElement)
           if (dElement.oType.eKind === 'loyalty-points-discount') nRedeemedLoyaltyPoints += dElement.nRedeemedLoyaltyPoints || 0;
           if (dElement.oType.eKind === "discount"){
             nDiscountnPaymentAmount += dElement.nPaymentAmount || 0;
-            // element.nDiscount += dElement.nDiscount || 0;
+            element.nDiscount += dElement.nRevenueAmount || 0;
           } 
         });
         

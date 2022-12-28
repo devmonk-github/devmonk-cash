@@ -148,7 +148,7 @@ export class TillService {
     };
     console.log('length 115: ', transactionItems?.length);
     body.transactionItems = transactionItems.map((i: any) => {
-      console.log('i.nDiscount: ', i.nDiscount, i.price, i.oType);
+      console.log('i.nDiscount: ', i.nDiscount, i.price, i.oType, i.paymentAmount);
       const bRefund =
         i.oType?.bRefund /* Indication from the User */
         || i.nDiscount.quantity < 0 /* Minus Discount (e.g. -10 discount) [TODO: Remove the quantity as its not exist at all] */
@@ -227,7 +227,7 @@ export class TillService {
       oItem.sUniqueIdentifier =  i.sUniqueIdentifier || uuidv4();
       oItem.nRevenueAmount =  i.paymentAmount / i.quantity;
       oItem.sDescription = i.description;
-        // 60
+
       oItem.sServicePartnerRemark = i.sServicePartnerRemark;
       oItem.eEstimatedDateAction = i.eEstimatedDateAction;
       oItem.eActivityItemStatus = i.eActivityItemStatus;
@@ -390,6 +390,7 @@ export class TillService {
   }
 
   processTransactionSearchResult(result: any) {
+    console.log(393, result)
     const transactionItems: any = [];
     if (result.transaction) {
       result.transactionItems.forEach((transactionItem: any) => {
@@ -451,7 +452,7 @@ export class TillService {
   }
 
   async processTransactionForPdfReceipt(transaction: any) {
-    // console.log('processTransactionForPdfReceipt original', transaction);
+    console.log('processTransactionForPdfReceipt original', transaction);
     const relatedItemsPromises: any = [];
     let language: any = localStorage.getItem('language')
     let dataObject = JSON.parse(JSON.stringify(transaction));
@@ -497,14 +498,15 @@ export class TillService {
       } else { item.nDiscountToShow = disc }
       // console.log('item.nDiscountToShow', item.nDiscountToShow)
       // item.priceAfterDiscount = parseFloat(item.nRevenueAmount.toFixed(2)) - parseFloat(item.nDiscountToShow);
-      item.nPriceIncVatAfterDiscount = (parseFloat(item.nPriceIncVat) - parseFloat(item.nDiscountToShow)) * item.nQuantity - item.nRedeemedLoyaltyPoints;
+      item.nPriceIncVatAfterDiscount = (parseFloat(item.nPriceIncVat) - parseFloat(item.nDiscountToShow)) - item.nRedeemedLoyaltyPoints;
+      if (item.oType.bRefund === true) item.nPriceIncVatAfterDiscount = -(item.nPriceIncVatAfterDiscount)
       // console.log('item.nPriceIncVatAfterDiscount', item.nPriceIncVatAfterDiscount)
       item.totalPaymentAmount = (parseFloat(item.nRevenueAmount) - parseFloat(item.nDiscountToShow)) * item.nQuantity - item.nRedeemedLoyaltyPoints;
       // item.totalPaymentAmount = parseFloat(item.totalPaymentAmount.toFixed(2));
       // console.log('item.totalPaymentAmount', item.totalPaymentAmount)
       // item.totalPaymentAmountAfterDisc = parseFloat(item.priceAfterDiscount.toFixed(2)) * parseFloat(item.nQuantity);
       item.bPrepayment = item?.oType?.bPrepayment || false;
-      const vat = (item.nVatRate * item.nRevenueAmount / (100 + parseFloat(item.nVatRate)));
+      const vat = (item.nVatRate * item.nPriceIncVatAfterDiscount / (100 + parseFloat(item.nVatRate)));
       item.vat = (item.nVatRate > 0) ? parseFloat(vat.toFixed(2)) : 0;
       totalVat += vat;
       total = total + item.totalPaymentAmount;
