@@ -179,7 +179,13 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
     const currentEmployeeId = JSON.parse(localStorage.getItem('currentUser') || '')['userId'];
     
-    this.getBusinessDetails()
+    const _businessData:any = await this.getBusinessDetails().toPromise()
+
+    this.businessDetails = _businessData.data;
+    this.businessDetails.currentLocation = this.businessDetails?.aLocation?.filter((location: any) => location?._id.toString() == this.locationId.toString())[0];
+    this.tillService.selectCurrency(this.businessDetails.currentLocation);
+
+
     this.getPrintSettings(true)
     this.getPrintSettings()
     this.getEmployee(currentEmployeeId)
@@ -187,8 +193,11 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     setTimeout(() => {
       MenuComponent.bootstrap();
     });
-    this.getfiskalyInfo();
-    this.cancelFiskalyTransaction();
+
+    if (this.businessDetails.currentLocation?.tssInfo) {
+      this.getfiskalyInfo();
+      this.cancelFiskalyTransaction();
+    }
   }
   
   ngAfterViewInit() {
@@ -653,7 +662,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
               });
 
               this.handleReceiptPrinting();
-              this.updateFiskalyTransaction('FINISHED', body.payments);
+              // this.updateFiskalyTransaction('FINISHED', body.payments);
               setTimeout(() => {
                 this.saveInProgress = false;
                 this.fetchBusinessPartnersProductCount(uniq);
@@ -868,17 +877,17 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   // }
 
   getBusinessDetails() {
-    this.apiService.getNew('core', '/api/v1/business/' + this.business._id).subscribe((result:any)=> {
-      this.businessDetails = result.data;
-      this.businessDetails.currentLocation = this.businessDetails?.aLocation?.filter((location: any) => location?._id.toString() == this.locationId.toString())[0];
-      this.tillService.selectCurrency(this.businessDetails.currentLocation);
+    return this.apiService.getNew('core', '/api/v1/business/' + this.business._id);
+      // this.businessDetails = result.data;
+      // this.businessDetails.currentLocation = this.businessDetails?.aLocation?.filter((location: any) => location?._id.toString() == this.locationId.toString())[0];
+      // this.tillService.selectCurrency(this.businessDetails.currentLocation);
 
       // this.http.get<any>(this.businessDetails.sLogoLight).subscribe((data: any) => {
       //   // console.log(data)
       // }, (error: any) => {
       //   this.businessDetails.sLogoLight = "local";
       // })
-    });
+    // });
   }
 
 
@@ -1352,6 +1361,12 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   async updateFiskalyTransaction(state: string, payments: []) {
+    console.log(this.businessDetails.currentLocation?.tssInfo)
+    if (!this.businessDetails.currentLocation?.tssInfo){
+      console.log('if')
+      return;
+    } 
+    console.log('after if')
     const pay = _.clone(payments);
     try {
       if (!localStorage.getItem('fiskalyTransaction')) {
