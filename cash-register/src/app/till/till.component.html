@@ -335,10 +335,11 @@
                 <li class="nav-item mb-3 me-3" *ngFor="let button of quickButtons">
                   <div>
                     <button
-                      class="nav-link d-flex justify-content-center flex-column flex-center overflow-hidden w-85px h-85px py-4"
-                      (click)="onSelectProduct(button, 'quick-button')">
+                      class="nav-link d-flex justify-content-center flex-column flex-center overflow-hidden w-85px h-85px py-4 position-relative"
+                      (click)="onSelectProduct(button, 'quick-button', '', button)">
                       <h4 class="nav-text text-gray-800 fw-bold fs-6 lh-1 text-center mb-2">{{button.sName}}</h4>
                       <span class="text-gray-600">{{button.nPrice | currency: tillService.currency}}</span>
+                      <div *ngIf="button.loading" class="spinner-border mx-auto" style="position: absolute;left: 0;right: 0;"></div>
                     </button>
                   </div>
                 </li>

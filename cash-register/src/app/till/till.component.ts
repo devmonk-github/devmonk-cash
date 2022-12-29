@@ -662,7 +662,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
               });
 
               this.handleReceiptPrinting();
-              // this.updateFiskalyTransaction('FINISHED', body.payments);
+              this.updateFiskalyTransaction('FINISHED', body.payments);
               setTimeout(() => {
                 this.saveInProgress = false;
                 this.fetchBusinessPartnersProductCount(uniq);
@@ -982,9 +982,11 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   // Add selected product into purchase order
-  async onSelectProduct(product: any, isFrom: string = '', isFor: string = '') {
+  async onSelectProduct(product: any, isFrom: string = '', isFor: string = '', source ?: any) {
+    
     let price: any = {};
     if (isFrom === 'quick-button') {
+      source.loading = true;
       this.onSelectRegular();
       let selectedQuickButton = product;
       this.bSearchingProduct = true;
@@ -1035,6 +1037,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       isFor,
       oBusinessProductMetaData: this.tillService.createProductMetadata(product),
     });
+    if (isFrom === 'quick-button') { source.loading = false}
     this.resetSearch();
     this.clearPaymentAmounts();
   }
@@ -1361,12 +1364,9 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   async updateFiskalyTransaction(state: string, payments: []) {
-    console.log(this.businessDetails.currentLocation?.tssInfo)
     if (!this.businessDetails.currentLocation?.tssInfo){
-      console.log('if')
       return;
     } 
-    console.log('after if')
     const pay = _.clone(payments);
     try {
       if (!localStorage.getItem('fiskalyTransaction')) {
