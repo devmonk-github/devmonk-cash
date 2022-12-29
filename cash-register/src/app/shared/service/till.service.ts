@@ -483,6 +483,7 @@ export class TillService {
     dataObject.total = 0;
     let total = 0, totalAfterDisc = 0, totalVat = 0, totalDiscount = 0, totalSavingPoints = 0, totalRedeemedLoyaltyPoints = 0;
     dataObject.aTransactionItems.forEach((item: any, index: number) => {
+      item.bRegular = !item.oType.bRefund;
       if (item?.oArticleGroupMetaData?.oName && Object.keys(item?.oArticleGroupMetaData?.oName)?.length) {
         item.sArticleGroupName = (item?.oArticleGroupMetaData?.oName[language] || item?.oArticleGroupMetaData?.oName['en'] || item?.oArticleGroupMetaData?.oName['nl'] || '') + ' ';
       }
@@ -499,7 +500,7 @@ export class TillService {
       // console.log('item.nDiscountToShow', item.nDiscountToShow)
       // item.priceAfterDiscount = parseFloat(item.nRevenueAmount.toFixed(2)) - parseFloat(item.nDiscountToShow);
       item.nPriceIncVatAfterDiscount = (parseFloat(item.nPriceIncVat) - parseFloat(item.nDiscountToShow)) - item.nRedeemedLoyaltyPoints;
-      if (item.oType.bRefund === true) item.nPriceIncVatAfterDiscount = -(item.nPriceIncVatAfterDiscount)
+      if (item.oType.bRefund === true && item.oType.eKind != 'gold-purchase') item.nPriceIncVatAfterDiscount = -(item.nPriceIncVatAfterDiscount)
       // console.log('item.nPriceIncVatAfterDiscount', item.nPriceIncVatAfterDiscount)
       item.totalPaymentAmount = (parseFloat(item.nRevenueAmount) - parseFloat(item.nDiscountToShow)) * item.nQuantity - item.nRedeemedLoyaltyPoints;
       // item.totalPaymentAmount = parseFloat(item.totalPaymentAmount.toFixed(2));
@@ -508,12 +509,13 @@ export class TillService {
       item.bPrepayment = item?.oType?.bPrepayment || false;
       const vat = (item.nVatRate * item.nPriceIncVatAfterDiscount / (100 + parseFloat(item.nVatRate)));
       item.vat = (item.nVatRate > 0) ? parseFloat(vat.toFixed(2)) : 0;
-      totalVat += vat;
+      totalVat += vat * item.nQuantity;
       total = total + item.totalPaymentAmount;
       // console.log('total', total)
-      totalAfterDisc += item.nPriceIncVatAfterDiscount;
+      totalAfterDisc += (item.nPriceIncVatAfterDiscount * item.nQuantity);
       // console.log('totalAfterDisc', totalAfterDisc)
-      totalDiscount += (item.nDiscountToShow * item.nQuantity);
+      item.ntotalDiscountPerItem = (item.oType.bRefund===true) ? 0 : (item.nDiscountToShow * item.nQuantity)
+      totalDiscount += item.ntotalDiscountPerItem;
       // console.log('totalDiscount', totalDiscount)
 
       relatedItemsPromises[index] = this.getRelatedTransactionItem(item?.iActivityItemId, item?._id, index);
@@ -532,12 +534,12 @@ export class TillService {
           item.bDiscountOnPercentage = relatedItem?.bDiscountOnPercentage || false;
 
           if (relatedItem?.bDiscountOnPercentage) {
-            item.nDiscountToShow = (relatedItem.nDiscount) ? this.getPercentOf(relatedItem.nPriceIncVat, relatedItem.nDiscount) : 0;
-            totalDiscount += item.nDiscountToShow;
+            item.nDiscountToShow = (item.oType.bRefund === true) ? 0 : this.getPercentOf(relatedItem.nPriceIncVat, relatedItem.nDiscount);
+            totalDiscount += (item.oType.bRefund === true) ? 0 : item.nDiscountToShow;
             relatedItem.nRevenueAmount = relatedItem.nRevenueAmount.toFixed(2) - this.getPercentOf(relatedItem.nPriceIncVat,relatedItem.nDiscount);
           } else {
-            item.nDiscountToShow = relatedItem.nDiscount;
-            totalDiscount += item.nDiscountToShow;
+            item.nDiscountToShow = (item.oType.bRefund === true) ? 0 : relatedItem.nDiscount;
+            totalDiscount += (item.oType.bRefund === true) ? 0 : item.nDiscountToShow;
             relatedItem.nRevenueAmount = relatedItem.nRevenueAmount.toFixed(2) - relatedItem.nDiscount;
           }
 

@@ -352,7 +352,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
   async addItem(type: string) {
     // const price = this.randNumber(5, 200);
-    const price = 1;
+    const price = 0;
     let tax = Math.max(...this.taxes.map((tax: any) => tax.nRate), 0);
     this.transactionItems.push({
       isExclude: type === 'repair' ? true : false,
@@ -816,7 +816,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     if (printActionSettings?.length) {
       const aActionToPerform = printActionSettings[0].aActionToPerform;
       if (aActionToPerform.includes('PRINT_THERMAL')) {
-        console.log({ oDataSource , b: oDataSource.businessDetails})
+        // console.log({ oDataSource , b: oDataSource.businessDetails})
         this.receiptService.printThermalReceipt({
           oDataSource: oDataSource,
           printSettings: this.printSettings,
