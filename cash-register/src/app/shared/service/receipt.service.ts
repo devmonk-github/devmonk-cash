@@ -248,7 +248,7 @@ export class ReceiptService {
                     bInclude = this.checkCondition(column.condition, this.oOriginalDataSource);
                 }
                 if (bInclude) {
-                    let text = this.pdfService.removeBrackets(column.html);//removes [[ ]] from placeholders
+                    let text = this.pdfService.replaceVariables(column.html, this.oOriginalDataSource) || '';
                     let obj: any = { text: this.pdfService.translations[text] || text };
                     if (column?.alignment) obj.alignment = column.alignment;
                     if (column?.styles) {
@@ -487,25 +487,19 @@ export class ReceiptService {
 
     addRow(dataRow: any, row: any, dataSource: any, tableWidths: any) {
         let html = row.html;
+        let bCheck;
         if (row?.conditionalHtml) {
-            const bCheck = this.checkCondition(row.conditions, dataSource);
+            bCheck = this.checkCondition(row.conditions, dataSource);
             html = (bCheck) ? row.htmlIf : row.htmlElse
         }
 
-
         let text = this.pdfService.replaceVariables(html, dataSource) || html;
-        // console.log({html, text})
+        console.log({text});
         let obj: any = { text: text };
         if(text?.indexOf('<strike>') != -1) {
-            let testResult = text.match('<strike>(.*)</strike>');
-            obj = {
-                columns: [
-                    { text: testResult[1], decoration: 'lineThrough', alignment: row.alignment },
-                    { text: ' ', width: 5 },
-                    { text: text.replace(testResult[0], ""), width: 'auto' },
-                ]
-            }
+            obj = this.addStrikenData(obj,text,row);
         }
+
         if (row?.alignment) obj.alignment = row.alignment;
         if (row?.styles) obj = { ...obj, ...row.styles };
         dataRow.push(obj);
@@ -586,5 +580,33 @@ export class ReceiptService {
                     this.businessDetails = result.data;
                     this.businessDetails.currentLocation = this.businessDetails?.aLocation?.filter((location: any) => location?._id.toString() == this.iLocationId.toString())[0];
                 })
+    }
+
+    addStrikenData(obj:any, text:any, row:any){
+        let testResult = text.match('(<strike>(.*)</strike>)(.*)');
+        console.log({testResult});
+        if (text.indexOf('<strike>') > 1) {
+            obj = [
+                { text: testResult[1], alignment: row?.alignment || '' },
+                {
+                    columns: [
+                        { text: testResult[3], decoration: 'lineThrough' },
+                        { text: '', width: 1 },
+                        { text: testResult[4], width: 'auto' },
+                    ],
+                    alignment: row?.alignment || ''
+                }
+            ];
+        } else {
+            obj = {
+                columns: [
+                    { text: testResult[2], decoration: 'lineThrough' },
+                    { text: '', width: 1 },
+                    { text: testResult[3], width: 'auto' },
+                ],
+                alignment: row?.alignment || ''
+            };
+        }
+        return obj;
     }
 }
