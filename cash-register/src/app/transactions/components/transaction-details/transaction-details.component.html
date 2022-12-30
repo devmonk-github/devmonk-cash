@@ -208,7 +208,7 @@
                                     <td class="text-muted">{{'PRODUCT' | translate}}</td>
                                     <td class="text-muted">{{'PRICE' | translate}}</td>
                                     <td class="text-muted">{{'QUANTITY' | translate}}</td>
-                                    <td class="text-muted">{{'DISCOUNT_PER_ITEM' | translate}}</td>
+                                    <td class="text-muted" *ngIf="transaction.totalDiscount > 0">{{'DISCOUNT_PER_ITEM' | translate}}</td>
                                     <ng-container *ngIf="transaction.totalRedeemedLoyaltyPoints > 0">
                                         <td class="text-muted">{{'LOYALTY_POINTS_REDEEMED' | translate}}</td>
                                     </ng-container>
@@ -229,7 +229,7 @@
                                             <ng-container *ngIf="item.sDescription">
                                                 {{ item.sDescription}} <br />
                                             </ng-container>
-                                            <ng-container><!-- *ngIf="item?.nDiscountToShow > 0" -->
+                                            <ng-container *ngIf="item?.nDiscountToShow > 0">
                                                 {{ 'ORIGINAL_AMOUNT_INC_DISC' | translate }}: {{ item.nPriceIncVatAfterDiscount }} <br />
                                             </ng-container>
                                             
@@ -258,7 +258,7 @@
                                     </td>
                                     <td>{{item.nPriceIncVatAfterDiscount | currency: tillService.currency}}</td>
                                     <td>{{item.nQuantity}}</td>
-                                    <td>
+                                    <td *ngIf="item.nDiscountToShow > 0">
                                         <span *ngIf="item.bDiscountOnPercentage">
                                             {{ item.nDiscount }}% ({{item.nDiscountToShow * item.nQuantity | currency: tillService.currency}})
                                         </span>
@@ -274,7 +274,7 @@
                                     <td>
                                         <div class="d-flex align-items-center justify-content-between">
                                             <div>
-                                                <span *ngIf="item.totalPaymentAmount != item.nPriceIncVat">
+                                                <span *ngIf="item.nDiscountToShow > 0">
                                                     <s>({{(item.nPriceIncVat * item.nQuantity) | currency: tillService.currency}})</s>
                                                 </span>
                                                  {{item.totalPaymentAmount || 0 | currency: tillService.currency}}</div>
@@ -285,12 +285,6 @@
                                                             (click)="showActivityItem(item,$event)">
                                                             <i class="fa fa-eye"></i>
                                                         </button>
-                                                        <!-- <button id="kt_supplier_stock_product_toggle"
-                                                            class="btn btn-secondary btn-flex h-35px shadow-sm fs-6 px-4 rounded-top-0" title="" data-bs-toggle="tooltip"
-                                                            data-bs-placement="left" data-bs-dismiss="click" data-bs-trigger="hover"
-                                                            data-bs-original-title="Check out 20 more demos" (click)="onOpenProductSlider(item)">
-                                                            <fa-icon [icon]="faMagnifyingGlassPlus"></fa-icon>
-                                                        </button> -->
                                                         <div *ngIf="item.bFetchingActivityItem"
                                                             class="spinner-border mx-2"></div>
                                                     </div>
@@ -299,16 +293,13 @@
                                         </div>
 
                                     </td>
-                                    <!-- <td>
-                                        <ng-template #supplierSliderTemplate></ng-template>
-                                    </td> -->
                                 </tr>
                                 <tr class="fw-bolder">
                                     <td></td>
                                     <td>{{ 'TOTAL' | translate }}</td>
                                     <td>{{ transaction.totalAfterDisc | currency: tillService.currency }}</td>
-                                    <td>{{ transaction.totalQty }}</td>
-                                    <td>{{ transaction.totalDiscount | currency: tillService.currency }}</td>
+                                    <td>{{ transaction.nTotalQty }}</td>
+                                    <td *ngIf="transaction.totalDiscount > 0">{{ transaction.totalDiscount | currency: tillService.currency }}</td>
                                     <ng-container *ngIf="transaction.totalRedeemedLoyaltyPoints > 0">
                                         <td>{{transaction.totalRedeemedLoyaltyPoints}}</td>
                                     </ng-container>

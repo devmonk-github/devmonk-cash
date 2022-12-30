@@ -82,9 +82,11 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
     this.iWorkstationId = localStorage.getItem("currentWorkstation") || '';
     // let language: any = localStorage.getItem('language')
     this.transaction = await this.tillService.processTransactionForPdfReceipt(this.transaction);
-    let nTotalOriginalAmount = 0;
+    let nTotalOriginalAmount = 0, nTotalQty = 0;
+
     this.transaction.aTransactionItems.forEach((item: any) => {
-      // let description = (item?.nDiscountToShow > 0) ? `Original amount: ${item.nPriceIncVat}\n` : '';
+      // let description = (item?.nDiscountToShow > 0) nTotalQty? `Original amount: ${item.nPriceIncVat}\n` : '';
+      nTotalQty += item.nQuantity;
       let description = (item?.nDiscountToShow > 0) ? `${this.translateService.instant('ORIGINAL_AMOUNT_INC_DISC')}: ${item.nPriceIncVatAfterDiscount}\n` : '';
       if (item?.related?.length) {
         nTotalOriginalAmount += item.nPriceIncVatAfterDiscount;
@@ -99,6 +101,7 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
       item.description = description;
     });
     this.transaction.nTotalOriginalAmount = nTotalOriginalAmount;
+    this.transaction.nTotalQty = nTotalQty;
     
     this.loading = false;
     // this.fetchBusinessDetails();
