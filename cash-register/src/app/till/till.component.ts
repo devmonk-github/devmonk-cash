@@ -352,7 +352,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
   async addItem(type: string) {
     // const price = this.randNumber(5, 200);
-    const price = 1;
+    const price = 0;
     let tax = Math.max(...this.taxes.map((tax: any) => tax.nRate), 0);
     this.transactionItems.push({
       isExclude: type === 'repair' ? true : false,
@@ -474,7 +474,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   openTransactionSearchDialog(): void {
     this.dialogService.openModal(TransactionsSearchComponent, { cssClass: 'modal-xl', context: { customer: this.customer } })
       .instance.close.subscribe((data) => {
-        if (data.transaction) {
+        if (data?.transaction) {
           this.handleTransactionResponse(data);
         }
         // this.changeInPayment();
@@ -662,7 +662,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
               });
 
               this.handleReceiptPrinting();
-              // this.updateFiskalyTransaction('FINISHED', body.payments);
+              this.updateFiskalyTransaction('FINISHED', body.payments);
               setTimeout(() => {
                 this.saveInProgress = false;
                 this.fetchBusinessPartnersProductCount(uniq);
@@ -816,7 +816,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     if (printActionSettings?.length) {
       const aActionToPerform = printActionSettings[0].aActionToPerform;
       if (aActionToPerform.includes('PRINT_THERMAL')) {
-        console.log({ oDataSource , b: oDataSource.businessDetails})
+        // console.log({ oDataSource , b: oDataSource.businessDetails})
         this.receiptService.printThermalReceipt({
           oDataSource: oDataSource,
           printSettings: this.printSettings,
@@ -982,9 +982,11 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   // Add selected product into purchase order
-  async onSelectProduct(product: any, isFrom: string = '', isFor: string = '') {
+  async onSelectProduct(product: any, isFrom: string = '', isFor: string = '', source ?: any) {
+    
     let price: any = {};
     if (isFrom === 'quick-button') {
+      source.loading = true;
       this.onSelectRegular();
       let selectedQuickButton = product;
       this.bSearchingProduct = true;
@@ -1035,6 +1037,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       isFor,
       oBusinessProductMetaData: this.tillService.createProductMetadata(product),
     });
+    if (isFrom === 'quick-button') { source.loading = false}
     this.resetSearch();
     this.clearPaymentAmounts();
   }
@@ -1361,12 +1364,9 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   async updateFiskalyTransaction(state: string, payments: []) {
-    console.log(this.businessDetails.currentLocation?.tssInfo)
     if (!this.businessDetails.currentLocation?.tssInfo){
-      console.log('if')
       return;
     } 
-    console.log('after if')
     const pay = _.clone(payments);
     try {
       if (!localStorage.getItem('fiskalyTransaction')) {

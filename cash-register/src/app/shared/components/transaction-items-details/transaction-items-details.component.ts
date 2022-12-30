@@ -5,6 +5,7 @@ import { ApiService } from 'src/app/shared/service/api.service';
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import * as _ from 'lodash';
 import { ActivatedRoute, Router } from '@angular/router';
+import { ToastService } from '../toast';
 
 @Component({
   selector: 'app-transaction-items-details',
@@ -59,6 +60,7 @@ export class TransactionItemsDetailsComponent implements OnInit {
     private apiService: ApiService,
     private route: ActivatedRoute,
     private router: Router,
+    private toastrService: ToastService,
     ) {
       const _injector = this.viewContainerRef.parentInjector;
       this.dialogRef = _injector.get<DialogComponent>(DialogComponent);
@@ -84,6 +86,7 @@ export class TransactionItemsDetailsComponent implements OnInit {
     this.requestParams.iTransactionId = this.transaction._id;
     let url = `/api/v1/transaction/item/transaction-items`;
     // console.log('fetchTransactionItems: ', url, this.transaction);
+    let aRelatedTransactionItem:any;
     if (this.itemType === 'activity') {
       delete this.requestParams.iTransactionId;
       let id;
@@ -95,8 +98,7 @@ export class TransactionItemsDetailsComponent implements OnInit {
       if (this.isFor !== 'activity' && this.transaction?.iActivityItemId) url = `/api/v1/activities/activity-item/${this.transaction.iActivityItemId}`;
     } else {
       /* fetching the related transaction-item detail if there is any mutiple pre-payment then need to change the payment-amount */
-      const aRelatedTransactionItem: any = await this.getRelatedTransactionItem(this.transaction?._id);
-      // console.log('aRelatedTransactionItem: ', aRelatedTransactionItem);
+      aRelatedTransactionItem = await this.getRelatedTransactionItem(this.transaction?._id);      
       if (aRelatedTransactionItem?.data?.length > 1) {
         // console.log('oShowWarning: ', this.oShowWarning);
         this.oShowWarning.bIsMoreTransaction = true;
@@ -109,12 +111,11 @@ export class TransactionItemsDetailsComponent implements OnInit {
       this.bIsAnyGiftCardDiscount = this.transactionItems.find((el: any) => el?.oType?.eKind === 'giftcard-discount')
       this.transactionItems = this.transactionItems.filter(o => o.oType.eKind !== 'discount' && o.oType.eKind !== 'loyalty-points' && o.oType.eKind !== 'loyalty-points-discount' && o.oType.eKind !== 'giftcard-discount');
       this.transactionItems.forEach(element => {
+        if (aRelatedTransactionItem?.data?.length) element.nRevenueAmount = 0;
         const elementDiscount = discountRecords.filter(o => o.sUniqueIdentifier === element.sUniqueIdentifier);
         let nRedeemedLoyaltyPoints = 0;
         let nDiscountnPaymentAmount  = 0;
-        console.log(elementDiscount)
         elementDiscount.forEach(dElement => {
-          console.log(dElement)
           if (dElement.oType.eKind === 'loyalty-points-discount') nRedeemedLoyaltyPoints += dElement.nRedeemedLoyaltyPoints || 0;
           if (dElement.oType.eKind === "discount"){
             nDiscountnPaymentAmount += dElement.nPaymentAmount || 0;
@@ -127,6 +128,17 @@ export class TransactionItemsDetailsComponent implements OnInit {
         element.nPaidAmount += _.sumBy(elementDiscount, 'nPaymentAmount');
         element.nPriceIncVat += (nDiscountnPaymentAmount / element.nQuantity)
       });
+
+      if (aRelatedTransactionItem?.data?.length) {
+        aRelatedTransactionItem?.data.forEach((relatedItem: any) => {
+          this.transactionItems.forEach((transactionItem: any) => {
+            if (relatedItem.sUniqueIdentifier == transactionItem.sUniqueIdentifier) {
+              transactionItem.nRevenueAmount += relatedItem.nRevenueAmount;
+            }
+          })
+        })
+      }
+
       this.transactionItems = this.transactionItems.map(v => ({ ...v, isSelected: false }));
       this.transactionItems.forEach(transactionItem => {
         if (transactionItem.nPaidAmount < transactionItem.nTotalAmount) {
@@ -159,6 +171,10 @@ export class TransactionItemsDetailsComponent implements OnInit {
   }
 
   close(data: any) {
-    this.dialogRef.close.emit(data);
+    if(!data?.transactionItems?.filter((item:any)=> item.isSelected)?.length) {
+      this.toastrService.show({ type: 'warning', text: 'Please select at least one item!' });
+    } else {
+      this.dialogRef.close.emit(data);
+    }
   }
 }
