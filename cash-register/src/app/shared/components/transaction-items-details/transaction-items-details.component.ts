@@ -5,6 +5,7 @@ import { ApiService } from 'src/app/shared/service/api.service';
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import * as _ from 'lodash';
 import { ActivatedRoute, Router } from '@angular/router';
+import { ToastService } from '../toast';
 
 @Component({
   selector: 'app-transaction-items-details',
@@ -59,6 +60,7 @@ export class TransactionItemsDetailsComponent implements OnInit {
     private apiService: ApiService,
     private route: ActivatedRoute,
     private router: Router,
+    private toastrService: ToastService,
     ) {
       const _injector = this.viewContainerRef.parentInjector;
       this.dialogRef = _injector.get<DialogComponent>(DialogComponent);
@@ -169,6 +171,10 @@ export class TransactionItemsDetailsComponent implements OnInit {
   }
 
   close(data: any) {
-    this.dialogRef.close.emit(data);
+    if(!data?.transactionItems?.filter((item:any)=> item.isSelected)?.length) {
+      this.toastrService.show({ type: 'warning', text: 'Please select at least one item!' });
+    } else {
+      this.dialogRef.close.emit(data);
+    }
   }
 }
