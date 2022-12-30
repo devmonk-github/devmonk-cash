@@ -390,13 +390,12 @@ export class TillService {
   }
 
   processTransactionSearchResult(result: any) {
-    console.log(393, result)
     const transactionItems: any = [];
     if (result.transaction) {
       result.transactionItems.forEach((transactionItem: any) => {
         if (transactionItem.isSelected) {
           const { tType } = transactionItem;
-          let paymentAmount = transactionItem.nQuantity * transactionItem.nPriceIncVat - transactionItem.nPaidAmount;
+          let paymentAmount = transactionItem.nQuantity * transactionItem.nPriceIncVat - transactionItem.nRevenueAmount;
           if (tType === 'refund') {
             // paymentAmount = -1 * transactionItem.nPaidAmount;
             paymentAmount = 0;
@@ -410,7 +409,7 @@ export class TillService {
             iActivityItemId: transactionItem.iActivityItemId,
             nRefundAmount: transactionItem.nPaidAmount,
             iLastTransactionItemId: transactionItem.iTransactionItemId,
-            prePaidAmount: tType === 'refund' ? transactionItem.nPaidAmount : transactionItem.nPaymentAmount,
+            prePaidAmount: transactionItem.nRevenueAmount,
             type: transactionItem.sGiftCardNumber ? 'giftcard' : transactionItem.oType.eKind,
             eTransactionItemType: 'regular',
             nBrokenProduct: 0,
@@ -452,7 +451,7 @@ export class TillService {
   }
 
   async processTransactionForPdfReceipt(transaction: any) {
-    console.log('processTransactionForPdfReceipt original', transaction);
+    // console.log('processTransactionForPdfReceipt original', transaction);
     const relatedItemsPromises: any = [];
     let language: any = localStorage.getItem('language')
     let dataObject = JSON.parse(JSON.stringify(transaction));
@@ -507,7 +506,7 @@ export class TillService {
       // console.log('item.totalPaymentAmount', item.totalPaymentAmount)
       // item.totalPaymentAmountAfterDisc = parseFloat(item.priceAfterDiscount.toFixed(2)) * parseFloat(item.nQuantity);
       item.bPrepayment = item?.oType?.bPrepayment || false;
-      const vat = (item.nVatRate * item.nPriceIncVatAfterDiscount / (100 + parseFloat(item.nVatRate)));
+      const vat = (item.nVatRate * item.nRevenueAmount / (100 + parseFloat(item.nVatRate)));
       item.vat = (item.nVatRate > 0) ? parseFloat(vat.toFixed(2)) : 0;
       totalVat += vat * item.nQuantity;
       total = total + item.totalPaymentAmount;

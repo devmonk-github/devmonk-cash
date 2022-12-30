@@ -120,7 +120,7 @@ export class ReceiptService {
         this.oOriginalDataSource = oDataSource;
         this.pdfService.getTranslations();
         
-        // console.log(this.oOriginalDataSource, printActionSettings, printSettings, sAction)
+        // console.log(this.oOriginalDataSource)
         
         this.commonService.pdfTitle = pdfTitle;
         this.commonService.mapCommonParams(templateData.aSettings);
@@ -494,7 +494,7 @@ export class ReceiptService {
         }
 
         let text = this.pdfService.replaceVariables(html, dataSource) || html;
-        console.log({text});
+        // console.log({text});
         let obj: any = { text: text };
         if(text?.indexOf('<strike>') != -1) {
             obj = this.addStrikenData(obj,text,row);
@@ -548,7 +548,7 @@ export class ReceiptService {
                     command = this.pn2escposService.generate(JSON.stringify(result.data.aTemplate), JSON.stringify(transactionDetails));
                 } catch (e) {
                     this.toastService.show({ type: 'danger', text: 'Template not defined properly. Check browser console for more details' });
-                    console.log(e);
+                    // console.log(e);
                     return;
                 }
 
@@ -584,7 +584,7 @@ export class ReceiptService {
 
     addStrikenData(obj:any, text:any, row:any){
         let testResult = text.match('(<strike>(.*)</strike>)(.*)');
-        console.log({testResult});
+        // console.log({testResult});
         if (text.indexOf('<strike>') > 1) {
             obj = [
                 { text: testResult[1], alignment: row?.alignment || '' },
