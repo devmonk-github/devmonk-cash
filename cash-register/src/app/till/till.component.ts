@@ -20,7 +20,7 @@ import { ApiService } from '../shared/service/api.service';
 import { BarcodeService } from "../shared/service/barcode.service";
 import { CreateArticleGroupService } from '../shared/service/create-article-groups.service';
 import { CustomerStructureService } from '../shared/service/customer-structure.service';
-import { DialogService } from '../shared/service/dialog';
+import { DialogComponent, DialogService } from '../shared/service/dialog';
 import { FiskalyService } from '../shared/service/fiskaly.service';
 import { PaymentDistributionService } from '../shared/service/payment-distribution.service';
 import { ReceiptService } from '../shared/service/receipt.service';
@@ -752,7 +752,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     const aTemplates = _template.data;
 
-    this.dialogService.openModal(TransactionActionDialogComponent, {
+    const oDialogComponent:DialogComponent = this.dialogService.openModal(TransactionActionDialogComponent, {
       cssClass: 'modal-lg', hasBackdrop: true, closeOnBackdropClick: true, closeOnEsc: true,
       context: {
         transaction: oDataSource,
@@ -765,7 +765,9 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
         aTemplates: aTemplates,
         businessDetails: this.businessDetails
       }
-    }).instance.close.subscribe((data) => { this.clearAll();  });
+    }).instance;
+    oDialogComponent.close.subscribe(() => { this.clearAll();  });
+    oDialogComponent.triggerEvent.subscribe(() => { this.clearAll();  });
 
     if (bOrderCondition) {
       // print order receipt
