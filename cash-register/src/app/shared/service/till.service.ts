@@ -397,15 +397,15 @@ export class TillService {
         if (transactionItem.isSelected) {
           const { tType } = transactionItem;
           let paymentAmount = transactionItem.nQuantity * transactionItem.nPriceIncVat - transactionItem.nPaidAmount;
-          console.log(400, 'paymentAmount',paymentAmount)
+          // console.log(400, 'paymentAmount',paymentAmount)
           if (tType === 'refund') {
             // paymentAmount = -1 * transactionItem.nPaidAmount;
             paymentAmount = 0;
-            console.log(404, 'paymentAmount', paymentAmount)
+            // console.log(404, 'paymentAmount', paymentAmount)
             transactionItem.oType.bRefund = true;
           } else if (tType === 'revert') {
             paymentAmount = transactionItem.nPaidAmount;
-            console.log(408, 'paymentAmount', paymentAmount)
+            // console.log(408, 'paymentAmount', paymentAmount)
             transactionItem.oType.bRefund = false;
           };
           transactionItems.push({
