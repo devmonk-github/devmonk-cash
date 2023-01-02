@@ -494,7 +494,7 @@ export class ReceiptService {
         }
 
         let text = this.pdfService.replaceVariables(html, dataSource) || html;
-        // console.log({text});
+        // console.log({ text }, html, dataSource);
         let obj: any = { text: text };
         if(text?.indexOf('<strike>') != -1) {
             obj = this.addStrikenData(obj,text,row);

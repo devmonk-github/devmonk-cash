@@ -390,18 +390,22 @@ export class TillService {
   }
 
   processTransactionSearchResult(result: any) {
+    console.log(JSON.parse(JSON.stringify(result)));
     const transactionItems: any = [];
     if (result.transaction) {
       result.transactionItems.forEach((transactionItem: any) => {
         if (transactionItem.isSelected) {
           const { tType } = transactionItem;
-          let paymentAmount = transactionItem.nQuantity * transactionItem.nPriceIncVat - transactionItem.nRevenueAmount;
+          let paymentAmount = transactionItem.nQuantity * transactionItem.nPriceIncVat - transactionItem.nPaidAmount;
+          // console.log(400, 'paymentAmount',paymentAmount)
           if (tType === 'refund') {
             // paymentAmount = -1 * transactionItem.nPaidAmount;
             paymentAmount = 0;
+            // console.log(404, 'paymentAmount', paymentAmount)
             transactionItem.oType.bRefund = true;
           } else if (tType === 'revert') {
             paymentAmount = transactionItem.nPaidAmount;
+            // console.log(408, 'paymentAmount', paymentAmount)
             transactionItem.oType.bRefund = false;
           };
           transactionItems.push({
@@ -409,7 +413,7 @@ export class TillService {
             iActivityItemId: transactionItem.iActivityItemId,
             nRefundAmount: transactionItem.nPaidAmount,
             iLastTransactionItemId: transactionItem.iTransactionItemId,
-            prePaidAmount: transactionItem.nRevenueAmount,
+            prePaidAmount: tType === 'refund' ? transactionItem.nPaidAmount : transactionItem.nPaymentAmount,
             type: transactionItem.sGiftCardNumber ? 'giftcard' : transactionItem.oType.eKind,
             eTransactionItemType: 'regular',
             nBrokenProduct: 0,
@@ -502,7 +506,7 @@ export class TillService {
       if (item.oType.bRefund === true && item.oType.eKind != 'gold-purchase') item.nPriceIncVatAfterDiscount = -(item.nPriceIncVatAfterDiscount)
       // console.log('item.nPriceIncVatAfterDiscount', item.nPriceIncVatAfterDiscount)
       item.totalPaymentAmount = (parseFloat(item.nRevenueAmount) - parseFloat(item.nDiscountToShow)) * item.nQuantity - item.nRedeemedLoyaltyPoints;
-      // item.totalPaymentAmount = parseFloat(item.totalPaymentAmount.toFixed(2));
+      item.totalPaymentAmount = parseFloat(item.totalPaymentAmount.toFixed(2));
       // console.log('item.totalPaymentAmount', item.totalPaymentAmount)
       // item.totalPaymentAmountAfterDisc = parseFloat(item.priceAfterDiscount.toFixed(2)) * parseFloat(item.nQuantity);
       item.bPrepayment = item?.oType?.bPrepayment || false;
