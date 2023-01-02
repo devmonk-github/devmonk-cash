@@ -696,7 +696,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     let nTotalOriginalAmount = 0;
     oDataSource.aTransactionItems.forEach((item: any) => {
       nTotalOriginalAmount += item.nPriceIncVatAfterDiscount;
-      let description = (item?.nDiscountToShow > 0) ? `${this.translateService.instant('ORIGINAL_AMOUNT_INC_DISC') }: ${item.nPriceIncVatAfterDiscount}\n` : '';
+      let description = (item?.totalPaymentAmount != item?.nPriceIncVatAfterDiscount) ? `${this.translateService.instant('ORIGINAL_AMOUNT_INC_DISC')}: ${item.nPriceIncVatAfterDiscount}\n` : '';
       if (item?.related?.length) {
         description += `${this.translateService.instant('ALREADY_PAID')}: \n${item.sTransactionNumber} | ${item.nRevenueAmount} (${this.translateService.instant('THIS_RECEIPT')})\n`;
 
@@ -708,8 +708,10 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       item.description = description;
     });
     // oDataSource.bHasPrePayments = true;
+    oDataSource.sActivityNumber = oDataSource.activity.sNumber;
     oDataSource.nTotalOriginalAmount = nTotalOriginalAmount;
     oDataSource.sBarcodeURI = this.generateBarcodeURI(false, oDataSource.sNumber);
+    oDataSource.sActivityBarcodeURI = this.generateBarcodeURI(false, oDataSource.sActivityNumber);
 
     const aUniqueItemTypes = [];
 

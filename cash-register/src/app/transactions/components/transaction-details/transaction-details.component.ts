@@ -87,7 +87,7 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
     this.transaction.aTransactionItems.forEach((item: any) => {
       // let description = (item?.nDiscountToShow > 0) nTotalQty? `Original amount: ${item.nPriceIncVat}\n` : '';
       nTotalQty += item.nQuantity;
-      let description = (item?.nDiscountToShow > 0) ? `${this.translateService.instant('ORIGINAL_AMOUNT_INC_DISC')}: ${item.nPriceIncVatAfterDiscount}\n` : '';
+      let description = (item?.totalPaymentAmount != item?.nPriceIncVatAfterDiscount) ? `${this.translateService.instant('ORIGINAL_AMOUNT_INC_DISC')}: ${item.nPriceIncVatAfterDiscount}\n` : '';
       if (item?.related?.length) {
         nTotalOriginalAmount += item.nPriceIncVatAfterDiscount;
         if (item.nPriceIncVatAfterDiscount !== item.nRevenueAmount) {
@@ -126,6 +126,7 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
       this.transaction.createrDetail = _empResult.data;
       this.transaction.sAdvisedEmpFirstName = `${this.transaction.createrDetail.sFirstName}`;
     }
+    console.log(this.transaction)
   }
 
   ngAfterContentInit(): void {
@@ -204,6 +205,7 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
     const oDataSource = JSON.parse(JSON.stringify(this.transaction));
       
     oDataSource.sBarcodeURI = this.generateBarcodeURI(false, oDataSource.sNumber);
+    oDataSource.sActivityBarcodeURI = this.generateBarcodeURI(false, oDataSource.sActivityNumber);
     oDataSource.sBusinessLogoUrl = (await this.getBase64FromUrl(oDataSource?.businessDetails?.sLogoLight).toPromise()).data;
     // oDataSource.oCustomer = {
     //   sFirstName: this.transaction.oCustomer.sFirstName,

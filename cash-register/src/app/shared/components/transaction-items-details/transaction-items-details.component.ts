@@ -98,7 +98,8 @@ export class TransactionItemsDetailsComponent implements OnInit {
       if (this.isFor !== 'activity' && this.transaction?.iActivityItemId) url = `/api/v1/activities/activity-item/${this.transaction.iActivityItemId}`;
     } else {
       /* fetching the related transaction-item detail if there is any mutiple pre-payment then need to change the payment-amount */
-      aRelatedTransactionItem = await this.getRelatedTransactionItem(this.transaction?._id);      
+      aRelatedTransactionItem = await this.getRelatedTransactionItem(this.transaction?._id);
+      console.log('aRelatedTransactionItem',aRelatedTransactionItem);
       if (aRelatedTransactionItem?.data?.length > 1) {
         // console.log('oShowWarning: ', this.oShowWarning);
         this.oShowWarning.bIsMoreTransaction = true;
@@ -106,38 +107,48 @@ export class TransactionItemsDetailsComponent implements OnInit {
       }
     }
     this.apiService.postNew('cashregistry', url, this.requestParams).subscribe((result: any) => {
-      this.transactionItems = result.data[0].result;  
+      this.transactionItems = result.data[0].result;
+
+      console.log(112, result.data[0].result)
+
       const discountRecords = this.transactionItems.filter(o => o.oType.eKind === 'discount' || o.oType.eKind === 'loyalty-points-discount');
       this.bIsAnyGiftCardDiscount = this.transactionItems.find((el: any) => el?.oType?.eKind === 'giftcard-discount')
       this.transactionItems = this.transactionItems.filter(o => o.oType.eKind !== 'discount' && o.oType.eKind !== 'loyalty-points' && o.oType.eKind !== 'loyalty-points-discount' && o.oType.eKind !== 'giftcard-discount');
       this.transactionItems.forEach(element => {
-        if (aRelatedTransactionItem?.data?.length) element.nRevenueAmount = 0;
+        // element.nDiscount = 0;
+        // if (aRelatedTransactionItem?.data?.length && element.oType.eKind==='regular') element.nRevenueAmount = 0;
         const elementDiscount = discountRecords.filter(o => o.sUniqueIdentifier === element.sUniqueIdentifier);
+        console.log(120, elementDiscount)
         let nRedeemedLoyaltyPoints = 0;
         let nDiscountnPaymentAmount  = 0;
         elementDiscount.forEach(dElement => {
+          console.log(124, dElement)
           if (dElement.oType.eKind === 'loyalty-points-discount') nRedeemedLoyaltyPoints += dElement.nRedeemedLoyaltyPoints || 0;
           if (dElement.oType.eKind === "discount"){
+            console.log(127, dElement)
             nDiscountnPaymentAmount += dElement.nPaymentAmount || 0;
             element.nDiscount += dElement.nRevenueAmount || 0;
           } 
         });
-        
         element.nRedeemedLoyaltyPoints = nRedeemedLoyaltyPoints;
         element.nPaymentAmount += _.sumBy(elementDiscount, 'nPaymentAmount');
         element.nPaidAmount += _.sumBy(elementDiscount, 'nPaymentAmount');
         element.nPriceIncVat += (nDiscountnPaymentAmount / element.nQuantity)
+        
+        element.nPaidAmount = element.nPaidAmount.toFixed(2);
+        element.nPaymentAmount = element.nPaymentAmount.toFixed(2);
       });
-
-      if (aRelatedTransactionItem?.data?.length) {
-        aRelatedTransactionItem?.data.forEach((relatedItem: any) => {
-          this.transactionItems.forEach((transactionItem: any) => {
-            if (relatedItem.sUniqueIdentifier == transactionItem.sUniqueIdentifier) {
-              transactionItem.nRevenueAmount += relatedItem.nRevenueAmount;
-            }
-          })
-        })
-      }
+      
+      console.log(this.transactionItems)
+      // if (aRelatedTransactionItem?.data?.length) {
+      //   aRelatedTransactionItem?.data.forEach((relatedItem: any) => {
+      //     this.transactionItems.forEach((transactionItem: any) => {
+      //       if (relatedItem.sUniqueIdentifier == transactionItem.sUniqueIdentifier) {
+      //         transactionItem.nRevenueAmount += relatedItem.nRevenueAmount;
+      //       }
+      //     })
+      //   })
+      // }
 
       this.transactionItems = this.transactionItems.map(v => ({ ...v, isSelected: false }));
       this.transactionItems.forEach(transactionItem => {
@@ -170,11 +181,15 @@ export class TransactionItemsDetailsComponent implements OnInit {
     });
   }
 
-  close(data: any) {
-    if(!data?.transactionItems?.filter((item:any)=> item.isSelected)?.length) {
-      this.toastrService.show({ type: 'warning', text: 'Please select at least one item!' });
-    } else {
+  close(data: any, sFrom:string = '') {
+    if(sFrom === 'close') {
       this.dialogRef.close.emit(data);
+    } else {
+      if(!data?.transactionItems?.filter((item:any)=> item.isSelected)?.length) {
+        this.toastrService.show({ type: 'warning', text: 'Please select at least one item!' });
+      } else {
+        this.dialogRef.close.emit(data);
+      }
     }
   }
 }

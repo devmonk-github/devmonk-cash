@@ -229,7 +229,7 @@
                                             <ng-container *ngIf="item.sDescription">
                                                 {{ item.sDescription}} <br />
                                             </ng-container>
-                                            <ng-container *ngIf="item?.nDiscountToShow > 0">
+                                            <ng-container *ngIf="item?.totalPaymentAmount != item?.nPriceIncVatAfterDiscount">
                                                 {{ 'ORIGINAL_AMOUNT_INC_DISC' | translate }}: {{ item.nPriceIncVatAfterDiscount }} <br />
                                             </ng-container>
                                             

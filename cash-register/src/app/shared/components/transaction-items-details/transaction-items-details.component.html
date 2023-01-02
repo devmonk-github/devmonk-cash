@@ -2,7 +2,7 @@
     <div class="card-header" style="margin-top: 20px;">
         <h4>{{itemType === 'transaction'? "TRANSACTION_ITEMS" : "ACTIVITY_ITEMS" | translate}}</h4>
         <div>
-            <button type="button" class="btn btn-sm btn-light" (click)="close({ action: false })">
+            <button type="button" class="btn btn-sm btn-light" (click)="close(null, 'close')">
                 <fa-icon [icon]="faTimes"></fa-icon>
             </button>
         </div>
@@ -50,21 +50,21 @@
                                 </label>
                             </td>
                             <td class="">{{transactionItem.sProductName}}</td>
-                            <td class="">{{transactionItem.nPriceIncVat}}</td>
+                            <td class="">{{transactionItem.nTotalAmount}}</td>
                             <td class="">{{transactionItem.nQuantity}}</td>
-                            <td class="">{{transactionItem.nRevenueAmount}}</td>
+                            <td class="">{{transactionItem.nPaidAmount}}</td>
                             <td class="">{{transactionItem.nTotalAmount > transactionItem.nPaidAmount ? 'True' :
                                 'False'}}</td>
                             <td class="">{{ transactionItem.dCreatedDate | date: 'short'}}</td>
                             <td>
                                 <div class="btn-group btn-toggle"
                                     [ngClass]="{'cursor-not-allowed': transactionItem.bIsRefunded }">
-                                    <button class="btn btn-lg btn-default"
+                                    <!-- <button class="btn btn-lg btn-default"
                                         *ngIf="transactionItem.nPaidAmount < transactionItem.nPriceIncVat * transactionItem.nQuantity"
                                         (click)="transactionItem.tType = 'pay'"
                                         [ngClass]="transactionItem.tType === 'pay'? 'btn-primary active': ''"
                                         [disabled]="transactionItem.bIsRefunded">{{ 'RESET_PAYMENT' |
-                                        translate}}</button>
+                                        translate}}</button> -->
                                     <button class="btn btn-lg btn-default btn-primary active"
                                         *ngIf="transactionItem.nPaidAmount === transactionItem.nPriceIncVat * transactionItem.nQuantity"
                                         [disabled]="transactionItem.bIsRefunded">{{ "REFUND" | translate}}</button>
