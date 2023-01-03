@@ -510,7 +510,7 @@ export class TillService {
       // console.log('item.totalPaymentAmount', item.totalPaymentAmount)
       // item.totalPaymentAmountAfterDisc = parseFloat(item.priceAfterDiscount.toFixed(2)) * parseFloat(item.nQuantity);
       item.bPrepayment = item?.oType?.bPrepayment || false;
-      const vat = (item.nVatRate * item.nRevenueAmount / (100 + parseFloat(item.nVatRate)));
+      const vat = (item.nVatRate * item.totalPaymentAmount / (100 + parseFloat(item.nVatRate)));
       item.vat = (item.nVatRate > 0) ? parseFloat(vat.toFixed(2)) : 0;
       totalVat += vat * item.nQuantity;
       total = total + item.totalPaymentAmount;
