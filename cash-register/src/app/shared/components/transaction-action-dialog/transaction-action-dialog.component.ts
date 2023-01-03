@@ -24,7 +24,7 @@ export class TransactionActionDialogComponent implements OnInit {
   faCheck = faCheck;
   loading = false;
   showLoader = false;
-  transaction: any;
+  transaction: any = undefined;
   activityItems: any;
   printActionSettings: any;
   printSettings: any;
@@ -42,6 +42,7 @@ export class TransactionActionDialogComponent implements OnInit {
   bRegularCondition: boolean = false;
   bOrderCondition: boolean = false;
   bGiftcardCondition: boolean = false;
+  bProcessingTransaction: boolean = false;
 
   constructor(
     private viewContainer: ViewContainerRef,
@@ -51,21 +52,33 @@ export class TransactionActionDialogComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.aRepairItems = this.activityItems.filter((item: any) => item.oType.eKind === 'repair');
 
-    this.bRegularCondition = this.transaction.total > 0.02 || this.transaction.total < -0.02;
-    this.bOrderCondition = this.nOrderCount === 1 && this.nRepairCount === 1 || this.nRepairCount > 1 || this.nOrderCount > 1;
+    this.dialogRef.contextChanged.subscribe((context:any) => {
+      this.transaction = context.transaction;
+      this.aTemplates = context.aTemplates;
+      this.activityItems = context.activityItems;
+      this.businessDetails = context.businessDetails;
+      this.nOrderCount = context.nOrderCount;
+      this.nRepairCount = context.nRepairCount;
+      this.printActionSettings = context.printActionSettings;
+      this.printSettings = context.printSettings;
 
+      this.aRepairItems = this.activityItems.filter((item: any) => item.oType.eKind === 'repair');
+      
+      this.bRegularCondition = this.transaction.total > 0.02 || this.transaction.total < -0.02;
+      this.bOrderCondition = this.nOrderCount === 1 && this.nRepairCount === 1 || this.nRepairCount > 1 || this.nOrderCount > 1;
+  
+  
+      if (this.bRegularCondition) this.aUniqueTypes.push('regular');
+      if (this.bOrderCondition) this.aUniqueTypes.push('order');
+      // console.log(this.transaction)
+      if (this.transaction.aTransactionItemType.includes('giftcard')){
+        this.bGiftcardCondition = true;
+        this.aUniqueTypes.push('giftcard')
+      }
+      this.aUniqueTypes = [...new Set(this.aUniqueTypes)]
 
-    if (this.bRegularCondition) this.aUniqueTypes.push('regular');
-    if (this.bOrderCondition) this.aUniqueTypes.push('order');
-    // console.log(this.transaction)
-    if (this.transaction.aTransactionItemType.includes('giftcard')){
-      this.bGiftcardCondition = true;
-      this.aUniqueTypes.push('giftcard')
-    }
-    this.aUniqueTypes = [...new Set(this.aUniqueTypes)]
-    // console.log(this.transaction, this.aUniqueTypes);
+    })
   }
 
   close(data: any): void {

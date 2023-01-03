@@ -6,7 +6,8 @@ export class ToastData {
     text?: string;
     template?: TemplateRef<any>;
     templateContext?: {};
-    apiUrl?: string
+    apiUrl?: string;
+    noAutoClose?: boolean;
 }
 
 export type ToastType = 'warning' | 'info' | 'success' | 'primary' | 'danger';

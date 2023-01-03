@@ -1,4 +1,4 @@
-<div class="toast show" [@fadeAnimation]="{value: animationState, params:
+<div (click)="closeToast()" class="toast show" [@fadeAnimation]="{value: animationState, params:
         { fadeIn: toastConfig?.animation?.fadeIn, fadeOut: toastConfig?.animation?.fadeOut }}"
    (@fadeAnimation.done)="onFadeFinished($event)" [class]="bg_color">
    <div class="toast-header" *ngIf="data.title">

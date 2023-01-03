@@ -931,13 +931,12 @@
                                                             <ng-container *ngIf="oArticleGroup.bIsCollapseItem">
                                                                 <tr class="bg-white"
                                                                     *ngFor="let item of oArticleGroup.aTransactionItems">
-                                                                    <td> {{item.sProductName || item?.sProductNumber}}
-                                                                    </td>
-                                                                    <td> {{ item.nQuantity }}</td>
-                                                                    <td> {{ item.nRevenueAmount | number :'1.2-2'}}</td>
-                                                                    <td> {{ item.nCostOfRevenue | number :'1.2-2'}}</td>
-                                                                    <td>{{item.nProfitOfRevenue | number :'1.2-2'}}</td>
-                                                                    <td></td>
+                                                                    <td> {{item.sProductName || item?.sProductNumber}}</td>
+                                                                    <td class="w-150px"> {{ item.nQuantity }}</td>
+                                                                    <td class="w-150px"> {{ item.nRevenueAmount | number :'1.2-2'}}</td>
+                                                                    <td class="w-150px"> {{ item.nCostOfRevenue | number :'1.2-2'}}</td>
+                                                                    <td class="w-150px">{{item.nProfitOfRevenue | number :'1.2-2'}}</td>
+                                                                    <!-- <td></td> -->
                                                                 </tr>
                                                             </ng-container>
                                                         </tbody>

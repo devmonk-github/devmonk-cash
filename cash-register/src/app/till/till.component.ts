@@ -579,7 +579,15 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       const paymentMethod = this.payMethods.findIndex(o => o.sName.toLowerCase() === element.oGoldFor.name && o.amount === element.amountToBePaid);
       if (paymentMethod < 0) {
         isGoldForPayment = false;
-        this.toastrService.show({ type: 'danger', text: `The amount paid for '${element.oGoldFor.name}' does not match.` });
+        // this.toastrService.show({ type: 'danger', text: `The amount paid for '${element.oGoldFor.name}' does not match.` });
+        this.toastrService.show({
+          type: 'danger', 
+          text: `You selected '${element.oGoldFor.name}' as a administrative procedure for this gold purchase. 
+        If your administration supports special rules for 'VAT' processing on gold purchases please remove all the other products/items on this purchase. 
+        In case you're following the 'regular' procedure like most retailers (95%): Change the option 'Cash/Bank' to 'Stock/Repair/Giftcard/Order' on the gold purchase item's dropdown. 
+        You can still give cash to your customer or select bank (transfer) as a method. 
+        In that case on paper the governement handles this 'gold purchase' as an exchange to goods (which may be done on a different transaction.`,
+          noAutoClose:true });
       }
     });
     return isGoldForPayment;
@@ -606,8 +614,10 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     const giftCardPayment = this.allPaymentMethod.find((o) => o.sName === 'Giftcards');
     this.saveInProgress = true;
     const changeAmount = this.getUsedPayMethods(true) - this.getTotals('price')
+    console.log('changeAmount', changeAmount);
     this.dialogService.openModal(TerminalDialogComponent, { cssClass: 'modal-lg', context: { payments: this.payMethods, changeAmount } })
-      .instance.close.subscribe((payMethods) => {
+      .instance.close.subscribe((payMethods:any) => {
+        console.log(618, payMethods)
         if (!payMethods) {
           this.saveInProgress = false;
           this.clearPaymentAmounts();
@@ -639,6 +649,11 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
           let result = body.transactionItems.map((a: any) => a.iBusinessPartnerId);
           const uniq = [...new Set(_.compact(result))];
           if (this.appliedGiftCards?.length) this.tillService.createGiftcardTransactionItem(body, this.discountArticleGroup);
+
+          const oDialogComponent: DialogComponent = this.dialogService.openModal(TransactionActionDialogComponent, {
+            cssClass: 'modal-lg', hasBackdrop: true, closeOnBackdropClick: true, closeOnEsc: true,
+          }).instance;
+
           this.apiService.postNew('cashregistry', '/api/v1/till/transaction', body)
             .subscribe(async (data: any) => {
 
@@ -660,8 +675,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
                   }
                 }
               });
-
-              this.handleReceiptPrinting();
+              
+              this.handleReceiptPrinting(oDialogComponent);
               this.updateFiskalyTransaction('FINISHED', body.payments);
               setTimeout(() => {
                 this.saveInProgress = false;
@@ -689,7 +704,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
 
-  async handleReceiptPrinting() {
+  async handleReceiptPrinting(oDialogComponent: DialogComponent) {
     this.transaction = await this.tillService.processTransactionForPdfReceipt(this.transaction);
 
     let oDataSource = JSON.parse(JSON.stringify(this.transaction));
@@ -753,21 +768,33 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       };
     }
     const aTemplates = _template.data;
+    // const oDialogComponent:DialogComponent = this.dialogService.openModal(TransactionActionDialogComponent, {
+    //   cssClass: 'modal-lg', hasBackdrop: true, closeOnBackdropClick: true, closeOnEsc: true,
+    //   context: {
+    //     transaction: oDataSource,
+    //     printActionSettings: this.printActionSettings,
+    //     printSettings: this.printSettings,
+    //     aUniqueItemTypes: aUniqueItemTypes,
+    //     nRepairCount: nRepairCount,
+    //     nOrderCount: nOrderCount,
+    //     activityItems: this.activityItems,
+    //     aTemplates: aTemplates,
+    //     businessDetails: this.businessDetails
+    //   }
+    // }).instance;
+    oDialogComponent.contextChanged.next({
+      transaction: oDataSource,
+      printActionSettings: this.printActionSettings,
+      printSettings: this.printSettings,
+      aUniqueItemTypes: aUniqueItemTypes,
+      nRepairCount: nRepairCount,
+      nOrderCount: nOrderCount,
+      activityItems: this.activityItems,
+      aTemplates: aTemplates,
+      businessDetails: this.businessDetails
+    });
 
-    const oDialogComponent:DialogComponent = this.dialogService.openModal(TransactionActionDialogComponent, {
-      cssClass: 'modal-lg', hasBackdrop: true, closeOnBackdropClick: true, closeOnEsc: true,
-      context: {
-        transaction: oDataSource,
-        printActionSettings: this.printActionSettings,
-        printSettings: this.printSettings,
-        aUniqueItemTypes: aUniqueItemTypes,
-        nRepairCount: nRepairCount,
-        nOrderCount: nOrderCount,
-        activityItems: this.activityItems,
-        aTemplates: aTemplates,
-        businessDetails: this.businessDetails
-      }
-    }).instance;
+    // oDialogComponent.context = 
     oDialogComponent.close.subscribe(() => { this.clearAll();  });
     oDialogComponent.triggerEvent.subscribe(() => { this.clearAll();  });
 
