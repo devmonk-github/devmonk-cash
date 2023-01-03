@@ -42,6 +42,7 @@ export class TillService {
 
 
   getUsedPayMethods(total: boolean, payMethods: any): any {
+    console.log(45,'getUsedPayMethods', payMethods)
     if (!payMethods) {
       return 0
     }

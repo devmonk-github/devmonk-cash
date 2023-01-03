@@ -579,7 +579,15 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       const paymentMethod = this.payMethods.findIndex(o => o.sName.toLowerCase() === element.oGoldFor.name && o.amount === element.amountToBePaid);
       if (paymentMethod < 0) {
         isGoldForPayment = false;
-        this.toastrService.show({ type: 'danger', text: `The amount paid for '${element.oGoldFor.name}' does not match.` });
+        // this.toastrService.show({ type: 'danger', text: `The amount paid for '${element.oGoldFor.name}' does not match.` });
+        this.toastrService.show({
+          type: 'danger', 
+          text: `You selected '${element.oGoldFor.name}' as a administrative procedure for this gold purchase. 
+        If your administration supports special rules for 'VAT' processing on gold purchases please remove all the other products/items on this purchase. 
+        In case you're following the 'regular' procedure like most retailers (95%): Change the option 'Cash/Bank' to 'Stock/Repair/Giftcard/Order' on the gold purchase item's dropdown. 
+        You can still give cash to your customer or select bank (transfer) as a method. 
+        In that case on paper the governement handles this 'gold purchase' as an exchange to goods (which may be done on a different transaction.`,
+          noAutoClose:true });
       }
     });
     return isGoldForPayment;
@@ -606,8 +614,10 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     const giftCardPayment = this.allPaymentMethod.find((o) => o.sName === 'Giftcards');
     this.saveInProgress = true;
     const changeAmount = this.getUsedPayMethods(true) - this.getTotals('price')
+    console.log('changeAmount', changeAmount);
     this.dialogService.openModal(TerminalDialogComponent, { cssClass: 'modal-lg', context: { payments: this.payMethods, changeAmount } })
       .instance.close.subscribe((payMethods:any) => {
+        console.log(618, payMethods)
         if (!payMethods) {
           this.saveInProgress = false;
           this.clearPaymentAmounts();

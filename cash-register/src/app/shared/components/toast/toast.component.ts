@@ -29,6 +29,7 @@ export class ToastComponent implements OnInit, OnDestroy {
   chevronUp = faChevronUp;
 
   private intervalId: any;
+  noAutoClose: boolean = true;
 
   constructor(
     readonly data: ToastData,
@@ -55,14 +56,19 @@ export class ToastComponent implements OnInit, OnDestroy {
         this.iconType = faEnvelopeSquare;
     }
     this.bg_color = data.type ? "bg-" + data.type : "";
+    
+    this.noAutoClose = this.data?.noAutoClose || false;
   }
 
   ngOnInit() {
     if (this.data?.apiUrl) {
       this.fetchStatus();
       this.intervalId = setTimeout(() => this.animationState = 'closing', 15000);
-    } else
-      this.intervalId = setTimeout(() => this.animationState = 'closing', 5000);
+    } else{
+      if (!this.noAutoClose) {
+        this.intervalId = setTimeout(() => this.animationState = 'closing', 5000);
+      }
+    }
 
   }
 
@@ -95,5 +101,8 @@ export class ToastComponent implements OnInit, OnDestroy {
           this.states.message = 'PRINTJOB_NOT_FOUND';
         }
       })
+  }
+  closeToast(){
+    this.intervalId = setTimeout(() => this.animationState = 'closing', 1000);
   }
 }
