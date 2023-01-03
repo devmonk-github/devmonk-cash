@@ -607,7 +607,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     this.saveInProgress = true;
     const changeAmount = this.getUsedPayMethods(true) - this.getTotals('price')
     this.dialogService.openModal(TerminalDialogComponent, { cssClass: 'modal-lg', context: { payments: this.payMethods, changeAmount } })
-      .instance.close.subscribe((payMethods) => {
+      .instance.close.subscribe((payMethods:any) => {
         if (!payMethods) {
           this.saveInProgress = false;
           this.clearPaymentAmounts();
@@ -639,6 +639,11 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
           let result = body.transactionItems.map((a: any) => a.iBusinessPartnerId);
           const uniq = [...new Set(_.compact(result))];
           if (this.appliedGiftCards?.length) this.tillService.createGiftcardTransactionItem(body, this.discountArticleGroup);
+
+          const oDialogComponent: DialogComponent = this.dialogService.openModal(TransactionActionDialogComponent, {
+            cssClass: 'modal-lg', hasBackdrop: true, closeOnBackdropClick: true, closeOnEsc: true,
+          }).instance;
+
           this.apiService.postNew('cashregistry', '/api/v1/till/transaction', body)
             .subscribe(async (data: any) => {
 
@@ -660,8 +665,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
                   }
                 }
               });
-
-              this.handleReceiptPrinting();
+              
+              this.handleReceiptPrinting(oDialogComponent);
               this.updateFiskalyTransaction('FINISHED', body.payments);
               setTimeout(() => {
                 this.saveInProgress = false;
@@ -689,7 +694,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
 
-  async handleReceiptPrinting() {
+  async handleReceiptPrinting(oDialogComponent: DialogComponent) {
     this.transaction = await this.tillService.processTransactionForPdfReceipt(this.transaction);
 
     let oDataSource = JSON.parse(JSON.stringify(this.transaction));
@@ -753,21 +758,33 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       };
     }
     const aTemplates = _template.data;
+    // const oDialogComponent:DialogComponent = this.dialogService.openModal(TransactionActionDialogComponent, {
+    //   cssClass: 'modal-lg', hasBackdrop: true, closeOnBackdropClick: true, closeOnEsc: true,
+    //   context: {
+    //     transaction: oDataSource,
+    //     printActionSettings: this.printActionSettings,
+    //     printSettings: this.printSettings,
+    //     aUniqueItemTypes: aUniqueItemTypes,
+    //     nRepairCount: nRepairCount,
+    //     nOrderCount: nOrderCount,
+    //     activityItems: this.activityItems,
+    //     aTemplates: aTemplates,
+    //     businessDetails: this.businessDetails
+    //   }
+    // }).instance;
+    oDialogComponent.contextChanged.next({
+      transaction: oDataSource,
+      printActionSettings: this.printActionSettings,
+      printSettings: this.printSettings,
+      aUniqueItemTypes: aUniqueItemTypes,
+      nRepairCount: nRepairCount,
+      nOrderCount: nOrderCount,
+      activityItems: this.activityItems,
+      aTemplates: aTemplates,
+      businessDetails: this.businessDetails
+    });
 
-    const oDialogComponent:DialogComponent = this.dialogService.openModal(TransactionActionDialogComponent, {
-      cssClass: 'modal-lg', hasBackdrop: true, closeOnBackdropClick: true, closeOnEsc: true,
-      context: {
-        transaction: oDataSource,
-        printActionSettings: this.printActionSettings,
-        printSettings: this.printSettings,
-        aUniqueItemTypes: aUniqueItemTypes,
-        nRepairCount: nRepairCount,
-        nOrderCount: nOrderCount,
-        activityItems: this.activityItems,
-        aTemplates: aTemplates,
-        businessDetails: this.businessDetails
-      }
-    }).instance;
+    // oDialogComponent.context = 
     oDialogComponent.close.subscribe(() => { this.clearAll();  });
     oDialogComponent.triggerEvent.subscribe(() => { this.clearAll();  });
 

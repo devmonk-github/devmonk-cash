@@ -12,6 +12,7 @@ import {
   Injector,
   Compiler
 } from '@angular/core';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'app-dialog',
@@ -33,6 +34,7 @@ export class DialogComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input() closeOnEsc: boolean | undefined;
 
   @Output() triggerEvent: EventEmitter<any> = new EventEmitter();
+  contextChanged = new Subject<any>();
 
   @ViewChild('backdrop', { read: ViewContainerRef }) backdrop!: ViewContainerRef;
   @ViewChild('dialogContainer', { read: ViewContainerRef }) container!: ViewContainerRef;

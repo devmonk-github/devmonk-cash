@@ -1,6 +1,7 @@
 <div class="card shadow-sm">
     <div class="card-header" style="margin-top: 20px;">
-        <h4>{{"TRANSACTION_COMPLETED" | translate}}</h4>
+        <h4 *ngIf="transaction">{{"TRANSACTION_COMPLETED" | translate}}</h4>
+        <h4 *ngIf="!transaction">{{'PROCESSING_YOUR_TRANSACTION' | translate }}</h4>
         <div>
             <button type="button" class="btn btn-sm btn-light" (click)="close(false)">
                 <fa-icon [icon]="faTimes"></fa-icon>
@@ -9,7 +10,19 @@
     </div>
     <div class="card-body">
         <div class="row">
-            <div>
+            <div class="text-center">
+                <h3 *ngIf="transaction">{{'TRANSACTION_COMPLETED_SUCCESSFULLY' | translate }} !</h3>
+                <h3 *ngIf="!transaction">{{'PLEASE_WAIT' | translate }}...</h3>
+            </div>
+            <div class="processing-div" *ngIf="!transaction">
+                <div class="box">
+                    <div class="cube"></div>
+                    <div class="cube"></div>
+                    <div class="cube"></div>
+                    <div class="cube"></div>
+                </div>
+            </div>
+            <div *ngIf="transaction">
                 <div class="success-checkmark">
                     <div class="check-icon">
                         <span class="icon-line line-tip"></span>
@@ -18,9 +31,6 @@
                         <div class="icon-fix"></div>
                     </div>
                 </div>
-            </div>
-            <div class="text-center">
-                <h3>{{'TRANSACTION_COMPLETED_SUCCESSFULLY' | translate }} !</h3>
             </div>
             <hr>
         </div>
