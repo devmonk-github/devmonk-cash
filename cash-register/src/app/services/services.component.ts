@@ -355,14 +355,20 @@ export class ServicesComponent implements OnInit, OnDestroy {
   }
 
   getCustomers() {
-    const arr = [];
-    for (let i = 0; i < this.activities.length; i++) {
-      if (this.activities[i].iCustomerId && arr.indexOf(this.activities[i].iCustomerId) < 0) arr.push(this.activities[i].iCustomerId);
-    }
+    // const arr = [];
+    // const UniqueIBusinessPartnerIds = [...new Set(response.map((el) => el?.iBusinessPartnerId?.toString()))];
+    // this.activities.forEach((activity) => {
+      
+    // })
+    // for (let i = 0; i < this.activities.length; i++) {
+    //   if (this.activities[i].iCustomerId && arr.indexOf(this.activities[i].iCustomerId) < 0) arr.push(this.activities[i].iCustomerId);
+    // }
 
     const body = {
       iBusinessId: this.iBusinessId,
-      arr: arr,
+      oFilterBy:{
+        _id: [...new Set(this.activities.map((el: any) => el?.iCustomerId).filter((n: any) => n))]
+      }
     }
 
     this.apiService.postNew('customer', '/api/v1/customer/list', body)
