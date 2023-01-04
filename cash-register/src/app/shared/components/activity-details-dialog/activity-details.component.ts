@@ -130,6 +130,7 @@ export class ActivityDetailsComponent implements OnInit {
   bActivityNumber: boolean = false;
   bShowOrderDownload: boolean = false;
   routerSub: any;
+  bActivityPdfGenerationInProgress: boolean = false;
 
   constructor(
     private viewContainerRef: ViewContainerRef,
@@ -206,14 +207,12 @@ export class ActivityDetailsComponent implements OnInit {
     this.getListEmployees()
     this.getListSuppliers()
     this.getBusinessBrands();
-    const [_printActionSettings, _printSettings, _template]: any = await Promise.all([
+    const [_printActionSettings, _printSettings]: any = await Promise.all([
       this.getPdfPrintSetting({ oFilterBy: { sMethod: 'actions' } }),
       this.getPdfPrintSetting({ oFilterBy: { sType: ['repair', 'order', 'repair_alternative'] } }),
-      this.getTemplate(['repair', 'order', 'repair_alternative' , 'giftcard'])
     ]);
     this.printActionSettings = _printActionSettings?.data[0]?.result[0].aActions;
     this.printSettings = _printSettings?.data[0]?.result;
-    this.aTemplates = _template.data;
   }
 
 
@@ -485,10 +484,10 @@ export class ActivityDetailsComponent implements OnInit {
       type = (oDataSource?.oType.eKind === 'regular') ? 'repair_alternative' : 'repair';
       sBarcodeURI = this.generateBarcodeURI(false, oDataSource.sNumber);
     } 
-    if (!this.businessDetails) {
-      const result: any = await this.getBusinessDetails().toPromise();
-      this.businessDetails = result.data;
-    }
+    // if (!this.businessDetails) {
+    //   const result: any = await this.getBusinessDetails().toPromise();
+    //   this.businessDetails = result.data;
+    // }
     oDataSource.businessDetails = this.businessDetails;
 
     const template = this.aTemplates.filter((t: any) => t.eType === type)[0];
@@ -686,19 +685,32 @@ export class ActivityDetailsComponent implements OnInit {
     return canvas.toDataURL("image/png");
   }
 
-  async downloadReceipt() {
+  async downloadReceipt(event:any) {
+    this.bActivityPdfGenerationInProgress = true;
+    event.target.disabled = true;
+
     const oDataSource = JSON.parse(JSON.stringify(this.activity));
-    const template = this.aTemplates.filter((t: any) => t.eType === 'order')[0];
-    if (!this.businessDetails) {
-      const result: any = await this.getBusinessDetails().toPromise();
-      this.businessDetails = result.data;
-    }
     oDataSource.businessDetails = this.businessDetails;
+
+    const [_logo, _templates]: any = await Promise.all([
+      this.getBase64FromUrl(oDataSource?.businessDetails?.sLogoLight).toPromise(),
+      this.getTemplate(['repair', 'order', 'repair_alternative', 'giftcard'])
+    ]);
+    oDataSource.sBusinessLogoUrl = _logo.data
+    this.aTemplates = _templates.data;
+
+
+    const template = this.aTemplates.filter((t: any) => t.eType === 'order')[0];
+    // if (!this.businessDetails) {
+    //   const result: any = await this.getBusinessDetails().toPromise();
+    //   this.businessDetails = result.data;
+    // }
     oDataSource.businessDetails.sMobile = this.businessDetails.oPhone.sMobile;
+    oDataSource.businessDetails.sLandLine = this.businessDetails?.oPhone?.sLandLine;
     const locationIndex = this.businessDetails.aLocation.findIndex((location:any)=>location._id == this.iLocationId);
     const currentLocation = this.businessDetails.aLocation[locationIndex];
-    oDataSource.sAddressline1 = currentLocation.oAddress.street + " " + currentLocation.oAddress.houseNumber + " " + currentLocation.oAddress.houseNumberSuffix + " ,  " + currentLocation.oAddress.postalCode + " " + currentLocation.oAddress.city;
-    oDataSource.sAddressline2 = currentLocation.oAddress.country; 
+    oDataSource.businessDetails.sAddressline1 = currentLocation.oAddress.street + " " + currentLocation.oAddress.houseNumber + " " + currentLocation.oAddress.houseNumberSuffix + " ,  " + currentLocation.oAddress.postalCode + " " + currentLocation.oAddress.city;
+    oDataSource.businessDetails.sAddressline2 = currentLocation.oAddress.country; 
 
     oDataSource.oCustomer = {
       sFirstName: this.customer?.sFirstName || '',
@@ -710,8 +722,9 @@ export class ActivityDetailsComponent implements OnInit {
 
     const sBarcodeURI = this.generateBarcodeURI(false, oDataSource.sNumber);
     oDataSource.sBarcodeURI = sBarcodeURI;
+    
 
-    oDataSource.sBusinessLogoUrl = (await this.getBase64FromUrl(oDataSource?.businessDetails?.sLogoLight).toPromise()).data;
+
     oDataSource.aTransactionItems = oDataSource.activityitems;
     oDataSource.sActivityNumber = oDataSource.sNumber;
     oDataSource.aTransactionItems.forEach((item: any) => {
@@ -720,6 +733,8 @@ export class ActivityDetailsComponent implements OnInit {
     });
 
     this.sendForReceipt(oDataSource, template, oDataSource.sNumber);
+    this.bActivityPdfGenerationInProgress = false;
+    event.target.disabled = false;
   }
 
   sendForReceipt(oDataSource: any, template: any, title: any) {

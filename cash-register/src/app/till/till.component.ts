@@ -1052,7 +1052,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       tax: (product?.aLocation?.length) ? product.aLocation.find((l: any) => l._id === this.locationId)?.nVatRate || 0 : 0 ,
       sProductNumber: product.sProductNumber,
       sArticleNumber: product.sArticleNumber,
-      description: product.sLabelDescription,
+      description: '',//product.sLabelDescription,
       iArticleGroupId: product.iArticleGroupId,
       oArticleGroupMetaData: { aProperty: product.aProperty || [], sCategory: '', sSubCategory: '', oName: {}, oNameOriginal: {} },
       iBusinessBrandId: product.iBusinessBrandId || product.iBrandId,

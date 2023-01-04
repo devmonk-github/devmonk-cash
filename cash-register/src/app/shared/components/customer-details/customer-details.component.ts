@@ -870,7 +870,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
 
   async fetchLoyaltyPoints() {
     if (this.customer.bCounter) return;
-    if (this.customer) {
+    if (this.customer?._id && this.customer._id != '') {
       const nPointsResult: any = await this.apiService.getNew('cashregistry', `/api/v1/points-settings/points?iBusinessId=${this.requestParams.iBusinessId}&iCustomerId=${this.customer._id}`).toPromise();
       const oPointsSettingsResult: any = await this.apiService.getNew('cashregistry', `/api/v1/points-settings?iBusinessId=${this.requestParams.iBusinessId}`).toPromise();
       this.customer.nLoyaltyPoints = nPointsResult;

@@ -304,10 +304,22 @@ export class ServicesComponent implements OnInit, OnDestroy {
           if (this.webOrders && result) this.router.navigate(['business/till']);
         });
     } else {
-      this.dialogService.openModal(ActivityDetailsComponent, { cssClass: 'w-fullscreen mt--5', hasBackdrop: true, closeOnBackdropClick: true, closeOnEsc: true, context: { activity, openActivityId, items: false, webOrders: this.webOrders, from: 'services' } })
-        .instance.close.subscribe(result => {
-          if (this.webOrders && result) this.router.navigate(['business/till']);
-        });
+      this.dialogService.openModal(ActivityDetailsComponent, {
+        cssClass: 'w-fullscreen mt--5',
+        hasBackdrop: true,
+        closeOnBackdropClick: true,
+        closeOnEsc: true,
+        context: {
+          activity,
+          businessDetails: this.businessDetails,
+          openActivityId,
+          items: false,
+          webOrders: this.webOrders,
+          from: 'services'
+        }
+      }).instance.close.subscribe(result => {
+        if (this.webOrders && result) this.router.navigate(['business/till']);
+      });
     }
   }
 
@@ -355,14 +367,20 @@ export class ServicesComponent implements OnInit, OnDestroy {
   }
 
   getCustomers() {
-    const arr = [];
-    for (let i = 0; i < this.activities.length; i++) {
-      if (this.activities[i].iCustomerId && arr.indexOf(this.activities[i].iCustomerId) < 0) arr.push(this.activities[i].iCustomerId);
-    }
+    // const arr = [];
+    // const UniqueIBusinessPartnerIds = [...new Set(response.map((el) => el?.iBusinessPartnerId?.toString()))];
+    // this.activities.forEach((activity) => {
+      
+    // })
+    // for (let i = 0; i < this.activities.length; i++) {
+    //   if (this.activities[i].iCustomerId && arr.indexOf(this.activities[i].iCustomerId) < 0) arr.push(this.activities[i].iCustomerId);
+    // }
 
     const body = {
       iBusinessId: this.iBusinessId,
-      arr: arr,
+      oFilterBy:{
+        _id: [...new Set(this.activities.map((el: any) => el?.iCustomerId).filter((n: any) => n))]
+      }
     }
 
     this.apiService.postNew('customer', '/api/v1/customer/list', body)
@@ -464,8 +482,7 @@ export class ServicesComponent implements OnInit, OnDestroy {
 
   fetchBusinessDetails() {
     this.apiService.getNew('core', '/api/v1/business/' + this.iBusinessId)
-      .subscribe(
-        (result: any) => {
+      .subscribe((result: any) => {
           this.businessDetails = result.data;
         })
   }
