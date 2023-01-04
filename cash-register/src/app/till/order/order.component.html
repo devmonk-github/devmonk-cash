@@ -76,10 +76,13 @@
           <!-- Service partner remark -->
           <div class="col-12">
             <div class="my-3">
-              <button (click)="bShowServicePartnerRemark = !bShowServicePartnerRemark" type="button"
-                class="btn btn-outline-primary fs-6 p-2 ">
-                {{bShowServicePartnerRemark?'Hide service partner remark':'Show service partner remark'}}
-              </button>
+              <button *ngIf="bShowServicePartnerRemark" (click)="bShowServicePartnerRemark = !bShowServicePartnerRemark" type="button"
+                class="btn btn-outline-primary fs-6 p-2 ">{{'HIDE_SERVICE_PARTNER_REMARK' | translate}} </button>
+                <button *ngIf="!bShowServicePartnerRemark" (click)="bShowServicePartnerRemark = !bShowServicePartnerRemark" type="button"
+                class="btn btn-outline-primary fs-6 p-2 ">{{'SHOW_SERVICE_PARTNER_REMARK' | translate}} </button>
+                <!-- {{ bShowServicePartnerRemark ? {{ 'HIDE_SERVICE_PARTNER_REMARK' | translate}} :
+                {{'SHOW_SERVICE_PARTNER_REMARK' | translate }} }}
+              </button> -->
               <ng-container *ngIf="bShowServicePartnerRemark">
                 <textarea class="form-control" name="REMARK_FOR_SERVICE_PARTNERS"
                   placeholder="{{ 'REMARK_FOR_SERVICE_PARTNERS' | translate }}" lines="10"
