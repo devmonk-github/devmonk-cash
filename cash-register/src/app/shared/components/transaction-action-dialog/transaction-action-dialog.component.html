@@ -14,17 +14,22 @@
                 <h3 *ngIf="transaction">{{'TRANSACTION_COMPLETED_SUCCESSFULLY' | translate }} !</h3>
                 <h3 *ngIf="!transaction">{{'PLEASE_WAIT' | translate }}...</h3>
             </div>
-            <div class="processing-div" *ngIf="!transaction">
+            <!-- <div class="processing-div" *ngIf="!transaction">
                 <div class="box">
                     <div class="cube"></div>
                     <div class="cube"></div>
                     <div class="cube"></div>
                     <div class="cube"></div>
                 </div>
-            </div>
-            <div *ngIf="transaction">
+            </div> -->
+            <div>
                 <div class="success-checkmark">
-                    <div class="check-icon">
+
+                    <div class="processing-div" *ngIf="!transaction">
+                        <div class="outer"></div>
+                        <div class="inner"></div>
+                    </div>
+                    <div class="check-icon" *ngIf="transaction">
                         <span class="icon-line line-tip"></span>
                         <span class="icon-line line-long"></span>
                         <div class="icon-circle"></div>
@@ -107,7 +112,7 @@
     </div>
 
     <div class="card-footer">
-        <div class="btn-holder">
+        <div class="text-end" *ngIf="transaction">
             <button type="button" class="btn btn-primary" (click)="close(false)">{{"FINISH" | translate}}</button>
         </div>
     </div>
