@@ -105,8 +105,54 @@ export class TransactionAuditUiPdfService {
             'CASH_COUNTED',
             'TREASURY_DIFFERENCE',
             'SKIM',
-            'AMOUNT_TO_LEFT_IN_CASH'
-        ]
+            'AMOUNT_TO_LEFT_IN_CASH' ,
+            'AMOUNT',
+            'DYANAMIC_DATA',
+            'STATIC_DATA',
+            'TRANSACTION_AUDIT_REPORT',
+            'LOCATION(S)',
+            'DISPLAY_METHOD',
+            'WORKSTATION(S)',
+            'TYPE_OF_DATA',
+            'COMMENT',
+            'TYPE' ,
+            'PAYMENT_METHODS',
+            'METHOD',
+            'TOTAL_AMOUNT',
+            'QUANTITY',
+            'TOTAL' ,
+            'REFUND' ,
+            'PRICE' ,
+            'TAX',
+            'DESCRIPTION' ,
+            'DISCOUNT(S)',
+            'DISCOUNT',
+            'PRODUCT_NAME' ,
+            'REPAIR(S)',
+            'NO_RECORDS_FOUND',
+            'EMPLOYEE',
+            'GIFTCARD(S)',
+            'PAYMENT_TYPE',
+            'DATE',
+            'VAT_RATE',
+            'NUMBER',
+            'PAYMENT_TRANSACTION_NUMBER' ,
+            'GOLD_PURCHASE(S)',
+            'GIFT_CARD_NUMBER',
+            'VAT_TYPE',
+            'PRICE_WITH_VAT',
+            'PURCHASE_PRICE_EX_VAT',
+            'TOTAL_OF_VAT_RATE',
+            'TOTAL_OF_ALL_VAT_RATE',
+            'GROSS_PROFIT',
+            'VAT_AMOUNT',
+            'FROM',
+            'TO' ,
+            'PURCHASE_PRICE',
+            'PARTICULARS',
+            'PRICE_INCL_VAT',
+            'SUPPLIER' ,
+            'ARTICLE'           ]
         this.translateService.get(aKeywords).subscribe(
             (result: any) => {aKeywords
                 this.translations = result
@@ -168,7 +214,7 @@ export class TransactionAuditUiPdfService {
             },
         };
         let sType = sOptionMenu.parent.sValue
-        let dataType = bIsDynamicState ? 'Dynamic Data' : 'Static Data';
+        let dataType = bIsDynamicState ? this.translations['DYANAMIC_DATA']: this.translations['STATIC_DATA'];
 
         // get selected locaions
         let sLocations = '';
@@ -210,38 +256,38 @@ export class TransactionAuditUiPdfService {
         }
 
         let dataFromTo =
-            '(From : ' + moment(oFilterDates.startDate).format('DD-MM-yyyy hh:mm A') + ' TO ' +
+            '( ' + this.translations['FROM'] + ': ' + moment(oFilterDates.startDate).format('DD-MM-yyyy hh:mm A') + " "+  this.translations['TO']  + " " +
             moment(oFilterDates.endDate).format('DD-MM-yyyy hh:mm A') + ')';
 
         this.content = [
             { text: date, style: ['right', 'normal'] },
-            { text: 'Transaction Audit Report', style: ['header', 'center'] },
+            { text: this.translations['TRANSACTION_AUDIT_REPORT'], style: ['header', 'center'] },
             { text: dataFromTo, style: ['center', 'normal'] },
             { text: oBusinessDetails.sName, style: 'businessName' },
             {
                 columns: [
-                    { text: 'Location(s) : ', style: ['left', 'normal'], width: 100 },
+                    { text: this.translations['LOCATION(S)'] + ': ', style: ['left', 'normal'], width: 100 },
                     { text: sLocations, style: ['left', 'normal'], width: 150 },
                     { width: '*', text: '' },
-                    { text: 'Display Method : ', style: ['right', 'normal'], width: 100 },
+                    { text: this.translations['DISPLAY_METHOD'] + ': ', style: ['right', 'normal'], width: 100 },
                     { text: sDisplayMethodString, style: ['right', 'normal'], width: 150 },
                 ],
             },
             {
                 columns: [
-                    { text: 'Workstation(s): ', style: ['left', 'normal'], width: 100 },
+                    { text: this.translations['WORKSTATION(S)'] + ': ', style: ['left', 'normal'], width: 100 },
                     { text: sWorkstation, style: ['left', 'normal'], width: 200 },
                     { width: '*', text: '' },
-                    { text: 'Type of Data: ', style: ['right', 'normal'], width: 100 },
+                    { text: this.translations['TYPE_OF_DATA']+': ', style: ['right', 'normal'], width: 100 },
                     { text: dataType, style: ['right', 'normal'], width: 150 },
                 ],
             },
             {
                 columns: [
-                    { text: 'Comment: ', style: ['left', 'normal'], width: 100 },
+                    { text: this.translations['COMMENT']+ ': ', style: ['left', 'normal'], width: 100 },
                     { text: oStatisticsDocument.sComment, style: ['left', 'normal'], width: 200 },
                     { width: '*', text: '' },
-                    { text: 'Type: ', style: ['right', 'normal'], width: 100 },
+                    { text: this.translations['TYPE']+ ': ', style: ['right', 'normal'], width: 100 },
                     { text: sType, style: ['right', 'normal'], width: 150 },
                 ],
             },
@@ -298,9 +344,9 @@ export class TransactionAuditUiPdfService {
                 })
         }
 
-        this.content.push({text: 'Payment Methods',style: ['left', 'normal'],margin: [0, 30, 0, 10],});
+        this.content.push({text: this.translations['PAYMENT_METHODS'] ,style: ['left', 'normal'],margin: [0, 30, 0, 10],});
 
-        const tableHeaders = ['Method', 'Total Amount', 'Quantity'];
+        const tableHeaders = [this.translations['METHOD'], this.translations['TOTAL_AMOUNT'], this.translations['QUANTITY']];
 
         const tableHeadersList: Array<any> = [];
         tableHeaders.forEach((header: any) => {
@@ -325,7 +371,7 @@ export class TransactionAuditUiPdfService {
                 
             });
             texts.push([
-                {text: 'TOTAL', style:['td', 'bold','bgGray']},
+                {text: this.translations['TOTAL'], style:['td', 'bold','bgGray']},
                 {text: nTotalAmount, style:['td', 'bold','bgGray']},
                 {text: nTotalQuantity, style:['td', 'bold','bgGray']},
             ])
@@ -345,7 +391,7 @@ export class TransactionAuditUiPdfService {
                     body: [
                         [...tableHeadersList],
                         [
-                            { text: 'No records found', colSpan: 3, alignment: 'center', style: ['td'] },
+                            { text: this.translations['NO_RECORDS_FOUND'], colSpan: 3, alignment: 'center', style: ['td'] },
                             {},
                             {},
                         ],
@@ -366,7 +412,7 @@ export class TransactionAuditUiPdfService {
             content: this.content,
             orientation: 'portrait',
             pageSize: 'A4',
-            pdfTitle: oBusinessDetails.sName + '-' + 'Transaction Audit Report'
+            pdfTitle: oBusinessDetails.sName + '-' + this.translations['TRANSACTION_AUDIT_REPORT']
         });
     }
 
@@ -374,8 +420,8 @@ export class TransactionAuditUiPdfService {
         const oCountings = oStatisticsDocument.oCountings;
 
         const tableHeadersList: any = [
-            { text: 'PARTICULARS', style: ['th', 'articleGroup'] },
-            { text: 'AMOUNT', style: ['th', 'articleGroup'], }
+            { text: this.translations['PARTICULARS'], style: ['th', 'articleGroup'] },
+            { text: this.translations['AMOUNT'], style: ['th', 'articleGroup'], }
         ];
 
         let texts: any = [
@@ -427,11 +473,11 @@ export class TransactionAuditUiPdfService {
 
     processVatRates(columnWidths: any, tableLayout: any, aVatRates:any){
         const tableHeaders = [
-            'VAT_TYPE',
-            'PRICE_WITH_VAT',
-            'PURCHASE_PRICE_EX_VAT',
-            'GROSS_PROFIT',
-            'VAT_AMOUNT',
+            this.translations['VAT_TYPE'],
+            this.translations['PRICE_WITH_VAT'],
+            this.translations['PURCHASE_PRICE_EX_VAT'],
+            this.translations['GROSS_PROFIT'],
+            this.translations['VAT_AMOUNT'],
         ]
         const tableHeadersList: any = [];
         tableHeaders.forEach((header: any) => {
@@ -447,7 +493,7 @@ export class TransactionAuditUiPdfService {
             let nOverallTotalRevenue = 0, nOverallTotalPurchaseValue =0, nOverallTotalProfit=0, nOverallTotalVatAmount=0;
             aVatRates.forEach((oItem: any) => {
                 let nTotalRevenue = 0, nTotalPurchaseValue =0, nTotalProfit=0, nTotalVatAmount=0;
-                texts.push([{ text: 'VAT_RATE - ' + ((oItem?.nVat) ? oItem?.nVat : ''), colSpan: 5, style: ['articleGroup', 'center', 'td'] }, {}, {}, {}, {}]);
+                texts.push([{ text: this.translations['VAT_RATE'] + ((oItem?.nVat) ? oItem?.nVat : ''), colSpan: 5, style: ['articleGroup', 'center', 'td'] }, {}, {}, {}, {}]);
                 aFieldsToInclude.forEach((field: any) => {
                     nTotalRevenue += oItem[field].nTotalRevenue;
                     nTotalPurchaseValue += oItem[field].nPurchaseValue;
@@ -467,7 +513,7 @@ export class TransactionAuditUiPdfService {
                 nOverallTotalVatAmount += nTotalVatAmount;
 
                 texts.push([
-                    { text: 'Total of vat rate ' + oItem?.nVat + '%', style: ['td', 'bold'] },
+                    { text: this.translations['TOTAL_OF_VAT_RATE'] + oItem?.nVat + '%', style: ['td', 'bold'] },
                     { text: parseFloat(nTotalRevenue.toFixed(2)), style: ['td', 'bold'] },
                     { text: parseFloat(nTotalPurchaseValue.toFixed(2)), style: ['td', 'bold'] },
                     { text: parseFloat(nTotalProfit.toFixed(2)), style: ['td', 'bold'] },
@@ -476,7 +522,7 @@ export class TransactionAuditUiPdfService {
             });
 
             texts.push([
-                { text: 'Total of all vat rates ', style: ['td', 'bold', 'bgGray'] },
+                { text: this.translations['TOTAL_OF_ALL_VAT_RATE'] , style: ['td', 'bold', 'bgGray'] },
                 { text: parseFloat(nOverallTotalRevenue.toFixed(2)), style: ['td', 'bold', 'bgGray'] },
                 { text: parseFloat(nOverallTotalPurchaseValue.toFixed(2)), style: ['td', 'bold', 'bgGray'] },
                 { text: parseFloat(nOverallTotalProfit.toFixed(2)), style: ['td', 'bold', 'bgGray'] },
@@ -500,7 +546,7 @@ export class TransactionAuditUiPdfService {
                     widths: columnWidths,
                     body: [
                         [...tableHeadersList],
-                        [{ text: 'No records found', colSpan: 5, alignment: 'center', style: ['td'] }, {}, {}, {}, {}]
+                        [{ text: this.translations['NO_RECORDS_FOUND'], colSpan: 5, alignment: 'center', style: ['td'] }, {}, {}, {}, {}]
                     ],
                     dontBreakRows: true,
                 },
@@ -521,12 +567,12 @@ export class TransactionAuditUiPdfService {
 
     addRefundToPdf() {
         this.content.push({
-            text: 'Refund',
+            text: this.translations['REFUND'],
             style: ['left', 'normal'],
             margin: [0, 30, 0, 10],
         });
 
-        const refundHeaders = ['Description', 'Price', 'Tax', 'Total'];
+        const refundHeaders = [this.translations['DESCRIPTION'], this.translations['PRICE'], this.translations['TAX'], this.translations['TOTAL']];
 
         const tableHeadersList: any = [];
         refundHeaders.forEach((header: any) => {
@@ -561,7 +607,7 @@ export class TransactionAuditUiPdfService {
                     widths: '*',
                     body: [[...tableHeadersList],
                         [
-                            { text: 'No records found', colSpan: 4, alignment: 'center', style: ['td'] },
+                            { text: this.translations['NO_RECORDS_FOUND'], colSpan: 4, alignment: 'center', style: ['td'] },
                             {},
                             {},
                             {},
@@ -574,12 +620,12 @@ export class TransactionAuditUiPdfService {
 
     addDiscountToPdf() {
         this.content.push({
-            text: 'Discount(s)',
+            text: this.translations['DISCOUNT(S)'],
             style: ['left', 'normal'],
             margin: [0, 30, 0, 10],
         });
 
-        const aHeaders = ['Product Name', 'Quantity', 'Discount', 'Price', 'Tax'];
+        const aHeaders = [this.translations['PRODUCT_NAME'], this.translations['QUANTITY'], this.translations['DISCOUNT'], this.translations['PRICE'], this.translations['TAX']];
 
         const tableHeadersList: any = [];
         aHeaders.forEach((header: any) => {
@@ -610,7 +656,7 @@ export class TransactionAuditUiPdfService {
                     widths: '*',
                     body: [[...tableHeadersList],
                     [
-                        { text: 'No records found', colSpan: 5, alignment: 'center', style: ['td'] },
+                        { text: this.translations['NO_RECORDS_FOUND'], colSpan: 5, alignment: 'center', style: ['td'] },
                         {},
                         {},
                         {},
@@ -624,17 +670,17 @@ export class TransactionAuditUiPdfService {
 
     addRepairsToPdf() {
         this.content.push({
-            text: 'Repair(s)',
+            text: this.translations['REPAIR(S)'],
             style: ['left', 'normal'],
             margin: [0, 30, 0, 10],
         });
 
         const aHeaders = [
-            'Product Name',
-            'Comment',
-            'Quantity',
-            'Employee',
-            'Total',
+            this.translations['PRODUCT_NAME'],
+            this.translations['COMMENT'],
+            this.translations['QUANTITY'],
+            this.translations['EMPLOYEE'],
+            this.translations['TOTAL'],
         ];
 
         const tableHeadersList: any = [];
@@ -666,7 +712,7 @@ export class TransactionAuditUiPdfService {
                     widths: '*',
                     body: [[...tableHeadersList],
                     [
-                        { text: 'No records found', colSpan: 5, alignment: 'center', style: ['td'] },
+                        { text: this.translations['NO_RECORDS_FOUND'], colSpan: 5, alignment: 'center', style: ['td'] },
                         {},
                         {},
                         {},
@@ -680,16 +726,16 @@ export class TransactionAuditUiPdfService {
 
     addGiftcardsToPdf() {
         this.content.push({
-            text: 'Giftcard(s)',
+            text: this.translations['GIFTCARD(S)'],
             style: ['left', 'normal'],
             margin: [0, 30, 0, 10],
         });
         const aHeaders = [
-            'Giftcard Number',
-            'Comment',
-            'Quantity',
-            'Employee',
-            'Total',
+            this.translations['GIFT_CARD_NUMBER'],
+             this.translations['COMMENT'],
+             this.translations['QUANTITY'],
+             this.translations['EMPLOYEE'],
+             this.translations['TOTAL'],
         ];
 
         const tableHeadersList: any = [];
@@ -721,7 +767,7 @@ export class TransactionAuditUiPdfService {
                     widths: '*',
                     body: [[...tableHeadersList],
                     [
-                        { text: 'No records found', colSpan: 5, alignment: 'center', style: ['td'] },
+                        { text: this.translations['NO_RECORD_FOUND'], colSpan: 5, alignment: 'center', style: ['td'] },
                         {},
                         {},
                         {},
@@ -735,19 +781,19 @@ export class TransactionAuditUiPdfService {
 
     addGoldPurchasesToPdf() {
         this.content.push({
-            text: 'Gold Purchase(s)',
+            text: this.translations['GOLD_PURCHASE(S)'],
             style: ['left', 'normal'],
             margin: [0, 30, 0, 10],
         });
         const widths = [100, 70, 50, 50, 50, '*', 80];
         const aHeaders = [
-            'Number',
-            'Date',
-            'Quantity',
-            'Price',
-            'Total',
-            'Payment Transaction No.',
-            'Payment Type',
+            this.translations['NUMBER'],
+            this.translations['DATE'],
+            this.translations['QUANTITY'],
+            this.translations['PRICE'],
+            this.translations['TOTAL'],
+            this.translations['PAYMENT_TRANSACTION_NUMBER'],
+            this.translations['PAYMENT_TYPE'],
         ];
 
         const tableHeadersList: any = [];
@@ -820,7 +866,7 @@ export class TransactionAuditUiPdfService {
             this.content.push({
                 table: {
                     widths: widths,
-                    body: [[{ text: 'No records found', colSpan: 7, alignment: 'center', style: ['td'] }, {}, {}, {}, {}, {}, {},],],
+                    body: [[{ text:this.translations['NO_RECORDS_FOUND'], colSpan: 7, alignment: 'center', style: ['td'] }, {}, {}, {}, {}, {}, {},],],
                 },
                 layout: {
                     hLineWidth: function (i: any) {
@@ -834,11 +880,11 @@ export class TransactionAuditUiPdfService {
     processPdfByRevenuePerBusinessPartner(columnWidths: any,tableLayout: any,aStatistic:any) {
         let arr: Array<any> = [];
         const header: Array<any> = [
-            'Supplier',
-            'Quantity',
-            'Price incl VAT',
-            'Purchase price',
-            'Gross profit'
+           this.translations['SUPPLIER'],
+           this.translations['QUANTITY'],
+           this.translations['PRICE_INCL_VAT'],
+           this.translations['PURCHASE_PRICE'],
+           this.translations['GROSS_PROFIT']
         ];
         const headerList: Array<any> = [];
         header.forEach((singleHeader: any) => {
@@ -1161,11 +1207,11 @@ export class TransactionAuditUiPdfService {
         let arr: Array<any> = [];
 
         const tableHeaders = [
-            'ARTICLE',
-            'QUANTITY',
-            'PRICE_WITH_VAT',
-            'PURCHASE_PRICE_EX_VAT',
-            'GROSS_PROFIT',
+            this.translations['ARTICLE'],
+            this.translations['QUANTITY'],
+            this.translations['PRICE_WITH_VAT'],
+            this.translations['PURCHASE_PRICE_EX_VAT'],
+            this.translations['GROSS_PROFIT'],
         ];
 
         const tableHeadersList: any = [];
@@ -1205,7 +1251,7 @@ export class TransactionAuditUiPdfService {
             ]);
         });
         texts.push([
-            { text: 'TOTAL', style: ['td', 'bold','bgGray'] },
+            { text: this.translations['TOTAL'], style: ['td', 'bold','bgGray'] },
             { text: nTotalQuantity, style:['td', 'bold','bgGray'] },
             { text: parseFloat(nTotalRevenue.toFixed(2)), style:['td', 'bold','bgGray'] },
             { text: parseFloat(nTotalPurchaseAmount.toFixed(2)), style:['td', 'bold','bgGray'] },
