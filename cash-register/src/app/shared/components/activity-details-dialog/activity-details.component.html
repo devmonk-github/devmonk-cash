@@ -24,9 +24,12 @@
                     <div class="card-body">
                         
                         <div *ngIf="bShowOrderDownload">
-                            <button class="btn btn-primary" (click)="downloadReceipt()">
+                            <button class="btn btn-primary" (click)="downloadReceipt($event)">
                                 {{ 'DOWNLOAD' | translate }}
                             </button>
+                            <ng-container *ngIf="bActivityPdfGenerationInProgress">
+                                <div class="spinner-border mx-2"></div>
+                            </ng-container>
                         </div>
 
                         <div class="d-flex flex-wrap py-5">

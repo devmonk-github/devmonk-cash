@@ -225,20 +225,17 @@
                                     </td>
                                     <td>
                                         <div>
-                                            {{ item.sArticleGroupName }} {{ item.sProductName }} <br /> 
-                                            <ng-container *ngIf="item.sDescription">
-                                                {{ item.sDescription}} <br />
-                                            </ng-container>
-                                            <ng-container *ngIf="item?.totalPaymentAmount != item?.nPriceIncVatAfterDiscount">
+                                            {{ item.sArticleGroupName }} {{ item.sProductNumber }} <br />
+                                            <!-- {{ item.sProductName }}   -->
+                                            <span *ngIf="item.sDescription">{{ item.sDescription}} <br /></span>
+                                            <span *ngIf="item?.totalPaymentAmount != item?.nPriceIncVatAfterDiscount">
                                                 {{ 'ORIGINAL_AMOUNT_INC_DISC' | translate }}: {{ item.nPriceIncVatAfterDiscount }} <br />
-                                            </ng-container>
+                                            </span>
                                             
                                             <div *ngIf="item.related?.length">
                                                 {{ "ALREADY_PAID" | translate}}:<br />
                                                 {{item.sTransactionNumber}} | {{item.nPaymentAmount}} ({{"THIS_RECEIPT" | translate }})<br />
-                                                <div *ngFor="let obj of item.related">
-                                                    {{obj.sTransactionNumber}} | {{obj.nRevenueAmount }}<br />
-                                                </div>
+                                                <span *ngFor="let obj of item.related">{{obj.sTransactionNumber}} | {{obj.nRevenueAmount }}<br /></span>
                                             </div>
                                         </div>
                                         <div *ngIf="item?.aProductVariant?.length > 0">

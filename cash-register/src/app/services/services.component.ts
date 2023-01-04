@@ -304,10 +304,22 @@ export class ServicesComponent implements OnInit, OnDestroy {
           if (this.webOrders && result) this.router.navigate(['business/till']);
         });
     } else {
-      this.dialogService.openModal(ActivityDetailsComponent, { cssClass: 'w-fullscreen mt--5', hasBackdrop: true, closeOnBackdropClick: true, closeOnEsc: true, context: { activity, openActivityId, items: false, webOrders: this.webOrders, from: 'services' } })
-        .instance.close.subscribe(result => {
-          if (this.webOrders && result) this.router.navigate(['business/till']);
-        });
+      this.dialogService.openModal(ActivityDetailsComponent, {
+        cssClass: 'w-fullscreen mt--5',
+        hasBackdrop: true,
+        closeOnBackdropClick: true,
+        closeOnEsc: true,
+        context: {
+          activity,
+          businessDetails: this.businessDetails,
+          openActivityId,
+          items: false,
+          webOrders: this.webOrders,
+          from: 'services'
+        }
+      }).instance.close.subscribe(result => {
+        if (this.webOrders && result) this.router.navigate(['business/till']);
+      });
     }
   }
 
@@ -470,8 +482,7 @@ export class ServicesComponent implements OnInit, OnDestroy {
 
   fetchBusinessDetails() {
     this.apiService.getNew('core', '/api/v1/business/' + this.iBusinessId)
-      .subscribe(
-        (result: any) => {
+      .subscribe((result: any) => {
           this.businessDetails = result.data;
         })
   }
