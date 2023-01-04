@@ -120,7 +120,7 @@ export class ReceiptService {
         this.oOriginalDataSource = oDataSource;
         this.pdfService.getTranslations();
         
-        // console.log(this.oOriginalDataSource)
+        console.log(this.oOriginalDataSource)
         
         this.commonService.pdfTitle = pdfTitle;
         this.commonService.mapCommonParams(templateData.aSettings);
@@ -381,6 +381,8 @@ export class ReceiptService {
                 };
                 if (el?.width) obj.width = el.width;
                 columnData = obj;
+            } else if(el?.type === 'parts') {
+                columnData = this.addParts(el)
             } else {
                 let html = el.html || '';
                 let object = el?.object;
@@ -609,4 +611,27 @@ export class ReceiptService {
         }
         return obj;
     }
+
+    addParts(el:any){
+        let obj:any = [];
+        el.parts.forEach((part:any) => {
+            if (part?.ifAnd){
+                part.ifAnd.forEach((rule:any)=>{
+                    let field = (el?.object) ? this.oOriginalDataSource[el.object][rule.field] : this.oOriginalDataSource[rule.field];
+                    let bTestResult = this.comparators[rule.compare](field, rule.target)
+                    if(bTestResult) {
+                        let text = this.pdfService.replaceVariables(part?.text, (el?.object) ? this.oOriginalDataSource[el.object] : this.oOriginalDataSource)
+                        obj.push({text: text, alignment: el?.alignment});
+                    }
+                })
+            }
+        })
+        return obj;
+    }
+
+    comparators:any = {
+        "eq": (a:any, b:any) => a === b,
+        "ne": (a:any, b:any) => a !== b,
+        "gt": (a:any, b:any) => a > b
+    };
 }
