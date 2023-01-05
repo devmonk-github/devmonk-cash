@@ -489,6 +489,30 @@ export class ActivityDetailsComponent implements OnInit {
     //   this.businessDetails = result.data;
     // }
     oDataSource.businessDetails = this.businessDetails;
+    const aPromises = [];
+    let bBusinessLogo = false, bTemplate = false;
+    if(this.businessDetails?.sBusinessLogoUrl) {
+      oDataSource.sBusinessLogoUrl = this.businessDetails?.sBusinessLogoUrl;
+    } else {
+      aPromises.push(this.getBase64FromUrl(oDataSource?.businessDetails?.sLogoLight).toPromise())
+      bBusinessLogo = true;
+    }
+
+    if(!this.aTemplates?.length) {
+      aPromises.push(this.getTemplate(['repair', 'order', 'repair_alternative', 'giftcard']));
+      bTemplate = true;
+    }
+
+    const aResultPromises: any = await Promise.all(aPromises);
+
+    if(bBusinessLogo) {
+      oDataSource.sBusinessLogoUrl = aResultPromises[0].data;
+      this.businessDetails.sBusinessLogoUrl = aResultPromises[0].data;
+    }
+
+    if (bTemplate) {
+      this.aTemplates = (bBusinessLogo) ? aResultPromises[1].data : aResultPromises[0].data;
+    } 
 
     const template = this.aTemplates.filter((t: any) => t.eType === type)[0];
 
@@ -692,12 +716,30 @@ export class ActivityDetailsComponent implements OnInit {
     const oDataSource = JSON.parse(JSON.stringify(this.activity));
     oDataSource.businessDetails = this.businessDetails;
 
-    const [_logo, _templates]: any = await Promise.all([
-      this.getBase64FromUrl(oDataSource?.businessDetails?.sLogoLight).toPromise(),
-      this.getTemplate(['repair', 'order', 'repair_alternative', 'giftcard'])
-    ]);
-    oDataSource.sBusinessLogoUrl = _logo.data
-    this.aTemplates = _templates.data;
+    const aPromises = [];
+    let bBusinessLogo = false, bTemplate = false;
+    if (this.businessDetails?.sBusinessLogoUrl) {
+      oDataSource.sBusinessLogoUrl = this.businessDetails?.sBusinessLogoUrl;
+    } else {
+      aPromises.push(this.getBase64FromUrl(oDataSource?.businessDetails?.sLogoLight).toPromise())
+      bBusinessLogo = true;
+    }
+
+    if (!this.aTemplates?.length) {
+      aPromises.push(this.getTemplate(['repair', 'order', 'repair_alternative', 'giftcard']));
+      bTemplate = true;
+    }
+
+    const aResultPromises: any = await Promise.all(aPromises);
+
+    if (bBusinessLogo) {
+      oDataSource.sBusinessLogoUrl = aResultPromises[0].data;
+      this.businessDetails.sBusinessLogoUrl = aResultPromises[0].data;
+    }
+
+    if (bTemplate) {
+      this.aTemplates = (bBusinessLogo) ? aResultPromises[1].data : aResultPromises[0].data;
+    }
 
 
     const template = this.aTemplates.filter((t: any) => t.eType === 'order')[0];

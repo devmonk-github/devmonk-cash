@@ -389,7 +389,8 @@ export class ReceiptService {
                  let text = '';
                 if (object && Object.keys(object)?.length) {
                     text = this.pdfService.replaceVariables(html, (object) ? this.oOriginalDataSource[object] : this.oOriginalDataSource) || '';
-                }
+                } else {
+                    text = this.pdfService.replaceVariables(html, this.oOriginalDataSource) || html;               }
                 columnData = { text: text };
                 if (el?.width) columnData.width = el?.width;
                 if (el?.alignment) columnData.alignment = el?.alignment;
