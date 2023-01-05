@@ -770,10 +770,10 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       this.getBase64FromUrl(oDataSource?.businessDetails?.sLogoLight),
     ]);
 
-    oDataSource.sAdvisedEmpFirstName = this.employee.sFirstName;
+    oDataSource.sAdvisedEmpFirstName = this.employee?.sFirstName ? this.employee.sFirstName : 'a';
     oDataSource.sBusinessLogoUrl = _oLogoData.data;
     if (oDataSource.oCustomer && oDataSource.oCustomer.bCounter === true) {
-      oDataSource.oCustomer = {};  
+      oDataSource.oCustomer = {};
     } else {
       oDataSource.oCustomer = {
         sFirstName: oDataSource.oCustomer.sFirstName,
