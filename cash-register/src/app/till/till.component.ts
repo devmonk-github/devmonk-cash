@@ -178,26 +178,26 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.bIsDayStateOpened) this.fetchQuickButtons();
 
     const currentEmployeeId = JSON.parse(localStorage.getItem('currentUser') || '')['userId'];
-    
-    const _businessData:any = await this.getBusinessDetails().toPromise()
+
+    const _businessData: any = await this.getBusinessDetails().toPromise()
 
     this.businessDetails = _businessData.data;
     this.businessDetails.currentLocation = this.businessDetails?.aLocation?.filter((location: any) => location?._id.toString() == this.locationId.toString())[0];
     this.tillService.selectCurrency(this.businessDetails.currentLocation);
     this.businessDetails.sMobile = this.businessDetails.oPhone.sMobile;
     this.businessDetails.sLandLine = this.businessDetails?.oPhone?.sLandLine;
-    this.businessDetails.sAddressline1 = this.businessDetails.currentLocation.oAddress.street + " " + 
-                                          this.businessDetails.currentLocation.oAddress.houseNumber + " " + 
-                                          this.businessDetails.currentLocation.oAddress.houseNumberSuffix + " ,  " + 
-                                          this.businessDetails.currentLocation.oAddress.postalCode + " " + 
-                                          this.businessDetails.currentLocation.oAddress.city;
-    this.businessDetails.sAddressline2 = this.businessDetails.currentLocation.oAddress.country; 
+    this.businessDetails.sAddressline1 = this.businessDetails.currentLocation.oAddress.street + " " +
+      this.businessDetails.currentLocation.oAddress.houseNumber + " " +
+      this.businessDetails.currentLocation.oAddress.houseNumberSuffix + " ,  " +
+      this.businessDetails.currentLocation.oAddress.postalCode + " " +
+      this.businessDetails.currentLocation.oAddress.city;
+    this.businessDetails.sAddressline2 = this.businessDetails.currentLocation.oAddress.country;
 
 
     this.getPrintSettings(true)
     this.getPrintSettings()
     this.getEmployee(currentEmployeeId)
-    
+
     setTimeout(() => {
       MenuComponent.bootstrap();
     });
@@ -207,7 +207,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       this.cancelFiskalyTransaction();
     }
   }
-  
+
   ngAfterViewInit() {
     if (this.searchField)
       this.searchField.nativeElement.focus();
@@ -589,13 +589,14 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
         isGoldForPayment = false;
         // this.toastrService.show({ type: 'danger', text: `The amount paid for '${element.oGoldFor.name}' does not match.` });
         this.toastrService.show({
-          type: 'danger', 
+          type: 'danger',
           text: `You selected '${element.oGoldFor.name}' as a administrative procedure for this gold purchase. 
         If your administration supports special rules for 'VAT' processing on gold purchases please remove all the other products/items on this purchase. 
         In case you're following the 'regular' procedure like most retailers (95%): Change the option 'Cash/Bank' to 'Stock/Repair/Giftcard/Order' on the gold purchase item's dropdown. 
         You can still give cash to your customer or select bank (transfer) as a method. 
         In that case on paper the governement handles this 'gold purchase' as an exchange to goods (which may be done on a different transaction.`,
-          noAutoClose:true });
+          noAutoClose: true
+        });
       }
     });
     return isGoldForPayment;
@@ -626,15 +627,15 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
     if (nTotalToPay < 0) {
       let nDiff = parseFloat((nTotalToPay - nEnteredAmountTotal).toFixed(2));
-      if(nDiff < -0.02 || nDiff > 0.02) {
-        this.toastrService.show({ type: 'warning', text: `We do not allow prepayment on negative transactions and also we do not support negative change money.`});
+      if (nDiff < -0.02 || nDiff > 0.02) {
+        this.toastrService.show({ type: 'warning', text: `We do not allow prepayment on negative transactions and also we do not support negative change money.` });
         this.saveInProgress = false;
         return;
       }
     }
     const changeAmount = nEnteredAmountTotal - nTotalToPay
     this.dialogService.openModal(TerminalDialogComponent, { cssClass: 'modal-lg', context: { payments: this.payMethods, changeAmount } })
-      .instance.close.subscribe((payMethods:any) => {
+      .instance.close.subscribe((payMethods: any) => {
         if (!payMethods) {
           this.saveInProgress = false;
           this.clearPaymentAmounts();
@@ -670,7 +671,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
           const oDialogComponent: DialogComponent = this.dialogService.openModal(TransactionActionDialogComponent, {
             cssClass: 'modal-lg', hasBackdrop: true, closeOnBackdropClick: true, closeOnEsc: true,
           }).instance;
-          return;
+
           this.apiService.postNew('cashregistry', '/api/v1/till/transaction', body)
             .subscribe(async (data: any) => {
 
@@ -692,7 +693,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
                   }
                 }
               });
-              
+
               this.handleReceiptPrinting(oDialogComponent);
               this.updateFiskalyTransaction('FINISHED', body.payments);
               setTimeout(() => {
@@ -713,8 +714,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   getEmployee(id: any) {
-    if(id != '') {
-      this.apiService.getNew('auth', `/api/v1/employee/${id}?iBusinessId=${this.business._id}`).subscribe((result:any)=> {
+    if (id != '') {
+      this.apiService.getNew('auth', `/api/v1/employee/${id}?iBusinessId=${this.business._id}`).subscribe((result: any) => {
         this.employee = result?.data;
       });
     }
@@ -760,7 +761,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     if (bOrderCondition) aUniqueItemTypes.push('order');
 
     aUniqueItemTypes.push(...['repair', 'repair_alternative', 'giftcard']);
-    
+
     oDataSource.businessDetails = this.businessDetails;
     oDataSource.currentLocation = this.businessDetails.currentLocation;// ? this.businessDetails.currentLocation : this.getValueFromLocalStorage('currentLocation');    
 
@@ -770,10 +771,10 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       this.getBase64FromUrl(oDataSource?.businessDetails?.sLogoLight),
     ]);
 
-    oDataSource.sAdvisedEmpFirstName = this.employee.sFirstName;
+    oDataSource.sAdvisedEmpFirstName = this.employee?.sFirstName ? this.employee.sFirstName : 'a';
     oDataSource.sBusinessLogoUrl = _oLogoData.data;
     if (oDataSource.oCustomer && oDataSource.oCustomer.bCounter === true) {
-      oDataSource.oCustomer = {};  
+      oDataSource.oCustomer = {};
     } else {
       oDataSource.oCustomer = {
         sFirstName: oDataSource.oCustomer.sFirstName,
@@ -785,7 +786,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       };
     }
     const aTemplates = _template.data;
-    
+
     oDialogComponent.contextChanged.next({
       transaction: oDataSource,
       printActionSettings: this.printActionSettings,
@@ -799,8 +800,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       businessDetails: this.businessDetails
     });
 
-    oDialogComponent.close.subscribe(() => { this.clearAll();  });
-    oDialogComponent.triggerEvent.subscribe(() => { this.clearAll();  });
+    oDialogComponent.close.subscribe(() => { this.clearAll(); });
+    oDialogComponent.triggerEvent.subscribe(() => { this.clearAll(); });
 
     if (bOrderCondition) {
       // print order receipt
@@ -843,7 +844,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       })
     }
 
-    
+
   }
 
   sendForReceipt(oDataSource: any, template: any, title: any, type?: any) {
@@ -862,7 +863,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       }
       if (aActionToPerform.includes('DOWNLOAD') || aActionToPerform.includes('PRINT_PDF')) {
         const settings = this.printSettings.filter((s: any) => s.sMethod === 'pdf' && s.sType === type && s.iWorkstationId === this.iWorkstationId);
-        
+
         this.receiptService.exportToPdf({
           oDataSource: oDataSource,
           pdfTitle: title,
@@ -880,11 +881,11 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       iLocationId: this.locationId,
       oFilterBy: {}
     }
-    if(action) {
+    if (action) {
       oBody.oFilterBy = { sMethod: 'actions' };
     }
-    this.apiService.postNew('cashregistry', `/api/v1/print-settings/list/${this.business._id}`, oBody).subscribe((result:any)=>{
-      if(action) {
+    this.apiService.postNew('cashregistry', `/api/v1/print-settings/list/${this.business._id}`, oBody).subscribe((result: any) => {
+      if (action) {
         this.printActionSettings = result?.data[0]?.result[0].aActions;
       } else {
         this.printSettings = result?.data[0]?.result;
@@ -913,15 +914,15 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
   getBusinessDetails() {
     return this.apiService.getNew('core', '/api/v1/business/' + this.business._id);
-      // this.businessDetails = result.data;
-      // this.businessDetails.currentLocation = this.businessDetails?.aLocation?.filter((location: any) => location?._id.toString() == this.locationId.toString())[0];
-      // this.tillService.selectCurrency(this.businessDetails.currentLocation);
+    // this.businessDetails = result.data;
+    // this.businessDetails.currentLocation = this.businessDetails?.aLocation?.filter((location: any) => location?._id.toString() == this.locationId.toString())[0];
+    // this.tillService.selectCurrency(this.businessDetails.currentLocation);
 
-      // this.http.get<any>(this.businessDetails.sLogoLight).subscribe((data: any) => {
-      //   // console.log(data)
-      // }, (error: any) => {
-      //   this.businessDetails.sLogoLight = "local";
-      // })
+    // this.http.get<any>(this.businessDetails.sLogoLight).subscribe((data: any) => {
+    //   // console.log(data)
+    // }, (error: any) => {
+    //   this.businessDetails.sLogoLight = "local";
+    // })
     // });
   }
 
@@ -1017,8 +1018,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   // Add selected product into purchase order
-  async onSelectProduct(product: any, isFrom: string = '', isFor: string = '', source ?: any) {
-    
+  async onSelectProduct(product: any, isFrom: string = '', isFor: string = '', source?: any) {
+
     let price: any = {};
     if (isFrom === 'quick-button') {
       source.loading = true;
@@ -1053,7 +1054,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       oType: { bRefund: false, bDiscount: false, bPrepayment: false },
       nDiscount: product.nDiscount || 0,
       bDiscountOnPercentage: product.bDiscountOnPercentage || false,
-      tax: (product?.aLocation?.length) ? product.aLocation.find((l: any) => l._id === this.locationId)?.nVatRate || 0 : 0 ,
+      tax: (product?.aLocation?.length) ? product.aLocation.find((l: any) => l._id === this.locationId)?.nVatRate || 0 : 0,
       sProductNumber: product.sProductNumber,
       sArticleNumber: product.sArticleNumber,
       description: '',//product.sLabelDescription,
@@ -1072,7 +1073,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       isFor,
       oBusinessProductMetaData: this.tillService.createProductMetadata(product),
     });
-    if (isFrom === 'quick-button') { source.loading = false}
+    if (isFrom === 'quick-button') { source.loading = false }
     this.resetSearch();
     this.clearPaymentAmounts();
   }
@@ -1399,9 +1400,9 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   async updateFiskalyTransaction(state: string, payments: []) {
-    if (!this.businessDetails.currentLocation?.tssInfo){
+    if (!this.businessDetails.currentLocation?.tssInfo) {
       return;
-    } 
+    }
     const pay = _.clone(payments);
     try {
       if (!localStorage.getItem('fiskalyTransaction')) {
