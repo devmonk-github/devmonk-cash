@@ -231,7 +231,7 @@ export class ActivityDetailsComponent implements OnInit {
           let createerIndex = this.employeesList.findIndex((employee: any) => employee._id == this.activity.iEmployeeId);
           if (this.createrDetail != -1) {
             this.createrDetail = this.employeesList[createerIndex];
-            this.activity.sEmpFirstName = `Advised By: ${this.createrDetail.sFirstName}`;
+            this.activity.sAdvisedEmpFirstName = this.createrDetail.sFirstName;
           }
         }
 
@@ -720,17 +720,18 @@ export class ActivityDetailsComponent implements OnInit {
       sLandLine: this.customer?.oPhone?.sLandLine || '',
     };
 
-    const sBarcodeURI = this.generateBarcodeURI(false, oDataSource.sNumber);
-    oDataSource.sBarcodeURI = sBarcodeURI;
-    
+    const sActivityBarcodeURI = this.generateBarcodeURI(false, oDataSource.sNumber);
+    oDataSource.sActivityBarcodeURI = sActivityBarcodeURI;
 
-
-    oDataSource.aTransactionItems = oDataSource.activityitems;
+    // oDataSource.aTransactionItems = oDataSource.activityitems;
     oDataSource.sActivityNumber = oDataSource.sNumber;
-    oDataSource.aTransactionItems.forEach((item: any) => {
+    let nTotalPaidAmount = 0;
+    oDataSource.activityitems.forEach((item: any) => {
+      nTotalPaidAmount += item.nPaidAmount;
       item.sActivityItemNumber = item.sNumber;
       item.sOrderDescription = item.sProductName + '\n' + item.sDescription;
     });
+    oDataSource.nTotalPaidAmount = nTotalPaidAmount;
 
     this.sendForReceipt(oDataSource, template, oDataSource.sNumber);
     this.bActivityPdfGenerationInProgress = false;

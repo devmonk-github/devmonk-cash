@@ -184,6 +184,14 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     this.businessDetails = _businessData.data;
     this.businessDetails.currentLocation = this.businessDetails?.aLocation?.filter((location: any) => location?._id.toString() == this.locationId.toString())[0];
     this.tillService.selectCurrency(this.businessDetails.currentLocation);
+    this.businessDetails.sMobile = this.businessDetails.oPhone.sMobile;
+    this.businessDetails.sLandLine = this.businessDetails?.oPhone?.sLandLine;
+    this.businessDetails.sAddressline1 = this.businessDetails.currentLocation.oAddress.street + " " + 
+                                          this.businessDetails.currentLocation.oAddress.houseNumber + " " + 
+                                          this.businessDetails.currentLocation.oAddress.houseNumberSuffix + " ,  " + 
+                                          this.businessDetails.currentLocation.oAddress.postalCode + " " + 
+                                          this.businessDetails.currentLocation.oAddress.city;
+    this.businessDetails.sAddressline2 = this.businessDetails.currentLocation.oAddress.country; 
 
 
     this.getPrintSettings(true)
@@ -768,20 +776,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       };
     }
     const aTemplates = _template.data;
-    // const oDialogComponent:DialogComponent = this.dialogService.openModal(TransactionActionDialogComponent, {
-    //   cssClass: 'modal-lg', hasBackdrop: true, closeOnBackdropClick: true, closeOnEsc: true,
-    //   context: {
-    //     transaction: oDataSource,
-    //     printActionSettings: this.printActionSettings,
-    //     printSettings: this.printSettings,
-    //     aUniqueItemTypes: aUniqueItemTypes,
-    //     nRepairCount: nRepairCount,
-    //     nOrderCount: nOrderCount,
-    //     activityItems: this.activityItems,
-    //     aTemplates: aTemplates,
-    //     businessDetails: this.businessDetails
-    //   }
-    // }).instance;
+    
     oDialogComponent.contextChanged.next({
       transaction: oDataSource,
       printActionSettings: this.printActionSettings,
@@ -790,11 +785,11 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       nRepairCount: nRepairCount,
       nOrderCount: nOrderCount,
       activityItems: this.activityItems,
+      activity: this.activity,
       aTemplates: aTemplates,
       businessDetails: this.businessDetails
     });
 
-    // oDialogComponent.context = 
     oDialogComponent.close.subscribe(() => { this.clearAll();  });
     oDialogComponent.triggerEvent.subscribe(() => { this.clearAll();  });
 

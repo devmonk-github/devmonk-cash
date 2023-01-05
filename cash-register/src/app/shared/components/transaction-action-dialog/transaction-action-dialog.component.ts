@@ -26,6 +26,7 @@ export class TransactionActionDialogComponent implements OnInit {
   showLoader = false;
   transaction: any = undefined;
   activityItems: any;
+  activity: any;
   printActionSettings: any;
   printSettings: any;
   nRepairCount: number = 0;
@@ -57,6 +58,7 @@ export class TransactionActionDialogComponent implements OnInit {
       this.transaction = context.transaction;
       this.aTemplates = context.aTemplates;
       this.activityItems = context.activityItems;
+      this.activity = context.activity;
       this.businessDetails = context.businessDetails;
       this.nOrderCount = context.nOrderCount;
       this.nRepairCount = context.nRepairCount;
@@ -106,22 +108,46 @@ export class TransactionActionDialogComponent implements OnInit {
       pdfTitle = oDataSource.sNumber;
       
     } else if (type === 'regular') {
+      
       oDataSource = this.transaction;
       pdfTitle = this.transaction.sNumber;
       template = this.aTemplates.filter((template: any) => template.eType === 'regular')[0];
+    
     } else if (type === 'giftcard') {
+
       oDataSource = this.activityItems.filter((item: any) => item.oType.eKind === 'giftcard')[0];
       oDataSource.nTotal = oDataSource.nPaidAmount;
       oDataSource.sBarcodeURI = this.generateBarcodeURI(true, 'G-' + oDataSource.sGiftCardNumber);
       pdfTitle = oDataSource.sGiftCardNumber;
       template = this.aTemplates.filter((template: any) => template.eType === 'giftcard')[0];
+    
     } else if (type === 'order') {
+
       template = this.aTemplates.filter((template: any) => template.eType === 'order')[0];
-      oDataSource = this.transaction;
+      oDataSource = {
+        ...this.activity, 
+        activityitems: this.activityItems,
+        aTransactionItems: this.transaction.aTransactionItems
+      };
+      
+      oDataSource.oCustomer = this.transaction.oCustomer
+      oDataSource.businessDetails = this.businessDetails;
+      oDataSource.sBusinessLogoUrl = this.transaction.sBusinessLogoUrl
+      oDataSource.sActivityBarcodeURI = this.transaction.sActivityBarcodeURI
+      oDataSource.sAdvisedEmpFirstName = this.transaction.sAdvisedEmpFirstName;
+
+      let nTotalPaidAmount = 0;
+      oDataSource.activityitems.forEach((item: any) => {
+        item.sActivityItemNumber = item.sNumber;
+        item.sOrderDescription = item.sProductName + '\n' + item.sDescription;
+        nTotalPaidAmount += item.nPaidAmount;
+      });
+      oDataSource.nTotalPaidAmount = nTotalPaidAmount;
       oDataSource.sActivityNumber = this.transaction.activity.sNumber;
+
       pdfTitle = oDataSource.sActivityNumber;
     }
-    console.log(111, this.transaction.sNumber)
+    
     if (action == 'PRINT_THERMAL') {
       this.receiptService.printThermalReceipt({
         oDataSource: oDataSource,
