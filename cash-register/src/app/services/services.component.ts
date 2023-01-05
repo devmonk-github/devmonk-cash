@@ -367,15 +367,6 @@ export class ServicesComponent implements OnInit, OnDestroy {
   }
 
   getCustomers() {
-    // const arr = [];
-    // const UniqueIBusinessPartnerIds = [...new Set(response.map((el) => el?.iBusinessPartnerId?.toString()))];
-    // this.activities.forEach((activity) => {
-      
-    // })
-    // for (let i = 0; i < this.activities.length; i++) {
-    //   if (this.activities[i].iCustomerId && arr.indexOf(this.activities[i].iCustomerId) < 0) arr.push(this.activities[i].iCustomerId);
-    // }
-
     const body = {
       iBusinessId: this.iBusinessId,
       oFilterBy:{
@@ -383,8 +374,8 @@ export class ServicesComponent implements OnInit, OnDestroy {
       }
     }
 
-    this.apiService.postNew('customer', '/api/v1/customer/list', body)
-      .subscribe(async (result: any) => {
+    this.apiService.postNew('customer', '/api/v1/customer/list', body).subscribe(async (result: any) => {
+      if (result?.data?.length && result?.data[0]?.result?.length) {
         const customers = result.data[0].result || [];
         for (let i = 0; i < this.activities.length; i++) {
           for (let j = 0; j < customers.length; j++) {
@@ -397,9 +388,8 @@ export class ServicesComponent implements OnInit, OnDestroy {
             }
           }
         }
-      },
-        (error) => {
-        })
+      }
+    })
   }
 
   goToCashRegister() {

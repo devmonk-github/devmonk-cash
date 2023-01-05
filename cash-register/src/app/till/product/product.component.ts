@@ -14,7 +14,7 @@ import { TillService } from 'src/app/shared/service/till.service';
   templateUrl: './product.component.html',
   styleUrls: ['./product.component.sass'],
 })
-export class ProductComponent implements OnInit, OnChanges{
+export class ProductComponent implements OnInit{
   @Input() item: any
   @Input() taxes: any
   @Output() itemChanged = new EventEmitter<any>();
@@ -38,10 +38,6 @@ export class ProductComponent implements OnInit, OnChanges{
     ngOnInit(): void {
       this.fetchArticleGroupInfo();
       this.getTotalDiscount(this.item)
-    }
-    
-    ngOnChanges(changes: SimpleChanges): void {
-      console.log(changes)
     }
 
   fetchArticleGroupInfo() {

@@ -184,6 +184,14 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     this.businessDetails = _businessData.data;
     this.businessDetails.currentLocation = this.businessDetails?.aLocation?.filter((location: any) => location?._id.toString() == this.locationId.toString())[0];
     this.tillService.selectCurrency(this.businessDetails.currentLocation);
+    this.businessDetails.sMobile = this.businessDetails.oPhone.sMobile;
+    this.businessDetails.sLandLine = this.businessDetails?.oPhone?.sLandLine;
+    this.businessDetails.sAddressline1 = this.businessDetails.currentLocation.oAddress.street + " " + 
+                                          this.businessDetails.currentLocation.oAddress.houseNumber + " " + 
+                                          this.businessDetails.currentLocation.oAddress.houseNumberSuffix + " ,  " + 
+                                          this.businessDetails.currentLocation.oAddress.postalCode + " " + 
+                                          this.businessDetails.currentLocation.oAddress.city;
+    this.businessDetails.sAddressline2 = this.businessDetails.currentLocation.oAddress.country; 
 
 
     this.getPrintSettings(true)
@@ -613,11 +621,20 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     console.log(this.transactionItems);
     const giftCardPayment = this.allPaymentMethod.find((o) => o.sName === 'Giftcards');
     this.saveInProgress = true;
-    const changeAmount = this.getUsedPayMethods(true) - this.getTotals('price')
-    console.log('changeAmount', changeAmount);
+    const nTotalToPay = this.getTotals('price');
+    const nEnteredAmountTotal = this.getUsedPayMethods(true);
+
+    if (nTotalToPay < 0) {
+      let nDiff = parseFloat((nTotalToPay - nEnteredAmountTotal).toFixed(2));
+      if(nDiff < -0.02 || nDiff > 0.02) {
+        this.toastrService.show({ type: 'warning', text: `We do not allow prepayment on negative transactions and also we do not support negative change money.`});
+        this.saveInProgress = false;
+        return;
+      }
+    }
+    const changeAmount = nEnteredAmountTotal - nTotalToPay
     this.dialogService.openModal(TerminalDialogComponent, { cssClass: 'modal-lg', context: { payments: this.payMethods, changeAmount } })
       .instance.close.subscribe((payMethods:any) => {
-        console.log(618, payMethods)
         if (!payMethods) {
           this.saveInProgress = false;
           this.clearPaymentAmounts();
@@ -653,7 +670,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
           const oDialogComponent: DialogComponent = this.dialogService.openModal(TransactionActionDialogComponent, {
             cssClass: 'modal-lg', hasBackdrop: true, closeOnBackdropClick: true, closeOnEsc: true,
           }).instance;
-
+          return;
           this.apiService.postNew('cashregistry', '/api/v1/till/transaction', body)
             .subscribe(async (data: any) => {
 
@@ -768,20 +785,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       };
     }
     const aTemplates = _template.data;
-    // const oDialogComponent:DialogComponent = this.dialogService.openModal(TransactionActionDialogComponent, {
-    //   cssClass: 'modal-lg', hasBackdrop: true, closeOnBackdropClick: true, closeOnEsc: true,
-    //   context: {
-    //     transaction: oDataSource,
-    //     printActionSettings: this.printActionSettings,
-    //     printSettings: this.printSettings,
-    //     aUniqueItemTypes: aUniqueItemTypes,
-    //     nRepairCount: nRepairCount,
-    //     nOrderCount: nOrderCount,
-    //     activityItems: this.activityItems,
-    //     aTemplates: aTemplates,
-    //     businessDetails: this.businessDetails
-    //   }
-    // }).instance;
+    
     oDialogComponent.contextChanged.next({
       transaction: oDataSource,
       printActionSettings: this.printActionSettings,
@@ -790,11 +794,11 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       nRepairCount: nRepairCount,
       nOrderCount: nOrderCount,
       activityItems: this.activityItems,
+      activity: this.activity,
       aTemplates: aTemplates,
       businessDetails: this.businessDetails
     });
 
-    // oDialogComponent.context = 
     oDialogComponent.close.subscribe(() => { this.clearAll();  });
     oDialogComponent.triggerEvent.subscribe(() => { this.clearAll();  });
 

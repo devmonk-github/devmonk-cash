@@ -231,7 +231,7 @@ export class ActivityDetailsComponent implements OnInit {
           let createerIndex = this.employeesList.findIndex((employee: any) => employee._id == this.activity.iEmployeeId);
           if (this.createrDetail != -1) {
             this.createrDetail = this.employeesList[createerIndex];
-            this.activity.sEmpFirstName = `Advised By: ${this.createrDetail.sFirstName}`;
+            this.activity.sAdvisedEmpFirstName = this.createrDetail.sFirstName;
           }
         }
 
@@ -489,6 +489,30 @@ export class ActivityDetailsComponent implements OnInit {
     //   this.businessDetails = result.data;
     // }
     oDataSource.businessDetails = this.businessDetails;
+    const aPromises = [];
+    let bBusinessLogo = false, bTemplate = false;
+    if(this.businessDetails?.sBusinessLogoUrl) {
+      oDataSource.sBusinessLogoUrl = this.businessDetails?.sBusinessLogoUrl;
+    } else {
+      aPromises.push(this.getBase64FromUrl(oDataSource?.businessDetails?.sLogoLight).toPromise())
+      bBusinessLogo = true;
+    }
+
+    if(!this.aTemplates?.length) {
+      aPromises.push(this.getTemplate(['repair', 'order', 'repair_alternative', 'giftcard']));
+      bTemplate = true;
+    }
+
+    const aResultPromises: any = await Promise.all(aPromises);
+
+    if(bBusinessLogo) {
+      oDataSource.sBusinessLogoUrl = aResultPromises[0].data;
+      this.businessDetails.sBusinessLogoUrl = aResultPromises[0].data;
+    }
+
+    if (bTemplate) {
+      this.aTemplates = (bBusinessLogo) ? aResultPromises[1].data : aResultPromises[0].data;
+    } 
 
     const template = this.aTemplates.filter((t: any) => t.eType === type)[0];
 
@@ -692,12 +716,30 @@ export class ActivityDetailsComponent implements OnInit {
     const oDataSource = JSON.parse(JSON.stringify(this.activity));
     oDataSource.businessDetails = this.businessDetails;
 
-    const [_logo, _templates]: any = await Promise.all([
-      this.getBase64FromUrl(oDataSource?.businessDetails?.sLogoLight).toPromise(),
-      this.getTemplate(['repair', 'order', 'repair_alternative', 'giftcard'])
-    ]);
-    oDataSource.sBusinessLogoUrl = _logo.data
-    this.aTemplates = _templates.data;
+    const aPromises = [];
+    let bBusinessLogo = false, bTemplate = false;
+    if (this.businessDetails?.sBusinessLogoUrl) {
+      oDataSource.sBusinessLogoUrl = this.businessDetails?.sBusinessLogoUrl;
+    } else {
+      aPromises.push(this.getBase64FromUrl(oDataSource?.businessDetails?.sLogoLight).toPromise())
+      bBusinessLogo = true;
+    }
+
+    if (!this.aTemplates?.length) {
+      aPromises.push(this.getTemplate(['repair', 'order', 'repair_alternative', 'giftcard']));
+      bTemplate = true;
+    }
+
+    const aResultPromises: any = await Promise.all(aPromises);
+
+    if (bBusinessLogo) {
+      oDataSource.sBusinessLogoUrl = aResultPromises[0].data;
+      this.businessDetails.sBusinessLogoUrl = aResultPromises[0].data;
+    }
+
+    if (bTemplate) {
+      this.aTemplates = (bBusinessLogo) ? aResultPromises[1].data : aResultPromises[0].data;
+    }
 
 
     const template = this.aTemplates.filter((t: any) => t.eType === 'order')[0];
@@ -720,17 +762,18 @@ export class ActivityDetailsComponent implements OnInit {
       sLandLine: this.customer?.oPhone?.sLandLine || '',
     };
 
-    const sBarcodeURI = this.generateBarcodeURI(false, oDataSource.sNumber);
-    oDataSource.sBarcodeURI = sBarcodeURI;
-    
+    const sActivityBarcodeURI = this.generateBarcodeURI(false, oDataSource.sNumber);
+    oDataSource.sActivityBarcodeURI = sActivityBarcodeURI;
 
-
-    oDataSource.aTransactionItems = oDataSource.activityitems;
+    // oDataSource.aTransactionItems = oDataSource.activityitems;
     oDataSource.sActivityNumber = oDataSource.sNumber;
-    oDataSource.aTransactionItems.forEach((item: any) => {
+    let nTotalPaidAmount = 0;
+    oDataSource.activityitems.forEach((item: any) => {
+      nTotalPaidAmount += item.nPaidAmount;
       item.sActivityItemNumber = item.sNumber;
       item.sOrderDescription = item.sProductName + '\n' + item.sDescription;
     });
+    oDataSource.nTotalPaidAmount = nTotalPaidAmount;
 
     this.sendForReceipt(oDataSource, template, oDataSource.sNumber);
     this.bActivityPdfGenerationInProgress = false;
