@@ -513,7 +513,7 @@ export class TransactionAuditUiPdfService {
                 nOverallTotalVatAmount += nTotalVatAmount;
 
                 texts.push([
-                    { text: this.translations['TOTAL_OF_VAT_RATE'] + oItem?.nVat + '%', style: ['td', 'bold'] },
+                    { text: this.translations['TOTAL_OF_VAT_RATE'] + ' '+ oItem?.nVat + '%', style: ['td', 'bold'] },
                     { text: parseFloat(nTotalRevenue.toFixed(2)), style: ['td', 'bold'] },
                     { text: parseFloat(nTotalPurchaseValue.toFixed(2)), style: ['td', 'bold'] },
                     { text: parseFloat(nTotalProfit.toFixed(2)), style: ['td', 'bold'] },
