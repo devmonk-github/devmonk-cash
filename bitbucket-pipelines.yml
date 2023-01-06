@@ -39,7 +39,7 @@ pipelines:
           script:
           - apt-get update -y
           - apt-get install zip -y
-          - rm -rf cash-register/dist
+          - rm -rf dist
           - mkdir compress
           - zip -r compress/prismanote-app-cash-register.zip cash-register
           - echo $(ls)
