@@ -22,7 +22,7 @@
                     </span>
 
                     <div class="card-body">
-                        
+
                         <div *ngIf="bShowOrderDownload">
                             <button class="btn btn-primary" (click)="downloadReceipt($event)">
                                 {{ 'DOWNLOAD' | translate }}
@@ -79,17 +79,19 @@
 
                         <div class="d-flex flex-wrap py-5">
                             <div class="flex-equal me-5">
-                             {{ 'CREATER_DETAIL' | translate}}
-                      
-                             <div class="d-flex fs-6 ms-1 my-1">
-                                <div class="align-items-center">                                 
-                                    <img alt="Logo"
-                                    *ngIf="createrDetail?.sFirstName && (!createrDetail?.sAvatar  || createrDetail.sAvatar == '')"
-                                    src="https://prismanote.com/public/prismanote.png" class="createrImage">
-                                  <img alt="Logo" *ngIf="createrDetail?.sAvatar" [src]="createrDetail.sAvatar" class="createrImage">                                                      
-                                  <span> {{createrDetail?.sFirstName || ''}} {{createrDetail?.sLastName || ''}} </span>
-                                    </div>   
-                                    </div>                                   
+                                {{ 'CREATER_DETAIL' | translate}}
+
+                                <div class="d-flex fs-6 ms-1 my-1">
+                                    <div class="align-items-center">
+                                        <img alt="Logo"
+                                            *ngIf="createrDetail?.sFirstName && (!createrDetail?.sAvatar  || createrDetail.sAvatar == '')"
+                                            src="https://prismanote.com/public/prismanote.png" class="createrImage">
+                                        <img alt="Logo" *ngIf="createrDetail?.sAvatar" [src]="createrDetail.sAvatar"
+                                            class="createrImage">
+                                        <span> {{createrDetail?.sFirstName || ''}} {{createrDetail?.sLastName || ''}}
+                                        </span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -168,10 +170,12 @@
                                                 </div>
                                                 <div class="row mt-2">
                                                     <div class="col-6">
-                                                        {{"ALREADY_PAID" | translate}}: {{activity.nPaidAmount | currency:tillService.currency}}
+                                                        {{"ALREADY_PAID" | translate}}: {{activity.nPaidAmount |
+                                                        currency:tillService.currency}}
                                                     </div>
                                                     <div class="col-6">
-                                                        {{"STILL_TO_PAY"}}: {{(activity.nTotalAmount - activity.nPaidAmount) | currency:tillService.currency}}
+                                                        {{"STILL_TO_PAY" | translate}}: {{(activity.nTotalAmount -
+                                                        activity.nPaidAmount) | currency:tillService.currency}}
                                                     </div>
                                                 </div>
                                             </div>
@@ -186,9 +190,9 @@
                                                 </span>
 
                                                 <span class="btn btn-primary btn-icon fs-bold" role="button">
-                                                    <div class="btn btn-icon show menu-dropdown" data-kt-menu-trigger="click"
-                                                        data-kt-menu-attach="parent" data-kt-menu-placement="bottom-end"
-                                                        data-kt-menu-flip="bottom">
+                                                    <div class="btn btn-icon show menu-dropdown"
+                                                        data-kt-menu-trigger="click" data-kt-menu-attach="parent"
+                                                        data-kt-menu-placement="bottom-end" data-kt-menu-flip="bottom">
                                                         <span class="svg-icon svg-icon-2 m-0">
                                                             <svg xmlns="http://www.w3.org/2000/svg" width="24"
                                                                 height="24" viewBox="0 0 24 24" fill="none">
@@ -487,7 +491,8 @@
                                                         <tr *ngFor='let receipt of activity.receipts'>
                                                             <td>{{receipt.sTransactionNumber}}</td>
                                                             <td>{{receipt.dCreatedDate | date: 'medium'}}</td>
-                                                            <td>{{receipt.nPaymentAmount | currency: tillService.currency}}</td>
+                                                            <td>{{receipt.nPaymentAmount | currency:
+                                                                tillService.currency}}</td>
                                                             <ng-container *ngIf="from != 'transaction-details'">
                                                                 <td>
                                                                     <div class="d-flex align-items-center">
@@ -508,51 +513,58 @@
                                         <div class="col-3">
                                             <div class="row mb-6">
                                                 <div class="col-12">
-                                            <div *ngIf="!activity?.aImage?.length">
-                                                {{"NO_IMAGES" | translate}}
-                                            </div>
-                                            <div class="d-flex">
-                                                <div class="image-input p-1 d-flex"
-                                                    *ngFor="let image of activity.aImage; let i = index"
-                                                    data-kt-image-input="true"
-                                                    style="background-image: url('assets/media/svg/avatars/blank.svg')">
-                                                    <div class="image-input-wrapper w-100px h-100px"
-                                                        style="background-image: url(assets/media/avatars/300-1.jpg)">
-                                                        <img src={{image}} width="100px" height="100px">
+                                                    <div *ngIf="!activity?.aImage?.length">
+                                                        {{"NO_IMAGES" | translate}}
                                                     </div>
-                                                    <div class="mt-2 ">
-                                                        <div data-kt-image-input-action="reorder" class="d-flex">
-                                                            <button
-                                                                class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow"
-                                                                data-kt-image-input-action="remove"
-                                                                data-bs-toggle="tooltip" title="Remove image">
-                                                                <i class="bi bi-x fs-2"></i>
-                                                            </button>
+                                                    <div class="d-flex">
+                                                        <div class="image-input p-1 d-flex"
+                                                            *ngFor="let image of activity.aImage; let i = index"
+                                                            data-kt-image-input="true"
+                                                            style="background-image: url('assets/media/svg/avatars/blank.svg')">
+                                                            <div class="image-input-wrapper w-100px h-100px"
+                                                                style="background-image: url(assets/media/avatars/300-1.jpg)">
+                                                                <img src={{image}} width="100px" height="100px">
+                                                            </div>
+                                                            <div class="mt-2 ">
+                                                                <div data-kt-image-input-action="reorder"
+                                                                    class="d-flex">
+                                                                    <button
+                                                                        class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow"
+                                                                        data-kt-image-input-action="remove"
+                                                                        data-bs-toggle="tooltip" title="Remove image">
+                                                                        <i class="bi bi-x fs-2"></i>
+                                                                    </button>
+                                                                </div>
+
+                                                            </div>
+
+
                                                         </div>
-
                                                     </div>
-
-
                                                 </div>
-                                            </div>
-                                            </div>
                                             </div>
                                             <div class="row mb-6" *ngIf="activity.oType.eKind == 'order'">
                                                 <div class="col-12">
-                                                {{'PRODUCT_SELECTED' | translate}}
+                                                    {{'PRODUCT_SELECTED' | translate}}
                                                 </div>
                                                 <div class="col-12">
                                                     <label>{{'PRODUCT_NUMBER' | translate}} : </label>
-                                                 <span *ngIf="activity?.iBusinessProductId">{{activity?.sProductNumber}} </span>
-                                                 <span *ngIf="activity?.iBusinessProductId == undefined">{{'NO_PRODUCT_SELECTED' | translate}} </span>
+                                                    <span
+                                                        *ngIf="activity?.iBusinessProductId">{{activity?.sProductNumber}}
+                                                    </span>
+                                                    <span
+                                                        *ngIf="activity?.iBusinessProductId == undefined">{{'NO_PRODUCT_SELECTED'
+                                                        | translate}} </span>
                                                 </div>
                                                 <div class="col-12">
-                                                <label>{{'ARTICLE_DETAIL' | translate}} : </label>
-                                                 {{activity?.sArticleNumber}} - {{activity?.sArticleName}}
+                                                    <label>{{'ARTICLE_DETAIL' | translate}} : </label>
+                                                    {{activity?.sArticleNumber}} - {{activity?.sArticleName}}
                                                 </div>
-                                             <div class="col-12">
-                                               <button class="btn btn-success" (click)="AssignOrderProduct(activity , index)"> {{'ADD / CHANGE' | translate}}</button>
-                                            </div>
+                                                <div class="col-12">
+                                                    <button class="btn btn-success"
+                                                        (click)="AssignOrderProduct(activity , index)"> {{'ADD / CHANGE'
+                                                        | translate}}</button>
+                                                </div>
                                             </div>
 
                                         </div>
@@ -805,7 +817,7 @@
                                                         tillService.currency}}
                                                     </div>
                                                     <div class="col-6">
-                                                        {{"STILL_TO_PAY"}}: {{(activity.nTotalAmount -
+                                                        {{"STILL_TO_PAY" | translate}}: {{(activity.nTotalAmount -
                                                         activity.nPaidAmount)
                                                         |
                                                         currency:
@@ -1124,7 +1136,8 @@
                                                         <tr *ngFor='let receipt of activity.receipts'>
                                                             <td>{{receipt.sTransactionNumber}}</td>
                                                             <td>{{receipt.dCreatedDate | date: 'medium'}}</td>
-                                                            <td>{{receipt.nPaymentAmount | currency: tillService.currency}}</td>
+                                                            <td>{{receipt.nPaymentAmount | currency:
+                                                                tillService.currency}}</td>
                                                             <ng-container *ngIf="from != 'transaction-details'">
                                                                 <td>
                                                                     <div class="d-flex align-items-center">
@@ -1461,7 +1474,7 @@
                                                         tillService.currency}}
                                                     </div>
                                                     <div class="col-6">
-                                                        {{"STILL_TO_PAY"}}: {{(activity.nTotalAmount -
+                                                        {{"STILL_TO_PAY" | translate}}: {{(activity.nTotalAmount -
                                                         activity.nPaidAmount)
                                                         |
                                                         currency:
@@ -1780,7 +1793,8 @@
                                                         <tr *ngFor='let receipt of activity.receipts'>
                                                             <td>{{receipt.sTransactionNumber}}</td>
                                                             <td>{{receipt.dCreatedDate | date: 'medium'}}</td>
-                                                            <td>{{receipt.nPaymentAmount | currency: tillService.currency}}</td>
+                                                            <td>{{receipt.nPaymentAmount | currency:
+                                                                tillService.currency}}</td>
                                                             <ng-container *ngIf="from != 'transaction-details'">
                                                                 <td>
                                                                     <div class="d-flex align-items-center">
