@@ -70,6 +70,7 @@ export class TransactionItemsDetailsComponent implements OnInit {
     
     ngOnInit(): void {
       // console.log('TransactionItemsDetailsComponent 1');
+      this.apiService.setToastService(this.toastrService);
       this.itemType = this.dialogRef.context.itemType;
       this.transaction = this.dialogRef.context.transaction;
       this.selectedId = this.dialogRef.context.selectedId;

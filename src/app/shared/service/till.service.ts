@@ -131,6 +131,9 @@ export class TillService {
       payments: this.getUsedPayMethods(false, payMethods),
       redeemedLoyaltyPoints,
     };
+    
+    body.payments.forEach((payment: any) => payment.amount = parseFloat(payment.amount.toFixed(2)))
+
     if (customer && customer._id) {
       body.oTransaction.iCustomerId = customer._id;
       body.oTransaction.oCustomer = {

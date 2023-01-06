@@ -153,7 +153,7 @@ export class ActivityDetailsComponent implements OnInit {
 
 
   async ngOnInit() {
-
+    this.apiService.setToastService(this.toastService);
     this.routerSub = this.routes.events.subscribe((event) => {
       if (event instanceof NavigationEnd && !(event.url.startsWith('/business/activity-items') || event.url.startsWith('/business/services'))) {
         this.routerSub.unsubscribe();
