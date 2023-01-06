@@ -25,7 +25,6 @@ pipelines:
           name: Deploy to S3
           script:
           - echo $(pwd)
-          - echo $(ls cash-register)
           - pipe: atlassian/aws-s3-deploy:1.1.0
             variables:
               AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID # Optional if already defined in the context or OIDC used.
