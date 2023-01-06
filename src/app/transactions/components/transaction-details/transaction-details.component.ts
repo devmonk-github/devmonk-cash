@@ -124,7 +124,7 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
 
     if (_empResult?.data) {
       this.transaction.createrDetail = _empResult.data;
-      this.transaction.sAdvisedEmpFirstName = `${this.transaction.createrDetail.sFirstName}`;
+      this.transaction.sAdvisedEmpFirstName = this.transaction.createrDetail?.sFirstName || 'a';
     }
     console.log(this.transaction)
   }

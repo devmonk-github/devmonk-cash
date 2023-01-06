@@ -103,7 +103,7 @@ export class TransactionActionDialogComponent implements OnInit {
       oDataSource.sBarcodeURI = this.generateBarcodeURI(false, oDataSource.sNumber);
       oDataSource.oCustomer = this.transaction.oCustomer
       oDataSource.businessDetails = this.businessDetails;
-      oDataSource.sAdvisedEmpFirstName = this.transaction.sAdvisedEmpFirstName;
+      oDataSource.sAdvisedEmpFirstName = this.transaction?.sAdvisedEmpFirstName || 'a';
       oDataSource.sBusinessLogoUrl = this.transaction.sBusinessLogoUrl
       pdfTitle = oDataSource.sNumber;
       
@@ -134,7 +134,7 @@ export class TransactionActionDialogComponent implements OnInit {
       oDataSource.businessDetails = this.businessDetails;
       oDataSource.sBusinessLogoUrl = this.transaction.sBusinessLogoUrl
       oDataSource.sActivityBarcodeURI = this.transaction.sActivityBarcodeURI
-      oDataSource.sAdvisedEmpFirstName = this.transaction.sAdvisedEmpFirstName;
+      oDataSource.sAdvisedEmpFirstName = this.transaction?.sAdvisedEmpFirstName || 'a';
 
       let nTotalPaidAmount = 0;
       oDataSource.activityitems.forEach((item: any) => {

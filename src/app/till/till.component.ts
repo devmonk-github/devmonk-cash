@@ -771,7 +771,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       this.getBase64FromUrl(oDataSource?.businessDetails?.sLogoLight),
     ]);
 
-    oDataSource.sAdvisedEmpFirstName = this.employee?.sFirstName ? this.employee.sFirstName : 'a';
+    oDataSource.sAdvisedEmpFirstName = this.employee?.sFirstName || 'a';
     oDataSource.sBusinessLogoUrl = _oLogoData.data;
     if (oDataSource.oCustomer && oDataSource.oCustomer.bCounter === true) {
       oDataSource.oCustomer = {};
@@ -823,7 +823,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       //use two column layout
       const template = aTemplates.filter((template: any) => template.eType === 'repair')[0];
       oDataSource = this.activityItems.filter((item: any) => item.oType.eKind === 'repair')[0];
-      oDataSource.sAdvisedEmpFirstName = this.employee.sFirstName;
+      oDataSource.sAdvisedEmpFirstName = this.employee?.sFirstName || 'a';
       const aTemp = oDataSource.sNumber.split("-");
       oDataSource.sPartRepairNumber = aTemp[aTemp.length - 1];
       oDataSource.sBarcodeURI = this.generateBarcodeURI(false, oDataSource.sNumber);
@@ -835,7 +835,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       // use repair_alternative laYout
       const template = aTemplates.filter((template: any) => template.eType === 'repair_alternative')[0];
       oDataSource = this.activityItems.filter((item: any) => item.oType.eKind === 'repair');
-      oDataSource.sAdvisedEmpFirstName = this.employee.sFirstName;
+      oDataSource.sAdvisedEmpFirstName = this.employee?.sFirstName || 'a';
       oDataSource.forEach((data: any) => {
         data.sBarcodeURI = this.generateBarcodeURI(false, data.sNumber);
         data.sBusinessLogoUrl = _oLogoData.data;

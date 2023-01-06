@@ -231,7 +231,7 @@ export class ActivityDetailsComponent implements OnInit {
           let createerIndex = this.employeesList.findIndex((employee: any) => employee._id == this.activity.iEmployeeId);
           if (this.createrDetail != -1) {
             this.createrDetail = this.employeesList[createerIndex];
-            this.activity.sAdvisedEmpFirstName = this.createrDetail.sFirstName;
+            this.activity.sAdvisedEmpFirstName = this.createrDetail?.sFirstName || 'a';
           }
         }
 
@@ -532,10 +532,10 @@ export class ActivityDetailsComponent implements OnInit {
       const employeeIndex: any = this.employeesList.findIndex((employee: any) => employee._id == oDataSource.iEmployeeId);
       if (employeeIndex != -1) {
         oDataSource.sEmployeeName = this.employeesList[employeeIndex]['sName'];
-        if(type==='repair')
-          oDataSource.sAdvisedEmpFirstName = `${this.employeesList[employeeIndex]['sFirstName']}`;
-        else
-          oDataSource.sAdvisedEmpFirstName = `Advised By: ${this.employeesList[employeeIndex]['sFirstName']}`;
+        oDataSource.sAdvisedEmpFirstName = this.employeesList[employeeIndex]['sFirstName'] || 'a';
+        // if(type==='repair')
+        // else
+        //   oDataSource.sAdvisedEmpFirstName = `Advised By: ${this.employeesList[employeeIndex]['sFirstName']}`;
       }
     }
     oDataSource.sBarcodeURI = sBarcodeURI;
