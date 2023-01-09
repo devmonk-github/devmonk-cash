@@ -7,6 +7,7 @@ import { ApiService } from './api.service';
 import * as _ from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
 import * as _moment from 'moment';
+import { TranslateService } from '@ngx-translate/core';
 const moment = (_moment as any).default ? (_moment as any).default : _moment;
 @Injectable({
   providedIn: 'root'
@@ -17,7 +18,8 @@ export class TillService {
 
   iBusinessId = localStorage.getItem('currentBusiness');
   constructor(
-    private apiService: ApiService) { }
+    private apiService: ApiService,
+    private translateService: TranslateService) { }
 
   selectCurrency(oLocation: any) {
     // console.log('oLocation? currency selection', oLocation?.eCurrency)
@@ -490,6 +492,9 @@ export class TillService {
     dataObject.total = 0;
     let total = 0, totalAfterDisc = 0, totalVat = 0, totalDiscount = 0, totalSavingPoints = 0, totalRedeemedLoyaltyPoints = 0;
     dataObject.aTransactionItems.forEach((item: any, index: number) => {
+      if(item.oType.eKind==='giftcard') {
+        item.sDescription = this.translateService.instant('VOUCHER_SALE');
+      }
       item.bRegular = !item.oType.bRefund;
       if (item?.oArticleGroupMetaData?.oName && Object.keys(item?.oArticleGroupMetaData?.oName)?.length) {
         item.sArticleGroupName = (item?.oArticleGroupMetaData?.oName[language] || item?.oArticleGroupMetaData?.oName['en'] || item?.oArticleGroupMetaData?.oName['nl'] || '') + ' ';
