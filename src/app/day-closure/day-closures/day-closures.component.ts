@@ -120,6 +120,8 @@ export class DayClosuresComponent implements OnInit, OnDestroy {
   }
 
   selectedLocationChanged(){
+    this.aWorkStation = [];
+    this.oSelectedWorkStation = undefined;
     this.aWorkStation = this.aWorkStationList.filter((workstation:any)=> this.aSelectedLocation.includes(workstation.iLocationId));
   }
 

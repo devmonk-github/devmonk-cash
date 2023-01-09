@@ -10,7 +10,7 @@
                     <label class="fs-6 form-label fw-bolder text-dark">{{'LOCATION' | translate}}</label>
                     <div class="w-100" *ngIf="aLocation?.length">
                         <ng-select [multiple]="true" [items]="aLocation" [(ngModel)]="aSelectedLocation" (ngModelChange)="selectedLocationChanged()"
-                            name="iLocationId" bindValue="_id" bindLabel="sName" placeholder="Select" required
+                            name="iLocationId" bindValue="_id" bindLabel="sName" placeholder="{{'SELECT' | translate}}" required
                             [closeOnSelect]="false">
                             <ng-template ng-option-tmp let-item="item" let-item$="item$" let-index="index">
                                 <input id="item-{{index}}" type="checkbox" name="item-{{index}}"
@@ -22,8 +22,8 @@
                 </div>
                 <div class="col-md-4">
                     <label class="fs-6 form-label fw-bolder text-dark">{{'WORK_STATION' | translate}}</label>
-                    <ng-select class="form-control form-control-solid p-0" [(ngModel)]="oSelectedWorkStation"
-                        [clearable]="false">
+                    <ng-select class="form-control p-0" [(ngModel)]="oSelectedWorkStation" placeholder="{{'SELECT' | translate}}"
+                        [clearable]="true">
                         <ng-option *ngFor="let oWorkStation of aWorkStation" [value]="oWorkStation">
                             {{oWorkStation.sName}}
                         </ng-option>
