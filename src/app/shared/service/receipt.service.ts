@@ -489,23 +489,32 @@ export class ReceiptService {
     }
 
     addRow(dataRow: any, row: any, dataSource: any, tableWidths: any) {
-        let html = row.html;
-        let bCheck;
-        if (row?.conditionalHtml) {
-            bCheck = this.checkCondition(row.conditions, dataSource);
-            html = (bCheck) ? row.htmlIf : row.htmlElse
-        }
+        if (row?.html || row?.conditionalHtml) {
+            let html = row.html;
+            let bCheck;
+            if (row?.conditionalHtml) {
+                bCheck = this.checkCondition(row.conditions, dataSource);
+                html = (bCheck) ? row.htmlIf : row.htmlElse
+            }
 
-        let text = this.pdfService.replaceVariables(html, dataSource) || html;
-        // console.log({ text }, html, dataSource);
-        let obj: any = { text: text };
-        if(text?.indexOf('<strike>') != -1) {
-            obj = this.addStrikenData(obj,text,row);
-        }
+            let text = this.pdfService.replaceVariables(html, dataSource) || html;
+            // console.log({ text }, html, dataSource);
+            let obj: any = { text: text };
+            if (text?.indexOf('<strike>') != -1) {
+                obj = this.addStrikenData(obj, text, row);
+            }
 
-        if (row?.alignment) obj.alignment = row.alignment;
-        if (row?.styles) obj = { ...obj, ...row.styles };
-        dataRow.push(obj);
+            if (row?.alignment) obj.alignment = row.alignment;
+            if (row?.styles) obj = { ...obj, ...row.styles };
+            dataRow.push(obj);
+        } else if (row?.type) {
+            if (row?.type === 'stack') {
+                let obj = {
+                    "stack" : this.processStack(row, dataSource)
+                };
+                dataRow.push(obj);
+            }
+        }
     }
 
     processStack(item: any, object?: any) {
@@ -514,15 +523,38 @@ export class ReceiptService {
             if (el?.type === 'image') {
                 stack.push(this.addImage(el))
             } else {
-                let html = el.html;
-                let text = this.pdfService.replaceVariables(html, (object) ? this.oOriginalDataSource[object] : this.oOriginalDataSource) || html;
-                let obj: any = { text: text };
-                if (el?.alignment) obj.alignment = el.alignment;
-                if (el?.width) obj.width = el.width;
-                if (el?.styles) {
-                    obj = { ...obj, ...el.styles }
+                let bTestResult:boolean = true;
+                if (el?.ifAnd) {
+                    bTestResult = el.ifAnd.every((rule: any) => {
+                        let field = (object) ? object[rule.field] : this.oOriginalDataSource[rule.field];
+                        return this.comparators[rule.compare](field, rule.target)
+                    });
+                    if (bTestResult) {
+                        let text = this.pdfService.replaceVariables(el.html, (object) ? object : this.oOriginalDataSource)
+                        stack.push({ text: text, alignment: el?.alignment });
+                    }
+
+                } else if (el?.ifOr) {
+                    bTestResult = el.ifOr.some((rule: any) => {
+                        let field = (object) ? object[rule.field] : this.oOriginalDataSource[rule.field];
+                        return (field) ? this.comparators[rule.compare](field, rule.target) : false;
+                    })
+                    if (bTestResult) {
+                        let text = this.pdfService.replaceVariables(el.html, (object) ? object : this.oOriginalDataSource)
+                        stack.push({ text: text, alignment: el?.alignment });
+                    }
+                } else {
+                    let text = this.pdfService.replaceVariables(el.html, (object) ? object : this.oOriginalDataSource) || '';
+                    if(text.trim() != '') {
+                        let obj: any = { text: text };
+                        if (el?.alignment) obj.alignment = el.alignment;
+                        if (el?.width) obj.width = el.width;
+                        if (el?.styles) {
+                            obj = { ...obj, ...el.styles }
+                        }
+                        stack.push(obj)
+                    }
                 }
-                stack.push(obj)
             }
         });
         return stack;
