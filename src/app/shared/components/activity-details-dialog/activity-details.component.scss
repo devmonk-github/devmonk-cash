@@ -132,11 +132,11 @@
   background-color: #f5f8fa;
 }
 
-.printer-button {
-  line-break: anywhere;
-}
+// .printer-button {
+//   line-break: anywhere;
+// }
 
-.printer-button-span{
+.btn-group.w-100 .btn:nth-child(2){
   height: inherit;
 }
 
@@ -144,4 +144,18 @@
   height: 32px;
   border-radius: 50%;
   margin-right: 15px;
+}
+
+.btn-group.w-100 .btn:nth-child(1){
+  display:flex;
+  align-items: center;
+}
+
+.btn-icon {
+  max-width: calc(1.5em + 1.5rem + 2px);
+}
+
+.indicator-label {
+  text-align: center;
+  width: 100%;
 }

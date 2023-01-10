@@ -593,6 +593,7 @@ export class ActivityDetailsComponent implements OnInit {
   }
 
   fetchCustomer(customerId: any, index: number) {
+    if(!customerId) return;
     this.apiService.getNew('customer', `/api/v1/customer/${customerId}?iBusinessId=${this.iBusinessId}`).subscribe(
       (result: any) => {
         if (index > -1) this.transactions[index].customer = result;
@@ -627,7 +628,7 @@ export class ActivityDetailsComponent implements OnInit {
       this.totalPrice += obj.nPaymentAmount;
       this.quantity += obj.bRefund ? (- obj.nQuantity) : obj.nQuantity
       if (obj.iStockLocationId) this.setSelectedBusinessLocation(obj.iStockLocationId, i)
-      this.fetchCustomer(obj.iCustomerId, i);
+      this.fetchCustomer(obj?.iCustomerId, i);
     }
     setTimeout(() => {
       MenuComponent.reinitialization();
