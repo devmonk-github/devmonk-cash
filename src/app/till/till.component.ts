@@ -1133,7 +1133,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
           dUpdatedDate: data?.dUpdatedDate.toString(),
           sNumber: data?.sNumber.toString()
         })
-        this.toastrService.show({ type: 'success', text: 'Transaction parked!' })
+        this.toastrService.show({ type: 'success', text: this.translateService.instant('TRANSACTION_PARKED') })
 
       }, err => {
         this.toastrService.show({ type: 'danger', text: err.message });

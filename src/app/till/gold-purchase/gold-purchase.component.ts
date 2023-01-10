@@ -54,8 +54,8 @@ export class GoldPurchaseComponent implements OnInit {
   showDeleteBtn: boolean = false;
   aProperty: any = [];
   typeArray = [
-    {key: 'regular', value: false}, 
-    { key: 'return', value:true }
+    { key: 'regular', value: false, title: 'REGULAR' },
+    { key: 'return', value: true, title: 'RETURN' }
   ];
   constructor(
     private priceService: PriceService,

@@ -23,8 +23,8 @@ export class ProductComponent implements OnInit{
   faArrowDown = faArrowDown;
   faArrowUp = faArrowUp;
   typeArray = [
-    { key: 'regular', value: false },
-    { key: 'return', value: true }
+    { key: 'regular', value: false, title: 'REGULAR' },
+    { key: 'return', value: true, title: 'RETURN' }
   ];
   collapsedBtn: Boolean = false;
   totalDiscount = 0;
