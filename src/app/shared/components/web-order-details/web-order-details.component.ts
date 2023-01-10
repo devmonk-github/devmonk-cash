@@ -19,7 +19,17 @@ export class WebOrderDetailsComponent implements OnInit {
   dialogRef: DialogComponent;
   activityItems: Array<any> = [];
   business: any;
-  statuses = ['new', 'processing', 'cancelled', 'completed', 'refund', 'refundInCashRegister', 'payInCashRegister'];
+  statuses =[
+    {key:'NEW' , value:'new'},
+    {key:'PROCESSING' , value:'processing'},
+    {key:'CANCELLED' , value:'cancelled'},
+    {key:'COMPLETED' , value:'completed'},
+    {key:'REFUND' , value:'refund'},
+    {key:'REFUND_IN_CASH_REGISTER' , value:'refundInCashRegister'},
+    {key:'PAY_IN_CASH_REGISTER' , value:'payInCashRegister'}
+  ]
+
+  // statuses = ['new', 'processing', 'cancelled', 'completed', 'refund', 'refundInCashRegister', 'payInCashRegister'];
   statusesForItems = ['new', 'processing', 'cancelled', 'completed'];
   FeStatus = '';
   carriers = ['PostNL', 'DHL', 'DPD', 'bpost', 'other'];
@@ -89,7 +99,7 @@ export class WebOrderDetailsComponent implements OnInit {
     this.activity = this.dialogRef.context.activity;
     this.selectedLanguage = localStorage.getItem('language')?.toString() || navigator.language.substring(0, 2);
     if (this.from == 'web-orders' || this.from == 'web-reservations') {
-      const index = this.statuses.indexOf('cancelled');
+      const index = this.statuses.findIndex((status:any)=>status.value == 'cancelled');
       if (index > -1) this.statuses.splice(index, 1);
 
       const index2 = this.statusesForItems.indexOf('cancelled');

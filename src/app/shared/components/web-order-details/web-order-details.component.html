@@ -62,7 +62,7 @@
                         <ng-select name="status" id="status" class="form-select" [(ngModel)]="activity.eActivityStatus"
                             placeholder="{{'ORDER_STATUS' | translate}}"
                             (ngModelChange)="changeStatusForAll(activity.eActivityStatus)">
-                            <ng-option *ngFor="let status of statuses" [value]="status">{{status}}</ng-option>
+                            <ng-option *ngFor="let status of statuses" [value]="status.value">{{status.key | translate}}</ng-option>
                         </ng-select>
                     </div>
                     <label class="col-md-4 mt-3 mt-3 text-muted">{{"STATUS" | translate}} : </label>
