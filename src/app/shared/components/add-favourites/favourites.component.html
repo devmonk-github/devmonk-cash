@@ -99,7 +99,10 @@
                 <div class="row mb-5">
                     <label> {{ "PRODUCT_NAME" | translate}}</label>
                     <input type="text" class="form-control" [placeholder]="'ENTER_NAME(ALIAS)' | translate"
-                        [(ngModel)]="newSelectedProduct.sName">
+                        [(ngModel)]="newSelectedProduct.sName" (ngModelChange)="validate()">
+                        <span class="err-msg" *ngIf="newSelectedProduct.sName?.length > limit">
+                            {{ 'MAX_LIMIT_REACHED' | translate }} : {{ limit }} {{ 'CHARACTERS' | translate }}
+                        </span>
                 </div>
                 <div class="row mb-5">
                     <label> {{ "PRICE" | translate}}</label>
@@ -109,9 +112,9 @@
             </div>
         </div>
     </div>
-    <div class="card-footer p-5 text-end align-items-center d-flex">
+    <div class="card-footer p-5 justify-content-end align-items-center d-flex">
         <div *ngIf="creating" class="me-2 spinner-border mx-auto"></div>
-        <button class="btn btn-primary me-2" (click)="create($event)">
+        <button class="btn btn-primary me-2" (click)="create($event)" [disabled]="!bValid">
             <span *ngIf="mode === 'create'">{{'CREATE' | translate}}</span>
             <span *ngIf="mode === 'edit'">{{'SAVE' | translate}}</span>
         </button>

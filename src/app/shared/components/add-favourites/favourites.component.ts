@@ -53,12 +53,15 @@ export class AddFavouritesComponent implements OnInit {
   iLocationId: string = '';
   translation:any =[];
   button?:any;
+  bValid:boolean = false;
+  limit: number = 20;
 
   constructor(
     private viewContainer: ViewContainerRef,
     private apiService: ApiService,
     private toastService: ToastService,
-    private translationService: TranslateService
+    private translateService: TranslateService,
+
   ) {
     const _injector = this.viewContainer.parentInjector;
     this.dialogRef = _injector.get<DialogComponent>(DialogComponent);
@@ -67,10 +70,8 @@ export class AddFavouritesComponent implements OnInit {
   ngOnInit(): void {
     this.business._id = localStorage.getItem('currentBusiness');
     this.iLocationId = localStorage.getItem('currentLocation') || '';
-    const translate=['SUCCESSFULLY_UPDATED'];
-    this.translationService.get(translate).subscribe((res:any)=>{
-      this.translation = res;
-    })
+    this.translation = this.translateService.instant('SUCCESSFULLY_UPDATED');
+      
 
     if(this.mode==='edit') {
       console.log(this.button)
@@ -161,19 +162,29 @@ export class AddFavouritesComponent implements OnInit {
       this.toastService.show({ type: 'warning', text: `Please select a location` });
       return;
     }
-    let _result: any;
+    let _result: any, msg:string = '';
     if (this.mode === 'create') {
       _result = await this.apiService.postNew('cashregistry', '/api/v1/quick-buttons/create', data).toPromise();
+      msg = this.translateService.instant('NEW_QUICK_BUTTON_ADDED')
     } else {
       _result = await this.apiService.putNew('cashregistry', `/api/v1/quick-buttons/${this.newSelectedProduct._id}`, data).toPromise();
+      msg = this.translateService.instant('QUICK_BUTTON_UPDATED')
     }
     event.target.disabled = false;
     this.creating = false;
 
     if (_result.message == 'success') {
       this.close(true);
-      this.toastService.show({ type: 'success', text: `New Quick Button added successfully` });
+      this.toastService.show({ type: 'success', text: msg }); //`New Quick Button added successfully`
+    } else {
+      this.toastService.show({ type: 'success', text: this.translateService.instant('AN_ERROR_OCCURED') });
     }
+  }
+
+  validate() {
+    if(this.newSelectedProduct.sName.length > this.limit) 
+      this.bValid = false;
+    else this.bValid = true;
   }
 
   close(action: boolean) {
