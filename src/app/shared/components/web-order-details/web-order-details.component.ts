@@ -71,6 +71,7 @@ export class WebOrderDetailsComponent implements OnInit {
       'iActivityItemId']
   };
   selectedLanguage: string;
+  bIsSaving: boolean = false;
 
 
   constructor(
@@ -100,7 +101,7 @@ export class WebOrderDetailsComponent implements OnInit {
     if (this.activity?.eActivityStatus != 'completed') this.showDeliverBtn = true;
     this.getPrintSetting();
     this.getBusinessLocations();
-    this.fetchTransactionItems();
+    
     this.fetchTransactionDetails();
 
     const [_printActionSettings, _printSettings]: any = await Promise.all([
@@ -229,17 +230,16 @@ export class WebOrderDetailsComponent implements OnInit {
         if (result.message == "success" && result?.data) {
           this.userDetail = result.data;
           if (this.userDetail.aBusiness) {
-            this.userDetail.aBusiness.map(
-              (business: any) => {
+            this.userDetail.aBusiness.map((business: any) => {
                 if (business._id == this.iBusinessId) {
                   this.business = business;
+
+                  this.fetchTransactionItems();
                 }
               })
           }
         }
-        setTimeout(() => {
-          MenuComponent.reinitialization();
-        }, 200);
+        
       }, (error) => {
         console.log('error: ', error);
       });
@@ -509,7 +509,9 @@ export class WebOrderDetailsComponent implements OnInit {
     this.dialogRef.close.emit(data);
   }
 
-  submit() {
+  submit(event:any) {
+    event.target.disabled = true;
+    this.bIsSaving = true;
   }
 
   getPdfPrintSetting(oFilterBy?: any) {

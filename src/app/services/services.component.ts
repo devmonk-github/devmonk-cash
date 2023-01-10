@@ -121,17 +121,8 @@ export class ServicesComponent implements OnInit, OnDestroy {
     private activatedRoute: ActivatedRoute,
     private toastrService: ToastService,
     private barcodeService: BarcodeService,
-  ) {
-
-
-
-  }
-  ngOnDestroy(): void {
-    console.log('ondestroy services')
-    MenuComponent.clearEverything();
-  }
-
-
+  ) { }
+  
   async ngOnInit(): Promise<void> {
     this.apiService.setToastService(this.toastrService);
     this.barcodeService.barcodeScanned.subscribe((barcode: string) => {
@@ -475,5 +466,10 @@ export class ServicesComponent implements OnInit, OnDestroy {
       .subscribe((result: any) => {
           this.businessDetails = result.data;
         })
+  }
+
+  ngOnDestroy(): void {
+    console.log('ondestroy services')
+    MenuComponent.clearEverything();
   }
 }
