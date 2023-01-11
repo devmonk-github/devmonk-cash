@@ -140,7 +140,7 @@
                                                 <select name="status" id="status"
                                                     class="form-control form-control-solid"
                                                     [(ngModel)]="activity.eActivityItemStatus">
-                                                    <option *ngFor="let type of repairStatus" [value]="type">{{type}}
+                                                    <option *ngFor="let type of repairStatus" [value]="type.value">{{type.key | translate}}
                                                     </option>
                                                 </select>
                                             </div>
@@ -610,7 +610,7 @@
                                                                             [(ngModel)]="activity.iAssigneeId"
                                                                             (search)="searchEmployees($event.term)"
                                                                             class="form-control form-control-solid p-0 w-100 custom"
-                                                                            placeholder="Search employee"
+                                                                            placeholder="{{ 'SEARCH_EMPLOYEE' | translate}}"
                                                                             [minTermLength]="2" [clearable]="false"
                                                                             [isOpen]="filteredEmployees.length > 0"
                                                                             (change)="onEmployeeChange($event , index)">
@@ -643,7 +643,7 @@
                                                                             [(ngModel)]="activity.iBusinessPartnerId"
                                                                             (search)="searchSuppliers($event.term)"
                                                                             class="form-control form-control-solid p-0 w-100 custom"
-                                                                            placeholder="Search repairer"
+                                                                            placeholder="{{'SEARCH_REPAIRER' | translate}}"
                                                                             [minTermLength]="2" [clearable]="false"
                                                                             [isOpen]="supplierOptions.length > 0"
                                                                             (change)="onSupplierChange($event,index)">
@@ -676,7 +676,7 @@
                                                                             [(ngModel)]="activity.iBusinessBrandId"
                                                                             (search)="searchBrands($event.term)"
                                                                             class="form-control form-control-solid p-0 w-100 custom"
-                                                                            placeholder="Search brand"
+                                                                            placeholder="{{'SEARCH_BRAND' | translate }}"
                                                                             [minTermLength]="2" [clearable]="false"
                                                                             [isOpen]="filteredBrands.length > 0"
                                                                             (change)="onBrandChange($event, index)">
@@ -1440,7 +1440,7 @@
                                                 <select name="status" id="status"
                                                     class="form-control form-control-solid"
                                                     [(ngModel)]="activity.eActivityItemStatus">
-                                                    <option *ngFor="let type of repairStatus" [value]="type">{{type}}
+                                                    <option *ngFor="let type of repairStatus" [value]="type.value">{{type.key | translate}}
                                                     </option>
                                                 </select>
                                             </div>
@@ -1934,7 +1934,7 @@
                                                                             [(ngModel)]="activity.iAssigneeId"
                                                                             (search)="searchEmployees($event.term)"
                                                                             class="form-control form-control-solid p-0 w-100 custom"
-                                                                            placeholder="Search employee"
+                                                                            placeholder="{{'SEARCH_EMPLOYEE'| translate }}"
                                                                             [minTermLength]="2" [clearable]="false"
                                                                             [isOpen]="filteredEmployees.length > 0"
                                                                             (change)="onEmployeeChange($event , index)">
@@ -1969,7 +1969,7 @@
                                                                             [(ngModel)]="activity.iBusinessPartnerId"
                                                                             (search)="searchSuppliers($event.term)"
                                                                             class="form-control form-control-solid p-0 w-100 custom"
-                                                                            placeholder="Search repairer"
+                                                                            placeholder="{{'SEARCH_REPAIRER' | translate }}"
                                                                             [minTermLength]="2" [clearable]="false"
                                                                             [isOpen]="supplierOptions.length > 0"
                                                                             (change)="onSupplierChange($event,index)">
@@ -2002,7 +2002,7 @@
                                                                             [(ngModel)]="activity.iBusinessBrandId"
                                                                             (search)="searchBrands($event.term)"
                                                                             class="form-control form-control-solid p-0 w-100 custom"
-                                                                            placeholder="Search brand"
+                                                                            placeholder="{{'SEARCH_BRAND' | translate}}"
                                                                             [minTermLength]="2" [clearable]="false"
                                                                             [isOpen]="filteredBrands.length > 0"
                                                                             (change)="onBrandChange($event, index)">
