@@ -97,7 +97,7 @@ export class ServicesComponent implements OnInit, OnDestroy {
   employees: Array<any> = [];
   workstations: Array<any> = [];
   selectedWorkstations: Array<any> = [];
-  iLocationId: String | null | undefined;
+  iLocationId: string;
   webOrders: Boolean = false;
   isFor = "";
 
@@ -137,7 +137,7 @@ export class ServicesComponent implements OnInit, OnDestroy {
       this.requestParams.eType = ['webshop-revenue'] //, 'webshop-reservation'
     }
     this.businessDetails._id = localStorage.getItem('currentBusiness');
-    this.iLocationId = localStorage.getItem('currentLocation');
+    this.iLocationId = localStorage.getItem('currentLocation') || '';
     this.userType = localStorage.getItem('type');
     this.iBusinessId = localStorage.getItem('currentBusiness');
 
@@ -186,20 +186,21 @@ export class ServicesComponent implements OnInit, OnDestroy {
     return str;
   }
 
-  getBusinessLocations() {
-    return new Promise<any>((resolve, reject) => {
-      this.apiService.getNew('core', '/api/v1/business/user-business-and-location/list')
-        .subscribe((result: any) => {
-          if (result.message == "success" && result?.data) {
-            resolve(result);
-          }
-          resolve(null);
-        }, (error) => {
-          resolve(error);
-          console.error('error: ', error);
-        })
-    })
-  }
+  // getBusinessLocations() {
+  //   // return new Promise<any>((resolve, reject) => {
+  //     return this.apiService.getNew('core', '/api/v1/business/user-business-and-location/list')
+  //       // .subscribe((result: any) => {
+  //       //   if (result.message == "success" && result?.data) {
+  //       //     resolve(result);
+  //       //   }
+  //       //   // resolve(null);
+  //       // }
+  //       // , (error) => {
+  //       //   resolve(error);
+  //       //   console.error('error: ', error);
+  //       // })
+  //   // })
+  // }
 
   getLocations() {
     return this.apiService.postNew('core', `/api/v1/business/${this.businessDetails._id}/list-location`, {}).toPromise();
@@ -209,26 +210,39 @@ export class ServicesComponent implements OnInit, OnDestroy {
     return new Promise<void>(async (resolve, reject) => {
       this.iLocationId = sLocationId ?? (localStorage.getItem('currentLocation') ?? '')
       try {
-        const oBusinessLocation: any = await this.getBusinessLocations()
-        let oNewLocation: any
-        let bIsCurrentBIsWebshop = false
-        for (let k = 0; k < oBusinessLocation?.data?.aBusiness?.length; k++) {
-          const oAllLocations = oBusinessLocation?.data?.aBusiness[k]
-          for (let i = 0; i < oAllLocations?.aLocation?.length; i++) {
-            const l = oAllLocations?.aLocation[i];
-            if (l.bIsWebshop) oNewLocation = l
-            if (l._id.toString() === this.iLocationId) {
-              if (l.bIsWebshop) {
-                bIsCurrentBIsWebshop = true
-                this.iLocationId = l._id.toString()
-                break
-              }
-            }
+        const _aBusinessLocation: any = await this.apiService.getNew('core', '/api/v1/business/user-business-and-location/list').toPromise();
+        if (_aBusinessLocation?.data?.aBusiness?.length) {
+          const aBusiness = _aBusinessLocation.data?.aBusiness.find((business:any)=> business._id === this.iBusinessId)
+          if (aBusiness?.aInLocation?.length){
+            this.iLocationId = aBusiness.aInLocation.find((location: any) => location.bIsWebshop)?._id || this.iLocationId;
           }
         }
-        if (!bIsCurrentBIsWebshop) {
-          this.iLocationId = oNewLocation._id.toString()
-        }
+        // resolve()
+
+        // const aBusinessLocation = _aBusinessLocation.data;
+        // console.log(218, aBusinessLocation)
+        // let oNewLocation: any
+        // let bIsCurrentBIsWebshop = false
+        // for (let k = 0; k < aBusinessLocation?.data?.aBusiness?.length; k++) {
+        //   console.log(222)
+        //   const aAllLocations = aBusinessLocation?.data?.aBusiness[k]
+        //   for (let i = 0; i < aAllLocations?.aLocation?.length; i++) {
+        //     const l = aAllLocations?.aLocation[i];
+        //     if (l.bIsWebshop) oNewLocation = l
+        //     if (l._id.toString() === this.iLocationId) {
+        //       if (l.bIsWebshop) {
+        //         bIsCurrentBIsWebshop = true
+        //         this.iLocationId = l._id.toString()
+        //         break
+        //       }
+        //     }
+        //   }
+        // }
+        // console.log(230, oNewLocation, bIsCurrentBIsWebshop)
+        // if (!bIsCurrentBIsWebshop) {
+        //   this.iLocationId = oNewLocation._id.toString()
+        //   console.log(233, this.iLocationId)
+        // }
         resolve()
       } catch (error) {
         resolve()
@@ -462,10 +476,10 @@ export class ServicesComponent implements OnInit, OnDestroy {
   }
 
   fetchBusinessDetails() {
-    this.apiService.getNew('core', '/api/v1/business/' + this.iBusinessId)
-      .subscribe((result: any) => {
-          this.businessDetails = result.data;
-        })
+    this.apiService.getNew('core', '/api/v1/business/' + this.iBusinessId).subscribe((result: any) => {
+      this.businessDetails = result.data;
+      this.businessDetails.currentLocation = this.businessDetails?.aLocation?.find((location: any) => location?._id === localStorage.getItem('currentLocation'));
+    })
   }
 
   ngOnDestroy(): void {
