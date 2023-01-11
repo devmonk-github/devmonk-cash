@@ -85,7 +85,7 @@ export class PrintSettingsEditorComponent implements OnInit {
   }
   fetchSettings(){
     // this.apiService.getNew('cashregistry', `/api/v1/pdf/templates/getTemplate/${this.oTemplate._id}?iBusinessId=${this.iBusinessId}`).subscribe((result: any) => {
-    this.apiService.getNew('cashregistry', `/api/v1/pdf/templates/${this.iBusinessId}?eType=${this.format.key}`).subscribe((result: any) => {
+    this.apiService.getNew('cashregistry', `/api/v1/pdf/templates/${this.iBusinessId}?eType=${this.format.key}&iLocationId=${this.iLocationId}`).subscribe((result: any) => {
       if(result?.data){
         this.mode = 'update';
         this.oTemplate = result.data;

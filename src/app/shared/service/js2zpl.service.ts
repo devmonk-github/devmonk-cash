@@ -194,6 +194,7 @@ export class Js2zplService {
   }
 
   isValidElement(element: any) {
+    console.log('checking element validity', element)
     //check if the element exists and if the neccesary parameters of the element type are present
     if (element.type !== undefined && Js2zplService.knownElements.indexOf(element.type) > -1) {
       switch (element.type) {
@@ -214,6 +215,7 @@ export class Js2zplService {
           break;
 
         case 'barcode':
+          console.log(218, "pnfield" in element)
           return ("pnfield" in element) ? true : false;
           break;
 
@@ -349,7 +351,11 @@ export class Js2zplService {
 
     command += this.endCommand();
 
+    if (!data['%%QUANTITY%%']) {
+      data['%%QUANTITY%%'] = 1;
+    }
     command = command.replace('^XA', '^XA^PQ' + data['%%QUANTITY%%'])
+
     console.warn("Generated: ", command, String(command).split(/(?=\^)/g));
 
     return this.validateCommand(command);
@@ -390,14 +396,14 @@ export class Js2zplService {
         element.visible = true;
       }
 
-      if (element.visible == true) {
+      if (Boolean(element.visible) == true) {
 
         element.x = this.parseIfInteger(element.x);
         element.y = this.parseIfInteger(element.y);
 
         //check if the element is valid and contains required parameters
         if (element.type && this.isValidElement(element)) {
-
+          console.log(404, 'valid element', element)
           if (this.can_rotate) {
 
             var rotate: any = '^FWN'
@@ -420,7 +426,7 @@ export class Js2zplService {
             }
           }
 
-          if (layout_command === true) {
+          if (layout_command === true) { // print actual data
             if (element.type !== 'rectangle' && element.type !== 'circle') {
 
               var fh = ''
@@ -446,7 +452,8 @@ export class Js2zplService {
                 command += '^FN' + field_id + fh + '^FD' + hex_euro + prefix + this.getFieldData(element.pnfield) + '^FS';
               }
             }
-          } else {
+            console.log(543, element)
+          } else { // sending layout command
             element.x = (typeof element.x !== 'undefined') ? this.convertElementPosition(element.x, this.width) : 0;
             element.y = (typeof element.y !== 'undefined') ? this.convertElementPosition(element.y, this.height) : 0;
 
@@ -468,7 +475,7 @@ export class Js2zplService {
                 element.pnfield = field_id;
               }
             }
-
+            console.log(476, element, element.type)
             switch (element.type) {
               case 'rectangle':
                 command += this.drawRectangle(element.width, element.height, element.border, element.color, element.rounding)

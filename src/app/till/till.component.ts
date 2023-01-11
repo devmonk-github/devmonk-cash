@@ -900,6 +900,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   getTemplate(types: any) {
     const body = {
       iBusinessId: this.business._id,
+      iLocationId: this.locationId,
       oFilterBy: {
         eType: types
       }
