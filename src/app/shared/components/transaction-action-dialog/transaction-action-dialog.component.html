@@ -42,9 +42,10 @@
         <div class="row">
             <div class="col-4 d-flex flex-column align-items-center" *ngIf="bRegularCondition">
                 <span>{{ 'PROOF_OF_PAYMENT' | translate }}</span>
-                <div class="d-flex flex-column" *ngFor="let action of aActionSettings">
+                <div class="d-flex flex-column w-50" *ngFor="let action of aActionSettings">
                     <span
-                        [ngClass]="{'badge-info': action=='PRINT_THERMAL', 'badge-dark': action=='PRINT_PDF', 'badge-success': action=='DOWNLOAD' }"
+                        *ngIf="(transaction.oCustomer.sEmail && transaction.oCustomer.sEmail != '' && action =='EMAIL') || action !='EMAIL'"
+                        [ngClass]="{'badge-info': action=='PRINT_THERMAL', 'badge-secondary': action =='EMAIL', 'badge-dark': action=='PRINT_PDF', 'badge-success': action=='DOWNLOAD' }"
                         class="badge cursor-pointer my-2" (click)="performAction('regular', action)">
                         {{ action | translate }}
                     </span>
@@ -52,9 +53,10 @@
             </div>
             <div class="col-4 d-flex flex-column align-items-center" *ngIf="bOrderCondition">
                 <span>{{ 'OVERVIEW_OF_PROJECT' | translate }}</span>
-                <div class="d-flex flex-column" *ngFor="let action of aActionSettings">
+                <div class="d-flex flex-column w-50" *ngFor="let action of aActionSettings">
                     <span
-                        [ngClass]="{'badge-info': action=='PRINT_THERMAL', 'badge-dark': action=='PRINT_PDF', 'badge-success': action=='DOWNLOAD' }"
+                        *ngIf="(transaction.oCustomer.sEmail && transaction.oCustomer.sEmail != '' && action =='EMAIL') || action !='EMAIL'"
+                        [ngClass]="{'badge-info': action=='PRINT_THERMAL', 'badge-secondary': action =='EMAIL', 'badge-dark': action=='PRINT_PDF', 'badge-success': action=='DOWNLOAD' }"
                         class="badge cursor-pointer my-2" (click)="performAction('order', action)">
                         {{action | translate }}
                     </span>
@@ -62,10 +64,11 @@
             </div>
             <div class="col-4 d-flex flex-column align-items-center" *ngIf="bGiftcardCondition">
                 <span>{{ 'GIFTCARD' | translate }}</span>
-                <div class="d-flex flex-column" *ngFor="let action of aActionSettings">
+                <div class="d-flex flex-column w-50" *ngFor="let action of aActionSettings">
                     <span
-                        [ngClass]="{'badge-info': action=='PRINT_THERMAL', 'badge-dark': action=='PRINT_PDF', 'badge-success': action=='DOWNLOAD' }"
-                        class="badge cursor-pointer my-2" (click)="performAction('giftcard', action)">
+                        *ngIf="(transaction.oCustomer.sEmail && transaction.oCustomer.sEmail != '' && action =='EMAIL') || action !='EMAIL'"
+                        [ngClass]="{'badge-info': action=='PRINT_THERMAL', 'badge-secondary': action =='EMAIL', 'badge-dark': action=='PRINT_PDF', 'badge-success': action=='DOWNLOAD' }"
+                        class="badge cursor-pointer my-2 py-2" (click)="performAction('giftcard', action)">
                         {{action | translate }}
                     </span>
                 </div>
@@ -87,7 +90,8 @@
                             <td class="ps-9 text-center">
                                 <ng-container *ngFor="let action of aActionSettings">
                                     <span
-                                        [ngClass]="{'badge-info': action=='PRINT_THERMAL', 'badge-dark': action=='PRINT_PDF', 'badge-success': action=='DOWNLOAD' }"
+                                        *ngIf="(transaction.oCustomer.sEmail && transaction.oCustomer.sEmail != '' && action =='EMAIL') || action !='EMAIL'"
+                                        [ngClass]="{'badge-info': action=='PRINT_THERMAL', 'badge-secondary': action =='EMAIL', 'badge-dark': action=='PRINT_PDF', 'badge-success': action=='DOWNLOAD' }"
                                         class="badge cursor-pointer mx-2 my-2"
                                         (click)="performAction('repair', action, i)">
                                         {{action | translate }}
@@ -97,7 +101,8 @@
                             <td class="ps-9 text-center">
                                 <ng-container *ngFor="let action of aActionSettings">
                                     <span
-                                        [ngClass]="{'badge-info': action=='PRINT_THERMAL', 'badge-dark': action=='PRINT_PDF', 'badge-success': action=='DOWNLOAD' }"
+                                        *ngIf="(transaction.oCustomer.sEmail && transaction.oCustomer.sEmail != '' && action =='EMAIL') || action !='EMAIL'"
+                                        [ngClass]="{'badge-info': action=='PRINT_THERMAL', 'badge-secondary': action =='EMAIL', 'badge-dark': action=='PRINT_PDF', 'badge-success': action=='DOWNLOAD' }"
                                         class="badge cursor-pointer mx-2 my-2"
                                         (click)="performAction('repair_alternative', action, i)">
                                         {{action | translate }}
