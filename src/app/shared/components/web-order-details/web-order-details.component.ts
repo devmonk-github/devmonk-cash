@@ -8,6 +8,7 @@ import { TransactionItemsDetailsComponent } from '../transaction-items-details/t
 import * as JsBarcode from 'jsbarcode';
 import { Observable } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
+import { ToastService } from '../toast';
 @Component({
   selector: 'app-web-order-details',
   templateUrl: './web-order-details.component.html',
@@ -19,7 +20,17 @@ export class WebOrderDetailsComponent implements OnInit {
   dialogRef: DialogComponent;
   activityItems: Array<any> = [];
   business: any;
-  statuses = ['new', 'processing', 'cancelled', 'completed', 'refund', 'refundInCashRegister', 'payInCashRegister'];
+  statuses = [
+    { key: 'NEW', value: 'new' },
+    { key: 'PROCESSING', value: 'processing' },
+    { key: 'CANCELLED', value: 'cancelled' },
+    { key: 'COMPLETED', value: 'completed' },
+    { key: 'REFUND', value: 'refund' },
+    { key: 'REFUND_IN_CASH_REGISTER', value: 'refundInCashRegister' },
+    { key: 'PAY_IN_CASH_REGISTER', value: 'payInCashRegister' }
+  ]
+
+  // statuses = ['new', 'processing', 'cancelled', 'completed', 'refund', 'refundInCashRegister', 'payInCashRegister'];
   statusesForItems = ['new', 'processing', 'cancelled', 'completed'];
   FeStatus = '';
   carriers = ['PostNL', 'DHL', 'DPD', 'bpost', 'other'];
@@ -35,8 +46,8 @@ export class WebOrderDetailsComponent implements OnInit {
   loading: Boolean = false;
   iBusinessId = localStorage.getItem('currentBusiness');
   transactions: Array<any> = [];
-  totalPrice: Number = 0;
-  quantity: Number = 0;
+  totalPrice: number = 0;
+  quantity: number = 0;
   userDetail: any;
   showDeliverBtn: Boolean = false;
   showDetails: Boolean = true;
@@ -71,6 +82,7 @@ export class WebOrderDetailsComponent implements OnInit {
       'iActivityItemId']
   };
   selectedLanguage: string;
+  bIsSaving: boolean = false;
 
 
   constructor(
@@ -78,7 +90,8 @@ export class WebOrderDetailsComponent implements OnInit {
     private apiService: ApiService,
     private receiptService: ReceiptService,
     private dialogService: DialogService,
-    private translateService: TranslateService
+    private translateService: TranslateService,
+    private toastService: ToastService
   ) {
     const _injector = this.viewContainerRef.injector;
     this.dialogRef = _injector.get<DialogComponent>(DialogComponent);
@@ -86,10 +99,10 @@ export class WebOrderDetailsComponent implements OnInit {
   }
 
   async ngOnInit() {
-    this.activity = this.dialogRef.context.activity;
+    // this.activity = this.dialogRef.context.activity;
     this.selectedLanguage = localStorage.getItem('language')?.toString() || navigator.language.substring(0, 2);
     if (this.from == 'web-orders' || this.from == 'web-reservations') {
-      const index = this.statuses.indexOf('cancelled');
+      const index = this.statuses.findIndex((status: any) => status.value == 'cancelled');
       if (index > -1) this.statuses.splice(index, 1);
 
       const index2 = this.statusesForItems.indexOf('cancelled');
@@ -100,7 +113,7 @@ export class WebOrderDetailsComponent implements OnInit {
     if (this.activity?.eActivityStatus != 'completed') this.showDeliverBtn = true;
     this.getPrintSetting();
     this.getBusinessLocations();
-    this.fetchTransactionItems();
+
     this.fetchTransactionDetails();
 
     const [_printActionSettings, _printSettings]: any = await Promise.all([
@@ -109,12 +122,21 @@ export class WebOrderDetailsComponent implements OnInit {
     ]);
     this.printActionSettings = _printActionSettings?.data[0]?.result[0].aActions;
     this.printSettings = _printSettings?.data[0]?.result;
+
+    console.log(this.activity)
   }
 
   deliver(type: string) {
     const transactions = []
     for (const item of this.activityItems) {
       for (const receipt of item.receipts) { transactions.push({ ...receipt, iActivityItemId: item._id }) }
+    }
+    if (type == 'sentToCustomer') {
+      if (!this.activity.sTrackingNumber || this.activity.sTrackingNumber == '' || !this.activity.eCarrier || this.activity.eCarrier == '') {
+        this.toastService.show({ type: 'warning', text: 'Set tracking number and carrier.' });
+        return;
+      }
+      this.generatePDF(false, 'sentToCustomer');
     }
     this.createStockCorrections(transactions, type)
   }
@@ -152,13 +174,15 @@ export class WebOrderDetailsComponent implements OnInit {
     );
   }
 
-  fetchBusinessDetails() {
-    this.apiService.getNew('core', '/api/v1/business/' + this.iBusinessId)
-      .subscribe(
-        (result: any) => {
-          this.businessDetails = result.data;
-        })
-  }
+  // fetchBusinessDetails() {
+  //   this.apiService.getNew('core', '/api/v1/business/' + this.iBusinessId)
+  //     .subscribe(
+  //       (result: any) => {
+  //         this.businessDetails = result.data;
+  //         console.log(173, this.businessDetails)
+
+  //       })
+  // }
 
   openTransaction(transaction: any, itemType: any) {
     transaction.iActivityId = this.activity._id;
@@ -229,17 +253,16 @@ export class WebOrderDetailsComponent implements OnInit {
         if (result.message == "success" && result?.data) {
           this.userDetail = result.data;
           if (this.userDetail.aBusiness) {
-            this.userDetail.aBusiness.map(
-              (business: any) => {
-                if (business._id == this.iBusinessId) {
-                  this.business = business;
-                }
-              })
+            this.userDetail.aBusiness.map((business: any) => {
+              if (business._id == this.iBusinessId) {
+                this.business = business;
+
+                this.fetchTransactionItems();
+              }
+            })
           }
         }
-        setTimeout(() => {
-          MenuComponent.reinitialization();
-        }, 200);
+
       }, (error) => {
         console.log('error: ', error);
       });
@@ -249,102 +272,138 @@ export class WebOrderDetailsComponent implements OnInit {
     this.generatePDF(false);
   }
 
-  generatePDF(print: boolean): void {
+  getTemplate(types: any) {
+    const body = {
+      iBusinessId: this.business._id,
+      oFilterBy: {
+        eType: types
+      }
+    }
+    return this.apiService.postNew('cashregistry', `/api/v1/pdf/templates`, body);
+  }
+
+  async generatePDF(print: boolean, sAction?: string) {
     const sName = 'Sample', eType = this.activity.eType == 'webshop-reservation' ? 'webshop-revenue' : this.activity.eType;
     this.downloading = true;
     this.activity.businessDetails = this.businessDetails;
-    for (let i = 0; i < this.businessDetails?.aLocation.length; i++) {
-      if (this.businessDetails.aLocation[i]?._id.toString() == this.iLocationId.toString()) {
-        this.activity.currentLocation = this.businessDetails.aLocation[i];
+    this.activity.currentLocation = this.businessDetails.currentLocation;
+    // for (let i = 0; i < this.businessDetails?.aLocation.length; i++) {
+    //   if (this.businessDetails.aLocation[i]?._id.toString() == this.iLocationId.toString()) {
+    //     this.activity.currentLocation = this.businessDetails.aLocation[i];
+    //   }
+    // }
+
+    const [_template, _businessLogoUrl]: any = await Promise.all([
+      this.getTemplate([eType]).toPromise(),
+      this.getBase64FromUrl(this.businessDetails?.sLogoLight).toPromise()
+    ]);
+
+    this.transactionDetails.sBusinessLogoUrl = _businessLogoUrl.data;
+    const template = _template.data[0];
+
+    // this.apiService.getNew('cashregistry', '/api/v1/pdf/templates/' + this.iBusinessId + '?sName=' + sName + '&eType=' + eType).subscribe(
+    //   async (result: any) => {
+    // const filename = new Date().getTime().toString()
+
+
+    const oDataSource = {
+      ...JSON.parse(JSON.stringify(this.transactionDetails)),
+      sAdvisedEmpFirstName: '',
+      totalVat: 0,
+      totalDiscount: 0,
+      totalRedeemedLoyaltyPoints: 0,
+      totalSavingPoints: 0,
+      total: 0,
+      totalAfterDisc: 0
+    };
+
+    let printData;
+    if (print) {
+      printData = {
+        computerId: this.computerId,
+        printerId: this.printerId,
+        title: oDataSource.sNumber,
+        quantity: 1
       }
     }
-    this.apiService.getNew('cashregistry', '/api/v1/pdf/templates/' + this.iBusinessId + '?sName=' + sName + '&eType=' + eType).subscribe(
-      async (result: any) => {
-        const filename = new Date().getTime().toString()
-        let printData = null
-        if (print) {
-          printData = {
-            computerId: this.computerId,
-            printerId: this.printerId,
-            title: filename,
-            quantity: 1
-          }
-        }
 
-        const oDataSource = {
-          ...JSON.parse(JSON.stringify(this.transactionDetails)),
-          totalVat: 0,
-          totalDiscount: 0,
-          totalRedeemedLoyaltyPoints: 0,
-          totalSavingPoints: 0,
-          total: 0,
-          totalAfterDisc: 0
-        };
-        oDataSource.businessDetails = this.businessDetails;
-        oDataSource.businessDetails.sMobile = this.businessDetails?.oPhone?.sMobile || '';
-        const locationIndex = this.businessDetails.aLocation.findIndex((location: any) => location._id == this.iLocationId);
-        const currentLocation = this.businessDetails.aLocation[locationIndex];
-        oDataSource.sAddressline1 = currentLocation.oAddress.street + " " + currentLocation.oAddress.houseNumber + " " + currentLocation.oAddress.houseNumberSuffix + " ,  " + currentLocation.oAddress.postalCode + " " + currentLocation.oAddress.city;
-        oDataSource.sAddressline2 = currentLocation.oAddress.country;
 
-        oDataSource.oCustomer = {
-          sFirstName: this.customer?.sFirstName || '',
-          sLastName: this.customer?.sLastName || '',
-          sEmail: this.customer?.sEmail || '',
-          sMobile: this.customer?.oPhone?.sCountryCode || '' + this.customer?.oPhone?.sMobile || '',
-          sLandLine: this.customer?.oPhone?.sLandLine || '',
-        };
+    oDataSource.businessDetails = this.businessDetails;
+    oDataSource.businessDetails.sMobile = this.businessDetails?.oPhone?.sMobile || '';
+    console.log(319, this.businessDetails);
+    // const locationIndex = this.businessDetails.aLocation.findIndex((location: any) => location._id == this.iLocationId);
+    // const currentLocation = this.businessDetails.aLocation[locationIndex];
+    oDataSource.sAddressline1 = this.businessDetails.currentLocation.oAddress.street + " " + this.businessDetails.currentLocation.oAddress.houseNumber + " " + this.businessDetails.currentLocation.oAddress.houseNumberSuffix + " ,  " + this.businessDetails.currentLocation.oAddress.postalCode + " " + this.businessDetails.currentLocation.oAddress.city;
+    oDataSource.sAddressline2 = this.businessDetails.currentLocation.oAddress.country;
 
-        const sBarcodeURI = this.generateBarcodeURI(false, oDataSource.sNumber);
-        oDataSource.sBarcodeURI = sBarcodeURI;
+    oDataSource.oCustomer = {
+      sFirstName: this.customer?.sFirstName || '',
+      sLastName: this.customer?.sLastName || '',
+      sEmail: this.customer?.sEmail || '',
+      sMobile: this.customer?.oPhone?.sCountryCode || '' + this.customer?.oPhone?.sMobile || '',
+      sLandLine: this.customer?.oPhone?.sLandLine || '',
+    };
 
-        oDataSource.sBusinessLogoUrl = (await this.getBase64FromUrl(oDataSource?.businessDetails?.sLogoLight).toPromise()).data;
-        oDataSource.aTransactionItems = this.activityItems;
-        oDataSource.sActivityNumber = oDataSource.sNumber;
-        oDataSource.aTransactionItems.forEach((item: any) => {
-          item.sProductName = item?.receipts[0]?.sProductNumber || this.getName(item);
-          item.sArticleGroupName = item.oArticleGroupMetaData.oName[this.selectedLanguage] || '';
-          item.vat = ((parseFloat(item.nPriceIncVat) / 100) * parseFloat(item.nVatRate)).toFixed(2);
-          item.sActivityItemNumber = item.sNumber;
-          item.nSavingsPoints = this.getSavingPoint(item);
-          item.sOrderDescription = item.sProductName + '\n' + item.sDescription;
-          item.nDiscountPrice = item.nDiscount > 0 ?
-            (item.bDiscountOnPercentage ?
-              (item.nPriceIncVat * ((item.nDiscount || 0) / 100))
-              : item.nDiscount)
-            : 0
-          oDataSource.totalVat += parseFloat(item.vat);
-          oDataSource.totalDiscount += item.nDiscountPrice;
-          oDataSource.totalRedeemedLoyaltyPoints += item.nRedeemedLoyaltyPoints || 0;
-          oDataSource.totalSavingPoints += parseFloat(item.nSavingsPoints);
-          oDataSource.total += item.nPriceIncVat;
-          oDataSource.totalAfterDisc += item.nTotalAmount;
-        });
+    oDataSource.sBarcodeURI = this.generateBarcodeURI(false, oDataSource.sNumber);
+    oDataSource.sActivityBarcodeURI = this.generateBarcodeURI(false, this.activity.sNumber);
 
-        // let dataObject = this.transactionDetails;
-        // dataObject.oBusiness = this.businessDetails;
-        // dataObject.aTransactionItems = this.activityItems;
+    oDataSource.aTransactionItems = this.activityItems;
+    oDataSource.sActivityNumber = this.activity.sNumber;
+    oDataSource.aTransactionItems.forEach((item: any) => {
+      item.sProductName = item?.receipts[0]?.sProductNumber || this.getName(item);
+      item.sArticleGroupName = item.oArticleGroupMetaData.oName[this.selectedLanguage] || '';
 
-        this.receiptService.exportToPdf({
-          oDataSource: oDataSource,
-          pdfTitle: filename,
-          templateData: result.data,
-          printSettings: this.printSettings,
-          printActionSettings: this.printActionSettings,
-          eSituation: 'is_created'
-        });
-        // this.pdfService.createPdf(JSON.stringify(result.data), dataObject, filename, print, printData, this.iBusinessId, this.activity?._id)
-        //   .then(() => {
-        //     this.downloading = false;
-        //   })
-        //   .catch((e: any) => {
-        //     this.downloading = false;
-        //     console.error('err', e)
-        //   })
-      }, (error) => {
-        this.downloading = false;
-        console.log('printing error', error);
-      })
+      const vat = parseFloat(item.nVatRate) * parseFloat(item.nPaidAmount) / (100 + parseFloat(item.nVatRate));
+      item.vat = (item.nVatRate > 0) ? parseFloat(vat.toFixed(2)) : 0;
+      // item.vat = ((parseFloat(item.nPaidAmount) / 100) * parseFloat(item.nVatRate)).toFixed(2);
+
+      item.sActivityItemNumber = item.sNumber;
+      item.nSavingsPoints = this.getSavingPoint(item);
+      item.sOrderDescription = item.sProductName + '\n' + item.sDescription;
+      item.nDiscountPrice = item.nDiscount > 0 ?
+        (item.bDiscountOnPercentage ?
+          (item.nPriceIncVat * ((item.nDiscount || 0) / 100))
+          : item.nDiscount)
+        : 0
+      item.nPriceIncVatAfterDiscount = (parseFloat(item.nPriceIncVat) - parseFloat(item.nDiscountPrice));
+      oDataSource.totalVat += parseFloat(item.vat);
+      oDataSource.totalDiscount += item.nDiscountPrice;
+      oDataSource.totalRedeemedLoyaltyPoints += item.nRedeemedLoyaltyPoints || 0;
+      oDataSource.totalSavingPoints += parseFloat(item.nSavingsPoints);
+      oDataSource.total += item.nPaidAmount;
+      oDataSource.totalAfterDisc += item.nTotalAmount;
+    });
+
+    // let dataObject = this.transactionDetails;
+    // dataObject.oBusiness = this.businessDetails;
+    // dataObject.aTransactionItems = this.activityItems;
+
+    const response = await this.receiptService.exportToPdf({
+      oDataSource: oDataSource,
+      pdfTitle: oDataSource.sNumber,
+      templateData: template,
+      printSettings: this.printSettings,
+      printActionSettings: this.printActionSettings,
+      eSituation: 'is_created',
+      sAction: sAction
+    });
+
+    if (sAction == 'sentToCustomer') {
+      this.sendMailToCustomer(response);
+    }
+    // this.pdfService.createPdf(JSON.stringify(result.data), dataObject, filename, print, printData, this.iBusinessId, this.activity?._id)
+    //   .then(() => {
+    //     this.downloading = false;
+    //   })
+    //   .catch((e: any) => {
+    //     this.downloading = false;
+    //     console.error('err', e)
+    //   })
+
+    // }, (error) => {
+    //   this.downloading = false;
+    //   console.log('printing error', error);
+    // })
   }
 
   fetchTransactionItems() {
@@ -353,6 +412,7 @@ export class WebOrderDetailsComponent implements OnInit {
     this.apiService.postNew('cashregistry', url, this.requestParams).subscribe((result: any) => {
       this.activityItems = result.data[0].result.sort((item1: any, item2: any) => !item1?.iBusinessProductId ? -1 : (!item2?.iBusinessProductId ? -1 : (item2.iBusinessProductId - item1.iBusinessProductId)));
       this.loading = false;
+      console.log(this.activityItems);
       let completed = 0, refunded = 0;
       // this.transactions = [];
       for (let i = 0; i < this.activityItems.length; i++) {
@@ -365,7 +425,7 @@ export class WebOrderDetailsComponent implements OnInit {
           // this.transactions.push({ ...item, ...obj });
           const item = obj.receipts[j];
           if (!item.iStockLocationId && item.iLocationId) item.iStockLocationId = item.iLocationId;
-          this.totalPrice += item.nPaymentAmount;
+          this.totalPrice += item.nPaymentAmount * item.nQuantity;
           this.quantity += item.bRefund ? (- item.nQuantity) : item.nQuantity
           if (item.iStockLocationId) this.setSelectedBusinessLocation(item.iStockLocationId, i, j)
         }
@@ -412,12 +472,12 @@ export class WebOrderDetailsComponent implements OnInit {
   // togglePayInCashRegister(event: any){}
 
   checkAllLocations() {
-    let flag = true;
+    let flag = false;
     for (let i = 0; i < this.activityItems.length; i++) {
       const obj = this.activityItems[i];
       for (let j = 0; j < obj.receipts.length; j++) {
         const item = obj.receipts[j];
-        if (!item.iStockLocationId && item?.iBusinessProductId) flag = false;
+        if (!item.iStockLocationId && item?.iBusinessProductId) flag = true;
       }
     }
     return flag;
@@ -509,7 +569,9 @@ export class WebOrderDetailsComponent implements OnInit {
     this.dialogRef.close.emit(data);
   }
 
-  submit() {
+  submit(event: any) {
+    event.target.disabled = true;
+    this.bIsSaving = true;
   }
 
   getPdfPrintSetting(oFilterBy?: any) {
@@ -561,5 +623,25 @@ export class WebOrderDetailsComponent implements OnInit {
       sAction: 'thermal',
       apikey: this.businessDetails.oPrintNode.sApiKey
     });
+  }
+
+  sendMailToCustomer(pdfContent: any) {
+    const body = {
+      pdfContent,
+      iTransactionId: this.transactionDetails._id,
+      iActivityId: this.activity._id,
+      sTrackingNumber: this.activity.sTrackingNumber,
+      eCarrier: this.activity.eCarrier
+    }
+
+    this.apiService.postNew('cashregistry', '/api/v1/till/send-to-customer', body).subscribe(
+      (result: any) => {
+        if (result) {
+          this.toastService.show({ type: 'success', text: 'Mail send to customer.' });
+        }
+      }, (error: any) => {
+
+      }
+    )
   }
 }
