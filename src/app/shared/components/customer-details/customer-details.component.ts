@@ -248,6 +248,8 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
   from !: string;
 
   customerNotesChangedSubject : Subject<string> = new Subject<string>();
+  nTotalTurnOver: any;
+  nAvgOrderValueIncVat: number;
   
   constructor(
     private viewContainerRef: ViewContainerRef,
@@ -553,6 +555,10 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
           if (result?.data?.oTransactionAudit?.[0]?.individual?.length) this.setAStatisticsChartData(result?.data?.oTransactionAudit?.[0]?.individual)
           if (result?.data?.aPaymentMethods?.length) this.aPaymentChartData = result?.data?.aPaymentMethods;
           if (result?.data?.aEmployeeStatistic?.length) this.aEmployeeStatistic = result?.data?.aEmployeeStatistic;
+          if (result?.data?.oTransactionAudit?.[0]?.overall?.length) {
+            this.nTotalTurnOver = result?.data?.oTransactionAudit?.[0]?.overall[0].nTotalRevenue;
+            this.nAvgOrderValueIncVat = parseFloat((this.nTotalTurnOver / result?.data?.oTransactionAudit?.[0]?.overall[0].nQuantity).toFixed(2));
+          }
           this.aStatisticsChartDataLoading = false;
         },
         (error: any) => {
