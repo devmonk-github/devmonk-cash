@@ -159,7 +159,7 @@ export class AddFavouritesComponent implements OnInit {
     };
 
     if (!data.iLocationId) {
-      this.toastService.show({ type: 'warning', text: `Please select a location` });
+      this.toastService.show({ type: 'warning', text: this.translateService.instant('PLEASE_SELECT_LOCATION')`Please select a location` });
       return;
     }
     let _result: any, msg:string = '';

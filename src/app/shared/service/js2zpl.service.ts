@@ -194,6 +194,7 @@ export class Js2zplService {
   }
 
   isValidElement(element: any) {
+    console.log('checking element validity', element)
     //check if the element exists and if the neccesary parameters of the element type are present
     if (element.type !== undefined && Js2zplService.knownElements.indexOf(element.type) > -1) {
       switch (element.type) {
@@ -214,6 +215,7 @@ export class Js2zplService {
           break;
 
         case 'barcode':
+          console.log(218, "pnfield" in element)
           return ("pnfield" in element) ? true : false;
           break;
 
@@ -312,15 +314,10 @@ export class Js2zplService {
     return '~jc';
   }
 
-  generateCommand(request: any, data: any, layout_command = true) {
-    if (data) {
-      this.alldata = data;
-    } else {
-      return;
-    }
+  generateCommand(request: any, data: any, print_command = true) {
+    if (!data || !request) return;
 
-    if (typeof request === 'undefined')
-      return;
+    this.alldata = data;
 
     //override label parameters if provided
     this.overrideVariables(request);
@@ -331,7 +328,7 @@ export class Js2zplService {
 
     if (this.layout_name.length > 0) {
 
-      if (layout_command === true) {
+      if (print_command === true) {
         command += '^XF' + this.layout_storage + ':' + this.layout_name + '.ZPL';
       } else {
         if (this.layout_name.length > 0)
@@ -341,15 +338,20 @@ export class Js2zplService {
       fieldtype = 'N'; //Will be used as ^FN(+field number) to reference a field in the layout
     }
 
-    if (layout_command === false) {
+    if (print_command === false) {
       command += this.getSettings();
     }
 
-    command += this.addFieldsToCommand(request, layout_command, fieldtype);
+    command += this.addFieldsToCommand(request, print_command, fieldtype);
 
     command += this.endCommand();
 
+    if (!data['%%QUANTITY%%']) {
+      data['%%QUANTITY%%'] = 1;
+    }
+
     command = command.replace('^XA', '^XA^PQ' + data['%%QUANTITY%%'])
+
     console.warn("Generated: ", command, String(command).split(/(?=\^)/g));
 
     return this.validateCommand(command);
@@ -376,7 +378,7 @@ export class Js2zplService {
     return command;
   }
 
-  addFieldsToCommand(request: any, layout_command: any, fieldtype: any, preview = false) {
+  addFieldsToCommand(request: any, print_command: any, fieldtype: any, preview = false) {
 
     var command = '';
 
@@ -386,11 +388,11 @@ export class Js2zplService {
 
       var element = request.elements[key];
 
-      if (typeof element.visible == 'undefined') {
+      if (!element?.visible) {
         element.visible = true;
       }
 
-      if (element.visible == true) {
+      if (Boolean(element.visible) == true) {
 
         element.x = this.parseIfInteger(element.x);
         element.y = this.parseIfInteger(element.y);
@@ -420,8 +422,8 @@ export class Js2zplService {
             }
           }
 
-          if (layout_command === true) {
-            if (element.type !== 'rectangle' && element.type !== 'circle') {
+          if (print_command === true) {
+            if (element.type !== 'rectangle' && element.type !== 'circle' && element.type !== 'barcode') {
 
               var fh = ''
               var hex_euro = ''
@@ -445,13 +447,28 @@ export class Js2zplService {
               } else {
                 command += '^FN' + field_id + fh + '^FD' + hex_euro + prefix + this.getFieldData(element.pnfield) + '^FS';
               }
+            } else {
+              switch (element.type) {
+                case 'rectangle':
+                  command += this.changePosition(element.x, element.y) + rotate + this.drawRectangle(element.width, element.height, element.border, element.color, element.rounding)
+                  break;
+                case 'circle':
+                  command += rotate + this.drawCircle(element.size, element.border, element.color)
+                  break;
+                case 'barcode':
+                  element.width = (element.width == 0) ? 1 : element.width;
+                  element.height = (element.height == 0) ? 15 : element.height;
+                  command += rotate + this.drawBarcode(this.getFieldData(element.pnfield), element.width, element.height, element.barcodetype, element.showdata, 'D')
+                  break;
+              }
             }
+            
           } else {
-            element.x = (typeof element.x !== 'undefined') ? this.convertElementPosition(element.x, this.width) : 0;
-            element.y = (typeof element.y !== 'undefined') ? this.convertElementPosition(element.y, this.height) : 0;
+            element.x = (element?.x) ? this.convertElementPosition(element.x, this.width) : 0;
+            element.y = (element?.y) ? this.convertElementPosition(element.y, this.height) : 0;
 
-            element.width = (element.width !== undefined) ? this.convertElementSize(element.width, this.width) : 0;
-            element.height = (element.height !== undefined) ? this.convertElementSize(element.height, this.height) : 0;
+            element.width = (element?.width) ? this.convertElementSize(element.width, this.width) : 0;
+            element.height = (element?.height) ? this.convertElementSize(element.height, this.height) : 0;
 
             command += this.changePosition(element.x, element.y)
 
@@ -468,7 +485,7 @@ export class Js2zplService {
                 element.pnfield = field_id;
               }
             }
-
+            
             switch (element.type) {
               case 'rectangle':
                 command += this.drawRectangle(element.width, element.height, element.border, element.color, element.rounding)

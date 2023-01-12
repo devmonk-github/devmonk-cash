@@ -44,8 +44,24 @@ export class ActivityDetailsComponent implements OnInit {
   faEuro = faEuro;
   faChevronRight = faChevronRight;
   faDownload = faDownload;
-  repairStatus = ['new', 'info', 'processing', 'cancelled', 'inspection', 'completed', 'refundInCashRegister',
-    'offer', 'offer-is-ok', 'offer-is-not-ok', 'to-repair', 'part-are-order', 'shipped-to-repair', 'delivered'];
+  repairStatus =[
+    {key:'NEW' , value:'new'},
+    {key:'INFO' , value:'info'},
+    {key:'PROCESSING' , value:'processing'},
+    {key:'CANCELLED' , value:'cancelled'},
+    {key:'INSPECTION' , value:'inspection'},
+    {key:'COMPLETED' , value:'completed'},
+    {key:'REFUNDINCASHREGISTER' , value:'refundInCashRegister'},
+    {key:'OFFER' , value:'offer'},
+    {key:'OFFER_IS_OK' , value:'offer-is-ok'},
+    {key:'OFFER_IS_NOT_OK' , value:'offer-is-not-ok'},
+    {key:'TO_REPAIR' , value:'to-repair'},
+    {key:'PART_ARE_ORDER' , value:'part-are-order'},
+    {key:'SHIPPED_TO_REPAIR' , value:'shipped-to-repair'},
+    {key:'DELIVERED' , value:'delivered'}  
+  ]
+  // repairStatus = ['new', 'info', 'processing', 'cancelled', 'inspection', 'completed', 'refundInCashRegister',
+    // 'offer', 'offer-is-ok', 'offer-is-not-ok', 'to-repair', 'part-are-order', 'shipped-to-repair', 'delivered'];
 
   carriers = ['PostNL', 'DHL', 'DPD', 'bpost', 'other'];
   printOptions = ['Portrait', 'Landscape'];

@@ -159,6 +159,7 @@ export class PrintSettingsComponent implements OnInit {
           })
           return template
         })
+        console.log(this.LabelTemplatesData)
         this.isLoadingTemplatesLabel = false
         this.isLoadingDefaultLabel = false
 
@@ -315,6 +316,7 @@ export class PrintSettingsComponent implements OnInit {
   }
 
   async sentToLayout(template:any){
+    console.log(319, template)
     const js2zplService = new Js2zplService(template);
     let layoutCommand: any = js2zplService.generateCommand(template, {}, false)
     const response: any = await this.printService.printRawContent(

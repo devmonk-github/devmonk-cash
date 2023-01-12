@@ -283,7 +283,8 @@ export class WebOrderDetailsComponent implements OnInit {
   }
 
   async generatePDF(print: boolean, sAction?: string) {
-    const sName = 'Sample', eType = this.activity.eType == 'webshop-reservation' ? 'webshop-revenue' : this.activity.eType;
+    // const sName = 'Sample'
+    const eType = this.activity.eType == 'webshop-reservation' ? 'webshop-revenue' : this.activity.eType;
     this.downloading = true;
     this.activity.businessDetails = this.businessDetails;
     this.activity.currentLocation = this.businessDetails.currentLocation;
