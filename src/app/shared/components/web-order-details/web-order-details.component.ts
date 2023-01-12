@@ -8,6 +8,7 @@ import { TransactionItemsDetailsComponent } from '../transaction-items-details/t
 import * as JsBarcode from 'jsbarcode';
 import { Observable } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
+import { ToastService } from '../toast';
 @Component({
   selector: 'app-web-order-details',
   templateUrl: './web-order-details.component.html',
@@ -19,14 +20,14 @@ export class WebOrderDetailsComponent implements OnInit {
   dialogRef: DialogComponent;
   activityItems: Array<any> = [];
   business: any;
-  statuses =[
-    {key:'NEW' , value:'new'},
-    {key:'PROCESSING' , value:'processing'},
-    {key:'CANCELLED' , value:'cancelled'},
-    {key:'COMPLETED' , value:'completed'},
-    {key:'REFUND' , value:'refund'},
-    {key:'REFUND_IN_CASH_REGISTER' , value:'refundInCashRegister'},
-    {key:'PAY_IN_CASH_REGISTER' , value:'payInCashRegister'}
+  statuses = [
+    { key: 'NEW', value: 'new' },
+    { key: 'PROCESSING', value: 'processing' },
+    { key: 'CANCELLED', value: 'cancelled' },
+    { key: 'COMPLETED', value: 'completed' },
+    { key: 'REFUND', value: 'refund' },
+    { key: 'REFUND_IN_CASH_REGISTER', value: 'refundInCashRegister' },
+    { key: 'PAY_IN_CASH_REGISTER', value: 'payInCashRegister' }
   ]
 
   // statuses = ['new', 'processing', 'cancelled', 'completed', 'refund', 'refundInCashRegister', 'payInCashRegister'];
@@ -89,7 +90,8 @@ export class WebOrderDetailsComponent implements OnInit {
     private apiService: ApiService,
     private receiptService: ReceiptService,
     private dialogService: DialogService,
-    private translateService: TranslateService
+    private translateService: TranslateService,
+    private toastService: ToastService
   ) {
     const _injector = this.viewContainerRef.injector;
     this.dialogRef = _injector.get<DialogComponent>(DialogComponent);
@@ -100,7 +102,7 @@ export class WebOrderDetailsComponent implements OnInit {
     // this.activity = this.dialogRef.context.activity;
     this.selectedLanguage = localStorage.getItem('language')?.toString() || navigator.language.substring(0, 2);
     if (this.from == 'web-orders' || this.from == 'web-reservations') {
-      const index = this.statuses.findIndex((status:any)=>status.value == 'cancelled');
+      const index = this.statuses.findIndex((status: any) => status.value == 'cancelled');
       if (index > -1) this.statuses.splice(index, 1);
 
       const index2 = this.statusesForItems.indexOf('cancelled');
@@ -111,7 +113,7 @@ export class WebOrderDetailsComponent implements OnInit {
     if (this.activity?.eActivityStatus != 'completed') this.showDeliverBtn = true;
     this.getPrintSetting();
     this.getBusinessLocations();
-    
+
     this.fetchTransactionDetails();
 
     const [_printActionSettings, _printSettings]: any = await Promise.all([
@@ -128,6 +130,13 @@ export class WebOrderDetailsComponent implements OnInit {
     const transactions = []
     for (const item of this.activityItems) {
       for (const receipt of item.receipts) { transactions.push({ ...receipt, iActivityItemId: item._id }) }
+    }
+    if (type == 'sentToCustomer') {
+      if (!this.activity.sTrackingNumber || this.activity.sTrackingNumber == '' || !this.activity.eCarrier || this.activity.eCarrier == '') {
+        this.toastService.show({ type: 'warning', text: 'Set tracking number and carrier.' });
+        return;
+      }
+      this.generatePDF(false, 'sentToCustomer');
     }
     this.createStockCorrections(transactions, type)
   }
@@ -171,7 +180,7 @@ export class WebOrderDetailsComponent implements OnInit {
   //       (result: any) => {
   //         this.businessDetails = result.data;
   //         console.log(173, this.businessDetails)
-          
+
   //       })
   // }
 
@@ -245,15 +254,15 @@ export class WebOrderDetailsComponent implements OnInit {
           this.userDetail = result.data;
           if (this.userDetail.aBusiness) {
             this.userDetail.aBusiness.map((business: any) => {
-                if (business._id == this.iBusinessId) {
-                  this.business = business;
+              if (business._id == this.iBusinessId) {
+                this.business = business;
 
-                  this.fetchTransactionItems();
-                }
-              })
+                this.fetchTransactionItems();
+              }
+            })
           }
         }
-        
+
       }, (error) => {
         console.log('error: ', error);
       });
@@ -273,7 +282,7 @@ export class WebOrderDetailsComponent implements OnInit {
     return this.apiService.postNew('cashregistry', `/api/v1/pdf/templates`, body);
   }
 
-  async generatePDF(print: boolean) {
+  async generatePDF(print: boolean, sAction?: string) {
     // const sName = 'Sample'
     const eType = this.activity.eType == 'webshop-reservation' ? 'webshop-revenue' : this.activity.eType;
     this.downloading = true;
@@ -281,8 +290,8 @@ export class WebOrderDetailsComponent implements OnInit {
     this.activity.currentLocation = this.businessDetails.currentLocation;
     // for (let i = 0; i < this.businessDetails?.aLocation.length; i++) {
     //   if (this.businessDetails.aLocation[i]?._id.toString() == this.iLocationId.toString()) {
-      //     this.activity.currentLocation = this.businessDetails.aLocation[i];
-      //   }
+    //     this.activity.currentLocation = this.businessDetails.aLocation[i];
+    //   }
     // }
 
     const [_template, _businessLogoUrl]: any = await Promise.all([
@@ -344,7 +353,7 @@ export class WebOrderDetailsComponent implements OnInit {
     oDataSource.aTransactionItems.forEach((item: any) => {
       item.sProductName = item?.receipts[0]?.sProductNumber || this.getName(item);
       item.sArticleGroupName = item.oArticleGroupMetaData.oName[this.selectedLanguage] || '';
-      
+
       const vat = parseFloat(item.nVatRate) * parseFloat(item.nPaidAmount) / (100 + parseFloat(item.nVatRate));
       item.vat = (item.nVatRate > 0) ? parseFloat(vat.toFixed(2)) : 0;
       // item.vat = ((parseFloat(item.nPaidAmount) / 100) * parseFloat(item.nVatRate)).toFixed(2);
@@ -376,8 +385,13 @@ export class WebOrderDetailsComponent implements OnInit {
       templateData: template,
       printSettings: this.printSettings,
       printActionSettings: this.printActionSettings,
-      eSituation: 'is_created'
+      eSituation: 'is_created',
+      sAction: sAction
     });
+
+    if (sAction == 'sentToCustomer') {
+      this.sendMailToCustomer(template);
+    }
     // this.pdfService.createPdf(JSON.stringify(result.data), dataObject, filename, print, printData, this.iBusinessId, this.activity?._id)
     //   .then(() => {
     //     this.downloading = false;
@@ -459,12 +473,12 @@ export class WebOrderDetailsComponent implements OnInit {
   // togglePayInCashRegister(event: any){}
 
   checkAllLocations() {
-    let flag = true;
+    let flag = false;
     for (let i = 0; i < this.activityItems.length; i++) {
       const obj = this.activityItems[i];
       for (let j = 0; j < obj.receipts.length; j++) {
         const item = obj.receipts[j];
-        if (!item.iStockLocationId && item?.iBusinessProductId) flag = false;
+        if (!item.iStockLocationId && item?.iBusinessProductId) flag = true;
       }
     }
     return flag;
@@ -556,7 +570,7 @@ export class WebOrderDetailsComponent implements OnInit {
     this.dialogRef.close.emit(data);
   }
 
-  submit(event:any) {
+  submit(event: any) {
     event.target.disabled = true;
     this.bIsSaving = true;
   }
@@ -610,5 +624,23 @@ export class WebOrderDetailsComponent implements OnInit {
       sAction: 'thermal',
       apikey: this.businessDetails.oPrintNode.sApiKey
     });
+  }
+
+  sendMailToCustomer(pdfContent: any) {
+    const body = {
+      pdfContent,
+      iTransactionId: this.transactionDetails._id,
+      iActivityId: this.activity._id,
+      sTrackingNumber: this.activity.sTrackingNumber,
+      eCarrier: this.activity.eCarrier
+    }
+
+    this.apiService.postNew('cashregistry', '/api/v1/till/send-to-customer', body).subscribe(
+      (result: any) => {
+
+      }, (error: any) => {
+
+      }
+    )
   }
 }

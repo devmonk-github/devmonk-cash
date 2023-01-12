@@ -99,7 +99,7 @@ export class ReceiptService {
     orientation: string = 'portrait';
     translations: any;
 
-    pn2escposService:any;
+    pn2escposService: any;
     constructor(
         private pdfServiceNew: PdfServiceNew,
         private apiService: ApiService,
@@ -119,14 +119,14 @@ export class ReceiptService {
     async exportToPdf({ oDataSource, templateData, pdfTitle, printSettings, printActionSettings, eSituation, sAction }: any) {
         this.oOriginalDataSource = oDataSource;
         this.pdfService.getTranslations();
-        
+
         console.log(this.oOriginalDataSource)
-        
+
         this.commonService.pdfTitle = pdfTitle;
         this.commonService.mapCommonParams(templateData.aSettings);
         this.processTemplate(templateData.layout);
         // console.log(this.content)
-        this.pdfServiceNew.getPdfData({
+        const response = await this.pdfServiceNew.getPdfData({
             styles: this.styles,
             content: this.content,
             orientation: this.commonService.oCommonParameters.orientation,
@@ -142,6 +142,7 @@ export class ReceiptService {
             sAction: sAction
         });
         this.cleanUp();
+        if (sAction == 'sentToCustomer') return response;
     }
 
     processTemplate(layout: any) {
@@ -381,16 +382,17 @@ export class ReceiptService {
                 };
                 if (el?.width) obj.width = el.width;
                 columnData = obj;
-            } else if(el?.type === 'parts') {
+            } else if (el?.type === 'parts') {
                 columnData = this.addParts(el)
             } else {
                 let html = el.html || '';
                 let object = el?.object;
-                 let text = '';
+                let text = '';
                 if (object && Object.keys(object)?.length) {
                     text = this.pdfService.replaceVariables(html, (object) ? this.oOriginalDataSource[object] : this.oOriginalDataSource) || '';
                 } else {
-                    text = this.pdfService.replaceVariables(html, this.oOriginalDataSource) || html;               }
+                    text = this.pdfService.replaceVariables(html, this.oOriginalDataSource) || html;
+                }
                 columnData = { text: text };
                 if (el?.width) columnData.width = el?.width;
                 if (el?.alignment) columnData.alignment = el?.alignment;
@@ -477,7 +479,7 @@ export class ReceiptService {
                         return dataSource[condition.field] > condition.value;
                     else return this.oOriginalDataSource[condition.field] > condition.value;
                 case '===':
-                    if(condition?.value) {
+                    if (condition?.value) {
                         return dataSource[condition.field] === condition.value;
                     } else {
                         return dataSource[condition.field1] === dataSource[condition.field2];
@@ -510,7 +512,7 @@ export class ReceiptService {
         } else if (row?.type) {
             if (row?.type === 'stack') {
                 let obj = {
-                    "stack" : this.processStack(row, dataSource)
+                    "stack": this.processStack(row, dataSource)
                 };
                 dataRow.push(obj);
             }
@@ -523,7 +525,7 @@ export class ReceiptService {
             if (el?.type === 'image') {
                 stack.push(this.addImage(el))
             } else {
-                let bTestResult:boolean = true;
+                let bTestResult: boolean = true;
                 if (el?.ifAnd) {
                     bTestResult = el.ifAnd.every((rule: any) => {
                         let field = (object) ? object[rule.field] : this.oOriginalDataSource[rule.field];
@@ -545,7 +547,7 @@ export class ReceiptService {
                     }
                 } else {
                     let text = this.pdfService.replaceVariables(el.html, (object) ? object : this.oOriginalDataSource) || '';
-                    if(text.trim() != '') {
+                    if (text.trim() != '') {
                         let obj: any = { text: text };
                         if (el?.alignment) obj.alignment = el.alignment;
                         if (el?.width) obj.width = el.width;
@@ -617,7 +619,7 @@ export class ReceiptService {
                 })
     }
 
-    addStrikenData(obj:any, text:any, row:any){
+    addStrikenData(obj: any, text: any, row: any) {
         let testResult = text.match('(<strike>(.*)</strike>)(.*)');
         // console.log({testResult});
         if (text.indexOf('<strike>') > 1) {
@@ -645,16 +647,16 @@ export class ReceiptService {
         return obj;
     }
 
-    addParts(el:any){
-        let obj:any = [];
-        el.parts.forEach((part:any) => {
-            if (part?.ifAnd){
-                part.ifAnd.forEach((rule:any)=>{
+    addParts(el: any) {
+        let obj: any = [];
+        el.parts.forEach((part: any) => {
+            if (part?.ifAnd) {
+                part.ifAnd.forEach((rule: any) => {
                     let field = (el?.object) ? this.oOriginalDataSource[el.object][rule.field] : this.oOriginalDataSource[rule.field];
                     let bTestResult = this.comparators[rule.compare](field, rule.target)
-                    if(bTestResult) {
+                    if (bTestResult) {
                         let text = this.pdfService.replaceVariables(part?.text, (el?.object) ? this.oOriginalDataSource[el.object] : this.oOriginalDataSource)
-                        obj.push({text: text, alignment: el?.alignment});
+                        obj.push({ text: text, alignment: el?.alignment });
                     }
                 })
             }
@@ -662,9 +664,9 @@ export class ReceiptService {
         return obj;
     }
 
-    comparators:any = {
-        "eq": (a:any, b:any) => a === b,
-        "ne": (a:any, b:any) => a !== b,
-        "gt": (a:any, b:any) => a > b
+    comparators: any = {
+        "eq": (a: any, b: any) => a === b,
+        "ne": (a: any, b: any) => a !== b,
+        "gt": (a: any, b: any) => a > b
     };
 }

@@ -83,10 +83,9 @@
                             <ng-option *ngFor="let carrier of carriers" [value]="carrier">{{carrier}}</ng-option>
                         </ng-select>
                     </div>
-                    <input *ngIf="showDeliverBtn && activity.eActivityStatus == 'completed'" type="text"
-                        name="activityName" [(ngModel)]="activity.sTrackingNumber"
-                        [placeholder]="'TRACK_AND_TRACE_ORDER' | translate" class="form-control"
-                        (ngModelChange)="changeTrackingNumberForAll(activity.sTrackingNumber)">
+                    <input *ngIf="activity.eActivityStatus == 'completed'" type="text" name="activityName"
+                        [(ngModel)]="activity.sTrackingNumber" [placeholder]="'TRACK_AND_TRACE_ORDER' | translate"
+                        class="form-control" (ngModelChange)="changeTrackingNumberForAll(activity.sTrackingNumber)">
                     <!-- <label class="form-check form-switch form-check-custom form-check-solid mt-5">
                         <input class="form-check-input" type="checkbox" id="bPayInCashRegister"
                             checked="checked" [(ngModel)]="activity.bPayInCashRegister"
