@@ -651,6 +651,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
     this.oCountings.nCashDifference = this.oStatisticsDocument?.oCountings?.nCashDifference || 0;
     this.bDisableCountings = !this.oStatisticsDocument.bIsDayState;
     if (this.aStatistic?.length && this.aStatistic[0]?.overall?.length) {
+      this.aStatistic[0].overall[0].nTotalRevenue = parseFloat(this.aStatistic[0].overall[0].nTotalRevenue.toFixed(2))
       this.oCountings.nCashInTill = this.aStatistic[0].overall[0].nTotalRevenue;
     }
     
@@ -815,6 +816,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
             this.aStatistic = result.data.oTransactionAudit;
 
           if (this.aStatistic?.length && this.aStatistic[0]?.overall?.length) {
+            this.aStatistic[0].overall[0].nTotalRevenue = parseFloat(this.aStatistic[0].overall[0].nTotalRevenue.toFixed(2))
             this.oCountings.nCashInTill = this.aStatistic[0].overall[0].nTotalRevenue;
           }
           this.mappingThePaymentMethod(result?.data);

@@ -27,6 +27,7 @@ export class Transaction {
       oPhone: string,
       sVatNumber: string,
       sCocNumber: string,
+      sEmail: string
     }
   ) {
   }

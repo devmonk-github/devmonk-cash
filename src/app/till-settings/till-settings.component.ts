@@ -278,7 +278,7 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
     event.target.disabled = true;
     this.quickButtonsLoading = true;
     try {
-      this.saveFavouritesSubscription = this.apiService.putNew('cashregistry', '/api/v1/quick-buttons/update/' + this.requestParams.iBusinessId, this.quickButtons).subscribe((result: any) => {
+      this.saveFavouritesSubscription = this.apiService.putNew('cashregistry', '/api/v1/quick-buttons/updateSequence/' + this.requestParams.iBusinessId, this.quickButtons).subscribe((result: any) => {
         this.toastService.show({ type: 'success', text: `Quick Buttons order saved successfully` });
         this.quickButtonsLoading = false;
         event.target.disabled = false;
@@ -306,6 +306,14 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
     }
   }
 
+  editQuickButton(button:any) {
+    console.log(button)
+    this.createFavouriteModalSub = this.dialogService.openModal(AddFavouritesComponent, { context: { mode: 'edit', button:button}, cssClass: "modal-lg", hasBackdrop: true, closeOnBackdropClick: true, closeOnEsc: true }).instance.close.subscribe(result => {
+      if (result.action)
+        this.fetchQuickButtons();
+    });
+  }
+ 
   ngOnDestroy(): void {
     if (this.deleteMethodModalSub) this.deleteMethodModalSub.unsubscribe();
     if (this.getSettingsSubscription) this.getSettingsSubscription.unsubscribe();

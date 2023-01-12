@@ -15,21 +15,17 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-2">
-                <div class="card m-0" style="width: 18rem;">
-                    <span class="card-header justify-content-center align-items-center text-center fs-3 m-0">
-                        <p>{{activity.sNumber}}</p>
+            <div class="col-2 pe-0">
+                <div class="card pt-2" > <!-- style="width: 18rem;" -->
+                    <span class="card-header justify-content-center align-items-center text-center m-0 ps-0 pe-0">
+                        <h3>{{activity.sNumber}}</h3>
                     </span>
 
-                    <div class="card-body">
-                        
+                    <div class="card-body p-3">
+
                         <div *ngIf="bShowOrderDownload">
-                            <button class="btn btn-primary" (click)="downloadReceipt($event)">
-                                {{ 'DOWNLOAD' | translate }}
-                            </button>
-                            <ng-container *ngIf="bActivityPdfGenerationInProgress">
-                                <div class="spinner-border mx-2"></div>
-                            </ng-container>
+                            <button class="btn btn-primary" (click)="downloadReceipt($event)">{{ 'DOWNLOAD' | translate }}</button>
+                            <div class="spinner-border mx-2" *ngIf="bActivityPdfGenerationInProgress"></div>
                         </div>
 
                         <div class="d-flex flex-wrap py-5">
@@ -37,9 +33,7 @@
                                 {{ "CUSTOMER_DETAILS" | translate}}
                                 <div class="fs-6 ms-1">
                                     <div class="align-items-center">
-                                        <div class="text-gray-600">{{customer?.sFirstName || ''}} {{customer?.sLastName
-                                            || ''}}
-                                        </div>
+                                        <div class="text-gray-600">{{customer?.sFirstName || ''}} {{customer?.sLastName || ''}}</div>
                                     </div>
                                 </div>
                                 <div class="fs-6 ms-1">
@@ -79,17 +73,19 @@
 
                         <div class="d-flex flex-wrap py-5">
                             <div class="flex-equal me-5">
-                             {{ 'CREATER_DETAIL' | translate}}
-                      
-                             <div class="d-flex fs-6 ms-1 my-1">
-                                <div class="align-items-center">                                 
-                                    <img alt="Logo"
-                                    *ngIf="createrDetail?.sFirstName && (!createrDetail?.sAvatar  || createrDetail.sAvatar == '')"
-                                    src="https://prismanote.com/public/prismanote.png" class="createrImage">
-                                  <img alt="Logo" *ngIf="createrDetail?.sAvatar" [src]="createrDetail.sAvatar" class="createrImage">                                                      
-                                  <span> {{createrDetail?.sFirstName || ''}} {{createrDetail?.sLastName || ''}} </span>
-                                    </div>   
-                                    </div>                                   
+                                {{ 'CREATER_DETAIL' | translate}}
+
+                                <div class="d-flex fs-6 ms-1 my-1">
+                                    <div class="align-items-center">
+                                        <img alt="Logo"
+                                            *ngIf="createrDetail?.sFirstName && (!createrDetail?.sAvatar  || createrDetail.sAvatar == '')"
+                                            src="https://prismanote.com/public/prismanote.png" class="createrImage">
+                                        <img alt="Logo" *ngIf="createrDetail?.sAvatar" [src]="createrDetail.sAvatar"
+                                            class="createrImage">
+                                        <span> {{createrDetail?.sFirstName || ''}} {{createrDetail?.sLastName || ''}}
+                                        </span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -144,7 +140,7 @@
                                                 <select name="status" id="status"
                                                     class="form-control form-control-solid"
                                                     [(ngModel)]="activity.eActivityItemStatus">
-                                                    <option *ngFor="let type of repairStatus" [value]="type">{{type}}
+                                                    <option *ngFor="let type of repairStatus" [value]="type.value">{{type.key | translate}}
                                                     </option>
                                                 </select>
                                             </div>
@@ -168,27 +164,29 @@
                                                 </div>
                                                 <div class="row mt-2">
                                                     <div class="col-6">
-                                                        {{"ALREADY_PAID" | translate}}: {{activity.nPaidAmount | currency:tillService.currency}}
+                                                        {{"ALREADY_PAID" | translate}}: {{activity.nPaidAmount |
+                                                        currency:tillService.currency}}
                                                     </div>
                                                     <div class="col-6">
-                                                        {{"STILL_TO_PAY"}}: {{(activity.nTotalAmount - activity.nPaidAmount) | currency:tillService.currency}}
+                                                        {{"STILL_TO_PAY" | translate}}: {{(activity.nTotalAmount -
+                                                        activity.nPaidAmount) | currency:tillService.currency}}
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="col-3 my-3">
                                             <div class="btn-group me-4 w-100 my-3">
-                                                <span class="btn btn-primary fs-bold px-6"
+                                                <span class="btn btn-primary fs-bold"
                                                     (click)="downloadCustomerReceipt(index)">
-                                                    <fa-icon class="mx-4" [icon]="faUser"></fa-icon>
+                                                    <fa-icon class="group-icon" [icon]="faUser"></fa-icon>
                                                     <span class="indicator-label ">{{ "CUSTOMER_RECEIPT" | translate
                                                         }}</span>
                                                 </span>
 
                                                 <span class="btn btn-primary btn-icon fs-bold" role="button">
-                                                    <div class="btn btn-icon show menu-dropdown" data-kt-menu-trigger="click"
-                                                        data-kt-menu-attach="parent" data-kt-menu-placement="bottom-end"
-                                                        data-kt-menu-flip="bottom">
+                                                    <div class="btn btn-icon show menu-dropdown"
+                                                        data-kt-menu-trigger="click" data-kt-menu-attach="parent"
+                                                        data-kt-menu-placement="bottom-end" data-kt-menu-flip="bottom">
                                                         <span class="svg-icon svg-icon-2 m-0">
                                                             <svg xmlns="http://www.w3.org/2000/svg" width="24"
                                                                 height="24" viewBox="0 0 24 24" fill="none">
@@ -210,10 +208,10 @@
                                                 </span>
                                             </div>
                                             <div class="btn-group me-4 w-100 my-3">
-                                                <span class="btn btn-primary fs-bold px-6"
+                                                <span class="btn btn-primary fs-bold"
                                                     (click)="downloadCustomerReceipt(index)">
-                                                    <fa-icon class="mx-4" [icon]="faPrint"></fa-icon>
-                                                    <span class="indicator-label printer-button">{{
+                                                    <fa-icon class="group-icon" [icon]="faPrint"></fa-icon>
+                                                    <span class="indicator-label">{{
                                                         "CUSTOMER_RECEIPT_PRINT" |
                                                         translate}}</span>
                                                 </span>
@@ -242,8 +240,8 @@
                                                 </span>
                                             </div>
                                             <div class="btn-group me-4 w-100 my-3">
-                                                <span class="btn btn-primary fs-bold px-6">
-                                                    <fa-icon class="mx-4" [icon]="faReceipt"></fa-icon>
+                                                <span class="btn btn-primary fs-bold">
+                                                    <fa-icon class="group-icon" [icon]="faReceipt"></fa-icon>
                                                     <span class="indicator-label">{{ "RECEIPT_PARTNER" |
                                                         translate}}</span>
                                                 </span>
@@ -270,9 +268,9 @@
                                                 </span>
                                             </div>
                                             <div class="btn-group me-4 w-100 my-3">
-                                                <span class="btn btn-primary fs-bold px-6">
+                                                <span class="btn btn-primary fs-bold">
                                                     <span>
-                                                        <fa-icon class="mx-4" [icon]="faReceipt"></fa-icon>
+                                                        <fa-icon class="group-icon" [icon]="faReceipt"></fa-icon>
                                                     </span>
                                                     <span class="indicator-label">{{ "RECEIPT_FOR_BOTH" |
                                                         translate}}</span>
@@ -300,15 +298,15 @@
                                                 </span>
                                             </div>
                                             <div class="btn-group me-4 w-100 my-3">
-                                                <span class="btn btn-primary fs-bold px-6">
-                                                    <fa-icon class="mx-4" [icon]="faEnvelope"></fa-icon>
+                                                <span class="btn btn-primary fs-bold">
+                                                    <fa-icon class="group-icon" [icon]="faEnvelope"></fa-icon>
                                                     <span class="indicator-label">{{ "MAIL" | translate}}</span>
                                                 </span>
                                             </div>
                                             <div class="btn-group me-4 w-100 my-3">
-                                                <span class="btn btn-primary fs-bold px-6"
+                                                <span class="btn btn-primary fs-bold"
                                                     (click)="loadCashRegister = true; openTransaction(activity, 'activity')">
-                                                    <fa-icon class="mx-4" [icon]="faEuro"></fa-icon>
+                                                    <fa-icon class="group-icon" [icon]="faEuro"></fa-icon>
                                                     <span class="indicator-label">{{ "CHECKOUT" | translate}}</span>
                                                 </span>
                                             </div>
@@ -487,7 +485,8 @@
                                                         <tr *ngFor='let receipt of activity.receipts'>
                                                             <td>{{receipt.sTransactionNumber}}</td>
                                                             <td>{{receipt.dCreatedDate | date: 'medium'}}</td>
-                                                            <td>{{receipt.nPaymentAmount | currency: tillService.currency}}</td>
+                                                            <td>{{receipt.nPaymentAmount | currency:
+                                                                tillService.currency}}</td>
                                                             <ng-container *ngIf="from != 'transaction-details'">
                                                                 <td>
                                                                     <div class="d-flex align-items-center">
@@ -508,51 +507,58 @@
                                         <div class="col-3">
                                             <div class="row mb-6">
                                                 <div class="col-12">
-                                            <div *ngIf="!activity?.aImage?.length">
-                                                {{"NO_IMAGES" | translate}}
-                                            </div>
-                                            <div class="d-flex">
-                                                <div class="image-input p-1 d-flex"
-                                                    *ngFor="let image of activity.aImage; let i = index"
-                                                    data-kt-image-input="true"
-                                                    style="background-image: url('assets/media/svg/avatars/blank.svg')">
-                                                    <div class="image-input-wrapper w-100px h-100px"
-                                                        style="background-image: url(assets/media/avatars/300-1.jpg)">
-                                                        <img src={{image}} width="100px" height="100px">
+                                                    <div *ngIf="!activity?.aImage?.length">
+                                                        {{"NO_IMAGES" | translate}}
                                                     </div>
-                                                    <div class="mt-2 ">
-                                                        <div data-kt-image-input-action="reorder" class="d-flex">
-                                                            <button
-                                                                class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow"
-                                                                data-kt-image-input-action="remove"
-                                                                data-bs-toggle="tooltip" title="Remove image">
-                                                                <i class="bi bi-x fs-2"></i>
-                                                            </button>
+                                                    <div class="d-flex">
+                                                        <div class="image-input p-1 d-flex"
+                                                            *ngFor="let image of activity.aImage; let i = index"
+                                                            data-kt-image-input="true"
+                                                            style="background-image: url('assets/media/svg/avatars/blank.svg')">
+                                                            <div class="image-input-wrapper w-100px h-100px"
+                                                                style="background-image: url(assets/media/avatars/300-1.jpg)">
+                                                                <img src={{image}} width="100px" height="100px">
+                                                            </div>
+                                                            <div class="mt-2 ">
+                                                                <div data-kt-image-input-action="reorder"
+                                                                    class="d-flex">
+                                                                    <button
+                                                                        class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow"
+                                                                        data-kt-image-input-action="remove"
+                                                                        data-bs-toggle="tooltip" title="Remove image">
+                                                                        <i class="bi bi-x fs-2"></i>
+                                                                    </button>
+                                                                </div>
+
+                                                            </div>
+
+
                                                         </div>
-
                                                     </div>
-
-
                                                 </div>
-                                            </div>
-                                            </div>
                                             </div>
                                             <div class="row mb-6" *ngIf="activity.oType.eKind == 'order'">
                                                 <div class="col-12">
-                                                {{'PRODUCT_SELECTED' | translate}}
+                                                    {{'PRODUCT_SELECTED' | translate}}
                                                 </div>
                                                 <div class="col-12">
                                                     <label>{{'PRODUCT_NUMBER' | translate}} : </label>
-                                                 <span *ngIf="activity?.iBusinessProductId">{{activity?.sProductNumber}} </span>
-                                                 <span *ngIf="activity?.iBusinessProductId == undefined">{{'NO_PRODUCT_SELECTED' | translate}} </span>
+                                                    <span
+                                                        *ngIf="activity?.iBusinessProductId">{{activity?.sProductNumber}}
+                                                    </span>
+                                                    <span
+                                                        *ngIf="activity?.iBusinessProductId == undefined">{{'NO_PRODUCT_SELECTED'
+                                                        | translate}} </span>
                                                 </div>
                                                 <div class="col-12">
-                                                <label>{{'ARTICLE_DETAIL' | translate}} : </label>
-                                                 {{activity?.sArticleNumber}} - {{activity?.sArticleName}}
+                                                    <label>{{'ARTICLE_DETAIL' | translate}} : </label>
+                                                    {{activity?.sArticleNumber}} - {{activity?.sArticleName}}
                                                 </div>
-                                             <div class="col-12">
-                                               <button class="btn btn-success" (click)="AssignOrderProduct(activity , index)"> {{'ADD / CHANGE' | translate}}</button>
-                                            </div>
+                                                <div class="col-12">
+                                                    <button class="btn btn-success"
+                                                        (click)="AssignOrderProduct(activity , index)"> {{'ADD / CHANGE'
+                                                        | translate}}</button>
+                                                </div>
                                             </div>
 
                                         </div>
@@ -604,7 +610,7 @@
                                                                             [(ngModel)]="activity.iAssigneeId"
                                                                             (search)="searchEmployees($event.term)"
                                                                             class="form-control form-control-solid p-0 w-100 custom"
-                                                                            placeholder="Search employee"
+                                                                            placeholder="{{ 'SEARCH_EMPLOYEE' | translate}}"
                                                                             [minTermLength]="2" [clearable]="false"
                                                                             [isOpen]="filteredEmployees.length > 0"
                                                                             (change)="onEmployeeChange($event , index)">
@@ -637,7 +643,7 @@
                                                                             [(ngModel)]="activity.iBusinessPartnerId"
                                                                             (search)="searchSuppliers($event.term)"
                                                                             class="form-control form-control-solid p-0 w-100 custom"
-                                                                            placeholder="Search repairer"
+                                                                            placeholder="{{'SEARCH_REPAIRER' | translate}}"
                                                                             [minTermLength]="2" [clearable]="false"
                                                                             [isOpen]="supplierOptions.length > 0"
                                                                             (change)="onSupplierChange($event,index)">
@@ -670,7 +676,7 @@
                                                                             [(ngModel)]="activity.iBusinessBrandId"
                                                                             (search)="searchBrands($event.term)"
                                                                             class="form-control form-control-solid p-0 w-100 custom"
-                                                                            placeholder="Search brand"
+                                                                            placeholder="{{'SEARCH_BRAND' | translate }}"
                                                                             [minTermLength]="2" [clearable]="false"
                                                                             [isOpen]="filteredBrands.length > 0"
                                                                             (change)="onBrandChange($event, index)">
@@ -805,7 +811,7 @@
                                                         tillService.currency}}
                                                     </div>
                                                     <div class="col-6">
-                                                        {{"STILL_TO_PAY"}}: {{(activity.nTotalAmount -
+                                                        {{"STILL_TO_PAY" | translate}}: {{(activity.nTotalAmount -
                                                         activity.nPaidAmount)
                                                         |
                                                         currency:
@@ -816,9 +822,9 @@
                                         </div>
                                         <div class="col-3 my-3">
                                             <div class="btn-group me-4 w-100 my-3">
-                                                <span class="btn btn-primary fs-bold px-6"
+                                                <span class="btn btn-primary fs-bold"
                                                     (click)="downloadCustomerReceipt(index)">
-                                                    <fa-icon class="mx-4" [icon]="faUser"></fa-icon>
+                                                    <fa-icon class="group-icon" [icon]="faUser"></fa-icon>
                                                     <span class="indicator-label ">{{ "CUSTOMER_RECEIPT" | translate
                                                         }}</span>
                                                 </span>
@@ -848,10 +854,10 @@
                                                 </span>
                                             </div>
                                             <div class="btn-group me-4 w-100 my-3">
-                                                <span class="btn btn-primary fs-bold px-6"
+                                                <span class="btn btn-primary fs-bold"
                                                     (click)="downloadCustomerReceipt(index)">
-                                                    <fa-icon class="mx-4" [icon]="faPrint"></fa-icon>
-                                                    <span class="indicator-label printer-button">{{
+                                                    <fa-icon class="group-icon" [icon]="faPrint"></fa-icon>
+                                                    <span class="indicator-label">{{
                                                         "CUSTOMER_RECEIPT_PRINT" |
                                                         translate}}</span>
                                                 </span>
@@ -880,8 +886,8 @@
                                                 </span>
                                             </div>
                                             <div class="btn-group me-4 w-100 my-3">
-                                                <span class="btn btn-primary fs-bold px-6">
-                                                    <fa-icon class="mx-4" [icon]="faReceipt"></fa-icon>
+                                                <span class="btn btn-primary fs-bold">
+                                                    <fa-icon class="group-icon" [icon]="faReceipt"></fa-icon>
                                                     <span class="indicator-label">{{ "RECEIPT_PARTNER" |
                                                         translate}}</span>
                                                 </span>
@@ -908,9 +914,9 @@
                                                 </span>
                                             </div>
                                             <div class="btn-group me-4 w-100 my-3">
-                                                <span class="btn btn-primary fs-bold px-6">
+                                                <span class="btn btn-primary fs-bold">
                                                     <span>
-                                                        <fa-icon class="mx-4" [icon]="faReceipt"></fa-icon>
+                                                        <fa-icon class="group-icon" [icon]="faReceipt"></fa-icon>
                                                     </span>
                                                     <span class="indicator-label">{{ "RECEIPT_FOR_BOTH" |
                                                         translate}}</span>
@@ -938,15 +944,15 @@
                                                 </span>
                                             </div>
                                             <div class="btn-group me-4 w-100 my-3">
-                                                <span class="btn btn-primary fs-bold px-6">
-                                                    <fa-icon class="mx-4" [icon]="faEnvelope"></fa-icon>
+                                                <span class="btn btn-primary fs-bold">
+                                                    <fa-icon class="group-icon" [icon]="faEnvelope"></fa-icon>
                                                     <span class="indicator-label">{{ "MAIL" | translate}}</span>
                                                 </span>
                                             </div>
                                             <div class="btn-group me-4 w-100 my-3">
-                                                <span class="btn btn-primary fs-bold px-6"
+                                                <span class="btn btn-primary fs-bold"
                                                     (click)="loadCashRegister = true; openTransaction(activity, 'activity')">
-                                                    <fa-icon class="mx-4" [icon]="faEuro"></fa-icon>
+                                                    <fa-icon class="group-icon" [icon]="faEuro"></fa-icon>
                                                     <span class="indicator-label">{{ "CHECKOUT" | translate}}</span>
                                                 </span>
                                             </div>
@@ -1124,7 +1130,8 @@
                                                         <tr *ngFor='let receipt of activity.receipts'>
                                                             <td>{{receipt.sTransactionNumber}}</td>
                                                             <td>{{receipt.dCreatedDate | date: 'medium'}}</td>
-                                                            <td>{{receipt.nPaymentAmount | currency: tillService.currency}}</td>
+                                                            <td>{{receipt.nPaymentAmount | currency:
+                                                                tillService.currency}}</td>
                                                             <ng-container *ngIf="from != 'transaction-details'">
                                                                 <td>
                                                                     <div class="d-flex align-items-center">
@@ -1433,7 +1440,7 @@
                                                 <select name="status" id="status"
                                                     class="form-control form-control-solid"
                                                     [(ngModel)]="activity.eActivityItemStatus">
-                                                    <option *ngFor="let type of repairStatus" [value]="type">{{type}}
+                                                    <option *ngFor="let type of repairStatus" [value]="type.value">{{type.key | translate}}
                                                     </option>
                                                 </select>
                                             </div>
@@ -1461,7 +1468,7 @@
                                                         tillService.currency}}
                                                     </div>
                                                     <div class="col-6">
-                                                        {{"STILL_TO_PAY"}}: {{(activity.nTotalAmount -
+                                                        {{"STILL_TO_PAY" | translate}}: {{(activity.nTotalAmount -
                                                         activity.nPaidAmount)
                                                         |
                                                         currency:
@@ -1472,9 +1479,9 @@
                                         </div>
                                         <div class="col-3 my-3">
                                             <div class="btn-group me-4 w-100 my-3">
-                                                <span class="btn btn-primary fs-bold px-6"
+                                                <span class="btn btn-primary fs-bold"
                                                     (click)="downloadCustomerReceipt(index)">
-                                                    <fa-icon class="mx-4" [icon]="faUser"></fa-icon>
+                                                    <fa-icon class="group-icon" [icon]="faUser"></fa-icon>
                                                     <span class="indicator-label ">{{ "CUSTOMER_RECEIPT" | translate
                                                         }}</span>
                                                 </span>
@@ -1504,12 +1511,10 @@
                                                 </span>
                                             </div>
                                             <div class="btn-group me-4 w-100 my-3">
-                                                <span class="btn btn-primary fs-bold px-6"
+                                                <span class="btn btn-primary fs-bold"
                                                     (click)="downloadCustomerReceipt(index)">
-                                                    <fa-icon class="mx-4" [icon]="faPrint"></fa-icon>
-                                                    <span class="indicator-label printer-button">{{
-                                                        "CUSTOMER_RECEIPT_PRINT" |
-                                                        translate}}</span>
+                                                    <fa-icon class="group-icon" [icon]="faPrint"></fa-icon>
+                                                    <span class="indicator-label">{{"CUSTOMER_RECEIPT_PRINT" | translate}}</span>
                                                 </span>
 
                                                 <span class="btn btn-primary btn-icon fs-bold printer-button-span"
@@ -1536,8 +1541,8 @@
                                                 </span>
                                             </div>
                                             <div class="btn-group me-4 w-100 my-3">
-                                                <span class="btn btn-primary fs-bold px-6">
-                                                    <fa-icon class="mx-4" [icon]="faReceipt"></fa-icon>
+                                                <span class="btn btn-primary fs-bold">
+                                                    <fa-icon class="group-icon" [icon]="faReceipt"></fa-icon>
                                                     <span class="indicator-label">{{ "RECEIPT_PARTNER" |
                                                         translate}}</span>
                                                 </span>
@@ -1564,9 +1569,9 @@
                                                 </span>
                                             </div>
                                             <div class="btn-group me-4 w-100 my-3">
-                                                <span class="btn btn-primary fs-bold px-6">
+                                                <span class="btn btn-primary fs-bold">
                                                     <span>
-                                                        <fa-icon class="mx-4" [icon]="faReceipt"></fa-icon>
+                                                        <fa-icon class="group-icon" [icon]="faReceipt"></fa-icon>
                                                     </span>
                                                     <span class="indicator-label">{{ "RECEIPT_FOR_BOTH" |
                                                         translate}}</span>
@@ -1594,15 +1599,15 @@
                                                 </span>
                                             </div>
                                             <div class="btn-group me-4 w-100 my-3">
-                                                <span class="btn btn-primary fs-bold px-6">
-                                                    <fa-icon class="mx-4" [icon]="faEnvelope"></fa-icon>
+                                                <span class="btn btn-primary fs-bold">
+                                                    <fa-icon class="group-icon" [icon]="faEnvelope"></fa-icon>
                                                     <span class="indicator-label">{{ "MAIL" | translate}}</span>
                                                 </span>
                                             </div>
                                             <div class="btn-group me-4 w-100 my-3">
-                                                <span class="btn btn-primary fs-bold px-6"
+                                                <span class="btn btn-primary fs-bold"
                                                     (click)="loadCashRegister = true; openTransaction(activity, 'activity')">
-                                                    <fa-icon class="mx-4" [icon]="faEuro"></fa-icon>
+                                                    <fa-icon class="group-icon" [icon]="faEuro"></fa-icon>
                                                     <span class="indicator-label">{{ "CHECKOUT" | translate}}</span>
                                                 </span>
                                             </div>
@@ -1780,7 +1785,8 @@
                                                         <tr *ngFor='let receipt of activity.receipts'>
                                                             <td>{{receipt.sTransactionNumber}}</td>
                                                             <td>{{receipt.dCreatedDate | date: 'medium'}}</td>
-                                                            <td>{{receipt.nPaymentAmount | currency: tillService.currency}}</td>
+                                                            <td>{{receipt.nPaymentAmount | currency:
+                                                                tillService.currency}}</td>
                                                             <ng-container *ngIf="from != 'transaction-details'">
                                                                 <td>
                                                                     <div class="d-flex align-items-center">
@@ -1928,7 +1934,7 @@
                                                                             [(ngModel)]="activity.iAssigneeId"
                                                                             (search)="searchEmployees($event.term)"
                                                                             class="form-control form-control-solid p-0 w-100 custom"
-                                                                            placeholder="Search employee"
+                                                                            placeholder="{{'SEARCH_EMPLOYEE'| translate }}"
                                                                             [minTermLength]="2" [clearable]="false"
                                                                             [isOpen]="filteredEmployees.length > 0"
                                                                             (change)="onEmployeeChange($event , index)">
@@ -1963,7 +1969,7 @@
                                                                             [(ngModel)]="activity.iBusinessPartnerId"
                                                                             (search)="searchSuppliers($event.term)"
                                                                             class="form-control form-control-solid p-0 w-100 custom"
-                                                                            placeholder="Search repairer"
+                                                                            placeholder="{{'SEARCH_REPAIRER' | translate }}"
                                                                             [minTermLength]="2" [clearable]="false"
                                                                             [isOpen]="supplierOptions.length > 0"
                                                                             (change)="onSupplierChange($event,index)">
@@ -1996,7 +2002,7 @@
                                                                             [(ngModel)]="activity.iBusinessBrandId"
                                                                             (search)="searchBrands($event.term)"
                                                                             class="form-control form-control-solid p-0 w-100 custom"
-                                                                            placeholder="Search brand"
+                                                                            placeholder="{{'SEARCH_BRAND' | translate}}"
                                                                             [minTermLength]="2" [clearable]="false"
                                                                             [isOpen]="filteredBrands.length > 0"
                                                                             (change)="onBrandChange($event, index)">

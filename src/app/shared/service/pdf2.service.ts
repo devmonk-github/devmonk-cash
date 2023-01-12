@@ -117,15 +117,22 @@ export class PdfService {
 
   getPdfData({ styles, content, orientation, pageSize, pdfTitle, footer, pageMargins, defaultStyle,
     printSettings, printActionSettings, eType, eSituation, sAction }: any) {
-    // console.log('getPdfData', { orientation, pageSize, pdfTitle, pageMargins, printSettings, printActionSettings, sAction, eType })
-    const docDefinition = this.getDocDefinition(styles, content, orientation, pageSize, footer, pageMargins, defaultStyle);
-    const pdfObject = this.generatePdf(docDefinition);
-    if ((printSettings?.length && printActionSettings?.length) || sAction) {
-      this.processPrintAction(pdfObject, pdfTitle, printSettings, printActionSettings, eType, eSituation, sAction);
-    } else {
-      pdfObject.download(pdfTitle);
-    }
+    return new Promise((resolve, reject) => {
+      // console.log('getPdfData', { orientation, pageSize, pdfTitle, pageMargins, printSettings, printActionSettings, sAction, eType })
+      const docDefinition = this.getDocDefinition(styles, content, orientation, pageSize, footer, pageMargins, defaultStyle);
+      const pdfObject = this.generatePdf(docDefinition);
+      if (sAction == 'sentToCustomer') {
+        pdfObject.getBase64(async (response: any) => resolve(response));
+      } else if ((printSettings?.length && printActionSettings?.length) || sAction) {
+        this.processPrintAction(pdfObject, pdfTitle, printSettings, printActionSettings, eType, eSituation, sAction);
+        resolve;
+      } else {
+        pdfObject.download(pdfTitle);
+        resolve;
+      }
+    });
   }
+
 
 
   processPrintAction(pdfObject: any, pdfTitle: any, printSettings: any, printActionSettings: any, eType: any, eSituation: any, sAction: any) {
@@ -133,7 +140,7 @@ export class PdfService {
     if (!printActionSettings?.length && !sAction) {
       pdfObject.download(pdfTitle);
       return;
-    } else if (printActionSettings?.length){
+    } else if (printActionSettings?.length) {
       printActionSettings = printActionSettings.filter((s: any) => s.eType === eType && s.eSituation === eSituation);
     }
     printSettings = printSettings.filter((s: any) => s.sType === eType && s.iWorkstationId === this.iWorkstationId);
@@ -186,7 +193,7 @@ export class PdfService {
         1,
         pdfTitle,
         { title: pdfTitle }
-      ).then((response:any) => {
+      ).then((response: any) => {
         if (response.status == "PRINTJOB_NOT_CREATED") {
           let message = '';
           if (response.computerStatus != 'online') {

@@ -5,6 +5,7 @@ import { DialogService } from '../../service/dialog';
 import { CustomerDetailsComponent } from '../customer-details/customer-details.component';
 import { ApiService } from '../../service/api.service';
 import { TranslateService } from '@ngx-translate/core';
+import { ToastService } from '../toast';
 
 @Component({
   selector: 'app-customer-dialog',
@@ -108,7 +109,8 @@ export class CustomerDialogComponent implements OnInit {
     private viewContainer: ViewContainerRef,
     private dialogService: DialogService,
     private apiService: ApiService,
-    private translateService: TranslateService) {
+    private translateService: TranslateService,
+    private toastService: ToastService) {
     const _injector = this.viewContainer.parentInjector
     this.dialogRef = _injector.get<DialogComponent>(DialogComponent);
   }
@@ -118,7 +120,7 @@ export class CustomerDialogComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    
+    this.apiService.setToastService(this.toastService);
     this.business._id = localStorage.getItem("currentBusiness");
     this.requestParams.iBusinessId = this.business._id;
   }

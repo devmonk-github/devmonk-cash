@@ -7,6 +7,7 @@ import { ApiService } from './api.service';
 import * as _ from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
 import * as _moment from 'moment';
+import { TranslateService } from '@ngx-translate/core';
 const moment = (_moment as any).default ? (_moment as any).default : _moment;
 @Injectable({
   providedIn: 'root'
@@ -17,7 +18,8 @@ export class TillService {
 
   iBusinessId = localStorage.getItem('currentBusiness');
   constructor(
-    private apiService: ApiService) { }
+    private apiService: ApiService,
+    private translateService: TranslateService) { }
 
   selectCurrency(oLocation: any) {
     // console.log('oLocation? currency selection', oLocation?.eCurrency)
@@ -42,7 +44,7 @@ export class TillService {
 
 
   getUsedPayMethods(total: boolean, payMethods: any): any {
-    console.log(45,'getUsedPayMethods', payMethods)
+    console.log(45, 'getUsedPayMethods', payMethods)
     if (!payMethods) {
       return 0
     }
@@ -131,6 +133,9 @@ export class TillService {
       payments: this.getUsedPayMethods(false, payMethods),
       redeemedLoyaltyPoints,
     };
+
+    body.payments.forEach((payment: any) => payment.amount = parseFloat(payment.amount.toFixed(2)))
+
     if (customer && customer._id) {
       body.oTransaction.iCustomerId = customer._id;
       body.oTransaction.oCustomer = {
@@ -145,6 +150,7 @@ export class TillService {
         oPhone: customer.oPhone,
         sVatNumber: customer.sVatNumber,
         sCocNumber: customer.sCocNumber,
+        sEmail: customer.sEmail
       }
     };
     console.log('length 115: ', transactionItems?.length);
@@ -211,22 +217,22 @@ export class TillService {
       oItem.iLocationId = this.getValueFromLocalStorage('currentLocation');
       oItem.sBagNumber = i.sBagNumber;
       oItem.iSupplierId = i.iSupplierId; // repairer id
-        // 50
+      // 50
       oItem.iLastTransactionItemId = i.iLastTransactionItemId;
       oItem.oType = {
-          eTransactionType: i.eTransactionType || 'cash-registry', // TODO
-          bRefund,
-          nStockCorrection: i.eTransactionItemType === 'regular' ? i.quantity : i.quantity - (i.nBrokenProduct || 0),
-          eKind: i.type, // TODO // repai
-          bDiscount: i.nDiscount > 0,
-          bPrepayment: bPrepayment
-        };
+        eTransactionType: i.eTransactionType || 'cash-registry', // TODO
+        bRefund,
+        nStockCorrection: i.eTransactionItemType === 'regular' ? i.quantity : i.quantity - (i.nBrokenProduct || 0),
+        eKind: i.type, // TODO // repai
+        bDiscount: i.nDiscount > 0,
+        bPrepayment: bPrepayment
+      };
       oItem.iActivityItemId = i.iActivityItemId;
       oItem.oGoldFor = i.oGoldFor;
       oItem.nDiscount = i.nDiscount;
       oItem.nRedeemedLoyaltyPoints = i.redeemedLoyaltyPoints;
-      oItem.sUniqueIdentifier =  i.sUniqueIdentifier || uuidv4();
-      oItem.nRevenueAmount =  i.paymentAmount / i.quantity;
+      oItem.sUniqueIdentifier = i.sUniqueIdentifier || uuidv4();
+      oItem.nRevenueAmount = i.paymentAmount / i.quantity;
       oItem.sDescription = i.description;
 
       oItem.sServicePartnerRemark = i.sServicePartnerRemark;
@@ -234,7 +240,7 @@ export class TillService {
       oItem.eActivityItemStatus = i.eActivityItemStatus;
       oItem.bGiftcardTaxHandling = i.bGiftcardTaxHandling;
       oItem.bDiscountOnPercentage = i.bDiscountOnPercentage || false
-      
+
       return oItem;
     });
     console.log('iPayment 201: ', JSON.parse(JSON.stringify(body?.transactionItems)));
@@ -487,6 +493,9 @@ export class TillService {
     dataObject.total = 0;
     let total = 0, totalAfterDisc = 0, totalVat = 0, totalDiscount = 0, totalSavingPoints = 0, totalRedeemedLoyaltyPoints = 0;
     dataObject.aTransactionItems.forEach((item: any, index: number) => {
+      if (item.oType.eKind === 'giftcard') {
+        item.sDescription = this.translateService.instant('VOUCHER_SALE');
+      }
       item.bRegular = !item.oType.bRefund;
       if (item?.oArticleGroupMetaData?.oName && Object.keys(item?.oArticleGroupMetaData?.oName)?.length) {
         item.sArticleGroupName = (item?.oArticleGroupMetaData?.oName[language] || item?.oArticleGroupMetaData?.oName['en'] || item?.oArticleGroupMetaData?.oName['nl'] || '') + ' ';
@@ -518,7 +527,7 @@ export class TillService {
       // console.log('total', total)
       totalAfterDisc += (item.nPriceIncVatAfterDiscount * item.nQuantity);
       // console.log('totalAfterDisc', totalAfterDisc)
-      item.ntotalDiscountPerItem = (item.oType.bRefund===true) ? 0 : (item.nDiscountToShow * item.nQuantity)
+      item.ntotalDiscountPerItem = (item.oType.bRefund === true) ? 0 : (item.nDiscountToShow * item.nQuantity)
       totalDiscount += item.ntotalDiscountPerItem;
       // console.log('totalDiscount', totalDiscount)
 
@@ -540,7 +549,7 @@ export class TillService {
           if (relatedItem?.bDiscountOnPercentage) {
             item.nDiscountToShow = (item.oType.bRefund === true) ? 0 : this.getPercentOf(relatedItem.nPriceIncVat, relatedItem.nDiscount);
             totalDiscount += (item.oType.bRefund === true) ? 0 : item.nDiscountToShow;
-            relatedItem.nRevenueAmount = relatedItem.nRevenueAmount.toFixed(2) - this.getPercentOf(relatedItem.nPriceIncVat,relatedItem.nDiscount);
+            relatedItem.nRevenueAmount = relatedItem.nRevenueAmount.toFixed(2) - this.getPercentOf(relatedItem.nPriceIncVat, relatedItem.nDiscount);
           } else {
             item.nDiscountToShow = (item.oType.bRefund === true) ? 0 : relatedItem.nDiscount;
             totalDiscount += (item.oType.bRefund === true) ? 0 : item.nDiscountToShow;
@@ -548,7 +557,7 @@ export class TillService {
           }
 
           relatedItem.nRevenueAmount = relatedItem.nRevenueAmount.toFixed(2);
-        })          
+        })
       }
     })
     dataObject.totalAfterDisc = parseFloat(totalAfterDisc.toFixed(2));
@@ -564,7 +573,7 @@ export class TillService {
       this.apiService.getNew('cashregistry', `/api/v1/points-settings?iBusinessId=${this.iBusinessId}`).toPromise()
     ])
     dataObject.bSavingPointsSettings = _loyaltyPointSettings?.bEnabled;
-    dataObject.aTransactionItems.forEach((item:any)=>item.bSavingPointsSettings = _loyaltyPointSettings?.bEnabled)
+    dataObject.aTransactionItems.forEach((item: any) => item.bSavingPointsSettings = _loyaltyPointSettings?.bEnabled)
     dataObject.related = _relatedResult.data || [];
     dataObject.related.forEach((relatedobj: any) => {
       relatedobj.aPayments.forEach((obj: any) => {

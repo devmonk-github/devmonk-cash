@@ -435,7 +435,7 @@ export class TransactionAuditUiPdfService {
             ],
             [
                 { text: this.translations['CASH_IN_TILL'], style: ['td'] },
-                { text: this.convertToMoney(aStatistic[0].overall[0].nTotalRevenue + (-oCountings.nCashDifference)), style: ['td'] },
+                { text: this.convertToMoney((aStatistic[0]?.overall?.length) ? aStatistic[0].overall[0].nTotalRevenue : 0 + (-oCountings.nCashDifference)), style: ['td'] },
             ],
             [
                 { text: this.translations['CASH_COUNTED'], style: ['td'] },
@@ -513,7 +513,7 @@ export class TransactionAuditUiPdfService {
                 nOverallTotalVatAmount += nTotalVatAmount;
 
                 texts.push([
-                    { text: this.translations['TOTAL_OF_VAT_RATE'] + oItem?.nVat + '%', style: ['td', 'bold'] },
+                    { text: this.translations['TOTAL_OF_VAT_RATE'] + ' '+ oItem?.nVat + '%', style: ['td', 'bold'] },
                     { text: parseFloat(nTotalRevenue.toFixed(2)), style: ['td', 'bold'] },
                     { text: parseFloat(nTotalPurchaseValue.toFixed(2)), style: ['td', 'bold'] },
                     { text: parseFloat(nTotalProfit.toFixed(2)), style: ['td', 'bold'] },

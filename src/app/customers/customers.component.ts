@@ -5,6 +5,7 @@ import { ApiService } from '../shared/service/api.service';
 import { PaginatePipe } from 'ngx-pagination';
 import { CustomerDetailsComponent } from '../shared/components/customer-details/customer-details.component';
 import { CustomerStructureService } from '../shared/service/customer-structure.service';
+import { ToastService } from '../shared/components/toast';
 // import { result } from 'lodash';
 
 // interface FSEntry {
@@ -60,7 +61,7 @@ export class CustomersComponent implements OnInit {
 
   constructor(
     private apiService: ApiService,
-    // private dataSourceBuilder: NbTreeGridDataSourceBuilder<FSEntry>,
+    private toastService: ToastService,
     private paginationPipe: PaginatePipe,
     private dialogService: DialogService,
     private customerStructureService: CustomerStructureService
@@ -68,6 +69,7 @@ export class CustomersComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.apiService.setToastService(this.toastService);
     this.business._id = localStorage.getItem("currentBusiness");
     this.requestParams.iBusinessId = this.business._id;
     this.getCustomers()

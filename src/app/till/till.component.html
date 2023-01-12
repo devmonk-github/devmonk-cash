@@ -470,13 +470,13 @@
           <div *ngIf="payMethodsLoading" class="spinner-border mx-auto"></div>
         </div>
 
-        <h1 *ngIf="(getUsedPayMethods(true) - getTotals('price')) <0">{{ "Yet to Pay" | translate}}:
+        <h1 *ngIf="(getUsedPayMethods(true) - getTotals('price')) <0">{{ "YET_TO_PAY" | translate}}:
           {{getUsedPayMethods(true) - getTotals('price') | currency: tillService.currency}}</h1>
-        <h1 *ngIf="(getUsedPayMethods(true) - getTotals('price')) >=0">{{ "Change" | translate}}:
+        <h1 *ngIf="(getUsedPayMethods(true) - getTotals('price')) >=0">{{ "CHANGE" | translate}}:
           {{getUsedPayMethods(true) - getTotals('price') | currency: tillService.currency}}</h1>
 
         <h4 *ngIf="(getUsedPayMethods(true) - getTotals('price')) <0">{{ "PREPAYMENT" | translate}}: {{totalPrepayment()
-          | currency: tillService.currency}} {{'from total' | translate}} {{getTotals('price') | currency:
+          | currency: tillService.currency}} {{'FROM_TOTAL' | translate}} {{getTotals('price') | currency:
           tillService.currency}}</h4>
         <h4 *ngIf="(getUsedPayMethods(true) - getTotals('price')) ==0">{{ "PAYMENT" | translate}}: {{totalPrepayment() |
           currency: tillService.currency}}</h4>
@@ -490,7 +490,7 @@
               <fa-icon [icon]="faSpinner" class="fa-spin"></fa-icon>
             </span>
             <span *ngIf="!saveInProgress">
-              {{ "CHECKOUT" | translate}}
+              {{ "C_CHECKOUT" | translate}}
             </span>
           </button>
           <button class="btn btn-primary" (click)="clearPaymentAmounts()" [disabled]="!amountDefined">

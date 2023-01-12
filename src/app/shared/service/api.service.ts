@@ -42,7 +42,7 @@ export class ApiService {
 
   defaultHeaders: any = { 'Content-Type': 'application/json', observe: 'response' };
 
-  httpError(error: { error: { message: string; }; message: string; status: string }) {
+  httpError(error: { error: { message: string; }; message: string; status: number, url:string }) {
     let msg = ''
     if (error.error instanceof ErrorEvent) {
       //Client side error
@@ -51,8 +51,13 @@ export class ApiService {
       //Server side error
       msg = error.error.message
     }
-    // console.error('HttpClient throws error', msg)
-    this.toastService.show({type: 'danger', text: msg || 'Something went wrong!' })
+
+    if(Number(error.status) == 0) {
+      let url = error.url.match('.*/v1/(.*)/') || ''
+      this.toastService.show({type: 'danger', text: `Something went wrong while executing this url '${url[1]}'` })
+    } else {
+      this.toastService.show({type: 'danger', text: msg || 'Something went wrong!' })
+    }
     return throwError(new Error(msg))
   }
   

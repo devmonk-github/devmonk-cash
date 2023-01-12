@@ -262,6 +262,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
   }
 
   ngOnInit(): void {
+    this.apiService.setToastService(this.toastService);
       if(this.customer._id == ""){
         this.getBusinessDetails();
       }

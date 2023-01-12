@@ -900,6 +900,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   getTemplate(types: any) {
     const body = {
       iBusinessId: this.business._id,
+      iLocationId: this.locationId,
       oFilterBy: {
         eType: types
       }
@@ -1133,7 +1134,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
           dUpdatedDate: data?.dUpdatedDate.toString(),
           sNumber: data?.sNumber.toString()
         })
-        this.toastrService.show({ type: 'success', text: 'Transaction parked!' })
+        this.toastrService.show({ type: 'success', text: this.translateService.instant('TRANSACTION_PARKED') })
 
       }, err => {
         this.toastrService.show({ type: 'danger', text: err.message });
@@ -1142,19 +1143,19 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   getParkedTransactions() {
-    this.apiService.getNew('cashregistry', `/api/v1/park?iBusinessId=${this.getValueFromLocalStorage('currentBusiness')}`)
-      .subscribe((data: any) => {
-        this.parkedTransactions = data;
+    this.apiService.getNew('cashregistry', `/api/v1/park?iBusinessId=${this.business._id}`).subscribe((data: any) => {
+      this.parkedTransactions = data;
 
-      }, err => {
-        this.toastrService.show({ type: 'danger', text: err.message });
-      });
+    }, err => {
+      this.toastrService.show({ type: 'danger', text: err.message });
+    });
   }
 
   fetchParkedTransactionInfo() {
     this.parkedTransactionLoading = true;
-    this.apiService.getNew('cashregistry', `/api/v1/park/${this.selectedTransaction._id}?iBusinessId=${this.getValueFromLocalStorage('currentBusiness')}`)
+    this.apiService.getNew('cashregistry', `/api/v1/park/${this.selectedTransaction._id}?iBusinessId=${this.business._id}`)
       .subscribe((transactionInfo: any) => {
+        console.log(1157, transactionInfo)
         this.taxes = transactionInfo.aTaxes;
         this.transactionItems = transactionInfo.aTransactionItems;
         this.customer = transactionInfo.oCustomer;

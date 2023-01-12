@@ -6,6 +6,7 @@ import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import * as _ from 'lodash';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastService } from '../toast';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-transaction-items-details',
@@ -19,8 +20,9 @@ export class TransactionItemsDetailsComponent implements OnInit {
   transaction: any;
   mode: string = '';
   showLoader = false;
-  transactionColumns = ['Product Name', 'Price', 'Quantity', 'Payment Amount', 'Is Prepayment', 'Created On', 'Actions'];
-  activityColumns = ['Activity item number', 'Total amount', 'Paid amount', 'Is Prepayment', 'Created On', 'Actions'];
+  translation :any =[];
+  transactionColumns :any= []
+  activityColumns : any= []
   transactionItems: Array<any> = [];
   faTimes = faTimes;
   itemType = 'transaction';
@@ -61,6 +63,7 @@ export class TransactionItemsDetailsComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private toastrService: ToastService,
+    private transaltionService:TranslateService
     ) {
       const _injector = this.viewContainerRef.parentInjector;
       this.dialogRef = _injector.get<DialogComponent>(DialogComponent);
@@ -70,6 +73,13 @@ export class TransactionItemsDetailsComponent implements OnInit {
     
     ngOnInit(): void {
       // console.log('TransactionItemsDetailsComponent 1');
+      const translation =['ACTIVITY_ITEM_NUMBER' , 'TOTAL_AMOUNT' , 'PAID_AMOUNT' , 'IS_PREPAYMENT' , 'CREATED_ON' , 'ACTIONS' , 'PRODUCT_NAME' , 'PRICE' , 'QUANTITY' , 'PAYMENT_AMOUNT'];
+      this.transaltionService.get(translation).subscribe((res:any)=>{
+        this.translation = res
+      })
+      this.transactionColumns =  [this.translation['PRODUCT_NAME'] , this.translation['PRICE'], this.translation['QUANTITY'], this.translation['PAYMENT_AMOUNT'], this.translation['IS_PREPAYMENT'], this.translation['CREATED_ON'], this.translation['ACTIONS']];
+      this.activityColumns =[this.translation['ACTIVITY_ITEM_NUMBER'], this.translation['TOTAL_AMOUNT'], this.translation['PAID_AMOUNT'], this.translation['IS_PREPAYMENT'], this.translation['CREATED_ON'], this.translation['ACTIONS']];
+      this.apiService.setToastService(this.toastrService);
       this.itemType = this.dialogRef.context.itemType;
       this.transaction = this.dialogRef.context.transaction;
       this.selectedId = this.dialogRef.context.selectedId;

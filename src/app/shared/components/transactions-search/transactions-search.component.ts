@@ -3,9 +3,9 @@ import { DialogComponent } from "../../service/dialog";
 import { faTimes, faSearch } from "@fortawesome/free-solid-svg-icons";
 import { DialogService } from '../../service/dialog';
 import { ApiService } from '../../service/api.service';
-import { TranslateService } from '@ngx-translate/core';
 import { TransactionItemsDetailsComponent } from '../transaction-items-details/transaction-items-details.component';
 import { TillService } from '../../service/till.service';
+import { ToastService } from '../toast';
 
 @Component({
   selector: 'app-transactions-search',
@@ -41,8 +41,8 @@ export class TransactionsSearchComponent implements OnInit, AfterViewInit {
     private viewContainer: ViewContainerRef,
     private dialogService: DialogService,
     private apiService: ApiService,
-    private tillService: TillService,
-    private translateService: TranslateService) {
+    private toastService: ToastService,
+    private tillService: TillService) {
     const _injector = this.viewContainer.injector
     this.dialogRef = _injector.get<DialogComponent>(DialogComponent);
   }
@@ -52,6 +52,7 @@ export class TransactionsSearchComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
+    this.apiService.setToastService(this.toastService);
     this.business._id = localStorage.getItem("currentBusiness");
     this.requestParams.iBusinessId = this.business._id;
   }

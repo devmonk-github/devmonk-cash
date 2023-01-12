@@ -44,8 +44,24 @@ export class ActivityDetailsComponent implements OnInit {
   faEuro = faEuro;
   faChevronRight = faChevronRight;
   faDownload = faDownload;
-  repairStatus = ['new', 'info', 'processing', 'cancelled', 'inspection', 'completed', 'refundInCashRegister',
-    'offer', 'offer-is-ok', 'offer-is-not-ok', 'to-repair', 'part-are-order', 'shipped-to-repair', 'delivered'];
+  repairStatus =[
+    {key:'NEW' , value:'new'},
+    {key:'INFO' , value:'info'},
+    {key:'PROCESSING' , value:'processing'},
+    {key:'CANCELLED' , value:'cancelled'},
+    {key:'INSPECTION' , value:'inspection'},
+    {key:'COMPLETED' , value:'completed'},
+    {key:'REFUNDINCASHREGISTER' , value:'refundInCashRegister'},
+    {key:'OFFER' , value:'offer'},
+    {key:'OFFER_IS_OK' , value:'offer-is-ok'},
+    {key:'OFFER_IS_NOT_OK' , value:'offer-is-not-ok'},
+    {key:'TO_REPAIR' , value:'to-repair'},
+    {key:'PART_ARE_ORDER' , value:'part-are-order'},
+    {key:'SHIPPED_TO_REPAIR' , value:'shipped-to-repair'},
+    {key:'DELIVERED' , value:'delivered'}  
+  ]
+  // repairStatus = ['new', 'info', 'processing', 'cancelled', 'inspection', 'completed', 'refundInCashRegister',
+    // 'offer', 'offer-is-ok', 'offer-is-not-ok', 'to-repair', 'part-are-order', 'shipped-to-repair', 'delivered'];
 
   carriers = ['PostNL', 'DHL', 'DPD', 'bpost', 'other'];
   printOptions = ['Portrait', 'Landscape'];
@@ -153,7 +169,7 @@ export class ActivityDetailsComponent implements OnInit {
 
 
   async ngOnInit() {
-
+    this.apiService.setToastService(this.toastService);
     this.routerSub = this.routes.events.subscribe((event) => {
       if (event instanceof NavigationEnd && !(event.url.startsWith('/business/activity-items') || event.url.startsWith('/business/services'))) {
         this.routerSub.unsubscribe();
@@ -593,6 +609,7 @@ export class ActivityDetailsComponent implements OnInit {
   }
 
   fetchCustomer(customerId: any, index: number) {
+    if(!customerId) return;
     this.apiService.getNew('customer', `/api/v1/customer/${customerId}?iBusinessId=${this.iBusinessId}`).subscribe(
       (result: any) => {
         if (index > -1) this.transactions[index].customer = result;
@@ -627,7 +644,7 @@ export class ActivityDetailsComponent implements OnInit {
       this.totalPrice += obj.nPaymentAmount;
       this.quantity += obj.bRefund ? (- obj.nQuantity) : obj.nQuantity
       if (obj.iStockLocationId) this.setSelectedBusinessLocation(obj.iStockLocationId, i)
-      this.fetchCustomer(obj.iCustomerId, i);
+      this.fetchCustomer(obj?.iCustomerId, i);
     }
     setTimeout(() => {
       MenuComponent.reinitialization();

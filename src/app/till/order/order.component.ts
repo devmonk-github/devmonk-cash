@@ -31,8 +31,8 @@ export class OrderComponent implements OnInit {
   faPhone = faPhone;
   faAt = faAt;
   typeArray = [
-    { key: 'regular', value: false },
-    { key: 'return', value: true }
+    { key: 'regular', value: false, title: 'REGULAR' },
+    { key: 'return', value: true, title: 'RETURN' }
   ];
   propertyOptions: Array<any> = [];
   selectedProperties: Array<any> = [];
