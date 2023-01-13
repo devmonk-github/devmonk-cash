@@ -6,6 +6,9 @@ import { PaginatePipe } from 'ngx-pagination';
 import { CustomerDetailsComponent } from '../shared/components/customer-details/customer-details.component';
 import { CustomerStructureService } from '../shared/service/customer-structure.service';
 import { ToastService } from '../shared/components/toast';
+import {ExportsComponent} from '../shared/components/exports/exports.component';
+import { MenuComponent } from '../shared/_layout/components/common';
+
 // import { result } from 'lodash';
 
 // interface FSEntry {
@@ -41,6 +44,14 @@ export class CustomersComponent implements OnInit {
   customColumn = 'NAME';
   defaultColumns = ['PHONE', 'EMAIL', 'SHIPPING_ADDRESS', 'INVOICE_ADDRESS'];
   allColumns = [this.customColumn, ...this.defaultColumns];
+  headerList: Array<any> = ['Salutation', 'First name', 'Prefix', 'Last name', 'Date of birth', 'Client id', 'Gender', 'Email verified', 'Counter', 'Email', 'phone'
+   , 'Shipping Address' , 'Invoice Address' , 'Comment' , 'Newsletter' , 'Company name' , 'Points' , 'Identity' , 'Vat number' ,
+   'Coc number' , 'Payment term days' , 'Discount' , 'Whatsapp' , 'Matching code' , 'Note' , 'Migrated customer'
+  ];
+  valuesList: Array<any> = ['sSalutation', 'sFirstName', 'sPrefix', 'sLastName', 'dDateOfBirth', 'nClientId', 'sGender', 'bIsEmailVerified',
+  'bCounter', 'sEmail', 'oPhone', 'oShippingAddress', 'oInvoiceAddress', 'sComment', 'bNewsletter', 'sCompanyName', 'oPoints',
+   'oIdentity', 'sVatNumber', 'sCocNumber', 'nPaymentTermDays', 'nDiscount', 'bWhatsApp', 'nMatchingCode' , 'sNote' , 'iEmployeeId' , 'bIsMigrated'];
+  
   requestParams: any = {
     iBusinessId: "",
     skip: 0,
@@ -50,7 +61,7 @@ export class CustomersComponent implements OnInit {
     searchValue: '',
     aProjection: ['sSalutation', 'sFirstName', 'sPrefix', 'sLastName', 'dDateOfBirth', 'dDateOfBirth', 'nClientId', 'sGender', 'bIsEmailVerified',
       'bCounter', 'sEmail', 'oPhone', 'oShippingAddress', 'oInvoiceAddress', 'iBusinessId', 'sComment', 'bNewsletter', 'sCompanyName', 'oPoints',
-      'sCompanyName', 'oIdentity', 'sVatNumber', 'sCocNumber', 'nPaymentTermDays', 'nDiscount', 'bWhatsApp', 'nMatchingCode' , 'sNote' , 'iEmployeeId'],
+      'sCompanyName', 'oIdentity', 'sVatNumber', 'sCocNumber', 'nPaymentTermDays', 'nDiscount', 'bWhatsApp', 'nMatchingCode' , 'sNote' , 'iEmployeeId' , 'bIsMigrated'],
     oFilterBy: {
       oStatic: {},
       oDynamic: {}
@@ -105,6 +116,10 @@ export class CustomersComponent implements OnInit {
             customer['EMAIL'] = customer.sEmail;
             customer['PHONE'] = (customer.oPhone && customer.oPhone.sLandLine ? customer.oPhone.sLandLine : '') + (customer.oPhone && customer.oPhone.sLandLine && customer.oPhone.sMobile ? ' / ' : '') + (customer.oPhone && customer.oPhone.sMobile ? customer.oPhone.sMobile : '')
           }
+          setTimeout(() => {
+            MenuComponent.bootstrap();
+            // MenuComponent.reinitialization();
+          }, 200);
         }
       },
         (error: any) => {
@@ -117,6 +132,13 @@ export class CustomersComponent implements OnInit {
   loadPageTableData() {
     let result = this.paginationPipe.transform(this.customers, this.paginationConfig);
     // return this.dataSourceBuilder.create(result, this.getters);
+  }
+
+  export(){
+    this.dialogService.openModal(ExportsComponent , { cssClass: "modal-lg", context: { requestParams:this.requestParams , headerList : this.headerList , valuesList:this.valuesList , separator:';'  } }).instance.close.subscribe(result => {
+      console.log("--------------customer export successfully!!!");
+    })
+
   }
 
   openCustomer(customer: any) {
