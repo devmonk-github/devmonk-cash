@@ -1155,7 +1155,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     this.parkedTransactionLoading = true;
     this.apiService.getNew('cashregistry', `/api/v1/park/${this.selectedTransaction._id}?iBusinessId=${this.business._id}`)
       .subscribe((transactionInfo: any) => {
-        console.log(1157, transactionInfo)
         this.taxes = transactionInfo.aTaxes;
         this.transactionItems = transactionInfo.aTransactionItems;
         this.customer = transactionInfo.oCustomer;
