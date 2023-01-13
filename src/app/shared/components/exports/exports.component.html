@@ -2,7 +2,7 @@
     <div class="card-header d-flex">
         <h3 class="card-title">{{"EXPORT_FIELD_SELECTION" | translate}}</h3>
         <a class="cancel ml-auto mt-3" (click)="close(false)">
-            <fa-icon icon="times"></fa-icon>
+            <i class="fa fa-times"></i>
         </a>
     </div>
     <div class="card-body">
@@ -55,7 +55,8 @@
             </div>
         </div> -->
     </div>
-    <div class="card-footer d-flex">
-        <button class="cancel btn btn-secondary ms-auto" (click)="getExportData()">{{"EXPORT" | translate}}</button>
+    <div class="card-footer">
+        <button class="cancel btn btn-secondary ms-auto mb-2" (click)="getExportData(';')">{{"EXPORT_SELECTION_TO_CSV_WITH_SEMI_COLON" | translate}}</button>
+        <button class="cancel btn btn-secondary ms-auto" (click)="getExportData(',')">{{"EXPORT_SELECTION_TO_CSV_WITH_COMMA" | translate}}</button>
     </div>
 </div>
