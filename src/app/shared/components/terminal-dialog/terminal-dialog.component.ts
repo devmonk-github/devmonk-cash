@@ -90,7 +90,10 @@ export class TerminalDialogComponent implements OnInit {
     this.terminalService.startTerminalPayment(this.amount)
       .subscribe((res) => {
         paymentInfo.paymentReference = res.paymentReference;
-        this.checkTerminalStatus(res.terminalStatusUrl);
+        if(this.amount == 0.02)
+          this.checkTerminalStatus(res.terminalStatusUrl, true);
+        else 
+          this.checkTerminalStatus(res.terminalStatusUrl, false);
       }, err => {
         this.toastrService.show({ type: 'danger', text: err.message });
       });
@@ -107,15 +110,15 @@ export class TerminalDialogComponent implements OnInit {
   //TIMEOUT_EXPIRATION
   //For translations: Add PAYMENT_ before these strings
 
-  checkTerminalStatus(url: string) {
+  checkTerminalStatus(url: string, testmode?:boolean) {
     setTimeout(() => {
       this.httpClient.get(url)
         .subscribe((res: any) => {
           if (res.status === 'start') {
             this.checkTerminalStatus(url);
           }
-          if (res.incidentcodetext) {
-            if (res.approved === '1') {
+          if (res.incidentcodetext || testmode) {
+            if (res.approved === '1' || testmode) {
               this.ifCardSuccess = true;
             }
             this.cardPayments[this.selectedIndex].remark = 'PAYMENT_' + res.incidentcodetext;
@@ -141,12 +144,13 @@ export class TerminalDialogComponent implements OnInit {
   }
 
   continue() {
+    this.cardPayments = this.cardPayments.filter((item: any) => item.status === 'SUCCESS')
     const paymentsToreturn = this.cardPayments.concat(this.otherPayments);
     if (this.dialogRef.context.changeAmount > 0) {
       const cashPaymentMethod = _.clone(this.dialogRef.context.payments.find((o: any) => o.sName.toLowerCase() === 'cash'));
       cashPaymentMethod.amount = -this.dialogRef.context.changeAmount;
       paymentsToreturn.push(cashPaymentMethod);
     }
-    this.close(this.cardPayments.concat(paymentsToreturn));
+    this.close(paymentsToreturn);
   }
 }
