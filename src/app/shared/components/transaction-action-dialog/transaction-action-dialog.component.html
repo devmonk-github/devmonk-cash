@@ -39,6 +39,12 @@
             </div>
             <hr>
         </div>
+        <div class="row border-bottom-2" *ngIf="transaction?.oCustomer?.sEmail || transaction?.oCustomer?.sEmail == ''">
+            <div class="col-12 pb-4 flex-column align-items-center">
+                <input type="mail" [(ngModel)]="transaction.oCustomer.sEmail" class="form-control">
+            </div>
+            <hr>
+        </div>
         <div class="row">
             <div class="col-4 d-flex flex-column align-items-center" *ngIf="bRegularCondition">
                 <span>{{ 'PROOF_OF_PAYMENT' | translate }}</span>
