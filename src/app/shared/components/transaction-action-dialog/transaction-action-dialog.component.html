@@ -40,8 +40,18 @@
             <hr>
         </div>
         <div class="row border-bottom-2" *ngIf="transaction?.oCustomer?.sEmail || transaction?.oCustomer?.sEmail == ''">
-            <div class="col-12 pb-4 flex-column align-items-center">
+            <div class="col-6 pb-4 flex-column align-items-center">
                 <input type="mail" [(ngModel)]="transaction.oCustomer.sEmail" class="form-control">
+            </div>
+            <div class="col-4 pb-4 flex-column d-flex align-items-center">
+                <label class="form-check form-switch form-check-custom form-check-solid my-auto">
+                    <input class="form-check-input" type="checkbox" [(ngModel)]="bReceiveNewsletter" />
+                    <span class="form-check-label fw-bold text-muted">{{ 'RECEIVE_NEWSLETTER' | translate }} </span>
+                </label>
+            </div>
+            <div class="col-2 pb-4 flex-column align-items-center">
+                <button type="button" class="btn btn-primary" (click)="updateCustomer()">{{"UPDATE" |
+                    translate}}</button>
             </div>
             <hr>
         </div>
