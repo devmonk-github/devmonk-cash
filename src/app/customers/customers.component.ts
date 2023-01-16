@@ -43,15 +43,7 @@ export class CustomersComponent implements OnInit {
 
   customColumn = 'NAME';
   defaultColumns = ['PHONE', 'EMAIL', 'SHIPPING_ADDRESS', 'INVOICE_ADDRESS'];
-  allColumns = [this.customColumn, ...this.defaultColumns];
-  headerList: Array<any> = ['Salutation', 'First name', 'Prefix', 'Last name', 'Date of birth', 'Client id', 'Gender', 'Email verified', 'Counter', 'Email', 'phone'
-   , 'Shipping Address' , 'Invoice Address' , 'Comment' , 'Newsletter' , 'Company name' , 'Points' , 'Identity' , 'Vat number' ,
-   'Coc number' , 'Payment term days' , 'Discount' , 'Whatsapp' , 'Matching code' , 'Note' , 'Migrated customer'
-  ];
-  valuesList: Array<any> = ['sSalutation', 'sFirstName', 'sPrefix', 'sLastName', 'dDateOfBirth', 'nClientId', 'sGender', 'bIsEmailVerified',
-  'bCounter', 'sEmail', 'PHONE', 'SHIPPING_ADDRESS', 'INVOICE_ADDRESS', 'sComment', 'bNewsletter', 'sCompanyName', 'oPoints',
-   'oIdentity', 'sVatNumber', 'sCocNumber', 'nPaymentTermDays', 'nDiscount', 'bWhatsApp', 'nMatchingCode' , 'sNote' , 'iEmployeeId' , 'bIsMigrated'];
-  
+  allColumns = [this.customColumn, ...this.defaultColumns];  
   requestParams: any = {
     iBusinessId: "",
     skip: 0,
@@ -135,7 +127,13 @@ export class CustomersComponent implements OnInit {
   }
 
   export(){
-    this.dialogService.openModal(ExportsComponent , { cssClass: "modal-lg", context: { requestParams:this.requestParams , headerList : this.headerList , valuesList:this.valuesList , separator:''  } }).instance.close.subscribe(result => {
+
+   const  headerList = [
+    { key : "sSalutation" , value: 'Salutation'}, {key : "sFirstName" , value : 'First name'}, { key:"sPrefix" , value :'Prefix'}, { key : "sLastName" , value : 'Last name' },{key :"dDateOfBirth" , value :'Date of birth'}, { key : "nClientId" , value :'Client id'}, { key : "sGender" , value :'Gender'}, {key : "bIsEmailVerified" , value : 'Email verified'}, {key : "bCounter" , value : 'Counter'}, { key :"sEmail" , value :'Email'}, { key : "oPhone" , value :'phone'},
+    {key :"oShippingAddress" , value: 'Shipping Address' },{key :"oInvoiceAddress" , value: 'Invoice Address' },{key:"sComment" , value: 'Comment' },{key:"bNewsletter" , value:'Newsletter'} , {key:"sCompanyName" , value:'Company name'} , { key:"oPoints" , value:'Points' },{ key:"oIdentity" , value:'Identity' },{key:"sVatNumber" , value:'Vat number'} ,
+    { key :"sCocNumber" , value:'Coc number'} , { key:"nPaymentTermDays" , value:'Payment term days'} ,{ key:"nDiscount" , value:'Discount' }, { key:"bWhatsApp" , value:'Whatsapp'} , { key :"nMatchingCode" , value:'Matching code'} , { key:"sNote" , value:'Note'} ,{key:"bIsMigrated" , value:'Migrated customer'}
+   ];
+    this.dialogService.openModal(ExportsComponent , { cssClass: "modal-lg", context: { requestParams:this.requestParams , customerHeaderList :headerList, separator:''  } }).instance.close.subscribe(result => {
       console.log("--------------customer export successfully!!!");
     })
 

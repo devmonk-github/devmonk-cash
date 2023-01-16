@@ -474,11 +474,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
           }
         },
         (error: any) => {
-          let errorMessage=""
-          this.translateService.get(error.message).subscribe(
-            result => errorMessage = result
-          )
-          this.toastService.show({ type: 'warning', text:errorMessage });
+             console.log(error.message);
         }
       );
     }
@@ -499,11 +495,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
           }
         },
         (error: any) => {
-          let errorMessage = "";
-          this.translateService.get(error.message).subscribe((res:any)=>{
-           errorMessage = res;
-          })
-          this.toastService.show({type:'warning' , text:errorMessage});
+          console.log(error.message);
         }
       );
     }

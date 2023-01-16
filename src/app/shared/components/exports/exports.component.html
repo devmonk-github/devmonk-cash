@@ -29,9 +29,9 @@
                 </ng-select>
             </div> -->
         </div>
-        <div class="d-flex my-1" *ngFor="let obj of headerList">
-            <input type="checkbox" class="form-check-input me-2" [value]="obj" checked (click)='removeFields(obj)' />
-            {{obj}}
+        <div class="d-flex my-1" *ngFor="let obj of customerHeaderList">
+            <input type="checkbox" class="form-check-input me-2" [value]="obj.value" checked (click)='removeFields(obj)' />
+            {{obj.value}}
         </div>
         <div class="row p-0" *ngIf="loader">
             <div class="spinner-box h-300px">
