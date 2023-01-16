@@ -45,6 +45,7 @@ export class TransactionActionDialogComponent implements OnInit {
   bOrderCondition: boolean = false;
   bGiftcardCondition: boolean = false;
   bProcessingTransaction: boolean = false;
+  bReceiveNewsletter: boolean = false;
 
   constructor(
     private viewContainer: ViewContainerRef,
@@ -171,7 +172,8 @@ export class TransactionActionDialogComponent implements OnInit {
       const body = {
         pdfContent: response,
         iTransactionId: this.transaction._id,
-        receiptType: 'purchase-receipt'
+        receiptType: 'purchase-receipt',
+        sCustomerEmail: oDataSource.oCustomer.sEmail
       }
 
       this.apiService.postNew('cashregistry', '/api/v1/till/send-to-customer', body).subscribe(
@@ -198,5 +200,22 @@ export class TransactionActionDialogComponent implements OnInit {
     var canvas = document.createElement("canvas");
     JsBarcode(canvas, data, { format: "CODE128", displayValue: displayValue });
     return canvas.toDataURL("image/png");
+  }
+
+  updateCustomer() {
+    let customerDetails = JSON.parse(JSON.stringify(this.transaction.oCustomer));
+    customerDetails.bNewsletter = this.bReceiveNewsletter;
+    customerDetails.iBusinessId = this.businessDetails._id;
+    this.apiService.putNew('customer', `/api/v1/customer/update/${this.businessDetails._id}/${this.transaction.iCustomerId}`, customerDetails).subscribe(
+      (result: any) => {
+        if (result?.message == "success") {
+          this.toastService.show({ type: 'success', text: 'Customer details updated.' });
+        } else {
+          this.toastService.show({ type: 'warning', text: 'Error while updating customer details updated.' });
+        }
+      }, (error: any) => {
+        this.toastService.show({ type: 'warning', text: 'Error while updating customer details updated.' });
+      }
+    )
   }
 }

@@ -49,7 +49,7 @@ export class CustomersComponent implements OnInit {
    'Coc number' , 'Payment term days' , 'Discount' , 'Whatsapp' , 'Matching code' , 'Note' , 'Migrated customer'
   ];
   valuesList: Array<any> = ['sSalutation', 'sFirstName', 'sPrefix', 'sLastName', 'dDateOfBirth', 'nClientId', 'sGender', 'bIsEmailVerified',
-  'bCounter', 'sEmail', 'oPhone', 'oShippingAddress', 'oInvoiceAddress', 'sComment', 'bNewsletter', 'sCompanyName', 'oPoints',
+  'bCounter', 'sEmail', 'PHONE', 'SHIPPING_ADDRESS', 'INVOICE_ADDRESS', 'sComment', 'bNewsletter', 'sCompanyName', 'oPoints',
    'oIdentity', 'sVatNumber', 'sCocNumber', 'nPaymentTermDays', 'nDiscount', 'bWhatsApp', 'nMatchingCode' , 'sNote' , 'iEmployeeId' , 'bIsMigrated'];
   
   requestParams: any = {
@@ -135,7 +135,7 @@ export class CustomersComponent implements OnInit {
   }
 
   export(){
-    this.dialogService.openModal(ExportsComponent , { cssClass: "modal-lg", context: { requestParams:this.requestParams , headerList : this.headerList , valuesList:this.valuesList , separator:';'  } }).instance.close.subscribe(result => {
+    this.dialogService.openModal(ExportsComponent , { cssClass: "modal-lg", context: { requestParams:this.requestParams , headerList : this.headerList , valuesList:this.valuesList , separator:''  } }).instance.close.subscribe(result => {
       console.log("--------------customer export successfully!!!");
     })
 
