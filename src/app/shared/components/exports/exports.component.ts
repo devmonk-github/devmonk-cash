@@ -3,7 +3,7 @@ import { ApiService } from 'src/app/shared/service/api.service';
 import { JsonToCsvService } from 'src/app/shared/service/json-to-csv.service';
 import { ExportsService } from 'src/app/shared/service/exports.service';
 import * as _moment from 'moment';
-import _ from 'lodash';
+import _, { head } from 'lodash';
 import { DialogService } from '../../service/dialog';
 import { DialogComponent } from '../../service/dialog';
 import { CustomerStructureService } from '../../service/customer-structure.service';
@@ -21,6 +21,7 @@ export class ExportsComponent implements OnInit {
   @Input() valuesList: Array<any> = [];
   @Input() separator: String = '';
   @Input() socialMedia: Boolean = false;
+  @Input() customerHeaderList:Array<any> =[];
 
   secondHeaderList: Array<any> = [];
   secondValuesList: Array<any> = [];
@@ -86,21 +87,22 @@ export class ExportsComponent implements OnInit {
 
   getExportData(separator:any){
     this.separator = separator;
-    var valuesListObj = _.clone(this.valuesList);
-    var headerListObj = _.clone(this.headerList);
     for(let index in this.secondAProjection){
       if(this.requestParams.aProjection.indexOf(this.secondAProjection[index]) < 0) this.requestParams.aProjection.push(this.secondAProjection[index]);
     }
+    let secondHeader = _.clone(this.customerHeaderList);
     for(let index in this.fieldsToRemove){
-      var charIndex = this.requestParams.aProjection.indexOf(this.fieldsToRemove[index]);
-      this.requestParams.aProjection.splice(this.fieldsToRemove[index] , 1);
-      this.requestParams.aProjection.splice(charIndex, 1);
-      var valueIndex = valuesListObj.indexOf(this.fieldsToRemove[index]);
-      valuesListObj.splice(valueIndex, 1);
-      headerListObj.splice(valueIndex, 1);
-      this.headerList.splice(this.fieldsToRemove[index] , 1);
-      this.valuesList.splice(this.fieldsToRemove[index], 1);
+      const headerIndex =secondHeader.findIndex((customerheader:any)=> customerheader.key == this.fieldsToRemove[index].key)
+      if(headerIndex >-1){
+         secondHeader.splice(headerIndex , 1);
+      }
     }
+     secondHeader.forEach((header:any)=>{
+      this.headerList.push(header.value);
+      this.valuesList.push(header.key);
+    })
+
+    this.requestParams.aProjection = this.valuesList;
     if(!this.useSameFilter){ this.requestParams.oFilterBy.oDynamic = {}; this.requestParams.oFilterBy.oStatic = {}; }
     var body = this.requestParams;
     this.apiService.postNew('customer', '/api/v1/customer/exports', body).subscribe(
@@ -110,10 +112,11 @@ export class ExportsComponent implements OnInit {
         }
           for (const customer of this.dataForCSV) {
             // customer['NAME'] = this.customerStructureService.makeCustomerName(customer);
-            customer['SHIPPING_ADDRESS'] = this.customerStructureService.makeCustomerAddress(customer.oShippingAddress, false);
-            customer['INVOICE_ADDRESS'] = this.customerStructureService.makeCustomerAddress(customer.oInvoiceAddress, false);
-            customer['EMAIL'] = customer.sEmail;
-            customer['PHONE'] = (customer.oPhone && customer.oPhone.sLandLine ? customer.oPhone.sLandLine : '') + (customer.oPhone && customer.oPhone.sLandLine && customer.oPhone.sMobile ? ' / ' : '') + (customer.oPhone && customer.oPhone.sMobile ? customer.oPhone.sMobile : '')
+            customer['oShippingAddress'] = this.customerStructureService.makeCustomerAddress(customer.oShippingAddress, false);
+            customer['oInvoiceAddress'] = this.customerStructureService.makeCustomerAddress(customer.oInvoiceAddress, false);
+            customer['sEmail'] = customer.sEmail;
+            customer['oPhone'] = (customer.oPhone && customer.oPhone.sLandLine ? customer.oPhone.sLandLine : '') + (customer.oPhone && customer.oPhone.sLandLine && customer.oPhone.sMobile ? ' / ' : '') + (customer.oPhone && customer.oPhone.sMobile ? customer.oPhone.sMobile : '')
+            customer['oIdentity'] = (customer.oIdentity && customer.oIdentity.documentName ? customer.oIdentity.documentName : '-') + (customer.oIdentity && customer.oIdentity.documentNumber ? customer.oIdentity.documentNumber : '')
           }
 
         for(let index in this.headerList){
@@ -129,24 +132,15 @@ export class ExportsComponent implements OnInit {
   }
 
 
-  download(){
-    var headerListObj = this.headerList.concat(this.secondAProjection);
-    var valuesListObj = this.valuesList.concat(this.secondAProjection);
-    for(let index in this.fieldsToRemove){
-      var index2 = headerListObj.indexOf(this.fieldsToRemove[index]);
-      headerListObj.splice(index2, 1);
-      valuesListObj.splice(index2, 1);
-    }
-    this.secondAProjection = [];
+  download(){  
     var data = { from: 'Assortment-stock-export'};
-    this.jsonToCsvService.convertToCSV(this.dataForCSV, headerListObj, valuesListObj, 'Assortment-stock', this.separator, data)
+    this.jsonToCsvService.convertToCSV(this.dataForCSV, this.headerList, this.valuesList, 'Assortment-stock', this.separator, data)
     this.dialogRef.close.emit({ action: false });
   }
 
-  removeFields(key : any){
-    var field = this.headerList.indexOf(key);
-    var index = this.fieldsToRemove.indexOf(field);
+  removeFields(obj : any){
+    var index = this.fieldsToRemove.findIndex((field)=>field.value == obj.value);
     if(index > -1) this.fieldsToRemove.splice(index, 1);
-    else this.fieldsToRemove.push(field)
+    else this.fieldsToRemove.push(obj)
   }
 }
