@@ -168,9 +168,9 @@ export class Pn2escposService {
 
     var foreachString = "";
     var requestedData = this.data[command.data];
-
+    // console.log('requestedData', requestedData)
     //The value passed to the foreach-action should exist in the data array
-    if (typeof requestedData !== 'undefined') {
+    if (requestedData) {
 
       //the foreach data object should contain child objects
       if (typeof Object.values(requestedData)[0] == 'object') {
@@ -186,15 +186,15 @@ export class Pn2escposService {
 
             action.inforeach = true;
 
-            if (typeof command.columns !== 'undefined') {
-              if (typeof command.columns[i] !== 'undefined') {
+            if (command.columns) {
+              if (command.columns[i]) {
 
                 var colwidthsum = 0;
 
-                for (let a = 0; a < command.columns.length; a++) {
+                for (let k = 0; k < command.columns.length; k++) {
                   colwidthsum += command.columns[i];
                 }
-
+                // console.log({colwidthsum, default_line_length: this.default_line_length});
                 if (colwidthsum == this.default_line_length) {
                   this.cwarn('The sum of the columns in your foreach equal the default line length. This should be equal to the default line length minus the number of columns)')
                 }
@@ -210,10 +210,10 @@ export class Pn2escposService {
 
             if (action.if) {
               if (this.checkConditions(action.if, JSON.stringify(requestedData[a]))) {
-                foreachString += this.doAction(action, i)
+                foreachString += this.doAction(action, i, a)
               }
             } else {
-              foreachString += this.doAction(action, i);
+              foreachString += this.doAction(action, i, a);
             }
           }
         }
@@ -352,8 +352,7 @@ export class Pn2escposService {
     return divider;
   }
 
-  doAction(command: any, currentKey: any) {
-
+  doAction(command: any, currentKey: any, index:number = 0) {
     switch (command.do) {
 
       case "align":
@@ -393,10 +392,10 @@ export class Pn2escposService {
         return this.addForeach(command)
 
       case "text":
-        return this.addText(command)
+        return this.addText(command, false, index)
 
       case "line":
-        return this.addText(command, true)
+        return this.addText(command, true, index)
 
       case "break":
         return this.epBreak(command.data)
@@ -417,7 +416,7 @@ export class Pn2escposService {
     }
   }
 
-  replaceVariables(commandText: any, itemData = null, colpos = 0, colwidth = 0, colcount = 0, pullright = false) {
+  replaceVariables(commandText: any, itemData = null, colpos = 0, colwidth = 0, colcount = 0, pullright = false, itemIndex?:number) {
 
     //match on any text between "[[" and "]]"
     var extractedVariables = commandText.match(/\[\[(.*?)]]/ig); //includes child variables
@@ -434,7 +433,7 @@ export class Pn2escposService {
     var finalString = commandText;
 
     if (extractedVariables !== null) {
-
+      // console.log('extractedVariables', extractedVariables)
       /**
        * if there is more than one variable in a column, justification should not
        * be applied to the variables individually but only to the text as a whole
@@ -449,6 +448,7 @@ export class Pn2escposService {
         var currentMatch = extractedVariables[a];
         var placeholder = "";
         var maxlength = 0;
+        // console.log('currentMatch', currentMatch)
 
         //Finding more than 2 "[" means there's a variable not closed properly
         if (currentMatch.match(/\[/g).length == 2) {
@@ -458,6 +458,13 @@ export class Pn2escposService {
 
           //remove brackets
           let variableStringFilteredIndex0 = currentMatch.replace('[[', '').replace(']]', '');
+          // console.log('variableStringFilteredIndex0',variableStringFilteredIndex0)
+          if (variableStringFilteredIndex0 === 'nIndex'){
+            let n = (itemIndex) ? itemIndex : 0;
+            finalString = finalString.replace(currentMatch, String(++n));
+            finalString = this.helperJustifyInColumn(finalString, colcount, colwidth, colpos, pullright);
+            continue;
+          } 
           const hasFormat = variableStringFilteredIndex0.includes('|');
           let aFormatParts;
           let format;
@@ -511,7 +518,7 @@ export class Pn2escposService {
           if (providedData[variableStringFilteredIndex0]) { //a match on key
             if (String(providedData[variableStringFilteredIndex0]).length > 0) { // ..there's data
               newtext = providedData[variableStringFilteredIndex0];
-              
+              // console.log(520, 'newtext', newtext)
               if (typeof (variableStringFilteredIndex1) == 'string' && String(providedData[variableStringFilteredIndex0][variableStringFilteredIndex1]).length > 0) {
                 if (typeof (variableStringFilteredIndex2) == 'string' && providedData[variableStringFilteredIndex0][variableStringFilteredIndex1][variableStringFilteredIndex2]) {
                   newtext = providedData[variableStringFilteredIndex0][variableStringFilteredIndex1][variableStringFilteredIndex2];
@@ -522,13 +529,13 @@ export class Pn2escposService {
                 }
               }
 
-              if (!multiple_vars_in_column)
-                newtext = this.helperJustifyInColumn(newtext, colcount, colwidth, colpos, pullright);
+              
 
               // finalString = finalString.replace(currentMatch, newtext, 0);
               matched = true;
             } else {
               if (!multiple_vars_in_column)
+                // console.log(540, 'justifying')
                 finalString = this.helperJustifyInColumn(finalString, colcount, colwidth, colpos, pullright);
 
               if (placeholder)
@@ -592,14 +599,24 @@ export class Pn2escposService {
               this.cwarn('"' + finalString + '" could not be matched with the provided data.');
             }
 
-            if (!multiple_vars_in_column)
-              finalString = this.helperJustifyInColumn("", colcount, colwidth, colpos, pullright);
-          }
+            // if (!multiple_vars_in_column)
+            //   console.log(605, 'justifying')
+            //   finalString = this.helperJustifyInColumn("", colcount, colwidth, colpos, pullright);
+          } 
+          // else {
+          //   console.log(506, 'justifying')
+          //   finalString = this.helperJustifyInColumn(finalString, colcount, colwidth, colpos, pullright);
+            
+          // }
+          
 
         } else {
           this.cerror('A variable in "' + currentMatch + '" is not closed properly.', currentMatch)
         }
       }
+      // console.log(617, 'justifying')
+      finalString = this.helperJustifyInColumn(finalString, colcount, colwidth, colpos, pullright);
+
     } else {
       if (colwidth !== 0) {
         if (!multiple_vars_in_column)
@@ -607,15 +624,12 @@ export class Pn2escposService {
       }
     }
 
-    if (multiple_vars_in_column) {
-      finalString = this.helperJustifyInColumn(finalString, colcount, colwidth, colpos, pullright, true);
-    }
-
     return finalString;
   }
 
   helperJustifyInColumn(newtext: any = null, colcount: any, colwidth: any, colpos: any, pullright = false, multiple_vars_in_column = false) {
-
+    // console.log('helperJustifyInColumn',{ newtext, colcount, colwidth, colpos }) 
+    newtext = String(newtext)
     if (newtext == null || newtext.length == 0) {
       newtext = "";
       for (let i = 0; i < colwidth; i++) {
@@ -624,16 +638,13 @@ export class Pn2escposService {
     } else {
       if (colwidth > 0) {
         if (newtext.length <= colwidth) {
-
           var spacesneeded = colwidth - newtext.length;
-          var extra = ""
+          // console.log('spacesneeded', spacesneeded)
+          var extra = " ".repeat(spacesneeded);
+          // for (let i = 0; i < spacesneeded; i++) {
+          // }
 
-          for (let i = 0; i < spacesneeded; i++) {
-            extra += " ";
-          }
-
-          newtext = (pullright) ? String(extra + newtext) : String(newtext + extra);
-
+          newtext = (pullright) ? String(extra + newtext) : String((newtext===' ' ? extra : newtext+extra));
         } else {
           if (newtext.substr(newtext.length - 1) !== " ") {
             newtext = this.helperSubstring(newtext, colwidth);
@@ -643,28 +654,29 @@ export class Pn2escposService {
     }
 
     if (colpos < (colcount - 1)) {
-      newtext += " ";
+      newtext += "";
     }
 
     if (multiple_vars_in_column == true) {
-      newtext += " ";
+      newtext += "";
     }
 
     return newtext;
   }
 
-  addText(command: any, breakafter = false) {
-
+  addText(command: any, breakafter = false, itemIndex?:number) {
+    // console.log('addtext', command, breakafter, itemIndex)
     var text = "";
     var dataString = String(command.data);
 
     //to split the text into columns, it must be a lin and not in a foreach
-    if (breakafter && dataString.indexOf('|') > -1 && typeof command.inforeach == 'undefined') {
+    if (dataString.indexOf('|') > -1) { //breakafter &&  && typeof command.inforeach == 'undefined'
 
       //split the line into parts and remove empty ones
-      var parts = dataString.split('|').filter(function (el) {
+      var parts = dataString.split('|').filter((el) => {
         return el != "";
       });
+      // console.log('parts', parts)
 
       var table = [];
 
@@ -673,16 +685,22 @@ export class Pn2escposService {
         for (let i = 0; i < parts.length; i++) {
           var col = parts[i];
           var nr_of_cols = parts.length;
-          var colwidth = Math.floor((this.default_line_length - (nr_of_cols - 1)) / nr_of_cols);
+          if (command?.colWeights?.length) {
+            var colwidth = command.colWeights[i] * Math.floor(this.default_line_length/12);
+          } else {
+            var colwidth = Math.floor((this.default_line_length - (nr_of_cols - 1)) / nr_of_cols);
+          }
+          // console.log('colwidth: ', colwidth, 'default_line_length', this.default_line_length, 'nr_of_cols', nr_of_cols, 'itemIndex', itemIndex);
 
-          col = this.replaceVariables(col, null, i, colwidth, nr_of_cols)
-
+          col = this.replaceVariables(col, command.source, i, colwidth, nr_of_cols, command.pullright, itemIndex)
+          // console.log(703, col)
           table.push(col);
         }
         dataString = table.join('');
+        // console.log('datastring', dataString)
       }
     } else {
-      dataString = this.replaceVariables(dataString, command.source, command.columnpos, command.columnwidth, command.colcount, command.pullright)
+      dataString = this.replaceVariables(dataString, command.source, command.columnpos, command.columnwidth, command.colcount, command.pullright, itemIndex)
     }
 
     if (dataString.indexOf('<<>>') > -1) {
