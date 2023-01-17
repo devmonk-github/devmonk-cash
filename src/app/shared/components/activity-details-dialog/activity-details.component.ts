@@ -189,7 +189,7 @@ export class ActivityDetailsComponent implements OnInit {
       if (this.activity?.activityitems?.length) {
         this.bShowOrderDownload = true;
         this.activityItems = this.activity.activityitems;
-        if (this.activityItems?.length == 1) this.activityItems[0].collapsedBtn = true; /* only item there then we will always open it */
+        // if (this.activityItems?.length == 1) this.activityItems[0].collapsedBtn = true; /* only item there then we will always open it */
          this.activityItems.forEach((item:any , index)=>{
           if(item.oType.eKind == 'order' && item?.iBusinessProductId){
             this.getBusinessProduct(item.iBusinessProductId).subscribe((res:any)=>{
@@ -230,7 +230,6 @@ export class ActivityDetailsComponent implements OnInit {
     this.printActionSettings = _printActionSettings?.data[0]?.result[0].aActions;
     this.printSettings = _printSettings?.data[0]?.result;
   }
-
 
   getBusinessProduct(iProductId:any){
    return this.apiService.getNew('core' , `/api/v1/business/products/${iProductId}?iBusinessId=${this.iBusinessId}`);
@@ -500,18 +499,20 @@ export class ActivityDetailsComponent implements OnInit {
       type = (oDataSource?.oType.eKind === 'regular') ? 'repair_alternative' : 'repair';
       sBarcodeURI = this.generateBarcodeURI(false, oDataSource.sNumber);
     } 
-    // if (!this.businessDetails) {
-    //   const result: any = await this.getBusinessDetails().toPromise();
-    //   this.businessDetails = result.data;
-    // }
+    if (!this.businessDetails) {
+      const result: any = await this.getBusinessDetails().toPromise();
+      this.businessDetails = result.data;
+    }
     oDataSource.businessDetails = this.businessDetails;
     const aPromises = [];
     let bBusinessLogo = false, bTemplate = false;
     if(this.businessDetails?.sBusinessLogoUrl) {
       oDataSource.sBusinessLogoUrl = this.businessDetails?.sBusinessLogoUrl;
     } else {
-      aPromises.push(this.getBase64FromUrl(oDataSource?.businessDetails?.sLogoLight).toPromise())
-      bBusinessLogo = true;
+      if(oDataSource?.businessDetails?.sLogoLight){
+        aPromises.push(this.getBase64FromUrl(oDataSource?.businessDetails?.sLogoLight).toPromise())
+        bBusinessLogo = true;
+      }
     }
 
     if(!this.aTemplates?.length) {
@@ -733,13 +734,20 @@ export class ActivityDetailsComponent implements OnInit {
     const oDataSource = JSON.parse(JSON.stringify(this.activity));
     oDataSource.businessDetails = this.businessDetails;
 
+    if (!this.businessDetails) {
+      const result: any = await this.getBusinessDetails().toPromise();
+      this.businessDetails = result.data;
+    }
+
     const aPromises = [];
     let bBusinessLogo = false, bTemplate = false;
     if (this.businessDetails?.sBusinessLogoUrl) {
       oDataSource.sBusinessLogoUrl = this.businessDetails?.sBusinessLogoUrl;
     } else {
-      aPromises.push(this.getBase64FromUrl(oDataSource?.businessDetails?.sLogoLight).toPromise())
-      bBusinessLogo = true;
+      if(oDataSource?.businessDetails?.sLogoLight){
+        aPromises.push(this.getBase64FromUrl(oDataSource?.businessDetails?.sLogoLight).toPromise())
+        bBusinessLogo = true;
+      }
     }
 
     if (!this.aTemplates?.length) {
@@ -760,10 +768,7 @@ export class ActivityDetailsComponent implements OnInit {
 
 
     const template = this.aTemplates.filter((t: any) => t.eType === 'order')[0];
-    // if (!this.businessDetails) {
-    //   const result: any = await this.getBusinessDetails().toPromise();
-    //   this.businessDetails = result.data;
-    // }
+
     oDataSource.businessDetails.sMobile = this.businessDetails.oPhone.sMobile;
     oDataSource.businessDetails.sLandLine = this.businessDetails?.oPhone?.sLandLine;
     const locationIndex = this.businessDetails.aLocation.findIndex((location:any)=>location._id == this.iLocationId);
