@@ -45,6 +45,12 @@ export class TransactionActionDialogComponent implements OnInit {
   bOrderCondition: boolean = false;
   bGiftcardCondition: boolean = false;
   bProcessingTransaction: boolean = false;
+  bRepairDisabled: boolean = false;
+  bOrderDisabled: boolean = false;
+  bRegularDisabled: boolean = false;
+  bGiftCardDisabled : boolean = false;
+  bRepairAlternativeDisabled : boolean = false;
+
   bReceiveNewsletter: boolean = false;
 
   constructor(
@@ -99,6 +105,11 @@ export class TransactionActionDialogComponent implements OnInit {
     let pdfTitle = '';
 
     if (index != undefined && (type === 'repair' || type === 'repair_alternative')) {
+      if(type == 'repair'){
+        this.bRepairDisabled = true
+      }else if(type == 'repair_alternative'){
+        this.bRepairAlternativeDisabled = true
+      }
       // console.log('repair items index=', index, this.aRepairItems[index], this.activityItems);
       oDataSource = this.aRepairItems[index];
       const aTemp = oDataSource.sNumber.split("-");
@@ -113,13 +124,13 @@ export class TransactionActionDialogComponent implements OnInit {
       pdfTitle = oDataSource.sNumber;
 
     } else if (type === 'regular') {
-
+      this.bRegularDisabled = true;
       oDataSource = this.transaction;
       pdfTitle = this.transaction.sNumber;
       template = this.aTemplates.filter((template: any) => template.eType === 'regular')[0];
 
     } else if (type === 'giftcard') {
-
+      this.bGiftCardDisabled = true;
       oDataSource = this.activityItems.filter((item: any) => item.oType.eKind === 'giftcard')[0];
       oDataSource.nTotal = oDataSource.nPaidAmount;
       oDataSource.sBarcodeURI = this.generateBarcodeURI(true, 'G-' + oDataSource.sGiftCardNumber);
@@ -127,7 +138,7 @@ export class TransactionActionDialogComponent implements OnInit {
       template = this.aTemplates.filter((template: any) => template.eType === 'giftcard')[0];
 
     } else if (type === 'order') {
-
+      this.bOrderDisabled = true;
       template = this.aTemplates.filter((template: any) => template.eType === 'order')[0];
       oDataSource = {
         ...this.activity,
@@ -193,6 +204,18 @@ export class TransactionActionDialogComponent implements OnInit {
         printSettings: this.printSettings.filter((s: any) => s.sType === type),
         sAction: (action === 'DOWNLOAD') ? 'download' : 'print',
       });
+      
+      if(type === 'repair'){
+        this.bRepairDisabled = false
+      }else if(type === 'repair_alternative'){
+        this.bRepairAlternativeDisabled = false
+      }else if(type === 'regular'){
+        this.bRegularDisabled = false
+      }else if(type === 'giftcard'){
+          this.bGiftCardDisabled = false
+      }else if(type === 'order'){
+        this.bOrderDisabled = false
+      }    
     }
   }
 

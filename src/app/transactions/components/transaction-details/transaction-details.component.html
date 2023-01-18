@@ -111,7 +111,7 @@
                     <fa-icon [icon]="faFileInvoice"></fa-icon>
                     <label class="mx-auto">{{ "GENERAL_INVOICE" | translate}}</label>
                 </button>
-                <button [disabled]="!businessDetails?._id" class="btn btn-sm btn-secondary w-100 d-flex"
+                <button [disabled]="!businessDetails?._id" class="btn btn-sm btn-secondary w-100 d-flex" [disabled]="downloadWithVATLoading"
                     (click)="downloadWithVAT()">
                     <fa-icon [hidden]="downloadWithVATLoading" [icon]="faDownload"></fa-icon>
                     <span *ngIf="downloadWithVATLoading">

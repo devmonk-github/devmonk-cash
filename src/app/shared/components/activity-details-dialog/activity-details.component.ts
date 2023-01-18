@@ -147,6 +147,9 @@ export class ActivityDetailsComponent implements OnInit {
   bShowOrderDownload: boolean = false;
   routerSub: any;
   bActivityPdfGenerationInProgress: boolean = false;
+  bCustomerReceipt : boolean = false;
+  bDownloadCustomerReceipt : boolean = false;
+  bDownloadReceipt: boolean = false;
 
   constructor(
     private viewContainerRef: ViewContainerRef,
@@ -495,7 +498,13 @@ export class ActivityDetailsComponent implements OnInit {
     return this.apiService.getNew('core', '/api/v1/business/' + this.business._id);
   }
 
-  async downloadCustomerReceipt(index: number) {
+  async downloadCustomerReceipt(index: number , receipt:any) {
+    if(receipt == 'customerReceipt'){
+      this.bCustomerReceipt = true;
+    }else if(receipt == 'downloadCustomerReceipt'){
+      this.bDownloadCustomerReceipt = true;
+    }
+
     let oDataSource = JSON.parse(JSON.stringify(this.activity));
     if (oDataSource?.activityitems) {
       oDataSource = oDataSource.activityitems[index];
@@ -511,10 +520,10 @@ export class ActivityDetailsComponent implements OnInit {
       type = (oDataSource?.oType.eKind === 'regular') ? 'repair_alternative' : 'repair';
       sBarcodeURI = this.generateBarcodeURI(false, oDataSource.sNumber);
     } 
-    if (!this.businessDetails) {
-      const result: any = await this.getBusinessDetails().toPromise();
-      this.businessDetails = result.data;
-    }
+    // if (!this.businessDetails) {
+    //   const result: any = await this.getBusinessDetails().toPromise();
+    //   this.businessDetails = result.data;
+    // }
     oDataSource.businessDetails = this.businessDetails;
     const aPromises = [];
     let bBusinessLogo = false, bTemplate = false;
@@ -573,8 +582,8 @@ export class ActivityDetailsComponent implements OnInit {
     oDataSource.sBusinessLogoUrl = (await this.getBase64FromUrl(oDataSource?.businessDetails?.sLogoLight).toPromise()).data;
     // return;
     // this.printSettings = this.getPdfPrintSetting(type);
-
-    this.sendForReceipt(oDataSource, template, oDataSource.sNumber);
+    
+      this.sendForReceipt(oDataSource, template, oDataSource.sNumber , receipt);
     return;
     const data = this.activity.activityitems[index];
     const sName = 'Sample', eType = 'completed';
@@ -739,18 +748,20 @@ export class ActivityDetailsComponent implements OnInit {
     return canvas.toDataURL("image/png");
   }
 
-  async downloadReceipt(event:any) {
+  async downloadReceipt(event:any , receipt:any) {
+    if(receipt == 'downloadReceipt'){
+      this.bDownloadReceipt = true;
+    }
     this.bActivityPdfGenerationInProgress = true;
     event.target.disabled = true;
 
     const oDataSource = JSON.parse(JSON.stringify(this.activity));
     oDataSource.businessDetails = this.businessDetails;
 
-    if (!this.businessDetails) {
-      const result: any = await this.getBusinessDetails().toPromise();
-      this.businessDetails = result.data;
-    }
-
+    // if (!this.businessDetails) {
+    //   const result: any = await this.getBusinessDetails().toPromise();
+    //   this.businessDetails = result.data;
+    // }
     const aPromises = [];
     let bBusinessLogo = false, bTemplate = false;
     if (this.businessDetails?.sBusinessLogoUrl) {
@@ -809,12 +820,12 @@ export class ActivityDetailsComponent implements OnInit {
     });
     oDataSource.nTotalPaidAmount = nTotalPaidAmount;
 
-    this.sendForReceipt(oDataSource, template, oDataSource.sNumber);
+    this.sendForReceipt(oDataSource, template, oDataSource.sNumber , receipt);
     this.bActivityPdfGenerationInProgress = false;
     event.target.disabled = false;
   }
 
-  sendForReceipt(oDataSource: any, template: any, title: any) {
+  sendForReceipt(oDataSource: any, template: any, title: any , receipt:any) {
     this.receiptService.exportToPdf({
       oDataSource: oDataSource,
       pdfTitle: title,
@@ -823,6 +834,13 @@ export class ActivityDetailsComponent implements OnInit {
       printActionSettings: this.printActionSettings,
       eSituation: 'is_created'
     });
+    if(receipt == 'customerReceipt'){
+      this.bCustomerReceipt = false;
+    }else if(receipt == 'downloadCustomerReceipt'){
+      this.bDownloadCustomerReceipt = false;
+    } else if(receipt == 'downloadReceipt'){
+      this.bDownloadReceipt = false;
+    }
   }
 
   getPdfPrintSetting(oFilterBy?: any) {
