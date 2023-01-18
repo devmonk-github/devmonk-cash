@@ -360,13 +360,13 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
       });
   }
 
-  getThermalReceipt() {
+  getThermalReceipt(type:string) {
     if (!this.thermalPrintSettings?.nPrinterId || !this.thermalPrintSettings?.nComputerId) {
       this.toastService.show({ type: 'danger', text: 'Check your business -> printer settings' });
     }
     
 
-    this.apiService.getNew('cashregistry', `/api/v1/print-template/business-receipt/${this.iBusinessId}/${this.iLocationId}`).subscribe((result: any) => {
+    this.apiService.getNew('cashregistry', `/api/v1/print-template/${type}/${this.iBusinessId}/${this.iLocationId}`).subscribe((result: any) => {
       if (result?.data?.aTemplate?.length > 0) {
         let transactionDetails = { businessDetails: this.businessDetails, ...this.transaction };
         let command;

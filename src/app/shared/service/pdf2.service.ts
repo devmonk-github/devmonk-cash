@@ -125,10 +125,10 @@ export class PdfService {
         pdfObject.getBase64(async (response: any) => resolve(response));
       } else if ((printSettings?.length && printActionSettings?.length) || sAction) {
         this.processPrintAction(pdfObject, pdfTitle, printSettings, printActionSettings, eType, eSituation, sAction);
-        resolve;
+        resolve(true);
       } else {
         pdfObject.download(pdfTitle);
-        resolve;
+        resolve(true);
       }
     });
   }
