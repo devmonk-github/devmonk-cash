@@ -111,6 +111,12 @@ export class ExportsComponent implements OnInit {
           this.dataForCSV = result.data[0].result;
         }
           for (const customer of this.dataForCSV) {
+            console.log(typeof(customer['oPoints']));
+            if(typeof(customer['oPoints']) == 'number'){
+              customer['oPoints'] = (customer.oPoints ? customer.oPoints : '-')
+            }else{
+              customer['oPoints'] = '-'
+            }
             // customer['NAME'] = this.customerStructureService.makeCustomerName(customer);
             customer['oShippingAddress'] = this.customerStructureService.makeCustomerAddress(customer.oShippingAddress, false);
             customer['oInvoiceAddress'] = this.customerStructureService.makeCustomerAddress(customer.oInvoiceAddress, false);
