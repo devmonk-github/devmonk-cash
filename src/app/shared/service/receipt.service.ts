@@ -118,7 +118,7 @@ export class ReceiptService {
 
     async exportToPdf({ oDataSource, templateData, pdfTitle, printSettings, printActionSettings, eSituation, sAction }: any) {
         this.oOriginalDataSource = oDataSource;
-        this.pdfService.getTranslations();
+        // this.pdfService.getTranslations();
 
         // console.log(this.oOriginalDataSource)
 
@@ -250,7 +250,7 @@ export class ReceiptService {
                 }
                 if (bInclude) {
                     let text = this.pdfService.replaceVariables(column.html, this.oOriginalDataSource) || '';
-                    let obj: any = { text: this.pdfService.translations[text] || text };
+                    let obj: any = { text: text };
                     if (column?.alignment) obj.alignment = column.alignment;
                     if (column?.styles) {
                         obj = { ...obj, ...column.styles };
