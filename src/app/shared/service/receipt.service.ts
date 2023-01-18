@@ -124,6 +124,7 @@ export class ReceiptService {
 
         this.commonService.pdfTitle = pdfTitle;
         this.commonService.mapCommonParams(templateData.aSettings);
+        this.content = [];
         this.processTemplate(templateData.layout);
         // console.log(this.content)
         const response = await this.pdfServiceNew.getPdfData({
@@ -141,7 +142,7 @@ export class ReceiptService {
             eSituation,
             sAction: sAction
         });
-        this.cleanUp();
+        // this.cleanUp();
         if (sAction == 'sentToCustomer') return response;
     }
 
@@ -565,7 +566,7 @@ export class ReceiptService {
     cleanUp() {
         this.oOriginalDataSource = null;
         this.content = [];
-        this.styles = {};
+        // this.styles = {};
     }
 
     async printThermalReceipt({ oDataSource, printSettings, sAction, apikey, title }: any) {
