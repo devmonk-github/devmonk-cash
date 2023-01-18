@@ -649,7 +649,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
           payMethods = payMethods.filter((o: any) => o.amount !== 0);
           let availableAmount = _.sumBy(payMethods, 'amount') || 0;
           this.paymentDistributeService.distributeAmount(this.transactionItems, availableAmount);
-          this.transactionItems = [...this.transactionItems]
+          this.transactionItems = [...this.transactionItems.filter((item:any)=> item.type !== 'empty-line')]
           
           const body = this.tillService.createTransactionBody(this.transactionItems, payMethods, this.discountArticleGroup, this.redeemedLoyaltyPoints, this.customer);
           if (body.transactionItems.filter((item: any) => item.oType.eKind === 'repair')[0]?.iActivityItemId) {

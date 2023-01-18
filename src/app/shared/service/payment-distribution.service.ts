@@ -17,7 +17,8 @@ export class PaymentDistributionService {
   
   distributeAmount(transactionItems: any[], availableAmount: any): any[] {
     // console.log('initial availableAmount',availableAmount)
-    transactionItems.map((i: any) => {
+    transactionItems = transactionItems.filter((i:any) => i.type !== 'empty-line')
+    transactionItems.forEach((i: any) => {
       // console.log('i.paymentAmount',i.paymentAmount)
       let _nDiscount = 0;
       if (i.nDiscount > 0 && !i.bDiscountOnPercentage) _nDiscount = i.nDiscount
@@ -33,7 +34,6 @@ export class PaymentDistributionService {
       if (i.paymentAmount > i.amountToBePaid) {
         i.paymentAmount = i.amountToBePaid;
       };
-      return i;
     });
     const setAmount = transactionItems.filter(item => item.isExclude);
     setAmount.map(i => (i.paymentAmount = 0));
