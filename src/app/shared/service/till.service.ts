@@ -237,7 +237,11 @@ export class TillService {
 
       oItem.sServicePartnerRemark = i.sServicePartnerRemark;
       oItem.eEstimatedDateAction = i.eEstimatedDateAction;
-      oItem.eActivityItemStatus = i.eActivityItemStatus;
+      if (bPrepayment === false && (i.type === 'repair' || i.type === 'order')) {
+        oItem.eActivityItemStatus = 'delivered';
+      } else {
+        oItem.eActivityItemStatus = i.eActivityItemStatus;
+      }
       oItem.bGiftcardTaxHandling = i.bGiftcardTaxHandling;
       oItem.bDiscountOnPercentage = i.bDiscountOnPercentage || false
 

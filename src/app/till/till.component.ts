@@ -1404,7 +1404,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   async updateFiskalyTransaction(state: string, payments: []) {
-    if (!this.businessDetails.currentLocation?.tssInfo) {
+    if (!this.businessDetails?.currentLocation?.tssInfo) {
       return;
     }
     const pay = _.clone(payments);
