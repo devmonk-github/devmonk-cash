@@ -217,6 +217,7 @@ export class ActivityDetailsComponent implements OnInit {
       this.processTransactionItems(_transactionItemData);
     }
     
+    this.processActivityItems();
 
     if (this.activity?.iCustomerId) this.fetchCustomer(this.activity.iCustomerId, -1);
     this.getBusinessLocations();
@@ -231,42 +232,52 @@ export class ActivityDetailsComponent implements OnInit {
     this.printSettings = _printSettings?.data[0]?.result;
   }
 
+  processActivityItems(){
+    const aDiscounts = this.activityItems.filter((item:any)=> item.oType.eKind === 'discount')
+    this.activityItems = this.activityItems.filter((item: any) => item.oType.eKind !== 'discount')
+    if (this.activityItems?.length == 1) this.activityItems[0].collapsedBtn = true;
+    if(aDiscounts?.length) {
+      this.activityItems.forEach((item:any) => {
+        const discountRecord = aDiscounts.find((d: any) => d.sUniqueIdentifier === item.sUniqueIdentifier)
+        item.nPaidAmount = item.nPaidAmount + discountRecord.nPaidAmount;
+      })
+    }
+  }
+
 
   getBusinessProduct(iProductId:any){
    return this.apiService.getNew('core' , `/api/v1/business/products/${iProductId}?iBusinessId=${this.iBusinessId}`);
   }
 
   getListEmployees() {
-    const oBody = {
-      iBusinessId: localStorage.getItem('currentBusiness') || '',
-    }
-    this.apiService.postNew('auth', `/api/v1/employee/list`, oBody).subscribe((result: any) => {
-      if (result && result.data && result.data.length) {
-        this.employeesList = result.data[0].result;
-        if (this.activity?.iEmployeeId) {
-          let createerIndex = this.employeesList.findIndex((employee: any) => employee._id == this.activity.iEmployeeId);
-          if (this.createrDetail != -1) {
-            this.createrDetail = this.employeesList[createerIndex];
-            this.activity.sAdvisedEmpFirstName = this.createrDetail?.sFirstName || 'a';
-          }
-        }
-
-        this.employeesList.map(o => o.sName = `${o.sFirstName} ${o.sLastName}`);
-        if(this.activityItems[0]?.iEmployeeId){
-          let createerIndex = this.employeesList.findIndex((employee:any) => employee._id == this.activityItems[0].iEmployeeId);
-          if(createerIndex != -1){
-             this.createrDetail = this.employeesList[createerIndex] 
-           }
-        }
-        this.activityItems.forEach((items:any , index:any)=>{
-          let employeeIndex= this.employeesList.findIndex((employee:any)=> employee._id == items.iAssigneeId);
-          if(employeeIndex != -1){
-            this.activityItems[index] = { ...items, "employeeName": this.employeesList[employeeIndex].sName}
-          }
-        })
+    // const oBody = {
+    //   iBusinessId: localStorage.getItem('currentBusiness') || '',
+    // }
+    // this.apiService.postNew('auth', `/api/v1/employee/list`, oBody).subscribe((result: any) => {
+    //   if (result && result.data && result.data.length) {
+    // this.employeesList = result.data[0].result;
+    if (this.activity?.iEmployeeId) {
+      let createerIndex = this.employeesList.findIndex((employee: any) => employee._id == this.activity.iEmployeeId);
+      if (this.createrDetail != -1) {
+        this.createrDetail = this.employeesList[createerIndex];
+        this.activity.sAdvisedEmpFirstName = this.createrDetail?.sFirstName || 'a';
       }
-    }, (error) => {
-    });
+    }
+
+    this.employeesList.map(o => o.sName = `${o.sFirstName} ${o.sLastName}`);
+    if (this.activityItems[0]?.iEmployeeId) {
+      let createerIndex = this.employeesList.findIndex((employee: any) => employee._id == this.activityItems[0].iEmployeeId);
+      if (createerIndex != -1) {
+        this.createrDetail = this.employeesList[createerIndex]
+      }
+    }
+    this.activityItems.forEach((items: any, index: any) => {
+      let employee = this.employeesList.find((employee: any) => employee._id === items.iAssigneeId);
+      if (employee) {
+        this.activityItems[index] = { ...items, "employeeName": employee.sName }
+      }
+    })
+    // }
   }
 
   getListSuppliers() {

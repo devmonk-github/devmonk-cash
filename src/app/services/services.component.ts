@@ -141,32 +141,15 @@ export class ServicesComponent implements OnInit, OnDestroy {
     this.userType = localStorage.getItem('type');
     this.iBusinessId = localStorage.getItem('currentBusiness');
 
-    this.showLoader = true;
+    // this.showLoader = true;
     if (this.isFor !== "activity") await this.setLocation() /* For web-orders, we will switch to the web-order location otherwise keep current location */
     this.showLoader = false
     this.loadTransaction();
     this.fetchBusinessDetails();
-
-    const [_locationData, _workstationData, _employeeData]: any = await Promise.all([
-      this.getLocations(),
-      this.getWorkstations(),
-      this.listEmployee()
-    ]);
-
-    if (_locationData.message == 'success') {
-      this.requestParams.locations = _locationData.data.aLocation;
-    }
-
-    if (_workstationData && _workstationData.data) {
-      this.workstations = _workstationData.data;
-    }
-
-    if (_employeeData?.data?.length && _employeeData.data[0]?.result?.length) {
-      this.employees = _employeeData.data[0].result
-    }
-    // setTimeout(() => { 
-    //   MenuComponent.bootstrap();
-    // }, 200);
+   
+    this.getLocations();
+    this.getWorkstations();
+    this.listEmployee();
   }
 
   // Function for handle event of transaction menu
@@ -203,7 +186,9 @@ export class ServicesComponent implements OnInit, OnDestroy {
   // }
 
   getLocations() {
-    return this.apiService.postNew('core', `/api/v1/business/${this.businessDetails._id}/list-location`, {}).toPromise();
+    this.apiService.postNew('core', `/api/v1/business/${this.businessDetails._id}/list-location`, {}).subscribe((result:any)=> {
+      this.requestParams.locations = result.data.aLocation;
+    });
   }
 
   async setLocation(sLocationId: string = "") {
@@ -251,7 +236,11 @@ export class ServicesComponent implements OnInit, OnDestroy {
   }
 
   getWorkstations() {
-    return this.apiService.getNew('cashregistry', `/api/v1/workstations/list/${this.businessDetails._id}/${this.iLocationId}`).toPromise();
+    this.apiService.getNew('cashregistry', `/api/v1/workstations/list/${this.businessDetails._id}/${this.iLocationId}`).subscribe((result:any)=>{
+      if (result && result.data) {
+        this.workstations = result.data;
+      }
+    });
   }
 
   // Function for update item's per page
@@ -298,7 +287,11 @@ export class ServicesComponent implements OnInit, OnDestroy {
   }
 
   listEmployee() {
-    return this.apiService.postNew('auth', '/api/v1/employee/list', { iBusinessId: this.businessDetails._id }).toPromise();
+    this.apiService.postNew('auth', '/api/v1/employee/list', { iBusinessId: this.businessDetails._id }).subscribe((result:any)=>{
+      if (result?.data?.length && result.data[0]?.result?.length) {
+        this.employees = result.data[0].result
+      }
+    });
   }
 
   openActivities(activity: any, openActivityId?: any) {
@@ -320,7 +313,8 @@ export class ServicesComponent implements OnInit, OnDestroy {
           openActivityId,
           items: false,
           webOrders: this.webOrders,
-          from: 'services'
+          from: 'services',
+          employeesList: this.employees
         }
       }).instance.close.subscribe(result => {
         if (this.webOrders && result) this.router.navigate(['business/till']);
@@ -345,8 +339,7 @@ export class ServicesComponent implements OnInit, OnDestroy {
     this.requestParams.limit = this.paginationConfig.itemsPerPage || 50;
     this.requestParams.importStatus = this.importStatus == 'all' ? undefined : this.importStatus;
     // if (this.iLocationId && !this.requestParams.selectedLocations?.length) this.requestParams.selectedLocations.push(this.requestParams.selectedLocations);
-    this.showLoader = true;
-
+    
     this.requestParams.estimateDate = {
       minDate: this.filterDates.estimate.minDate,
       maxDate: this.filterDates.estimate.maxDate,
@@ -355,6 +348,7 @@ export class ServicesComponent implements OnInit, OnDestroy {
       minDate: this.filterDates.create.minDate,
       maxDate: this.filterDates.create.maxDate,
     }
+    this.showLoader = true;
     this.apiService.postNew('cashregistry', '/api/v1/activities', this.requestParams).subscribe((result: any) => {
       if (result?.data?.length) this.activities = result?.data;
       else this.activities = [];
