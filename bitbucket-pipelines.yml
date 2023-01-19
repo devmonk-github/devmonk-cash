@@ -40,8 +40,14 @@ pipelines:
           - apt-get update -y
           - apt-get install zip -y
           - rm -rf dist
+          - echo $(pwd)
+          - cd ..
           - mkdir compress
-          - zip -r compress/prismanote-app-cash-register.zip cash-register
+          - echo $(ls)
+          - zip -r compress/prismanote-app-cash-register.zip build
+          - mkdir build/compress
+          - mv compress/prismanote-app-cash-register.zip build/compress
+          - cd build
           - echo $(ls)
           - pipe: atlassian/aws-s3-deploy:1.1.0
             variables:
