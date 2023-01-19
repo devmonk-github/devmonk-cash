@@ -110,7 +110,7 @@ export class TerminalDialogComponent implements OnInit {
   //TIMEOUT_EXPIRATION
   //For translations: Add PAYMENT_ before these strings
 
-  checkTerminalStatus(url: string, testmode?:boolean) {
+  checkTerminalStatus(url: string, testmode:boolean = false) {
     setTimeout(() => {
       this.httpClient.get(url)
         .subscribe((res: any) => {
