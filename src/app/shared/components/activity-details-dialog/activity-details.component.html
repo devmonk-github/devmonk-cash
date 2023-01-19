@@ -100,14 +100,14 @@
                             <h2 class="accordion-header">
                                 <button class="accordion-button fs-4 fw-bold"
                                     type="button"
+                                    (click)="activity.bIsVisible = !activity.bIsVisible"
                                     data-bs-toggle="collapse"
                                     [attr.data-bs-target]="'item'+activityindex"
-                                    [attr.aria-expanded]="activityindex === 0 ? true : false" 
-                                    [attr.aria-controls]="'item'+activityindex">
+                                    [ngClass]="{'collapsed': activity.bIsVisible === false}">
                                     {{activity.sNumber}}
-                                    <span class="ms-5" (click)="copyToClipboard(activity.sNumber)">
+                                    <span class="ms-5" (click)="copyToClipboard(activity)">
                                         <i class="fa fa-copy" title="Click to copy"> </i>
-                                        <span @fade *ngIf="bActivityNumberCopied" class="text-primary bold ms-2 my-2">
+                                        <span @fade *ngIf="activity.bActivityNumberCopied" class="text-primary bold ms-2 my-2">
                                             {{ 'COPIED_TO_CLIPBOARD' | translate }}</span>
                                         </span>
                                     </button>
@@ -116,8 +116,7 @@
                             <div class="accordion-collapse collapse general"
                                 *ngIf="eKindValueForLayout.includes(activity.oType.eKind)" 
                                 data-bs-parent="#kt_accordion_1" 
-                                [id]="'item'+activityindex"
-                                [class.show]="activity.bIsVisible">
+                                [id]="'item'+activityindex">
                                 <div class="accordion-body">
                                     <div class="row">
                                         <div class="col-4">
@@ -758,8 +757,7 @@
                             </div>
 
                             <div class="accordion-collapse collapse giftcard" *ngIf="activity.oType.eKind == 'giftcard'"
-                                data-bs-parent="#kt_accordion_1" 
-                                [class.show]="activity.bIsVisible">
+                                data-bs-parent="#kt_accordion_1">
                                 <div class="accordion-body">
                                     <div class="row">
                                         <div class="col-4">
@@ -1419,8 +1417,7 @@
                             </div>
 
                             <div class="accordion-collapse collapse gold-purchase" *ngIf="activity.oType.eKind == 'gold-purchase'"
-                                data-bs-parent="#kt_accordion_1" 
-                                [class.show]="activity.bIsVisible">
+                                data-bs-parent="#kt_accordion_1">
                                 <div class="accordion-body">
                                     <div class="row">
                                         <div class="col-4">

@@ -156,7 +156,6 @@ export class ActivityDetailsComponent implements OnInit {
   ];
   // eKindForLayoutHide =['giftcard'];
   translation:any=[];
-  bActivityNumberCopied: boolean = false;
   bShowOrderDownload: boolean = false;
   routerSub: any;
   bActivityPdfGenerationInProgress: boolean = false;
@@ -218,11 +217,8 @@ export class ActivityDetailsComponent implements OnInit {
         
            }
          })
-        if (this.openActivityId) {
-          this.activityItems.forEach((item: any, index) => {
-            if (item._id === this.openActivityId) item.bIsVisible = true;
-          });
-        }
+        console.log(this.openActivityId)
+        
         
       } else {
         _transactionItemData = await this.fetchTransactionItems();
@@ -252,11 +248,25 @@ export class ActivityDetailsComponent implements OnInit {
   processActivityItems(){
     const aDiscounts = this.activityItems.filter((item:any)=> item.oType.eKind === 'discount')
     this.activityItems = this.activityItems.filter((item: any) => item.oType.eKind !== 'discount')
-    if (this.activityItems?.length == 1) this.activityItems[0].bIsVisible = true;
-    if(aDiscounts?.length) {
+    
+    if (this.activityItems?.length == 1) {
+      
+      this.activityItems[0].bIsVisible = true;
+    
+    } else if (this.openActivityId) {
+      
+      this.activityItems.find((item: any) => item._id === this.openActivityId).bIsVisible = true
+
+    } else {
+      this.activityItems.forEach((item: any) => item.bIsVisible = false)
+    }
+
+    if (aDiscounts?.length) {
       this.activityItems.forEach((item:any) => {
         const discountRecord = aDiscounts.find((d: any) => d.sUniqueIdentifier === item.sUniqueIdentifier)
-        item.nPaidAmount = item.nPaidAmount + discountRecord.nPaidAmount;
+        if (discountRecord) {
+          item.nPaidAmount = item.nPaidAmount + discountRecord.nPaidAmount;
+        }
       })
     }
   }
@@ -869,11 +879,11 @@ export class ActivityDetailsComponent implements OnInit {
     activity.nTotalAmount = activity.nPriceIncVat * activity.nQuantity;
   }
 
-  copyToClipboard(data:any) {
-    this.clipboard.copy(data);
-    this.bActivityNumberCopied = true;
+  copyToClipboard(activity:any) {
+    this.clipboard.copy(activity.sNumber);
+    activity.bActivityNumberCopied = true;
     setTimeout(() => {
-      this.bActivityNumberCopied = false;
+      activity.bActivityNumberCopied = false;
     }, 3000);
   }
 }

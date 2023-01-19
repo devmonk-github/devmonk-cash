@@ -208,7 +208,7 @@
           <td>{{activity?.oCustomer?.sFirstName}} {{activity?.oCustomer?.sLastName || '-'}}</td>
           <td>
             <div class="btn-group me-4">
-              <div class="btn btn-primary fs-bold px-6" (click)="openActivities(activity)">
+              <div class="btn btn-primary fs-bold px-6" (click)="openActivities(activity)" [class.disabled]="!businessDetails?._id">
                 <span class="indicator-label">{{ "VIEW"}}</span>
               </div>
             </div>

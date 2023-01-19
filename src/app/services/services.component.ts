@@ -46,7 +46,7 @@ export class ServicesComponent implements OnInit, OnDestroy {
     sortBy: { key: '_id', selected: true, sort: 'asc' },
     sortOrder: 'asc'
   };
-  showLoader: Boolean = false;
+  showLoader = false;
   widgetLog: string[] = [];
   pageCounts: Array<number> = [10, 25, 50, 100]
   pageCount: number = 10;
@@ -121,7 +121,11 @@ export class ServicesComponent implements OnInit, OnDestroy {
     private activatedRoute: ActivatedRoute,
     private toastrService: ToastService,
     private barcodeService: BarcodeService,
-  ) { }
+  ) { 
+    this.iBusinessId = localStorage.getItem('currentBusiness') || '';
+    this.iLocationId = localStorage.getItem('currentLocation') || '';
+    this.userType = localStorage.getItem('type');
+  }
   
   async ngOnInit(): Promise<void> {
     this.apiService.setToastService(this.toastrService);
@@ -136,14 +140,9 @@ export class ServicesComponent implements OnInit, OnDestroy {
       this.webOrders = true;
       this.requestParams.eType = ['webshop-revenue'] //, 'webshop-reservation'
     }
-    this.businessDetails._id = localStorage.getItem('currentBusiness');
-    this.iLocationId = localStorage.getItem('currentLocation') || '';
-    this.userType = localStorage.getItem('type');
-    this.iBusinessId = localStorage.getItem('currentBusiness');
-
+    
     // this.showLoader = true;
-    if (this.isFor !== "activity") await this.setLocation() /* For web-orders, we will switch to the web-order location otherwise keep current location */
-    this.showLoader = false
+    if (this.isFor !== "activity") await this.setLocation() /* For web-orders, we will switch to the web-order location otherwise keep current location */    
     this.loadTransaction();
     this.fetchBusinessDetails();
    
@@ -186,7 +185,7 @@ export class ServicesComponent implements OnInit, OnDestroy {
   // }
 
   getLocations() {
-    this.apiService.postNew('core', `/api/v1/business/${this.businessDetails._id}/list-location`, {}).subscribe((result:any)=> {
+    this.apiService.postNew('core', `/api/v1/business/${this.iBusinessId}/list-location`, {}).subscribe((result:any)=> {
       this.requestParams.locations = result.data.aLocation;
     });
   }
@@ -236,7 +235,7 @@ export class ServicesComponent implements OnInit, OnDestroy {
   }
 
   getWorkstations() {
-    this.apiService.getNew('cashregistry', `/api/v1/workstations/list/${this.businessDetails._id}/${this.iLocationId}`).subscribe((result:any)=>{
+    this.apiService.getNew('cashregistry', `/api/v1/workstations/list/${this.iBusinessId}/${this.iLocationId}`).subscribe((result:any)=>{
       if (result && result.data) {
         this.workstations = result.data;
       }
@@ -287,7 +286,7 @@ export class ServicesComponent implements OnInit, OnDestroy {
   }
 
   listEmployee() {
-    this.apiService.postNew('auth', '/api/v1/employee/list', { iBusinessId: this.businessDetails._id }).subscribe((result:any)=>{
+    this.apiService.postNew('auth', '/api/v1/employee/list', { iBusinessId: this.iBusinessId }).subscribe((result:any)=>{
       if (result?.data?.length && result.data[0]?.result?.length) {
         this.employees = result.data[0].result
       }
@@ -334,7 +333,7 @@ export class ServicesComponent implements OnInit, OnDestroy {
       if (this.iLocationId) this.requestParams.iLocationId = this.iLocationId
     }
     this.activities = [];
-    this.requestParams.iBusinessId = this.businessDetails._id;
+    this.requestParams.iBusinessId = this.iBusinessId;
     this.requestParams.skip = this.requestParams.skip || 0;
     this.requestParams.limit = this.paginationConfig.itemsPerPage || 50;
     this.requestParams.importStatus = this.importStatus == 'all' ? undefined : this.importStatus;
@@ -402,7 +401,7 @@ export class ServicesComponent implements OnInit, OnDestroy {
       this.toastrService.show({ type: 'success', text: 'Barcode detected: ' + barcode })
       // activityitem.find({sNumber: barcode},{eTransactionItem.eKind : 1})
       let oBody: any = {
-        iBusinessId: this.businessDetails._id,
+        iBusinessId: this.iBusinessId,
         oFilterBy: {
           sNumber: barcode
         }
@@ -413,7 +412,7 @@ export class ServicesComponent implements OnInit, OnDestroy {
         const iActivityId = activityItemResult?.data[0].result[0].iActivityId;
         const iActivityItemId = activityItemResult?.data[0].result[0]._id;
         oBody = {
-          iBusinessId: this.businessDetails._id,
+          iBusinessId: this.iBusinessId,
           oFilterBy: {
             _id: iActivityId
           }
@@ -426,7 +425,7 @@ export class ServicesComponent implements OnInit, OnDestroy {
     } else if (barcode.startsWith("A")) {
       this.toastrService.show({ type: 'success', text: 'Barcode detected: ' + barcode })
       let oBody = {
-        iBusinessId: this.businessDetails._id,
+        iBusinessId: this.iBusinessId,
         oFilterBy: {
           sNumber: barcode
         }
@@ -441,7 +440,7 @@ export class ServicesComponent implements OnInit, OnDestroy {
     } else if (barcode.startsWith("G")) {
       this.toastrService.show({ type: 'success', text: 'Barcode detected: ' + barcode })
       let oBody: any = {
-        iBusinessId: this.businessDetails._id,
+        iBusinessId: this.iBusinessId,
         oFilterBy: {
           sGiftCardNumber: barcode.substring(2)
         }
