@@ -2,7 +2,7 @@ import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnInit, ViewCh
 import { DialogComponent, DialogService } from '../../service/dialog';
 import { ViewContainerRef } from '@angular/core';
 import { ApiService } from 'src/app/shared/service/api.service';
-import { faTimes } from "@fortawesome/free-solid-svg-icons";
+import { faL, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { TranslateService } from '@ngx-translate/core';
 import {
   ApexAxisChartSeries,
@@ -82,6 +82,9 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
   setPaginateSize: number = 10;
   iEmployeeId:any;
   employeesList:any;
+  customerLoyalityPoints :Number;
+  pointsAdded:Boolean = false;
+  oPointsSettingsResult:any;
 
   purchasePaginationConfig: any = {
     id: 'purchases_paginate',
@@ -268,12 +271,14 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
       if(this.customer._id == ""){
         this.getBusinessDetails();
       }
-    const translations = ['SUCCESSFULLY_ADDED', 'SUCCESSFULLY_UPDATED']
+    const translations = ['SUCCESSFULLY_ADDED', 'SUCCESSFULLY_UPDATED' ,'LOYALITY_POINTS_ADDED']
     this.translateService.get(translations).subscribe(
       result => this.translations = result
     )
     this.requestParams.iBusinessId = localStorage.getItem('currentBusiness');
     this.requestParams.iLocationid = localStorage.getItem('currentLocation');
+    console.log("----------------i location---------------");
+    console.log(this.requestParams.iLocationId);
     this.iEmployeeId = localStorage.getItem('currentUser') ?JSON.parse(localStorage.getItem('currentUser') || '') : "";
 
     this.requestParams.oFilterBy = {
@@ -336,7 +341,33 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
      
     });
   }
-  
+  addLoyalityPoints(){
+    console.log("--------------------loyality points-------------");
+    this.pointsAdded = true;
+    const oBody ={
+      iBusinessId:this.requestParams.iBusinessId ,
+      iLocationId:localStorage.getItem('currentLocation'),
+      iCustomerId:this.customer._id,
+      nSavingsPoints:this.customerLoyalityPoints   
+    }
+    this.apiService.postNew('cashregistry' , '/api/v1/points-settings/createPoints' , oBody).subscribe((res:any)=>{
+      console.log("--------------points settings-----------");
+      console.log(res);
+      if(res.message == 'success' && res?.data?._id){
+        this.pointsAdded = false;
+        this.customerLoyalityPoints = 0;
+        this.customer.nLoyaltyPoints = this.customer.nLoyaltyPoints + res.data.nSavingsPoints;
+        this.customer.nLoyaltyPointsValue = this.customer.nLoyaltyPoints / this.oPointsSettingsResult.nPerEuro2;
+        this.toastService.show({type:'success' , text:this.translations['LOYALITY_POINTS_ADDED']});
+      }else{
+        this.pointsAdded = false;
+        this.customerLoyalityPoints = 0;
+      }
+
+    })
+
+  }
+
 
   getListEmployees() {
     const oBody = {
@@ -871,9 +902,9 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     if (this.customer.bCounter) return;
     if (this.customer?._id && this.customer._id != '') {
       const nPointsResult: any = await this.apiService.getNew('cashregistry', `/api/v1/points-settings/points?iBusinessId=${this.requestParams.iBusinessId}&iCustomerId=${this.customer._id}`).toPromise();
-      const oPointsSettingsResult: any = await this.apiService.getNew('cashregistry', `/api/v1/points-settings?iBusinessId=${this.requestParams.iBusinessId}`).toPromise();
+      this.oPointsSettingsResult = await this.apiService.getNew('cashregistry', `/api/v1/points-settings?iBusinessId=${this.requestParams.iBusinessId}`).toPromise();
       this.customer.nLoyaltyPoints = nPointsResult;
-      this.customer.nLoyaltyPointsValue = nPointsResult / oPointsSettingsResult.nPerEuro2;
+      this.customer.nLoyaltyPointsValue = nPointsResult / this.oPointsSettingsResult.nPerEuro2;
     }
   }
   CopyInvoiceAddressToShipping() {
