@@ -190,8 +190,8 @@
                                         <label class="col-12">{{"ADD_OR_REDUCE_SAVING_POINTS" | translate}}</label>
                                         <div class="col-12">
                                             <div class="d-flex">
-                                                <input type="text" class="form-control">
-                                                <button class="btn btn-secondary">{{"SAVE" | translate}}</button>
+                                                <input type="number" class="form-control" name="loyalityPoints" [(ngModel)]="customerLoyalityPoints">
+                                                <button class="btn btn-primary" [disabled]="pointsAdded" (click)="addLoyalityPoints()">{{"SAVE" | translate}}</button>
                                             </div>
                                         </div>
                                     </div>
