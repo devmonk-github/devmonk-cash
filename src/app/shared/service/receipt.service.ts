@@ -118,12 +118,13 @@ export class ReceiptService {
 
     async exportToPdf({ oDataSource, templateData, pdfTitle, printSettings, printActionSettings, eSituation, sAction }: any) {
         this.oOriginalDataSource = oDataSource;
-        this.pdfService.getTranslations();
+        // this.pdfService.getTranslations();
 
         // console.log(this.oOriginalDataSource)
 
         this.commonService.pdfTitle = pdfTitle;
         this.commonService.mapCommonParams(templateData.aSettings);
+        this.content = [];
         this.processTemplate(templateData.layout);
         // console.log(this.content)
         const response = await this.pdfServiceNew.getPdfData({
@@ -141,7 +142,7 @@ export class ReceiptService {
             eSituation,
             sAction: sAction
         });
-        this.cleanUp();
+        // this.cleanUp();
         if (sAction == 'sentToCustomer') return response;
     }
 
@@ -250,7 +251,7 @@ export class ReceiptService {
                 }
                 if (bInclude) {
                     let text = this.pdfService.replaceVariables(column.html, this.oOriginalDataSource) || '';
-                    let obj: any = { text: this.pdfService.translations[text] || text };
+                    let obj: any = { text: text };
                     if (column?.alignment) obj.alignment = column.alignment;
                     if (column?.styles) {
                         obj = { ...obj, ...column.styles };
@@ -565,7 +566,7 @@ export class ReceiptService {
     cleanUp() {
         this.oOriginalDataSource = null;
         this.content = [];
-        this.styles = {};
+        // this.styles = {};
     }
 
     async printThermalReceipt({ oDataSource, printSettings, sAction, apikey, title }: any) {

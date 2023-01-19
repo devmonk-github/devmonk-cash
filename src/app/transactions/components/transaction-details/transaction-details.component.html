@@ -111,7 +111,7 @@
                     <fa-icon [icon]="faFileInvoice"></fa-icon>
                     <label class="mx-auto">{{ "GENERAL_INVOICE" | translate}}</label>
                 </button>
-                <button [disabled]="!businessDetails?._id" class="btn btn-sm btn-secondary w-100 d-flex"
+                <button [disabled]="!businessDetails?._id" class="btn btn-sm btn-secondary w-100 d-flex" [disabled]="downloadWithVATLoading"
                     (click)="downloadWithVAT()">
                     <fa-icon [hidden]="downloadWithVATLoading" [icon]="faDownload"></fa-icon>
                     <span *ngIf="downloadWithVATLoading">
@@ -130,9 +130,13 @@
                     <fa-icon [icon]="faDownload"></fa-icon>
                     <label class="mx-auto">{{ "DOWNLOAD_WITHOUT_VAT" | translate}}</label>
                 </button>
-                <button [disabled]="!businessDetails?._id" class="btn btn-sm btn-secondary w-100 d-flex" (click)="getThermalReceipt()">
+                <button [disabled]="!businessDetails?._id" class="btn btn-sm btn-secondary w-100 d-flex" (click)="getThermalReceipt('business-receipt')">
                     <fa-icon [icon]="faReceipt"></fa-icon>
                     <label class="mx-auto"> {{ "THERMAL_RECEIPT" | translate}}</label>
+                </button>
+                <button [disabled]="!businessDetails?._id" class="btn btn-sm btn-secondary w-100 d-flex" (click)="getThermalReceipt('warranty-receipt')">
+                    <fa-icon [icon]="faReceipt"></fa-icon>
+                    <label class="mx-auto"> {{ "WARRANTY_RECEIPT" | translate}}</label>
                 </button>
                 <button class="btn btn-sm btn-secondary w-100 d-flex">
                     <fa-icon [icon]="faAt"></fa-icon>

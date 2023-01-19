@@ -147,6 +147,9 @@ export class ActivityDetailsComponent implements OnInit {
   bShowOrderDownload: boolean = false;
   routerSub: any;
   bActivityPdfGenerationInProgress: boolean = false;
+  bCustomerReceipt : boolean = false;
+  bDownloadCustomerReceipt : boolean = false;
+  bDownloadReceipt: boolean = false;
 
   constructor(
     private viewContainerRef: ViewContainerRef,
@@ -217,6 +220,7 @@ export class ActivityDetailsComponent implements OnInit {
       this.processTransactionItems(_transactionItemData);
     }
     
+    this.processActivityItems();
 
     if (this.activity?.iCustomerId) this.fetchCustomer(this.activity.iCustomerId, -1);
     this.getBusinessLocations();
@@ -231,41 +235,52 @@ export class ActivityDetailsComponent implements OnInit {
     this.printSettings = _printSettings?.data[0]?.result;
   }
 
+  processActivityItems(){
+    const aDiscounts = this.activityItems.filter((item:any)=> item.oType.eKind === 'discount')
+    this.activityItems = this.activityItems.filter((item: any) => item.oType.eKind !== 'discount')
+    if (this.activityItems?.length == 1) this.activityItems[0].collapsedBtn = true;
+    if(aDiscounts?.length) {
+      this.activityItems.forEach((item:any) => {
+        const discountRecord = aDiscounts.find((d: any) => d.sUniqueIdentifier === item.sUniqueIdentifier)
+        item.nPaidAmount = item.nPaidAmount + discountRecord.nPaidAmount;
+      })
+    }
+  }
+
+
   getBusinessProduct(iProductId:any){
    return this.apiService.getNew('core' , `/api/v1/business/products/${iProductId}?iBusinessId=${this.iBusinessId}`);
   }
 
   getListEmployees() {
-    const oBody = {
-      iBusinessId: localStorage.getItem('currentBusiness') || '',
-    }
-    this.apiService.postNew('auth', `/api/v1/employee/list`, oBody).subscribe((result: any) => {
-      if (result && result.data && result.data.length) {
-        this.employeesList = result.data[0].result;
-        if (this.activity?.iEmployeeId) {
-          let createerIndex = this.employeesList.findIndex((employee: any) => employee._id == this.activity.iEmployeeId);
-          if (this.createrDetail != -1) {
-            this.createrDetail = this.employeesList[createerIndex];
-            this.activity.sAdvisedEmpFirstName = this.createrDetail?.sFirstName || 'a';
-          }
-        }
-
-        this.employeesList.map(o => o.sName = `${o.sFirstName} ${o.sLastName}`);
-        if(this.activityItems[0]?.iEmployeeId){
-          let createerIndex = this.employeesList.findIndex((employee:any) => employee._id == this.activityItems[0].iEmployeeId);
-          if(createerIndex != -1){
-             this.createrDetail = this.employeesList[createerIndex] 
-           }
-        }
-        this.activityItems.forEach((items:any , index:any)=>{
-          let employeeIndex= this.employeesList.findIndex((employee:any)=> employee._id == items.iAssigneeId);
-          if(employeeIndex != -1){
-            this.activityItems[index] = { ...items, "employeeName": this.employeesList[employeeIndex].sName}
-          }
-        })
+    // const oBody = {
+    //   iBusinessId: localStorage.getItem('currentBusiness') || '',
+    // }
+    // this.apiService.postNew('auth', `/api/v1/employee/list`, oBody).subscribe((result: any) => {
+    //   if (result && result.data && result.data.length) {
+    // this.employeesList = result.data[0].result;
+    if (this.activity?.iEmployeeId) {
+      let createerIndex = this.employeesList.findIndex((employee: any) => employee._id == this.activity.iEmployeeId);
+      if (this.createrDetail != -1) {
+        this.createrDetail = this.employeesList[createerIndex];
+        this.activity.sAdvisedEmpFirstName = this.createrDetail?.sFirstName || 'a';
       }
-    }, (error) => {
-    });
+    }
+
+    this.employeesList.map(o => o.sName = `${o.sFirstName} ${o.sLastName}`);
+    if (this.activityItems[0]?.iEmployeeId) {
+      let createerIndex = this.employeesList.findIndex((employee: any) => employee._id == this.activityItems[0].iEmployeeId);
+      if (createerIndex != -1) {
+        this.createrDetail = this.employeesList[createerIndex]
+      }
+    }
+    this.activityItems.forEach((items: any, index: any) => {
+      let employee = this.employeesList.find((employee: any) => employee._id === items.iAssigneeId);
+      if (employee) {
+        this.activityItems[index] = { ...items, "employeeName": employee.sName }
+      }
+    })
+    // }
   }
 
   getListSuppliers() {
@@ -483,7 +498,13 @@ export class ActivityDetailsComponent implements OnInit {
     return this.apiService.getNew('core', '/api/v1/business/' + this.business._id);
   }
 
-  async downloadCustomerReceipt(index: number) {
+  async downloadCustomerReceipt(index: number , receipt:any) {
+    if(receipt == 'customerReceipt'){
+      this.bCustomerReceipt = true;
+    }else if(receipt == 'downloadCustomerReceipt'){
+      this.bDownloadCustomerReceipt = true;
+    }
+
     let oDataSource = JSON.parse(JSON.stringify(this.activity));
     if (oDataSource?.activityitems) {
       oDataSource = oDataSource.activityitems[index];
@@ -499,10 +520,10 @@ export class ActivityDetailsComponent implements OnInit {
       type = (oDataSource?.oType.eKind === 'regular') ? 'repair_alternative' : 'repair';
       sBarcodeURI = this.generateBarcodeURI(false, oDataSource.sNumber);
     } 
-    if (!this.businessDetails) {
-      const result: any = await this.getBusinessDetails().toPromise();
-      this.businessDetails = result.data;
-    }
+    // if (!this.businessDetails) {
+    //   const result: any = await this.getBusinessDetails().toPromise();
+    //   this.businessDetails = result.data;
+    // }
     oDataSource.businessDetails = this.businessDetails;
     const aPromises = [];
     let bBusinessLogo = false, bTemplate = false;
@@ -561,8 +582,8 @@ export class ActivityDetailsComponent implements OnInit {
     oDataSource.sBusinessLogoUrl = (await this.getBase64FromUrl(oDataSource?.businessDetails?.sLogoLight).toPromise()).data;
     // return;
     // this.printSettings = this.getPdfPrintSetting(type);
-
-    this.sendForReceipt(oDataSource, template, oDataSource.sNumber);
+    
+      this.sendForReceipt(oDataSource, template, oDataSource.sNumber , receipt);
     return;
     const data = this.activity.activityitems[index];
     const sName = 'Sample', eType = 'completed';
@@ -727,18 +748,20 @@ export class ActivityDetailsComponent implements OnInit {
     return canvas.toDataURL("image/png");
   }
 
-  async downloadReceipt(event:any) {
+  async downloadReceipt(event:any , receipt:any) {
+    if(receipt == 'downloadReceipt'){
+      this.bDownloadReceipt = true;
+    }
     this.bActivityPdfGenerationInProgress = true;
     event.target.disabled = true;
 
     const oDataSource = JSON.parse(JSON.stringify(this.activity));
     oDataSource.businessDetails = this.businessDetails;
 
-    if (!this.businessDetails) {
-      const result: any = await this.getBusinessDetails().toPromise();
-      this.businessDetails = result.data;
-    }
-
+    // if (!this.businessDetails) {
+    //   const result: any = await this.getBusinessDetails().toPromise();
+    //   this.businessDetails = result.data;
+    // }
     const aPromises = [];
     let bBusinessLogo = false, bTemplate = false;
     if (this.businessDetails?.sBusinessLogoUrl) {
@@ -797,12 +820,12 @@ export class ActivityDetailsComponent implements OnInit {
     });
     oDataSource.nTotalPaidAmount = nTotalPaidAmount;
 
-    this.sendForReceipt(oDataSource, template, oDataSource.sNumber);
+    this.sendForReceipt(oDataSource, template, oDataSource.sNumber , receipt);
     this.bActivityPdfGenerationInProgress = false;
     event.target.disabled = false;
   }
 
-  sendForReceipt(oDataSource: any, template: any, title: any) {
+  sendForReceipt(oDataSource: any, template: any, title: any , receipt:any) {
     this.receiptService.exportToPdf({
       oDataSource: oDataSource,
       pdfTitle: title,
@@ -811,6 +834,13 @@ export class ActivityDetailsComponent implements OnInit {
       printActionSettings: this.printActionSettings,
       eSituation: 'is_created'
     });
+    if(receipt == 'customerReceipt'){
+      this.bCustomerReceipt = false;
+    }else if(receipt == 'downloadCustomerReceipt'){
+      this.bDownloadCustomerReceipt = false;
+    } else if(receipt == 'downloadReceipt'){
+      this.bDownloadReceipt = false;
+    }
   }
 
   getPdfPrintSetting(oFilterBy?: any) {

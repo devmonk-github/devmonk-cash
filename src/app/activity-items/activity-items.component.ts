@@ -101,6 +101,7 @@ export class ActivityItemsComponent implements OnInit, OnDestroy {
     this.apiService.setToastService(this.toastrService);
     this.businessDetails._id = localStorage.getItem('currentBusiness');
     this.iLocationId = localStorage.getItem('currentLocation');
+    this.fetchBusinessDetails();
     this.loadTransaction();
 
     const [_locationData, _workstationData, _employeeData]: any = await Promise.all([
@@ -135,6 +136,12 @@ export class ActivityItemsComponent implements OnInit, OnDestroy {
     });
   }
 
+    fetchBusinessDetails() {
+    this.apiService.getNew('core', '/api/v1/business/' + this.businessDetails._id).subscribe((result: any) => {
+      this.businessDetails = result.data;
+    })
+  }
+
   loadTransaction() {
     this.activityItems = [];
     this.requestParams.iBusinessId = this.businessDetails._id;
@@ -163,7 +170,7 @@ export class ActivityItemsComponent implements OnInit, OnDestroy {
   }
 
   openActivities(activity: any, openActivityId?: any) {
-    this.dialogService.openModal(ActivityDetailsComponent, { cssClass: 'w-fullscreen mt--5', hasBackdrop: true, closeOnBackdropClick: true, closeOnEsc: true, context: { activity: activity, openActivityId, items: true, from: 'activity-items' } })
+    this.dialogService.openModal(ActivityDetailsComponent, { cssClass: 'w-fullscreen mt--5', hasBackdrop: true, closeOnBackdropClick: true, closeOnEsc: true, context: { activity: activity, openActivityId, items: true,  businessDetails:this.businessDetails ,from: 'activity-items' } })
       .instance.close.subscribe((result: any) => {
         // if (result) this.routes.navigate(['business/till']);
       });

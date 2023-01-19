@@ -647,6 +647,10 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
             }
           });
           payMethods = payMethods.filter((o: any) => o.amount !== 0);
+          let availableAmount = _.sumBy(payMethods, 'amount') || 0;
+          this.paymentDistributeService.distributeAmount(this.transactionItems, availableAmount);
+          this.transactionItems = [...this.transactionItems.filter((item:any)=> item.type !== 'empty-line')]
+          
           const body = this.tillService.createTransactionBody(this.transactionItems, payMethods, this.discountArticleGroup, this.redeemedLoyaltyPoints, this.customer);
           if (body.transactionItems.filter((item: any) => item.oType.eKind === 'repair')[0]?.iActivityItemId) {
             this.bHasIActivityItemId = true
@@ -751,7 +755,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     const nRepairCount = oDataSource.aTransactionItemType.filter((e: any) => e === 'repair')?.length;
     const nOrderCount = oDataSource.aTransactionItemType.filter((e: any) => e === 'order')?.length;
 
-    const bRegularCondition = oDataSource.total > 0.02 || oDataSource.total < -0.02;
+    const bRegularCondition = oDataSource.total >= 0.02 || oDataSource.total <= -0.02;
     const bOrderCondition = nOrderCount === 1 && nRepairCount === 1 || nRepairCount > 1 || nOrderCount > 1;
     const bRepairCondition = nRepairCount === 1 && nOrderCount === 0;
     const bRepairAlternativeCondition = nRepairCount >= 1 && nOrderCount >= 1;
@@ -1400,7 +1404,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   async updateFiskalyTransaction(state: string, payments: []) {
-    if (!this.businessDetails.currentLocation?.tssInfo) {
+    if (!this.businessDetails?.currentLocation?.tssInfo) {
       return;
     }
     const pay = _.clone(payments);
