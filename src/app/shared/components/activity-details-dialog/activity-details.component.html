@@ -95,26 +95,29 @@
             <div class="col-10">
 
                 <div class="accordion" id="kt_accordion_1">
-                    <div class="accordion-item" *ngFor="let activity of activityItems; index as index">
+                    <div class="accordion-item" *ngFor="let activity of activityItems; let activityindex = index">
                         <div *ngIf="!eKindValue.includes(activity.oType.eKind)">
                             <h2 class="accordion-header">
                                 <button class="accordion-button fs-4 fw-bold"
-                                    (click)="activity.collapsedBtn = !activity.collapsedBtn" type="button"
-                                    data-bs-toggle="collapse" [ngClass]="{'collapsed': activity.collapsedBtn }"
-                                    #accordionBtn>
-                                    <label>{{activity.sNumber}}
-                                        <button [cdkCopyToClipboard]="activity.sNumber"
-                                            (cdkCopyToClipboardCopied)="bActivityNumber=true" class="btn">
-                                            <i class="fa fa-copy" title="Click to copy"> </i>
-                                        </button>
-                                        <span *ngIf="bActivityNumber" class="text-green bold text-end my-2">Copied to
-                                            clipboard!</span>
-                                    </label>
-                                </button>
+                                    type="button"
+                                    data-bs-toggle="collapse"
+                                    [attr.data-bs-target]="'item'+activityindex"
+                                    [attr.aria-expanded]="activityindex === 0 ? true : false" 
+                                    [attr.aria-controls]="'item'+activityindex">
+                                    {{activity.sNumber}}
+                                    <span class="ms-5" (click)="copyToClipboard(activity.sNumber)">
+                                        <i class="fa fa-copy" title="Click to copy"> </i>
+                                        <span @fade *ngIf="bActivityNumberCopied" class="text-primary bold ms-2 my-2">
+                                            {{ 'COPIED_TO_CLIPBOARD' | translate }}</span>
+                                        </span>
+                                    </button>
+                                
                             </h2>
-                            <div class="accordion-collapse collapse"
-                                *ngIf="eKindValueForLayout.includes(activity.oType.eKind)" data-bs-parent="accordion"
-                                [ngClass]="{'show': activity.collapsedBtn }">
+                            <div class="accordion-collapse collapse general"
+                                *ngIf="eKindValueForLayout.includes(activity.oType.eKind)" 
+                                data-bs-parent="#kt_accordion_1" 
+                                [id]="'item'+activityindex"
+                                [class.show]="activity.bIsVisible">
                                 <div class="accordion-body">
                                     <div class="row">
                                         <div class="col-4">
@@ -177,7 +180,7 @@
                                         <div class="col-3 my-3">
                                             <div class="btn-group me-4 w-100 my-3">
                                                 <button class="btn btn-primary fs-bold"
-                                                    (click)="downloadCustomerReceipt(index , 'customerReceipt')" [disabled]="bCustomerReceipt">
+                                                    (click)="downloadCustomerReceipt(activityindex , 'customerReceipt')" [disabled]="bCustomerReceipt">
                                                     <fa-icon class="group-icon" [icon]="faUser"></fa-icon>
                                                     <span class="indicator-label ">{{ "CUSTOMER_RECEIPT" | translate
                                                         }}</span>
@@ -209,7 +212,7 @@
                                             </div>
                                             <div class="btn-group me-4 w-100 my-3">
                                                 <button class="btn btn-primary fs-bold"
-                                                    (click)="downloadCustomerReceipt(index , 'downloadCustomerReceipt')" [disabled]="bDownloadCustomerReceipt">
+                                                    (click)="downloadCustomerReceipt(activityindex , 'downloadCustomerReceipt')" [disabled]="bDownloadCustomerReceipt">
                                                     <fa-icon class="group-icon" [icon]="faPrint"></fa-icon>
                                                     <span class="indicator-label">{{
                                                         "CUSTOMER_RECEIPT_PRINT" |
@@ -512,7 +515,7 @@
                                                     </div>
                                                     <div class="d-flex">
                                                         <div class="image-input p-1 d-flex"
-                                                            *ngFor="let image of activity.aImage; let i = index"
+                                                            *ngFor="let image of activity.aImage"
                                                             data-kt-image-input="true"
                                                             style="background-image: url('assets/media/svg/avatars/blank.svg')">
                                                             <div class="image-input-wrapper w-100px h-100px"
@@ -556,7 +559,7 @@
                                                 </div>
                                                 <div class="col-12">
                                                     <button class="btn btn-success"
-                                                        (click)="AssignOrderProduct(activity , index)"> {{'ADD / CHANGE'
+                                                        (click)="AssignOrderProduct(activity , activityindex)"> {{'ADD / CHANGE'
                                                         | translate}}</button>
                                                 </div>
                                             </div>
@@ -613,7 +616,7 @@
                                                                             placeholder="{{ 'SEARCH_EMPLOYEE' | translate}}"
                                                                             [minTermLength]="2" [clearable]="false"
                                                                             [isOpen]="filteredEmployees.length > 0"
-                                                                            (change)="onEmployeeChange($event , index)">
+                                                                            (change)="onEmployeeChange($event , activityindex)">
                                                                             <ng-option
                                                                                 *ngFor="let option of filteredEmployees"
                                                                                 [value]="option">
@@ -624,7 +627,7 @@
                                                                         <div class="chip d-flex"
                                                                             *ngIf="activity.iAssigneeId">
                                                                             {{activity.employeeName}}
-                                                                            <div (click)="removeEmployeees(index)">
+                                                                            <div (click)="removeEmployeees(activityindex)">
                                                                                 &nbsp;<i
                                                                                     class="close fas fa-times cursor-pointer"></i>
                                                                             </div>
@@ -646,7 +649,7 @@
                                                                             placeholder="{{'SEARCH_REPAIRER' | translate}}"
                                                                             [minTermLength]="2" [clearable]="false"
                                                                             [isOpen]="supplierOptions.length > 0"
-                                                                            (change)="onSupplierChange($event,index)">
+                                                                            (change)="onSupplierChange($event,activityindex)">
                                                                             <ng-option
                                                                                 *ngFor="let option of supplierOptions"
                                                                                 [value]="option">
@@ -656,7 +659,7 @@
                                                                         <div class="chip d-flex"
                                                                             *ngIf="activity.iBusinessPartnerId">
                                                                             {{activity.sBusinessPartnerName}}
-                                                                            <div (click)="removeSuppliers(index)">
+                                                                            <div (click)="removeSuppliers(activityindex)">
                                                                                 &nbsp;<i
                                                                                     class="close fas fa-times cursor-pointer"></i>
                                                                             </div>
@@ -679,7 +682,7 @@
                                                                             placeholder="{{'SEARCH_BRAND' | translate }}"
                                                                             [minTermLength]="2" [clearable]="false"
                                                                             [isOpen]="filteredBrands.length > 0"
-                                                                            (change)="onBrandChange($event, index)">
+                                                                            (change)="onBrandChange($event, activityindex)">
                                                                             <ng-option
                                                                                 *ngFor="let option of filteredBrands"
                                                                                 [value]="option">
@@ -689,7 +692,7 @@
                                                                         <div class="chip d-flex"
                                                                             *ngIf="activity.iBusinessBrandId">
                                                                             {{activity.brandName}}
-                                                                            <div (click)="removeBrands(index)">
+                                                                            <div (click)="removeBrands(activityindex)">
                                                                                 &nbsp;<i
                                                                                     class="close fas fa-times cursor-pointer"></i>
                                                                             </div>
@@ -746,7 +749,7 @@
                                         </div>
                                         <div class="row">
                                             <div class="col-3">
-                                                <button class="btn btn-primary" (click)="submit(activity._id , index)"
+                                                <button class="btn btn-primary" (click)="submit(activity._id , activityindex)"
                                                     type="submit"> {{ "SUBMIT" | translate}}</button>
                                             </div>
                                         </div>
@@ -754,8 +757,9 @@
                                 </div>
                             </div>
 
-                            <div class="accordion-collapse collapse" *ngIf="activity.oType.eKind == 'giftcard'"
-                                data-bs-parent="accordion" [ngClass]="{'show': activity.collapsedBtn }">
+                            <div class="accordion-collapse collapse giftcard" *ngIf="activity.oType.eKind == 'giftcard'"
+                                data-bs-parent="#kt_accordion_1" 
+                                [class.show]="activity.bIsVisible">
                                 <div class="accordion-body">
                                     <div class="row">
                                         <div class="col-4">
@@ -823,7 +827,7 @@
                                         <div class="col-3 my-3">
                                             <div class="btn-group me-4 w-100 my-3">
                                                 <button class="btn btn-primary fs-bold"
-                                                    (click)="downloadCustomerReceipt(index , 'customerReceipt')" [disabled]="bCustomerReceipt">
+                                                    (click)="downloadCustomerReceipt(activityindex , 'customerReceipt')" [disabled]="bCustomerReceipt">
                                                     <fa-icon class="group-icon" [icon]="faUser"></fa-icon>
                                                     <span class="indicator-label ">{{ "CUSTOMER_RECEIPT" | translate
                                                         }}</span>
@@ -855,7 +859,7 @@
                                             </div>
                                             <div class="btn-group me-4 w-100 my-3">
                                                 <button class="btn btn-primary fs-bold"
-                                                    (click)="downloadCustomerReceipt(index , 'downloadCustomerReceipt')" [disabled]="bDownloadCustomerReceipt">
+                                                    (click)="downloadCustomerReceipt(activityindex , 'downloadCustomerReceipt')" [disabled]="bDownloadCustomerReceipt">
                                                     <fa-icon class="group-icon" [icon]="faPrint"></fa-icon>
                                                     <span class="indicator-label">{{
                                                         "CUSTOMER_RECEIPT_PRINT" |
@@ -1155,7 +1159,7 @@
                             </div>
                             <div class="d-flex">
                                 <div class="image-input p-1 d-flex"
-                                    *ngFor="let image of activity.aImage; let i = index"
+                                    *ngFor="let image of activity.aImage; let i = activityindex"
                                     data-kt-image-input="true"
                                     style="background-image: url('assets/media/svg/avatars/blank.svg')">
                                     <div class="image-input-wrapper w-100px h-100px"
@@ -1406,7 +1410,7 @@
                     </div> -->
                                         <div class="row">
                                             <div class="col-3">
-                                                <button class="btn btn-primary" (click)="submit(activity._id , index)"
+                                                <button class="btn btn-primary" (click)="submit(activity._id , activityindex)"
                                                     type="submit"> {{ "SUBMIT" | translate}}</button>
                                             </div>
                                         </div>
@@ -1414,8 +1418,9 @@
                                 </div>
                             </div>
 
-                            <div class="accordion-collapse collapse" *ngIf="activity.oType.eKind == 'gold-purchase'"
-                                data-bs-parent="accordion" [ngClass]="{'show': activity.collapsedBtn }">
+                            <div class="accordion-collapse collapse gold-purchase" *ngIf="activity.oType.eKind == 'gold-purchase'"
+                                data-bs-parent="#kt_accordion_1" 
+                                [class.show]="activity.bIsVisible">
                                 <div class="accordion-body">
                                     <div class="row">
                                         <div class="col-4">
@@ -1481,7 +1486,7 @@
                                         <div class="col-3 my-3">
                                             <div class="btn-group me-4 w-100 my-3">
                                                 <button class="btn btn-primary fs-bold"
-                                                    (click)="downloadCustomerReceipt(index , 'customerReceipt')" [disabled]="bCustomerReceipt">
+                                                    (click)="downloadCustomerReceipt(activityindex , 'customerReceipt')" [disabled]="bCustomerReceipt">
                                                     <fa-icon class="group-icon" [icon]="faUser"></fa-icon>
                                                     <span class="indicator-label ">{{ "CUSTOMER_RECEIPT" | translate
                                                         }}</span>
@@ -1513,7 +1518,7 @@
                                             </div>
                                             <div class="btn-group me-4 w-100 my-3">
                                                 <button class="btn btn-primary fs-bold"
-                                                    (click)="downloadCustomerReceipt(index , 'downloadCustomerReceipt')" [disabled]="bDownloadCustomerReceipt">
+                                                    (click)="downloadCustomerReceipt(activityindex , 'downloadCustomerReceipt')" [disabled]="bDownloadCustomerReceipt">
                                                     <fa-icon class="group-icon" [icon]="faPrint"></fa-icon>
                                                     <span class="indicator-label">{{"CUSTOMER_RECEIPT_PRINT" | translate}}</span>
                                                 </button>
@@ -1811,7 +1816,7 @@
                             </div>
                             <div class="d-flex">
                                 <div class="image-input p-1 d-flex"
-                                    *ngFor="let image of activity.aImage; let i = index"
+                                    *ngFor="let image of activity.aImage; let i = activityindex"
                                     data-kt-image-input="true"
                                     style="background-image: url('assets/media/svg/avatars/blank.svg')">
                                     <div class="image-input-wrapper w-100px h-100px"
@@ -1938,7 +1943,7 @@
                                                                             placeholder="{{'SEARCH_EMPLOYEE'| translate }}"
                                                                             [minTermLength]="2" [clearable]="false"
                                                                             [isOpen]="filteredEmployees.length > 0"
-                                                                            (change)="onEmployeeChange($event , index)">
+                                                                            (change)="onEmployeeChange($event , activityindex)">
                                                                             <ng-option
                                                                                 *ngFor="let option of filteredEmployees"
                                                                                 [value]="option">
@@ -1949,7 +1954,7 @@
                                                                         <div class="chip d-flex"
                                                                             *ngIf="activity.iAssigneeId">
                                                                             {{activity.employeeName}}
-                                                                            <div (click)="removeEmployeees(index)">
+                                                                            <div (click)="removeEmployeees(activityindex)">
                                                                                 &nbsp;<i
                                                                                     class="close fas fa-times cursor-pointer"></i>
                                                                             </div>
@@ -1973,7 +1978,7 @@
                                                                             placeholder="{{'SEARCH_REPAIRER' | translate }}"
                                                                             [minTermLength]="2" [clearable]="false"
                                                                             [isOpen]="supplierOptions.length > 0"
-                                                                            (change)="onSupplierChange($event,index)">
+                                                                            (change)="onSupplierChange($event,activityindex)">
                                                                             <ng-option
                                                                                 *ngFor="let option of supplierOptions"
                                                                                 [value]="option">
@@ -1983,7 +1988,7 @@
                                                                         <div class="chip d-flex"
                                                                             *ngIf="activity.iBusinessPartnerId">
                                                                             {{activity.sBusinessPartnerName}}
-                                                                            <div (click)="removeSuppliers(index)">
+                                                                            <div (click)="removeSuppliers(activityindex)">
                                                                                 &nbsp;<i
                                                                                     class="close fas fa-times cursor-pointer"></i>
                                                                             </div>
@@ -2006,7 +2011,7 @@
                                                                             placeholder="{{'SEARCH_BRAND' | translate}}"
                                                                             [minTermLength]="2" [clearable]="false"
                                                                             [isOpen]="filteredBrands.length > 0"
-                                                                            (change)="onBrandChange($event, index)">
+                                                                            (change)="onBrandChange($event, activityindex)">
                                                                             <ng-option
                                                                                 *ngFor="let option of filteredBrands"
                                                                                 [value]="option">
@@ -2016,7 +2021,7 @@
                                                                         <div class="chip d-flex"
                                                                             *ngIf="activity.iBusinessBrandId">
                                                                             {{activity.brandName}}
-                                                                            <div (click)="removeBrands(index)">
+                                                                            <div (click)="removeBrands(activityindex)">
                                                                                 &nbsp;<i
                                                                                     class="close fas fa-times cursor-pointer"></i>
                                                                             </div>
@@ -2070,7 +2075,7 @@
                                         </div>
                                         <div class="row">
                                             <div class="col-3">
-                                                <button class="btn btn-primary" (click)="submit(activity._id , index)"
+                                                <button class="btn btn-primary" (click)="submit(activity._id , activityindex)"
                                                     type="submit"> {{ "SUBMIT" | translate}}</button>
                                             </div>
                                         </div>
@@ -2078,6 +2083,7 @@
                                 </div>
                             </div>
                         </div>
+                        
                     </div>
                     <div class="d-flex mt-100">
                         <h5 *ngIf='!activityItems.length && !loading' style="text-align: center">{{'NO_DATA_FOUND' |

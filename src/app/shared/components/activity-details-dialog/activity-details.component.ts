@@ -15,10 +15,23 @@ import { ToastService } from '../toast';
 import { TranslateService } from '@ngx-translate/core';
 import { TillService } from '../../service/till.service';
 import {AddFavouritesComponent} from '../add-favourites/favourites.component';
+import { Clipboard } from '@angular/cdk/clipboard';
+import { animate, style, transition, trigger } from '@angular/animations';
 @Component({
   selector: 'app-activity-details',
   templateUrl: './activity-details.component.html',
-  styleUrls: ['./activity-details.component.scss']
+  styleUrls: ['./activity-details.component.scss'],
+  animations: [
+    trigger('fade', [ 
+      transition(':enter', [
+        style({ opacity: 0 }),
+        animate('500ms', style({ opacity: 1 })),
+      ]),
+      transition(':leave', [
+        animate('500ms', style({ opacity: 0 }))
+      ])
+    ])
+  ]
 })
 export class ActivityDetailsComponent implements OnInit {
 
@@ -68,7 +81,7 @@ export class ActivityDetailsComponent implements OnInit {
   itemType = 'transaction';
   customerReceiptDownloading: Boolean = false;
   loading: Boolean = false;
-  collapsedBtn: Boolean = false;
+  bIsVisible: Boolean = false;
   iBusinessId = localStorage.getItem('currentBusiness');
   transactions: Array<any> = [];
   totalPrice: Number = 0;
@@ -143,7 +156,7 @@ export class ActivityDetailsComponent implements OnInit {
   ];
   // eKindForLayoutHide =['giftcard'];
   translation:any=[];
-  bActivityNumber: boolean = false;
+  bActivityNumberCopied: boolean = false;
   bShowOrderDownload: boolean = false;
   routerSub: any;
   bActivityPdfGenerationInProgress: boolean = false;
@@ -161,6 +174,7 @@ export class ActivityDetailsComponent implements OnInit {
     private toastService: ToastService ,
     private translationService:TranslateService,
     public tillService: TillService,
+    private clipboard: Clipboard
   ) {
     const _injector = this.viewContainerRef.injector;
     this.dialogRef = _injector.get<DialogComponent>(DialogComponent);
@@ -192,7 +206,7 @@ export class ActivityDetailsComponent implements OnInit {
       if (this.activity?.activityitems?.length) {
         this.bShowOrderDownload = true;
         this.activityItems = this.activity.activityitems;
-        // if (this.activityItems?.length == 1) this.activityItems[0].collapsedBtn = true; /* only item there then we will always open it */
+        // if (this.activityItems?.length == 1) this.activityItems[0].bIsVisible = true; /* only item there then we will always open it */
          this.activityItems.forEach((item:any , index)=>{
           if(item.oType.eKind == 'order' && item?.iBusinessProductId){
             this.getBusinessProduct(item.iBusinessProductId).subscribe((res:any)=>{
@@ -206,7 +220,7 @@ export class ActivityDetailsComponent implements OnInit {
          })
         if (this.openActivityId) {
           this.activityItems.forEach((item: any, index) => {
-            if (item._id === this.openActivityId) item.collapsedBtn = true;
+            if (item._id === this.openActivityId) item.bIsVisible = true;
           });
         }
         
@@ -238,7 +252,7 @@ export class ActivityDetailsComponent implements OnInit {
   processActivityItems(){
     const aDiscounts = this.activityItems.filter((item:any)=> item.oType.eKind === 'discount')
     this.activityItems = this.activityItems.filter((item: any) => item.oType.eKind !== 'discount')
-    if (this.activityItems?.length == 1) this.activityItems[0].collapsedBtn = true;
+    if (this.activityItems?.length == 1) this.activityItems[0].bIsVisible = true;
     if(aDiscounts?.length) {
       this.activityItems.forEach((item:any) => {
         const discountRecord = aDiscounts.find((d: any) => d.sUniqueIdentifier === item.sUniqueIdentifier)
@@ -646,7 +660,7 @@ export class ActivityDetailsComponent implements OnInit {
   processTransactionItems(result:any){
     this.activityItems = result.data[0].result;
     this.oLocationName = this.activityItems[0].oLocationName;   
-    if (this.activityItems.length == 1) this.activityItems[0].collapsedBtn = true;
+    if (this.activityItems.length == 1) this.activityItems[0].bIsVisible = true;
     this.transactions = [];
     for (const obj of this.activityItems) {
       if(obj.oType.eKind == 'order' && obj?.iBusinessProductId){
@@ -853,5 +867,13 @@ export class ActivityDetailsComponent implements OnInit {
 
   changeTotalAmount(activity: any) {
     activity.nTotalAmount = activity.nPriceIncVat * activity.nQuantity;
+  }
+
+  copyToClipboard(data:any) {
+    this.clipboard.copy(data);
+    this.bActivityNumberCopied = true;
+    setTimeout(() => {
+      this.bActivityNumberCopied = false;
+    }, 3000);
   }
 }
