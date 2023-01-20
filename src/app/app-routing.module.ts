@@ -19,7 +19,7 @@ const routes: Routes = [
     loadChildren: () => import('./print-settings/print-settings.module').then(module => module.PrintSettingsModule)
   },
   {
-    path: 'payment-integration',
+    path: 'payment-account-management',
     loadChildren: () => import('./payment-integration/payment-integration.module').then(module => module.PaymentIntegrationModule)
   },
   {
