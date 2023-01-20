@@ -3,8 +3,7 @@
         <h4 class="card-title" *ngIf="mode === 'create'">{{"NEW_CUSTOMER" | translate}}</h4>
         <h4 class="card-title" *ngIf="mode === 'details'">{{"CUSTOMER_DETAILS" | translate}}</h4>
         <div *ngIf="mode === 'details'" class="card-toolbar flex-row-fluid justify-content-end gap-5">
-            <button class="btn btn-secondary" (click)="editProfile = !editProfile">{{ (editProfile)?"CANCEL":"EDIT" |
-                translate}}</button>
+            <button class="btn btn-secondary" (click)="editProfile = !editProfile">{{ ((editProfile)? "CANCEL":"EDIT" )| translate}}</button>
             <button class="btn btn-primary" *ngIf="editProfile" (click)="EditOrCreateCustomer()">{{"SAVE" |
                 translate}}</button>
                 <button class="btn btn-secondary cancel my-auto" *ngIf="!editProfile" (click)="close(false)">{{"CANCEL" | translate}}</button>
@@ -57,16 +56,21 @@
                                         </div>
                                     </div>
                                     <div class="d-flex flex-column mb-5">
-                                        <h5 class="text-gray-700 fw-bolder mb-2"> {{ 'CREATER_DETAIL' | translate}} </h5>
+                                        <div *ngIf="customer?.iEmployeeId">
+                                        <h5 class="text-gray-700 fw-bolder mb-2" > {{ 'CREATER_DETAIL' | translate}} </h5>
                                         <div class="d-flex fs-6 ms-1 my-1">
                                             <div class="align-items-center">                                 
                                                 <img alt="Logo"
                                                 *ngIf="customer?.createrDetail?.sFirstName && (!customer?.createrDetail?.sAvatar  || customer?.createrDetail?.sAvatar == '')"
                                                 src="https://prismanote.com/public/prismanote.png" class="createrImage">
                                               <img alt="Logo" *ngIf="customer?.createrDetail?.sAvatar" [src]="customer.createrDetail.sAvatar" class="createrImage">                                                      
-                                              <span> {{customer?.createrDetail?.sFirstName || ''}} {{customer?.createrDetail?.sLastName || ''}} </span>
+                                              <span> {{customer?.createrDetail?.sFirstName || '-'}} {{customer?.createrDetail?.sLastName || ''}} </span>
                                                 </div>   
-                                                </div>      
+                                                </div>     
+                                        </div>
+                                        <div *ngIf="!customer?.iEmployeeId && customer?.bIsMigrated == true">
+                                            <h5 class="text-gray-700 fw-bolder mb-2"> {{'MIGRATED_CUSTOMER' | translate}}</h5>
+                                        </div> 
                                     </div>
                                 </div>
                                 <div class="">
@@ -163,21 +167,7 @@
                     </div>
                     <div class="col-3">
                         <div>
-                            <div class="card panel-card mb-3">
-                                <div class="card-header">
-                                    <h3 class="card-title"> {{ "ORDER_VALUE" | translate}}</h3>
-                                </div>
-                                <div class="card-body">
-                                    <div class="row mb-7">
-                                        <label class="col-8">{{ "TOTAL_TURNOVER_INC_VAT" |translate}}</label>
-                                        <label class="col-4">{{ '100' | currency: 'EUR'}}</label>
-                                    </div>
-                                    <div class="row mb-7">
-                                        <label class="col-8">{{ "AVERAGE_ORDER_VALUE_INC_VAT" |translate }}</label>
-                                        <label class="col-4">{{ '10' | currency: 'EUR'}}</label>
-                                    </div>
-                                </div>
-                            </div>
+                            
 
                             <div class="card panel-card">
                                 <div class="card-header">
@@ -200,8 +190,8 @@
                                         <label class="col-12">{{"ADD_OR_REDUCE_SAVING_POINTS" | translate}}</label>
                                         <div class="col-12">
                                             <div class="d-flex">
-                                                <input type="text" class="form-control">
-                                                <button class="btn btn-secondary">{{"SAVE" | translate}}</button>
+                                                <input type="number" class="form-control" name="loyalityPoints" [(ngModel)]="customerLoyalityPoints">
+                                                <button class="btn btn-primary" [disabled]="pointsAdded" (click)="addLoyalityPoints()">{{"SAVE" | translate}}</button>
                                             </div>
                                         </div>
                                     </div>
@@ -451,7 +441,26 @@
                                     </div>
                                 </div>
                                 <div class="row mb-5">
-                                    <div class="col-6">
+                                    <div class="col-4">
+                                        <div class="card panel-card mb-3">
+                                            <div class="card-header">
+                                                <h3 class="card-title"> {{ "ORDER_VALUE" | translate}}</h3>
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="row mb-7">
+                                                    <label class="col-6">{{ "TOTAL_TURNOVER_INC_VAT" |translate}}</label>
+                                                    <label class="col-6">{{ nTotalTurnOver | currency: 'EUR'}}</label>
+                                                </div>
+                                                <div class="row mb-7">
+                                                    <label class="col-6">{{ "AVERAGE_ORDER_VALUE_INC_VAT" |translate }}</label>
+                                                    <label class="col-6">{{ nAvgOrderValueIncVat | currency: 'EUR'}}</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                    <div class="col-3">
                                         <table class="table table-hover table-rounded table-striped border gs-7">
                                             <thead>
                                                 <tr class="fw-bold fs-6 text-gray-800 border-bottom-2 border-gray-200">
@@ -467,7 +476,7 @@
                                             </tbody>
                                         </table>
                                     </div>
-                                    <div class="col-6">
+                                    <div class="col-5">
                                         <div id="paymentMethodsChart">
 
                                             <apx-chart [series]="paymentMethodsChartOptions.series"

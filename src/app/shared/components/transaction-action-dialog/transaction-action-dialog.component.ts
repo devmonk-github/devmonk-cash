@@ -45,6 +45,13 @@ export class TransactionActionDialogComponent implements OnInit {
   bOrderCondition: boolean = false;
   bGiftcardCondition: boolean = false;
   bProcessingTransaction: boolean = false;
+  bRepairDisabled: boolean = false;
+  bOrderDisabled: boolean = false;
+  bRegularDisabled: boolean = false;
+  bGiftCardDisabled : boolean = false;
+  bRepairAlternativeDisabled : boolean = false;
+
+  bReceiveNewsletter: boolean = false;
 
   constructor(
     private viewContainer: ViewContainerRef,
@@ -98,6 +105,11 @@ export class TransactionActionDialogComponent implements OnInit {
     let pdfTitle = '';
 
     if (index != undefined && (type === 'repair' || type === 'repair_alternative')) {
+      if(type == 'repair'){
+        this.bRepairDisabled = true
+      }else if(type == 'repair_alternative'){
+        this.bRepairAlternativeDisabled = true
+      }
       // console.log('repair items index=', index, this.aRepairItems[index], this.activityItems);
       oDataSource = this.aRepairItems[index];
       const aTemp = oDataSource.sNumber.split("-");
@@ -112,13 +124,13 @@ export class TransactionActionDialogComponent implements OnInit {
       pdfTitle = oDataSource.sNumber;
 
     } else if (type === 'regular') {
-
+      this.bRegularDisabled = true;
       oDataSource = this.transaction;
       pdfTitle = this.transaction.sNumber;
       template = this.aTemplates.filter((template: any) => template.eType === 'regular')[0];
 
     } else if (type === 'giftcard') {
-
+      this.bGiftCardDisabled = true;
       oDataSource = this.activityItems.filter((item: any) => item.oType.eKind === 'giftcard')[0];
       oDataSource.nTotal = oDataSource.nPaidAmount;
       oDataSource.sBarcodeURI = this.generateBarcodeURI(true, 'G-' + oDataSource.sGiftCardNumber);
@@ -126,7 +138,7 @@ export class TransactionActionDialogComponent implements OnInit {
       template = this.aTemplates.filter((template: any) => template.eType === 'giftcard')[0];
 
     } else if (type === 'order') {
-
+      this.bOrderDisabled = true;
       template = this.aTemplates.filter((template: any) => template.eType === 'order')[0];
       oDataSource = {
         ...this.activity,
@@ -171,7 +183,8 @@ export class TransactionActionDialogComponent implements OnInit {
       const body = {
         pdfContent: response,
         iTransactionId: this.transaction._id,
-        receiptType: 'purchase-receipt'
+        receiptType: 'purchase-receipt',
+        sCustomerEmail: oDataSource.oCustomer.sEmail
       }
 
       this.apiService.postNew('cashregistry', '/api/v1/till/send-to-customer', body).subscribe(
@@ -191,6 +204,18 @@ export class TransactionActionDialogComponent implements OnInit {
         printSettings: this.printSettings.filter((s: any) => s.sType === type),
         sAction: (action === 'DOWNLOAD') ? 'download' : 'print',
       });
+      
+      if(type === 'repair'){
+        this.bRepairDisabled = false
+      }else if(type === 'repair_alternative'){
+        this.bRepairAlternativeDisabled = false
+      }else if(type === 'regular'){
+        this.bRegularDisabled = false
+      }else if(type === 'giftcard'){
+          this.bGiftCardDisabled = false
+      }else if(type === 'order'){
+        this.bOrderDisabled = false
+      }    
     }
   }
 
@@ -198,5 +223,22 @@ export class TransactionActionDialogComponent implements OnInit {
     var canvas = document.createElement("canvas");
     JsBarcode(canvas, data, { format: "CODE128", displayValue: displayValue });
     return canvas.toDataURL("image/png");
+  }
+
+  updateCustomer() {
+    let customerDetails = JSON.parse(JSON.stringify(this.transaction.oCustomer));
+    customerDetails.bNewsletter = this.bReceiveNewsletter;
+    customerDetails.iBusinessId = this.businessDetails._id;
+    this.apiService.putNew('customer', `/api/v1/customer/update/${this.businessDetails._id}/${this.transaction.iCustomerId}`, customerDetails).subscribe(
+      (result: any) => {
+        if (result?.message == "success") {
+          this.toastService.show({ type: 'success', text: 'Customer details updated.' });
+        } else {
+          this.toastService.show({ type: 'warning', text: 'Error while updating customer details updated.' });
+        }
+      }, (error: any) => {
+        this.toastService.show({ type: 'warning', text: 'Error while updating customer details updated.' });
+      }
+    )
   }
 }

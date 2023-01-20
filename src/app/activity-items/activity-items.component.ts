@@ -29,7 +29,8 @@ export class ActivityItemsComponent implements OnInit, OnDestroy {
   };
   importStatus: string = 'all';
   businessDetails: any = {};
-  iLocationId: String | null | undefined;
+  iLocationId: string;
+  iBusinessId: string;
   requestParams: any = {
     create: {
       minDate: new Date('01-01-2015'),
@@ -99,15 +100,10 @@ export class ActivityItemsComponent implements OnInit, OnDestroy {
 
   async ngOnInit() {
     this.apiService.setToastService(this.toastrService);
-    this.businessDetails._id = localStorage.getItem('currentBusiness');
-    this.iLocationId = localStorage.getItem('currentLocation');
+    this.iBusinessId = localStorage.getItem('currentBusiness') || "";
+    this.iLocationId = localStorage.getItem('currentLocation') || "";
+    this.fetchBusinessDetails();
     this.loadTransaction();
-
-    const [_locationData, _workstationData, _employeeData]: any = await Promise.all([
-      this.getLocations(),
-      this.getWorkstations(),
-      this.listEmployee()
-    ]);
 
     this.apiService.activityItemDetails.subscribe((res:any)=>{
       let updatedActivityIndex= this.activityItems.findIndex((activity)=> activity._id == res._id)
@@ -115,38 +111,35 @@ export class ActivityItemsComponent implements OnInit, OnDestroy {
         this.activityItems[updatedActivityIndex] = res;
       }
     })
-
-    if (_locationData.message == 'success') {
-      this.requestParams.locations = _locationData.data.aLocation;
-    }
-
-    if (_workstationData && _workstationData.data) {
-      this.workstations = _workstationData.data;
-    }
-
-    if (_employeeData?.data?.length && _employeeData.data[0]?.result?.length) {
-      this.employees = _employeeData.data[0].result
-    }
-
+    
     this.getProperties();
+    this.getLocations()
+    this.getWorkstations()
+    this.listEmployee()
 
     this.barcodeService.barcodeScanned.subscribe((barcode: string) => {
       this.openModal(barcode);
     });
   }
 
+    fetchBusinessDetails() {
+    this.apiService.getNew('core', '/api/v1/business/' + this.iBusinessId).subscribe((result: any) => {
+      this.businessDetails = result.data;
+    })
+  }
+
   loadTransaction() {
     this.activityItems = [];
-    this.requestParams.iBusinessId = this.businessDetails._id;
+    this.requestParams.iBusinessId = this.iBusinessId;
     this.requestParams.limit = this.paginationConfig.itemsPerPage || 50;
     if (this.requestParams?.selectedKind?.length) this.requestParams.selectedKind = this.requestParams.selectedKind
 
     if (this.iLocationId) this.requestParams.iLocationId = this.iLocationId;
-    this.showLoader = true;
     const oBody = { ... this.requestParams }
     oBody.aPropertyOptionIds = this.aPropertyOptionIds;
     oBody.importStatus = this.importStatus == 'all' ? undefined : this.importStatus;
     oBody.sSearchValue = this.sSearchValue;
+    this.showLoader = true;
     this.apiService.postNew('cashregistry', '/api/v1/activities/items', oBody).subscribe(
       (result: any) => {
         this.activityItems = result.data;
@@ -163,27 +156,45 @@ export class ActivityItemsComponent implements OnInit, OnDestroy {
   }
 
   openActivities(activity: any, openActivityId?: any) {
-    this.dialogService.openModal(ActivityDetailsComponent, { cssClass: 'w-fullscreen mt--5', hasBackdrop: true, closeOnBackdropClick: true, closeOnEsc: true, context: { activity: activity, openActivityId, items: true, from: 'activity-items' } })
-      .instance.close.subscribe((result: any) => {
-        // if (result) this.routes.navigate(['business/till']);
-      });
+    console.log(activity)
+    this.dialogService.openModal(ActivityDetailsComponent, 
+      { 
+        cssClass: 'w-fullscreen mt--5', 
+        hasBackdrop: true, 
+        closeOnBackdropClick: true, 
+        closeOnEsc: true, 
+        context: { 
+          activity: activity,
+          businessDetails: this.businessDetails,
+          openActivityId, 
+          items: true, 
+          from: 'activity-items' 
+        } 
+      }).instance.close.subscribe();
   }
 
   listEmployee() {
-    return this.apiService.postNew('auth', '/api/v1/employee/list', { iBusinessId: this.businessDetails._id }).toPromise();
-    //   if (result?.data?.length) {
-    //     if (result?.data?.length && result.data[0].result?.length) this.employees = result.data[0].result
-    //   }
-    // }, (error) => {
-    // })
+    this.apiService.postNew('auth', '/api/v1/employee/list', { iBusinessId: this.iBusinessId }).subscribe((result:any)=>{
+      if (result?.data?.length && result.data[0].result?.length) {
+        this.employees = result.data[0].result
+      }
+    })
   }
 
   getLocations() {
-    return this.apiService.postNew('core', `/api/v1/business/${this.businessDetails._id}/list-location`, {}).toPromise();
+    this.apiService.postNew('core', `/api/v1/business/${this.iBusinessId}/list-location`, {}).subscribe((result:any) => {
+      if (result?.data?.aLocation?.length) {
+        this.requestParams.locations = result.data.aLocation;
+      }
+    });
   }
 
   getWorkstations() {
-    return this.apiService.getNew('cashregistry', `/api/v1/workstations/list/${this.businessDetails._id}/${this.iLocationId}`).toPromise();
+    this.apiService.getNew('cashregistry', `/api/v1/workstations/list/${this.iBusinessId}/${this.iLocationId}`).subscribe((result:any)=> {
+      if (result?.data) {
+        this.workstations = result.data;
+      }
+    });
   }
 
   // Function for update item's per page
@@ -239,7 +250,7 @@ export class ActivityItemsComponent implements OnInit, OnDestroy {
     if (barcode.startsWith("AI")) {
       this.toastrService.show({ type: 'success', text: 'Barcode detected: ' + barcode })
       let oBody: any = {
-        iBusinessId: this.businessDetails._id,
+        iBusinessId: this.iBusinessId,
         oFilterBy: {
           sNumber: barcode
         }
@@ -250,7 +261,7 @@ export class ActivityItemsComponent implements OnInit, OnDestroy {
         const iActivityId = activityItemResult?.data[0].result[0].iActivityId;
         const iActivityItemId = activityItemResult?.data[0].result[0]._id;
         oBody = {
-          iBusinessId: this.businessDetails._id,
+          iBusinessId: this.iBusinessId,
           oFilterBy: {
             _id: iActivityId
           }
@@ -264,7 +275,7 @@ export class ActivityItemsComponent implements OnInit, OnDestroy {
     } else if (barcode.startsWith("A")) {
       this.toastrService.show({ type: 'success', text: 'Barcode detected: ' + barcode })
       let oBody = {
-        iBusinessId: this.businessDetails._id,
+        iBusinessId: this.iBusinessId,
         oFilterBy: {
           sNumber: barcode
         }
@@ -279,7 +290,7 @@ export class ActivityItemsComponent implements OnInit, OnDestroy {
     } else if (barcode.startsWith("G")) {
       this.toastrService.show({ type: 'success', text: 'Barcode detected: ' + barcode })
       let oBody: any = {
-        iBusinessId: this.businessDetails._id,
+        iBusinessId: this.iBusinessId,
         oFilterBy: {
           sGiftCardNumber: barcode.substring(2)
         }

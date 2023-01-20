@@ -1,12 +1,11 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { faPencilAlt, faCopy, faXmark, faSave } from '@fortawesome/free-solid-svg-icons';
+import { faCopy, faPencilAlt, faSave, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { throwError } from 'rxjs';
 import { AddEditWorkstationComponent } from 'src/app/shared/components/add-edit-workstation/add-edit-workstation.component';
 import { PrintSettingsEditorComponent } from 'src/app/shared/components/print-settings-editor/print-settings-editor.component';
+import { ToastService } from 'src/app/shared/components/toast';
 import { ApiService } from 'src/app/shared/service/api.service';
 import { DialogService } from 'src/app/shared/service/dialog';
-import { ToastService } from 'src/app/shared/components/toast';
-import { Observable, observable, throwError } from 'rxjs';
-import { HttpResponse } from '@angular/common/http';
 
 @Component({
   selector: 'print-workstation',
@@ -37,14 +36,16 @@ export class PrintWorkstationComponent implements OnInit {
         { name: 'ORDER_RECEIPT', key: 'order', enabled: true },
         { name: 'REPAIR_RECEIPT', key: 'repair', enabled: true },
         { name: 'GIFTCARD_RECEIPT', key: 'giftcard', enabled: true },
-        { name: 'REPAIR_ALTERNATIVE_RECEIPT', key: 'repair_alternative', enabled: true }
+        { name: 'REPAIR_ALTERNATIVE_RECEIPT', key: 'repair_alternative', enabled: true },
+        { name: 'CERTIFICATE', key: 'certificate', enabled: true }
       ]
     },
     {
       name: 'THERMAL',
       typeList: [
         { name: 'BUSINESS_RECEIPT', key: 'regular', enabled: false },
-        { name: 'REPAIR_RECEIPT', key: 'repair', enabled: false }
+        { name: 'REPAIR_RECEIPT', key: 'repair', enabled: false },
+        { name: 'WARRANTY_RECEIPT', key: 'warranty', enabled: false }
       ]
     },
     {
@@ -61,7 +62,8 @@ export class PrintWorkstationComponent implements OnInit {
   printersList !: Array<any>;
   businessPrintSettings !: Array<any>;
   workStationsCount: number = 0;
-
+  iWorkstationId = localStorage.getItem('currentWorkstation');
+  
   ngOnInit(): void {
     this.getWorkstations();
     this.fetchPrintSettings();
@@ -90,18 +92,16 @@ export class PrintWorkstationComponent implements OnInit {
     this.apiService.getNew('cashregistry', `/api/v1/workstations/list/${this.businessDetails._id}/${this.iLocationId}`).subscribe(
       (result: any) => {
         if (result?.data?.length > 0) {
-          this.tableMaxWidth = result.data.length * 250;
-          let workstations: any = [];
-          result.data.map(async (workstation: any) => {
+          this.workstations = result.data;
+          this.tableMaxWidth = this.workstations.length * 250;
+          this.workstations.forEach(async (workstation: any) => {
             if (workstation.nPrintNodeComputerId) {
               let computers: any = await this.getComputerDetails(workstation.nPrintNodeComputerId).toPromise();
               workstation.computer = computers[0] || undefined;
-              workstations.unshift(workstation);
-            } else {
-              workstations.push(workstation);
             }
           });
-          this.workstations = workstations;
+          const current = this.workstations.splice(this.workstations.findIndex((el: any) => el._id === this.iWorkstationId), 1)
+          this.workstations = [...current, ...this.workstations]
         }
         this.loading = false;
       }),

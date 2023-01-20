@@ -7,6 +7,21 @@
   border: 1px solid gray;
 }
 
+.clipboard-button {
+  position: relative;
+  left: 150px;
+  margin-top: 15px;
+}
+
+.clipboard-span {
+   position: relative;
+   left: 150px;
+   margin-top:15px;
+}
+
+.collapse-button{
+  position: absolute;
+}
 #progressbar {
   margin-bottom: 3vh;
   overflow: hidden;
