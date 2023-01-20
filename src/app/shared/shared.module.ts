@@ -19,6 +19,7 @@ import { DeviceDetailsComponent } from './components/device-details/device-detai
 import { PrintSettingsDetailsComponent } from './components/print-settings-details/print-settings-details.component';
 import { ToastModule } from "./components/toast";
 import { PdfComponent } from './components/pdf/pdf.component';
+import {ExportsComponent} from './components/exports/exports.component';
 import { TransactionsSearchComponent } from "./components/transactions-search/transactions-search.component";
 import { TransactionItemsDetailsComponent } from "./components/transaction-items-details/transaction-items-details.component";
 
@@ -68,6 +69,7 @@ import { TransactionActionDialogComponent } from "./components/transaction-actio
     DeviceDetailsComponent,
     PrintSettingsDetailsComponent,
     PdfComponent,
+    ExportsComponent,
     TransactionsSearchComponent,
     TransactionItemsDetailsComponent,
     ActivityDetailsComponent,

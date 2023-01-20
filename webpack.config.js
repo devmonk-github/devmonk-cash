@@ -74,6 +74,16 @@ module.exports = {
     }),
     new ModuleFederationPlugin({
       // For remotes (please adjust)
+      name: "paymentIntegration",
+      filename: "payment-integration.js",
+      exposes: {
+        './PaymentIntegrationModule': './src/app/payment-integration/payment-integration.module.ts'
+      },
+
+      shared: share(sharedLibrary)
+    }),
+    new ModuleFederationPlugin({
+      // For remotes (please adjust)
       name: "savingPoints",
       filename: "saving-points.js",
       exposes: {

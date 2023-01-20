@@ -6,6 +6,9 @@ import { PaginatePipe } from 'ngx-pagination';
 import { CustomerDetailsComponent } from '../shared/components/customer-details/customer-details.component';
 import { CustomerStructureService } from '../shared/service/customer-structure.service';
 import { ToastService } from '../shared/components/toast';
+import {ExportsComponent} from '../shared/components/exports/exports.component';
+import { MenuComponent } from '../shared/_layout/components/common';
+
 // import { result } from 'lodash';
 
 // interface FSEntry {
@@ -40,7 +43,7 @@ export class CustomersComponent implements OnInit {
 
   customColumn = 'NAME';
   defaultColumns = ['PHONE', 'EMAIL', 'SHIPPING_ADDRESS', 'INVOICE_ADDRESS'];
-  allColumns = [this.customColumn, ...this.defaultColumns];
+  allColumns = [this.customColumn, ...this.defaultColumns];  
   requestParams: any = {
     iBusinessId: "",
     skip: 0,
@@ -50,7 +53,7 @@ export class CustomersComponent implements OnInit {
     searchValue: '',
     aProjection: ['sSalutation', 'sFirstName', 'sPrefix', 'sLastName', 'dDateOfBirth', 'dDateOfBirth', 'nClientId', 'sGender', 'bIsEmailVerified',
       'bCounter', 'sEmail', 'oPhone', 'oShippingAddress', 'oInvoiceAddress', 'iBusinessId', 'sComment', 'bNewsletter', 'sCompanyName', 'oPoints',
-      'sCompanyName', 'oIdentity', 'sVatNumber', 'sCocNumber', 'nPaymentTermDays', 'nDiscount', 'bWhatsApp', 'nMatchingCode' , 'sNote' , 'iEmployeeId'],
+      'sCompanyName', 'oIdentity', 'sVatNumber', 'sCocNumber', 'nPaymentTermDays', 'nDiscount', 'bWhatsApp', 'nMatchingCode' , 'sNote' , 'iEmployeeId' , 'bIsMigrated'],
     oFilterBy: {
       oStatic: {},
       oDynamic: {}
@@ -105,6 +108,10 @@ export class CustomersComponent implements OnInit {
             customer['EMAIL'] = customer.sEmail;
             customer['PHONE'] = (customer.oPhone && customer.oPhone.sLandLine ? customer.oPhone.sLandLine : '') + (customer.oPhone && customer.oPhone.sLandLine && customer.oPhone.sMobile ? ' / ' : '') + (customer.oPhone && customer.oPhone.sMobile ? customer.oPhone.sMobile : '')
           }
+          setTimeout(() => {
+            MenuComponent.bootstrap();
+            // MenuComponent.reinitialization();
+          }, 200);
         }
       },
         (error: any) => {
@@ -117,6 +124,19 @@ export class CustomersComponent implements OnInit {
   loadPageTableData() {
     let result = this.paginationPipe.transform(this.customers, this.paginationConfig);
     // return this.dataSourceBuilder.create(result, this.getters);
+  }
+
+  export(){
+
+   const  headerList = [
+    { key : "sSalutation" , value: 'Salutation'}, {key : "sFirstName" , value : 'First name'}, { key:"sPrefix" , value :'Prefix'}, { key : "sLastName" , value : 'Last name' },{key :"dDateOfBirth" , value :'Date of birth'}, { key : "nClientId" , value :'Client id'}, { key : "sGender" , value :'Gender'}, {key : "bIsEmailVerified" , value : 'Email verified'}, {key : "bCounter" , value : 'Counter'}, { key :"sEmail" , value :'Email'}, { key : "oPhone" , value :'phone'},
+    {key :"oShippingAddress" , value: 'Shipping Address' },{key :"oInvoiceAddress" , value: 'Invoice Address' },{key:"sComment" , value: 'Comment' },{key:"bNewsletter" , value:'Newsletter'} , {key:"sCompanyName" , value:'Company name'} , { key:"oPoints" , value:'Points' },{ key:"oIdentity" , value:'Identity' },{key:"sVatNumber" , value:'Vat number'} ,
+    { key :"sCocNumber" , value:'Coc number'} , { key:"nPaymentTermDays" , value:'Payment term days'} ,{ key:"nDiscount" , value:'Discount' }, { key:"bWhatsApp" , value:'Whatsapp'} , { key :"nMatchingCode" , value:'Matching code'} , { key:"sNote" , value:'Note'} ,{key:"bIsMigrated" , value:'Migrated customer'}
+   ];
+    this.dialogService.openModal(ExportsComponent , { cssClass: "modal-lg", context: { requestParams:this.requestParams , customerHeaderList :headerList, separator:''  } }).instance.close.subscribe(result => {
+      console.log("--------------customer export successfully!!!");
+    })
+
   }
 
   openCustomer(customer: any) {

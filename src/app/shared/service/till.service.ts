@@ -155,6 +155,7 @@ export class TillService {
     };
     console.log('length 115: ', transactionItems?.length);
     body.transactionItems = transactionItems.map((i: any) => {
+      console.log(i)
       console.log('i.nDiscount: ', i.nDiscount, i.price, i.oType, i.paymentAmount);
       const bRefund =
         i.oType?.bRefund /* Indication from the User */
@@ -164,13 +165,12 @@ export class TillService {
         (bRefund && i.oType?.bPrepayment) /* User indicates it is refund or negative amount */
         // || (i.paymentAmount > 0 /* Whenever the prepayment-field is filled */
         || (this.getUsedPayMethods(true, payMethods) - this.getTotals('price', transactionItems) < 0)
-        && (i.paymentAmount !== i.amountToBePaid)
+        || (i.paymentAmount !== i.amountToBePaid)
 
       console.log('i.paymentAmount: ', i.paymentAmount);
-      console.log('i.bRefund: ', bRefund, i.oType?.bPrepayment);
-      console.log('i.bRefund: ', bRefund, i.oType?.bPrepayment);
-      console.log('UsedPaymentMethod: ', this.getUsedPayMethods(true, payMethods));
-      console.log('getTotal: ', this.getTotals('price', transactionItems));
+      console.log('i.bRefund: ', bRefund);
+      console.log('UsedPaymentMethod: ', this.getUsedPayMethods(true, payMethods));//0.02
+      console.log('getTotal: ', this.getTotals('price', transactionItems));//0.03
       console.log('Last condition: ', i.paymentAmount, i.amountToBePaid);
       console.log('bPrepayment: ', bPrepayment, bRefund && i.oType?.bPrepayment, (this.getUsedPayMethods(true, payMethods) - this.getTotals('price', transactionItems) < 0), (i.paymentAmount !== i.amountToBePaid));
 
@@ -237,7 +237,11 @@ export class TillService {
 
       oItem.sServicePartnerRemark = i.sServicePartnerRemark;
       oItem.eEstimatedDateAction = i.eEstimatedDateAction;
-      oItem.eActivityItemStatus = i.eActivityItemStatus;
+      if (i.type === 'giftcard' || (bPrepayment === false && (i.type === 'repair' || i.type === 'order'))) {
+        oItem.eActivityItemStatus = 'delivered';
+      } else {
+        oItem.eActivityItemStatus = i.eActivityItemStatus;
+      }
       oItem.bGiftcardTaxHandling = i.bGiftcardTaxHandling;
       oItem.bDiscountOnPercentage = i.bDiscountOnPercentage || false
 
@@ -530,8 +534,10 @@ export class TillService {
       item.ntotalDiscountPerItem = (item.oType.bRefund === true) ? 0 : (item.nDiscountToShow * item.nQuantity)
       totalDiscount += item.ntotalDiscountPerItem;
       // console.log('totalDiscount', totalDiscount)
+      if(!item?.bMigrate){
+        relatedItemsPromises[index] = this.getRelatedTransactionItem(item?.iActivityItemId, item?._id, index);
 
-      relatedItemsPromises[index] = this.getRelatedTransactionItem(item?.iActivityItemId, item?._id, index);
+      }
     })
     await Promise.all(relatedItemsPromises).then(result => {
       // console.log(result);

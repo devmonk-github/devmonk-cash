@@ -15,10 +15,23 @@ import { ToastService } from '../toast';
 import { TranslateService } from '@ngx-translate/core';
 import { TillService } from '../../service/till.service';
 import {AddFavouritesComponent} from '../add-favourites/favourites.component';
+import { Clipboard } from '@angular/cdk/clipboard';
+import { animate, style, transition, trigger } from '@angular/animations';
 @Component({
   selector: 'app-activity-details',
   templateUrl: './activity-details.component.html',
-  styleUrls: ['./activity-details.component.scss']
+  styleUrls: ['./activity-details.component.scss'],
+  animations: [
+    trigger('fade', [ 
+      transition(':enter', [
+        style({ opacity: 0 }),
+        animate('500ms', style({ opacity: 1 })),
+      ]),
+      transition(':leave', [
+        animate('500ms', style({ opacity: 0 }))
+      ])
+    ])
+  ]
 })
 export class ActivityDetailsComponent implements OnInit {
 
@@ -68,7 +81,7 @@ export class ActivityDetailsComponent implements OnInit {
   itemType = 'transaction';
   customerReceiptDownloading: Boolean = false;
   loading: Boolean = false;
-  collapsedBtn: Boolean = false;
+  bIsVisible: Boolean = false;
   iBusinessId = localStorage.getItem('currentBusiness');
   transactions: Array<any> = [];
   totalPrice: Number = 0;
@@ -143,10 +156,12 @@ export class ActivityDetailsComponent implements OnInit {
   ];
   // eKindForLayoutHide =['giftcard'];
   translation:any=[];
-  bActivityNumber: boolean = false;
   bShowOrderDownload: boolean = false;
   routerSub: any;
   bActivityPdfGenerationInProgress: boolean = false;
+  bCustomerReceipt : boolean = false;
+  bDownloadCustomerReceipt : boolean = false;
+  bDownloadReceipt: boolean = false;
 
   constructor(
     private viewContainerRef: ViewContainerRef,
@@ -158,6 +173,7 @@ export class ActivityDetailsComponent implements OnInit {
     private toastService: ToastService ,
     private translationService:TranslateService,
     public tillService: TillService,
+    private clipboard: Clipboard
   ) {
     const _injector = this.viewContainerRef.injector;
     this.dialogRef = _injector.get<DialogComponent>(DialogComponent);
@@ -189,7 +205,7 @@ export class ActivityDetailsComponent implements OnInit {
       if (this.activity?.activityitems?.length) {
         this.bShowOrderDownload = true;
         this.activityItems = this.activity.activityitems;
-        if (this.activityItems?.length == 1) this.activityItems[0].collapsedBtn = true; /* only item there then we will always open it */
+        // if (this.activityItems?.length == 1) this.activityItems[0].bIsVisible = true; /* only item there then we will always open it */
          this.activityItems.forEach((item:any , index)=>{
           if(item.oType.eKind == 'order' && item?.iBusinessProductId){
             this.getBusinessProduct(item.iBusinessProductId).subscribe((res:any)=>{
@@ -201,11 +217,8 @@ export class ActivityDetailsComponent implements OnInit {
         
            }
          })
-        if (this.openActivityId) {
-          this.activityItems.forEach((item: any, index) => {
-            if (item._id === this.openActivityId) item.collapsedBtn = true;
-          });
-        }
+        console.log(this.openActivityId)
+        
         
       } else {
         _transactionItemData = await this.fetchTransactionItems();
@@ -217,6 +230,7 @@ export class ActivityDetailsComponent implements OnInit {
       this.processTransactionItems(_transactionItemData);
     }
     
+    this.processActivityItems();
 
     if (this.activity?.iCustomerId) this.fetchCustomer(this.activity.iCustomerId, -1);
     this.getBusinessLocations();
@@ -231,42 +245,66 @@ export class ActivityDetailsComponent implements OnInit {
     this.printSettings = _printSettings?.data[0]?.result;
   }
 
+  processActivityItems(){
+    const aDiscounts = this.activityItems.filter((item:any)=> item.oType.eKind === 'discount')
+    this.activityItems = this.activityItems.filter((item: any) => item.oType.eKind !== 'discount')
+    
+    if (this.activityItems?.length == 1) {
+      
+      this.activityItems[0].bIsVisible = true;
+    
+    } else if (this.openActivityId) {
+      
+      this.activityItems.find((item: any) => item._id === this.openActivityId).bIsVisible = true
+
+    } else {
+      this.activityItems.forEach((item: any) => item.bIsVisible = false)
+    }
+
+    if (aDiscounts?.length) {
+      this.activityItems.forEach((item:any) => {
+        const discountRecord = aDiscounts.find((d: any) => d.sUniqueIdentifier === item.sUniqueIdentifier)
+        if (discountRecord) {
+          item.nPaidAmount = item.nPaidAmount + discountRecord.nPaidAmount;
+        }
+      })
+    }
+  }
+
 
   getBusinessProduct(iProductId:any){
    return this.apiService.getNew('core' , `/api/v1/business/products/${iProductId}?iBusinessId=${this.iBusinessId}`);
   }
 
   getListEmployees() {
-    const oBody = {
-      iBusinessId: localStorage.getItem('currentBusiness') || '',
-    }
-    this.apiService.postNew('auth', `/api/v1/employee/list`, oBody).subscribe((result: any) => {
-      if (result && result.data && result.data.length) {
-        this.employeesList = result.data[0].result;
-        if (this.activity?.iEmployeeId) {
-          let createerIndex = this.employeesList.findIndex((employee: any) => employee._id == this.activity.iEmployeeId);
-          if (this.createrDetail != -1) {
-            this.createrDetail = this.employeesList[createerIndex];
-            this.activity.sAdvisedEmpFirstName = this.createrDetail?.sFirstName || 'a';
-          }
-        }
-
-        this.employeesList.map(o => o.sName = `${o.sFirstName} ${o.sLastName}`);
-        if(this.activityItems[0]?.iEmployeeId){
-          let createerIndex = this.employeesList.findIndex((employee:any) => employee._id == this.activityItems[0].iEmployeeId);
-          if(createerIndex != -1){
-             this.createrDetail = this.employeesList[createerIndex] 
-           }
-        }
-        this.activityItems.forEach((items:any , index:any)=>{
-          let employeeIndex= this.employeesList.findIndex((employee:any)=> employee._id == items.iAssigneeId);
-          if(employeeIndex != -1){
-            this.activityItems[index] = { ...items, "employeeName": this.employeesList[employeeIndex].sName}
-          }
-        })
+    // const oBody = {
+    //   iBusinessId: localStorage.getItem('currentBusiness') || '',
+    // }
+    // this.apiService.postNew('auth', `/api/v1/employee/list`, oBody).subscribe((result: any) => {
+    //   if (result && result.data && result.data.length) {
+    // this.employeesList = result.data[0].result;
+    if (this.activity?.iEmployeeId) {
+      let createerIndex = this.employeesList.findIndex((employee: any) => employee._id == this.activity.iEmployeeId);
+      if (this.createrDetail != -1) {
+        this.createrDetail = this.employeesList[createerIndex];
+        this.activity.sAdvisedEmpFirstName = this.createrDetail?.sFirstName || 'a';
       }
-    }, (error) => {
-    });
+    }
+
+    this.employeesList.map(o => o.sName = `${o.sFirstName} ${o.sLastName}`);
+    if (this.activityItems[0]?.iEmployeeId) {
+      let createerIndex = this.employeesList.findIndex((employee: any) => employee._id == this.activityItems[0].iEmployeeId);
+      if (createerIndex != -1) {
+        this.createrDetail = this.employeesList[createerIndex]
+      }
+    }
+    this.activityItems.forEach((items: any, index: any) => {
+      let employee = this.employeesList.find((employee: any) => employee._id === items.iAssigneeId);
+      if (employee) {
+        this.activityItems[index] = { ...items, "employeeName": employee.sName }
+      }
+    })
+    // }
   }
 
   getListSuppliers() {
@@ -484,7 +522,13 @@ export class ActivityDetailsComponent implements OnInit {
     return this.apiService.getNew('core', '/api/v1/business/' + this.business._id);
   }
 
-  async downloadCustomerReceipt(index: number) {
+  async downloadCustomerReceipt(index: number , receipt:any) {
+    if(receipt == 'customerReceipt'){
+      this.bCustomerReceipt = true;
+    }else if(receipt == 'downloadCustomerReceipt'){
+      this.bDownloadCustomerReceipt = true;
+    }
+
     let oDataSource = JSON.parse(JSON.stringify(this.activity));
     if (oDataSource?.activityitems) {
       oDataSource = oDataSource.activityitems[index];
@@ -510,8 +554,10 @@ export class ActivityDetailsComponent implements OnInit {
     if(this.businessDetails?.sBusinessLogoUrl) {
       oDataSource.sBusinessLogoUrl = this.businessDetails?.sBusinessLogoUrl;
     } else {
-      aPromises.push(this.getBase64FromUrl(oDataSource?.businessDetails?.sLogoLight).toPromise())
-      bBusinessLogo = true;
+      if(oDataSource?.businessDetails?.sLogoLight){
+        aPromises.push(this.getBase64FromUrl(oDataSource?.businessDetails?.sLogoLight).toPromise())
+        bBusinessLogo = true;
+      }
     }
 
     if(!this.aTemplates?.length) {
@@ -560,8 +606,8 @@ export class ActivityDetailsComponent implements OnInit {
     oDataSource.sBusinessLogoUrl = (await this.getBase64FromUrl(oDataSource?.businessDetails?.sLogoLight).toPromise()).data;
     // return;
     // this.printSettings = this.getPdfPrintSetting(type);
-
-    this.sendForReceipt(oDataSource, template, oDataSource.sNumber);
+    
+      this.sendForReceipt(oDataSource, template, oDataSource.sNumber , receipt);
     return;
     const data = this.activity.activityitems[index];
     const sName = 'Sample', eType = 'completed';
@@ -624,7 +670,7 @@ export class ActivityDetailsComponent implements OnInit {
   processTransactionItems(result:any){
     this.activityItems = result.data[0].result;
     this.oLocationName = this.activityItems[0].oLocationName;   
-    if (this.activityItems.length == 1) this.activityItems[0].collapsedBtn = true;
+    if (this.activityItems.length == 1) this.activityItems[0].bIsVisible = true;
     this.transactions = [];
     for (const obj of this.activityItems) {
       if(obj.oType.eKind == 'order' && obj?.iBusinessProductId){
@@ -726,20 +772,29 @@ export class ActivityDetailsComponent implements OnInit {
     return canvas.toDataURL("image/png");
   }
 
-  async downloadReceipt(event:any) {
+  async downloadReceipt(event:any , receipt:any) {
+    if(receipt == 'downloadReceipt'){
+      this.bDownloadReceipt = true;
+    }
     this.bActivityPdfGenerationInProgress = true;
     event.target.disabled = true;
 
     const oDataSource = JSON.parse(JSON.stringify(this.activity));
     oDataSource.businessDetails = this.businessDetails;
 
+    // if (!this.businessDetails) {
+    //   const result: any = await this.getBusinessDetails().toPromise();
+    //   this.businessDetails = result.data;
+    // }
     const aPromises = [];
     let bBusinessLogo = false, bTemplate = false;
     if (this.businessDetails?.sBusinessLogoUrl) {
       oDataSource.sBusinessLogoUrl = this.businessDetails?.sBusinessLogoUrl;
     } else {
-      aPromises.push(this.getBase64FromUrl(oDataSource?.businessDetails?.sLogoLight).toPromise())
-      bBusinessLogo = true;
+      if(oDataSource?.businessDetails?.sLogoLight){
+        aPromises.push(this.getBase64FromUrl(oDataSource?.businessDetails?.sLogoLight).toPromise())
+        bBusinessLogo = true;
+      }
     }
 
     if (!this.aTemplates?.length) {
@@ -760,10 +815,7 @@ export class ActivityDetailsComponent implements OnInit {
 
 
     const template = this.aTemplates.filter((t: any) => t.eType === 'order')[0];
-    // if (!this.businessDetails) {
-    //   const result: any = await this.getBusinessDetails().toPromise();
-    //   this.businessDetails = result.data;
-    // }
+
     oDataSource.businessDetails.sMobile = this.businessDetails.oPhone.sMobile;
     oDataSource.businessDetails.sLandLine = this.businessDetails?.oPhone?.sLandLine;
     const locationIndex = this.businessDetails.aLocation.findIndex((location:any)=>location._id == this.iLocationId);
@@ -792,12 +844,12 @@ export class ActivityDetailsComponent implements OnInit {
     });
     oDataSource.nTotalPaidAmount = nTotalPaidAmount;
 
-    this.sendForReceipt(oDataSource, template, oDataSource.sNumber);
+    this.sendForReceipt(oDataSource, template, oDataSource.sNumber , receipt);
     this.bActivityPdfGenerationInProgress = false;
     event.target.disabled = false;
   }
 
-  sendForReceipt(oDataSource: any, template: any, title: any) {
+  sendForReceipt(oDataSource: any, template: any, title: any , receipt:any) {
     this.receiptService.exportToPdf({
       oDataSource: oDataSource,
       pdfTitle: title,
@@ -806,6 +858,13 @@ export class ActivityDetailsComponent implements OnInit {
       printActionSettings: this.printActionSettings,
       eSituation: 'is_created'
     });
+    if(receipt == 'customerReceipt'){
+      this.bCustomerReceipt = false;
+    }else if(receipt == 'downloadCustomerReceipt'){
+      this.bDownloadCustomerReceipt = false;
+    } else if(receipt == 'downloadReceipt'){
+      this.bDownloadReceipt = false;
+    }
   }
 
   getPdfPrintSetting(oFilterBy?: any) {
@@ -818,5 +877,13 @@ export class ActivityDetailsComponent implements OnInit {
 
   changeTotalAmount(activity: any) {
     activity.nTotalAmount = activity.nPriceIncVat * activity.nQuantity;
+  }
+
+  copyToClipboard(activity:any) {
+    this.clipboard.copy(activity.sNumber);
+    activity.bActivityNumberCopied = true;
+    setTimeout(() => {
+      activity.bActivityNumberCopied = false;
+    }, 3000);
   }
 }
