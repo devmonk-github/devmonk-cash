@@ -534,8 +534,10 @@ export class TillService {
       item.ntotalDiscountPerItem = (item.oType.bRefund === true) ? 0 : (item.nDiscountToShow * item.nQuantity)
       totalDiscount += item.ntotalDiscountPerItem;
       // console.log('totalDiscount', totalDiscount)
+      if(!item?.bMigrate){
+        relatedItemsPromises[index] = this.getRelatedTransactionItem(item?.iActivityItemId, item?._id, index);
 
-      relatedItemsPromises[index] = this.getRelatedTransactionItem(item?.iActivityItemId, item?._id, index);
+      }
     })
     await Promise.all(relatedItemsPromises).then(result => {
       // console.log(result);
