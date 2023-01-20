@@ -10,7 +10,7 @@ definitions:
 
 pipelines:
   branches:
-    master:
+    master-r:
       - step:
           name: Build app
           caches:
@@ -44,9 +44,9 @@ pipelines:
           - cd ..
           - mkdir compress
           - echo $(ls)
-          - zip -r compress/prismanote-app-cash-register.zip build
+          - zip -r compress/retailgear-app-cashregister-v1.zip build
           - mkdir build/compress
-          - mv compress/prismanote-app-cash-register.zip build/compress
+          - mv compress/retailgear-app-cashregister-v1.zip build/compress
           - cd build
           - echo $(ls)
           - pipe: atlassian/aws-s3-deploy:1.1.0
