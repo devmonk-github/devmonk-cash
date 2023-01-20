@@ -1265,6 +1265,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       price: 0,
       nDiscount: 0,
       bDiscountOnPercentage: false,
+      oType: { bRefund: false, bDiscount: false, bPrepayment: false },
       tax: 0,
       description: '',
       oArticleGroupMetaData: { aProperty: [], sCategory: '', sSubCategory: '', oName: {}, oNameOriginal: {} },

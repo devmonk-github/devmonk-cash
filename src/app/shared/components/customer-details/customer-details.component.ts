@@ -277,8 +277,6 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     )
     this.requestParams.iBusinessId = localStorage.getItem('currentBusiness');
     this.requestParams.iLocationid = localStorage.getItem('currentLocation');
-    console.log("----------------i location---------------");
-    console.log(this.requestParams.iLocationId);
     this.iEmployeeId = localStorage.getItem('currentUser') ?JSON.parse(localStorage.getItem('currentUser') || '') : "";
 
     this.requestParams.oFilterBy = {
@@ -342,7 +340,6 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     });
   }
   addLoyalityPoints(){
-    console.log("--------------------loyality points-------------");
     this.pointsAdded = true;
     const oBody ={
       iBusinessId:this.requestParams.iBusinessId ,
@@ -351,8 +348,6 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
       nSavingsPoints:this.customerLoyalityPoints   
     }
     this.apiService.postNew('cashregistry' , '/api/v1/points-settings/createPoints' , oBody).subscribe((res:any)=>{
-      console.log("--------------points settings-----------");
-      console.log(res);
       if(res.message == 'success' && res?.data?._id){
         this.pointsAdded = false;
         this.customerLoyalityPoints = 0;
