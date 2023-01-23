@@ -3,7 +3,6 @@ import { DialogComponent, DialogService } from '../../service/dialog';
 import { ViewContainerRef } from '@angular/core';
 import { ApiService } from 'src/app/shared/service/api.service';
 import { faTimes, faMessage, faEnvelope, faEnvelopeSquare, faUser, faReceipt, faEuro, faChevronRight, faDownload, faPrint } from "@fortawesome/free-solid-svg-icons";
-import { PdfService } from '../../service/pdf.service';
 import { TransactionItemsDetailsComponent } from '../transaction-items-details/transaction-items-details.component';
 import { MenuComponent } from '../../_layout/components/common';
 import { NavigationEnd, Router } from '@angular/router';
@@ -166,7 +165,6 @@ export class ActivityDetailsComponent implements OnInit {
   constructor(
     private viewContainerRef: ViewContainerRef,
     private apiService: ApiService,
-    private pdfService: PdfService,
     private dialogService: DialogService,
     private routes: Router,
     private receiptService: ReceiptService,
@@ -604,40 +602,7 @@ export class ActivityDetailsComponent implements OnInit {
     const aTemp = oDataSource.sNumber.split("-");
     oDataSource.sPartRepairNumber = aTemp[aTemp.length - 1];
     oDataSource.sBusinessLogoUrl = (await this.getBase64FromUrl(oDataSource?.businessDetails?.sLogoLight).toPromise()).data;
-    // return;
-    // this.printSettings = this.getPdfPrintSetting(type);
-    
-      this.sendForReceipt(oDataSource, template, oDataSource.sNumber , receipt);
-    return;
-    const data = this.activity.activityitems[index];
-    const sName = 'Sample', eType = 'completed';
-    this.customerReceiptDownloading = true;
-    this.apiService.getNew('cashregistry', '/api/v1/pdf/templates/' + this.iBusinessId + '?sName=' + sName + '&eType=' + eType).subscribe(
-      (result: any) => {
-        const template = result.data;
-        const filename = new Date().getTime().toString()
-        let printData = null
-        let print = false;
-        // if (print) {
-        //   printData = {
-        //     computerId: this.computerId,
-        //     printerId: this.printerId,
-        //     title: filename,
-        //     quantity: 1
-        //   }
-        // }
-
-        this.pdfService.createPdf(JSON.stringify(template), data, filename, print, printData, this.iBusinessId, this.activity?._id)
-          .then(() => {
-            this.customerReceiptDownloading = false;
-          })
-          .catch((e: any) => {
-            this.customerReceiptDownloading = false;
-            console.error('err', e)
-          })
-      }, (error) => {
-        this.customerReceiptDownloading = false;
-      })
+    this.sendForReceipt(oDataSource, template, oDataSource.sNumber, receipt);
   }
 
   getBase64FromUrl(url: any): Observable<any> {

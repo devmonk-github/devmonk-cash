@@ -56,10 +56,14 @@ export class PaymentIntegrationComponent implements OnInit {
     sServiceId: '',
     sApiToken: '',
     sApiCode: '',
+    aPaymentIntegration: [],
+    iPaymentServiceProviderId: ''
   };
-  oCcv:any = {
+  oCCV:any = {
     sApiCode: '',
-    sManagementId: ''
+    sManagementId: '',
+    aPaymentIntegration: [],
+    iPaymentServiceProviderId: ''
   };
   oBusinessSetting: any = {
     iBusinessSettingId: '',
@@ -77,73 +81,91 @@ export class PaymentIntegrationComponent implements OnInit {
   
   ngOnInit(): void {
     this.apiService.setToastService(this.toastService);
-    this.getWorkstations();
-    // this.fetchPaymentProviderSetting();
     this.fetchTerminals();
   }
-
+  
   fetchTerminals() {
     this.terminalService.getTerminals().subscribe((res) => {
-        this.aTerminalList = res;
-      }, err => {
-      this.toastService.show({ type: 'danger', text: err.message });
-      });
+      this.aTerminalList = res;
+      // this.aTerminalList.forEach((terminal:any) => {
+      //   terminal.keyValue = terminal.name + '/id/'+ terminal.id;
+      // })
+      this.getWorkstations();
+    });
   }
 
-  fetchPaymentProviderSetting() {
-    this.apiService.getNew('cashregistry', `/api/v1/payment/providers/${this.iBusinessId}`).subscribe((result: any) => {
-      console.log(result)
-      // if (result?.data?._id) {
-        
-      //   this.oBusinessSetting.iBusinessSettingId = result.data._id;
-      //   this.oBusinessSetting.aPaymentIntegration = result?.data?.aPaymentIntegration || [];
-      //   console.log(this.oBusinessSetting);
-      //   if (this.oBusinessSetting?.aPaymentIntegration?.length) {
-      //     this.oBusinessSetting.aPaymentIntegration.forEach((item:any) => {
-      //       if (item?.sProviderName === 'paynl') {
-      //         this.oPaynl.sServiceId = item?.sServiceId || '';
-      //         this.oPaynl.sApiToken = item?.sApiToken || '';
-      //         this.oPaynl.sApiCode = item?.sApiCode || '';
-      //       } else if (item?.sProviderName === 'ccv') {
-      //         this.oCcv.sApiCode = item?.sApiCode || '';
-      //         this.oCcv.sManagementId = item?.sManagementId || '';
-      //       }
-      //     })
-      //   }
-      // }
-    }, (error) => {
-      console.error('error: ', error);
-    })
-  }
-
-  getWorkstations() {
+  async getWorkstations() {
     this.loading = true;
     this.workstations = [];
-    this.apiService.getNew('cashregistry', `/api/v1/workstations/list/${this.iBusinessId}/${this.iLocationId}`).subscribe(
-      (result: any) => {
-        if (result?.data?.length > 0) {
-          this.workstations = result.data;
-          this.tableMaxWidth = this.workstations.length * 250;
-          const current = this.workstations.splice(this.workstations.findIndex((el: any) => el._id === this.iWorkstationId), 1)
-          this.workstations = [...current, ...this.workstations]
-        }
-        this.loading = false;
-      }),
-      (error: any) => {
-        this.loading = false;
-      }
+    const _result: any = await this.apiService.getNew('cashregistry', `/api/v1/workstations/list/${this.iBusinessId}/${this.iLocationId}`).toPromise();
+    if (_result?.data?.length > 0) {
+      this.workstations = _result.data;
+      this.tableMaxWidth = this.workstations.length * 250;
+      const current = this.workstations.splice(this.workstations.findIndex((el: any) => el._id === this.iWorkstationId), 1)
+      this.workstations = [...current, ...this.workstations]
+      this.fetchPaymentProviderSetting();
+    }
   }
 
-  fetchPrintSettings() {
-    let reqData = { iBusinessId: this.iBusinessId, iLocationId: this.iLocationId };
-    this.apiService.postNew('cashregistry', '/api/v1/print-settings/list/' + this.businessDetails._id, reqData).subscribe(
-      (result: any) => {
-        if (result?.data[0]?.result?.length > 0) {
-          this.businessPrintSettings = result.data[0].result;
+  async fetchPaymentProviderSetting() {
+    const oBody = {
+      iBusinessId: this.iBusinessId,
+      oFilterBy: {
+        eName: ['paynl', 'ccv'],
+        "oWebshop.bUseForWebshop" : false
+      }
+    }
+    const _result:any = await this.apiService.postNew('cashregistry', `/api/v1/payment-service-provider/list`, oBody).toPromise();
+    if(_result?.data?.length) {
+      const _paynl:any = _result?.data.find((item: any) => item.eName === 'paynl');
+      if(_paynl) {
+        this.oPaynl = {
+          iPaymentServiceProviderId: _paynl?._id || '',
+          sServiceId: _paynl?.oPayNL.sServiceId || '',
+          sApiToken: _paynl?.oPayNL.sApiToken || '',
+          sApiCode: _paynl?.oPayNL.sApiCode || '',
+          aPaymentIntegration: _paynl?.aPaymentIntegration || []
         }
       }
-    )
+      const _ccv = _result?.data.find((item: any) => item.eName === 'ccv');
+      if(_ccv) {
+        this.oCCV = {
+          iPaymentServiceProviderId: _ccv?._id || '',
+          sApiCode: _ccv?.oCCV.sApiCode || '',
+          sManagementId: _ccv?.oCCV.sManagementId || '',
+          aPaymentIntegration: _ccv?.aPaymentIntegration || []
+        };
+      }
+    }
+    this.mapWorkstations();
   }
+
+  mapWorkstations() {
+    this.workstations.forEach((ws:any) => {
+      ws.paynl = { sTerminalId: '', edit: false }
+      ws.ccv = { sTerminalId  : '', edit: false }
+      
+
+      if(this.oPaynl.aPaymentIntegration?.length) {
+        const oAssigned = this.oPaynl.aPaymentIntegration.find((item:any)=> item.iWorkstationId === ws._id)
+        if(oAssigned) {
+          ws.paynl.sTerminalName = this.aTerminalList.find((el: any) => el.id === oAssigned.sTerminalId)?.name || '';
+          ws.paynl.sTerminalId = oAssigned.sTerminalId || '';
+        }
+      }
+
+      if (this.oCCV.aPaymentIntegration?.length) {
+        const oAssigned = this.oCCV.aPaymentIntegration.find((item: any) => item.iWorkstationId === ws._id)
+        if (oAssigned) {
+          ws.ccv.sTerminalId = oAssigned.sTerminalId;
+        }
+      }
+    })
+    this.loading = false;
+    console.log(this.oPaynl, this.oCCV, {ws: this.workstations});
+  }
+
+  
 
   openEditSetting(format: any) {
     this.dialogService.openModal(PrintSettingsEditorComponent, { cssClass: "modal-xl", context: { format } })
@@ -170,19 +192,27 @@ export class PaymentIntegrationComponent implements OnInit {
       });
   }
 
-  
 
   // Function for remove print setting
-  removePrintSetting(details: any) {
-    let printSetting = details.workstation[details.name][details.type]?.printSetting;
-    this.apiService.deleteNew('cashregistry', `/api/v1/print-settings/${this.iBusinessId}/${printSetting._id}`).subscribe(
-      (result: any) => {
-        if (result.message == 'success') {
-          this.businessPrintSettings = this.businessPrintSettings.filter((pSetting: any) => pSetting._id != printSetting._id);
-          details.workstation[details.name][details.type] = undefined;
-        }
-      }
-    )
+  async remove(event:any, provider:any, workstation: any) { 
+    let oBody: any = {
+      iBusinessId: this.iBusinessId,
+      aPaymentIntegration: []
+    }
+    let iPaymentServiceProviderId = '';
+    if(provider === 'paynl') {
+      iPaymentServiceProviderId = this.oPaynl.iPaymentServiceProviderId;
+      const oSavedData = this.oPaynl.aPaymentIntegration.findIndex((i: any) => i.iWorkstationId === workstation._id);
+      this.oPaynl.aPaymentIntegration.splice(oSavedData, 1);      
+      oBody.aPaymentIntegration = [...this.oPaynl.aPaymentIntegration];
+    } else {
+      iPaymentServiceProviderId = this.oCCV.iPaymentServiceProviderId;
+      const oSavedData = this.oCCV.aPaymentIntegration.findIndex((i: any) => i.iWorkstationId === workstation._id);
+      this.oCCV.aPaymentIntegration.splice(oSavedData, 1);
+      oBody.aPaymentIntegration = [...this.oCCV.aPaymentIntegration];
+    }
+    const _result: any = await this.apiService.putNew('cashregistry', `/api/v1/payment-service-provider/${iPaymentServiceProviderId}`, oBody).toPromise();
+    workstation[provider].sTerminalId = '';
   }
 
   toggleSettings(provider:any){
@@ -193,30 +223,70 @@ export class PaymentIntegrationComponent implements OnInit {
     }    
   }
 
-  saveSettings() {
-    const oBody:any = {
+  async savePaymentIntegration(event:any, provider:any, workstation:any){
+    console.log(event, provider, workstation, this.oCCV);
+    // const ids = event.split('/id/');
+    
+    let oBody:any = {
       iBusinessId: this.iBusinessId,
-      aPaymentIntegration: [
-        {
-          sProviderName: 'paynl',
-          sServiceId: this.oPaynl.sServiceId,
-          sApiToken: this.oPaynl.sApiToken,
-          sApiCode: this.oPaynl.sApiCode,
-        },
-        {
-          sProviderName: 'ccv',
-          sApiCode: this.oCcv.sApiCode,
-          sManagementId: this.oCcv.sManagementId
-        }
-      ]
+      aPaymentIntegration : []
     }
-    this.apiService.putNew('core', `/api/v1/business/setting/${this.oBusinessSetting.iBusinessSettingId}`, oBody)
-      .subscribe((result: any) => {
-        this.toastService.show({ type: 'success', text: 'Setting has been updated' });
-      }, (error) => {
-        console.error('error: ', error);
-        this.toastService.show({ type: 'warning', text: 'Something went wrong' });
-      })
+    
+    let iPaymentServiceProviderId = '';
+    
+    if (provider === 'paynl') {
+      iPaymentServiceProviderId = this.oPaynl.iPaymentServiceProviderId;
+      const oSavedData = this.oPaynl.aPaymentIntegration.findIndex((i: any) => i.iWorkstationId === workstation._id);
+      if (oSavedData > -1) {
+        this.oPaynl.aPaymentIntegration.splice(oSavedData, 1);
+      }
+      oBody.aPaymentIntegration = [...this.oPaynl.aPaymentIntegration, { iWorkstationId: workstation._id, sTerminalId: event }];
+    } else {
+      iPaymentServiceProviderId = this.oCCV.iPaymentServiceProviderId;
+      const oSavedData = this.oCCV.aPaymentIntegration.findIndex((i: any) => i.iWorkstationId === workstation._id);
+      if (oSavedData > -1) {
+        this.oCCV.aPaymentIntegration.splice(oSavedData, 1);
+      }
+      oBody.aPaymentIntegration = [...this.oCCV.aPaymentIntegration, { iWorkstationId: workstation._id, sTerminalId: event }];
+    }
+
+    if (!iPaymentServiceProviderId?.length) {
+      this.toastService.show({ type: 'warning', text: `Please set your credentials for ${provider}!` })
+      // workstation[provider].edit = false;
+      workstation[provider].sTerminalId = '';
+      return;
+    }
+    workstation[provider].sTerminalName = this.aTerminalList.find((el: any) => el.id === event).name;
+    
+    const _result: any = await this.apiService.putNew('cashregistry', `/api/v1/payment-service-provider/${iPaymentServiceProviderId}`, oBody).toPromise();
+    console.log(oBody, iPaymentServiceProviderId);
+    // return;
+  }
+
+  saveSettings() {
+    const oBody: any = {
+      iBusinessId: this.iBusinessId,
+      iLocationId: this.iLocationId,
+      eName : this.currentOpenSettings
+    };
+    
+    if(this.currentOpenSettings === 'paynl') {
+      oBody.oPayNL = {
+        sServiceId: this.oPaynl.sServiceId,
+        sApiToken: this.oPaynl.sApiToken,
+        sApiCode: this.oPaynl.sApiCode,
+      }
+    } else {
+      oBody.oCCV = {
+        sApiCode: this.oCCV.sApiCode,
+        sManagementId: this.oCCV.sManagementId
+      }
+    }
+    this.apiService.postNew('cashregistry', `/api/v1/payment-service-provider/`, oBody).subscribe((result: any) => {
+      if(result?.data?._id)
+      this.toastService.show({ type: 'success', text: 'Saved!' });
+      this.oCCV.iPaymentServiceProviderId = result.data._id;
+    })
   }
 
   
