@@ -58,27 +58,28 @@
                         </div>
                     </div>
                 </div>
-                <div class="row mt-2">
-                   <div class="col-12">
-                    <button class="btn btn-primary" (click)="saveSettings()" [disabled]="loading">{{ 'SAVE' | translate }}</button>
-                    <div *ngIf="loading" class="spinner-border mx-auto">
-                    </div>
-                   </div> 
-                </div>
+                
             </div>
             <div @fade *ngIf="currentOpenSettings === 'ccv' ">
                 <div class="row mt-2">
                     <div class="col-6">
                         <div class="form-group">
                             <label>{{ 'API_CODE' | translate }}</label>
-                            <input class="form-control" placeholder="{{ 'API_CODE' | translate }}" [(ngModel)]="oCcv.sApiCode">
+                            <input class="form-control" placeholder="{{ 'API_CODE' | translate }}" [(ngModel)]="oCCV.sApiCode">
                         </div>
                     </div>
                     <div class="col-6">
                         <div class="form-group">
                             <label>{{ 'MANAGEMENT_ID' | translate }}</label>
-                            <input class="form-control" placeholder="{{ 'MANAGEMENT_ID' | translate }}" [(ngModel)]="oCcv.sManagementId">
+                            <input class="form-control" placeholder="{{ 'MANAGEMENT_ID' | translate }}" [(ngModel)]="oCCV.sManagementId">
                         </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-2">
+                <div class="col-12">
+                    <button class="btn btn-primary" (click)="saveSettings()" [disabled]="loading">{{ 'SAVE' | translate }}</button>
+                    <div *ngIf="loading" class="spinner-border mx-auto">
                     </div>
                 </div>
             </div>
@@ -90,12 +91,12 @@
     <div class="card-header">
         <h4 class="card-title">{{"POS_SETTINGS" | translate}}</h4>
     </div>
-    <div class="card-body" >
-        <div>
+    <div class="card-body">
+        <!-- <div>
             <button (click)="fetchTerminals()" class="btn btn-primary">
                 {{ 'GET_TERMINALS' | translate }}
             </button>
-        </div>
+        </div> -->
         <div class="tscroll">
             <table class="table table-row-gray-400 gx-2 mt-4 table-row-bordered table-rounded border border-gray-400"
                 [style.width.px]="tableMaxWidth">
@@ -110,34 +111,37 @@
         
                             </div>
                             
-                            <button class="btn btn-info float-end px-4 py-2" (click)="editWorkstation(workstation)">
+                            <!-- <button class="btn btn-info float-end px-4 py-2" (click)="editWorkstation(workstation)">
                                 <fa-icon [icon]="faPencilAlt"></fa-icon>
-                            </button>
+                            </button> -->
                         </td>
                     </tr>
                 </thead>
-                <tbody class="scroll-x"> 
+                <tbody class="scroll-x" *ngIf="!loading"> 
                     <tr class="lh-xxl" *ngFor="let type of typeList, let tIndex = index;">
                         <td class="sticky-col first-col border border-gray-400">
                             <label class="vertical-label-text mt-per-35"> {{ type.name }} </label>
                         </td>
                         <td *ngFor="let workstation of workstations" class="w-260px">
-                            <div *ngIf="workstation[type.key]?.sTerminal; else selectTerminal">
-                                <label>{{ workstation[type.key].sTerminalName }}</label>
-                                <div class="float-end mt-2">
-                                    <button class="btn btn-info px-4 py-2" (click)="workstation[type.key].withName = true">
-                                        <fa-icon [icon]="faPencilAlt"></fa-icon>
-                                    </button>
-                                    <button class="btn btn-danger ms-1 px-4 py-2"
-                                        (click)="removePrintSetting({type: type.key, workstation: workstation})">
-                                        <fa-icon [icon]="faXmark"></fa-icon>
-                                    </button>
+                            <div *ngIf="workstation[type.key]?.sTerminalId != ''; else selectTerminal">
+                                <div *ngIf="workstation[type.key]?.edit == false">
+                                    <label>{{ workstation[type.key].sTerminalName }}</label>
+                                    <div class="float-end mt-2">
+                                        <button class="btn btn-info px-4 py-2" (click)="workstation[type.key].edit = true">
+                                            <fa-icon [icon]="faPencilAlt"></fa-icon>
+                                        </button>
+                                        <button class="btn btn-danger ms-1 px-4 py-2"
+                                            (click)="remove($event, type.key, workstation)">
+                                            <fa-icon [icon]="faXmark"></fa-icon>
+                                        </button>
+                                    </div>
                                 </div>
+                                <div *ngIf="workstation[type.key]?.edit == true; then selectTerminal"></div>
                             </div>
                             <ng-template #selectTerminal>
-                                <ng-select [items]="aTerminalList" bindLabel="name" bindValue="id"
-                                    >
-                                </ng-select>
+                                <ng-select [items]="aTerminalList" [clearable]="false" bindLabel="name" bindValue="id" 
+                                [(ngModel)]="workstation[type.key].sTerminalId"
+                                    (ngModelChange)="savePaymentIntegration($event, type.key, workstation)"></ng-select>
                             </ng-template>
                         </td>
                     </tr>
