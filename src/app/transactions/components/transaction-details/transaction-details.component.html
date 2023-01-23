@@ -270,7 +270,7 @@
                                     <ng-container *ngIf="item.nRedeemedLoyaltyPoints > 0">
                                         <td>{{ item.nRedeemedLoyaltyPoints }} </td>
                                     </ng-container>
-                                    <td>{{item.nSavingsPoints}} </td>
+                                    <td>{{item.nSavingsPoints || 0}} </td>
                                     <td>{{item.nVatRate}} % ({{item.vat || 0 | currency: tillService.currency }})</td>
                                     <td>
                                         <div class="d-flex align-items-center justify-content-between">
@@ -279,7 +279,7 @@
                                                     <s>({{(item.nPriceIncVat * item.nQuantity) | currency: tillService.currency}})</s>
                                                 </span>
                                                  {{item.totalPaymentAmount || 0 | currency: tillService.currency}}</div>
-                                            <ng-container *ngIf="from != 'activity-details'">
+                                            <ng-container *ngIf="from != 'activity-details' && !item?.bMigrate">
                                                 <div class="mx-2">
                                                     <div class="d-flex align-items-center">
                                                         <button class="btn btn-primary btn-sm"

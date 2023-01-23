@@ -507,9 +507,9 @@ export class TillService {
       // if (item?.oBusinessProductMetaData?.sLabelDescription){
       //   item.description = item.description + item?.oBusinessProductMetaData?.sLabelDescription + ' ' + item?.sProductNumber;
       // }
-      totalSavingPoints += item.nSavingsPoints;
+      totalSavingPoints += ( item?.nSavingsPoints || 0);
       totalRedeemedLoyaltyPoints += item?.nRedeemedLoyaltyPoints || 0;
-      let disc = parseFloat(item.nDiscount);
+      let disc = parseFloat(item?.nDiscount) || 0;
       if (item.bDiscountOnPercentage) {
         disc = this.getPercentOf(disc, item.nPriceIncVat)
         item.nDiscountToShow = disc;//.toFixed(2);
@@ -534,8 +534,10 @@ export class TillService {
       item.ntotalDiscountPerItem = (item.oType.bRefund === true) ? 0 : (item.nDiscountToShow * item.nQuantity)
       totalDiscount += item.ntotalDiscountPerItem;
       // console.log('totalDiscount', totalDiscount)
+      if(!item?.bMigrate){
+        relatedItemsPromises[index] = this.getRelatedTransactionItem(item?.iActivityItemId, item?._id, index);
 
-      relatedItemsPromises[index] = this.getRelatedTransactionItem(item?.iActivityItemId, item?._id, index);
+      }
     })
     await Promise.all(relatedItemsPromises).then(result => {
       // console.log(result);
@@ -572,19 +574,32 @@ export class TillService {
     dataObject.totalRedeemedLoyaltyPoints = totalRedeemedLoyaltyPoints;
     dataObject.nTotalExcVat = dataObject.totalAfterDisc - dataObject.totalVat;
     dataObject.dCreatedDate = moment(dataObject.dCreatedDate).format('DD-MM-yyyy hh:mm:ss');
-    const [_relatedResult, _loyaltyPointSettings]: any = await Promise.all([ //_empResult
-      this.getRelatedTransaction(dataObject?.iActivityId, dataObject?._id).toPromise(),
-      this.apiService.getNew('cashregistry', `/api/v1/points-settings?iBusinessId=${this.iBusinessId}`).toPromise()
-    ])
+    let _relatedResult:any , _loyaltyPointSettings:any;
+    
+    // const [_relatedResult, _loyaltyPointSettings]: any = 
+    if(!dataObject?.bMigrate){
+      await Promise.all([ //_empResult
+      _relatedResult =  this.getRelatedTransaction(dataObject?.iActivityId, dataObject?._id).toPromise(),
+      _loyaltyPointSettings = this.apiService.getNew('cashregistry', `/api/v1/points-settings?iBusinessId=${this.iBusinessId}`).toPromise()
+      ])
+    }else{
+      await Promise.all([ //_empResult
+      // _relatedResult =  this.getRelatedTransaction(dataObject?.iActivityId, dataObject?._id).toPromise(),
+      _loyaltyPointSettings = this.apiService.getNew('cashregistry', `/api/v1/points-settings?iBusinessId=${this.iBusinessId}`).toPromise()
+      ])
+    }
+
     dataObject.bSavingPointsSettings = _loyaltyPointSettings?.bEnabled;
     dataObject.aTransactionItems.forEach((item: any) => item.bSavingPointsSettings = _loyaltyPointSettings?.bEnabled)
-    dataObject.related = _relatedResult.data || [];
-    dataObject.related.forEach((relatedobj: any) => {
-      relatedobj.aPayments.forEach((obj: any) => {
-        obj.dCreatedDate = moment(obj.dCreatedDate).format('DD-MM-yyyy hh:mm:ss');
-      });
-      dataObject.aPayments = dataObject.aPayments.concat(relatedobj.aPayments);
-    })
+    dataObject.related = _relatedResult?.data || [];
+    if(dataObject.related.length){
+      dataObject.related.forEach((relatedobj: any) => {
+        relatedobj.aPayments.forEach((obj: any) => {
+          obj.dCreatedDate = moment(obj.dCreatedDate).format('DD-MM-yyyy hh:mm:ss');
+        });
+        dataObject.aPayments = dataObject.aPayments.concat(relatedobj.aPayments);
+      })
+    }
     transaction = dataObject;
     // console.log('processTransactionForPdfReceipt after processing', transaction);
     return transaction;
