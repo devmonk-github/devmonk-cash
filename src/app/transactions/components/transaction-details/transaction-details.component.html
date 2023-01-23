@@ -270,7 +270,7 @@
                                     <ng-container *ngIf="item.nRedeemedLoyaltyPoints > 0">
                                         <td>{{ item.nRedeemedLoyaltyPoints }} </td>
                                     </ng-container>
-                                    <td>{{item.nSavingsPoints}} </td>
+                                    <td>{{item.nSavingsPoints || 0}} </td>
                                     <td>{{item.nVatRate}} % ({{item.vat || 0 | currency: tillService.currency }})</td>
                                     <td>
                                         <div class="d-flex align-items-center justify-content-between">
