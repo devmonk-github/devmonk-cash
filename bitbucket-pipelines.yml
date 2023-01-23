@@ -30,7 +30,7 @@ pipelines:
               AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID # Optional if already defined in the context or OIDC used.
               AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY # Optional if already defined in the context or OIDC used.
               AWS_DEFAULT_REGION: $AWS_DEFAULT_REGION # Optional if already defined in the context or OIDC used.
-              S3_BUCKET: 'directives-prismanote2.com'
+              S3_BUCKET: 'directives-prismanote2.com/cash-register'
               LOCAL_PATH: 'dist/cash-register'
               ACL: 'public-read'
               DELETE_FLAG: 'true'
@@ -54,7 +54,7 @@ pipelines:
               AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID # Optional if already defined in the context or OIDC used.
               AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY # Optional if already defined in the context or OIDC used.
               AWS_DEFAULT_REGION: $AWS_DEFAULT_REGION # Optional if already defined in the context or OIDC used.
-              S3_BUCKET: $S3_BUCKET
+              S3_BUCKET: 'directives-multiscreenplatform.com/cash-register'
               LOCAL_PATH: 'dist/cash-register'
               ACL: 'public-read'
               DELETE_FLAG: 'true'
@@ -78,5 +78,5 @@ pipelines:
               AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID # Optional if already defined in the context or OIDC used.
               AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY # Optional if already defined in the context or OIDC used.
               AWS_DEFAULT_REGION: $AWS_DEFAULT_REGION # Optional if already defined in the context or OIDC used.
-              S3_BUCKET: $SHARED_S3_BUCKET
+              S3_BUCKET: 'shareable-frontends'
               LOCAL_PATH: 'compress'
