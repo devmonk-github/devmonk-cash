@@ -496,7 +496,12 @@ export class TillService {
 
     dataObject.total = 0;
     let total = 0, totalAfterDisc = 0, totalVat = 0, totalDiscount = 0, totalSavingPoints = 0, totalRedeemedLoyaltyPoints = 0;
+    const aToFetchPayments:any = [];
     dataObject.aTransactionItems.forEach((item: any, index: number) => {
+      if (item?.aPayments?.some((payment: any) => payment.sMethod === 'card')) {
+        aToFetchPayments.push(item.iTransactionId);
+      }
+
       if (item.oType.eKind === 'giftcard') {
         item.sDescription = this.translateService.instant('VOUCHER_SALE');
       }
@@ -545,9 +550,13 @@ export class TillService {
         transaction.aTransactionItems[index].related = item.data || [];
       })
     });
+    
     transaction.aTransactionItems.forEach((item: any) => {
       if (item?.related?.length) {
         item.related.forEach((relatedItem: any) => {
+          if(relatedItem?.aPayments?.some((payment: any) => payment.sMethod === 'card')){
+            aToFetchPayments.push(relatedItem.iTransactionId);
+          }
           if (relatedItem.nPriceIncVat > item.nPriceIncVat) item.nPriceIncVat = relatedItem.nPriceIncVat;
           item.nDiscount = relatedItem.nDiscount || 0;
           item.bDiscountOnPercentage = relatedItem?.bDiscountOnPercentage || false;
@@ -566,6 +575,17 @@ export class TillService {
         })
       }
     })
+    const oBody = {
+      iBusinessId: this.iBusinessId,
+      oFilterBy: {
+        iTransactionId: [...aToFetchPayments]
+      }
+    }
+    const _payments:any = await this.apiService.postNew('cashregistry', `/api/v1/payments/list`, oBody).toPromise()
+    if(_payments?.data?.length && _payments?.data[0]?.result?.length) {
+      dataObject.aCardPayments = _payments?.data[0]?.result;
+    }
+
     dataObject.totalAfterDisc = parseFloat(totalAfterDisc.toFixed(2));
     dataObject.total = parseFloat(total.toFixed(2));
     dataObject.totalVat = parseFloat(totalVat.toFixed(2));
