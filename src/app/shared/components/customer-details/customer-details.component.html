@@ -760,6 +760,14 @@
                         <label for="sCocNumber">{{'COC_NUMBER' | translate}}</label>
                         <input class="form-control" [(ngModel)]="customer.sCocNumber" />
                     </div>
+
+                    <div class="mb-3">
+                        <label for="customersGroup">{{'CUSTOMER_GROUP' | translate}} </label>
+                        <ng-select fullWidth id="group" name="group" [(ngModel)]="customerGroups.sName" [multiple]="true" [clearable]="false">
+                            <ng-option [value]="groupDetail._id" *ngFor="let groupDetail of customersGroupList" >{{ groupDetail.sName | translate }}</ng-option>
+                        
+                        </ng-select>    
+                    </div>
                 </div>
             </div>
         </ng-container>
