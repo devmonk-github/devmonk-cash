@@ -43,13 +43,13 @@ export class ApiService {
   defaultHeaders: any = { 'Content-Type': 'application/json', observe: 'response' };
 
   httpError(error: { error: { message: string; }; message: string; status: number, url:string }) {
-    let msg = ''
+    let msg = ''    
     if (error.error instanceof ErrorEvent) {
       //Client side error
-      msg = error.error.message
+      msg = error?.error?.message
     } else {
       //Server side error
-      msg = error.error.message
+      msg = error?.error?.message
     }
 
     if(Number(error.status) == 0) {

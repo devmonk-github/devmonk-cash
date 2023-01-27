@@ -69,6 +69,8 @@ export class PaymentIntegrationComponent implements OnInit {
     iBusinessSettingId: '',
     aPaymentIntegration: []
   }
+  bTerminalsLoading: boolean = false;
+  bSavingSettings: boolean = false;
 
   constructor(
     private apiService: ApiService,
@@ -76,8 +78,6 @@ export class PaymentIntegrationComponent implements OnInit {
     private toastService: ToastService,
     private terminalService: TerminalService
   ) { }
-
-  
   
   ngOnInit(): void {
     this.apiService.setToastService(this.toastService);
@@ -85,17 +85,17 @@ export class PaymentIntegrationComponent implements OnInit {
   }
   
   fetchTerminals() {
+    this.bTerminalsLoading = true;
+    this.aTerminalList = []
     this.terminalService.getTerminals().subscribe((res) => {
       this.aTerminalList = res;
-      // this.aTerminalList.forEach((terminal:any) => {
-      //   terminal.keyValue = terminal.name + '/id/'+ terminal.id;
-      // })
-      this.getWorkstations();
+      this.bTerminalsLoading = false;
+      if (!this.workstations?.length)
+        this.getWorkstations();
     });
   }
 
   async getWorkstations() {
-    this.loading = true;
     this.workstations = [];
     const _result: any = await this.apiService.getNew('cashregistry', `/api/v1/workstations/list/${this.iBusinessId}/${this.iLocationId}`).toPromise();
     if (_result?.data?.length > 0) {
@@ -162,7 +162,6 @@ export class PaymentIntegrationComponent implements OnInit {
       }
     })
     this.loading = false;
-    console.log(this.oPaynl, this.oCCV, {ws: this.workstations});
   }
 
   
@@ -259,34 +258,50 @@ export class PaymentIntegrationComponent implements OnInit {
     workstation[provider].sTerminalName = this.aTerminalList.find((el: any) => el.id === event).name;
     
     const _result: any = await this.apiService.putNew('cashregistry', `/api/v1/payment-service-provider/${iPaymentServiceProviderId}`, oBody).toPromise();
-    console.log(oBody, iPaymentServiceProviderId);
-    // return;
+    // console.log(oBody, iPaymentServiceProviderId);
+    
   }
 
-  saveSettings() {
+  async saveSettings() {
+    this.bSavingSettings = true;
+    const sType = this.currentOpenSettings;
     const oBody: any = {
       iBusinessId: this.iBusinessId,
       iLocationId: this.iLocationId,
-      eName : this.currentOpenSettings
+      eName : sType
     };
     
-    if(this.currentOpenSettings === 'paynl') {
+    let id = '';
+
+    if(sType === 'paynl') {
+      id = this.oPaynl?.iPaymentServiceProviderId;
       oBody.oPayNL = {
         sServiceId: this.oPaynl.sServiceId,
         sApiToken: this.oPaynl.sApiToken,
         sApiCode: this.oPaynl.sApiCode,
       }
     } else {
+      id = this.oCCV?.iPaymentServiceProviderId;
       oBody.oCCV = {
         sApiCode: this.oCCV.sApiCode,
         sManagementId: this.oCCV.sManagementId
       }
     }
-    this.apiService.postNew('cashregistry', `/api/v1/payment-service-provider/`, oBody).subscribe((result: any) => {
-      if(result?.data?._id)
-      this.toastService.show({ type: 'success', text: 'Saved!' });
-      this.oCCV.iPaymentServiceProviderId = result.data._id;
-    })
+
+    if(id) { ///update
+      await this.apiService.putNew('cashregistry', `/api/v1/payment-service-provider/${id}`, oBody).toPromise();
+      this.toastService.show({ type: 'success', text: 'UPDATED!' });
+      this.fetchTerminals();
+    } else { // create
+      const result: any = await this.apiService.postNew('cashregistry', `/api/v1/payment-service-provider/`, oBody).toPromise();
+      if (result?.data?._id) {
+        this.toastService.show({ type: 'success', text: 'Saved!' });
+        if (sType === 'paynl') this.oPaynl.iPaymentServiceProviderId = result.data._id;
+        else this.oCCV.iPaymentServiceProviderId = result.data._id;
+      }
+
+    }
+    this.bSavingSettings = false;
   }
 
   
