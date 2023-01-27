@@ -158,20 +158,23 @@
     </div>
     <div class="card-body p-9">
         <form name="labelForm" class="row mt-6">
-            <div class="col-md-4">
-                <label class="form-label">{{"DOMESTIC" | translate}}</label> {{cMethod.domestic}}
+            <div class="col-md-3">
+                <label class="form-label">{{"DOMESTIC" | translate}}</label>
                 <input type="number" name="input23" [(ngModel)]="cMethod.domestic" class="form-control" fullWidth
                     required="true">
             </div>
-            <div class="col-md-4">
-                <label class="form-label">{{"EUROPE" | translate}}</label> {{cMethod.europe}}
+            <div class="col-md-3">
+                <label class="form-label">{{"EUROPE" | translate}}</label>
                 <input type="number" name="input24" [(ngModel)]="cMethod.europe" class="form-control" fullWidth
                     required="true">
             </div>
-            <div class="col-md-4">
-                <label class="form-label">{{"WORLDWIDE" | translate}}</label> {{cMethod.abroad}}
+            <div class="col-md-3">
+                <label class="form-label">{{"WORLDWIDE" | translate}}</label>
                 <input type="number" name="input25" [(ngModel)]="cMethod.abroad" class="form-control" fullWidth
                     required="true">
+            </div>
+            <div class="col-md-3 d-flex">
+                <button class="btn mt-auto btn-primary" (click)="updateWebShopSettings()"> {{ 'UPDATE' | translate}}</button>
             </div>
         </form>
     </div>
