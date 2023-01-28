@@ -8,6 +8,7 @@ import { NgSelectModule } from '@ng-select/ng-select';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 // import { BrowserModule } from '@angular/platform-browser'
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { SharedModule } from '../shared/shared.module';
 
 
 @NgModule({
@@ -18,6 +19,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
     CommonModule,
     FormsModule,
     TranslateModule,
+    SharedModule,
     // PaginatePipe,
     NgxPaginationModule,
     NgSelectModule,

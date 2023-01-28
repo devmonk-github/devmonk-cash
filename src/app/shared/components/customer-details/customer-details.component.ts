@@ -168,10 +168,8 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     nLoyaltyPointsValue: 0 ,
     createrDetail:{},
     iEmployeeId:'',
-    aCustomerGroups:[]
+    aGroups:[]
   }
-
-  customerGroups:any=[];
 
   requestParams: any = {
     iBusinessId: "",
@@ -256,7 +254,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
   customerNotesChangedSubject : Subject<string> = new Subject<string>();
   nTotalTurnOver: any;
   nAvgOrderValueIncVat: number;
-  customersGroupList :any=[];
+  customerGroupList :any=[];
   
   constructor(
     private viewContainerRef: ViewContainerRef,
@@ -318,7 +316,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     };
 
     this.loadStatisticsTabData();
-    this.getCustomersGroup();
+    this.getCustomerGroups();
   }
 
 
@@ -326,24 +324,11 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     this.customerNotesChangedSubject.next(event);
   }
 
-  getCustomersGroup(){
+  getCustomerGroups(){
      this.apiService.postNew('customer' , '/api/v1/group/list' ,{iBusinessId:this.requestParams.iBusinessId , iLocationId:localStorage.getItem('currentLocation')}).subscribe((res:any)=>{
        if(res?.message == 'success'){
          if(res?.data?.length){
-           this.customersGroupList = res?.data[0]?.result;
-           this.customerGroups =[];
-           if(this.customersGroupList?.length){
-            this.customer.aCustomerGroups.forEach((customerGroup:any)=>{
-              const index = this.customersGroupList.findIndex((group:any)=> group._id == customerGroup);
-              if(index>=0){
-                this.customerGroups.push(this.customersGroupList[index]);
-        
-              }
-            })
-            console.log(this.customer.aCustomerGroups);
-            console.log(this.customerGroups);
-           }
-        
+           this.customerGroupList = res?.data[0]?.result;
          }
        }
      })
@@ -510,10 +495,9 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
   }
 
   EditOrCreateCustomer() {
-    console.log(this.customerGroups);
     this.customer.iBusinessId = this.requestParams.iBusinessId;
     this.customer.iEmployeeId = this.iEmployeeId?.userId;
-    this.customer.aCustomerGroups = this.customerGroups;
+    // this.customer.aCustomerGroups = this.aSelectedGroups;
     if (this.mode == 'create') {
       this.apiService.postNew('customer', '/api/v1/customer/create', this.customer).subscribe(
         (result: any) => {

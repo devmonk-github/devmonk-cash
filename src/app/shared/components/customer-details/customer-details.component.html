@@ -763,10 +763,18 @@
 
                     <div class="mb-3">
                         <label for="customersGroup">{{'CUSTOMER_GROUP' | translate}} </label>
-                        <ng-select fullWidth id="group" name="group" [(ngModel)]="customerGroups.sName" [multiple]="true" [clearable]="false">
-                            <ng-option [value]="groupDetail._id" *ngFor="let groupDetail of customersGroupList" >{{ groupDetail.sName | translate }}</ng-option>
-                        
-                        </ng-select>    
+                        <ng-select [multiple]="true" [items]="customerGroupList" [(ngModel)]="this.customer.aGroups"
+                        name="aCustomers" bindValue="_id" bindLabel="sName" placeholder="Select"
+                        required [closeOnSelect]="false" >
+
+                        <ng-template ng-option-tmp let-item="item" let-item$="item$"
+                            let-index="index">
+                            <input id="item-{{index}}" type="checkbox" name="item-{{index}}"
+                                [ngModel]="item$.selected" />
+                            {{item.sName}}
+                        </ng-template>
+
+                    </ng-select>                      
                     </div>
                 </div>
             </div>
