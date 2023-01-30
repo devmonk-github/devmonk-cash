@@ -125,6 +125,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   bIsOpeningDayState: boolean = false;
   selectedLanguage: any = localStorage.getItem('language') ? localStorage.getItem('language') : 'en';
   bHasIActivityItemId: boolean = false;
+  bSerialSearchMode = false;
   employee: any;
 
   randNumber(min: number, max: number): number {
