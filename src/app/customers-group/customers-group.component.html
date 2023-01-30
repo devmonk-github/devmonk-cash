@@ -9,8 +9,11 @@
                                 <i class="fas fa-xs fa-search"></i>
                             </span>
                             <input type="text" class="form-control form-control-solid w-250px ps-14 me-4"
-                                name="searchValue" (keyup.enter)="getCustomersGroupList()" [(ngModel)]="requestParams.searchValue" placeholder="{{'SEARCH_CUSTOMER_GROUP' | translate}}">
-                            <button class="btn btn-primary" (click)="getCustomersGroupList()">{{'SEARCH' | translate}} </button>
+                                name="searchValue" (keyup.enter)="getCustomersGroupList()"
+                                [(ngModel)]="requestParams.searchValue"
+                                placeholder="{{'SEARCH_CUSTOMER_GROUP' | translate}}">
+                            <button class="btn btn-primary" (click)="getCustomersGroupList()">{{'SEARCH' | translate}}
+                            </button>
                         </div>
                     </div>
                     <div class="card-toolbar flex-row-fluid justify-content-end gap-5">
@@ -30,8 +33,9 @@
                                         <td></td>
                                     </tr>
                                 </thead>
-                                <tbody class="fw-bold text-gray-600" >
-                                    <tr *ngFor="let group of groupList | paginate: paginationConfig ; let i = index" class="bg-hover-secondary">
+                                <tbody class="fw-bold text-gray-600">
+                                    <tr *ngFor="let group of groupList | paginate: paginationConfig ; let i = index"
+                                        class="bg-hover-secondary">
                                         <td>{{group.sName | translate}} </td>
                                         <td>{{group.sDescription | translate}} </td>
                                         <td>

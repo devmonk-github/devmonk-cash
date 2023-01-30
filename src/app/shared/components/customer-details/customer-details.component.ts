@@ -21,7 +21,6 @@ import { TransactionDetailsComponent } from '../../../transactions/components/tr
 import { fromEvent, Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, tap } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
-import { result } from 'lodash';
 export interface BarChartOptions {
   series: ApexAxisChartSeries;
   chart: ApexChart;
@@ -255,6 +254,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
   nTotalTurnOver: any;
   nAvgOrderValueIncVat: number;
   customerGroupList :any=[];
+  aSelectedGroups:any =[];
   
   constructor(
     private viewContainerRef: ViewContainerRef,
@@ -329,6 +329,14 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
        if(res?.message == 'success'){
          if(res?.data?.length){
            this.customerGroupList = res?.data[0]?.result;
+           if(this.customer?.aGroups?.length){
+             this.customer.aGroups.forEach((group:any)=>{
+               const index = this.customerGroupList.findIndex((cGroup:any)=>cGroup._id == group);
+               if(index>=0){
+                 this.aSelectedGroups.push(this.customerGroupList[index].sName);
+               }
+             })
+           }
          }
        }
      })
