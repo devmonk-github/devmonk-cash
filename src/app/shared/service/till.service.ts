@@ -575,15 +575,17 @@ export class TillService {
         })
       }
     })
-    const oBody = {
-      iBusinessId: this.iBusinessId,
-      oFilterBy: {
-        iTransactionId: [...aToFetchPayments]
+    if (aToFetchPayments?.length) {
+      const oBody = {
+        iBusinessId: this.iBusinessId,
+        oFilterBy: {
+          iTransactionId: [...aToFetchPayments]
+        }
       }
-    }
-    const _payments:any = await this.apiService.postNew('cashregistry', `/api/v1/payments/list`, oBody).toPromise()
-    if(_payments?.data?.length && _payments?.data[0]?.result?.length) {
-      dataObject.aCardPayments = _payments?.data[0]?.result;
+      const _payments: any = await this.apiService.postNew('cashregistry', `/api/v1/payments/list`, oBody).toPromise()
+      if (_payments?.data?.length && _payments?.data[0]?.result?.length) {
+        dataObject.aCardPayments = _payments?.data[0]?.result;
+      }
     }
 
     dataObject.totalAfterDisc = parseFloat(totalAfterDisc.toFixed(2));
