@@ -1093,11 +1093,33 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   search() {
     this.shopProducts = [];
     this.commonProducts = [];
-    this.listShopProducts(this.searchKeyword, false);
-    if (!this.isStockSelected) {
-      this.listCommonBrandProducts(this.searchKeyword, false); // Searching for the products of common brand
+    if(this.bSerialSearchMode) {
+      this.listShopProductsBySerial(this.searchKeyword, false);
+    } else {
+      this.listShopProducts(this.searchKeyword, false);
+      if (!this.isStockSelected) {
+        this.listCommonBrandProducts(this.searchKeyword, false); // Searching for the products of common brand
+      }
     }
   }
+
+  listShopProductsBySerial(searchValue: string | undefined, isFromEAN: boolean | false) {
+    let data = {
+      iBusinessId: this.business._id,
+      sSerialNumber: searchValue,
+    }
+    this.bSearchingProduct = true;
+    this.shopProducts = [];
+    this.apiService.postNew('core', '/api/v1/business/products/list-by-serial-number', data).subscribe((result: any) => {
+      this.bSearchingProduct = false;
+      if (result?.data?.length) {
+        this.shopProducts = result.data;
+      }
+    }, (error) => {
+      this.bSearchingProduct = false;
+    });
+  }
+
 
   addNewLine() {
     this.transactionItems.push({
