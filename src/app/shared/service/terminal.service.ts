@@ -7,23 +7,27 @@ import { ApiService } from './api.service';
   providedIn: 'root'
 })
 export class TerminalService {
-
+  iBusinessId = localStorage.getItem('currentBusiness');
+  iWorkstationId = localStorage.getItem('currentWorkstation');
+  
   constructor(private apiService: ApiService) { }
 
   getTerminals(): Observable<any> {
-    const iBusinessId = localStorage.getItem('currentBusiness');
-    return this.apiService.getNew('cashregistry', `/api/v1/pin-terminal/get-terminals?iBusinessId=${iBusinessId}`).pipe(retry(1));
+    return this.apiService.getNew('cashregistry', `/api/v1/pin-terminal/get-terminals?iBusinessId=${this.iBusinessId}`).pipe(retry(1));
   }
 
   startTerminalPayment(amount: number): Observable<any> {
-    const iBusinessId = localStorage.getItem('currentBusiness');
-    return this.apiService.postNew('cashregistry', `/api/v1/pin-terminal/start-payment`, { amount }).pipe(retry(1));
+    const oBody = {
+      amount,
+      iBusinessId: this.iBusinessId, 
+      iWorkstationId: this.iWorkstationId 
+    }
+    return this.apiService.postNew('cashregistry', `/api/v1/pin-terminal/start-payment`, oBody).pipe(retry(1));
   }
 
 
   getGiftCardInformation(cardDetails: any): Observable<any> {
-    const iBusinessId = localStorage.getItem('currentBusiness');
-    cardDetails.iBusinessId = iBusinessId;
+    cardDetails.iBusinessId = this.iBusinessId;
     return this.apiService.postNew('cashregistry', `/api/v1/pin-terminal/get-giftcard`, cardDetails).pipe(retry(1));
   }
 }

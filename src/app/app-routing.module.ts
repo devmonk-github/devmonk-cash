@@ -74,7 +74,8 @@ const routes: Routes = [
     path: 'day-closure',
     loadChildren: () => import('./day-closure/day-closure.module').then(module => module.DayClosureModule)
   },
-  { path: '', redirectTo: 'home', pathMatch: 'full' }
+  { path: '', redirectTo: 'home', pathMatch: 'full' },
+  { path: 'customers-group', loadChildren: () => import('./customers-group/customers-group.module').then(m => m.CustomersGroupModule) }
 ];
 
 @NgModule({

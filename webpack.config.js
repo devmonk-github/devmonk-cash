@@ -173,6 +173,13 @@ module.exports = {
       shared: share(sharedLibrary)
     }),
     new ModuleFederationPlugin({
+      name:'customerGroup',
+      filename:'customerGroup.js',
+      exposes:{
+        './customerGroupModule':'./src/app/customers-group/customers-group.module.ts',
+      }
+    }),
+    new ModuleFederationPlugin({
       // For remotes (please adjust)
       name: "webshopSettings",
       filename: "webshop-settings.js",

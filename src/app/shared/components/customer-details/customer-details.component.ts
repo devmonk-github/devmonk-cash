@@ -21,7 +21,6 @@ import { TransactionDetailsComponent } from '../../../transactions/components/tr
 import { fromEvent, Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, tap } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
-import { result } from 'lodash';
 export interface BarChartOptions {
   series: ApexAxisChartSeries;
   chart: ApexChart;
@@ -167,7 +166,8 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     nLoyaltyPoints: 0,
     nLoyaltyPointsValue: 0 ,
     createrDetail:{},
-    iEmployeeId:''
+    iEmployeeId:'',
+    aGroups:[]
   }
 
   requestParams: any = {
@@ -253,6 +253,8 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
   customerNotesChangedSubject : Subject<string> = new Subject<string>();
   nTotalTurnOver: any;
   nAvgOrderValueIncVat: number;
+  customerGroupList :any=[];
+  aSelectedGroups:any =[];
   
   constructor(
     private viewContainerRef: ViewContainerRef,
@@ -314,11 +316,30 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     };
 
     this.loadStatisticsTabData();
+    this.getCustomerGroups();
   }
 
 
   customerNotesChanged(event:any){
     this.customerNotesChangedSubject.next(event);
+  }
+
+  getCustomerGroups(){
+     this.apiService.postNew('customer' , '/api/v1/group/list' ,{iBusinessId:this.requestParams.iBusinessId , iLocationId:localStorage.getItem('currentLocation')}).subscribe((res:any)=>{
+       if(res?.message == 'success'){
+         if(res?.data?.length){
+           this.customerGroupList = res?.data[0]?.result;
+           if(this.customer?.aGroups?.length){
+             this.customer.aGroups.forEach((group:any)=>{
+               const index = this.customerGroupList.findIndex((cGroup:any)=>cGroup._id == group);
+               if(index>=0){
+                 this.aSelectedGroups.push(this.customerGroupList[index].sName);
+               }
+             })
+           }
+         }
+       }
+     })
   }
 
   getBusinessDetails() {
@@ -484,6 +505,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
   EditOrCreateCustomer() {
     this.customer.iBusinessId = this.requestParams.iBusinessId;
     this.customer.iEmployeeId = this.iEmployeeId?.userId;
+    // this.customer.aCustomerGroups = this.aSelectedGroups;
     if (this.mode == 'create') {
       this.apiService.postNew('customer', '/api/v1/customer/create', this.customer).subscribe(
         (result: any) => {

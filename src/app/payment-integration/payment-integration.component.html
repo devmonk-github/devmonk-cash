@@ -78,9 +78,8 @@
             </div>
             <div class="row mt-2">
                 <div class="col-12">
-                    <button class="btn btn-primary" (click)="saveSettings()" [disabled]="loading">{{ 'SAVE' | translate }}</button>
-                    <div *ngIf="loading" class="spinner-border mx-auto">
-                    </div>
+                    <button class="btn btn-primary" (click)="saveSettings()" [disabled]="bSavingSettings">{{ 'SAVE' | translate }}</button>
+                    <div *ngIf="bSavingSettings" class="spinner-border mx-auto"></div>
                 </div>
             </div>
         </div>
@@ -97,7 +96,7 @@
                 {{ 'GET_TERMINALS' | translate }}
             </button>
         </div> -->
-        <div class="tscroll">
+        <div class="tscroll" *ngIf="!bTerminalsLoading">
             <table class="table table-row-gray-400 gx-2 mt-4 table-row-bordered table-rounded border border-gray-400"
                 [style.width.px]="tableMaxWidth">
                 <thead>
@@ -148,5 +147,12 @@
                 </tbody>
             </table>
         </div>
+
+        <div class="spinner-box h-200px" *ngIf="bTerminalsLoading">
+            <div class="three-quarter-spinner">
+            </div>
+        </div>
+
+
     </div>
 </div>

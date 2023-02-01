@@ -199,7 +199,7 @@
         </div>
         <!-- </div> -->
         <div class="row">
-            <div class="col-md-12">
+            <div class="col-12">
                 <h3 class="fw-bolder mb-3">
                     <span>{{ "ITEMS" | translate }}</span>
                 </h3>
@@ -318,7 +318,7 @@
                     <div *ngIf="loading" class="spinner-border mx-auto"></div>
                 </div>
             </div>
-            <div class="col-md-4">
+            <div class="col-4">
                 <h3 class="fw-bolder mb-3">
                     <span>{{ "PAYMENTS" | translate }}</span>
                 </h3>
@@ -341,6 +341,34 @@
                     </div>
                 </div>
             </div>
+            <div class="col-4" *ngIf="transaction.aCardPayments?.length">
+                <h3 class="fw-bolder mb-3">
+                    <span>{{ "CARD_PAYMENT_DETAILS" | translate }}</span>
+                </h3>
+                <div class="row fw-bold gy-1 d-flex flex-wrap py-5">
+                    <div class="flex-equal me-5">
+                        <table class="table table-hover table-rounded table-striped border gs-7">
+                            <thead>
+                                <tr class="fw-bold fs-6 text-gray-400">
+                                    <td class="text-muted">{{'PROVIDER' | translate}}</td>
+                                    <td class="text-muted">{{'CARD_NAME' | translate}}</td>
+                                    <td class="text-muted">{{'TRANSACTION_ID' | translate}}</td>
+                                    <td class="text-muted">{{'AMOUNT' | translate}}</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let item of transaction.aCardPayments">
+                                    <td>{{ (item?.oPayNL) ? 'PayNL' : 'CCV' }}</td>
+                                    <td>{{ item?.sCardName }}</td>
+                                    <td>{{ (item?.oPayNL) ? item.oPayNL.sTransactionId : ''}}</td>
+                                    <td>{{ item.nAmount || 0 }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
         </div>
     </div>
     <div class="card-footer">
