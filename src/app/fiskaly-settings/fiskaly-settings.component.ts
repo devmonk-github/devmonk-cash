@@ -24,31 +24,30 @@ export class FiskalySettingsComponent implements OnInit {
   }
 
   fetchLocationList(): void {
-    this.apiService.getNew('core', '/api/v1/business/user-business-and-location/list')
-      .subscribe((result: any) => {
-        this.userDetails = result.data;
-        if (this.userDetails.aBusiness) {
-          this.businessDetails = this.userDetails.aBusiness.find((o: any) => o._id === this.iBusinessId);
-          this.fetchTSSList();
-        }
-      }, (error) => {
-        console.log('error: ', error);
-      });
+    this.apiService.getNew('core', '/api/v1/business/user-business-and-location/list').subscribe((result: any) => {
+      this.userDetails = result.data;
+      if (this.userDetails.aBusiness) {
+        this.businessDetails = this.userDetails.aBusiness.find((o: any) => o._id === this.iBusinessId);
+        this.fetchTSSList();
+      }
+    }, (error) => {
+      console.log('error: ', error);
+    });
   }
 
-  fetchTSSList(): void {
-    this.fiskalyService.getTSSList()
-      .subscribe((res: any) => {
-        this.businessDetails.aLocation.forEach((location: any) => {
-          const tssData = res.find((o: any) => o.iLocationId === location._id);
-          location.tssInfo = null;
-          if (tssData) {
-            location.tssInfo = tssData.tssInfo;
-            location.iTssId = tssData._id;
-            location.tssEnabled = tssData.bEnabled;
-          };
-        });
-      })
+  async fetchTSSList(){
+    await this.fiskalyService.loginToFiskaly();
+    this.fiskalyService.getTSSList().subscribe((res: any) => {
+      this.businessDetails.aLocation.forEach((location: any) => {
+        const tssData = res.find((o: any) => o.iLocationId === location._id);
+        location.tssInfo = null;
+        if (tssData) {
+          location.tssInfo = tssData.tssInfo;
+          location.iTssId = tssData._id;
+          location.tssEnabled = tssData.bEnabled;
+        };
+      });
+    })
   }
 
   async createTSS(locationId: string, index: number) {
