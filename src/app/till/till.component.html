@@ -242,10 +242,10 @@
                 </label>
 
                 <button class="btn btn-secondary me-3 d-flex search-button mx-2" (click)="openTransactionSearchDialog()">
-                  <fa-icon [icon]="faSearch"></fa-icon>{{ "TRANSACTION" | translate}}
+                  <fa-icon [icon]="faSearch" style="margin-right: 10px;"></fa-icon>{{ "TRANSACTION" | translate}}
                 </button>
 
-                <button class="btn btn-secondary min-w-100px" (click)="addNewLine()">{{ "TEXT_LINE" |
+                <button class="btn btn-secondary min-w-120px" style="white-space: nowrap;" (click)="addNewLine()">{{ "TEXT_LINE" |
                   translate}}</button>
                 <button class="btn btn-secondary mx-3 min-w-100px" (click)="addNewLine()">{{ "EMPTY_LINE" |
                   translate}}</button>
