@@ -496,8 +496,8 @@ export class Pn2escposService {
             variableStringFilteredIndex0 = variableParameters[0];
           }
 
-          var variableStringFilteredIndex1: String | undefined;
-          var variableStringFilteredIndex2: String | undefined;
+          let variableStringFilteredIndex1: string = '';
+          let variableStringFilteredIndex2: string = '';
           //Detect nested variables, e.g. {shop.address}
           if (variableStringFilteredIndex0 && variableStringFilteredIndex0.match(/\./g)) {
             if (variableStringFilteredIndex0.match(/\./g).length <= 3) {
@@ -510,17 +510,19 @@ export class Pn2escposService {
               this.cerror('Cannot use "' + variableStringFilteredIndex0 + '", nesting is limited to three level', variableStringFilteredIndex0);
             }
           }
-
           var matched = false;
           var newtext: any = "";
-          
           
           if (providedData[variableStringFilteredIndex0]) { //a match on key
             if (String(providedData[variableStringFilteredIndex0]).length > 0) { // ..there's data
               newtext = providedData[variableStringFilteredIndex0];
               // console.log(520, 'newtext', newtext)
               if (typeof (variableStringFilteredIndex1) == 'string' && String(providedData[variableStringFilteredIndex0][variableStringFilteredIndex1]).length > 0) {
-                if (typeof (variableStringFilteredIndex2) == 'string' && providedData[variableStringFilteredIndex0][variableStringFilteredIndex1][variableStringFilteredIndex2]) {
+                if (
+                  typeof (variableStringFilteredIndex2) == 'string' && 
+                  providedData[variableStringFilteredIndex0] && 
+                  providedData[variableStringFilteredIndex0][variableStringFilteredIndex1] &&
+                  providedData[variableStringFilteredIndex0][variableStringFilteredIndex1][variableStringFilteredIndex2]) {
                   newtext = providedData[variableStringFilteredIndex0][variableStringFilteredIndex1][variableStringFilteredIndex2];
                   
                 } else {

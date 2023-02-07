@@ -45,7 +45,7 @@ export class PrintWorkstationComponent implements OnInit {
       typeList: [
         { name: 'BUSINESS_RECEIPT', key: 'regular', enabled: false },
         { name: 'REPAIR_RECEIPT', key: 'repair', enabled: false },
-        { name: 'WARRANTY_RECEIPT', key: 'warranty', enabled: false }
+        { name: 'WARRANTY_RECEIPT', key: 'warranty-receipt', enabled: false }
       ]
     },
     {
