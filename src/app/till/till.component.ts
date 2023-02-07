@@ -180,11 +180,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
     const currentEmployeeId = JSON.parse(localStorage.getItem('currentUser') || '')['userId'];
 
-    const [_businessData, _fiscallyData]: any = await Promise.all([
-      this.getBusinessDetails().toPromise(),
-      this.fiskalyService.getTSSList()
-    ]);
-
+    
+    const _businessData: any = await this.getBusinessDetails().toPromise();
     this.businessDetails = _businessData.data;
     this.businessDetails.currentLocation = this.businessDetails?.aLocation?.filter((location: any) => location?._id.toString() == this.locationId.toString())[0];
     this.tillService.selectCurrency(this.businessDetails.currentLocation);
@@ -197,7 +194,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       this.businessDetails.currentLocation.oAddress.city;
     this.businessDetails.sAddressline2 = this.businessDetails.currentLocation.oAddress.country;
 
-
+    const _fiscallyData = await this.fiskalyService.getTSSList();
     this.mapFiscallyData(_fiscallyData);
     
     this.getPrintSettings(true)
