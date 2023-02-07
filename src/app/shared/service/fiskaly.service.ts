@@ -25,17 +25,14 @@ export class FiskalyService {
 
 
   async loginToFiskaly() {
-    console.log('fs login')
     this.fiskalyAuth = await this.apiService.postNew('fiskaly', '/api/v1/fiskaly/login', {iBusinessId: this.iBusinessId}).toPromise();
   }
 
   setTss(id:any) {
-    console.log('fs setTss')
     this.tssId = id;
   }
 
   async startTransaction() {
-    console.log('fs startTransaction')
     if (!this.fiskalyAuth) await this.loginToFiskaly();
     
     const guid = uuidv4();
@@ -112,7 +109,6 @@ export class FiskalyService {
   }
   
   async updateFiskalyTransaction(transactionItems: any, payments: any, state: string) {
-    console.log('updateFiskalyTransaction', transactionItems, payments, state);
     if (!this.fiskalyAuth) await this.loginToFiskaly();
     
     if (!this.tssId) this.fetchTSS();
@@ -151,7 +147,6 @@ export class FiskalyService {
   }
 
   fetchTSS() {
-    console.log('fs fetch tss')
     this.apiService.getNew('fiskaly', `/api/v1/tss/get/${this.iBusinessId}/${this.iLocationId}`).subscribe((result:any) => {
       if (result?._id) {
         this.setTss(result._id)
@@ -173,9 +168,9 @@ export class FiskalyService {
     this.client = await this.apiService.postNew('fiskaly', `/api/v1/tss/fetch-client/${this.iBusinessId}`, body).toPromise();
   }
 
-  getTSSList() {
-    console.log('fs get TSS list', this.fiskalyAuth)
-    return this.apiService.getNew('fiskaly', `/api/v1/tss/list/${this.iBusinessId}?refresh_token=${this.fiskalyAuth.refresh_token}`);
+  async getTSSList() {
+    if(!this.fiskalyAuth) await this.loginToFiskaly();
+    return this.apiService.getNew('fiskaly', `/api/v1/tss/list/${this.iBusinessId}`).toPromise();
   }
 
   async changeTSSState(iTssId: string, bEnabled: boolean) {

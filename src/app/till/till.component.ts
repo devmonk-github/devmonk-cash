@@ -182,7 +182,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
     const [_businessData, _fiscallyData]: any = await Promise.all([
       this.getBusinessDetails().toPromise(),
-      this.fiskalyService.getTSSList().toPromise()
+      this.fiskalyService.getTSSList()
     ]);
 
     this.businessDetails = _businessData.data;
