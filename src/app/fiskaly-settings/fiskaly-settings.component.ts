@@ -69,10 +69,18 @@ export class FiskalySettingsComponent implements OnInit {
     }
   }
 
+  async removeTSS(location:any){
+    location.bUpdatingState = true;
+    const result: any = await this.fiskalyService.changeTSSState(location, false, true); // tssid, bEnabled, bRemoveFromLive
+    location.tssInfo = null;
+    location.bUpdatingState = false;
+
+  }
+
   async changeState(location: any, state: boolean, index: number) {
     try {
       location.bUpdatingState = true;
-      await this.fiskalyService.changeTSSState(location.iTssId, state);
+      await this.fiskalyService.changeTSSState(location, state);
       location.bUpdatingState = false;
       this.toastrService.show({ type: 'success', text: 'Status updated!' });
     } catch (error) {
