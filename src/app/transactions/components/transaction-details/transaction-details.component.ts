@@ -104,29 +104,11 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
     this.transaction.nTotalQty = nTotalQty;
     
     this.loading = false;
-    // this.fetchBusinessDetails();
-    // console.log('ngoninit customer', this.transaction.oCustomer, this.businessDetails)
-    // this.fetchCustomer(this.transaction.oCustomer._id);
-    const [_thermalSettings, _printActionSettings, _printSettings, _empResult]: any = await Promise.all([
-      this.getThermalPrintSetting(),
-      this.getPdfPrintSetting({ oFilterBy: { sMethod: 'actions' } }),
-      this.getPdfPrintSetting(),
-      this.apiService.getNew('auth', `/api/v1/employee/${this.transaction?.iEmployeeId}?iBusinessId=${this.iBusinessId}`).toPromise(),
-    ]);
 
-    if (_thermalSettings?.data?._id) {
-      this.thermalPrintSettings = _thermalSettings?.data;
-    }
-
-    this.printActionSettings = _printActionSettings?.data[0]?.result[0].aActions;
-    this.printSettings = _printSettings?.data[0]?.result;
-
-
-    if (_empResult?.data) {
-      this.transaction.createrDetail = _empResult.data;
-      this.transaction.sAdvisedEmpFirstName = this.transaction.createrDetail?.sFirstName || 'a';
-    }
-    console.log(this.transaction)
+    this.getPdfPrintSetting()
+    this.getThermalPrintSetting()
+    this.getPdfPrintSetting({ oFilterBy: { sMethod: 'actions' } })
+    this.getEmployees();
   }
 
   ngAfterContentInit(): void {
@@ -184,7 +166,22 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
       iLocationId: this.iLocationId,
       ...oFilterBy
     }
-    return this.apiService.postNew('cashregistry', `/api/v1/print-settings/list/${this.iBusinessId}`, oBody).toPromise();
+    this.apiService.postNew('cashregistry', `/api/v1/print-settings/list/${this.iBusinessId}`, oBody).subscribe((result:any) => {
+      if(oFilterBy) {
+        this.printActionSettings = result?.data[0]?.result[0].aActions;
+      } else {
+        this.printSettings = result?.data[0]?.result;
+      }
+    });
+  }
+
+  getEmployees() {
+    this.apiService.getNew('auth', `/api/v1/employee/${this.transaction?.iEmployeeId}?iBusinessId=${this.iBusinessId}`).subscribe((result:any) => {
+      if (result?.data) {
+        this.transaction.createrDetail = result.data;
+        this.transaction.sAdvisedEmpFirstName = this.transaction.createrDetail?.sFirstName || 'a';
+      }
+    })
   }
 
   async generatePDF(print: boolean) {
@@ -336,7 +333,11 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   }
 
   getThermalPrintSetting() {
-    return this.apiService.getNew('cashregistry', `/api/v1/print-settings/${this.iBusinessId}/${this.iWorkstationId}/thermal/regular`).toPromise();
+    this.apiService.getNew('cashregistry', `/api/v1/print-settings/${this.iBusinessId}/${this.iWorkstationId}/thermal/regular`).subscribe((result:any) => {
+      if (result?.data?._id) {
+        this.thermalPrintSettings = result?.data;
+      }
+    });
   }
 
   openCustomer(customer: any) {

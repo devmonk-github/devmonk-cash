@@ -521,7 +521,10 @@ export class TillService {
       } else { item.nDiscountToShow = disc }
       // console.log('item.nDiscountToShow', item.nDiscountToShow)
       // item.priceAfterDiscount = parseFloat(item.nRevenueAmount.toFixed(2)) - parseFloat(item.nDiscountToShow);
+      item.nPriceIncVat = item.nPriceIncVat.toFixed(2);
       item.nPriceIncVatAfterDiscount = (parseFloat(item.nPriceIncVat) - parseFloat(item.nDiscountToShow)) - item.nRedeemedLoyaltyPoints;
+      item.nPriceIncVatAfterDiscount = item.nPriceIncVatAfterDiscount.toFixed(2);
+
       if (item.oType.bRefund === true && item.oType.eKind != 'gold-purchase') item.nPriceIncVatAfterDiscount = -(item.nPriceIncVatAfterDiscount)
       // console.log('item.nPriceIncVatAfterDiscount', item.nPriceIncVatAfterDiscount)
       item.totalPaymentAmount = (parseFloat(item.nRevenueAmount) - parseFloat(item.nDiscountToShow)) * item.nQuantity - item.nRedeemedLoyaltyPoints;
