@@ -108,7 +108,7 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
     this.getPdfPrintSetting()
     this.getThermalPrintSetting()
     this.getPdfPrintSetting({ oFilterBy: { sMethod: 'actions' } })
-    this.getEmployees();
+    this.mapEmployee();
   }
 
   ngAfterContentInit(): void {
@@ -175,13 +175,12 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
     });
   }
 
-  getEmployees() {
-    this.apiService.getNew('auth', `/api/v1/employee/${this.transaction?.iEmployeeId}?iBusinessId=${this.iBusinessId}`).subscribe((result:any) => {
-      if (result?.data) {
-        this.transaction.createrDetail = result.data;
-        this.transaction.sAdvisedEmpFirstName = this.transaction.createrDetail?.sFirstName || 'a';
-      }
-    })
+  mapEmployee() {
+    const emp = this.employeesList.find((employee: any) => employee._id === this.transaction?.iEmployeeId)
+    if(emp) {
+      this.transaction.createrDetail = emp;
+      this.transaction.sAdvisedEmpFirstName = this.transaction.createrDetail?.sFirstName || 'a';
+    }
   }
 
   async generatePDF(print: boolean) {
