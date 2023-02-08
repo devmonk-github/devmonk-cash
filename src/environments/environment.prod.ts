@@ -1,13 +1,14 @@
 const CORE_URL = 'https://core.e-orderportal.com';
-const CASH_URL = 'https://cashregister.e-orderportal.com';
+const CASH_URL = 'https://cashregister.backend-retailgear.org';
 const AUTH_URL = 'https://auth.e-orderportal.com';
-const CUSTOMER_URL = 'https://customer.e-orderportal.com';
-const BOOKKEEPING_URL = 'https://bookkeeping.e-orderportal.com';
-const WEBSITE_URL = 'https://website.e-orderportal.com';
-const FISKALY_URL = 'http://localhost:3020';
+const CUSTOMER_URL = 'https://customer.backend-retailgear.org';
+const WEBSITE_URL = 'https://website.backend-retailgear.org';
+const BOOKKEEPING_URL = 'https://bookkeeping.backend-retailgear.org';
 const BACKUP_URL = 'https://backup.e-orderportal.com';
 const ORGANIZATION_URL = 'https://organization.e-orderportal.com';
 const LOG_URL = 'https://log.e-orderportal.com';
+const FISKALY_URL = 'http://localhost:3020';
+/* IF YOU ARE ADDING ANY URL HERE, then don't forgot add in CSP at below */
 
 export const environment = {
   production: true,
@@ -21,7 +22,6 @@ export const environment = {
   ORGANIZATION_URL: ORGANIZATION_URL,
   LOG_URL: LOG_URL,
   FISKALY_URL: FISKALY_URL,
-
   apiURL: 'http://prismanote.com',
   oldPlatformUrl: 'https://kassa.prismanote.com',
   fiskalyURL: 'https://kassensichv-middleware.fiskaly.com/api/v2',
