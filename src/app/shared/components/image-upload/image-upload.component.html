@@ -30,7 +30,7 @@
         <!-- <img class="img-thumbnail" height="241" width="430" [src]="webcamImage.imageAsDataUrl" /> -->
       </div>
 
-      <button class="btn btn-primary" (click)="submit()" type="submit"> {{ "SUBMIT" | translate}}</button>
+      <button class="btn btn-primary" (click)="submit()" [disabled]="isImageValid" type="submit"> {{ "SUBMIT" | translate}}</button>
     </div>
   </div>
 </div>

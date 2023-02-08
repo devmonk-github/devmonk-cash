@@ -235,12 +235,19 @@
                   [(ngModel)]="searchKeyword"
                   (ngModelChange)="searchKeyword? shopProducts = shopProducts: shopProducts = []"
                   (keyup.enter)="search()" (focus)="switchMode()" #searchField>
-                <button class="btn btn-secondary me-3 d-flex search-button" (click)="openTransactionSearchDialog()">
-                  <fa-icon [icon]="faSearch"></fa-icon> {{ "TRANSACTION" | translate}}
+               
+                  <label class="form-check form-switch form-check-custom form-check-solid">
+                  <input class="form-check-input" type="checkbox" [(ngModel)]="bSerialSearchMode" />
+                  <span class="form-check-label fw-bold">{{ "SERIAL_NUMBER_MODE" | translate }}</span>
+                </label>
+
+                <button class="btn btn-secondary me-3 d-flex search-button mx-2" (click)="openTransactionSearchDialog()">
+                  <fa-icon [icon]="faSearch" style="margin-right: 10px;"></fa-icon>{{ "TRANSACTION" | translate}}
                 </button>
-                <button class="btn btn-secondary me-3 search-button" (click)="addNewLine()">{{ "TEXT_LINE" |
+
+                <button class="btn btn-secondary min-w-120px" style="white-space: nowrap;" (click)="addNewLine()">{{ "TEXT_LINE" |
                   translate}}</button>
-                <button class="btn btn-secondary me-3 search-button" (click)="addNewLine()">{{ "EMPTY_LINE" |
+                <button class="btn btn-secondary mx-3 min-w-100px" (click)="addNewLine()">{{ "EMPTY_LINE" |
                   translate}}</button>
                 <button class="btn btn-icon btn-secondary w-85px" (click)="cancelItems()"
                   [disabled]="transactionItems.length === 0">
@@ -281,6 +288,7 @@
                           <p class="block mt-2">{{ product.oName? product.oName['en'] : 'No name' }}</p>
                           <p class="mt-2">{{ product.sEan }}</p>
                           <p class="mt-2">{{ product.sProductNumber }}</p>
+                          <p class="mt-2">{{ product?.sSerialNumber || '' }}</p>
                         </div>
                       </div>
                     </div>
