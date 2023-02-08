@@ -31,7 +31,7 @@ export class TransactionsComponent implements OnInit, OnDestroy {
     { name: 'Instanbul', code: 'INS' }
   ];
   selectedCity: string = '';
-  transactions: Array<any> = [];
+  transactions: any = [];
   TIEkinds: Array<any> = ['regular', 'giftcard', 'repair', 'order', 'gold-purchase', 'gold-sell', 'discount', 'offer', 'refund'];
   paymentMethods:  Array<any> =  [];
   businessDetails: any = {};
@@ -206,7 +206,7 @@ export class TransactionsComponent implements OnInit, OnDestroy {
     this.showLoader = true;
     this.requestParams.eTransactionType = this.eType;
     this.apiService.postNew('cashregistry', '/api/v1/transaction/cashRegister', this.requestParams).subscribe((result: any) => {
-      if (result && result.data && result.data && result.data.result && result.data.result.length) {
+      if (result?.data?.result?.length) {
         this.transactions = result.data.result;
         this.paginationConfig.totalItems = result.data.totalCount;
       }
@@ -302,8 +302,20 @@ export class TransactionsComponent implements OnInit, OnDestroy {
 
   // Function for show transaction details
   showTransaction(transaction: any) {
-    this.dialogService.openModal(TransactionDetailsComponent, { cssClass: "w-fullscreen mt--5", context: { transaction: transaction, businessDetails: this.businessDetails, eType: this.eType, from: 'transactions' }, hasBackdrop: true, closeOnBackdropClick: false, closeOnEsc: false })
-      .instance.close.subscribe(
+    this.dialogService.openModal(TransactionDetailsComponent, 
+      { 
+        cssClass: "w-fullscreen mt--5", 
+        context: { 
+          transaction: transaction, 
+          businessDetails: this.businessDetails, 
+          eType: this.eType, 
+          from: 'transactions',
+          employeesList: this.employees
+        }, 
+        hasBackdrop: true, 
+        closeOnBackdropClick: false, 
+        closeOnEsc: false 
+      }).instance.close.subscribe(
         res => {
           if (res) this.routes.navigate(['business/till']);
         });

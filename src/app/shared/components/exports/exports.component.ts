@@ -7,7 +7,6 @@ import _, { head } from 'lodash';
 import { DialogService } from '../../service/dialog';
 import { DialogComponent } from '../../service/dialog';
 import { CustomerStructureService } from '../../service/customer-structure.service';
-const moment = (_moment as any).default ? (_moment as any).default : _moment;
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 
 @Component({
@@ -111,19 +110,25 @@ export class ExportsComponent implements OnInit {
           this.dataForCSV = result.data[0].result;
         }
           for (const customer of this.dataForCSV) {
-            console.log(typeof(customer['oPoints']));
             if(typeof(customer['oPoints']) == 'number'){
               customer['oPoints'] = (customer.oPoints ? customer.oPoints : '-')
             }else{
               customer['oPoints'] = '-'
             }
             // customer['NAME'] = this.customerStructureService.makeCustomerName(customer);
-            customer['oShippingAddress'] = this.customerStructureService.makeCustomerAddress(customer.oShippingAddress, false);
-            customer['oInvoiceAddress'] = this.customerStructureService.makeCustomerAddress(customer.oInvoiceAddress, false);
+            // customer['oShippingAddress'] = this.customerStructureService.makeCustomerAddress(customer.oShippingAddress, false);
+            // customer['oInvoiceAddress'] = this.customerStructureService.makeCustomerAddress(customer.oInvoiceAddress, false);
             customer['sEmail'] = customer.sEmail;
-            customer['oPhone'] = (customer.oPhone && customer.oPhone.sLandLine ? customer.oPhone.sLandLine : '') + (customer.oPhone && customer.oPhone.sLandLine && customer.oPhone.sMobile ? ' / ' : '') + (customer.oPhone && customer.oPhone.sMobile ? customer.oPhone.sMobile : '')
+            customer['oPhone.sLandLine'] = customer.oPhone && customer.oPhone.sLandLine? customer.oPhone.sLandLine:'';
+            customer['oPhone.sMobile'] =customer.oPhone && customer.oPhone.sMobile ? customer.oPhone.sMobile :"";
+            customer['oShippingAddress.sStreet'] = customer.oShippingAddress && customer.oShippingAddress.sStreet ? customer.oShippingAddress.sStreet :"";
+            customer['oShippingAddress.sHouseNumber'] = customer.oShippingAddress &&  customer.oShippingAddress.sHouseNumber ? customer.oShippingAddress.sHouseNumber :"";
+            customer['oShippingAddress.sPostalCode'] =customer.oShippingAddress &&  customer.oShippingAddress.sPostalCode? customer.oShippingAddress.sPostalCode:"";
+            customer['oShippingAddress.sCountryCode'] = customer.oShippingAddress && customer.oShippingAddress.sCountryCode ? customer.oShippingAddress.sCountryCode:"";
+            // customer['oPhone'] = (customer.oPhone && customer.oPhone.sLandLine ? customer.oPhone.sLandLine : '') + (customer.oPhone && customer.oPhone.sLandLine && customer.oPhone.sMobile ? ' / ' : '') + (customer.oPhone && customer.oPhone.sMobile ? customer.oPhone.sMobile : '')
             customer['oIdentity'] = (customer.oIdentity && customer.oIdentity.documentName ? customer.oIdentity.documentName : '-') + (customer.oIdentity && customer.oIdentity.documentNumber ? customer.oIdentity.documentNumber : '')
           }
+          
 
         for(let index in this.headerList){
           this.fieldObject[this.headerList[index]] = this.valuesList[index]

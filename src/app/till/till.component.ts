@@ -194,8 +194,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       this.businessDetails.currentLocation.oAddress.city;
     this.businessDetails.sAddressline2 = this.businessDetails.currentLocation.oAddress.country;
 
-    const _fiscallyData = await this.fiskalyService.getTSSList();
-    this.mapFiscallyData(_fiscallyData);
+    this.mapFiscallyData();
     
     this.getPrintSettings(true)
     this.getPrintSettings()
@@ -206,9 +205,10 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-  async mapFiscallyData(data: any) {
+  async mapFiscallyData() {
+    const _fiscallyData:any = await this.fiskalyService.getTSSList();
     this.businessDetails.aLocation.forEach((location: any) => {
-      const oMatch = data.find((tss: any) => tss.iLocationId === location._id)
+      const oMatch = _fiscallyData.find((tss: any) => tss.iLocationId === location._id)
       if (oMatch) {
         location.tssInfo = oMatch.tssInfo;
       }
@@ -670,7 +670,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
           const oDialogComponent: DialogComponent = this.dialogService.openModal(TransactionActionDialogComponent, {
             cssClass: 'modal-lg', hasBackdrop: true, closeOnBackdropClick: true, closeOnEsc: true,
           }).instance;
-
+          
           this.apiService.postNew('cashregistry', '/api/v1/till/transaction', body)
             .subscribe(async (data: any) => {
 
@@ -751,7 +751,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     const nOrderCount = oDataSource.aTransactionItemType.filter((e: any) => e === 'order')?.length;
 
     const bRegularCondition = oDataSource.total >= 0.02 || oDataSource.total <= -0.02;
-    const bOrderCondition = nOrderCount === 1 && nRepairCount === 1 || nRepairCount > 1 || nOrderCount > 1;
+    const bOrderCondition = nOrderCount === 1 && nRepairCount === 1 || nRepairCount > 1 || nOrderCount >= 1;
     const bRepairCondition = nRepairCount === 1 && nOrderCount === 0;
     const bRepairAlternativeCondition = nRepairCount >= 1 && nOrderCount >= 1;
 
