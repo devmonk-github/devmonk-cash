@@ -173,6 +173,9 @@ export class TillService {
       console.log('getTotal: ', this.getTotals('price', transactionItems));//0.03
       console.log('Last condition: ', i.paymentAmount, i.amountToBePaid);
       console.log('bPrepayment: ', bPrepayment, bRefund && i.oType?.bPrepayment, (this.getUsedPayMethods(true, payMethods) - this.getTotals('price', transactionItems) < 0), (i.paymentAmount !== i.amountToBePaid));
+      
+      i.price = (parseFloat(i.price)).toFixed(2);
+      i.nPurchasePrice = (parseFloat(i.nPurchasePrice)).toFixed(2);
 
       const oItem = new TransactionItem();
       oItem.sProductName = i.name;
@@ -199,13 +202,13 @@ export class TillService {
       oItem.sProductCategory = 'CATEGORY';
       oItem.sGiftCardNumber = i?.sGiftCardNumber;
       oItem.sGiftCardNumber = i?.sGiftCardNumber;
-      oItem.nEstimatedTotal = i?.nTotal;
-      oItem.nPaymentAmount = i?.paymentAmount || 0;
+      oItem.nEstimatedTotal = i?.nTotal.toFixed(2);
+      oItem.nPaymentAmount = i?.paymentAmount.toFixed(2) || 0;
       oItem.nPaidLaterAmount = 0;
       oItem.bDiscount = i.nDiscount.value > 0;
       oItem.bDiscountPercent = i.nDiscount.percent;
       oItem.nDiscountValue = i.nDiscount.value;
-      oItem.nRefundAmount = i.nRefundAmount;
+      oItem.nRefundAmount = Number((parseFloat(i.nRefundAmount)).toFixed(2));
       oItem.dEstimatedDate = i.dEstimatedDate;
       oItem.iBusinessBrandId = i.iBusinessBrandId;
       oItem.iBusinessProductId = i.iBusinessProductId;
@@ -232,7 +235,7 @@ export class TillService {
       oItem.nDiscount = i.nDiscount;
       oItem.nRedeemedLoyaltyPoints = i.redeemedLoyaltyPoints;
       oItem.sUniqueIdentifier = i.sUniqueIdentifier || uuidv4();
-      oItem.nRevenueAmount = i.paymentAmount / i.quantity;
+      oItem.nRevenueAmount = Number((i.paymentAmount / i.quantity).toFixed(2));
       oItem.sDescription = i.description;
 
       oItem.sServicePartnerRemark = i.sServicePartnerRemark;
@@ -521,7 +524,6 @@ export class TillService {
       } else { item.nDiscountToShow = disc }
       // console.log('item.nDiscountToShow', item.nDiscountToShow)
       // item.priceAfterDiscount = parseFloat(item.nRevenueAmount.toFixed(2)) - parseFloat(item.nDiscountToShow);
-      item.nPriceIncVat = item.nPriceIncVat.toFixed(2);
       item.nPriceIncVatAfterDiscount = (parseFloat(item.nPriceIncVat) - parseFloat(item.nDiscountToShow)) - item.nRedeemedLoyaltyPoints;
       item.nPriceIncVatAfterDiscount = item.nPriceIncVatAfterDiscount.toFixed(2);
 
@@ -601,19 +603,18 @@ export class TillService {
     dataObject.dCreatedDate = moment(dataObject.dCreatedDate).format('DD-MM-yyyy hh:mm:ss');
     let _relatedResult:any , _loyaltyPointSettings:any;
     
-    // const [_relatedResult, _loyaltyPointSettings]: any = 
     if(!dataObject?.bMigrate){
-      await Promise.all([ //_empResult
-      _relatedResult =  this.getRelatedTransaction(dataObject?.iActivityId, dataObject?._id).toPromise(),
-      _loyaltyPointSettings = this.apiService.getNew('cashregistry', `/api/v1/points-settings?iBusinessId=${this.iBusinessId}`).toPromise()
+      const [_relatedResultTemp, _loyaltyPointSettingsTemp]: any = await Promise.all([
+        this.getRelatedTransaction(dataObject?.iActivityId, dataObject?._id).toPromise(),
+        this.apiService.getNew('cashregistry', `/api/v1/points-settings?iBusinessId=${this.iBusinessId}`).toPromise()
       ])
-    }else{
-      await Promise.all([ //_empResult
-      // _relatedResult =  this.getRelatedTransaction(dataObject?.iActivityId, dataObject?._id).toPromise(),
-      _loyaltyPointSettings = this.apiService.getNew('cashregistry', `/api/v1/points-settings?iBusinessId=${this.iBusinessId}`).toPromise()
-      ])
-    }
+      _relatedResult = _relatedResultTemp;
+      _loyaltyPointSettings = _loyaltyPointSettingsTemp;
 
+    }else{             
+      _loyaltyPointSettings = await this.apiService.getNew('cashregistry', `/api/v1/points-settings?iBusinessId=${this.iBusinessId}`).toPromise()
+    }
+    console.log(615, _loyaltyPointSettings)
     dataObject.bSavingPointsSettings = _loyaltyPointSettings?.bEnabled;
     dataObject.aTransactionItems.forEach((item: any) => item.bSavingPointsSettings = _loyaltyPointSettings?.bEnabled)
     dataObject.related = _relatedResult?.data || [];
@@ -626,6 +627,7 @@ export class TillService {
       })
     }
     transaction = dataObject;
+    transaction.bCompletedProcessing = true;
     // console.log('processTransactionForPdfReceipt after processing', transaction);
     return transaction;
   }
