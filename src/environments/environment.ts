@@ -2,23 +2,45 @@
 // `ng build` replaces `environment.ts` with `environment.prod.ts`.
 // The list of file replacements can be found in `angular.json`.
 
+const CORE_URL = 'http://localhost:3002';
+const CASH_URL = 'http://localhost:3004';
+const AUTH_URL = 'http://localhost:3005';
+const CUSTOMER_URL = 'http://localhost:3006';
+const WEBSITE_URL = 'http://localhost:3010';
+const BOOKKEEPING_URL = 'http://localhost:3007';
+const BACKUP_URL = 'http://localhost:3008';
+const ORGANIZATION_URL = 'http://localhost:3001';
+const LOG_URL = 'http://localhost:3003';
+const FISKALY_URL = 'http://localhost:3020';
+/* IF YOU ARE ADDING ANY URL HERE, then don't forgot add in CSP at below */
+
 export const environment = {
   production: false,
-  CORE_URL: 'http://localhost:3002',
-  CASH_URL: 'http://localhost:3004',
-  AUTH_URL: 'http://localhost:3005',
-  CUSTOMER_URL: 'http://localhost:3006',
-  BOOKKEEPING_URL: 'http://localhost:3007',
-  BACKUP_URL: 'http://localhost:3008',
-  ORGANIZATION_URL: 'http://localhost:3001',
-  LOG_URL: 'http://localhost:3003',
-  WEBSITE_URL: 'http://localhost:3010',
-  FISKALY_URL: 'http://localhost:3020',
+  CORE_URL: CORE_URL,
+  CASH_URL: CASH_URL,
+  AUTH_URL: AUTH_URL,
+  CUSTOMER_URL: CUSTOMER_URL,
+  WEBSITE_URL: WEBSITE_URL,
+  BOOKKEEPING_URL: BOOKKEEPING_URL,
+  BACKUP_URL: BACKUP_URL,
+  ORGANIZATION_URL: ORGANIZATION_URL,
+  LOG_URL: LOG_URL,
+  FISKALY_URL: FISKALY_URL,
+
   apiBasePath: 'http://localhost',
   apiURL: 'http://localhost:3000',
   oldPlatformUrl: `http://localhost:3000/`, // https://kassa.prismanote.com,
   fiskalyURL: 'https://kassensichv-middleware.fiskaly.com/api/v2',
-  indexedDBName: 'prismaNote'
+  indexedDBName: 'prismaNote',
+  csp: `
+    default-src 'self';
+    img-src https://* 'self' data:;
+    font-src 'self' https://fonts.gstatic.com;
+    style-src 'self' wchat.eu.freshchat.com https://fonts.googleapis.com https://fonts.googleapis.com 'unsafe-inline';
+    script-src 'self' https://wchat.eu.freshchat.com ${ORGANIZATION_URL};
+    connect-src 'self' ${CORE_URL} ${CASH_URL} ${AUTH_URL} ${CUSTOMER_URL} ${WEBSITE_URL} ${BOOKKEEPING_URL} ${BACKUP_URL} ${ORGANIZATION_URL} ${LOG_URL} ${FISKALY_URL};
+    frame-src 'self' https://wchat.eu.freshchat.com https://533155761215573.eu.webpush.freshchat.com
+ `
 };
 
 /*

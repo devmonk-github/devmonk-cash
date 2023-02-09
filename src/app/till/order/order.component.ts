@@ -242,6 +242,8 @@ export class OrderComponent implements OnInit {
       this.supplierOptions = this.suppliersList.filter((supplier: any) => {
         return supplier.sName && supplier.sName.toLowerCase().includes(searchStr.toLowerCase());
       });
+    } else {
+      this.supplierOptions = [];
     }
   }
 
@@ -284,6 +286,8 @@ export class OrderComponent implements OnInit {
       this.filteredBrands = this.brandsList.filter((brands: any) => {
         return brands.sName && brands.sName.toLowerCase().includes(searchStr.toLowerCase());
       });
+    } else {
+      this.filteredBrands = [];
     }
   }
   checkArticleGroups() {
@@ -335,5 +339,16 @@ export class OrderComponent implements OnInit {
 
   updatePayments(): void {
     this.itemChanged.emit('update');
+  }
+
+  changePrePayment(item:any){
+    if (item.paymentAmount < 0 && item.paymentAmount > item.nTotal) item.oType.bPrepayment = true;
+    else if (item.paymentAmount >= 0 && item.nTotal > item.paymentAmount) item.oType.bPrepayment = true;
+    else if (item.paymentAmount >= 0 && item.nTotal == item.paymentAmount) item.oType.bPrepayment = false;
+    else if (item.nTotal > 0 && item.paymentAmount < 0) throw ('strange transaction A');
+    else if (item.nTotal <= 0 && item.paymentAmount > 0) throw ('strange transaction B');
+
+    item.prepaymentTouched = true;
+    this.itemChanged.emit('prepaymentChange');
   }
 }

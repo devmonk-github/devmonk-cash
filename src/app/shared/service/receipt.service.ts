@@ -529,8 +529,8 @@ export class ReceiptService {
                 let bTestResult: boolean = true;
                 if (el?.ifAnd) {
                     bTestResult = el.ifAnd.every((rule: any) => {
-                        let field = (object) ? object[rule.field] : this.oOriginalDataSource[rule.field];
-                        return this.comparators[rule.compare](field, rule.target)
+                        let field = (object) ? object[rule.field] : this.oOriginalDataSource[rule.field];                        
+                        return (field) ? this.comparators[rule.compare](field, rule.target) : false;
                     });
                     if (bTestResult) {
                         let text = this.pdfService.replaceVariables(el.html, (object) ? object : this.oOriginalDataSource)
@@ -569,10 +569,10 @@ export class ReceiptService {
         // this.styles = {};
     }
 
-    async printThermalReceipt({ oDataSource, printSettings, sAction, apikey, title }: any) {
+    async printThermalReceipt({ oDataSource, printSettings, sAction, apikey, title, sType }: any) {
         let thermalPrintSettings: any;
         if (printSettings?.length > 0) {
-            thermalPrintSettings = printSettings.filter((p: any) => p.iWorkstationId == this.iWorkstationId && p.sMethod == 'thermal' && p.sType == 'regular')[0];
+            thermalPrintSettings = printSettings.filter((p: any) => p.iWorkstationId == this.iWorkstationId && p.sMethod == 'thermal' && p.sType == sType)[0];
         }
         if (!thermalPrintSettings?.nPrinterId || !thermalPrintSettings?.nComputerId) {
             this.toastService.show({ type: 'danger', text: 'Check your business -> printer settings' });

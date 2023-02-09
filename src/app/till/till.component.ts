@@ -549,6 +549,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     this.iActivityId = '';
     this.sNumber = '';
     this.customer = null;
+    this.saveInProgress = false;
     this.clearPaymentAmounts();
   }
 
@@ -614,7 +615,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.transactionItems.length < 1 || !isGoldForCash) {
       return;
     }
-    console.log(this.transactionItems);
     const giftCardPayment = this.allPaymentMethod.find((o) => o.sName === 'Giftcards');
     this.saveInProgress = true;
     const nTotalToPay = this.getTotals('price');
@@ -641,11 +641,11 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
               pay.amount = 0;
             }
           });
-          payMethods = payMethods.filter((o: any) => o.amount !== 0);
+          // payMethods = payMethods.filter((o: any) => o.amount !== 0);
           let availableAmount = _.sumBy(payMethods, 'amount') || 0;
           this.paymentDistributeService.distributeAmount(this.transactionItems, availableAmount);
           this.transactionItems = [...this.transactionItems.filter((item:any)=> item.type !== 'empty-line')]
-          
+          // console.log(payMethods)
           const body = this.tillService.createTransactionBody(this.transactionItems, payMethods, this.discountArticleGroup, this.redeemedLoyaltyPoints, this.customer);
           if (body.transactionItems.filter((item: any) => item.oType.eKind === 'repair')[0]?.iActivityItemId) {
             this.bHasIActivityItemId = true
@@ -1014,27 +1014,31 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // Add selected product into purchase order
   async onSelectProduct(product: any, isFrom: string = '', isFor: string = '', source?: any) {
-
-    let price: any = {};
+    let nPriceIncludesVat = 0, nVatRate = 0;
     if (isFrom === 'quick-button') {
       source.loading = true;
       this.onSelectRegular();
       let selectedQuickButton = product;
       this.bSearchingProduct = true;
       this.bSearchingProduct = false;
-      price.nPriceIncludesVat = selectedQuickButton.nPrice;
-    } else {
-      price = product.aLocation ? product.aLocation.find((o: any) => o._id === this.locationId) : 0;
+      nPriceIncludesVat = selectedQuickButton.nPrice;
     }
+
     if (isFor == 'commonProducts') {
       const _oBaseProductDetail = await this.getBaseProduct(product?._id).toPromise();
       product = _oBaseProductDetail.data;
     } else {
       const _oBusinessProductDetail = await this.getBusinessProduct(product?.iBusinessProductId || product?._id).toPromise();
       product = _oBusinessProductDetail.data;
+      if (product?.aLocation?.length) {
+        const currentLocation = product.aLocation.find((o: any) => o._id === this.locationId);
+        if (currentLocation) {
+          nPriceIncludesVat = currentLocation?.nPriceIncludesVat || 0;
+          nVatRate = currentLocation?.nVatRate || 0;
+        }
+      }
     }
-    let name = '';
-    name = (product?.oArticleGroup?.oName) ? ((product.oArticleGroup?.oName[this.selectedLanguage]) ? product.oArticleGroup?.oName[this.selectedLanguage] : product.oArticleGroup.oName['en']) : '';
+    let name = (product?.oArticleGroup?.oName) ? ((product.oArticleGroup?.oName[this.selectedLanguage]) ? product.oArticleGroup?.oName[this.selectedLanguage] : product.oArticleGroup.oName['en']) : '';
     name += ' ' + (product?.sLabelDescription || '');
     name += ' ' + (product?.sProductNumber || '');
     this.transactionItems.push({
@@ -1042,14 +1046,14 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       eTransactionItemType: 'regular',
       type: this.eKind,
       quantity: 1,
-      price: (isFor == 'commonProducts') ? product.nSuggestedRetailPrice : (price ? price.nPriceIncludesVat : 0),
+      price: (isFor == 'commonProducts') ? product.nSuggestedRetailPrice : nPriceIncludesVat,
       nMargin: 1,
       nPurchasePrice: product.nPurchasePrice,
       paymentAmount: 0,
       oType: { bRefund: false, bDiscount: false, bPrepayment: false },
       nDiscount: product.nDiscount || 0,
       bDiscountOnPercentage: product.bDiscountOnPercentage || false,
-      tax: (product?.aLocation?.length) ? product.aLocation.find((l: any) => l._id === this.locationId)?.nVatRate || 0 : 0,
+      tax: nVatRate,
       sProductNumber: product.sProductNumber,
       sArticleNumber: product.sArticleNumber,
       description: '',//product.sLabelDescription,
