@@ -25,6 +25,7 @@ export class CustomerDialogComponent implements OnInit {
   customColumn = 'NAME';
   defaultColumns = [ 'PHONE', 'EMAIL', 'SHIPPING_ADDRESS', 'INVOICE_ADDRESS'];
   allColumns = [ this.customColumn, ...this.defaultColumns ];
+  isCustomerSearched:Boolean = false;
   requestParams: any = {
     searchValue: ''
   }
@@ -187,9 +188,11 @@ export class CustomerDialogComponent implements OnInit {
   getCustomers() {
     this.showLoader = true;
     this.customers = [];
+    this.isCustomerSearched = false;
     this.apiService.postNew('customer', '/api/v1/customer/list', this.requestParams)
       .subscribe(async (result: any) => {
         this.showLoader = false;
+        this.isCustomerSearched = true;
           if (result && result.data && result.data[0] && result.data[0].result) {
             this.customers = result.data[0].result;
             for(const customer of this.customers){

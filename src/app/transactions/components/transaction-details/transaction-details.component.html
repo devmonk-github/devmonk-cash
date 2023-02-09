@@ -205,7 +205,7 @@
                 </h3>
                 <div class="row fw-bold gy-1 d-flex flex-wrap py-5">
                     <div class="flex-equal me-5">
-                        <table class="table table-hover table-rounded table-striped border gy-7 gs-7">
+                        <table class="table table-hover table-rounded table-striped border gy-7 gs-7" *ngIf="transaction?.bCompletedProcessing">
                             <thead>
                                 <tr class="fw-bold fs-6 text-gray-400">
                                     <td class="text-muted">{{'IMAGE' | translate}}</td>
@@ -313,9 +313,9 @@
                     </div>
                 </div>
                 <div class="d-flex">
-                    <h5 *ngIf='!transaction?.aTransactionItems?.length && !loading' style="text-align: center;">{{
+                    <h5 *ngIf='!transaction?.aTransactionItems?.length && !loading && !transaction?.bCompletedProcessing' style="text-align: center;">{{
                         'NO_DATA_FOUND' | translate }}</h5>
-                    <div *ngIf="loading" class="spinner-border mx-auto"></div>
+                    <div *ngIf="loading || !transaction?.bCompletedProcessing" class="spinner-border mx-auto"></div>
                 </div>
             </div>
             <div class="col-4">
@@ -333,7 +333,11 @@
                             </thead>
                             <tbody>
                                 <tr *ngFor="let item of transaction.aPayments">
-                                    <td>{{item.sMethod}} <br/> ({{ item.dCreatedDate }})</td>
+                                    <td>
+                                        {{item.sMethod}} <br/> 
+                                        <span *ngIf="item?.sRemarks">({{item.sRemarks}})<br/></span>
+                                        ({{ item.dCreatedDate }})
+                                    </td>
                                     <td>{{item.nAmount || 0}}</td>
                                 </tr>
                             </tbody>

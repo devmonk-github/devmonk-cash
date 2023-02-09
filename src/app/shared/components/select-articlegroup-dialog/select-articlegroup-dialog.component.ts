@@ -84,6 +84,8 @@ export class SelectArticleDialogComponent implements OnInit, AfterViewInit {
       this.filteredArticleGroups = this.articleGroupsList.filter((articlegroup: any) => {
         return articlegroup.oName && articlegroup.oName.en && articlegroup.oName.en.toLowerCase().includes(searchStr.toLowerCase());
       });
+    } else {
+      this.filteredArticleGroups = [];
     }
   }
 
@@ -93,6 +95,8 @@ export class SelectArticleDialogComponent implements OnInit, AfterViewInit {
       this.filteredSupplierList = this.partnersList.filter((supplier: any) => {
         return supplier.sName && supplier.sName.toLowerCase().includes(searchStr.toLowerCase());
       });
+    } else {
+      this.filteredSupplierList = [];
     }
   }
 
@@ -101,6 +105,8 @@ export class SelectArticleDialogComponent implements OnInit, AfterViewInit {
       this.filteredBrandList = this.brandsList.filter((brand: any) => {
         return brand.sName && brand.sName.toLowerCase().includes(searchStr.toLowerCase());
       });
+    } else {
+      this.filteredBrandList = [];
     }
   }
 

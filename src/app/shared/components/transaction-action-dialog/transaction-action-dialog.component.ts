@@ -79,7 +79,7 @@ export class TransactionActionDialogComponent implements OnInit {
       this.aRepairItems = this.activityItems.filter((item: any) => item.oType.eKind === 'repair');
 
       this.bRegularCondition = this.transaction.total > 0.02 || this.transaction.total < -0.02;
-      this.bOrderCondition = this.nOrderCount === 1 && this.nRepairCount === 1 || this.nRepairCount > 1 || this.nOrderCount > 1;
+      this.bOrderCondition = this.nOrderCount === 1 && this.nRepairCount === 1 || this.nRepairCount > 1 || this.nOrderCount >= 1;
 
 
       if (this.bRegularCondition) this.aUniqueTypes.push('regular');

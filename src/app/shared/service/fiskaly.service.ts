@@ -173,16 +173,24 @@ export class FiskalyService {
     return this.apiService.getNew('fiskaly', `/api/v1/tss/list/${this.iBusinessId}`).toPromise();
   }
 
-  async changeTSSState(iTssId: string, bEnabled: boolean) {
+  async changeTSSState(location: any, bEnabled: boolean, bRemoveFromLive: boolean = false) {
     const body = {
       bEnabled,
-      iTssId
+      iTssId: location.iTssId,
+      bRemoveFromLive,
+      sLiveTssId: '',
+      fiskalyToken: '',
+      admin_puk : ''
     };
+    if (bRemoveFromLive) {
+      body.fiskalyToken = this.fiskalyAuth.access_token;
+      body.sLiveTssId = location.tssInfo._id;
+      body.admin_puk = location.tssInfo.admin_puk;
+    } 
     return await this.apiService.putNew('fiskaly', `/api/v1/tss/change-state/${this.iBusinessId}`, body).toPromise();
   }
 
   clearAll() {
-    console.log('fs clear all')
     this.tssId = null;
     this.fiskalyAuth = null;
     this.client = null;

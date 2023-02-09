@@ -529,8 +529,8 @@ export class ReceiptService {
                 let bTestResult: boolean = true;
                 if (el?.ifAnd) {
                     bTestResult = el.ifAnd.every((rule: any) => {
-                        let field = (object) ? object[rule.field] : this.oOriginalDataSource[rule.field];
-                        return this.comparators[rule.compare](field, rule.target)
+                        let field = (object) ? object[rule.field] : this.oOriginalDataSource[rule.field];                        
+                        return (field) ? this.comparators[rule.compare](field, rule.target) : false;
                     });
                     if (bTestResult) {
                         let text = this.pdfService.replaceVariables(el.html, (object) ? object : this.oOriginalDataSource)
