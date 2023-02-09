@@ -51,6 +51,8 @@ export class TerminalDialogComponent implements OnInit {
     this.otherPayments = this.dialogRef.context.payments.filter((o: any) => o.sName.toLowerCase() !== 'card' && o.amount);
     if (this.dialogRef.context.changeAmount > 0) {
       this.changeAmount = -this.dialogRef.context.changeAmount
+    } else if (this.dialogRef.context.changeAmount < 0) {
+      this.changeAmount = 0;
     }
     this.totalAmount = _.sumBy(this.dialogRef.context.payments, 'amount');
     this.cardPayments.map((o: any) => { o.status = 'PROCEED'; o.remark = 'NOT_PAID'; o.sCardName = ''; o.oPayNL = { sTransactionId: '', sTransactionStatus: '', sTicketHash: '' }; return o; });

@@ -614,7 +614,6 @@ export class TillService {
     }else{             
       _loyaltyPointSettings = await this.apiService.getNew('cashregistry', `/api/v1/points-settings?iBusinessId=${this.iBusinessId}`).toPromise()
     }
-    console.log(615, _loyaltyPointSettings)
     dataObject.bSavingPointsSettings = _loyaltyPointSettings?.bEnabled;
     dataObject.aTransactionItems.forEach((item: any) => item.bSavingPointsSettings = _loyaltyPointSettings?.bEnabled)
     dataObject.related = _relatedResult?.data || [];
