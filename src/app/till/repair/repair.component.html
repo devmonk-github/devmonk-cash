@@ -277,7 +277,7 @@
           <div class="col-12">
             <div class="mb-4">
               <ng-select *ngIf="!supplier" [(ngModel)]="supplier" (search)="searchSuppliers($event.term)"
-                class="form-control form-control-solid p-0 w-100 custom" placeholder="{{'SEARCH_REPAIRER' | translate}}"
+                class="form-control form-control-solid p-0 w-100 custom" placeholder="{{'SEARCH_SUPPLIER' | translate}}"
                 [minTermLength]="2" [clearable]="false" [isOpen]="supplierOptions.length > 0" (change)="
               supplier = $event.sName;
               item.iSupplierId = $event._id;

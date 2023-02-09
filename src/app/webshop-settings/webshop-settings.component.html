@@ -237,46 +237,64 @@
             <input name="input16" type="text" class="form-control form-control-solid" value="Current setting: pay">
         </div>
         <div class="col-form-label mt-4">
-            <div class="row form-check form-check-custom form-check-solid form-check-sm">
-                <label for="label19" name="label19" class="col-md-2">
-                    <input name="input17" type="radio" class="form-check-input" [(ngModel)]="paymentProvider"
-                        value="PayNL" name="radios5" checked="checked" />
-                    <span></span>
-                    PayNL
-                </label>
-                <label for="label20" name="label20" class="col-md-2">
-                    <input name="input18" type="radio" class="form-check-input" [(ngModel)]="paymentProvider"
-                        value="Mollie" name="radios5" />
-                    <span></span>
-                    Mollie
-                </label>
-                <label for="label21" name="label21" class="col-md-2">
-                    <input name="input19" type="radio" class="form-check-input" [(ngModel)]="paymentProvider"
-                        value="Stripe" name="radios5" />
-                    <span></span>
-                    Stripe
-                </label>
-            </div>
+            <form [formGroup]="paymentMethodFormGroup">
+                <div class="row form-check form-check-custom form-check-solid form-check-sm">
+                    <label for="label19" name="label19" class="col-md-2">
+                        <input formControlName="provider" type="radio" class="form-check-input"
+                            value="paynl" checked="checked" />
+                        <span></span>
+                        PayNL
+                    </label>
+                    <label for="label20" name="label20" class="col-md-2">
+                        <input formControlName="provider" type="radio" class="form-check-input"
+                            value="mollie" />
+                        <span></span>
+                        Mollie
+                    </label>
+                    <label for="label21" name="label21" class="col-md-2">
+                        <input formControlName="provider" type="radio" class="form-check-input"
+                            value="stripe" />
+                        <span></span>
+                        Stripe
+                    </label>
+                </div>
+                <div class="row mx-0">
+                    <div class="col-md-4 mt-2">
+                        <label for="forWebshop" name="forWebshop" class="form-label">{{"USE_FOR_WEBSHOP" | translate}}</label>
+                        <div class="form-check form-check-solid form-switch fv-row lh-xxl">
+                            <input name="useForWebshop" id="forWebshop" type="checkbox" class="form-check-input w-45px h-30px"
+                                formControlName='useForWebshop' />
+                        </div>
+                    </div>
+                    <div *ngIf="paymentMethodFormGroup.controls.provider.value === 'mollie'" class="col-md-4 mt-2">
+                        <label for="label22" name="label22" class="form-label">{{"YOUR_MOLLIE_API_KEY" | translate}}</label>
+                        <input name="mollieAPIKey" formControlName="mollieAPIKey" type="text" class="form-control" fullWidth required="true"
+                            placeholder='{{ "YOUR_MOLLIE_API_KEY" |translate}}'>
+                        <span class="small text-danger mt-2" *ngIf="showPaymentMethodError && paymentMethodFormGroup.controls.mollieAPIKey?.errors?.required">
+                            {{'MOLLIE_API_KEY_REQUIRED' | translate}}!
+                        </span>
+                    </div>
+                    <div *ngIf="paymentMethodFormGroup.controls.provider.value === 'stripe'" class="col-md-4 mt-2">
+                        <label for="label23" name="label23" class="form-label">{{"YOUR_STRIPE_SECRET_API_KEY" |
+                            translate}}</label>
+                        <input name="stripeSecretKey" formControlName="stripeSecretKey" type="text" class="form-control" fullWidth required="true"
+                            placeholder='{{ "YOUR_STRIPE_SECRET_API_KEY" |translate}}'>
+                        <span class="small text-danger mt-2" *ngIf="showPaymentMethodError && paymentMethodFormGroup.controls.stripeSecretKey?.errors?.required">
+                            {{'STRIPE_SECRET_KEY_REQUIRED' | translate}}!
+                        </span>
+                    </div>
+                    <div *ngIf="paymentMethodFormGroup.controls.provider.value === 'stripe'" class="col-md-4 mt-2">
+                        <label for="label24" name="label24" class="form-label">{{"YOUR_STRIPE_ENDPOINT_SIGNATURE" |
+                            translate}}</label>
+                        <input name="stripeSign" formControlName="stripeSign" type="text" class="form-control" fullWidth required="true"
+                            placeholder='{{ "YOUR_STRIPE_ENDPOINT_SIGNATURE" |translate}}'>
+                        <span class="small text-danger mt-2" *ngIf="showPaymentMethodError && paymentMethodFormGroup.controls.stripeSign?.errors?.required">
+                            {{'STRIPE_SIGN_REQUIRED' | translate}}!
+                        </span>
+                    </div>
+                </div>
+            </form>
         </div>
-        <form name="labelForm">
-            <div *ngIf="paymentProvider === 'Mollie'" class="row col-md-4 mt-2">
-                <label for="label22" name="label22" class="form-label">{{"YOUR_MOLLIE_API_KEY" | translate}}</label>
-                <input name="input20" type="text" class="form-control" fullWidth required="true"
-                    placeholder='{{ "YOUR_MOLLIE_API_KEY" |translate}}'>
-            </div>
-            <div *ngIf="paymentProvider === 'Stripe'" class="row col-md-4 mt-2">
-                <label for="label23" name="label23" class="form-label">{{"YOUR_STRIPE_SECRET_API_KEY" |
-                    translate}}</label>
-                <input name="input21" type="text" class="form-control" fullWidth required="true"
-                    placeholder='{{ "YOUR_STRIPE_SECRET_API_KEY" |translate}}'>
-            </div>
-            <div *ngIf="paymentProvider === 'Stripe'" class="row col-md-4 mt-2">
-                <label for="label24" name="label24" class="form-label">{{"YOUR_STRIPE_ENDPOINT_SIGNATURE" |
-                    translate}}</label>
-                <input name="input22" type="text" class="form-control" fullWidth required="true"
-                    placeholder='{{ "YOUR_STRIPE_ENDPOINT_SIGNATURE" |translate}}'>
-            </div>
-        </form>
     </div>
 </div>
 
