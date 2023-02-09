@@ -105,6 +105,8 @@ export class SelectArticleDialogComponent implements OnInit, AfterViewInit {
       this.filteredBrandList = this.brandsList.filter((brand: any) => {
         return brand.sName && brand.sName.toLowerCase().includes(searchStr.toLowerCase());
       });
+    } else {
+      this.filteredBrandList = [];
     }
   }
 
