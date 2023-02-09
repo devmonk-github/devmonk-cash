@@ -143,7 +143,8 @@ export class WebshopSettingsComponent implements OnInit {
     } 
     if(isForCreate){
       if(this.paymentMethodFormGroup.get('useForWebshop')?.value){
-        this.apiService.postNew('cashregistry', '/api/v1/payment-methods/create', {iBusinessId: this.business._id,bIsDefaultPaymentMethod: true,sName: 'Mollie Payment'}).subscribe(
+        let paymentName = (data.eName[0].toUpperCase() + data.eName[0].slice(1)) + ' Payment';
+        this.apiService.postNew('cashregistry', '/api/v1/payment-methods/create', {iBusinessId: this.business._id,bIsDefaultPaymentMethod: true, sName: paymentName}).subscribe(
           (result : any) => {})
       }
       this.apiService.postNew('cashregistry', '/api/v1/payment-service-provider', data).subscribe(
