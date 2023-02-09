@@ -95,6 +95,8 @@ export class SelectArticleDialogComponent implements OnInit, AfterViewInit {
       this.filteredSupplierList = this.partnersList.filter((supplier: any) => {
         return supplier.sName && supplier.sName.toLowerCase().includes(searchStr.toLowerCase());
       });
+    } else {
+      this.filteredSupplierList = [];
     }
   }
 
