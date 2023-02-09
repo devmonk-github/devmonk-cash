@@ -569,10 +569,10 @@ export class ReceiptService {
         // this.styles = {};
     }
 
-    async printThermalReceipt({ oDataSource, printSettings, sAction, apikey, title }: any) {
+    async printThermalReceipt({ oDataSource, printSettings, sAction, apikey, title, sType }: any) {
         let thermalPrintSettings: any;
         if (printSettings?.length > 0) {
-            thermalPrintSettings = printSettings.filter((p: any) => p.iWorkstationId == this.iWorkstationId && p.sMethod == 'thermal' && p.sType == 'regular')[0];
+            thermalPrintSettings = printSettings.filter((p: any) => p.iWorkstationId == this.iWorkstationId && p.sMethod == 'thermal' && p.sType == sType)[0];
         }
         if (!thermalPrintSettings?.nPrinterId || !thermalPrintSettings?.nComputerId) {
             this.toastService.show({ type: 'danger', text: 'Check your business -> printer settings' });
