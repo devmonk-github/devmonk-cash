@@ -59,9 +59,9 @@
                         <div class="text-gray-800">{{activityItems[0]?.receipts[0]?.sTransactionNumber}}</div>
                     </div>
                     <div class="col-md-12 mb-3">
-                        <ng-select name="status" id="status" [(ngModel)]="activity.eActivityStatus"
+                        <ng-select name="status" id="status" [(ngModel)]="activity.eActivityItemStatus"
                             placeholder="{{'ORDER_STATUS' | translate}}"
-                            (ngModelChange)="changeStatusForAll(activity.eActivityStatus)">
+                            (ngModelChange)="changeStatusForAll(activity.eActivityItemStatus)">
                             <ng-option *ngFor="let status of statuses" [value]="status.value">{{status.key | translate}}
                             </ng-option>
                         </ng-select>
@@ -70,21 +70,21 @@
                     <div class="col-md-8 mt-3 mt-3">
                         <div class="text-gray-800">{{FeStatus}}</div>
                     </div>
-                    <label *ngIf="activity.eActivityStatus == 'completed'"
+                    <label *ngIf="activity.eActivityItemStatus == 'completed'"
                         class="col-md-4 mt-5 text-muted">{{"SHIPPING_METHOD" | translate}} : </label>
-                    <div *ngIf="activity.eActivityStatus == 'completed'" class="col-md-8 mt-5">
+                    <div *ngIf="activity.eActivityItemStatus == 'completed'" class="col-md-8 mt-5">
                         <div class="text-gray-800">{{"COMPLETED" | translate}}</div>
                     </div>
-                    <label *ngIf="activity.eActivityStatus == 'completed'" class="col-md-4 mt-5 text-muted">{{"CARRIER"
+                    <label *ngIf="activity.eActivityItemStatus == 'completed'" class="col-md-4 mt-5 text-muted">{{"CARRIER"
                         | translate}} : </label>
-                    <div *ngIf="activity.eActivityStatus == 'completed'" class="col-md-8 mt-5">
+                    <div *ngIf="activity.eActivityItemStatus == 'completed'" class="col-md-8 mt-5">
                         <ng-select name="carrier" id="carrier" [(ngModel)]="activity.eCarrier"
                             placeholder="{{'CARRIER' | translate}}"
                             (ngModelChange)="changeCarrierForAll(activity.eCarrier)">
                             <ng-option *ngFor="let carrier of carriers" [value]="carrier">{{carrier}}</ng-option>
                         </ng-select>
                     </div>
-                    <input *ngIf="activity.eActivityStatus == 'completed'" type="text" name="activityName"
+                    <input *ngIf="activity.eActivityItemStatus == 'completed'" type="text" name="activityName"
                         [(ngModel)]="activity.sTrackingNumber" [placeholder]="'TRACK_AND_TRACE_ORDER' | translate"
                         class="form-control" (blur)="changeTrackingNumberForAll(activity.sTrackingNumber)">
                     <!-- <label class="form-check form-switch form-check-custom form-check-solid mt-5">
@@ -111,16 +111,16 @@
                         <fa-icon [icon]="faDownload"></fa-icon>
                         <label class="mx-auto">{{ "DOWNLOAD_PDF" | translate}}</label>
                     </button>
-                    <button *ngIf="activity.eActivityStatus == 'completed'"
+                    <button *ngIf="activity.eActivityItemStatus == 'completed'"
                         [disabled]="!showDeliverBtn && checkAllLocations()"
                         class="btn btn-sm btn-primary w-100 d-flex mt-5" (click)="deliver('sentToCustomer')">
                         <label class="mx-auto">{{ "SEND_TO_CUSTOMER" | translate}}</label>
                     </button>
-                    <button *ngIf="activity.eActivityStatus == 'completed'"
+                    <button *ngIf="activity.eActivityItemStatus == 'completed'"
                         class="btn btn-sm btn-secondary w-100 d-flex">
                         <label class="mx-auto">{{ "READY_TO_PICKUP" | translate}}</label>
                     </button>
-                    <button *ngIf="activity.eActivityStatus == 'completed'"
+                    <button *ngIf="activity.eActivityItemStatus == 'completed'"
                         [disabled]="!showDeliverBtn && checkAllLocations()"
                         class="btn btn-sm btn-secondary w-100 d-flex" (click)="deliver('deliver')">
                         <label class="mx-auto"> {{"DELIVER" | translate}}</label>
