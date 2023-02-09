@@ -130,7 +130,7 @@ export class TillService {
       iWorkstationId: this.getValueFromLocalStorage('currentWorkstation'),
       transactionItems: transactionItems,
       oTransaction: transaction,
-      payments: this.getUsedPayMethods(false, payMethods),
+      payments: payMethods,//this.getUsedPayMethods(false, payMethods),
       redeemedLoyaltyPoints,
     };
 
