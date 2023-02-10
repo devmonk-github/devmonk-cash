@@ -143,7 +143,7 @@ export class ProductComponent implements OnInit{
     else if (item.nTotal > 0 && item.paymentAmount < 0) throw ('strange transaction A');
     else if (item.nTotal <= 0 && item.paymentAmount > 0) throw ('strange transaction B');
 
-    item.prepaymentTouched = true;
+    item.manualUpdate = true;
     // item.manualUpdate = true;
     //  this.updatePayments();
     this.itemChanged.emit('prepaymentChange');

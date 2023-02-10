@@ -81,6 +81,9 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
     this.iLocationId = localStorage.getItem("currentLocation") || '';
     this.iWorkstationId = localStorage.getItem("currentWorkstation") || '';
     // let language: any = localStorage.getItem('language')
+    this.transaction.businessDetails = this.businessDetails;
+    this.transaction.currentLocation = this.businessDetails.currentLocation;
+    
     this.transaction = await this.tillService.processTransactionForPdfReceipt(this.transaction);
     let nTotalOriginalAmount = 0, nTotalQty = 0;
 
@@ -189,8 +192,7 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
     else 
       this.downloadWithVATLoading = true;
 
-    this.transaction.businessDetails = this.businessDetails;
-    this.transaction.currentLocation = this.businessDetails.currentLocation;
+    
     // for (let i = 0; i < this.businessDetails?.aLocation.length; i++) {
     //   if (this.businessDetails.aLocation[i]?._id.toString() == this.iLocationId.toString()) {
     //   }
