@@ -71,7 +71,6 @@ export class Pn2escposService {
       if (this.helperValidateJSON(dataObject)) {
         this.data = JSON.parse(dataObject);
       }
-      // console.log(this.data);
 
       var commandString = "";
 
@@ -82,19 +81,17 @@ export class Pn2escposService {
 
       Object.keys(template).forEach((key: any) => {
         var action: any = this.createObjectFromTemplateLine(template[key]);
-        // console.log({action});
         if (action.do) {
           //this.clog('EXECUTING {"'+action.do+'":"'+action.data+'"}')
           let a;
           if (action.if) {
+            console.log('action if 90: ', action.if);
             if (this.checkConditions(action.if, this.data)) {
               a = this.doAction(action, key)
-              // console.log('after process if', a)
               commandString += a;
             }
           } else {
             a = this.doAction(action, key)
-            // console.log('after process else', a)
             commandString += a;
           }
 
@@ -168,7 +165,6 @@ export class Pn2escposService {
 
     var foreachString = "";
     var requestedData = this.data[command.data];
-    // console.log('requestedData', requestedData)
     //The value passed to the foreach-action should exist in the data array
     if (requestedData) {
 
@@ -194,7 +190,6 @@ export class Pn2escposService {
                 for (let k = 0; k < command.columns.length; k++) {
                   colwidthsum += command.columns[i];
                 }
-                // console.log({colwidthsum, default_line_length: this.default_line_length});
                 if (colwidthsum == this.default_line_length) {
                   this.cwarn('The sum of the columns in your foreach equal the default line length. This should be equal to the default line length minus the number of columns)')
                 }
@@ -209,6 +204,7 @@ export class Pn2escposService {
             }
 
             if (action.if) {
+              console.log('action.if 212 ', action.if);
               if (this.checkConditions(action.if, JSON.stringify(requestedData[a]))) {
                 foreachString += this.doAction(action, i, a)
               }
@@ -433,7 +429,6 @@ export class Pn2escposService {
     var finalString = commandText;
 
     if (extractedVariables !== null) {
-      // console.log('extractedVariables', extractedVariables)
       /**
        * if there is more than one variable in a column, justification should not
        * be applied to the variables individually but only to the text as a whole
@@ -448,7 +443,6 @@ export class Pn2escposService {
         var currentMatch = extractedVariables[a];
         var placeholder = "";
         var maxlength = 0;
-        // console.log('currentMatch', currentMatch)
 
         //Finding more than 2 "[" means there's a variable not closed properly
         if (currentMatch.match(/\[/g).length == 2) {
@@ -458,7 +452,6 @@ export class Pn2escposService {
 
           //remove brackets
           let variableStringFilteredIndex0 = currentMatch.replace('[[', '').replace(']]', '');
-          // console.log('variableStringFilteredIndex0',variableStringFilteredIndex0)
           if (variableStringFilteredIndex0 === 'nIndex'){
             let n = (itemIndex) ? itemIndex : 0;
             finalString = finalString.replace(currentMatch, String(++n));
@@ -516,7 +509,6 @@ export class Pn2escposService {
           if (providedData[variableStringFilteredIndex0]) { //a match on key
             if (String(providedData[variableStringFilteredIndex0]).length > 0) { // ..there's data
               newtext = providedData[variableStringFilteredIndex0];
-              // console.log(520, 'newtext', newtext)
               if (typeof (variableStringFilteredIndex1) == 'string' && String(providedData[variableStringFilteredIndex0][variableStringFilteredIndex1]).length > 0) {
                 if (
                   typeof (variableStringFilteredIndex2) == 'string' && 
@@ -537,7 +529,6 @@ export class Pn2escposService {
               matched = true;
             } else {
               if (!multiple_vars_in_column)
-                // console.log(540, 'justifying')
                 finalString = this.helperJustifyInColumn(finalString, colcount, colwidth, colpos, pullright);
 
               if (placeholder)
@@ -556,67 +547,17 @@ export class Pn2escposService {
           }
           finalString = finalString.replace(currentMatch, newtext, 0);
 
-          // backup code for some time
-
-          // Object.keys(providedData).forEach((key, index) => {
-          //   if (key == variableStringFilteredIndex0) { //a match on key
-          //     if (String(providedData[variableStringFilteredIndex0]).length > 0) { // ..there's data
-          //       newtext = providedData[variableStringFilteredIndex0];
-          //       console.log(502, { newtext, variableStringFilteredIndex0 })
-          //       if (typeof (variableStringFilteredIndex1) == 'string' && String(providedData[variableStringFilteredIndex0][variableStringFilteredIndex1]).length > 0) {
-          //         if (typeof (variableStringFilteredIndex2) == 'string' && providedData[variableStringFilteredIndex0][variableStringFilteredIndex1][variableStringFilteredIndex2]) {
-          //           newtext = providedData[variableStringFilteredIndex0][variableStringFilteredIndex1][variableStringFilteredIndex2];
-          //           console.log(506, { newtext, variableStringFilteredIndex0, variableStringFilteredIndex1, variableStringFilteredIndex2 })
-          //         } else {
-          //           newtext = providedData[variableStringFilteredIndex0][variableStringFilteredIndex1];
-          //           console.log(509, { newtext, variableStringFilteredIndex0, variableStringFilteredIndex1 })
-          //         }
-          //       }
-
-          //       if (!multiple_vars_in_column)
-          //         newtext = this.helperJustifyInColumn(newtext, colcount, colwidth, colpos, pullright);
-
-          //       finalString = finalString.replace(currentMatch, newtext, 0);
-
-          //       matched = true;
-          //     } else if (variableStringFilteredIndex0.startsWith("__")) {
-          //       newtext = this.translateService.instant(variableStringFilteredIndex0.substring(2));
-          //     }
-          //     else {
-          //       if (!multiple_vars_in_column)
-          //         finalString = this.helperJustifyInColumn(finalString, colcount, colwidth, colpos, pullright);
-
-          //       if (placeholder)
-          //         finalString = placeholder;
-
-          //       finalString = finalString.replace(currentMatch, newtext, 0);
-          //     }
-          //   }
-          // });
-
           if (!matched) {
             if (placeholder) {
               this.clog('"' + variableStringFilteredIndex0 + '" replaced by placeholder "' + placeholder + '"')
             } else {
               this.cwarn('"' + finalString + '" could not be matched with the provided data.');
             }
-
-            // if (!multiple_vars_in_column)
-            //   console.log(605, 'justifying')
-            //   finalString = this.helperJustifyInColumn("", colcount, colwidth, colpos, pullright);
           } 
-          // else {
-          //   console.log(506, 'justifying')
-          //   finalString = this.helperJustifyInColumn(finalString, colcount, colwidth, colpos, pullright);
-            
-          // }
-          
-
         } else {
           this.cerror('A variable in "' + currentMatch + '" is not closed properly.', currentMatch)
         }
       }
-      // console.log(617, 'justifying')
       finalString = this.helperJustifyInColumn(finalString, colcount, colwidth, colpos, pullright);
 
     } else {
@@ -630,7 +571,6 @@ export class Pn2escposService {
   }
 
   helperJustifyInColumn(newtext: any = null, colcount: any, colwidth: any, colpos: any, pullright = false, multiple_vars_in_column = false) {
-    // console.log('helperJustifyInColumn',{ newtext, colcount, colwidth, colpos }) 
     newtext = String(newtext)
     if (newtext == null || newtext.length == 0) {
       newtext = "";
@@ -641,7 +581,6 @@ export class Pn2escposService {
       if (colwidth > 0) {
         if (newtext.length <= colwidth) {
           var spacesneeded = colwidth - newtext.length;
-          // console.log('spacesneeded', spacesneeded)
           var extra = " ".repeat(spacesneeded);
           // for (let i = 0; i < spacesneeded; i++) {
           // }
@@ -667,7 +606,6 @@ export class Pn2escposService {
   }
 
   addText(command: any, breakafter = false, itemIndex?:number) {
-    // console.log('addtext', command, breakafter, itemIndex)
     var text = "";
     var dataString = String(command.data);
 
@@ -678,7 +616,6 @@ export class Pn2escposService {
       var parts = dataString.split('|').filter((el) => {
         return el != "";
       });
-      // console.log('parts', parts)
 
       var table = [];
 
@@ -692,14 +629,11 @@ export class Pn2escposService {
           } else {
             var colwidth = Math.floor((this.default_line_length - (nr_of_cols - 1)) / nr_of_cols);
           }
-          // console.log('colwidth: ', colwidth, 'default_line_length', this.default_line_length, 'nr_of_cols', nr_of_cols, 'itemIndex', itemIndex);
 
           col = this.replaceVariables(col, command.source, i, colwidth, nr_of_cols, command.pullright, itemIndex)
-          // console.log(703, col)
           table.push(col);
         }
         dataString = table.join('');
-        // console.log('datastring', dataString)
       }
     } else {
       dataString = this.replaceVariables(dataString, command.source, command.columnpos, command.columnwidth, command.colcount, command.pullright, itemIndex)
@@ -860,7 +794,6 @@ export class Pn2escposService {
   }
 
   createObjectFromTemplateLine(templateline: any, requestedData = null) {
-
     var action: any = new Object();
 
     var action_keys: any = Object.keys(templateline);
@@ -874,6 +807,7 @@ export class Pn2escposService {
     } else {
       if (action_keys[1] == "if") {
         action.if = action_vals[1]
+        console.log('IF CONDITION: ', action_vals[1]);
       }
     }
 
@@ -893,6 +827,7 @@ export class Pn2escposService {
   }
 
   checkConditions(conditions: any, dataSourceObject: any) {
+    console.log('check conditions: 896 ', conditions);
     // dataSourceObject = JSON.parse(dataSourceObject);
 
     var item = dataSourceObject; //Used for the eval() function

@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { AppComponent } from './app.component';
@@ -15,6 +15,7 @@ import { NgJsonEditorModule } from 'ang-jsoneditor';
 import { SharedServiceModule } from './shared/shared-service.module';
 import { BarcodeComponent } from './barcode/barcode.component';
 import { TranslationsService } from 'src/app/shared/service/translation.service';
+import { AppInitService } from './shared/service/app-init.service';
 
 
 @NgModule({
@@ -33,16 +34,28 @@ import { TranslationsService } from 'src/app/shared/service/translation.service'
     NgJsonEditorModule,
     SharedServiceModule
   ],
-  providers: [],
+  providers: [
+    AppInitService,
+    {
+      provide: APP_INITIALIZER,
+      useFactory: initCsp,
+      deps: [AppInitService],
+      multi: true
+    },
+  ],
   bootstrap: [AppComponent]
 })
+
 export class AppModule {
   constructor(
     private translationsService: TranslationsService,
-
-
   ) {
-    console.log('cash register app module constructor')
     // this.translationsService.init()
   }
+}
+
+export function initCsp(appInitService: AppInitService) {
+  return () => {
+    appInitService.initCsp();
+  };
 }

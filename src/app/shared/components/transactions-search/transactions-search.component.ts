@@ -55,6 +55,7 @@ export class TransactionsSearchComponent implements OnInit, AfterViewInit {
     this.apiService.setToastService(this.toastService);
     this.business._id = localStorage.getItem("currentBusiness");
     this.requestParams.iBusinessId = this.business._id;
+    this.findTransactions()
   }
 
   findTransactions() {
