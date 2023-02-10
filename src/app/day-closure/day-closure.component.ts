@@ -1,5 +1,5 @@
 import { Subscription } from 'rxjs';
-import { Component, OnInit, HostListener, ViewChild, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 
 import { ActivatedRoute, Router } from '@angular/router';
 import { ApiService } from '../shared/service/api.service';
@@ -26,31 +26,12 @@ export class DayClosureComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute
   ) { }
 
-
-  @ViewChild('adminFrame') iframe: any;
-
-  @HostListener('window:message', ['$event'])
-  onMessage(e: any) {
-    if (e.data && e.data.for == 'frame loaded') {
-      setTimeout(() => {
-        this.onFrameLoad();
-      }, 500);
-    }
-  }
-
   ngOnInit(): void {
     this.apiService.setToastService(this.toastService);
     this.iBusinessId = localStorage.getItem('currentBusiness');
     this.iLocationId = localStorage.getItem('currentLocation');
     this.iWorkstationId = localStorage.getItem('currentWorkstation');
     this.isAnyDayStateOpened();
-  }
-
-  onFrameLoad(): void {
-    if (this.iframe == null) return;
-    let iWindow = this.iframe.nativeElement.contentWindow;
-    if (iWindow == null) return;
-    iWindow.postMessage({ "parentOrigin": window.location.origin }, 'http://localhost:4002');
   }
 
   ngOnDestroy(): void {

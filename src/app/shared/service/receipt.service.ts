@@ -378,8 +378,9 @@ export class ReceiptService {
                 columnData = this.processTextAsTableData(el);
                 this.DIVISON_FACTOR = 1;
             } else if (el?.type === 'stack') {
+                // console.log('el', el)
                 let obj: any = {
-                    "stack": this.processStack(el)
+                    "stack": this.processStack(el, (el?.object) ? this.oOriginalDataSource[el?.object] : null)
                 };
                 if (el?.width) obj.width = el.width;
                 columnData = obj;
@@ -521,6 +522,7 @@ export class ReceiptService {
     }
 
     processStack(item: any, object?: any) {
+        // console.log('processStack', item, object);
         const stack: any = [];
         item.elements.forEach((el: any) => {
             if (el?.type === 'image') {
@@ -528,8 +530,10 @@ export class ReceiptService {
             } else {
                 let bTestResult: boolean = true;
                 if (el?.ifAnd) {
+                    // console.log('ifand', el)
                     bTestResult = el.ifAnd.every((rule: any) => {
-                        let field = (object) ? object[rule.field] : this.oOriginalDataSource[rule.field];                        
+                        let field = (object) ? object[rule.field] : this.oOriginalDataSource[rule.field];
+                        // console.log({ field, rule })
                         return (field) ? this.comparators[rule.compare](field, rule.target) : false;
                     });
                     if (bTestResult) {

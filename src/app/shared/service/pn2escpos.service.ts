@@ -87,6 +87,7 @@ export class Pn2escposService {
           //this.clog('EXECUTING {"'+action.do+'":"'+action.data+'"}')
           let a;
           if (action.if) {
+            console.log('action if 90: ', action.if);
             if (this.checkConditions(action.if, this.data)) {
               a = this.doAction(action, key)
               // console.log('after process if', a)
@@ -209,6 +210,7 @@ export class Pn2escposService {
             }
 
             if (action.if) {
+              console.log('action.if 212 ', action.if);
               if (this.checkConditions(action.if, JSON.stringify(requestedData[a]))) {
                 foreachString += this.doAction(action, i, a)
               }
@@ -893,6 +895,7 @@ export class Pn2escposService {
   }
 
   checkConditions(conditions: any, dataSourceObject: any) {
+    console.log('check conditions: 896 ', conditions);
     // dataSourceObject = JSON.parse(dataSourceObject);
 
     var item = dataSourceObject; //Used for the eval() function
