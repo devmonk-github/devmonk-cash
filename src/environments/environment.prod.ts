@@ -7,7 +7,7 @@ const BOOKKEEPING_URL = 'https://bookkeeping.backend-retailgear.org';
 const BACKUP_URL = 'https://backup.e-orderportal.com';
 const ORGANIZATION_URL = 'https://organization.e-orderportal.com';
 const LOG_URL = 'https://log.e-orderportal.com';
-const FISKALY_URL = 'http://localhost:3020';
+const FISKALY_URL = 'https://fiskaly.backend-retailgear.org';
 /* IF YOU ARE ADDING ANY URL HERE, then don't forgot add in CSP at below */
 
 export const environment = {
