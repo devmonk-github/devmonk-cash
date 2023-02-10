@@ -333,7 +333,11 @@
                             </thead>
                             <tbody>
                                 <tr *ngFor="let item of transaction.aPayments">
-                                    <td>{{item.sMethod}} <br/> ({{ item.dCreatedDate }})</td>
+                                    <td>
+                                        {{item.sMethod}} <br/> 
+                                        <span *ngIf="item?.sRemarks">({{item.sRemarks}})<br/></span>
+                                        ({{ item.dCreatedDate }})
+                                    </td>
                                     <td>{{item.nAmount || 0}}</td>
                                 </tr>
                             </tbody>

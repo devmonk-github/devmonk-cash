@@ -49,7 +49,11 @@ export class TerminalDialogComponent implements OnInit {
   ngOnInit(): void {
     this.cardPayments = this.dialogRef.context.payments.filter((o: any) => o.sName.toLowerCase() === 'card' && o.amount);
     this.otherPayments = this.dialogRef.context.payments.filter((o: any) => o.sName.toLowerCase() !== 'card' && o.amount);
-    this.changeAmount = this.dialogRef.context.changeAmount < 0 ? 0 : this.dialogRef.context.changeAmount;
+    if (this.dialogRef.context.changeAmount > 0) {
+      this.changeAmount = -this.dialogRef.context.changeAmount
+    } else if (this.dialogRef.context.changeAmount < 0) {
+      this.changeAmount = 0;
+    }
     this.totalAmount = _.sumBy(this.dialogRef.context.payments, 'amount');
     this.cardPayments.map((o: any) => { o.status = 'PROCEED'; o.remark = 'NOT_PAID'; o.sCardName = ''; o.oPayNL = { sTransactionId: '', sTransactionStatus: '', sTicketHash: '' }; return o; });
     // if (this.cardPayments.length > 0) {
@@ -146,11 +150,12 @@ export class TerminalDialogComponent implements OnInit {
   continue() {
     this.cardPayments = this.cardPayments.filter((item: any) => item.status === 'SUCCESS')
     const paymentsToreturn = this.cardPayments.concat(this.otherPayments);
-    if (this.dialogRef.context.changeAmount > 0) {
+    // if (this.dialogRef.context.changeAmount > 0) {
       const cashPaymentMethod = _.clone(this.dialogRef.context.payments.find((o: any) => o.sName.toLowerCase() === 'cash'));
-      cashPaymentMethod.amount = -this.dialogRef.context.changeAmount;
+      cashPaymentMethod.amount = this.changeAmount;
+      cashPaymentMethod.remark = 'CHANGE_MONEY';
       paymentsToreturn.push(cashPaymentMethod);
-    }
+    // }
     this.close(paymentsToreturn);
   }
 }

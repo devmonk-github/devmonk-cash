@@ -285,6 +285,8 @@ export class RepairComponent implements OnInit {
       this.supplierOptions = this.suppliersList.filter((supplier: any) => {
         return supplier.sName && supplier.sName.toLowerCase().includes(searchStr.toLowerCase());
       });
+    } else {
+      this.supplierOptions = [];
     }
   }
 
@@ -294,6 +296,8 @@ export class RepairComponent implements OnInit {
       this.filteredEmployees = this.employeesList.filter((employee: any) => {
         return employee.sName && employee.sName.toLowerCase().includes(searchStr.toLowerCase());
       });
+    } else {
+      this.filteredEmployees = [];
     }
   }
 
@@ -316,6 +320,8 @@ export class RepairComponent implements OnInit {
       this.filteredBrands = this.brandsList.filter((brands: any) => {
         return brands.sName && brands.sName.toLowerCase().includes(searchStr.toLowerCase());
       });
+    } else {
+      this.filteredBrands = [];
     }
   }
 

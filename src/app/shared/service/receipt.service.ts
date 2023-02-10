@@ -378,8 +378,9 @@ export class ReceiptService {
                 columnData = this.processTextAsTableData(el);
                 this.DIVISON_FACTOR = 1;
             } else if (el?.type === 'stack') {
+                // console.log('el', el)
                 let obj: any = {
-                    "stack": this.processStack(el)
+                    "stack": this.processStack(el, (el?.object) ? this.oOriginalDataSource[el?.object] : null)
                 };
                 if (el?.width) obj.width = el.width;
                 columnData = obj;
@@ -521,6 +522,7 @@ export class ReceiptService {
     }
 
     processStack(item: any, object?: any) {
+        // console.log('processStack', item, object);
         const stack: any = [];
         item.elements.forEach((el: any) => {
             if (el?.type === 'image') {
@@ -528,9 +530,11 @@ export class ReceiptService {
             } else {
                 let bTestResult: boolean = true;
                 if (el?.ifAnd) {
+                    // console.log('ifand', el)
                     bTestResult = el.ifAnd.every((rule: any) => {
                         let field = (object) ? object[rule.field] : this.oOriginalDataSource[rule.field];
-                        return this.comparators[rule.compare](field, rule.target)
+                        // console.log({ field, rule })
+                        return (field) ? this.comparators[rule.compare](field, rule.target) : false;
                     });
                     if (bTestResult) {
                         let text = this.pdfService.replaceVariables(el.html, (object) ? object : this.oOriginalDataSource)
@@ -569,10 +573,10 @@ export class ReceiptService {
         // this.styles = {};
     }
 
-    async printThermalReceipt({ oDataSource, printSettings, sAction, apikey, title }: any) {
+    async printThermalReceipt({ oDataSource, printSettings, sAction, apikey, title, sType }: any) {
         let thermalPrintSettings: any;
         if (printSettings?.length > 0) {
-            thermalPrintSettings = printSettings.filter((p: any) => p.iWorkstationId == this.iWorkstationId && p.sMethod == 'thermal' && p.sType == 'regular')[0];
+            thermalPrintSettings = printSettings.filter((p: any) => p.iWorkstationId == this.iWorkstationId && p.sMethod == 'thermal' && p.sType == sType)[0];
         }
         if (!thermalPrintSettings?.nPrinterId || !thermalPrintSettings?.nComputerId) {
             this.toastService.show({ type: 'danger', text: 'Check your business -> printer settings' });

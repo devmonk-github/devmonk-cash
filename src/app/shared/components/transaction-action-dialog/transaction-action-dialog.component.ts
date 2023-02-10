@@ -170,7 +170,8 @@ export class TransactionActionDialogComponent implements OnInit {
         printSettings: this.printSettings.filter((s: any) => s.sType === type),
         sAction: 'thermal',
         apikey: this.businessDetails.oPrintNode.sApiKey,
-        title: this.transaction.sNumber
+        title: this.transaction.sNumber,
+        sType: type
       });
     } else if (action == 'EMAIL') {
       const response = await this.receiptService.exportToPdf({
