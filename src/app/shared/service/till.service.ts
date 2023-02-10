@@ -473,6 +473,16 @@ export class TillService {
     let language: any = localStorage.getItem('language')
     let dataObject = JSON.parse(JSON.stringify(transaction));
 
+    dataObject.businessDetails.sMobile = dataObject.businessDetails?.oPhone?.sMobile || '';
+    dataObject.businessDetails.sLandLine = dataObject.businessDetails?.oPhone?.sLandLine;
+    dataObject.businessDetails.sAddressline1 = (dataObject.businessDetails?.currentLocation?.oAddress?.street + " " +
+      dataObject.businessDetails?.currentLocation?.oAddress?.houseNumber + " " +
+      dataObject.businessDetails?.currentLocation?.oAddress?.houseNumberSuffix + " ,  " +
+      dataObject.businessDetails?.currentLocation?.oAddress?.postalCode + " " +
+      dataObject.businessDetails?.currentLocation?.oAddress?.city) || '';
+    dataObject.businessDetails.sAddressline2 = dataObject.businessDetails?.currentLocation?.oAddress?.country || '';
+    
+
     dataObject.aPayments.forEach((obj: any) => {
       obj.dCreatedDate = moment(obj.dCreatedDate).format('DD-MM-yyyy hh:mm:ss');
     });

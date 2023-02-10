@@ -8,6 +8,7 @@ const BACKUP_URL = 'https://backup.e-orderportal.com';
 const ORGANIZATION_URL = 'https://organization.e-orderportal.com';
 const LOG_URL = 'https://log.e-orderportal.com';
 const FISKALY_URL = 'https://fiskaly.backend-retailgear.org';
+const JEWELS_AND_WATCHES_URL = 'https://jewels.backend-retailgear.org';
 /* IF YOU ARE ADDING ANY URL HERE, then don't forgot add in CSP at below */
 
 export const environment = {
@@ -22,6 +23,7 @@ export const environment = {
   ORGANIZATION_URL: ORGANIZATION_URL,
   LOG_URL: LOG_URL,
   FISKALY_URL: FISKALY_URL,
+  JEWELS_AND_WATCHES_URL: JEWELS_AND_WATCHES_URL,
   apiURL: 'http://prismanote.com',
   oldPlatformUrl: 'https://kassa.prismanote.com',
   fiskalyURL: 'https://kassensichv-middleware.fiskaly.com/api/v2',
@@ -31,7 +33,7 @@ export const environment = {
     img-src https://* 'self' data:;
     font-src 'self' https://fonts.gstatic.com;
     style-src 'self' wchat.eu.freshchat.com https://fonts.googleapis.com https://fonts.googleapis.com 'unsafe-inline';
-    script-src 'self' https://wchat.eu.freshchat.com ${ORGANIZATION_URL};
+    script-src 'self' https://s3.eu-central-1.amazonaws.com/directives-multiscreenplatform.com/ https://wchat.eu.freshchat.com ${ORGANIZATION_URL};
     connect-src 'self' ${CORE_URL} ${CASH_URL} ${AUTH_URL} ${CUSTOMER_URL} ${WEBSITE_URL} ${BOOKKEEPING_URL} ${BACKUP_URL} ${ORGANIZATION_URL} ${LOG_URL} ${FISKALY_URL};
     frame-src 'self' https://wchat.eu.freshchat.com https://533155761215573.eu.webpush.freshchat.com
   `
