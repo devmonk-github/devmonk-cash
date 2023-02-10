@@ -127,6 +127,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   bHasIActivityItemId: boolean = false;
   bSerialSearchMode = false;
   employee: any;
+  bIsFiscallyEnabled: boolean = false;
 
   randNumber(min: number, max: number): number {
     return Math.floor(Math.random() * (max - min + 1) + min);
@@ -185,14 +186,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     this.businessDetails = _businessData.data;
     this.businessDetails.currentLocation = this.businessDetails?.aLocation?.find((location: any) => location?._id === this.locationId);
     this.tillService.selectCurrency(this.businessDetails.currentLocation);
-    this.businessDetails.sMobile = this.businessDetails?.oPhone?.sMobile || '';
-    this.businessDetails.sLandLine = this.businessDetails?.oPhone?.sLandLine;
-    this.businessDetails.sAddressline1 = (this.businessDetails?.currentLocation?.oAddress?.street + " " +
-      this.businessDetails?.currentLocation?.oAddress?.houseNumber + " " +
-      this.businessDetails?.currentLocation?.oAddress?.houseNumberSuffix + " ,  " +
-      this.businessDetails?.currentLocation?.oAddress?.postalCode + " " +
-      this.businessDetails?.currentLocation?.oAddress?.city) || '';
-    this.businessDetails.sAddressline2 = this.businessDetails?.currentLocation?.oAddress?.country || '';
     this.getPrintSettings(true)
     this.getPrintSettings()
     this.getEmployee(currentEmployeeId)
@@ -209,9 +202,11 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       const oMatch = _fiscallyData.find((tss: any) => tss.iLocationId === location._id)
       if (oMatch) {
         location.tssInfo = oMatch.tssInfo;
+        location.bIsFiskalyEnabled = oMatch.bEnabled;
       }
     });
-    if (this.businessDetails.currentLocation?.tssInfo) {
+    if (this.businessDetails.currentLocation?.tssInfo && this.businessDetails.currentLocation?.bIsFiskalyEnabled) {
+      this.bIsFiscallyEnabled = true;
       this.cancelFiskalyTransaction();
       this.fiskalyService.setTss(this.businessDetails.currentLocation?.tssInfo._id)
     }
@@ -691,8 +686,12 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
                 }
               });
 
-              this.handleReceiptPrinting(oDialogComponent);
-              this.updateFiskalyTransaction('FINISHED', body.payments);
+              if (this.bIsFiscallyEnabled) {
+                this.updateFiskalyTransaction('FINISHED', body.payments, oDialogComponent);
+              } else {
+                this.handleReceiptPrinting(oDialogComponent);
+              }
+              
               setTimeout(() => {
                 this.saveInProgress = false;
                 this.fetchBusinessPartnersProductCount(uniq);
@@ -720,6 +719,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
 
   async handleReceiptPrinting(oDialogComponent: DialogComponent) {
+    this.transaction.businessDetails = this.businessDetails;
+    this.transaction.currentLocation = this.businessDetails.currentLocation;
     this.transaction = await this.tillService.processTransactionForPdfReceipt(this.transaction);
 
     let oDataSource = JSON.parse(JSON.stringify(this.transaction));
@@ -759,8 +760,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
     aUniqueItemTypes.push(...['repair', 'repair_alternative', 'giftcard']);
 
-    oDataSource.businessDetails = this.businessDetails;
-    oDataSource.currentLocation = this.businessDetails.currentLocation;// ? this.businessDetails.currentLocation : this.getValueFromLocalStorage('currentLocation');    
+    // oDataSource.businessDetails = this.businessDetails;
+    // oDataSource.currentLocation = this.businessDetails.currentLocation;
 
     const [_template, _oLogoData]: any = await Promise.all([
       this.getTemplate(aUniqueItemTypes),
@@ -1419,7 +1420,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  async updateFiskalyTransaction(state: string, payments: []) {
+  async updateFiskalyTransaction(state: string, payments: [], oDialogComponent ?:any) {
     if (!this.fiskalyService.tssId) return;
 
     const pay = _.clone(payments);
@@ -1430,6 +1431,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       const result = await this.fiskalyService.updateFiskalyTransaction(this.transactionItems, pay, state);
       if (state === 'FINISHED') {
         localStorage.removeItem('fiskalyTransaction');
+        this.transaction.sTxId = result._id;
+        this.handleReceiptPrinting(oDialogComponent);
       } else {
         localStorage.setItem('fiskalyTransaction', JSON.stringify(result));
       }
