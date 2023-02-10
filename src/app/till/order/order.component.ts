@@ -348,7 +348,7 @@ export class OrderComponent implements OnInit {
     else if (item.nTotal > 0 && item.paymentAmount < 0) throw ('strange transaction A');
     else if (item.nTotal <= 0 && item.paymentAmount > 0) throw ('strange transaction B');
 
-    item.manualUpdate = true;
+    item.prepaymentTouched = true;
     this.itemChanged.emit('prepaymentChange');
   }
 }

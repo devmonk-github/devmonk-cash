@@ -349,7 +349,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     return result;
   }
   async addItem(type: string) {
-    const price = (type==='giftcard') ? 5 : 0;
+    const price = 0;
     let tax = Math.max(...this.taxes.map((tax: any) => tax.nRate), 0);
     this.transactionItems.push({
       isExclude: type === 'repair' ? true : false,
@@ -1066,7 +1066,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       iSupplierId: product.iBusinessPartnerId,
       aImage: product.aImage,
       isExclude: false,
-      manualUpdate: false,
       open: true,
       new: true,
       isFor,
