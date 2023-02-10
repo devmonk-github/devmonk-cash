@@ -183,19 +183,16 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     
     const _businessData: any = await this.getBusinessDetails().toPromise();
     this.businessDetails = _businessData.data;
-    this.businessDetails.currentLocation = this.businessDetails?.aLocation?.filter((location: any) => location?._id.toString() == this.locationId.toString())[0];
+    this.businessDetails.currentLocation = this.businessDetails?.aLocation?.find((location: any) => location?._id === this.locationId);
     this.tillService.selectCurrency(this.businessDetails.currentLocation);
-    this.businessDetails.sMobile = this.businessDetails.oPhone.sMobile;
+    this.businessDetails.sMobile = this.businessDetails?.oPhone?.sMobile || '';
     this.businessDetails.sLandLine = this.businessDetails?.oPhone?.sLandLine;
-    this.businessDetails.sAddressline1 = this.businessDetails.currentLocation.oAddress.street + " " +
-      this.businessDetails.currentLocation.oAddress.houseNumber + " " +
-      this.businessDetails.currentLocation.oAddress.houseNumberSuffix + " ,  " +
-      this.businessDetails.currentLocation.oAddress.postalCode + " " +
-      this.businessDetails.currentLocation.oAddress.city;
-    this.businessDetails.sAddressline2 = this.businessDetails.currentLocation.oAddress.country;
-
-    this.mapFiscallyData();
-    
+    this.businessDetails.sAddressline1 = (this.businessDetails?.currentLocation?.oAddress?.street + " " +
+      this.businessDetails?.currentLocation?.oAddress?.houseNumber + " " +
+      this.businessDetails?.currentLocation?.oAddress?.houseNumberSuffix + " ,  " +
+      this.businessDetails?.currentLocation?.oAddress?.postalCode + " " +
+      this.businessDetails?.currentLocation?.oAddress?.city) || '';
+    this.businessDetails.sAddressline2 = this.businessDetails?.currentLocation?.oAddress?.country || '';
     this.getPrintSettings(true)
     this.getPrintSettings()
     this.getEmployee(currentEmployeeId)
@@ -203,6 +200,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     setTimeout(() => {
       MenuComponent.bootstrap();
     });
+    this.mapFiscallyData();
   }
 
   async mapFiscallyData() {
@@ -1033,7 +1031,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       if (product?.aLocation?.length) {
         const currentLocation = product.aLocation.find((o: any) => o._id === this.locationId);
         if (currentLocation) {
-          nPriceIncludesVat = currentLocation?.nPriceIncludesVat || 0;
+          if (isFrom !== 'quick-button') nPriceIncludesVat = currentLocation?.nPriceIncludesVat || 0;
           nVatRate = currentLocation?.nVatRate || 0;
         }
       }
