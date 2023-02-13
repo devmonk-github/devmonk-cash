@@ -165,7 +165,7 @@
                     </label>:
                     <span style="color:red;font-weight:bolder">Don't touch this field untill you filled in the payments on the right side</span>
                     <input class="form-control mb-3 mb-lg-0" type="number" step="any"
-                      (keyup)="changePrePayment(item)" [(ngModel)]="item.paymentAmount" [disabled]="item.isExclude" />
+                      (keyup)="changePrePayment(item)" [(ngModel)]="item.paymentAmount" [disabled]="item.isExclude || disablePrepayment" />
                   </div>
                 </div>
               </div>
@@ -327,10 +327,10 @@
           <div class="col-12">
             <div class="form-group mb-4">
               <label class="form-control-label mb-3">{{ "EXCLUDE_ITEM" | translate}}</label>:
-              <label class="form-check form-switch form-check-custom form-check-solid mb-3 mb-lg-0">
+              <label class="form-check form-switch form-check-custom form-check-solid mb-3 mb-lg-0"> 
                 <input type="checkbox" class="form-check-input" [(ngModel)]="item.isExclude" (ngModelChange)="updatePayments()">
               </label>
-            </div>
+            </div> {{ item.isExclude }}
           </div>
         </div>
 

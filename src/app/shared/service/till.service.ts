@@ -202,8 +202,8 @@ export class TillService {
       oItem.sProductCategory = 'CATEGORY';
       oItem.sGiftCardNumber = i?.sGiftCardNumber;
       oItem.sGiftCardNumber = i?.sGiftCardNumber;
-      oItem.nEstimatedTotal = i?.nTotal.toFixed(2);
-      oItem.nPaymentAmount = i?.paymentAmount.toFixed(2) || 0;
+      oItem.nEstimatedTotal = i?.nTotal?.toFixed(2) || 0;
+      oItem.nPaymentAmount = i?.paymentAmount?.toFixed(2) || 0;
       oItem.nPaidLaterAmount = 0;
       oItem.bDiscount = i.nDiscount.value > 0;
       oItem.bDiscountPercent = i.nDiscount.percent;

@@ -128,6 +128,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   bSerialSearchMode = false;
   employee: any;
   bIsFiscallyEnabled: boolean = false;
+  bDisablePrepayment: boolean = true;
+  bAllGiftcardPaid: boolean = true;
 
   randNumber(min: number, max: number): number {
     return Math.floor(Math.random() * (max - min + 1) + min);
@@ -419,8 +421,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       case 'update':
         // console.log('itemChanged update')
         this.clearPaymentAmounts();
-        // let availableAmount = this.getUsedPayMethods(true);
-        // this.paymentDistributeService.distributeAmount(this.transactionItems, availableAmount);
+        let availableAmount = this.getUsedPayMethods(true);
+        this.paymentDistributeService.distributeAmount(this.transactionItems, availableAmount);
         break;
       case 'prepaymentChange':
         this.paymentDistributeService.distributeAmount(this.transactionItems, this.getUsedPayMethods(true));
@@ -432,8 +434,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
         this.clearPaymentAmounts();
         break;
       default:
-        // console.log('itemChanged default')
-        this.transactionItems[index] = item
+        console.log('itemChanged default', item)
+        this.transactionItems[index] = item;
         this.clearPaymentAmounts();
         break;
     }
@@ -519,10 +521,15 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
   changeInPayment() {
     let availableAmount = this.getUsedPayMethods(true);
+    this.bDisablePrepayment = availableAmount === 0;
     this.paymentDistributeService.distributeAmount(this.transactionItems, availableAmount);
     this.allPaymentMethod = this.allPaymentMethod.map((v: any) => ({ ...v, isDisabled: true }));
     this.payMethods.map(o => o.isDisabled = true);
     const paidAmount = _.sumBy(this.payMethods, 'amount') || 0;
+
+    const aGiftcard = this.transactionItems.filter((v: any) => v.type == 'giftcard');
+    this.bAllGiftcardPaid = aGiftcard.every((el:any) => el.paymentAmount == el.amountToBePaid)
+
     if (paidAmount === 0) {
       this.payMethods.map(o => o.isDisabled = false);
     }

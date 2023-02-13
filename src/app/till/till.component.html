@@ -178,13 +178,13 @@
                 <div style="display:inline-table;">
                   <!-- regular -->
                   <div class="accordion-item w-100 d-table-cell" till-product
-                    *ngIf="item.type === 'regular' || item.type === 'reservation'" [item]="item" [taxes]="taxes"
+                    *ngIf="item.type === 'regular' || item.type === 'reservation'" [item]="item" [taxes]="taxes" 
                     (itemChanged)="itemChanged($event, i)"></div>
                   <!-- order -->
                   <div class="accordion-item w-100 d-table-cell" till-order *ngIf="item.type === 'order'" [item]="item"
                     [taxes]="taxes" (itemChanged)="itemChanged($event, i)"></div>
                   <!-- repair -->
-                  <div class="accordion-item w-100 d-table-cell" till-repair *ngIf="item.type === 'repair'"
+                  <div class="accordion-item w-100 d-table-cell" till-repair *ngIf="item.type === 'repair'" [disablePrepayment]="bDisablePrepayment"
                     [item]="item" [taxes]="taxes" (itemChanged)="itemChanged($event, i)"></div>
                   <!-- giftcard -->
                   <div class="accordion-item w-100 d-table-cell w-100" till-gift *ngIf="item.type === 'giftcard'"
@@ -493,7 +493,7 @@
 
         <div class="d-flex flex-wrap">
           <button class="btn btn-primary till-save-button flex-grow-1 me-2" (click)="createTransaction()"
-            [disabled]="saveInProgress || 1 > transactionItems.length || !amountDefined">
+            [disabled]="saveInProgress || 1 > transactionItems.length || !amountDefined || !bAllGiftcardPaid">
             <span class="d-flex" *ngIf="saveInProgress">
               <fa-icon [icon]="faSpinner" class="fa-spin"></fa-icon>
             </span>

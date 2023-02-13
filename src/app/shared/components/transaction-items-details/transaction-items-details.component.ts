@@ -68,11 +68,10 @@ export class TransactionItemsDetailsComponent implements OnInit {
       const _injector = this.viewContainerRef.parentInjector;
       this.dialogRef = _injector.get<DialogComponent>(DialogComponent);
       this.isFor = this.route?.snapshot?.queryParams?.isFor;
-      // console.log('TransactionItemsDetailsComponent');
     }
     
     ngOnInit(): void {
-      // console.log('TransactionItemsDetailsComponent 1');
+      // console.log('this.transactionItems 1', this.transactionItems);
       const translation =['ACTIVITY_ITEM_NUMBER' , 'TOTAL_AMOUNT' , 'PAID_AMOUNT' , 'IS_PREPAYMENT' , 'CREATED_ON' , 'ACTIONS' , 'PRODUCT_NAME' , 'PRICE' , 'QUANTITY' , 'PAYMENT_AMOUNT'];
       this.transaltionService.get(translation).subscribe((res:any)=>{
         this.translation = res
@@ -118,10 +117,12 @@ export class TransactionItemsDetailsComponent implements OnInit {
     }
     this.apiService.postNew('cashregistry', url, this.requestParams).subscribe((result: any) => {
       this.transactionItems = result.data[0].result;
+      // console.log('this.transactionItems 2', this.transactionItems, url);
 
       const discountRecords = this.transactionItems.filter(o => o.oType.eKind === 'discount' || o.oType.eKind === 'loyalty-points-discount');
       this.bIsAnyGiftCardDiscount = this.transactionItems.find((el: any) => el?.oType?.eKind === 'giftcard-discount')
       this.transactionItems = this.transactionItems.filter(o => o.oType.eKind !== 'discount' && o.oType.eKind !== 'loyalty-points' && o.oType.eKind !== 'loyalty-points-discount' && o.oType.eKind !== 'giftcard-discount');
+      // console.log('this.transactionItems 3', this.transactionItems);
       this.transactionItems.forEach(element => {
         // element.nDiscount = 0;
         // if (aRelatedTransactionItem?.data?.length && element.oType.eKind==='regular') element.nRevenueAmount = 0;
@@ -161,6 +162,7 @@ export class TransactionItemsDetailsComponent implements OnInit {
       });
     
       this.transactionItems = this.transactionItems.map(v => ({ ...v, isSelected: false }));
+      // console.log('this.transactionItems 4: ', this.transactionItems);
       this.transactionItems.forEach(transactionItem => {
         if (transactionItem.nPaidAmount < transactionItem.nTotalAmount) {
           transactionItem.tType = 'pay';
@@ -186,6 +188,7 @@ export class TransactionItemsDetailsComponent implements OnInit {
 
   selectAll($event: any) {
     this.transactionItems = this.transactionItems.map(v => ({ ...v, isSelected: $event.checked }));
+    // console.log('this.transactionItems 6:', this.transactionItems);
     this.transactionItems.forEach(element => {
       if (element.bIsRefunded) {
         element.isSelected = false;
