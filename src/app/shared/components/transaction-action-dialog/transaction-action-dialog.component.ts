@@ -204,6 +204,7 @@ export class TransactionActionDialogComponent implements OnInit {
         templateData: template,
         printSettings: this.printSettings.filter((s: any) => s.sType === type),
         sAction: (action === 'DOWNLOAD') ? 'download' : 'print',
+        sApiKey: this.businessDetails.oPrintNode.sApiKey
       });
       
       if(type === 'repair'){

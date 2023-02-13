@@ -116,7 +116,7 @@ export class PdfService {
   }
 
   getPdfData({ styles, content, orientation, pageSize, pdfTitle, footer, pageMargins, defaultStyle,
-    printSettings, printActionSettings, eType, eSituation, sAction }: any) {
+    printSettings, printActionSettings, eType, eSituation, sAction, sApiKey }: any) {
     return new Promise((resolve, reject) => {
       // console.log('getPdfData', { orientation, pageSize, pdfTitle, pageMargins, printSettings, printActionSettings, sAction, eType })
       const docDefinition = this.getDocDefinition(styles, content, orientation, pageSize, footer, pageMargins, defaultStyle);
@@ -124,7 +124,7 @@ export class PdfService {
       if (sAction == 'sentToCustomer') {
         pdfObject.getBase64(async (response: any) => resolve(response));
       } else if ((printSettings?.length && printActionSettings?.length) || sAction) {
-        this.processPrintAction(pdfObject, pdfTitle, printSettings, printActionSettings, eType, eSituation, sAction);
+        this.processPrintAction(pdfObject, pdfTitle, printSettings, printActionSettings, eType, eSituation, sAction, sApiKey);
         resolve(true);
       } else {
         pdfObject.download(pdfTitle);
@@ -135,7 +135,7 @@ export class PdfService {
 
 
 
-  processPrintAction(pdfObject: any, pdfTitle: any, printSettings: any, printActionSettings: any, eType: any, eSituation: any, sAction: any) {
+  processPrintAction(pdfObject: any, pdfTitle: any, printSettings: any, printActionSettings: any, eType: any, eSituation: any, sAction: any, sApiKey:any) {
     // pdfObject.download(pdfTitle);
     if (!printActionSettings?.length && !sAction) {
       pdfObject.download(pdfTitle);
@@ -148,7 +148,7 @@ export class PdfService {
       // console.log('if sAction= print')
       printSettings = printSettings.filter((s: any) => s.sMethod === 'pdf')[0];
       // console.log('if filter', printSettings)
-      this.handlePrint(pdfObject, printSettings, pdfTitle);
+      this.handlePrint(pdfObject, printSettings, pdfTitle, sApiKey);
     } else if (sAction && sAction === 'download') {
       // console.log('else if saction=download')
       pdfObject.download(pdfTitle);
@@ -164,7 +164,7 @@ export class PdfService {
                 this.toastrService.show({ type: 'danger', text: `Printer is not selected for ${printSettings.sType}` });
                 return;
               }
-              this.handlePrint(pdfObject, printSettings, pdfTitle);
+              this.handlePrint(pdfObject, printSettings, pdfTitle, sApiKey);
               break;
             case 'DOWNLOAD':
               pdfObject.download(pdfTitle);
@@ -178,7 +178,7 @@ export class PdfService {
     }
   }
 
-  handlePrint(pdfObject: any, printSettings: any, pdfTitle: any) {
+  handlePrint(pdfObject: any, printSettings: any, pdfTitle: any, sApiKey:any) {
     if (!printSettings?.nPrinterId) {
       this.toastrService.show({ type: 'danger', text: `Printer is not selected for ${printSettings.sType}` });
       return;
@@ -203,7 +203,7 @@ export class PdfService {
           }
           this.toastrService.show({ type: 'warning', title: 'PRINTJOB_NOT_CREATED', text: message });
         } else {
-          this.toastrService.show({ type: 'success', text: 'PRINTJOB_CREATED', apiUrl: '/api/v1/printnode/print-job/' + response.id });
+          this.toastrService.show({ type: 'success', text: 'PRINTJOB_CREATED', apiUrl: '/api/v1/printnode/print-job', templateContext: { apiKey: sApiKey, id: response.id } });
         }
 
       })

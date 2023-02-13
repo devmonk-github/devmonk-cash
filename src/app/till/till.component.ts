@@ -868,7 +868,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
           templateData: template,
           printSettings: settings,
           printActionSettings: this.printActionSettings,
-          eSituation: 'is_created'
+          eSituation: 'is_created',
+          sApiKey: this.businessDetails.oPrintNode.sApiKey
         });
       }
     }

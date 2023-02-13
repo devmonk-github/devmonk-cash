@@ -227,7 +227,8 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
       printSettings: this.printSettings,
       printActionSettings: this.printActionSettings,
       eSituation: 'is_created',
-      sAction: (print) ? 'print': 'download'
+      sAction: (print) ? 'print': 'download',
+      sApiKey: this.businessDetails.oPrintNode.sApiKey,
     });
     if(print)
       this.printWithVATLoading = false
@@ -390,7 +391,7 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
             }
             this.toastService.show({ type: 'warning', title: 'PRINTJOB_NOT_CREATED', text: message });
           } else {
-            this.toastService.show({ type: 'success', text: 'PRINTJOB_CREATED', apiUrl: '/api/v1/printnode/print-job/' + response.id });
+            this.toastService.show({ type: 'success', text: 'PRINTJOB_CREATED', apiUrl: '/api/v1/printnode/print-job', templateContext: { apiKey: this.businessDetails.oPrintNode.sApiKey, id: response.id } });
           }
         })
       } else if (result?.data?.aTemplate?.length == 0) {
