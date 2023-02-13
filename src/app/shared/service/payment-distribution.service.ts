@@ -59,24 +59,24 @@ export class PaymentDistributionService {
       if (bTesting)  console.log('totalAmountToBePaid', totalAmountToBePaid)
       if (totalAmountToBePaid !== 0) {
         arrToUpdate.map(i => {
-          console.log('currently available', availableAmount)
+          // console.log('currently available', availableAmount)
           if(i.type === 'giftcard') {
             if (availableAmount >= i.amountToBePaid) {
-              console.log('if 64')
+              // console.log('if 64')
               i.paymentAmount = i.amountToBePaid;
               availableAmount -= i.amountToBePaid;
               totalAmountToBePaid -= i.amountToBePaid;
-              console.log('payment amount', i.paymentAmount);
+              // console.log('payment amount', i.paymentAmount);
             } else {
-              console.log('else 68')
+              // console.log('else 68')
               i.paymentAmount = availableAmount;
               availableAmount -= i.paymentAmount;
               console.log('payment amount', i.paymentAmount);
             }
           } else {
-            console.log('else 73')
+            // console.log('else 73')
             const a = this.roundToXDigits(i.amountToBePaid * availableAmount / totalAmountToBePaid);
-            console.log('roundiff', a)
+            // console.log('roundiff', a)
             i.paymentAmount = a;
           }
         });

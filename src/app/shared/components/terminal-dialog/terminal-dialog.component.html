@@ -27,7 +27,7 @@
                             (click)="restartPaymentTimer = 45; startTerminal(paymethod, i)"
                             [disabled]="(restartPaymentTimer > 0 && 46 > restartPaymentTimer) || paymethod.status === 'SUCCESS'">
                             <span *ngIf="paymethod.status !== 'PROGRESS'">
-                                {{ paymethod.status | translate}}
+                                {{ 'START' | translate}}
                             </span>
                             <span class="d-flex" *ngIf="paymethod.status === 'PROGRESS'">
                                 <fa-icon [icon]="faSpinner" class="fa-spin"></fa-icon>
