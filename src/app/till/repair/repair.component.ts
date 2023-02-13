@@ -45,6 +45,7 @@ export class RepairComponent implements OnInit {
   showDeleteBtn: boolean = false;
   collapsedBtn: Boolean = false;
   repairer: any = null;
+  @Input() disablePrepayment:any;
   oRepairer: any = {
     sName: '',
     _id: ''
@@ -124,8 +125,11 @@ export class RepairComponent implements OnInit {
     });
   }
 
-  updatePayments(): void {
-    this.itemChanged.emit('update');
+  updatePayments() {
+    console.log('update payments', this.item.isExclude);
+    // this.item.isExclude = !this.item.isExclude;
+    console.log('emiting', this.item, this.item.isExclude);
+    this.itemChanged.emit(this.item);
   }
 
   changePrePayment(item: any) {
