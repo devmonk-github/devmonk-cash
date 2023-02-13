@@ -116,7 +116,7 @@ export class ReceiptService {
         this.pn2escposService = new Pn2escposService(Object, this.translateService);
     }
 
-    async exportToPdf({ oDataSource, templateData, pdfTitle, printSettings, printActionSettings, eSituation, sAction }: any) {
+    async exportToPdf({ oDataSource, templateData, pdfTitle, printSettings, printActionSettings, eSituation, sAction, sApiKey }: any) {
         this.oOriginalDataSource = oDataSource;
         // this.pdfService.getTranslations();
 
@@ -140,7 +140,8 @@ export class ReceiptService {
             printActionSettings,
             eType: templateData.eType,
             eSituation,
-            sAction: sAction
+            sAction: sAction,
+            sApiKey: sApiKey
         });
         // this.cleanUp();
         if (sAction == 'sentToCustomer') return response;
@@ -604,7 +605,7 @@ export class ReceiptService {
                         }
                         this.toastService.show({ type: 'warning', title: 'PRINTJOB_NOT_CREATED', text: message });
                     } else {
-                        this.toastService.show({ type: 'success', text: 'PRINTJOB_CREATED', apiUrl: '/api/v1/printnode/print-job/' + response.id });
+                        this.toastService.show({ type: 'success', text: 'PRINTJOB_CREATED', apiUrl: '/api/v1/printnode/print-job', templateContext: { apiKey: this.businessDetails.oPrintNode.sApiKey, id: response.id } });
                     }
                 })
             } else if (result?.data?.aTemplate?.length == 0) {
