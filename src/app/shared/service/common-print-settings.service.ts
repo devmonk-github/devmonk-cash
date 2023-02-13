@@ -98,4 +98,12 @@ export class CommonPrintSettingsService {
         let num = size * ((this.pageWidth * this.MM_TO_PT_CONVERSION_FACTOR - totalMargin) / 12);
         return parseFloat(num.toFixed(2)) - 9;
     }
+
+    comparators: any = {
+        "eq": (a: any, b: any) => a == b,
+        "teq": (a: any, b: any) => a === b,
+        "ne": (a: any, b: any) => a !== b,
+        "gt": (a: any, b: any) => a > b,
+        "lt": (a: any, b: any) => a < b
+    };
 }
