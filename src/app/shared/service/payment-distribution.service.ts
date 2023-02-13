@@ -16,22 +16,23 @@ export class PaymentDistributionService {
   }
   
   distributeAmount(transactionItems: any[], availableAmount: any): any[] {
-    console.log('distributeAmount',{availableAmount})
+    const bTesting = false;
+    if(bTesting) console.log('distributeAmount',{availableAmount})
     transactionItems = transactionItems.filter((i:any) => i.type !== 'empty-line')
     transactionItems.forEach((i: any) => {
-      // console.log('i.paymentAmount',i.paymentAmount)
+      if (bTesting)  console.log('i.paymentAmount',i.paymentAmount)
       let _nDiscount = 0;
       if (i.nDiscount > 0 && !i.bDiscountOnPercentage) _nDiscount = i.nDiscount
       else if (i.nDiscount > 0 && i.bDiscountOnPercentage) _nDiscount = i.price * (i.nDiscount / 100)
-      console.log(26, i.price, i.prePaidAmount)
+      if (bTesting)  console.log(26, i.price, i.prePaidAmount)
       i.amountToBePaid = i.price * i.quantity - (i.prePaidAmount || 0) - (_nDiscount * i.quantity || 0);
-      console.log(28, 'amountToBePaid', i.amountToBePaid)
+      if (bTesting)  console.log(28, 'amountToBePaid', i.amountToBePaid)
       
       if (i.type === 'gold-purchase') i.amountToBePaid = -(i.amountToBePaid);
 
       if (i.tType && i.tType === 'refund') i.amountToBePaid = -(i.prePaidAmount);
       
-      console.log('paymentAmount', i.paymentAmount)
+      if (bTesting)  console.log('paymentAmount', i.paymentAmount)
       if (i.paymentAmount > i.amountToBePaid) i.paymentAmount = i.amountToBePaid;
       
     });
@@ -40,29 +41,29 @@ export class PaymentDistributionService {
     const arrToUpdate = transactionItems.filter(item => !item?.manualUpdate && !item?.isExclude);
     const arrNotToUpdate = transactionItems.filter(item => item?.manualUpdate || item?.isExclude);
     
-    console.log({update: arrToUpdate, notToUpdate: arrNotToUpdate})
+    if (bTesting)  console.log({update: arrToUpdate, notToUpdate: arrNotToUpdate})
     
     const assignedAmountToManual = arrNotToUpdate.reduce((n, { paymentAmount }) => n + paymentAmount, 0);
     availableAmount -= assignedAmountToManual
     
     
-    console.log('assignedAmountToManual', assignedAmountToManual)
-    console.log('availableAmount', availableAmount)
+    // console.log('assignedAmountToManual', assignedAmountToManual)
+    // console.log('availableAmount', availableAmount)
 
     if (arrToUpdate?.length) {
       const totalAmountToBePaid = arrToUpdate.reduce((n, { amountToBePaid }) => n + amountToBePaid, 0) + assignedAmountToManual;
-      console.log('totalAmountToBePaid', totalAmountToBePaid)
+      if (bTesting)  console.log('totalAmountToBePaid', totalAmountToBePaid)
       if (totalAmountToBePaid !== 0) {
         arrToUpdate.map(i => i.paymentAmount = this.roundToXDigits(i.amountToBePaid * availableAmount / totalAmountToBePaid));
       }
       const assignedAmount = arrToUpdate.reduce((n, { paymentAmount }) => n + paymentAmount, 0);
-      console.log('assignedAmount', assignedAmount)
+      if (bTesting)  console.log('assignedAmount', assignedAmount)
       arrToUpdate[arrToUpdate.length - 1].paymentAmount += (availableAmount - assignedAmount);
       // console.log("updated last item's paymentAmount to ", (availableAmount - assignedAmount))
       // console.log('last item is ', arrToUpdate[arrToUpdate.length - 1])
     }
     arrToUpdate.forEach(element => {
-      console.log(69, { paymentAmount : element.paymentAmount, nTotal: element.nTotal})
+      if (bTesting)  console.log(69, { paymentAmount : element.paymentAmount, nTotal: element.nTotal})
       if (availableAmount === 0) {
         element.paymentAmount = 0;
         return;

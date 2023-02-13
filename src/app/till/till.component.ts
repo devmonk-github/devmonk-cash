@@ -548,6 +548,13 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
   clearPaymentAmounts() {
     // console.log(this.transactionItems);
+
+    this.transactionItems.forEach((item:any) => {
+      item.paymentAmount = 0;
+      if (item.type != 'gold-purchase') item.manualUpdate = false;
+      item.isExclude = false;
+    })
+    
     this.payMethods.map(o => { o.amount = null, o.isDisabled = false });
     let availableAmount = this.getUsedPayMethods(true);
     this.paymentDistributeService.distributeAmount(this.transactionItems, availableAmount);
