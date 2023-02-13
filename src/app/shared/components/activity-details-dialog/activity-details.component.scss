@@ -174,3 +174,10 @@
   text-align: center;
   width: 100%;
 }
+
+.disabled{
+  cursor: not-allowed;
+  pointer-events: none;
+  opacity: 0.6;
+  filter: grayscale(0.75);
+}

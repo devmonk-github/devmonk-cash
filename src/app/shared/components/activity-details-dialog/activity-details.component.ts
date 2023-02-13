@@ -497,7 +497,7 @@ export class ActivityDetailsComponent implements OnInit {
   }
 
   openTransaction(transaction: any, itemType: any) {
-    console.log('openTransaction: ', JSON.parse(JSON.stringify(transaction)), itemType);
+    // console.log('openTransaction: ', JSON.parse(JSON.stringify(transaction)), itemType);
     transaction.iActivityId = this.activity._id;
     this.dialogService.openModal(TransactionItemsDetailsComponent, { cssClass: "modal-xl", context: { transaction, itemType, selectedId: transaction._id } })
       .instance.close.subscribe((result: any) => {

@@ -305,13 +305,15 @@
                                                     <span class="indicator-label">{{ "MAIL" | translate}}</span>
                                                 </span>
                                             </div>
-                                            <div class="btn-group me-4 w-100 my-3">
-                                                <span class="btn btn-primary fs-bold"
-                                                    (click)="loadCashRegister = true; openTransaction(activity, 'activity')">
+                                            <div class="btn-group me-4 w-100 my-3 disabled">
+                                                <!-- <span class="btn btn-primary fs-bold"
+                                                    (click)="loadCashRegister = true; openTransaction(activity, 'activity')"> -->
+                                                <span class="btn btn-primary fs-bold">
                                                     <fa-icon class="group-icon" [icon]="faEuro"></fa-icon>
                                                     <span class="indicator-label">{{ "CHECKOUT" | translate}}</span>
                                                 </span>
                                             </div>
+                                            <p style="color: red">{{ 'PLEASE_USE_CASH_REGISTER_TO_MAKE_OTHER_PAYMENTS' | translate}}</p>
                                         </div>
                                     </div>
                                     <div *ngIf="activity.eRepairStatus === 'completed'"
