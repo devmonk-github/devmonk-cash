@@ -91,15 +91,13 @@ export class ReceiptService {
         },
     };
 
-
-
     oOriginalDataSource: any;
     // logoUri: any;
     pageSize: any = 'A5';
     orientation: string = 'portrait';
     translations: any;
 
-    pn2escposService: any;
+    // pn2escposService: any;
     constructor(
         private pdfServiceNew: PdfServiceNew,
         private apiService: ApiService,
@@ -107,16 +105,16 @@ export class ReceiptService {
         private pdfService: PdfService,
         private toastService: ToastService,
         private printService: PrintService,
-        private translateService: TranslateService,) {
+        private pn2escposService: Pn2escposService) {
 
         this.iBusinessId = localStorage.getItem('currentBusiness') || '';
         this.iLocationId = localStorage.getItem('currentLocation') || '';
         this.iWorkstationId = localStorage.getItem('currentWorkstation') || '';
         this.fetchBusinessDetails();
-        this.pn2escposService = new Pn2escposService(Object, this.translateService);
+        // this.pn2escposService = new Pn2escposService(Object);
     }
 
-    async exportToPdf({ oDataSource, templateData, pdfTitle, printSettings, printActionSettings, eSituation, sAction }: any) {
+    async exportToPdf({ oDataSource, templateData, pdfTitle, printSettings, printActionSettings, eSituation, sAction, sApiKey }: any) {
         this.oOriginalDataSource = oDataSource;
         // this.pdfService.getTranslations();
 
@@ -140,7 +138,8 @@ export class ReceiptService {
             printActionSettings,
             eType: templateData.eType,
             eSituation,
-            sAction: sAction
+            sAction: sAction,
+            sApiKey: sApiKey
         });
         // this.cleanUp();
         if (sAction == 'sentToCustomer') return response;
@@ -534,7 +533,7 @@ export class ReceiptService {
                     bTestResult = el.ifAnd.every((rule: any) => {
                         let field = (object) ? object[rule.field] : this.oOriginalDataSource[rule.field];
                         // console.log({ field, rule })
-                        return (field) ? this.comparators[rule.compare](field, rule.target) : false;
+                        return (field) ? this.commonService.comparators[rule.compare](field, rule.target) : false;
                     });
                     if (bTestResult) {
                         let text = this.pdfService.replaceVariables(el.html, (object) ? object : this.oOriginalDataSource)
@@ -544,7 +543,7 @@ export class ReceiptService {
                 } else if (el?.ifOr) {
                     bTestResult = el.ifOr.some((rule: any) => {
                         let field = (object) ? object[rule.field] : this.oOriginalDataSource[rule.field];
-                        return (field) ? this.comparators[rule.compare](field, rule.target) : false;
+                        return (field) ? this.commonService.comparators[rule.compare](field, rule.target) : false;
                     })
                     if (bTestResult) {
                         let text = this.pdfService.replaceVariables(el.html, (object) ? object : this.oOriginalDataSource)
@@ -585,6 +584,11 @@ export class ReceiptService {
         this.apiService.getNew('cashregistry', `/api/v1/print-template/business-receipt/${this.iBusinessId}/${this.iLocationId}`).subscribe((result: any) => {
             if (result?.data?.aTemplate?.length > 0) {
                 let transactionDetails = { business: this.businessDetails, ...oDataSource };
+                transactionDetails.oCustomer = {
+                    ...transactionDetails.oCustomer,
+                    ...transactionDetails.oCustomer.oPhone,
+                    ...transactionDetails.oCustomer.oInvoiceAddress
+                };
                 let command;
                 try {
                     command = this.pn2escposService.generate(JSON.stringify(result.data.aTemplate), JSON.stringify(transactionDetails));
@@ -604,7 +608,7 @@ export class ReceiptService {
                         }
                         this.toastService.show({ type: 'warning', title: 'PRINTJOB_NOT_CREATED', text: message });
                     } else {
-                        this.toastService.show({ type: 'success', text: 'PRINTJOB_CREATED', apiUrl: '/api/v1/printnode/print-job/' + response.id });
+                        this.toastService.show({ type: 'success', text: 'PRINTJOB_CREATED', apiUrl: '/api/v1/printnode/print-job', templateContext: { apiKey: this.businessDetails.oPrintNode.sApiKey, id: response.id } });
                     }
                 })
             } else if (result?.data?.aTemplate?.length == 0) {
@@ -658,7 +662,7 @@ export class ReceiptService {
             if (part?.ifAnd) {
                 part.ifAnd.forEach((rule: any) => {
                     let field = (el?.object) ? this.oOriginalDataSource[el.object][rule.field] : this.oOriginalDataSource[rule.field];
-                    let bTestResult = this.comparators[rule.compare](field, rule.target)
+                    let bTestResult = this.commonService.comparators[rule.compare](field, rule.target)
                     if (bTestResult) {
                         let text = this.pdfService.replaceVariables(part?.text, (el?.object) ? this.oOriginalDataSource[el.object] : this.oOriginalDataSource)
                         obj.push({ text: text, alignment: el?.alignment });
@@ -668,10 +672,4 @@ export class ReceiptService {
         })
         return obj;
     }
-
-    comparators: any = {
-        "eq": (a: any, b: any) => a === b,
-        "ne": (a: any, b: any) => a !== b,
-        "gt": (a: any, b: any) => a > b
-    };
 }

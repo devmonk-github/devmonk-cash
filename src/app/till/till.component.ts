@@ -349,7 +349,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     return result;
   }
   async addItem(type: string) {
-    const price = 0;
+    const price = (type==='giftcard') ? 5 : 0;
     let tax = Math.max(...this.taxes.map((tax: any) => tax.nRate), 0);
     this.transactionItems.push({
       isExclude: type === 'repair' ? true : false,
@@ -548,6 +548,13 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
   clearPaymentAmounts() {
     // console.log(this.transactionItems);
+
+    this.transactionItems.forEach((item:any) => {
+      item.paymentAmount = 0;
+      if (item.type != 'gold-purchase') item.manualUpdate = false;
+      item.isExclude = false;
+    })
+    
     this.payMethods.map(o => { o.amount = null, o.isDisabled = false });
     let availableAmount = this.getUsedPayMethods(true);
     this.paymentDistributeService.distributeAmount(this.transactionItems, availableAmount);
@@ -868,7 +875,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
           templateData: template,
           printSettings: settings,
           printActionSettings: this.printActionSettings,
-          eSituation: 'is_created'
+          eSituation: 'is_created',
+          sApiKey: this.businessDetails.oPrintNode.sApiKey
         });
       }
     }
@@ -1066,6 +1074,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       iSupplierId: product.iBusinessPartnerId,
       aImage: product.aImage,
       isExclude: false,
+      manualUpdate: false,
       open: true,
       new: true,
       isFor,

@@ -1,8 +1,7 @@
 <button class="btn btn-primary"> {{ "MANAGE_RECEIPTS" | translate }} </button>
 <button class="btn btn-primary float-end" (click)="editWorkstation()"> {{ "ADD_NEW_WORKSTATION" | translate }} </button>
 <div class="tscroll">
-    <table class="table table-row-gray-400 gx-2 mt-4 table-row-bordered table-rounded border border-gray-400"
-        [style.width.px]="tableMaxWidth">
+    <table class="table table-row-gray-400 gx-2 mt-4 table-row-bordered table-rounded border border-gray-400 table-workstation"> <!-- [style.width.px]="tableMaxWidth"-->
         <thead>
             <!-- <tr>
                 <td colspan="2" rowspan="2" class="sticky-col first-col border border-gray-400"></td>
@@ -12,7 +11,7 @@
             <tr>
                 <td colspan="2" class="sticky-col first-col border border-gray-400"></td>
                 <td *ngFor="let workstation of workstations; trackBy:trackByFunction;"
-                    class="lh-xxl" style="max-width: 260px;">
+                    class="lh-xxl second-col">
                     {{ workstation.sName }}
                     <div style="white-space: normal;" class="badge" *ngIf="workstation?.computer"
                         [ngClass]="workstation?.computer?.state == 'connected' ? 'badge-light-success' : 'badge-light-danger'">
