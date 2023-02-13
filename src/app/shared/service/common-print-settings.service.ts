@@ -26,6 +26,14 @@ export class CommonPrintSettingsService {
         A5: {
             pageWidth: 148,
             pageHeight: 210
+        },
+        A6: {
+            pageWidth: 105,
+            pageHeight: 148
+        },
+        custom: {
+            pageWidth: 0,
+            pageHeight: 0
         }
     };
 
@@ -73,10 +81,13 @@ export class CommonPrintSettingsService {
                 case 'pageSize':
                     if (param.value === 'custom'){
                         this.oCommonParameters[param.sParameter] = { width: param.nWidth, height: param.nHeight };
-                        this.pageWidth = param.nWidth;
+                        // this.pageWidth = param.nWidth;
+                        // this.pageSizes[param.value].pageWidth = param.nWidth;
+                        // this.pageSizes[param.value].pageHeight = param.nHeight;
+
                     } else {
                         this.oCommonParameters[param.sParameter] = param.value;
-                        // this.pageWidth = this.pageSizes[param.value].pageWidth;
+                        this.pageWidth = this.pageSizes[param.value].pageWidth;
                     }
                     break;
                 case 'pageMargins':
@@ -85,11 +96,16 @@ export class CommonPrintSettingsService {
                 }
             });
 
-            if (this.oCommonParameters['orientation'] === 'portrait') {
-                this.pageWidth = this.pageSizes[this.oCommonParameters['pageSize']].pageWidth;
-            } else {
-                this.pageWidth = this.pageSizes[this.oCommonParameters['pageSize']].pageHeight;
-            }
+        if (typeof this.oCommonParameters['pageSize'] == 'string' && this.oCommonParameters['pageSize'] != 'custom') {
+            this.pageWidth = (this.oCommonParameters['orientation'] === 'portrait') ? 
+                                this.pageSizes[this.oCommonParameters['pageSize']].pageWidth : 
+                                this.pageSizes[this.oCommonParameters['pageSize']].pageHeight ;
+        } else {
+            this.pageWidth = (this.oCommonParameters['orientation'] === 'portrait') ?
+                this.oCommonParameters['pageSize'].width :
+                this.oCommonParameters['pageSize'].height;
+        }
+        
     }
 
     calcColumnWidth(size: number): number {
