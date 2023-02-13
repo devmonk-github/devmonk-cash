@@ -54,7 +54,7 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   thermalPrintSettings !: any;
   employeesList:any =[];
 
-  private pn2escposService = new Pn2escposService(Object, this.translateService);
+  // private pn2escposService = new Pn2escposService(Object, this.translateService);
   printSettings: any;
   printActionSettings:any;
   printWithVATLoading: boolean = false;
@@ -68,7 +68,8 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
     private toastService: ToastService,
     public tillService: TillService,
     private translateService: TranslateService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private pn2escposService: Pn2escposService
     // private compiler: Compiler,
     // private injector: Injector,
   ) {
@@ -112,6 +113,9 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
     this.getThermalPrintSetting()
     this.getPdfPrintSetting({ oFilterBy: { sMethod: 'actions' } })
     this.mapEmployee();
+
+    // console.log(this.transaction)
+
   }
 
   ngAfterContentInit(): void {
@@ -372,15 +376,21 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
     this.apiService.getNew('cashregistry', `/api/v1/print-template/${type}/${this.iBusinessId}/${this.iLocationId}`).subscribe((result: any) => {
       if (result?.data?.aTemplate?.length > 0) {
         let transactionDetails = { businessDetails: this.businessDetails, ...this.transaction };
+        transactionDetails.oCustomer = {
+          ...transactionDetails.oCustomer,
+          ...transactionDetails.oCustomer.oPhone,
+          ...transactionDetails.oCustomer.oInvoiceAddress
+        };
         let command;
         try {
           command = this.pn2escposService.generate(JSON.stringify(result.data.aTemplate), JSON.stringify(transactionDetails));
+          // console.log(command);
         } catch (e) {
           this.toastService.show({ type: 'danger', text: 'Template not defined properly. Check browser console for more details' });
           console.log(e);
           return;
         }
-
+        // return;
         this.printService.openDrawer(this.iBusinessId, command, this.thermalPrintSettings?.nPrinterId, this.thermalPrintSettings?.nComputerId, this.businessDetails.oPrintNode.sApiKey, this.transaction.sNumber).then((response: any) => {
           if (response.status == "PRINTJOB_NOT_CREATED") {
             let message = '';

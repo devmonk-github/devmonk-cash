@@ -1,5 +1,10 @@
+import { Injectable } from "@angular/core";
 import { TranslateService } from "@ngx-translate/core";
+import { CommonPrintSettingsService } from "./common-print-settings.service";
 
+@Injectable({
+  providedIn: 'root',
+})
 export class Pn2escposService {
 
   debug: any
@@ -18,21 +23,24 @@ export class Pn2escposService {
   syntaxname: string;
   syntax: any
   data: any;
-  translateService: any;
-  constructor(parameters: any = Object, translateService: TranslateService) {
+  parameters: any = Object;
+  constructor( 
+      private translateService: TranslateService,
+      private commonService: CommonPrintSettingsService
+    ) {
     this.translateService = translateService;
-    this.debug = (this.isDefined(parameters.debug)) ? parameters.debug : true;
-    this.default_spacing = (this.isDefined(parameters.default_spacing)) ? parameters.default_spacing : 6;
-    this.divider_gutter = (this.isDefined(parameters.divider_gutter)) ? parameters.divider_gutter : 4;
-    this.drawerpin = (this.isDefined(parameters.drawerpin)) ? parameters.drawerpin : 2;
-    this.paper_cut = (this.isDefined(parameters.paper_cut)) ? parameters.paper_cut : 2;
-    this.max_line_length_n = (this.isDefined(parameters.linelength_n)) ? parameters.linelength_n : 48;
-    this.max_line_length_l = (this.isDefined(parameters.linelength_l)) ? parameters.linelength_l : 24;
+    this.debug = (this.isDefined(this.parameters.debug)) ? this.parameters.debug : true;
+    this.default_spacing = (this.isDefined(this.parameters.default_spacing)) ? this.parameters.default_spacing : 6;
+    this.divider_gutter = (this.isDefined(this.parameters.divider_gutter)) ? this.parameters.divider_gutter : 4;
+    this.drawerpin = (this.isDefined(this.parameters.drawerpin)) ? this.parameters.drawerpin : 2;
+    this.paper_cut = (this.isDefined(this.parameters.paper_cut)) ? this.parameters.paper_cut : 2;
+    this.max_line_length_n = (this.isDefined(this.parameters.linelength_n)) ? this.parameters.linelength_n : 48;
+    this.max_line_length_l = (this.isDefined(this.parameters.linelength_l)) ? this.parameters.linelength_l : 24;
     this.default_line_length = this.max_line_length_n;
-    this.encoding = (this.isDefined(parameters.encoding)) ? this.epSetEncoding(parameters.encoding) : this.epSetEncoding("CP1253"); //ESC t 16 = Cp1253
-    this.excerpt_suffix = (this.isDefined(parameters.excerpt_suffix)) ? parameters.excerpt_suffix : "..";
-    this.replace_symbols = (this.isDefined(parameters.replace_symbols)) ? parameters.replace_symbols : false
-    this.do_validate = (this.isDefined(parameters.do_validate)) ? parameters.do_validate : false
+    this.encoding = (this.isDefined(this.parameters.encoding)) ? this.epSetEncoding(this.parameters.encoding) : this.epSetEncoding("CP1253"); //ESC t 16 = Cp1253
+    this.excerpt_suffix = (this.isDefined(this.parameters.excerpt_suffix)) ? this.parameters.excerpt_suffix : "..";
+    this.replace_symbols = (this.isDefined(this.parameters.replace_symbols)) ? this.parameters.replace_symbols : false
+    this.do_validate = (this.isDefined(this.parameters.do_validate)) ? this.parameters.do_validate : false
 
     /**
      * Some symbols are not printed correctly and need to be replaced.
@@ -54,7 +62,7 @@ export class Pn2escposService {
     //1253
 
     //If Epson syntax doesn't work, try star
-    if (parameters.syntax === "star") {
+    if (this.parameters.syntax === "star") {
       this.syntaxname = 'star';
       this.syntax = this.syntaxStar;
     } else {
@@ -80,13 +88,13 @@ export class Pn2escposService {
       //Loop over the actions defined in the template
 
       Object.keys(template).forEach((key: any) => {
-        var action: any = this.createObjectFromTemplateLine(template[key]);
+        const action: any = this.createObjectFromTemplateLine(template[key]);
         if (action.do) {
           //this.clog('EXECUTING {"'+action.do+'":"'+action.data+'"}')
           let a;
           if (action.if) {
-            console.log('action if 90: ', action.if);
-            if (this.checkConditions(action.if, this.data)) {
+            
+            if (this.checkConditions(action.if, (action?.object) ? this.data[action.object] : this.data)) {
               a = this.doAction(action, key)
               commandString += a;
             }
@@ -205,7 +213,7 @@ export class Pn2escposService {
 
             if (action.if) {
               console.log('action.if 212 ', action.if);
-              if (this.checkConditions(action.if, JSON.stringify(requestedData[a]))) {
+              if (this.checkConditions(action.if, requestedData[a])) {
                 foreachString += this.doAction(action, i, a)
               }
             } else {
@@ -415,18 +423,19 @@ export class Pn2escposService {
   replaceVariables(commandText: any, itemData = null, colpos = 0, colwidth = 0, colcount = 0, pullright = false, itemIndex?:number) {
 
     //match on any text between "[[" and "]]"
-    var extractedVariables = commandText.match(/\[\[(.*?)]]/ig); //includes child variables
-    var multiple_vars_in_column = false;
-
+    const extractedVariables = commandText.match(/\[\[(.*?)]]/ig); //includes child variables
+    let multiple_vars_in_column = false;
+    let providedData;
+    
     //in a foreach, the data is provided. If not provided, the parent variables will be searched
     if (itemData) {
-      var providedData: any = itemData;
+      providedData = itemData;
     } else {
-      var providedData: any = this.data;
+      providedData = this.data;
     }
 
     //we first assume there are no matches, the return data will then be equal to the provided data.
-    var finalString = commandText;
+    let finalString = commandText;
 
     if (extractedVariables !== null) {
       /**
@@ -440,9 +449,9 @@ export class Pn2escposService {
       //for each variable, we loop over the data array to find a match
       for (let a = 0; a < extractedVariables.length; a++) {
 
-        var currentMatch = extractedVariables[a];
-        var placeholder = "";
-        var maxlength = 0;
+        let currentMatch = extractedVariables[a];
+        let placeholder = "";
+        let maxlength = 0;
 
         //Finding more than 2 "[" means there's a variable not closed properly
         if (currentMatch.match(/\[/g).length == 2) {
@@ -503,27 +512,22 @@ export class Pn2escposService {
               this.cerror('Cannot use "' + variableStringFilteredIndex0 + '", nesting is limited to three level', variableStringFilteredIndex0);
             }
           }
-          var matched = false;
-          var newtext: any = "";
-          
-          if (providedData[variableStringFilteredIndex0]) { //a match on key
-            if (String(providedData[variableStringFilteredIndex0]).length > 0) { // ..there's data
-              newtext = providedData[variableStringFilteredIndex0];
-              if (typeof (variableStringFilteredIndex1) == 'string' && String(providedData[variableStringFilteredIndex0][variableStringFilteredIndex1]).length > 0) {
-                if (
-                  typeof (variableStringFilteredIndex2) == 'string' && 
-                  providedData[variableStringFilteredIndex0] && 
-                  providedData[variableStringFilteredIndex0][variableStringFilteredIndex1] &&
-                  providedData[variableStringFilteredIndex0][variableStringFilteredIndex1][variableStringFilteredIndex2]) {
-                  newtext = providedData[variableStringFilteredIndex0][variableStringFilteredIndex1][variableStringFilteredIndex2];
-                  
-                } else {
-                  newtext = providedData[variableStringFilteredIndex0][variableStringFilteredIndex1];
-                  
-                }
-              }
+          let matched = false;
+          let newtext: any = "";
 
+          if (providedData[variableStringFilteredIndex0]) { //a match on key
+            if (String(providedData[variableStringFilteredIndex0]).length) { // ..there's data
+              newtext = providedData[variableStringFilteredIndex0];
               
+              if (
+                variableStringFilteredIndex1?.length && variableStringFilteredIndex2?.length &&
+                providedData[variableStringFilteredIndex0] && 
+                providedData[variableStringFilteredIndex0][variableStringFilteredIndex1] &&
+                providedData[variableStringFilteredIndex0][variableStringFilteredIndex1][variableStringFilteredIndex2]) {
+                newtext = providedData[variableStringFilteredIndex0][variableStringFilteredIndex1][variableStringFilteredIndex2];
+              } else if (variableStringFilteredIndex1?.length && providedData[variableStringFilteredIndex0][variableStringFilteredIndex1]){
+                newtext = providedData[variableStringFilteredIndex0][variableStringFilteredIndex1];
+              }
 
               // finalString = finalString.replace(currentMatch, newtext, 0);
               matched = true;
@@ -606,21 +610,21 @@ export class Pn2escposService {
   }
 
   addText(command: any, breakafter = false, itemIndex?:number) {
-    var text = "";
-    var dataString = String(command.data);
+    let text = "";
+    let dataString = String(command.data);
 
     //to split the text into columns, it must be a lin and not in a foreach
     if (dataString.indexOf('|') > -1) { //breakafter &&  && typeof command.inforeach == 'undefined'
 
       //split the line into parts and remove empty ones
-      var parts = dataString.split('|').filter((el) => {
+      const parts = dataString.split('|').filter((el) => {
         return el != "";
       });
 
-      var table = [];
+      let table = [];
 
       if (parts.length > 0) {
-        var table = [];
+        table = [];
         for (let i = 0; i < parts.length; i++) {
           var col = parts[i];
           var nr_of_cols = parts.length;
@@ -827,10 +831,16 @@ export class Pn2escposService {
   }
 
   checkConditions(conditions: any, dataSourceObject: any) {
-    console.log('check conditions: 896 ', conditions);
     // dataSourceObject = JSON.parse(dataSourceObject);
 
-    var item = dataSourceObject; //Used for the eval() function
+    // var item = dataSourceObject; //Used for the eval() function
+    const bTestResult = conditions.every((rule: any) => {
+      const target = (rule?.type === 'var') ? dataSourceObject[rule.target] : rule.target;
+      return (target) ? this.commonService.comparators[rule.compare](dataSourceObject[rule.field], target) : false;
+      
+    })
+    return bTestResult;
+    
 
     if (conditions && conditions !== "" && !conditions.startsWith('item') && !conditions.startsWith('!item')) {
       throw String('Conditions should be preceded by "item.", so this should something like item.' + conditions)
