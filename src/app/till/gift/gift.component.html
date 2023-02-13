@@ -11,7 +11,7 @@
             <div class="col"></div>
             <div class="col">{{item.tax}}%</div>
             <div class="col">{{item.price | currency: tillService.currency}}</div>
-            <div class="col"></div>
+            <div class="col">{{ item.paymentAmount | currency: tillService.currency }}</div>
           </div>
         </div>
       </section>

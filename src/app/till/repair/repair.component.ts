@@ -127,7 +127,19 @@ export class RepairComponent implements OnInit {
   updatePayments(): void {
     this.itemChanged.emit('update');
   }
-  deleteItem(): void {
+
+  changePrePayment(item: any) {
+    if (item.paymentAmount < 0 && item.paymentAmount > item.nTotal) item.oType.bPrepayment = true;
+    else if (item.paymentAmount >= 0 && item.nTotal > item.paymentAmount) item.oType.bPrepayment = true;
+    else if (item.paymentAmount >= 0 && item.nTotal == item.paymentAmount) item.oType.bPrepayment = false;
+    else if (item.nTotal > 0 && item.paymentAmount < 0) throw ('strange transaction A');
+    else if (item.nTotal <= 0 && item.paymentAmount > 0) throw ('strange transaction B');
+
+    item.manualUpdate = true;
+    this.itemChanged.emit('prepaymentChange');
+  }
+
+  deleteItem() {
     this.itemChanged.emit('delete')
   }
 
