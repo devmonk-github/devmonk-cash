@@ -45,7 +45,6 @@ export class RepairComponent implements OnInit {
   showDeleteBtn: boolean = false;
   collapsedBtn: Boolean = false;
   repairer: any = null;
-  @Input() disablePrepayment:any;
   oRepairer: any = {
     sName: '',
     _id: ''
@@ -56,6 +55,9 @@ export class RepairComponent implements OnInit {
   contactType: 'phone' | 'email' | 'whatsapp' | '' = ''
   bShowServicePartnerRemark = false
   @ViewChild('descriptionRef') descriptionRef!: ElementRef
+  @Input() disablePrepayment:any;
+  @Input() availableAmount:any;
+
   constructor(private priceService: PriceService,
     private apiService: ApiService,
     private dialogService: DialogService,
@@ -64,6 +66,7 @@ export class RepairComponent implements OnInit {
     private createArticleGroupService: CreateArticleGroupService) { }
 
   ngOnInit(): void {
+    console.log(this.disablePrepayment)
     this.listSuppliers();
     this.listEmployees();
     this.getBusinessBrands();
@@ -133,13 +136,19 @@ export class RepairComponent implements OnInit {
   }
 
   changePrePayment(item: any) {
-    if (item.paymentAmount < 0 && item.paymentAmount > item.nTotal) item.oType.bPrepayment = true;
-    else if (item.paymentAmount >= 0 && item.nTotal > item.paymentAmount) item.oType.bPrepayment = true;
-    else if (item.paymentAmount >= 0 && item.nTotal == item.paymentAmount) item.oType.bPrepayment = false;
+    if (item.paymentAmount == 0 || (item.paymentAmount < 0 && item.paymentAmount > item.nTotal)) item.oType.bPrepayment = true;
+    else if (item.paymentAmount > 0 && item.nTotal > item.paymentAmount) item.oType.bPrepayment = true;
+    else if (item.paymentAmount > 0 && item.nTotal == item.paymentAmount) item.oType.bPrepayment = false;
     else if (item.nTotal > 0 && item.paymentAmount < 0) throw ('strange transaction A');
     else if (item.nTotal <= 0 && item.paymentAmount > 0) throw ('strange transaction B');
 
+    if (item.paymentAmount > this.availableAmount) {
+      this.toastrService.show({ type: 'warning', text: `Can't assign more than available money!` });
+      return;
+    }
+
     item.manualUpdate = true;
+    item.prepaymentTouched = true;
     this.itemChanged.emit('prepaymentChange');
   }
 

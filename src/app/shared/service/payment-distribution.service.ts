@@ -1,9 +1,12 @@
 import { Injectable } from '@angular/core';
+import { ToastService } from '../components/toast';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PaymentDistributionService {
+  
+  toastService: ToastService;
 
   constructor() { }
 
@@ -14,6 +17,10 @@ export class PaymentDistributionService {
     value = value / Math.pow(10, digits);
     return value;
   }
+
+  setToastService(toastService: ToastService) {
+    this.toastService = toastService;
+  }
   
   distributeAmount(transactionItems: any[], availableAmount: any): any[] {
     const bTesting = false;
@@ -22,7 +29,6 @@ export class PaymentDistributionService {
     transactionItems = transactionItems.filter((i:any) => i.type !== 'empty-line')
     transactionItems.forEach((i: any) => {
       if (bTesting) console.log(i);
-      if (bTesting) console.log('i.paymentAmount',i.paymentAmount)
       
       let _nDiscount = 0;
       if (i.nDiscount > 0 && !i.bDiscountOnPercentage) _nDiscount = i.nDiscount
@@ -39,6 +45,8 @@ export class PaymentDistributionService {
       
       if (bTesting)  console.log('paymentAmount', i.paymentAmount)
       if (i.paymentAmount > i.amountToBePaid) i.paymentAmount = i.amountToBePaid;
+
+      
     });
     // const setAmount = transactionItems.filter(item => item.isExclude).map(i => (i.paymentAmount = 0));
     
@@ -50,33 +58,34 @@ export class PaymentDistributionService {
     const assignedAmountToManual = arrNotToUpdate.reduce((n, { paymentAmount }) => n + paymentAmount, 0);
     availableAmount -= assignedAmountToManual
     
-    
-    // console.log('assignedAmountToManual', assignedAmountToManual)
-    // console.log('availableAmount', availableAmount)
+    if (bTesting) console.log('assignedAmountToManual', assignedAmountToManual, 'availableAmount', availableAmount)
 
     if (arrToUpdate?.length) {
-      let totalAmountToBePaid = arrToUpdate.reduce((n, { amountToBePaid }) => n + amountToBePaid, 0) + assignedAmountToManual;
+      let totalAmountToBePaid = arrToUpdate.reduce((n, { amountToBePaid }) => n + amountToBePaid, 0); // + assignedAmountToManual
       if (bTesting)  console.log('totalAmountToBePaid', totalAmountToBePaid)
       if (totalAmountToBePaid !== 0) {
-        arrToUpdate.map(i => {
-          // console.log('currently available', availableAmount)
-          if(i.type === 'giftcard') {
+
+        const aGiftcard = arrToUpdate.filter((el:any) => el.type === 'giftcard');
+
+        if(aGiftcard?.length) {
+          aGiftcard.forEach((i:any) => {
             if (availableAmount >= i.amountToBePaid) {
               // console.log('if 64')
               i.paymentAmount = i.amountToBePaid;
               availableAmount -= i.amountToBePaid;
               totalAmountToBePaid -= i.amountToBePaid;
-              // console.log('payment amount', i.paymentAmount);
+              if (bTesting)  console.log('giftcard full payment amount', i.paymentAmount);
             } else {
               // console.log('else 68')
               i.paymentAmount = availableAmount;
               availableAmount -= i.paymentAmount;
-              console.log('payment amount', i.paymentAmount);
-            }
-          } else {
-            // console.log('else 73')
+              if (bTesting)  console.log('73 giftcard part payment amount', i.paymentAmount);
+            };
+          })
+        }
+        arrToUpdate.map(i => {
+          if(i.type !== 'giftcard') {
             const a = this.roundToXDigits(i.amountToBePaid * availableAmount / totalAmountToBePaid);
-            // console.log('roundiff', a)
             i.paymentAmount = a;
           }
         });
