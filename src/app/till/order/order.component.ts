@@ -341,7 +341,7 @@ export class OrderComponent implements OnInit {
   }
 
   updatePayments(): void {
-    this.itemChanged.emit('update');
+    this.itemChanged.emit(this.item);
   }
 
   changePrePayment(item:any){
@@ -353,6 +353,7 @@ export class OrderComponent implements OnInit {
 
     if (item.paymentAmount > this.availableAmount) {
       this.toastrService.show({ type: 'warning', text: `Can't assign more than available money!` });
+      item.paymentAmount = 0;
       return;
     }
 

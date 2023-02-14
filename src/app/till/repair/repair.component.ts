@@ -66,7 +66,6 @@ export class RepairComponent implements OnInit {
     private createArticleGroupService: CreateArticleGroupService) { }
 
   ngOnInit(): void {
-    console.log(this.disablePrepayment)
     this.listSuppliers();
     this.listEmployees();
     this.getBusinessBrands();
@@ -129,9 +128,6 @@ export class RepairComponent implements OnInit {
   }
 
   updatePayments() {
-    console.log('update payments', this.item.isExclude);
-    // this.item.isExclude = !this.item.isExclude;
-    console.log('emiting', this.item, this.item.isExclude);
     this.itemChanged.emit(this.item);
   }
 
@@ -144,6 +140,7 @@ export class RepairComponent implements OnInit {
 
     if (item.paymentAmount > this.availableAmount) {
       this.toastrService.show({ type: 'warning', text: `Can't assign more than available money!` });
+      item.paymentAmount = 0;
       return;
     }
 

@@ -32,12 +32,24 @@ import { SupplierWarningDialogComponent } from './dialogs/supplier-warning-dialo
 import { HttpClient } from '@angular/common/http';
 const moment = (_moment as any).default ? (_moment as any).default : _moment;
 import { debounceTime, distinctUntilChanged, filter, tap } from 'rxjs/operators';
+import { trigger, transition, style, animate } from '@angular/animations';
 
 @Component({
   selector: 'app-till',
   templateUrl: './till.component.html',
   styleUrls: ['./till.component.scss'],
-  providers: [BarcodeService]
+  providers: [BarcodeService],
+  animations: [
+    trigger('fade', [
+      transition(':enter', [
+        style({ opacity: 0 }),
+        animate('500ms', style({ opacity: 1 })),
+      ]),
+      transition(':leave', [
+        animate('0ms', style({ opacity: 0 }))
+      ])
+    ])
+  ]
 })
 export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   
@@ -136,7 +148,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   bDisablePrepayment: boolean = true;
   bAllGiftcardPaid: boolean = true;
 
-  paymentChanged: Subject<any> = new Subject<any>();
+  // paymentChanged: Subject<any> = new Subject<any>();
   availableAmount:any;
   
   randNumber(min: number, max: number): number {
@@ -227,12 +239,12 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.searchField)
       this.searchField.nativeElement.focus();
    
-    this.paymentChanged.pipe(
-      debounceTime(1000),
-      distinctUntilChanged()
-    ).subscribe(() => {
-      this.changeInPayment();
-    });
+    // this.paymentChanged.pipe(
+    //   debounceTime(1000),
+    //   distinctUntilChanged()
+    // ).subscribe(() => {
+    //   this.changeInPayment();
+    // });
     
   }
   // async getfiskalyInfo() {
@@ -406,7 +418,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       ...(type === 'gold-purchase') && { oGoldFor: { name: 'stock', type: 'goods' } }
     });
     this.clearPaymentAmounts();
-    console.log('added item', this.transactionItems[0].isExclude, this.transactionItems[0])
+    // console.log('added item', this.transactionItems[0].isExclude, this.transactionItems[0])
     await this.updateFiskalyTransaction('ACTIVE', []);
   }
 
@@ -578,7 +590,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     this.transactionItems.forEach((item:any) => {
       item.paymentAmount = 0;
       
-      if (item.type === 'repair'){
+      if (item.type === 'repair' || item.type=== 'order'){
         if (item?.prepaymentTouched) {
           item.manualUpdate = false;
           item.prepaymentTouched = false;

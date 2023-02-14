@@ -443,7 +443,7 @@
         <ng-container *ngFor="let payment of payMethods; let i = index">
           <div class="input-group" [ngClass]="{'mb-3':i===0,'my-3':i>0}">
             <input type="number" class="form-control col-5" [(ngModel)]="payment.amount"
-              placeholder="{{'AMOUNT' | translate}}" (ngModelChange)="paymentChanged.next($event)">
+              placeholder="{{'AMOUNT' | translate}}" (ngModelChange)="changeInPayment()">
             <button class="btn btn-primary col-7" [disabled]="payment.isDisabled" (click)="assignAllAmount(i)">{{
               payment.sName | uppercase | translate}}</button>
           </div>
@@ -504,6 +504,7 @@
           <button class="btn btn-primary" (click)="clearPaymentAmounts()" [disabled]="!amountDefined">
             <fa-icon [icon]="faRotateLeft" class="fa-spin"></fa-icon>
           </button>
+          <div @fade *ngIf="!bAllGiftcardPaid" class="badge badge-danger mt-3">{{'PLEASE_PAY_ALL_GIFTCARD_TO_CHECKOUT' | translate}}</div>
         </div>
       </div>
     </div>
