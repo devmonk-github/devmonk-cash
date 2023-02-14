@@ -482,8 +482,15 @@ export class TillService {
       dataObject.businessDetails?.currentLocation?.oAddress?.postalCode + " " +
       dataObject.businessDetails?.currentLocation?.oAddress?.city) || '';
     dataObject.businessDetails.sAddressline2 = dataObject.businessDetails?.currentLocation?.oAddress?.country || '';
-    
 
+
+    dataObject.oCustomer = {
+      ...dataObject.oCustomer,
+      ...dataObject.oCustomer.oPhone,
+      ...dataObject.oCustomer.oInvoiceAddress
+    };
+    
+    
     dataObject.aPayments.forEach((obj: any) => {
       obj.dCreatedDate = moment(obj.dCreatedDate).format('DD-MM-yyyy hh:mm:ss');
     });
