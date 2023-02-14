@@ -675,7 +675,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     const changeAmount = nEnteredAmountTotal - nTotalToPay
     this.dialogService.openModal(TerminalDialogComponent, { cssClass: 'modal-lg', context: { payments: this.payMethods, changeAmount } })
-      .instance.close.subscribe((payMethods: any) => {
+      .instance.close.subscribe(async (payMethods: any) => {
         if (!payMethods) {
           this.saveInProgress = false;
           this.clearPaymentAmounts();
@@ -715,7 +715,14 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
           const oDialogComponent: DialogComponent = this.dialogService.openModal(TransactionActionDialogComponent, {
             cssClass: 'modal-lg', hasBackdrop: true, closeOnBackdropClick: true, closeOnEsc: true,
           }).instance;
-          
+
+          if (this.bIsFiscallyEnabled) {
+            const result: any = await this.fiskalyService.updateFiskalyTransaction(this.transactionItems, _.clone(body.payments), 'FINISHED');
+            if (result) {
+              localStorage.removeItem('fiskalyTransaction');
+              body.oTransaction.sFiskalyTxId = result._id;
+            }
+          }
           this.apiService.postNew('cashregistry', '/api/v1/till/transaction', body)
             .subscribe(async (data: any) => {
 
@@ -738,11 +745,11 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
                 }
               });
 
-              if (this.bIsFiscallyEnabled) {
-                this.updateFiskalyTransaction('FINISHED', body.payments, oDialogComponent);
-              } else {
+              // if (this.bIsFiscallyEnabled) {
+                // this.updateFiskalyTransaction('FINISHED', body.payments, oDialogComponent);
+              // } else {
                 this.handleReceiptPrinting(oDialogComponent);
-              }
+              // }
               
               setTimeout(() => {
                 this.saveInProgress = false;
@@ -1167,7 +1174,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-
   addNewLine() {
     this.transactionItems.push({
       name: '',
@@ -1200,7 +1206,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     };
     return body;
   }
-  park(): void {
+  park() {
     this.apiService.postNew('cashregistry', `/api/v1/park?iBusinessId=${this.iBusinessId}`, this.getParkedTransactionBody())
       .subscribe((data: any) => {
         this.parkedTransactions.unshift({
@@ -1448,9 +1454,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     })
   }
 
-
-
-  /* When doing */
   assignAllAmount(index: number) {
     this.payMethods[index].amount = -(this.getUsedPayMethods(true) - this.getTotals('price'));
     this.changeInPayment();
@@ -1474,9 +1477,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  async updateFiskalyTransaction(state: string, payments: [], oDialogComponent ?:any) {
-    if (!this.fiskalyService.tssId) return;
-
+  async updateFiskalyTransaction(state: string, payments: []) {
     const pay = _.clone(payments);
     try {
       if (!localStorage.getItem('fiskalyTransaction')) {
@@ -1485,8 +1486,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       const result = await this.fiskalyService.updateFiskalyTransaction(this.transactionItems, pay, state);
       if (state === 'FINISHED') {
         localStorage.removeItem('fiskalyTransaction');
-        this.transaction.sTxId = result._id;
-        this.handleReceiptPrinting(oDialogComponent);
       } else {
         localStorage.setItem('fiskalyTransaction', JSON.stringify(result));
       }
