@@ -29,6 +29,9 @@ export class ProductComponent implements OnInit{
   collapsedBtn: Boolean = false;
   totalDiscount = 0;
 
+  @Input() disablePrepayment: any;
+  @Input() availableAmount: any;
+
   constructor(private dialogService: DialogService,
     private priceService: PriceService,
     private apiService: ApiService,
@@ -143,9 +146,13 @@ export class ProductComponent implements OnInit{
     else if (item.nTotal > 0 && item.paymentAmount < 0) throw ('strange transaction A');
     else if (item.nTotal <= 0 && item.paymentAmount > 0) throw ('strange transaction B');
 
+    if (item.paymentAmount > this.availableAmount) {
+      this.toastrService.show({ type: 'warning', text: `Can't assign more than available money!` });
+      return;
+    }
+
     item.manualUpdate = true;
-    // item.manualUpdate = true;
-    //  this.updatePayments();
+    item.prepaymentTouched = true;
     this.itemChanged.emit('prepaymentChange');
   }
 }

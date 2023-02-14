@@ -60,6 +60,9 @@ export class OrderComponent implements OnInit {
   bShowServicePartnerRemark = false
   sServicePartnerRemark = ''
 
+  @Input() disablePrepayment: any;
+  @Input() availableAmount: any;
+
   constructor(
     private priceService: PriceService,
     private apiService: ApiService,
@@ -338,7 +341,7 @@ export class OrderComponent implements OnInit {
   }
 
   updatePayments(): void {
-    this.itemChanged.emit('update');
+    this.itemChanged.emit(this.item);
   }
 
   changePrePayment(item:any){
@@ -348,7 +351,14 @@ export class OrderComponent implements OnInit {
     else if (item.nTotal > 0 && item.paymentAmount < 0) throw ('strange transaction A');
     else if (item.nTotal <= 0 && item.paymentAmount > 0) throw ('strange transaction B');
 
+    if (item.paymentAmount > this.availableAmount) {
+      this.toastrService.show({ type: 'warning', text: `Can't assign more than available money!` });
+      item.paymentAmount = 0;
+      return;
+    }
+
     item.manualUpdate = true;
+    item.prepaymentTouched = true;
     this.itemChanged.emit('prepaymentChange');
   }
 }

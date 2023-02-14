@@ -130,7 +130,7 @@ export class FiskalyService {
     let httpHeaders = {
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${this.fiskalyAuth.access_token}` }
     }
-    return await this.httpClient.put<any>(finalUrl, body, httpHeaders).toPromise();
+    return this.httpClient.put<any>(finalUrl, body, httpHeaders).toPromise();
   }
 
   async getClientId() {

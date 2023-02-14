@@ -178,14 +178,14 @@
                 <div style="display:inline-table;">
                   <!-- regular -->
                   <div class="accordion-item w-100 d-table-cell" till-product
-                    *ngIf="item.type === 'regular' || item.type === 'reservation'" [item]="item" [taxes]="taxes" 
-                    (itemChanged)="itemChanged($event, i)"></div>
+                    *ngIf="item.type === 'regular' || item.type === 'reservation'" [item]="item" [taxes]="taxes" [disablePrepayment]="!availableAmount || availableAmount === 0"
+                    (itemChanged)="itemChanged($event, i)" [availableAmount]="availableAmount"></div>
                   <!-- order -->
-                  <div class="accordion-item w-100 d-table-cell" till-order *ngIf="item.type === 'order'" [item]="item"
-                    [taxes]="taxes" (itemChanged)="itemChanged($event, i)"></div>
+                  <div class="accordion-item w-100 d-table-cell" till-order *ngIf="item.type === 'order'" [item]="item" [disablePrepayment]="!availableAmount || availableAmount === 0"
+                    [taxes]="taxes" (itemChanged)="itemChanged($event, i)" [availableAmount]="availableAmount"></div>
                   <!-- repair -->
-                  <div class="accordion-item w-100 d-table-cell" till-repair *ngIf="item.type === 'repair'" [disablePrepayment]="bDisablePrepayment"
-                    [item]="item" [taxes]="taxes" (itemChanged)="itemChanged($event, i)"></div>
+                  <div class="accordion-item w-100 d-table-cell" till-repair *ngIf="item.type === 'repair'" [disablePrepayment]="!availableAmount || availableAmount === 0"
+                    [item]="item" [taxes]="taxes" (itemChanged)="itemChanged($event, i)" [availableAmount]="availableAmount"></div>
                   <!-- giftcard -->
                   <div class="accordion-item w-100 d-table-cell w-100" till-gift *ngIf="item.type === 'giftcard'"
                     [item]="item" [transactionItems]="transactionItems" [taxes]="taxes"
@@ -504,6 +504,7 @@
           <button class="btn btn-primary" (click)="clearPaymentAmounts()" [disabled]="!amountDefined">
             <fa-icon [icon]="faRotateLeft" class="fa-spin"></fa-icon>
           </button>
+          <div @fade *ngIf="!bAllGiftcardPaid" class="badge badge-danger mt-3">{{'PLEASE_PAY_ALL_GIFTCARD_TO_CHECKOUT' | translate}}</div>
         </div>
       </div>
     </div>

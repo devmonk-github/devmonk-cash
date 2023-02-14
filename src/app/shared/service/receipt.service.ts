@@ -341,16 +341,26 @@ export class ReceiptService {
             if (el?.html) {
 
                 let html = el.html || '';
-                if (typeof html === 'string') {
-                    let text = this.pdfService.replaceVariables(html, (object) ? this.oOriginalDataSource[object] : this.oOriginalDataSource) || html;
-                    let obj: any = { text: text };
-                    if (el?.alignment) obj.alignment = el.alignment;
-                    if (el?.size) obj.width = this.getWidth(el.size);
-                    if (el?.styles) {
-                        obj = { ...obj, ...el.styles }
+
+                if (el?.ifAnd) {
+                    const bTestResult = el.ifAnd.every((rule: any) => {
+                        let field = (object) ? object[rule.field] : this.oOriginalDataSource[rule.field];
+                        return (field) ? this.commonService.comparators[rule.compare](field, rule.target) : false;
+                    })
+                    if (bTestResult) {
+                        if (typeof html === 'string') {
+                            let text = this.pdfService.replaceVariables(html, (object) ? this.oOriginalDataSource[object] : this.oOriginalDataSource) || html;
+                            let obj: any = { text: text };
+                            if (el?.alignment) obj.alignment = el.alignment;
+                            if (el?.size) obj.width = this.getWidth(el.size);
+                            if (el?.styles) {
+                                obj = { ...obj, ...el.styles }
+                            }
+                            this.content.push(obj);
+                        }
                     }
-                    this.content.push(obj);
                 }
+                
             } else if (el?.type === 'image') {
                 let img = this.addImage(el);
                 this.content.push(img);

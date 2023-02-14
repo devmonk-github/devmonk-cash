@@ -152,7 +152,7 @@
                                             </div>
                                             <div class="border p-3 mb-5">
                                                 <div class="border p-1 my-3 px-4">
-                                                    {{ "TO_BE_PAID(EXCL_FEES)" | translate}}
+                                                    {{ "TOTAL_PRICE" | translate}}
                                                 </div>
                                                 <div class="row">
                                                     <div class="col-8">
@@ -209,7 +209,7 @@
                                                     </div>
                                                 </span>
                                             </div>
-                                            <div class="btn-group me-4 w-100 my-3">
+                                            <!-- <div class="btn-group me-4 w-100 my-3">
                                                 <button class="btn btn-primary fs-bold"
                                                     (click)="downloadCustomerReceipt(activityindex , 'downloadCustomerReceipt')" [disabled]="bDownloadCustomerReceipt">
                                                     <fa-icon class="group-icon" [icon]="faPrint"></fa-icon>
@@ -240,7 +240,7 @@
                                                         </div>
                                                     </div>
                                                 </span>
-                                            </div>
+                                            </div> -->
                                             <div class="btn-group me-4 w-100 my-3">
                                                 <span class="btn btn-primary fs-bold">
                                                     <fa-icon class="group-icon" [icon]="faReceipt"></fa-icon>
@@ -305,8 +305,8 @@
                                                     <span class="indicator-label">{{ "MAIL" | translate}}</span>
                                                 </span>
                                             </div>
-                                            <div class="btn-group me-4 w-100 my-3 disabled">
-                                                <!-- <span class="btn btn-primary fs-bold"
+                                            <div class="btn-group me-4 w-100 my-3">
+                                                <!--<span class="btn btn-primary fs-bold"
                                                     (click)="loadCashRegister = true; openTransaction(activity, 'activity')"> -->
                                                 <span class="btn btn-primary fs-bold">
                                                     <fa-icon class="group-icon" [icon]="faEuro"></fa-icon>
@@ -455,7 +455,7 @@
                                             </div>
                                             <div class="row mb-6">
                                                 <label class="col-lg-4 col-form-label fw-bold fs-6">
-                                                    {{"TO_BE_PAID(EXCL_FEES)" | translate}} - 1</label>
+                                                    {{"TOTAL_PRICE" | translate}}</label>
                                                 <div class="col-lg-8">
                                                     <div class="row">
                                                         <div class="col-lg-8 fv-row">
@@ -796,7 +796,7 @@
                                             </div> -->
                                             <div class="border p-3 mb-5">
                                                 <div class="border p-1 my-3 px-4">
-                                                    {{ "TO_BE_PAID(EXCL_FEES)" | translate}}
+                                                    {{ "TOTAL_PRICE" | translate}}
                                                 </div>
                                                 <div class="row">
                                                     <div class="col-8">
@@ -953,13 +953,15 @@
                                                     <span class="indicator-label">{{ "MAIL" | translate}}</span>
                                                 </span>
                                             </div> -->
-                                            <div class="btn-group me-4 w-100 my-3">
-                                                <span class="btn btn-primary fs-bold"
-                                                    (click)="loadCashRegister = true; openTransaction(activity, 'activity')">
+                                            <div class="btn-group me-4 w-100 my-3 disabled">
+                                                <!--<span class="btn btn-primary fs-bold"
+                                                    (click)="loadCashRegister = true; openTransaction(activity, 'activity')"> -->
+                                                <span class="btn btn-primary fs-bold">
                                                     <fa-icon class="group-icon" [icon]="faEuro"></fa-icon>
                                                     <span class="indicator-label">{{ "CHECKOUT" | translate}}</span>
                                                 </span>
                                             </div>
+                                            <p style="color: red">{{ 'PLEASE_USE_CASH_REGISTER_TO_MAKE_OTHER_PAYMENTS' | translate}}</p>
                                         </div>
                                     </div>
                                     <div *ngIf="activity.eRepairStatus === 'completed'"
@@ -1098,7 +1100,7 @@
                                             </div>
                                             <!-- <div class="row mb-6">
                                                 <label class="col-lg-4 col-form-label fw-bold fs-6">
-                                                    {{"TO_BE_PAID(EXCL_FEES)" | translate}}</label>
+                                                    {{"TOTAL_PRICE" | translate}}</label>
                                                 <div class="col-lg-8">
                                                     <div class="row">
                                                         <div class="col-lg-8 fv-row">
@@ -1454,7 +1456,7 @@
                                             </div> -->
                                             <div class="border p-3 mb-5">
                                                 <div class="border p-1 my-3 px-4">
-                                                    {{ "TO_BE_PAID(EXCL_FEES)" | translate}}
+                                                    {{ "TOTAL_PRICE" | translate}}
                                                 </div>
                                                 <div class="row">
                                                     <div class="col-8">
@@ -1609,13 +1611,15 @@
                                                     <span class="indicator-label">{{ "MAIL" | translate}}</span>
                                                 </span>
                                             </div>
-                                            <div class="btn-group me-4 w-100 my-3">
-                                                <span class="btn btn-primary fs-bold"
-                                                    (click)="loadCashRegister = true; openTransaction(activity, 'activity')">
+                                            <div class="btn-group me-4 w-100 my-3 disabled">
+                                                <!--<span class="btn btn-primary fs-bold"
+                                                    (click)="loadCashRegister = true; openTransaction(activity, 'activity')"> -->
+                                                <span class="btn btn-primary fs-bold">
                                                     <fa-icon class="group-icon" [icon]="faEuro"></fa-icon>
                                                     <span class="indicator-label">{{ "CHECKOUT" | translate}}</span>
                                                 </span>
                                             </div>
+                                            <p style="color: red">{{ 'PLEASE_USE_CASH_REGISTER_TO_MAKE_OTHER_PAYMENTS' | translate}}</p>
                                         </div>
                                     </div>
                                     <div *ngIf="activity.eRepairStatus === 'completed'"
@@ -1754,7 +1758,7 @@
                                             </div>
                                             <!-- <div class="row mb-6">
                                                 <label class="col-lg-4 col-form-label fw-bold fs-6">
-                                                    {{"TO_BE_PAID(EXCL_FEES)" | translate}}</label>
+                                                    {{"TOTAL_PRICE" | translate}}</label>
                                                 <div class="col-lg-8">
                                                     <div class="row">
                                                         <div class="col-lg-8 fv-row">
