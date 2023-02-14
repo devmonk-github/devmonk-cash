@@ -173,6 +173,53 @@ export class PrintSettingsComponent implements OnInit {
     });
   }
 
+  shiftLabelButton(type: string, index: number) {
+    if (type == 'up') {
+      if (this.LabelTemplatesData[index - 1])
+        [this.LabelTemplatesData[index - 1], this.LabelTemplatesData[index]] = [this.LabelTemplatesData[index], this.LabelTemplatesData[index - 1]]
+
+    } else {
+      if (this.LabelTemplatesData[index + 1])
+        [this.LabelTemplatesData[index + 1], this.LabelTemplatesData[index]] = [this.LabelTemplatesData[index], this.LabelTemplatesData[index + 1]]
+    }
+  }
+
+  markDefault(label:any){
+    try{
+      this.apiService.postNew('cashregistry', '/api/v1/label/templates/changeDefaultLabel' , {_id:label._id , iBusinessId:this.iBusinessId}).subscribe((result:any)=>{
+        if(result?.message == 'success'){
+          this.LabelTemplatesData.forEach((label:any)=>{
+            if(label.bDefault) label.bDefault = false;
+          })
+          label.bDefault = true;
+
+          this.toastService.show({type:'success' , text:'Default label updated successfully'});
+        }
+      })
+    }catch(error){
+      console.log(error);
+    }
+ 
+  }
+
+  updateLabelSequence(event:any){
+    event.target.disabled = true;
+    this.isLoadingDefaultLabel = true;
+    try {
+       this.apiService.putNew('cashregistry', '/api/v1/label/templates/updateSequence/' + this.iBusinessId, this.LabelTemplatesData).subscribe((result: any) => {
+        this.toastService.show({ type: 'success', text: `Label button order saved successfully` });
+        this.isLoadingDefaultLabel = false;
+        event.target.disabled = false;
+      }, (error) => {
+        this.isLoadingDefaultLabel = false;
+        event.target.disabled = false;
+      })
+    } catch (e) {
+      this.isLoadingDefaultLabel = false;
+      event.target.disabled = false;
+    }
+  }
+
   createLabelTemplate(jsonData: TemplateJSON) {
     const oBody = {
       "iBusinessId": jsonData.iBusinessId,
@@ -423,6 +470,7 @@ export interface TemplateJSON {
   elements: TemplateJSONElement[];
   layout_name: string;
   name: string;
+  bDefault:boolean,
   iBusinessId: string;
   iLocationId: string;
   dCreatedDate?: string;
