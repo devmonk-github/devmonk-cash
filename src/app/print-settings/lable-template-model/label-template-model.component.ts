@@ -67,7 +67,7 @@ export class LabelTemplateModelComponent implements OnInit {
   }
   validateTemplateJson(jsonData: TemplateJSON) {
     let excluded = ['dCreatedDate', 'dUpdatedDate', '_id', '__v']
-    let json: TemplateJSON = {
+    let json: any = {
       "readOnly": false,
       "inverted": false,
       "encoding": 28,
