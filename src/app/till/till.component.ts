@@ -150,6 +150,9 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // paymentChanged: Subject<any> = new Subject<any>();
   availableAmount:any;
+  nFinalAmount: number = 0;
+  nItemsTotalToBePaid: number = 0;
+  nTotalPayment:number = 0;
   
   randNumber(min: number, max: number): number {
     return Math.floor(Math.random() * (max - min + 1) + min);
@@ -229,9 +232,12 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     });
     if (this.businessDetails.currentLocation?.tssInfo && this.businessDetails.currentLocation?.bIsFiskalyEnabled) {
+      console.log('fiskaly enabled')
       this.bIsFiscallyEnabled = true;
       this.cancelFiskalyTransaction();
       this.fiskalyService.setTss(this.businessDetails.currentLocation?.tssInfo._id)
+    } else {
+      console.log('fiskaly disabled')
     }
   }
 
@@ -328,6 +334,17 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     this.searchKeyword = '';
     this.clearPaymentAmounts();
     await this.updateFiskalyTransaction('ACTIVE', []);
+  }
+
+  updateAmountVariables() {
+    this.nItemsTotalToBePaid = this.getTotals('price');
+    this.nTotalPayment = this.totalPrepayment();
+    this.nFinalAmount = this.availableAmount - this.nItemsTotalToBePaid;
+
+    // console.log({ nItemsTotalToBePaid: this.nItemsTotalToBePaid })
+    // console.log({ nTotalPayment: this.nTotalPayment })
+    // console.log({ nFinalAmount: this.nFinalAmount })
+    // console.log({ availableAmount: this.availableAmount })
   }
 
   getTotals(type: string): number {
@@ -472,6 +489,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
         break;
       case 'prepaymentChange':
         this.paymentDistributeService.distributeAmount(this.transactionItems, this.getUsedPayMethods(true));
+        this.updateAmountVariables();
         break;
       case 'duplicate':
         const tItem = Object.create(this.transactionItems[index]);
@@ -579,6 +597,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     // console.log('change in payment in cash ')
     this.transactionItems = [...this.transactionItems]
+    this.updateAmountVariables();
   }
 
   clearAll() {
@@ -615,7 +634,9 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     })
     
     this.payMethods.map(o => { o.amount = null, o.isDisabled = false });
-    this.paymentDistributeService.distributeAmount(this.transactionItems, this.getUsedPayMethods(true));
+    this.availableAmount = this.getUsedPayMethods(true);
+    this.paymentDistributeService.distributeAmount(this.transactionItems, this.availableAmount);
+    this.updateAmountVariables();
   }
 
 
@@ -1479,6 +1500,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   async startFiskalyTransaction() {
+    if (!this.bIsFiscallyEnabled) return;
     try {
       const res = await this.fiskalyService.startTransaction();
       localStorage.setItem('fiskalyTransaction', JSON.stringify(res));
@@ -1491,6 +1513,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   async updateFiskalyTransaction(state: string, payments: []) {
+    if (!this.bIsFiscallyEnabled) return;
     const pay = _.clone(payments);
     try {
       if (!localStorage.getItem('fiskalyTransaction')) {
@@ -1510,6 +1533,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   async cancelFiskalyTransaction() {
+    if(!this.bIsFiscallyEnabled) return;
     try {
       if (localStorage.getItem('fiskalyTransaction')) {
         await this.fiskalyService.updateFiskalyTransaction(this.transactionItems, [], 'CANCELLED');
@@ -1681,5 +1705,10 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     console.log('cashregister destroy')
     MenuComponent.clearEverything();
     
+  }
+
+  openDrawer(){
+    // console.log('open drawer cash register')
+    this.receiptService.openDrawer(this.businessDetails.oPrintNode.sApiKey)
   }
 }

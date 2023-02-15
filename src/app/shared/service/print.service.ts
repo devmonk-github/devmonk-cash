@@ -154,7 +154,21 @@ export class PrintService {
    * @param {String} printer
    * @param {String} computer
    */
-  openDrawer(businessId: string, command: any, printer: any, computer: any, apikey: any, title?:any) {
+  createPrintJob(businessId: string, command: any, printer: any, computer: any, apikey: any, title?:any) {
     return this.printRawContent(businessId, command, printer, computer, 1, { title: title }, apikey)
+  }
+
+  openDrawer(businessId: string, command: any, printer: any, computer: any, apikey: any) {
+    return this.apiService.postNew('cashregistry', '/api/v1/printnode', {
+      id: businessId,
+      iBusinessId: businessId,
+      contentType: 'raw_base64',
+      content: command,
+      printerId: printer,
+      computerId: computer,
+      quantity: 1,
+      options: { title: 'Open drawer'},
+      APIKEY: apikey,
+    });
   }
 }
