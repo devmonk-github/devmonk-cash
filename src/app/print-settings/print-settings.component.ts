@@ -365,7 +365,7 @@ export class PrintSettingsComponent implements OnInit {
   async sentToLayout(template:any){
     console.log(319, template)
     const js2zplService = new Js2zplService(template);
-    let layoutCommand: any = js2zplService.generateCommand(template, {}, false)
+    let layoutCommand: any = js2zplService.generateCommand(template, {}, true)
     const response: any = await this.printService.printRawContent(
       this.iBusinessId,
       layoutCommand,
