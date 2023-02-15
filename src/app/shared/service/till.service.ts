@@ -197,7 +197,7 @@ export class TillService {
       oItem.iArticleGroupId = i.iArticleGroupId;
       oItem.iArticleGroupOriginalId = i.iArticleGroupOriginalId || i.iArticleGroupId;
       oItem.oArticleGroupMetaData = i?.oArticleGroupMetaData;
-      oItem.bPayLater = false;
+      oItem.bPayLater = i?.isExclude;
       oItem.bDeposit = false;
       oItem.sProductCategory = 'CATEGORY';
       oItem.sGiftCardNumber = i?.sGiftCardNumber;
