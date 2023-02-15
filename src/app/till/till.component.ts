@@ -1669,4 +1669,9 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     MenuComponent.clearEverything();
     
   }
+
+  openDrawer(){
+    // console.log('open drawer cash register')
+    this.receiptService.openDrawer(this.businessDetails.oPrintNode.sApiKey)
+  }
 }

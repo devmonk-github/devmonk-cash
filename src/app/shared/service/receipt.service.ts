@@ -639,7 +639,7 @@ export class ReceiptService {
                     return;
                 }
 
-                this.printService.openDrawer(this.iBusinessId, command, thermalPrintSettings?.nPrinterId, thermalPrintSettings?.nComputerId, apikey, title).then((response: any) => {
+                this.printService.createPrintJob(this.iBusinessId, command, thermalPrintSettings?.nPrinterId, thermalPrintSettings?.nComputerId, apikey, title).then((response: any) => {
                     if (response.status == "PRINTJOB_NOT_CREATED") {
                         let message = '';
                         if (response.computerStatus != 'online') {
@@ -712,5 +712,13 @@ export class ReceiptService {
             }
         })
         return obj;
+    }
+    
+    openDrawer(sApiKey:any) {
+        // console.log("Open drawer", sApiKey);
+        let drawerJob = this.pn2escposService.epOpenDrawer()
+        this.printService.openDrawer(this.iBusinessId, drawerJob, 70780318, 394051, sApiKey).subscribe((result:any) => {
+            console.log('drawer response', result);
+        });
     }
 }
