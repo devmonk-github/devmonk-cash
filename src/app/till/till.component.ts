@@ -232,9 +232,12 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     });
     if (this.businessDetails.currentLocation?.tssInfo && this.businessDetails.currentLocation?.bIsFiskalyEnabled) {
+      console.log('fiskaly enabled')
       this.bIsFiscallyEnabled = true;
       this.cancelFiskalyTransaction();
       this.fiskalyService.setTss(this.businessDetails.currentLocation?.tssInfo._id)
+    } else {
+      console.log('fiskaly disabled')
     }
   }
 
@@ -1484,6 +1487,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   async startFiskalyTransaction() {
+    if (!this.bIsFiscallyEnabled) return;
     try {
       const res = await this.fiskalyService.startTransaction();
       localStorage.setItem('fiskalyTransaction', JSON.stringify(res));
@@ -1496,6 +1500,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   async updateFiskalyTransaction(state: string, payments: []) {
+    if (!this.bIsFiscallyEnabled) return;
     const pay = _.clone(payments);
     try {
       if (!localStorage.getItem('fiskalyTransaction')) {
@@ -1515,6 +1520,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   async cancelFiskalyTransaction() {
+    if(!this.bIsFiscallyEnabled) return;
     try {
       if (localStorage.getItem('fiskalyTransaction')) {
         await this.fiskalyService.updateFiskalyTransaction(this.transactionItems, [], 'CANCELLED');
