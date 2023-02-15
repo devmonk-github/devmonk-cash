@@ -391,7 +391,7 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
           return;
         }
         // return;
-        this.printService.openDrawer(this.iBusinessId, command, this.thermalPrintSettings?.nPrinterId, this.thermalPrintSettings?.nComputerId, this.businessDetails.oPrintNode.sApiKey, this.transaction.sNumber).then((response: any) => {
+        this.printService.createPrintJob(this.iBusinessId, command, this.thermalPrintSettings?.nPrinterId, this.thermalPrintSettings?.nComputerId, this.businessDetails.oPrintNode.sApiKey, this.transaction.sNumber).then((response: any) => {
           if (response.status == "PRINTJOB_NOT_CREATED") {
             let message = '';
             if (response.computerStatus != 'online') {

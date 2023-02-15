@@ -706,7 +706,7 @@ export class Pn2escposService {
 
     var finishing = "";
 
-    finishing += this.epOpenDrawer();
+    // finishing += this.epOpenDrawer();
     finishing += this.epBreak(this.default_spacing);
     finishing += cut_syntax;
 
