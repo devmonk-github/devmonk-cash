@@ -150,6 +150,9 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // paymentChanged: Subject<any> = new Subject<any>();
   availableAmount:any;
+  nFinalAmount: number = 0;
+  nItemsTotalToBePaid: number = 0;
+  nTotalPayment:number = 0;
   
   randNumber(min: number, max: number): number {
     return Math.floor(Math.random() * (max - min + 1) + min);
@@ -330,6 +333,17 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     await this.updateFiskalyTransaction('ACTIVE', []);
   }
 
+  updateAmountVariables() {
+    this.nItemsTotalToBePaid = this.getTotals('price');
+    this.nTotalPayment = this.totalPrepayment();
+    this.nFinalAmount = this.availableAmount - this.nItemsTotalToBePaid;
+
+    // console.log({ nItemsTotalToBePaid: this.nItemsTotalToBePaid })
+    // console.log({ nTotalPayment: this.nTotalPayment })
+    // console.log({ nFinalAmount: this.nFinalAmount })
+    // console.log({ availableAmount: this.availableAmount })
+  }
+
   getTotals(type: string): number {
     this.amountDefined = this.payMethods.find((pay) => pay.amount || pay.amount?.toString() === '0');
     if (!type) {
@@ -459,6 +473,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
         break;
       case 'prepaymentChange':
         this.paymentDistributeService.distributeAmount(this.transactionItems, this.getUsedPayMethods(true));
+        this.updateAmountVariables();
         break;
       case 'duplicate':
         const tItem = Object.create(this.transactionItems[index]);
@@ -566,6 +581,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     // console.log('change in payment in cash ')
     this.transactionItems = [...this.transactionItems]
+    this.updateAmountVariables();
   }
 
   clearAll() {
@@ -602,7 +618,9 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     })
     
     this.payMethods.map(o => { o.amount = null, o.isDisabled = false });
-    this.paymentDistributeService.distributeAmount(this.transactionItems, this.getUsedPayMethods(true));
+    this.availableAmount = this.getUsedPayMethods(true);
+    this.paymentDistributeService.distributeAmount(this.transactionItems, this.availableAmount);
+    this.updateAmountVariables();
   }
 
 
