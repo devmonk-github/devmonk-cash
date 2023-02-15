@@ -397,6 +397,19 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     });
     return result;
   }
+
+  checkout():any{
+    if(this.transactionItems?.length){ 
+        const items = this.transactionItems.filter((item:any)=>{
+          if(item?.isExclude) return item;
+        })
+        if(items?.length == this.transactionItems?.length) return false
+        else if(this.amountDefined && this.bAllGiftcardPaid) return false;
+        else return true
+    }else{
+        return true;
+    }
+  }
   async addItem(type: string) {
     // console.log('add item,', type, type==='repair')
     
