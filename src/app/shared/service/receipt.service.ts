@@ -502,6 +502,7 @@ export class ReceiptService {
     }
 
     addRow(dataRow: any, row: any, dataSource: any, tableWidths: any) {
+        // console.log({dataRow, row, dataSource})
         if (row?.html || row?.conditionalHtml) {
             let html = row.html;
             let bCheck;
@@ -511,14 +512,28 @@ export class ReceiptService {
             }
 
             let text = this.pdfService.replaceVariables(html, dataSource) || html;
-            // console.log({ text }, html, dataSource);
+            // console.log({ text }, html);
             let obj: any = { text: text };
             if (text?.indexOf('<strike>') != -1) {
                 obj = this.addStrikenData(obj, text, row);
             }
-
+            let styles = {};
+            if (row?.conditionalStyles?.length) {
+                // console.log('522 has conditional styles', row.conditionalStyles)
+                row.conditionalStyles.forEach((condition: any) => {
+                    const field = dataSource[condition.if.field];
+                    // console.log({ field }, 'checking condition', condition)
+                    const bApplyStyles = this.commonService.comparators[condition.if.compare](field, condition.if.target);
+                    // console.log({bApplyStyles})
+                    if (bApplyStyles) {
+                        styles = { ...styles, ...condition.styles }
+                    }
+                })
+            }
+            // console.log(533, {styles})
             if (row?.alignment) obj.alignment = row.alignment;
-            if (row?.styles) obj = { ...obj, ...row.styles };
+            obj = { ...obj, ...row?.styles, ...styles };
+            // console.log(obj)
             dataRow.push(obj);
         } else if (row?.type) {
             if (row?.type === 'stack') {
@@ -531,23 +546,39 @@ export class ReceiptService {
     }
 
     processStack(item: any, object?: any) {
-        // console.log('processStack', item, object);
         const stack: any = [];
         item.elements.forEach((el: any) => {
             if (el?.type === 'image') {
                 stack.push(this.addImage(el))
             } else {
-                let bTestResult: boolean = true;
+                let bTestResult = true;
                 if (el?.ifAnd) {
-                    // console.log('ifand', el)
+                    let field;
+                    bTestResult = true;
                     bTestResult = el.ifAnd.every((rule: any) => {
-                        let field = (object) ? object[rule.field] : this.oOriginalDataSource[rule.field];
-                        // console.log({ field, rule })
-                        return (field) ? this.commonService.comparators[rule.compare](field, rule.target) : false;
+                        field = (object) ? object[rule.field] : this.oOriginalDataSource[rule.field];
+                        return (field != null) ? this.commonService.comparators[rule.compare](field, rule.target) : false;
                     });
                     if (bTestResult) {
+                        // console.log('replacing', el.html)
                         let text = this.pdfService.replaceVariables(el.html, (object) ? object : this.oOriginalDataSource)
-                        stack.push({ text: text, alignment: el?.alignment });
+                        // console.log({text})
+                        let obj:any = { text: text, alignment: el?.alignment };
+                        let styles = {};
+                        if (el?.conditionalStyles?.length) {
+                            el.conditionalStyles.forEach((condition:any) => {
+                                // console.log(condition)
+                                const bApplyStyles = this.commonService.comparators[condition.if.compare](text, condition.if.target);
+                                // console.log({bApplyStyles})
+                                if(bApplyStyles) {
+                                    styles =  { ...styles, ...condition.styles }
+                                }
+                            })
+                        }
+                        
+                        obj = { ...obj, ...styles, ...el?.styles};
+                        // console.log(obj)
+                        stack.push(obj);
                     }
 
                 } else if (el?.ifOr) {
