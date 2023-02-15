@@ -491,9 +491,9 @@
         <h4 *ngIf="(getUsedPayMethods(true) - getTotals('price')) >0">{{ "PREPAYMENT" | translate}}: {{totalPrepayment()
           | currency: tillService.currency}}</h4>
 
-        <div class="d-flex flex-wrap">
-          <button class="btn btn-primary till-save-button flex-grow-1 me-2" (click)="createTransaction()"
-            [disabled]="saveInProgress || 1 > transactionItems.length || !amountDefined || !bAllGiftcardPaid">
+        <div class="d-flex flex-wrap"> 
+          <button class="btn btn-primary till-save-button flex-grow-1 me-2" (click)="createTransaction()"   [disabled]="checkout()">
+          <!-- [disabled]="saveInProgress || 1 > transactionItems.length || !amountDefined || !bAllGiftcardPaid"> -->
             <span class="d-flex" *ngIf="saveInProgress">
               <fa-icon [icon]="faSpinner" class="fa-spin"></fa-icon>
             </span>
