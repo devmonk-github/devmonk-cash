@@ -47,9 +47,9 @@ export class PrintSettingsComponent implements OnInit {
     { key: 'giftcard', value: 'Giftcard receipt' },
   ];
 
-  aActionSettings:any = [];
+  aActionSettings: any = [];
 
-  
+
   iBusinessId: string = '';
   iLocationId: string = '';
   isLoadingDefaultLabel: boolean = false;
@@ -82,7 +82,7 @@ export class PrintSettingsComponent implements OnInit {
       MenuComponent.reinitialization();
     }, 200);
 
-    
+
   }
 
   createPrintSettings() {
@@ -153,7 +153,7 @@ export class PrintSettingsComponent implements OnInit {
     return new Promise((resolve, reject) => {
       this.apiService.getNew('cashregistry', `/api/v1/label/templates/${this.iBusinessId}`).subscribe((result: any) => {
         this.defaultLabelsData = result.data.filter((lable: any) => lable.readOnly)
-        this.LabelTemplatesData = result.data.filter((lable: any) => !lable.readOnly).map((template:any)=> {
+        this.LabelTemplatesData = result.data.filter((lable: any) => !lable.readOnly).map((template: any) => {
           template.elements.map((element: any, i: number) => {
             template.elements[i]['type'] = element.sType
           })
@@ -184,29 +184,29 @@ export class PrintSettingsComponent implements OnInit {
     }
   }
 
-  markDefault(label:any){
-    try{
-      this.apiService.postNew('cashregistry', '/api/v1/label/templates/changeDefaultLabel' , {_id:label._id , iBusinessId:this.iBusinessId}).subscribe((result:any)=>{
-        if(result?.message == 'success'){
-          this.LabelTemplatesData.forEach((label:any)=>{
-            if(label.bDefault) label.bDefault = false;
+  markDefault(label: any) {
+    try {
+      this.apiService.postNew('cashregistry', '/api/v1/label/templates/changeDefaultLabel', { _id: label._id, iBusinessId: this.iBusinessId }).subscribe((result: any) => {
+        if (result?.message == 'success') {
+          this.LabelTemplatesData.forEach((label: any) => {
+            if (label.bDefault) label.bDefault = false;
           })
           label.bDefault = true;
 
-          this.toastService.show({type:'success' , text:'Default label updated successfully'});
+          this.toastService.show({ type: 'success', text: 'Default label updated successfully' });
         }
       })
-    }catch(error){
+    } catch (error) {
       console.log(error);
     }
- 
+
   }
 
-  updateLabelSequence(event:any){
+  updateLabelSequence(event: any) {
     event.target.disabled = true;
     this.isLoadingDefaultLabel = true;
     try {
-       this.apiService.putNew('cashregistry', '/api/v1/label/templates/updateSequence/' + this.iBusinessId, this.LabelTemplatesData).subscribe((result: any) => {
+      this.apiService.putNew('cashregistry', '/api/v1/label/templates/updateSequence/' + this.iBusinessId, this.LabelTemplatesData).subscribe((result: any) => {
         this.toastService.show({ type: 'success', text: `Label button order saved successfully` });
         this.isLoadingDefaultLabel = false;
         event.target.disabled = false;
@@ -302,7 +302,7 @@ export class PrintSettingsComponent implements OnInit {
       });
   }
 
-  async fetchActionSettings(){
+  async fetchActionSettings() {
     this.bShowActionSettingsLoader = true;
     const data = {
       iLocationId: this.iLocationId,
@@ -310,18 +310,18 @@ export class PrintSettingsComponent implements OnInit {
         sMethod: 'actions'
       }
     }
-    const result:any = await this.apiService.postNew('cashregistry', `/api/v1/print-settings/list/${this.iBusinessId}`, data).toPromise();
+    const result: any = await this.apiService.postNew('cashregistry', `/api/v1/print-settings/list/${this.iBusinessId}`, data).toPromise();
     this.bShowActionSettingsLoader = false;
-    if(result?.data[0]?.result?.length){
+    if (result?.data[0]?.result?.length) {
       this.aActionSettings = result?.data[0]?.result[0];
     }
   }
 
-  openActionSetting(mode: string = 'create', index:number = 0){
-    let obj :any = {
-      mode: mode  
+  openActionSetting(mode: string = 'create', index: number = 0) {
+    let obj: any = {
+      mode: mode
     }
-    if(mode === 'update'){
+    if (mode === 'update') {
       const item = this.aActionSettings.aActions[index];
       if (item?.eType) obj.eType = item?.eType;
       if (item?.eSituation) obj.eSituation = item?.eSituation;
@@ -330,16 +330,16 @@ export class PrintSettingsComponent implements OnInit {
       obj.iActionId = item._id
     }
 
-    this.dialogService.openModal(ActionSettingsComponent, { cssClass: "modal-lg", context: {...obj} })
+    this.dialogService.openModal(ActionSettingsComponent, { cssClass: "modal-lg", context: { ...obj } })
       .instance.close.subscribe(result => {
-        if(result){
+        if (result) {
           this.aActionSettings = [];
           this.fetchActionSettings();
         }
       });
   }
 
-  async removeActionSetting(index:number){
+  async removeActionSetting(index: number) {
     const iPrintSettingsId = this.aActionSettings._id;
     const iActionId = this.aActionSettings.aActions[index]._id;
     await this.apiService.deleteNew('cashregistry', `/api/v1/print-settings/${this.iBusinessId}/${iPrintSettingsId}/${iActionId}`).toPromise();
@@ -362,10 +362,10 @@ export class PrintSettingsComponent implements OnInit {
     );
   }
 
-  async sentToLayout(template:any){
+  async sentToLayout(template: any) {
     console.log(319, template)
     const js2zplService = new Js2zplService(template);
-    let layoutCommand: any = js2zplService.generateCommand(template, {}, true)
+    let layoutCommand: any = js2zplService.generateCommand(template, {}, false)
     const response: any = await this.printService.printRawContent(
       this.iBusinessId,
       layoutCommand,
@@ -389,9 +389,9 @@ export class PrintSettingsComponent implements OnInit {
     }
   }
 
-  async printSample(template:any){
+  async printSample(template: any) {
     const js2zplService = new Js2zplService(template);
-    
+
     const sampleObject = {
       '%%PRODUCT_NAME%%': 'Ring Diamant',
       '%%SELLING_PRICE%%': '1234',
@@ -417,7 +417,7 @@ export class PrintSettingsComponent implements OnInit {
       '%%JEWEL_MATERIAL%%': 'Goud',
       '%%STRAP_WIDTH%%': '30mm',
       '%%STRAP_MATERIAL%%': 'Staal',
-      '%%QUANTITY%%' :'1'
+      '%%QUANTITY%%': '1'
     }
 
     let layoutCommand: any = js2zplService.generateCommand(template, sampleObject, true)
@@ -457,7 +457,7 @@ export interface TemplateJSON {
   encoding: number;
   media_darkness: number;
   media_type: string;
-  disable_upload: boolean; 
+  disable_upload: boolean;
   can_rotate: boolean;
   alternative_price_notation: boolean;
   dpmm: number;
@@ -470,7 +470,7 @@ export interface TemplateJSON {
   elements: TemplateJSONElement[];
   layout_name: string;
   name: string;
-  bDefault:boolean,
+  bDefault: boolean,
   iBusinessId: string;
   iLocationId: string;
   dCreatedDate?: string;
