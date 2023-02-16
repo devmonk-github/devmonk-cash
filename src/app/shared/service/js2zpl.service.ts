@@ -314,10 +314,10 @@ export class Js2zplService {
     return '~jc';
   }
 
-  generateCommand(request: any, data: any, print_command = true) {
-    if (!data || !request) return;
+  generateCommand(request: any, data: any, layout_command = true) {
+    if (!request || !data) return
+    if (data) { this.alldata = data; }
 
-    this.alldata = data;
 
     //override label parameters if provided
     this.overrideVariables(request);
@@ -328,7 +328,7 @@ export class Js2zplService {
 
     if (this.layout_name.length > 0) {
 
-      if (print_command === true) {
+      if (layout_command === true) {
         command += '^XF' + this.layout_storage + ':' + this.layout_name + '.ZPL';
       } else {
         if (this.layout_name.length > 0)
@@ -338,21 +338,20 @@ export class Js2zplService {
       fieldtype = 'N'; //Will be used as ^FN(+field number) to reference a field in the layout
     }
 
-    if (print_command === false) {
+    if (layout_command === false) {
       command += this.getSettings();
     }
 
-    command += this.addFieldsToCommand(request, print_command, fieldtype);
+    command += this.addFieldsToCommand(request, layout_command, fieldtype);
 
     command += this.endCommand();
 
     if (!data['%%QUANTITY%%']) {
       data['%%QUANTITY%%'] = 1;
     }
-
     command = command.replace('^XA', '^XA^PQ' + data['%%QUANTITY%%'])
 
-    console.warn("Generated: ", command, String(command).split(/(?=\^)/g));
+    console.warn("Generated: ", layout_command, command, String(command).split(/(?=\^)/g));
 
     return this.validateCommand(command);
   }
@@ -378,7 +377,7 @@ export class Js2zplService {
     return command;
   }
 
-  addFieldsToCommand(request: any, print_command: any, fieldtype: any, preview = false) {
+  addFieldsToCommand(request: any, layout_command: any, fieldtype: any, preview = false) {
 
     var command = '';
 
@@ -422,8 +421,8 @@ export class Js2zplService {
             }
           }
 
-          if (print_command === true) {
-            if (element.type !== 'rectangle' && element.type !== 'circle' && element.type !== 'barcode') {
+          if (layout_command === true) { // print actual data
+            if (element.type !== 'rectangle' && element.type !== 'circle') {
 
               var fh = ''
               var hex_euro = ''
@@ -462,7 +461,7 @@ export class Js2zplService {
                   break;
               }
             }
-            
+
           } else {
             element.x = (element?.x) ? this.convertElementPosition(element.x, this.width) : 0;
             element.y = (element?.y) ? this.convertElementPosition(element.y, this.height) : 0;
@@ -485,7 +484,7 @@ export class Js2zplService {
                 element.pnfield = field_id;
               }
             }
-            
+
             switch (element.type) {
               case 'rectangle':
                 command += this.drawRectangle(element.width, element.height, element.border, element.color, element.rounding)
