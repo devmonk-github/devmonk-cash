@@ -1,5 +1,5 @@
 <button class="btn btn-primary"> {{ "MANAGE_RECEIPTS" | translate }} </button>
-<button class="btn btn-primary float-end" (click)="editWorkstation()"> {{ "ADD_NEW_WORKSTATION" | translate }} </button>
+<!-- <button class="btn btn-primary float-end" (click)="editWorkstation()"> {{ "ADD_NEW_WORKSTATION" | translate }} </button> -->
 <div class="tscroll">
     <table class="table table-row-gray-400 gx-2 mt-4 table-row-bordered table-rounded border border-gray-400 table-workstation"> <!-- [style.width.px]="tableMaxWidth"-->
         <thead>
@@ -9,7 +9,7 @@
                 </td>
             </tr> -->
             <tr>
-                <td colspan="2" class="sticky-col first-col border border-gray-400"></td>
+                <td colspan="2" class="sticky-col bg-body first-col border border-gray-400"></td>
                 <td *ngFor="let workstation of workstations; trackBy:trackByFunction;"
                     class="lh-xxl second-col">
                     {{ workstation.sName }}
@@ -38,10 +38,10 @@
             <ng-container *ngFor="let template of templates">
                 <tr class="lh-xxl" *ngFor="let type of template.typeList; let tIndex = index;">
                     <td [attr.rowspan]="template.typeList.length" *ngIf="tIndex == 0"
-                        class="sticky-col first-col border border-gray-400">
+                        class="sticky-col bg-body first-col border border-gray-400">
                         <label class="vertical-label-text mt-per-35"> {{ template.name }} </label>
                     </td>
-                    <td class="sticky-col second-col border border-gray-400">
+                    <td class="sticky-col bg-body second-col border border-gray-400">
                         {{ type.name | translate}}
                         <button class="btn btn-info float-end px-4 py-2" [disabled]="!type.enabled"
                             (click)="openEditSetting(type)">

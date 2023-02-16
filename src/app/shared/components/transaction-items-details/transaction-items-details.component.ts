@@ -186,13 +186,12 @@ export class TransactionItemsDetailsComponent implements OnInit {
     });
   }
 
-  selectAll($event: any) {
-    this.transactionItems = this.transactionItems.map(v => ({ ...v, isSelected: $event.checked }));
+  selectAll(event: any) {
+    // this.transactionItems = this.transactionItems.map(v => ({ ...v, isSelected: $event.checked }));
     // console.log('this.transactionItems 6:', this.transactionItems);
     this.transactionItems.forEach(element => {
-      if (element.bIsRefunded) {
-        element.isSelected = false;
-      }
+      if (element.bIsRefunded) element.isSelected = false;
+      else element.isSelected = event.checked;
     });
   }
 

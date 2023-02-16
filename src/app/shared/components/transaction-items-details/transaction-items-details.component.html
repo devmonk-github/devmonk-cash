@@ -50,26 +50,45 @@
                             <td class="">{{transactionItem.nTotalAmount}}</td>
                             <td class="">{{transactionItem.nQuantity}}</td>
                             <td class="">{{transactionItem.nPaidAmount}}</td>
-                            <td class="">{{transactionItem.nTotalAmount > transactionItem.nPaidAmount ? 'True' :
-                                'False'}}</td>
+                            <td class="">{{(transactionItem.nTotalAmount > transactionItem.nPaidAmount ? 'YES' :
+                                'NO') | translate }}</td>
                             <td class="">{{ transactionItem.dCreatedDate | date: 'short'}}</td>
                             <td>
-                                <div class="btn-group btn-toggle"
-                                    [ngClass]="{'cursor-not-allowed': transactionItem.bIsRefunded }">
-                                    <!-- <button class="btn btn-lg btn-default"
-                                        *ngIf="transactionItem.nPaidAmount < transactionItem.nPriceIncVat * transactionItem.nQuantity"
-                                        (click)="transactionItem.tType = 'pay'"
-                                        [ngClass]="transactionItem.tType === 'pay'? 'btn-primary active': ''"
-                                        [disabled]="transactionItem.bIsRefunded">{{ 'RESET_PAYMENT' |
-                                        translate}}</button> -->
-                                    <button class="btn btn-lg btn-default btn-primary active"
-                                        *ngIf="transactionItem.nPaidAmount === transactionItem.nPriceIncVat * transactionItem.nQuantity"
-                                        [disabled]="transactionItem.bIsRefunded">{{ "REFUND" | translate}}</button>
-                                    <button class="btn btn-lg"
-                                        *ngIf="transactionItem.nPaidAmount < transactionItem.nPriceIncVat * transactionItem.nQuantity"
-                                        (click)="transactionItem.tType = 'refund'"
-                                        [ngClass]="transactionItem.tType === 'refund'? 'btn-primary active': ''"
-                                        [disabled]="transactionItem.bIsRefunded">{{ "REFUND" | translate}}</button>
+                                <div class= "form-check-custom"
+                                 [ngClass]="{'cursor-not-allowed': transactionItem.bIsRefunded }">
+                                
+                                    <div class="form-check form-check-solid" *ngIf="transactionItem.nPaidAmount === transactionItem.nPriceIncVat * transactionItem.nQuantity">
+                                        <input class="form-check-input" id="ref1_tr_{{transactionItem._id}}" type="radio" name="tr_{{transactionItem._id}}" [checked]="transactionItem.tType === 'refund'? true : false" [disabled]="transactionItem.bIsRefunded"/>
+                                        <label class="form-check-label" for="ref1_tr_{{transactionItem._id}}">
+                                            {{ "REFUND" | translate}}
+                                        </label>
+                                    </div>
+                                    <div class="form-check form-check-solid" *ngIf="transactionItem.nPaidAmount < transactionItem.nPriceIncVat * transactionItem.nQuantity">
+                                        <input class="form-check-input" id="ref2_tr_{{transactionItem._id}}" type="radio" name="tr_{{transactionItem._id}}" [checked]="transactionItem.tType === 'refund'? true : false" (click)="transactionItem.tType = 'refund'" [disabled]="transactionItem.bIsRefunded"/>
+                                        <label class="form-check-label" for="ref2_tr_{{transactionItem._id}}">
+                                            {{ "REFUND" | translate}}
+                                        </label>
+                                    </div>
+                                
+                                <!--<div class="btn-group btn-toggle"
+                                    [ngClass]="{'cursor-not-allowed': transactionItem.bIsRefunded }">-->
+
+                                        <!--THIS ONE WAS COMMENTED, LEAVE THIS ONE-->
+                                        <!--<button class="btn btn-lg btn-default"
+                                            *ngIf="transactionItem.nPaidAmount < transactionItem.nPriceIncVat * transactionItem.nQuantity"
+                                            (click)="transactionItem.tType = 'pay'"
+                                            [ngClass]="transactionItem.tType === 'pay'? 'btn-primary active': ''"
+                                            [disabled]="transactionItem.bIsRefunded">{{ 'RESET_PAYMENT' |
+                                            translate}}</button> -->
+
+                                        <!--<button class="btn btn-lg btn-default btn-primary active"
+                                            *ngIf="transactionItem.nPaidAmount === transactionItem.nPriceIncVat * transactionItem.nQuantity"
+                                            [disabled]="transactionItem.bIsRefunded">{{ "REFUND" | translate}}</button>
+                                        <button class="btn btn-lg"
+                                            *ngIf="transactionItem.nPaidAmount < transactionItem.nPriceIncVat * transactionItem.nQuantity"
+                                            (click)="transactionItem.tType = 'refund'"
+                                            [ngClass]="transactionItem.tType === 'refund'? 'btn-primary active': ''"
+                                            [disabled]="transactionItem.bIsRefunded">{{ "REFUND" | translate}}</button>-->
                                 </div>
                             </td>
                         </tr>
@@ -87,11 +106,40 @@
                             <td class="">{{transactionItem.sNumber}}</td>
                             <td class="">{{transactionItem.nTotalAmount}}</td>
                             <td class="">{{transactionItem.nPaidAmount}}</td>
-                            <td class="">{{transactionItem.nTotalAmount > transactionItem.nPaidAmount ? 'True' :
-                                'False'}}</td>
+                            <td class="">{{(transactionItem.nTotalAmount > transactionItem.nPaidAmount ? 'YES' :
+                                'NO') | translate }}</td>
                             <td class="">{{ transactionItem.dCreatedDate | date: 'short'}}</td>
                             <td>
-                                <div class="btn-group btn-toggle"
+                               
+                              <div class= "form-check-custom"
+                                    [ngClass]="{'cursor-not-allowed': transactionItem.bIsRefunded }">
+                                    
+                                    <div class="form-check form-check-solid" *ngIf="transactionItem.nPaidAmount < transactionItem.nPriceIncVat * transactionItem.nQuantity">
+                                        <input class="form-check-input" id="prep_tr_{{transactionItem.sNumber}}" 
+                                            type="radio" 
+                                            name="tr_{{transactionItem.sNumber}}" 
+                                            (click)="transactionItem.tType = 'pay'" 
+                                            [checked]="transactionItem.tType == 'pay'" 
+                                            [disabled]="transactionItem.bIsRefunded"/>
+                                            
+                                        <label class="form-check-label"for="prep_tr_{{transactionItem.sNumber}}">
+                                            {{ 'RESET_PAYMENT' | translate}}
+                                        </label>
+                                    </div>
+                                    <div class="form-check form-check-solid" *ngIf="transactionItem.nPaidAmount === transactionItem.nPriceIncVat * transactionItem.nQuantity">
+                                        <input class="form-check-input" id="ref1_tr_{{transactionItem.sNumber}}" type="radio" name="tr_{{transactionItem.sNumber}}" [checked]="transactionItem.nPaidAmount === transactionItem.nPriceIncVat * transactionItem.nQuantity" [disabled]="transactionItem.bIsRefunded"/>
+                                        <label class="form-check-label" for="ref1_tr_{{transactionItem.sNumber}}">
+                                            {{ "REFUND" | translate}}
+                                        </label>
+                                    </div>
+                                    <div class="form-check form-check-solid" *ngIf="transactionItem.nPaidAmount < transactionItem.nPriceIncVat * transactionItem.nQuantity">
+                                        <input class="form-check-input" id="ref2_tr_{{transactionItem.sNumber}}" type="radio" name="tr_{{transactionItem.sNumber}}" (click)="transactionItem.tType = 'refund'" [disabled]="transactionItem.bIsRefunded"/>
+                                        <label class="form-check-label" for="ref2_tr_{{transactionItem.sNumber}}">
+                                            {{ "REFUND" | translate}}
+                                        </label>
+                                    </div>
+
+                                <!--<div class= "btn-group btn-toggle"
                                     [ngClass]="{'cursor-not-allowed': transactionItem.bIsRefunded }">
                                     <button class="btn btn-lg btn-default"
                                         *ngIf="transactionItem.nPaidAmount < transactionItem.nPriceIncVat * transactionItem.nQuantity"
@@ -106,7 +154,7 @@
                                         *ngIf="transactionItem.nPaidAmount < transactionItem.nPriceIncVat * transactionItem.nQuantity"
                                         (click)="transactionItem.tType = 'refund'"
                                         [ngClass]="transactionItem.tType === 'refund'? 'btn-primary active': ''"
-                                        [disabled]="transactionItem.bIsRefunded">{{ "REFUND" | translate}}</button>
+                                        [disabled]="transactionItem.bIsRefunded">{{ "REFUND" | translate}}</button> -->
                                 </div>
                             </td>
                         </tr>
