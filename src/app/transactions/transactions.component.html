@@ -308,7 +308,6 @@
             </select>
           </label>
         </div>
-        <span *ngIf='!transactions.length && !showLoader' style="text-align: center;">CV1.0.0</span>
       </div>
       <div class="col-sm-12 col-md-9 d-flex align-items-center justify-content-center justify-content-md-end">
         <pagination-controls [hidden]="transactions.length === 0" (pageChange)="pageChanged($event)"
