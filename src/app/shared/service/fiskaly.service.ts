@@ -169,7 +169,7 @@ export class FiskalyService {
   }
 
   async getTSSList() {
-    if(!this.fiskalyAuth) await this.loginToFiskaly();
+    // if(!this.fiskalyAuth) await this.loginToFiskaly();
     return this.apiService.getNew('fiskaly', `/api/v1/tss/list/${this.iBusinessId}`).toPromise();
   }
 
