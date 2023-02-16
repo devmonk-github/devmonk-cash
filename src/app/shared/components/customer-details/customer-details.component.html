@@ -515,7 +515,7 @@
                                         </table>
                                     </div>
                                     <div class="col-5">
-                                        <div id="paymentMethodsChart">
+                                        <div id="paymentMethodsChart" *ngIf="paymentMethodsChartOptions">
 
                                             <apx-chart [series]="paymentMethodsChartOptions.series"
                                                 [chart]="paymentMethodsChartOptions.chart"
