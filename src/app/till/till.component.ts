@@ -244,14 +244,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   ngAfterViewInit() {
     if (this.searchField)
       this.searchField.nativeElement.focus();
-   
-    // this.paymentChanged.pipe(
-    //   debounceTime(1000),
-    //   distinctUntilChanged()
-    // ).subscribe(() => {
-    //   this.changeInPayment();
-    // });
-    
   }
   // async getfiskalyInfo() {
   //   const tssId = await this.fiskalyService.fetchTSS();
@@ -508,10 +500,10 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   createGiftCard(item: any, index: number): void {
     const body = {
       iBusinessId: this.iBusinessId,
-      iLocationId: this.getValueFromLocalStorage('currentLocation'),
+      iLocationId: this.iLocationId,
 
       // Do we still need to keep this hard code value here?
-      iCustomerId: '6182a52f1949ab0a59ff4e7b',
+      iCustomerId: this.customer?._id,
 
       sGiftCardNumber: this.transactionItems[index].sGiftCardNumber,
       eType: '',
@@ -1685,7 +1677,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       });
   }
 
-  handleTransactionResponse(data: any) {
+  async handleTransactionResponse(data: any) {
     this.clearAll();
     const { transactionItems, transaction } = data;
     this.transactionItems = transactionItems;
@@ -1695,6 +1687,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       this.fetchCustomer(transaction.iCustomerId);
     }
     this.changeInPayment();
+    await this.updateFiskalyTransaction('ACTIVE', []);
   }
 
   generateBarcodeURI(displayValue: boolean = true, data: any) {
