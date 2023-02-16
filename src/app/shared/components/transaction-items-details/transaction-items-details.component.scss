@@ -1,3 +1,8 @@
 .cursor-not-allowed {
     cursor: not-allowed;
 }
+.form-check-custom{
+    display: flex;
+    flex-direction: row;
+    column-gap: 15px;
+}

@@ -232,7 +232,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
 
   @ViewChild('customerNote') customerNote: ElementRef;
 
-  aStatisticsChartDataLoading = true
+  aStatisticsChartDataLoading = false
   aActivityTitles: any = [
     { type: "Repairs", value: 0, color: ChartColors.REPAIR },//$primary-color
     { type: "Special orders", value: 0, color: ChartColors.SPECIAL_ORDERS },//$dark-primary-light-color
@@ -273,6 +273,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
       if(this.customer._id == ""){
         this.getBusinessDetails();
       }
+    this.customer = { ... this.customer ,  ... this.dialogRef?.context?.customerData}
     const translations = ['SUCCESSFULLY_ADDED', 'SUCCESSFULLY_UPDATED' ,'LOYALITY_POINTS_ADDED']
     this.translateService.get(translations).subscribe(
       result => this.translations = result
@@ -588,6 +589,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
         // dEndDate: "2022-10-24T21:59:59.639Z",
       },
     };
+    this.aStatisticsChartDataLoading = true;
     this.apiService
       .postNew('cashregistry', '/api/v1/statistics/transaction/audit', body)
       .subscribe(
