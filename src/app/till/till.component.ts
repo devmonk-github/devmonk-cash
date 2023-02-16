@@ -212,7 +212,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     this.businessDetails = _businessData.data;
     this.businessDetails.currentLocation = this.businessDetails?.aLocation?.find((location: any) => location?._id === this.iLocationId);
     this.tillService.selectCurrency(this.businessDetails.currentLocation);
-    this.getPrintSettings(true)
+    // this.getPrintSettings(true)
     this.getPrintSettings()
     this.getEmployee(currentEmployeeId)
 
@@ -232,12 +232,12 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     });
     if (this.businessDetails.currentLocation?.tssInfo && this.businessDetails.currentLocation?.bIsFiskalyEnabled) {
-      console.log('fiskaly enabled')
+      // console.log('fiskaly enabled')
       this.bIsFiscallyEnabled = true;
       this.cancelFiskalyTransaction();
       this.fiskalyService.setTss(this.businessDetails.currentLocation?.tssInfo._id)
     } else {
-      console.log('fiskaly disabled')
+      // console.log('fiskaly disabled')
     }
   }
 
@@ -968,19 +968,25 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  getPrintSettings(action?: any) {
+  getPrintSettings() {
+    // console.log('gitprintsettings called')
     let oBody = {
       iLocationId: this.iLocationId,
-      oFilterBy: {}
+      // oFilterBy: {}
     }
-    if (action) {
-      oBody.oFilterBy = { sMethod: 'actions' };
-    }
+    // if (action) {
+    //   oBody.oFilterBy = { sMethod: 'actions' };
+    // }
     this.apiService.postNew('cashregistry', `/api/v1/print-settings/list/${this.iBusinessId}`, oBody).subscribe((result: any) => {
-      if (action) {
-        this.printActionSettings = result?.data[0]?.result[0].aActions;
-      } else {
-        this.printSettings = result?.data[0]?.result;
+      if(result?.data?.length && result?.data[0]?.result?.length) {
+        this.printSettings = [];
+        result?.data[0]?.result.forEach((settings:any) => {
+          if(settings?.sMethod === 'actions') {
+            this.printActionSettings = settings?.aActions || [];
+          } else {
+            this.printSettings.push(settings);
+          }
+        })
       }
     });
   }
