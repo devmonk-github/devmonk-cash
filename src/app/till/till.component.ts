@@ -199,14 +199,12 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     this.barcodeService.barcodeScanned.subscribe((barcode: string) => {
       this.openModal(barcode);
     });
-    this.loadTransaction();
-
+    
     this.checkArticleGroups();
 
     if (this.bIsDayStateOpened) this.fetchQuickButtons();
 
     const currentEmployeeId = JSON.parse(localStorage.getItem('currentUser') || '')['userId'];
-
     
     const _businessData: any = await this.getBusinessDetails().toPromise();
     this.businessDetails = _businessData.data;
@@ -216,10 +214,12 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     this.getPrintSettings()
     this.getEmployee(currentEmployeeId)
 
+    this.mapFiscallyData()
+
     setTimeout(() => {
       MenuComponent.bootstrap();
     });
-    this.mapFiscallyData();
+    
   }
 
   async mapFiscallyData() {
@@ -232,13 +232,12 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     });
     if (this.businessDetails.currentLocation?.tssInfo && this.businessDetails.currentLocation?.bIsFiskalyEnabled) {
-      // console.log('fiskaly enabled')
       this.bIsFiscallyEnabled = true;
       this.cancelFiskalyTransaction();
       this.fiskalyService.setTss(this.businessDetails.currentLocation?.tssInfo._id)
-    } else {
-      // console.log('fiskaly disabled')
     }
+
+    this.loadTransaction();
   }
 
   ngAfterViewInit() {
@@ -261,7 +260,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   loadTransaction() {
     const fromTransactionPage: any = localStorage.getItem('fromTransactionPage');
     if (fromTransactionPage) this.handleTransactionResponse(JSON.parse(fromTransactionPage));
-      
   }
 
   getValueFromLocalStorage(key: string): any {
@@ -1678,6 +1676,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   async handleTransactionResponse(data: any) {
+    console.log('handleTransactionResponse')
     this.clearAll();
     const { transactionItems, transaction } = data;
     this.transactionItems = transactionItems;
