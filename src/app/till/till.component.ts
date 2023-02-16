@@ -604,6 +604,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     this.customer = null;
     this.saveInProgress = false;
     this.clearPaymentAmounts();
+    localStorage.removeItem('fromTransactionPage');
   }
 
   clearPaymentAmounts() {
