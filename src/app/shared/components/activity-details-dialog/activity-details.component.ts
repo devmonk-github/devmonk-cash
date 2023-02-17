@@ -16,6 +16,7 @@ import { TillService } from '../../service/till.service';
 import {AddFavouritesComponent} from '../add-favourites/favourites.component';
 import { Clipboard } from '@angular/cdk/clipboard';
 import { animate, style, transition, trigger } from '@angular/animations';
+import { CustomerDetailsComponent } from '../customer-details/customer-details.component';
 @Component({
   selector: 'app-activity-details',
   templateUrl: './activity-details.component.html',
@@ -432,6 +433,15 @@ export class ActivityDetailsComponent implements OnInit {
         })
   }
 
+  removeImage(activityindex: any, imageIndex: any) {
+    this.activityItems[activityindex].aImage.splice(imageIndex, 1);
+  }
+
+  openCustomer(customer:any){
+    this.dialogService.openModal(CustomerDetailsComponent,
+      { cssClass: "modal-xl position-fixed start-0 end-0", context: { customerData:customer, mode: 'details', editProfile: false } }).instance.close.subscribe(result => { });  
+    }
+    
   getBusinessLocations() {
     this.apiService.getNew('core', '/api/v1/business/user-business-and-location/list')
       .subscribe((result: any) => {
