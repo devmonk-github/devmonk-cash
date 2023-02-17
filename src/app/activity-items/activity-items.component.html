@@ -193,11 +193,10 @@
         </tr>
       </thead>
       <tbody class="fw-bold text-gray-600">
-        <ng-container *ngIf="" *ngFor="let activity of activityItems | paginate: paginationConfig, let i = index;">
+        <ng-container *ngFor="let activity of activityItems | paginate: paginationConfig, let i = index;">
           <tr *ngIf="activity.eActivityItemStatus !== 'cancelled'">
             <td>{{activity?.sNumber}}</td>
             <td>{{activity?.sBagNumber || '-'}}</td>
-            <!-- <td>{{activity?.oType?.eTransactionType}}</td> -->
             <td scope="row">{{activity?.dCreatedDate | date: 'yyyy-MM-dd HH:mm'}}</td>
             <td scope="row">{{activity?.dEstimatedDate | date: 'yyyy-MM-dd HH:mm'}}</td>
             <td>{{activity?.eActivityItemStatus}}</td>
@@ -207,8 +206,11 @@
               <div class="btn-group me-4">
                 <div class="btn btn-primary fs-bold px-6" (click)="openActivities(activity)"
                   [class.disabled]="!businessDetails?._id">
-                  <span class="indicator-label">{{ "VIEW" | translate }}</span>
+                  <span class="indicator-label">
+                    {{ "VIEW" | translate }}
+                  </span>
                 </div>
+              </div>
             </td>
           </tr>
         </ng-container>
