@@ -274,12 +274,13 @@
                 <fa-icon [icon]="faTimes" class="topright cursor-pointer" (click)="searchKeyword = ''"></fa-icon>
                 <div>
                   <span class="text-danger"> {{"USE_ENTER_KEY_TO_SEARCH" | translate }} </span>
-                  <div class="cursor-pointer mt-2" (click)="addOrder({ name: searchKeyword })">
-                    <h4>{{searchKeyword}}</h4>
+                  <br>
+                  <button type="button" class="btn btn-primary mt-2"  (click)="addOrder({ name: searchKeyword })">
+                    <h4 class="mb-0 text-white">{{searchKeyword}}</h4>
                     <span>
                       {{ "USE_THIS_INPUT" |translate}}
                     </span>
-                  </div>
+                  </button>
                 </div>
               </div>
             </div>
