@@ -50,8 +50,8 @@
                             <td class="">{{transactionItem.nTotalAmount}}</td>
                             <td class="">{{transactionItem.nQuantity}}</td>
                             <td class="">{{transactionItem.nPaidAmount}}</td>
-                            <td class="">{{transactionItem.nTotalAmount > transactionItem.nPaidAmount ? 'True' :
-                                'False'}}</td>
+                            <td class="">{{(transactionItem.nTotalAmount > transactionItem.nPaidAmount ? 'YES' :
+                                'NO') | translate }}</td>
                             <td class="">{{ transactionItem.dCreatedDate | date: 'short'}}</td>
                             <td>
                                 <div class= "form-check-custom"
@@ -106,8 +106,8 @@
                             <td class="">{{transactionItem.sNumber}}</td>
                             <td class="">{{transactionItem.nTotalAmount}}</td>
                             <td class="">{{transactionItem.nPaidAmount}}</td>
-                            <td class="">{{transactionItem.nTotalAmount > transactionItem.nPaidAmount ? 'True' :
-                                'False'}}</td>
+                            <td class="">{{(transactionItem.nTotalAmount > transactionItem.nPaidAmount ? 'YES' :
+                                'NO') | translate }}</td>
                             <td class="">{{ transactionItem.dCreatedDate | date: 'short'}}</td>
                             <td>
                                
