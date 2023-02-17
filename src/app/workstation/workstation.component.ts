@@ -115,6 +115,7 @@ export class WorkstationComponent implements OnInit {
     this.apiService.postNew('cashregistry', '/api/v1/workstations/create', this.workstation).subscribe(
       (result : any) => {
         this.loading = false;
+        this.toastService.show({ type: 'success', text: 'WORKSTATION_CREATED_SUCCESSFULLY' });
         this.getWorkstations();
       }),
       (error: any) => {
@@ -162,10 +163,10 @@ export class WorkstationComponent implements OnInit {
           self.apiService.deleteNew('cashregistry', `/api/v1/workstations/${workstation.iBusinessId}/${workstation._id}`).subscribe(
             (result : any) => {
               if(result.message == "success"){
-                self.toastService.show({ type: 'success', text: 'Workstation deleted successfully' });
+                self.toastService.show({ type: 'success', text: 'WORKSTATION_DELETED_SUCCESSFULLY' });
                 self.getWorkstations();
               } else {
-                self.toastService.show({ type: 'success', text: 'Error while deleting workstation.' });
+                self.toastService.show({ type: 'success', text: 'ERROR_WHILE_DELETING_WORKSTATION' });
               }
             }
           );
