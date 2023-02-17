@@ -150,6 +150,9 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // paymentChanged: Subject<any> = new Subject<any>();
   availableAmount:any;
+  nFinalAmount: number = 0;
+  nItemsTotalToBePaid: number = 0;
+  nTotalPayment:number = 0;
   
   randNumber(min: number, max: number): number {
     return Math.floor(Math.random() * (max - min + 1) + min);
@@ -196,27 +199,27 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     this.barcodeService.barcodeScanned.subscribe((barcode: string) => {
       this.openModal(barcode);
     });
-    this.loadTransaction();
-
+    
     this.checkArticleGroups();
 
     if (this.bIsDayStateOpened) this.fetchQuickButtons();
 
     const currentEmployeeId = JSON.parse(localStorage.getItem('currentUser') || '')['userId'];
-
     
     const _businessData: any = await this.getBusinessDetails().toPromise();
     this.businessDetails = _businessData.data;
     this.businessDetails.currentLocation = this.businessDetails?.aLocation?.find((location: any) => location?._id === this.iLocationId);
     this.tillService.selectCurrency(this.businessDetails.currentLocation);
-    this.getPrintSettings(true)
+    // this.getPrintSettings(true)
     this.getPrintSettings()
     this.getEmployee(currentEmployeeId)
+
+    this.mapFiscallyData()
 
     setTimeout(() => {
       MenuComponent.bootstrap();
     });
-    this.mapFiscallyData();
+    
   }
 
   async mapFiscallyData() {
@@ -233,19 +236,13 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       this.cancelFiskalyTransaction();
       this.fiskalyService.setTss(this.businessDetails.currentLocation?.tssInfo._id)
     }
+
+    this.loadTransaction();
   }
 
   ngAfterViewInit() {
     if (this.searchField)
       this.searchField.nativeElement.focus();
-   
-    // this.paymentChanged.pipe(
-    //   debounceTime(1000),
-    //   distinctUntilChanged()
-    // ).subscribe(() => {
-    //   this.changeInPayment();
-    // });
-    
   }
   // async getfiskalyInfo() {
   //   const tssId = await this.fiskalyService.fetchTSS();
@@ -263,7 +260,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   loadTransaction() {
     const fromTransactionPage: any = localStorage.getItem('fromTransactionPage');
     if (fromTransactionPage) this.handleTransactionResponse(JSON.parse(fromTransactionPage));
-      
   }
 
   getValueFromLocalStorage(key: string): any {
@@ -330,6 +326,17 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     await this.updateFiskalyTransaction('ACTIVE', []);
   }
 
+  updateAmountVariables() {
+    this.nItemsTotalToBePaid = this.getTotals('price');
+    this.nTotalPayment = this.totalPrepayment();
+    this.nFinalAmount = this.availableAmount - this.nItemsTotalToBePaid;
+
+    // console.log({ nItemsTotalToBePaid: this.nItemsTotalToBePaid })
+    // console.log({ nTotalPayment: this.nTotalPayment })
+    // console.log({ nFinalAmount: this.nFinalAmount })
+    // console.log({ availableAmount: this.availableAmount })
+  }
+
   getTotals(type: string): number {
     this.amountDefined = this.payMethods.find((pay) => pay.amount || pay.amount?.toString() === '0');
     if (!type) {
@@ -379,6 +386,19 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     });
     return result;
+  }
+
+  checkout():any{
+    if(this.transactionItems?.length){ 
+        const items = this.transactionItems.filter((item:any)=>{
+          if(item?.isExclude) return item;
+        })
+        if(items?.length == this.transactionItems?.length) return false
+        else if(this.amountDefined && this.bAllGiftcardPaid) return false;
+        else return true
+    }else{
+        return true;
+    }
   }
   async addItem(type: string) {
     // console.log('add item,', type, type==='repair')
@@ -459,6 +479,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
         break;
       case 'prepaymentChange':
         this.paymentDistributeService.distributeAmount(this.transactionItems, this.getUsedPayMethods(true));
+        this.updateAmountVariables();
         break;
       case 'duplicate':
         const tItem = Object.create(this.transactionItems[index]);
@@ -477,10 +498,10 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   createGiftCard(item: any, index: number): void {
     const body = {
       iBusinessId: this.iBusinessId,
-      iLocationId: this.getValueFromLocalStorage('currentLocation'),
+      iLocationId: this.iLocationId,
 
       // Do we still need to keep this hard code value here?
-      iCustomerId: '6182a52f1949ab0a59ff4e7b',
+      iCustomerId: this.customer?._id,
 
       sGiftCardNumber: this.transactionItems[index].sGiftCardNumber,
       eType: '',
@@ -566,6 +587,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     // console.log('change in payment in cash ')
     this.transactionItems = [...this.transactionItems]
+    this.updateAmountVariables();
   }
 
   clearAll() {
@@ -582,6 +604,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     this.customer = null;
     this.saveInProgress = false;
     this.clearPaymentAmounts();
+    localStorage.removeItem('fromTransactionPage');
   }
 
   clearPaymentAmounts() {
@@ -602,7 +625,9 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     })
     
     this.payMethods.map(o => { o.amount = null, o.isDisabled = false });
-    this.paymentDistributeService.distributeAmount(this.transactionItems, this.getUsedPayMethods(true));
+    this.availableAmount = this.getUsedPayMethods(true);
+    this.paymentDistributeService.distributeAmount(this.transactionItems, this.availableAmount);
+    this.updateAmountVariables();
   }
 
 
@@ -934,19 +959,25 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  getPrintSettings(action?: any) {
+  getPrintSettings() {
+    // console.log('gitprintsettings called')
     let oBody = {
       iLocationId: this.iLocationId,
-      oFilterBy: {}
+      // oFilterBy: {}
     }
-    if (action) {
-      oBody.oFilterBy = { sMethod: 'actions' };
-    }
+    // if (action) {
+    //   oBody.oFilterBy = { sMethod: 'actions' };
+    // }
     this.apiService.postNew('cashregistry', `/api/v1/print-settings/list/${this.iBusinessId}`, oBody).subscribe((result: any) => {
-      if (action) {
-        this.printActionSettings = result?.data[0]?.result[0].aActions;
-      } else {
-        this.printSettings = result?.data[0]?.result;
+      if(result?.data?.length && result?.data[0]?.result?.length) {
+        this.printSettings = [];
+        result?.data[0]?.result.forEach((settings:any) => {
+          if(settings?.sMethod === 'actions') {
+            this.printActionSettings = settings?.aActions || [];
+          } else {
+            this.printSettings.push(settings);
+          }
+        })
       }
     });
   }
@@ -1466,6 +1497,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   async startFiskalyTransaction() {
+    if (!this.bIsFiscallyEnabled) return;
     try {
       const res = await this.fiskalyService.startTransaction();
       localStorage.setItem('fiskalyTransaction', JSON.stringify(res));
@@ -1478,6 +1510,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   async updateFiskalyTransaction(state: string, payments: []) {
+    if (!this.bIsFiscallyEnabled) return;
     const pay = _.clone(payments);
     try {
       if (!localStorage.getItem('fiskalyTransaction')) {
@@ -1497,6 +1530,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   async cancelFiskalyTransaction() {
+    if(!this.bIsFiscallyEnabled) return;
     try {
       if (localStorage.getItem('fiskalyTransaction')) {
         await this.fiskalyService.updateFiskalyTransaction(this.transactionItems, [], 'CANCELLED');
@@ -1642,7 +1676,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       });
   }
 
-  handleTransactionResponse(data: any) {
+  async handleTransactionResponse(data: any) {
+    console.log('handleTransactionResponse')
     this.clearAll();
     const { transactionItems, transaction } = data;
     this.transactionItems = transactionItems;
@@ -1652,6 +1687,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       this.fetchCustomer(transaction.iCustomerId);
     }
     this.changeInPayment();
+    await this.updateFiskalyTransaction('ACTIVE', []);
   }
 
   generateBarcodeURI(displayValue: boolean = true, data: any) {
@@ -1668,5 +1704,10 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     console.log('cashregister destroy')
     MenuComponent.clearEverything();
     
+  }
+
+  openDrawer(){
+    // console.log('open drawer cash register')
+    this.receiptService.openDrawer(this.businessDetails.oPrintNode.sApiKey)
   }
 }

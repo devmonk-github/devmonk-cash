@@ -26,11 +26,12 @@
                         <div *ngIf="bShowOrderDownload">
                             <button class="btn btn-primary" [disabled]="bDownloadReceipt" (click)="downloadReceipt($event , 'downloadReceipt')">{{ 'DOWNLOAD' | translate }}</button>
                             <div class="spinner-border mx-2" *ngIf="bActivityPdfGenerationInProgress"></div>
-                        </div>
+                        </div>  
 
                         <div class="d-flex flex-wrap py-5">
                             <div class="flex-equal me-5">
                                 {{ "CUSTOMER_DETAILS" | translate}}
+                                <button class="btn btn-primary mx-3" (click)="openCustomer(customer)">{{'VIEW'|translate}} </button>
                                 <div class="fs-6 ms-1">
                                     <div class="align-items-center">
                                         <div class="text-gray-600">{{customer?.sFirstName || ''}} {{customer?.sLastName || ''}}</div>
@@ -308,7 +309,7 @@
                                             <div class="btn-group me-4 w-100 my-3">
                                                 <!--<span class="btn btn-primary fs-bold"
                                                     (click)="loadCashRegister = true; openTransaction(activity, 'activity')"> -->
-                                                <span class="btn btn-primary fs-bold">
+                                                <span class="btn btn-primary fs-bold" (click)="loadCashRegister = true; openTransaction(activity, 'activity')">
                                                     <fa-icon class="group-icon" [icon]="faEuro"></fa-icon>
                                                     <span class="indicator-label">{{ "CHECKOUT" | translate}}</span>
                                                 </span>
@@ -516,7 +517,7 @@
                                                     </div>
                                                     <div class="d-flex">
                                                         <div class="image-input p-1 d-flex"
-                                                            *ngFor="let image of activity.aImage"
+                                                            *ngFor="let image of activity.aImage ; let imageIndex = index"
                                                             data-kt-image-input="true"
                                                             style="background-image: url('assets/media/svg/avatars/blank.svg')">
                                                             <div class="image-input-wrapper w-100px h-100px"
@@ -529,7 +530,7 @@
                                                                     <button
                                                                         class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow"
                                                                         data-kt-image-input-action="remove"
-                                                                        data-bs-toggle="tooltip" title="Remove image">
+                                                                        data-bs-toggle="tooltip" title="Remove image" (click)="removeImage(activityindex, imageIndex)">
                                                                         <i class="bi bi-x fs-2"></i>
                                                                     </button>
                                                                 </div>

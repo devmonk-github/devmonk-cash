@@ -224,7 +224,7 @@ export class CustomerDialogComponent implements OnInit {
   }
 
   editCustomer(customer: any){
-    this.dialogService.openModal(CustomerDetailsComponent, { cssClass:"modal-xl", context: { mode: 'details', customer: customer, editProfile: true } }).instance.close.subscribe(result =>{
+    this.dialogService.openModal(CustomerDetailsComponent, { cssClass:"modal-xl", context: { mode: 'details', customerData: customer, editProfile: false } }).instance.close.subscribe(result =>{
        this.getCustomers()
     });
   }

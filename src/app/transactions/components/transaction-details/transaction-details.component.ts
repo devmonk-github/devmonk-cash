@@ -347,8 +347,20 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   }
 
   openCustomer(customer: any) {
-    this.dialogService.openModal(CustomerDetailsComponent,
-      { cssClass: "modal-xl position-fixed start-0 end-0", context: { customer: customer, mode: 'details', from: 'transactions' } }).instance.close.subscribe(result => { });
+    if(customer?._id){
+      this.apiService.getNew('customer' , `/api/v1/customer/${this.iBusinessId}/${customer._id}`).subscribe((result:any)=>{
+        if(result?.data){
+          this.dialogService.openModal(CustomerDetailsComponent,
+            { cssClass: "modal-xl position-fixed start-0 end-0", context: { customerData: result?.data, mode: 'details', from: 'transactions' } }).instance.close.subscribe(result => { });
+        }else{
+           this.toastService.show({type:'warning' , text:'No customer data available'})
+        }
+      }) 
+    }else{
+      this.toastService.show({type:'warning' , text:'No customer data available'})
+    }
+
+ 
   }
 
   async showActivityItem(activityItem: any, event: any) {
@@ -391,7 +403,7 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
           return;
         }
         // return;
-        this.printService.openDrawer(this.iBusinessId, command, this.thermalPrintSettings?.nPrinterId, this.thermalPrintSettings?.nComputerId, this.businessDetails.oPrintNode.sApiKey, this.transaction.sNumber).then((response: any) => {
+        this.printService.createPrintJob(this.iBusinessId, command, this.thermalPrintSettings?.nPrinterId, this.thermalPrintSettings?.nComputerId, this.businessDetails.oPrintNode.sApiKey, this.transaction.sNumber).then((response: any) => {
           if (response.status == "PRINTJOB_NOT_CREATED") {
             let message = '';
             if (response.computerStatus != 'online') {

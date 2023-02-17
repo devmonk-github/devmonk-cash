@@ -16,7 +16,10 @@ export class TillService {
 
   currency: string = "€";
 
-  iBusinessId = localStorage.getItem('currentBusiness');
+  iBusinessId = localStorage.getItem('currentBusiness') || '';
+  iLocationId = localStorage.getItem('currentLocation') || '';
+  iWorkstationId = localStorage.getItem('currentWorkstation') || '';
+
   constructor(
     private apiService: ApiService,
     private translateService: TranslateService) { }
@@ -113,21 +116,21 @@ export class TillService {
       null,
       null,
       null,
-      this.getValueFromLocalStorage('currentBusiness'),
+      this.iBusinessId,
       null,
       'cash-register-revenue',
       'y',
-      this.getValueFromLocalStorage('currentWorkstation'),
+      this.iWorkstationId,
       this.getValueFromLocalStorage('currentUser').userId,
-      this.getValueFromLocalStorage('currentLocation'),
+      this.iLocationId,
       null,
       null,
     )
 
     const body = {
-      iBusinessId: this.getValueFromLocalStorage('currentBusiness'),
-      iLocationId: this.getValueFromLocalStorage('currentLocation'),
-      iWorkstationId: this.getValueFromLocalStorage('currentWorkstation'),
+      iBusinessId: this.iBusinessId,
+      iLocationId: this.iLocationId,
+      iWorkstationId: this.iWorkstationId,
       transactionItems: transactionItems,
       oTransaction: transaction,
       payments: payMethods,//this.getUsedPayMethods(false, payMethods),
@@ -153,10 +156,10 @@ export class TillService {
         sEmail: customer.sEmail
       }
     };
-    console.log('length 115: ', transactionItems?.length);
+    // console.log('length 115: ', transactionItems?.length);
     body.transactionItems = transactionItems.map((i: any) => {
-      console.log(i)
-      console.log('i.nDiscount: ', i.nDiscount, i.price, i.oType, i.paymentAmount);
+      // console.log(i)
+      // console.log('i.nDiscount: ', i.nDiscount, i.price, i.oType, i.paymentAmount);
       const bRefund =
         i.oType?.bRefund /* Indication from the User */
         || i.nDiscount.quantity < 0 /* Minus Discount (e.g. -10 discount) [TODO: Remove the quantity as its not exist at all] */
@@ -167,12 +170,12 @@ export class TillService {
         || (this.getUsedPayMethods(true, payMethods) - this.getTotals('price', transactionItems) < 0)
         || (i.paymentAmount !== i.amountToBePaid)
 
-      console.log('i.paymentAmount: ', i.paymentAmount);
-      console.log('i.bRefund: ', bRefund);
-      console.log('UsedPaymentMethod: ', this.getUsedPayMethods(true, payMethods));//0.02
-      console.log('getTotal: ', this.getTotals('price', transactionItems));//0.03
-      console.log('Last condition: ', i.paymentAmount, i.amountToBePaid);
-      console.log('bPrepayment: ', bPrepayment, bRefund && i.oType?.bPrepayment, (this.getUsedPayMethods(true, payMethods) - this.getTotals('price', transactionItems) < 0), (i.paymentAmount !== i.amountToBePaid));
+      // console.log('i.paymentAmount: ', i.paymentAmount);
+      // console.log('i.bRefund: ', bRefund);
+      // console.log('UsedPaymentMethod: ', this.getUsedPayMethods(true, payMethods));//0.02
+      // console.log('getTotal: ', this.getTotals('price', transactionItems));//0.03
+      // console.log('Last condition: ', i.paymentAmount, i.amountToBePaid);
+      // console.log('bPrepayment: ', bPrepayment, bRefund && i.oType?.bPrepayment, (this.getUsedPayMethods(true, payMethods) - this.getTotals('price', transactionItems) < 0), (i.paymentAmount !== i.amountToBePaid));
       
       i.price = (parseFloat(i.price)).toFixed(2);
       i.nPurchasePrice = (parseFloat(i.nPurchasePrice)).toFixed(2);
@@ -193,11 +196,11 @@ export class TillService {
       oItem.nMargin = i.nMargin;
       oItem.iBusinessPartnerId = i.iBusinessPartnerId;
       oItem.sBusinessPartnerName = i.sBusinessPartnerName;
-      oItem.iBusinessId = this.getValueFromLocalStorage('currentBusiness');
+      oItem.iBusinessId = this.iBusinessId;
       oItem.iArticleGroupId = i.iArticleGroupId;
       oItem.iArticleGroupOriginalId = i.iArticleGroupOriginalId || i.iArticleGroupId;
       oItem.oArticleGroupMetaData = i?.oArticleGroupMetaData;
-      oItem.bPayLater = false;
+      oItem.bPayLater = i?.isExclude;
       oItem.bDeposit = false;
       oItem.sProductCategory = 'CATEGORY';
       oItem.sGiftCardNumber = i?.sGiftCardNumber;
@@ -214,10 +217,10 @@ export class TillService {
       oItem.iBusinessProductId = i.iBusinessProductId;
       oItem.oBusinessProductMetaData = i.oBusinessProductMetaData;
       oItem.eStatus = 'y';
-      oItem.iWorkstationId = this.getValueFromLocalStorage('currentWorkstation');
+      oItem.iWorkstationId = this.iWorkstationId;
       oItem.iEmployeeId = i.iEmployeeId || this.getValueFromLocalStorage('currentUser').userId;
       oItem.iAssigneeId = i.iAssigneeId;
-      oItem.iLocationId = this.getValueFromLocalStorage('currentLocation');
+      oItem.iLocationId = this.iLocationId;
       oItem.sBagNumber = i.sBagNumber;
       oItem.iSupplierId = i.iSupplierId; // repairer id
       // 50
@@ -250,7 +253,7 @@ export class TillService {
 
       return oItem;
     });
-    console.log('iPayment 201: ', JSON.parse(JSON.stringify(body?.transactionItems)));
+    // console.log('iPayment 201: ', JSON.parse(JSON.stringify(body?.transactionItems)));
     const originalTItemsLength = length = body.transactionItems.filter((i: any) => i.oType.eKind !== 'loyalty-points').length;
     body.transactionItems.map((i: any) => {
       let discountRecords: any = localStorage.getItem('discountRecords');
@@ -258,14 +261,14 @@ export class TillService {
         discountRecords = JSON.parse(discountRecords);
       }
       let _nDiscount = i?.bDiscountOnPercentage ? (i.nPriceIncVat * (i.nDiscount / 100)) : i.nDiscount;
-      console.log('-------------------_nDiscount-----------------------------------: ', _nDiscount);
+      // console.log('-------------------_nDiscount-----------------------------------: ', _nDiscount);
       if (i.oType.bRefund && _nDiscount !== 0) {
-        console.log('IN IF CONDITION: ');
+        // console.log('IN IF CONDITION: ');
         i.nPaymentAmount -= _nDiscount * i.nQuantity;
         i.nRevenueAmount = i.nPaymentAmount;
         const records = discountRecords.filter((o: any) => o.sUniqueIdentifier === i.sUniqueIdentifier);
         records.forEach((record: any) => {
-          console.log('IN IF CONDITION record: ', record);
+          // console.log('IN IF CONDITION record: ', record);
           i.nPaymentAmount += record.nPaymentAmount;
           record.nPaymentAmount = -1 * record.nPaymentAmount;
           record.nRevenueAmount = -1 * record.nRevenueAmount;
@@ -279,7 +282,7 @@ export class TillService {
         });
       } else {
         if (_nDiscount && _nDiscount > 0 && !i.oType.bRefund && !i.iActivityItemId) {
-          console.log('IN ELSE: ', i, _nDiscount, i.nQuantity);
+          // console.log('IN ELSE: ', i, _nDiscount, i.nQuantity);
           i.nPaymentAmount += _nDiscount * i.nQuantity;
           i.nRevenueAmount += _nDiscount;
           const tItem1 = JSON.parse(JSON.stringify(i));
@@ -323,7 +326,7 @@ export class TillService {
         }
       });
     }
-    console.log('finaly body: ', body);
+    // console.log('finaly body: ', body);
     return body;
   }
 
@@ -366,7 +369,7 @@ export class TillService {
       searchValue: 'Ordered products',
       oFilterBy: {
       },
-      iBusinessId: localStorage.getItem('currentBusiness'),
+      iBusinessId: this.iBusinessId,
     };
     return this.apiService.postNew('core', '/api/v1/business/article-group/list', data).pipe(retry(1), catchError(this.processError));
   }
@@ -492,7 +495,8 @@ export class TillService {
     
     
     dataObject.aPayments.forEach((obj: any) => {
-      obj.dCreatedDate = moment(obj.dCreatedDate).format('DD-MM-yyyy hh:mm:ss');
+      if(!obj?.sRemarks) obj.sRemarks = "";
+      obj.dCreatedDate = moment(obj.dCreatedDate).format('DD-MM-yyyy hh:mm');
     });
 
     const aLoyaltyPointsItems = transaction.aTransactionItems.filter((item: any) => item?.oType?.eKind == 'loyalty-points-discount');
@@ -617,7 +621,7 @@ export class TillService {
     dataObject.totalSavingPoints = totalSavingPoints;
     dataObject.totalRedeemedLoyaltyPoints = totalRedeemedLoyaltyPoints;
     dataObject.nTotalExcVat = dataObject.totalAfterDisc - dataObject.totalVat;
-    dataObject.dCreatedDate = moment(dataObject.dCreatedDate).format('DD-MM-yyyy hh:mm:ss');
+    dataObject.dCreatedDate = moment(dataObject.dCreatedDate).format('DD-MM-yyyy hh:mm');
     let _relatedResult:any , _loyaltyPointSettings:any;
     
     if(!dataObject?.bMigrate){
@@ -637,7 +641,7 @@ export class TillService {
     if(dataObject.related.length){
       dataObject.related.forEach((relatedobj: any) => {
         relatedobj.aPayments.forEach((obj: any) => {
-          obj.dCreatedDate = moment(obj.dCreatedDate).format('DD-MM-yyyy hh:mm:ss');
+          obj.dCreatedDate = moment(obj.dCreatedDate).format('DD-MM-yyyy hh:mm');
         });
         dataObject.aPayments = dataObject.aPayments.concat(relatedobj.aPayments);
       })

@@ -121,6 +121,7 @@ export class AddFavouritesComponent implements OnInit {
       this.newSelectedProduct.sName = product?.sName || 'No name';
       this.newSelectedProduct._id = product?._id;
     }
+    this.validate();  
   }
 
   assignProduct(){
