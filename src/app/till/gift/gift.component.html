@@ -55,7 +55,7 @@
         <div class="col-3">
           <div class="form-floating mb-7">
             <input type="number" class="form-control" name="number" id="value" [(ngModel)]="item.price"
-              [disabled]="item.nonEditable" (change)="changeInPrice()">
+              [disabled]="item.nonEditable" (change)="changeInPrice(); updatePayments();">
             <label for="number">{{ "VALUE" | translate}}</label>
           </div>
           <p>{{ "VAT_HANDLING" | translate}}</p>
