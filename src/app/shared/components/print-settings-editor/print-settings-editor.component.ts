@@ -37,6 +37,13 @@ export class PrintSettingsEditorComponent implements OnInit {
       eType: 'dropdown'
     },
     {
+      sTitle: 'PDF Method',
+      sParameter: 'pdfMethod',
+      eOptions: ['PDFMake', 'Javascript'],
+      value: 'PDFMake',
+      eType: 'dropdown'
+    },
+    {
       sTitle: 'Page size',
       sParameter: 'pageSize',
       eOptions: ['A4', 'A5', 'custom'],
@@ -100,13 +107,14 @@ export class PrintSettingsEditorComponent implements OnInit {
     });
   }
   mapWithDefaultSettings(){
-    this.oTemplate.aSettings.map((setting:any)=>{
-      this.aDefaultSettings.forEach((defaultSetting:any) => {
-        if (setting.sParameter === defaultSetting.sParameter){
-          setting.eOptions = defaultSetting?.eOptions;
-          setting.eType = defaultSetting?.eType;
-        }
-      });
+    this.aDefaultSettings.forEach((defaultSetting:any) => {
+      const oMatch = this.oTemplate.aSettings.find((setting: any) => setting.sParameter === defaultSetting.sParameter );
+      if (oMatch){
+        oMatch.eOptions = defaultSetting?.eOptions;
+        oMatch.eType = defaultSetting?.eType;
+      } else {
+        this.oTemplate.aSettings.push(defaultSetting);
+      }      
     });
     
   }
