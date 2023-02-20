@@ -125,10 +125,10 @@
                                         </thead>
                                         <tbody>
                                           
-                                            <td class="table-width">{{activity?.oType?.eKind }}</td>
+                                            <td class="table-width">{{activity?.oType?.eKind || '-'}}</td>
                                             <td class="table-width">{{activity.dCreatedDate | date:'yyyy-MM-dd'}}</td>
-                                            <td class="table-width"> {{activity.eActivityItemStatus }}</td>
-                                            <td class="table-width">{{activity.nTotalAmount }}</td>
+                                            <td class="table-width"> {{activity.eActivityItemStatus || '-' }}</td>
+                                            <td class="table-width">{{activity.nTotalAmount || '-' }}</td>
                                         </tbody>
                                       </table> 
                                       </div>
