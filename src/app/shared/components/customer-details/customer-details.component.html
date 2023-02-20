@@ -7,9 +7,9 @@
                 translate}}</button>
             <button class="btn btn-primary" *ngIf="editProfile" (click)="EditOrCreateCustomer()">{{"SAVE" |
                 translate}}</button>
-            <button class="btn btn-secondary cancel my-auto" *ngIf="!editProfile" (click)="close(false)">{{"CANCEL" |
-                translate}}</button>
-            <a class="cancel my-auto" *ngIf="editProfile" (click)="close(false)">
+            <!-- <button class="btn btn-secondary cancel my-auto" *ngIf="!editProfile" (click)="close(false)">{{"CANCEL" |
+                translate}}</button> -->
+            <a class="cancel my-auto" (click)="close(false)"> <!--*ngIf="editProfile"-->
                 <i class="fa fa-times"></i>
             </a>
             <!-- <button type="button" class="btn btn-sm" (click)="close(false)">

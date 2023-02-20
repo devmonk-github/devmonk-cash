@@ -436,7 +436,7 @@
         </div>
 
         <div class="form-floating input-group mb-5 py-0 ">
-          <select class="form-select" [(ngModel)]="selectedTransaction" (ngModelChange)="fetchParkedTransactionInfo()">
+          <select class="form-select" style="padding-top: 0.75rem;" [(ngModel)]="selectedTransaction" (ngModelChange)="fetchParkedTransactionInfo()">
             <option [ngValue]="null" disabled selected>
               {{"PARKED_TRANSACTIONS" | translate}}
             </option>
