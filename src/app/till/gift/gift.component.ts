@@ -105,6 +105,10 @@ export class GiftComponent implements OnInit {
     this.item.nPurchasePrice = this.item.price / 1.21;
   }
 
+  updatePayments(): void {
+    this.itemChanged.emit(this.item);
+  }
+
   create(): void {
     this.generatePDF(false);
     this.createGiftCard.emit('create');
