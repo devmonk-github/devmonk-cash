@@ -98,22 +98,46 @@
                 <div class="accordion" id="kt_accordion_1">
                     <div class="accordion-item" *ngFor="let activity of activityItems; let activityindex = index">
                         <div *ngIf="!eKindValue.includes(activity.oType.eKind)">
-                            <h2 class="accordion-header">
-                                <button class="accordion-button fs-4 fw-bold"
+                            <h6 class="accordion-header">
+                                <div >
+                                    <button class="accordion-button fs-4 fw-bold"
                                     type="button"
                                     (click)="activity.bIsVisible = !activity.bIsVisible"
                                     data-bs-toggle="collapse"
                                     [attr.data-bs-target]="'item'+activityindex"
                                     [ngClass]="{'collapsed': activity.bIsVisible === false}">
+                                    <div class="col-5">
                                     {{activity.sNumber}}
                                     <span class="ms-5" (click)="copyToClipboard(activity)">
                                         <i class="fa fa-copy" title="Click to copy"> </i>
                                         <span @fade *ngIf="activity.bActivityNumberCopied" class="text-primary bold ms-2 my-2">
                                             {{ 'COPIED_TO_CLIPBOARD' | translate }}</span>
                                         </span>
+
+                                    </div>
+                                    <div class="col-7">
+                                    <table class="table table-borderless mx-8">
+                                        <thead>
+                                            <td class="table-width">{{'TYPE' | translate}}</td>
+                                            <td class="table-width">{{'INTAKE_DATE' | translate}}</td>
+                                            <td class="table-width">{{'STATUS' | translate}}</td>
+                                            <td class="table-width">{{'PRICE' | translate}}</td>
+                                        </thead>
+                                        <tbody>
+                                          
+                                            <td class="table-width">{{activity?.oType?.eKind }}</td>
+                                            <td class="table-width">{{activity.dCreatedDate | date:'yyyy-MM-dd'}}</td>
+                                            <td class="table-width"> {{activity.eActivityItemStatus }}</td>
+                                            <td class="table-width">{{activity.nTotalAmount }}</td>
+                                        </tbody>
+                                      </table> 
+                                      </div>
                                     </button>
-                                
-                            </h2>
+
+
+                                </div>
+                    
+                            </h6>
                             <div class="accordion-collapse collapse general"
                                 *ngIf="eKindValueForLayout.includes(activity.oType.eKind)" 
                                 data-bs-parent="#kt_accordion_1" 
