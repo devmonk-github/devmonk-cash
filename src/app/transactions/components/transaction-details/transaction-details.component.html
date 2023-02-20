@@ -100,18 +100,18 @@
                 <div class="col-md-8">
                     <div class="text-gray-800 mt-2">{{ 0 }}</div>
                 </div>
-                <label class="col-md-4 mt-2 text-muted">{{"ASSISTED_BY" | translate}}</label>
+                <!-- <label class="col-md-4 mt-2 text-muted">{{"ASSISTED_BY" | translate}}</label>
                 <div class="col-md-8">
                     <div class="text-gray-800 mt-2">{{ transaction?.oEmployee?.sFirstName }} {{
                         transaction?.oEmployee?.sLastName }}</div>
-                </div>
+                </div> -->
             </div>
             <div class="col-md-4">
-                <button class="btn btn-sm btn-secondary w-100 d-flex">
+                <button class="btn btn-sm btn-secondary w-100 d-flex mb-2">
                     <fa-icon [icon]="faFileInvoice"></fa-icon>
                     <label class="mx-auto">{{ "GENERAL_INVOICE" | translate}}</label>
                 </button>
-                <button class="btn btn-sm btn-secondary w-100 d-flex" [disabled]="downloadWithVATLoading || !printSettings?.length || !businessDetails?._id" 
+                <button class="btn btn-sm btn-secondary w-100 d-flex mb-2" [disabled]="downloadWithVATLoading || !printSettings?.length || !businessDetails?._id" 
                     (click)="downloadWithVAT()">
                     <fa-icon [hidden]="downloadWithVATLoading" [icon]="faDownload"></fa-icon>
                     <span *ngIf="downloadWithVATLoading">
@@ -119,39 +119,39 @@
                     </span>
                     <label class="mx-auto">{{ "DOWNLOAD_WITH_VAT" | translate}}</label>
                 </button>
-                <button class="btn btn-sm btn-secondary w-100 d-flex" (click)="downloadWithVAT(true)">
+                <button class="btn btn-sm btn-secondary w-100 d-flex mb-2" (click)="downloadWithVAT(true)">
                     <fa-icon [hidden]="printWithVATLoading" [icon]="faPrint"></fa-icon>
                     <span *ngIf="printWithVATLoading">
                         <i class="fa fa-spinner fa-spin" [hidden]="!printWithVATLoading" style="font-size:15px;"></i>
                     </span>
                     <label class="mx-auto">{{ "PRINT" | translate }}</label>
                 </button>
-                <button class="btn btn-sm btn-secondary w-100 d-flex">
+                <button class="btn btn-sm btn-secondary w-100 d-flex mb-2">
                     <fa-icon [icon]="faDownload"></fa-icon>
                     <label class="mx-auto">{{ "DOWNLOAD_WITHOUT_VAT" | translate}}</label>
                 </button>
-                <button [disabled]="!businessDetails?._id" class="btn btn-sm btn-secondary w-100 d-flex" (click)="getThermalReceipt('business-receipt')">
+                <button [disabled]="!businessDetails?._id" class="btn btn-sm btn-secondary w-100 d-flex mb-2" (click)="getThermalReceipt('business-receipt')">
                     <fa-icon [icon]="faReceipt"></fa-icon>
                     <label class="mx-auto"> {{ "THERMAL_RECEIPT" | translate}}</label>
                 </button>
-                <button [disabled]="!businessDetails?._id" class="btn btn-sm btn-secondary w-100 d-flex" (click)="getThermalReceipt('warranty-receipt')">
+                <button [disabled]="!businessDetails?._id" class="btn btn-sm btn-secondary w-100 d-flex mb-2" (click)="getThermalReceipt('warranty-receipt')">
                     <fa-icon [icon]="faReceipt"></fa-icon>
                     <label class="mx-auto"> {{ "WARRANTY_RECEIPT" | translate}}</label>
                 </button>
-                <button class="btn btn-sm btn-secondary w-100 d-flex">
+                <button class="btn btn-sm btn-secondary w-100 d-flex mb-2">
                     <fa-icon [icon]="faAt"></fa-icon>
                     <label class="mx-auto">{{ "MAIL" | translate}}</label>
                 </button>
-                <button class="btn btn-sm btn-secondary w-100 d-flex"
+                <button class="btn btn-sm btn-secondary w-100 d-flex mb-2"
                     (click)="openTransaction(transaction, 'transaction')">
                     <fa-icon [icon]="faUndoAlt"></fa-icon>
                     <label class="mx-auto">{{"REFUND" | translate}}</label>
                 </button>
-                <button class="btn btn-sm btn-secondary w-100 d-flex">
+                <button class="btn btn-sm btn-secondary w-100 d-flex mb-2">
                     <fa-icon [icon]="faClipboard"></fa-icon>
                     <label class="mx-auto">{{"VIEW_LOG" | translate}}</label>
                 </button>
-                <button class="btn btn-sm btn-secondary w-100 d-flex">
+                <button class="btn btn-sm btn-secondary w-100 d-flex mb-2">
                     <fa-icon [icon]="faTrashAlt"></fa-icon>
                     <label class="mx-auto">{{ "DELETE" | translate}}</label>
                 </button>
