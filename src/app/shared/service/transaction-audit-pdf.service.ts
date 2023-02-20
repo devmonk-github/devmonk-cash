@@ -435,7 +435,7 @@ export class TransactionAuditUiPdfService {
             ],
             [
                 { text: this.translations['CASH_IN_TILL'], style: ['td'] },
-                { text: this.convertToMoney((aStatistic[0]?.overall?.length) ? aStatistic[0].overall[0].nTotalRevenue : 0 + (-oCountings.nCashDifference)), style: ['td'] },
+                { text: this.convertToMoney(oCountings?.nCashInTill || 0), style: ['td'] },
             ],
             [
                 { text: this.translations['CASH_COUNTED'], style: ['td'] },
