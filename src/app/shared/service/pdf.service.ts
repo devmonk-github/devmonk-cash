@@ -78,6 +78,11 @@ export class PdfService {
       type: "A6",
       width: "105",
       height: "148"
+    },
+    {
+      type: "custom",
+      width: "0",
+      height: "0"
     }
   ]
 
@@ -465,9 +470,8 @@ export class PdfService {
 
       if (this.orientation === 'portrait' || this.orientation === 'landscape') {
 
-        definedPaperSize = this.staticPaperSize.find((size) => {
-          return size.type === paperSize
-        })
+
+        definedPaperSize = this.staticPaperSize.find((size) => size.type === paperSize)
 
         if (this.orientation === 'landscape') {
           let definedPaperSizeOldWidth = definedPaperSize.width
@@ -582,7 +586,6 @@ export class PdfService {
     
     for (let r = 0; r < rowsToBeCreated; r++) {
       let finalDataSourceObject = dataSourceObject;
-      
       if (typeof dataSourceObject.length === 'number') {
         finalDataSourceObject = Object.values(dataSourceObject)[r];
       }
@@ -606,6 +609,7 @@ export class PdfService {
         let colsize = col.size;
         let gutterSize = this.calcColumnGutter(colsize, gutter);
         let newRowWidth = this.calcRowWidth(printableArea.width, colsize, gutterSize);
+        if (col?.object) finalDataSourceObject = finalDataSourceObject[col.object];
         let newCol = this.createCol(i, cols.length, newRowWidth, gutter, col, finalDataSourceObject, colsize, printableArea);
         if (this.isDefined(col.css)) {
           newCol = this.applyCss(newCol, col.css);
@@ -655,7 +659,6 @@ export class PdfService {
 
     const printableWidth = (paperSize.width - (margins.left + margins.right));
     const printableHeight = (paperSize.height - (margins.top + margins.bottom));
-
     const printableArea = {
       x: margins.left,
       y: margins.top,
@@ -1411,11 +1414,51 @@ export class PdfService {
     pdfGenerator.style.display = 'none'
     pdfGenerator.id = 'pdfGenerator'
     document.body.appendChild(pdfGenerator)
-
+    templateString = this.processTemplateString(JSON.parse(templateString));
     return this.generate(templateString, JSON.stringify(data), fileName, print, printData, businessId, transactionId)
   }
 
   logService(details: string) {
+  }
+
+  processTemplateString(template:any) {
+    let t:any = {...template};
+    
+    delete template.dCreatedDate;
+    delete template.dUpdatedDate;
+    delete template.eStatus;
+    delete template.eType;
+    delete template.iBusinessId;
+    delete template.iLocationId;
+    delete template.sName;
+    delete template._id;
+    delete template.__v;
+
+    template?.aSettings.forEach((setting:any) => {
+      switch (setting.sParameter) {
+        case 'orientation':
+          t.orientation = setting.value;
+          break;
+        case 'pageSize':
+          t.paperSize = (setting.value === 'custom') ? { width: setting.nWidth, height: setting.nHeight, type: 'custom-papersize' } :setting.value;
+          break;
+        case 'pageMargins':
+          console.log({ setting });
+          t.margins = { 
+            left: setting.aValues[0], 
+            top: setting.aValues[1], 
+            right: setting.aValues[2], 
+            bottom: setting.aValues[3] 
+          };
+          break;
+        case 'fontSize':
+          t.fontSize = setting.value;
+          break;
+      }
+      t.css = setting?.css;
+      t.defaultElement = "p";
+    });
+    return JSON.stringify(t);
   }
 
 
