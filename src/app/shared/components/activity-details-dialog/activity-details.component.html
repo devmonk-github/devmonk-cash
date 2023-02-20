@@ -328,9 +328,7 @@
                                                     <span class="indicator-label">{{ "MAIL" | translate}}</span>
                                                 </span>
                                             </div>
-                                            <div class="btn-group me-4 w-100 my-3">
-                                                <!--<span class="btn btn-primary fs-bold"
-                                                    (click)="loadCashRegister = true; openTransaction(activity, 'activity')"> -->
+                                            <div [ngClass]="bShowOrderDownload ? 'btn-group me-4 w-100 my-3': 'btn-group me-4 w-100 my-3 disabled'">
                                                 <span class="btn btn-primary fs-bold" (click)="loadCashRegister = true; openTransaction(activity, 'activity')">
                                                     <fa-icon class="group-icon" [icon]="faEuro"></fa-icon>
                                                     <span class="indicator-label">{{ "CHECKOUT" | translate}}</span>
@@ -976,10 +974,8 @@
                                                     <span class="indicator-label">{{ "MAIL" | translate}}</span>
                                                 </span>
                                             </div> -->
-                                            <div class="btn-group me-4 w-100 my-3 disabled">
-                                                <!--<span class="btn btn-primary fs-bold"
-                                                    (click)="loadCashRegister = true; openTransaction(activity, 'activity')"> -->
-                                                <span class="btn btn-primary fs-bold">
+                                            <div [ngClass]="bShowOrderDownload ? 'btn-group me-4 w-100 my-3': 'btn-group me-4 w-100 my-3 disabled'">
+                                                <span class="btn btn-primary fs-bold" (click)="loadCashRegister = true; openTransaction(activity, 'activity')">
                                                     <fa-icon class="group-icon" [icon]="faEuro"></fa-icon>
                                                     <span class="indicator-label">{{ "CHECKOUT" | translate}}</span>
                                                 </span>
@@ -1634,10 +1630,8 @@
                                                     <span class="indicator-label">{{ "MAIL" | translate}}</span>
                                                 </span>
                                             </div>
-                                            <div class="btn-group me-4 w-100 my-3 disabled">
-                                                <!--<span class="btn btn-primary fs-bold"
-                                                    (click)="loadCashRegister = true; openTransaction(activity, 'activity')"> -->
-                                                <span class="btn btn-primary fs-bold">
+                                            <div [ngClass]="bShowOrderDownload ? 'btn-group me-4 w-100 my-3': 'btn-group me-4 w-100 my-3 disabled'">
+                                                <span class="btn btn-primary fs-bold" (click)="loadCashRegister = true; openTransaction(activity, 'activity')">
                                                     <fa-icon class="group-icon" [icon]="faEuro"></fa-icon>
                                                     <span class="indicator-label">{{ "CHECKOUT" | translate}}</span>
                                                 </span>
