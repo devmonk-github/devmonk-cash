@@ -652,7 +652,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
     this.bDisableCountings = !this.oStatisticsDocument.bIsDayState;
     if (this.aStatistic?.length && this.aStatistic[0]?.overall?.length) {
       this.aStatistic[0].overall[0].nTotalRevenue = parseFloat(this.aStatistic[0].overall[0].nTotalRevenue.toFixed(2))
-      this.oCountings.nCashInTill = this.aStatistic[0].overall[0].nTotalRevenue;
+      // this.oCountings.nCashInTill = this.aStatistic[0].overall[0].nTotalRevenue;
     }
     
     let aKeys: any = [];
@@ -761,10 +761,15 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
       this.aPaymentMethods.map((item: any) => {
         item.nNewAmount = item.nAmount;
         this.nPaymentMethodTotal += parseFloat(item.nAmount);
+        if (item?.sMethod === 'cash') this.oCountings.nCashInTill = item?.nAmount || 0;
         return item;
       });
       this.nNewPaymentMethodTotal = this.nPaymentMethodTotal;
       this.filterDuplicatePaymentMethods();
+    }
+
+    if (oData?.bIsDayState === false) {
+      this.oCountings.nCashInTill = oData?.oCountings?.nCashInTill || 0;
     }
   }
 
@@ -817,7 +822,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
 
           if (this.aStatistic?.length && this.aStatistic[0]?.overall?.length) {
             this.aStatistic[0].overall[0].nTotalRevenue = parseFloat(this.aStatistic[0].overall[0].nTotalRevenue.toFixed(2))
-            this.oCountings.nCashInTill = this.aStatistic[0].overall[0].nTotalRevenue;
+            // this.oCountings.nCashInTill = this.aStatistic[0].overall[0].nTotalRevenue;
           }
           this.mappingThePaymentMethod(result?.data);
         }
@@ -1168,8 +1173,8 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
     const oBankPaymentMethod = this.allPaymentMethod.filter((el: any) => el.sName.toLowerCase() === 'bankpayment')[0];
     const nVatRate = await this.taxService.fetchDefaultVatRate({ iLocationId: this.iLocationId });
 
-    console.log('nVatRate: ', nVatRate);
-    console.log('nDifferenceAmount: ', this.oCountings.nCashDifference);
+    // console.log('nVatRate: ', nVatRate);
+    // console.log('nDifferenceAmount: ', this.oCountings.nCashDifference);
     const aPromises:any = [];
     
     if (this.oCountings.nCashDifference !== 0) {
@@ -1229,6 +1234,8 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
       oCountings: this.oCountings,
       sComment: this.oStatisticsDocument.sComment
     }
+    // console.log(oBody)
+    // return;
 
     this.closeSubscription = this.apiService.postNew('cashregistry', `/api/v1/statistics/close/day-state`, oBody).subscribe((result: any) => {
       this.toastService.show({ type: 'success', text: `Day-state is close now` });

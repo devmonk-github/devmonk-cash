@@ -16,6 +16,8 @@ import { TillService } from '../../service/till.service';
 import {AddFavouritesComponent} from '../add-favourites/favourites.component';
 import { Clipboard } from '@angular/cdk/clipboard';
 import { animate, style, transition, trigger } from '@angular/animations';
+import { CustomerDetailsComponent } from '../customer-details/customer-details.component';
+import { PdfService } from '../../service/pdf.service';
 @Component({
   selector: 'app-activity-details',
   templateUrl: './activity-details.component.html',
@@ -168,6 +170,7 @@ export class ActivityDetailsComponent implements OnInit {
     private dialogService: DialogService,
     private routes: Router,
     private receiptService: ReceiptService,
+    private pdfService: PdfService,
     private toastService: ToastService ,
     private translationService:TranslateService,
     public tillService: TillService,
@@ -227,8 +230,8 @@ export class ActivityDetailsComponent implements OnInit {
       _transactionItemData = await this.fetchTransactionItems();
       this.processTransactionItems(_transactionItemData);
     }
-    
-    this.processActivityItems();
+    // console.log(236)
+    // this.processActivityItems();
 
     if (this.activity?.iCustomerId) this.fetchCustomer(this.activity.iCustomerId, -1);
     this.getBusinessLocations();
@@ -241,6 +244,10 @@ export class ActivityDetailsComponent implements OnInit {
     ]);
     this.printActionSettings = _printActionSettings?.data[0]?.result[0].aActions;
     this.printSettings = _printSettings?.data[0]?.result;
+
+    setTimeout(() => {
+      MenuComponent.reinitialization();
+    }, 200);
   }
 
   processActivityItems(){
@@ -432,6 +439,15 @@ export class ActivityDetailsComponent implements OnInit {
         })
   }
 
+  removeImage(activityindex: any, imageIndex: any) {
+    this.activityItems[activityindex].aImage.splice(imageIndex, 1);
+  }
+
+  openCustomer(customer:any){
+    this.dialogService.openModal(CustomerDetailsComponent,
+      { cssClass: "modal-xl position-fixed start-0 end-0", context: { customerData:customer, mode: 'details', editProfile: false } }).instance.close.subscribe(result => { });  
+    }
+    
   getBusinessLocations() {
     this.apiService.getNew('core', '/api/v1/business/user-business-and-location/list')
       .subscribe((result: any) => {
@@ -447,9 +463,7 @@ export class ActivityDetailsComponent implements OnInit {
               })
           }
         }
-        setTimeout(() => {
-          MenuComponent.reinitialization();
-        }, 200);
+        
       }, (error) => {
         console.log('error: ', error);
       });
@@ -633,6 +647,7 @@ export class ActivityDetailsComponent implements OnInit {
   }
 
   processTransactionItems(result:any){
+    console.log('processTransactionItems');
     this.activityItems = result.data[0].result;
     this.oLocationName = this.activityItems[0].oLocationName;   
     if (this.activityItems.length == 1) this.activityItems[0].bIsVisible = true;
@@ -657,9 +672,9 @@ export class ActivityDetailsComponent implements OnInit {
       if (obj.iStockLocationId) this.setSelectedBusinessLocation(obj.iStockLocationId, i)
       this.fetchCustomer(obj?.iCustomerId, i);
     }
-    setTimeout(() => {
-      MenuComponent.reinitialization();
-    }, 200);
+    // setTimeout(() => {
+    //   MenuComponent.reinitialization();
+    // }, 200);
     this.loading = false;
   }
 
@@ -814,15 +829,21 @@ export class ActivityDetailsComponent implements OnInit {
     event.target.disabled = false;
   }
 
-  sendForReceipt(oDataSource: any, template: any, title: any , receipt:any) {
-    this.receiptService.exportToPdf({
-      oDataSource: oDataSource,
-      pdfTitle: title,
-      templateData: template,
-      printSettings: this.printSettings,
-      printActionSettings: this.printActionSettings,
-      eSituation: 'is_created'
-    });
+  async sendForReceipt(oDataSource: any, template: any, title: any , receipt:any) {
+    const oPdfSetting = template.aSettings.find((el:any) => el.sParameter === 'pdfMethod');
+    if (oPdfSetting && oPdfSetting.value === 'Javascript') {
+      await this.pdfService.createPdf(JSON.stringify(template), oDataSource, oDataSource.sNumber, true, null, this.iBusinessId, null);
+    } else {
+      this.receiptService.exportToPdf({
+        oDataSource: oDataSource,
+        pdfTitle: title,
+        templateData: template,
+        printSettings: this.printSettings,
+        printActionSettings: this.printActionSettings,
+        eSituation: 'is_created'
+      });
+    }
+
     if(receipt == 'customerReceipt'){
       this.bCustomerReceipt = false;
     }else if(receipt == 'downloadCustomerReceipt'){

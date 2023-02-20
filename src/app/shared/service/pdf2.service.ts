@@ -123,7 +123,7 @@ export class PdfService {
       const pdfObject = this.generatePdf(docDefinition);
       if (sAction == 'sentToCustomer') {
         pdfObject.getBase64(async (response: any) => resolve(response));
-      } else if ((printSettings?.length && printActionSettings?.length) || sAction) {
+      } else if ((printSettings?.length && printActionSettings?.length) || sAction != 'download') {
         this.processPrintAction(pdfObject, pdfTitle, printSettings, printActionSettings, eType, eSituation, sAction, sApiKey);
         resolve(true);
       } else {

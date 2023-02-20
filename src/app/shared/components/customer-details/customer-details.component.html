@@ -7,9 +7,9 @@
                 translate}}</button>
             <button class="btn btn-primary" *ngIf="editProfile" (click)="EditOrCreateCustomer()">{{"SAVE" |
                 translate}}</button>
-            <button class="btn btn-secondary cancel my-auto" *ngIf="!editProfile" (click)="close(false)">{{"CANCEL" |
-                translate}}</button>
-            <a class="cancel my-auto" *ngIf="editProfile" (click)="close(false)">
+            <!-- <button class="btn btn-secondary cancel my-auto" *ngIf="!editProfile" (click)="close(false)">{{"CANCEL" |
+                translate}}</button> -->
+            <a class="cancel my-auto" (click)="close(false)"> <!--*ngIf="editProfile"-->
                 <i class="fa fa-times"></i>
             </a>
             <!-- <button type="button" class="btn btn-sm" (click)="close(false)">
@@ -141,10 +141,41 @@
                             </div>
                         </div>
                     </div>
+
+                    
+                    <div *ngIf="!editProfile" class="row mb-6">
+                        <div class="col-3">
+                        <label class="col-form-label text-gray-700  fw-bolder fs-6 mb-2">{{'DATE_OF_BIRTH'  | translate}} </label>                       
+                        <p class="fs-6 mb-2">{{customer?.dDateOfBirth | date:'yyyy-MM-dd' || '-'}} </p>
+                      </div>
+                      <div class="col-3">
+                        <label class="col-form-label text-gray-700  fw-bolder fs-6 mb-2">{{'DOCUMENT_NAME'  | translate}} </label>
+                            <p class="fs-6 mb-2">{{customer?.oIdentity?.documentName || '-'}} </p>
+                      </div>
+                      <div class="col-3">
+                        <label class="col-form-label text-gray-700 fw-bolder fs-6 mb-2">{{'DOCUMENT_NUMBER'  | translate}} </label>
+                            <p class="fs-6 mb-2">{{customer?.oIdentity?.documentNumber || '-'}} </p>
+                      </div>
+                      <div class="col-3">
+                        <label class="col-form-label text-gray-700  fw-bolder fs-6 mb-2">{{'COMPANY_NAME'  | translate}} </label>                       
+                        <p class="fs-6 mb-2">{{customer?.sCompanyName || '-'}} </p>
+                      </div>
+                    </div>
+
+                    <div *ngIf="!editProfile" class="row mb-6">
+                      <div class="col-3">
+                        <label class="col-form-label text-gray-700  fw-bolder fs-6 mb-2">{{'PAYMENT_TERM_IN_DAYS'  | translate}} </label>
+                            <p class="fs-6 mb-2">{{customer?.nPaymentTermDays || '-'}} </p>
+                      </div>
+                      <div class="col-3">
+                        <label class="col-form-label text-gray-700  fw-bolder fs-6 mb-2">{{'VAT_NUMBER'  | translate}} </label>
+                            <p class="fs-6 mb-2">{{customer?.sVatNumber || '-'}} </p>
+                      </div>
+                    </div>
                
                     <div *ngIf="!editProfile" class="row mb-6">
-                        <label class="col-lg-3 col-form-label fw-bold fs-6">{{'NOTES' | translate}}</label>
-                        <div class="col-lg-9">
+                        <label class="col-lg-12 col-form-label fw-bold fs-6 mb-2">{{'NOTES' | translate}}</label>
+                        <div class="col-lg-12">
                             <div class="row">
                                 <div class="col-lg-12 fv-row">
                                     <textarea cols="30" rows="3" type="text" #customerNote
@@ -515,7 +546,7 @@
                                         </table>
                                     </div>
                                     <div class="col-5">
-                                        <div id="paymentMethodsChart">
+                                        <div id="paymentMethodsChart" *ngIf="paymentMethodsChartOptions">
 
                                             <apx-chart [series]="paymentMethodsChartOptions.series"
                                                 [chart]="paymentMethodsChartOptions.chart"

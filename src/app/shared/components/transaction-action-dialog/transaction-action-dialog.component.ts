@@ -198,11 +198,18 @@ export class TransactionActionDialogComponent implements OnInit {
         }
       )
     } else {
+
+      const oSettings = this.printSettings.find((s: any) => s.sType === type && s.sMethod === 'pdf')
+      if (!oSettings && action === 'PRINT_PDF') {
+        this.toastService.show({ type: 'danger', text: 'Check your business -> printer settings' });
+        this.bRegularDisabled = false;
+        return;
+      }
       this.receiptService.exportToPdf({
         oDataSource: oDataSource,
         pdfTitle: pdfTitle,
         templateData: template,
-        printSettings: this.printSettings.filter((s: any) => s.sType === type),
+        printSettings: oSettings,
         sAction: (action === 'DOWNLOAD') ? 'download' : 'print',
         sApiKey: this.businessDetails.oPrintNode.sApiKey
       });

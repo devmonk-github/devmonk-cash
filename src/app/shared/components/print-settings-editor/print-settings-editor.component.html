@@ -17,7 +17,7 @@
                         <h3>{{oTemplate.sTitle}}</h3>
                     </div>
 
-                    <div class="col-12 setting" *ngFor="let setting of oTemplate.aSettings">
+                    <div class="col-12" *ngFor="let setting of oTemplate.aSettings">
 
                         <div *ngIf="setting.eType==='switch'" class="row align-items-center mb-3">
                             <label class="col-3">{{ setting.sTitle }}</label>
@@ -28,7 +28,6 @@
                         </div>
 
                         <div *ngIf="setting.eType==='dropdown'" class="row align-items-center mb-3">
-
                             <label class="col-3">{{ setting.sTitle }}</label>
                             <ng-select [(ngModel)]="setting.value" [clearable]="false" class="col-3">
                                 <ng-option *ngFor="let option of setting.eOptions" [value]="option">{{ option }}

@@ -1409,12 +1409,12 @@
                                 <div>
                                     <label>{{ "CASH_IN_TILL" | translate}}</label>
                                     <label class="">
-                                        <ng-container *ngIf="bDisableCountings">
-                                            {{ oCountings.nCashInTill + (-oCountings.nCashDifference) | currency: transactionAuditPdfService.currency }}
+                                        {{ oCountings.nCashInTill | currency: transactionAuditPdfService.currency }}
+                                        <!-- <ng-container *ngIf="bDisableCountings">
                                         </ng-container>
                                         <ng-container *ngIf="!bDisableCountings">
                                             {{ oCountings.nCashInTill | currency: transactionAuditPdfService.currency }}
-                                        </ng-container>
+                                        </ng-container> -->
                                     </label>
                                 </div>
                                 <div>

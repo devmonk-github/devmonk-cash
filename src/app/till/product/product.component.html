@@ -134,7 +134,8 @@
                     <span *ngIf="item.oType.bPrepayment===true">{{ "PREPAYMENT" | translate}}</span>
                     <span *ngIf="item.oType.bPrepayment===false">{{ "FULL_PAYMENT" | translate}}</span>
                   </label>: 
-                  <span style="color:red;font-weight:bolder">Don't touch this field untill you filled in the payments on the right side</span>
+                  <!-- <span style="color:red;font-weight:bolder">Don't touch this field untill you filled in the payments on the right side</span> -->
+                  <span style="color:red;font-weight:bolder">{{ "FIRST_FILL_AMOUNT_AT_RIGHT_SIDE" | translate}}</span>
                   <input class="form-control  mb-3 mb-lg-0" type="number" [disabled]="item.isExclude || disablePrepayment"
                     [(ngModel)]="item.paymentAmount" (ngModelChange)="changePrePayment(item)">
                 </div>
