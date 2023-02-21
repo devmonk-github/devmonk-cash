@@ -9,6 +9,7 @@ import { ApiService } from '../shared/service/api.service';
 import { BarcodeService } from '../shared/service/barcode.service';
 import { DialogService } from '../shared/service/dialog';
 import { MenuComponent } from '../shared/_layout/components/common';
+import { ActivityItemExportComponent } from '../shared/components/activity-item-export/activity-item-export.component';
 
 @Component({
   selector: 'app-activity-items',
@@ -174,6 +175,20 @@ export class ActivityItemsComponent implements OnInit, OnDestroy {
       }).instance.close.subscribe();
   }
 
+  openExportModel(){
+    this.dialogService.openModal(ActivityItemExportComponent, 
+      { 
+        cssClass: 'model-lg', 
+        hasBackdrop: true, 
+        closeOnBackdropClick: true, 
+        closeOnEsc: true, 
+        context: { 
+          headerList:{},
+          valueList:{}
+        } 
+      }).instance.close.subscribe(); 
+  }
+  
   listEmployee() {
     this.apiService.postNew('auth', '/api/v1/employee/list', { iBusinessId: this.iBusinessId }).subscribe((result:any)=>{
       if (result?.data?.length && result.data[0].result?.length) {

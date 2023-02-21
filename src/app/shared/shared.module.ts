@@ -19,7 +19,7 @@ import { DeviceDetailsComponent } from './components/device-details/device-detai
 import { PrintSettingsDetailsComponent } from './components/print-settings-details/print-settings-details.component';
 import { ToastModule } from "./components/toast";
 import { PdfComponent } from './components/pdf/pdf.component';
-import {ExportsComponent} from './components/exports/exports.component';
+import { ExportsComponent } from './components/exports/exports.component';
 import { TransactionsSearchComponent } from "./components/transactions-search/transactions-search.component";
 import { TransactionItemsDetailsComponent } from "./components/transaction-items-details/transaction-items-details.component";
 
@@ -54,6 +54,7 @@ import { ReceiptService } from "./service/receipt.service";
 import { TransactionActionDialogComponent } from "./components/transaction-action-dialog/transaction-action-dialog.component";
 import { CustomerGroupDetailComponent } from './components/customer-group-detail/customer-group-detail.component';
 import { CurrencyFormatPipe } from "./pipes/currency-format.pipe";
+import { ActivityItemExportComponent } from './components/activity-item-export/activity-item-export.component';
 
 @NgModule({
   declarations: [
@@ -89,7 +90,8 @@ import { CurrencyFormatPipe } from "./pipes/currency-format.pipe";
     FilterPipe,
     TransactionActionDialogComponent,
     CustomerGroupDetailComponent,
-    CurrencyFormatPipe
+    CurrencyFormatPipe,
+    ActivityItemExportComponent
   ],
   imports: [
     CommonModule,
