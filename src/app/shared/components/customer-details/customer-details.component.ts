@@ -512,7 +512,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
         (result: any) => {
           if(result.message == 'success'){
           this.toastService.show({ type: 'success', text: this.translations[`SUCCESSFULLY_ADDED`] });
-          this.close({ action: true, customer: this.customer });
+          this.close({ action: true, customer: result.data });
           }else{
            
             let errorMessage = ""
