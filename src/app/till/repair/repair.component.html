@@ -106,7 +106,7 @@
             <button class="btn btn-bg-light btn-active-color-primary mt-2" type="button" data-bs-toggle="collapse"
               (click)="collapsedBtn = !collapsedBtn" [ngClass]="{'collapsed': collapsedBtn }"
               data-bs-target="#kt_accordion_123" aria-expanded="true" aria-controls="kt_accordion_123">
-              More
+              {{ "MORE" | translate}}
               <fa-icon *ngIf="!collapsedBtn" [icon]="faArrowDown"></fa-icon>
               <fa-icon *ngIf="collapsedBtn" [icon]="faArrowUp"></fa-icon>
             </button>
@@ -234,7 +234,7 @@
             </div>
           </div>
           <div class="col-12">
-            <button class="btn btn-bg-light btn-active-color-primary mt-2" (click)="openImageModal()"> Photos
+            <button class="btn btn-bg-light btn-active-color-primary mt-2" (click)="openImageModal()"> {{ "PHOTO" | translate}}
               <fa-icon [icon]="faUpload"></fa-icon>
             </button>
           </div>
