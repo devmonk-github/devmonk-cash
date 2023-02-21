@@ -223,7 +223,13 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   async mapFiscallyData() {
-    const _fiscallyData:any = await this.fiskalyService.getTSSList();
+    let _fiscallyData:any;
+    try {
+      _fiscallyData = await this.fiskalyService.getTSSList();
+    } catch (err) {
+      console.log('error while executing fiskaly service', err)
+    }
+    if(!_fiscallyData) return;
     this.businessDetails.aLocation.forEach((location: any) => {
       const oMatch = _fiscallyData.find((tss: any) => tss.iLocationId === location._id)
       if (oMatch) {
