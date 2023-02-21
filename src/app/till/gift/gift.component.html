@@ -7,11 +7,11 @@
           <div class="row">
             <div class="col-1">{{item.quantity}}</div>
             <div class="col-4 text-truncate">{{item.name}} - {{item.sGiftCardNumber}}</div>
-            <div class="col">{{item.price | currency: tillService.currency}}</div>
+            <div class="col">{{item.price | currencyFormat: tillService.currency:tillService.separator}}</div>
             <div class="col"></div>
             <div class="col">{{item.tax}}%</div>
-            <div class="col">{{item.price | currency: tillService.currency}}</div>
-            <div class="col">{{ item.paymentAmount | currency: tillService.currency }}</div>
+            <div class="col">{{item.price | currencyFormat: tillService.currency:tillService.separator}}</div>
+            <div class="col">{{ item.paymentAmount | currencyFormat: tillService.currency:tillService.separator }}</div>
           </div>
         </div>
       </section>

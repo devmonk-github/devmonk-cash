@@ -15,6 +15,7 @@ const moment = (_moment as any).default ? (_moment as any).default : _moment;
 export class TillService {
 
   currency: string = "€";
+  separator: string = ",";
 
   iBusinessId = localStorage.getItem('currentBusiness') || '';
   iLocationId = localStorage.getItem('currentLocation') || '';
@@ -28,17 +29,11 @@ export class TillService {
     // console.log('oLocation? currency selection', oLocation?.eCurrency)
     if (oLocation?.eCurrency) {
       switch (oLocation?.eCurrency) {
-        case 'euro':
-          this.currency = "€";
-          break;
         case 'pound':
           this.currency = "£";
           break;
         case 'swiss':
           this.currency = "₣";
-          break;
-        default:
-          this.currency = "€";
           break;
       }
     }

@@ -40,7 +40,7 @@ export class ProductComponent implements OnInit{
     
     ngOnInit(): void {
       this.fetchArticleGroupInfo();
-      this.getTotalDiscount(this.item)
+      // this.getTotalDiscount(this.item)
     }
 
   fetchArticleGroupInfo() {
@@ -75,10 +75,10 @@ export class ProductComponent implements OnInit{
     // this.item.nPurchasePrice = this.item.price / this.item.nMargin || 1;
   }
 
-  getTotalDiscount(item: any): string {
-    this.totalDiscount = (item?.discount) ? this.priceService.getDiscountValue(item) : formatCurrency(item.nDiscount, 'en-GB', this.tillService.currency) ;
-    return String(this.totalDiscount);
-  }
+  // getTotalDiscount(item: any) {
+  //   this.totalDiscount = (item?.discount) ? this.priceService.getDiscountValue(item) : formatCurrency(item.nDiscount, 'en-GB', this.tillService.currency) ;
+  //   return String(this.totalDiscount);
+  // }
 
   getTotalPrice(item: any): string {
     return this.priceService.getArticlePrice(item)
@@ -123,7 +123,7 @@ export class ProductComponent implements OnInit{
         if (data.item) {
           this.item.nDiscount = data.item.nDiscount;
           this.item.bDiscountOnPercentage = data.item?.discount?.percent || false;
-          this.getTotalDiscount(data.item)
+          // this.getTotalDiscount(data.item)
           this.itemChanged.emit(this.item);
         }
       })

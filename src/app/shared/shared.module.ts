@@ -53,6 +53,7 @@ import { PdfService } from "./service/pdf2.service";
 import { ReceiptService } from "./service/receipt.service";
 import { TransactionActionDialogComponent } from "./components/transaction-action-dialog/transaction-action-dialog.component";
 import { CustomerGroupDetailComponent } from './components/customer-group-detail/customer-group-detail.component';
+import { CurrencyFormatPipe } from "./pipes/currency-format.pipe";
 
 @NgModule({
   declarations: [
@@ -87,7 +88,8 @@ import { CustomerGroupDetailComponent } from './components/customer-group-detail
     ActionSettingsComponent,
     FilterPipe,
     TransactionActionDialogComponent,
-    CustomerGroupDetailComponent
+    CustomerGroupDetailComponent,
+    CurrencyFormatPipe
   ],
   imports: [
     CommonModule,
@@ -127,7 +129,8 @@ import { CustomerGroupDetailComponent } from './components/customer-group-detail
     SelectArticleDialogComponent,
     NgxPaginationModule,
     AddEditWorkstationComponent,
-    SortPipe
+    SortPipe,
+    CurrencyFormatPipe
   ],
   providers: [CurrencyPipe, CommonPrintSettingsService, PdfService, ReceiptService]
 })

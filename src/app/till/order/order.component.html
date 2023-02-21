@@ -12,13 +12,12 @@
             </svg>{{item.quantity}}
           </div>
           <div class="col-4 text-truncate">{{item.name}}</div>
-          <div class="col">{{item.price | currency: tillService.currency}}</div>
-          <div class="col">{{item.nDiscount | currency: tillService.currency}}</div>
+          <div class="col">{{item.price | currencyFormat: tillService.currency:tillService.separator}}</div>
+          <div class="col">{{item.nDiscount | currencyFormat: tillService.currency:tillService.separator}}</div>
           <div class="col">{{item.tax}}%</div>
           <!-- <div class="w-100px">{{getTotalPrice(item)}}</div> -->
-          <div class="col">{{(item.price - item.nDiscount) * item.quantity | currency: tillService.currency }}
-          </div>
-          <div class="col">{{item.paymentAmount | currency: tillService.currency}}</div>
+          <div class="col">{{ item.amountToBePaid | currencyFormat: tillService.currency:tillService.separator }}</div>
+          <div class="col">{{item.paymentAmount | currencyFormat: tillService.currency:tillService.separator}}</div>
         </div>
       </div>
     </section>
