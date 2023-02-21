@@ -167,7 +167,8 @@ export class ActivityItemsComponent implements OnInit, OnDestroy {
           activity: activity,
           businessDetails: this.businessDetails,
           openActivityId, 
-          items: true, 
+          items: true,
+          employeesList: this.employees,
           from: 'activity-items' 
         } 
       }).instance.close.subscribe();
