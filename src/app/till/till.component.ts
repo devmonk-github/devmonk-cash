@@ -1111,6 +1111,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // Add selected product into purchase order
   async onSelectProduct(product: any, isFrom: string = '', isFor: string = '', source?: any) {
+    // console.log('onSelectProduct', {product, isFrom, isFor, source})
     let nPriceIncludesVat = 0, nVatRate = 0;
     if (isFrom === 'quick-button') {
       source.loading = true;
@@ -1169,6 +1170,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       new: true,
       isFor,
       oBusinessProductMetaData: this.tillService.createProductMetadata(product),
+      eActivityItemStatus: (this.eKind === 'order') ? 'new' : ''
     });
     if (isFrom === 'quick-button') { source.loading = false }
     this.resetSearch();
