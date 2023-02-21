@@ -530,7 +530,7 @@ export class TillService {
         item.sDescription = this.translateService.instant('VOUCHER_SALE');
       }
       item.bRegular = !item.oType.bRefund;
-      if (item?.oArticleGroupMetaData?.oName && Object.keys(item?.oArticleGroupMetaData?.oName)?.length) {
+      if (item?.oArticleGroupMetaData?.oName && Object.keys(item?.oArticleGroupMetaData?.oName)?.length && item.oType.eKind !== 'repair') {
         item.sArticleGroupName = (item?.oArticleGroupMetaData?.oName[language] || item?.oArticleGroupMetaData?.oName['en'] || item?.oArticleGroupMetaData?.oName['nl'] || '') + ' ';
       }
       // if (item?.oBusinessProductMetaData?.sLabelDescription){
