@@ -411,7 +411,7 @@ export class ReceiptService {
             if (el?.alignment) columnData.alignment = el?.alignment;
             if (el?.styles) columnData = { ...columnData, ...el.styles }
             if (el?.width) columnData.width = el?.width;
-
+            if (el?.pageBreak) columnData.pageBreak = el?.pageBreak;
             columns.push(columnData)
         });
         let obj = { columns: columns };
