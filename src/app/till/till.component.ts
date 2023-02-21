@@ -326,6 +326,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       open: true,
       new: true,
       isFor: 'create',
+      eActivityItemStatus: 'new'
     });
     this.searchKeyword = '';
     this.clearPaymentAmounts();
@@ -1707,7 +1708,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     this.cancelFiskalyTransaction();
     if (this.getSettingsSubscription) this.getSettingsSubscription.unsubscribe();
     if (this.dayClosureCheckSubscription) this.dayClosureCheckSubscription.unsubscribe();
-    console.log('cashregister destroy')
+    // console.log('cashregister destroy')
     MenuComponent.clearEverything();
     
   }
