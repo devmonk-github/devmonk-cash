@@ -643,20 +643,17 @@ export class ActivityDetailsComponent implements OnInit {
     );
   }
 
-  processTransactionItems(result:any){
-    console.log('processTransactionItems');
+  async processTransactionItems(result:any){
     this.activityItems = result.data[0].result;
     this.oLocationName = this.activityItems[0].oLocationName;   
     if (this.activityItems.length == 1) this.activityItems[0].bIsVisible = true;
     this.transactions = [];
     for (const obj of this.activityItems) {
-      if(obj.oType.eKind == 'order' && obj?.iBusinessProductId){
-       this.getBusinessProduct(obj.iBusinessProductId).subscribe((res:any)=>{
-        const productDetail = res.data;
+      if (obj.oType.eKind == 'order' && obj?.iBusinessProductId) {
+        const _productData: any = await this.getBusinessProduct(obj.iBusinessProductId).toPromise();
+        const productDetail = _productData.data;
         obj.sArticleNumber = productDetail.sArticleNumber
         obj.sProductNumber = productDetail.sProductNumber
-       });
-  
       }
       for (const item of obj.receipts) {
         this.transactions.push({ ...item, ...obj });
