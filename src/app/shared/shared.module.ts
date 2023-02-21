@@ -53,6 +53,7 @@ import { PdfService } from "./service/pdf2.service";
 import { ReceiptService } from "./service/receipt.service";
 import { TransactionActionDialogComponent } from "./components/transaction-action-dialog/transaction-action-dialog.component";
 import { CustomerGroupDetailComponent } from './components/customer-group-detail/customer-group-detail.component';
+import { ActivityItemExportComponent } from './components/activity-item-export/activity-item-export.component';
 
 @NgModule({
   declarations: [
@@ -87,7 +88,8 @@ import { CustomerGroupDetailComponent } from './components/customer-group-detail
     ActionSettingsComponent,
     FilterPipe,
     TransactionActionDialogComponent,
-    CustomerGroupDetailComponent
+    CustomerGroupDetailComponent,
+    ActivityItemExportComponent
   ],
   imports: [
     CommonModule,
