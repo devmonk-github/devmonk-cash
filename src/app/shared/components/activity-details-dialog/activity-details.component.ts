@@ -244,10 +244,6 @@ export class ActivityDetailsComponent implements OnInit {
     ]);
     this.printActionSettings = _printActionSettings?.data[0]?.result[0].aActions;
     this.printSettings = _printSettings?.data[0]?.result;
-
-    setTimeout(() => {
-      MenuComponent.reinitialization();
-    }, 200);
   }
 
   processActivityItems(){
@@ -676,6 +672,9 @@ export class ActivityDetailsComponent implements OnInit {
     //   MenuComponent.reinitialization();
     // }, 200);
     this.loading = false;
+    setTimeout(() => {
+      MenuComponent.reinitialization();
+    }, 200);
   }
 
   fetchTransactionItems() {
