@@ -163,6 +163,9 @@ export class ActivityDetailsComponent implements OnInit {
   bCustomerReceipt : boolean = false;
   bDownloadCustomerReceipt : boolean = false;
   bDownloadReceipt: boolean = false;
+  aContactOption = [{ key: 'CALL_ON_READY', value: 'call_on_ready' },
+  { key: 'EMAIL_ON_READY', value: 'email_on_ready' },
+  { key: 'WHATSAPP_ON_READY', value: 'whatsapp_on_ready' }]
 
   constructor(
     private viewContainerRef: ViewContainerRef,
@@ -218,7 +221,6 @@ export class ActivityDetailsComponent implements OnInit {
         
            }
          })
-        console.log(this.openActivityId)
         
         
       } else {
@@ -286,7 +288,7 @@ export class ActivityDetailsComponent implements OnInit {
     // this.employeesList = result.data[0].result;
     if (this.activity?.iEmployeeId) {
       let createerIndex = this.employeesList.findIndex((employee: any) => employee._id == this.activity.iEmployeeId);
-      if (this.createrDetail != -1) {
+      if (createerIndex != -1) {
         this.createrDetail = this.employeesList[createerIndex];
         this.activity.sAdvisedEmpFirstName = this.createrDetail?.sFirstName || 'a';
       }
