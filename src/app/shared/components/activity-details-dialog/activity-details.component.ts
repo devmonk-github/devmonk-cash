@@ -586,15 +586,16 @@ export class ActivityDetailsComponent implements OnInit {
 
     const template = this.aTemplates.filter((t: any) => t.eType === type)[0];
 
-    oDataSource.oCustomer = {
-      sFirstName: this.customer?.sFirstName || '',
-      sLastName: this.customer?.sLastName || '',
-      sEmail: this.customer?.sEmail || '',
-      sMobile: this.customer?.oPhone?.sCountryCode || '' + this.customer?.oPhone?.sMobile || '',
-      sLandLine: this.customer?.oPhone?.sLandLine || '',
-      sAddressLine1: this.customer?.oShippingAddress?.sStreet + " " + this.customer?.oShippingAddress?.sHouseNumber + " " + this.customer?.oShippingAddress?.sHouseNumberSuffix + " , " + this.customer?.oShippingAddress?.sPostalCode + " " + this.customer?.oShippingAddress?.sCity,
-      sAddressLine2: this.customer?.oShippingAddress?.sCountry
-    };
+    oDataSource.oCustomer = this.tillService.processCustomerDetails(this.customer);
+    // {
+    //   sFirstName: this.customer?.sFirstName || '',
+    //   sLastName: this.customer?.sLastName || '',
+    //   sEmail: this.customer?.sEmail || '',
+    //   sMobile: this.customer?.oPhone?.sCountryCode || '' + this.customer?.oPhone?.sMobile || '',
+    //   sLandLine: this.customer?.oPhone?.sLandLine || '',
+    //   sAddressLine1: this.customer?.oShippingAddress?.sStreet + " " + this.customer?.oShippingAddress?.sHouseNumber + " " + this.customer?.oShippingAddress?.sHouseNumberSuffix + " , " + this.customer?.oShippingAddress?.sPostalCode + " " + this.customer?.oShippingAddress?.sCity,
+    //   sAddressLine2: this.customer?.oShippingAddress?.sCountry
+    // };
     if (!oDataSource.dEstimatedDate) {
       oDataSource.dEstimatedDate = this.translation['NO_DATE_SELECTED'];
     }
@@ -802,13 +803,14 @@ export class ActivityDetailsComponent implements OnInit {
     oDataSource.businessDetails.sAddressline1 = currentLocation.oAddress.street + " " + currentLocation.oAddress.houseNumber + " " + currentLocation.oAddress.houseNumberSuffix + " ,  " + currentLocation.oAddress.postalCode + " " + currentLocation.oAddress.city;
     oDataSource.businessDetails.sAddressline2 = currentLocation.oAddress.country; 
 
-    oDataSource.oCustomer = {
-      sFirstName: this.customer?.sFirstName || '',
-      sLastName: this.customer?.sLastName || '',
-      sEmail: this.customer?.sEmail || '',
-      sMobile: this.customer?.oPhone?.sCountryCode || '' + this.customer?.oPhone?.sMobile || '',
-      sLandLine: this.customer?.oPhone?.sLandLine || '',
-    };
+    oDataSource.oCustomer = this.tillService.processCustomerDetails(this.customer);
+    // {
+    //   sFirstName: this.customer?.sFirstName || '',
+    //   sLastName: this.customer?.sLastName || '',
+    //   sEmail: this.customer?.sEmail || '',
+    //   sMobile: this.customer?.oPhone?.sCountryCode || '' + this.customer?.oPhone?.sMobile || '',
+    //   sLandLine: this.customer?.oPhone?.sLandLine || '',
+    // };
 
     const sActivityBarcodeURI = this.generateBarcodeURI(false, oDataSource.sNumber);
     oDataSource.sActivityBarcodeURI = sActivityBarcodeURI;

@@ -487,11 +487,7 @@ export class TillService {
     dataObject.businessDetails.sAddressline2 = dataObject.businessDetails?.currentLocation?.oAddress?.country || '';
 
 
-    dataObject.oCustomer = {
-      ...dataObject.oCustomer,
-      ...dataObject.oCustomer.oPhone,
-      ...dataObject.oCustomer.oInvoiceAddress
-    };
+    dataObject.oCustomer = this.processCustomerDetails(dataObject.oCustomer);
     
     
     dataObject.aPayments.forEach((obj: any) => {
@@ -650,6 +646,14 @@ export class TillService {
     transaction.bCompletedProcessing = true;
     // console.log('processTransactionForPdfReceipt after processing', transaction);
     return transaction;
+  }
+
+  processCustomerDetails(customer:any) {
+    return {
+      ...customer,
+      ...customer.oPhone,
+      ...customer.oInvoiceAddress,
+    };
   }
 
   getPercentOf(nNumber: any, nPercent: any) {
