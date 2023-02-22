@@ -15,6 +15,7 @@ const moment = (_moment as any).default ? (_moment as any).default : _moment;
 export class TillService {
 
   currency: string = "€";
+  separator: string = ",";
 
   iBusinessId = localStorage.getItem('currentBusiness') || '';
   iLocationId = localStorage.getItem('currentLocation') || '';
@@ -28,17 +29,11 @@ export class TillService {
     // console.log('oLocation? currency selection', oLocation?.eCurrency)
     if (oLocation?.eCurrency) {
       switch (oLocation?.eCurrency) {
-        case 'euro':
-          this.currency = "€";
-          break;
         case 'pound':
           this.currency = "£";
           break;
         case 'swiss':
           this.currency = "₣";
-          break;
-        default:
-          this.currency = "€";
           break;
       }
     }
@@ -47,7 +42,7 @@ export class TillService {
 
 
   getUsedPayMethods(total: boolean, payMethods: any): any {
-    console.log(45, 'getUsedPayMethods', payMethods)
+    // console.log(45, 'getUsedPayMethods', payMethods)
     if (!payMethods) {
       return 0
     }
@@ -62,7 +57,7 @@ export class TillService {
       return 0
     }
     let result = 0
-    console.log('result: ', result);
+    // console.log('result: ', result);
     switch (type) {
       case 'price':
         transactionItems.forEach((i: any) => {
@@ -243,7 +238,7 @@ export class TillService {
 
       oItem.sServicePartnerRemark = i.sServicePartnerRemark;
       oItem.eEstimatedDateAction = i.eEstimatedDateAction;
-      if (i.type === 'giftcard' || (bPrepayment === false && (i.type === 'repair' || i.type === 'order'))) {
+      if (i.type === 'giftcard') { //|| (bPrepayment === false && (i.type === 'repair' || i.type === 'order'))
         oItem.eActivityItemStatus = 'delivered';
       } else {
         oItem.eActivityItemStatus = i.eActivityItemStatus;
@@ -359,7 +354,7 @@ export class TillService {
       tItem1.nDiscount = 0;
       body.transactionItems.push(tItem1);
     });
-    console.log(329, body);
+    // console.log(329, body);
   }
 
   checkArticleGroups(): Observable<any> {
@@ -407,7 +402,7 @@ export class TillService {
   }
 
   processTransactionSearchResult(result: any) {
-    console.log(JSON.parse(JSON.stringify(result)));
+    // console.log(405, JSON.parse(JSON.stringify(result)));
     const transactionItems: any = [];
     if (result.transaction) {
       result.transactionItems.forEach((transactionItem: any) => {
@@ -487,11 +482,7 @@ export class TillService {
     dataObject.businessDetails.sAddressline2 = dataObject.businessDetails?.currentLocation?.oAddress?.country || '';
 
 
-    dataObject.oCustomer = {
-      ...dataObject.oCustomer,
-      ...dataObject.oCustomer.oPhone,
-      ...dataObject.oCustomer.oInvoiceAddress
-    };
+    dataObject.oCustomer = this.processCustomerDetails(dataObject.oCustomer);
 
 
     dataObject.aPayments.forEach((obj: any) => {
@@ -650,6 +641,14 @@ export class TillService {
     transaction.bCompletedProcessing = true;
     // console.log('processTransactionForPdfReceipt after processing', transaction);
     return transaction;
+  }
+
+  processCustomerDetails(customer: any) {
+    return {
+      ...customer,
+      ...customer.oPhone,
+      ...customer.oInvoiceAddress,
+    };
   }
 
   getPercentOf(nNumber: any, nPercent: any) {

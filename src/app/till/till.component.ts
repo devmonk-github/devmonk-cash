@@ -223,18 +223,26 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   async mapFiscallyData() {
-    const _fiscallyData:any = await this.fiskalyService.getTSSList();
-    this.businessDetails.aLocation.forEach((location: any) => {
-      const oMatch = _fiscallyData.find((tss: any) => tss.iLocationId === location._id)
-      if (oMatch) {
-        location.tssInfo = oMatch.tssInfo;
-        location.bIsFiskalyEnabled = oMatch.bEnabled;
+    let _fiscallyData:any;
+    try {
+      _fiscallyData = await this.fiskalyService.getTSSList();
+    } catch (err) {
+      console.log('error while executing fiskaly service', err)
+    }
+    if(_fiscallyData) {
+
+      this.businessDetails.aLocation.forEach((location: any) => {
+        const oMatch = _fiscallyData.find((tss: any) => tss.iLocationId === location._id)
+        if (oMatch) {
+          location.tssInfo = oMatch.tssInfo;
+          location.bIsFiskalyEnabled = oMatch.bEnabled;
+        }
+      });
+      if (this.businessDetails.currentLocation?.tssInfo && this.businessDetails.currentLocation?.bIsFiskalyEnabled) {
+        this.bIsFiscallyEnabled = true;
+        this.cancelFiskalyTransaction();
+        this.fiskalyService.setTss(this.businessDetails.currentLocation?.tssInfo._id)
       }
-    });
-    if (this.businessDetails.currentLocation?.tssInfo && this.businessDetails.currentLocation?.bIsFiskalyEnabled) {
-      this.bIsFiscallyEnabled = true;
-      this.cancelFiskalyTransaction();
-      this.fiskalyService.setTss(this.businessDetails.currentLocation?.tssInfo._id)
     }
 
     this.loadTransaction();
@@ -258,6 +266,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   loadTransaction() {
+    // console.log('load transaction');
     const fromTransactionPage: any = localStorage.getItem('fromTransactionPage');
     if (fromTransactionPage) this.handleTransactionResponse(JSON.parse(fromTransactionPage));
   }
@@ -320,6 +329,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       open: true,
       new: true,
       isFor: 'create',
+      eActivityItemStatus: 'new'
     });
     this.searchKeyword = '';
     this.clearPaymentAmounts();
@@ -523,10 +533,13 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       });
   }
 
-  openTransactionSearchDialog(): void {
+  openTransactionSearchDialog() {
+    // console.log('open transaction search dialog')
     this.dialogService.openModal(TransactionsSearchComponent, { cssClass: 'modal-xl', context: { customer: this.customer } })
       .instance.close.subscribe((data) => {
+        // console.log('response of transaction search component', data)
         if (data?.transaction) {
+          // console.log('now calling handle transaction response')
           this.handleTransactionResponse(data);
         }
         // this.changeInPayment();
@@ -1104,6 +1117,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // Add selected product into purchase order
   async onSelectProduct(product: any, isFrom: string = '', isFor: string = '', source?: any) {
+    // console.log('onSelectProduct', {product, isFrom, isFor, source})
     let nPriceIncludesVat = 0, nVatRate = 0;
     if (isFrom === 'quick-button') {
       source.loading = true;
@@ -1162,6 +1176,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       new: true,
       isFor,
       oBusinessProductMetaData: this.tillService.createProductMetadata(product),
+      eActivityItemStatus: (this.eKind === 'order') ? 'new' : 'delivered'
     });
     if (isFrom === 'quick-button') { source.loading = false }
     this.resetSearch();
@@ -1677,7 +1692,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   async handleTransactionResponse(data: any) {
-    console.log('handleTransactionResponse')
+    // console.log('handleTransactionResponse', data)
     this.clearAll();
     const { transactionItems, transaction } = data;
     this.transactionItems = transactionItems;
@@ -1701,13 +1716,20 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     this.cancelFiskalyTransaction();
     if (this.getSettingsSubscription) this.getSettingsSubscription.unsubscribe();
     if (this.dayClosureCheckSubscription) this.dayClosureCheckSubscription.unsubscribe();
-    console.log('cashregister destroy')
+    // console.log('cashregister destroy')
     MenuComponent.clearEverything();
     
   }
 
   openDrawer(){
     // console.log('open drawer cash register')
-    this.receiptService.openDrawer(this.businessDetails.oPrintNode.sApiKey)
+    const aThermalSettings = this.printSettings.filter((settings:any) => settings.sMethod === 'thermal' && settings.iWorkstationId === this.iWorkstationId)
+    const oSettings = aThermalSettings.find((s:any) => s.sType === 'regular' && s.nComputerId && s.nPrinterId);
+    if (oSettings) {
+      this.receiptService.openDrawer(this.businessDetails.oPrintNode.sApiKey, oSettings.nPrinterId, oSettings.nComputerId,)
+    } else {
+      this.toastrService.show({type: 'warning', text: 'Please check your print settings!'})
+    }
+    
   }
 }

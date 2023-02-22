@@ -43,7 +43,7 @@ export class ActivityDetailsComponent implements OnInit {
   createrDetail :any;
   webOrders: boolean | undefined;
   items: Array<any> = [];
-  from: string = '';
+  from: string;
   mode: string = '';
   showLoader = false;
   activityItems: Array<any> = [];
@@ -163,6 +163,9 @@ export class ActivityDetailsComponent implements OnInit {
   bCustomerReceipt : boolean = false;
   bDownloadCustomerReceipt : boolean = false;
   bDownloadReceipt: boolean = false;
+  aContactOption = [{ key: 'CALL_ON_READY', value: 'call_on_ready' },
+  { key: 'EMAIL_ON_READY', value: 'email_on_ready' },
+  { key: 'WHATSAPP_ON_READY', value: 'whatsapp_on_ready' }]
 
   constructor(
     private viewContainerRef: ViewContainerRef,
@@ -186,6 +189,7 @@ export class ActivityDetailsComponent implements OnInit {
 
 
   async ngOnInit() {
+    // console.log('from', this.from, this.activityItems, this.activity)
     this.apiService.setToastService(this.toastService);
     this.routerSub = this.routes.events.subscribe((event) => {
       if (event instanceof NavigationEnd && !(event.url.startsWith('/business/activity-items') || event.url.startsWith('/business/services'))) {
@@ -199,41 +203,39 @@ export class ActivityDetailsComponent implements OnInit {
     this.translationService.get(translationKey).subscribe((res:any)=>{
       this.translation = res;
     })
-    this.oLocationName = this.activity.oLocationName;
-    let _transactionItemData:any;
     
     if (this.activity) {
-      if (this.activity?.activityitems?.length) {
-        this.bShowOrderDownload = true;
-        this.activityItems = this.activity.activityitems;
+      // this.oLocationName = this.activity.oLocationName;
+      this.bShowOrderDownload = true;
+      this.fetchTransactionItems(this.activity._id);
+      // if (this.activity?.activityitems?.length) {
+        // console.log(211)
+        // this.activityItems = this.activity.activityitems;
         // if (this.activityItems?.length == 1) this.activityItems[0].bIsVisible = true; /* only item there then we will always open it */
-         this.activityItems.forEach((item:any , index)=>{
-          if(item.oType.eKind == 'order' && item?.iBusinessProductId){
-            this.getBusinessProduct(item.iBusinessProductId).subscribe((res:any)=>{
-             const productDetail = res.data;
-             this.activityItems[index].sArticleNumber = productDetail.sArticleNumber
-             this.activityItems[index].sProductNumber = productDetail.sProductNumber
-             this.activityItems[index].sArticleName = productDetail?.oArticleGroup?.oName[this.language]
-            });
+        //  this.activityItems.forEach((item:any , index)=>{
+        //   if(item.oType.eKind == 'order' && item?.iBusinessProductId){
+        //     this.getBusinessProduct(item.iBusinessProductId).subscribe((res:any)=>{
+        //      const productDetail = res.data;
+        //      this.activityItems[index].sArticleNumber = productDetail.sArticleNumber
+        //      this.activityItems[index].sProductNumber = productDetail.sProductNumber
+        //      this.activityItems[index].sArticleName = productDetail?.oArticleGroup?.oName[this.language]
+        //     });
         
-           }
-         })
-        console.log(this.openActivityId)
-        
-        
-      } else {
-        _transactionItemData = await this.fetchTransactionItems();
-        this.processTransactionItems(_transactionItemData);
-      }
-
+        //    }
+        //  })
+      // }
     } else {
-      _transactionItemData = await this.fetchTransactionItems();
-      this.processTransactionItems(_transactionItemData);
+      // we have opened an activity item so fetch associated activity (required for checkout)
+      // this.fetchActivity(this.activity._id); //actually it is an id of activity item
+      // console.log(235)
+      this.oLocationName = this.businessDetails.aLocation.find((location: any) => location._id === this.activityItems[0].iLocationId)?.sName;
+      this.fetchActivity(this.activityItems[0].iActivityId);
+      this.fetchTransactionItems(this.activityItems[0]._id);
     }
     // console.log(236)
     // this.processActivityItems();
 
-    if (this.activity?.iCustomerId) this.fetchCustomer(this.activity.iCustomerId, -1);
+    // if (this.activity?.iCustomerId) this.fetchCustomer(this.activity.iCustomerId, -1);
     this.getBusinessLocations();
     this.getListEmployees()
     this.getListSuppliers()
@@ -244,10 +246,6 @@ export class ActivityDetailsComponent implements OnInit {
     ]);
     this.printActionSettings = _printActionSettings?.data[0]?.result[0].aActions;
     this.printSettings = _printSettings?.data[0]?.result;
-
-    setTimeout(() => {
-      MenuComponent.reinitialization();
-    }, 200);
   }
 
   processActivityItems(){
@@ -276,6 +274,13 @@ export class ActivityDetailsComponent implements OnInit {
     }
   }
 
+  fetchActivity(_id:any) {
+    this.apiService.getNew('cashregistry', `/api/v1/activities/${_id}?iBusinessId=${this.requestParams.iBusinessId}`).subscribe((result: any) => {
+      if(result?.data?._id)
+      this.activity = result.data;
+    });
+  }
+
 
   getBusinessProduct(iProductId:any){
    return this.apiService.getNew('core' , `/api/v1/business/products/${iProductId}?iBusinessId=${this.iBusinessId}`);
@@ -290,7 +295,7 @@ export class ActivityDetailsComponent implements OnInit {
     // this.employeesList = result.data[0].result;
     if (this.activity?.iEmployeeId) {
       let createerIndex = this.employeesList.findIndex((employee: any) => employee._id == this.activity.iEmployeeId);
-      if (this.createrDetail != -1) {
+      if (createerIndex != -1) {
         this.createrDetail = this.employeesList[createerIndex];
         this.activity.sAdvisedEmpFirstName = this.createrDetail?.sFirstName || 'a';
       }
@@ -511,12 +516,15 @@ export class ActivityDetailsComponent implements OnInit {
   }
 
   openTransaction(transaction: any, itemType: any) {
-    // console.log('openTransaction: ', JSON.parse(JSON.stringify(transaction)), itemType);
+    // console.log('openTransaction: ', this.activity, itemType);
     transaction.iActivityId = this.activity._id;
-    this.dialogService.openModal(TransactionItemsDetailsComponent, { cssClass: "modal-xl", context: { transaction, itemType, selectedId: transaction._id } })
+    this.dialogService.openModal(TransactionItemsDetailsComponent, { cssClass: "modal-xl", context: { transaction:this.activity, itemType, selectedId: transaction._id } })
       .instance.close.subscribe((result: any) => {
+        // console.log(514, result)
         if(result?.action !== false){
+          // console.log(516, 'calling process transaction search result')
           const data = this.tillService.processTransactionSearchResult(result);
+          // console.log(518, data)
           localStorage.setItem('fromTransactionPage', JSON.stringify(data));
           localStorage.setItem('recentUrl', '/business/transactions');
           setTimeout(() => {
@@ -590,15 +598,16 @@ export class ActivityDetailsComponent implements OnInit {
 
     const template = this.aTemplates.filter((t: any) => t.eType === type)[0];
 
-    oDataSource.oCustomer = {
-      sFirstName: this.customer?.sFirstName || '',
-      sLastName: this.customer?.sLastName || '',
-      sEmail: this.customer?.sEmail || '',
-      sMobile: this.customer?.oPhone?.sCountryCode || '' + this.customer?.oPhone?.sMobile || '',
-      sLandLine: this.customer?.oPhone?.sLandLine || '',
-      sAddressLine1: this.customer?.oShippingAddress?.sStreet + " " + this.customer?.oShippingAddress?.sHouseNumber + " " + this.customer?.oShippingAddress?.sHouseNumberSuffix + " , " + this.customer?.oShippingAddress?.sPostalCode + " " + this.customer?.oShippingAddress?.sCity,
-      sAddressLine2: this.customer?.oShippingAddress?.sCountry
-    };
+    oDataSource.oCustomer = this.tillService.processCustomerDetails(this.customer);
+    // {
+    //   sFirstName: this.customer?.sFirstName || '',
+    //   sLastName: this.customer?.sLastName || '',
+    //   sEmail: this.customer?.sEmail || '',
+    //   sMobile: this.customer?.oPhone?.sCountryCode || '' + this.customer?.oPhone?.sMobile || '',
+    //   sLandLine: this.customer?.oPhone?.sLandLine || '',
+    //   sAddressLine1: this.customer?.oShippingAddress?.sStreet + " " + this.customer?.oShippingAddress?.sHouseNumber + " " + this.customer?.oShippingAddress?.sHouseNumberSuffix + " , " + this.customer?.oShippingAddress?.sPostalCode + " " + this.customer?.oShippingAddress?.sCity,
+    //   sAddressLine2: this.customer?.oShippingAddress?.sCountry
+    // };
     if (!oDataSource.dEstimatedDate) {
       oDataSource.dEstimatedDate = this.translation['NO_DATE_SELECTED'];
     }
@@ -646,20 +655,17 @@ export class ActivityDetailsComponent implements OnInit {
     );
   }
 
-  processTransactionItems(result:any){
-    console.log('processTransactionItems');
+  async processTransactionItems(result:any){
     this.activityItems = result.data[0].result;
     this.oLocationName = this.activityItems[0].oLocationName;   
-    if (this.activityItems.length == 1) this.activityItems[0].bIsVisible = true;
+    // if (this.activityItems.length == 1) this.activityItems[0].bIsVisible = true;
     this.transactions = [];
     for (const obj of this.activityItems) {
-      if(obj.oType.eKind == 'order' && obj?.iBusinessProductId){
-       this.getBusinessProduct(obj.iBusinessProductId).subscribe((res:any)=>{
-        const productDetail = res.data;
+      if (obj.oType.eKind == 'order' && obj?.iBusinessProductId) {
+        const _productData: any = await this.getBusinessProduct(obj.iBusinessProductId).toPromise();
+        const productDetail = _productData.data;
         obj.sArticleNumber = productDetail.sArticleNumber
         obj.sProductNumber = productDetail.sProductNumber
-       });
-  
       }
       for (const item of obj.receipts) {
         this.transactions.push({ ...item, ...obj });
@@ -676,20 +682,17 @@ export class ActivityDetailsComponent implements OnInit {
     //   MenuComponent.reinitialization();
     // }, 200);
     this.loading = false;
+    setTimeout(() => {
+      MenuComponent.reinitialization();
+    }, 200);
   }
 
-  fetchTransactionItems() {
+  fetchTransactionItems(_id:any) {
     this.loading = true;
-    return this.apiService.postNew('cashregistry', `/api/v1/activities/activity-item/${this.activity._id}`, this.requestParams).toPromise();
-
-    // .subscribe((result: any) => {
-      
-    // }
-    // , (error) => {
-    //   this.loading = false;
-    //   alert(error.error.message);
-    //   this.dialogRef.close.emit('data');
-    // });
+    const url = (this.from === 'activity-items') ? `/api/v1/activities/activity-item/${_id}` : `/api/v1/activities/items/${_id}`;
+    this.apiService.postNew('cashregistry', url , this.requestParams).subscribe((result: any) => {
+      this.processTransactionItems(result)
+    });
   }
 
   close(data: any) {
@@ -803,13 +806,14 @@ export class ActivityDetailsComponent implements OnInit {
     oDataSource.businessDetails.sAddressline1 = currentLocation.oAddress.street + " " + currentLocation.oAddress.houseNumber + " " + currentLocation.oAddress.houseNumberSuffix + " ,  " + currentLocation.oAddress.postalCode + " " + currentLocation.oAddress.city;
     oDataSource.businessDetails.sAddressline2 = currentLocation.oAddress.country; 
 
-    oDataSource.oCustomer = {
-      sFirstName: this.customer?.sFirstName || '',
-      sLastName: this.customer?.sLastName || '',
-      sEmail: this.customer?.sEmail || '',
-      sMobile: this.customer?.oPhone?.sCountryCode || '' + this.customer?.oPhone?.sMobile || '',
-      sLandLine: this.customer?.oPhone?.sLandLine || '',
-    };
+    oDataSource.oCustomer = this.tillService.processCustomerDetails(this.customer);
+    // {
+    //   sFirstName: this.customer?.sFirstName || '',
+    //   sLastName: this.customer?.sLastName || '',
+    //   sEmail: this.customer?.sEmail || '',
+    //   sMobile: this.customer?.oPhone?.sCountryCode || '' + this.customer?.oPhone?.sMobile || '',
+    //   sLandLine: this.customer?.oPhone?.sLandLine || '',
+    // };
 
     const sActivityBarcodeURI = this.generateBarcodeURI(false, oDataSource.sNumber);
     oDataSource.sActivityBarcodeURI = sActivityBarcodeURI;

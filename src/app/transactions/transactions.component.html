@@ -250,8 +250,8 @@
           <td>{{transaction.sReceiptNumber}}</td>
           <td>{{transaction?.oCustomer?.sFirstName || ''}} {{transaction?.oCustomer?.sLastName || ''}}</td>
           <td>{{getMethods(transaction.aPayments)}}</td>
-          <td> - </td>
-          <td>{{transaction.eType}}</td>
+          <td> {{getPaymets(transaction.aPayments)}} </td>
+          <!-- <td>{{transaction.eType}}</td> -->
           <td>
             <div class="btn-group me-4">
               <!--begin::Submit-->

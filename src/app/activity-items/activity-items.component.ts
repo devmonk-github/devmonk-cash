@@ -9,6 +9,7 @@ import { ApiService } from '../shared/service/api.service';
 import { BarcodeService } from '../shared/service/barcode.service';
 import { DialogService } from '../shared/service/dialog';
 import { MenuComponent } from '../shared/_layout/components/common';
+import { ActivityItemExportComponent } from '../shared/components/activity-item-export/activity-item-export.component';
 
 @Component({
   selector: 'app-activity-items',
@@ -146,7 +147,7 @@ export class ActivityItemsComponent implements OnInit, OnDestroy {
         this.paginationConfig.totalItems = result.count;
         this.showLoader = false;
         setTimeout(() => {
-          MenuComponent.reinitialization();
+          MenuComponent.bootstrap();
         }, 200);
         if (result?.aUniqueBusinessPartner?.length && !this.aFilterBusinessPartner?.length) this.aFilterBusinessPartner = result.aUniqueBusinessPartner;
       },
@@ -156,7 +157,7 @@ export class ActivityItemsComponent implements OnInit, OnDestroy {
   }
 
   openActivities(activity: any, openActivityId?: any) {
-    console.log(activity)
+    // console.log(activity)
     this.dialogService.openModal(ActivityDetailsComponent, 
       { 
         cssClass: 'w-fullscreen mt--5', 
@@ -164,15 +165,30 @@ export class ActivityItemsComponent implements OnInit, OnDestroy {
         closeOnBackdropClick: true, 
         closeOnEsc: true, 
         context: { 
-          activity: activity,
+          activityItems: [activity],
           businessDetails: this.businessDetails,
           openActivityId, 
-          items: true, 
+          items: true,
+          employeesList: this.employees,
           from: 'activity-items' 
         } 
       }).instance.close.subscribe();
   }
 
+  openExportModel(){
+    this.dialogService.openModal(ActivityItemExportComponent, 
+      { 
+        cssClass: 'model-lg', 
+        hasBackdrop: true, 
+        closeOnBackdropClick: true, 
+        closeOnEsc: true, 
+        context: { 
+          headerList:{},
+          valueList:{}
+        } 
+      }).instance.close.subscribe(); 
+  }
+  
   listEmployee() {
     this.apiService.postNew('auth', '/api/v1/employee/list', { iBusinessId: this.iBusinessId }).subscribe((result:any)=>{
       if (result?.data?.length && result.data[0].result?.length) {

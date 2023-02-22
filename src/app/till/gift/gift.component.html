@@ -7,11 +7,11 @@
           <div class="row">
             <div class="col-1">{{item.quantity}}</div>
             <div class="col-4 text-truncate">{{item.name}} - {{item.sGiftCardNumber}}</div>
-            <div class="col">{{item.price | currency: tillService.currency}}</div>
+            <div class="col">{{item.price | currencyFormat: tillService.currency:tillService.separator}}</div>
             <div class="col"></div>
             <div class="col">{{item.tax}}%</div>
-            <div class="col">{{item.price | currency: tillService.currency}}</div>
-            <div class="col">{{ item.paymentAmount | currency: tillService.currency }}</div>
+            <div class="col">{{item.price | currencyFormat: tillService.currency:tillService.separator}}</div>
+            <div class="col">{{ item.paymentAmount | currencyFormat: tillService.currency:tillService.separator }}</div>
           </div>
         </div>
       </section>
@@ -58,7 +58,7 @@
               [disabled]="item.nonEditable" (change)="changeInPrice(); updatePayments();">
             <label for="number">{{ "VALUE" | translate}}</label>
           </div>
-          <p>{{ "VAT_HANDLING" | translate}}</p>
+          <!-- <p>{{ "VAT_HANDLING" | translate}}</p>
           <div class="form-check form-check-custom form-check-solid">
             <input class="form-check-input" type="radio" [(ngModel)]="item.bGiftcardTaxHandling" value="true"
               id="vatPaid1" />
@@ -72,7 +72,7 @@
             <label class="form-check-label" for="vatPaid2">
               {{ "PAY_TAXES_WHEN_REDEEM" | translate}}
             </label>
-          </div>
+          </div> -->
         </div>
 
         <div class="col-3">

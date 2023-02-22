@@ -411,7 +411,7 @@ export class ReceiptService {
             if (el?.alignment) columnData.alignment = el?.alignment;
             if (el?.styles) columnData = { ...columnData, ...el.styles }
             if (el?.width) columnData.width = el?.width;
-
+            if (el?.pageBreak) columnData.pageBreak = el?.pageBreak;
             columns.push(columnData)
         });
         let obj = { columns: columns };
@@ -714,10 +714,10 @@ export class ReceiptService {
         return obj;
     }
     
-    openDrawer(sApiKey:any) {
+    openDrawer(sApiKey: any, nPrinterId: any, nComputerId: any,) {
         // console.log("Open drawer", sApiKey);
         let drawerJob = this.pn2escposService.epOpenDrawer()
-        this.printService.openDrawer(this.iBusinessId, drawerJob, 70780318, 394051, sApiKey).subscribe((result:any) => {
+        this.printService.openDrawer(this.iBusinessId, drawerJob, nPrinterId, nComputerId, sApiKey).subscribe((result:any) => {
             console.log('drawer response', result);
         });
     }

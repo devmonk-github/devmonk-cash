@@ -59,6 +59,7 @@ export class TransactionsSearchComponent implements OnInit, AfterViewInit {
   }
 
   findTransactions() {
+    // console.log('transaction search - findTransactions');
     this.transactions = [];
     this.totalTransactions = 0;
     this.activities = [];
@@ -69,6 +70,7 @@ export class TransactionsSearchComponent implements OnInit, AfterViewInit {
     this.requestParams.locations = this.selectedLocations;
     this.showLoader = true;
     this.apiService.postNew('cashregistry', '/api/v1/transaction/search', this.requestParams).subscribe((result: any) => {
+      // console.log('transaction search - findTransactions search result', result);
       this.transactions = result.transactions.records;
       this.totalTransactions = result.transactions.count;
       this.activities = result.activities.records;
@@ -85,10 +87,14 @@ export class TransactionsSearchComponent implements OnInit, AfterViewInit {
   }
 
   openTransaction(transaction: any, itemType: any) {
-    // console.log('openTransaction: ', transaction, itemType);
+    // console.log('transaction search openTransaction: ', transaction, itemType);
     this.dialogService.openModal(TransactionItemsDetailsComponent, { cssClass: "modal-xl", context: { transaction, itemType } }).instance.close.subscribe(result => {
+      // console.log('transaction search response of transaction item details component: ', result);
       if(result?.transaction) {
-        this.close(this.tillService.processTransactionSearchResult(result));
+        // console.log('now sending to tillservice processTransactionSearchResult')
+        const temp = this.tillService.processTransactionSearchResult(result);
+        // console.log('response of tillservice processTransactionSearchResult closing search dialog', temp)
+        this.close(temp);
       }
     });
   }

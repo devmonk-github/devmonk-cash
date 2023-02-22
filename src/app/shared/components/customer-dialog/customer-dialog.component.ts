@@ -1,10 +1,9 @@
-import {Component, Input, OnInit, ViewContainerRef, ViewChildren, QueryList, ElementRef } from '@angular/core';
-import {DialogComponent} from "../../service/dialog";
-import {faTimes, faSearch} from "@fortawesome/free-solid-svg-icons";
-import { DialogService } from '../../service/dialog';
-import { CustomerDetailsComponent } from '../customer-details/customer-details.component';
-import { ApiService } from '../../service/api.service';
+import { Component, ElementRef, Input, OnInit, QueryList, ViewChildren, ViewContainerRef } from '@angular/core';
+import { faSearch, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { TranslateService } from '@ngx-translate/core';
+import { ApiService } from '../../service/api.service';
+import { DialogComponent, DialogService } from "../../service/dialog";
+import { CustomerDetailsComponent } from '../customer-details/customer-details.component';
 import { ToastService } from '../toast';
 
 @Component({
@@ -219,7 +218,7 @@ export class CustomerDialogComponent implements OnInit {
       customer['INVOICE_ADDRESS'] = this.makeCustomerAddress(customer.oInvoiceAddress, false);
       customer['EMAIL'] = customer.sEmail;
       customer['PHONE'] = (customer.oPhone && customer.oPhone.sLandLine ? customer.oPhone.sLandLine : '') + (customer.oPhone && customer.oPhone.sLandLine && customer.oPhone.sMobile ? ' / ' : '') + (customer.oPhone && customer.oPhone.sMobile ? customer.oPhone.sMobile : '')
-      this.close({action: false, customer: customer });
+      this.close({action: true, customer: customer });
     });
   }
 

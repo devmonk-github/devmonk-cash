@@ -274,16 +274,11 @@ export class Js2zplService {
     return value;
   }
 
-  getSettings(use_old_width = true) {
+  getSettings() {
 
     var settings = '^CI' + this.encoding;
 
-    if (use_old_width === false) {
-      settings += '^PW' + this.width + '^ML' + this.height
-    } else {
-      settings += '^ML' + this.width
-    }
-
+    settings += '^PW' + this.width + '^ML' + this.height
     settings += (this.inverted) ? '^POI' : '^PON';
     settings += '^PMN'
       + '^LS' + this.labelleft
