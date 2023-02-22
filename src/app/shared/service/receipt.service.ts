@@ -223,7 +223,8 @@ export class ReceiptService {
     processAbsoluteData(absoluteElements: any) {
         for (const el of absoluteElements) {
             if (el.type === 'text') {
-                let text = this.pdfService.replaceVariables(el.html, this.oOriginalDataSource);
+                let object = el?.object;
+                let text = this.pdfService.replaceVariables(el.html, (object) ? this.oOriginalDataSource[object] : this.oOriginalDataSource);
                 this.content.push({ text: text, absolutePosition: { x: el.position.x * this.commonService.MM_TO_PT_CONVERSION_FACTOR, y: el.position.y * this.commonService.MM_TO_PT_CONVERSION_FACTOR } })
             } else if (el.type === 'image') {
                 const img = this.addImage(el);
