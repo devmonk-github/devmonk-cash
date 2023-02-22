@@ -646,7 +646,7 @@ export class ActivityDetailsComponent implements OnInit {
     this.apiService.getNew('customer', `/api/v1/customer/${customerId}?iBusinessId=${this.iBusinessId}`).subscribe(
       (result: any) => {
         if (index > -1) this.transactions[index].customer = result;
-        else this.customer = result;
+        this.customer = result;
       },
       (error: any) => {
         console.error(error)
