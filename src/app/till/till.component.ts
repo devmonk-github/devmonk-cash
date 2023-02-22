@@ -1176,7 +1176,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       new: true,
       isFor,
       oBusinessProductMetaData: this.tillService.createProductMetadata(product),
-      eActivityItemStatus: (this.eKind === 'order') ? 'new' : ''
+      eActivityItemStatus: (this.eKind === 'order') ? 'new' : 'delivered'
     });
     if (isFrom === 'quick-button') { source.loading = false }
     this.resetSearch();
@@ -1723,6 +1723,13 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
   openDrawer(){
     // console.log('open drawer cash register')
-    this.receiptService.openDrawer(this.businessDetails.oPrintNode.sApiKey)
+    const aThermalSettings = this.printSettings.filter((settings:any) => settings.sMethod === 'thermal' && settings.iWorkstationId === this.iWorkstationId)
+    const oSettings = aThermalSettings.find((s:any) => s.sType === 'regular' && s.nComputerId && s.nPrinterId);
+    if (oSettings) {
+      this.receiptService.openDrawer(this.businessDetails.oPrintNode.sApiKey, oSettings.nPrinterId, oSettings.nComputerId,)
+    } else {
+      this.toastrService.show({type: 'warning', text: 'Please check your print settings!'})
+    }
+    
   }
 }
