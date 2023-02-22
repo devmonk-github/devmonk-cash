@@ -92,7 +92,7 @@ export class TransactionsComponent implements OnInit, OnDestroy {
     { key: 'CUSTOMER', selected: false, sort: '' },
     { key: 'METHOD', disabled: true },
     { key: 'TOTAL', disabled: true },
-    { key: 'TYPE', disabled: true },
+    // { key: 'TYPE', disabled: true },
     {key:'ACTION' , disabled:true }
   ]
 
@@ -172,6 +172,14 @@ export class TransactionsComponent implements OnInit, OnDestroy {
       else str = str + ', ' + obj.sMethod;
     }
     return str;
+  }
+
+  getPaymets(arr:any){
+    let total = 0;
+    for(const obj of arr){
+      total= total + Number(obj?.nAmount)
+    }
+    return total;
   }
 
   toolTipData(item: any) {
