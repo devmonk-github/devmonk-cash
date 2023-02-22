@@ -157,7 +157,7 @@ export class ActivityItemsComponent implements OnInit, OnDestroy {
   }
 
   openActivities(activity: any, openActivityId?: any) {
-    console.log(activity)
+    // console.log(activity)
     this.dialogService.openModal(ActivityDetailsComponent, 
       { 
         cssClass: 'w-fullscreen mt--5', 
@@ -165,7 +165,7 @@ export class ActivityItemsComponent implements OnInit, OnDestroy {
         closeOnBackdropClick: true, 
         closeOnEsc: true, 
         context: { 
-          activity: activity,
+          activityItems: [activity],
           businessDetails: this.businessDetails,
           openActivityId, 
           items: true,
