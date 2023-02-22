@@ -402,7 +402,7 @@ export class TillService {
   }
 
   processTransactionSearchResult(result: any) {
-    // console.log(JSON.parse(JSON.stringify(result)));
+    // console.log(405, JSON.parse(JSON.stringify(result)));
     const transactionItems: any = [];
     if (result.transaction) {
       result.transactionItems.forEach((transactionItem: any) => {
@@ -521,7 +521,7 @@ export class TillService {
         item.sDescription = this.translateService.instant('VOUCHER_SALE');
       }
       item.bRegular = !item.oType.bRefund;
-      if (item?.oArticleGroupMetaData?.oName && Object.keys(item?.oArticleGroupMetaData?.oName)?.length && item.oType.eKind !== 'repair') {
+      if (item?.oArticleGroupMetaData?.oName && Object.keys(item?.oArticleGroupMetaData?.oName)?.length) {
         item.sArticleGroupName = (item?.oArticleGroupMetaData?.oName[language] || item?.oArticleGroupMetaData?.oName['en'] || item?.oArticleGroupMetaData?.oName['nl'] || '') + ' ';
       }
       // if (item?.oBusinessProductMetaData?.sLabelDescription){
@@ -646,8 +646,8 @@ export class TillService {
   processCustomerDetails(customer:any) {
     return {
       ...customer,
-      ...customer.oPhone,
-      ...customer.oInvoiceAddress,
+      ...customer?.oPhone,
+      ...customer?.oInvoiceAddress,
     };
   }
 

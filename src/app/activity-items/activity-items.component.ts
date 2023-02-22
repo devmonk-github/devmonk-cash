@@ -9,6 +9,7 @@ import { ApiService } from '../shared/service/api.service';
 import { BarcodeService } from '../shared/service/barcode.service';
 import { DialogService } from '../shared/service/dialog';
 import { MenuComponent } from '../shared/_layout/components/common';
+import { ActivityItemExportComponent } from '../shared/components/activity-item-export/activity-item-export.component';
 
 @Component({
   selector: 'app-activity-items',
@@ -156,7 +157,7 @@ export class ActivityItemsComponent implements OnInit, OnDestroy {
   }
 
   openActivities(activity: any, openActivityId?: any) {
-    console.log(activity)
+    // console.log(activity)
     this.dialogService.openModal(ActivityDetailsComponent, 
       { 
         cssClass: 'w-fullscreen mt--5', 
@@ -164,7 +165,7 @@ export class ActivityItemsComponent implements OnInit, OnDestroy {
         closeOnBackdropClick: true, 
         closeOnEsc: true, 
         context: { 
-          activity: activity,
+          activityItems: [activity],
           businessDetails: this.businessDetails,
           openActivityId, 
           items: true,
@@ -172,6 +173,31 @@ export class ActivityItemsComponent implements OnInit, OnDestroy {
           from: 'activity-items' 
         } 
       }).instance.close.subscribe();
+  }
+
+  openExportModel() {
+    const header = [
+      { key: 'ACTIVITY_NO', value: 'sNumber', width: '18%' },
+      { key: 'CUSTOMER', value: 'oCustomer.sLastName', width: '10%' },
+      { key: 'CITY', value: 'oCustomer.oInvoiceAddress.sCity', width: '10%' },
+      { key: 'COMMENT', value: 'sDescription', width: '15%' },
+      { key: 'TOTAL_PRICE', value: 'nTotalAmount', width: '10%' },
+      { key: 'CREATION_DATE', value: 'dCreatedDate', width: '10%' },
+      { key: 'ESTIMATED_DATE', value: 'dEstimatedDate', width: '10%' },
+      { key: 'DELIVERED_DATE', value: 'dActualFinishDate', width: '10%' },
+      { key: 'EMPLOYEE', value: 'sEmployeeName', width: '7%' }
+    ]
+    this.dialogService.openModal(ActivityItemExportComponent, {
+      cssClass: 'model-lg',
+      hasBackdrop: true,
+      closeOnBackdropClick: true,
+      closeOnEsc: true,
+      context: {
+        headerList: header,
+        businessDetails:this.businessDetails,
+        page: 'activityItem'
+      }
+    }).instance.close.subscribe();
   }
 
   listEmployee() {

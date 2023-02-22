@@ -1,0 +1,41 @@
+<div class="card shadow-sm">
+    <div class="card-header">
+        <h3 class="card-title">{{"ACTIVITY_ITEM_EXPORT" | translate}}</h3>
+        <div mat-dialog-actions>
+            <button mat-dialog-close type="button" class="btn btn-sm btn-light" (click)="close(false)">
+                <fa-icon [icon]="faTimes"></fa-icon>
+            </button>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div style="font-weight: bold">{{"BASIC_DETAIL" | translate}}</div>&nbsp;
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                <label>{{'START_DATE' | translate}}</label>
+                <input type="date" class="form-control form-control form-control-solid" name="startDate"
+                    [ngModel]="filterDates.startDate | date:'yyyy-MM-dd'"
+                    (ngModelChange)="filterDates.startDate = $event" />
+            </div>
+            <div class="col-md-4">
+                <label>{{'END_DATE' | translate}}</label>
+                <input type="date" class="form-control form-control form-control-solid" name="endDate"
+                    [ngModel]="filterDates.endDate | date:'yyyy-MM-dd'"
+                    (ngModelChange)="filterDates.endDate = $event" />
+            </div>
+            <div class="col-md-4">
+                <label>{{'FIELD' | translate}}</label>
+                <div *ngFor="let obj of headerList">
+                    <label>
+                        <input type="checkbox" [value]="obj" checked (click)="updateExportField(obj)" />
+                        {{obj.key | translate}}
+                    </label>
+                </div>&nbsp;
+            </div>
+        </div>
+    </div>
+    <div class="card-footer">
+        <button class="btn btn-secondary" (click)="exportToPDF()">{{"EXPORT" | translate}}</button>
+    </div>
+</div>
