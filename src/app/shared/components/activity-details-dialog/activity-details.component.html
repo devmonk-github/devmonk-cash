@@ -337,7 +337,6 @@
                                                     <span class="indicator-label">{{ "CHECKOUT" | translate}}</span>
                                                 </span>
                                             </div>
-                                            <p style="color: red">{{ 'PLEASE_USE_CASH_REGISTER_TO_MAKE_OTHER_PAYMENTS' | translate}}</p>
                                         </div>
                                     </div>
                                     <div *ngIf="activity.eRepairStatus === 'completed'"
@@ -989,13 +988,12 @@
                                                     <span class="indicator-label">{{ "MAIL" | translate}}</span>
                                                 </span>
                                             </div> -->
-                                            <div [ngClass]="bShowOrderDownload ? 'btn-group me-4 w-100 my-3': 'btn-group me-4 w-100 my-3 disabled'">
+                                            <div class="btn-group me-4 w-100 my-3">
                                                 <span class="btn btn-primary fs-bold" (click)="loadCashRegister = true; openTransaction(activity, 'activity')">
                                                     <fa-icon class="group-icon" [icon]="faEuro"></fa-icon>
                                                     <span class="indicator-label">{{ "CHECKOUT" | translate}}</span>
                                                 </span>
                                             </div>
-                                            <p style="color: red">{{ 'PLEASE_USE_CASH_REGISTER_TO_MAKE_OTHER_PAYMENTS' | translate}}</p>
                                         </div>
                                     </div>
                                     <div *ngIf="activity.eRepairStatus === 'completed'"
@@ -1648,13 +1646,12 @@
                                                     <span class="indicator-label">{{ "MAIL" | translate}}</span>
                                                 </span>
                                             </div>
-                                            <div [ngClass]="bShowOrderDownload ? 'btn-group me-4 w-100 my-3': 'btn-group me-4 w-100 my-3 disabled'">
+                                            <div class="btn-group me-4 w-100 my-3">
                                                 <span class="btn btn-primary fs-bold" (click)="loadCashRegister = true; openTransaction(activity, 'activity')">
                                                     <fa-icon class="group-icon" [icon]="faEuro"></fa-icon>
                                                     <span class="indicator-label">{{ "CHECKOUT" | translate}}</span>
                                                 </span>
                                             </div>
-                                            <p style="color: red">{{ 'PLEASE_USE_CASH_REGISTER_TO_MAKE_OTHER_PAYMENTS' | translate}}</p>
                                         </div>
                                     </div>
                                     <div *ngIf="activity.eRepairStatus === 'completed'"
