@@ -361,7 +361,7 @@ export class ReceiptService {
                         }
                     }
                 }
-                
+
             } else if (el?.type === 'image') {
                 let img = this.addImage(el);
                 this.content.push(img);
@@ -564,20 +564,20 @@ export class ReceiptService {
                         // console.log('replacing', el.html)
                         let text = this.pdfService.replaceVariables(el.html, (object) ? object : this.oOriginalDataSource)
                         // console.log({text})
-                        let obj:any = { text: text, alignment: el?.alignment };
+                        let obj: any = { text: text, alignment: el?.alignment };
                         let styles = {};
                         if (el?.conditionalStyles?.length) {
-                            el.conditionalStyles.forEach((condition:any) => {
+                            el.conditionalStyles.forEach((condition: any) => {
                                 // console.log(condition)
                                 const bApplyStyles = this.commonService.comparators[condition.if.compare](text, condition.if.target);
                                 // console.log({bApplyStyles})
-                                if(bApplyStyles) {
-                                    styles =  { ...styles, ...condition.styles }
+                                if (bApplyStyles) {
+                                    styles = { ...styles, ...condition.styles }
                                 }
                             })
                         }
-                        
-                        obj = { ...obj, ...styles, ...el?.styles};
+
+                        obj = { ...obj, ...styles, ...el?.styles };
                         // console.log(obj)
                         stack.push(obj);
                     }
@@ -714,11 +714,11 @@ export class ReceiptService {
         })
         return obj;
     }
-    
+
     openDrawer(sApiKey: any, nPrinterId: any, nComputerId: any,) {
         // console.log("Open drawer", sApiKey);
         let drawerJob = this.pn2escposService.epOpenDrawer()
-        this.printService.openDrawer(this.iBusinessId, drawerJob, nPrinterId, nComputerId, sApiKey).subscribe((result:any) => {
+        this.printService.openDrawer(this.iBusinessId, drawerJob, nPrinterId, nComputerId, sApiKey).subscribe((result: any) => {
             console.log('drawer response', result);
         });
     }
