@@ -509,12 +509,15 @@ export class ActivityDetailsComponent implements OnInit {
   }
 
   openTransaction(transaction: any, itemType: any) {
-    // console.log('openTransaction: ', JSON.parse(JSON.stringify(transaction)), itemType);
+    // console.log('openTransaction: ', this.activity, itemType);
     transaction.iActivityId = this.activity._id;
-    this.dialogService.openModal(TransactionItemsDetailsComponent, { cssClass: "modal-xl", context: { transaction, itemType, selectedId: transaction._id } })
+    this.dialogService.openModal(TransactionItemsDetailsComponent, { cssClass: "modal-xl", context: { transaction:this.activity, itemType, selectedId: transaction._id } })
       .instance.close.subscribe((result: any) => {
+        // console.log(514, result)
         if(result?.action !== false){
+          // console.log(516)
           const data = this.tillService.processTransactionSearchResult(result);
+          // console.log(518, data)
           localStorage.setItem('fromTransactionPage', JSON.stringify(data));
           localStorage.setItem('recentUrl', '/business/transactions');
           setTimeout(() => {

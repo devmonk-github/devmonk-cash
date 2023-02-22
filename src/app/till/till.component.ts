@@ -229,18 +229,20 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     } catch (err) {
       console.log('error while executing fiskaly service', err)
     }
-    if(!_fiscallyData) return;
-    this.businessDetails.aLocation.forEach((location: any) => {
-      const oMatch = _fiscallyData.find((tss: any) => tss.iLocationId === location._id)
-      if (oMatch) {
-        location.tssInfo = oMatch.tssInfo;
-        location.bIsFiskalyEnabled = oMatch.bEnabled;
+    if(_fiscallyData) {
+
+      this.businessDetails.aLocation.forEach((location: any) => {
+        const oMatch = _fiscallyData.find((tss: any) => tss.iLocationId === location._id)
+        if (oMatch) {
+          location.tssInfo = oMatch.tssInfo;
+          location.bIsFiskalyEnabled = oMatch.bEnabled;
+        }
+      });
+      if (this.businessDetails.currentLocation?.tssInfo && this.businessDetails.currentLocation?.bIsFiskalyEnabled) {
+        this.bIsFiscallyEnabled = true;
+        this.cancelFiskalyTransaction();
+        this.fiskalyService.setTss(this.businessDetails.currentLocation?.tssInfo._id)
       }
-    });
-    if (this.businessDetails.currentLocation?.tssInfo && this.businessDetails.currentLocation?.bIsFiskalyEnabled) {
-      this.bIsFiscallyEnabled = true;
-      this.cancelFiskalyTransaction();
-      this.fiskalyService.setTss(this.businessDetails.currentLocation?.tssInfo._id)
     }
 
     this.loadTransaction();
@@ -264,6 +266,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   loadTransaction() {
+    // console.log('load transaction');
     const fromTransactionPage: any = localStorage.getItem('fromTransactionPage');
     if (fromTransactionPage) this.handleTransactionResponse(JSON.parse(fromTransactionPage));
   }
@@ -530,10 +533,13 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       });
   }
 
-  openTransactionSearchDialog(): void {
+  openTransactionSearchDialog() {
+    // console.log('open transaction search dialog')
     this.dialogService.openModal(TransactionsSearchComponent, { cssClass: 'modal-xl', context: { customer: this.customer } })
       .instance.close.subscribe((data) => {
+        // console.log('response of transaction search component', data)
         if (data?.transaction) {
+          // console.log('now calling handle transaction response')
           this.handleTransactionResponse(data);
         }
         // this.changeInPayment();
@@ -1686,7 +1692,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   async handleTransactionResponse(data: any) {
-    console.log('handleTransactionResponse')
+    // console.log('handleTransactionResponse', data)
     this.clearAll();
     const { transactionItems, transaction } = data;
     this.transactionItems = transactionItems;

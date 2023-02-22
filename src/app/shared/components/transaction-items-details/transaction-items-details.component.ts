@@ -91,12 +91,13 @@ export class TransactionItemsDetailsComponent implements OnInit {
   }
 
   async fetchTransactionItems() {
-    // console.log('TransactionItemsDetailsComponent 3');
+    // console.log('TransactionItemsDetailsComponent fetchTransactionItems', this.transaction);
     this.requestParams.iTransactionId = this.transaction._id;
     let url = `/api/v1/transaction/item/transaction-items`;
     // console.log('fetchTransactionItems: ', url, this.transaction);
     let aRelatedTransactionItem:any;
     if (this.itemType === 'activity') {
+      // console.log('item type activity if')
       delete this.requestParams.iTransactionId;
       let id;
       if (this.transaction?.iActivityId) id = this.transaction.iActivityId
@@ -116,6 +117,7 @@ export class TransactionItemsDetailsComponent implements OnInit {
       }
     }
     this.apiService.postNew('cashregistry', url, this.requestParams).subscribe((result: any) => {
+      // console.log('120 api result assiging to transaction items', result)
       this.transactionItems = result.data[0].result;
       // console.log('this.transactionItems 2', this.transactionItems, url);
 
@@ -196,6 +198,7 @@ export class TransactionItemsDetailsComponent implements OnInit {
   }
 
   close(data: any, sFrom:string = '') {
+    // console.log(201, 'closing from transaction item details', data);
     if(sFrom === 'close') {
       this.dialogRef.close.emit(data);
     } else {

@@ -402,7 +402,7 @@ export class TillService {
   }
 
   processTransactionSearchResult(result: any) {
-    // console.log(JSON.parse(JSON.stringify(result)));
+    // console.log(405, JSON.parse(JSON.stringify(result)));
     const transactionItems: any = [];
     if (result.transaction) {
       result.transactionItems.forEach((transactionItem: any) => {
