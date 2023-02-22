@@ -175,20 +175,31 @@ export class ActivityItemsComponent implements OnInit, OnDestroy {
       }).instance.close.subscribe();
   }
 
-  openExportModel(){
-    this.dialogService.openModal(ActivityItemExportComponent, 
-      { 
-        cssClass: 'model-lg', 
-        hasBackdrop: true, 
-        closeOnBackdropClick: true, 
-        closeOnEsc: true, 
-        context: { 
-          headerList:{},
-          valueList:{}
-        } 
-      }).instance.close.subscribe(); 
+  openExportModel() {
+    const header = [
+      { key: 'ACTIVITY_NO', value: 'sNumber', width: '18%' },
+      { key: 'CUSTOMER', value: 'oCustomer.sLastName', width: '10%' },
+      { key: 'CITY', value: 'oCustomer.oInvoiceAddress.sCity', width: '10%' },
+      { key: 'COMMENT', value: 'sDescription', width: '15%' },
+      { key: 'TOTAL_PRICE', value: 'nTotalAmount', width: '10%' },
+      { key: 'CREATION_DATE', value: 'dCreatedDate', width: '10%' },
+      { key: 'ESTIMATED_DATE', value: 'dEstimatedDate', width: '10%' },
+      { key: 'DELIVERED_DATE', value: 'dActualFinishDate', width: '10%' },
+      { key: 'EMPLOYEE', value: 'sEmployeeName', width: '7%' }
+    ]
+    this.dialogService.openModal(ActivityItemExportComponent, {
+      cssClass: 'model-lg',
+      hasBackdrop: true,
+      closeOnBackdropClick: true,
+      closeOnEsc: true,
+      context: {
+        headerList: header,
+        businessDetails:this.businessDetails,
+        page: 'activityItem'
+      }
+    }).instance.close.subscribe();
   }
-  
+
   listEmployee() {
     this.apiService.postNew('auth', '/api/v1/employee/list', { iBusinessId: this.iBusinessId }).subscribe((result:any)=>{
       if (result?.data?.length && result.data[0].result?.length) {
