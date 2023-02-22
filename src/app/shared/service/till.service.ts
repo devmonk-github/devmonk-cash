@@ -646,8 +646,8 @@ export class TillService {
   processCustomerDetails(customer: any) {
     return {
       ...customer,
-      ...customer.oPhone,
-      ...customer.oInvoiceAddress,
+      ...customer?.oPhone,
+      ...customer?.oInvoiceAddress,
     };
   }
 
