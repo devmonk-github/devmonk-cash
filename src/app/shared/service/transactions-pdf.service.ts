@@ -73,7 +73,8 @@ export class TransactionsPdfService {
           aActivityItem = result.data;
           aActivityItem.forEach((activityItem: any, index: Number) => {
             let obj: any = {};
-            let aEmployeeName = activityItem?.sEmployeeName.split(' ');
+            let aEmployeeName :any 
+            if(activityItem?.sEmployeeName) aEmployeeName = activityItem?.sEmployeeName.split(' ');
             if (headerObj['sNumber']) obj['sNumber'] = activityItem && activityItem.sNumber ? activityItem.sNumber : '-';
             if (headerObj['oCustomer.sLastName']) obj['oCustomer.sLastName'] = activityItem && activityItem.oCustomer?.sLastName ? activityItem.oCustomer?.sLastName : '-';
             if (headerObj['oCustomer.oInvoiceAddress.sCity']) obj['oCustomer.oInvoiceAddress.sCity'] = activityItem && activityItem?.oCustomer?.sCity ? activityItem?.oCustomer?.sCity : '-';
