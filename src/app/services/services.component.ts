@@ -348,9 +348,11 @@ export class ServicesComponent implements OnInit, OnDestroy {
       maxDate: this.filterDates.create.maxDate,
     }
     this.showLoader = true;
+    this.activities = [];
     this.apiService.postNew('cashregistry', '/api/v1/activities', this.requestParams).subscribe((result: any) => {
-      if (result?.data?.length) this.activities = result?.data;
-      else this.activities = [];
+      if (result?.data?.length){
+        this.activities = result?.data;
+      } 
       if (result?.aUniqueBusinessPartner && !this.aFilterBusinessPartner?.length) this.aFilterBusinessPartner = result.aUniqueBusinessPartner;
       this.paginationConfig.totalItems = result?.count;
       this.getCustomers();

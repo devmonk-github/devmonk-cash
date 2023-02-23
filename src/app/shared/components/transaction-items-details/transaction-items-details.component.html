@@ -104,6 +104,7 @@
                                 </label>
                             </td>
                             <td class="">{{transactionItem.sNumber}}</td>
+                            <td class="">{{transactionItem?.sBagNumber || ''}}</td>
                             <td class="">{{transactionItem.nTotalAmount}}</td>
                             <td class="">{{transactionItem.nPaidAmount}}</td>
                             <td class="">{{(transactionItem.nTotalAmount > transactionItem.nPaidAmount ? 'YES' :

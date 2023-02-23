@@ -27,6 +27,7 @@
                             <thead>
                                 <tr class="text-start text-gray-400 fw-bolder fs-7 text-uppercase gs-0">
                                     <th class="min-w-100px sorting" tabindex="0"> {{"ACTIVITY_NUMBER" | translate}}</th>
+                                    <th class="min-w-100px sorting" tabindex="0"> {{"BAG_NUMBER" | translate}}</th>
                                     <th class="min-w-100px sorting" tabindex="0"> {{"DATE" |translate}}</th>
                                     <th class="min-w-100px sorting" tabindex="0">{{ "ACTION" | translate}}</th>
                                 </tr>
@@ -34,6 +35,7 @@
                             <tbody class="fw-bold text-gray-600">
                                 <tr *ngFor='let transaction of activities'>
                                     <td class="">{{transaction.sNumber}}</td>
+                                    <td class="">{{(transaction?.aBagNumber?.length) ? transaction.aBagNumber.join(',') : ''}}</td>
                                     <td class="">{{ transaction.dCreatedDate | date: 'short'}}</td>
                                     <td>
                                         <button class="btn btn-primary"
@@ -45,7 +47,7 @@
                         </table>
                     </div>
                     <div class="d-flex">
-                        <h5 *ngIf='!transactions.length && !showLoader'> {{"NO_DATA_FOUND" | translate}}!</h5>
+                        <h5 *ngIf='!transactions?.length && !activities?.length && !showLoader'> {{"NO_DATA_FOUND" | translate}}!</h5>
                         <div *ngIf="showLoader" class="spinner-border mx-auto"></div>
                     </div>
                 </div>
