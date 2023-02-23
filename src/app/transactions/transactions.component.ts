@@ -165,22 +165,22 @@ export class TransactionsComponent implements OnInit, OnDestroy {
     })
   }
 
-  getMethods(arr: any){
-    let str = undefined;
-    for(const obj of arr){
-      if(!str) str = obj.sMethod;
-      else str = str + ', ' + obj.sMethod;
-    }
-    return str;
-  }
+  // getMethods(arr: any){
+  //   let str = undefined;
+  //   for(const obj of arr){
+  //     if(!str) str = obj.sMethod;
+  //     else str = str + ', ' + obj.sMethod;
+  //   }
+  //   return str;
+  // }
 
-  getPaymets(arr:any){
-    let total = 0;
-    for(const obj of arr){
-      total= total + Number(obj?.nAmount)
-    }
-    return total;
-  }
+  // getPaymets(arr:any){
+  //   let total = 0;
+  //   for(const obj of arr){
+  //     total= total + Number(obj?.nAmount)
+  //   }
+  //   return total;
+  // }
 
   toolTipData(item: any) {
     var itemList = []
@@ -216,6 +216,13 @@ export class TransactionsComponent implements OnInit, OnDestroy {
     this.apiService.postNew('cashregistry', '/api/v1/transaction/cashRegister', this.requestParams).subscribe((result: any) => {
       if (result?.data?.result?.length) {
         this.transactions = result.data.result;
+        // console.log(this.transactions);
+        this.transactions.forEach((transaction:any) => {
+          const aTemp = transaction.aPayments.filter((payment: any) => payment.sRemarks !== 'CHANGE_MONEY')
+          transaction.sMethods = aTemp.map((m:any) => m.sMethod).join(',');
+          transaction.nTotal = 0;
+          aTemp.forEach((m: any) => transaction.nTotal += m.nAmount)
+        })
         this.paginationConfig.totalItems = result.data.totalCount;
       }
       this.showLoader = false;
