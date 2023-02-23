@@ -55,6 +55,7 @@ import { TransactionActionDialogComponent } from "./components/transaction-actio
 import { CustomerGroupDetailComponent } from './components/customer-group-detail/customer-group-detail.component';
 import { CurrencyFormatPipe } from "./pipes/currency-format.pipe";
 import { ActivityItemExportComponent } from './components/activity-item-export/activity-item-export.component';
+import { TransactionsPdfService } from "./service/transactions-pdf.service";
 
 @NgModule({
   declarations: [
@@ -134,7 +135,7 @@ import { ActivityItemExportComponent } from './components/activity-item-export/a
     SortPipe,
     CurrencyFormatPipe
   ],
-  providers: [CurrencyPipe, CommonPrintSettingsService, PdfService, ReceiptService]
+  providers: [CurrencyPipe, CommonPrintSettingsService, PdfService, ReceiptService,TransactionsPdfService]
 })
 
 export class SharedModule {

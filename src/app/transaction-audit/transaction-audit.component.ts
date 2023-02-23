@@ -16,6 +16,7 @@ import { TaxService } from '../shared/service/tax.service';
   styleUrls: ['./transaction-audit.component.scss'],
   providers: [TransactionAuditUiPdfService]
 })
+
 export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestroy {
 
   iBusinessId: any = '';
@@ -611,8 +612,6 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
     if (sLevelFilter) {
       this.bIsArticleGroupLevel = sLevelFilter === "articleGroup"
     }
-
-
   }
 
   fetchBusinessLocation() {
@@ -1386,7 +1385,6 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
 
   checkShowDownload() {
     const bCondition1 = this.IsDynamicState;
-    // = (this.oStatisticsDocument && this.oStatisticsDocument?.bIsDayState === false);
       
     const bCondition2 = (!this.selectedEmployee?._id &&
       !this.selectedWorkStation?._id &&
