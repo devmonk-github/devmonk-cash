@@ -520,7 +520,7 @@ export class ActivityDetailsComponent implements OnInit {
     this.dialogService.openModal(TransactionItemsDetailsComponent, { cssClass: "modal-xl", context: { transaction: this.activity, itemType, selectedId: transaction._id } })
       .instance.close.subscribe((result: any) => {
         // console.log(514, result)
-        if (result?.action !== false) {
+        if (result?.action) {
           // console.log(516, 'calling process transaction search result')
           const data = this.tillService.processTransactionSearchResult(result);
           // console.log(518, data)
@@ -528,9 +528,9 @@ export class ActivityDetailsComponent implements OnInit {
           localStorage.setItem('recentUrl', '/business/transactions');
           setTimeout(() => {
             if (this.loadCashRegister) {
+              this.close(true);
               this.routes.navigate(['/business/till']);
             }
-            this.close(true);
           }, 100);
         }
       }, (error) => {

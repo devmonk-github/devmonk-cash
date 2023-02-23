@@ -2,7 +2,7 @@
     <div class="card-header" style="margin-top: 20px;">
         <h4>{{itemType === 'transaction'? "TRANSACTION_ITEMS" : "ACTIVITY_ITEMS" | translate}}</h4>
         <div>
-            <button type="button" class="btn btn-sm btn-light" (click)="close(null, 'close')">
+            <button type="button" class="btn btn-sm btn-light" (click)="close({action:false}, 'close')">
                 <fa-icon [icon]="faTimes"></fa-icon>
             </button>
         </div>
