@@ -5,7 +5,9 @@ pdfMake.vfs = pdfFonts.pdfMake.vfs;
 import * as moment from 'moment';
 import { PdfService } from 'src/app/shared/service/pdf2.service';
 import { ApiService } from './api.service';
-import { left } from '@popperjs/core';
+import { ToastService } from '../components/toast';
+import { TranslateService } from '@ngx-translate/core';
+import { assign } from 'lodash';
 
 @Injectable({
   providedIn: 'root'
@@ -31,6 +33,10 @@ export class TransactionsPdfService {
         fontSize: 12,
         margin: [0, -10, 0, 10]
       },
+      normal: {
+        fontSize: 10,
+        margin: 5, //[0, 5, 0, 5]
+      },
       header: {
         fontSize: 15,
         alignment: 'center',
@@ -47,12 +53,21 @@ export class TransactionsPdfService {
         margin: [0, 20, 0, 20]
       },
     };
-
+  translations: any = [];
 
   constructor(private pdf: PdfService,
-    private apiService: ApiService) { }
+    private apiService: ApiService,
+    private toastService: ToastService,
+    private transalteService: TranslateService) {
+    const translate = ['ACTIVITY_NO', 'CUSTOMER', 'CITY', 'COMMENT', 'TOTAL_PRICE', 'CREATION_DATE', 'ESTIMATED_DATE', 'DELIVERED_DATE', 'EMPLOYEE',
+      'CREATE_MIN_DATE', 'CREATE_MAX_DATE', 'ESTIMATE_MIN_DATE', 'ESTIMATE_MAX_DATE', 'REPAIR_STATUS', 'EMPLOYEES', 'LOCATION', 'WORKSTATION', 'ASSIGNEE',
+      'BUSINESS_PARTNER', 'E_KIND', 'IMPORT_STATUS'];
+    this.transalteService.get(translate).subscribe((res: any) => {
+      this.translations = res;
+    })
+  }
 
-  exportToPdf(requestParams: any, customerHeader: any, page: any, businessDetail: any) {
+  async exportToPdf({ requestParams, customerHeader, page, businessDetail, aWorkstation, aLocation, aAssignee, aBusinessPartner }: any) {
     let aTableBody: Array<any> = [];
     // this.downloading = true;
     let aActivityItem: any[] = [];
@@ -63,93 +78,188 @@ export class TransactionsPdfService {
 
     customerHeader.forEach((header: any) => {
       tableWidth.push(header.width);
-      tableHeader.push({ text: header.key, bold: true });
+      tableHeader.push({ text: this.translations[header.key], bold: true });
       headerObj = { ...headerObj, [header.value]: header.key }
     })
 
-    this.apiService.postNew('cashregistry', '/api/v1/activities/items', requestParams).subscribe(
-      (result: any) => {
-        if (result && result.data && result.data.length) {
-          aActivityItem = result.data;
-          aActivityItem.forEach((activityItem: any, index: Number) => {
-            let obj: any = {};
-            let aEmployeeName :any 
-            if(activityItem?.sEmployeeName) aEmployeeName = activityItem?.sEmployeeName.split(' ');
-            if (headerObj['sNumber']) obj['sNumber'] = activityItem && activityItem.sNumber ? activityItem.sNumber : '-';
-            if (headerObj['oCustomer.sLastName']) obj['oCustomer.sLastName'] = activityItem && activityItem.oCustomer?.sLastName ? activityItem.oCustomer?.sLastName : '-';
-            if (headerObj['oCustomer.oInvoiceAddress.sCity']) obj['oCustomer.oInvoiceAddress.sCity'] = activityItem && activityItem?.oCustomer?.sCity ? activityItem?.oCustomer?.sCity : '-';
-            if (headerObj['sDescription']) obj['sDescription'] = activityItem && activityItem?.sDescription ? activityItem?.sDescription : '-';
-            if (headerObj['nTotalAmount']) obj['nTotalAmount'] = activityItem && activityItem?.nTotalAmount ? activityItem?.nTotalAmount : '-';
-            if (headerObj['dCreatedDate']) obj['dCreatedDate'] = activityItem && activityItem.dCreatedDate ? moment(activityItem.dCreatedDate).format('DD-MM-yyyy') : '-';
-            if (headerObj['dEstimatedDate']) obj['dEstimatedDate'] = activityItem && activityItem?.dEstimatedDate ? moment(activityItem?.dEstimatedDate).format('DD-MM-yyyy') : '-';
-            if (headerObj['dActualFinishDate']) obj['dActualFinishDate'] = activityItem && activityItem.dActualFinishDate ? moment(activityItem.dActualFinishDate).format('DD-MM-yyyy') : '-';
-            if (headerObj['sEmployeeName']) obj['sEmployeeName'] = (aEmployeeName && aEmployeeName[0].charAt(0) ? aEmployeeName[0].charAt(0) : '-') + (aEmployeeName && aEmployeeName[1].charAt(0) ? aEmployeeName[1].charAt(0) : '-');
+    const result: any = await this.fetchActivityItem(requestParams);
+    if (result && result?.data && result?.data?.length) {
+      aActivityItem = result.data;
+      aActivityItem.forEach((activityItem: any, index: Number) => {
+        let obj: any = {};
+        let aEmployeeName: any
+        if (activityItem?.sEmployeeName) aEmployeeName = activityItem?.sEmployeeName.split(' ');
+        if (headerObj['sNumber']) obj['sNumber'] = activityItem && activityItem.sNumber ? activityItem.sNumber : '-';
+        if (headerObj['oCustomer.sLastName']) obj['oCustomer.sLastName'] = activityItem && activityItem.oCustomer?.sLastName ? activityItem.oCustomer?.sLastName : '-';
+        if (headerObj['oCustomer.oInvoiceAddress.sCity']) obj['oCustomer.oInvoiceAddress.sCity'] = activityItem && activityItem?.oCustomer?.sCity ? activityItem?.oCustomer?.sCity : '-';
+        if (headerObj['sDescription']) obj['sDescription'] = activityItem && activityItem?.sDescription ? activityItem?.sDescription : '-';
+        if (headerObj['nTotalAmount']) obj['nTotalAmount'] = activityItem && activityItem?.nTotalAmount ? activityItem?.nTotalAmount : '-';
+        if (headerObj['dCreatedDate']) obj['dCreatedDate'] = activityItem && activityItem.dCreatedDate ? moment(activityItem.dCreatedDate).format('DD-MM-yyyy') : '-';
+        if (headerObj['dEstimatedDate']) obj['dEstimatedDate'] = activityItem && activityItem?.dEstimatedDate ? moment(activityItem?.dEstimatedDate).format('DD-MM-yyyy') : '-';
+        if (headerObj['dActualFinishDate']) obj['dActualFinishDate'] = activityItem && activityItem.dActualFinishDate ? moment(activityItem.dActualFinishDate).format('DD-MM-yyyy') : '-';
+        if (headerObj['sEmployeeName']) obj['sEmployeeName'] = (aEmployeeName && aEmployeeName[0].charAt(0) ? aEmployeeName[0].charAt(0) : '-') + (aEmployeeName && aEmployeeName[1].charAt(0) ? aEmployeeName[1].charAt(0) : '-');
 
-            aTableBody.push(obj);
-          })
+        aTableBody.push(obj);
+      })
 
-          let date: any = Date.now();
-          date = moment(date).format('DD-MM-yyyy');
+      let date: any = Date.now();
+      date = moment(date).format('DD-MM-yyyy');
 
-          let bodyData: Array<any> = [];
-          aTableBody.forEach((singleRecord: any) => {
-            bodyData.push(Object.values(singleRecord));
-          })
+      let bodyData: Array<any> = [];
+      aTableBody.forEach((singleRecord: any) => {
+        bodyData.push(Object.values(singleRecord));
+      })
 
+      let repairStatus = '-';
+      let employee = '-';
+      let sWorkStation = '-';
+      let sLocation = '';
+      let sAssignee = '-';
+      let sBusinessPartner = '-';
+      let ekind = '-';
+      let importStatus = '-';
 
-          let content = [
-            { text: date, style: 'dateStyle' },
-            { text: 'Activity Item Overview', style: 'header' },
-            { text: businessDetail?.sName, style: 'businessName' },
-            // { text: supplierDetailsName, style: 'supplierName' },
-            { canvas: [{ type: 'line', x1: 0, y1: 0, x2: 575, y2: 0, lineWidth: 1 }], margin: [0, 0, 20, 0], style: 'afterLine' },
-            {
-              style: 'tableExample',
-              table: {
-                headerRows: 1,
-                widths: tableWidth,
-                // widths: [70, 75, 85, 50, 30, 40, 40, 50, 50],
-                // widths: [ 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto','auto' ],
-                body: [tableHeader]
-              },
-              layout: {
-                hLineStyle: function () {
-                  return { dash: { length: 0.001, space: 40 * 20 } };
-                },
-                vLineStyle: function () {
-                  return { dash: { length: 0.001, space: 40 * 20 } };
-                },
-              }
-            },
-            { canvas: [{ type: 'line', x1: 0, y1: 0, x2: 575, y2: 0, lineWidth: 1 }], margin: [0, 0, 20, 0], style: 'afterLine' },
-            {
-              style: 'tableExample',
-              table: {
-                headerRows: 0,
-                widths: tableWidth,
-                // widths: [ 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto','auto' ],
-                body: bodyData
-              },
-              layout: {
-                hLineStyle: function () {
-                  return { dash: { length: 0.001, space: 40 * 20 } };
-                },
-                vLineStyle: function () {
-                  return { dash: { length: 0.001, space: 40 * 20 } };
-                },
-              }
-            },
-            { canvas: [{ type: 'line', x1: 0, y1: 0, x2: 575, y2: 0, lineWidth: 1 }], margin: [0, 0, 20, 0], style: 'afterLastLine' },
-          ]
+      const fromCreationDate = requestParams?.create?.minDate ? moment(requestParams.create.minDate).format('DD-MM-yyyy') : '-';
+      const toCreationDate = requestParams?.create?.maxDate ? moment(requestParams.create.maxDate).format('DD-MM-yyyy') : '-';
+      const fromEndDate = requestParams?.estimate?.minDate ? moment(requestParams.estimate.minDate).format('DD-MM-yyyy') : '-';
+      const toEndDate = requestParams?.estimate?.maxDate ? moment(requestParams.estimate.maxDate).format('DD-MM-yyyy') : '-';
 
-          this.pdf.getPdfData({ styles: this.styles, content: content, orientation: 'portrait', pageSize: 'A4', pdfTitle: "TESTACTIVITYPDF" + '-' + 'StockList' })
-          // this.downloading = false;
-        }
-      },
-      (error: any) => {
-        aActivityItem = [];
-        // this.downloading = false;
+      if (requestParams?.selectedRepairStatuses?.length) repairStatus = requestParams.selectedRepairStatuses.join(" ,");
+      if (requestParams?.employee) employee = requestParams?.employee?.sFirstName + " " + requestParams?.employee?.sLastName;
+      if (requestParams?.selectedWorkstations?.length) {
+        // aWorkStation = [];
+        sWorkStation = aWorkstation
+          .filter((workstation: any) => requestParams?.selectedWorkstations.includes(workstation._id))
+          .map((workstation: any) => workstation.sName)
+          .join(', ');
       }
-    );
+      if (requestParams?.selectedLocations?.length) {
+        // aWorkStation = [];
+        sLocation = aLocation
+          .filter((location: any) => requestParams?.selectedLocations.includes(location._id))
+          .map((location: any) => location.sName)
+          .join(', ');
+      }
+      if (requestParams?.iAssigneeId) {
+        sAssignee = aAssignee.filter((assign: any) => requestParams?.iAssigneeId == assign._id)
+          .map((assign: any) => assign.sFirstName + " " + assign.sLastName)
+      }
+      if (requestParams?.aSelectedBusinessPartner?.length) {
+        sBusinessPartner = aBusinessPartner
+          .filter((businessPartner: any) => requestParams?.aSelectedBusinessPartner.includes(businessPartner.iBusinessPartnerId))
+          .map((businessPartner: any) => businessPartner.sBusinessPartnerName)
+          .join(', ');
+      }
+      if (requestParams?.selectedKind?.length) ekind = requestParams?.selectedKind.join(" ,");
+      if (requestParams?.importStatus) importStatus = requestParams?.importStatus == 'true' ? 'Imported' : 'Created'
+
+      let content = [
+        { text: date, style: 'dateStyle' },
+        { text: 'Activity Item Overview', style: 'header' },
+        { text: businessDetail?.sName, style: 'businessName' },
+        {
+          columns: [
+            { text: this.translations['CREATE_MIN_DATE'] + ': ', style: ['left', 'normal'], width: 100 },
+            { text: fromCreationDate, style: ['left', 'normal'], width: 150 },
+            { width: '*', text: '' },
+            { text: this.translations['CREATE_MAX_DATE'] + ': ', style: ['right', 'normal'], width: 100 },
+            { text: toCreationDate, style: ['right', 'normal'], width: 150 },
+          ],
+        },
+        {
+          columns: [
+            { text: this.translations['ESTIMATE_MIN_DATE'] + ': ', style: ['left', 'normal'], width: 100 },
+            { text: fromEndDate, style: ['left', 'normal'], width: 150 },
+            { width: '*', text: '' },
+            { text: this.translations['ESTIMATE_MAX_DATE'] + ': ', style: ['right', 'normal'], width: 100 },
+            { text: toEndDate, style: ['right', 'normal'], width: 150 },
+          ],
+        },
+        {
+          columns: [
+            { text: this.translations['REPAIR_STATUS'] + ': ', style: ['left', 'normal'], width: 100 },
+            { text: repairStatus, style: ['left', 'normal'], width: 150 },
+            { width: '*', text: '' },
+            { text: this.translations['EMPLOYEES'] + ': ', style: ['right', 'normal'], width: 100 },
+            { text: employee, style: ['right', 'normal'], width: 150 },
+          ],
+        },
+        {
+          columns: [
+            { text: this.translations['WORKSTATION'] + ': ', style: ['left', 'normal'], width: 100 },
+            { text: sWorkStation, style: ['left', 'normal'], width: 150 },
+            { width: '*', text: '' },
+            { text: this.translations['LOCATION'] + ': ', style: ['right', 'normal'], width: 100 },
+            { text: sLocation, style: ['right', 'normal'], width: 150 },
+          ],
+        },
+        {
+          columns: [
+            { text: this.translations['ASSIGNEE'] + ': ', style: ['left', 'normal'], width: 100 },
+            { text: sAssignee, style: ['left', 'normal'], width: 150 },
+            { width: '*', text: '' },
+            { text: this.translations['BUSINESS_PARTNER'] + ': ', style: ['right', 'normal'], width: 100 },
+            { text: sBusinessPartner, style: ['right', 'normal'], width: 150 },
+          ],
+        },
+        {
+          columns: [
+            { text: this.translations['E_KIND'] + ': ', style: ['left', 'normal'], width: 100 },
+            { text: ekind, style: ['left', 'normal'], width: 150 },
+            { width: '*', text: '' },
+            { text: this.translations['IMPORT_STATUS'] + ': ', style: ['right', 'normal'], width: 100 },
+            { text: importStatus, style: ['right', 'normal'], width: 150 },
+          ],
+        },
+        // { text: supplierDetailsName, style: 'supplierName' },
+        { canvas: [{ type: 'line', x1: 0, y1: 0, x2: 575, y2: 0, lineWidth: 1 }], margin: [0, 0, 20, 0], style: 'afterLine' },
+        {
+          style: 'tableExample',
+          table: {
+            headerRows: 1,
+            widths: tableWidth,
+            // widths: [70, 75, 85, 50, 30, 40, 40, 50, 50],
+            // widths: [ 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto','auto' ],
+            body: [tableHeader]
+          },
+          layout: {
+            hLineStyle: function () {
+              return { dash: { length: 0.001, space: 40 * 20 } };
+            },
+            vLineStyle: function () {
+              return { dash: { length: 0.001, space: 40 * 20 } };
+            },
+          }
+        },
+        { canvas: [{ type: 'line', x1: 0, y1: 0, x2: 575, y2: 0, lineWidth: 1 }], margin: [0, 0, 20, 0], style: 'afterLine' },
+        {
+          style: 'tableExample',
+          table: {
+            headerRows: 0,
+            widths: tableWidth,
+            // widths: [ 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto','auto' ],
+            body: bodyData
+          },
+          layout: {
+            hLineStyle: function () {
+              return { dash: { length: 0.001, space: 40 * 20 } };
+            },
+            vLineStyle: function () {
+              return { dash: { length: 0.001, space: 40 * 20 } };
+            },
+          }
+        },
+        { canvas: [{ type: 'line', x1: 0, y1: 0, x2: 575, y2: 0, lineWidth: 1 }], margin: [0, 0, 20, 0], style: 'afterLastLine' },
+      ]
+
+      this.pdf.getPdfData({ styles: this.styles, content: content, orientation: 'portrait', pageSize: 'A4', pdfTitle: "ActivityItem" + '-' + date })
+      // this.downloading = false;
+    } else {
+      this.toastService.show({ type: 'warning', text: 'Activity Item data not found' });
+    }
+  }
+
+  fetchActivityItem(requestParams: any) {
+    return this.apiService.postNew('cashregistry', '/api/v1/activities/items', requestParams).toPromise()
   }
 }
