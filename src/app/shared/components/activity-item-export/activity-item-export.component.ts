@@ -12,11 +12,16 @@ import { TransactionsPdfService } from '../../service/transactions-pdf.service';
 })
 export class ActivityItemExportComponent implements OnInit {
 
-  businessDetails:any;
+  businessDetails: any;
   headerList: Array<any> = [];
   valuesList: Array<any> = [];
   fieldsToRemove: Array<any> = [];
   downloading: boolean = false;
+  useSameFilter: Boolean = true;
+  aWorkStation: any = [];
+  aLocation: any = [];
+  aAssignee: any = [];
+  aBusinessPartner: any = [];
   faTimes = faTimes;
   requestParams: any = {
     iBusinessId: '',
@@ -32,6 +37,9 @@ export class ActivityItemExportComponent implements OnInit {
 
   dialogRef: DialogComponent;
   translate: any = [];
+  isPdfLoading: boolean = false;
+  iBusinessId: any;
+  iLocationId: any;
 
   constructor(
     private viewContainerRef: ViewContainerRef,
@@ -44,8 +52,9 @@ export class ActivityItemExportComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.requestParams.iBusinessId = localStorage.getItem("currentBusiness");
-    this.requestParams.iLocationId = localStorage.getItem('currentLocation');
+    this.iBusinessId = localStorage.getItem("currentBusiness");
+    this.iLocationId = localStorage.getItem('currentLocation');
+    this.requestParams.limit = '';
     const translate = ['NO_DATA_FOUND'];
     this.translateService.get(translate).subscribe((res) => {
       this.translate = res;
@@ -56,18 +65,33 @@ export class ActivityItemExportComponent implements OnInit {
     this.dialogRef.close.emit({ action: false })
   }
 
-   exportToPDF() {
+  async exportToPDF() {
     let customHeader: any = [... this.headerList];
-    this.requestParams.aProjection = [];
+    this.isPdfLoading = true;
+    if (!this.useSameFilter) {
+      this.requestParams = {
+        iBusinessId: this.iBusinessId,
+        iLocationId: this.iLocationId,
+        limit: ''
+      }
+    }
     for (let index in this.fieldsToRemove) {
       const headerIndex = customHeader.findIndex((customerheader: any) => customerheader.key == this.fieldsToRemove[index].key)
       if (headerIndex > -1) {
         customHeader.splice(headerIndex, 1);
       }
     }
-     this.transactionsPdfService.exportToPdf(this.requestParams, customHeader, this.page , this.businessDetails);
-    // this.dialogRef.close.emit({ action: false })
-
+    await this.transactionsPdfService.exportToPdf({
+      requestParams: this.requestParams,
+      customerHeader: customHeader,
+      page: this.page,
+      businessDetail: this.businessDetails,
+      aWorkstation: this.aWorkStation,
+      aLocation: this.aLocation,
+      aAssignee: this.aAssignee,
+      aBusinessPartner: this.aBusinessPartner
+    });
+    this.isPdfLoading = false;
   }
 
   updateExportField(obj: any) {
