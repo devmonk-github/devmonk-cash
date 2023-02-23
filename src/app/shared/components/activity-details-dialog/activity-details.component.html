@@ -30,8 +30,7 @@
 
                         <div class="d-flex flex-wrap py-5">
                             <div class="flex-equal me-5">
-                                {{ "CUSTOMER_DETAILS" | translate}}
-                                <button class="btn btn-primary mx-3" (click)="openCustomer(customer)">{{'VIEW'|translate}} </button>
+                                <p><strong>{{ "CUSTOMER_DETAILS" | translate}}</strong></p>
                                 <div class="fs-6 ms-1">
                                     <div class="align-items-center">
                                         <div class="text-gray-600">{{customer?.sFirstName || ''}} {{customer?.sLastName || ''}}</div>
@@ -47,28 +46,30 @@
                                 </div>
                                 <div class="fs-6 ms-1">
                                     <div class="align-items-center">
-                                        {{'PHONE_MOBILE' | translate}}
-                                        <span>{{customer?.oPhone?.sMobile}}
-                                            <i class="fab fa-whatsapp ms-1" *ngIf="customer?.oPhone?.bWhatsApp"
-                                                style="color: #1CB39B;"></i>
-                                        </span>
+                                        <p style="margin: 0; margin-bottom: 5px;">{{'PHONE_MOBILE' | translate}}</p>
+                                        <p style="margin: 0; margin-bottom: 5px;">
+                                            <span>{{customer?.oPhone?.sMobile || '-'}}
+                                                <i class="fab fa-whatsapp ms-1" *ngIf="customer?.oPhone?.bWhatsApp"
+                                                    style="color: #1CB39B;"></i>
+                                            </span>
+                                        </p>
                                     </div>
                                 </div>
                                 <div class="fs-6 ms-1">
                                     <div class="align-items-center">
-                                        {{'PHONE_LANDLINE' | translate}}
-                                        <span>{{customer?.oPhone?.sLandLine}}
-                                        </span>
+                                        <p style="margin: 0; margin-bottom: 5px;">{{'PHONE_LANDLINE' | translate}}</p>
+                                        <p style="margin: 0; margin-bottom: 5px;"><span>{{customer?.oPhone?.sLandLine || '-'}}</span></p>
                                     </div>
                                 </div>
 
-                                <div class="fs-6 ms-1">
+                                <!-- <div class="fs-6 ms-1">
                                     <div class="align-items-center">
                                         {{'Advised by' | translate}}
                                         <span>{{customer?.oPhone?.sLandLine}}
                                         </span>
                                     </div>
-                                </div>
+                                </div> -->
+                                <button class="btn btn-primary my-3 btn-custom" (click)="openCustomer(customer)">{{'VIEW'|translate}} </button>
                             </div>
                         </div>
 
