@@ -441,21 +441,22 @@ export class Js2zplService {
               } else {
                 command += '^FN' + field_id + fh + '^FD' + hex_euro + prefix + this.getFieldData(element.pnfield) + '^FS';
               }
-            } else {
-              switch (element.type) {
-                case 'rectangle':
-                  command += this.changePosition(element.x, element.y) + rotate + this.drawRectangle(element.width, element.height, element.border, element.color, element.rounding)
-                  break;
-                case 'circle':
-                  command += rotate + this.drawCircle(element.size, element.border, element.color)
-                  break;
-                case 'barcode':
-                  element.width = (element.width == 0) ? 1 : element.width;
-                  element.height = (element.height == 0) ? 15 : element.height;
-                  command += rotate + this.drawBarcode(this.getFieldData(element.pnfield), element.width, element.height, element.barcodetype, element.showdata, 'D')
-                  break;
-              }
             }
+            // } else {  
+            //   switch (element.type) {
+            //     case 'rectangle':
+            //       command += this.changePosition(element.x, element.y) + rotate + this.drawRectangle(element.width, element.height, element.border, element.color, element.rounding)
+            //       break;
+            //     case 'circle':
+            //       command += rotate + this.drawCircle(element.size, element.border, element.color)
+            //       break;
+            //     case 'barcode':
+            //       element.width = (element.width == 0) ? 1 : element.width;
+            //       element.height = (element.height == 0) ? 15 : element.height;
+            //       command += rotate + this.drawBarcode(this.getFieldData(element.pnfield), element.width, element.height, element.barcodetype, element.showdata, 'D')
+            //       break;
+            //   }
+            // }
 
           } else {
             element.x = (element?.x) ? this.convertElementPosition(element.x, this.width) : 0;
