@@ -72,12 +72,12 @@ export class TransactionItemsDetailsComponent implements OnInit {
     
     ngOnInit(): void {
       // console.log('this.transactionItems 1', this.transactionItems);
-      const translation =['ACTIVITY_ITEM_NUMBER' , 'TOTAL_AMOUNT' , 'PAID_AMOUNT' , 'IS_PREPAYMENT' , 'CREATED_ON' , 'ACTIONS' , 'PRODUCT_NAME' , 'PRICE' , 'QUANTITY' , 'PAYMENT_AMOUNT'];
+      const translation =['ACTIVITY_ITEM_NUMBER', 'BAG_NUMBER', 'TOTAL_AMOUNT' , 'PAID_AMOUNT' , 'IS_PREPAYMENT' , 'CREATED_ON' , 'ACTIONS' , 'PRODUCT_NAME' , 'PRICE' , 'QUANTITY' , 'PAYMENT_AMOUNT'];
       this.transaltionService.get(translation).subscribe((res:any)=>{
         this.translation = res
       })
       this.transactionColumns =  [this.translation['PRODUCT_NAME'] , this.translation['PRICE'], this.translation['QUANTITY'], this.translation['PAYMENT_AMOUNT'], this.translation['IS_PREPAYMENT'], this.translation['CREATED_ON'], this.translation['ACTIONS']];
-      this.activityColumns =[this.translation['ACTIVITY_ITEM_NUMBER'], this.translation['TOTAL_AMOUNT'], this.translation['PAID_AMOUNT'], this.translation['IS_PREPAYMENT'], this.translation['CREATED_ON'], this.translation['ACTIONS']];
+      this.activityColumns = [this.translation['ACTIVITY_ITEM_NUMBER'], this.translation['BAG_NUMBER'], this.translation['TOTAL_AMOUNT'], this.translation['PAID_AMOUNT'], this.translation['IS_PREPAYMENT'], this.translation['CREATED_ON'], this.translation['ACTIONS']];
       this.apiService.setToastService(this.toastrService);
       this.itemType = this.dialogRef.context.itemType;
       this.transaction = this.dialogRef.context.transaction;

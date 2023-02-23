@@ -189,13 +189,16 @@ export class ActivityItemsComponent implements OnInit, OnDestroy {
     ]
     this.dialogService.openModal(ActivityItemExportComponent, {
       cssClass: 'model-lg',
-      hasBackdrop: true,
-      closeOnBackdropClick: true,
       closeOnEsc: true,
       context: {
         headerList: header,
-        businessDetails:this.businessDetails,
-        page: 'activityItem'
+        businessDetails: this.businessDetails,
+        page: 'activityItem',
+        aWorkStation: this.workstations,
+        aLocation: this.requestParams.locations,
+        aAssignee: this.employees,
+        aBusinessPartner: this.aFilterBusinessPartner,
+        requestParams: this.requestParams
       }
     }).instance.close.subscribe();
   }

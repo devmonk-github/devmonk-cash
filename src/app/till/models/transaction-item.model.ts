@@ -86,6 +86,7 @@ export class TransactionItem {
   eActivityItemStatus: string;
   bGiftcardTaxHandling: string;
   bDiscountOnPercentage: boolean;  
+  sCommentVisibleServicePartner: string;  
   constructor() {}
 
 }

@@ -30,8 +30,7 @@
 
                         <div class="d-flex flex-wrap py-5">
                             <div class="flex-equal me-5">
-                                {{ "CUSTOMER_DETAILS" | translate}}
-                                <button class="btn btn-primary mx-3" (click)="openCustomer(customer)">{{'VIEW'|translate}} </button>
+                                <p><strong>{{ "CUSTOMER_DETAILS" | translate}}</strong></p>
                                 <div class="fs-6 ms-1">
                                     <div class="align-items-center">
                                         <div class="text-gray-600">{{customer?.sFirstName || ''}} {{customer?.sLastName || ''}}</div>
@@ -47,28 +46,30 @@
                                 </div>
                                 <div class="fs-6 ms-1">
                                     <div class="align-items-center">
-                                        {{'PHONE_MOBILE' | translate}}
-                                        <span>{{customer?.oPhone?.sMobile}}
-                                            <i class="fab fa-whatsapp ms-1" *ngIf="customer?.oPhone?.bWhatsApp"
-                                                style="color: #1CB39B;"></i>
-                                        </span>
+                                        <p style="margin: 0; margin-bottom: 5px;">{{'PHONE_MOBILE' | translate}}</p>
+                                        <p style="margin: 0; margin-bottom: 5px;">
+                                            <span>{{customer?.oPhone?.sMobile || '-'}}
+                                                <i class="fab fa-whatsapp ms-1" *ngIf="customer?.oPhone?.bWhatsApp"
+                                                    style="color: #1CB39B;"></i>
+                                            </span>
+                                        </p>
                                     </div>
                                 </div>
                                 <div class="fs-6 ms-1">
                                     <div class="align-items-center">
-                                        {{'PHONE_LANDLINE' | translate}}
-                                        <span>{{customer?.oPhone?.sLandLine}}
-                                        </span>
+                                        <p style="margin: 0; margin-bottom: 5px;">{{'PHONE_LANDLINE' | translate}}</p>
+                                        <p style="margin: 0; margin-bottom: 5px;"><span>{{customer?.oPhone?.sLandLine || '-'}}</span></p>
                                     </div>
                                 </div>
 
-                                <div class="fs-6 ms-1">
+                                <!-- <div class="fs-6 ms-1">
                                     <div class="align-items-center">
                                         {{'Advised by' | translate}}
                                         <span>{{customer?.oPhone?.sLandLine}}
                                         </span>
                                     </div>
-                                </div>
+                                </div> -->
+                                <button class="btn btn-primary my-3 btn-custom" (click)="openCustomer(customer)">{{'VIEW'|translate}} </button>
                             </div>
                         </div>
 
@@ -130,7 +131,7 @@
                                             <td class="table-width">{{activity?.oType?.eKind || '-'}}</td>
                                             <td class="table-width">{{activity.dCreatedDate | date:'yyyy-MM-dd'}}</td>
                                             <td class="table-width"> {{activity.eActivityItemStatus || '-' }}</td>
-                                            <td class="table-width">{{activity.nTotalAmount || '-' }}</td>
+                                            <td class="table-width">{{(activity?.nTotalAmount ? activity?.nTotalAmount : 0 ) | currency:tillService.currency }}</td>
                                         </tbody>
                                       </table> 
                                       </div>
@@ -187,7 +188,7 @@
                                                 <div class="row">
                                                     <div class="col-8">
                                                         <input class="form-control form-control-solid w-100"
-                                                            type="number" [(ngModel)]="activity.nTotalAmount">
+                                                            type="number" [(ngModel)]="activity.nPriceIncVat">
                                                     </div>
                                                     <div class="col-4">
                                                         <button class="btn btn-primary">{{ "MAIL_CUSTOMER" |
@@ -546,28 +547,23 @@
                                                     <div *ngIf="!activity?.aImage?.length">
                                                         {{"NO_IMAGES" | translate}}
                                                     </div>
-                                                    <div class="d-flex">
-                                                        <div class="image-input p-1 d-flex"
+                                                    <button *ngIf="activity.oType.eKind == 'repair' || activity.oType.eKind == 'order'" class="btn btn-bg-light btn-active-color-primary my-2" (click)="openImageModal(activityindex)"> {{ "PHOTO" | translate}}
+                                                        <fa-icon [icon]="faUpload"></fa-icon>
+                                                      </button>
+                                                    <div>
+                                                        <div class="image-input p-1"
                                                             *ngFor="let image of activity.aImage ; let imageIndex = index"
                                                             data-kt-image-input="true"
                                                             style="background-image: url('assets/media/svg/avatars/blank.svg')">
-                                                            <div class="image-input-wrapper w-100px h-100px"
+                                                            <div class="image-input-wrapper w-100px h-100px m-5"
                                                                 style="background-image: url(assets/media/avatars/300-1.jpg)">
                                                                 <img src={{image}} width="100px" height="100px">
                                                             </div>
-                                                            <div class="mt-2 ">
-                                                                <div data-kt-image-input-action="reorder"
-                                                                    class="d-flex">
-                                                                    <button
-                                                                        class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow"
-                                                                        data-kt-image-input-action="remove"
-                                                                        data-bs-toggle="tooltip" title="Remove image" (click)="removeImage(activityindex, imageIndex)">
-                                                                        <i class="bi bi-x fs-2"></i>
-                                                                    </button>
-                                                                </div>
-
-                                                            </div>
-
+                                                            <button class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow"
+                                                            data-kt-image-input-action="remove" data-bs-toggle="tooltip" title="Remove image"
+                                                            (click)="removeImage(activityindex, imageIndex)">
+                                                            <i class="bi bi-x fs-2" ></i>
+                                                          </button>
 
                                                         </div>
                                                     </div>
@@ -762,17 +758,14 @@
                                             </div>
                                             <div class="col-6">
                                                 <div class="row mb-6">
-                                                    <label class="col-lg-12 col-form-label fw-bold fs-6">{{
-                                                        "REMARK_FOR_COLLEAGUES" |
-                                                        translate}}</label>
+                                                    <label class="col-lg-12 col-form-label fw-bold fs-6">{{"REMARK_FOR_COLLEAGUES" | translate}}</label>
                                                     <div class="col-lg-12">
                                                         <div class="row">
                                                             <div class="col-lg-12 fv-row">
                                                                 <textarea
                                                                     class="form-control form-control-lg form-control-solid mb-3 mb-lg-0 w-100"
-                                                                    placeholder="{{ 'REMARK_FOR_SERVICE_PARTNERS' | translate}}"
-                                                                    lines="10"
-                                                                    [(ngModel)]="activity.sCommentVisibleCollegues"></textarea>
+                                                                    placeholder="{{ 'REMARK_FOR_COLLEAGUES' | translate}}"
+                                                                    lines="10" [(ngModel)]="activity.sCommentVisibleCollegues"></textarea>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -836,7 +829,7 @@
                                                 <div class="row">
                                                     <div class="col-8">
                                                         <input class="form-control form-control-solid w-100"
-                                                            type="number" [(ngModel)]="activity.nTotalAmount">
+                                                            type="number" [(ngModel)]="activity.nPriceIncVat">
                                                     </div>
                                                     <!-- <div class="col-4">
                                                         <button class="btn btn-primary">{{ "MAIL_CUSTOMER" |
@@ -1496,7 +1489,7 @@
                                                 <div class="row">
                                                     <div class="col-8">
                                                         <input class="form-control form-control-solid w-100" type="text"
-                                                            [(ngModel)]="activity.nTotalAmount">
+                                                            [(ngModel)]="activity.nPriceIncVat">
                                                     </div>
                                                     <div class="col-4">
                                                         <button class="btn btn-primary">{{ "MAIL_CUSTOMER" |

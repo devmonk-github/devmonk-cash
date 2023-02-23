@@ -2,7 +2,7 @@ import { AfterViewInit, Component, OnInit } from '@angular/core';
 import { DialogComponent, DialogService } from '../../service/dialog';
 import { ViewContainerRef } from '@angular/core';
 import { ApiService } from 'src/app/shared/service/api.service';
-import { faTimes, faMessage, faEnvelope, faEnvelopeSquare, faUser, faReceipt, faEuro, faChevronRight, faDownload, faPrint } from "@fortawesome/free-solid-svg-icons";
+import { faTimes, faMessage, faEnvelope, faEnvelopeSquare, faUser,faUpload, faReceipt, faEuro, faChevronRight, faDownload, faPrint } from "@fortawesome/free-solid-svg-icons";
 import { TransactionItemsDetailsComponent } from '../transaction-items-details/transaction-items-details.component';
 import { MenuComponent } from '../../_layout/components/common';
 import { NavigationEnd, Router } from '@angular/router';
@@ -18,6 +18,7 @@ import { Clipboard } from '@angular/cdk/clipboard';
 import { animate, style, transition, trigger } from '@angular/animations';
 import { CustomerDetailsComponent } from '../customer-details/customer-details.component';
 import { PdfService } from '../../service/pdf.service';
+import { ImageUploadComponent } from '../image-upload/image-upload.component';
 @Component({
   selector: 'app-activity-details',
   templateUrl: './activity-details.component.html',
@@ -50,6 +51,7 @@ export class ActivityDetailsComponent implements OnInit {
   imagePlaceHolder: string = '../../../../assets/images/no-photo.svg';
   faTimes = faTimes;
   faMessage = faMessage;
+  faUpload = faUpload;
   faEnvelope = faEnvelope;
   faEnvelopeSquare = faEnvelopeSquare;
   faUser = faUser;
@@ -281,6 +283,13 @@ export class ActivityDetailsComponent implements OnInit {
     });
   }
 
+  openImageModal(activityindex:any) {
+    this.dialogService.openModal(ImageUploadComponent, { cssClass: "modal-m", context: { mode: 'create' } })
+      .instance.close.subscribe(result => {
+        if (result.url)
+          this.activityItems[activityindex].aImage.push(result.url);
+      });
+  }
 
   getBusinessProduct(iProductId: any) {
     return this.apiService.getNew('core', `/api/v1/business/products/${iProductId}?iBusinessId=${this.iBusinessId}`);
@@ -520,7 +529,7 @@ export class ActivityDetailsComponent implements OnInit {
     this.dialogService.openModal(TransactionItemsDetailsComponent, { cssClass: "modal-xl", context: { transaction: this.activity, itemType, selectedId: transaction._id } })
       .instance.close.subscribe((result: any) => {
         // console.log(514, result)
-        if (result?.action !== false) {
+        if (result?.action) {
           // console.log(516, 'calling process transaction search result')
           const data = this.tillService.processTransactionSearchResult(result);
           // console.log(518, data)
@@ -528,9 +537,9 @@ export class ActivityDetailsComponent implements OnInit {
           localStorage.setItem('recentUrl', '/business/transactions');
           setTimeout(() => {
             if (this.loadCashRegister) {
+              this.close(true);
               this.routes.navigate(['/business/till']);
             }
-            this.close(true);
           }, 100);
         }
       }, (error) => {

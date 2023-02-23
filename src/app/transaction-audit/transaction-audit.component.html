@@ -438,7 +438,7 @@
                         <div class="row">
 
                             <div class="card overflow-y-auto" *ngIf="sDisplayMethod === 'revenuePerBusinessPartner'">
-                                <p> {{ 'REVENUE_PER_BUSINESS_PARTNER' | translate}} </p>
+                                <strong> {{ 'REVENUE_PER_BUSINESS_PARTNER' | translate}} </strong>
                                 <div class="card-body">
                                     <div class="table-responsive"
                                         *ngFor="let oStatistic of aStatistic; let statisticIndex = index">
@@ -537,7 +537,7 @@
                             </div>
 
                             <div class="card" *ngIf="sDisplayMethod === 'revenuePerSupplierAndArticleGroup'">
-                                <p> {{ 'REVENUE_PER_SUPPLIER_AND_ARTICLE_GROUP' | translate}} </p>
+                                <strong> {{ 'REVENUE_PER_SUPPLIER_AND_ARTICLE_GROUP' | translate}} </strong>
                                 <div class="card-body">
                                     <div class="table-responsive" *ngFor="let oStatistic of aStatistic; let i = index">
                                         <table
@@ -640,7 +640,7 @@
                             </div>
 
                             <div class="card" *ngIf="sDisplayMethod === 'revenuePerArticleGroupAndProperty'">
-                                <p> {{ 'REVENUE_PER_ARTICLE_GROUP_AND_PROPERTY' | translate}} </p>
+                                <strong> {{ 'REVENUE_PER_ARTICLE_GROUP_AND_PROPERTY' | translate}} </strong>
                                 <div class="card-body">
                                     <div class="table-responsive">
                                         <table
@@ -736,7 +736,7 @@
                             </div>
 
                             <div class="card" *ngIf="sDisplayMethod === 'revenuePerProperty'">
-                                <p> {{ 'REVENUE_PER_PROPERTY' | translate}} </p>
+                                <strong> {{ 'REVENUE_PER_PROPERTY' | translate}} </strong>
 
                                 <div class="card-body">
                                     <div class="table-responsive" *ngFor="let oStatistic of aStatistic; let i = index">
@@ -850,7 +850,7 @@
                             </div>
 
                             <div class="card" *ngIf="sDisplayMethod === 'revenuePerArticleGroup'">
-                                <p> {{ 'REVENUE_PER_ARTICLE_GROUP' | translate}} </p>
+                                <strong> {{ 'REVENUE_PER_ARTICLE_GROUP' | translate}} </strong>
                                 <div class="card-body">
                                     <div class="table-responsive" *ngFor="let oStatistic of aStatistic; let i = index">
                                         <table
@@ -952,7 +952,7 @@
                             </div>
 
                             <div class="card" *ngIf="sDisplayMethod === 'aVatRates'">
-                                <p> {{ 'VAT_RATES' | translate}} </p>
+                                <strong> {{ 'VAT_RATES' | translate}} </strong>
 
                                 <div class="card-body">
                                     <div class="table-responsive" *ngFor="let oStatistic of aStatistic; let i = index">
@@ -1158,35 +1158,93 @@
 
                 <!-- STOCK HISTORY START -->
                 <div class="card">
+                
                     <div class="container">
-                        <div class="d-flex justify-content-between">
+                        <strong *ngIf="!oStockPerLocation.aHistory">{{ 'STOCK_HISTORY_NOT_FOUND' | translate}} </strong>
+                        <div class="card overflow-y-auto" *ngIf="oStockPerLocation.aHistory?.length">
                             <strong> {{ 'STOCK_HISTORY' | translate}} </strong>
-                        </div>
-                        <p *ngIf="!oStockPerLocation.aHistory">{{ 'STOCK_HISTORY_NOT_FOUND' | translate}}</p>
-                        <div *ngIf="oStockPerLocation.aHistory">
                             <div class="card-body">
-                                <table
-                                    class="table table-row-bordered table-row-gray-300 gy-5 gs-5 mb-0 text-gray-600 fw-bold border">
-                                    <thead class="bg-gray-100">
-                                        <tr class="fw-bold fs-6 text-gray-800">
-                                            <th>{{ 'LOCATION_NAME' | translate}}</th>
-                                            <th class="w-150px">{{ 'PURCHASE_PRICE' | translate}} -
-                                                {{oStockPerLocation.nTotalPurchasePrice | number:'1.2-2'}}</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="p-2">
-                                        <tr *ngFor="let oHistory of oStockPerLocation.aHistory; let i = index">
-                                            <td class="ps-9">{{oHistory.sName ? oHistory.sName : '-' }}</td>
-                                            <td>{{oHistory.nPurchasePrice | number:'1.2-2'}}</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                                <div class="table-responsive">
+                                    <table
+                                        class="table table-rounded border border-gray-300 table-row-bordered table-row-gray-300 gy-5 gs-5 text-gray-600">
+                                        <thead>
+                                            <tr class="fw-bold fs-6 text-gray-900 bg-gray-300">
+                                                <th>
+                                                    <span class="">{{ 'LOCATION_NAME' | translate}}</span>
+                                                </th>
+                                                <th class="w-150px">
+                                                    {{ 'PURCHASE_PRICE' | translate}} - {{oStockPerLocation.nTotalPurchasePrice |
+                                                    number:'1.2-2'}}
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td colspan="6" class="p-2">
+                                                    <table
+                                                        class="table table-row-bordered table-row-gray-300 gy-5 gs-5 mb-0 text-gray-600 fw-bold border"
+                                                        *ngFor="let oHistory of oStockPerLocation.aHistory; let historyIndex = index">
+                                                        <thead class="bg-gray-100">
+                                                            <tr class="fw-bold fs-6 text-gray-700 bg-gray-200">
+                                                                <th scope="col">
+                                                                    <span>
+                                                                        {{oHistory.sName ? oHistory.sName : '-'}}
+                                                                    </span>
+                                                                    <span>
+                                                                        <i *ngIf="!oHistory.bIsCollapseItem"
+                                                                            class="px-sm-2 cursor-pointer bi bi-chevron-down"
+                                                                            (click)="oHistory.bIsCollapseItem = true;">
+                                                                        </i>
+                                                                        <i *ngIf="oHistory.bIsCollapseItem"
+                                                                            class="px-sm-2 cursor-pointer bi bi-chevron-up"
+                                                                            (click)="oHistory.bIsCollapseItem = false;">
+                                                                        </i>
+                                                                    </span>
+                                                                </th>
+                                                                <th scope="col" class="w-150px">
+                                                                    {{oHistory.nPurchasePrice | number:'1.2-2'}}
+                                                                </th>
+                                                            </tr>
+                                                        </thead>
+                    
+                                                        <!-- Expand view of payment -->
+                                                        <ng-container *ngIf="oHistory.aOwnerShip.length && oHistory.bIsCollapseItem">
+                                                            <thead>
+                                                                <tr class="fw-bold fs-6 text-gray-600 bg-gray-100">
+                                                                    <th>
+                                                                        <span class="">{{ 'OWNERSHIP' | translate}}</span>
+                                                                    </th>
+                                                                    <th class="w-150px">
+                                                                        <span class="">{{"OWNERSHIP_PRICE" | translate}}</span>
+                                                                    </th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody class="p-2"
+                                                                *ngFor="let oOwnerShip of oHistory.aOwnerShip; let ownerShipIndex = index">
+                                                                <tr>
+                                                                    <td class="ps-9">
+                                                                        {{ oOwnerShip.eOwnerShip ? oOwnerShip.eOwnerShip : 'NA' }}
+                                                                    </td>
+                                                                    <td>{{oOwnerShip.nPurchasePrice}}</td>
+                                                                </tr>
+                                                            </tbody>
+                                                        </ng-container>
+                                                        <!-- Expand view of payment -->
+                    
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
+                    
                     </div>
+                
                 </div>
                 <!-- STOCK HISTORY END -->
-
+              
                 <!-- Tushar's code START -->
                 <ng-container
                     *ngIf="sDisplayMethod === this.edisplayMethodKeysEnum.revenuePerBusinessPartner || sDisplayMethod === this.edisplayMethodKeysEnum.revenuePerArticleGroupAndProperty">
