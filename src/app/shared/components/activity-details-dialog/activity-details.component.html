@@ -762,17 +762,14 @@
                                             </div>
                                             <div class="col-6">
                                                 <div class="row mb-6">
-                                                    <label class="col-lg-12 col-form-label fw-bold fs-6">{{
-                                                        "REMARK_FOR_COLLEAGUES" |
-                                                        translate}}</label>
+                                                    <label class="col-lg-12 col-form-label fw-bold fs-6">{{"REMARK_FOR_COLLEAGUES" | translate}}</label>
                                                     <div class="col-lg-12">
                                                         <div class="row">
                                                             <div class="col-lg-12 fv-row">
                                                                 <textarea
                                                                     class="form-control form-control-lg form-control-solid mb-3 mb-lg-0 w-100"
-                                                                    placeholder="{{ 'REMARK_FOR_SERVICE_PARTNERS' | translate}}"
-                                                                    lines="10"
-                                                                    [(ngModel)]="activity.sCommentVisibleCollegues"></textarea>
+                                                                    placeholder="{{ 'REMARK_FOR_COLLEAGUES' | translate}}"
+                                                                    lines="10" [(ngModel)]="activity.sCommentVisibleCollegues"></textarea>
                                                             </div>
                                                         </div>
                                                     </div>

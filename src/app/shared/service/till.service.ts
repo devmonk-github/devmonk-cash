@@ -237,6 +237,7 @@ export class TillService {
       oItem.sDescription = i.description;
 
       oItem.sServicePartnerRemark = i.sServicePartnerRemark;
+      oItem.sCommentVisibleServicePartner = i.sCommentVisibleServicePartner;
       oItem.eEstimatedDateAction = i.eEstimatedDateAction;
       if (i.type === 'giftcard') { //|| (bPrepayment === false && (i.type === 'repair' || i.type === 'order'))
         oItem.eActivityItemStatus = 'delivered';
