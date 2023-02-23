@@ -130,7 +130,7 @@
                                             <td class="table-width">{{activity?.oType?.eKind || '-'}}</td>
                                             <td class="table-width">{{activity.dCreatedDate | date:'yyyy-MM-dd'}}</td>
                                             <td class="table-width"> {{activity.eActivityItemStatus || '-' }}</td>
-                                            <td class="table-width">{{activity.nTotalAmount || '-' }}</td>
+                                            <td class="table-width">{{(activity?.nTotalAmount ? activity?.nTotalAmount : 0 ) | currency:tillService.currency }}</td>
                                         </tbody>
                                       </table> 
                                       </div>
@@ -187,7 +187,7 @@
                                                 <div class="row">
                                                     <div class="col-8">
                                                         <input class="form-control form-control-solid w-100"
-                                                            type="number" [(ngModel)]="activity.nTotalAmount">
+                                                            type="number" [(ngModel)]="activity.nPriceIncVat">
                                                     </div>
                                                     <div class="col-4">
                                                         <button class="btn btn-primary">{{ "MAIL_CUSTOMER" |
@@ -833,7 +833,7 @@
                                                 <div class="row">
                                                     <div class="col-8">
                                                         <input class="form-control form-control-solid w-100"
-                                                            type="number" [(ngModel)]="activity.nTotalAmount">
+                                                            type="number" [(ngModel)]="activity.nPriceIncVat">
                                                     </div>
                                                     <!-- <div class="col-4">
                                                         <button class="btn btn-primary">{{ "MAIL_CUSTOMER" |
@@ -1493,7 +1493,7 @@
                                                 <div class="row">
                                                     <div class="col-8">
                                                         <input class="form-control form-control-solid w-100" type="text"
-                                                            [(ngModel)]="activity.nTotalAmount">
+                                                            [(ngModel)]="activity.nPriceIncVat">
                                                     </div>
                                                     <div class="col-4">
                                                         <button class="btn btn-primary">{{ "MAIL_CUSTOMER" |
