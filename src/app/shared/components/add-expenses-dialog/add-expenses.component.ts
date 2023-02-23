@@ -26,12 +26,25 @@ export class AddExpensesComponent implements OnInit {
   focusValue = false;
   name: any;
   submitted = false;
-  ledgerDescriptions = ['drinks', 'food', 'cleaning costs', 'office supplies', 'promotional material', 'shipping costs', 'car costs', 'Add money to cash register', 'Lost money/money difference'];
+  ledgerDescriptions = [
+    { title: 'drinks', type: 'negative' },
+    { title: 'food', type: 'negative' },
+    { title: 'cleaning costs', type: 'negative' },
+    { title: 'office supplies', type: 'negative' },
+    { title: 'promotional material', type: 'negative' },
+    { title: 'shipping costs', type: 'negative' },
+    { title: 'car costs', type: 'negative' },
+    { title: 'Add money to cash register', type: 'positive' },
+    { title: 'Lost money/money difference', type: 'negative' },
+  ];
   selectedArticleGroup: any;
   allArticleGroups: any = [];
   currentEmployeeId: any;
   paymentMethod: any;
   // nVatRate: any;
+  iLocationId: any = localStorage.getItem('currentLocation');
+  iBusinessId: any = localStorage.getItem('currentBusiness');
+  iWorkstationId: any = localStorage.getItem('currentWorkstation');
 
   constructor(
     private viewContainerRef: ViewContainerRef,
@@ -48,7 +61,6 @@ export class AddExpensesComponent implements OnInit {
 
   async ngOnInit() {
     const value = localStorage.getItem('currentEmployee');
-    const iLocationId: any = localStorage.getItem('currentLocation');
     // this.nVatRate = await this.taxService.fetchDefaultVatRate({ iLocationId: iLocationId });
     if (value) {
       this.currentEmployeeId = JSON.parse(value)._id;
@@ -64,7 +76,7 @@ export class AddExpensesComponent implements OnInit {
 
   get f() { return this.expenseForm.controls };
 
-  assignArticleGroup() {
+  assignArticleGroup(type:any) {
     this.selectedArticleGroup = null;
     const expenseType = this.expenseForm.value.expenseType;
     this.selectedArticleGroup = this.allArticleGroups.find((o: any) => o.sSubCategory === this.expenseForm.value.expenseType);
@@ -98,38 +110,35 @@ export class AddExpensesComponent implements OnInit {
   }
 
   submit() {
- 
-    if (this.expenseForm.invalid) {
-      return;
-    }
+    if (this.expenseForm.invalid) return;
     const { amount, expenseType, description, tax } = this.expenseForm.value;
 
     const oArticleGroupMetaData = {
-      aProperty: this.selectedArticleGroup.aProperty,
-      sCategory: this.selectedArticleGroup.sCategory,
-      sSubCategory: this.selectedArticleGroup.sSubCategory,
-      oName: this.selectedArticleGroup.oName
+      aProperty: this.selectedArticleGroup?.aProperty,
+      sCategory: this.selectedArticleGroup?.sCategory,
+      sSubCategory: this.selectedArticleGroup?.sSubCategory,
+      oName: this.selectedArticleGroup?.oName
     }
     const oPayment = {
       iPaymentMethodId: this.paymentMethod._id,
       sMethod: this.paymentMethod.sName.toLowerCase(),
-      nAmount: -(amount),
+      nAmount: (expenseType?.type === 'negative') ? -(amount) : amount,
     };
     const transactionItem = {
-      sProductName: 'Expenses',
+      sProductName: expenseType.title,
       sComment: description,
       nPriceIncVat: amount,
       nPurchasePrice: amount,
-      iBusinessId: localStorage.getItem('currentBusiness'),
-      iArticleGroupId: this.selectedArticleGroup._id,
+      iBusinessId: this.iBusinessId,
+      iArticleGroupId: this.selectedArticleGroup?._id,
       oArticleGroupMetaData,
 
-      nTotal: -(amount),
-      nPaymentAmount: -(amount),
-      nRevenueAmount: -(amount),
-      iWorkstationId: localStorage.getItem('currentWorkstation'),
+      nTotal: (expenseType?.type === 'negative') ? -(amount) : amount,
+      nPaymentAmount: (expenseType?.type === 'negative') ? -(amount) : amount,
+      nRevenueAmount: (expenseType?.type === 'negative') ? -(amount) : amount,
+      iWorkstationId: this.iWorkstationId,
       iEmployeeId: this.currentEmployeeId,
-      iLocationId: localStorage.getItem('currentLocation'),
+      iLocationId: this.iLocationId,
       nVatRate: tax,
       oType: {
         eTransactionType: 'expenses',
