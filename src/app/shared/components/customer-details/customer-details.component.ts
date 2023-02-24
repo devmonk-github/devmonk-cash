@@ -255,6 +255,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
   nAvgOrderValueIncVat: number;
   customerGroupList :any=[];
   aSelectedGroups:any =[];
+  businessDetails:any={};
   
   constructor(
     private viewContainerRef: ViewContainerRef,
@@ -270,9 +271,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
 
   ngOnInit(): void {
     this.apiService.setToastService(this.toastService);
-      if(this.customer._id == ""){
-        this.getBusinessDetails();
-      }
+    this.getBusinessDetails();
     this.customer = { ... this.customer ,  ... this.dialogRef?.context?.customerData}
     const translations = ['SUCCESSFULLY_ADDED', 'SUCCESSFULLY_UPDATED' ,'LOYALITY_POINTS_ADDED']
     this.translateService.get(translations).subscribe(
@@ -346,10 +345,11 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
   getBusinessDetails() {
     this.apiService.getNew('core', '/api/v1/business/' + localStorage.getItem('currentBusiness')).subscribe((response:any)=>{
       const currentLocation = localStorage.getItem('currentLocation');
-      if(response?.data?.aLocation?.length){
-        const locationIndex = response.data.aLocation.findIndex((location:any)=> location._id == currentLocation);
+      if(response?.data) this.businessDetails = response.data;
+      if(this.businessDetails?.aLocation?.length && !this.customer?._id ){
+        const locationIndex = this.businessDetails.aLocation.findIndex((location:any)=> location._id == currentLocation);
         if(locationIndex != -1){
-         const currentLocationDetail = response?.data?.aLocation[locationIndex];
+         const currentLocationDetail = this.businessDetails?.aLocation[locationIndex];
          if(currentLocationDetail?.oAddress?.country && currentLocationDetail?.oAddress?.countryCode){
          this.customer.oInvoiceAddress.sCountry = currentLocationDetail?.oAddress?.country;
          this.customer.oInvoiceAddress.sCountryCode = currentLocationDetail?.oAddress?.countryCode;
@@ -908,7 +908,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
 
   // Function for show transaction details
   showTransaction(transaction: any) {
-    this.dialogService.openModal(TransactionDetailsComponent, { cssClass: "modal-xl", context: { transaction: transaction, eType: 'cash-register-revenue', from: 'customer' } })
+    this.dialogService.openModal(TransactionDetailsComponent, { cssClass: "modal-xl", context: { transaction: transaction, businessDetails: this.businessDetails , eType: 'cash-register-revenue', from: 'customer' } })
       .instance.close.subscribe(
         (res: any) => {
           // if (res) this.router.navigate(['business/till']);
