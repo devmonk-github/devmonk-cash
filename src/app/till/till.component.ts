@@ -360,7 +360,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
             if (i.tType === 'refund') {
               result -= i.prePaidAmount;
             } else {
-              let discountPrice = i.bDiscountOnPercentage ? (i.price - (i.price * ((i.nDiscount || 0) / 100))) : (i.price - i.nDiscount);
+              const price = (typeof i.price === 'string') ? i.price.replace(',','.') : i.price;
+              let discountPrice = i.bDiscountOnPercentage ? (price - (price * ((i.nDiscount || 0) / 100))) : (price - i.nDiscount);
               i.nTotal = i.quantity * discountPrice;
               i.nTotal = i.type === 'gold-purchase' ? -1 * i.nTotal : i.nTotal;
               result += i.nTotal - (i.prePaidAmount || 0);
@@ -485,7 +486,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       case 'update':
         // console.log('itemChanged update')
         this.clearPaymentAmounts();
-        this.paymentDistributeService.distributeAmount(this.transactionItems, this.getUsedPayMethods(true));
+        // this.paymentDistributeService.distributeAmount(this.transactionItems, this.getUsedPayMethods(true));
         break;
       case 'prepaymentChange':
         this.paymentDistributeService.distributeAmount(this.transactionItems, this.getUsedPayMethods(true));
