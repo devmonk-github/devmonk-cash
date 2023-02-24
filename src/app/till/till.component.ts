@@ -945,7 +945,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   sendForReceipt(oDataSource: any, template: any, title: any, type?: any) {
-    const printActionSettings = this.printActionSettings.filter((pas: any) => pas.eType === type);
+    const printActionSettings = this.printActionSettings?.filter((pas: any) => pas.eType === type);
     if (printActionSettings?.length) {
       const aActionToPerform = printActionSettings[0].aActionToPerform;
       if (aActionToPerform.includes('PRINT_THERMAL')) {
@@ -1073,11 +1073,12 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     this.bSearchingProduct = true;
     this.apiService.postNew('core', '/api/v1/business/products/list', data).subscribe((result: any) => {
-      this.bSearchingProduct = false;
       if (result && result.data && result.data.length) {
         const response = result.data[0];
         this.shopProducts = response.result;
+        this.shopProducts.map((el: any) => el.oCurrentLocation = el?.aLocation?.find((oLoc: any) => oLoc?._id?.toString() === this.iLocationId));
       }
+      this.bSearchingProduct = false;
     }, (error) => {
       this.bSearchingProduct = false;
     });
@@ -1724,8 +1725,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   openDrawer(){
-    const aThermalSettings = this.printSettings.filter((settings:any) => settings.sMethod === 'thermal' && settings.iWorkstationId === this.iWorkstationId)
-    const oSettings = aThermalSettings.find((s:any) => s.sType === 'regular' && s.nComputerId && s.nPrinterId);
+    const aThermalSettings = this.printSettings?.filter((settings:any) => settings.sMethod === 'thermal' && settings.iWorkstationId === this.iWorkstationId)
+    const oSettings = aThermalSettings?.find((s:any) => s.sType === 'regular' && s.nComputerId && s.nPrinterId);
     if (oSettings) {
       this.receiptService.openDrawer(this.businessDetails.oPrintNode.sApiKey, oSettings.nPrinterId, oSettings.nComputerId,)
     } else {
