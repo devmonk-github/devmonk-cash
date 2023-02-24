@@ -306,6 +306,7 @@
                           <p class="mt-2">{{ product.sEan }}</p>
                           <p class="mt-2">{{ product.sProductNumber }}</p>
                           <p class="mt-2">{{ product?.sSerialNumber || '' }}</p>
+                          <p class="mt-2">{{ product?.sArticleNumber }}</p>
                         </div>
                       </div>
                     </div>
@@ -336,6 +337,7 @@
                           <p class="block mt-2">{{ product.oName? product.oName['en'] : 'No name' }}</p>
                           <p class="mt-2">{{ product.sEan }}</p>
                           <p class="mt-2">{{ product.sProductNumber }}</p>
+                          <p class="mt-2">{{ product?.sArticleNumber }}</p>
                         </div>
                       </div>
                       <div class="absolute hover-product-option mt-n6" *ngIf="product['showOption']">
