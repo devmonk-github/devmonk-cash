@@ -784,11 +784,12 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
                 }
               });
 
-              // if (this.bIsFiscallyEnabled) {
-                // this.updateFiskalyTransaction('FINISHED', body.payments, oDialogComponent);
-              // } else {
-                this.handleReceiptPrinting(oDialogComponent);
-              // }
+              
+              const bOpenCashDrawer = payMethods.some((m:any) => m.sName === 'Cash' && m.remark != 'CHANGE_MONEY');
+              if(bOpenCashDrawer) this.openDrawer();
+              
+              this.handleReceiptPrinting(oDialogComponent);
+              
               
               setTimeout(() => {
                 this.saveInProgress = false;
@@ -1723,7 +1724,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   openDrawer(){
-    // console.log('open drawer cash register')
     const aThermalSettings = this.printSettings.filter((settings:any) => settings.sMethod === 'thermal' && settings.iWorkstationId === this.iWorkstationId)
     const oSettings = aThermalSettings.find((s:any) => s.sType === 'regular' && s.nComputerId && s.nPrinterId);
     if (oSettings) {
