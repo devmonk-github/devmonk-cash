@@ -185,6 +185,7 @@ export class CustomerDialogComponent implements OnInit {
   }
 
   getCustomers() {
+    if (this.requestParams?.searchValue?.length < 3) return;
     this.showLoader = true;
     this.customers = [];
     this.isCustomerSearched = false;
