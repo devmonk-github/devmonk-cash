@@ -18,7 +18,7 @@ export class CurrencyFormatPipe implements PipeTransform {
 
         let result = '\\d(?=(\\d{' + chunkLength + '})+' + (decimalLength > 0 ? '\\D' : '$') + ')';
         let num = Number(value).toFixed(Math.max(0, ~~decimalLength));
-
+        // console.log({num})
         return currencySign + (decimalDelimiter ? num.replace('.', decimalDelimiter) : num).replace(new RegExp(result, 'g'), '$&' + chunkDelimiter);
     }
 }

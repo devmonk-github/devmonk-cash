@@ -130,7 +130,7 @@ export class ProductComponent implements OnInit{
   }
 
   updatePayments(): void {
-    this.itemChanged.emit('update');
+    this.itemChanged.emit(this.item);
   }
 
   quantityChangeHandler(nQuantity: number) {

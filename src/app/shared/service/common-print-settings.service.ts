@@ -96,15 +96,15 @@ export class CommonPrintSettingsService {
                 }
             });
 
-        if (typeof this.oCommonParameters['pageSize'] == 'string' && this.oCommonParameters['pageSize'] != 'custom') {
-            this.pageWidth = (this.oCommonParameters['orientation'] === 'portrait') ? 
-                                this.pageSizes[this.oCommonParameters['pageSize']].pageWidth : 
-                                this.pageSizes[this.oCommonParameters['pageSize']].pageHeight ;
-        } else {
-            this.pageWidth = (this.oCommonParameters['orientation'] === 'portrait') ?
-                this.oCommonParameters['pageSize'].width :
-                this.oCommonParameters['pageSize'].height;
-        }
+        // if (typeof this.oCommonParameters['pageSize'] == 'string' && this.oCommonParameters['pageSize'] != 'custom') {
+        //     this.pageWidth = (this.oCommonParameters['orientation'] === 'portrait') ? 
+        //                         this.pageSizes[this.oCommonParameters['pageSize']].pageWidth : 
+        //                         this.pageSizes[this.oCommonParameters['pageSize']].pageHeight ;
+        // } else {
+        //     this.pageWidth = (this.oCommonParameters['orientation'] === 'portrait') ?
+        //         this.oCommonParameters['pageSize'].width :
+        //         this.oCommonParameters['pageSize'].height;
+        // }
         
     }
 
