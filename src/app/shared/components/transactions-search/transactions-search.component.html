@@ -34,8 +34,8 @@
                             </thead>
                             <tbody class="fw-bold text-gray-600">
                                 <tr *ngFor='let transaction of activities'>
-                                    <td class="">{{transaction.sNumber}}</td>
-                                    <td class="">{{(transaction?.aBagNumber?.length) ? transaction.aBagNumber.join(',') : ''}}</td>
+                                    <td class="">{{ transaction.sNumber }}</td>
+                                    <td class="">{{ transaction.sBagNumbers }}</td>
                                     <td class="">{{ transaction.dCreatedDate | date: 'short'}}</td>
                                     <td>
                                         <button class="btn btn-primary"

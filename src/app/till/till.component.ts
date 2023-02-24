@@ -227,7 +227,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     try {
       _fiscallyData = await this.fiskalyService.getTSSList();
     } catch (err) {
-      console.log('error while executing fiskaly service', err)
+      // console.log('error while executing fiskaly service', err)
     }
     if(_fiscallyData) {
 
