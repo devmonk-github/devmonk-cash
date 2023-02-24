@@ -547,10 +547,13 @@
                                                     <div *ngIf="!activity?.aImage?.length">
                                                         {{"NO_IMAGES" | translate}}
                                                     </div>
+                                                    <div *ngIf="activity?.aImage?.length">
+                                                    {{'IMAGES' | translate}}
+                                                    </div>
                                                     <button *ngIf="activity.oType.eKind == 'repair' || activity.oType.eKind == 'order'" class="btn btn-bg-light btn-active-color-primary my-2" (click)="openImageModal(activityindex)"> {{ "PHOTO" | translate}}
                                                         <fa-icon [icon]="faUpload"></fa-icon>
                                                       </button>
-                                                    <div>
+                                                    <div class="d-flex flex-wrap">
                                                         <div class="image-input p-1"
                                                             *ngFor="let image of activity.aImage ; let imageIndex = index"
                                                             data-kt-image-input="true"
