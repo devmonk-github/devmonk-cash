@@ -251,7 +251,7 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   }
 
   getTemplate(type: string): Observable<any> {
-    return this.apiService.getNew('cashregistry', `/api/v1/pdf/templates/${this.iBusinessId}?eType=${type}`);
+    return this.apiService.getNew('cashregistry', `/api/v1/pdf/templates/${this.iBusinessId}?eType=${type}&iLocationId=${this.iLocationId}`);
   }
 
   fetchCustomer(customerId: any) {
