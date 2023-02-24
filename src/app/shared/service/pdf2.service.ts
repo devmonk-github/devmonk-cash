@@ -81,32 +81,33 @@ export class PdfService {
   }
 
   getDocDefinition(styles: any, content: any, orientation: string, pageSize?: any, footer?: any, pageMargins?: any, defaultStyle?: any) {
-
-    let pageMargin;
-    let headerFont;
-    let contentFont;
-    if (pageSize === 'A6') {
-      pageMargin = [10, 110, 10, 10];
-      headerFont = 10;
-      contentFont = 7;
-    } else {
-      headerFont = 16;
-      contentFont = 10;
-      pageMargin = [10, 10, 10, 10];
-    }
+    // console.log(pageSize)
+    // let pageMargin;
+    // let headerFont;
+    // let contentFont;
+    // if (pageSize === 'A6') {
+    //   pageMargin = [10, 110, 10, 10];
+    //   headerFont = 10;
+    //   contentFont = 7;
+    // } else {
+    //   headerFont = 16;
+    //   contentFont = 10;
+    //   pageMargin = [10, 10, 10, 10];
+    // }
     const docDefinition: any = {
-      pageOrientation: orientation,
       pageSize,
-      pageMargins: pageMargin,
+      pageMargins: pageMargins,
       content: content,
       styles: styles,
-      defaultStyle: {
-        fontSize: 6
-      },
+      defaultStyle,
+      footer
     };
-    if (footer) docDefinition.footer = footer;
-    if (pageMargins) docDefinition.pageMargins = pageMargins;
-    if (defaultStyle) docDefinition.defaultStyle = defaultStyle;
+    // console.log(typeof pageSize, pageSize);
+    if (typeof pageSize === 'string') docDefinition.pageOrientation = orientation;
+    // if (footer) docDefinition.footer = footer;
+    // if (pageMargins) docDefinition.pageMargins = pageMargins;
+    // if (defaultStyle) docDefinition.defaultStyle = defaultStyle;
+    // console.log({docDefinition});
     return docDefinition;
   }
 

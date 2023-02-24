@@ -557,10 +557,10 @@ export class ActivityDetailsComponent implements OnInit {
       this.bDownloadCustomerReceipt = true;
     }
 
-    let oDataSource = JSON.parse(JSON.stringify(this.activity));
-    if (oDataSource?.activityitems) {
-      oDataSource = oDataSource.activityitems[index];
-    }
+    let oDataSource = JSON.parse(JSON.stringify(this.activityItems[index]));
+    // if (oDataSource?.activityitems) {
+    //   oDataSource = oDataSource.activityitems[index];
+    // }
     let type: any;
     let sBarcodeURI: any;
     if (oDataSource?.oType?.eKind === 'giftcard') {
@@ -632,7 +632,7 @@ export class ActivityDetailsComponent implements OnInit {
     oDataSource.sBarcodeURI = sBarcodeURI;
     const aTemp = oDataSource.sNumber.split("-");
     oDataSource.sPartRepairNumber = aTemp[aTemp.length - 1];
-    oDataSource.sBusinessLogoUrl = (await this.getBase64FromUrl(oDataSource?.businessDetails?.sLogoLight).toPromise()).data;
+    // oDataSource.sBusinessLogoUrl = (await this.getBase64FromUrl(oDataSource?.businessDetails?.sLogoLight).toPromise()).data;
     this.sendForReceipt(oDataSource, template, oDataSource.sNumber, receipt);
   }
 

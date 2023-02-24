@@ -28,7 +28,7 @@ export class PaymentDistributionService {
     
     transactionItems = transactionItems.filter((i:any) => i.type !== 'empty-line')
     transactionItems.forEach((i: any) => {
-      if (bTesting) console.log(i);
+      if (bTesting) console.log(31, i, i.nTotal);
       
       let _nDiscount = 0;
       if (i.nDiscount > 0 && !i.bDiscountOnPercentage) _nDiscount = i.nDiscount
@@ -36,7 +36,7 @@ export class PaymentDistributionService {
       
       if (bTesting)  console.log(26, i.price, i.prePaidAmount)
       
-      i.amountToBePaid = i.price * i.quantity - (i.prePaidAmount || 0) - (_nDiscount * i.quantity || 0);
+      i.amountToBePaid = ((typeof i.price === 'string') ? i.price.replace(',','.') : i.price) * i.quantity - (i.prePaidAmount || 0) - (_nDiscount * i.quantity || 0);
       if (bTesting)  console.log(28, 'amountToBePaid', i.amountToBePaid)
       
       if (i.type === 'gold-purchase') i.amountToBePaid = -(i.amountToBePaid);

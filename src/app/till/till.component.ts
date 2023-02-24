@@ -360,7 +360,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
             if (i.tType === 'refund') {
               result -= i.prePaidAmount;
             } else {
-              let discountPrice = i.bDiscountOnPercentage ? (i.price - (i.price * ((i.nDiscount || 0) / 100))) : (i.price - i.nDiscount);
+              const price = (typeof i.price === 'string') ? i.price.replace(',','.') : i.price;
+              let discountPrice = i.bDiscountOnPercentage ? (price - (price * ((i.nDiscount || 0) / 100))) : (price - i.nDiscount);
               i.nTotal = i.quantity * discountPrice;
               i.nTotal = i.type === 'gold-purchase' ? -1 * i.nTotal : i.nTotal;
               result += i.nTotal - (i.prePaidAmount || 0);
@@ -485,7 +486,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       case 'update':
         // console.log('itemChanged update')
         this.clearPaymentAmounts();
-        this.paymentDistributeService.distributeAmount(this.transactionItems, this.getUsedPayMethods(true));
+        // this.paymentDistributeService.distributeAmount(this.transactionItems, this.getUsedPayMethods(true));
         break;
       case 'prepaymentChange':
         this.paymentDistributeService.distributeAmount(this.transactionItems, this.getUsedPayMethods(true));
@@ -783,11 +784,12 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
                 }
               });
 
-              // if (this.bIsFiscallyEnabled) {
-                // this.updateFiskalyTransaction('FINISHED', body.payments, oDialogComponent);
-              // } else {
-                this.handleReceiptPrinting(oDialogComponent);
-              // }
+              
+              const bOpenCashDrawer = payMethods.some((m:any) => m.sName === 'Cash' && m.remark != 'CHANGE_MONEY');
+              if(bOpenCashDrawer) this.openDrawer();
+              
+              this.handleReceiptPrinting(oDialogComponent);
+              
               
               setTimeout(() => {
                 this.saveInProgress = false;
@@ -1722,7 +1724,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   openDrawer(){
-    // console.log('open drawer cash register')
     const aThermalSettings = this.printSettings.filter((settings:any) => settings.sMethod === 'thermal' && settings.iWorkstationId === this.iWorkstationId)
     const oSettings = aThermalSettings.find((s:any) => s.sType === 'regular' && s.nComputerId && s.nPrinterId);
     if (oSettings) {
