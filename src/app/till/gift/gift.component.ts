@@ -1,12 +1,11 @@
 /* eslint-disable @angular-eslint/component-selector */
 import { Component, EventEmitter, Input, OnInit, Output, ViewEncapsulation } from '@angular/core';
-import { faTimes, faPlus, faMinus, faCheck, faSpinner, faPrint, faBan, faClone } from "@fortawesome/free-solid-svg-icons";
+import { faBan, faCheck, faClone, faMinus, faPlus, faPrint, faSpinner, faTimes } from "@fortawesome/free-solid-svg-icons";
 import * as JsBarcode from 'jsbarcode';
 import { Observable } from 'rxjs';
 import { ToastService } from 'src/app/shared/components/toast';
 import { ApiService } from 'src/app/shared/service/api.service';
 import { CreateArticleGroupService } from 'src/app/shared/service/create-article-groups.service';
-import { PdfService } from 'src/app/shared/service/pdf.service';
 import { ReceiptService } from 'src/app/shared/service/receipt.service';
 import { TillService } from 'src/app/shared/service/till.service';
 // import { TaxService } from "../../shared/service/tax.service";
@@ -31,20 +30,19 @@ export class GiftComponent implements OnInit {
   faBan = faBan;
   faClone = faClone;
   checkingNumber: boolean = false
-  iBusinessId: string = '';
+  iBusinessId: any = localStorage.getItem('currentBusiness');
+  iLocationId: any = localStorage.getItem('currentLocation');
   downloading: boolean = false;
   computerId: number | undefined;
   printerId: number | undefined;
   constructor(
     private apiService: ApiService,
     private receiptService: ReceiptService,
-    private pdfService: PdfService,
     private toastrService: ToastService,
     public tillService: TillService,
     private createArticleGroupService: CreateArticleGroupService) { }
 
   ngOnInit(): void {
-    this.iBusinessId = localStorage.getItem('currentBusiness') || '';
     this.checkNumber();
     this.checkArticleGroups();
     this.changeInPrice();
@@ -114,19 +112,20 @@ export class GiftComponent implements OnInit {
     this.createGiftCard.emit('create');
   }
 
-  getPrintSetting() {
-    this.apiService.getNew('cashregistry', '/api/v1/print-settings/' + '6182a52f1949ab0a59ff4e7b' + '/' + '624c98415e537564184e5614').subscribe(
-      (result: any) => {
-        this.computerId = result?.data?.nComputerId;
-        this.printerId = result?.data?.nPrinterId;
-      },
-      (error: any) => {
-        console.error(error)
-      }
-    );
-  }
+  // getPrintSetting() {
+  //   this.apiService.getNew('cashregistry', '/api/v1/print-settings/' + '6182a52f1949ab0a59ff4e7b' + '/' + '624c98415e537564184e5614').subscribe(
+  //     (result: any) => {
+  //       this.computerId = result?.data?.nComputerId;
+  //       this.printerId = result?.data?.nPrinterId;
+  //     },
+  //     (error: any) => {
+  //       console.error(error)
+  //     }
+  //   );
+  // }
+
   getTemplate(type: string): Observable<any> {
-    return this.apiService.getNew('cashregistry', `/api/v1/pdf/templates/${this.iBusinessId}?eType=${type}`);
+    return this.apiService.getNew('cashregistry', `/api/v1/pdf/templates/${this.iBusinessId}?eType=${type}&iLocationId=${this.iLocationId}`);
   }
 
   generateBarcodeURI(data:any) {
@@ -155,7 +154,8 @@ export class GiftComponent implements OnInit {
 
     const oDataSource = JSON.parse(JSON.stringify(this.item));
     oDataSource.sBarcodeURI = this.generateBarcodeURI('G-'+oDataSource.sGiftCardNumber);
-
+    oDataSource.nPriceIncVat = oDataSource.price;
+    oDataSource.dCreatedDate = new Date();
 
     this.receiptService.exportToPdf({
       oDataSource: oDataSource,
