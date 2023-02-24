@@ -126,17 +126,13 @@ export class CustomersComponent implements OnInit {
     // return this.dataSourceBuilder.create(result, this.getters);
   }
 
-  export(){
-
-   const  headerList = [
-    { key : "sSalutation" , value: 'Salutation'}, {key : "sFirstName" , value : 'First name'}, { key:"sPrefix" , value :'Prefix'}, { key : "sLastName" , value : 'Last name' },{key :"dDateOfBirth" , value :'Date of birth'}, { key : "nClientId" , value :'Client id'}, { key : "sGender" , value :'Gender'}, {key : "bIsEmailVerified" , value : 'Email verified'}, {key : "bCounter" , value : 'Counter'}, { key :"sEmail" , value :'Email'}, { key : "oPhone.sLandLine" , value :'Landline'}, 
-    {key:'oPhone.sMobile' , value:'Mobile'} , {key:'oShippingAddress.sStreet' , value:'street'} , {key:'oShippingAddress.sHouseNumber' , value:'House Number'} , {key:'oShippingAddress.sPostalCode' , value:'Postal code'}, {key:'oShippingAddress.sCountryCode' , value:'country code'},{key:"sComment" , value: 'Comment' },{key:"bNewsletter" , value:'Newsletter'} , {key:"sCompanyName" , value:'Company name'} , { key:"oPoints" , value:'Points' },{ key:"oIdentity" , value:'Identity' },{key:"sVatNumber" , value:'Vat number'} ,
-    { key :"sCocNumber" , value:'Coc number'} , { key:"nPaymentTermDays" , value:'Payment term days'} ,{ key:"nDiscount" , value:'Discount' }, { key:"bWhatsApp" , value:'Whatsapp'} , { key :"nMatchingCode" , value:'Matching code'} , { key:"sNote" , value:'Note'} ,{key:"bIsMigrated" , value:'Migrated customer'}
-   ];
-    this.dialogService.openModal(ExportsComponent , { cssClass: "modal-lg", context: { requestParams:this.requestParams , customerHeaderList :headerList, separator:''  } }).instance.close.subscribe(result => {
-      console.log("--------------customer export successfully!!!");
-    })
-
+  export() {
+    const headerList = [
+      { key: "sSalutation", value: 'Salutation' }, { key: "sFirstName", value: 'First name' }, { key: "sPrefix", value: 'Prefix' }, { key: "sLastName", value: 'Last name' }, { key: "dDateOfBirth", value: 'Date of birth' }, { key: "nClientId", value: 'Client id' }, { key: "sGender", value: 'Gender' }, { key: "bIsEmailVerified", value: 'Email verified' }, { key: "bCounter", value: 'Counter' }, { key: "sEmail", value: 'Email' }, { key: "oPhone.sLandLine", value: 'Landline' },
+      { key: 'oPhone.sMobile', value: 'Mobile' }, { key: 'oShippingAddress.sStreet', value: 'street' }, { key: 'oShippingAddress.sHouseNumber', value: 'House Number' }, { key: 'oShippingAddress.sPostalCode', value: 'Postal code' }, { key: 'oShippingAddress.sCountryCode', value: 'country code' }, { key: "sComment", value: 'Comment' }, { key: "bNewsletter", value: 'Newsletter' }, { key: "sCompanyName", value: 'Company name' }, { key: "oPoints", value: 'Points' }, { key: "oIdentity", value: 'Identity' }, { key: "sVatNumber", value: 'Vat number' },
+      { key: "sCocNumber", value: 'Coc number' }, { key: "nPaymentTermDays", value: 'Payment term days' }, { key: "nDiscount", value: 'Discount' }, { key: "bWhatsApp", value: 'Whatsapp' }, { key: "nMatchingCode", value: 'Matching code' }, { key: "sNote", value: 'Note' }, { key: "bIsMigrated", value: 'Migrated customer' }
+    ];
+    this.dialogService.openModal(ExportsComponent, { cssClass: "modal-lg", context: { requestParams: this.requestParams, customerHeaderList: headerList, separator: '' } }).instance.close.subscribe(result => {})
   }
 
   openCustomer(customer: any) {
