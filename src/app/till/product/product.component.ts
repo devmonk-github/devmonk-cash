@@ -5,7 +5,6 @@ import { DiscountDialogComponent } from "../dialogs/discount-dialog/discount-dia
 import { PriceService } from '../../shared/service/price.service';
 import { ApiService } from 'src/app/shared/service/api.service';
 import { ToastService } from 'src/app/shared/components/toast';
-import { formatCurrency } from '@angular/common';
 import { TillService } from 'src/app/shared/service/till.service';
 
 @Component({
@@ -28,6 +27,7 @@ export class ProductComponent implements OnInit{
   ];
   collapsedBtn: Boolean = false;
   totalDiscount = 0;
+  iSelectedLocationId: string;
 
   @Input() disablePrepayment: any;
   @Input() availableAmount: any;
@@ -40,7 +40,7 @@ export class ProductComponent implements OnInit{
     
     ngOnInit(): void {
       this.fetchArticleGroupInfo();
-      // this.getTotalDiscount(this.item)
+      this.iSelectedLocationId = this.item.oCurrentLocation?._id;
     }
 
   fetchArticleGroupInfo() {
@@ -74,11 +74,6 @@ export class ProductComponent implements OnInit{
   changeInMargin() {
     // this.item.nPurchasePrice = this.item.price / this.item.nMargin || 1;
   }
-
-  // getTotalDiscount(item: any) {
-  //   this.totalDiscount = (item?.discount) ? this.priceService.getDiscountValue(item) : formatCurrency(item.nDiscount, 'en-GB', this.tillService.currency) ;
-  //   return String(this.totalDiscount);
-  // }
 
   getTotalPrice(item: any): string {
     return this.priceService.getArticlePrice(item)
@@ -130,8 +125,14 @@ export class ProductComponent implements OnInit{
   }
 
   updatePayments(): void {
+    this.item.iLocationId = this.iSelectedLocationId; /* in case, we changed the location from the drop-down */
     this.itemChanged.emit(this.item);
   }
+
+  // onChangeLocation() {
+  //   this.item.iLocationId = this.iSelectedLocationId;
+  //   this.itemChanged.emit(this.item);
+  // }
 
   quantityChangeHandler(nQuantity: number) {
     this.itemChanged.emit('update');
