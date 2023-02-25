@@ -448,8 +448,8 @@
             </option>
           </select>
           <ng-container>
-            <button class="btn btn-secondary" (click)="selectedTransaction ? updateParkedTransaction(): park()">{{
-              selectedTransaction ? "SAVE" : "PARK" |
+            <button class="btn btn-secondary" (click)="selectedTransaction ? updateParkedTransaction(): park()">{{(
+              selectedTransaction ? "SAVE" : "PARK") |
               translate}}</button>
             <button class="btn btn-secondary" (click)="selectedTransaction = null" *ngIf="selectedTransaction">
               <fa-icon [icon]="faTimesCircle"></fa-icon>

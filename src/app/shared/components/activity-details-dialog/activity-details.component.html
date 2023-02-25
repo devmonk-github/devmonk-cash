@@ -18,7 +18,7 @@
             <div class="col-2 pe-0">
                 <div class="card pt-2" > <!-- style="width: 18rem;" -->
                     <span class="card-header justify-content-center align-items-center text-center m-0 ps-0 pe-0">
-                        <h3>{{(from === 'activity-items') ? activityItems[0].sNumber : activity.sNumber}}</h3>
+                        <h3 class="my-1">{{(from === 'activity-items') ? activityItems[0].sNumber : activity.sNumber}}</h3>
                     </span>
 
                     <div class="card-body p-3">
@@ -109,37 +109,33 @@
                                     [attr.data-bs-target]="'item'+activityindex" 
                                     data-bs-toggle="collapse"
                                     >
-                                    <div class="col-5">
-                                    {{activity.sNumber}}
-                                    <span class="ms-5" (click)="copyToClipboard(activity)">
-                                        <i class="fa fa-copy" title="Click to copy"> </i>
-                                        <span @fade *ngIf="activity.bActivityNumberCopied" class="text-primary bold ms-2 my-2">
-                                            {{ 'COPIED_TO_CLIPBOARD' | translate }}</span>
-                                        </span>
+                                        <div class="col-4">
+                                        {{activity.sNumber}}
+                                        <span class="ms-5" (click)="copyToClipboard(activity)">
+                                            <i class="fa fa-copy" title="Click to copy"> </i>
+                                            <span @fade *ngIf="activity.bActivityNumberCopied" class="text-primary bold ms-2 my-2">
+                                                {{ 'COPIED_TO_CLIPBOARD' | translate }}</span>
+                                            </span>
 
-                                    </div>
-                                    <div class="col-5">
-                                    <table class="table table-borderless mx-8">
-                                        <thead>
-                                            <td class="table-width">{{'TYPE' | translate}}</td>
-                                            <td class="table-width">{{'INTAKE_DATE' | translate}}</td>
-                                            <td class="table-width">{{'STATUS' | translate}}</td>
-                                            <td class="table-width">{{'PRICE' | translate}}</td>
-                                        </thead>
-                                        <tbody>
-                                          
-                                            <td class="table-width">{{activity?.oType?.eKind || '-'}}</td>
-                                            <td class="table-width">{{activity.dCreatedDate | date:'yyyy-MM-dd'}}</td>
-                                            <td class="table-width"> {{activity.eActivityItemStatus || '-' }}</td>
-                                            <td class="table-width">{{(activity?.nTotalAmount ? activity?.nTotalAmount : 0 ) | currency:tillService.currency }}</td>
-                                        </tbody>
-                                      </table> 
-                                      </div>
+                                        </div>
+                                        <div class="col-7">
+                                        <div class="table-custom">
+                                            <div class="t-head">
+                                                <p class="p-0 m-0 label-custom col-3">{{'TYPE' | translate}}</p>
+                                                <p class="p-0 m-0 label-custom col-3">{{'INTAKE_DATE' | translate}}</p>
+                                                <p class="p-0 m-0 label-custom col-3">{{'STATUS' | translate}}</p>
+                                                <p class="p-0 m-0 label-custom col-3">{{'PRICE' | translate}}</p>
+                                            </div>
+                                            <div class="t-body">
+                                                <p class="p-0 m-0 data-custom col-3">{{activity?.oType?.eKind || '-'}}</p>
+                                                <p class="p-0 m-0 data-custom col-3">{{activity.dCreatedDate | date:'yyyy-MM-dd'}}</p>
+                                                <p class="p-0 m-0 data-custom col-3">{{activity.eActivityItemStatus || '-' }}</p>
+                                                <p class="p-0 m-0 data-custom col-3">{{(activity?.nPriceIncVat ? activity?.nPriceIncVat : 0 ) | currency:tillService.currency }}</p>
+                                            </div>
+                                        </div> 
+                                        </div>
                                     </button>
-
-
                                 </div>
-                    
                             </h6>
                             <div class="accordion-collapse collapse general"
                                 *ngIf="eKindValueForLayout.includes(activity.oType.eKind)" 
@@ -179,11 +175,11 @@
                                             </div>
 
                                             <div>
-                                                {{"INFORM_CUSTOMER_THAT_PRODUCT_CAN_BE_PICKED_UP" | translate}}
+                                                <p class="mb-3"> {{"INFORM_CUSTOMER_THAT_PRODUCT_CAN_BE_PICKED_UP" | translate}}</p>
                                             </div>
-                                            <div class="border p-3 mb-5">
-                                                <div class="border p-1 my-3 px-4">
-                                                    {{ "TOTAL_PRICE" | translate}}
+                                            <div class="border p-2 mb-5">
+                                                <div>
+                                                    <p class="mb-2">{{ "TOTAL_PRICE" | translate}}</p>
                                                 </div>
                                                 <div class="row">
                                                     <div class="col-8">
@@ -826,11 +822,11 @@
                                                 {{"INFORM_CUSTOMER_THAT_PRODUCT_CAN_BE_PICKED_UP" | translate}}
                                             </div> -->
                                             <div class="border p-3 mb-5">
-                                                <div class="border p-1 my-3 px-4">
-                                                    {{ "TOTAL_PRICE" | translate}}
+                                                <div>
+                                                    <p class="mb-2">{{ "TOTAL_PRICE" | translate}}</p>
                                                 </div>
                                                 <div class="row">
-                                                    <div class="col-8">
+                                                    <div class="col-12">
                                                         <input class="form-control form-control-solid w-100"
                                                             type="number" [(ngModel)]="activity.nPriceIncVat">
                                                     </div>
@@ -1486,8 +1482,8 @@
                                                 {{"INFORM_CUSTOMER_THAT_PRODUCT_CAN_BE_PICKED_UP" | translate}}
                                             </div> -->
                                             <div class="border p-3 mb-5">
-                                                <div class="border p-1 my-3 px-4">
-                                                    {{ "TOTAL_PRICE" | translate}}
+                                                <div>
+                                                    <p class="mb-2">{{ "TOTAL_PRICE" | translate}}</p>
                                                 </div>
                                                 <div class="row">
                                                     <div class="col-8">

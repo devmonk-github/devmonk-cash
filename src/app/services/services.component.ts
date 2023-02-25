@@ -351,7 +351,11 @@ export class ServicesComponent implements OnInit, OnDestroy {
     this.activities = [];
     this.apiService.postNew('cashregistry', '/api/v1/activities', this.requestParams).subscribe((result: any) => {
       if (result?.data?.length){
-        this.activities = result?.data;
+        this.activities = result?.data.map((item:any) => {
+          item.sBagNumbers = (item?.aActivityItemMetaData?.length) ? item.aActivityItemMetaData.map((el: any) => el.sBagNumber).join(',') : '';
+          return item;
+        });
+
       } 
       if (result?.aUniqueBusinessPartner && !this.aFilterBusinessPartner?.length) this.aFilterBusinessPartner = result.aUniqueBusinessPartner;
       this.paginationConfig.totalItems = result?.count;
