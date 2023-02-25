@@ -719,7 +719,7 @@ export class ReceiptService {
         // console.log("Open drawer", sApiKey);
         let drawerJob = this.pn2escposService.epOpenDrawer()
         this.printService.openDrawer(this.iBusinessId, drawerJob, nPrinterId, nComputerId, sApiKey).subscribe((result: any) => {
-            console.log('drawer response', result);
+            // console.log('drawer response', result);
         });
     }
 }

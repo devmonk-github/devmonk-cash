@@ -190,3 +190,29 @@
   width: 100%;
   font-size: .925rem;
 }
+
+.table-custom{
+  display: flex;
+  flex-direction: column;
+  color: #181C32 !important;
+
+  .t-head{
+    display: flex;
+    
+    .label-custom{
+      font-weight: 600;
+      text-transform: capitalize;
+      margin-bottom: 5px !important;
+    }
+  }
+
+  .t-body{
+    display: flex;
+
+    .data-custom{
+      text-transform: capitalize;
+      font-size: .1.1rem;
+    }
+  }
+
+}

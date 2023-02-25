@@ -40,6 +40,7 @@
         </div>
 
         <div class="col-3">
+          <label class="form-contrl-label mb-3" for="giftCardNumber">{{ "GIFT_CARD_NUMBER" | translate}}</label>
           <div class="input-group b-5">
             <input type="text" class="form-control" name="number" id="number" [(ngModel)]="item.sGiftCardNumber"
               (blur)="checkNumber()" [disabled]="item.nonEditable">
@@ -53,10 +54,10 @@
         </div>
 
         <div class="col-3">
-          <div class="form-floating mb-7">
+          <!-- <div class="form-floating mb-7"> -->
+            <label class="form-contrl-label mb-3" for="number">{{ "VALUE" | translate}}</label>
             <input type="number" class="form-control" name="number" id="value" [(ngModel)]="item.price"
               [disabled]="item.nonEditable" (change)="changeInPrice(); updatePayments();">
-            <label for="number">{{ "VALUE" | translate}}</label>
           </div>
           <!-- <p>{{ "VAT_HANDLING" | translate}}</p>
           <div class="form-check form-check-custom form-check-solid">
@@ -73,15 +74,15 @@
               {{ "PAY_TAXES_WHEN_REDEEM" | translate}}
             </label>
           </div> -->
-        </div>
+        <!-- </div> -->
 
         <div class="col-3">
-          <div class="form-floating till-padding">
+          <!-- <div class="form-floating till-padding"> -->
+            <label class="form-contrl-label mb-3" for="taxRate">{{"TAX" | translate}}</label>
             <ng-select name="taxRate" id="taxRate" class="form-select" [(ngModel)]="item.tax">
               <ng-option *ngFor="let rate of taxes" [value]="rate.nRate">{{rate.sName}}</ng-option>
             </ng-select>
-            <label for="taxRate">{{"TAX" | translate}}</label>
-          </div>
+          <!-- </div> -->
         </div>
         <div class="col-1">
           <!-- <button class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary w-30px h-30px" (click)="create()"
