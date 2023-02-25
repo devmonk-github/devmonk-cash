@@ -175,7 +175,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
     nCashCounted: 0,
     nCashInTill: 0,
     nSkim: 0,
-    nCashDifference:0,
+    nCashDifference: 0,
     nCashRemain: 0,
     nCashAtStart: 0,
     oCountingsCashDetails: {},
@@ -199,7 +199,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
     private taxService: TaxService
 
   ) {
-    
+
     this.iBusinessId = localStorage.getItem('currentBusiness') || '';
     this.iLocationId = localStorage.getItem('currentLocation') || '';
     this.iWorkstationId = localStorage.getItem('currentWorkstation') || '';
@@ -251,7 +251,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
     this.fetchBusinessLocation();
     this.getProperties();
     this.getPaymentMethods();
-    
+
     setTimeout(() => {
       MenuComponent.bootstrap();
     }, 200);
@@ -653,7 +653,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
       this.aStatistic[0].overall[0].nTotalRevenue = parseFloat(this.aStatistic[0].overall[0].nTotalRevenue.toFixed(2))
       // this.oCountings.nCashInTill = this.aStatistic[0].overall[0].nTotalRevenue;
     }
-    
+
     let aKeys: any = [];
     if (this.oStatisticsDocument?.oCountings?.oCountingsCashDetails) aKeys = Object.keys(this.oStatisticsDocument?.oCountings?.oCountingsCashDetails);
     if (aKeys?.length) {
@@ -995,7 +995,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
     });
   }
 
-  async expandItem(item: any, iBusinessPartnerId: string = '', from:string = 'articlegroup') {
+  async expandItem(item: any, iBusinessPartnerId: string = '', from: string = 'articlegroup') {
     item.bIsCollapseItem = !item.bIsCollapseItem;
 
     if (from === 'articlegroup') {
@@ -1052,7 +1052,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
           oTI.nRevenueAmount = oTI.nRevenueAmount * oTI.nQuantity
           return oTI;
         })
-        }      
+      }
     } else if (from === 'payments') {
       if (item?.aItems) return;
       item.isLoading = true;
@@ -1067,7 +1067,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
         }
       }
       const _result: any = await this.apiService.postNew('cashregistry', '/api/v1/payments/list', data).toPromise()
-      if (_result.data?.length && _result.data[0]?.result?.length){
+      if (_result.data?.length && _result.data[0]?.result?.length) {
         item.aItems = _result.data[0]?.result;
       }
       item.isLoading = false;
@@ -1157,12 +1157,24 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
       this.toastService.show({ type: 'warning', text: 'Something went wrong' });
       return;
     }
-  
-     /* This is to check if day-state is not changed already (in mean-time) */
-    if (oStatisticDetail?.data?.oTransactionAudit[0]?.overall[0]?.nTotalRevenue != this.aStatistic[0].overall[0].nTotalRevenue ||
+
+    const aAmount = oStatisticDetail?.data?.oTransactionAudit[0]?.overall[0]?.nTotalRevenue
+    const bAmount = this.aStatistic[0].overall[0].nTotalRevenue
+
+    /* This is to check if day-state is not changed already (in mean-time) */
+    if (
+      // below allows some difference of 0.05 but not greater than that + allows difference of -0.05 but not less difference
+      (aAmount - bAmount) < -0.05 ||
+      (bAmount - aAmount) > 0.05
+      &&
+      (aAmount - bAmount) >= 0.06 ||
+      (bAmount - aAmount) <= -0.06
+
+
+      ||
       oStatisticDetail?.data?.oTransactionAudit[0]?.overall[0]?.nQuantity != this.aStatistic[0].overall[0].nQuantity) {
-        this.toastService.show({ type: 'warning', text: 'Someone modified the transaction in this workstation. Please refresh the page' });
-        return;
+      this.toastService.show({ type: 'warning', text: 'Someone modified the transaction in this workstation. Please refresh the page' });
+      return;
     }
 
     this.aAmount.filter((item: any) => item.nQuantity > 0).forEach((item: any) => (this.oCountings.oCountingsCashDetails[item.key] = item.nQuantity));
@@ -1174,8 +1186,8 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
 
     // console.log('nVatRate: ', nVatRate);
     // console.log('nDifferenceAmount: ', this.oCountings.nCashDifference);
-    const aPromises:any = [];
-    
+    const aPromises: any = [];
+
     if (this.oCountings.nCashDifference !== 0) {
       //we have difference in cash, so add that as and expense
       aPromises.push(this.addExpenses(
@@ -1379,20 +1391,20 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
       const dDayClosureDateTime = new Date(aDayClosure[i].dCloseDate).getTime();
       if (dFromStateTime > dDayClosureDateTime) aDayClosure[i].isDisable = true;
     }
-    
+
     this.checkShowDownload();
   }
 
   checkShowDownload() {
     const bCondition1 = this.IsDynamicState;
-      
+
     const bCondition2 = (!this.selectedEmployee?._id &&
       !this.selectedWorkStation?._id &&
       !(this.aSelectedLocation?.length > 1) &&
       this.statisticFilter.dFromState != '' &&
       this.statisticFilter.dToState != '');
-    
-    const bCondition3 = (this.iStatisticId && this.iStatisticId != '' && this.oStatisticsDocument && this.oStatisticsDocument?.bIsDayState === false) || false ;
+
+    const bCondition3 = (this.iStatisticId && this.iStatisticId != '' && this.oStatisticsDocument && this.oStatisticsDocument?.bIsDayState === false) || false;
 
     this.bShowDownload = bCondition1 || bCondition2 || bCondition3;
   }
