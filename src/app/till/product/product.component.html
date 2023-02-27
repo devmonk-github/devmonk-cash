@@ -54,16 +54,6 @@
                 [(ngModel)]="item.nBrokenProduct" class="form-control" (change)="changeInbrokenAmount(item)">
             </div>
           </div>
-
-          <div class="col-12">
-            <ng-select
-            [(ngModel)]="iSelectedLocationId" (change)="updatePayments()"
-              class="form-control p-0 text-capitalize" [clearable]="false">
-              <ng-option *ngFor="let oLocation of item.aLocation" [value]="oLocation._id"> {{oLocation.sName | translate }} - ( {{ oLocation?.nStock}} ) </ng-option>
-            </ng-select>
-          
-          </div>
-          
         </div>
 
       </div>
