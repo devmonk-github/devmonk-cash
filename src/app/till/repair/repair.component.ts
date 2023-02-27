@@ -8,6 +8,7 @@ import { DialogService } from 'src/app/shared/service/dialog';
 import { PriceService } from 'src/app/shared/service/price.service';
 import { TillService } from 'src/app/shared/service/till.service';
 import { ImageUploadComponent } from '../../shared/components/image-upload/image-upload.component';
+import { DiscountDialogComponent } from '../dialogs/discount-dialog/discount-dialog.component';
 
 @Component({
   // eslint-disable-next-line @angular-eslint/component-selector
@@ -401,6 +402,18 @@ export class RepairComponent implements OnInit {
 
   getTotalPrice(item: any): void {
     return this.priceService.calculateItemPrice(item)
+  }
+
+  openDiscountDialog(): void {
+    this.dialogService.openModal(DiscountDialogComponent, { context: { item: JSON.parse(JSON.stringify(this.item)) } })
+      .instance.close.subscribe((data) => {
+        if (data.item) {
+          this.item.nDiscount = data.item.nDiscount;
+          this.item.bDiscountOnPercentage = data.item?.discount?.percent || false;
+          // this.getTotalDiscount(data.item)
+          this.itemChanged.emit(this.item);
+        }
+      })
   }
 
   openImage(imageIndex:any){
