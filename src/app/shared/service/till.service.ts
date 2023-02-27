@@ -107,7 +107,6 @@ export class TillService {
   }
 
   createTransactionBody(transactionItems: any, payMethods: any, discountArticleGroup: any, redeemedLoyaltyPoints: number, customer: any): any {
-    const iLocationId = transactionItems?.length && transactionItems[0].iLocationId ? transactionItems[0].iLocationId : this.iLocationId; /* If we changed the location from the drop-down then it would change */
     const transaction = new Transaction(
       null,
       null,
@@ -118,14 +117,14 @@ export class TillService {
       'y',
       this.iWorkstationId,
       this.getValueFromLocalStorage('currentUser').userId,
-      iLocationId,
+      this.iLocationId,
       null,
       null,
     )
 
     const body = {
       iBusinessId: this.iBusinessId,
-      iLocationId: iLocationId,
+      iLocationId: this.iLocationId,
       iWorkstationId: this.iWorkstationId,
       transactionItems: transactionItems,
       oTransaction: transaction,
