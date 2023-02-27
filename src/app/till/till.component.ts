@@ -104,7 +104,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   bIsDayStateOpened: boolean = false; // Not opened then require to open it first
   bDayStateChecking: boolean = false;
   dOpenDate: any = '';
-  aBusinessLocation: any = [];
   
   transaction: any = {};
   activityItems: any = {};
@@ -180,7 +179,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     this.iWorkstationId = localStorage.getItem('currentWorkstation') || '';
   }
   async ngOnInit() {
-    this.fetchBusinessLocation();
     this.apiService.setToastService(this.toastrService)
     this.paymentDistributeService.setToastService(this.toastrService)
 
@@ -1137,13 +1135,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       const _oBusinessProductDetail = await this.getBusinessProduct(product?.iBusinessProductId || product?._id).toPromise();
       product = _oBusinessProductDetail.data;
       if (product?.aLocation?.length) {
-        product.aLocation = product.aLocation.map((oProdLoc: any) => {
-          console.log('oProdLoc: ', oProdLoc, this.aBusinessLocation);
-          const oFound: any = this.aBusinessLocation.find((oBusLoc: any) => oBusLoc?._id?.toString() === oProdLoc?._id?.toString());
-          oProdLoc.sName = oFound?.sName;
-          return oProdLoc;
-        })
-        console.log('Product location: ', product?.aLocation);
         currentLocation = product.aLocation.find((o: any) => o._id === this.iLocationId);
         if (currentLocation) {
           if (isFrom !== 'quick-button') nPriceIncludesVat = currentLocation?.nPriceIncludesVat || 0;
@@ -1741,17 +1732,5 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       this.toastrService.show({type: 'warning', text: 'Please check your print settings!'})
     }
     
-  }
-
-  fetchBusinessLocation() {
-    this.apiService.postNew('core', `/api/v1/business/${this.iBusinessId}/list-location`, { iBusinessId: this.iBusinessId, }).subscribe((result: any) => {
-      if (result?.data?.aLocation?.length) {
-        this.aBusinessLocation = result.data.aLocation;
-        console.log('aBusinessLocation: ', this.aBusinessLocation);
-      }
-    }, (error) => {
-      console.log('error: ', error);
-    }
-    );
   }
 }
