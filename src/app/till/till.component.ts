@@ -181,7 +181,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     this.iWorkstationId = localStorage.getItem('currentWorkstation') || '';
   }
   async ngOnInit() {
-    this.fetchBusinessLocation();
     this.apiService.setToastService(this.toastrService)
     this.paymentDistributeService.setToastService(this.toastrService)
 
@@ -211,6 +210,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     
     const _businessData: any = await this.getBusinessDetails().toPromise();
     this.businessDetails = _businessData.data;
+    this.aBusinessLocation = this.businessDetails?.aLocation || [];
     this.businessDetails.currentLocation = this.businessDetails?.aLocation?.find((location: any) => location?._id === this.iLocationId);
     this.tillService.selectCurrency(this.businessDetails.currentLocation);
     // this.getPrintSettings(true)
@@ -1139,12 +1139,12 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       product = _oBusinessProductDetail.data;
       if (product?.aLocation?.length) {
         product.aLocation = product.aLocation.map((oProdLoc: any) => {
-          console.log('oProdLoc: ', oProdLoc, this.aBusinessLocation);
+          // console.log('oProdLoc: ', oProdLoc, this.aBusinessLocation);
           const oFound: any = this.aBusinessLocation.find((oBusLoc: any) => oBusLoc?._id?.toString() === oProdLoc?._id?.toString());
           oProdLoc.sName = oFound?.sName;
           return oProdLoc;
         })
-        console.log('Product location: ', product?.aLocation);
+        // console.log('Product location: ', product?.aLocation);
         currentLocation = product.aLocation.find((o: any) => o._id === this.iLocationId);
         if (currentLocation) {
           if (isFrom !== 'quick-button') nPriceIncludesVat = currentLocation?.nPriceIncludesVat || 0;
@@ -1739,7 +1739,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     if (oSettings) {
       this.receiptService.openDrawer(this.businessDetails.oPrintNode.sApiKey, oSettings.nPrinterId, oSettings.nComputerId,)
     } else {
-      this.toastrService.show({type: 'warning', text: 'Please check your print settings!'})
+      this.toastrService.show({type: 'warning', text: 'Error while opening cash drawer. Please check your print settings!'})
     }
     
   }
