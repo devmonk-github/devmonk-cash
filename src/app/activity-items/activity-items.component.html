@@ -57,7 +57,7 @@
             <label class="fs-6 form-label fw-bolder text-dark">{{ 'REPAIR_STATUS' | translate }}</label>
             <ng-select class="form-control form-control-solid p-0" [multiple]="true"
               [(ngModel)]="requestParams.selectedRepairStatuses" [clearable]="false">
-              <ng-option *ngFor="let repairStatus of repairStatuses" [value]="repairStatus">{{repairStatus}}
+              <ng-option *ngFor="let repairStatus of repairStatuses" [value]="repairStatus.value">{{repairStatus.key | translate}}
               </ng-option>
             </ng-select>
           </div>

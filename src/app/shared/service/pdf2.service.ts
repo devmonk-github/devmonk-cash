@@ -162,7 +162,7 @@ export class PdfService {
             case 'PRINT_PDF':
               printSettings = printSettings.filter((s: any) => s.sMethod === 'pdf')[0];
               if (!printSettings?.nPrinterId) {
-                this.toastrService.show({ type: 'danger', text: `Printer is not selected for ${printSettings.sType}` });
+                this.toastrService.show({ type: 'danger', text: `Printer is not selected for PDF - ${eType}` });
                 return;
               }
               this.handlePrint(pdfObject, printSettings, pdfTitle, sApiKey);

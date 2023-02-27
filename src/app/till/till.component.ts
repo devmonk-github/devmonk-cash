@@ -104,6 +104,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   bIsDayStateOpened: boolean = false; // Not opened then require to open it first
   bDayStateChecking: boolean = false;
   dOpenDate: any = '';
+  aBusinessLocation: any = [];
   
   transaction: any = {};
   activityItems: any = {};
@@ -153,6 +154,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   nFinalAmount: number = 0;
   nItemsTotalToBePaid: number = 0;
   nTotalPayment:number = 0;
+  oStaticData: any;
   
   randNumber(min: number, max: number): number {
     return Math.floor(Math.random() * (max - min + 1) + min);
@@ -208,6 +210,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     
     const _businessData: any = await this.getBusinessDetails().toPromise();
     this.businessDetails = _businessData.data;
+    this.aBusinessLocation = this.businessDetails?.aLocation || [];
     this.businessDetails.currentLocation = this.businessDetails?.aLocation?.find((location: any) => location?._id === this.iLocationId);
     this.tillService.selectCurrency(this.businessDetails.currentLocation);
     // this.getPrintSettings(true)
@@ -477,6 +480,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   itemChanged(item: any, index: number): void {
+    console.log('itemChanged: ', item);
     switch (item) {
       case 'delete':
         // console.log('itemChanged delete')
@@ -599,7 +603,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     if (paidAmount === 0) {
       this.payMethods.map(o => o.isDisabled = false);
     }
-    // console.log('change in payment in cash ')
+    console.log('change in payment in cash ', this.transactionItems)
     this.transactionItems = [...this.transactionItems]
     this.updateAmountVariables();
   }
@@ -622,7 +626,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   clearPaymentAmounts() {
-    // console.log(this.transactionItems);
+    console.log('this.transactionItems: ', this.transactionItems);
 
     this.transactionItems.forEach((item:any) => {
       item.paymentAmount = 0;
@@ -729,8 +733,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
           let availableAmount = _.sumBy(payMethods, 'amount') || 0;
           this.paymentDistributeService.distributeAmount(this.transactionItems, availableAmount);
           this.transactionItems = [...this.transactionItems.filter((item:any)=> item.type !== 'empty-line')]
-          // console.log(payMethods)
           const body = this.tillService.createTransactionBody(this.transactionItems, payMethods, this.discountArticleGroup, this.redeemedLoyaltyPoints, this.customer);
+          console.log('body: ', body);
           if (body.transactionItems.filter((item: any) => item.oType.eKind === 'repair')[0]?.iActivityItemId) {
             this.bHasIActivityItemId = true
           }
@@ -784,7 +788,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
                 }
               });
 
-              
               const bOpenCashDrawer = payMethods.some((m:any) => m.sName === 'Cash' && m.remark != 'CHANGE_MONEY');
               if(bOpenCashDrawer) this.openDrawer();
               
@@ -798,7 +801,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
               if (this.selectedTransaction) {
                 this.deleteParkedTransaction();
               };
-
 
             }, err => {
               this.toastrService.show({ type: 'danger', text: err.message });
@@ -940,8 +942,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
         this.sendForReceipt(data, template, data.sNumber);
       })
     }
-
-
   }
 
   sendForReceipt(oDataSource: any, template: any, title: any, type?: any) {
@@ -1130,7 +1130,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       this.bSearchingProduct = false;
       nPriceIncludesVat = selectedQuickButton.nPrice;
     }
-
+    let currentLocation;
     if (isFor == 'commonProducts') {
       const _oBaseProductDetail = await this.getBaseProduct(product?._id).toPromise();
       product = _oBaseProductDetail.data;
@@ -1138,7 +1138,14 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       const _oBusinessProductDetail = await this.getBusinessProduct(product?.iBusinessProductId || product?._id).toPromise();
       product = _oBusinessProductDetail.data;
       if (product?.aLocation?.length) {
-        const currentLocation = product.aLocation.find((o: any) => o._id === this.iLocationId);
+        product.aLocation = product.aLocation.map((oProdLoc: any) => {
+          // console.log('oProdLoc: ', oProdLoc, this.aBusinessLocation);
+          const oFound: any = this.aBusinessLocation.find((oBusLoc: any) => oBusLoc?._id?.toString() === oProdLoc?._id?.toString());
+          oProdLoc.sName = oFound?.sName;
+          return oProdLoc;
+        })
+        // console.log('Product location: ', product?.aLocation);
+        currentLocation = product.aLocation.find((o: any) => o._id === this.iLocationId);
         if (currentLocation) {
           if (isFrom !== 'quick-button') nPriceIncludesVat = currentLocation?.nPriceIncludesVat || 0;
           nVatRate = currentLocation?.nVatRate || 0;
@@ -1179,7 +1186,9 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       new: true,
       isFor,
       oBusinessProductMetaData: this.tillService.createProductMetadata(product),
-      eActivityItemStatus: (this.eKind === 'order') ? 'new' : 'delivered'
+      eActivityItemStatus: (this.eKind === 'order') ? 'new' : 'delivered',
+      oCurrentLocation: currentLocation,
+      aLocation: product?.aLocation
     });
     if (isFrom === 'quick-button') { source.loading = false }
     this.resetSearch();
@@ -1730,8 +1739,13 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     if (oSettings) {
       this.receiptService.openDrawer(this.businessDetails.oPrintNode.sApiKey, oSettings.nPrinterId, oSettings.nComputerId,)
     } else {
-      this.toastrService.show({type: 'warning', text: 'Please check your print settings!'})
+      this.toastrService.show({type: 'warning', text: 'Error while opening cash drawer. Please check your print settings!'})
     }
     
+  }
+
+  articleGroupDataChange(oStaticData:any){
+    // console.log('articleGroupDataChange', oStaticData)
+    this.oStaticData = oStaticData;
   }
 }

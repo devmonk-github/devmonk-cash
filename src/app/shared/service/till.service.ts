@@ -107,6 +107,7 @@ export class TillService {
   }
 
   createTransactionBody(transactionItems: any, payMethods: any, discountArticleGroup: any, redeemedLoyaltyPoints: number, customer: any): any {
+    const iLocationId = transactionItems?.length && transactionItems[0].iLocationId ? transactionItems[0].iLocationId : this.iLocationId; /* If we changed the location from the drop-down then it would change */
     const transaction = new Transaction(
       null,
       null,
@@ -117,14 +118,14 @@ export class TillService {
       'y',
       this.iWorkstationId,
       this.getValueFromLocalStorage('currentUser').userId,
-      this.iLocationId,
+      iLocationId,
       null,
       null,
     )
 
     const body = {
       iBusinessId: this.iBusinessId,
-      iLocationId: this.iLocationId,
+      iLocationId: iLocationId,
       iWorkstationId: this.iWorkstationId,
       transactionItems: transactionItems,
       oTransaction: transaction,
@@ -171,10 +172,9 @@ export class TillService {
       // console.log('getTotal: ', this.getTotals('price', transactionItems));//0.03
       // console.log('Last condition: ', i.paymentAmount, i.amountToBePaid);
       // console.log('bPrepayment: ', bPrepayment, bRefund && i.oType?.bPrepayment, (this.getUsedPayMethods(true, payMethods) - this.getTotals('price', transactionItems) < 0), (i.paymentAmount !== i.amountToBePaid));
-
-      i.price = (parseFloat(i.price)).toFixed(2);
-      i.nPurchasePrice = (parseFloat(i.nPurchasePrice)).toFixed(2);
-
+      i.price = +(parseFloat(i.price).toFixed(2));
+      i.nPurchasePrice = +(i.nPurchasePrice.toFixed(2));
+      
       const oItem = new TransactionItem();
       oItem.sProductName = i.name;
       oItem.sComment = i.comment;
@@ -200,13 +200,13 @@ export class TillService {
       oItem.sProductCategory = 'CATEGORY';
       oItem.sGiftCardNumber = i?.sGiftCardNumber;
       oItem.sGiftCardNumber = i?.sGiftCardNumber;
-      oItem.nEstimatedTotal = i?.nTotal?.toFixed(2) || 0;
-      oItem.nPaymentAmount = i?.paymentAmount?.toFixed(2) || 0;
+      oItem.nEstimatedTotal = +(i?.nTotal?.toFixed(2)) || 0;
+      oItem.nPaymentAmount = +(i?.paymentAmount?.toFixed(2) || 0);
       oItem.nPaidLaterAmount = 0;
       oItem.bDiscount = i.nDiscount.value > 0;
       oItem.bDiscountPercent = i.nDiscount.percent;
       oItem.nDiscountValue = i.nDiscount.value;
-      oItem.nRefundAmount = Number((parseFloat(i.nRefundAmount)).toFixed(2));
+      oItem.nRefundAmount = +((i?.nRefundAmount || 0).toFixed(2));
       oItem.dEstimatedDate = i.dEstimatedDate;
       oItem.iBusinessBrandId = i.iBusinessBrandId;
       oItem.iBusinessProductId = i.iBusinessProductId;
@@ -233,7 +233,7 @@ export class TillService {
       oItem.nDiscount = i.nDiscount;
       oItem.nRedeemedLoyaltyPoints = i.redeemedLoyaltyPoints;
       oItem.sUniqueIdentifier = i.sUniqueIdentifier || uuidv4();
-      oItem.nRevenueAmount = Number((i.paymentAmount / i.quantity).toFixed(2));
+      oItem.nRevenueAmount = +((i.paymentAmount / i.quantity).toFixed(2));
       oItem.sDescription = i.description;
 
       oItem.sServicePartnerRemark = i.sServicePartnerRemark;

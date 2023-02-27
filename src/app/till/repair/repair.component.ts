@@ -8,6 +8,7 @@ import { DialogService } from 'src/app/shared/service/dialog';
 import { PriceService } from 'src/app/shared/service/price.service';
 import { TillService } from 'src/app/shared/service/till.service';
 import { ImageUploadComponent } from '../../shared/components/image-upload/image-upload.component';
+import { DiscountDialogComponent } from '../dialogs/discount-dialog/discount-dialog.component';
 
 @Component({
   // eslint-disable-next-line @angular-eslint/component-selector
@@ -57,6 +58,8 @@ export class RepairComponent implements OnInit {
   @ViewChild('descriptionRef') descriptionRef!: ElementRef
   @Input() disablePrepayment:any;
   @Input() availableAmount:any;
+  @Output() articleGroupDataChanged = new EventEmitter<any>();
+  @Input() oStaticData:any;
 
   constructor(private priceService: PriceService,
     private apiService: ApiService,
@@ -81,9 +84,19 @@ export class RepairComponent implements OnInit {
   }
 
   selectArticleGroup() {
-    this.dialogService.openModal(SelectArticleDialogComponent, { cssClass: 'modal-m', context: { from: 'repair' } })
-      .instance.close.subscribe((data) => {
-        if (data) {
+    this.dialogService.openModal(SelectArticleDialogComponent, 
+      { 
+        cssClass: 'modal-m', 
+        context: { 
+          from: 'repair',
+          iBusinessBrandId: this.item.iBusinessBrandId,
+          articleGroupsList: this.oStaticData?.articleGroupsList || [],
+          brandsList: this.oStaticData?.brandsList || [],
+          partnersList: this.oStaticData?.partnersList || [],
+        } 
+      }).instance.close.subscribe((data) => {
+        // console.log({data});
+        if (data.action) {
           if (this.descriptionRef) {
             this.descriptionRef.nativeElement.focus();
           }
@@ -102,6 +115,14 @@ export class RepairComponent implements OnInit {
         else {
           this.deleteItem();
         }
+
+        this.oStaticData = {
+          articleGroupsList: data.articleGroupsList,
+          brandsList: data.brandsList,
+          partnersList: data.partnersList
+        }
+        // console.log('oStaticData', this.oStaticData)
+        this.articleGroupDataChanged.emit(this.oStaticData)
       });
   }
 
@@ -383,6 +404,22 @@ export class RepairComponent implements OnInit {
     return this.priceService.calculateItemPrice(item)
   }
 
+  openDiscountDialog(): void {
+    this.dialogService.openModal(DiscountDialogComponent, { context: { item: JSON.parse(JSON.stringify(this.item)) } })
+      .instance.close.subscribe((data) => {
+        if (data.item) {
+          this.item.nDiscount = data.item.nDiscount;
+          this.item.bDiscountOnPercentage = data.item?.discount?.percent || false;
+          // this.getTotalDiscount(data.item)
+          this.itemChanged.emit(this.item);
+        }
+      })
+  }
+
+  openImage(imageIndex:any){
+    const url =this.item.aImage[imageIndex];
+    window.open(url , "_blank");
+  }
   removeImage(index: number): void {
     this.item.aImage.splice(index, 1);
   }

@@ -94,7 +94,7 @@ export class CardsComponent implements OnInit, AfterViewInit {
       return;
     }
     this.fetchInProgress = true;
-    const url = `/api/v1/activities/giftcard?iBusinessId=${this.iBusinessId}&sGiftCardNumber=${sGiftCardNumber}`;
+    const url = `/api/v1/activities/giftcard/${sGiftCardNumber}?iBusinessId=${this.iBusinessId}`;
     this.apiService.getNew('cashregistry', url).subscribe((result: any) => {
       this.giftCardDetails = result;
       this.giftCardInfo.nPaidAmount = result.nPaidAmount;

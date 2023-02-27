@@ -1,8 +1,9 @@
-import { AfterViewInit, Component, Input, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
+import { Component, Input, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
 import { NgSelectComponent } from '@ng-select/ng-select';
 // import * as _ from 'lodash';
 
 import { ApiService } from '../../service/api.service';
+import { CreateArticleGroupService } from '../../service/create-article-groups.service';
 import { DialogComponent } from "../../service/dialog";
 import { ToastService } from '../toast';
 @Component({
@@ -10,7 +11,7 @@ import { ToastService } from '../toast';
   templateUrl: './select-articlegroup-dialog.component.html',
   styleUrls: ['./select-articlegroup-dialog.component.scss']
 })
-export class SelectArticleDialogComponent implements OnInit, AfterViewInit {
+export class SelectArticleDialogComponent implements OnInit {
   @Input() customer: any;
   dialogRef: DialogComponent;
   filteredArticleGroups: Array<any> = [];
@@ -27,51 +28,62 @@ export class SelectArticleDialogComponent implements OnInit, AfterViewInit {
   iBusinessBrandId: any = null;
   from: any;
   @ViewChild('articleGroupRef') articleGroupRef!: NgSelectComponent
-  articleGroupLoading: boolean = true;
+  articleGroupLoading = false;
+
   constructor(
     private viewContainer: ViewContainerRef,
     private apiService: ApiService,
-    private toastrService: ToastService) {
+    private toastrService: ToastService,
+    private createArticleGroupService: CreateArticleGroupService) {
     const _injector = this.viewContainer.injector;
     this.dialogRef = _injector.get<DialogComponent>(DialogComponent);
 
   }
 
-
-  ngOnInit(): void {
-    this.fetchArticleGroups(null);
+  ngOnInit() {
+    // this.fetchArticleGroups(null);
     this.fetchBusinessPartners([]);
     this.getBusinessBrands();
-    this.iBusinessBrandId = this.dialogRef.context?.item?.iBusinessBrandId;
-    this.from = this.dialogRef.context.from;
-  }
-  ngAfterViewInit(): void {
-
   }
 
-  fetchArticleGroups(iBusinessPartnerId: any) {
-    if (!iBusinessPartnerId) {
-      this.articlegroup = null;
+  async fetchArticleGroups(iBusinessPartnerId: any) {
+    const oDefaultArticle: any = await this.createArticleGroupService.checkArticleGroups('repair').toPromise();
+    // console.log(oDefaultArticle);
+    if (oDefaultArticle?.data?.length && oDefaultArticle?.data[0]?.result?.length) {
+      this.articlegroup = oDefaultArticle?.data[0]?.result[0];
+      this.supplier = this.partnersList.find((el:any) => el._id === this.articlegroup.aBusinessPartner[0].iBusinessPartnerId);
+      // console.log(55, this.articlegroup);
+    } else {
+      const articleBody = { name: 'Repair', sCategory: 'repair', sSubCategory: 'repair' };
+      const result: any = await this.createArticleGroupService.createArticleGroup(articleBody);
+      // console.log(59, {result});
+      this.articlegroup = result?.data[0]?.result[0];
+      this.supplier = this.partnersList.find((el: any) => el._id === this.articlegroup.aBusinessPartner[0].iBusinessPartnerId);
+      
     }
+    // if (!iBusinessPartnerId) {
+    //   this.articlegroup = null;
+    // }
     let data = {
-      searchValue: '',
-      oFilterBy: {
-      },
+      // searchValue: '',
+      // oFilterBy: {
+      // },
       iBusinessPartnerId,
-      iBusinessId: localStorage.getItem('currentBusiness'),
+      iBusinessId: this.iBusinessId,
     };
-    this.apiService.postNew('core', '/api/v1/business/article-group/list', data)
-      .subscribe((result: any) => {
-        if (result && result.data && result.data[0] && result.data[0].result && result.data[0].result.length) {
+    
+    this.apiService.postNew('core', '/api/v1/business/article-group/list', data).subscribe((result: any) => {
+        if (result.data?.length && result.data[0]?.result?.length) {
           this.articleGroupsList = result.data[0].result;
-          setTimeout(() => {
-            this.articleGroupLoading = false;
-            if (this.articleGroupRef)
-              this.articleGroupRef.focus()
-          }, 150);
-        } else {
-          this.fetchArticleGroups(null);
-        }
+          this.articleGroupLoading = false;
+          // setTimeout(() => {
+          //   if (this.articleGroupRef)
+          //     this.articleGroupRef.focus()
+          // }, 150);
+        } 
+        // else {
+        //   this.fetchArticleGroups(null);
+        // }
 
       }, error => {
         this.toastrService.show({ type: 'danger', text: error.message });
@@ -111,6 +123,7 @@ export class SelectArticleDialogComponent implements OnInit, AfterViewInit {
   }
 
   fetchBusinessPartners(aBusinessPartnerId: any) {
+    this.articleGroupLoading = true;
     this.partnersList = [];
     var body = {
       iBusinessId: this.iBusinessId,
@@ -123,6 +136,7 @@ export class SelectArticleDialogComponent implements OnInit, AfterViewInit {
       (result: any) => {
         if (result && result.data && result.data && result.data[0] && result.data[0].result && result.data[0].result.length && result.data[0].count && result.data[0].count.totalData) {
           this.partnersList = result.data[0].result;
+          this.fetchArticleGroups(null);
           if (aBusinessPartnerId.length > 0) {
             this.supplier = this.partnersList[0];
           }
@@ -172,15 +186,28 @@ export class SelectArticleDialogComponent implements OnInit, AfterViewInit {
   }
 
   close(status: boolean): void {
+    const data = {
+      articleGroupsList: this.articleGroupsList,
+      brandsList: this.brandsList,
+      partnersList: this.partnersList
+    };
     if (status) {
       if (!this.articlegroup || !this.supplier) {
         return
       };
       const businessPartner = this.articlegroup.aBusinessPartner.find((o: any) => o.iBusinessPartnerId === this.supplier._id);
       let nMargin = businessPartner ? businessPartner.nMargin : 1;
-      this.dialogRef.close.emit({ brand: this.brand || {}, articlegroup: this.articlegroup, supplier: this.supplier, nMargin });
+      
+      this.dialogRef.close.emit({ 
+        action: true, 
+        brand: this.brand || {}, 
+        articlegroup: this.articlegroup, 
+        supplier: this.supplier, 
+        nMargin, 
+        ...data
+      });
     } else {
-      this.dialogRef.close.emit(false);
+      this.dialogRef.close.emit({ action: false, ...data });
     }
   }
 }
