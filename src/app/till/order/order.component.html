@@ -360,7 +360,7 @@
           (mouseout)="showDeleteBtn = false">
           <div class="image-input" data-kt-image-input="true"
             style="background-image: url('assets/media/svg/avatars/blank.svg')">
-            <div class="image-input-wrapper w-125px h-125px"
+            <div class="image-input-wrapper w-125px h-125px" (click)="openImage(i)"
               style="background-image: url(assets/media/avatars/300-1.jpg)">
               <img src={{image}} width="125px" height="125px">
             </div>
