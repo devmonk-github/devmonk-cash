@@ -336,6 +336,11 @@ export class OrderComponent implements OnInit {
     return this.priceService.getArticlePrice(item)
   }
 
+  openImage(imageIndex:any){
+    const url =this.item.aImage[imageIndex];
+    window.open(url , "_blank");
+  }
+
   removeImage(index: number): void {
     this.item.aImage.splice(index, 1);
   }
