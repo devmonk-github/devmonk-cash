@@ -919,8 +919,8 @@
                                                                     {{oArticleGroup.nTotalPurchaseAmount | number
                                                                     :'1.2-2'}}</td>
                                                                 <td class="w-150px">{{oArticleGroup.nProfit | number
-                                                                    :'1.2-2'}}</td>
-                                                                <!-- <td class="w-150px">{{oArticleGroup.nMargin}}</td> -->
+                                                                    :'1.2-2'}} </td>
+                                                             
                                                             </tr>
                                                             <tr *ngIf="oArticleGroup.isLoading">
                                                                 <td colspan="6" class="text-center">
@@ -935,7 +935,7 @@
                                                                     <td class="w-150px"> {{ item.nQuantity }}</td>
                                                                     <td class="w-150px"> {{ item.nRevenueAmount | number :'1.2-2'}}</td>
                                                                     <td class="w-150px"> {{ item.nCostOfRevenue | number :'1.2-2'}}</td>
-                                                                    <td class="w-150px">{{item.nProfitOfRevenue | number :'1.2-2'}}</td>
+                                                                    <td class="w-150px"> {{item.nProfitOfRevenue | number :'1.2-2'}}</td>
                                                                     <!-- <td></td> -->
                                                                 </tr>
                                                             </ng-container>
