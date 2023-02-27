@@ -50,11 +50,13 @@
 	overflow-y: auto;
 }
 .payment-section{
-	margin-left: 50px;
-	position: fixed;
-	top:225px;
-	left:75%;
-	padding-right: 100px;
-	height: calc(100vh - 350px);
-	overflow-y: auto;
+	position: relative;
+
+	.fixed-content{
+		position: sticky;
+		position: -webkit-sticky; /* Safari */
+		position: sticky;
+		top: 0;
+	}
+
 }
