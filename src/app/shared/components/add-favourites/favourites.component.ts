@@ -55,6 +55,7 @@ export class AddFavouritesComponent implements OnInit {
   button?:any;
   bValid:boolean = false;
   limit: number = 20;
+  currentLanguage='en';
 
   constructor(
     private viewContainer: ViewContainerRef,
@@ -71,11 +72,14 @@ export class AddFavouritesComponent implements OnInit {
     this.business._id = localStorage.getItem('currentBusiness');
     this.iLocationId = localStorage.getItem('currentLocation') || '';
     this.translation = this.translateService.instant('SUCCESSFULLY_UPDATED');
+    this.currentLanguage = localStorage.getItem('language') || 'en';
       
 
     if(this.mode==='edit') {
-      console.log(this.button)
-      this.onSelectProduct(this.button)
+      this.newSelectedProduct.nPrice = this.button?.nPrice || 0;
+      this.newSelectedProduct.sName = this.button?.sName || 'No name';
+      this.newSelectedProduct._id = this.button?._id;
+      // this.onSelectProduct(this.button)
     }
   } 
 
@@ -108,20 +112,18 @@ export class AddFavouritesComponent implements OnInit {
   
 
   onSelectProduct(product: any, isFrom?: string, isFor?: string) {
-    if (this.mode === 'create') {
-      this.newSelectedProduct.sName = product.oName ? product.oName['en'] : 'No name';
+    if (this.mode == 'create' || this.mode == 'assign') {
+      this.newSelectedProduct.sName = product.oName ? product.oName[this.currentLanguage] : 'No name';
       this.newSelectedProduct.iBusinessProductId = product._id;
       this.newSelectedProduct.aImage = product.aImage;
       if (product?.aLocation?.length) {
         this.newSelectedProduct.nPrice = product?.aLocation.filter((location: any) => location._id === this.iLocationId)[0]?.nPriceIncludesVat || 0
       }
       this.shopProducts = null;
-    } else {
-      this.newSelectedProduct.nPrice = product?.nPrice || 0;
-      this.newSelectedProduct.sName = product?.sName || 'No name';
-      this.newSelectedProduct._id = product?._id;
-    }
     this.validate();  
+    }else{
+      this.shopProducts = null;
+    }
   }
 
   assignProduct(){

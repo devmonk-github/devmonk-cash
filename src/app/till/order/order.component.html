@@ -112,11 +112,11 @@
                 (keyup)="updatePayments(); changeInMargin()" placeholder="{{ 'PRICE' | translate}}" id="price"
                 [(ngModel)]="item.price" [disabled]="item.oType?.bRefund || item.tType === 'pay'">
             </div>
-            </div>
+            </div>  
             <div class="col-3">
               <div class="form-group mb-4">
-                <label class="form-control-label mb-3"></label>
-                <button class="btn btn-icon btn-secondary my-2" (click)="openDiscountDialog()"
+                <!-- <label class="form-control-label mb-3"></label> -->
+                <button class="btn btn-icon btn-secondary mb-2 mt-9" (click)="openDiscountDialog()"
                   [disabled]="item.oType?.bRefund || item.tType === 'pay'">
                   <span class="svg-icon svg-icon-1qx me-0">
                     <i class="fas fa-percent"></i>
