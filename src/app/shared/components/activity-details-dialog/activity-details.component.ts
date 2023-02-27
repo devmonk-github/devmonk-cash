@@ -456,6 +456,12 @@ export class ActivityDetailsComponent implements OnInit {
   removeImage(activityindex: any, imageIndex: any) {
     this.activityItems[activityindex].aImage.splice(imageIndex, 1);
   }
+  openImage(activityindex:any , imageIndex:any){
+    const url = this.activityItems[activityindex].aImage[imageIndex];
+    window.open(url , "_blank");
+  }
+
+
 
   openCustomer(customer: any) {
     this.dialogService.openModal(CustomerDetailsComponent,
