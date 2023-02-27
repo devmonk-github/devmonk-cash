@@ -10,7 +10,7 @@ import { ToastService } from '../toast';
   templateUrl: './select-articlegroup-dialog.component.html',
   styleUrls: ['./select-articlegroup-dialog.component.scss']
 })
-export class SelectArticleDialogComponent implements OnInit, AfterViewInit {
+export class SelectArticleDialogComponent implements OnInit {
   @Input() customer: any;
   dialogRef: DialogComponent;
   filteredArticleGroups: Array<any> = [];
@@ -27,7 +27,8 @@ export class SelectArticleDialogComponent implements OnInit, AfterViewInit {
   iBusinessBrandId: any = null;
   from: any;
   @ViewChild('articleGroupRef') articleGroupRef!: NgSelectComponent
-  articleGroupLoading: boolean = true;
+  articleGroupLoading = false;
+
   constructor(
     private viewContainer: ViewContainerRef,
     private apiService: ApiService,
@@ -38,28 +39,38 @@ export class SelectArticleDialogComponent implements OnInit, AfterViewInit {
   }
 
 
-  ngOnInit(): void {
-    this.fetchArticleGroups(null);
-    this.fetchBusinessPartners([]);
-    this.getBusinessBrands();
-    this.iBusinessBrandId = this.dialogRef.context?.item?.iBusinessBrandId;
-    this.from = this.dialogRef.context.from;
-  }
-  ngAfterViewInit(): void {
+  ngOnInit() {
+    if(!this.articleGroupsList?.length){
+      this.fetchArticleGroups(null);
+    } else {
+      setTimeout(() => {
+        if (this.articleGroupRef)
+          this.articleGroupRef.focus()
+      }, 150);
+    }
+      
 
+    if (!this.partnersList?.length) this.fetchBusinessPartners([]);
+    if (!this.brandsList?.length) this.getBusinessBrands();
+    // this.iBusinessBrandId = this.dialogRef.context?.item?.iBusinessBrandId;
+    // this.from = this.dialogRef.context.from;
   }
+  // ngAfterViewInit(): void {
+
+  // }
 
   fetchArticleGroups(iBusinessPartnerId: any) {
     if (!iBusinessPartnerId) {
       this.articlegroup = null;
     }
     let data = {
-      searchValue: '',
-      oFilterBy: {
-      },
+      // searchValue: '',
+      // oFilterBy: {
+      // },
       iBusinessPartnerId,
-      iBusinessId: localStorage.getItem('currentBusiness'),
+      iBusinessId: this.iBusinessId,
     };
+    this.articleGroupLoading = true;
     this.apiService.postNew('core', '/api/v1/business/article-group/list', data)
       .subscribe((result: any) => {
         if (result && result.data && result.data[0] && result.data[0].result && result.data[0].result.length) {
@@ -172,15 +183,28 @@ export class SelectArticleDialogComponent implements OnInit, AfterViewInit {
   }
 
   close(status: boolean): void {
+    const data = {
+      articleGroupsList: this.articleGroupsList,
+      brandsList: this.brandsList,
+      partnersList: this.partnersList
+    };
     if (status) {
       if (!this.articlegroup || !this.supplier) {
         return
       };
       const businessPartner = this.articlegroup.aBusinessPartner.find((o: any) => o.iBusinessPartnerId === this.supplier._id);
       let nMargin = businessPartner ? businessPartner.nMargin : 1;
-      this.dialogRef.close.emit({ brand: this.brand || {}, articlegroup: this.articlegroup, supplier: this.supplier, nMargin });
+      
+      this.dialogRef.close.emit({ 
+        action: true, 
+        brand: this.brand || {}, 
+        articlegroup: this.articlegroup, 
+        supplier: this.supplier, 
+        nMargin, 
+        ...data
+      });
     } else {
-      this.dialogRef.close.emit(false);
+      this.dialogRef.close.emit({ action: false, ...data });
     }
   }
 }

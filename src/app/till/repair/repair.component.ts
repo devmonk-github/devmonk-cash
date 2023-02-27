@@ -57,6 +57,8 @@ export class RepairComponent implements OnInit {
   @ViewChild('descriptionRef') descriptionRef!: ElementRef
   @Input() disablePrepayment:any;
   @Input() availableAmount:any;
+  @Output() articleGroupDataChanged = new EventEmitter<any>();
+  @Input() oStaticData:any;
 
   constructor(private priceService: PriceService,
     private apiService: ApiService,
@@ -81,9 +83,19 @@ export class RepairComponent implements OnInit {
   }
 
   selectArticleGroup() {
-    this.dialogService.openModal(SelectArticleDialogComponent, { cssClass: 'modal-m', context: { from: 'repair' } })
-      .instance.close.subscribe((data) => {
-        if (data) {
+    this.dialogService.openModal(SelectArticleDialogComponent, 
+      { 
+        cssClass: 'modal-m', 
+        context: { 
+          from: 'repair',
+          iBusinessBrandId: this.item.iBusinessBrandId,
+          articleGroupsList: this.oStaticData?.articleGroupsList || [],
+          brandsList: this.oStaticData?.brandsList || [],
+          partnersList: this.oStaticData?.partnersList || [],
+        } 
+      }).instance.close.subscribe((data) => {
+        // console.log({data});
+        if (data.action) {
           if (this.descriptionRef) {
             this.descriptionRef.nativeElement.focus();
           }
@@ -102,6 +114,14 @@ export class RepairComponent implements OnInit {
         else {
           this.deleteItem();
         }
+
+        this.oStaticData = {
+          articleGroupsList: data.articleGroupsList,
+          brandsList: data.brandsList,
+          partnersList: data.partnersList
+        }
+        // console.log('oStaticData', this.oStaticData)
+        this.articleGroupDataChanged.emit(this.oStaticData)
       });
   }
 

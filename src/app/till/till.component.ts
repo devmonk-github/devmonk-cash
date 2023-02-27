@@ -154,6 +154,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   nFinalAmount: number = 0;
   nItemsTotalToBePaid: number = 0;
   nTotalPayment:number = 0;
+  oStaticData: any;
   
   randNumber(min: number, max: number): number {
     return Math.floor(Math.random() * (max - min + 1) + min);
@@ -1743,15 +1744,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     
   }
 
-  fetchBusinessLocation() {
-    this.apiService.postNew('core', `/api/v1/business/${this.iBusinessId}/list-location`, { iBusinessId: this.iBusinessId, }).subscribe((result: any) => {
-      if (result?.data?.aLocation?.length) {
-        this.aBusinessLocation = result.data.aLocation;
-        console.log('aBusinessLocation: ', this.aBusinessLocation);
-      }
-    }, (error) => {
-      console.log('error: ', error);
-    }
-    );
+  articleGroupDataChange(oStaticData:any){
+    // console.log('articleGroupDataChange', oStaticData)
+    this.oStaticData = oStaticData;
   }
 }
