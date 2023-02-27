@@ -172,7 +172,7 @@ export class TillService {
       // console.log('getTotal: ', this.getTotals('price', transactionItems));//0.03
       // console.log('Last condition: ', i.paymentAmount, i.amountToBePaid);
       // console.log('bPrepayment: ', bPrepayment, bRefund && i.oType?.bPrepayment, (this.getUsedPayMethods(true, payMethods) - this.getTotals('price', transactionItems) < 0), (i.paymentAmount !== i.amountToBePaid));
-      i.price = +(i.price.toFixed(2));
+      i.price = +(parseFloat(i.price).toFixed(2));
       i.nPurchasePrice = +(i.nPurchasePrice.toFixed(2));
       
       const oItem = new TransactionItem();

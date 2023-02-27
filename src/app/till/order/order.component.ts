@@ -9,6 +9,7 @@ import { CreateArticleGroupService } from 'src/app/shared/service/create-article
 import { DialogService } from 'src/app/shared/service/dialog';
 import { PriceService } from 'src/app/shared/service/price.service';
 import { TillService } from 'src/app/shared/service/till.service';
+import { DiscountDialogComponent } from '../dialogs/discount-dialog/discount-dialog.component';
 
 @Component({
   // eslint-disable-next-line @angular-eslint/component-selector
@@ -326,6 +327,18 @@ export class OrderComponent implements OnInit {
     if (item.quantity < item.nBrokenProduct) {
       item.nBrokenProduct = item.quantity;
     }
+  }
+
+  openDiscountDialog(): void {
+    this.dialogService.openModal(DiscountDialogComponent, { context: { item: JSON.parse(JSON.stringify(this.item)) } })
+      .instance.close.subscribe((data) => {
+        if (data.item) {
+          this.item.nDiscount = data.item.nDiscount;
+          this.item.bDiscountOnPercentage = data.item?.discount?.percent || false;
+          // this.getTotalDiscount(data.item)
+          this.itemChanged.emit(this.item);
+        }
+      })
   }
 
   getTotalDiscount(item: any): string {

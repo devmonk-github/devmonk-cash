@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 import { Observable, throwError } from 'rxjs';
 import { catchError, retry } from 'rxjs/operators';
 import { ApiService } from './api.service';
@@ -8,7 +9,7 @@ import { ApiService } from './api.service';
 })
 export class CreateArticleGroupService {
 
-  constructor(private apiService: ApiService) { }
+  constructor(private apiService: ApiService, private translateService: TranslateService) { }
 
   getSupplierList(body: any): Observable<any> {
     return this.apiService.postNew('core', '/api/v1/business/partners/supplierList', body)
@@ -29,7 +30,6 @@ export class CreateArticleGroupService {
   }
 
   async fetchInternalBusinessPartner(iBusinessId: any) {
-    let supplierId;
     const body = {
       oFilterBy: {
         bInternal: true,
@@ -39,7 +39,7 @@ export class CreateArticleGroupService {
     let internalBusinessPartner: any = await this.getSupplierList(body).toPromise();
     if (internalBusinessPartner && internalBusinessPartner.data && internalBusinessPartner.data.length > 0) {
       const supplier = internalBusinessPartner.data[0].result;
-      supplierId = supplier[0]._id;
+      return supplier[0];
     } else {
       const businessDetails: any = await this.getBusiness(iBusinessId).toPromise();
       const { data } = businessDetails;
@@ -64,22 +64,33 @@ export class CreateArticleGroupService {
       };
       // internalBusinessPartner = this.createInternalBusinessPartner(order).toPromise();
       internalBusinessPartner = await this.apiService.postNew('core', '/api/v1/business/partners', order).toPromise();
-      supplierId = internalBusinessPartner.data._id;
+      return internalBusinessPartner.data;
     }
-
-    return supplierId;
   }
 
   async createArticleGroup(articleData: { name: string, sCategory: string, sSubCategory: string }) {
     const { name } = articleData;
     const iBusinessId = localStorage.getItem('currentBusiness')
-    const iBusinessPartnerId = await this.fetchInternalBusinessPartner(iBusinessId);
+    const oBusinessPartner = await this.fetchInternalBusinessPartner(iBusinessId);
+    const org = JSON.parse(localStorage.getItem('org') || '');
+    // console.log(org);
+    const oName:any = {};
+    if(org) {
+      const aTranslations = this.translateService.translations;
+      // console.log(82, aTranslations);
+      org.aLanguage.forEach((lang:any) => {
+          oName[lang] = aTranslations[lang][name.toUpperCase()] || name;
+      })
+    }
     let data = {
       ...articleData,
       iBusinessId,
       nMargin: 0,
-      iBusinessPartnerId,
-      oName: { nl: name, en: name, de: name, fr: name },
+      aBusinessPartner: [{
+          iBusinessPartnerId: oBusinessPartner._id,
+          nMargin: oBusinessPartner.nPurchaseMargin || 0
+        }],
+      oName: { ...oName },
       bShowInOverview: false,
       bShowOnWebsite: false,
       bInventory: false,
