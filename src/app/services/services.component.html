@@ -66,7 +66,7 @@
                 <label class="fs-6 form-label fw-bolder text-dark" *ngIf="isFor == 'activity'"> {{ 'ACTIVITY_STATUS' | translate }}</label>
                 <ng-select class="form-control form-control-solid p-0" [multiple]="true"
                   [(ngModel)]="requestParams.selectedTransactionStatuses" [clearable]="false">
-                  <ng-option *ngFor="let status of requestParams.transactionStatuses" [value]="status">{{status}}
+                  <ng-option *ngFor="let status of transactionStatuses" [value]="status.value">{{status.key | translate}}
                   </ng-option>
                 </ng-select>
               </div>
