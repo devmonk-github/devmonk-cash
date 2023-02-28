@@ -93,7 +93,7 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
   }
 
   getSettings() {
-    this.getSettingsSubscription = this.apiService.getNew('cashregistry', '/api/v1/settings/' + this.requestParams.iBusinessId).subscribe((result: any) => {
+    this.getSettingsSubscription = this.apiService.getNew('cashregistry', `/api/v1/settings/${this.requestParams.iBusinessId}`).subscribe((result: any) => {
       this.settings = result;
     }, (error) => {
       console.log(error);
@@ -225,9 +225,14 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
   }
 
   updateSettings(event:any): void {
-    const { nLastInvoiceNumber, nLastReceiptNumber, sDayClosurePeriod } = this.settings;
-    const body = { nLastInvoiceNumber, nLastReceiptNumber, sDayClosurePeriod };
-    event.target.disabled = true;
+    const body = {
+      nLastInvoiceNumber: this.settings.nLastInvoiceNumber,
+      nLastReceiptNumber: this.settings.nLastReceiptNumber,
+      sDayClosurePeriod: this.settings.sDayClosurePeriod,
+      bOpenCashDrawer: this.settings.bOpenCashDrawer,
+      bAutoIncrementBagNumbers: this.settings.bAutoIncrementBagNumbers,
+      nLastBagNumber: this.settings.nLastBagNumber,
+    };
     this.updatingSettings = true;
     this.updateSettingsSubscription = this.apiService.putNew('cashregistry', '/api/v1/settings/update/' + this.requestParams.iBusinessId, body)
       .subscribe((result: any) => {

@@ -60,6 +60,7 @@ export class RepairComponent implements OnInit {
   @Input() availableAmount:any;
   @Output() articleGroupDataChanged = new EventEmitter<any>();
   @Input() oStaticData:any;
+  @Input() settings:any;
 
   constructor(private priceService: PriceService,
     private apiService: ApiService,
@@ -69,6 +70,8 @@ export class RepairComponent implements OnInit {
     private createArticleGroupService: CreateArticleGroupService) { }
 
   ngOnInit(): void {
+    // console.log(this.settings.nLastBagNumber, this.settings.bAutoIncrementBagNumbers);
+    
     this.listSuppliers();
     this.listEmployees();
     this.getBusinessBrands();
@@ -111,6 +114,7 @@ export class RepairComponent implements OnInit {
           this.item.iBusinessBrandId = brand._id;
           this.updateProperties(articlegroup);
           this.changeInMargin();
+          this.settingsChanged();
         }
         else {
           this.deleteItem();
@@ -124,6 +128,13 @@ export class RepairComponent implements OnInit {
         // console.log('oStaticData', this.oStaticData)
         this.articleGroupDataChanged.emit(this.oStaticData)
       });
+  }
+
+  settingsChanged(event?:any){
+    if (this.settings.bAutoIncrementBagNumbers) {
+      this.item.sBagNumber = (event) ? event : this.settings.nLastBagNumber + 1;
+      this.itemChanged.emit({item:'settingsChanged', index: 0, data: this.item.sBagNumber});
+    }
   }
 
   changeInMargin() {

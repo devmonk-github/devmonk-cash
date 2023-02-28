@@ -208,6 +208,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     this.getPaymentMethods();
     this.getParkedTransactions();
+    
     this.barcodeService.barcodeScanned.subscribe((barcode: string) => {
       this.openModal(barcode);
     });
@@ -489,8 +490,9 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     this.resetSearch();
   }
 
-  itemChanged(item: any, index: number): void {
-    console.log('itemChanged: ', item);
+  itemChanged(event: any, index: number): void {
+    // console.log('itemChanged: ', event);
+    let item = (typeof event === 'object') ? event.item : event;
     switch (item) {
       case 'delete':
         // console.log('itemChanged delete')
@@ -511,6 +513,9 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
         tItem.sGiftCardNumber = Date.now();
         this.transactionItems.push(tItem);
         this.clearPaymentAmounts();
+        break;
+      case 'settingsChanged':
+        this.settings.nLastBagNumber = Number(event.data);
         break;
       default:
         this.transactionItems[index] = item;
@@ -799,17 +804,18 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
               body.oTransaction.sFiskalyTxId = result._id;
             }
           }
-          this.apiService.postNew('cashregistry', '/api/v1/till/transaction', body)
-            .subscribe(async (data: any) => {
 
-              // this.toastrService.show({ type: 'success', text: 'Transaction created.' });
-              this.saveInProgress = false;
-              const { transaction, aTransactionItems, activityItems, activity } = data;
-              transaction.aTransactionItems = aTransactionItems;
-              transaction.activity = activity;
-              this.transaction = transaction;
-              this.activityItems = activityItems;
-              this.activity = activity;
+          this.apiService.postNew('cashregistry', '/api/v1/till/transaction', body).subscribe(async (data: any) => {
+
+            // this.toastrService.show({ type: 'success', text: 'Transaction created.' });
+            this.saveInProgress = false;
+            const { transaction, aTransactionItems, activityItems, activity } = data;
+            transaction.aTransactionItems = aTransactionItems;
+            transaction.activity = activity;
+            this.transaction = transaction;
+            this.activityItems = activityItems;
+            this.activity = activity;
+            this.tillService.updateSettings(this.settings);
 
 
               this.transaction.aTransactionItems.map((tItem: any) => {
@@ -822,7 +828,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
               });
 
               const bOpenCashDrawer = payMethods.some((m:any) => m.sName === 'Cash' && m.remark != 'CHANGE_MONEY');
-              if(bOpenCashDrawer) this.openDrawer();
+              if (bOpenCashDrawer && this.settings.bOpenCashDrawer) this.openDrawer();
               
               this.handleReceiptPrinting(oDialogComponent);
               
@@ -1520,6 +1526,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
           this.getSettingsSubscription = this.apiService.getNew('cashregistry', `/api/v1/settings/${this.iBusinessId}`).subscribe((result: any) => {
             this.settings = result;
+            console.log(this.settings)
             let nDayClosurePeriodAllowed = 0;
             if (this.settings?.sDayClosurePeriod && this.settings.sDayClosurePeriod === 'week') {
               nDayClosurePeriodAllowed = 3600 * 24 * 7;
