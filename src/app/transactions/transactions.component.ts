@@ -67,8 +67,9 @@ export class TransactionsComponent implements OnInit, OnDestroy {
     { key: 'PREPAYMENT' },
     { key: 'MARK_CONFIRMED' },
   ];
-  iBusinessId: any = '';
-  iLocationId: any = '';
+  
+  iBusinessId:any = localStorage.getItem('currentBusiness');
+  iLocationId:any = localStorage.getItem('currentLocation');
 
   // Advance search fields 
 
@@ -112,8 +113,6 @@ export class TransactionsComponent implements OnInit, OnDestroy {
 
   async ngOnInit() {
     this.apiService.setToastService(this.toastrService);
-    this.iBusinessId = localStorage.getItem('currentBusiness');
-    this.iLocationId = localStorage.getItem('currentLocation');
     this.userType = localStorage.getItem("type");
     
     if (this.routes.url.includes('/business/web-orders')) this.eType = 'webshop-revenue';
@@ -135,7 +134,7 @@ export class TransactionsComponent implements OnInit, OnDestroy {
   }
 
   fetchBusinessDetails() {
-    this.apiService.getNew('core', '/api/v1/business/' + this.iBusinessId).subscribe((result: any) => {
+    this.apiService.getNew('core', `/api/v1/business/${this.iBusinessId}`).subscribe((result: any) => {
       this.businessDetails = result.data;
       this.businessDetails.currentLocation = this.businessDetails?.aLocation?.filter((location: any) => location?._id.toString() == this.iLocationId.toString())[0];
       this.tillService.selectCurrency(this.businessDetails.currentLocation);

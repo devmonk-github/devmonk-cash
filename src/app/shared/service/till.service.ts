@@ -107,6 +107,10 @@ export class TillService {
   }
 
   createTransactionBody(transactionItems: any, payMethods: any, discountArticleGroup: any, redeemedLoyaltyPoints: number, customer: any): any {
+    this.iBusinessId = localStorage.getItem('currentBusiness') || '';
+    this.iLocationId = localStorage.getItem('currentLocation') || '';
+    this.iWorkstationId = localStorage.getItem('currentWorkstation') || '';
+
     const iLocationId = transactionItems?.length && transactionItems[0].iLocationId ? transactionItems[0].iLocationId : this.iLocationId; /* If we changed the location from the drop-down then it would change */
     const transaction = new Transaction(
       null,
