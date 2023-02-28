@@ -46,7 +46,7 @@ export class PrintSettingsEditorComponent implements OnInit {
     {
       sTitle: 'Page size',
       sParameter: 'pageSize',
-      eOptions: ['A4', 'A5', 'custom'],
+      eOptions: ['A4', 'A5', 'A6', 'custom'],
       value: 'A5',
       nWidth: 0,
       nHeight: 0,

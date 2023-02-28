@@ -56,6 +56,7 @@ import { CustomerGroupDetailComponent } from './components/customer-group-detail
 import { CurrencyFormatPipe } from "./pipes/currency-format.pipe";
 import { ActivityItemExportComponent } from './components/activity-item-export/activity-item-export.component';
 import { TransactionsPdfService } from "./service/transactions-pdf.service";
+import { DateTranslatePipe } from './pipes/date-translate.pipe';
 
 @NgModule({
   declarations: [
@@ -92,7 +93,8 @@ import { TransactionsPdfService } from "./service/transactions-pdf.service";
     TransactionActionDialogComponent,
     CustomerGroupDetailComponent,
     CurrencyFormatPipe,
-    ActivityItemExportComponent
+    ActivityItemExportComponent,
+    DateTranslatePipe
   ],
   imports: [
     CommonModule,
@@ -133,9 +135,10 @@ import { TransactionsPdfService } from "./service/transactions-pdf.service";
     NgxPaginationModule,
     AddEditWorkstationComponent,
     SortPipe,
-    CurrencyFormatPipe
+    CurrencyFormatPipe,
+    DateTranslatePipe
   ],
-  providers: [CurrencyPipe, CommonPrintSettingsService, PdfService, ReceiptService,TransactionsPdfService]
+  providers: [CurrencyPipe, CommonPrintSettingsService, PdfService, ReceiptService,TransactionsPdfService , DateTranslatePipe]
 })
 
 export class SharedModule {

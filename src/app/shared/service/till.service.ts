@@ -581,6 +581,7 @@ export class TillService {
           if(relatedItem?.aPayments?.some((payment: any) => payment.sMethod === 'card')){
             aToFetchPayments.push(relatedItem.iTransactionId);
           }
+          relatedItem.aPayments = relatedItem?.aPayments.filter((payment: any) => payment?.sRemarks !== 'CHANGE_MONEY');
           if (relatedItem.nPriceIncVat > item.nPriceIncVat) item.nPriceIncVat = relatedItem.nPriceIncVat;
           item.nDiscount = relatedItem.nDiscount || 0;
           item.bDiscountOnPercentage = relatedItem?.bDiscountOnPercentage || false;
@@ -638,7 +639,9 @@ export class TillService {
     dataObject.related = _relatedResult?.data || [];
     if(dataObject.related.length){
       dataObject.related.forEach((relatedobj: any) => {
+        relatedobj.aPayments = relatedobj.aPayments.filter((payment: any) => payment?.sRemarks !== 'CHANGE_MONEY');
         relatedobj.aPayments.forEach((obj: any) => {
+          obj.sRemarks = "";
           obj.dCreatedDate = moment(obj.dCreatedDate).format('DD-MM-yyyy hh:mm');
         });
         dataObject.aPayments = dataObject.aPayments.concat(relatedobj.aPayments);
@@ -672,5 +675,20 @@ export class TillService {
       iTransactionId: iTransactionId
     }
     return this.apiService.postNew('cashregistry', '/api/v1/transaction/activity/' + iActivityId, body);
+  }
+
+  updateSettings(settings: any): void {
+    const body = {
+      nLastInvoiceNumber: settings.nLastInvoiceNumber,
+      nLastReceiptNumber: settings.nLastReceiptNumber,
+      sDayClosurePeriod: settings.sDayClosurePeriod,
+      bOpenCashDrawer: settings.bOpenCashDrawer,
+      bAutoIncrementBagNumbers: settings.bAutoIncrementBagNumbers,
+      nLastBagNumber: settings.nLastBagNumber,
+    };
+    
+    this.apiService.putNew('cashregistry', '/api/v1/settings/update/' + this.iBusinessId, body).subscribe((result: any) => {
+      console.log(result)
+    })
   }
 }

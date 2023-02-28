@@ -81,11 +81,11 @@ export class TransactionItemsDetailsComponent implements OnInit {
         this.translation = res
       })
       this.transactionColumns =  [this.translation['PRODUCT_NAME'] , this.translation['PRICE'], this.translation['QUANTITY'], this.translation['PAYMENT_AMOUNT'], this.translation['IS_PREPAYMENT'], this.translation['CREATED_ON'], this.translation['ACTIONS']];
-      this.activityColumns = [this.translation['ACTIVITY_ITEM_NUMBER'], this.translation['BAG_NUMBER'], this.translation['TOTAL_AMOUNT'], this.translation['PAID_AMOUNT'], this.translation['IS_PREPAYMENT'], this.translation['CREATED_ON'], this.translation['ACTIONS']];
+      this.activityColumns = [this.translation['ACTIVITY_ITEM_NUMBER'], this.translation['PRODUCT_NAME'], this.translation['BAG_NUMBER'], this.translation['TOTAL_AMOUNT'], this.translation['PAID_AMOUNT'], this.translation['IS_PREPAYMENT'], this.translation['CREATED_ON'], this.translation['ACTIONS']];
       this.apiService.setToastService(this.toastrService);
-      this.itemType = this.dialogRef.context.itemType;
-      this.transaction = this.dialogRef.context.transaction;
-      this.selectedId = this.dialogRef.context.selectedId;
+      // this.itemType = this.dialogRef.context.itemType;
+      // this.transaction = this.dialogRef.context.transaction;
+      // this.selectedId = this.dialogRef.context.selectedId;
     this.requestParams.iBusinessId = localStorage.getItem('currentBusiness');
     this.fetchTransactionItems();
   }
@@ -123,7 +123,7 @@ export class TransactionItemsDetailsComponent implements OnInit {
     this.apiService.postNew('cashregistry', url, this.requestParams).subscribe((result: any) => {
       // console.log('120 api result assiging to transaction items', result)
       this.transactionItems = result.data[0].result;
-      // console.log('this.transactionItems 2', this.transactionItems, url);
+      console.log('this.transactionItems 2', this.transactionItems);
 
       const discountRecords = this.transactionItems.filter(o => o.oType.eKind === 'discount' || o.oType.eKind === 'loyalty-points-discount');
       this.bIsAnyGiftCardDiscount = this.transactionItems.find((el: any) => el?.oType?.eKind === 'giftcard-discount')
