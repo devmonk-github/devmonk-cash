@@ -219,7 +219,7 @@ export class TillService {
       oItem.iWorkstationId = this.iWorkstationId;
       oItem.iEmployeeId = i.iEmployeeId || this.getValueFromLocalStorage('currentUser').userId;
       oItem.iAssigneeId = i.iAssigneeId;
-      oItem.iLocationId = this.iLocationId;
+      oItem.iLocationId = iLocationId;
       oItem.sBagNumber = i.sBagNumber;
       oItem.iSupplierId = i.iSupplierId; // repairer id
       // 50
