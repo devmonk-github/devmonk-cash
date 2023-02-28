@@ -38,24 +38,28 @@ export class TransactionItemsDetailsComponent implements OnInit {
   
   requestParams: any = {
     iBusinessId: "",
-    aProjection: ['_id',
-    'iBusinessId',
-    'iProductId',
-    'iSupplierId',
-    'nQuantity',
-    'sProductName',
-    'nPriceIncVat',
-    'nPurchasePrice',
-    'nVatRate',
-    'nPaymentAmount',
-    'nRefundAmount',
-    'oType',
-    'sArticleNumber',
-    'dCreatedDate',
-    'dUpdatedDate',
-    'iActivityItemId',
-    'oArticleGroupMetaData',
-    'sDescription']
+    aProjection: [
+      '_id',
+      'iBusinessId',
+      'iProductId',
+      'iSupplierId',
+      'nQuantity',
+      'sProductName',
+      'nPriceIncVat',
+      'nPurchasePrice',
+      'nVatRate',
+      'nPaymentAmount',
+      'nRefundAmount',
+      'oType',
+      'sArticleNumber',
+      'dCreatedDate',
+      'dUpdatedDate',
+      'iActivityItemId',
+      'oArticleGroupMetaData',
+      'sDescription',
+      'sArticleNumber',
+      'iLocationId'
+    ]
   };
   constructor(
     private viewContainerRef: ViewContainerRef,

@@ -539,10 +539,33 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   openTransactionSearchDialog() {
     // console.log('open transaction search dialog')
     this.dialogService.openModal(TransactionsSearchComponent, { cssClass: 'modal-xl', context: { customer: this.customer } })
-      .instance.close.subscribe((data) => {
+      .instance.close.subscribe(async (data) => {
         // console.log('response of transaction search component', data)
         if (data?.transaction) {
-          // console.log('now calling handle transaction response')
+
+          // / Finding BusinessProduct and their location and stock. Need to show in the dropdown of location choosing /
+          if (data?.transactionItems?.length) {
+            let aBusinessProduct: any = [];
+            const _aBusinessProduct: any = await this.getBusinessProductList(data?.transactionItems.map((el: any) => el.iBusinessProductId)).toPromise();
+            if (aBusinessProduct?.data?.length && aBusinessProduct.data[0]?.result?.length) aBusinessProduct = _aBusinessProduct.data[0]?.result;
+            console.log('aBusinessProduct: ', aBusinessProduct, _aBusinessProduct);
+            data.transactionItems = data.transactionItems?.map((oTI: any) => {
+              // / assigning the BusinessProduct location to transction-item /
+              const oFoundProdLoc = aBusinessProduct?.find((oBusinessProd: any) => oBusinessProd?._id?.toString() === oTI?.iBusinessProductId?.toString());
+              console.log('iBusinessProductId: ', oTI?.iBusinessProductId, oFoundProdLoc);
+              if (oFoundProdLoc?.aLocation?.length) {
+                oTI.aLocation = oFoundProdLoc.aLocation?.map((oProdLoc: any) => {
+                  const oFound: any = this.aBusinessLocation?.find((oBusLoc: any) => oBusLoc?._id?.toString() === oProdLoc?._id?.toString());
+                  console.log('oFound 559: ', oFound);
+                  oProdLoc.sName = oFound?.sName;
+                  return oProdLoc;
+                });
+              }
+              oTI.oCurrentLocation = oTI.aLocation?.find((o: any) => o._id === oTI.iLocationId);
+              return oTI;
+            })
+          }
+
           this.handleTransactionResponse(data);
         }
         // this.changeInPayment();
@@ -1110,6 +1133,11 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
   getBusinessProduct(iBusinessProductId: string): Observable<any> {
     return this.apiService.getNew('core', `/api/v1/business/products/${iBusinessProductId}?iBusinessId=${this.iBusinessId}`)
+  }
+  
+  getBusinessProductList(aBusinessProductId: any): Observable<any> {
+    const oBody = { iBusinessId: this.iBusinessId, aBusinessProductId: aBusinessProductId };
+    return this.apiService.postNew('core', `/api/v1/business/products/list`, oBody);
   }
 
   getBaseProduct(iProductId: string): Observable<any> {
