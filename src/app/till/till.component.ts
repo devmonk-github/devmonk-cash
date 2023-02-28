@@ -1,6 +1,6 @@
-import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, Inject, LOCALE_ID, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { faArrowRightFromBracket, faBoxesStacked, faCalculator, faCoins, faCopy, faGifts, faMoneyBill, faRing, faRotateLeft, faScrewdriverWrench, faSearch, faSpinner, faTimes, faTimesCircle, faTrashAlt, faTruck, faUser } from '@fortawesome/free-solid-svg-icons';
-import { TranslateService } from '@ngx-translate/core';
+import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
 import * as _ from 'lodash';
 import { Observable, Subject, Subscription } from 'rxjs';
 
@@ -33,6 +33,7 @@ import { HttpClient } from '@angular/common/http';
 const moment = (_moment as any).default ? (_moment as any).default : _moment;
 import { debounceTime, distinctUntilChanged, filter, tap } from 'rxjs/operators';
 import { trigger, transition, style, animate } from '@angular/animations';
+import { registerLocaleData } from '@angular/common';
 
 @Component({
   selector: 'app-till',
@@ -101,7 +102,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   bDayStateChecking: boolean = false;
   dOpenDate: any = '';
   aBusinessLocation: any = [];
-  
   transaction: any = {};
   activityItems: any = {};
   amountDefined: any;
@@ -174,16 +174,28 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     private customerStructureService: CustomerStructureService,
     private fiskalyService: FiskalyService,
     private receiptService: ReceiptService,
-    private http: HttpClient
+    private http: HttpClient,
+    @Inject(LOCALE_ID) private locale: string
   ) {
-    
+
+    import(
+      `@angular/common/locales/${this.selectedLanguage}.js`
+    ).then(module => registerLocaleData(module.default))
+
+    this.translateService.onLangChange
+        .subscribe((langChangeEvent: LangChangeEvent) => {
+          import(
+            `@angular/common/locales/${langChangeEvent.lang}.js`
+          ).then(module => registerLocaleData(module.default))
+        })
   }
+
   async ngOnInit() {
     this.apiService.setToastService(this.toastrService)
     this.paymentDistributeService.setToastService(this.toastrService)
 
     this.checkDayState();
-
+    
     this.requestParams.iBusinessId = this.iBusinessId;
     let taxDetails: any = await this.taxService.getLocationTax({ iLocationId: this.iLocationId });
     if (taxDetails) {
