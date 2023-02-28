@@ -564,16 +564,13 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
           if (data?.transactionItems?.length) {
             let aBusinessProduct: any = [];
             const _aBusinessProduct: any = await this.getBusinessProductList(data?.transactionItems.map((el: any) => el.iBusinessProductId)).toPromise();
-            if (aBusinessProduct?.data?.length && aBusinessProduct.data[0]?.result?.length) aBusinessProduct = _aBusinessProduct.data[0]?.result;
-            console.log('aBusinessProduct: ', aBusinessProduct, _aBusinessProduct);
+            if (_aBusinessProduct?.data?.length && _aBusinessProduct.data[0]?.result?.length) aBusinessProduct = _aBusinessProduct.data[0]?.result;
             data.transactionItems = data.transactionItems?.map((oTI: any) => {
               // / assigning the BusinessProduct location to transction-item /
               const oFoundProdLoc = aBusinessProduct?.find((oBusinessProd: any) => oBusinessProd?._id?.toString() === oTI?.iBusinessProductId?.toString());
-              console.log('iBusinessProductId: ', oTI?.iBusinessProductId, oFoundProdLoc);
               if (oFoundProdLoc?.aLocation?.length) {
                 oTI.aLocation = oFoundProdLoc.aLocation?.map((oProdLoc: any) => {
                   const oFound: any = this.aBusinessLocation?.find((oBusLoc: any) => oBusLoc?._id?.toString() === oProdLoc?._id?.toString());
-                  console.log('oFound 559: ', oFound);
                   oProdLoc.sName = oFound?.sName;
                   return oProdLoc;
                 });
