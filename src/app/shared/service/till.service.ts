@@ -463,6 +463,8 @@ export class TillService {
             eActivityItemStatus: transactionItem.eActivityItemStatus,
             eEstimatedDateAction: transactionItem.eEstimatedDateAction,
             bGiftcardTaxHandling: transactionItem.bGiftcardTaxHandling,
+            sArticleNumber: transactionItem?.sArticleNumber,
+            iLocationId: transactionItem?.iLocationId
           });
         }
       });
@@ -673,5 +675,20 @@ export class TillService {
       iTransactionId: iTransactionId
     }
     return this.apiService.postNew('cashregistry', '/api/v1/transaction/activity/' + iActivityId, body);
+  }
+
+  updateSettings(settings: any): void {
+    const body = {
+      nLastInvoiceNumber: settings.nLastInvoiceNumber,
+      nLastReceiptNumber: settings.nLastReceiptNumber,
+      sDayClosurePeriod: settings.sDayClosurePeriod,
+      bOpenCashDrawer: settings.bOpenCashDrawer,
+      bAutoIncrementBagNumbers: settings.bAutoIncrementBagNumbers,
+      nLastBagNumber: settings.nLastBagNumber,
+    };
+    
+    this.apiService.putNew('cashregistry', '/api/v1/settings/update/' + this.iBusinessId, body).subscribe((result: any) => {
+      console.log(result)
+    })
   }
 }

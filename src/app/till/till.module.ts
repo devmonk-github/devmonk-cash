@@ -1,4 +1,4 @@
-import { ComponentFactory, ComponentFactoryResolver, ComponentRef, NgModule } from '@angular/core';
+import { ComponentFactory, ComponentFactoryResolver, ComponentRef, LOCALE_ID, NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { TillRoutingModule } from './till-routing.module';
@@ -22,7 +22,6 @@ import { DiscountDialogComponent } from './dialogs/discount-dialog/discount-dial
 import { OtherComponent } from './other/other.component';
 import { LoyaltyPointsDiscountComponent } from './loyalty-points-discount/loyalty-points-discount.component';
 import { SupplierWarningDialogComponent } from './dialogs/supplier-warning-dialog/supplier-warning-dialog.component';
-
 @NgModule({
   declarations: [
     TillComponent,
@@ -64,13 +63,15 @@ import { SupplierWarningDialogComponent } from './dialogs/supplier-warning-dialo
     InputTextModule,
     ToolbarModule
   ],
+  providers: [
+    { provide: LOCALE_ID,   useValue: navigator.language},
+  ],
   bootstrap: [
     TillComponent
   ]
 })
 export class TillModule {
   constructor(private componentFactoryResolver: ComponentFactoryResolver) {
-
   }
 
   public resolveComponent(): ComponentFactory<TillComponent> {

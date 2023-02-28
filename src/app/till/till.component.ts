@@ -1,6 +1,6 @@
-import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, Inject, LOCALE_ID, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { faArrowRightFromBracket, faBoxesStacked, faCalculator, faCoins, faCopy, faGifts, faMoneyBill, faRing, faRotateLeft, faScrewdriverWrench, faSearch, faSpinner, faTimes, faTimesCircle, faTrashAlt, faTruck, faUser } from '@fortawesome/free-solid-svg-icons';
-import { TranslateService } from '@ngx-translate/core';
+import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
 import * as _ from 'lodash';
 import { Observable, Subject, Subscription } from 'rxjs';
 
@@ -33,6 +33,7 @@ import { HttpClient } from '@angular/common/http';
 const moment = (_moment as any).default ? (_moment as any).default : _moment;
 import { debounceTime, distinctUntilChanged, filter, tap } from 'rxjs/operators';
 import { trigger, transition, style, animate } from '@angular/animations';
+import { registerLocaleData } from '@angular/common';
 
 @Component({
   selector: 'app-till',
@@ -101,7 +102,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   bDayStateChecking: boolean = false;
   dOpenDate: any = '';
   aBusinessLocation: any = [];
-  
   transaction: any = {};
   activityItems: any = {};
   amountDefined: any;
@@ -174,16 +174,28 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     private customerStructureService: CustomerStructureService,
     private fiskalyService: FiskalyService,
     private receiptService: ReceiptService,
-    private http: HttpClient
+    private http: HttpClient,
+    @Inject(LOCALE_ID) private locale: string
   ) {
-    
+
+    import(
+      `@angular/common/locales/${this.selectedLanguage}.js`
+    ).then(module => registerLocaleData(module.default))
+
+    this.translateService.onLangChange
+        .subscribe((langChangeEvent: LangChangeEvent) => {
+          import(
+            `@angular/common/locales/${langChangeEvent.lang}.js`
+          ).then(module => registerLocaleData(module.default))
+        })
   }
+
   async ngOnInit() {
     this.apiService.setToastService(this.toastrService)
     this.paymentDistributeService.setToastService(this.toastrService)
 
     this.checkDayState();
-
+    
     this.requestParams.iBusinessId = this.iBusinessId;
     let taxDetails: any = await this.taxService.getLocationTax({ iLocationId: this.iLocationId });
     if (taxDetails) {
@@ -196,6 +208,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     this.getPaymentMethods();
     this.getParkedTransactions();
+    
     this.barcodeService.barcodeScanned.subscribe((barcode: string) => {
       this.openModal(barcode);
     });
@@ -478,7 +491,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   itemChanged(item: any, index: number): void {
-    console.log('itemChanged: ', item);
+    // console.log('itemChanged: ', event);
+    // let item = (typeof event === 'object') ? event.item : event;
     switch (item) {
       case 'delete':
         // console.log('itemChanged delete')
@@ -500,6 +514,9 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
         this.transactionItems.push(tItem);
         this.clearPaymentAmounts();
         break;
+      // case 'settingsChanged':
+      //   this.settings.nLastBagNumber = Number(event.data);
+      //   break;
       default:
         this.transactionItems[index] = item;
         this.clearPaymentAmounts();
@@ -539,10 +556,33 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   openTransactionSearchDialog() {
     // console.log('open transaction search dialog')
     this.dialogService.openModal(TransactionsSearchComponent, { cssClass: 'modal-xl', context: { customer: this.customer } })
-      .instance.close.subscribe((data) => {
+      .instance.close.subscribe(async (data) => {
         // console.log('response of transaction search component', data)
         if (data?.transaction) {
-          // console.log('now calling handle transaction response')
+
+          // / Finding BusinessProduct and their location and stock. Need to show in the dropdown of location choosing /
+          if (data?.transactionItems?.length) {
+            let aBusinessProduct: any = [];
+            const _aBusinessProduct: any = await this.getBusinessProductList(data?.transactionItems.map((el: any) => el.iBusinessProductId)).toPromise();
+            if (aBusinessProduct?.data?.length && aBusinessProduct.data[0]?.result?.length) aBusinessProduct = _aBusinessProduct.data[0]?.result;
+            console.log('aBusinessProduct: ', aBusinessProduct, _aBusinessProduct);
+            data.transactionItems = data.transactionItems?.map((oTI: any) => {
+              // / assigning the BusinessProduct location to transction-item /
+              const oFoundProdLoc = aBusinessProduct?.find((oBusinessProd: any) => oBusinessProd?._id?.toString() === oTI?.iBusinessProductId?.toString());
+              console.log('iBusinessProductId: ', oTI?.iBusinessProductId, oFoundProdLoc);
+              if (oFoundProdLoc?.aLocation?.length) {
+                oTI.aLocation = oFoundProdLoc.aLocation?.map((oProdLoc: any) => {
+                  const oFound: any = this.aBusinessLocation?.find((oBusLoc: any) => oBusLoc?._id?.toString() === oProdLoc?._id?.toString());
+                  console.log('oFound 559: ', oFound);
+                  oProdLoc.sName = oFound?.sName;
+                  return oProdLoc;
+                });
+              }
+              oTI.oCurrentLocation = oTI.aLocation?.find((o: any) => o._id === oTI.iLocationId);
+              return oTI;
+            })
+          }
+
           this.handleTransactionResponse(data);
         }
         // this.changeInPayment();
@@ -764,17 +804,18 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
               body.oTransaction.sFiskalyTxId = result._id;
             }
           }
-          this.apiService.postNew('cashregistry', '/api/v1/till/transaction', body)
-            .subscribe(async (data: any) => {
 
-              // this.toastrService.show({ type: 'success', text: 'Transaction created.' });
-              this.saveInProgress = false;
-              const { transaction, aTransactionItems, activityItems, activity } = data;
-              transaction.aTransactionItems = aTransactionItems;
-              transaction.activity = activity;
-              this.transaction = transaction;
-              this.activityItems = activityItems;
-              this.activity = activity;
+          this.apiService.postNew('cashregistry', '/api/v1/till/transaction', body).subscribe(async (data: any) => {
+
+            // this.toastrService.show({ type: 'success', text: 'Transaction created.' });
+            this.saveInProgress = false;
+            const { transaction, aTransactionItems, activityItems, activity } = data;
+            transaction.aTransactionItems = aTransactionItems;
+            transaction.activity = activity;
+            this.transaction = transaction;
+            this.activityItems = activityItems;
+            this.activity = activity;
+            this.tillService.updateSettings(this.settings);
 
 
               this.transaction.aTransactionItems.map((tItem: any) => {
@@ -787,7 +828,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
               });
 
               const bOpenCashDrawer = payMethods.some((m:any) => m.sName === 'Cash' && m.remark != 'CHANGE_MONEY');
-              if(bOpenCashDrawer) this.openDrawer();
+              if (bOpenCashDrawer && this.settings.bOpenCashDrawer) this.openDrawer();
               
               this.handleReceiptPrinting(oDialogComponent);
               
@@ -1110,6 +1151,11 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
   getBusinessProduct(iBusinessProductId: string): Observable<any> {
     return this.apiService.getNew('core', `/api/v1/business/products/${iBusinessProductId}?iBusinessId=${this.iBusinessId}`)
+  }
+  
+  getBusinessProductList(aBusinessProductId: any): Observable<any> {
+    const oBody = { iBusinessId: this.iBusinessId, aBusinessProductId: aBusinessProductId };
+    return this.apiService.postNew('core', `/api/v1/business/products/list`, oBody);
   }
 
   getBaseProduct(iProductId: string): Observable<any> {
@@ -1480,6 +1526,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
           this.getSettingsSubscription = this.apiService.getNew('cashregistry', `/api/v1/settings/${this.iBusinessId}`).subscribe((result: any) => {
             this.settings = result;
+            console.log(this.settings)
             let nDayClosurePeriodAllowed = 0;
             if (this.settings?.sDayClosurePeriod && this.settings.sDayClosurePeriod === 'week') {
               nDayClosurePeriodAllowed = 3600 * 24 * 7;
