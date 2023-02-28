@@ -53,10 +53,6 @@ import { trigger, transition, style, animate } from '@angular/animations';
 })
 export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   
-  iBusinessId: string;
-  iLocationId: string;
-  iWorkstationId: string;
-
   faScrewdriverWrench = faScrewdriverWrench;
   faTruck = faTruck;
   faBoxesStacked = faBoxesStacked;
@@ -155,6 +151,10 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   nItemsTotalToBePaid: number = 0;
   nTotalPayment:number = 0;
   oStaticData: any;
+
+  iBusinessId = localStorage.getItem('currentBusiness') || '';
+  iLocationId = localStorage.getItem('currentLocation') || '';
+  iWorkstationId = localStorage.getItem('currentWorkstation') || '';
   
   randNumber(min: number, max: number): number {
     return Math.floor(Math.random() * (max - min + 1) + min);
@@ -176,9 +176,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     private receiptService: ReceiptService,
     private http: HttpClient
   ) {
-    this.iBusinessId = localStorage.getItem('currentBusiness') || '';
-    this.iLocationId = localStorage.getItem('currentLocation') || '';
-    this.iWorkstationId = localStorage.getItem('currentWorkstation') || '';
+    
   }
   async ngOnInit() {
     this.apiService.setToastService(this.toastrService)
