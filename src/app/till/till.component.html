@@ -203,7 +203,7 @@
                         <!-- repair -->
                         <div class="accordion-item w-100 d-table-cell" till-repair *ngIf="item.type === 'repair'"
                           [disablePrepayment]="!availableAmount || availableAmount === 0" [item]="item" [taxes]="taxes"
-                          (itemChanged)="itemChanged($event, i)" [availableAmount]="availableAmount" [settings]="settings"></div>
+                          (itemChanged)="itemChanged($event, i)" [availableAmount]="availableAmount"></div>
                         <!-- giftcard -->
                         <div class="accordion-item w-100 d-table-cell w-100" till-gift *ngIf="item.type === 'giftcard'"
                           [item]="item" [transactionItems]="transactionItems" [taxes]="taxes"
