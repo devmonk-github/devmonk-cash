@@ -116,9 +116,9 @@ export class ProductComponent implements OnInit{
     this.dialogService.openModal(DiscountDialogComponent, { context: { item: JSON.parse(JSON.stringify(this.item)) } })
       .instance.close.subscribe((data) => {
         if (data.item) {
+          console.log('data.item: ', data.item);
           this.item.nDiscount = data.item.nDiscount;
           this.item.bDiscountOnPercentage = data.item?.discount?.percent || false;
-          // this.getTotalDiscount(data.item)
           this.itemChanged.emit(this.item);
         }
       })
