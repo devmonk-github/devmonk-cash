@@ -48,7 +48,7 @@ export class SelectArticleDialogComponent implements OnInit {
 
   async fetchArticleGroups(iBusinessPartnerId: any) {
     const oDefaultArticle: any = await this.createArticleGroupService.checkArticleGroups('repair').toPromise();
-    // console.log(oDefaultArticle);
+    // console.log(51, oDefaultArticle);
     if (oDefaultArticle?.data?.length && oDefaultArticle?.data[0]?.result?.length) {
       this.articlegroup = oDefaultArticle?.data[0]?.result[0];
       this.supplier = this.partnersList.find((el:any) => el._id === this.articlegroup.aBusinessPartner[0].iBusinessPartnerId);
@@ -57,7 +57,8 @@ export class SelectArticleDialogComponent implements OnInit {
       const articleBody = { name: 'Repair', sCategory: 'repair', sSubCategory: 'repair' };
       const result: any = await this.createArticleGroupService.createArticleGroup(articleBody);
       // console.log(59, {result});
-      this.articlegroup = result?.data[0]?.result[0];
+      this.articlegroup = result?.data;//[0]?.result[0];
+      // console.log(61, this.articlegroup)
       this.supplier = this.partnersList.find((el: any) => el._id === this.articlegroup.aBusinessPartner[0].iBusinessPartnerId);
       
     }
