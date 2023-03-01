@@ -83,7 +83,7 @@
                 </div>
                 <label class="col-md-4 mt-2 text-muted">{{"DATE_TIME" | translate}}</label>
                 <div class="col-md-8">
-                    <div class="text-gray-800 mt-2">{{ transaction.dCreatedDate }}</div>
+                    <div class="text-gray-800 mt-2">{{ transaction.dCreatedDate | date:'dd-MM-YYYY hh:mm' }}</div>
                 </div>
                 <!-- <label class="col-md-4 mt-2 text-muted">{{"PAY_METHOD" | translate}}</label>
                 <div class="col-md-8">
@@ -336,7 +336,7 @@
                                     <td>
                                         {{item.sMethod}} <br/> 
                                         <span *ngIf="item?.sRemarks"> {{item.sRemarks | translate}}<br/></span>
-                                        ({{ item.dCreatedDate }})
+                                        ({{ item.dCreatedDate | date:'dd-MM-YYYY hh:mm' }})
                                     </td>
                                     <td>{{item.nAmount || 0}}</td>
                                 </tr>
