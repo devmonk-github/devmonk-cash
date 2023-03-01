@@ -1158,10 +1158,10 @@
 
                 <!-- STOCK HISTORY START -->
                 <div class="card">
-                
                     <div class="container">
-                        <strong *ngIf="!oStockPerLocation.aHistory">{{ 'STOCK_HISTORY_NOT_FOUND' | translate}} </strong>
-                        <div class="card overflow-y-auto" *ngIf="oStockPerLocation.aHistory?.length">
+                        <button class="btn btn-secondary w-100 my-4" (click)="isShowStockLocation = !isShowStockLocation">{{isShowStockLocation?('HIDE_STOCK_VALUE'| translate):('SHOW_STOCK_VALUE'| translate)}}</button>
+                        <strong *ngIf="!oStockPerLocation.aHistory && isShowStockLocation">{{ 'STOCK_HISTORY_NOT_FOUND' | translate}} </strong>
+                        <div class="card overflow-y-auto" *ngIf="oStockPerLocation.aHistory?.length && isShowStockLocation">
                             <strong> {{ 'STOCK_HISTORY' | translate}} </strong>
                             <div class="card-body">
                                 <div class="table-responsive">

@@ -39,6 +39,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
   aPaymentMethods: any = [];
   aDayClosure: any = [];
   oStockPerLocation: any = [];
+  isShowStockLocation:boolean= false;
 
   closingDayState: boolean = false;
   bShowDownload: boolean = false;
