@@ -133,6 +133,12 @@ export class TransactionsComponent implements OnInit, OnDestroy {
     });
   }
 
+  // Function for reset selected filters
+  resetFilters() {
+    this.requestParams.searchValue = "";
+    this.loadTransaction();
+  }
+
   fetchBusinessDetails() {
     this.apiService.getNew('core', `/api/v1/business/${this.iBusinessId}`).subscribe((result: any) => {
       this.businessDetails = result.data;

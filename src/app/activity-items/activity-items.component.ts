@@ -153,6 +153,12 @@ export class ActivityItemsComponent implements OnInit, OnDestroy {
     })
   }
 
+  // Function for reset selected filters
+  resetFilters() {
+    this.sSearchValue = "";
+    this.loadTransaction()
+  }
+
   loadTransaction() {
     this.activityItems = [];
     this.requestParams.iBusinessId = this.iBusinessId;
