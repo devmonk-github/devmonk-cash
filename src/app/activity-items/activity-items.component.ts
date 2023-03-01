@@ -83,7 +83,16 @@ export class ActivityItemsComponent implements OnInit, OnDestroy {
   { key: 'SHIPPED_TO_REPAIR', value: 'shipped-to-repair' },
   { key: 'DELIVERED', value: 'delivered' }]
 
-  aKind: Array<any> = ['reservation', 'repair', 'giftcard', 'order', 'gold-purchase', 'gold-sell', 'offer', 'refund']
+  aKind: Array<any> = [
+    { key: 'RESERVATION', value: 'reservation' },
+    { key: 'REPAIR', value: 'repair' },
+    { key: 'GIFTCARD', value: 'giftcard' },
+    { key: 'ORDER', value: 'order' },
+    { key: 'GOLD_PURCHASE', value: 'gold-purchase' },
+    { key: 'GOLD_SELL', value: 'gold-sell' },
+    { key: 'OFFER', value: 'offer' },
+    { key: 'REFUND', value: 'refund' }
+  ]
   methodValue: string = 'All';
   transactionValue: string = 'All';
   aFilterBusinessPartner: any = [];

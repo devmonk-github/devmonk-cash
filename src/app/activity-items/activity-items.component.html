@@ -101,7 +101,7 @@
             <label class="fs-6 form-label fw-bolder text-dark">{{ 'E_KIND' | translate }}</label>
             <ng-select class="form-control form-control-solid p-0" [multiple]="true"
               [(ngModel)]="requestParams.selectedKind" [clearable]="false">
-              <ng-option *ngFor="let eKind of aKind" [value]="eKind">{{eKind}}</ng-option>
+              <ng-option *ngFor="let eKind of aKind" [value]="eKind.value">{{eKind.key | translate}}</ng-option>
             </ng-select>
           </div>
     
