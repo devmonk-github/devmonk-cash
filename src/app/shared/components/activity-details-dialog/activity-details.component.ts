@@ -239,7 +239,6 @@ export class ActivityDetailsComponent implements OnInit {
 
     // if (this.activity?.iCustomerId) this.fetchCustomer(this.activity.iCustomerId, -1);
     this.getBusinessLocations();
-    this.getListEmployees()
     this.getListSuppliers()
     this.getBusinessBrands();
     const [_printActionSettings, _printSettings]: any = await Promise.all([
@@ -692,6 +691,7 @@ export class ActivityDetailsComponent implements OnInit {
       if (obj.iStockLocationId) this.setSelectedBusinessLocation(obj.iStockLocationId, i)
       this.fetchCustomer(obj?.iCustomerId, i);
     }
+    this.getListEmployees()
     // setTimeout(() => {
     //   MenuComponent.reinitialization();
     // }, 200);
