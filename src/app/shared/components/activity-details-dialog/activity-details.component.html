@@ -16,24 +16,28 @@
         </div>
         <div class="row">
             <div class="col-2 pe-0">
-                <div class="card pt-2" > <!-- style="width: 18rem;" -->
+                <div class="card pt-2"> <!-- style="width: 18rem;" -->
                     <span class="card-header justify-content-center align-items-center text-center m-0 ps-0 pe-0">
-                        <h3 class="my-1">{{(from === 'activity-items') ? activityItems[0].sNumber : activity.sNumber}}</h3>
+                        <h3 class="my-1">{{(from === 'activity-items') ? activityItems[0].sNumber : activity.sNumber}}
+                        </h3>
                     </span>
 
                     <div class="card-body p-3">
 
                         <div *ngIf="bShowOrderDownload">
-                            <button class="btn btn-primary" [disabled]="bDownloadReceipt" (click)="downloadReceipt($event , 'downloadReceipt')">{{ 'DOWNLOAD' | translate }}</button>
+                            <button class="btn btn-primary" [disabled]="bDownloadReceipt"
+                                (click)="downloadReceipt($event , 'downloadReceipt')">{{ 'DOWNLOAD' | translate
+                                }}</button>
                             <div class="spinner-border mx-2" *ngIf="bActivityPdfGenerationInProgress"></div>
-                        </div>  
+                        </div>
 
                         <div class="d-flex flex-wrap py-5">
                             <div class="flex-equal me-5">
                                 <p><strong>{{ "CUSTOMER_DETAILS" | translate}}</strong></p>
                                 <div class="fs-6 ms-1">
                                     <div class="align-items-center">
-                                        <div class="text-gray-600">{{customer?.sFirstName || ''}} {{customer?.sLastName || ''}}</div>
+                                        <div class="text-gray-600">{{customer?.sFirstName || ''}} {{customer?.sLastName
+                                            || ''}}</div>
                                     </div>
                                 </div>
                                 <div class="fs-6 ms-1">
@@ -58,7 +62,8 @@
                                 <div class="fs-6 ms-1">
                                     <div class="align-items-center">
                                         <p style="margin: 0; margin-bottom: 5px;">{{'PHONE_LANDLINE' | translate}}</p>
-                                        <p style="margin: 0; margin-bottom: 5px;"><span>{{customer?.oPhone?.sLandLine || '-'}}</span></p>
+                                        <p style="margin: 0; margin-bottom: 5px;"><span>{{customer?.oPhone?.sLandLine ||
+                                                '-'}}</span></p>
                                     </div>
                                 </div>
 
@@ -69,7 +74,8 @@
                                         </span>
                                     </div>
                                 </div> -->
-                                <button class="btn btn-primary my-3 btn-custom" (click)="openCustomer(customer)">{{'VIEW'|translate}} </button>
+                                <button class="btn btn-primary my-3 btn-custom"
+                                    (click)="openCustomer(customer)">{{'VIEW'|translate}} </button>
                             </div>
                         </div>
 
@@ -101,48 +107,49 @@
                         <div *ngIf="!eKindValue.includes(activity.oType.eKind)">
                             <h6 class="accordion-header">
                                 <!--(click)="activity.bIsVisible = !activity.bIsVisible" -->
-                                <div >
-                                    <button class="accordion-button fs-4 fw-bold"
-                                    type="button"
-                                    data-bs-parent="#kt_accordion_1"
-                                    [class.collapsed]="activityItems.length > 1"
-                                    [attr.data-bs-target]="'item'+activityindex" 
-                                    data-bs-toggle="collapse"
-                                    >
+                                <div>
+                                    <button class="accordion-button fs-4 fw-bold" type="button"
+                                        data-bs-parent="#kt_accordion_1" [class.collapsed]="activityItems.length > 1"
+                                        [attr.data-bs-target]="'item'+activityindex" data-bs-toggle="collapse">
                                         <div class="col-4">
-                                        {{activity.sNumber}}
-                                        <span class="ms-5" (click)="copyToClipboard(activity)">
-                                            <i class="fa fa-copy" title="Click to copy"> </i>
-                                            <span @fade *ngIf="activity.bActivityNumberCopied" class="text-primary bold ms-2 my-2">
-                                                {{ 'COPIED_TO_CLIPBOARD' | translate }}</span>
+                                            {{activity.sNumber}}
+                                            <span class="ms-5" (click)="copyToClipboard(activity)">
+                                                <i class="fa fa-copy" title="Click to copy"> </i>
+                                                <span @fade *ngIf="activity.bActivityNumberCopied"
+                                                    class="text-primary bold ms-2 my-2">
+                                                    {{ 'COPIED_TO_CLIPBOARD' | translate }}</span>
                                             </span>
 
                                         </div>
                                         <div class="col-7">
-                                        <div class="table-custom">
-                                            <div class="t-head">
-                                                <p class="p-0 m-0 label-custom col-3">{{'TYPE' | translate}}</p>
-                                                <p class="p-0 m-0 label-custom col-3">{{'INTAKE_DATE' | translate}}</p>
-                                                <p class="p-0 m-0 label-custom col-3">{{'STATUS' | translate}}</p>
-                                                <p class="p-0 m-0 label-custom col-3">{{'PRICE' | translate}}</p>
+                                            <div class="table-custom">
+                                                <div class="t-head">
+                                                    <p class="p-0 m-0 label-custom col-3">{{'TYPE' | translate}}</p>
+                                                    <p class="p-0 m-0 label-custom col-3">{{'INTAKE_DATE' | translate}}
+                                                    </p>
+                                                    <p class="p-0 m-0 label-custom col-3">{{'STATUS' | translate}}</p>
+                                                    <p class="p-0 m-0 label-custom col-3">{{'PRICE' | translate}}</p>
+                                                </div>
+                                                <div class="t-body">
+                                                    <p class="p-0 m-0 data-custom col-3">{{activity?.oType?.eKind ||
+                                                        '-'}}</p>
+                                                    <p class="p-0 m-0 data-custom col-3">{{activity.dCreatedDate |
+                                                        date:'yyyy-MM-dd'}}</p>
+                                                    <p class="p-0 m-0 data-custom col-3">{{activity.eActivityItemStatus
+                                                        || '-' }}</p>
+                                                    <p class="p-0 m-0 data-custom col-3">{{(activity?.nPriceIncVat ?
+                                                        activity?.nPriceIncVat : 0 ) | currency:tillService.currency }}
+                                                    </p>
+                                                </div>
                                             </div>
-                                            <div class="t-body">
-                                                <p class="p-0 m-0 data-custom col-3">{{activity?.oType?.eKind || '-'}}</p>
-                                                <p class="p-0 m-0 data-custom col-3">{{activity.dCreatedDate | date:'yyyy-MM-dd'}}</p>
-                                                <p class="p-0 m-0 data-custom col-3">{{activity.eActivityItemStatus || '-' }}</p>
-                                                <p class="p-0 m-0 data-custom col-3">{{(activity?.nPriceIncVat ? activity?.nPriceIncVat : 0 ) | currency:tillService.currency }}</p>
-                                            </div>
-                                        </div> 
                                         </div>
                                     </button>
                                 </div>
                             </h6>
                             <div class="accordion-collapse collapse general"
-                                *ngIf="eKindValueForLayout.includes(activity.oType.eKind)" 
-                                data-bs-parent="#kt_accordion_1" 
-                                [id]="'item'+activityindex"
-                                [class.show]="activityItems.length == 1"
-                                >
+                                *ngIf="eKindValueForLayout.includes(activity.oType.eKind)"
+                                data-bs-parent="#kt_accordion_1" [id]="'item'+activityindex"
+                                [class.show]="activityItems.length == 1">
                                 <!-- [class.show]="activity.bIsVisible == true" -->
                                 <div class="accordion-body">
                                     <div class="row">
@@ -169,13 +176,15 @@
                                                 <select name="status" id="status"
                                                     class="form-control form-control-solid"
                                                     [(ngModel)]="activity.eActivityItemStatus">
-                                                    <option *ngFor="let type of repairStatus" [value]="type.value">{{type.key | translate}}
+                                                    <option *ngFor="let type of repairStatus" [value]="type.value">
+                                                        {{type.key | translate}}
                                                     </option>
                                                 </select>
                                             </div>
 
                                             <div>
-                                                <p class="mb-3"> {{"INFORM_CUSTOMER_THAT_PRODUCT_CAN_BE_PICKED_UP" | translate}}</p>
+                                                <p class="mb-3"> {{"INFORM_CUSTOMER_THAT_PRODUCT_CAN_BE_PICKED_UP" |
+                                                    translate}}</p>
                                             </div>
                                             <div class="border p-2 mb-5">
                                                 <div>
@@ -193,12 +202,13 @@
                                                 </div>
                                                 <div class="row mt-2">
                                                     <div class="col-6">
-                                                        {{"ALREADY_PAID" | translate}}: 
+                                                        {{"ALREADY_PAID" | translate}}:
                                                         {{activity.nPaidAmount | currency:tillService.currency}}
                                                     </div>
                                                     <div class="col-6">
-                                                        {{"STILL_TO_PAY" | translate}}: 
-                                                        {{(activity.nTotalAmount - activity.nPaidAmount) | currency:tillService.currency}}
+                                                        {{"STILL_TO_PAY" | translate}}:
+                                                        {{(activity.nTotalAmount - activity.nPaidAmount) |
+                                                        currency:tillService.currency}}
                                                     </div>
                                                 </div>
                                             </div>
@@ -206,14 +216,17 @@
                                         <div class="col-3 my-3">
                                             <div class="btn-group me-4 w-100 my-3">
                                                 <button class="btn btn-primary fs-bold"
-                                                    (click)="downloadCustomerReceipt(activityindex , 'customerReceipt')" [disabled]="bCustomerReceipt">
+                                                    (click)="downloadCustomerReceipt(activityindex , 'customerReceipt')"
+                                                    [disabled]="bCustomerReceipt">
                                                     <fa-icon class="group-icon" [icon]="faUser"></fa-icon>
                                                     <span class="indicator-label ">{{ "CUSTOMER_RECEIPT" | translate
                                                         }}</span>
                                                 </button>
 
                                                 <div class="btn btn-primary btn-icon fs-bold">
-                                                    <span class="btn btn-icon" data-kt-menu-trigger="hover" data-kt-menu-attach="parent" data-kt-menu-placement="bottom-end" data-kt-menu-flip="bottom">
+                                                    <span class="btn btn-icon" data-kt-menu-trigger="hover"
+                                                        data-kt-menu-attach="parent" data-kt-menu-placement="bottom-end"
+                                                        data-kt-menu-flip="bottom">
                                                         <span class="svg-icon svg-icon-2 m-0">
                                                             <svg xmlns="http://www.w3.org/2000/svg" width="24"
                                                                 height="24" viewBox="0 0 24 24" fill="none">
@@ -329,7 +342,8 @@
                                             </div>
                                             <!-- [ngClass]="bShowOrderDownload ? 'btn-group me-4 w-100 my-3': 'btn-group me-4 w-100 my-3 disabled'" -->
                                             <div class="btn-group me-4 w-100 my-3">
-                                                <span class="btn btn-primary fs-bold" (click)="loadCashRegister = true; openTransaction(activity, 'activity')">
+                                                <span class="btn btn-primary fs-bold"
+                                                    (click)="loadCashRegister = true; openTransaction(activity, 'activity')">
                                                     <fa-icon class="group-icon" [icon]="faEuro"></fa-icon>
                                                     <span class="indicator-label">{{ "CHECKOUT" | translate}}</span>
                                                 </span>
@@ -452,16 +466,14 @@
                                                 <div class="col-lg-8">
                                                     <div class="row">
                                                         <div class="col-lg-8 fv-row">
-                                                            <ng-select
-                                                            [(ngModel)]="activity.eEstimatedDateAction"
-                                                            class="form-control form-control-solid p-0 w-100 custom"
-                                                            [clearable]="false">
-                                                            <ng-option
-                                                                *ngFor="let option of aContactOption"
-                                                                [value]="option.value">
-                                                                {{option.key | translate}}</ng-option>
-                                                        </ng-select>
-                                                     
+                                                            <ng-select [(ngModel)]="activity.eEstimatedDateAction"
+                                                                class="form-control form-control-solid p-0 w-100 custom"
+                                                                [clearable]="false">
+                                                                <ng-option *ngFor="let option of aContactOption"
+                                                                    [value]="option.value">
+                                                                    {{option.key | translate}}</ng-option>
+                                                            </ng-select>
+
                                                         </div>
                                                     </div>
                                                 </div>
@@ -544,25 +556,32 @@
                                                         {{"NO_IMAGES" | translate}}
                                                     </div>
                                                     <div *ngIf="activity?.aImage?.length">
-                                                    {{'IMAGES' | translate}}
+                                                        {{'IMAGES' | translate}}
                                                     </div>
-                                                    <button *ngIf="activity.oType.eKind == 'repair' || activity.oType.eKind == 'order'" class="btn btn-bg-light btn-active-color-primary my-2" (click)="openImageModal(activityindex)"> {{ "PHOTO" | translate}}
+                                                    <button
+                                                        *ngIf="activity.oType.eKind == 'repair' || activity.oType.eKind == 'order'"
+                                                        class="btn btn-bg-light btn-active-color-primary my-2"
+                                                        (click)="openImageModal(activityindex)"> {{ "PHOTO" |
+                                                        translate}}
                                                         <fa-icon [icon]="faUpload"></fa-icon>
-                                                      </button>
+                                                    </button>
                                                     <div class="d-flex flex-wrap">
                                                         <div class="image-input p-1"
                                                             *ngFor="let image of activity.aImage ; let imageIndex = index"
                                                             data-kt-image-input="true"
                                                             style="background-image: url('assets/media/svg/avatars/blank.svg')">
-                                                            <div class="image-input-wrapper w-100px h-100px m-5" (click)="openImage(activityindex , imageIndex)"
+                                                            <div class="image-input-wrapper w-100px h-100px m-5"
+                                                                (click)="openImage(activityindex , imageIndex)"
                                                                 style="background-image: url(assets/media/avatars/300-1.jpg)">
                                                                 <img src={{image}} width="100px" height="100px">
                                                             </div>
-                                                            <button class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow"
-                                                            data-kt-image-input-action="remove" data-bs-toggle="tooltip" title="Remove image"
-                                                            (click)="removeImage(activityindex, imageIndex)">
-                                                            <i class="bi bi-x fs-2" ></i>
-                                                          </button>
+                                                            <button
+                                                                class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow"
+                                                                data-kt-image-input-action="remove"
+                                                                data-bs-toggle="tooltip" title="Remove image"
+                                                                (click)="removeImage(activityindex, imageIndex)">
+                                                                <i class="bi bi-x fs-2"></i>
+                                                            </button>
 
                                                         </div>
                                                     </div>
@@ -587,7 +606,8 @@
                                                 </div>
                                                 <div class="col-12">
                                                     <button class="btn btn-success"
-                                                        (click)="AssignOrderProduct(activity , activityindex)"> {{'ADD / CHANGE'
+                                                        (click)="AssignOrderProduct(activity , activityindex)"> {{'ADD /
+                                                        CHANGE'
                                                         | translate}}</button>
                                                 </div>
                                             </div>
@@ -655,7 +675,8 @@
                                                                         <div class="chip d-flex"
                                                                             *ngIf="activity.iAssigneeId">
                                                                             {{activity.employeeName}}
-                                                                            <div (click)="removeEmployeees(activityindex)">
+                                                                            <div
+                                                                                (click)="removeEmployeees(activityindex)">
                                                                                 &nbsp;<i
                                                                                     class="close fas fa-times cursor-pointer"></i>
                                                                             </div>
@@ -687,7 +708,8 @@
                                                                         <div class="chip d-flex"
                                                                             *ngIf="activity.iBusinessPartnerId && activity?.sBusinessPartnerName">
                                                                             {{activity.sBusinessPartnerName}}
-                                                                            <div (click)="removeSuppliers(activityindex)">
+                                                                            <div
+                                                                                (click)="removeSuppliers(activityindex)">
                                                                                 &nbsp;<i
                                                                                     class="close fas fa-times cursor-pointer"></i>
                                                                             </div>
@@ -757,14 +779,17 @@
                                             </div>
                                             <div class="col-6">
                                                 <div class="row mb-6">
-                                                    <label class="col-lg-12 col-form-label fw-bold fs-6">{{"REMARK_FOR_COLLEAGUES" | translate}}</label>
+                                                    <label
+                                                        class="col-lg-12 col-form-label fw-bold fs-6">{{"REMARK_FOR_COLLEAGUES"
+                                                        | translate}}</label>
                                                     <div class="col-lg-12">
                                                         <div class="row">
                                                             <div class="col-lg-12 fv-row">
                                                                 <textarea
                                                                     class="form-control form-control-lg form-control-solid mb-3 mb-lg-0 w-100"
                                                                     placeholder="{{ 'REMARK_FOR_COLLEAGUES' | translate}}"
-                                                                    lines="10" [(ngModel)]="activity.sCommentVisibleCollegues"></textarea>
+                                                                    lines="10"
+                                                                    [(ngModel)]="activity.sCommentVisibleCollegues"></textarea>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -774,19 +799,27 @@
                                         </div>
                                         <div class="row">
                                             <div class="col-3">
-                                                <button class="btn btn-primary" (click)="submit(activity._id , activityindex)"
-                                                    type="submit"> {{ "SUBMIT" | translate}}</button>
+                                                <button [disabled]="submitted" [class.btn-pulse]="submitted"
+                                                    class="btn btn-lg btn-primary"
+                                                    (click)="submit(activity._id , activityindex)" type="submit">
+                                                    <span *ngIf="submitted" class="mx-3">
+                                                        <i class="fa fa-spinner fa-spin" [hidden]="!submitted"
+                                                            style="font-size:15px;"></i>
+                                                    </span>
+
+                                                    <span class="indicator-label">{{"SUBMIT" | translate}}</span>
+
+                                                </button>
+
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
-                            <div class="accordion-collapse collapse giftcard" 
-                            *ngIf="activity.oType.eKind == 'giftcard'"
-                            data-bs-parent="#kt_accordion_1" 
-                            [id]="'item'+activityindex"
-                            [class.show]="activityItems.length == 1">
+                            <div class="accordion-collapse collapse giftcard" *ngIf="activity.oType.eKind == 'giftcard'"
+                                data-bs-parent="#kt_accordion_1" [id]="'item'+activityindex"
+                                [class.show]="activityItems.length == 1">
                                 <div class="accordion-body">
                                     <div class="row">
                                         <div class="col-4">
@@ -817,7 +850,7 @@
                                                     class="form-control form-control-solid mb-3 mb-lg-0"
                                                     [(ngModel)]="activity.sGiftCardNumber" readonly />
                                             </div>
-<!-- 
+                                            <!-- 
                                             <div>
                                                 {{"INFORM_CUSTOMER_THAT_PRODUCT_CAN_BE_PICKED_UP" | translate}}
                                             </div> -->
@@ -854,7 +887,8 @@
                                         <div class="col-3 my-3">
                                             <div class="btn-group me-4 w-100 my-3">
                                                 <button class="btn btn-primary fs-bold"
-                                                    (click)="downloadCustomerReceipt(activityindex , 'customerReceipt')" [disabled]="bCustomerReceipt">
+                                                    (click)="downloadCustomerReceipt(activityindex , 'customerReceipt')"
+                                                    [disabled]="bCustomerReceipt">
                                                     <fa-icon class="group-icon" [icon]="faUser"></fa-icon>
                                                     <span class="indicator-label ">{{ "CUSTOMER_RECEIPT" | translate
                                                         }}</span>
@@ -886,7 +920,8 @@
                                             </div>
                                             <div class="btn-group me-4 w-100 my-3">
                                                 <button class="btn btn-primary fs-bold"
-                                                    (click)="downloadCustomerReceipt(activityindex , 'downloadCustomerReceipt')" [disabled]="bDownloadCustomerReceipt">
+                                                    (click)="downloadCustomerReceipt(activityindex , 'downloadCustomerReceipt')"
+                                                    [disabled]="bDownloadCustomerReceipt">
                                                     <fa-icon class="group-icon" [icon]="faPrint"></fa-icon>
                                                     <span class="indicator-label">{{
                                                         "CUSTOMER_RECEIPT_PRINT" |
@@ -981,7 +1016,8 @@
                                                 </span>
                                             </div> -->
                                             <div class="btn-group me-4 w-100 my-3">
-                                                <span class="btn btn-primary fs-bold" (click)="loadCashRegister = true; openTransaction(activity, 'activity')">
+                                                <span class="btn btn-primary fs-bold"
+                                                    (click)="loadCashRegister = true; openTransaction(activity, 'activity')">
                                                     <fa-icon class="group-icon" [icon]="faEuro"></fa-icon>
                                                     <span class="indicator-label">{{ "CHECKOUT" | translate}}</span>
                                                 </span>
@@ -1436,19 +1472,27 @@
                     </div> -->
                                         <div class="row">
                                             <div class="col-3">
-                                                <button class="btn btn-primary" (click)="submit(activity._id , activityindex)"
-                                                    type="submit"> {{ "SUBMIT" | translate}}</button>
+                                                <button [disabled]="submitted" [class.btn-pulse]="submitted"
+                                                    class="btn btn-lg btn-primary"
+                                                    (click)="submit(activity._id , activityindex)" type="submit">
+                                                    <span *ngIf="submitted" class="mx-3">
+                                                        <i class="fa fa-spinner fa-spin" [hidden]="!submitted"
+                                                            style="font-size:15px;"></i>
+                                                    </span>
+
+                                                    <span class="indicator-label">{{"SUBMIT" | translate}}</span>
+
+                                                </button>
+
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
-                            <div class="accordion-collapse collapse gold-purchase" 
-                            *ngIf="activity.oType.eKind == 'gold-purchase'"
-                            data-bs-parent="#kt_accordion_1" 
-                            [id]="'item'+activityindex"
-                            [class.show]="activityItems.length == 1">
+                            <div class="accordion-collapse collapse gold-purchase"
+                                *ngIf="activity.oType.eKind == 'gold-purchase'" data-bs-parent="#kt_accordion_1"
+                                [id]="'item'+activityindex" [class.show]="activityItems.length == 1">
                                 <div class="accordion-body">
                                     <div class="row">
                                         <div class="col-4">
@@ -1514,7 +1558,8 @@
                                         <div class="col-3 my-3">
                                             <div class="btn-group me-4 w-100 my-3">
                                                 <button class="btn btn-primary fs-bold"
-                                                    (click)="downloadCustomerReceipt(activityindex , 'customerReceipt')" [disabled]="bCustomerReceipt">
+                                                    (click)="downloadCustomerReceipt(activityindex , 'customerReceipt')"
+                                                    [disabled]="bCustomerReceipt">
                                                     <fa-icon class="group-icon" [icon]="faUser"></fa-icon>
                                                     <span class="indicator-label ">{{ "CUSTOMER_RECEIPT" | translate
                                                         }}</span>
@@ -1546,9 +1591,11 @@
                                             </div>
                                             <div class="btn-group me-4 w-100 my-3">
                                                 <button class="btn btn-primary fs-bold"
-                                                    (click)="downloadCustomerReceipt(activityindex , 'downloadCustomerReceipt')" [disabled]="bDownloadCustomerReceipt">
+                                                    (click)="downloadCustomerReceipt(activityindex , 'downloadCustomerReceipt')"
+                                                    [disabled]="bDownloadCustomerReceipt">
                                                     <fa-icon class="group-icon" [icon]="faPrint"></fa-icon>
-                                                    <span class="indicator-label">{{"CUSTOMER_RECEIPT_PRINT" | translate}}</span>
+                                                    <span class="indicator-label">{{"CUSTOMER_RECEIPT_PRINT" |
+                                                        translate}}</span>
                                                 </button>
 
                                                 <span class="btn btn-primary btn-icon fs-bold printer-button-span"
@@ -1639,7 +1686,8 @@
                                                 </span>
                                             </div>
                                             <div class="btn-group me-4 w-100 my-3">
-                                                <span class="btn btn-primary fs-bold" (click)="loadCashRegister = true; openTransaction(activity, 'activity')">
+                                                <span class="btn btn-primary fs-bold"
+                                                    (click)="loadCashRegister = true; openTransaction(activity, 'activity')">
                                                     <fa-icon class="group-icon" [icon]="faEuro"></fa-icon>
                                                     <span class="indicator-label">{{ "CHECKOUT" | translate}}</span>
                                                 </span>
@@ -1981,7 +2029,8 @@
                                                                         <div class="chip d-flex"
                                                                             *ngIf="activity.iAssigneeId">
                                                                             {{activity.employeeName}}
-                                                                            <div (click)="removeEmployeees(activityindex)">
+                                                                            <div
+                                                                                (click)="removeEmployeees(activityindex)">
                                                                                 &nbsp;<i
                                                                                     class="close fas fa-times cursor-pointer"></i>
                                                                             </div>
@@ -2015,7 +2064,8 @@
                                                                         <div class="chip d-flex"
                                                                             *ngIf="activity.iBusinessPartnerId && activity?.sBusinessPartnerName">
                                                                             {{activity.sBusinessPartnerName}}
-                                                                            <div (click)="removeSuppliers(activityindex)">
+                                                                            <div
+                                                                                (click)="removeSuppliers(activityindex)">
                                                                                 &nbsp;<i
                                                                                     class="close fas fa-times cursor-pointer"></i>
                                                                             </div>
@@ -2102,15 +2152,25 @@
                                         </div>
                                         <div class="row">
                                             <div class="col-3">
-                                                <button class="btn btn-primary" (click)="submit(activity._id , activityindex)"
-                                                    type="submit"> {{ "SUBMIT" | translate}}</button>
+                                                <button [disabled]="submitted" [class.btn-pulse]="submitted"
+                                                    class="btn btn-lg btn-primary"
+                                                    (click)="submit(activity._id , activityindex)" type="submit">
+                                                    <span *ngIf="submitted" class="mx-3">
+                                                        <i class="fa fa-spinner fa-spin" [hidden]="!submitted"
+                                                            style="font-size:15px;"></i>
+                                                    </span>
+
+                                                    <span class="indicator-label">{{"SUBMIT" | translate}}</span>
+
+                                                </button>
+
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        
+
                     </div>
                     <div class="d-flex mt-100">
                         <h5 *ngIf='!activityItems.length && !loading' style="text-align: center">{{'NO_DATA_FOUND' |

@@ -2,7 +2,7 @@ import { AfterViewInit, Component, OnInit } from '@angular/core';
 import { DialogComponent, DialogService } from '../../service/dialog';
 import { ViewContainerRef } from '@angular/core';
 import { ApiService } from 'src/app/shared/service/api.service';
-import { faTimes, faMessage, faEnvelope, faEnvelopeSquare, faUser,faUpload, faReceipt, faEuro, faChevronRight, faDownload, faPrint } from "@fortawesome/free-solid-svg-icons";
+import { faTimes, faMessage, faEnvelope, faEnvelopeSquare, faUser, faUpload, faReceipt, faEuro, faChevronRight, faDownload, faPrint } from "@fortawesome/free-solid-svg-icons";
 import { TransactionItemsDetailsComponent } from '../transaction-items-details/transaction-items-details.component';
 import { MenuComponent } from '../../_layout/components/common';
 import { NavigationEnd, Router } from '@angular/router';
@@ -60,6 +60,7 @@ export class ActivityDetailsComponent implements OnInit {
   faEuro = faEuro;
   faChevronRight = faChevronRight;
   faDownload = faDownload;
+  submitted = false;
   repairStatus = [
     { key: 'NEW', value: 'new' },
     { key: 'INFO', value: 'info' },
@@ -283,7 +284,7 @@ export class ActivityDetailsComponent implements OnInit {
     });
   }
 
-  openImageModal(activityindex:any) {
+  openImageModal(activityindex: any) {
     this.dialogService.openModal(ImageUploadComponent, { cssClass: "modal-m", context: { mode: 'create' } })
       .instance.close.subscribe(result => {
         if (result.url)
@@ -456,9 +457,9 @@ export class ActivityDetailsComponent implements OnInit {
   removeImage(activityindex: any, imageIndex: any) {
     this.activityItems[activityindex].aImage.splice(imageIndex, 1);
   }
-  openImage(activityindex:any , imageIndex:any){
+  openImage(activityindex: any, imageIndex: any) {
     const url = this.activityItems[activityindex].aImage[imageIndex];
-    window.open(url , "_blank");
+    window.open(url, "_blank");
   }
 
 
@@ -714,15 +715,26 @@ export class ActivityDetailsComponent implements OnInit {
   }
 
   submit(activityItemId: any, index: any) {
+    this.submitted = true;
+    console.log(this.submitted);
     const oActivityItem = this.activityItems[index];
     oActivityItem.iBusinessId = this.iBusinessId;
     this.apiService.putNew('cashregistry', '/api/v1/activities/items/' + activityItemId, oActivityItem)
       .subscribe((result: any) => {
+
         if (result.message == 'success') {
+          this.submitted = false;
+          console.log(this.submitted);
+          console.log("ssthis.submitted");
           this.apiService.activityItemDetails.next(oActivityItem);
           this.toastService.show({ type: "success", text: this.translation['SUCCESSFULLY_UPDATED'] });
+
+
         }
         else {
+          this.submitted = false;
+          console.log(this.submitted);
+          console.log("this.submitted");
           let errorMessage = "";
           this.translationService.get(result.message).subscribe((res: any) => {
             errorMessage = res;
@@ -730,6 +742,7 @@ export class ActivityDetailsComponent implements OnInit {
           this.toastService.show({ type: "warning", text: errorMessage });
         }
       }, (error) => {
+        this.submitted = false;
         console.log('error: ', error);
         let errorMessage = "";
         this.translationService.get(error.message).subscribe((res: any) => {
