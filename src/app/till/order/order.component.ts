@@ -63,6 +63,7 @@ export class OrderComponent implements OnInit {
 
   @Input() disablePrepayment: any;
   @Input() availableAmount: any;
+  @Input() settings:any;
 
   constructor(
     private priceService: PriceService,
@@ -86,7 +87,8 @@ export class OrderComponent implements OnInit {
   selectArticleGroup() {
     this.dialogService.openModal(SelectArticleDialogComponent, { cssClass: 'modal-m', context: { item: this.item, from: 'order' } })
       .instance.close.subscribe((data) => {
-        if (data) {
+        
+        if (data.action) {
           const { articlegroup, brand, supplier, nMargin } = data;
           this.item.supplier = supplier.sName;
           this.item.iArticleGroupOriginalId = articlegroup._id;
@@ -98,10 +100,18 @@ export class OrderComponent implements OnInit {
           this.item.iBusinessBrandId = brand._id;
           this.updateProperties(articlegroup);
           this.changeInMargin();
+          this.settingsChanged();
         } else {
           this.deleteItem();
         }
       });
+  }
+
+  settingsChanged(event?:any){
+    if (this.settings.bAutoIncrementBagNumbers) {
+      this.item.sBagNumber = (event) ? event : this.settings.nLastBagNumber + 1;
+      this.itemChanged.emit({type:'settingsChanged', data: this.item.sBagNumber});
+    }
   }
 
   changeInMargin() {
@@ -127,7 +137,7 @@ export class OrderComponent implements OnInit {
   }
 
   deleteItem(): void {
-    this.itemChanged.emit('delete')
+    this.itemChanged.emit({type: 'delete'})
   }
   getDiscount(item: any): string {
     return this.priceService.getDiscount(item.nDiscount)
@@ -336,7 +346,7 @@ export class OrderComponent implements OnInit {
           this.item.nDiscount = data.item.nDiscount;
           this.item.bDiscountOnPercentage = data.item?.discount?.percent || false;
           // this.getTotalDiscount(data.item)
-          this.itemChanged.emit(this.item);
+          this.itemChanged.emit({type: 'item', data: this.item});
         }
       })
   }
@@ -359,7 +369,7 @@ export class OrderComponent implements OnInit {
   }
 
   updatePayments(): void {
-    this.itemChanged.emit(this.item);
+    this.itemChanged.emit({type: 'item', data: this.item});
   }
 
   changePrePayment(item:any){
@@ -377,6 +387,6 @@ export class OrderComponent implements OnInit {
 
     item.manualUpdate = true;
     item.prepaymentTouched = true;
-    this.itemChanged.emit('prepaymentChange');
+    this.itemChanged.emit({type: 'prepaymentChange'});
   }
 }

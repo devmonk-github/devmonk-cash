@@ -33,7 +33,7 @@
                                 </tr>
                             </thead>
                             <tbody class="fw-bold text-gray-600">
-                                <tr *ngFor='let transaction of activities'>
+                                <tr *ngFor='let transaction of activities| paginate: paginationConfig'>
                                     <td class="">{{ transaction.sNumber }}</td>
                                     <td class="">{{ transaction.sBagNumbers }}</td>
                                     <td class="">{{ transaction.dCreatedDate | date: 'short'}}</td>
@@ -54,7 +54,25 @@
             </app-pn-tab>
 
             <div class="row">
-                <div
+                <div class="col-sm-12 col-md-3 d-flex align-items-center justify-content-center justify-content-md-start">
+                    <div class="dataTables_length" id="kt_ecommerce_sales_table_length">
+                        <label>
+                            <select name="kt_ecommerce_sales_table_length" aria-controls="kt_ecommerce_sales_table"
+                                class="form-select form-select-sm form-select-solid" [(ngModel)]="pageCount"
+                                (change)="changeItemsPerPage(pageCount)">
+                                <option *ngFor="let pageNum of pageCounts" [value]="pageNum">{{ pageNum }}</option>
+                            </select>
+                        </label>
+                    </div>
+                </div>
+                <div class="col-sm-12 col-md-9 d-flex align-items-center justify-content-center justify-content-md-end">
+                    <pagination-controls [hidden]="activities.length === 0" (pageChange)="pageChanged($event)"
+                      (pageBoundsCorrection)="pageChanged($event)" [maxSize]="setPaginateSize"
+                      [previousLabel]="'PREVIOUS' | translate" [nextLabel]="'NEXT' | translate"
+                      screenReaderPaginationLabel="Pagination" [screenReaderPageLabel]="'PAGE' | translate">
+                    </pagination-controls>
+                  </div>
+                <!-- <div
                     class="col-sm-12 col-md-5 d-flex align-items-center justify-content-center justify-content-md-start">
                     <div class="dataTables_length" id="kt_ecommerce_sales_table_length">
                         <label>
@@ -78,7 +96,7 @@
                             </li>
                         </ul>
                     </div>
-                </div>
+                </div> -->
             </div>
         </app-pn-tabs>
     </div>

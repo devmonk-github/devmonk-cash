@@ -49,7 +49,7 @@ export class GiftComponent implements OnInit {
   }
 
   deleteItem(): void {
-    this.itemChanged.emit('delete');
+    this.itemChanged.emit({type:'delete'});
   }
 
   checkNumber(): void {
@@ -104,7 +104,7 @@ export class GiftComponent implements OnInit {
   }
 
   updatePayments(): void {
-    this.itemChanged.emit(this.item);
+    this.itemChanged.emit({type: 'item', data: this.item});
   }
 
   create(): void {
@@ -167,6 +167,6 @@ export class GiftComponent implements OnInit {
   }
 
   duplicate(): void {
-    this.itemChanged.emit('duplicate');
+    this.itemChanged.emit({type:'duplicate'});
   }
 }

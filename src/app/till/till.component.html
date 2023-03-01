@@ -24,12 +24,14 @@
         <div class="row">
           <div class="col-8">
             <div class="alert alert-warning" *ngIf="!bIsPreviousDayStateClosed">
-              <p class="mb-0" style="font-size: 1.2rem;font-weight: bold;margin-left:1.3rem">
+              <p class="mb-0" style="font-size: 1.2rem;font-weight: bold;">
                 <span style="margin-right:1rem; font-weight:bolder">!</span>
-                {{ "THE_PREVIOUS" | translate }} {{ settings.sDayClosurePeriod}} {{"IS_NOT_CLOSED_YET" | translate }}
+                {{ "THE_PREVIOUS" | translate }} {{ tillService.settings.sDayClosurePeriod}} {{"IS_NOT_CLOSED_YET" | translate }}
                 ({{ dOpenDate  | dateTranslate:"EEEE dd-MM-YYYY hh:mm:ss aaa"}})
               </p>
-              <a class="btn btn-hover" routerLink="../day-closure"><span class="badge bg-success">{{ "CLOSE_DAYSTATE" | translate}}</span></a>
+              <a routerLink="../day-closure"><span class="badge btn btn-primary btnclose">{{
+                "CLOSE_DAYSTATE" |
+                translate}}</span></a>
             </div>
           </div>
         </div>
@@ -197,13 +199,28 @@
                           [disablePrepayment]="!availableAmount || availableAmount === 0"
                           (itemChanged)="itemChanged($event, i)" [availableAmount]="availableAmount"></div>
                         <!-- order -->
-                        <div class="accordion-item w-100 d-table-cell" till-order *ngIf="item.type === 'order'"
-                          [item]="item" [disablePrepayment]="!availableAmount || availableAmount === 0" [taxes]="taxes"
-                          (itemChanged)="itemChanged($event, i)" [availableAmount]="availableAmount"></div>
+                        <div class="accordion-item w-100 d-table-cell" 
+                          *ngIf="item.type === 'order'"
+                          till-order 
+                          [item]="item" 
+                          [disablePrepayment]="!availableAmount || availableAmount === 0" 
+                          [taxes]="taxes"
+                          [availableAmount]="availableAmount" 
+                          [settings]="tillService.settings.currentLocation"
+                          (itemChanged)="itemChanged($event, i)">
+                        </div>
+                        
                         <!-- repair -->
-                        <div class="accordion-item w-100 d-table-cell" till-repair *ngIf="item.type === 'repair'"
-                          [disablePrepayment]="!availableAmount || availableAmount === 0" [item]="item" [taxes]="taxes"
-                          (itemChanged)="itemChanged($event, i)" [availableAmount]="availableAmount" [settings]="settings"></div>
+                        <div class="accordion-item w-100 d-table-cell" 
+                          till-repair 
+                          *ngIf="item.type === 'repair'"
+                          [disablePrepayment]="!availableAmount || availableAmount === 0" 
+                          [item]="item" 
+                          [taxes]="taxes"
+                          [availableAmount]="availableAmount" 
+                          [settings]="tillService.settings.currentLocation"
+                          (itemChanged)="itemChanged($event, i)">
+                        </div>
                         <!-- giftcard -->
                         <div class="accordion-item w-100 d-table-cell w-100" till-gift *ngIf="item.type === 'giftcard'"
                           [item]="item" [transactionItems]="transactionItems" [taxes]="taxes"
@@ -216,7 +233,7 @@
                         <!-- empty-line -->
                         <div class="accordion-item w-100 d-table-cell w-100" till-other
                           *ngIf="item.type=== 'empty-line'" [item]="item" [taxes]="taxes"
-                          (itemChanged)="itemChanged($event, i)"></div>
+                          (itemChanged)="itemChanged($event, i)" ></div>
                         <!-- loyalty-points -->
                         <div class="accordion-item w-100 d-table-cell w-100" till-loyalty-points-discount
                           *ngIf="item.type=== 'loyalty-points'" [item]="item" [taxes]="taxes"
@@ -224,7 +241,7 @@
 
                         <div class="d-table-cell">
                           <button class="btn btn-sm  btn-icon  btn-active-color-danger mx-6 ms-4"
-                            (click)="itemChanged('delete', i)">
+                            (click)="itemChanged({type:'delete'}, i)">
                             <span class="svg-icon svg-icon-3qx me-0">
                               <fa-icon [icon]="faTimes"></fa-icon>
                             </span>

@@ -64,7 +64,7 @@ export class ProductComponent implements OnInit{
   }
 
   deleteItem(): void {
-    this.itemChanged.emit('delete')
+    this.itemChanged.emit({type: 'delete'})
   }
 
   getDiscount(item: any): string {
@@ -116,17 +116,17 @@ export class ProductComponent implements OnInit{
     this.dialogService.openModal(DiscountDialogComponent, { context: { item: JSON.parse(JSON.stringify(this.item)) } })
       .instance.close.subscribe((data) => {
         if (data.item) {
-          console.log('data.item: ', data.item);
+          // console.log('data.item: ', data.item);
           this.item.nDiscount = data.item.nDiscount;
           this.item.bDiscountOnPercentage = data.item?.discount?.percent || false;
-          this.itemChanged.emit(this.item);
+          this.itemChanged.emit({ type: 'item', data: this.item});
         }
       })
   }
 
   updatePayments(): void {
     this.item.iLocationId = this.iSelectedLocationId; /* in case, we changed the location from the drop-down */
-    this.itemChanged.emit(this.item);
+    this.itemChanged.emit({type: 'item', data: this.item});
   }
 
   // onChangeLocation() {
@@ -135,7 +135,7 @@ export class ProductComponent implements OnInit{
   // }
 
   quantityChangeHandler(nQuantity: number) {
-    this.itemChanged.emit('update');
+    this.itemChanged.emit({type: 'update'});
     // console.log('changeQuantity: ', nQuantity, this.item?.paymentAmount, this.item);
   }
 
@@ -154,6 +154,6 @@ export class ProductComponent implements OnInit{
 
     item.manualUpdate = true;
     item.prepaymentTouched = true;
-    this.itemChanged.emit('prepaymentChange');
+    this.itemChanged.emit({type: 'prepaymentChange'});
   }
 }

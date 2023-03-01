@@ -131,7 +131,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   selectedQuickButton: any;
   getSettingsSubscription !: Subscription;
   dayClosureCheckSubscription !: Subscription;
-  settings: any;
   businessDetails: any;
   printActionSettings: any;
   printSettings: any;
@@ -193,7 +192,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   async ngOnInit() {
     this.apiService.setToastService(this.toastrService)
     this.paymentDistributeService.setToastService(this.toastrService)
-
+    this.tillService.updateVariables();
     this.checkDayState();
     
     this.requestParams.iBusinessId = this.iBusinessId;
@@ -490,10 +489,9 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     this.resetSearch();
   }
 
-  itemChanged(item: any, index: number): void {
+  itemChanged(event: any, index: number): void {
     // console.log('itemChanged: ', event);
-    // let item = (typeof event === 'object') ? event.item : event;
-    switch (item) {
+    switch (event.type) {
       case 'delete':
         // console.log('itemChanged delete')
         this.transactionItems.splice(index, 1);
@@ -514,11 +512,11 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
         this.transactionItems.push(tItem);
         this.clearPaymentAmounts();
         break;
-      // case 'settingsChanged':
-      //   this.settings.nLastBagNumber = Number(event.data);
-      //   break;
+      case 'settingsChanged':
+        this.tillService.settings.currentLocation.nLastBagNumber = Number(event.data);
+        break;
       default:
-        this.transactionItems[index] = item;
+        this.transactionItems[index] = event.data;
         this.clearPaymentAmounts();
         break;
     }
@@ -564,16 +562,13 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
           if (data?.transactionItems?.length) {
             let aBusinessProduct: any = [];
             const _aBusinessProduct: any = await this.getBusinessProductList(data?.transactionItems.map((el: any) => el.iBusinessProductId)).toPromise();
-            if (aBusinessProduct?.data?.length && aBusinessProduct.data[0]?.result?.length) aBusinessProduct = _aBusinessProduct.data[0]?.result;
-            console.log('aBusinessProduct: ', aBusinessProduct, _aBusinessProduct);
+            if (_aBusinessProduct?.data?.length && _aBusinessProduct.data[0]?.result?.length) aBusinessProduct = _aBusinessProduct.data[0]?.result;
             data.transactionItems = data.transactionItems?.map((oTI: any) => {
               // / assigning the BusinessProduct location to transction-item /
               const oFoundProdLoc = aBusinessProduct?.find((oBusinessProd: any) => oBusinessProd?._id?.toString() === oTI?.iBusinessProductId?.toString());
-              console.log('iBusinessProductId: ', oTI?.iBusinessProductId, oFoundProdLoc);
               if (oFoundProdLoc?.aLocation?.length) {
                 oTI.aLocation = oFoundProdLoc.aLocation?.map((oProdLoc: any) => {
                   const oFound: any = this.aBusinessLocation?.find((oBusLoc: any) => oBusLoc?._id?.toString() === oProdLoc?._id?.toString());
-                  console.log('oFound 559: ', oFound);
                   oProdLoc.sName = oFound?.sName;
                   return oProdLoc;
                 });
@@ -641,7 +636,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     if (paidAmount === 0) {
       this.payMethods.map(o => o.isDisabled = false);
     }
-    console.log('change in payment in cash ', this.transactionItems)
+    // console.log('change in payment in cash ', this.transactionItems)
     this.transactionItems = [...this.transactionItems]
     this.updateAmountVariables();
   }
@@ -664,7 +659,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   clearPaymentAmounts() {
-    console.log('this.transactionItems: ', this.transactionItems);
+    // console.log('this.transactionItems: ', this.transactionItems);
 
     this.transactionItems.forEach((item:any) => {
       item.paymentAmount = 0;
@@ -815,7 +810,10 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
             this.transaction = transaction;
             this.activityItems = activityItems;
             this.activity = activity;
-            this.tillService.updateSettings(this.settings);
+            
+            if (this.tillService.settings.currentLocation.bAutoIncrementBagNumbers) {
+              this.tillService.updateSettings();
+            }
 
 
               this.transaction.aTransactionItems.map((tItem: any) => {
@@ -828,7 +826,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
               });
 
               const bOpenCashDrawer = payMethods.some((m:any) => m.sName === 'Cash' && m.remark != 'CHANGE_MONEY');
-              if (bOpenCashDrawer && this.settings.bOpenCashDrawer) this.openDrawer();
+              if (bOpenCashDrawer && this.tillService.settings.bOpenCashDrawer) this.openDrawer();
               
               this.handleReceiptPrinting(oDialogComponent);
               
@@ -1516,33 +1514,28 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       iWorkstationId: this.iWorkstationId
     }
     this.bDayStateChecking = true;
-    this.dayClosureCheckSubscription = this.apiService.postNew('cashregistry', `/api/v1/statistics/day-closure/check`, oBody).subscribe((result: any) => {
+    this.dayClosureCheckSubscription = this.apiService.postNew('cashregistry', `/api/v1/statistics/day-closure/check`, oBody).subscribe(async (result: any) => {
       if (result?.data) {
         this.bDayStateChecking = false;
         this.bIsDayStateOpened = result?.data?.bIsDayStateOpened;
         if (this.bIsDayStateOpened) this.fetchQuickButtons();
         if (result?.data?.oStatisticDetail?.dOpenDate) {
           this.dOpenDate = result?.data?.oStatisticDetail?.dOpenDate;
+          await this.tillService.fetchSettings();
+          let nDayClosurePeriodAllowed = 0;
+          if (this.tillService.settings?.sDayClosurePeriod && this.tillService.settings.sDayClosurePeriod === 'week') {
+            nDayClosurePeriodAllowed = 3600 * 24 * 7;
+          } else {
+            nDayClosurePeriodAllowed = 3600 * 24;
+          }
 
-          this.getSettingsSubscription = this.apiService.getNew('cashregistry', `/api/v1/settings/${this.iBusinessId}`).subscribe((result: any) => {
-            this.settings = result;
-            console.log(this.settings)
-            let nDayClosurePeriodAllowed = 0;
-            if (this.settings?.sDayClosurePeriod && this.settings.sDayClosurePeriod === 'week') {
-              nDayClosurePeriodAllowed = 3600 * 24 * 7;
-            } else {
-              nDayClosurePeriodAllowed = 3600 * 24;
-            }
+          /* Show Close day state warning when Day-state is close according to settings day/week */
+          const nOpenTimeSecond = new Date(this.dOpenDate).getTime();
+          const nCurrentTimeSecond = new Date().getTime();
 
-            /* Show Close day state warning when Day-state is close according to settings day/week */
-            const nOpenTimeSecond = new Date(this.dOpenDate).getTime();
-            const nCurrentTimeSecond = new Date().getTime();
+          const nDifference = (nCurrentTimeSecond - nOpenTimeSecond) / 1000;
+          if (nDifference > nDayClosurePeriodAllowed) this.bIsPreviousDayStateClosed = false;
 
-            const nDifference = (nCurrentTimeSecond - nOpenTimeSecond) / 1000;
-            if (nDifference > nDayClosurePeriodAllowed) this.bIsPreviousDayStateClosed = false;
-          }, (error) => {
-            console.log(error);
-          })
 
           // /* Show Close day state warning when Day-state is close from last 24hrs */
           // const nOpenTimeSecond = (new Date(this.dOpenDate).getTime());

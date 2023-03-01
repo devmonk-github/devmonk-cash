@@ -62,28 +62,38 @@ export class ActivityItemsComponent implements OnInit, OnDestroy {
   faArrowDown = faLongArrowAltDown;
   sSearchValue: string = '';
   showAdvanceSearch = false;
+  isDownloadEnable = false;
 
   workstations: Array<any> = [];
   employees: Array<any> = [];
-  
-  repairStatuses: Array<any> =  [
-  { key: 'NEW', value: 'new' },
-  { key: 'INFO', value: 'info' },
-  { key: 'PROCESSING', value: 'processing' },
-  { key: 'CANCELLED', value: 'cancelled' },
-  { key: 'INSPECTION', value: 'inspection' },
-  { key: 'COMPLETED', value: 'completed' },
-  { key: 'REFUND' , value:'refund'},
-  { key: 'REFUNDINCASHREGISTER', value: 'refundInCashRegister' },
-  { key: 'OFFER', value: 'offer' },
-  { key: 'OFFER_IS_OK', value: 'offer-is-ok' },
-  { key: 'OFFER_IS_NOT_OK', value: 'offer-is-not-ok' },
-  { key: 'TO_REPAIR', value: 'to-repair' },
-  { key: 'PART_ARE_ORDER', value: 'part-are-order' },
-  { key: 'SHIPPED_TO_REPAIR', value: 'shipped-to-repair' },
-  { key: 'DELIVERED', value: 'delivered' }]
 
-  aKind: Array<any> = ['reservation', 'repair', 'giftcard', 'order', 'gold-purchase', 'gold-sell', 'offer', 'refund']
+  repairStatuses: Array<any> = [
+    { key: 'NEW', value: 'new' },
+    { key: 'INFO', value: 'info' },
+    { key: 'PROCESSING', value: 'processing' },
+    { key: 'CANCELLED', value: 'cancelled' },
+    { key: 'INSPECTION', value: 'inspection' },
+    { key: 'COMPLETED', value: 'completed' },
+    { key: 'REFUND', value: 'refund' },
+    { key: 'REFUNDINCASHREGISTER', value: 'refundInCashRegister' },
+    { key: 'OFFER', value: 'offer' },
+    { key: 'OFFER_IS_OK', value: 'offer-is-ok' },
+    { key: 'OFFER_IS_NOT_OK', value: 'offer-is-not-ok' },
+    { key: 'TO_REPAIR', value: 'to-repair' },
+    { key: 'PART_ARE_ORDER', value: 'part-are-order' },
+    { key: 'SHIPPED_TO_REPAIR', value: 'shipped-to-repair' },
+    { key: 'DELIVERED', value: 'delivered' }]
+
+  aKind: Array<any> = [
+    { key: 'RESERVATION', value: 'reservation' },
+    { key: 'REPAIR', value: 'repair' },
+    { key: 'GIFTCARD', value: 'giftcard' },
+    { key: 'ORDER', value: 'order' },
+    { key: 'GOLD_PURCHASE', value: 'gold-purchase' },
+    { key: 'GOLD_SELL', value: 'gold-sell' },
+    { key: 'OFFER', value: 'offer' },
+    { key: 'REFUND', value: 'refund' }
+  ]
   methodValue: string = 'All';
   transactionValue: string = 'All';
   aFilterBusinessPartner: any = [];
@@ -96,7 +106,7 @@ export class ActivityItemsComponent implements OnInit, OnDestroy {
     { key: 'STATUS', selected: false, sort: 'asc' },
     { key: 'SUPPLIER_REPAIR', disabled: true },
     { key: 'CUSTOMER', disabled: true },
-    { key: 'ACTION' , disabled:true }
+    { key: 'ACTION', disabled: true }
   ]
 
   selectedProperties: any;
@@ -120,13 +130,13 @@ export class ActivityItemsComponent implements OnInit, OnDestroy {
     this.fetchBusinessDetails();
     this.loadTransaction();
 
-    this.apiService.activityItemDetails.subscribe((res:any)=>{
-      let updatedActivityIndex= this.activityItems.findIndex((activity)=> activity._id == res._id)
-      if(updatedActivityIndex != -1){
+    this.apiService.activityItemDetails.subscribe((res: any) => {
+      let updatedActivityIndex = this.activityItems.findIndex((activity) => activity._id == res._id)
+      if (updatedActivityIndex != -1) {
         this.activityItems[updatedActivityIndex] = res;
       }
     })
-    
+
     this.getProperties();
     this.getLocations()
     this.getWorkstations()
@@ -137,7 +147,7 @@ export class ActivityItemsComponent implements OnInit, OnDestroy {
     });
   }
 
-    fetchBusinessDetails() {
+  fetchBusinessDetails() {
     this.apiService.getNew('core', '/api/v1/business/' + this.iBusinessId).subscribe((result: any) => {
       this.businessDetails = result.data;
     })
@@ -157,6 +167,7 @@ export class ActivityItemsComponent implements OnInit, OnDestroy {
     this.showLoader = true;
     this.apiService.postNew('cashregistry', '/api/v1/activities/items', oBody).subscribe(
       (result: any) => {
+        this.isDownloadEnable = true;
         this.activityItems = result.data;
         this.paginationConfig.totalItems = result.count;
         this.showLoader = false;
@@ -172,20 +183,20 @@ export class ActivityItemsComponent implements OnInit, OnDestroy {
 
   openActivities(activity: any, openActivityId?: any) {
     // console.log(activity)
-    this.dialogService.openModal(ActivityDetailsComponent, 
-      { 
-        cssClass: 'w-fullscreen mt--5', 
-        hasBackdrop: true, 
-        closeOnBackdropClick: true, 
-        closeOnEsc: true, 
-        context: { 
+    this.dialogService.openModal(ActivityDetailsComponent,
+      {
+        cssClass: 'w-fullscreen mt--5',
+        hasBackdrop: true,
+        closeOnBackdropClick: true,
+        closeOnEsc: true,
+        context: {
           activityItems: [activity],
           businessDetails: this.businessDetails,
-          openActivityId, 
+          openActivityId,
           items: true,
           employeesList: this.employees,
-          from: 'activity-items' 
-        } 
+          from: 'activity-items'
+        }
       }).instance.close.subscribe();
   }
 
@@ -218,7 +229,7 @@ export class ActivityItemsComponent implements OnInit, OnDestroy {
   }
 
   listEmployee() {
-    this.apiService.postNew('auth', '/api/v1/employee/list', { iBusinessId: this.iBusinessId }).subscribe((result:any)=>{
+    this.apiService.postNew('auth', '/api/v1/employee/list', { iBusinessId: this.iBusinessId }).subscribe((result: any) => {
       if (result?.data?.length && result.data[0].result?.length) {
         this.employees = result.data[0].result
       }
@@ -226,7 +237,7 @@ export class ActivityItemsComponent implements OnInit, OnDestroy {
   }
 
   getLocations() {
-    this.apiService.postNew('core', `/api/v1/business/${this.iBusinessId}/list-location`, {}).subscribe((result:any) => {
+    this.apiService.postNew('core', `/api/v1/business/${this.iBusinessId}/list-location`, {}).subscribe((result: any) => {
       if (result?.data?.aLocation?.length) {
         this.requestParams.locations = result.data.aLocation;
       }
@@ -234,7 +245,7 @@ export class ActivityItemsComponent implements OnInit, OnDestroy {
   }
 
   getWorkstations() {
-    this.apiService.getNew('cashregistry', `/api/v1/workstations/list/${this.iBusinessId}/${this.iLocationId}`).subscribe((result:any)=> {
+    this.apiService.getNew('cashregistry', `/api/v1/workstations/list/${this.iBusinessId}/${this.iLocationId}`).subscribe((result: any) => {
       if (result?.data) {
         this.workstations = result.data;
       }

@@ -32,7 +32,14 @@ export class TransactionsSearchComponent implements OnInit, AfterViewInit {
     limit: 5,
     skip: 0,
   }
-
+  setPaginateSize: number = 10;
+  paginationConfig: any = {
+    itemsPerPage: '10',
+    currentPage: 1,
+    totalItems: 0
+  };
+  pageCounts: Array<number> = [10, 25, 50, 100]
+  pageCount:any = 10;
   page = 1;
 
   @ViewChildren('inputElement') inputElement!: QueryList<ElementRef>;
@@ -58,6 +65,20 @@ export class TransactionsSearchComponent implements OnInit, AfterViewInit {
     this.findTransactions()
   }
 
+
+  changeItemsPerPage(pageCount: any) {
+    this.paginationConfig.itemsPerPage = pageCount;
+    this.findTransactions();
+  }
+
+  // Function for trigger event after page changes
+  pageChanged(page: any) {
+    this.requestParams.skip = (page - 1) * parseInt(this.paginationConfig.itemsPerPage);
+    this.findTransactions();
+    this.paginationConfig.currentPage = page;
+  }
+
+
   findTransactions() {
     // console.log('transaction search - findTransactions');
     this.transactions = [];
@@ -65,6 +86,7 @@ export class TransactionsSearchComponent implements OnInit, AfterViewInit {
     this.activities = [];
     this.totalActivities = 0;
     this.requestParams.type = 'transaction';
+    this.requestParams.limit = this.paginationConfig.itemsPerPage || 50;
     this.requestParams.iWorkstationId = undefined // we need to work on this once devides are available.
     this.requestParams.workstations = this.selectedWorkstations;
     this.requestParams.locations = this.selectedLocations;
@@ -73,6 +95,7 @@ export class TransactionsSearchComponent implements OnInit, AfterViewInit {
       // console.log('transaction search - findTransactions search result', result);
       this.transactions = result.transactions.records;
       this.totalTransactions = result.transactions.count;
+      this.paginationConfig.totalItems = result.activities.count;
       this.activities = result.activities.records;
       this.activities.forEach((item: any) =>{
         item.sBagNumbers = (item?.aActivityItemMetaData?.length) ? item.aActivityItemMetaData.map((el:any) => el.sBagNumber).join(',') : '';
