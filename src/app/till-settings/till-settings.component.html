@@ -37,21 +37,21 @@
           
           <h3 class="fw-bolder mb-0">{{'BAG_NUMBERS' | translate}}</h3>
           
-          <div class="row">
+          <div class="row" *ngIf="settings?.currentLocation">
             <div class="col-9 mb-5">
               <label class="form-check form-switch form-check-custom form-check-solid">{{ 'AUTO_INCREMENT_BAG_NUMBERS' |
                 translate}}</label>
             </div>
             <div class="col-3">
               <label class="form-check form-switch form-check-custom form-check-solid">
-                <input type="checkbox" class="form-check-input" [(ngModel)]="settings.bAutoIncrementBagNumbers">
+                <input type="checkbox" class="form-check-input" [(ngModel)]="settings.currentLocation.bAutoIncrementBagNumbers">
               </label>
             </div>
           
             <div class="row mb-6 align-items-center">
               <label class="col-6">{{"LAST_BAG_NUMBER" | translate}}</label>
               <div class="col-6">
-                <input type="number" class="form-control" [(ngModel)]="settings.nLastBagNumber">
+                <input type="number" class="form-control" [(ngModel)]="settings.currentLocation.nLastBagNumber">
               </div>
             </div>
           </div>
@@ -115,7 +115,7 @@
 
                 <div class="d-flex justify-content-end align-items-center">
                   <div *ngIf="updatingSettings" class="spinner-border mx-2"></div>
-                  <button type="submit" class="btn btn-primary mt-4 float-end" (click)="updateSettings($event)"
+                  <button type="submit" class="btn btn-primary mt-4 float-end" (click)="updateSettings()"
                     [disabled]="updatingSettings">
                     {{"SAVE" | translate}}
                   </button>

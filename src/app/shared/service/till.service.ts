@@ -21,6 +21,8 @@ export class TillService {
   iLocationId = localStorage.getItem('currentLocation') || '';
   iWorkstationId = localStorage.getItem('currentWorkstation') || '';
 
+  settings:any;
+
   constructor(
     private apiService: ApiService,
     private translateService: TranslateService) { }
@@ -107,9 +109,7 @@ export class TillService {
   }
 
   createTransactionBody(transactionItems: any, payMethods: any, discountArticleGroup: any, redeemedLoyaltyPoints: number, customer: any): any {
-    this.iBusinessId = localStorage.getItem('currentBusiness') || '';
-    this.iLocationId = localStorage.getItem('currentLocation') || '';
-    this.iWorkstationId = localStorage.getItem('currentWorkstation') || '';
+    this.updateVariables();
 
     const iLocationId = transactionItems?.length && transactionItems[0].iLocationId ? transactionItems[0].iLocationId : this.iLocationId; /* If we changed the location from the drop-down then it would change */
     const transaction = new Transaction(
@@ -677,18 +677,36 @@ export class TillService {
     return this.apiService.postNew('cashregistry', '/api/v1/transaction/activity/' + iActivityId, body);
   }
 
-  updateSettings(settings: any): void {
+  async fetchSettings() {
+    this.settings = await this.apiService.getNew('cashregistry', `/api/v1/settings/${this.iBusinessId}`).toPromise();
+    const oCurrentLocation = {
+      iLocationId: this.iLocationId,
+      bAutoIncrementBagNumbers: true,
+      nLastBagNumber: 0,
+    };
+
+    if (!this.settings?.aBagNumbers?.length) {
+      this.settings.currentLocation = oCurrentLocation;
+    } else {
+      this.settings.currentLocation = this.settings.aBagNumbers.find((el: any) => el.iLocationId === this.iLocationId) || oCurrentLocation;
+    }
+    // console.log(this.settings);
+    return this.settings;
+  }
+
+  async updateSettings() {
+    this.settings.aBagNumbers = [...this.settings.aBagNumbers.filter((el: any) => el.iLocationId !== this.iLocationId), this.settings.currentLocation];
     const body = {
-      nLastInvoiceNumber: settings.nLastInvoiceNumber,
-      nLastReceiptNumber: settings.nLastReceiptNumber,
-      sDayClosurePeriod: settings.sDayClosurePeriod,
-      bOpenCashDrawer: settings.bOpenCashDrawer,
-      bAutoIncrementBagNumbers: settings.bAutoIncrementBagNumbers,
-      nLastBagNumber: settings.nLastBagNumber,
+      aBagNumbers: this.settings.aBagNumbers
     };
     
-    this.apiService.putNew('cashregistry', '/api/v1/settings/update/' + this.iBusinessId, body).subscribe((result: any) => {
-      console.log(result)
-    })
+    const _result:any = await this.apiService.putNew('cashregistry', `/api/v1/settings/update/${this.iBusinessId}`, body).toPromise();
+    console.log(693, _result);
+  }
+
+  updateVariables() {
+    this.iBusinessId = localStorage.getItem('currentBusiness') || '';
+    this.iLocationId = localStorage.getItem('currentLocation') || '';
+    this.iWorkstationId = localStorage.getItem('currentWorkstation') || '';
   }
 }

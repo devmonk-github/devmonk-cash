@@ -21,10 +21,10 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
   bookKeepings: Array<any> = [];
   searchValue: string = '';
   requestParams: any = {
-    iBusinessId: ''
+    iBusinessId: localStorage.getItem('currentBusiness')
   }
   updatingSettings: boolean = false;
-  iLocationId:any;
+  iLocationId: any = localStorage.getItem('currentLocation');
   
   settings: any = { nLastReceiptNumber: 0, nLastInvoiceNumber: 0, id: null };
   overviewColumns = [
@@ -60,8 +60,7 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
-    this.requestParams.iBusinessId = localStorage.getItem('currentBusiness');
-    this.iLocationId = localStorage.getItem('currentLocation');
+    this.apiService.setToastService(this.toastService);
     this.getPaymentMethods();
     this.getBookkeepingSetting();
     this.getSettings();
@@ -92,9 +91,21 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
       )
   }
 
+  
+
   getSettings() {
     this.getSettingsSubscription = this.apiService.getNew('cashregistry', `/api/v1/settings/${this.requestParams.iBusinessId}`).subscribe((result: any) => {
       this.settings = result;
+      const oCurrentLocation = {
+        iLocationId: this.iLocationId,
+        bAutoIncrementBagNumbers: true,
+        nLastBagNumber: 0,
+      };
+      if (!this.settings?.aBagNumbers?.length) {
+        this.settings.currentLocation = oCurrentLocation;
+      } else {
+        this.settings.currentLocation = this.settings.aBagNumbers.find((el:any) => el.iLocationId === this.iLocationId) || oCurrentLocation;
+      }
     }, (error) => {
       console.log(error);
     })
@@ -224,21 +235,20 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
     });
   }
 
-  updateSettings(event:any): void {
+  updateSettings() {
+    this.settings.aBagNumbers = [...this.settings.aBagNumbers.filter((el: any) => el.iLocationId !== this.iLocationId), this.settings.currentLocation];
     const body = {
       nLastInvoiceNumber: this.settings.nLastInvoiceNumber,
       nLastReceiptNumber: this.settings.nLastReceiptNumber,
       sDayClosurePeriod: this.settings.sDayClosurePeriod,
       bOpenCashDrawer: this.settings.bOpenCashDrawer,
-      bAutoIncrementBagNumbers: this.settings.bAutoIncrementBagNumbers,
-      nLastBagNumber: this.settings.nLastBagNumber,
+      aBagNumbers: this.settings.aBagNumbers,
     };
     this.updatingSettings = true;
     this.updateSettingsSubscription = this.apiService.putNew('cashregistry', '/api/v1/settings/update/' + this.requestParams.iBusinessId, body)
       .subscribe((result: any) => {
         if (result){
           this.updatingSettings = false;
-          event.target.disabled = false;
           this.toastService.show({ type: 'success', text: 'Saved Successfully' });
         } 
       }, (error) => {
