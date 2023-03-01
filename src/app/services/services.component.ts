@@ -107,7 +107,32 @@ export class ServicesComponent implements OnInit, OnDestroy {
   // Function for reset selected filters
   resetFilters() {
     this.requestParams.searchValue = "";
-    this.loadTransaction()
+    this.requestParams = {
+      selectedTransactionStatuses: [],
+      locations: [],
+      selectedLocations: [],
+      aSelectedBusinessPartner: [],
+      iEmployeeId: '',
+      iAssigneeId: '',
+      searchValue: '',
+      sortBy: { key: '_id', selected: true, sort: 'asc' },
+      sortOrder: 'asc'
+    };
+    this.selectedWorkstations = [];
+    this.filterDates = {
+      create: {
+        minDate: new Date('01-01-2015'),
+        maxDate: new Date(new Date().setHours(23, 59, 59)),
+      },
+      estimate: {
+        minDate: undefined,
+        maxDate: undefined
+        // minDate: new Date('01-01-2015'),
+        // maxDate: this.addDays(new Date(new Date().setHours(23, 59, 59)), 20),
+      }
+    }
+    this.showAdvanceSearch = false;
+    this.loadTransaction();
   }
 
   paymentMethods: Array<any> = ['All', 'Cash', 'Credit', 'Card', 'Gift-Card'];
