@@ -15,7 +15,7 @@
                     <span>{{ "CUSTOMER" | translate }}</span>
                 </h3>
                 <ng-container *ngIf="from === 'transactions'">
-                    <button class="btn btn-primary" (click)="openCustomer(transaction.oCustomer)">
+                    <button class="btn btn-primary" *ngIf="!transaction?.oCustomer?.bCounter" (click)="openCustomer(transaction.oCustomer)">
                         {{ 'VIEW' | translate }}
                     </button>
                 </ng-container>
@@ -25,7 +25,7 @@
                     <div class="text-gray-900 mt-2">{{ transaction?.oCustomer?.sFirstName }} {{
                         transaction?.oCustomer?.sPrefix}} {{ transaction?.oCustomer?.sLastName }} </div>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-6" *ngIf="!transaction?.oCustomer?.bCounter">
                     <div class="mt-2 text-muted">{{ "INVOVICE_ADDRESS" | translate}}</div>
                     <div class="text-gray-800 mt-2">
                         <span> {{ transaction?.oCustomer?.oInvoiceAddress?.sStreet }} {{
@@ -35,7 +35,7 @@
                         <span> {{ transaction?.oCustomer?.oInvoiceAddress?.sCountry }}</span>
                     </div>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-6" *ngIf="!transaction?.oCustomer?.bCounter">
                     <div class="mt-2 text-muted">{{ "SHIPPING_ADDRESS" | translate}}</div>
                     <div class="text-gray-800 mt-2">
                         <span> {{ transaction?.oCustomer?.oShippingAddress?.sStreet }} {{
@@ -46,7 +46,7 @@
                     </div>
                 </div>
                 <div class="col-md-12">
-                    <div class="text-gray-800 mt-2">{{ transaction?.oCustomer?.sEmail }}</div>
+                    <div class="text-gray-800 mt-2" *ngIf="!transaction?.oCustomer?.bCounter">{{ transaction?.oCustomer?.sEmail }}</div>
                     <div class="text-gray-800 mt-2">{{ transaction?.oCustomer?.sMobile }} &nbsp; &nbsp; {{
                         transaction?.oCustomer?.sLandLine }}</div>
                 </div>
@@ -76,14 +76,15 @@
             <h3 class="fw-bolder mb-4">
                 <span>{{ "TRANSACTION_OVERVIEW" | translate }}</span>
             </h3>
-            <div class="col-md-8 row fw-bold gy-1">
-                <label class="col-md-4 mt-2 text-muted">{{"RECEIPT_NUMBER" | translate}}</label>
+            <div class="col-md-8 fw-bold gy-1">
+                <div class="row">
+                <label class="col-md-4 mt-3 text-muted">{{"RECEIPT_NUMBER" | translate}}</label>
                 <div class="col-md-8">
-                    <div class="text-gray-800 mt-2">{{ transaction.sInvoiceNumber || '' }}</div>
+                    <div class="text-gray-800 mt-3">{{ transaction.sInvoiceNumber || '' }}</div>
                 </div>
-                <label class="col-md-4 mt-2 text-muted">{{"DATE_TIME" | translate}}</label>
+                <label class="col-md-4 mt-3 text-muted">{{"DATE_TIME" | translate}}</label>
                 <div class="col-md-8">
-                    <div class="text-gray-800 mt-2">{{ transaction.dCreatedDate }}</div>
+                    <div class="text-gray-800 mt-3">{{ transaction.dCreatedDate }}</div>
                 </div>
                 <!-- <label class="col-md-4 mt-2 text-muted">{{"PAY_METHOD" | translate}}</label>
                 <div class="col-md-8">
@@ -92,19 +93,20 @@
                     </div>
 
                 </div> -->
-                <label class="col-md-4 mt-2 text-muted">{{"CHANGE" | translate}}</label>
+                <label class="col-md-4 mt-3 text-muted">{{"CHANGE" | translate}}</label>
                 <div class="col-md-8">
-                    <div class="text-gray-800 mt-2">{{ 0 }}</div>
+                    <div class="text-gray-800 mt-3">{{ 0 }}</div>
                 </div>
-                <label class="col-md-4 mt-2 text-muted">{{"REFUNDED" | translate}}</label>
+                <label class="col-md-4 mt-3 text-muted">{{"REFUNDED" | translate}}</label>
                 <div class="col-md-8">
-                    <div class="text-gray-800 mt-2">{{ 0 }}</div>
+                    <div class="text-gray-800 mt-3">{{ 0 }}</div>
                 </div>
                 <!-- <label class="col-md-4 mt-2 text-muted">{{"ASSISTED_BY" | translate}}</label>
                 <div class="col-md-8">
                     <div class="text-gray-800 mt-2">{{ transaction?.oEmployee?.sFirstName }} {{
                         transaction?.oEmployee?.sLastName }}</div>
                 </div> -->
+                </div>
             </div>
             <div class="col-md-4">
                 <button class="btn btn-sm btn-secondary w-100 d-flex mb-2">
@@ -138,7 +140,7 @@
                     <fa-icon [icon]="faReceipt"></fa-icon>
                     <label class="mx-auto"> {{ "WARRANTY_RECEIPT" | translate}}</label>
                 </button>
-                <button class="btn btn-sm btn-secondary w-100 d-flex mb-2">
+                <button class="btn btn-sm btn-secondary w-100 d-flex mb-2" *ngIf="!transaction?.oCustomer?.bCounter">
                     <fa-icon [icon]="faAt"></fa-icon>
                     <label class="mx-auto">{{ "MAIL" | translate}}</label>
                 </button>
