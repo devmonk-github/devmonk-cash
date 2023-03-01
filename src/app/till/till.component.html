@@ -24,7 +24,7 @@
         <div class="row">
           <div class="col-8">
             <div class="alert alert-warning" *ngIf="!bIsPreviousDayStateClosed">
-              <p class="mb-0" style="font-size: 1.2rem;font-weight: bold;margin-left:1.3rem">
+              <p class="mb-0" style="font-size: 1.2rem;font-weight: bold;">
                 <span style="margin-right:1rem; font-weight:bolder">!</span>
                 {{ "THE_PREVIOUS" | translate }} {{ tillService.settings.sDayClosurePeriod}} {{"IS_NOT_CLOSED_YET" | translate }}
                 ({{ dOpenDate  | dateTranslate:"EEEE dd-MM-YYYY hh:mm:ss aaa"}})
