@@ -63,6 +63,7 @@ export class OrderComponent implements OnInit {
 
   @Input() disablePrepayment: any;
   @Input() availableAmount: any;
+  @Input() settings:any;
 
   constructor(
     private priceService: PriceService,
@@ -86,7 +87,8 @@ export class OrderComponent implements OnInit {
   selectArticleGroup() {
     this.dialogService.openModal(SelectArticleDialogComponent, { cssClass: 'modal-m', context: { item: this.item, from: 'order' } })
       .instance.close.subscribe((data) => {
-        if (data) {
+        
+        if (data.action) {
           const { articlegroup, brand, supplier, nMargin } = data;
           this.item.supplier = supplier.sName;
           this.item.iArticleGroupOriginalId = articlegroup._id;
@@ -98,10 +100,18 @@ export class OrderComponent implements OnInit {
           this.item.iBusinessBrandId = brand._id;
           this.updateProperties(articlegroup);
           this.changeInMargin();
+          this.settingsChanged();
         } else {
           this.deleteItem();
         }
       });
+  }
+
+  settingsChanged(event?:any){
+    if (this.settings.bAutoIncrementBagNumbers) {
+      this.item.sBagNumber = (event) ? event : this.settings.nLastBagNumber + 1;
+      this.itemChanged.emit({type:'settingsChanged', data: this.item.sBagNumber});
+    }
   }
 
   changeInMargin() {

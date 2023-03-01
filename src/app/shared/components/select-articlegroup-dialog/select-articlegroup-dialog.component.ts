@@ -46,29 +46,25 @@ export class SelectArticleDialogComponent implements OnInit {
     this.getBusinessBrands();
   }
 
-  async fetchArticleGroups(iBusinessPartnerId: any) {
-    const oDefaultArticle: any = await this.createArticleGroupService.checkArticleGroups('repair').toPromise();
-    // console.log(51, oDefaultArticle);
-    if (oDefaultArticle?.data?.length && oDefaultArticle?.data[0]?.result?.length) {
-      this.articlegroup = oDefaultArticle?.data[0]?.result[0];
-      this.supplier = this.partnersList.find((el:any) => el._id === this.articlegroup.aBusinessPartner[0].iBusinessPartnerId);
-      // console.log(55, this.articlegroup);
-    } else {
-      const articleBody = { name: 'Repair', sCategory: 'repair', sSubCategory: 'repair' };
-      const result: any = await this.createArticleGroupService.createArticleGroup(articleBody);
-      // console.log(59, {result});
-      this.articlegroup = result?.data;//[0]?.result[0];
-      // console.log(61, this.articlegroup)
-      this.supplier = this.partnersList.find((el: any) => el._id === this.articlegroup.aBusinessPartner[0].iBusinessPartnerId);
-      
+  async fetchArticleGroups(iBusinessPartnerId: any, bIsSupplierUpdated:boolean = false) {
+    if (!bIsSupplierUpdated) {
+      const oDefaultArticle: any = await this.createArticleGroupService.checkArticleGroups(this.from).toPromise();
+      if (oDefaultArticle?.data?.length && oDefaultArticle?.data[0]?.result?.length) {
+        this.articlegroup = oDefaultArticle?.data[0]?.result[0];
+        this.supplier = this.partnersList.find((el: any) => el._id === this.articlegroup.aBusinessPartner[0].iBusinessPartnerId);
+        // console.log(55, this.articlegroup);
+      } else {
+        const articleBody = { name: (this.from === 'repair') ? 'Repair' : 'Order', sCategory: this.from, sSubCategory: this.from };
+        const result: any = await this.createArticleGroupService.createArticleGroup(articleBody);
+        // console.log(59, {result});
+        this.articlegroup = result?.data;//[0]?.result[0];
+        // console.log(61, this.articlegroup)
+        this.supplier = this.partnersList.find((el: any) => el._id === this.articlegroup.aBusinessPartner[0].iBusinessPartnerId);
+
+      }
     }
-    // if (!iBusinessPartnerId) {
-    //   this.articlegroup = null;
-    // }
+    
     let data = {
-      // searchValue: '',
-      // oFilterBy: {
-      // },
       iBusinessPartnerId,
       iBusinessId: this.iBusinessId,
     };
@@ -77,6 +73,7 @@ export class SelectArticleDialogComponent implements OnInit {
         if (result.data?.length && result.data[0]?.result?.length) {
           this.articleGroupsList = result.data[0].result;
           this.articleGroupLoading = false;
+          
           // setTimeout(() => {
           //   if (this.articleGroupRef)
           //     this.articleGroupRef.focus()
@@ -135,7 +132,7 @@ export class SelectArticleDialogComponent implements OnInit {
     }
     this.apiService.postNew('core', '/api/v1/business/partners/list', body).subscribe(
       (result: any) => {
-        if (result && result.data && result.data && result.data[0] && result.data[0].result && result.data[0].result.length && result.data[0].count && result.data[0].count.totalData) {
+        if (result?.data?.length && result.data[0]?.result?.length) {
           this.partnersList = result.data[0].result;
           this.fetchArticleGroups(null);
           if (aBusinessPartnerId.length > 0) {
@@ -162,7 +159,7 @@ export class SelectArticleDialogComponent implements OnInit {
   }
 
   changeInSupplier() {
-    this.fetchArticleGroups(this.supplier._id);
+    this.fetchArticleGroups(this.supplier._id, true);
   }
 
   changeInBrand() {
@@ -176,7 +173,7 @@ export class SelectArticleDialogComponent implements OnInit {
 
   getBusinessBrands() {
     const oBody = {
-      iBusinessId: localStorage.getItem('currentBusiness') || '',
+      iBusinessId: this.iBusinessId
     }
     this.apiService.postNew('core', '/api/v1/business/brands/list', oBody).subscribe((result: any) => {
       if (result.data && result.data.length > 0) {

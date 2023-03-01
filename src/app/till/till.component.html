@@ -197,13 +197,28 @@
                           [disablePrepayment]="!availableAmount || availableAmount === 0"
                           (itemChanged)="itemChanged($event, i)" [availableAmount]="availableAmount"></div>
                         <!-- order -->
-                        <div class="accordion-item w-100 d-table-cell" till-order *ngIf="item.type === 'order'"
-                          [item]="item" [disablePrepayment]="!availableAmount || availableAmount === 0" [taxes]="taxes"
-                          (itemChanged)="itemChanged($event, i)" [availableAmount]="availableAmount"></div>
+                        <div class="accordion-item w-100 d-table-cell" 
+                          *ngIf="item.type === 'order'"
+                          till-order 
+                          [item]="item" 
+                          [disablePrepayment]="!availableAmount || availableAmount === 0" 
+                          [taxes]="taxes"
+                          [availableAmount]="availableAmount" 
+                          [settings]="tillService.settings.currentLocation"
+                          (itemChanged)="itemChanged($event, i)">
+                        </div>
+                        
                         <!-- repair -->
-                        <div class="accordion-item w-100 d-table-cell" till-repair *ngIf="item.type === 'repair'"
-                          [disablePrepayment]="!availableAmount || availableAmount === 0" [item]="item" [taxes]="taxes"
-                          (itemChanged)="itemChanged($event, i)" [availableAmount]="availableAmount" [settings]="tillService.settings.currentLocation"></div>
+                        <div class="accordion-item w-100 d-table-cell" 
+                          till-repair 
+                          *ngIf="item.type === 'repair'"
+                          [disablePrepayment]="!availableAmount || availableAmount === 0" 
+                          [item]="item" 
+                          [taxes]="taxes"
+                          [availableAmount]="availableAmount" 
+                          [settings]="tillService.settings.currentLocation"
+                          (itemChanged)="itemChanged($event, i)">
+                        </div>
                         <!-- giftcard -->
                         <div class="accordion-item w-100 d-table-cell w-100" till-gift *ngIf="item.type === 'giftcard'"
                           [item]="item" [transactionItems]="transactionItems" [taxes]="taxes"
