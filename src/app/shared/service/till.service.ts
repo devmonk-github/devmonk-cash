@@ -37,6 +37,9 @@ export class TillService {
         case 'swiss':
           this.currency = "₣";
           break;
+        case 'euro':
+          this.currency = "€";
+          break;
       }
     }
     // console.log('this.currency succesfully selected', this.currency)
