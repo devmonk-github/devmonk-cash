@@ -216,7 +216,7 @@
                         <!-- empty-line -->
                         <div class="accordion-item w-100 d-table-cell w-100" till-other
                           *ngIf="item.type=== 'empty-line'" [item]="item" [taxes]="taxes"
-                          (itemChanged)="itemChanged($event, i)"></div>
+                          (itemChanged)="itemChanged($event, i)" ></div>
                         <!-- loyalty-points -->
                         <div class="accordion-item w-100 d-table-cell w-100" till-loyalty-points-discount
                           *ngIf="item.type=== 'loyalty-points'" [item]="item" [taxes]="taxes"
@@ -224,7 +224,7 @@
 
                         <div class="d-table-cell">
                           <button class="btn btn-sm  btn-icon  btn-active-color-danger mx-6 ms-4"
-                            (click)="itemChanged('delete', i)">
+                            (click)="itemChanged({type:'delete'}, i)">
                             <span class="svg-icon svg-icon-3qx me-0">
                               <fa-icon [icon]="faTimes"></fa-icon>
                             </span>

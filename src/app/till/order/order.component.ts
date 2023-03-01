@@ -127,7 +127,7 @@ export class OrderComponent implements OnInit {
   }
 
   deleteItem(): void {
-    this.itemChanged.emit('delete')
+    this.itemChanged.emit({type: 'delete'})
   }
   getDiscount(item: any): string {
     return this.priceService.getDiscount(item.nDiscount)
@@ -336,7 +336,7 @@ export class OrderComponent implements OnInit {
           this.item.nDiscount = data.item.nDiscount;
           this.item.bDiscountOnPercentage = data.item?.discount?.percent || false;
           // this.getTotalDiscount(data.item)
-          this.itemChanged.emit(this.item);
+          this.itemChanged.emit({type: 'item', data: this.item});
         }
       })
   }
@@ -359,7 +359,7 @@ export class OrderComponent implements OnInit {
   }
 
   updatePayments(): void {
-    this.itemChanged.emit(this.item);
+    this.itemChanged.emit({type: 'item', data: this.item});
   }
 
   changePrePayment(item:any){
@@ -377,6 +377,6 @@ export class OrderComponent implements OnInit {
 
     item.manualUpdate = true;
     item.prepaymentTouched = true;
-    this.itemChanged.emit('prepaymentChange');
+    this.itemChanged.emit({type: 'prepaymentChange'});
   }
 }

@@ -133,7 +133,7 @@ export class RepairComponent implements OnInit {
   settingsChanged(event?:any){
     if (this.settings.bAutoIncrementBagNumbers) {
       this.item.sBagNumber = (event) ? event : this.settings.nLastBagNumber + 1;
-      this.itemChanged.emit({item:'settingsChanged', index: 0, data: this.item.sBagNumber});
+      this.itemChanged.emit({type:'settingsChanged', data: this.item.sBagNumber});
     }
   }
 
@@ -160,7 +160,7 @@ export class RepairComponent implements OnInit {
   }
 
   updatePayments() {
-    this.itemChanged.emit(this.item);
+    this.itemChanged.emit({type: 'item', data: this.item});
   }
 
   changePrePayment(item: any) {
@@ -178,11 +178,11 @@ export class RepairComponent implements OnInit {
 
     item.manualUpdate = true;
     item.prepaymentTouched = true;
-    this.itemChanged.emit('prepaymentChange');
+    this.itemChanged.emit({type:'prepaymentChange', data:null});
   }
 
   deleteItem() {
-    this.itemChanged.emit('delete')
+    this.itemChanged.emit({type:'delete'})
   }
 
   listEmployees() {
@@ -365,7 +365,7 @@ export class RepairComponent implements OnInit {
     if (oUser) oUser = JSON.parse(oUser);
     this.item.iEmployeeId = oUser?.userId || null;
     this.item.iAssigneeId = oRepairer?._id;
-    this.itemChanged.emit(this.item);
+    this.itemChanged.emit({type:'item', data: this.item});
   }
 
   // Function for search suppliers
@@ -422,7 +422,7 @@ export class RepairComponent implements OnInit {
           this.item.nDiscount = data.item.nDiscount;
           this.item.bDiscountOnPercentage = data.item?.discount?.percent || false;
           // this.getTotalDiscount(data.item)
-          this.itemChanged.emit(this.item);
+          this.itemChanged.emit({type: 'item', data: this.item});
         }
       })
   }

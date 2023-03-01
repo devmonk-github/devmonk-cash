@@ -28,7 +28,7 @@ export class LoyaltyPointsDiscountComponent implements OnInit {
   }
 
   deleteItem(): void {
-    this.itemChanged.emit('delete')
+    this.itemChanged.emit({ type: 'delete'})
   }
   getDiscount(item: any): string {
     return this.priceService.getDiscount(item.nDiscount)

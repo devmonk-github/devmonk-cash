@@ -490,10 +490,9 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     this.resetSearch();
   }
 
-  itemChanged(item: any, index: number): void {
-    // console.log('itemChanged: ', event);
-    // let item = (typeof event === 'object') ? event.item : event;
-    switch (item) {
+  itemChanged(event: any, index: number): void {
+    console.log('itemChanged: ', event);
+    switch (event.type) {
       case 'delete':
         // console.log('itemChanged delete')
         this.transactionItems.splice(index, 1);
@@ -514,11 +513,11 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
         this.transactionItems.push(tItem);
         this.clearPaymentAmounts();
         break;
-      // case 'settingsChanged':
-      //   this.settings.nLastBagNumber = Number(event.data);
-      //   break;
+      case 'settingsChanged':
+        this.settings.nLastBagNumber = Number(event.data);
+        break;
       default:
-        this.transactionItems[index] = item;
+        this.transactionItems[index] = event.data;
         this.clearPaymentAmounts();
         break;
     }
