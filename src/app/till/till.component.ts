@@ -131,7 +131,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   selectedQuickButton: any;
   getSettingsSubscription !: Subscription;
   dayClosureCheckSubscription !: Subscription;
-  settings: any;
   businessDetails: any;
   printActionSettings: any;
   printSettings: any;
@@ -812,7 +811,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
             this.activityItems = activityItems;
             this.activity = activity;
             
-            if (this.settings.currentLocation.bAutoIncrementBagNumbers) {
+            if (this.tillService.settings.currentLocation.bAutoIncrementBagNumbers) {
               this.tillService.updateSettings();
             }
 
