@@ -3,6 +3,7 @@ import { faCopy, faPencilAlt, faSave, faXmark } from '@fortawesome/free-solid-sv
 import { throwError } from 'rxjs';
 import { AddEditWorkstationComponent } from 'src/app/shared/components/add-edit-workstation/add-edit-workstation.component';
 import { PrintSettingsEditorComponent } from 'src/app/shared/components/print-settings-editor/print-settings-editor.component';
+import { SelectPrintPaperDialogComponent } from 'src/app/shared/components/select-print-paper-dialog/select-print-paper-dialog.component';
 import { ToastService } from 'src/app/shared/components/toast';
 import { ApiService } from 'src/app/shared/service/api.service';
 import { DialogService } from 'src/app/shared/service/dialog';
@@ -64,10 +65,36 @@ export class PrintWorkstationComponent implements OnInit {
   workStationsCount: number = 0;
   iWorkstationId = localStorage.getItem('currentWorkstation');
   
-  ngOnInit(): void {
-    this.getWorkstations();
-    this.fetchPrintSettings();
-    this.getAllPrintersList();
+  async ngOnInit() {
+    this.loading = true;
+
+    const [_workstationsResult, _printSettings, _allPrintersList, _computersList]: any = await Promise.all([
+      this.getWorkstations(),
+      this.fetchPrintSettings(),
+      this.getAllPrintersList(),
+      this.getComputersList(),
+    ]);
+    
+    
+    this.computersList = _computersList;
+    // console.log('computersList',this.computersList);   
+    
+    if (_printSettings?.data[0]?.result?.length) {
+      this.businessPrintSettings = _printSettings.data[0].result;
+      // console.log('fetchPrintSettings', this.businessPrintSettings);
+    }
+    
+    if (_allPrintersList?.length) {
+      this.printersList = _allPrintersList.map((printer: any) => {
+        printer.keyValue = printer.computer.id + '/id/' + printer.id;
+        // console.log(printer.keyValue, printer.name);
+        return printer;
+      });
+      // console.log('printersList', this.printersList);
+      
+    }
+    
+    this.processWorkstations(_workstationsResult);
   }
 
   createWorkstation(workstation: any) {
@@ -87,27 +114,51 @@ export class PrintWorkstationComponent implements OnInit {
 
   // Function for get workstations list
   getWorkstations() {
-    this.loading = true;
+    // this.loading = true;
     this.workstations = [];
-    this.apiService.getNew('cashregistry', `/api/v1/workstations/list/${this.businessDetails._id}/${this.iLocationId}`).subscribe(
-      (result: any) => {
-        if (result?.data?.length > 0) {
-          this.workstations = result.data;
-          this.tableMaxWidth = this.workstations.length * 250;
-          this.workstations.forEach(async (workstation: any) => {
-            if (workstation.nPrintNodeComputerId) {
-              let computers: any = await this.getComputerDetails(workstation.nPrintNodeComputerId).toPromise();
-              workstation.computer = computers[0] || undefined;
-            }
-          });
-          const current = this.workstations.splice(this.workstations.findIndex((el: any) => el._id === this.iWorkstationId), 1)
-          this.workstations = [...current, ...this.workstations]
+    return this.apiService.getNew('cashregistry', `/api/v1/workstations/list/${this.businessDetails._id}/${this.iLocationId}`).toPromise();
+      // (result: any) => {
+        // if (result?.data?.length > 0) {
+        //   this.workstations = result.data;
+        //   this.tableMaxWidth = this.workstations.length * 250;
+        //   this.workstations.forEach(async (workstation: any) => {
+        //     if (workstation.nPrintNodeComputerId) {
+        //       let computers: any = await this.getComputerDetails(workstation.nPrintNodeComputerId).toPromise();
+        //       workstation.computer = computers[0] || undefined;
+        //     }
+        //   });
+          
+        //   //  bring the current workstaion to front of the list 
+        //   const current = this.workstations.splice(this.workstations.findIndex((el: any) => el._id === this.iWorkstationId), 1)
+        //   this.workstations = [...current, ...this.workstations]
+        //   // END
+        //   console.log('getWorkstation', this.workstations);
+        // }
+        // this.loading = false;
+      // }),
+      // (error: any) => {
+      //   this.loading = false;
+      // }
+  }
+
+  processWorkstations(result: any) {
+    if (result?.data?.length > 0) {
+      this.workstations = result.data;
+      this.tableMaxWidth = this.workstations.length * 250;
+      this.workstations.forEach(async (workstation: any) => {
+        if (workstation.nPrintNodeComputerId) {
+          // let computers: any = await this.getComputerDetails(workstation.nPrintNodeComputerId).toPromise();
+          workstation.computer = this.computersList.find((computer: any) => computer.id === workstation.nPrintNodeComputerId);
+          // console.log('printers for', workstation.nPrintNodeComputerId, this.printersList.filter((p: any) => p.computer.id === workstation.nPrintNodeComputerId))
         }
-        this.loading = false;
-      }),
-      (error: any) => {
-        this.loading = false;
-      }
+      });
+
+      //  bring the current workstaion to front of the list 
+      const current = this.workstations.splice(this.workstations.findIndex((el: any) => el._id === this.iWorkstationId), 1)
+      this.workstations = [...current, ...this.workstations]
+      // END
+      console.log('processWorkstations', this.workstations);
+    }
   }
 
   // Function for get computers list
@@ -117,38 +168,38 @@ export class PrintWorkstationComponent implements OnInit {
       this.toastService.show({ type: 'warning', text: 'PrintNode not configured for you business contact admin.' });
       return;
     }
-    let urlParams = `?id=${nAccountId}&APIKEY=${this.businessDetails?.oPrintNode?.sApiKey}`
-    this.apiService.getNew('cashregistry', '/api/v1/printnode/computers' + urlParams).subscribe(
-      (result: any) => {
-        if (result?.length > 0) {
-          this.computersList = [];
-          let self = this;
-          result.map(async (computer: any) => {
-            computer.printers = await this.getPrintersList(computer.id).toPromise();
-            self.computersList.push(computer);
-          });
-        }
-      }
-    )
+    let urlParams = `?id=${nAccountId}&APIKEY=${this.businessDetails?.oPrintNode?.sApiKey}`;
+    return this.apiService.getNew('cashregistry', '/api/v1/printnode/computers' + urlParams).toPromise();
+      // (result: any) => {
+        // if (result?.length > 0) {
+        //   this.computersList = [];
+        //   let self = this;
+        //   result.map(async (computer: any) => {
+        //     computer.printers = await this.getPrintersList(computer.id).toPromise();
+        //     self.computersList.push(computer);
+        //   });
+        // }
+      // }
+    // )
   }
 
   // Function for get computer details
-  getComputerDetails(computerId: number) {
-    let nAccountId = this.businessDetails?.oPrintNode?.nAccountId
-    if (!nAccountId) {
-      this.toastService.show({ type: 'warning', text: 'PrintNode not configured for you business contact admin.' });
-      return throwError('');
-    }
-    let urlParams = `?id=${nAccountId}&deviceId=${computerId}&APIKEY=${this.businessDetails?.oPrintNode?.sApiKey}`
-    return this.apiService.getNew('cashregistry', '/api/v1/printnode/computers' + urlParams);
-  }
+  // getComputerDetails(computerId?: number) {
+  //   let nAccountId = this.businessDetails?.oPrintNode?.nAccountId
+  //   if (!nAccountId) {
+  //     this.toastService.show({ type: 'warning', text: 'PrintNode not configured for you business contact admin.' });
+  //     return throwError('');
+  //   }
+  //   let urlParams = `?id=${nAccountId}&APIKEY=${this.businessDetails?.oPrintNode?.sApiKey}`; //&deviceId=${computerId}
+  //   return this.apiService.getNew('cashregistry', '/api/v1/printnode/computers' + urlParams);
+  // }
 
   // Function for get computers list
-  getPrintersList(computerId: number) {
-    let nAccountId = this.businessDetails?.oPrintNode?.nAccountId
-    let urlParams = `?id=${nAccountId}&deviceId=${computerId}&APIKEY=${this.businessDetails?.oPrintNode?.sApiKey}`
-    return this.apiService.getNew('cashregistry', '/api/v1/printnode/printers' + urlParams);
-  }
+  // getPrintersList(computerId: number) {
+  //   let nAccountId = this.businessDetails?.oPrintNode?.nAccountId
+  //   let urlParams = `?id=${nAccountId}&APIKEY=${this.businessDetails?.oPrintNode?.sApiKey}`; //deviceId=${computerId}
+  //   return this.apiService.getNew('cashregistry', '/api/v1/printnode/printers' + urlParams);
+  // }
 
   // Function for get all printers list
   getAllPrintersList() {
@@ -158,16 +209,17 @@ export class PrintWorkstationComponent implements OnInit {
       return
     }
     let urlParams = `?id=${nAccountId}&APIKEY=${this.businessDetails?.oPrintNode?.sApiKey}`
-    this.apiService.getNew('cashregistry', '/api/v1/printnode/printers' + urlParams).subscribe(
-      (result: any) => {
-        if (result?.length > 0) {
-          this.printersList = result.map((printer: any) => {
-            printer.keyValue = printer.computer.id + '/id/' + printer.id;
-            return printer;
-          });
-        }
-      }
-    );
+    return this.apiService.getNew('cashregistry', '/api/v1/printnode/printers' + urlParams).toPromise();
+      // (result: any) => {
+      //   if (result?.length > 0) {
+      //     this.printersList = result.map((printer: any) => {
+      //       printer.keyValue = printer.computer.id + '/id/' + printer.id;
+      //       return printer;
+      //     });
+      //     console.log('getAllPrintersList', {printersList: this.printersList});
+      //   }
+      // }
+    // );
   }
 
   // Get printer details for display on view
@@ -204,38 +256,42 @@ export class PrintWorkstationComponent implements OnInit {
   }
 
   // Function for create or update print settings
-  savePrintSetting(type: any) {
-    let printer = this.printersList.filter((printer: any) => printer.id == type.workstation[type.name][type.type]?.nPrinterId);
-    if (printer.length == 1) {
-      let reqData = {
-        sPrinterName: printer[0].name,
-        sMethod: type.name == 'LABEL' ? 'labelDefinition' : type.name.toLowerCase(),
-        sUser: 'customer',
-        nComputerId: printer[0].computer.id,
-        nPrinterId: printer[0].id,
-        sType: type.type,
-        iBusinessId: this.businessDetails._id,
-        iLocationId: this.iLocationId,
-        iWorkstationId: type.workstation._id,
-      };
-      type.workstation[type.name][type.type].printerName = printer[0].name;
-      this.apiService.postNew('cashregistry', '/api/v1/print-settings/create', reqData).subscribe(
-        (result: any) => {
-          if (result.message == 'success') {
-            if (result?.data?._id) {
-              type.workstation[type.name][type.type].printSetting = result.data;
-            }
-            if (this.workStationsCount > 0) {
-              if (this.workStationsCount == 1) {
-                this.getWorkstations();
-                this.fetchPrintSettings();
-              }
-              --this.workStationsCount;
-            }
-          }
-        }
-      )
+  savePrintSetting(type: any, printer?: any, sSelectedPaper?: any) {
+    // console.log(type, printer, sSelectedPaper);
+    if (!printer) printer = this.printersList.filter((printer: any) => printer.id == type.workstation[type.name][type.type]?.nPrinterId)[0];
+    // if (printer.length == 1) {
+    let reqData = {
+      sPrinterName: printer.name,
+      sMethod: type.name == 'LABEL' ? 'labelDefinition' : type.name.toLowerCase(),
+      sUser: 'customer',
+      nComputerId: printer.computer.id,
+      nPrinterId: printer.id,
+      sType: type.type,
+      iBusinessId: this.businessDetails._id,
+      iLocationId: this.iLocationId,
+      iWorkstationId: type.workstation._id,
+      sPrinterPageFormat: sSelectedPaper
+    };
+    if (!type.workstation[type.name][type.type]) {
+      type.workstation[type.name][type.type] = { printerName : '', printSetting: {}};
     }
+    type.workstation[type.name][type.type].printerName = printer.name;
+    this.apiService.postNew('cashregistry', '/api/v1/print-settings/create', reqData).subscribe(async (result: any) => {
+      if (result.message == 'success') {
+        if (result?.data?._id) {
+          type.workstation[type.name][type.type].printSetting = result.data;
+        }
+        if (this.workStationsCount > 0) {
+          if (this.workStationsCount == 1) {
+            this.processWorkstations(await this.getWorkstations());
+            this.fetchPrintSettings();
+          }
+          --this.workStationsCount;
+        }
+      }
+    }
+    )
+    // }
   }
 
   trackByFunction(element: any) {
@@ -256,14 +312,17 @@ export class PrintWorkstationComponent implements OnInit {
 
   // Function for get selected print setting for workstation
   getSelectedValue(event: any) {
+    // console.log('getSelectedValue', event);
     let computerId = event.workstation && event.workstation[event.name] && event.workstation[event.name][event.type] ? event.workstation[event.name][event.type]?.nComputerId : '';
     let printerId = event.workstation && event.workstation[event.name] && event.workstation[event.name][event.type] ? event.workstation[event.name][event.type]?.nPrinterId : '';
     if ((computerId == '' || printerId == '') && this.businessPrintSettings?.length > 0) {
       let method = event.name == 'LABEL' ? 'labelDefinition' : event.name.toLowerCase()
       let selectedSetting = this.businessPrintSettings.filter((setting: any) => setting.iWorkstationId == event.workstation._id &&
         setting?.sMethod == method && setting?.sType == event.type);
+      // console.log(selectedSetting);
       computerId = selectedSetting[0]?.nComputerId || '';
       printerId = selectedSetting[0]?.nPrinterId || '';
+      let sPrinterPageFormat = selectedSetting[0]?.sPrinterPageFormat || '';
       if (printerId != '') {
         if (!event.workstation[event.name]) {
           event.workstation[event.name] = {};
@@ -271,6 +330,7 @@ export class PrintWorkstationComponent implements OnInit {
         event.workstation[event.name][event.type] = {
           nPrinterId: printerId,
           nComputerId: computerId,
+          sPrinterPageFormat: sPrinterPageFormat,
           printerName: selectedSetting[0]?.sPrinterName || '',
           printSetting: selectedSetting[0]
         };
@@ -282,17 +342,18 @@ export class PrintWorkstationComponent implements OnInit {
   // Function for get print settings 
   fetchPrintSettings() {
     let reqData = { iBusinessId: this.businessDetails._id, iLocationId: this.iLocationId };
-    this.apiService.postNew('cashregistry', '/api/v1/print-settings/list/' + this.businessDetails._id, reqData).subscribe(
-      (result: any) => {
-        if (result?.data[0]?.result?.length > 0) {
-          this.businessPrintSettings = result.data[0].result;
-        }
-      }
-    )
+    return this.apiService.postNew('cashregistry', '/api/v1/print-settings/list/' + this.businessDetails._id, reqData).toPromise();
+      // (result: any) => {
+        // if (result?.data[0]?.result?.length > 0) {
+        //   this.businessPrintSettings = result.data[0].result;
+        //   console.log('fetchPrintSettings', this.businessPrintSettings);
+        // }
+      // }
+    // )
   }
 
   // Function for group printers by computer name
-  groupByFn = (item: any) => item.computer.name;
+  // groupByFn = (item: any) => { console.log('groupby'); return item.computer.name };
 
   // Function for remove print setting
   removePrintSetting(details: any) {
@@ -319,5 +380,29 @@ export class PrintWorkstationComponent implements OnInit {
       workstation[details.name][details.type] = details.workstation[details.name][details.type];
       this.savePrintSetting({ name: details.name, type: details.type, workstation });
     });
+  }
+
+  openSelectPrintPaperDialog(type:any, workstation:any, template:any){
+    // console.log({type, workstation, template});
+    let paper = '';
+    if (workstation[template][type] && workstation[template][type]['sPrinterPageFormat']) {
+      paper = workstation[template][type]['sPrinterPageFormat'];
+    }
+    this.dialogService.openModal(SelectPrintPaperDialogComponent, 
+      { 
+        cssClass: "modal-lg", 
+        context: { 
+          printersList: this.printersList,
+          oWorkstation: workstation,
+          sSelectedPaper: paper,
+          type,
+          template
+         } 
+      }).instance.close.subscribe(result => {
+        // console.log({result});
+        if(result.action) {
+          this.savePrintSetting({name: template, type: type, workstation: workstation}, result.oSelectedPrinter, result.sSelectedPaper);
+        }
+      });    
   }
 }
