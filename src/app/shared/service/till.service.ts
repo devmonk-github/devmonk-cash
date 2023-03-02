@@ -155,6 +155,7 @@ export class TillService {
         bCounter: customer.bCounter,
         oPhone: customer.oPhone,
         sVatNumber: customer.sVatNumber,
+        sCompanyName: customer.sCompanyName,
         sCocNumber: customer.sCocNumber,
         sEmail: customer.sEmail
       }

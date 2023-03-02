@@ -261,29 +261,29 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
     return this.apiService.getNew('cashregistry', `/api/v1/pdf/templates/${this.iBusinessId}?eType=${type}&iLocationId=${this.iLocationId}`);
   }
 
-  fetchCustomer(customerId: any) {
-    this.apiService.getNew('customer', `/api/v1/customer/${customerId}?iBusinessId=${this.iBusinessId}`).subscribe(
-      (result: any) => {
+  // fetchCustomer(customerId: any) {
+  //   this.apiService.getNew('customer', `/api/v1/customer/${customerId}?iBusinessId=${this.iBusinessId}`).subscribe(
+  //     (result: any) => {
 
-        // console.log('fetch customer result', result)
-        // this.transaction.oCustomer = result;
-        this.transaction.oCustomer = {
-          sFirstName: result?.sFirstName,
-          sPrefix: result?.sPrefix,
-          sLastName: result?.sLastName,
-          sEmail: result?.sEmail,
-          sMobile: result?.oPhone?.sCountryCode + result?.oPhone?.sMobile,
-          sLandLine: result?.oPhone?.sLandLine,
-          oInvoiceAddress: result?.oInvoiceAddress,
-          oShippingAddress: result?.oShippingAddress
-        };
+  //       // console.log('fetch customer result', result)
+  //       // this.transaction.oCustomer = result;
+  //       this.transaction.oCustomer = {
+  //         sFirstName: result?.sFirstName,
+  //         sPrefix: result?.sPrefix,
+  //         sLastName: result?.sLastName,
+  //         sEmail: result?.sEmail,
+  //         sMobile: result?.oPhone?.sCountryCode + result?.oPhone?.sMobile,
+  //         sLandLine: result?.oPhone?.sLandLine,
+  //         oInvoiceAddress: result?.oInvoiceAddress,
+  //         oShippingAddress: result?.oShippingAddress
+  //       };
 
-      },
-      (error: any) => {
-        console.error(error)
-      }
-    );
-  }
+  //     },
+  //     (error: any) => {
+  //       console.error(error)
+  //     }
+  //   );
+  // }
 
   openTransaction(transaction: any, itemType: any) {
     this.dialogService.openModal(TransactionItemsDetailsComponent, { cssClass: "modal-xl", context: { transaction, itemType } })

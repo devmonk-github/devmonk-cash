@@ -589,6 +589,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       .instance.close.subscribe((data) => {
         if (data.customer) {
           this.customer = data.customer;
+          console.log(this.customer)
         }
       })
   }
