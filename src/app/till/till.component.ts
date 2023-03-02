@@ -993,9 +993,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
           printSettings: this.printSettings,
           sAction: 'thermal',
           apikey: this.businessDetails.oPrintNode.sApiKey,
-          title: oDataSource.sNumber,
-          sType: type,
-          sTemplateType: 'business-receipt'
+          title: oDataSource.sNumber
         });
       }
       if (aActionToPerform.includes('DOWNLOAD') || aActionToPerform.includes('PRINT_PDF')) {
@@ -1183,11 +1181,14 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       const _oBusinessProductDetail = await this.getBusinessProduct(product?.iBusinessProductId || product?._id).toPromise();
       product = _oBusinessProductDetail.data;
       if (product?.aLocation?.length) {
-        product.aLocation = product.aLocation.map((oProdLoc: any) => {
+        product.aLocation = product.aLocation.filter((oProdLoc: any) => {
           // console.log('oProdLoc: ', oProdLoc, this.aBusinessLocation);
           const oFound: any = this.aBusinessLocation.find((oBusLoc: any) => oBusLoc?._id?.toString() === oProdLoc?._id?.toString());
-          oProdLoc.sName = oFound?.sName;
-          return oProdLoc;
+          if(oFound){
+            oProdLoc.sName = oFound?.sName;
+            return oProdLoc;
+          }
+        
         })
         // console.log('Product location: ', product?.aLocation);
         currentLocation = product.aLocation.find((o: any) => o._id === this.iLocationId);
