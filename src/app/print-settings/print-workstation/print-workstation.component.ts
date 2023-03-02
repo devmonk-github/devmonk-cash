@@ -276,10 +276,12 @@ export class PrintWorkstationComponent implements OnInit {
       type.workstation[type.name][type.type] = { printerName : '', printSetting: {}};
     }
     type.workstation[type.name][type.type].printerName = printer.name;
+    type.workstation[type.name][type.type].sPrinterPageFormat = sSelectedPaper;
     this.apiService.postNew('cashregistry', '/api/v1/print-settings/create', reqData).subscribe(async (result: any) => {
       if (result.message == 'success') {
         if (result?.data?._id) {
           type.workstation[type.name][type.type].printSetting = result.data;
+          // if (result.data?.sPrinterPageFormat) type.workstation[type.name][type.type].sPrinterPageFormat = result.data.sPrinterPageFormat;
         }
         if (this.workStationsCount > 0) {
           if (this.workStationsCount == 1) {
@@ -383,18 +385,20 @@ export class PrintWorkstationComponent implements OnInit {
   }
 
   openSelectPrintPaperDialog(type:any, workstation:any, template:any){
-    // console.log({type, workstation, template});
-    let paper = '';
-    if (workstation[template][type] && workstation[template][type]['sPrinterPageFormat']) {
-      paper = workstation[template][type]['sPrinterPageFormat'];
-    }
+    console.log({type, workstation, template});
+    if (!workstation[template]) workstation[template] = {};
+    
+    if (!workstation[template][type]) workstation[template][type] = {};
+    
+    if (!workstation[template][type]['sPrinterPageFormat']) workstation[template][type]['sPrinterPageFormat'] = '';
+    
     this.dialogService.openModal(SelectPrintPaperDialogComponent, 
       { 
         cssClass: "modal-lg", 
         context: { 
           printersList: this.printersList,
           oWorkstation: workstation,
-          sSelectedPaper: paper,
+          sSelectedPaper: workstation[template][type]['sPrinterPageFormat'],
           type,
           template
          } 
