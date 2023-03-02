@@ -51,7 +51,7 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   businessDetails: any = {};
   ableToDownload: Boolean = false;
   from !: string;
-  thermalPrintSettings !: any;
+  // thermalPrintSettings !: any;
   employeesList:any =[];
 
   // private pn2escposService = new Pn2escposService(Object, this.translateService);
@@ -109,9 +109,9 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
     
     this.loading = false;
 
-    this.getPdfPrintSetting()
-    this.getThermalPrintSetting()
-    this.getPdfPrintSetting({ oFilterBy: { sMethod: 'actions' } })
+    this.getPrintSetting()
+    // this.getThermalPrintSetting()
+    // this.getPdfPrintSetting({ oFilterBy: { sMethod: 'actions' } })
     this.mapEmployee();
 
     // console.log(this.transaction)
@@ -168,16 +168,20 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
     this.generatePDF(false);
   }
 
-  getPdfPrintSetting(oFilterBy?: any) {
+  getPrintSetting() {
     const oBody = {
       iLocationId: this.iLocationId,
-      ...oFilterBy
     }
     this.apiService.postNew('cashregistry', `/api/v1/print-settings/list/${this.iBusinessId}`, oBody).subscribe((result:any) => {
-      if(oFilterBy) {
-        this.printActionSettings = result?.data[0]?.result[0].aActions;
-      } else {
-        this.printSettings = result?.data[0]?.result;
+      if (result?.data?.length && result?.data[0]?.result?.length) {
+        this.printSettings = [];
+        result?.data[0]?.result.forEach((settings: any) => {
+          if (settings?.sMethod === 'actions') {
+            this.printActionSettings = settings?.aActions || [];
+          } else {
+            this.printSettings.push(settings);
+          }
+        })
       }
     });
   }
@@ -223,6 +227,9 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
       oDataSource.oCustomer = {};
     }
 
+    oDataSource?.aPayments?.forEach((payment: any) => {
+      payment.dCreatedDate = moment(payment.dCreatedDate).format('DD-MM-yyyy hh:mm');
+    })
     
     this.receiptService.exportToPdf({
       oDataSource: oDataSource,
@@ -254,29 +261,29 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
     return this.apiService.getNew('cashregistry', `/api/v1/pdf/templates/${this.iBusinessId}?eType=${type}&iLocationId=${this.iLocationId}`);
   }
 
-  fetchCustomer(customerId: any) {
-    this.apiService.getNew('customer', `/api/v1/customer/${customerId}?iBusinessId=${this.iBusinessId}`).subscribe(
-      (result: any) => {
+  // fetchCustomer(customerId: any) {
+  //   this.apiService.getNew('customer', `/api/v1/customer/${customerId}?iBusinessId=${this.iBusinessId}`).subscribe(
+  //     (result: any) => {
 
-        // console.log('fetch customer result', result)
-        // this.transaction.oCustomer = result;
-        this.transaction.oCustomer = {
-          sFirstName: result?.sFirstName,
-          sPrefix: result?.sPrefix,
-          sLastName: result?.sLastName,
-          sEmail: result?.sEmail,
-          sMobile: result?.oPhone?.sCountryCode + result?.oPhone?.sMobile,
-          sLandLine: result?.oPhone?.sLandLine,
-          oInvoiceAddress: result?.oInvoiceAddress,
-          oShippingAddress: result?.oShippingAddress
-        };
+  //       // console.log('fetch customer result', result)
+  //       // this.transaction.oCustomer = result;
+  //       this.transaction.oCustomer = {
+  //         sFirstName: result?.sFirstName,
+  //         sPrefix: result?.sPrefix,
+  //         sLastName: result?.sLastName,
+  //         sEmail: result?.sEmail,
+  //         sMobile: result?.oPhone?.sCountryCode + result?.oPhone?.sMobile,
+  //         sLandLine: result?.oPhone?.sLandLine,
+  //         oInvoiceAddress: result?.oInvoiceAddress,
+  //         oShippingAddress: result?.oShippingAddress
+  //       };
 
-      },
-      (error: any) => {
-        console.error(error)
-      }
-    );
-  }
+  //     },
+  //     (error: any) => {
+  //       console.error(error)
+  //     }
+  //   );
+  // }
 
   openTransaction(transaction: any, itemType: any) {
     this.dialogService.openModal(TransactionItemsDetailsComponent, { cssClass: "modal-xl", context: { transaction, itemType } })
@@ -338,13 +345,13 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
       });
   }
 
-  getThermalPrintSetting() {
-    this.apiService.getNew('cashregistry', `/api/v1/print-settings/${this.iBusinessId}/${this.iWorkstationId}/thermal/regular`).subscribe((result:any) => {
-      if (result?.data?._id) {
-        this.thermalPrintSettings = result?.data;
-      }
-    });
-  }
+  // getThermalPrintSetting() {
+  //   this.apiService.getNew('cashregistry', `/api/v1/print-settings/${this.iBusinessId}/${this.iWorkstationId}/thermal/regular`).subscribe((result:any) => {
+  //     if (result?.data?._id) {
+  //       this.thermalPrintSettings = result?.data;
+  //     }
+  //   });
+  // }
 
   openCustomer(customer: any) {
     if(customer?._id){
@@ -380,48 +387,59 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   }
 
   getThermalReceipt(type:string) {
-    if (!this.thermalPrintSettings?.nPrinterId || !this.thermalPrintSettings?.nComputerId) {
-      this.toastService.show({ type: 'danger', text: 'Check your business -> printer settings' });
-    }
+    this.receiptService.printThermalReceipt({
+      oDataSource: this.transaction,
+      printSettings: this.printSettings,
+      apikey: this.businessDetails.oPrintNode.sApiKey,
+      title: this.transaction.sNumber,
+      sType: 'regular',
+      sTemplateType: type
+    });
+    // return;
+
+    // if (!this.thermalPrintSettings?.nPrinterId || !this.thermalPrintSettings?.nComputerId) {
+    //   this.toastService.show({ type: 'danger', text: 'Check your business -> printer settings' });
+    // }
     
 
-    this.apiService.getNew('cashregistry', `/api/v1/print-template/${type}/${this.iBusinessId}/${this.iLocationId}`).subscribe((result: any) => {
-      if (result?.data?.aTemplate?.length > 0) {
-        let transactionDetails = { businessDetails: this.businessDetails, ...this.transaction };
-        transactionDetails.oCustomer = {
-          ...transactionDetails.oCustomer,
-          ...transactionDetails.oCustomer.oPhone,
-          ...transactionDetails.oCustomer.oInvoiceAddress
-        };
-        let command;
-        try {
-          command = this.pn2escposService.generate(JSON.stringify(result.data.aTemplate), JSON.stringify(transactionDetails));
-          // console.log(command);
-        } catch (e) {
-          this.toastService.show({ type: 'danger', text: 'Template not defined properly. Check browser console for more details' });
-          console.log(e);
-          return;
-        }
-        // return;
-        this.printService.createPrintJob(this.iBusinessId, command, this.thermalPrintSettings?.nPrinterId, this.thermalPrintSettings?.nComputerId, this.businessDetails.oPrintNode.sApiKey, this.transaction.sNumber).then((response: any) => {
-          if (response.status == "PRINTJOB_NOT_CREATED") {
-            let message = '';
-            if (response.computerStatus != 'online') {
-              message = 'Your computer status is : ' + response.computerStatus + '.';
-            } else if (response.printerStatus != 'online') {
-              message = 'Your printer status is : ' + response.printerStatus + '.';
-            }
-            this.toastService.show({ type: 'warning', title: 'PRINTJOB_NOT_CREATED', text: message });
-          } else {
-            this.toastService.show({ type: 'success', text: 'PRINTJOB_CREATED', apiUrl: '/api/v1/printnode/print-job', templateContext: { apiKey: this.businessDetails.oPrintNode.sApiKey, id: response.id } });
-          }
-        })
-      } else if (result?.data?.aTemplate?.length == 0) {
-        this.toastService.show({ type: 'danger', text: 'TEMPLATE_NOT_FOUND' });
-      } else {
-        this.toastService.show({ type: 'danger', text: 'Error while fetching print template' });
-      }
-    });
+    // this.apiService.getNew('cashregistry', `/api/v1/print-template/${type}/${this.iBusinessId}/${this.iLocationId}`).subscribe((result: any) => {
+    //   if (result?.data?.aTemplate?.length > 0) {
+    //     let transactionDetails = { businessDetails: this.businessDetails, ...this.transaction };
+    //     transactionDetails.oCustomer = {
+    //       ...transactionDetails.oCustomer,
+    //       ...transactionDetails.oCustomer.oPhone,
+    //       ...transactionDetails.oCustomer.oInvoiceAddress
+    //     };
+    //     let command;
+    //     try {
+    //       command = this.pn2escposService.generate(JSON.stringify(result.data.aTemplate), JSON.stringify(transactionDetails));
+    //       console.log(command);
+    //       return;
+    //     } catch (e) {
+    //       this.toastService.show({ type: 'danger', text: 'Template not defined properly. Check browser console for more details' });
+    //       console.log(e);
+    //       return;
+    //     }
+    //     // return;
+    //     this.printService.createPrintJob(this.iBusinessId, command, this.thermalPrintSettings?.nPrinterId, this.thermalPrintSettings?.nComputerId, this.businessDetails.oPrintNode.sApiKey, this.transaction.sNumber).then((response: any) => {
+    //       if (response.status == "PRINTJOB_NOT_CREATED") {
+    //         let message = '';
+    //         if (response.computerStatus != 'online') {
+    //           message = 'Your computer status is : ' + response.computerStatus + '.';
+    //         } else if (response.printerStatus != 'online') {
+    //           message = 'Your printer status is : ' + response.printerStatus + '.';
+    //         }
+    //         this.toastService.show({ type: 'warning', title: 'PRINTJOB_NOT_CREATED', text: message });
+    //       } else {
+    //         this.toastService.show({ type: 'success', text: 'PRINTJOB_CREATED', apiUrl: '/api/v1/printnode/print-job', templateContext: { apiKey: this.businessDetails.oPrintNode.sApiKey, id: response.id } });
+    //       }
+    //     })
+    //   } else if (result?.data?.aTemplate?.length == 0) {
+    //     this.toastService.show({ type: 'danger', text: 'TEMPLATE_NOT_FOUND' });
+    //   } else {
+    //     this.toastService.show({ type: 'danger', text: 'Error while fetching print template' });
+    //   }
+    // });
   }
 
 }

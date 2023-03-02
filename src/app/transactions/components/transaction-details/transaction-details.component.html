@@ -22,34 +22,62 @@
             </div>
             <div class="row fw-bold gy-1">
                 <div class="col-md-12">
-                    <div class="text-gray-900 mt-2">{{ transaction?.oCustomer?.sFirstName }} {{
-                        transaction?.oCustomer?.sPrefix}} {{ transaction?.oCustomer?.sLastName }} </div>
-                </div>
-                <div class="col-md-6" *ngIf="!transaction?.oCustomer?.bCounter">
-                    <div class="mt-2 text-muted">{{ "INVOVICE_ADDRESS" | translate}}</div>
-                    <div class="text-gray-800 mt-2">
-                        <span> {{ transaction?.oCustomer?.oInvoiceAddress?.sStreet }} {{
-                            transaction?.oCustomer?.oInvoiceAddress?.sHouseNumber }} </span>
-                        <span> {{ transaction?.oCustomer?.oInvoiceAddress?.sPostalCode }} {{
-                            transaction?.oCustomer?.oInvoiceAddress?.sCity }} </span>
-                        <span> {{ transaction?.oCustomer?.oInvoiceAddress?.sCountry }}</span>
+                    <div class="text-gray-900 mt-2">
+                        {{ transaction?.oCustomer?.sFirstName }} 
+                        {{ transaction?.oCustomer?.sPrefix}} 
+                        {{ transaction?.oCustomer?.sLastName }} 
                     </div>
                 </div>
-                <div class="col-md-6" *ngIf="!transaction?.oCustomer?.bCounter">
+                
+                <ng-container *ngIf="!transaction?.oCustomer?.bCounter">
+                <div class="col-md-6">
+                    <div class="mt-2 text-muted">{{ "INVOVICE_ADDRESS" | translate}}</div>
+                    <div class="text-gray-800 mt-2">
+                        <span> 
+                            {{ transaction?.oCustomer?.oInvoiceAddress?.sStreet }} 
+                            {{ transaction?.oCustomer?.oInvoiceAddress?.sHouseNumber }} 
+                        </span>
+                        <span> 
+                            {{ transaction?.oCustomer?.oInvoiceAddress?.sPostalCode }} 
+                            {{ transaction?.oCustomer?.oInvoiceAddress?.sCity }} </span>
+                        <span> 
+                            {{ transaction?.oCustomer?.oInvoiceAddress?.sCountry }}
+                        </span>
+                    </div>
+                </div>
+                <div class="col-md-6">
                     <div class="mt-2 text-muted">{{ "SHIPPING_ADDRESS" | translate}}</div>
                     <div class="text-gray-800 mt-2">
-                        <span> {{ transaction?.oCustomer?.oShippingAddress?.sStreet }} {{
-                            transaction?.oCustomer?.oShippingAddress?.sHouseNumber }} </span>
-                        <span> {{ transaction?.oCustomer?.oShippingAddress?.sPostalCode }} {{
-                            transaction?.oCustomer?.oShippingAddress?.sCity }} </span>
-                        <span> {{ transaction?.oCustomer?.oShippingAddress?.sCountry }}</span>
+                        <span> 
+                            {{ transaction?.oCustomer?.oShippingAddress?.sStreet }} 
+                            {{ transaction?.oCustomer?.oShippingAddress?.sHouseNumber }} 
+                        </span>
+                        <span> 
+                            {{ transaction?.oCustomer?.oShippingAddress?.sPostalCode }} 
+                            {{ transaction?.oCustomer?.oShippingAddress?.sCity }} 
+                        </span>
+                        <span> 
+                            {{ transaction?.oCustomer?.oShippingAddress?.sCountry }}
+                        </span>
                     </div>
                 </div>
                 <div class="col-md-12">
-                    <div class="text-gray-800 mt-2" *ngIf="!transaction?.oCustomer?.bCounter">{{ transaction?.oCustomer?.sEmail }}</div>
-                    <div class="text-gray-800 mt-2">{{ transaction?.oCustomer?.sMobile }} &nbsp; &nbsp; {{
-                        transaction?.oCustomer?.sLandLine }}</div>
+                    <div class="text-gray-800 mt-2">{{ transaction?.oCustomer?.sEmail }}</div>
+                    <div class="text-gray-800 mt-2">
+                        {{ transaction?.oCustomer?.sMobile }} &nbsp; &nbsp; {{ transaction?.oCustomer?.sLandLine }}
+                    </div>
                 </div>
+                <div class="col-md-12">
+                    <div class=" mt-2">
+                        <span class="text-muted me-5">{{ 'COMPANY_NAME' | translate}}: </span> 
+                        <span class="text-gray-800">{{ transaction?.oCustomer?.sCompanyName }}</span>
+                    </div>
+                    <div class=" mt-2">
+                        <span class="text-muted me-5">{{ 'VAT_NUMBER' | translate}}: </span> 
+                        <span class="text-gray-800">{{ transaction?.oCustomer?.sVatNumber }}</span>
+                    </div>
+                </div>
+                </ng-container>
             </div>
 
             <div class="d-flex justify-content-between align-items-center">
@@ -84,7 +112,7 @@
                 </div>
                 <label class="col-md-4 mt-3 text-muted">{{"DATE_TIME" | translate}}</label>
                 <div class="col-md-8">
-                    <div class="text-gray-800 mt-3">{{ transaction.dCreatedDate }}</div>
+                    <div class="text-gray-800 mt-2">{{ transaction.dCreatedDate | date:'dd-MM-YYYY hh:mm' }}</div>
                 </div>
                 <!-- <label class="col-md-4 mt-2 text-muted">{{"PAY_METHOD" | translate}}</label>
                 <div class="col-md-8">
@@ -338,7 +366,7 @@
                                     <td>
                                         {{item.sMethod}} <br/> 
                                         <span *ngIf="item?.sRemarks"> {{item.sRemarks | translate}}<br/></span>
-                                        ({{ item.dCreatedDate }})
+                                        ({{ item.dCreatedDate | date:'dd-MM-YYYY hh:mm' }})
                                     </td>
                                     <td>{{item.nAmount || 0}}</td>
                                 </tr>

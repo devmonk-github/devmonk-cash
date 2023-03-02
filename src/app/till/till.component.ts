@@ -589,6 +589,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       .instance.close.subscribe((data) => {
         if (data.customer) {
           this.customer = data.customer;
+          console.log(this.customer)
         }
       })
   }
@@ -992,7 +993,9 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
           printSettings: this.printSettings,
           sAction: 'thermal',
           apikey: this.businessDetails.oPrintNode.sApiKey,
-          title: oDataSource.sNumber
+          title: oDataSource.sNumber,
+          sType: type,
+          sTemplateType: 'business-receipt'
         });
       }
       if (aActionToPerform.includes('DOWNLOAD') || aActionToPerform.includes('PRINT_PDF')) {
