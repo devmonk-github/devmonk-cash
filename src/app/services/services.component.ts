@@ -104,6 +104,12 @@ export class ServicesComponent implements OnInit, OnDestroy {
     }
   }
 
+  // Function for reset selected filters
+  resetFilters() {
+    this.requestParams.searchValue = "";
+    this.loadTransaction()
+  }
+
   paymentMethods: Array<any> = ['All', 'Cash', 'Credit', 'Card', 'Gift-Card'];
   transactionTypes: Array<any> = ['All', 'Refund', 'Repair', 'Gold-purchase', 'Gold-sale', 'order', 'giftcard', 'offer', 'reservation'];
   transactionStatus: string = 'all';

@@ -15,14 +15,23 @@
           (click)="showAdvanceSearch = !showAdvanceSearch">{{ 'ADVANCED_SEARCH' | translate }}</a>
       </div>
       <div class="d-flex align-items-right ms-auto">
-        <button class="btn btn-primary mx-2" (click)="openExportModel()">{{'DOWNLOAD' | translate}}</button>
+        <button class="btn btn-primary mx-2" [disabled]="!isDownloadEnable" (click)="openExportModel()">{{'DOWNLOAD' |
+          translate}}</button>
         <button class="btn btn-primary" (click)="goToCashRegister()">{{ 'NEW' | translate }}</button>
+      </div>
+    </div>
+
+    <div class="col-md-4 no-padding d-flex mb-4">
+      <div class="col-md-6 no-padding">
+          <button class="btn btn-primary" (click)="resetFilters()">
+              <fa-icon icon="undo"></fa-icon>&nbsp; {{"RESET_FILTER" | translate}}
+          </button>
       </div>
     </div>
 
     <div class="collapse row" id="kt_advanced_search_form" data-kt-search-minimize="on"
       [ngClass]="{'show' : showAdvanceSearch}">
-    
+
       <div class="col-12">
         <div class="row g-4 mb-2">
           <div class="col-lg-2">
@@ -31,45 +40,47 @@
               [ngModel]="requestParams.create.minDate | date:'yyyy-MM-dd'"
               (ngModelChange)="requestParams.create.minDate = $event" />
           </div>
-    
+
           <div class="col-lg-2">
             <label class="fs-6 form-label fw-bolder text-dark">{{ "CREATE_MAX_DATE" | translate}}</label>
             <input type="date" class="form-control form-control form-control-solid" name="createMaxDate"
               [ngModel]="requestParams.create.maxDate | date:'yyyy-MM-dd'"
               (ngModelChange)="requestParams.create.maxDate = $event" />
           </div>
-    
+
           <div class="col-lg-2">
             <label class="fs-6 form-label fw-bolder text-dark">{{ "ESTIMATE_MIN_DATE" | translate}}</label>
             <input type="date" class="form-control form-control form-control-solid" name="estimateMinDate"
               [ngModel]="requestParams.estimate.minDate | date:'yyyy-MM-dd'"
               (ngModelChange)="requestParams.estimate.minDate = $event" />
           </div>
-    
+
           <div class="col-lg-2">
             <label class="fs-6 form-label fw-bolder text-dark">{{ "ESTIMATE_MAX_DATE" | translate}}</label>
             <input type="date" class="form-control form-control form-control-solid" name="estimateMaxDate"
               [ngModel]="requestParams.estimate.maxDate | date:'yyyy-MM-dd'"
               (ngModelChange)="requestParams.estimate.maxDate = $event" />
           </div>
-    
+
           <div class="col-lg-3">
             <label class="fs-6 form-label fw-bolder text-dark">{{ 'REPAIR_STATUS' | translate }}</label>
             <ng-select class="form-control form-control-solid p-0" [multiple]="true"
               [(ngModel)]="requestParams.selectedRepairStatuses" [clearable]="false">
-              <ng-option *ngFor="let repairStatus of repairStatuses" [value]="repairStatus.value">{{repairStatus.key | translate}}
+              <ng-option *ngFor="let repairStatus of repairStatuses" [value]="repairStatus.value">{{repairStatus.key |
+                translate}}
               </ng-option>
             </ng-select>
           </div>
-    
+
           <div class="col-lg-3">
             <label class="fs-6 form-label fw-bolder text-dark">{{ 'EMPLOYEES' | translate }}</label>
-            <ng-select class="form-control form-control-solid p-0" [clearable]="false" [(ngModel)]="requestParams.employee">
+            <ng-select class="form-control form-control-solid p-0" [clearable]="false"
+              [(ngModel)]="requestParams.employee">
               <ng-option *ngFor="let employeeObj of employees" [value]="employeeObj">{{employeeObj.sFirstName}}
                 {{employeeObj.sLastName || ''}}</ng-option>>
             </ng-select>
           </div>
-    
+
           <div class="col-lg-3">
             <label class="fs-6 form-label fw-bolder text-dark">{{ "ASSIGNEE" | translate}}</label>
             <ng-select class="form-control form-control-solid p-0" [clearable]="false"
@@ -78,7 +89,7 @@
                 {{employeeObj.sLastName || ''}}</ng-option>>
             </ng-select>
           </div>
-    
+
           <div class="col-lg-3">
             <label class="fs-6 form-label fw-bolder text-dark">{{ 'WORKSTATION' | translate }}</label>
             <ng-select class="form-control form-control-solid p-0" [multiple]="true"
@@ -87,7 +98,7 @@
               </ng-option>
             </ng-select>
           </div>
-    
+
           <div class="col-lg-3">
             <label class="fs-6 form-label fw-bolder text-dark">{{ 'LOCATION' | translate }}</label>
             <ng-select class="form-control form-control-solid p-0" [multiple]="true"
@@ -96,15 +107,15 @@
               </ng-option>
             </ng-select>
           </div>
-    
+
           <div class="col-lg-2">
             <label class="fs-6 form-label fw-bolder text-dark">{{ 'E_KIND' | translate }}</label>
             <ng-select class="form-control form-control-solid p-0" [multiple]="true"
               [(ngModel)]="requestParams.selectedKind" [clearable]="false">
-              <ng-option *ngFor="let eKind of aKind" [value]="eKind">{{eKind}}</ng-option>
+              <ng-option *ngFor="let eKind of aKind" [value]="eKind.value">{{eKind.key | translate}}</ng-option>
             </ng-select>
           </div>
-    
+
           <div class="col-lg-2">
             <label class="fs-6 form-label fw-bolder text-dark">{{ 'BUSINESS_PARTNER' | translate }}</label>
             <ng-select class="form-control form-control-solid p-0" [multiple]="true"
@@ -120,7 +131,8 @@
             <label class="fs-6 form-label fw-bolder text-dark">{{"IMPORT_STATUS" | translate}}</label>
             <div class="nav-group nav-group-fluid">
               <label>
-                <input type="radio" class="btn-check" name="import" value="all" [(ngModel)]="importStatus" checked="checked" />
+                <input type="radio" class="btn-check" name="import" value="all" [(ngModel)]="importStatus"
+                  checked="checked" />
                 <span class="btn btn-sm btn-color-muted btn-active btn-active-primary fw-bolder px-4">{{ "ALL" |
                   translate}}</span>
               </label>
@@ -136,7 +148,7 @@
               </label>
             </div>
           </div>
-    
+
           <!-- Property Filter -->
           <div class="col-lg-5">
             <ng-container>
@@ -144,7 +156,7 @@
                 <label class="fs-6 form-label fw-bolder text-dark">{{ "PROPERTIES" |
                   translate}}</label>
                 <div class="overflow-scroll py-1 h-200px">
-    
+
                   <div *ngFor="let property of aProperty; let pIndex = index">
                     <div class="row align-items-center">
                       <div class="col-md-4">
@@ -156,14 +168,15 @@
                             [(ngModel)]="selectedProperties[property.iPropertyId]" name="propertyId" bindValue="sName"
                             bindLabel="sName" placeholder="Select" (click)="onProperties(property.iPropertyId)" required
                             [closeOnSelect]="false">
-    
+
                             <ng-template ng-option-tmp let-item="item" let-item$="item$" let-index="index">
-                              <input id="item-{{index}}" type="checkbox" name="item-{{index}}" [ngModel]="item$.selected" />
+                              <input id="item-{{index}}" type="checkbox" name="item-{{index}}"
+                                [ngModel]="item$.selected" />
                               {{item.sName}}
                             </ng-template>
-    
+
                           </ng-select>
-    
+
                         </div>
                       </div>
                     </div>
@@ -174,11 +187,11 @@
             </ng-container>
           </div>
           <!-- Property Filter -->
-    
+
         </div>
-    
+
       </div>
-    
+
     </div>
 
     <!-- <div class="separator separator-dashed mt-9 mb-6"></div> -->

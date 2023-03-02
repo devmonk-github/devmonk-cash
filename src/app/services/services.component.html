@@ -18,6 +18,13 @@
         <button class="btn btn-primary" (click)="goToCashRegister()">{{ 'NEW' | translate }}</button>
       </div>
     </div>
+    <div class="col-md-4 no-padding d-flex mb-4">
+      <div class="col-md-6 no-padding">
+          <button class="btn btn-primary" (click)="resetFilters()">
+              <fa-icon icon="undo"></fa-icon>&nbsp; {{"RESET_FILTER" | translate}}
+          </button>
+      </div>
+    </div>
     <div class="collapse row" id="kt_advanced_search_form" data-kt-search-minimize="on"
       [ngClass]="{'show' : showAdvanceSearch}">
       <div class="col-12">
