@@ -8,6 +8,8 @@ import { PdfService as PdfService } from "./pdf.service";
 import { ToastService } from "../components/toast";
 import { Pn2escposService } from "./pn2escpos.service";
 import { PrintService } from "./print.service";
+import * as _moment from 'moment';
+const moment = (_moment as any).default ? (_moment as any).default : _moment;
 
 @Injectable({
     providedIn: 'root'
@@ -614,16 +616,24 @@ export class ReceiptService {
         // this.styles = {};
     }
 
-    async printThermalReceipt({ oDataSource, printSettings, sAction, apikey, title, sType }: any) {
+    async printThermalReceipt({ oDataSource, printSettings, apikey, title, sType, sTemplateType }: any) {
+        if(oDataSource?.aPayments?.length) {
+            // console.log(oDataSource?.aPayments);
+            oDataSource?.aPayments?.forEach((payment:any) => {
+                payment.dCreatedDate = moment(payment.dCreatedDate).format('DD-MM-yyyy HH:mm');
+            })
+        }
         let thermalPrintSettings: any;
         if (printSettings?.length > 0) {
             thermalPrintSettings = printSettings.filter((p: any) => p.iWorkstationId == this.iWorkstationId && p.sMethod == 'thermal' && p.sType == sType)[0];
         }
+        // console.log({printSettings, sType, thermalPrintSettings })
         if (!thermalPrintSettings?.nPrinterId || !thermalPrintSettings?.nComputerId) {
             this.toastService.show({ type: 'danger', text: 'Check your business -> printer settings' });
             return;
         }
-        this.apiService.getNew('cashregistry', `/api/v1/print-template/business-receipt/${this.iBusinessId}/${this.iLocationId}`).subscribe((result: any) => {
+        this.apiService.getNew('cashregistry', `/api/v1/print-template/${sTemplateType}/${this.iBusinessId}/${this.iLocationId}`).subscribe((result: any) => {
+            
             if (result?.data?.aTemplate?.length > 0) {
                 let transactionDetails = { business: this.businessDetails, ...oDataSource };
                 transactionDetails.oCustomer = {
@@ -634,6 +644,8 @@ export class ReceiptService {
                 let command;
                 try {
                     command = this.pn2escposService.generate(JSON.stringify(result.data.aTemplate), JSON.stringify(transactionDetails));
+                    // console.log(command);
+                    // return;
                 } catch (e) {
                     this.toastService.show({ type: 'danger', text: 'Template not defined properly. Check browser console for more details' });
                     // console.log(e);

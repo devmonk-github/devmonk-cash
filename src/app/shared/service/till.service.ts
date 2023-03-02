@@ -497,7 +497,7 @@ export class TillService {
     
     dataObject.aPayments.forEach((obj: any) => {
       if(!obj?.sRemarks) obj.sRemarks = "";
-      obj.dCreatedDate = moment(obj.dCreatedDate).format('DD-MM-yyyy hh:mm');
+      // obj.dCreatedDate = moment(obj.dCreatedDate).format('DD-MM-yyyy hh:mm');
     });
 
     const aLoyaltyPointsItems = transaction.aTransactionItems.filter((item: any) => item?.oType?.eKind == 'loyalty-points-discount');
@@ -623,7 +623,7 @@ export class TillService {
     dataObject.totalSavingPoints = totalSavingPoints;
     dataObject.totalRedeemedLoyaltyPoints = totalRedeemedLoyaltyPoints;
     dataObject.nTotalExcVat = dataObject.totalAfterDisc - dataObject.totalVat;
-    dataObject.dCreatedDate = moment(dataObject.dCreatedDate).format('DD-MM-yyyy hh:mm');
+    // dataObject.dCreatedDate = moment(dataObject.dCreatedDate).format('DD-MM-yyyy hh:mm');
     let _relatedResult:any , _loyaltyPointSettings:any;
     
     if(!dataObject?.bMigrate){
@@ -645,7 +645,7 @@ export class TillService {
         relatedobj.aPayments = relatedobj.aPayments.filter((payment: any) => payment?.sRemarks !== 'CHANGE_MONEY');
         relatedobj.aPayments.forEach((obj: any) => {
           obj.sRemarks = "";
-          obj.dCreatedDate = moment(obj.dCreatedDate).format('DD-MM-yyyy hh:mm');
+          // obj.dCreatedDate = moment(obj.dCreatedDate).format('DD-MM-yyyy hh:mm');
         });
         dataObject.aPayments = dataObject.aPayments.concat(relatedobj.aPayments);
       })
