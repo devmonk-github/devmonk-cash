@@ -40,7 +40,8 @@
                                             || ''}}</div>
                                     </div>
                                 </div>
-                                <div class="fs-6 ms-1">
+                                
+                                <div class="fs-6 ms-1" *ngIf="customer?.bCounter==false">
                                     <div class="align-items-center">
                                         <div class="text-gray-600">{{customer?.sEmail || ''}}<a
                                                 href="mailto:{{customer?.sEmail}}">
@@ -48,7 +49,7 @@
                                             </a></div>
                                     </div>
                                 </div>
-                                <div class="fs-6 ms-1">
+                                <div class="fs-6 ms-1" *ngIf="customer?.bCounter==false">
                                     <div class="align-items-center">
                                         <p style="margin: 0; margin-bottom: 5px;">{{'PHONE_MOBILE' | translate}}</p>
                                         <p style="margin: 0; margin-bottom: 5px;">
@@ -59,7 +60,7 @@
                                         </p>
                                     </div>
                                 </div>
-                                <div class="fs-6 ms-1">
+                                <div class="fs-6 ms-1" *ngIf="customer?.bCounter==false">
                                     <div class="align-items-center">
                                         <p style="margin: 0; margin-bottom: 5px;">{{'PHONE_LANDLINE' | translate}}</p>
                                         <p style="margin: 0; margin-bottom: 5px;"><span>{{customer?.oPhone?.sLandLine ||
@@ -74,7 +75,7 @@
                                         </span>
                                     </div>
                                 </div> -->
-                                <button class="btn btn-primary my-3 btn-custom"
+                                <button class="btn btn-primary my-3 btn-custom" *ngIf="customer?.bCounter==false"
                                     (click)="openCustomer(customer)">{{'VIEW'|translate}} </button>
                             </div>
                         </div>
@@ -334,7 +335,7 @@
                                                     </div>
                                                 </span>
                                             </div>
-                                            <div class="btn-group me-4 w-100 my-3">
+                                            <div class="btn-group me-4 w-100 my-3" *ngIf="customer?.bCounter==false">
                                                 <span class="btn btn-secondary fs-bold">
                                                     <fa-icon class="group-icon" [icon]="faEnvelope"></fa-icon>
                                                     <span class="indicator-label">{{ "MAIL" | translate}}</span>
@@ -1679,7 +1680,7 @@
                                                     </div>
                                                 </span>
                                             </div>
-                                            <div class="btn-group me-4 w-100 my-3">
+                                            <div class="btn-group me-4 w-100 my-3" *ngIf="customer?.bCounter==false">
                                                 <span class="btn btn-secondary fs-bold">
                                                     <fa-icon class="group-icon" [icon]="faEnvelope"></fa-icon>
                                                     <span class="indicator-label">{{ "MAIL" | translate}}</span>
