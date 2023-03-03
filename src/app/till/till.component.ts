@@ -926,6 +926,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
     oDialogComponent.contextChanged.next({
       transaction: oDataSource,
+      transactionDetail:this.transaction,
       printActionSettings: this.printActionSettings,
       printSettings: this.printSettings,
       aUniqueItemTypes: aUniqueItemTypes,
