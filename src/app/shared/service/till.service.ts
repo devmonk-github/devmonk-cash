@@ -510,7 +510,7 @@ export class TillService {
         for (let i = 0; i < aLoyaltyPointsItems.length; i++) {
           if (aLoyaltyPointsItems[i].iBusinessProductId === item.iBusinessProductId) {
             item.nRedeemedLoyaltyPoints = aLoyaltyPointsItems[i].nRedeemedLoyaltyPoints;
-            item.nDiscount = aLoyaltyPointsItems[i].nDiscount;
+            item.nDiscount += aLoyaltyPointsItems[i].nDiscount;
             break;
           }
         }
@@ -547,12 +547,12 @@ export class TillService {
       } else { item.nDiscountToShow = disc }
       // console.log('item.nDiscountToShow', item.nDiscountToShow)
       // item.priceAfterDiscount = parseFloat(item.nRevenueAmount.toFixed(2)) - parseFloat(item.nDiscountToShow);
-      item.nPriceIncVatAfterDiscount = (parseFloat(item.nPriceIncVat) - parseFloat(item.nDiscountToShow)) - item.nRedeemedLoyaltyPoints;
-      item.nPriceIncVatAfterDiscount = parseFloat(item.nPriceIncVatAfterDiscount.toFixed(2));
-
+      item.nPriceIncVatAfterDiscount = +(item.nPriceIncVat.toFixed(2) - item.nDiscountToShow.toFixed(2)) - item.nRedeemedLoyaltyPoints;
+      // item.nPriceIncVatAfterDiscount = parseFloat(item.nPriceIncVatAfterDiscount.toFixed(2));
       if (item.oType.bRefund === true && item.oType.eKind != 'gold-purchase') item.nPriceIncVatAfterDiscount = -(item.nPriceIncVatAfterDiscount)
       // console.log('item.nPriceIncVatAfterDiscount', item.nPriceIncVatAfterDiscount)
-      item.totalPaymentAmount = (parseFloat(item.nRevenueAmount) - parseFloat(item.nDiscountToShow)) * item.nQuantity - item.nRedeemedLoyaltyPoints;
+      item.nRevenueAmount = (+(item.nRevenueAmount.toFixed(2)) - item.nDiscount) * item.nQuantity;
+      item.totalPaymentAmount = (parseFloat(item.nRevenueAmount) - parseFloat(item.nDiscountToShow)) - item.nRedeemedLoyaltyPoints;
       item.totalPaymentAmount = parseFloat(item.totalPaymentAmount.toFixed(2));
       // console.log('item.totalPaymentAmount', item.totalPaymentAmount)
       // item.totalPaymentAmountAfterDisc = parseFloat(item.priceAfterDiscount.toFixed(2)) * parseFloat(item.nQuantity);
@@ -593,14 +593,14 @@ export class TillService {
           if (relatedItem?.bDiscountOnPercentage) {
             item.nDiscountToShow = (item.oType.bRefund === true) ? 0 : this.getPercentOf(relatedItem.nPriceIncVat, relatedItem.nDiscount);
             totalDiscount += (item.oType.bRefund === true) ? 0 : item.nDiscountToShow;
-            relatedItem.nRevenueAmount = relatedItem.nRevenueAmount.toFixed(2) - this.getPercentOf(relatedItem.nPriceIncVat, relatedItem.nDiscount);
+            relatedItem.nRevenueAmount = +(relatedItem.nRevenueAmount.toFixed(2)) - this.getPercentOf(relatedItem.nPriceIncVat, relatedItem.nDiscount);
           } else {
             item.nDiscountToShow = (item.oType.bRefund === true) ? 0 : relatedItem.nDiscount;
             totalDiscount += (item.oType.bRefund === true) ? 0 : item.nDiscountToShow;
-            relatedItem.nRevenueAmount = relatedItem.nRevenueAmount.toFixed(2) - relatedItem.nDiscount;
+            relatedItem.nRevenueAmount = (+(relatedItem.nRevenueAmount.toFixed(2)) - relatedItem.nDiscount)* relatedItem.nQuantity;
           }
 
-          relatedItem.nRevenueAmount = relatedItem.nRevenueAmount.toFixed(2);
+          // relatedItem.nRevenueAmount = relatedItem.nRevenueAmount.toFixed(2);
         })
       }
     })

@@ -21,6 +21,7 @@ import { TransactionDetailsComponent } from '../../../transactions/components/tr
 import { fromEvent, Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, tap } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
+import { Router } from '@angular/router';
 export interface BarChartOptions {
   series: ApexAxisChartSeries;
   chart: ApexChart;
@@ -263,7 +264,8 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     private cdr: ChangeDetectorRef,
     private toastService: ToastService,
     private dialogService: DialogService,
-    private translateService: TranslateService ,
+    private translateService: TranslateService,
+    private router: Router
   ) {
     const _injector = this.viewContainerRef.parentInjector;
     this.dialogRef = _injector.get<DialogComponent>(DialogComponent);
@@ -291,31 +293,31 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     }
     this.fetchLoyaltyPoints();
     this.getListEmployees();
-    this.activitiesChartOptions = {
-      series: this.aActivityTitles.map((el: any) => el.value),
-      colors: this.aActivityTitles.map((el: any) => el.color),
-      chart: {
-        width: '75%',
-        type: "pie"
-      },
-      title: {
-        text: "Number of Activities",
-        style: {
-          fontWeight: 'bold',
-        },
-      },
-      legend: {
-        position: 'left',
-        itemMargin: {
-          horizontal: 15,
-          vertical: 5
-        },
-        fontWeight: 600,
-      },
-      labels: this.aActivityTitles.map((el: any) => el.type + " (" + el.value + ") "),
-    };
+    // this.activitiesChartOptions = {
+    //   series: this.aActivityTitles.map((el: any) => el.value),
+    //   colors: this.aActivityTitles.map((el: any) => el.color),
+    //   chart: {
+    //     width: '75%',
+    //     type: "pie"
+    //   },
+    //   title: {
+    //     text: "Number of Activities",
+    //     style: {
+    //       fontWeight: 'bold',
+    //     },
+    //   },
+    //   legend: {
+    //     position: 'left',
+    //     itemMargin: {
+    //       horizontal: 15,
+    //       vertical: 5
+    //     },
+    //     fontWeight: 600,
+    //   },
+    //   labels: this.aActivityTitles.map((el: any) => el.type + " (" + el.value + ") "),
+    // };
 
-    this.loadStatisticsTabData();
+    // this.loadStatisticsTabData();
     this.getCustomerGroups();
   }
 
@@ -325,21 +327,21 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
   }
 
   getCustomerGroups(){
-     this.apiService.postNew('customer' , '/api/v1/group/list' ,{iBusinessId:this.requestParams.iBusinessId , iLocationId:localStorage.getItem('currentLocation')}).subscribe((res:any)=>{
-       if(res?.message == 'success'){
-         if(res?.data?.length){
-           this.customerGroupList = res?.data[0]?.result;
-           if(this.customer?.aGroups?.length){
-             this.customer.aGroups.forEach((group:any)=>{
-               const index = this.customerGroupList.findIndex((cGroup:any)=>cGroup._id == group);
-               if(index>=0){
-                 this.aSelectedGroups.push(this.customerGroupList[index].sName);
-               }
-             })
-           }
-         }
-       }
-     })
+    this.apiService.postNew('customer', '/api/v1/group/list', { iBusinessId: this.requestParams.iBusinessId, iLocationId: localStorage.getItem('currentLocation') }).subscribe((res: any) => {
+      if (res?.message == 'success') {
+        if (res?.data?.length) {
+          this.customerGroupList = res?.data[0]?.result;
+          if (this.customer?.aGroups?.length) {
+            this.customer.aGroups.forEach((group: any) => {
+              const index = this.customerGroupList.findIndex((cGroup: any) => cGroup._id == group);
+              if (index >= 0) {
+                this.aSelectedGroups.push(this.customerGroupList[index].sName);
+              }
+            })
+          }
+        }
+      }
+    }, (error) => {})
   }
 
   getBusinessDetails() {
@@ -911,7 +913,11 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     this.dialogService.openModal(TransactionDetailsComponent, { cssClass: "modal-xl", context: { transaction: transaction, businessDetails: this.businessDetails , eType: 'cash-register-revenue', from: 'customer' } })
       .instance.close.subscribe(
         (res: any) => {
-          // if (res) this.router.navigate(['business/till']);
+          // console.log({res});
+          if (res){
+            this.close(false);
+            this.router.navigate(['business/till']);
+          } 
         });
   }
 

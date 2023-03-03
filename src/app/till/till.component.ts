@@ -154,6 +154,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   iBusinessId = localStorage.getItem('currentBusiness') || '';
   iLocationId = localStorage.getItem('currentLocation') || '';
   iWorkstationId = localStorage.getItem('currentWorkstation') || '';
+  bIsTransactionLoading = false;
   
   randNumber(min: number, max: number): number {
     return Math.floor(Math.random() * (max - min + 1) + min);
@@ -279,9 +280,12 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   loadTransaction() {
-    // console.log('load transaction');
     const fromTransactionPage: any = localStorage.getItem('fromTransactionPage');
-    if (fromTransactionPage) this.handleTransactionResponse(JSON.parse(fromTransactionPage));
+    if (fromTransactionPage){
+      this.handleTransactionResponse(JSON.parse(fromTransactionPage));
+    } else {
+      this.bIsTransactionLoading = false;
+    }
   }
 
   getValueFromLocalStorage(key: string): any {
@@ -557,7 +561,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       .instance.close.subscribe(async (data) => {
         // console.log('response of transaction search component', data)
         if (data?.transaction) {
-
+          this.bIsTransactionLoading = true;
           // / Finding BusinessProduct and their location and stock. Need to show in the dropdown of location choosing /
           if (data?.transactionItems?.length) {
             let aBusinessProduct: any = [];
@@ -1524,7 +1528,10 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       if (result?.data) {
         this.bDayStateChecking = false;
         this.bIsDayStateOpened = result?.data?.bIsDayStateOpened;
-        if (this.bIsDayStateOpened) this.fetchQuickButtons();
+        if (this.bIsDayStateOpened){
+          this.bIsTransactionLoading = true;
+          this.fetchQuickButtons();
+        } 
         if (result?.data?.oStatisticDetail?.dOpenDate) {
           this.dOpenDate = result?.data?.oStatisticDetail?.dOpenDate;
           await this.tillService.fetchSettings();
@@ -1758,6 +1765,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       this.fetchCustomer(transaction.iCustomerId);
     }
     this.changeInPayment();
+    this.bIsTransactionLoading = false;
     await this.updateFiskalyTransaction('ACTIVE', []);
   }
 
@@ -1769,6 +1777,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnDestroy() {
     localStorage.removeItem('fromTransactionPage');
+    localStorage.removeItem('recentUrl');
     this.cancelFiskalyTransaction();
     if (this.getSettingsSubscription) this.getSettingsSubscription.unsubscribe();
     if (this.dayClosureCheckSubscription) this.dayClosureCheckSubscription.unsubscribe();
