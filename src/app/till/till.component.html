@@ -379,7 +379,7 @@
                     </div>
                   </div>
 
-                  <ng-container *ngIf="bSearchingProduct">
+                  <ng-container *ngIf="bSearchingProduct || bIsTransactionLoading">
                     <div class="d-flex mt-2">
                       <div class="spinner-border mx-auto"></div>
                     </div>
@@ -556,10 +556,10 @@
                 <button class="btn btn-primary till-save-button flex-grow-1 me-2" (click)="createTransaction()"
                   [disabled]="checkout()">
                   <!-- [disabled]="saveInProgress || 1 > transactionItems.length || !amountDefined || !bAllGiftcardPaid"> -->
-                  <span class="d-flex" *ngIf="saveInProgress">
-                    <fa-icon [icon]="faSpinner" class="fa-spin"></fa-icon>
+                  <span class="mr-3" *ngIf="saveInProgress">
+                    <fa-icon [icon]="faSpinner" class="fa fa-spinner fa-spin"></fa-icon>
                   </span>
-                  <span *ngIf="!saveInProgress">
+                  <span>
                     {{ "C_CHECKOUT" | translate}}
                   </span>
                 </button>

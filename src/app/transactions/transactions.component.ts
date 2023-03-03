@@ -136,7 +136,26 @@ export class TransactionsComponent implements OnInit, OnDestroy {
   // Function for reset selected filters
   resetFilters() {
     this.requestParams.searchValue = "";
+    
+    this.requestParams = {
+      methods: [],
+      TIEKinds: [],
+      workstations: [],
+      locations: [],
+      invoiceStatus: 'all',
+      importStatus: 'all',
+      iBusinessId: "",
+      skip: 0,
+      limit: 10,
+      searchValue: '',
+      iEmployeeId:'',
+      sortBy: 'dCreatedDate',
+      sortOrder: 'desc'
+    };
+    this.employee = [];
+    this.showAdvanceSearch = false;
     this.loadTransaction();
+   
   }
 
   fetchBusinessDetails() {

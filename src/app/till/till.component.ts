@@ -154,6 +154,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   iBusinessId = localStorage.getItem('currentBusiness') || '';
   iLocationId = localStorage.getItem('currentLocation') || '';
   iWorkstationId = localStorage.getItem('currentWorkstation') || '';
+  bIsTransactionLoading = false;
   
   randNumber(min: number, max: number): number {
     return Math.floor(Math.random() * (max - min + 1) + min);
@@ -279,9 +280,12 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   loadTransaction() {
-    // console.log('load transaction');
     const fromTransactionPage: any = localStorage.getItem('fromTransactionPage');
-    if (fromTransactionPage) this.handleTransactionResponse(JSON.parse(fromTransactionPage));
+    if (fromTransactionPage){
+      this.handleTransactionResponse(JSON.parse(fromTransactionPage));
+    } else {
+      this.bIsTransactionLoading = false;
+    }
   }
 
   getValueFromLocalStorage(key: string): any {
@@ -338,6 +342,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       oArticleGroupMetaData: { aProperty: [], sCategory: '', sSubCategory: '', oName: {}, oNameOriginal: {} },
       description: '',
       sServicePartnerRemark: '',
+      sCommentVisibleServicePartner:'',
       eEstimatedDateAction: 'call_on_ready',
       open: true,
       new: true,
@@ -451,6 +456,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       paymentAmount: type === 'gold-purchase' ? -1 * price : 0,
       description: '',
       sServicePartnerRemark: '',
+      sCommentVisibleServicePartner:'',
       eActivityItemStatus: 'new',
       eEstimatedDateAction: 'call_on_ready',
       open: true,
@@ -557,7 +563,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       .instance.close.subscribe(async (data) => {
         // console.log('response of transaction search component', data)
         if (data?.transaction) {
-
+          this.bIsTransactionLoading = true;
           // / Finding BusinessProduct and their location and stock. Need to show in the dropdown of location choosing /
           if (data?.transactionItems?.length) {
             let aBusinessProduct: any = [];
@@ -589,6 +595,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       .instance.close.subscribe((data) => {
         if (data.customer) {
           this.customer = data.customer;
+          console.log(this.customer)
         }
       })
   }
@@ -925,6 +932,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
     oDialogComponent.contextChanged.next({
       transaction: oDataSource,
+      transactionDetail:this.transaction,
       printActionSettings: this.printActionSettings,
       printSettings: this.printSettings,
       aUniqueItemTypes: aUniqueItemTypes,
@@ -992,7 +1000,9 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
           printSettings: this.printSettings,
           sAction: 'thermal',
           apikey: this.businessDetails.oPrintNode.sApiKey,
-          title: oDataSource.sNumber
+          title: oDataSource.sNumber,
+          sType: type,
+          sTemplateType: 'business-receipt'
         });
       }
       if (aActionToPerform.includes('DOWNLOAD') || aActionToPerform.includes('PRINT_PDF')) {
@@ -1180,11 +1190,14 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       const _oBusinessProductDetail = await this.getBusinessProduct(product?.iBusinessProductId || product?._id).toPromise();
       product = _oBusinessProductDetail.data;
       if (product?.aLocation?.length) {
-        product.aLocation = product.aLocation.map((oProdLoc: any) => {
+        product.aLocation = product.aLocation.filter((oProdLoc: any) => {
           // console.log('oProdLoc: ', oProdLoc, this.aBusinessLocation);
           const oFound: any = this.aBusinessLocation.find((oBusLoc: any) => oBusLoc?._id?.toString() === oProdLoc?._id?.toString());
-          oProdLoc.sName = oFound?.sName;
-          return oProdLoc;
+          if(oFound){
+            oProdLoc.sName = oFound?.sName;
+            return oProdLoc;
+          }
+        
         })
         // console.log('Product location: ', product?.aLocation);
         currentLocation = product.aLocation.find((o: any) => o._id === this.iLocationId);
@@ -1518,7 +1531,10 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       if (result?.data) {
         this.bDayStateChecking = false;
         this.bIsDayStateOpened = result?.data?.bIsDayStateOpened;
-        if (this.bIsDayStateOpened) this.fetchQuickButtons();
+        if (this.bIsDayStateOpened){
+          this.bIsTransactionLoading = true;
+          this.fetchQuickButtons();
+        } 
         if (result?.data?.oStatisticDetail?.dOpenDate) {
           this.dOpenDate = result?.data?.oStatisticDetail?.dOpenDate;
           await this.tillService.fetchSettings();
@@ -1729,6 +1745,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
                 nPurchasePrice: transactionItem.nPurchasePrice,
                 oBusinessProductMetaData: transactionItem.oBusinessProductMetaData,
                 sServicePartnerRemark: transactionItem.sServicePartnerRemark,
+
+                sCommentVisibleServicePartner: transactionItem.sCommentVisibleServicePartner,
                 eActivityItemStatus: transactionItem.eActivityItemStatus,
                 eEstimatedDateAction: transactionItem.eEstimatedDateAction,
                 bGiftcardTaxHandling: transactionItem.bGiftcardTaxHandling,
@@ -1752,6 +1770,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       this.fetchCustomer(transaction.iCustomerId);
     }
     this.changeInPayment();
+    this.bIsTransactionLoading = false;
     await this.updateFiskalyTransaction('ACTIVE', []);
   }
 
@@ -1763,6 +1782,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnDestroy() {
     localStorage.removeItem('fromTransactionPage');
+    localStorage.removeItem('recentUrl');
     this.cancelFiskalyTransaction();
     if (this.getSettingsSubscription) this.getSettingsSubscription.unsubscribe();
     if (this.dayClosureCheckSubscription) this.dayClosureCheckSubscription.unsubscribe();

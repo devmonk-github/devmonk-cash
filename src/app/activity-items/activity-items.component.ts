@@ -32,6 +32,7 @@ export class ActivityItemsComponent implements OnInit, OnDestroy {
   businessDetails: any = {};
   iLocationId: string;
   iBusinessId: string;
+  
   requestParams: any = {
     create: {
       minDate: new Date('01-01-2015'),
@@ -63,6 +64,7 @@ export class ActivityItemsComponent implements OnInit, OnDestroy {
   sSearchValue: string = '';
   showAdvanceSearch = false;
   isDownloadEnable = false;
+  
 
   workstations: Array<any> = [];
   employees: Array<any> = [];
@@ -156,7 +158,29 @@ export class ActivityItemsComponent implements OnInit, OnDestroy {
   // Function for reset selected filters
   resetFilters() {
     this.sSearchValue = "";
-    this.loadTransaction()
+    this.requestParams = {
+      create: {
+        minDate: new Date('01-01-2015'),
+        maxDate: new Date(new Date().setHours(23, 59, 59)),
+      },
+      estimate: {
+        minDate: undefined,
+        maxDate: undefined
+      },
+     
+      sortBy: 'dCreatedDate',
+      sortOrder: 'desc',
+      selectedRepairStatuses: [],
+      selectedWorkstations: [],
+      locations: [],
+      selectedLocations: [],
+      selectedKind: [],
+      aSelectedBusinessPartner: [],
+      iEmployeeId: '',
+      iAssigneeId: '',
+    };
+    this.showAdvanceSearch = false;
+    this.loadTransaction();
   }
 
   loadTransaction() {

@@ -51,7 +51,7 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   businessDetails: any = {};
   ableToDownload: Boolean = false;
   from !: string;
-  thermalPrintSettings !: any;
+  // thermalPrintSettings !: any;
   employeesList:any =[];
 
   // private pn2escposService = new Pn2escposService(Object, this.translateService);
@@ -86,32 +86,35 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
     this.transaction.currentLocation = this.businessDetails.currentLocation;
     
     this.transaction = await this.tillService.processTransactionForPdfReceipt(this.transaction);
-    let nTotalOriginalAmount = 0, nTotalQty = 0;
+    this.transaction.nTotalOriginalAmount = 0;
+    this.transaction.nTotalQty = 0;
 
     this.transaction.aTransactionItems.forEach((item: any) => {
       // let description = (item?.nDiscountToShow > 0) nTotalQty? `Original amount: ${item.nPriceIncVat}\n` : '';
-      nTotalQty += item.nQuantity;
+      // console.log(item);
+      this.transaction.nTotalQty += item.nQuantity;
       let description = (item?.totalPaymentAmount != item?.nPriceIncVatAfterDiscount) ? `${this.translateService.instant('ORIGINAL_AMOUNT_INC_DISC')}: ${item.nPriceIncVatAfterDiscount}\n` : '';
       if (item?.related?.length) {
-        nTotalOriginalAmount += item.nPriceIncVatAfterDiscount;
+        this.transaction.nTotalOriginalAmount += item.nPriceIncVatAfterDiscount;
         if (item.nPriceIncVatAfterDiscount !== item.nRevenueAmount) {
-          description += `${this.translateService.instant('ALREADY_PAID')}: \n${item.sTransactionNumber} | ${item.nRevenueAmount} (${this.translateService.instant('THIS_RECEIPT')})\n`;
+          // console.log(100, 'item revenue', item.nRevenueAmount, 'payment', item.totalPaymentAmount);
+          description += `${this.translateService.instant('ALREADY_PAID')}: \n${item.sTransactionNumber} | ${item.totalPaymentAmount} (${this.translateService.instant('THIS_RECEIPT')})\n`;
 
           item.related.forEach((related: any) => {
-            description += `${related.sTransactionNumber} | ${related.nRevenueAmount}\n`;
+            // console.log(103, 'related revenue', related.nRevenueAmount);
+            description += `${related.sTransactionNumber} | ${related.nRevenueAmount * related.nQuantity}\n`;
           });
         }
       }
       item.description = description;
     });
-    this.transaction.nTotalOriginalAmount = nTotalOriginalAmount;
-    this.transaction.nTotalQty = nTotalQty;
+    // console.log(this.transaction);
     
     this.loading = false;
 
-    this.getPdfPrintSetting()
-    this.getThermalPrintSetting()
-    this.getPdfPrintSetting({ oFilterBy: { sMethod: 'actions' } })
+    this.getPrintSetting()
+    // this.getThermalPrintSetting()
+    // this.getPdfPrintSetting({ oFilterBy: { sMethod: 'actions' } })
     this.mapEmployee();
 
     // console.log(this.transaction)
@@ -168,16 +171,20 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
     this.generatePDF(false);
   }
 
-  getPdfPrintSetting(oFilterBy?: any) {
+  getPrintSetting() {
     const oBody = {
       iLocationId: this.iLocationId,
-      ...oFilterBy
     }
     this.apiService.postNew('cashregistry', `/api/v1/print-settings/list/${this.iBusinessId}`, oBody).subscribe((result:any) => {
-      if(oFilterBy) {
-        this.printActionSettings = result?.data[0]?.result[0].aActions;
-      } else {
-        this.printSettings = result?.data[0]?.result;
+      if (result?.data?.length && result?.data[0]?.result?.length) {
+        this.printSettings = [];
+        result?.data[0]?.result.forEach((settings: any) => {
+          if (settings?.sMethod === 'actions') {
+            this.printActionSettings = settings?.aActions || [];
+          } else {
+            this.printSettings.push(settings);
+          }
+        })
       }
     });
   }
@@ -223,6 +230,9 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
       oDataSource.oCustomer = {};
     }
 
+    oDataSource?.aPayments?.forEach((payment: any) => {
+      payment.dCreatedDate = moment(payment.dCreatedDate).format('DD-MM-yyyy hh:mm');
+    })
     
     this.receiptService.exportToPdf({
       oDataSource: oDataSource,
@@ -254,83 +264,87 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
     return this.apiService.getNew('cashregistry', `/api/v1/pdf/templates/${this.iBusinessId}?eType=${type}&iLocationId=${this.iLocationId}`);
   }
 
-  fetchCustomer(customerId: any) {
-    this.apiService.getNew('customer', `/api/v1/customer/${customerId}?iBusinessId=${this.iBusinessId}`).subscribe(
-      (result: any) => {
+  // fetchCustomer(customerId: any) {
+  //   this.apiService.getNew('customer', `/api/v1/customer/${customerId}?iBusinessId=${this.iBusinessId}`).subscribe(
+  //     (result: any) => {
 
-        // console.log('fetch customer result', result)
-        // this.transaction.oCustomer = result;
-        this.transaction.oCustomer = {
-          sFirstName: result?.sFirstName,
-          sPrefix: result?.sPrefix,
-          sLastName: result?.sLastName,
-          sEmail: result?.sEmail,
-          sMobile: result?.oPhone?.sCountryCode + result?.oPhone?.sMobile,
-          sLandLine: result?.oPhone?.sLandLine,
-          oInvoiceAddress: result?.oInvoiceAddress,
-          oShippingAddress: result?.oShippingAddress
-        };
+  //       // console.log('fetch customer result', result)
+  //       // this.transaction.oCustomer = result;
+  //       this.transaction.oCustomer = {
+  //         sFirstName: result?.sFirstName,
+  //         sPrefix: result?.sPrefix,
+  //         sLastName: result?.sLastName,
+  //         sEmail: result?.sEmail,
+  //         sMobile: result?.oPhone?.sCountryCode + result?.oPhone?.sMobile,
+  //         sLandLine: result?.oPhone?.sLandLine,
+  //         oInvoiceAddress: result?.oInvoiceAddress,
+  //         oShippingAddress: result?.oShippingAddress
+  //       };
 
-      },
-      (error: any) => {
-        console.error(error)
-      }
-    );
-  }
+  //     },
+  //     (error: any) => {
+  //       console.error(error)
+  //     }
+  //   );
+  // }
 
   openTransaction(transaction: any, itemType: any) {
     this.dialogService.openModal(TransactionItemsDetailsComponent, { cssClass: "modal-xl", context: { transaction, itemType } })
       .instance.close.subscribe(result => {
-        const transactionItems: any = [];
+        // console.log({result});
+        // const transactionItems: any = [];
         if (result.transaction) {
-          result.transactionItems.forEach((transactionItem: any) => {
-            if (transactionItem.isSelected) {
-              const { tType } = transactionItem;
-              let paymentAmount = transactionItem.nQuantity * transactionItem.nPriceIncVat - transactionItem.nPaidAmount;
-              if (tType === 'refund') {
-                paymentAmount = -1 * transactionItem.nPaidAmount;
-                transactionItem.oType.bRefund = true;
-              } else if (tType === 'revert') {
-                paymentAmount = transactionItem.nPaidAmount;
-                transactionItem.oType.bRefund = false;
-              };
-              transactionItems.push({
-                name: transactionItem.sProductName || transactionItem.sProductNumber,
-                iActivityItemId: transactionItem.iActivityItemId,
-                nRefundAmount: transactionItem.nPaidAmount,
-                iLastTransactionItemId: transactionItem.iTransactionItemId,
-                prePaidAmount: tType === 'refund' ? transactionItem.nPaidAmount : transactionItem.nPaymentAmount,
-                type: transactionItem.sGiftCardNumber ? 'giftcard' : transactionItem.oType.eKind,
-                eTransactionItemType: 'regular',
-                nBrokenProduct: 0,
-                tType,
-                oType: transactionItem.oType,
-                aImage: transactionItem.aImage,
-                nonEditable: transactionItem.sGiftCardNumber ? true : false,
-                sGiftCardNumber: transactionItem.sGiftCardNumber,
-                quantity: transactionItem.nQuantity,
-                price: transactionItem.nPriceIncVat,
-                iRepairerId: transactionItem.iRepairerId,
-                oArticleGroupMetaData: transactionItem.oArticleGroupMetaData,
-                iEmployeeId: transactionItem.iEmployeeId,
-                iBrandId: transactionItem.iBrandId,
-                discount: 0,
-                tax: transactionItem.nVatRate,
-                iSupplierId: transactionItem.iSupplierId,
-                paymentAmount,
-                description: transactionItem.sDescription,
-                oBusinessProductMetaData: transactionItem.oBusinessProductMetaData,
-                sServicePartnerRemark: transactionItem.sServicePartnerRemark,
-                eActivityItemStatus: transactionItem.eActivityItemStatus,
-                eEstimatedDateAction: transactionItem.eEstimatedDateAction,
-                bGiftcardTaxHandling: transactionItem.bGiftcardTaxHandling,
-                open: true,
-              });
-            }
-          });
-          result.transactionItems = transactionItems;
-          localStorage.setItem('fromTransactionPage', JSON.stringify(result));
-          localStorage.setItem('recentUrl', '/business/transactions');
+          const data = this.tillService.processTransactionSearchResult(result);
+          // console.log(data);
+          // result.transactionItems.forEach((transactionItem: any) => {
+          //   if (transactionItem.isSelected) {
+          //     const { tType } = transactionItem;
+          //     let paymentAmount = transactionItem.nQuantity * transactionItem.nPriceIncVat - transactionItem.nPaidAmount;
+          //     if (tType === 'refund') {
+          //       paymentAmount = -1 * transactionItem.nPaidAmount;
+          //       transactionItem.oType.bRefund = true;
+          //     } else if (tType === 'revert') {
+          //       paymentAmount = transactionItem.nPaidAmount;
+          //       transactionItem.oType.bRefund = false;
+          //     };
+          //     transactionItems.push({
+          //       name: transactionItem.sProductName || transactionItem.sProductNumber,
+          //       iActivityItemId: transactionItem.iActivityItemId,
+          //       nRefundAmount: transactionItem.nPaidAmount,
+          //       iLastTransactionItemId: transactionItem.iTransactionItemId,
+          //       prePaidAmount: tType === 'refund' ? transactionItem.nPaidAmount : transactionItem.nPaymentAmount,
+          //       type: transactionItem.sGiftCardNumber ? 'giftcard' : transactionItem.oType.eKind,
+          //       eTransactionItemType: 'regular',
+          //       nBrokenProduct: 0,
+          //       tType,
+          //       oType: transactionItem.oType,
+          //       aImage: transactionItem.aImage,
+          //       nonEditable: transactionItem.sGiftCardNumber ? true : false,
+          //       sGiftCardNumber: transactionItem.sGiftCardNumber,
+          //       quantity: transactionItem.nQuantity,
+          //       price: transactionItem.nPriceIncVat,
+          //       iRepairerId: transactionItem.iRepairerId,
+          //       oArticleGroupMetaData: transactionItem.oArticleGroupMetaData,
+          //       iEmployeeId: transactionItem.iEmployeeId,
+          //       iBrandId: transactionItem.iBrandId,
+          //       discount: 0,
+          //       tax: transactionItem.nVatRate,
+          //       iSupplierId: transactionItem.iSupplierId,
+          //       paymentAmount,
+          //       description: transactionItem.sDescription,
+          //       oBusinessProductMetaData: transactionItem.oBusinessProductMetaData,
+          //       sServicePartnerRemark: transactionItem.sServicePartnerRemark,
+          //       eActivityItemStatus: transactionItem.eActivityItemStatus,
+          //       eEstimatedDateAction: transactionItem.eEstimatedDateAction,
+          //       bGiftcardTaxHandling: transactionItem.bGiftcardTaxHandling,
+          //       open: true,
+          //     });
+          //   }
+          // });
+
+          // result.transactionItems = transactionItems;
+          localStorage.setItem('fromTransactionPage', JSON.stringify(data));
+          // localStorage.setItem('recentUrl', '/business/transactions');
           setTimeout(() => {
             this.close(true);
           }, 100);
@@ -338,13 +352,13 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
       });
   }
 
-  getThermalPrintSetting() {
-    this.apiService.getNew('cashregistry', `/api/v1/print-settings/${this.iBusinessId}/${this.iWorkstationId}/thermal/regular`).subscribe((result:any) => {
-      if (result?.data?._id) {
-        this.thermalPrintSettings = result?.data;
-      }
-    });
-  }
+  // getThermalPrintSetting() {
+  //   this.apiService.getNew('cashregistry', `/api/v1/print-settings/${this.iBusinessId}/${this.iWorkstationId}/thermal/regular`).subscribe((result:any) => {
+  //     if (result?.data?._id) {
+  //       this.thermalPrintSettings = result?.data;
+  //     }
+  //   });
+  // }
 
   openCustomer(customer: any) {
     if (customer?._id) {
@@ -378,48 +392,59 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   }
 
   getThermalReceipt(type:string) {
-    if (!this.thermalPrintSettings?.nPrinterId || !this.thermalPrintSettings?.nComputerId) {
-      this.toastService.show({ type: 'danger', text: 'Check your business -> printer settings' });
-    }
+    this.receiptService.printThermalReceipt({
+      oDataSource: this.transaction,
+      printSettings: this.printSettings,
+      apikey: this.businessDetails.oPrintNode.sApiKey,
+      title: this.transaction.sNumber,
+      sType: 'regular',
+      sTemplateType: type
+    });
+    // return;
+
+    // if (!this.thermalPrintSettings?.nPrinterId || !this.thermalPrintSettings?.nComputerId) {
+    //   this.toastService.show({ type: 'danger', text: 'Check your business -> printer settings' });
+    // }
     
 
-    this.apiService.getNew('cashregistry', `/api/v1/print-template/${type}/${this.iBusinessId}/${this.iLocationId}`).subscribe((result: any) => {
-      if (result?.data?.aTemplate?.length > 0) {
-        let transactionDetails = { businessDetails: this.businessDetails, ...this.transaction };
-        transactionDetails.oCustomer = {
-          ...transactionDetails.oCustomer,
-          ...transactionDetails.oCustomer.oPhone,
-          ...transactionDetails.oCustomer.oInvoiceAddress
-        };
-        let command;
-        try {
-          command = this.pn2escposService.generate(JSON.stringify(result.data.aTemplate), JSON.stringify(transactionDetails));
-          // console.log(command);
-        } catch (e) {
-          this.toastService.show({ type: 'danger', text: 'Template not defined properly. Check browser console for more details' });
-          console.log(e);
-          return;
-        }
-        // return;
-        this.printService.createPrintJob(this.iBusinessId, command, this.thermalPrintSettings?.nPrinterId, this.thermalPrintSettings?.nComputerId, this.businessDetails.oPrintNode.sApiKey, this.transaction.sNumber).then((response: any) => {
-          if (response.status == "PRINTJOB_NOT_CREATED") {
-            let message = '';
-            if (response.computerStatus != 'online') {
-              message = 'Your computer status is : ' + response.computerStatus + '.';
-            } else if (response.printerStatus != 'online') {
-              message = 'Your printer status is : ' + response.printerStatus + '.';
-            }
-            this.toastService.show({ type: 'warning', title: 'PRINTJOB_NOT_CREATED', text: message });
-          } else {
-            this.toastService.show({ type: 'success', text: 'PRINTJOB_CREATED', apiUrl: '/api/v1/printnode/print-job', templateContext: { apiKey: this.businessDetails.oPrintNode.sApiKey, id: response.id } });
-          }
-        })
-      } else if (result?.data?.aTemplate?.length == 0) {
-        this.toastService.show({ type: 'danger', text: 'TEMPLATE_NOT_FOUND' });
-      } else {
-        this.toastService.show({ type: 'danger', text: 'Error while fetching print template' });
-      }
-    });
+    // this.apiService.getNew('cashregistry', `/api/v1/print-template/${type}/${this.iBusinessId}/${this.iLocationId}`).subscribe((result: any) => {
+    //   if (result?.data?.aTemplate?.length > 0) {
+    //     let transactionDetails = { businessDetails: this.businessDetails, ...this.transaction };
+    //     transactionDetails.oCustomer = {
+    //       ...transactionDetails.oCustomer,
+    //       ...transactionDetails.oCustomer.oPhone,
+    //       ...transactionDetails.oCustomer.oInvoiceAddress
+    //     };
+    //     let command;
+    //     try {
+    //       command = this.pn2escposService.generate(JSON.stringify(result.data.aTemplate), JSON.stringify(transactionDetails));
+    //       console.log(command);
+    //       return;
+    //     } catch (e) {
+    //       this.toastService.show({ type: 'danger', text: 'Template not defined properly. Check browser console for more details' });
+    //       console.log(e);
+    //       return;
+    //     }
+    //     // return;
+    //     this.printService.createPrintJob(this.iBusinessId, command, this.thermalPrintSettings?.nPrinterId, this.thermalPrintSettings?.nComputerId, this.businessDetails.oPrintNode.sApiKey, this.transaction.sNumber).then((response: any) => {
+    //       if (response.status == "PRINTJOB_NOT_CREATED") {
+    //         let message = '';
+    //         if (response.computerStatus != 'online') {
+    //           message = 'Your computer status is : ' + response.computerStatus + '.';
+    //         } else if (response.printerStatus != 'online') {
+    //           message = 'Your printer status is : ' + response.printerStatus + '.';
+    //         }
+    //         this.toastService.show({ type: 'warning', title: 'PRINTJOB_NOT_CREATED', text: message });
+    //       } else {
+    //         this.toastService.show({ type: 'success', text: 'PRINTJOB_CREATED', apiUrl: '/api/v1/printnode/print-job', templateContext: { apiKey: this.businessDetails.oPrintNode.sApiKey, id: response.id } });
+    //       }
+    //     })
+    //   } else if (result?.data?.aTemplate?.length == 0) {
+    //     this.toastService.show({ type: 'danger', text: 'TEMPLATE_NOT_FOUND' });
+    //   } else {
+    //     this.toastService.show({ type: 'danger', text: 'Error while fetching print template' });
+    //   }
+    // });
   }
 
 }

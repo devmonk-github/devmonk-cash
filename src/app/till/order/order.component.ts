@@ -59,7 +59,8 @@ export class OrderComponent implements OnInit {
 
   contactType: 'phone' | 'email' | 'whatsapp' | '' = ''
   bShowServicePartnerRemark = false
-  sServicePartnerRemark = ''
+  sServicePartnerRemark = '';
+  sCommentVisibleServicePartner = '';
 
   @Input() disablePrepayment: any;
   @Input() availableAmount: any;
