@@ -14,7 +14,7 @@
                 <h3 class="fw-bolder mb-4">
                     <span>{{ "CUSTOMER" | translate }}</span>
                 </h3>
-                <ng-container *ngIf="from === 'transactions'">
+                <ng-container *ngIf="from === 'transactions' || from === 'transactions-action' ">
                     <button class="btn btn-primary" *ngIf="!transaction?.oCustomer?.bCounter" (click)="openCustomer(transaction.oCustomer)">
                         {{ 'VIEW' | translate }}
                     </button>
