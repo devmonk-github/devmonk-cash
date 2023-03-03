@@ -313,28 +313,28 @@
                     <div class="col-md-6 cursor-pointer py-5 px-2" *ngFor="let product of shopProducts"
                       (mouseenter)="product['showOption'] = true" (mouseleave)="product['showOption'] = false">
                       <a (click)="onSelectProduct(product, 'business', 'shopProducts')">
-                        <div class="card m-1 shadow-sm h-100">
+                        <div class="card m-1 shadow-sm h-100 custom-card">
                           <div class="card-body">
-                            <div class="d-flex">
-                              <div class="p-2">
+                            <!-- <div class="d-flex"> -->
+                              <div class="r-content">
                                 <img
                                   src="{{product.aImage[0]? product.aImage[0]: '../assets/images/no-photo-available.jpg' }}"
-                                  class="w-50">
+                                  class="">
                               </div>
-                              <div class="px-2">
-                                <label class="business-bg-color rounded-full px-2 py-1 text-white text-sm">{{
-                                  "BUSINESS_PRODUCT"| translate}}</label>
+                              <div class="l-content">
+                                <!-- <label class="business-bg-color rounded-full px-2 py-1 text-white text-sm">{{
+                                  "BUSINESS_PRODUCT"| translate}}</label> -->
                                 <span>
                                   <fa-icon [icon]="faCopy" aria-label="copy-article-number" class="ml-4"></fa-icon>
                                 </span>
-                                <p class="block mt-2">{{ product.oName? product.oName['en'] : 'No name' }}</p>
-                                <p class="mt-2">{{ product.sEan }}</p>
-                                <p class="mt-2">{{ product.sProductNumber }}</p>
-                                <p class="mt-2">{{ product?.sSerialNumber || '' }}</p>
-                                <p class="mt-2">{{ product?.sArticleNumber }}</p>
-                                <p>{{"STOCK"| translate}} {{ product?.oCurrentLocation?.nStock }} </p>
+                                <p class="block mt-2 prod-name">{{ product.oName? product.oName['en'] : 'No name' }}</p>
+                                <p class="mt-2 text-gray-800">{{ product.sEan || '-'}}</p>
+                                <p class="mt-2 text-gray-800">{{ product.sProductNumber }}</p>
+                                <p class="mt-2 text-gray-800">{{ product?.sSerialNumber || '-' }}</p>
+                                <p class="mt-2 text-gray-800">{{ product?.sArticleNumber }}</p>
+                                <p class="text-gray-800">{{"STOCK"| translate}}: {{ product?.oCurrentLocation?.nStock || '-'}} </p>
                               </div>
-                            </div>
+                            <!-- </div> -->
                           </div>
                         </div>
                       </a>
