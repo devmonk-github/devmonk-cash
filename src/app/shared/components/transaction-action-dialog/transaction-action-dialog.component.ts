@@ -2,13 +2,13 @@ import { Component, Input, OnInit, ViewContainerRef, ViewChildren, QueryList, El
 import { HttpClient } from '@angular/common/http';
 import { faTimes, faSearch, faSpinner, faRefresh, faCheck } from "@fortawesome/free-solid-svg-icons";
 import * as _ from 'lodash';
-
-import { DialogComponent } from "../../service/dialog";
+import { DialogComponent, DialogService } from "../../service/dialog";
 import { TerminalService } from '../../service/terminal.service';
 import { ToastService } from '../toast';
 import { ReceiptService } from '../../service/receipt.service';
 import * as JsBarcode from 'jsbarcode';
 import { ApiService } from '../../service/api.service';
+import { TransactionDetailsComponent } from 'src/app/transactions/components/transaction-details/transaction-details.component';
 
 @Component({
   selector: 'app-transaction-action',
@@ -26,6 +26,7 @@ export class TransactionActionDialogComponent implements OnInit {
   loading = false;
   showLoader = false;
   transaction: any = undefined;
+  transactionDetail:any =undefined;
   activityItems: any;
   activity: any;
   printActionSettings: any;
@@ -37,6 +38,7 @@ export class TransactionActionDialogComponent implements OnInit {
   aUniqueTypes: any = [];
   aRepairItems: any = [];
   aTemplates: any = [];
+  employees:any =[];
   aRepairActionSettings: any;
   aRepairAlternativeActionSettings: any;
   usedActions: boolean = false;
@@ -50,23 +52,26 @@ export class TransactionActionDialogComponent implements OnInit {
   bRegularDisabled: boolean = false;
   bGiftCardDisabled : boolean = false;
   bRepairAlternativeDisabled : boolean = false;
-
+  eType = 'cash-register-revenue';
   bReceiveNewsletter: boolean = false;
+  iBusinessId:any;
 
   constructor(
     private viewContainer: ViewContainerRef,
     private receiptService: ReceiptService,
     private toastService: ToastService,
-    private apiService: ApiService
+    private apiService: ApiService,
+    private dialogService:DialogService
   ) {
     const _injector = this.viewContainer.injector;
     this.dialogRef = _injector.get<DialogComponent>(DialogComponent);
   }
 
-  ngOnInit(): void {
-
+  ngOnInit(): void {  
+    this.iBusinessId = localStorage.getItem('currentBusiness');
     this.dialogRef.contextChanged.subscribe((context: any) => {
       this.transaction = context.transaction;
+      this.transactionDetail = context.transactionDetail;
       this.aTemplates = context.aTemplates;
       this.activityItems = context.activityItems;
       this.activity = context.activity;
@@ -92,10 +97,19 @@ export class TransactionActionDialogComponent implements OnInit {
       this.aUniqueTypes = [...new Set(this.aUniqueTypes)]
 
     })
+    this.listEmployee();
   }
 
   close(data: any): void {
     this.dialogRef.close.emit(this.usedActions)
+  }
+
+  listEmployee() {
+    this.apiService.postNew('auth', '/api/v1/employee/list', { iBusinessId: this.iBusinessId }).subscribe((result:any)=>{
+      if (result?.data?.length) {
+        this.employees = this.employees.concat(result.data[0].result);
+      }
+    })
   }
 
   async performAction(type: any, action: any, index?: number) {
@@ -233,6 +247,28 @@ export class TransactionActionDialogComponent implements OnInit {
     JsBarcode(canvas, data, { format: "CODE128", displayValue: displayValue });
     return canvas.toDataURL("image/png");
   }
+  
+  openTransactionDetail(transaction: any) {
+    this.dialogService.openModal(TransactionDetailsComponent, 
+      { 
+        cssClass: "w-fullscreen mt--5", 
+        context: { 
+          transaction: transaction, 
+          businessDetails: this.businessDetails, 
+          eType: this.eType, 
+          from: 'transactions-action',
+          employeesList: this.employees
+        }, 
+        hasBackdrop: true, 
+        closeOnBackdropClick: false, 
+        closeOnEsc: false 
+      }).instance.close.subscribe(
+        res => {
+          this.close(false);
+          // if (res) this.routes.navigate(['business/till']);
+        });
+  }
+
 
   updateCustomer() {
     let customerDetails = JSON.parse(JSON.stringify(this.transaction.oCustomer));

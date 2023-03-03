@@ -152,12 +152,10 @@ export class TransactionsComponent implements OnInit, OnDestroy {
       sortBy: 'dCreatedDate',
       sortOrder: 'desc'
     };
+    this.employee = [];
     this.showAdvanceSearch = false;
-   
-    
-    //this.employee  = this.employee;
-    //this.requestParams.iEmployeeId = this.employee && this.employee._id ? this.employee._id : '';
     this.loadTransaction();
+   
   }
 
   fetchBusinessDetails() {
