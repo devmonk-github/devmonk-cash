@@ -464,6 +464,7 @@ export class TillService {
             nPurchasePrice: transactionItem.nPurchasePrice,
             oBusinessProductMetaData: transactionItem.oBusinessProductMetaData,
             sServicePartnerRemark: transactionItem.sServicePartnerRemark,
+            sCommentVisibleServicePartner:transactionItem.sCommentVisibleServicePartner,
             eActivityItemStatus: transactionItem.eActivityItemStatus,
             eEstimatedDateAction: transactionItem.eEstimatedDateAction,
             bGiftcardTaxHandling: transactionItem.bGiftcardTaxHandling,
