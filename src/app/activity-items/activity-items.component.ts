@@ -32,6 +32,7 @@ export class ActivityItemsComponent implements OnInit, OnDestroy {
   businessDetails: any = {};
   iLocationId: string;
   iBusinessId: string;
+  
   requestParams: any = {
     create: {
       minDate: new Date('01-01-2015'),
@@ -63,6 +64,7 @@ export class ActivityItemsComponent implements OnInit, OnDestroy {
   sSearchValue: string = '';
   showAdvanceSearch = false;
   isDownloadEnable = false;
+  
 
   workstations: Array<any> = [];
   employees: Array<any> = [];
