@@ -31,9 +31,10 @@
                             <div class="spinner-border mx-2" *ngIf="bActivityPdfGenerationInProgress"></div>
                         </div>
 
+                        <!-- System Customer Showing Start -->
                         <div class="d-flex flex-wrap py-5">
                             <div class="flex-equal me-5">
-                                <p><strong>{{ "CUSTOMER_DETAILS" | translate}}</strong></p>
+                                <p><strong>{{ "SYSTEM_CUSTOMER" | translate}}</strong></p>
                                 <div class="fs-6 ms-1">
                                     <div class="align-items-center">
                                         <div class="text-gray-600">{{customer?.sFirstName || ''}} {{customer?.sLastName
@@ -42,8 +43,7 @@
                                 </div>
                                 <div class="fs-6 ms-1">
                                     <div class="align-items-center">
-                                        <div class="text-gray-600">{{customer?.sEmail || ''}}<a
-                                                href="mailto:{{customer?.sEmail}}">
+                                        <div class="text-gray-600">{{customer?.sEmail || ''}}<a href="mailto:{{customer?.sEmail}}">
                                                 <fa-icon [icon]="faEnvelope"></fa-icon>
                                             </a></div>
                                     </div>
@@ -53,8 +53,7 @@
                                         <p style="margin: 0; margin-bottom: 5px;">{{'PHONE_MOBILE' | translate}}</p>
                                         <p style="margin: 0; margin-bottom: 5px;">
                                             <span>{{customer?.oPhone?.sMobile || '-'}}
-                                                <i class="fab fa-whatsapp ms-1" *ngIf="customer?.oPhone?.bWhatsApp"
-                                                    style="color: #1CB39B;"></i>
+                                                <i class="fab fa-whatsapp ms-1" *ngIf="customer?.oPhone?.bWhatsApp" style="color: #1CB39B;"></i>
                                             </span>
                                         </p>
                                     </div>
@@ -66,18 +65,52 @@
                                                 '-'}}</span></p>
                                     </div>
                                 </div>
-
-                                <!-- <div class="fs-6 ms-1">
-                                    <div class="align-items-center">
-                                        {{'Advised by' | translate}}
-                                        <span>{{customer?.oPhone?.sLandLine}}
-                                        </span>
-                                    </div>
-                                </div> -->
-                                <button class="btn btn-primary my-3 btn-custom"
-                                    (click)="openCustomer(customer)">{{'VIEW'|translate}} </button>
+                                <button class="btn btn-primary my-3 btn-custom" (click)="openCustomer(customer)">{{'VIEW'|translate}} </button>
                             </div>
                         </div>
+                        <!-- System Customer Showing End -->
+
+                        <!-- Activity/Activity-Item/Transaction Customer Showing Start -->
+                        <div class="d-flex flex-wrap py-5">
+                            <div class="flex-equal me-5">
+                                <p><strong>{{ "CURRENT_CUSTOMER" | translate}}</strong></p>
+                                <p *ngIf="!oCurrentCustomer?.sFirstName && !oCurrentCustomer?.sLastName"> {{ "NO_CUSTOMER_ADDED" | translate}} </p>
+                                <ng-container *ngIf="oCurrentCustomer?.sFirstName || oCurrentCustomer?.sLastName">
+                                    <div class="fs-6 ms-1">
+                                        <div class="align-items-center">
+                                            <div class="text-gray-600">{{oCurrentCustomer?.sFirstName || ''}} {{oCurrentCustomer?.sLastName
+                                                || ''}}</div>
+                                        </div>
+                                    </div>
+                                    <div class="fs-6 ms-1">
+                                        <div class="align-items-center">
+                                            <div class="text-gray-600">{{oCurrentCustomer?.sEmail || ''}}<a href="mailto:{{oCurrentCustomer?.sEmail}}">
+                                                    <fa-icon [icon]="faEnvelope"></fa-icon>
+                                                </a></div>
+                                        </div>
+                                    </div>
+                                    <div class="fs-6 ms-1">
+                                        <div class="align-items-center">
+                                            <p style="margin: 0; margin-bottom: 5px;">{{'PHONE_MOBILE' | translate}}</p>
+                                            <p style="margin: 0; margin-bottom: 5px;">
+                                                <span>{{oCurrentCustomer?.oPhone?.sMobile || '-'}}
+                                                    <i class="fab fa-whatsapp ms-1" *ngIf="oCurrentCustomer?.oPhone?.bWhatsApp" style="color: #1CB39B;"></i>
+                                                </span>
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="fs-6 ms-1">
+                                        <div class="align-items-center">
+                                            <p style="margin: 0; margin-bottom: 5px;">{{'PHONE_LANDLINE' | translate}}</p>
+                                            <p style="margin: 0; margin-bottom: 5px;"><span>{{oCurrentCustomer?.oPhone?.sLandLine ||
+                                                    '-'}}</span></p>
+                                        </div>
+                                    </div>
+                                </ng-container>
+                                <button class="btn btn-primary my-3 btn-custom" (click)="openCurrentCustomer(oCurrentCustomer)">{{'UPDATE_CURRENT_CUSTOMER'|translate}} </button>
+                            </div>
+                        </div>
+                        <!-- Activity/Activity-Item/Transaction Customer Showing End -->
 
                         <div class="d-flex flex-wrap py-5">
                             <div class="flex-equal me-5">

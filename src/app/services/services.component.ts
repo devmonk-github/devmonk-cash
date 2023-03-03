@@ -406,6 +406,7 @@ export class ServicesComponent implements OnInit, OnDestroy {
         const customers = result.data[0].result || [];
         for (let i = 0; i < this.activities.length; i++) {
           for (let j = 0; j < customers.length; j++) {
+            if (this.activities[i]?.oCustomer?._id) continue;
             if (this.activities[i]?.iCustomerId?.toString() == customers[j]?._id?.toString()) {
               this.activities[i].oCustomer = {
                 sFirstName: customers[j].sFirstName,

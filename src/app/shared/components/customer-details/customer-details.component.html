@@ -1,4 +1,6 @@
-<div class="card shadow-sm">
+<ng-container *ngIf="bIsCounterCustomer" [ngTemplateOutlet]="counterCustomer"></ng-container>
+
+<div class="card shadow-sm" *ngIf="!bIsCounterCustomer">
     <div class="card-header align-items-center py-5">
         <h4 class="card-title" *ngIf="mode === 'create'">{{"NEW_CUSTOMER" | translate}}</h4>
         <h4 class="card-title" *ngIf="mode === 'details'">{{"CUSTOMER_DETAILS" | translate}}</h4>
@@ -12,9 +14,6 @@
             <a class="cancel my-auto" (click)="close(false)"> <!--*ngIf="editProfile"-->
                 <i class="fa fa-times"></i>
             </a>
-            <!-- <button type="button" class="btn btn-sm" (click)="close(false)">
-                <fa-icon [icon]="faTimes"></fa-icon>
-            </button> -->
         </div>
         <div *ngIf="mode === 'create'" class="card-toolbar flex-row-fluid justify-content-end gap-5">
 
@@ -187,19 +186,6 @@
                             </div>
                         </div>
                     </div>
-                    <!-- <div *ngIf="!editProfile" class="mb-3">
-                        
-                        <label for="note">{{'NOTES' | translate}}</label>
-                        <textarea name="note" id="note" cols="30" rows="6" class="form-control" disabled
-                            ></textarea>
-                                </div> -->
-
-                    <!-- <p *ngIf="customer.note" class="text-gray-800 text-italic">{{customer.note}}</p>
-                    <div class="d-flex flex-wrap py-5">
-                        <div class="flex-equal me-5">
-    
-                        </div>
-                    </div> -->
                 </div>
             </div>
             <ng-container *ngIf="!editProfile">
@@ -568,15 +554,6 @@
                 </div>
 
             </ng-container>
-
-            <!-- <div class="row my-3">
-                <div class="d-flex flex-row-fluid justify-content-end gap-5">
-                    <button class="btn btn-secondary" (click)="editProfile = !editProfile"><span>{{'MORE_DETAILS' |
-                            translate}}</span></button>
-                    <button class="btn btn-secondary" (click)="showStatistics = !showStatistics"><span>{{'STATISTICS' |
-                            translate}}</span></button>
-                </div>
-            </div> -->
         </ng-container>
         <ng-container *ngIf="mode === 'create' || (mode === 'details' && editProfile)">
             <div class="row">
@@ -851,27 +828,24 @@
                 </div>
             </div>
         </ng-container>
-
     </div>
     <div class="card-footer">
-        <!-- <div class="row">
-            <div class="d-flex justify-content-right">
-                <button class="btn btn-secondary" (click)="close(true)">{{"CANCEL" | translate}}</button>
-            </div>
-        </div> -->
     </div>
-    <!-- <div class="card-footer" *ngIf="mode === 'details' && showStatistics">
-        <div class="row">
-            <div class="col-4">
-                <h3 class="fw-bolder">{{"TURNOVER" | translate}}</h3>
-            </div>
-            <div class="col-4">
-                <h3 class="fw-bolder">{{"RECENT_SALES" | translate}}</h3>
-            </div>
-            <div class="col-4">
-                <h3 class="fw-bolder">{{"RECENT_SERVICES" | translate}}</h3>
+</div>
+
+<ng-template #counterCustomer>
+    <div class="card shadow-sm">
+        <div class="card-header align-items-center py-5">
+            <h4 class="card-title">{{"CHOOSE_CUSTOMER" | translate}}</h4>
+            <div class="card-toolbar flex-row-fluid justify-content-end gap-5">
+                <button class="btn btn-primary" (click)="close({ bIsSelectingCustomer: true })">{{"CHANGE" |
+                    translate}}</button>
+                <a class="cancel my-auto" (click)="close(false)"> <i class="fa fa-times"></i>
+                </a>
             </div>
         </div>
-    </div> -->
-
-</div>
+        <div class="card-body main">
+            <p>NO_CUSTOMER_FOUND_SELECT_ONE</p>
+        </div>
+    </div>
+</ng-template>

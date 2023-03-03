@@ -71,6 +71,8 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
   documentTypes: Array<any> = ['Driving license', 'Passport', 'Identity card', 'Alien document'];
   mode: string = '';
   editProfile: boolean = false;
+  bIsCurrentCustomer: boolean = false;
+  bIsCounterCustomer: boolean = false;
   showStatistics: boolean = false;
   faTimes = faTimes;
   aPaymentChartData: any = [];
@@ -239,7 +241,6 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     { type: "Shop purchase", value: 0, color: ChartColors.SHOP_PURCHASE },//$dark-success-light-color
     { type: "Quotation", value: 0, color: ChartColors.QUOTATION },//$info-active-color
     { type: "Webshop", value: 0, color: ChartColors.WEBSHOP },//$gray-700
-    // { type: "Refund", value: 0, color: ChartColors.REFUND },//$orange
     { type: "Giftcard", value: 0, color: ChartColors.GIFTCARD },//$green
     { type: "Gold purchase", value: 0, color: ChartColors.GOLD_PURCHASE },//$maroon
     { type: "Product reservation", value: 0, color: ChartColors.PRODUCT_RESERVATION }//$pink
@@ -272,7 +273,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
   ngOnInit(): void {
     this.apiService.setToastService(this.toastService);
     this.getBusinessDetails();
-    this.customer = { ... this.customer ,  ... this.dialogRef?.context?.customerData}
+    this.customer = { ... this.customer, ... this.dialogRef?.context?.customerData }
     const translations = ['SUCCESSFULLY_ADDED', 'SUCCESSFULLY_UPDATED' ,'LOYALITY_POINTS_ADDED']
     this.translateService.get(translations).subscribe(
       result => this.translations = result
@@ -506,15 +507,27 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
   EditOrCreateCustomer() {
     this.customer.iBusinessId = this.requestParams.iBusinessId;
     this.customer.iEmployeeId = this.iEmployeeId?.userId;
-    // this.customer.aCustomerGroups = this.aSelectedGroups;
+    console.log('EditOrCreateCustomer called: ', this.editProfile, this.bIsCurrentCustomer);
+    
+    /* We are updating the current customer [T, A, AI] and Not the System customer */
+    if (this.editProfile && this.bIsCurrentCustomer && this.mode !== 'create') {
+      this.close({ bShouldUpdateCustomer: true, oCustomer: this.customer });
+      return;
+    }
+
     if (this.mode == 'create') {
       this.apiService.postNew('customer', '/api/v1/customer/create', this.customer).subscribe(
         (result: any) => {
           if(result.message == 'success'){
           this.toastService.show({ type: 'success', text: this.translations[`SUCCESSFULLY_ADDED`] });
+
+            /* Updating current-customer in [A, T, AI] and Not the System customer */
+            if (this.editProfile && this.bIsCurrentCustomer) {
+              this.close({ bShouldUpdateCustomer: true, oCustomer: result.data });
+              return;
+            }
           this.close({ action: true, customer: result.data });
           }else{
-           
             let errorMessage = ""
             this.translateService.get(result.message).subscribe(
               result=> errorMessage =result
@@ -939,6 +952,4 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
       ...invoiceAddress
     }
   }
-
-
 }

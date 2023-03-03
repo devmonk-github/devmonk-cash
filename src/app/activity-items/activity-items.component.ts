@@ -188,7 +188,6 @@ export class ActivityItemsComponent implements OnInit, OnDestroy {
   }
 
   openActivities(activity: any, openActivityId?: any) {
-    // console.log(activity)
     this.dialogService.openModal(ActivityDetailsComponent,
       {
         cssClass: 'w-fullscreen mt--5',

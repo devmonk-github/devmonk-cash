@@ -9,13 +9,16 @@
         </button>
     </div>
     <div class="card-body row main m-0">
+
         <div class="col-md-4">
+            <!-- CURRENT_CUSTOMER Start -->
             <div class="d-flex justify-content-between align-items-center">
                 <h3 class="fw-bolder mb-4">
-                    <span>{{ "CUSTOMER" | translate }}</span>
+                    <span>{{ "CURRENT_CUSTOMER" | translate }}</span>
                 </h3>
                 <ng-container *ngIf="from === 'transactions'">
-                    <button class="btn btn-primary" *ngIf="!transaction?.oCustomer?.bCounter" (click)="openCustomer(transaction.oCustomer)">
+                    <button class="btn btn-primary" *ngIf="!transaction?.oCustomer?.bCounter"
+                        (click)="openCustomer(transaction.oCustomer)">
                         {{ 'VIEW' | translate }}
                     </button>
                 </ng-container>
@@ -46,11 +49,26 @@
                     </div>
                 </div>
                 <div class="col-md-12">
-                    <div class="text-gray-800 mt-2" *ngIf="!transaction?.oCustomer?.bCounter">{{ transaction?.oCustomer?.sEmail }}</div>
+                    <div class="text-gray-800 mt-2" *ngIf="!transaction?.oCustomer?.bCounter">{{ transaction?.oCustomer?.sEmail }}
+                    </div>
                     <div class="text-gray-800 mt-2">{{ transaction?.oCustomer?.sMobile }} &nbsp; &nbsp; {{
                         transaction?.oCustomer?.sLandLine }}</div>
                 </div>
             </div>
+            <!-- CURRENT_CUSTOMER End -->
+            
+            <!-- SYSTEM_CUSTOMER Start -->
+            <div class="d-flex justify-content-between align-items-center">
+                <h3 class="fw-bolder mb-4">
+                    <span>{{ "SYSTEM_CUSTOMER" | translate }} </span>
+                </h3>
+                <ng-container>
+                    <button class="btn btn-primary" (click)="openCustomer({ _id: transaction.iCustomerId})">
+                        {{ 'VIEW' | translate }}
+                    </button>
+                </ng-container>
+            </div>
+            <!-- SYSTEM_CUSTOMER End -->
 
             <div class="d-flex justify-content-between align-items-center">
               <h3 class="fw-bolder mb-4">
@@ -72,6 +90,8 @@
             </div>
             </div>
         </div>
+        
+
         <div class="col-md-8 row" *ngIf="eType === 'cash-register-revenue'">
             <h3 class="fw-bolder mb-4">
                 <span>{{ "TRANSACTION_OVERVIEW" | translate }}</span>
@@ -199,7 +219,6 @@
                 </button>
             </div>
         </div>
-        <!-- </div> -->
         <div class="row">
             <div class="col-12">
                 <h3 class="fw-bolder mb-3">
