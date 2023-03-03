@@ -91,15 +91,18 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
 
     this.transaction.aTransactionItems.forEach((item: any) => {
       // let description = (item?.nDiscountToShow > 0) nTotalQty? `Original amount: ${item.nPriceIncVat}\n` : '';
+      // console.log(item);
       this.transaction.nTotalQty += item.nQuantity;
       let description = (item?.totalPaymentAmount != item?.nPriceIncVatAfterDiscount) ? `${this.translateService.instant('ORIGINAL_AMOUNT_INC_DISC')}: ${item.nPriceIncVatAfterDiscount}\n` : '';
       if (item?.related?.length) {
         this.transaction.nTotalOriginalAmount += item.nPriceIncVatAfterDiscount;
         if (item.nPriceIncVatAfterDiscount !== item.nRevenueAmount) {
-          description += `${this.translateService.instant('ALREADY_PAID')}: \n${item.sTransactionNumber} | ${item.nRevenueAmount} (${this.translateService.instant('THIS_RECEIPT')})\n`;
+          // console.log(100, 'item revenue', item.nRevenueAmount, 'payment', item.totalPaymentAmount);
+          description += `${this.translateService.instant('ALREADY_PAID')}: \n${item.sTransactionNumber} | ${item.totalPaymentAmount} (${this.translateService.instant('THIS_RECEIPT')})\n`;
 
           item.related.forEach((related: any) => {
-            description += `${related.sTransactionNumber} | ${related.nRevenueAmount}\n`;
+            // console.log(103, 'related revenue', related.nRevenueAmount);
+            description += `${related.sTransactionNumber} | ${related.nRevenueAmount * related.nQuantity}\n`;
           });
         }
       }

@@ -268,8 +268,8 @@
                                             
                                             <div *ngIf="item.related?.length">
                                                 {{ "ALREADY_PAID" | translate}}:<br />
-                                                {{item.sTransactionNumber}} | {{item.nRevenueAmount}} ({{"THIS_RECEIPT" | translate }})<br />
-                                                <span *ngFor="let obj of item.related">{{obj.sTransactionNumber}} | {{obj.nRevenueAmount }}<br /></span>
+                                                {{item.sTransactionNumber}} | {{item.totalPaymentAmount }} ({{"THIS_RECEIPT" | translate }})<br />
+                                                <span *ngFor="let obj of item.related">{{obj.sTransactionNumber}} | {{obj.totalPaymentAmount }}<br /></span>
                                             </div>
                                         </div>
                                         <div *ngIf="item?.aProductVariant?.length > 0">
