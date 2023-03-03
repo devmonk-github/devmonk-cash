@@ -342,33 +342,33 @@
                   </div>
                   <hr *ngIf="commonProducts && commonProducts.length > 0">
                   <div class="row" *ngIf="commonProducts && commonProducts.length > 0">
-                    <div class="col-md-6 cursor-pointer" *ngFor="let product of commonProducts"
+                    <div class="col-md-6 cursor-pointer py-5 px-2" *ngFor="let product of commonProducts"
                       (mouseenter)="product['showOption'] = true" (mouseleave)="product['showOption'] = false">
                       <a (click)="onSelectProduct(product, 'business', 'commonProducts')">
-                        <div class="card m-1 shadow-sm">
-                          <div class="card-body">
-                            <div class="d-flex">
-                              <div class="p-2">
+                        <div class="card m-1 shadow-sm custom-card common-prod">
+                          <div class="card-body custom-flex">
+                            <!-- <div class="d-flex"> -->
+                              <div class="r-content">
                                 <img
                                   src="{{product.aImage[0]? product.aImage[0]: '../assets/images/no-photo-available.jpg' }}"
-                                  class="w-50">
+                                  class="">
                               </div>
-                              <div class="w-50 px-2">
-                                <label
+                              <div class="l-content">
+                                <!-- <label
                                   class="business-bg-color rounded-full px-2 py-1 text-white text-sm">{{"BUSINESS_PRODUCT"
                                   |
-                                  translate}}</label>
+                                  translate}}</label> -->
                                 <span>
                                   <fa-icon [icon]="faCopy" aria-label="copy-article-number" class="ml-4"></fa-icon>
                                 </span>
-                                <p class="block mt-2">{{ product.oName? product.oName['en'] : 'No name' }}</p>
-                                <p class="mt-2">{{ product.sEan }}</p>
-                                <p class="mt-2">{{ product.sProductNumber }}</p>
-                                <p class="mt-2">{{ product?.sArticleNumber }}</p>
+                                <p class="block mt-2 prod-name">{{ product.oName? product.oName['en'] : 'No name' }}</p>
+                                <p class="mt-2 text-gray-800">{{ product.sEan || '-'}}</p>
+                                <p class="mt-2 text-gray-800">{{ product.sProductNumber || '-'}}</p>
+                                <p class="mt-2 text-gray-800">{{ product?.sArticleNumber || '-'}}</p>
                               </div>
-                            </div>
-                            <div class="absolute hover-product-option mt-n6" *ngIf="product['showOption']">
-                              <div class="d-flex">
+                            <!-- </div> -->
+                            <div class="absolute hover-product-option mt-n6 b-content" *ngIf="product['showOption']">
+                              <div class="d-flex justify-content-end">
                                 <button class="btn btn-secondary w-50 mr-2 p-0">{{ "ADD_THIS_ARTICLE" |
                                   translate}}</button>
                               </div>

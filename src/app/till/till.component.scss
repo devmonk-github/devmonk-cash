@@ -70,13 +70,31 @@
 
 .custom-card{
 	padding: 20px !important;
-	height: 250px !important;
+	height: 240px !important;
+
+	&.common-prod{
+		height: 220px !important;
+	}
 
 	.card-body{
 		padding: 0 !important;
 		display: flex;
 		align-items: center;
 		height: 100%;
+
+		&.custom-flex{
+			flex-wrap: wrap;
+			.r-content{
+				flex: 1;
+			}
+			.l-content{
+				flex: 1;
+			}
+			.b-content{
+				flex: 0 0 100%;
+			}
+		}
+	
 
 		.r-content{
 			width: 45%;
@@ -114,23 +132,7 @@
 			}
 
 		}
+
 	}
 
-}
-.card-flex-custom{
-	width: 100%;
-	align-items: center;
-
-	.img-container{
-		display: block;
-		width: 45%;
-		max-height: 233px;
-	
-		.prod-image{
-			object-fit: contain;
-			object-position: center;
-			max-width: 100%;
-			max-height: 100%;
-		}
-	}
 }
