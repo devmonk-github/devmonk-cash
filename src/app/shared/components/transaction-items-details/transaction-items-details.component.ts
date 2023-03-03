@@ -123,7 +123,7 @@ export class TransactionItemsDetailsComponent implements OnInit {
     this.apiService.postNew('cashregistry', url, this.requestParams).subscribe((result: any) => {
       // console.log('120 api result assiging to transaction items', result)
       this.transactionItems = result.data[0].result;
-      console.log('this.transactionItems 2', this.transactionItems);
+      // console.log('this.transactionItems 2', this.transactionItems);
 
       const discountRecords = this.transactionItems.filter(o => o.oType.eKind === 'discount' || o.oType.eKind === 'loyalty-points-discount');
       this.bIsAnyGiftCardDiscount = this.transactionItems.find((el: any) => el?.oType?.eKind === 'giftcard-discount')
@@ -140,7 +140,7 @@ export class TransactionItemsDetailsComponent implements OnInit {
           if (dElement.oType.eKind === 'loyalty-points-discount') nRedeemedLoyaltyPoints += dElement.nRedeemedLoyaltyPoints || 0;
           if (dElement.oType.eKind === "discount"){
             nDiscountnPaymentAmount += dElement.nPaymentAmount || 0;
-            element.nDiscount += dElement.nRevenueAmount || 0;
+            // element.nDiscount += dElement.nRevenueAmount || 0;
           } 
         });
 
@@ -170,7 +170,7 @@ export class TransactionItemsDetailsComponent implements OnInit {
       this.transactionItems = this.transactionItems.map(v => ({ ...v, isSelected: false }));
       // console.log('this.transactionItems 4: ', this.transactionItems);
       this.transactionItems.forEach(transactionItem => {
-        if (transactionItem.nPaidAmount < transactionItem.nTotalAmount) {
+        if (transactionItem.nPaidAmount < (transactionItem.nTotalAmount - transactionItem.nDiscount * transactionItem.nQuantity)) {
           transactionItem.tType = 'pay';
         } else {
           transactionItem.tType = 'refund';
