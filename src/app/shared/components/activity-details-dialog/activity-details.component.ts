@@ -195,7 +195,7 @@ export class ActivityDetailsComponent implements OnInit {
 
 
   async ngOnInit() {
-    // console.log('from', this.from, this.activityItems, this.activity)
+    //console.log('from', this.from, this.activityItems, this.activity)
     this.apiService.setToastService(this.toastService);
     this.routerSub = this.routes.events.subscribe((event) => {
       if (event instanceof NavigationEnd && !(event.url.startsWith('/business/activity-items') || event.url.startsWith('/business/services'))) {
@@ -231,10 +231,19 @@ export class ActivityDetailsComponent implements OnInit {
       //  })
       // }
     } else {
+      //console.log("else");
+      //console.log(this.activityItems[0].iActivityId);
       // we have opened an activity item so fetch associated activity (required for checkout)
       // this.fetchActivity(this.activity._id); //actually it is an id of activity item
       // console.log(235)
-      this.oLocationName = this.businessDetails.aLocation.find((location: any) => location._id === this.activityItems[0].iLocationId)?.sName;
+      if(this.activityItems && this.activityItems.length>0){
+        this.oLocationName = this.businessDetails.aLocation.find((location: any) => location._id === this.activityItems[0].iLocationId)?.sName;
+     
+      }else{
+        this.oLocationName ="";
+      }
+      //console.log("-this.oLocationName--");
+      //console.log(this.oLocationName);
       this.fetchActivity(this.activityItems[0].iActivityId);
       this.fetchTransactionItems(this.activityItems[0]._id);
     }
@@ -283,6 +292,7 @@ export class ActivityDetailsComponent implements OnInit {
     this.apiService.getNew('cashregistry', `/api/v1/activities/${_id}?iBusinessId=${this.requestParams.iBusinessId}`).subscribe((result: any) => {
       if (result?.data?._id)
         this.activity = result.data;
+        
     });
   }
 
@@ -467,6 +477,8 @@ export class ActivityDetailsComponent implements OnInit {
 
 
   openCustomer(customer: any) {
+    console.log("customer477");
+    console.log(customer);
     this.dialogService.openModal(CustomerDetailsComponent,
       { cssClass: "modal-xl position-fixed start-0 end-0", context: { customerData: customer, mode: 'details', editProfile: false } }).instance.close.subscribe(result => { });
   }
@@ -614,8 +626,8 @@ export class ActivityDetailsComponent implements OnInit {
     }
 
     const template = this.aTemplates.filter((t: any) => t.eType === type)[0];
-
     oDataSource.oCustomer = this.tillService.processCustomerDetails(this.customer);
+    
     // {
     //   sFirstName: this.customer?.sFirstName || '',
     //   sLastName: this.customer?.sLastName || '',
@@ -660,16 +672,19 @@ export class ActivityDetailsComponent implements OnInit {
   }
 
   fetchCustomer(customerId: any, index: number) {
+    
     if (!customerId) return;
     this.apiService.getNew('customer', `/api/v1/customer/${customerId}?iBusinessId=${this.iBusinessId}`).subscribe(
       (result: any) => {
         if (index > -1) this.transactions[index].customer = result;
         this.customer = result;
+        console.log(result);console.log("result");
+
       },
       (error: any) => {
         console.error(error)
       }
-    );
+    );  
   }
 
   async processTransactionItems(result: any) {
@@ -695,6 +710,8 @@ export class ActivityDetailsComponent implements OnInit {
       this.totalPrice += obj.nPaymentAmount;
       this.quantity += obj.bRefund ? (- obj.nQuantity) : obj.nQuantity
       if (obj.iStockLocationId) this.setSelectedBusinessLocation(obj.iStockLocationId, i)
+      console.log(obj?.iCustomerId);
+      console.log("obj?.iCustomerId");
       this.fetchCustomer(obj?.iCustomerId, i);
     }
     this.getListEmployees()
@@ -828,8 +845,8 @@ export class ActivityDetailsComponent implements OnInit {
     const currentLocation = this.businessDetails.aLocation[locationIndex];
     oDataSource.businessDetails.sAddressline1 = currentLocation.oAddress.street + " " + currentLocation.oAddress.houseNumber + " " + currentLocation.oAddress.houseNumberSuffix + " ,  " + currentLocation.oAddress.postalCode + " " + currentLocation.oAddress.city;
     oDataSource.businessDetails.sAddressline2 = currentLocation.oAddress.country;
-
     oDataSource.oCustomer = this.tillService.processCustomerDetails(this.customer);
+    
     // {
     //   sFirstName: this.customer?.sFirstName || '',
     //   sLastName: this.customer?.sLastName || '',
