@@ -75,7 +75,11 @@ const routes: Routes = [
     loadChildren: () => import('./day-closure/day-closure.module').then(module => module.DayClosureModule)
   },
   { path: '', redirectTo: 'home', pathMatch: 'full' },
-  { path: 'customers-group', loadChildren: () => import('./customers-group/customers-group.module').then(m => m.CustomersGroupModule) }
+  { path: 'customers-group', loadChildren: () => import('./customers-group/customers-group.module').then(m => m.CustomersGroupModule) },
+  {
+    path: 'gift-card',
+    loadChildren: () => import('./import-gift-card/import-gift-card.module').then(module => module.ImportGiftCardModule)
+  },
 ];
 
 @NgModule({

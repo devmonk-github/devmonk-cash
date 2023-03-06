@@ -216,16 +216,13 @@ module.exports = {
       shared: share(sharedLibrary)
     }),
     new ModuleFederationPlugin({
-      // For remotes (please adjust)
-      name: "supplierProductSlider",
-      filename: "supplierProductSlider.js",
+      name: "importGiftCardModule",
+      filename: "import-gift-card.js",
       exposes: {
-        './SupplierProductSliderModule': './src/app/sliders/supplier-stock-product-slider/supplier-stock-product-slider.module.ts',
+        './ImportGiftCardModule': './src/app/import-gift-card/import-gift-card.module.ts',
       },
       shared: share(sharedLibrary)
     }),
-    
-  
     sharedMappings.getPlugin()
   ],
 };
