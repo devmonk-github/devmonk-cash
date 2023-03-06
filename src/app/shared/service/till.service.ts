@@ -673,6 +673,8 @@ export class TillService {
   }
 
   processCustomerDetails(customer:any) {
+    //console.log("------ustomer------");
+    //console.log(customer);
     return {
       ...customer,
       ...customer?.oPhone,

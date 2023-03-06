@@ -90,6 +90,8 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   }
 
   async ngOnInit() {
+    console.log("-----------------transaction-------------------");
+    console.log(this.transaction);
     this.iBusinessId = localStorage.getItem("currentBusiness") || '';
     this.iLocationId = localStorage.getItem("currentLocation") || '';
     this.iWorkstationId = localStorage.getItem("currentWorkstation") || '';
@@ -206,12 +208,13 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
       const moduleRef: NgModuleRef<typeof ProductDetailPageModule> = moduleFactory.create(this.injector);
       const componentFactory = moduleRef.instance.resolveComponent();
 
-      console.log("componentFactory");
-      console.log(componentFactory.componentType);
+      //console.log("componentFactory");
+      //console.log(componentFactory.componentType);
    
     this.dialogService.openModal(componentFactory.componentType, { context: { initialData: oBody }, cssClass: 'w-fullscreen mt--5', hasBackdrop: true, closeOnBackdropClick: true, closeOnEsc: true })
       .instance.close.subscribe(
         data => {
+
           console.log(data);
          
         });
@@ -455,17 +458,22 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   }
 
   async showActivityItem(activityItem: any, event: any) {
+    //console.log("------------------activity detail model---------------");
+   // console.log(activityItem);
     const oBody = {
       iBusinessId: this.iBusinessId,
     }
     activityItem.bFetchingActivityItem = true;
     event.target.disabled = true;
-    // const _oActivityitem: any = await this.apiService.postNew('cashregistry', `/api/v1/activities/items/${activityItem.iActivityItemId}`, oBody).toPromise();
-    // const oActivityItem = _oActivityitem?.data[0]?.result[0];
+    const _oActivityitem: any = await this.apiService.postNew('cashregistry', `/api/v1/activities/activity-item/${activityItem.iActivityItemId}`, oBody).toPromise();
+    const oActivityItem = _oActivityitem?.data[0]?.result[0];
+    console.log(oActivityItem);
     activityItem.bFetchingActivityItem = false;
     event.target.disabled = false;
-    this.dialogService.openModal(ActivityDetailsComponent, { cssClass: 'w-fullscreen', context: { activity:{_id:activityItem.iActivityItemId}, items: true, from: 'transaction-details' } })
+    this.dialogService.openModal(ActivityDetailsComponent, { cssClass: 'w-fullscreen', context: { activityItems:[oActivityItem], items: true, from: 'transaction-details' } })
       .instance.close.subscribe((result: any) => {
+        //console.log("-------result")
+        //console.log(result)
 
       });
   }
