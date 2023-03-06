@@ -469,7 +469,8 @@ export class TillService {
             eEstimatedDateAction: transactionItem.eEstimatedDateAction,
             bGiftcardTaxHandling: transactionItem.bGiftcardTaxHandling,
             sArticleNumber: transactionItem?.sArticleNumber,
-            iLocationId: transactionItem?.iLocationId
+            iLocationId: transactionItem?.iLocationId,
+            // oCustomer: transactionItem?.oCustomer
           });
         }
       });
@@ -542,6 +543,7 @@ export class TillService {
       totalSavingPoints += ( item?.nSavingsPoints || 0);
       totalRedeemedLoyaltyPoints += item?.nRedeemedLoyaltyPoints || 0;
       let disc = parseFloat(item?.nDiscount) || 0;
+      // console.log(545, 'bDiscountOnPercentage', item.bDiscountOnPercentage)
       if (item.bDiscountOnPercentage) {
         disc = this.getPercentOf(disc, item.nPriceIncVat)
         item.nDiscountToShow = disc;//.toFixed(2);
@@ -552,9 +554,9 @@ export class TillService {
       // item.nPriceIncVatAfterDiscount = parseFloat(item.nPriceIncVatAfterDiscount.toFixed(2));
       if (item.oType.bRefund === true && item.oType.eKind != 'gold-purchase') item.nPriceIncVatAfterDiscount = -(item.nPriceIncVatAfterDiscount)
       // console.log('item.nPriceIncVatAfterDiscount', item.nPriceIncVatAfterDiscount)
-      item.nRevenueAmount = (+(item.nRevenueAmount.toFixed(2)) - item.nDiscount) * item.nQuantity;
-      item.totalPaymentAmount = (parseFloat(item.nRevenueAmount) - parseFloat(item.nDiscountToShow)) - item.nRedeemedLoyaltyPoints;
-      item.totalPaymentAmount = parseFloat(item.totalPaymentAmount.toFixed(2));
+      // item.nRevenueAmount = (+(item.nRevenueAmount.toFixed(2)) - item.nDiscount) * item.nQuantity;
+      item.totalPaymentAmount = (parseFloat(item.nRevenueAmount) - parseFloat(item.nDiscountToShow)) * item.nQuantity - item.nRedeemedLoyaltyPoints;
+      item.totalPaymentAmount = +(item.totalPaymentAmount.toFixed(2));
       // console.log('item.totalPaymentAmount', item.totalPaymentAmount)
       // item.totalPaymentAmountAfterDisc = parseFloat(item.priceAfterDiscount.toFixed(2)) * parseFloat(item.nQuantity);
       item.bPrepayment = item?.oType?.bPrepayment || false;
@@ -586,19 +588,31 @@ export class TillService {
           if(relatedItem?.aPayments?.some((payment: any) => payment.sMethod === 'card')){
             aToFetchPayments.push(relatedItem.iTransactionId);
           }
-          relatedItem.aPayments = relatedItem?.aPayments.filter((payment: any) => payment?.sRemarks !== 'CHANGE_MONEY');
-          if (relatedItem.nPriceIncVat > item.nPriceIncVat) item.nPriceIncVat = relatedItem.nPriceIncVat;
-          item.nDiscount = relatedItem.nDiscount || 0;
-          item.bDiscountOnPercentage = relatedItem?.bDiscountOnPercentage || false;
+          // relatedItem.aPayments = relatedItem?.aPayments.filter((payment: any) => payment?.sRemarks !== 'CHANGE_MONEY');
+          // if (relatedItem.nPriceIncVat > item.nPriceIncVat) item.nPriceIncVat = relatedItem.nPriceIncVat;
+          // item.nDiscount = relatedItem.nDiscount || 0;
+          // item.bDiscountOnPercentage = relatedItem?.bDiscountOnPercentage || false;
 
-          if (relatedItem?.bDiscountOnPercentage) {
-            item.nDiscountToShow = (item.oType.bRefund === true) ? 0 : this.getPercentOf(relatedItem.nPriceIncVat, relatedItem.nDiscount);
-            totalDiscount += (item.oType.bRefund === true) ? 0 : item.nDiscountToShow;
-            relatedItem.nRevenueAmount = +(relatedItem.nRevenueAmount.toFixed(2)) - this.getPercentOf(relatedItem.nPriceIncVat, relatedItem.nDiscount);
+          if(!relatedItem.oType.bRefund) {
+            if (relatedItem?.bDiscountOnPercentage) {
+              item.nDiscountToShow = (item.oType.bRefund === true) ? 0 : this.getPercentOf(relatedItem.nPriceIncVat, relatedItem.nDiscount);
+              totalDiscount += (item.oType.bRefund === true) ? 0 : item.nDiscountToShow;
+              relatedItem.totalPaymentAmount = (+(relatedItem.nRevenueAmount.toFixed(2)) - this.getPercentOf(relatedItem.nPriceIncVat, relatedItem.nDiscount)) * relatedItem.nQuantity;
+              // console.log(600, item.nDiscountToShow, relatedItem.totalPaymentAmount);
+            } else {
+              item.nDiscountToShow = (item.oType.bRefund === true) ? 0 : relatedItem.nDiscount;
+              totalDiscount += (item.oType.bRefund === true) ? 0 : item.nDiscountToShow;
+              relatedItem.totalPaymentAmount = (+(relatedItem.nRevenueAmount.toFixed(2)) - relatedItem.nDiscount) * relatedItem.nQuantity;
+              // console.log(605, item.nDiscountToShow, relatedItem.totalPaymentAmount);
+            }
           } else {
-            item.nDiscountToShow = (item.oType.bRefund === true) ? 0 : relatedItem.nDiscount;
-            totalDiscount += (item.oType.bRefund === true) ? 0 : item.nDiscountToShow;
-            relatedItem.nRevenueAmount = (+(relatedItem.nRevenueAmount.toFixed(2)) - relatedItem.nDiscount)* relatedItem.nQuantity;
+            if (relatedItem?.bDiscountOnPercentage) {
+              relatedItem.totalPaymentAmount = +(relatedItem.nRevenueAmount.toFixed(2)) - this.getPercentOf(relatedItem.nPriceIncVat, relatedItem.nDiscount);
+              // console.log(610, relatedItem.totalPaymentAmount)
+            } else {
+              relatedItem.totalPaymentAmount = (+(relatedItem.nRevenueAmount.toFixed(2)) - relatedItem.nDiscount) * relatedItem.nQuantity;
+              // console.log(613, relatedItem.totalPaymentAmount)
+            }
           }
 
           // relatedItem.nRevenueAmount = relatedItem.nRevenueAmount.toFixed(2);
@@ -644,7 +658,7 @@ export class TillService {
     dataObject.related = _relatedResult?.data || [];
     if(dataObject.related.length){
       dataObject.related.forEach((relatedobj: any) => {
-        relatedobj.aPayments = relatedobj.aPayments.filter((payment: any) => payment?.sRemarks !== 'CHANGE_MONEY');
+        // relatedobj.aPayments = relatedobj.aPayments.filter((payment: any) => payment?.sRemarks !== 'CHANGE_MONEY');
         relatedobj.aPayments.forEach((obj: any) => {
           obj.sRemarks = "";
           // obj.dCreatedDate = moment(obj.dCreatedDate).format('DD-MM-yyyy hh:mm');
@@ -706,7 +720,7 @@ export class TillService {
     };
     
     const _result:any = await this.apiService.putNew('cashregistry', `/api/v1/settings/update/${this.iBusinessId}`, body).toPromise();
-    console.log(693, _result);
+    // console.log(693, _result);
   }
 
   updateVariables() {

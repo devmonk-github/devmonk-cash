@@ -19,6 +19,7 @@ import { animate, style, transition, trigger } from '@angular/animations';
 import { CustomerDetailsComponent } from '../customer-details/customer-details.component';
 import { PdfService } from '../../service/pdf.service';
 import { ImageUploadComponent } from '../image-upload/image-upload.component';
+import { CustomerDialogComponent } from '../customer-dialog/customer-dialog.component';
 @Component({
   selector: 'app-activity-details',
   templateUrl: './activity-details.component.html',
@@ -123,7 +124,8 @@ export class ActivityDetailsComponent implements OnInit {
       'iBusinessBrandId',
       'iBrand',
       'iAssigneeId',
-      'iBusinessProductId'
+      'iBusinessProductId',
+      'oCustomer'
     ]
   };
   filteredEmployees: Array<any> = [];
@@ -139,6 +141,7 @@ export class ActivityDetailsComponent implements OnInit {
   iWorkstationId: string;
   aTemplates: any;
   eKindValue = ['discount', 'loyalty-points-discount', 'loyalty-points'];
+  oCurrentCustomer: any = {}; /* We are having the same oCustomer for Activity, ActivityItem and Transaction */
   eKindValueForLayout = [
     'regular',
     'expenses',
@@ -671,6 +674,8 @@ export class ActivityDetailsComponent implements OnInit {
 
   async processTransactionItems(result: any) {
     this.activityItems = result.data[0].result;
+    console.log('activityItems: ', this.activityItems);
+    this.oCurrentCustomer = this.activityItems[0].oCustomer;
     this.oLocationName = this.activityItems[0].oLocationName;
     // if (this.activityItems.length == 1) this.activityItems[0].bIsVisible = true;
     this.transactions = [];
@@ -693,9 +698,6 @@ export class ActivityDetailsComponent implements OnInit {
       this.fetchCustomer(obj?.iCustomerId, i);
     }
     this.getListEmployees()
-    // setTimeout(() => {
-    //   MenuComponent.reinitialization();
-    // }, 200);
     this.loading = false;
     setTimeout(() => {
       MenuComponent.reinitialization();
@@ -901,5 +903,58 @@ export class ActivityDetailsComponent implements OnInit {
     setTimeout(() => {
       activity.bActivityNumberCopied = false;
     }, 3000);
+  }
+
+  /* Update customer in [T, A, AI] */
+  updateCurrentCustomer(oData: any) {
+    const oBody = {
+      oCustomer: oData.oCustomer,
+      iBusinessId: this.iBusinessId,
+      iActivityItemId: this.activityItems[0]._id
+    }
+    this.apiService.postNew('cashregistry', '/api/v1/transaction/update-customer', oBody).subscribe((result: any) => {
+      console.log('Customer Updated: ', result, oBody?.oCustomer);
+      this.oCurrentCustomer = oBody?.oCustomer;
+      this.toastService.show({ type: "success", text: this.translation['SUCCESSFULLY_UPDATED'] });
+    }, (error) => {
+      console.log('update customer error: ', error);
+      this.toastService.show({ type: "warning", text: `Something went wrong` });
+    });
+  }
+
+  selectCustomer() {
+    this.dialogService.openModal(CustomerDialogComponent, { cssClass: 'modal-xl' })
+      .instance.close.subscribe((data) => {
+        console.log('after selecting customer: ', data);
+        if (!data?.customer?._id || !this.activityItems?.length || !this.activityItems[0]?._id) return;
+        this.updateCurrentCustomer({ oCustomer: data?.customer });
+      }, (error) => {
+        console.log('selectCustomer error: ', error);
+        this.toastService.show({ type: "warning", text: `Something went wrong` });
+      })
+  }
+
+  /* Here the current customer means from the Transaction/Activity/Activity-Items */
+  openCurrentCustomer(oCurrentCustomer: any) {
+    console.log('openCurrentCustomer: ', oCurrentCustomer);
+    const bIsCounterCustomer = (oCurrentCustomer?.sEmail === "balieklant@prismanote.com" || !oCurrentCustomer?._id) ? true : false /* If counter customer used then must needs to change */
+    this.dialogService.openModal(CustomerDetailsComponent,
+      {
+        cssClass: bIsCounterCustomer == true ? "modal-lg" : "modal-xl position-fixed start-0 end-0",
+        context: {
+          customerData: oCurrentCustomer,
+          mode: 'details',
+          editProfile: true,
+          bIsCurrentCustomer: true, /* We are only going to change in the A/T/AI */
+          bIsCounterCustomer: bIsCounterCustomer
+        }
+      }).instance.close.subscribe(result => {
+        console.log('result: ', result);
+        if (result?.bIsSelectingCustomer) this.selectCustomer();
+        else if (result?.bShouldUpdateCustomer) this.updateCurrentCustomer({ oCustomer: result?.oCustomer });
+      }, (error) => {
+        console.log("Error in customer: ", error);
+        this.toastService.show({ type: "warning", text: `Something went wrong` });
+      });
   }
 }

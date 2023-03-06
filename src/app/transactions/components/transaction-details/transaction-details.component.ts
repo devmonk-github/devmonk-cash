@@ -104,15 +104,18 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
 
     this.transaction.aTransactionItems.forEach((item: any) => {
       // let description = (item?.nDiscountToShow > 0) nTotalQty? `Original amount: ${item.nPriceIncVat}\n` : '';
+      // console.log(item);
       this.transaction.nTotalQty += item.nQuantity;
       let description = (item?.totalPaymentAmount != item?.nPriceIncVatAfterDiscount) ? `${this.translateService.instant('ORIGINAL_AMOUNT_INC_DISC')}: ${item.nPriceIncVatAfterDiscount}\n` : '';
       if (item?.related?.length) {
         this.transaction.nTotalOriginalAmount += item.nPriceIncVatAfterDiscount;
         if (item.nPriceIncVatAfterDiscount !== item.nRevenueAmount) {
-          description += `${this.translateService.instant('ALREADY_PAID')}: \n${item.sTransactionNumber} | ${item.nRevenueAmount} (${this.translateService.instant('THIS_RECEIPT')})\n`;
+          // console.log(100, 'item revenue', item.nRevenueAmount, 'payment', item.totalPaymentAmount);
+          description += `${this.translateService.instant('ALREADY_PAID')}: \n${item.sTransactionNumber} | ${item.totalPaymentAmount} (${this.translateService.instant('THIS_RECEIPT')})\n`;
 
           item.related.forEach((related: any) => {
-            description += `${related.sTransactionNumber} | ${related.nRevenueAmount}\n`;
+            // console.log(103, 'related revenue', related.nRevenueAmount);
+            description += `${related.sTransactionNumber} | ${related.nRevenueAmount * related.nQuantity}\n`;
           });
         }
       }
@@ -437,20 +440,18 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   // }
 
   openCustomer(customer: any) {
-    if(customer?._id){
-      this.apiService.getNew('customer' , `/api/v1/customer/${this.iBusinessId}/${customer._id}`).subscribe((result:any)=>{
-        if(result?.data){
+    if (customer?._id) {
+      this.apiService.getNew('customer', `/api/v1/customer/${this.iBusinessId}/${customer._id}`).subscribe((result: any) => {
+        if (result?.data) {
           this.dialogService.openModal(CustomerDetailsComponent,
             { cssClass: "modal-xl position-fixed start-0 end-0", context: { customerData: result?.data, mode: 'details', from: 'transactions' } }).instance.close.subscribe(result => { });
-        }else{
-           this.toastService.show({type:'warning' , text:'No customer data available'})
+        } else {
+          this.toastService.show({ type: 'warning', text: 'No customer data available' })
         }
-      }) 
-    }else{
-      this.toastService.show({type:'warning' , text:'No customer data available'})
+      })
+    } else {
+      this.toastService.show({ type: 'warning', text: 'No customer data available' })
     }
-
- 
   }
 
   async showActivityItem(activityItem: any, event: any) {

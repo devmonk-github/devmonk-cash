@@ -23,7 +23,7 @@ export class TransactionsPdfService {
       },
       tableExample: {
         border: 0,
-        fontSize: 9,
+        fontSize: 8,
       },
       tableExample2: {
         fontSize: 8,
@@ -34,7 +34,7 @@ export class TransactionsPdfService {
         margin: [0, -10, 0, 10]
       },
       normal: {
-        fontSize: 10,
+        fontSize: 9,
         margin: 5, //[0, 5, 0, 5]
       },
       header: {
@@ -92,7 +92,10 @@ export class TransactionsPdfService {
         if (headerObj['sNumber']) obj['sNumber'] = activityItem && activityItem.sNumber ? activityItem.sNumber : '-';
         if (headerObj['oCustomer.sLastName']) obj['oCustomer.sLastName'] = activityItem && activityItem.oCustomer?.sLastName ? activityItem.oCustomer?.sLastName : '-';
         if (headerObj['oCustomer.oInvoiceAddress.sCity']) obj['oCustomer.oInvoiceAddress.sCity'] = activityItem && activityItem?.oCustomer?.sCity ? activityItem?.oCustomer?.sCity : '-';
-        if (headerObj['sDescription']) obj['sDescription'] = activityItem && activityItem?.sDescription ? activityItem?.sDescription : '-';
+        if (headerObj['sDescription']){
+          if(activityItem?.sDescription?.length <= 15) obj['sDescription'] = activityItem && activityItem?.sDescription ? activityItem?.sDescription.substring(0,14) : '-';
+          else obj['sDescription'] = activityItem && activityItem?.sDescription ? activityItem?.sDescription.substring(0,11).concat(" ...") : '-';
+        } 
         if (headerObj['nTotalAmount']) obj['nTotalAmount'] = activityItem && activityItem?.nTotalAmount ? activityItem?.nTotalAmount : '-';
         if (headerObj['dCreatedDate']) obj['dCreatedDate'] = activityItem && activityItem.dCreatedDate ? moment(activityItem.dCreatedDate).format('DD-MM-yyyy') : '-';
         if (headerObj['dEstimatedDate']) obj['dEstimatedDate'] = activityItem && activityItem?.dEstimatedDate ? moment(activityItem?.dEstimatedDate).format('DD-MM-yyyy') : '-';
