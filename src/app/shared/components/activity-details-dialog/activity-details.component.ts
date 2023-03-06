@@ -718,7 +718,6 @@ export class ActivityDetailsComponent implements OnInit {
 
   submit(activityItemId: any, index: any) {
     this.submitted = true;
-    console.log(this.submitted);
     const oActivityItem = this.activityItems[index];
     oActivityItem.iBusinessId = this.iBusinessId;
     this.apiService.putNew('cashregistry', '/api/v1/activities/items/' + activityItemId, oActivityItem)
@@ -726,8 +725,6 @@ export class ActivityDetailsComponent implements OnInit {
 
         if (result.message == 'success') {
           this.submitted = false;
-          console.log(this.submitted);
-          console.log("ssthis.submitted");
           this.apiService.activityItemDetails.next(oActivityItem);
           this.toastService.show({ type: "success", text: this.translation['SUCCESSFULLY_UPDATED'] });
 
@@ -735,8 +732,6 @@ export class ActivityDetailsComponent implements OnInit {
         }
         else {
           this.submitted = false;
-          console.log(this.submitted);
-          console.log("this.submitted");
           let errorMessage = "";
           this.translationService.get(result.message).subscribe((res: any) => {
             errorMessage = res;
