@@ -469,7 +469,8 @@ export class TillService {
             eEstimatedDateAction: transactionItem.eEstimatedDateAction,
             bGiftcardTaxHandling: transactionItem.bGiftcardTaxHandling,
             sArticleNumber: transactionItem?.sArticleNumber,
-            iLocationId: transactionItem?.iLocationId
+            iLocationId: transactionItem?.iLocationId,
+            // oCustomer: transactionItem?.oCustomer
           });
         }
       });
