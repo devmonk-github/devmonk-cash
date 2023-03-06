@@ -357,7 +357,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   updateAmountVariables() {
     this.nItemsTotalToBePaid = this.getTotals('price');
     this.nTotalPayment = this.totalPrepayment();
-    this.nFinalAmount = this.availableAmount - this.nItemsTotalToBePaid;
+    this.nFinalAmount = Math.abs(this.availableAmount - this.nItemsTotalToBePaid);
 
     // console.log({ nItemsTotalToBePaid: this.nItemsTotalToBePaid })
     // console.log({ nTotalPayment: this.nTotalPayment })
