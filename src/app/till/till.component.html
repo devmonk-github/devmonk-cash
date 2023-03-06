@@ -195,7 +195,7 @@
                       <div style="display:inline-table;">
                         <!-- regular -->
                         <div class="accordion-item w-100 d-table-cell" till-product
-                          *ngIf="item.type === 'regular' || item.type === 'reservation'" [item]="item" [taxes]="taxes"
+                          *ngIf="(item.type === 'regular' || item.type === 'reservation') && item.bProductLoaded" [item]="item" [taxes]="taxes"
                           [disablePrepayment]="!availableAmount || availableAmount === 0"
                           (itemChanged)="itemChanged($event, i)" [availableAmount]="availableAmount"></div>
                         <!-- order -->
