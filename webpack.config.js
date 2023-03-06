@@ -215,13 +215,24 @@ module.exports = {
       },
       shared: share(sharedLibrary)
     }),
-    // new ModuleFederationPlugin({
-    //   // For remotes (please adjust)
-    //   remotes: {
-    //     "supplierSlider": "supplierSlider@http://localhost:4202/supplierSlider.js",
-    //   },
-    //   shared: share(sharedLibrary)
-    // }),
+    new ModuleFederationPlugin({
+
+      // For hosts (please adjust)
+      remotes: {
+        "productDetailPage": "productDetailPage@http://localhost:3001/api/v1/webpack/product/product-detail-page.js",
+        
+      },
+      shared: share({
+        "@angular/core": { singleton: true, requiredVersion: 'auto' },
+        "@angular/common": { singleton: true, requiredVersion: 'auto' },
+        "@angular/common/http": { singleton: true, requiredVersion: 'auto' },
+        "@angular/router": { singleton: true, requiredVersion: 'auto' },
+        "@ngx-translate/core": { singleton: true, requiredVersion: 'auto' },
+
+        ...sharedMappings.getDescriptors()
+      })
+    }),
+  
     sharedMappings.getPlugin()
   ],
 };

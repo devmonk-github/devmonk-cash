@@ -1,1 +1,1 @@
-// declare module 'supplierSlider/SupplierProductSliderModule';
+declare module 'productDetailPage/ProductDetailPageModule';
