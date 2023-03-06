@@ -195,7 +195,7 @@
                       <div style="display:inline-table;">
                         <!-- regular -->
                         <div class="accordion-item w-100 d-table-cell" till-product
-                          *ngIf="item.type === 'regular' || item.type === 'reservation'" [item]="item" [taxes]="taxes"
+                          *ngIf="(item.type === 'regular' || item.type === 'reservation') && item.bProductLoaded" [item]="item" [taxes]="taxes"
                           [disablePrepayment]="!availableAmount || availableAmount === 0"
                           (itemChanged)="itemChanged($event, i)" [availableAmount]="availableAmount"></div>
                         <!-- order -->
@@ -313,28 +313,28 @@
                     <div class="col-md-6 cursor-pointer py-5 px-2" *ngFor="let product of shopProducts"
                       (mouseenter)="product['showOption'] = true" (mouseleave)="product['showOption'] = false">
                       <a (click)="onSelectProduct(product, 'business', 'shopProducts')">
-                        <div class="card m-1 shadow-sm h-100">
+                        <div class="card m-1 shadow-sm h-100 custom-card">
                           <div class="card-body">
-                            <div class="d-flex">
-                              <div class="p-2">
+                            <!-- <div class="d-flex"> -->
+                              <div class="r-content">
                                 <img
                                   src="{{product.aImage[0]? product.aImage[0]: '../assets/images/no-photo-available.jpg' }}"
-                                  class="w-50">
+                                  class="">
                               </div>
-                              <div class="px-2">
-                                <label class="business-bg-color rounded-full px-2 py-1 text-white text-sm">{{
-                                  "BUSINESS_PRODUCT"| translate}}</label>
+                              <div class="l-content">
+                                <!-- <label class="business-bg-color rounded-full px-2 py-1 text-white text-sm">{{
+                                  "BUSINESS_PRODUCT"| translate}}</label> -->
                                 <span>
                                   <fa-icon [icon]="faCopy" aria-label="copy-article-number" class="ml-4"></fa-icon>
                                 </span>
-                                <p class="block mt-2">{{ product.oName? product.oName['en'] : 'No name' }}</p>
-                                <p class="mt-2">{{ product.sEan }}</p>
-                                <p class="mt-2">{{ product.sProductNumber }}</p>
-                                <p class="mt-2">{{ product?.sSerialNumber || '' }}</p>
-                                <p class="mt-2">{{ product?.sArticleNumber }}</p>
-                                <p>{{"STOCK"| translate}} {{ product?.oCurrentLocation?.nStock }} </p>
+                                <p class="block mt-2 prod-name">{{ product.oName? product.oName['en'] : 'No name' }}</p>
+                                <p class="mt-2 text-gray-800">{{ product.sEan || '-'}}</p>
+                                <p class="mt-2 text-gray-800">{{ product.sProductNumber }}</p>
+                                <p class="mt-2 text-gray-800">{{ product?.sSerialNumber || '-' }}</p>
+                                <p class="mt-2 text-gray-800">{{ product?.sArticleNumber }}</p>
+                                <p class="text-gray-800">{{"STOCK"| translate}}: {{ product?.oCurrentLocation?.nStock || '-'}} </p>
                               </div>
-                            </div>
+                            <!-- </div> -->
                           </div>
                         </div>
                       </a>
@@ -342,33 +342,33 @@
                   </div>
                   <hr *ngIf="commonProducts && commonProducts.length > 0">
                   <div class="row" *ngIf="commonProducts && commonProducts.length > 0">
-                    <div class="col-md-6 cursor-pointer" *ngFor="let product of commonProducts"
+                    <div class="col-md-6 cursor-pointer py-5 px-2" *ngFor="let product of commonProducts"
                       (mouseenter)="product['showOption'] = true" (mouseleave)="product['showOption'] = false">
                       <a (click)="onSelectProduct(product, 'business', 'commonProducts')">
-                        <div class="card m-1 shadow-sm">
-                          <div class="card-body">
-                            <div class="d-flex">
-                              <div class="p-2">
+                        <div class="card m-1 shadow-sm custom-card common-prod">
+                          <div class="card-body custom-flex">
+                            <!-- <div class="d-flex"> -->
+                              <div class="r-content">
                                 <img
                                   src="{{product.aImage[0]? product.aImage[0]: '../assets/images/no-photo-available.jpg' }}"
-                                  class="w-50">
+                                  class="">
                               </div>
-                              <div class="w-50 px-2">
-                                <label
+                              <div class="l-content">
+                                <!-- <label
                                   class="business-bg-color rounded-full px-2 py-1 text-white text-sm">{{"BUSINESS_PRODUCT"
                                   |
-                                  translate}}</label>
+                                  translate}}</label> -->
                                 <span>
                                   <fa-icon [icon]="faCopy" aria-label="copy-article-number" class="ml-4"></fa-icon>
                                 </span>
-                                <p class="block mt-2">{{ product.oName? product.oName['en'] : 'No name' }}</p>
-                                <p class="mt-2">{{ product.sEan }}</p>
-                                <p class="mt-2">{{ product.sProductNumber }}</p>
-                                <p class="mt-2">{{ product?.sArticleNumber }}</p>
+                                <p class="block mt-2 prod-name">{{ product.oName? product.oName['en'] : 'No name' }}</p>
+                                <p class="mt-2 text-gray-800">{{ product.sEan || '-'}}</p>
+                                <p class="mt-2 text-gray-800">{{ product.sProductNumber || '-'}}</p>
+                                <p class="mt-2 text-gray-800">{{ product?.sArticleNumber || '-'}}</p>
                               </div>
-                            </div>
-                            <div class="absolute hover-product-option mt-n6" *ngIf="product['showOption']">
-                              <div class="d-flex">
+                            <!-- </div> -->
+                            <div class="absolute hover-product-option mt-n6 b-content" *ngIf="product['showOption']">
+                              <div class="d-flex justify-content-end">
                                 <button class="btn btn-secondary w-50 mr-2 p-0">{{ "ADD_THIS_ARTICLE" |
                                   translate}}</button>
                               </div>
@@ -534,23 +534,23 @@
               </div>
 
               <h1>
-                <span *ngIf="nFinalAmount <0">{{ "YET_TO_PAY" | translate}}</span>
-                <span *ngIf="nFinalAmount >=0">{{ "CHANGE" | translate}}</span>:
+                <span *ngIf="nTotalPayment < nItemsTotalToBePaid">{{ "YET_TO_PAY" | translate}}</span>
+                <span *ngIf="nTotalPayment >= nItemsTotalToBePaid">{{ "CHANGE" | translate}}</span>:
 
                 {{ nFinalAmount | currency: tillService.currency}}
               </h1>
 
-              <h4 *ngIf="nFinalAmount < 0">
+              <h4 *ngIf="nTotalPayment < nItemsTotalToBePaid">
                 {{ "PREPAYMENT" | translate}}: {{ nTotalPayment | currency: tillService.currency}}
                 {{'FROM_TOTAL' | translate}} {{ nItemsTotalToBePaid | currency:tillService.currency}}
               </h4>
 
-              <h4 *ngIf="nFinalAmount == 0">{{ "PAYMENT" | translate}}: {{nTotalPayment | currency:
+              <h4 *ngIf="nTotalPayment == nItemsTotalToBePaid">{{ "PAYMENT" | translate}}: {{nTotalPayment | currency:
                 tillService.currency}}
               </h4>
-              <h4 *ngIf="nFinalAmount > 0">{{ "PREPAYMENT" | translate}}: {{nTotalPayment | currency:
+              <!-- <h4 *ngIf="nFinalAmount > 0">{{ "PREPAYMENT" | translate}}: {{nTotalPayment | currency:
                 tillService.currency}}
-              </h4>
+              </h4> -->
 
               <div class="d-flex flex-wrap">
                 <button class="btn btn-primary till-save-button flex-grow-1 me-2" (click)="createTransaction()"

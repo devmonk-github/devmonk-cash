@@ -272,11 +272,11 @@
                             </thead>
                             <tbody>
                                 <tr *ngFor="let item of transaction.aTransactionItems">
-                                    <td>
+                                    <td (click)="openProductInfo(item)">
                                         <img src="{{ item.aImage[0] || imagePlaceHolder}}"
                                             (error)="item.aImage[0]=imagePlaceHolder" class="product_image">
                                     </td>
-                                    <td>
+                                    <td (click)="openProductInfo(item)">
                                         <div>
                                             {{ item.sArticleGroupName }} {{ item.sProductNumber }} <br />
                                             <!-- {{ item.sProductName }}   -->

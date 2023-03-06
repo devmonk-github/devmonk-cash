@@ -1,10 +1,13 @@
-import { AfterContentInit, ChangeDetectorRef, Component, OnInit, ViewContainerRef } from '@angular/core';
+import { AfterContentInit, Compiler ,Injector ,NgModuleRef,  ChangeDetectorRef, Component, OnInit, ViewContainerRef } from '@angular/core';
+
 import { faTimes, faSync, faFileInvoice, faDownload, faReceipt, faAt, faUndoAlt, faClipboard, faTrashAlt, faPrint } from '@fortawesome/free-solid-svg-icons';
 import { TransactionItemsDetailsComponent } from 'src/app/shared/components/transaction-items-details/transaction-items-details.component';
 import { ApiService } from 'src/app/shared/service/api.service';
+import { ActivatedRoute, Router } from '@angular/router';
 import { DialogComponent, DialogService } from 'src/app/shared/service/dialog';
 // import { PdfService } from 'src/app/shared/service/pdf.service';
 import * as _moment from 'moment';
+//import { ProductDetailPageComponent } from 'src/app/shared/components/product-detail-page/product-detail-page.component';
 import { CustomerDetailsComponent } from 'src/app/shared/components/customer-details/customer-details.component';
 import { ActivityDetailsComponent } from 'src/app/shared/components/activity-details-dialog/activity-details.component';
 import { ReceiptService } from 'src/app/shared/service/receipt.service';
@@ -14,6 +17,8 @@ import { Observable } from 'rxjs';
 import { ToastService } from 'src/app/shared/components/toast';
 import * as JsBarcode from 'jsbarcode';
 import { TillService } from 'src/app/shared/service/till.service';
+import { ProductDetailPageModule } from 'productDetailPage/ProductDetailPageModule';
+import { ProductDetailPageComponent } from 'productDetailPage/ProductDetailPageModule';
 import { TranslateService } from '@ngx-translate/core';
 const moment = (_moment as any).default ? (_moment as any).default : _moment;
 // import { faMagnifyingGlassPlus } from '@fortawesome/free-solid-svg-icons';
@@ -22,9 +27,11 @@ const moment = (_moment as any).default ? (_moment as any).default : _moment;
   selector: 'app-transaction-details',
   templateUrl: './transaction-details.component.html',
   styleUrls: ['./transaction-details.component.sass']
+ 
+  
 })
 export class TransactionDetailsComponent implements OnInit, AfterContentInit {
-
+  componentRef: any;
   dialogRef: DialogComponent;
   faTimes = faTimes;
   faSync = faSync;
@@ -59,9 +66,14 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   printActionSettings:any;
   printWithVATLoading: boolean = false;
 
+  
+
   constructor(
     private viewContainerRef: ViewContainerRef,
     private apiService: ApiService,
+    private compiler: Compiler,
+    private injector: Injector,
+    private router: Router,
     private dialogService: DialogService,
     private receiptService: ReceiptService,
     private printService: PrintService,
@@ -78,6 +90,8 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   }
 
   async ngOnInit() {
+    console.log("-----------------transaction-------------------");
+    console.log(this.transaction);
     this.iBusinessId = localStorage.getItem("currentBusiness") || '';
     this.iLocationId = localStorage.getItem("currentLocation") || '';
     this.iWorkstationId = localStorage.getItem("currentWorkstation") || '';
@@ -88,6 +102,7 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
     this.transaction = await this.tillService.processTransactionForPdfReceipt(this.transaction);
     this.transaction.nTotalOriginalAmount = 0;
     this.transaction.nTotalQty = 0;
+    //this.loadDynamicComponent();
 
     this.transaction.aTransactionItems.forEach((item: any) => {
       // let description = (item?.nDiscountToShow > 0) nTotalQty? `Original amount: ${item.nPriceIncVat}\n` : '';
@@ -120,6 +135,7 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
     // console.log(this.transaction)
 
   }
+  
 
   ngAfterContentInit(): void {
     this.cdr.detectChanges();
@@ -166,10 +182,76 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   downloadWithVAT(print: boolean = false) {
     this.generatePDF(print);
   }
+  openProductInfo(product: any) {
+   
+    console.log(product);
+    const oBody = {
+      supplier: product.iSupplierId,
+      iBusinessProductId:product.iBusinessProductId,
+      iBusinessId: this.businessDetails._id,
+      oOrder: {
+        isAssortment: true,
+      },
+      data: {
+        oBusinessProduct: {
+          _id: product.iBusinessProductId
+        },
+      },
+      // isEditable: true
+    };
+    console.log("---------soBody");
+    console.log(oBody);
+    // this.router.navigateByUrl('/business/assortment/' + product._id, {
+    //   replaceUrl: false,
+    // })
+    this.compiler?.compileModuleAsync(ProductDetailPageModule).then(moduleFactory => {
+      const moduleRef: NgModuleRef<typeof ProductDetailPageModule> = moduleFactory.create(this.injector);
+      const componentFactory = moduleRef.instance.resolveComponent();
+
+      //console.log("componentFactory");
+      //console.log(componentFactory.componentType);
+   
+    this.dialogService.openModal(componentFactory.componentType, { context: { initialData: oBody }, cssClass: 'w-fullscreen mt--5', hasBackdrop: true, closeOnBackdropClick: true, closeOnEsc: true })
+      .instance.close.subscribe(
+        data => {
+
+          console.log(data);
+         
+        });
+      })
+  }
+
+  // loadDynamicComponent(product: any) {
+  //   this.compiler?.compileModuleAsync(ProductDetailPageModule).then(moduleFactory => {
+  //     const moduleRef: NgModuleRef<typeof ProductDetailPageModule> = moduleFactory.create(this.injector);
+  //     const componentFactory = moduleRef.instance.resolveComponent();
+
+  //     console.log("componentFactory");
+  //     console.log(componentFactory.componentType);
+  //   })
+    // try {
+    //   this.compiler?.compileModuleAsync(ProductDetailPageModule).then(moduleFactory => {
+    //     const moduleRef: NgModuleRef<typeof ProductDetailPageModule> = moduleFactory.create(this.injector);
+    //     const componentFactory = moduleRef.instance.resolveComponent();
+
+    //     console.log("componentFactory");
+    //     console.log(componentFactory);
+       
+    //   });
+
+     
+
+    // } catch (error) {
+    //   console.log('error: ', error);
+    // }
+  //}
 
   downloadWebOrder() {
     this.generatePDF(false);
   }
+  
+
+
 
   getPrintSetting() {
     const oBody = {
@@ -376,17 +458,22 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   }
 
   async showActivityItem(activityItem: any, event: any) {
+    //console.log("------------------activity detail model---------------");
+   // console.log(activityItem);
     const oBody = {
       iBusinessId: this.iBusinessId,
     }
     activityItem.bFetchingActivityItem = true;
     event.target.disabled = true;
-    // const _oActivityitem: any = await this.apiService.postNew('cashregistry', `/api/v1/activities/items/${activityItem.iActivityItemId}`, oBody).toPromise();
-    // const oActivityItem = _oActivityitem?.data[0]?.result[0];
+    const _oActivityitem: any = await this.apiService.postNew('cashregistry', `/api/v1/activities/activity-item/${activityItem.iActivityItemId}`, oBody).toPromise();
+    const oActivityItem = _oActivityitem?.data[0]?.result[0];
+    console.log(oActivityItem);
     activityItem.bFetchingActivityItem = false;
     event.target.disabled = false;
-    this.dialogService.openModal(ActivityDetailsComponent, { cssClass: 'w-fullscreen', context: { activity:{_id:activityItem.iActivityItemId}, items: true, from: 'transaction-details' } })
+    this.dialogService.openModal(ActivityDetailsComponent, { cssClass: 'w-fullscreen', context: { activityItems:[oActivityItem], items: true, from: 'transaction-details' } })
       .instance.close.subscribe((result: any) => {
+        //console.log("-------result")
+        //console.log(result)
 
       });
   }

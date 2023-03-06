@@ -357,7 +357,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   updateAmountVariables() {
     this.nItemsTotalToBePaid = this.getTotals('price');
     this.nTotalPayment = this.totalPrepayment();
-    this.nFinalAmount = this.availableAmount - this.nItemsTotalToBePaid;
+    this.nFinalAmount = Math.abs(this.availableAmount - this.nItemsTotalToBePaid);
 
     // console.log({ nItemsTotalToBePaid: this.nItemsTotalToBePaid })
     // console.log({ nTotalPayment: this.nTotalPayment })
@@ -1243,7 +1243,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       oBusinessProductMetaData: this.tillService.createProductMetadata(product),
       eActivityItemStatus: (this.eKind === 'order') ? 'new' : 'delivered',
       oCurrentLocation: currentLocation,
-      aLocation: product?.aLocation
+      aLocation: product?.aLocation,
+      bProductLoaded:true
     });
     if (isFrom === 'quick-button') { source.loading = false }
     this.resetSearch();
@@ -1766,6 +1767,26 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     this.transactionItems = transactionItems;
     this.iActivityId = transaction.iActivityId || transaction._id;
     this.sNumber = transaction?.sNumber;
+    
+    for(const item of this.transactionItems) {
+      if(item?.iBusinessProductId) {
+        const _oBusinessProductDetail: any = await this.getBusinessProduct(item?.iBusinessProductId).toPromise();
+        const product = _oBusinessProductDetail.data;
+        if (product?.aLocation?.length) {
+          item.aLocation = product.aLocation.filter((oProdLoc: any) => {
+            // console.log('oProdLoc: ', oProdLoc, this.aBusinessLocation);
+            const oFound: any = this.aBusinessLocation.find((oBusLoc: any) => oBusLoc?._id?.toString() === oProdLoc?._id?.toString());
+            if (oFound) {
+              oProdLoc.sName = oFound?.sName;
+              return oProdLoc;
+            }
+          })
+          item.oCurrentLocation = product.aLocation.find((o: any) => o._id === this.iLocationId);
+          item.bProductLoaded = true;
+        }
+      }
+    }
+
     if (transaction.iCustomerId) {
       this.fetchCustomer(transaction.iCustomerId);
     }
