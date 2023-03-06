@@ -626,8 +626,6 @@ export class ActivityDetailsComponent implements OnInit {
     }
 
     const template = this.aTemplates.filter((t: any) => t.eType === type)[0];
-    console.log("626this.customer");
-    console.log(this.customer);
     oDataSource.oCustomer = this.tillService.processCustomerDetails(this.customer);
     
     // {
@@ -847,8 +845,6 @@ export class ActivityDetailsComponent implements OnInit {
     const currentLocation = this.businessDetails.aLocation[locationIndex];
     oDataSource.businessDetails.sAddressline1 = currentLocation.oAddress.street + " " + currentLocation.oAddress.houseNumber + " " + currentLocation.oAddress.houseNumberSuffix + " ,  " + currentLocation.oAddress.postalCode + " " + currentLocation.oAddress.city;
     oDataSource.businessDetails.sAddressline2 = currentLocation.oAddress.country;
-    console.log("8476this.customer");
-    console.log(this.customer);
     oDataSource.oCustomer = this.tillService.processCustomerDetails(this.customer);
     
     // {
