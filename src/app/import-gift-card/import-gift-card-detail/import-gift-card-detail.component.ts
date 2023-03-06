@@ -1,19 +1,20 @@
-import { Component, Input, OnInit, Output, EventEmitter, SimpleChanges, OnChanges } from '@angular/core';
-import { ToastService } from 'src/app/shared/components/toast';
+import { Component, EventEmitter, Input, OnInit, Output, SimpleChanges } from '@angular/core';
+import { faSync, faTimes } from '@fortawesome/free-solid-svg-icons';
+// import { ToastService } from 'src/app/shared/components/toast';
 import { ApiService } from 'src/app/shared/service/api.service';
-import { faTimes, faSync } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
-  selector: 'app-customer-details-import',
-  templateUrl: './customer-details-import.component.html',
-  styleUrls: ['./customer-details-import.component.sass']
+  selector: 'app-import-gift-card-detail',
+  templateUrl: './import-gift-card-detail.component.html',
+  styleUrls: ['./import-gift-card-detail.component.sass']
 })
-export class CustomerDetailsImportComponent implements OnInit, OnChanges {
-  @Input() customerDetailsForm: any;
-  @Output() customerDetailsFormChange: EventEmitter<any> = new EventEmitter();
+export class ImportGiftCardDetailComponent implements OnInit {
+
+  @Input() giftCardDetailsForm: any;
+  @Output() giftCardDetailsFormChange: EventEmitter<any> = new EventEmitter();
   @Input() updateTemplateForm: any;
   @Output() updateTemplateFormChange: EventEmitter<any> = new EventEmitter();
-  @Input() parsedCustomerData: any;
+  @Input() parsedGiftCardData: any;
   @Output() moveToStep: EventEmitter<any> = new EventEmitter();
 
   faTimes = faTimes;
@@ -44,18 +45,18 @@ export class CustomerDetailsImportComponent implements OnInit, OnChanges {
 
   constructor(
     private apiService: ApiService,
-    private toasterService: ToastService
+    // private toasterService: ToastService
   ) { }
 
   ngOnInit(): void {
-    this.apiService.setToastService(this.toasterService);
-    // if (this.customerDetailsForm?.isTransaction) this.getDynamicFields(false); // FOR TESTING AND DYNAMIC DATA(TRANSACTION)
+    // this.apiService.setToastService(this.toasterService);
+    // if (this.giftCardDetailsForm?.isTransaction) this.getDynamicFields(false); // FOR TESTING AND DYNAMIC DATA(TRANSACTION)
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (this.parsedCustomerData && this.parsedCustomerData.length > 0) {
-      this.headerOptions = Object.keys(this.parsedCustomerData[0]);
-      this.customerDetailsForm = {};
+    if (this.parsedGiftCardData && this.parsedGiftCardData.length > 0) {
+      this.headerOptions = Object.keys(this.parsedGiftCardData[0]);
+      this.giftCardDetailsForm = {};
       this.updateTemplateForm = {};
       this.headerOptions.filter((option: any) => this.updateTemplateForm[option] = 'overwrite');
       this.getDynamicFields(false);
@@ -66,7 +67,7 @@ export class CustomerDetailsImportComponent implements OnInit, OnChanges {
   getDynamicFields(isResetAttributes: boolean) {
     let filter = {
       oFilterBy: {
-        "sName": "IMPORT_CUSTOMER_DETAILS"
+        "sName": "IMPORT_GIFT_CARD_DETAILS"
       }
     };
 
@@ -74,12 +75,12 @@ export class CustomerDetailsImportComponent implements OnInit, OnChanges {
       if (result && result.data && result.data.length > 0) {
         this.allFields['all'] = result.data[0].result[0].aOptions;
         if (isResetAttributes) {
-          this.customerDetailsForm = {};
+          this.giftCardDetailsForm = {};
           this.updateTemplateForm = {};
         }
         this.allFields['all'].filter((field: any) => {
           if (this.headerOptions.indexOf(field.sKey) > -1) {
-            this.customerDetailsForm[field.sKey] = field.sKey;
+            this.giftCardDetailsForm[field.sKey] = field.sKey;
           }
         });
       }
@@ -112,17 +113,17 @@ export class CustomerDetailsImportComponent implements OnInit, OnChanges {
 
   // Function for go to step(next / previous)
   gotoStep(step: string) {
-    if (Object.keys(this.customerDetailsForm).length != this.headerOptions.length) {
-      this.toasterService.show({ type: 'danger', text: 'You have not set some of the attributes exist in file.' });
+    if (Object.keys(this.giftCardDetailsForm).length != this.headerOptions.length) {
+      // this.toasterService.show({ type: 'danger', text: 'You have not set some of the attributes exist in file.' });
     }
     this.updateTemplateFormChange.emit(this.updateTemplateForm);
-    this.customerDetailsFormChange.emit(this.customerDetailsForm);
+    this.giftCardDetailsFormChange.emit(this.giftCardDetailsForm);
     this.moveToStep.emit(step);
   }
 
-  // Function for validate customer detail header linking
-  validateCustomerHeaderLink(): boolean {
-    return Object.keys(this.customerDetailsForm).length == 0;
+  // Function for validate gift-card detail header linking
+  validateGiftCardHeaderLink(): boolean {
+    return Object.keys(this.giftCardDetailsForm).length == 0;
   }
 
 }
