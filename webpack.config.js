@@ -216,22 +216,15 @@ module.exports = {
       shared: share(sharedLibrary)
     }),
     new ModuleFederationPlugin({
-
-      // For hosts (please adjust)
-      remotes: {
-        "productDetailPage": "productDetailPage@http://localhost:3001/api/v1/webpack/product/product-detail-page.js",
-        
+      // For remotes (please adjust)
+      name: "supplierProductSlider",
+      filename: "supplierProductSlider.js",
+      exposes: {
+        './SupplierProductSliderModule': './src/app/sliders/supplier-stock-product-slider/supplier-stock-product-slider.module.ts',
       },
-      shared: share({
-        "@angular/core": { singleton: true, requiredVersion: 'auto' },
-        "@angular/common": { singleton: true, requiredVersion: 'auto' },
-        "@angular/common/http": { singleton: true, requiredVersion: 'auto' },
-        "@angular/router": { singleton: true, requiredVersion: 'auto' },
-        "@ngx-translate/core": { singleton: true, requiredVersion: 'auto' },
-
-        ...sharedMappings.getDescriptors()
-      })
+      shared: share(sharedLibrary)
     }),
+    
   
     sharedMappings.getPlugin()
   ],
