@@ -1,32 +1,23 @@
-import { AfterContentInit, Compiler ,Injector ,NgModuleRef,  ChangeDetectorRef, Component, OnInit, ViewContainerRef } from '@angular/core';
-
+import { AfterContentInit, ChangeDetectorRef, Component, OnInit, ViewContainerRef } from '@angular/core';
 import { faTimes, faSync, faFileInvoice, faDownload, faReceipt, faAt, faUndoAlt, faClipboard, faTrashAlt, faPrint } from '@fortawesome/free-solid-svg-icons';
 import { TransactionItemsDetailsComponent } from 'src/app/shared/components/transaction-items-details/transaction-items-details.component';
 import { ApiService } from 'src/app/shared/service/api.service';
-import { ActivatedRoute, Router } from '@angular/router';
 import { DialogComponent, DialogService } from 'src/app/shared/service/dialog';
-// import { PdfService } from 'src/app/shared/service/pdf.service';
 import * as _moment from 'moment';
-//import { ProductDetailPageComponent } from 'src/app/shared/components/product-detail-page/product-detail-page.component';
 import { CustomerDetailsComponent } from 'src/app/shared/components/customer-details/customer-details.component';
 import { ActivityDetailsComponent } from 'src/app/shared/components/activity-details-dialog/activity-details.component';
 import { ReceiptService } from 'src/app/shared/service/receipt.service';
-import { Pn2escposService } from 'src/app/shared/service/pn2escpos.service';
-import { PrintService } from 'src/app/shared/service/print.service';
 import { Observable } from 'rxjs';
 import { ToastService } from 'src/app/shared/components/toast';
 import * as JsBarcode from 'jsbarcode';
 import { TillService } from 'src/app/shared/service/till.service';
 import { TranslateService } from '@ngx-translate/core';
 const moment = (_moment as any).default ? (_moment as any).default : _moment;
-// import { faMagnifyingGlassPlus } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-transaction-details',
   templateUrl: './transaction-details.component.html',
   styleUrls: ['./transaction-details.component.sass']
- 
-  
 })
 export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   componentRef: any;
@@ -42,15 +33,17 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   faClipboard = faClipboard;
   faTrashAlt = faTrashAlt;
   transaction: any = {};
-  iBusinessId: string = '';
-  iLocationId: string = '';
-  iWorkstationId: string = '';
+  
+  iBusinessId: any = localStorage.getItem("currentBusiness");
+  iLocationId: any = localStorage.getItem("currentLocation");
+  iWorkstationId: any = localStorage.getItem("currentWorkstation");
+  
   loading: boolean = true;
   customerLoading: boolean = true;
   customer: any = {};
   imagePlaceHolder: string = '../../../../assets/images/no-photo.svg';
   eType: string = '';
-  transactionId: string = '5c2f276e86a7527e67a45e9d'
+  transactionId: string;
   pdfGenerating: Boolean = false;
   downloadWithVATLoading: Boolean = false;
   businessDetails: any = {};
@@ -64,24 +57,21 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   printActionSettings:any;
   printWithVATLoading: boolean = false;
 
-  
+  paymentEditMode = false;
+  nPaymentMethodTotal = 0;
+  nNewPaymentMethodTotal = 0;
+  aNewSelectedPaymentMethods: any = [];
+  payMethods: any;
 
   constructor(
     private viewContainerRef: ViewContainerRef,
     private apiService: ApiService,
-    private compiler: Compiler,
-    private injector: Injector,
-    private router: Router,
     private dialogService: DialogService,
     private receiptService: ReceiptService,
-    private printService: PrintService,
     private toastService: ToastService,
     public tillService: TillService,
     private translateService: TranslateService,
     private cdr: ChangeDetectorRef,
-    private pn2escposService: Pn2escposService
-    // private compiler: Compiler,
-    // private injector: Injector,
   ) {
     const _injector = this.viewContainerRef.parentInjector;
     this.dialogRef = _injector.get<DialogComponent>(DialogComponent);
@@ -90,88 +80,43 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   async ngOnInit() {
     console.log("-----------------transaction-------------------");
     console.log(this.transaction);
-    this.iBusinessId = localStorage.getItem("currentBusiness") || '';
-    this.iLocationId = localStorage.getItem("currentLocation") || '';
-    this.iWorkstationId = localStorage.getItem("currentWorkstation") || '';
-    // let language: any = localStorage.getItem('language')
+
     this.transaction.businessDetails = this.businessDetails;
     this.transaction.currentLocation = this.businessDetails.currentLocation;
+    
+    this.getPaymentMethods()
     
     this.transaction = await this.tillService.processTransactionForPdfReceipt(this.transaction);
     this.transaction.nTotalOriginalAmount = 0;
     this.transaction.nTotalQty = 0;
-    //this.loadDynamicComponent();
 
     this.transaction.aTransactionItems.forEach((item: any) => {
-      // let description = (item?.nDiscountToShow > 0) nTotalQty? `Original amount: ${item.nPriceIncVat}\n` : '';
-      // console.log(item);
+      
       this.transaction.nTotalQty += item.nQuantity;
       let description = (item?.totalPaymentAmount != item?.nPriceIncVatAfterDiscount) ? `${this.translateService.instant('ORIGINAL_AMOUNT_INC_DISC')}: ${item.nPriceIncVatAfterDiscount}\n` : '';
       if (item?.related?.length) {
         this.transaction.nTotalOriginalAmount += item.nPriceIncVatAfterDiscount;
         if (item.nPriceIncVatAfterDiscount !== item.nRevenueAmount) {
-          // console.log(100, 'item revenue', item.nRevenueAmount, 'payment', item.totalPaymentAmount);
           description += `${this.translateService.instant('ALREADY_PAID')}: \n${item.sTransactionNumber} | ${item.totalPaymentAmount} (${this.translateService.instant('THIS_RECEIPT')})\n`;
 
           item.related.forEach((related: any) => {
-            // console.log(103, 'related revenue', related.nRevenueAmount);
             description += `${related.sTransactionNumber} | ${related.nRevenueAmount * related.nQuantity}\n`;
           });
         }
       }
       item.description = description;
     });
-    // console.log(this.transaction);
     
     this.loading = false;
 
     this.getPrintSetting()
-    // this.getThermalPrintSetting()
-    // this.getPdfPrintSetting({ oFilterBy: { sMethod: 'actions' } })
     this.mapEmployee();
-
-    // console.log(this.transaction)
-
   }
   
 
   ngAfterContentInit(): void {
     this.cdr.detectChanges();
   }
-  // fetchBusinessDetails() {
-  //   this.apiService.getNew('core', '/api/v1/business/' + this.iBusinessId)
-  //     .subscribe(
-  //       (result: any) => {
-  //         this.businessDetails = result.data;
-  //         this.businessDetails.currentLocation = this.businessDetails?.aLocation?.filter((location: any) => location?._id.toString() == this.iLocationId.toString())[0];
-  //         this.tillService.selectCurrency(this.businessDetails.currentLocation);
-  //         this.ableToDownload = true;
-  //       })
-  // }
-
-  // getRelatedTransactionItem(iActivityItemId: string, iTransactionItemId: string, index: number) {
-  //   return this.apiService.getNew('cashregistry', `/api/v1/transaction/item/activityItem/${iActivityItemId}?iBusinessId=${this.iBusinessId}&iTransactionItemId=${iTransactionItemId}`).toPromise();
-  // }
-
-  // getRelatedTransaction(iActivityId: string, iTransactionId: string) {
-  //   const body = {
-  //     iBusinessId: this.iBusinessId,
-  //     iTransactionId: iTransactionId
-  //   }
-  //   this.apiService.postNew('cashregistry', '/api/v1/transaction/activity/' + iActivityId, body)
-  //     .subscribe(
-  //       (result: any) => {
-  //         this.transaction.related = result.data || [];
-  //         this.transaction.related.forEach((obj: any) => {
-  //           obj.aPayments.forEach((obj: any) => {
-  //             obj.dCreatedDate = moment(obj.dCreatedDate).format('DD-MM-yyyy hh:mm');
-  //           });
-  //           this.transaction.aPayments = this.transaction.aPayments.concat(obj.aPayments);
-  //         })
-  //       }, (error) => {
-  //         console.log(error);
-  //       })
-  // }
 
   close(value: boolean) {
     this.dialogRef.close.emit(value);
@@ -184,37 +129,9 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
     
   }
 
-  // loadDynamicComponent(product: any) {
-  //   this.compiler?.compileModuleAsync(ProductDetailPageModule).then(moduleFactory => {
-  //     const moduleRef: NgModuleRef<typeof ProductDetailPageModule> = moduleFactory.create(this.injector);
-  //     const componentFactory = moduleRef.instance.resolveComponent();
-
-  //     console.log("componentFactory");
-  //     console.log(componentFactory.componentType);
-  //   })
-    // try {
-    //   this.compiler?.compileModuleAsync(ProductDetailPageModule).then(moduleFactory => {
-    //     const moduleRef: NgModuleRef<typeof ProductDetailPageModule> = moduleFactory.create(this.injector);
-    //     const componentFactory = moduleRef.instance.resolveComponent();
-
-    //     console.log("componentFactory");
-    //     console.log(componentFactory);
-       
-    //   });
-
-     
-
-    // } catch (error) {
-    //   console.log('error: ', error);
-    // }
-  //}
-
   downloadWebOrder() {
     this.generatePDF(false);
   }
-  
-
-
 
   getPrintSetting() {
     const oBody = {
@@ -248,27 +165,13 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
     else 
       this.downloadWithVATLoading = true;
 
-    
-    // for (let i = 0; i < this.businessDetails?.aLocation.length; i++) {
-    //   if (this.businessDetails.aLocation[i]?._id.toString() == this.iLocationId.toString()) {
-    //   }
-    // }
-
     const template = await this.getTemplate('regular').toPromise();
-    // const template = await this.getTemplate('single-activity').toPromise();
     const oDataSource = JSON.parse(JSON.stringify(this.transaction));
       
     oDataSource.sBarcodeURI = this.generateBarcodeURI(false, oDataSource.sNumber);
     oDataSource.sActivityBarcodeURI = this.generateBarcodeURI(false, oDataSource.sActivityNumber);
     oDataSource.sBusinessLogoUrl = (await this.getBase64FromUrl(oDataSource?.businessDetails?.sLogoLight).toPromise()).data;
-    // oDataSource.oCustomer = {
-    //   sFirstName: this.transaction.oCustomer.sFirstName,
-    //   sLastName: this.transaction.oCustomer.sLastName,
-    //   sEmail: this.transaction.oCustomer.sEmail,
-    //   sMobile: this.transaction.oCustomer.oPhone?.sCountryCode + this.transaction.oCustomer.oPhone?.sMobile,
-    //   sLandLine: this.transaction.oCustomer.oPhone?.sLandLine,
 
-    // };
     console.log(oDataSource)
 
     if(oDataSource?.oCustomer?.bCounter === true) {
@@ -309,101 +212,18 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
     return this.apiService.getNew('cashregistry', `/api/v1/pdf/templates/${this.iBusinessId}?eType=${type}&iLocationId=${this.iLocationId}`);
   }
 
-  // fetchCustomer(customerId: any) {
-  //   this.apiService.getNew('customer', `/api/v1/customer/${customerId}?iBusinessId=${this.iBusinessId}`).subscribe(
-  //     (result: any) => {
-
-  //       // console.log('fetch customer result', result)
-  //       // this.transaction.oCustomer = result;
-  //       this.transaction.oCustomer = {
-  //         sFirstName: result?.sFirstName,
-  //         sPrefix: result?.sPrefix,
-  //         sLastName: result?.sLastName,
-  //         sEmail: result?.sEmail,
-  //         sMobile: result?.oPhone?.sCountryCode + result?.oPhone?.sMobile,
-  //         sLandLine: result?.oPhone?.sLandLine,
-  //         oInvoiceAddress: result?.oInvoiceAddress,
-  //         oShippingAddress: result?.oShippingAddress
-  //       };
-
-  //     },
-  //     (error: any) => {
-  //       console.error(error)
-  //     }
-  //   );
-  // }
-
   openTransaction(transaction: any, itemType: any) {
     this.dialogService.openModal(TransactionItemsDetailsComponent, { cssClass: "modal-xl", context: { transaction, itemType } })
       .instance.close.subscribe(result => {
-        // console.log({result});
-        // const transactionItems: any = [];
         if (result.transaction) {
           const data = this.tillService.processTransactionSearchResult(result);
-          // console.log(data);
-          // result.transactionItems.forEach((transactionItem: any) => {
-          //   if (transactionItem.isSelected) {
-          //     const { tType } = transactionItem;
-          //     let paymentAmount = transactionItem.nQuantity * transactionItem.nPriceIncVat - transactionItem.nPaidAmount;
-          //     if (tType === 'refund') {
-          //       paymentAmount = -1 * transactionItem.nPaidAmount;
-          //       transactionItem.oType.bRefund = true;
-          //     } else if (tType === 'revert') {
-          //       paymentAmount = transactionItem.nPaidAmount;
-          //       transactionItem.oType.bRefund = false;
-          //     };
-          //     transactionItems.push({
-          //       name: transactionItem.sProductName || transactionItem.sProductNumber,
-          //       iActivityItemId: transactionItem.iActivityItemId,
-          //       nRefundAmount: transactionItem.nPaidAmount,
-          //       iLastTransactionItemId: transactionItem.iTransactionItemId,
-          //       prePaidAmount: tType === 'refund' ? transactionItem.nPaidAmount : transactionItem.nPaymentAmount,
-          //       type: transactionItem.sGiftCardNumber ? 'giftcard' : transactionItem.oType.eKind,
-          //       eTransactionItemType: 'regular',
-          //       nBrokenProduct: 0,
-          //       tType,
-          //       oType: transactionItem.oType,
-          //       aImage: transactionItem.aImage,
-          //       nonEditable: transactionItem.sGiftCardNumber ? true : false,
-          //       sGiftCardNumber: transactionItem.sGiftCardNumber,
-          //       quantity: transactionItem.nQuantity,
-          //       price: transactionItem.nPriceIncVat,
-          //       iRepairerId: transactionItem.iRepairerId,
-          //       oArticleGroupMetaData: transactionItem.oArticleGroupMetaData,
-          //       iEmployeeId: transactionItem.iEmployeeId,
-          //       iBrandId: transactionItem.iBrandId,
-          //       discount: 0,
-          //       tax: transactionItem.nVatRate,
-          //       iSupplierId: transactionItem.iSupplierId,
-          //       paymentAmount,
-          //       description: transactionItem.sDescription,
-          //       oBusinessProductMetaData: transactionItem.oBusinessProductMetaData,
-          //       sServicePartnerRemark: transactionItem.sServicePartnerRemark,
-          //       eActivityItemStatus: transactionItem.eActivityItemStatus,
-          //       eEstimatedDateAction: transactionItem.eEstimatedDateAction,
-          //       bGiftcardTaxHandling: transactionItem.bGiftcardTaxHandling,
-          //       open: true,
-          //     });
-          //   }
-          // });
-
-          // result.transactionItems = transactionItems;
           localStorage.setItem('fromTransactionPage', JSON.stringify(data));
-          // localStorage.setItem('recentUrl', '/business/transactions');
           setTimeout(() => {
             this.close(true);
           }, 100);
         }
       });
   }
-
-  // getThermalPrintSetting() {
-  //   this.apiService.getNew('cashregistry', `/api/v1/print-settings/${this.iBusinessId}/${this.iWorkstationId}/thermal/regular`).subscribe((result:any) => {
-  //     if (result?.data?._id) {
-  //       this.thermalPrintSettings = result?.data;
-  //     }
-  //   });
-  // }
 
   openCustomer(customer: any) {
     if (customer?._id) {
@@ -421,8 +241,6 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   }
 
   async showActivityItem(activityItem: any, event: any) {
-    //console.log("------------------activity detail model---------------");
-   // console.log(activityItem);
     const oBody = {
       iBusinessId: this.iBusinessId,
     }
@@ -434,11 +252,7 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
     activityItem.bFetchingActivityItem = false;
     event.target.disabled = false;
     this.dialogService.openModal(ActivityDetailsComponent, { cssClass: 'w-fullscreen', context: { activityItems:[oActivityItem], items: true, from: 'transaction-details' } })
-      .instance.close.subscribe((result: any) => {
-        //console.log("-------result")
-        //console.log(result)
-
-      });
+      .instance.close.subscribe((result: any) => {});
   }
 
   getThermalReceipt(type:string) {
@@ -450,51 +264,44 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
       sType: 'regular',
       sTemplateType: type
     });
-    // return;
-
-    // if (!this.thermalPrintSettings?.nPrinterId || !this.thermalPrintSettings?.nComputerId) {
-    //   this.toastService.show({ type: 'danger', text: 'Check your business -> printer settings' });
-    // }
-    
-
-    // this.apiService.getNew('cashregistry', `/api/v1/print-template/${type}/${this.iBusinessId}/${this.iLocationId}`).subscribe((result: any) => {
-    //   if (result?.data?.aTemplate?.length > 0) {
-    //     let transactionDetails = { businessDetails: this.businessDetails, ...this.transaction };
-    //     transactionDetails.oCustomer = {
-    //       ...transactionDetails.oCustomer,
-    //       ...transactionDetails.oCustomer.oPhone,
-    //       ...transactionDetails.oCustomer.oInvoiceAddress
-    //     };
-    //     let command;
-    //     try {
-    //       command = this.pn2escposService.generate(JSON.stringify(result.data.aTemplate), JSON.stringify(transactionDetails));
-    //       console.log(command);
-    //       return;
-    //     } catch (e) {
-    //       this.toastService.show({ type: 'danger', text: 'Template not defined properly. Check browser console for more details' });
-    //       console.log(e);
-    //       return;
-    //     }
-    //     // return;
-    //     this.printService.createPrintJob(this.iBusinessId, command, this.thermalPrintSettings?.nPrinterId, this.thermalPrintSettings?.nComputerId, this.businessDetails.oPrintNode.sApiKey, this.transaction.sNumber).then((response: any) => {
-    //       if (response.status == "PRINTJOB_NOT_CREATED") {
-    //         let message = '';
-    //         if (response.computerStatus != 'online') {
-    //           message = 'Your computer status is : ' + response.computerStatus + '.';
-    //         } else if (response.printerStatus != 'online') {
-    //           message = 'Your printer status is : ' + response.printerStatus + '.';
-    //         }
-    //         this.toastService.show({ type: 'warning', title: 'PRINTJOB_NOT_CREATED', text: message });
-    //       } else {
-    //         this.toastService.show({ type: 'success', text: 'PRINTJOB_CREATED', apiUrl: '/api/v1/printnode/print-job', templateContext: { apiKey: this.businessDetails.oPrintNode.sApiKey, id: response.id } });
-    //       }
-    //     })
-    //   } else if (result?.data?.aTemplate?.length == 0) {
-    //     this.toastService.show({ type: 'danger', text: 'TEMPLATE_NOT_FOUND' });
-    //   } else {
-    //     this.toastService.show({ type: 'danger', text: 'Error while fetching print template' });
-    //   }
-    // });
   }
 
+  addRow() {
+    this.aNewSelectedPaymentMethods.push({})
+    this.filterDuplicatePaymentMethods()
+  }
+
+  toggleEditPaymentMode() {
+    this.paymentEditMode = !this.paymentEditMode;
+    // this.addRow();
+    if (!this.paymentEditMode) this.aNewSelectedPaymentMethods = [];
+  }
+
+  reCalculateTotal() {
+    this.nNewPaymentMethodTotal = 0;
+    this.transaction.aPayments.forEach((item: any) => {
+      if (item.nNewAmount)
+        this.nNewPaymentMethodTotal += parseFloat(item.nNewAmount);
+    });
+    if (this.aNewSelectedPaymentMethods?.length)
+      this.aNewSelectedPaymentMethods.forEach((item: any) => {
+        if (item.nAmount)
+          this.nNewPaymentMethodTotal += parseFloat(item.nAmount);
+      });
+  }
+
+  filterDuplicatePaymentMethods() {
+    const aPresent:any = [...this.transaction.aPayments.map((item: any) => item.iPaymentMethodId), ...this.aNewSelectedPaymentMethods.map((item: any) => item._id)];
+    this.payMethods = this.payMethods.filter((item: any) => !aPresent.includes(item._id));
+  }
+
+  getPaymentMethods() {
+    this.payMethods = [];
+    this.apiService.getNew('cashregistry', `/api/v1/payment-methods/${this.iBusinessId}`).subscribe((result: any) => {
+      if (result?.data?.length) {
+        this.payMethods = [...result.data];
+        this.filterDuplicatePaymentMethods();
+      }
+    });
+  }
 }
