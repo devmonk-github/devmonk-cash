@@ -12,6 +12,7 @@ import { ToastService } from 'src/app/shared/components/toast';
 import * as JsBarcode from 'jsbarcode';
 import { TillService } from 'src/app/shared/service/till.service';
 import { TranslateService } from '@ngx-translate/core';
+import { TaxService } from 'src/app/shared/service/tax.service';
 const moment = (_moment as any).default ? (_moment as any).default : _moment;
 
 @Component({
@@ -58,8 +59,6 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   printWithVATLoading: boolean = false;
 
   paymentEditMode = false;
-  nPaymentMethodTotal = 0;
-  nNewPaymentMethodTotal = 0;
   aNewSelectedPaymentMethods: any = [];
   payMethods: any;
 
@@ -72,13 +71,13 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
     public tillService: TillService,
     private translateService: TranslateService,
     private cdr: ChangeDetectorRef,
+    private taxService: TaxService
   ) {
     const _injector = this.viewContainerRef.parentInjector;
     this.dialogRef = _injector.get<DialogComponent>(DialogComponent);
   }
 
   async ngOnInit() {
-    console.log("-----------------transaction-------------------");
     console.log(this.transaction);
 
     this.transaction.businessDetails = this.businessDetails;
@@ -278,15 +277,15 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   }
 
   reCalculateTotal() {
-    this.nNewPaymentMethodTotal = 0;
+    this.transaction.nNewPaymentMethodTotal = 0;
     this.transaction.aPayments.forEach((item: any) => {
       if (item.nNewAmount)
-        this.nNewPaymentMethodTotal += parseFloat(item.nNewAmount);
+        this.transaction.nNewPaymentMethodTotal += parseFloat(item.nNewAmount);
     });
     if (this.aNewSelectedPaymentMethods?.length)
       this.aNewSelectedPaymentMethods.forEach((item: any) => {
         if (item.nAmount)
-          this.nNewPaymentMethodTotal += parseFloat(item.nAmount);
+          this.transaction.nNewPaymentMethodTotal += parseFloat(item.nAmount);
       });
   }
 
@@ -303,5 +302,78 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
         this.filterDuplicatePaymentMethods();
       }
     });
+  }
+
+  async saveUpdatedPayments(event: any) {
+    event.target.disabled = true;
+    const nVatRate = await this.taxService.fetchDefaultVatRate({ iLocationId: this.iLocationId });
+    const aPayments = this.transaction.aPayments.filter((payments: any) => !payments?.bIgnore);
+    for (const item of aPayments) {
+      if (item.nAmount != item.nNewAmount) {
+        this.addExpenses({
+          amount: item.nNewAmount - item.nAmount,
+          type: 'payment-method-change',
+          comment: 'Payment method change',
+          iActivityId: this.transaction.iActivityId,
+          oPayment: {
+            iPaymentMethodId: item.iPaymentMethodId,
+            nAmount: item.nNewAmount - item.nAmount,
+            sMethod: item.sMethod,
+            sRemarks: 'PAYMENT_METHOD_CHANGE'
+          },
+          nVatRate: nVatRate
+        });
+      }
+    }
+
+      for (const item of this.aNewSelectedPaymentMethods) {
+        if (item.nAmount) {
+          this.addExpenses({
+            amount: item.nAmount,
+            type: 'payment-method-change',
+            comment: 'Payment method change',
+            iActivityId: this.transaction.iActivityId,
+            oPayment: {
+              iPaymentMethodId: item._id,
+              nAmount: item.nAmount,
+              sMethod: item.sName.toLowerCase(),
+              sRemarks: 'PAYMENT_METHOD_CHANGE'
+            },
+            nVatRate: nVatRate
+          });
+        }
+      }
+    
+
+    this.paymentEditMode = false;
+    event.target.disabled = false;
+  }
+
+  addExpenses(data: any) {
+    const value = localStorage.getItem('currentUser');
+    const currentEmployeeId = (value) ? JSON.parse(value).userId : '';
+    const transactionItem = {
+      sProductName: data?.type,
+      sComment: data.comment,
+      nPriceIncVat: data.amount,
+      nPurchasePrice: data.amount,
+      iBusinessId: this.iBusinessId,
+      nTotal: data.amount,
+      nPaymentAmount: data.amount,
+      nRevenueAmount: data.amount,
+      iWorkstationId: this.iWorkstationId,
+      iEmployeeId: currentEmployeeId,
+      iLocationId: this.iLocationId,
+      iActivityId: this.transaction.iActivityId,
+      oPayment: data?.oPayment,
+      oType: {
+        eTransactionType: data?.type,
+        bRefund: false,
+        eKind: data?.type,
+        bDiscount: false,
+      },
+      nVatRate: data?.nVatRate
+    };
+    return this.apiService.postNew('cashregistry', `/api/v1/till/add-expenses`, transactionItem).toPromise();
   }
 }

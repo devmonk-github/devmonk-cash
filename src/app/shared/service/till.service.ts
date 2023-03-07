@@ -497,12 +497,19 @@ export class TillService {
 
     dataObject.oCustomer = this.processCustomerDetails(dataObject.oCustomer);
     
+    dataObject.nPaymentMethodTotal = 0;
     
     dataObject.aPayments.forEach((obj: any) => {
-      if(!obj?.sRemarks) obj.sRemarks = "";
+      obj.bIgnore = false;
+      dataObject.nPaymentMethodTotal += obj.nAmount;
+      if(!obj?.sRemarks) 
+        obj.sRemarks = "";
+      else 
+        obj.bIgnore = true;
       // obj.dCreatedDate = moment(obj.dCreatedDate).format('DD-MM-yyyy hh:mm');
     });
-
+    dataObject.nNewPaymentMethodTotal = dataObject.nPaymentMethodTotal;
+    
     const aLoyaltyPointsItems = transaction.aTransactionItems.filter((item: any) => item?.oType?.eKind == 'loyalty-points-discount');
 
     dataObject.aTransactionItems = [];
@@ -660,7 +667,8 @@ export class TillService {
       dataObject.related.forEach((relatedobj: any) => {
         // relatedobj.aPayments = relatedobj.aPayments.filter((payment: any) => payment?.sRemarks !== 'CHANGE_MONEY');
         relatedobj.aPayments.forEach((obj: any) => {
-          obj.sRemarks = "";
+          if (!obj?.sRemarks) obj.sRemarks = "";
+          obj.bIgnore = true;
           // obj.dCreatedDate = moment(obj.dCreatedDate).format('DD-MM-yyyy hh:mm');
         });
         dataObject.aPayments = dataObject.aPayments.concat(relatedobj.aPayments);
