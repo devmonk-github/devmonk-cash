@@ -41,11 +41,24 @@
     </div>
     <form class="form mx-auto" novalidate="novalidate" id="kt_stepper_example_basic_form">
         <div class="mb-5">
+
+            <!-- Import file -->
             <div class="flex-column current" data-kt-stepper-element="content">
-                <import-gift-card-file [(parsedGiftCardData)]="parsedGiftCardData"
-                    (moveToStep)="moveToStep($event)"></import-gift-card-file>
+                <import-gift-card-file [(parsedGiftCardData)]="parsedGiftCardData" (moveToStep)="moveToStep($event)"
+                    [(allFields)]="allFields">
+                </import-gift-card-file>
             </div>
-            <!-- Gift Card Detail Import will be here -->
+            <!-- Import file -->
+
+            <!-- Gift Card Detail-->
+            <div class="flex-column" data-kt-stepper-element="content">
+                <import-gift-card-detail [parsedGiftCardData]="parsedGiftCardData"
+                    [(giftCardDetailsForm)]="giftCardDetailsForm" [(updateTemplateForm)]="updateTemplateForm"
+                    (moveToStep)="moveToStep($event)" [(allFields)]="allFields">
+                </import-gift-card-detail>
+            </div>
+            <!-- Gift Card Detail-->
+
             <div class="flex-column" data-kt-stepper-element="content">
                 <div class="flex">
                     <h4 *ngIf="importInprogress">{{"PROCESSING_YOUR_FILE" | translate}}</h4>
