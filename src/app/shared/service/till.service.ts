@@ -502,10 +502,8 @@ export class TillService {
     dataObject.aPayments.forEach((obj: any) => {
       obj.bIgnore = false;
       dataObject.nPaymentMethodTotal += obj.nAmount;
-      if(!obj?.sRemarks) 
-        obj.sRemarks = "";
-      else 
-        obj.bIgnore = true;
+      if(!obj?.sRemarks) obj.sRemarks = "";
+      
       // obj.dCreatedDate = moment(obj.dCreatedDate).format('DD-MM-yyyy hh:mm');
     });
     dataObject.nNewPaymentMethodTotal = dataObject.nPaymentMethodTotal;

@@ -105,7 +105,7 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
       }
       item.description = description;
     });
-    
+    // console.log(this.transaction);
     this.loading = false;
 
     this.getPrintSetting()

@@ -368,7 +368,7 @@
                     <div *ngIf="loading || !transaction?.bCompletedProcessing" class="spinner-border mx-auto"></div>
                 </div>
             </div>
-            <div [ngClass]="paymentEditMode ? 'col-12' : 'col-6'">
+            <div [ngClass]="paymentEditMode ? 'col-8' : 'col-6'">
                 <h3 class="fw-bolder mb-3">
                     <span>{{ "PAYMENTS" | translate }}</span>
                     <ng-container *ngIf="transaction.aPayments?.length">
@@ -397,7 +397,9 @@
                                     <td>{{ ((item?.sRemarks) ? item.sRemarks : '' ) | translate}}</td>
                                     <td>{{item.nAmount || 0}}</td>
                                     <td *ngIf="paymentEditMode">
-                                        <input class="form-control" type="number" [(ngModel)]="item.nNewAmount" (ngModelChange)="reCalculateTotal()">
+                                        <div *ngIf="!item.bIgnore">
+                                            <input class="form-control" type="number" [(ngModel)]="item.nNewAmount" (ngModelChange)="reCalculateTotal()">
+                                        </div>
                                     </td>
                                 </tr>
                                 <ng-container *ngIf="paymentEditMode">
@@ -412,6 +414,7 @@
                                             </div>
                                         </td>
                                         <td></td>
+                                        <td></td>
                                         <td class="d-flex align-items-center">
                                             <div>
                                                 <input class="form-control" type="number" [(ngModel)]="oPayment.nAmount"
@@ -425,7 +428,7 @@
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td colspan="3" class="text-start">
+                                        <td colspan="4" class="text-start">
                                             <span class="cursor-pointer text-gray-800" (click)="addRow()"> +
                                                 {{ "CLICK_HERE_TO_ADD_MORE" | translate}}</span>
                                         </td>
