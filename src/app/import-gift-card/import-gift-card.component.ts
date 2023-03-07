@@ -14,11 +14,16 @@ export class ImportGiftCardComponent implements OnInit {
   stepperIndex: any = 0;
   parsedGiftCardData: Array<any> = [];
   giftCardDetailsForm: any;
-  // updateTemplateForm: any;
+  updateTemplateForm: any;
   importInprogress: boolean = false;
   businessDetails: any = {};
   location: any = {};
   stepperInstatnce: any;
+  allFields: any = {
+    first: [],
+    last: [],
+    all: []
+  };
   @ViewChild('stepperContainer', { read: ViewContainerRef }) stepperContainer!: ViewContainerRef;
 
   constructor(
@@ -40,7 +45,6 @@ export class ImportGiftCardComponent implements OnInit {
 
   public moveToStep(step: any) {
     if (step == 'next') {
-      console.log('parsedGiftCardDataChange: ', this.parsedGiftCardData);
       this.stepperInstatnce.goNext();
     } else if (step == 'previous') {
       this.stepperInstatnce.goPrev();
@@ -58,8 +62,8 @@ export class ImportGiftCardComponent implements OnInit {
       aGiftCard: this.parsedGiftCardData,
       sDefaultLanguage: localStorage.getItem('language') || 'n;'
     };
-
-    this.apiService.postNew('cashregistry', '/api/v1/gift-card/import', data).subscribe((result: any) => {
+    console.log('importGiftCard: ', data);
+    this.apiService.postNew('cashregistry', '/api/v1/transaction/gift-card/import', data).subscribe((result: any) => {
       this.importInprogress = false;
     }, (error) => {
       console.error(error);
