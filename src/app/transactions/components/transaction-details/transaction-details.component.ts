@@ -17,8 +17,6 @@ import { Observable } from 'rxjs';
 import { ToastService } from 'src/app/shared/components/toast';
 import * as JsBarcode from 'jsbarcode';
 import { TillService } from 'src/app/shared/service/till.service';
-import { ProductDetailPageModule } from 'productDetailPage/ProductDetailPageModule';
-import { ProductDetailPageComponent } from 'productDetailPage/ProductDetailPageModule';
 import { TranslateService } from '@ngx-translate/core';
 const moment = (_moment as any).default ? (_moment as any).default : _moment;
 // import { faMagnifyingGlassPlus } from '@fortawesome/free-solid-svg-icons';
