@@ -183,42 +183,7 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
     this.generatePDF(print);
   }
   openProductInfo(product: any) {
-   
-    console.log(product);
-    const oBody = {
-      supplier: product.iSupplierId,
-      iBusinessProductId:product.iBusinessProductId,
-      iBusinessId: this.businessDetails._id,
-      oOrder: {
-        isAssortment: true,
-      },
-      data: {
-        oBusinessProduct: {
-          _id: product.iBusinessProductId
-        },
-      },
-      // isEditable: true
-    };
-    console.log("---------soBody");
-    console.log(oBody);
-    // this.router.navigateByUrl('/business/assortment/' + product._id, {
-    //   replaceUrl: false,
-    // })
-    this.compiler?.compileModuleAsync(ProductDetailPageModule).then(moduleFactory => {
-      const moduleRef: NgModuleRef<typeof ProductDetailPageModule> = moduleFactory.create(this.injector);
-      const componentFactory = moduleRef.instance.resolveComponent();
-
-      //console.log("componentFactory");
-      //console.log(componentFactory.componentType);
-   
-    this.dialogService.openModal(componentFactory.componentType, { context: { initialData: oBody }, cssClass: 'w-fullscreen mt--5', hasBackdrop: true, closeOnBackdropClick: true, closeOnEsc: true })
-      .instance.close.subscribe(
-        data => {
-
-          console.log(data);
-         
-        });
-      })
+    
   }
 
   // loadDynamicComponent(product: any) {

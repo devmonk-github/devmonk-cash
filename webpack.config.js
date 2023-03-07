@@ -223,28 +223,12 @@ module.exports = {
     //   shared: share(sharedLibrary)
     // }),
     new ModuleFederationPlugin({
-      name: "importGiftCardModule",
+      name: "ImportGiftCardModule",
       filename: "import-gift-card.js",
       exposes: {
         './ImportGiftCardModule': './src/app/import-gift-card/import-gift-card.module.ts',
       },
       shared: share(sharedLibrary)
-    }),
-    new ModuleFederationPlugin({
-
-      // For hosts (please adjust)
-      remotes: {
-        "productDetailPage": "productDetailPage@http://localhost:3001/api/v1/webpack/product/product-detail-page.js",
-      },
-      shared: share({
-        "@angular/core": { singleton: true, requiredVersion: 'auto' },
-        "@angular/common": { singleton: true, requiredVersion: 'auto' },
-        "@angular/common/http": { singleton: true, requiredVersion: 'auto' },
-        "@angular/router": { singleton: true, requiredVersion: 'auto' },
-        "@ngx-translate/core": { singleton: true, requiredVersion: 'auto' },
-
-        ...sharedMappings.getDescriptors()
-      })
     }),
     sharedMappings.getPlugin()
   ],
