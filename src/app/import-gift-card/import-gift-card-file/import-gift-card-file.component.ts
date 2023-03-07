@@ -21,7 +21,7 @@ export class GiftCardFileImportComponent implements OnInit {
   @Output() parsedGiftCardDataChange: EventEmitter<Array<any>> = new EventEmitter<Array<any>>();
   @Output() moveToStep: EventEmitter<any> = new EventEmitter();
   @Input() allFields: any;
-  
+  @Input() referenceObj: any;
   faTimes = faTimes;
 
   constructor(

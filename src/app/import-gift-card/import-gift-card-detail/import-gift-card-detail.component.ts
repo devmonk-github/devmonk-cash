@@ -30,6 +30,72 @@ export class ImportGiftCardDetailComponent implements OnInit {
   language: string = 'nl';
   iBusinessId !: string | null;
 
+  aDefaultAttribute = [
+    {
+      eFormField: "input",
+      sColumnHeader: "CREATED_DATE",
+      sDataBaseFieldName: "dCreatedDate",
+      sName: "dCreatedDate",
+      aOptions: []
+    },
+    {
+      eFormField: "input",
+      sColumnHeader: "MATCHING_CODE",
+      sDataBaseFieldName: "nMatchingCode",
+      sName: "nMatchingCode",
+      aOptions: []
+    },
+    {
+      eFormField: "input",
+      sColumnHeader: "PRODUCT_NAME",
+      sDataBaseFieldName: "sProductName",
+      sName: "sProductName",
+      aOptions: []
+    },
+    {
+      eFormField: "input",
+      sColumnHeader: "BAG_NUMBER",
+      sDataBaseFieldName: "sBagNumber",
+      sName: "sBagNumber",
+      aOptions: []
+    },
+    {
+      eFormField: "input",
+      sColumnHeader: "DESCRIPTION",
+      sDataBaseFieldName: "sDescription",
+      sName: "sDescription",
+      aOptions: []
+    },
+    {
+      eFormField: "input",
+      sColumnHeader: "PRICE_INC_VAT",
+      sDataBaseFieldName: "nPriceIncVat",
+      sName: "nPriceIncVat",
+      aOptions: []
+    },
+    {
+      eFormField: "input",
+      sColumnHeader: "TAX",
+      sDataBaseFieldName: "nVatRate",
+      sName: "nVatRate",
+      aOptions: []
+    },
+    {
+      eFormField: "input",
+      sColumnHeader: "ESTIMATE_DATE",
+      sDataBaseFieldName: "dEstimatedDate",
+      sName: "dEstimatedDate",
+      aOptions: []
+    },
+    {
+      eFormField: "input",
+      sColumnHeader: "ACTIVITY_ITEM_STATUS",
+      sDataBaseFieldName: "eActivityItemStatus",
+      sName: "eActivityItemStatus",
+      aOptions: []
+    }
+  ]
+
   constructor(
     private apiService: ApiService,
     private translateService: TranslateService
@@ -44,6 +110,7 @@ export class ImportGiftCardDetailComponent implements OnInit {
   ngOnChanges(changes: SimpleChanges): void {
     if (this.parsedGiftCardData?.length) {
       this.headerOptions = [...Object.keys(this.parsedGiftCardData[0])];
+      console.log('this.headerOptions: ', this.headerOptions);
       this.headerOptions = this.headerOptions.sort();
       this.giftCardDetailsForm = {};
       this.updateTemplateForm = {};
@@ -68,19 +135,20 @@ export class ImportGiftCardDetailComponent implements OnInit {
 
   // Function for get dynamic field
   getDynamicFields(isResetAttributes: boolean) {
+    console.log('getDynamicFields: ', isResetAttributes)
     this.apiService.getNew('core', '/api/v1/properties/dynamic/list/' + this.iBusinessId).subscribe((result: any) => {
-      console.log('getDynamicFields: ', result?.data?.length);
+      // console.log('getDynamicFields: ', result?.data);
       if (result?.data?.length) {
         result.data = this.sortTheProperty(result.data);
-        this.allFields['all'] = result.data;
+        // this.allFields['all'] = result.data;
+        this.allFields['all'] = this.aDefaultAttribute;
         if (isResetAttributes) {
           this.giftCardDetailsForm = {};
           this.updateTemplateForm = {};
         }
-        this.allFields['all'].filter((field: any) => {
+        this.allFields['all'].map((field: any) => {
           const index = this.headerOptions.indexOf(field.sColumnHeader);
           if (index > -1) {
-            // console.log('sColumnHeader: ', index, field.sColumnHeader);
             this.giftCardDetailsForm[field.sColumnHeader] = field.sColumnHeader;
             if (!this.referenceObj) this.referenceObj = {};
             this.referenceObj[this.headerOptions[index]] = field.sDataBaseFieldName;
@@ -147,12 +215,13 @@ export class ImportGiftCardDetailComponent implements OnInit {
   }
 
   setTemplate(option: any, obj: any) {
+    console.log('setTemplate: ', option, obj);
     /* for empty drop-down */
     if (obj === '') {
       this.giftCardDetailsForm[option] = '';
       return;
     };
-    console.log('setTemplate');
+    console.log('setTemplate 1: ', this.referenceObj);
     for (let i = 0; i < this.allFields.all.length; i++) {
       if (this.allFields.all[i].sColumnHeader === obj) {
         this.referenceObj[option] = this.allFields.all[i].sDataBaseFieldName;

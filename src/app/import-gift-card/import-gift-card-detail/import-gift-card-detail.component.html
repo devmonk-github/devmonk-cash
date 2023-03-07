@@ -31,7 +31,7 @@
         <div class="col-md-2 no-padding-left">
             {{option}}
         </div>
-        <div class="col-md-3 no-padding-left" *ngIf="allFields?.length">
+        <div class="col-md-3 no-padding-left" *ngIf="allFields?.all?.length">
             <select class="form-select" id="gift-card-attributes" [(ngModel)]="giftCardDetailsForm[option]"
                 (change)="setTemplate(option, giftCardDetailsForm[option])">
                 <option *ngFor="let obj of allFields.all" [value]="obj.sColumnHeader">{{ obj.sColumnHeader | translate}}

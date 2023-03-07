@@ -45,7 +45,7 @@
             <!-- Import file -->
             <div class="flex-column current" data-kt-stepper-element="content">
                 <import-gift-card-file [(parsedGiftCardData)]="parsedGiftCardData" (moveToStep)="moveToStep($event)"
-                    [(allFields)]="allFields">
+                    [(allFields)]="allFields" [(referenceObj)]="referenceObj">
                 </import-gift-card-file>
             </div>
             <!-- Import file -->
@@ -54,7 +54,7 @@
             <div class="flex-column" data-kt-stepper-element="content">
                 <import-gift-card-detail [parsedGiftCardData]="parsedGiftCardData"
                     [(giftCardDetailsForm)]="giftCardDetailsForm" [(updateTemplateForm)]="updateTemplateForm"
-                    (moveToStep)="moveToStep($event)" [(allFields)]="allFields">
+                    (moveToStep)="moveToStep($event)" [(allFields)]="allFields" [(referenceObj)]="referenceObj">
                 </import-gift-card-detail>
             </div>
             <!-- Gift Card Detail-->
