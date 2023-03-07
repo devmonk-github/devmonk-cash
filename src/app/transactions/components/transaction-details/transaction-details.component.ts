@@ -13,6 +13,7 @@ import * as JsBarcode from 'jsbarcode';
 import { TillService } from 'src/app/shared/service/till.service';
 import { TranslateService } from '@ngx-translate/core';
 import { TaxService } from 'src/app/shared/service/tax.service';
+
 const moment = (_moment as any).default ? (_moment as any).default : _moment;
 
 @Component({
@@ -62,6 +63,8 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   aNewSelectedPaymentMethods: any = [];
   payMethods: any;
 
+  translation: any = [];
+
   constructor(
     private viewContainerRef: ViewContainerRef,
     private apiService: ApiService,
@@ -78,6 +81,11 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   }
 
   async ngOnInit() {
+    let translationKey = ['SUCCESSFULLY_UPDATED', 'NO_DATE_SELECTED'];
+    this.translateService.get(translationKey).subscribe((res: any) => {
+      this.translation = res;
+    })
+    
     console.log(this.transaction);
 
     this.transaction.businessDetails = this.businessDetails;
@@ -111,7 +119,6 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
     this.getPrintSetting()
     this.mapEmployee();
   }
-  
 
   ngAfterContentInit(): void {
     this.cdr.detectChanges();
@@ -344,9 +351,11 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
         }
       }
     
-
     this.paymentEditMode = false;
     event.target.disabled = false;
+
+    this.toastService.show({ type: "success", text: this.translation['SUCCESSFULLY_UPDATED']  });
+    this.close(false);
   }
 
   addExpenses(data: any) {
