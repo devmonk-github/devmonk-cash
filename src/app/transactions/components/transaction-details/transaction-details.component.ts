@@ -1,4 +1,4 @@
-import { AfterContentInit, Compiler ,Injector , ChangeDetectorRef, Component, OnInit, ViewContainerRef } from '@angular/core';
+import { AfterContentInit, ChangeDetectorRef, Component, OnInit, ViewContainerRef } from '@angular/core';
 import { faTimes, faSync, faFileInvoice, faDownload, faReceipt, faAt, faUndoAlt, faClipboard, faTrashAlt, faPrint } from '@fortawesome/free-solid-svg-icons';
 import { TransactionItemsDetailsComponent } from 'src/app/shared/components/transaction-items-details/transaction-items-details.component';
 import { ApiService } from 'src/app/shared/service/api.service';
