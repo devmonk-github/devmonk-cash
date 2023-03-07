@@ -84,9 +84,10 @@
                 </ng-container>
             </div>
             <!-- CURRENT_CUSTOMER End -->
-            
-            <!-- SYSTEM_CUSTOMER Start -->
-            <div class="d-flex justify-content-between align-items-center">
+           
+            <!-- SYSTEM_CUSTOMER Start-->
+            <!-- WIP (uncomment this) -->
+            <!-- <div class="d-flex justify-content-between align-items-center">
                 <h3 class="fw-bolder mb-4">
                     <span>{{ "SYSTEM_CUSTOMER" | translate }} </span>
                 </h3>
@@ -95,7 +96,7 @@
                         {{ 'VIEW' | translate }}
                     </button>
                 </ng-container>
-            </div>
+            </div> -->
             <!-- SYSTEM_CUSTOMER End -->
 
             <div class="d-flex justify-content-between align-items-center">
@@ -254,7 +255,7 @@
                 </h3>
                 <div class="row fw-bold gy-1 d-flex flex-wrap py-5">
                     <div class="flex-equal me-5">
-                        <table class="table table-hover table-rounded table-striped border gy-7 gs-7" *ngIf="transaction?.bCompletedProcessing">
+                        <table class="table table-hover table-rounded table-striped border gy-3 gs-7" *ngIf="transaction?.bCompletedProcessing">
                             <thead>
                                 <tr class="fw-bold fs-6 text-gray-400">
                                     <td class="text-muted">{{'IMAGE' | translate}}</td>
@@ -331,10 +332,10 @@
                                             <ng-container *ngIf="from != 'activity-details' && !item?.bMigrate">
                                                 <div class="mx-2">
                                                     <div class="d-flex align-items-center">
-                                                        <button class="btn btn-primary btn-sm"
+                                                        <!-- <button class="btn btn-primary btn-sm"
                                                             (click)="showActivityItem(item,$event)">
                                                             <i class="fa fa-eye"></i>
-                                                        </button>
+                                                        </button> -->
                                                         <div *ngIf="item.bFetchingActivityItem"
                                                             class="spinner-border mx-2"></div>
                                                     </div>
@@ -367,7 +368,7 @@
                     <div *ngIf="loading || !transaction?.bCompletedProcessing" class="spinner-border mx-auto"></div>
                 </div>
             </div>
-            <div class="col-4">
+            <div [ngClass]="paymentEditMode ? 'col-8' : 'col-6'">
                 <h3 class="fw-bolder mb-3">
                     <span>{{ "PAYMENTS" | translate }}</span>
                     <ng-container *ngIf="transaction.aPayments?.length">
@@ -378,25 +379,27 @@
                 </h3>
                 <div class="row fw-bold gy-1 d-flex flex-wrap py-5">
                     <div class="flex-equal me-5">
-                        <table class="table table-hover table-rounded table-striped border gs-7">
+                        <table class="table table-hover table-rounded table-striped border gy-3 gs-7">
                             <thead>
                                 <tr class="fw-bold fs-6 text-gray-400">
                                     <td class="text-muted">{{'METHOD' | translate}}</td>
+                                    <td class="text-muted">{{'REMARKS' | translate}}</td>
                                     <td class="text-muted">{{'AMOUNT' | translate}}</td>
-                                    <th *ngIf="paymentEditMode" class="w-150px">{{ 'NEW_AMOUNT' | translate}}
-                                    </th>
+                                    <th *ngIf="paymentEditMode" class="w-150px">{{ 'NEW_AMOUNT' | translate}}</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr *ngFor="let item of transaction.aPayments">
                                     <td>
                                         {{item.sMethod}} <br/> 
-                                        <span *ngIf="item?.sRemarks"> {{item.sRemarks | translate}}<br/></span>
                                         ({{ item.dCreatedDate | date:'dd-MM-YYYY hh:mm' }})
                                     </td>
+                                    <td>{{ ((item?.sRemarks) ? item.sRemarks : '' ) | translate}}</td>
                                     <td>{{item.nAmount || 0}}</td>
                                     <td *ngIf="paymentEditMode">
-                                        <input class="form-control" type="number" [(ngModel)]="item.nNewAmount" (ngModelChange)="reCalculateTotal()">
+                                        <div *ngIf="!item.bIgnore">
+                                            <input class="form-control" type="number" [(ngModel)]="item.nNewAmount" (ngModelChange)="reCalculateTotal()">
+                                        </div>
                                     </td>
                                 </tr>
                                 <ng-container *ngIf="paymentEditMode">
@@ -411,20 +414,41 @@
                                             </div>
                                         </td>
                                         <td></td>
-                                        <td>
-                                            <input class="form-control" type="number" [(ngModel)]="oPayment.nAmount"
+                                        <td></td>
+                                        <td class="d-flex align-items-center">
+                                            <div>
+                                                <input class="form-control" type="number" [(ngModel)]="oPayment.nAmount"
                                                 (ngModelChange)="reCalculateTotal()">
+                                            </div>
+                                            <div>
+                                                <button class="btn p-0 ms-2" (click)="aNewSelectedPaymentMethods.splice(i,1)">
+                                                    <i class="fa fa-trash"></i>
+                                                </button>
+                                            </div>
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td colspan="3" class="text-start">
+                                        <td colspan="4" class="text-start">
                                             <span class="cursor-pointer text-gray-800" (click)="addRow()"> +
                                                 {{ "CLICK_HERE_TO_ADD_MORE" | translate}}</span>
                                         </td>
                                     </tr>
                                 </ng-container>
                             </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th class="text-end">{{ 'TOTAL' | translate}}</th>
+                                    <th class="w-150px">{{ transaction.nPaymentMethodTotal }}</th>
+                                    <ng-container *ngIf="paymentEditMode">
+                                        <th>
+                                            <span [ngClass]="transaction.nNewPaymentMethodTotal === transaction.nPaymentMethodTotal ? 'valid' : 'invalid' ">
+                                                {{ transaction.nNewPaymentMethodTotal }}</span>
+                                        </th>
+                                    </ng-container>
+                                </tr>
+                            </tfoot>
                         </table>
+                        <button *ngIf="paymentEditMode" class="btn btn-sm btn-primary" (click)="saveUpdatedPayments($event)" [disabled]="transaction.nNewPaymentMethodTotal !== transaction.nPaymentMethodTotal"> {{ "SAVE" | translate}}</button>
                     </div>
                 </div>
             </div>

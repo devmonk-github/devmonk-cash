@@ -77,8 +77,8 @@
                         <div class="d-flex flex-wrap py-5">
                             <div class="flex-equal me-5">
                                 <p><strong>{{ "CURRENT_CUSTOMER" | translate}}</strong></p>
-                                <p *ngIf="!oCurrentCustomer?.sFirstName && !oCurrentCustomer?.sLastName"> {{ "NO_CUSTOMER_ADDED" | translate}} </p>
-                                <ng-container *ngIf="oCurrentCustomer?.sFirstName || oCurrentCustomer?.sLastName">
+                               <p *ngIf="customer?.bCounter==true"> {{ "NO_CUSTOMER_ADDED" | translate}} </p>  <!-- WIP (replace) *ngIf="!oCurrentCustomer?.sFirstName && !oCurrentCustomer?.sLastName" -->
+                                <ng-container *ngIf="customer?.bCounter==false" > <!-- WIP (replace) *ngIf="oCurrentCustomer?.sFirstName || oCurrentCustomer?.sLastName" -->
                                     <div class="fs-6 ms-1">
                                         <div class="align-items-center">
                                             <div class="text-gray-600">{{oCurrentCustomer?.sFirstName || ''}} {{oCurrentCustomer?.sLastName
@@ -110,7 +110,8 @@
                                         </div>
                                     </div>
                                 </ng-container>
-                                <button class="btn btn-primary my-3 btn-custom" (click)="openCurrentCustomer(oCurrentCustomer)">{{'UPDATE_CURRENT_CUSTOMER'|translate}} </button>
+                                <!--WIP (uncomment this)-->
+                                <!-- <button class="btn btn-primary my-3 btn-custom" (click)="openCurrentCustomer(oCurrentCustomer)">{{'UPDATE_CURRENT_CUSTOMER'|translate}} </button> -->
                             </div>
                         </div>
                         <!-- Activity/Activity-Item/Transaction Customer Showing End -->

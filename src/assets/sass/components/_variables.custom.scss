@@ -30,7 +30,7 @@ $danger-light:    									if(isDarkMode(), #3A2434, #FFF5F8);
 $danger-inverse:  									#FFFFFF;
 
 // Warning
-$warning:       									if(isDarkMode(), #FFA800, #FFC700);
+$warning:       									if(isDarkMode(), #FFA800, #FFFFFF);
 $warning-active:    								if(isDarkMode(), #EE9D01, #F1BC00);
 $warning-light:    									if(isDarkMode(), #392F28, #FFF8DD);
 $warning-inverse:  									#FFFFFF;

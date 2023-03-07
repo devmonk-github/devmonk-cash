@@ -9,6 +9,44 @@
     </div>
     <div class="card-body">
         <app-pn-tabs class="tab-content" [activeTabIndex]="activeTabIndex">
+            <app-pn-tab tabTitle="{{ 'CUSTOM_GIFTCARDS' | translate}}">
+                <div class="dataTables_wrapper dt-bootstrap4 no-footer">
+                    <div class="row">
+                        <div class="col-6">
+                            {{"CARDNUMBER"| translate}}:
+                        </div>
+                        <div class="col-4">
+                            <input name="sGiftCardNumber" class="form-control" type="text" [(ngModel)]="sGiftCardNumber"
+                                #searchgift>
+                            <label for="sGiftCardNumber">{{"USE_YOUR_BARCODE_SCANNER_TO_SCAN_THIS" | translate}}</label>
+                        </div>
+                        <div class="col-2">
+                            <button class="btn btn-primary w-100" (click)="fetchGiftCard(sGiftCardNumber)"
+                                [disabled]="fetchInProgress">
+                                <span class="d-flex" *ngIf="fetchInProgress">
+                                    <fa-icon [icon]="faSpinner" class="fa-spin"></fa-icon>
+                                </span>
+                                <span *ngIf="!fetchInProgress">
+                                    {{ "FETCH" | translate}}
+                                </span></button>
+                        </div>
+                        <span *ngIf="giftCardDetails">{{"BALANCE_GIFTCARDS" | translate}}:
+                            {{giftCardDetails?.nPaidAmount}}</span>
+                    </div>
+                    <div class="row">
+                        <div class="col-6">
+                            {{"AMOUNT_TO_USE" | translate}}
+                        </div>
+                        <div class="col-6">
+                            <input name="" class="form-control" type="number"
+                                [disabled]="!giftCardDetails || 1 > giftCardDetails?.nPaidAmount" [(ngModel)]="nAmount">
+                            <span *ngIf="nAmount > giftCardDetails?.nPaidAmount"
+                                class="text-danger">{{"AMOUNT_ENTERED_IS_HIGHER_THAN_AVAILABLE_BALANCE" |
+                                translate}}.</span>
+                        </div>
+                    </div>
+                </div>
+            </app-pn-tab>
             <app-pn-tab tabTitle="{{ 'EXTERNAL_GIFTCARDS' | translate}}" (click)="nAmount = 0" #externalGiftcards>
                 <div class="dataTables_wrapper dt-bootstrap4 no-footer">
                     <!-- <img *ngIf="externalGiftCardDetails?.profileIconUrl" style="height: 35px; width: 35px;"
@@ -77,44 +115,6 @@
                             <input name="" class="form-control" type="text">
                         </div>
                     </div> -->
-                </div>
-            </app-pn-tab>
-            <app-pn-tab tabTitle="{{ 'CUSTOM_GIFTCARDS' | translate}}">
-                <div class="dataTables_wrapper dt-bootstrap4 no-footer">
-                    <div class="row">
-                        <div class="col-6">
-                            {{"CARDNUMBER"| translate}}:
-                        </div>
-                        <div class="col-4">
-                            <input name="sGiftCardNumber" class="form-control" type="text" [(ngModel)]="sGiftCardNumber"
-                                #searchgift>
-                            <label for="sGiftCardNumber">{{"USE_YOUR_BARCODE_SCANNER_TO_SCAN_THIS" | translate}}</label>
-                        </div>
-                        <div class="col-2">
-                            <button class="btn btn-primary w-100" (click)="fetchGiftCard(sGiftCardNumber)"
-                                [disabled]="fetchInProgress">
-                                <span class="d-flex" *ngIf="fetchInProgress">
-                                    <fa-icon [icon]="faSpinner" class="fa-spin"></fa-icon>
-                                </span>
-                                <span *ngIf="!fetchInProgress">
-                                    {{ "FETCH" | translate}}
-                                </span></button>
-                        </div>
-                        <span *ngIf="giftCardDetails">{{"BALANCE_GIFTCARDS" | translate}}:
-                            {{giftCardDetails?.nPaidAmount}}</span>
-                    </div>
-                    <div class="row">
-                        <div class="col-6">
-                            {{"AMOUNT_TO_USE" | translate}}
-                        </div>
-                        <div class="col-6">
-                            <input name="" class="form-control" type="number"
-                                [disabled]="!giftCardDetails || 1 > giftCardDetails?.nPaidAmount" [(ngModel)]="nAmount">
-                            <span *ngIf="nAmount > giftCardDetails?.nPaidAmount"
-                                class="text-danger">{{"AMOUNT_ENTERED_IS_HIGHER_THAN_AVAILABLE_BALANCE" |
-                                translate}}.</span>
-                        </div>
-                    </div>
                 </div>
             </app-pn-tab>
             <app-pn-tab tabTitle="{{ 'LOYALTY_POINTS' | translate}}" (click)="nAmount = 0" #loyaltyPointElem>
