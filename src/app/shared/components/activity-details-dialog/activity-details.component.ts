@@ -669,6 +669,7 @@ export class ActivityDetailsComponent implements OnInit {
   getTemplate(types: any) {
     const body = {
       iBusinessId: this.iBusinessId,
+      iLocationId: this.iLocationId,
       oFilterBy: {
         eType: types
       }
