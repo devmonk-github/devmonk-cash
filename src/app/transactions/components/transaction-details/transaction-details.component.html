@@ -370,6 +370,11 @@
             <div class="col-4">
                 <h3 class="fw-bolder mb-3">
                     <span>{{ "PAYMENTS" | translate }}</span>
+                    <ng-container *ngIf="transaction.aPayments?.length">
+                        <button class="btn" (click)="toggleEditPaymentMode()">
+                            <i class="fa fa-edit"></i>
+                        </button>
+                    </ng-container>
                 </h3>
                 <div class="row fw-bold gy-1 d-flex flex-wrap py-5">
                     <div class="flex-equal me-5">
@@ -378,6 +383,8 @@
                                 <tr class="fw-bold fs-6 text-gray-400">
                                     <td class="text-muted">{{'METHOD' | translate}}</td>
                                     <td class="text-muted">{{'AMOUNT' | translate}}</td>
+                                    <th *ngIf="paymentEditMode" class="w-150px">{{ 'NEW_AMOUNT' | translate}}
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -388,7 +395,34 @@
                                         ({{ item.dCreatedDate | date:'dd-MM-YYYY hh:mm' }})
                                     </td>
                                     <td>{{item.nAmount || 0}}</td>
+                                    <td *ngIf="paymentEditMode">
+                                        <input class="form-control" type="number" [(ngModel)]="item.nNewAmount" (ngModelChange)="reCalculateTotal()">
+                                    </td>
                                 </tr>
+                                <ng-container *ngIf="paymentEditMode">
+                                    <tr *ngFor="let oPayment of aNewSelectedPaymentMethods; let i = index">
+                                        <td>
+                                            <div>
+                                                <ng-select [(ngModel)]="aNewSelectedPaymentMethods[i]" [clearable]="false">
+                                                    <ng-option [value]="option" *ngFor="let option of payMethods">
+                                                        {{ option.sName | translate }}
+                                                    </ng-option>
+                                                </ng-select>
+                                            </div>
+                                        </td>
+                                        <td></td>
+                                        <td>
+                                            <input class="form-control" type="number" [(ngModel)]="oPayment.nAmount"
+                                                (ngModelChange)="reCalculateTotal()">
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="3" class="text-start">
+                                            <span class="cursor-pointer text-gray-800" (click)="addRow()"> +
+                                                {{ "CLICK_HERE_TO_ADD_MORE" | translate}}</span>
+                                        </td>
+                                    </tr>
+                                </ng-container>
                             </tbody>
                         </table>
                     </div>
