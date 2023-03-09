@@ -80,6 +80,10 @@ const routes: Routes = [
     path: 'gift-card',
     loadChildren: () => import('./import-gift-card/import-gift-card.module').then(module => module.ImportGiftCardModule)
   },
+  {
+    path: 'repair-order',
+    loadChildren: () => import('./import-repair-order/import-repair-order.module').then(module => module.ImportRepairOrderModule)
+  },
 ];
 
 @NgModule({

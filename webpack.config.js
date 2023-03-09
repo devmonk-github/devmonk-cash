@@ -230,6 +230,14 @@ module.exports = {
       },
       shared: share(sharedLibrary)
     }),
+    new ModuleFederationPlugin({
+      name: "ImportRepairOrderModule",
+      filename: "import-repair-order.js",
+      exposes: {
+        './ImportRepairOrderModule': './src/app/import-repair-order/import-repair-order.module.ts',
+      },
+      shared: share(sharedLibrary)
+    }),
     sharedMappings.getPlugin()
   ],
 };

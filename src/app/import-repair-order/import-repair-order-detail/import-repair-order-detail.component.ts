@@ -1,22 +1,22 @@
 import { Component, EventEmitter, Input, OnInit, Output, SimpleChanges } from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
 import { faSync, faTimes } from '@fortawesome/free-solid-svg-icons';
-import { ImportGiftCardService } from 'src/app/shared/service/import-gift-card.service';
+import { TranslateService } from '@ngx-translate/core';
+import { ImportRepairOrderService } from 'src/app/shared/service/import-repair-order.service';
 
 @Component({
-  selector: 'import-gift-card-detail',
-  templateUrl: './import-gift-card-detail.component.html',
-  styleUrls: ['./import-gift-card-detail.component.sass']
+  selector: 'import-repair-order-detail',
+  templateUrl: './import-repair-order-detail.component.html',
+  styleUrls: ['./import-repair-order-detail.component.sass']
 })
-export class ImportGiftCardDetailComponent implements OnInit {
+export class ImportRepairOrderDetailComponent implements OnInit {
 
-  @Input() giftCardDetailsForm: any;
+  @Input() repairOrderDetailsForm: any;
   @Input() referenceObj: any;
-  @Output() giftCardDetailsFormChange: EventEmitter<any> = new EventEmitter();
+  @Output() repairOrderDetailsFormChange: EventEmitter<any> = new EventEmitter();
   @Output() referenceObjChange: EventEmitter<any> = new EventEmitter();
   @Input() updateTemplateForm: any;
   @Output() updateTemplateFormChange: EventEmitter<any> = new EventEmitter();
-  @Input() parsedGiftCardData: any;
+  @Input() parsedRepairOrderData: any;
   @Output() moveToStep: EventEmitter<any> = new EventEmitter();
   @Input() allFields: any;
   faTimes = faTimes;
@@ -33,22 +33,22 @@ export class ImportGiftCardDetailComponent implements OnInit {
 
   constructor(
     private translateService: TranslateService,
-    private importGiftCardService: ImportGiftCardService
+    private ImportRepairOrderService: ImportRepairOrderService
   ) { }
 
   ngOnInit(): void {
     const translations = ['YOU_HAVE_NOT_SET_SOME_OF_THE_ATTRIBUTES_EXISTS_IN_FILE']
     this.translateService.get(translations).subscribe(result => this.translations = result);
     this.iBusinessId = localStorage.getItem('currentBusiness') ? localStorage.getItem('currentBusiness') : '';
-    this.aDefaultAttribute = this.importGiftCardService.defaultImportGiftCardAttribute();
+    this.aDefaultAttribute = this.ImportRepairOrderService.defaultImportRepairOrderAttribute();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (this.parsedGiftCardData?.length) {
-      this.headerOptions = [...Object.keys(this.parsedGiftCardData[0])];
+    if (this.parsedRepairOrderData?.length) {
+      this.headerOptions = [...Object.keys(this.parsedRepairOrderData[0])];
       console.log('this.headerOptions: ', this.headerOptions);
       this.headerOptions = this.headerOptions.sort();
-      this.giftCardDetailsForm = {};
+      this.repairOrderDetailsForm = {};
       this.updateTemplateForm = {};
       this.getDynamicFields(false);
     }
@@ -75,13 +75,13 @@ export class ImportGiftCardDetailComponent implements OnInit {
 
     this.allFields['all'] = this.aDefaultAttribute;
     if (isResetAttributes) {
-      this.giftCardDetailsForm = {};
+      this.repairOrderDetailsForm = {};
       this.updateTemplateForm = {};
     }
     this.allFields['all'].map((field: any) => {
       const index = this.headerOptions.indexOf(field.sColumnHeader);
       if (index > -1) {
-        this.giftCardDetailsForm[field.sColumnHeader] = field.sColumnHeader;
+        this.repairOrderDetailsForm[field.sColumnHeader] = field.sColumnHeader;
         if (!this.referenceObj) this.referenceObj = {};
         this.referenceObj[this.headerOptions[index]] = field.sDataBaseFieldName;
         this.updateTemplateForm[field.sColumnHeader] = 'overwrite'
@@ -98,8 +98,8 @@ export class ImportGiftCardDetailComponent implements OnInit {
     })
 
     this.headerOptions.filter((option: any) => {
-      if (!this.giftCardDetailsForm[option]) {
-        this.giftCardDetailsForm[option] = "";
+      if (!this.repairOrderDetailsForm[option]) {
+        this.repairOrderDetailsForm[option] = "";
       }
     });
   }
@@ -129,24 +129,24 @@ export class ImportGiftCardDetailComponent implements OnInit {
   // Function for go to step(next / previous)
   gotoStep(step: string) {
     console.log('gotoStep: ', step);
-    if (Object.keys(this.giftCardDetailsForm).length != this.headerOptions.length) {
+    if (Object.keys(this.repairOrderDetailsForm).length != this.headerOptions.length) {
       // this.toasterService.show({ type: 'warning', text: this.translations['YOU_HAVE_NOT_SET_SOME_OF_THE_ATTRIBUTES_EXISTS_IN_FILE'] });
     }
     this.updateTemplateFormChange.emit(this.updateTemplateForm);
-    this.giftCardDetailsFormChange.emit(this.giftCardDetailsForm);
+    this.repairOrderDetailsFormChange.emit(this.repairOrderDetailsForm);
     this.moveToStep.emit(step);
   }
 
-  // Function for validate gift-card detail header linking
-  validateGiftCardHeaderLink(): boolean {
-    return !Object.keys(this.giftCardDetailsForm).length;
+  // Function for validate repair-order detail header linking
+  validateRepairOrderHeaderLink(): boolean {
+    return !Object.keys(this.repairOrderDetailsForm).length;
   }
 
   setTemplate(option: any, obj: any) {
     console.log('setTemplate: ', option, obj);
     /* for empty drop-down */
     if (obj === '') {
-      this.giftCardDetailsForm[option] = '';
+      this.repairOrderDetailsForm[option] = '';
       return;
     };
     console.log('setTemplate 1: ', this.referenceObj);
@@ -155,6 +155,7 @@ export class ImportGiftCardDetailComponent implements OnInit {
         this.referenceObj[option] = this.allFields.all[i].sDataBaseFieldName;
       }
     }
-    this.updateTemplateForm[this.giftCardDetailsForm[option]] = "overwrite";
+    this.updateTemplateForm[this.repairOrderDetailsForm[option]] = "overwrite";
   }
+
 }

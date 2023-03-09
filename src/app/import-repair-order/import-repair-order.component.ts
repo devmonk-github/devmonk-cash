@@ -1,19 +1,18 @@
 import { Component, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
 import { ApiService } from '../shared/service/api.service';
-import { ImportGiftCardService } from '../shared/service/import-gift-card.service';
+import { ImportRepairOrderService } from '../shared/service/import-repair-order.service';
 import { StepperComponent } from '../shared/_layout/components/common';
 
 @Component({
-  selector: 'import-gift-card',
-  templateUrl: './import-gift-card.component.html',
-  styleUrls: ['./import-gift-card.component.sass']
+  selector: 'import-repair-order',
+  templateUrl: './import-repair-order.component.html',
+  styleUrls: ['./import-repair-order.component.sass']
 })
-
-export class ImportGiftCardComponent implements OnInit {
+export class ImportRepairOrderComponent implements OnInit {
 
   stepperIndex: any = 0;
-  parsedGiftCardData: Array<any> = [];
-  giftCardDetailsForm: any;
+  parsedRepairOrderData: Array<any> = [];
+  repairOrderDetailsForm: any;
   updateTemplateForm: any;
   importInprogress: boolean = false;
   businessDetails: any = {};
@@ -31,7 +30,7 @@ export class ImportGiftCardComponent implements OnInit {
 
   constructor(
     private apiService: ApiService,
-    private importGiftCardService: ImportGiftCardService
+    private ImportRepairOrderService: ImportRepairOrderService
   ) { }
 
   ngOnInit(): void {
@@ -54,16 +53,16 @@ export class ImportGiftCardComponent implements OnInit {
     } else if (step == 'previous') {
       this.stepperInstance.goPrev();
     } else if (step == 'import') {
-      this.importGiftCard()
+      this.importRepairOrder()
       this.stepperInstance.goNext();
     }
   }
 
-  importGiftCard() {
+  importRepairOrder() {
     try {
       this.importInprogress = true;
       const oData = {
-        parsedGiftCardData: this.parsedGiftCardData,
+        parsedRepairOrderData: this.parsedRepairOrderData,
         referenceObj: this.referenceObj,
         iBusinessId: this.businessDetails._id,
         iLocationId: this.location._id,
@@ -71,13 +70,13 @@ export class ImportGiftCardComponent implements OnInit {
         iEmployeeId: this.iEmployeeId
       }
 
-      const { parsedGiftCardData, oBody } = this.importGiftCardService.mapTheImportGiftCardBody(oData);
-      this.parsedGiftCardData = parsedGiftCardData;
+      const { parsedRepairOrderData, oBody } = this.ImportRepairOrderService.mapTheImportRepairOrderBody(oData);
+      this.parsedRepairOrderData = parsedRepairOrderData;
       const aTransactionItem = JSON.parse(JSON.stringify(oBody?.transactionItems));
       for (let i = 0; i < aTransactionItem?.length; i++) {
         oBody.transactionItems = [aTransactionItem[i]];
-        oBody.bImportGiftCard = true;
-        oBody.payments = this.importGiftCardService.mapPayment(aTransactionItem[i]);
+        oBody.bImportRepairOrder = true;
+        oBody.payments = this.ImportRepairOrderService.mapPayment(aTransactionItem[i]);
         this.apiService.postNew('cashregistry', '/api/v1/till/transaction', oBody).subscribe((result: any) => {
           this.importInprogress = false;
         }, (error) => {
@@ -85,7 +84,7 @@ export class ImportGiftCardComponent implements OnInit {
         });
       }
     } catch (error) {
-      console.log('Import Gift card');
+      console.log('Import Repair Order');
     }
   }
 
