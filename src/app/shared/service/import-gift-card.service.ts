@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 
 @Injectable({
   providedIn: 'root'
@@ -7,7 +8,7 @@ import { Injectable } from '@angular/core';
 export class ImportGiftCardService {
 
   constructor(
-
+    private translateService: TranslateService
   ) { }
 
   defaultImportGiftCardAttribute() {
@@ -83,7 +84,6 @@ export class ImportGiftCardService {
 
     /* mapping the file's field with database name */
     parsedGiftCardData = parsedGiftCardData.map((oGiftCard: any) => {
-      console.log('oGiftCard: ', oGiftCard, Object.keys(oGiftCard).length);
       if (Object.keys(oGiftCard).length) {
         for (let [key, value] of Object.entries(oGiftCard)) {
           oGiftCard[referenceObj[key]] = value;
@@ -94,6 +94,8 @@ export class ImportGiftCardService {
     })
 
     if (!parsedGiftCardData?.length) return [];
+
+    const sProductName = this.translateService.instant('GIFTCARD');
 
     /* processing Transaction-Item */
     const aTransactionItem = [];
@@ -114,6 +116,7 @@ export class ImportGiftCardService {
         nEstimatedTotal: oData?.nPriceIncVat,
         nPaymentAmount: oData?.nPriceIncVat,
         nRevenueAmount: oData?.nPriceIncVat,
+        nPaidAmount: oData?.nPriceIncVat - (oData?.nRemainingValue || 0),
         /* calculated */
         nPurchasePrice: nPurchasePrice,
         nProfit: oData?.nPriceIncVat - nPurchasePrice,
@@ -124,7 +127,7 @@ export class ImportGiftCardService {
         iCustomerId: '',
         oCustomer: '',
         /* default */
-        sProductName: "Tegoedbon",
+        sProductName: sProductName,
         eStatus: "y",
         aImage: [],
         nMargin: 1,
