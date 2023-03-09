@@ -17,63 +17,32 @@ export class ImportGiftCardService {
         sColumnHeader: "CREATED_DATE",
         sDataBaseFieldName: "dCreatedDate",
         sName: "dCreatedDate",
-        aOptions: []
       },
       {
         sColumnHeader: "MATCHING_CODE",
         sDataBaseFieldName: "nMatchingCode",
         sName: "nMatchingCode",
-        aOptions: []
       },
       {
         sColumnHeader: "REMAINING_VALUE",
         sDataBaseFieldName: "nRemainingValue",
         sName: "nRemainingValue",
-        aOptions: []
       },
       {
         sColumnHeader: "GIFT_CARD_NUMBER",
         sDataBaseFieldName: "sGiftCardNumber",
         sName: "sGiftCardNumber",
-        aOptions: []
       },
       {
         sColumnHeader: "PRICE_INC_VAT",
         sDataBaseFieldName: "nPriceIncVat",
         sName: "nPriceIncVat",
-        aOptions: []
       },
       {
         sColumnHeader: "TAX",
         sDataBaseFieldName: "nVatRate",
         sName: "nVatRate",
-        aOptions: []
       },
-      // {
-      //   sColumnHeader: "BAG_NUMBER",
-      //   sDataBaseFieldName: "sBagNumber",
-      //   sName: "sBagNumber",
-      //   aOptions: []
-      // },
-      // {
-      //   sColumnHeader: "DESCRIPTION",
-      //   sDataBaseFieldName: "sDescription",
-      //   sName: "sDescription",
-      //   aOptions: []
-      // },
-
-      // {
-      //   sColumnHeader: "ESTIMATE_DATE",
-      //   sDataBaseFieldName: "dEstimatedDate",
-      //   sName: "dEstimatedDate",
-      //   aOptions: []
-      // },
-      // {
-      //   sColumnHeader: "ACTIVITY_ITEM_STATUS",
-      //   sDataBaseFieldName: "eActivityItemStatus",
-      //   sName: "eActivityItemStatus",
-      //   aOptions: []
-      // }
     ]
 
     return aDefaultAttribute;

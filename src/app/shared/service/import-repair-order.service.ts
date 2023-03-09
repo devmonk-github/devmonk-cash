@@ -16,57 +16,42 @@ export class ImportRepairOrderService {
         sColumnHeader: "CREATED_DATE",
         sDataBaseFieldName: "dCreatedDate",
         sName: "dCreatedDate",
-        aOptions: []
       },
       {
         sColumnHeader: "MATCHING_CODE",
         sDataBaseFieldName: "nMatchingCode",
         sName: "nMatchingCode",
-        aOptions: []
       },
       {
         sColumnHeader: "REMAINING_VALUE",
         sDataBaseFieldName: "nRemainingValue",
         sName: "nRemainingValue",
-        aOptions: []
       },
       {
         sColumnHeader: "PRICE_INC_VAT",
         sDataBaseFieldName: "nPriceIncVat",
         sName: "nPriceIncVat",
-        aOptions: []
+      },
+      {
+        sColumnHeader: "TYPE",
+        sDataBaseFieldName: "oType.eKind",
+        sName: "eKind",
+      },
+      {
+        sColumnHeader: "ACTIVITY_ITEM_STATUS",
+        sDataBaseFieldName: "eActivityItemStatus",
+        sName: "eActivityItemStatus",
+      },
+      {
+        sColumnHeader: "BAG_NUMBER",
+        sDataBaseFieldName: "sBagNumber",
+        sName: "sBagNumber",
       },
       {
         sColumnHeader: "TAX",
         sDataBaseFieldName: "nVatRate",
         sName: "nVatRate",
-        aOptions: []
       },
-      // {
-      //   sColumnHeader: "BAG_NUMBER",
-      //   sDataBaseFieldName: "sBagNumber",
-      //   sName: "sBagNumber",
-      //   aOptions: []
-      // },
-      // {
-      //   sColumnHeader: "DESCRIPTION",
-      //   sDataBaseFieldName: "sDescription",
-      //   sName: "sDescription",
-      //   aOptions: []
-      // },
-
-      // {
-      //   sColumnHeader: "ESTIMATE_DATE",
-      //   sDataBaseFieldName: "dEstimatedDate",
-      //   sName: "dEstimatedDate",
-      //   aOptions: []
-      // },
-      // {
-      //   sColumnHeader: "ACTIVITY_ITEM_STATUS",
-      //   sDataBaseFieldName: "eActivityItemStatus",
-      //   sName: "eActivityItemStatus",
-      //   aOptions: []
-      // }
     ]
 
     return aDefaultAttribute;
@@ -101,6 +86,7 @@ export class ImportRepairOrderService {
         iEmployeeId: iEmployeeId,
         iLocationId: iLocationId,
         /* File */
+        sBagNumber: oData?.sBagNumber,
         nPriceIncVat: oData?.nPriceIncVat,
         nVatRate: oData?.nVatRate,
         nMatchingCode: oData?.nMatchingCode ? parseFloat(oData?.nMatchingCode) : undefined,
@@ -182,6 +168,7 @@ export class ImportRepairOrderService {
       transactionItems: aTransactionItem,
       sDefaultLanguage: localStorage.getItem('language') || 'nl',
       bImported: true,
+      bImportRepairOrder: true
     };
 
     console.log('importRepairOrder: ', oBody);

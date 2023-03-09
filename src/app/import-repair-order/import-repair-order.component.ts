@@ -75,7 +75,7 @@ export class ImportRepairOrderComponent implements OnInit {
       const aTransactionItem = JSON.parse(JSON.stringify(oBody?.transactionItems));
       for (let i = 0; i < aTransactionItem?.length; i++) {
         oBody.transactionItems = [aTransactionItem[i]];
-        oBody.bImportRepairOrder = true;
+        oBody.eType = aTransactionItem[i].eType;
         oBody.payments = this.ImportRepairOrderService.mapPayment(aTransactionItem[i]);
         this.apiService.postNew('cashregistry', '/api/v1/till/transaction', oBody).subscribe((result: any) => {
           this.importInprogress = false;
