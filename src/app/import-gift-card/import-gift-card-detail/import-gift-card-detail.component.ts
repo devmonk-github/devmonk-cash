@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output, SimpleChanges } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { ApiService } from 'src/app/shared/service/api.service';
 import { faSync, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { ImportGiftCardService } from 'src/app/shared/service/import-gift-card.service';
 
 @Component({
   selector: 'import-gift-card-detail',
@@ -29,82 +29,18 @@ export class ImportGiftCardDetailComponent implements OnInit {
   translations: any = [];
   language: string = 'nl';
   iBusinessId !: string | null;
-
-  aDefaultAttribute = [
-    {
-      eFormField: "input",
-      sColumnHeader: "CREATED_DATE",
-      sDataBaseFieldName: "dCreatedDate",
-      sName: "dCreatedDate",
-      aOptions: []
-    },
-    {
-      eFormField: "input",
-      sColumnHeader: "MATCHING_CODE",
-      sDataBaseFieldName: "nMatchingCode",
-      sName: "nMatchingCode",
-      aOptions: []
-    },
-    {
-      eFormField: "input",
-      sColumnHeader: "PRODUCT_NAME",
-      sDataBaseFieldName: "sProductName",
-      sName: "sProductName",
-      aOptions: []
-    },
-    {
-      eFormField: "input",
-      sColumnHeader: "BAG_NUMBER",
-      sDataBaseFieldName: "sBagNumber",
-      sName: "sBagNumber",
-      aOptions: []
-    },
-    {
-      eFormField: "input",
-      sColumnHeader: "DESCRIPTION",
-      sDataBaseFieldName: "sDescription",
-      sName: "sDescription",
-      aOptions: []
-    },
-    {
-      eFormField: "input",
-      sColumnHeader: "PRICE_INC_VAT",
-      sDataBaseFieldName: "nPriceIncVat",
-      sName: "nPriceIncVat",
-      aOptions: []
-    },
-    {
-      eFormField: "input",
-      sColumnHeader: "TAX",
-      sDataBaseFieldName: "nVatRate",
-      sName: "nVatRate",
-      aOptions: []
-    },
-    {
-      eFormField: "input",
-      sColumnHeader: "ESTIMATE_DATE",
-      sDataBaseFieldName: "dEstimatedDate",
-      sName: "dEstimatedDate",
-      aOptions: []
-    },
-    {
-      eFormField: "input",
-      sColumnHeader: "ACTIVITY_ITEM_STATUS",
-      sDataBaseFieldName: "eActivityItemStatus",
-      sName: "eActivityItemStatus",
-      aOptions: []
-    }
-  ]
+  aDefaultAttribute: any = [];
 
   constructor(
-    private apiService: ApiService,
-    private translateService: TranslateService
+    private translateService: TranslateService,
+    private importGiftCardService: ImportGiftCardService
   ) { }
 
   ngOnInit(): void {
     const translations = ['YOU_HAVE_NOT_SET_SOME_OF_THE_ATTRIBUTES_EXISTS_IN_FILE']
     this.translateService.get(translations).subscribe(result => this.translations = result);
     this.iBusinessId = localStorage.getItem('currentBusiness') ? localStorage.getItem('currentBusiness') : '';
+    this.aDefaultAttribute = this.importGiftCardService.defaultImportGiftCardAttribute();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -136,44 +72,46 @@ export class ImportGiftCardDetailComponent implements OnInit {
   // Function for get dynamic field
   getDynamicFields(isResetAttributes: boolean) {
     console.log('getDynamicFields: ', isResetAttributes)
-    this.apiService.getNew('core', '/api/v1/properties/dynamic/list/' + this.iBusinessId).subscribe((result: any) => {
-      // console.log('getDynamicFields: ', result?.data);
-      if (result?.data?.length) {
-        result.data = this.sortTheProperty(result.data);
-        // this.allFields['all'] = result.data;
-        this.allFields['all'] = this.aDefaultAttribute;
-        if (isResetAttributes) {
-          this.giftCardDetailsForm = {};
-          this.updateTemplateForm = {};
-        }
-        this.allFields['all'].map((field: any) => {
-          const index = this.headerOptions.indexOf(field.sColumnHeader);
-          if (index > -1) {
-            this.giftCardDetailsForm[field.sColumnHeader] = field.sColumnHeader;
-            if (!this.referenceObj) this.referenceObj = {};
-            this.referenceObj[this.headerOptions[index]] = field.sDataBaseFieldName;
-            this.updateTemplateForm[field.sColumnHeader] = 'overwrite'
-          }
-        });
 
-        /* For making, de-selection works in drop-down */
-        this.allFields['all'].unshift({
-          eFormField: "input",
-          sColumnHeader: "",
-          sDataBaseFieldName: "EMPTY",
-          sName: "EMPTY",
-          aOptions: []
-        })
-
-        this.headerOptions.filter((option: any) => {
-          if (!this.giftCardDetailsForm[option]) {
-            this.giftCardDetailsForm[option] = "";
-          }
-        });
+    this.allFields['all'] = this.aDefaultAttribute;
+    if (isResetAttributes) {
+      this.giftCardDetailsForm = {};
+      this.updateTemplateForm = {};
+    }
+    this.allFields['all'].map((field: any) => {
+      const index = this.headerOptions.indexOf(field.sColumnHeader);
+      if (index > -1) {
+        this.giftCardDetailsForm[field.sColumnHeader] = field.sColumnHeader;
+        if (!this.referenceObj) this.referenceObj = {};
+        this.referenceObj[this.headerOptions[index]] = field.sDataBaseFieldName;
+        this.updateTemplateForm[field.sColumnHeader] = 'overwrite'
       }
-    }, error => {
-      console.log("error :", error);
+    });
+
+    /* For making, de-selection works in drop-down */
+    this.allFields['all'].unshift({
+      eFormField: "input",
+      sColumnHeader: "",
+      sDataBaseFieldName: "EMPTY",
+      sName: "EMPTY",
+      aOptions: []
     })
+
+    this.headerOptions.filter((option: any) => {
+      if (!this.giftCardDetailsForm[option]) {
+        this.giftCardDetailsForm[option] = "";
+      }
+    });
+    // this.apiService.getNew('core', '/api/v1/properties/dynamic/list/' + this.iBusinessId).subscribe((result: any) => {
+    //   // console.log('getDynamicFields: ', result?.data);
+    //   if (result?.data?.length) {
+    //     result.data = this.sortTheProperty(result.data);
+    //     // this.allFields['all'] = result.data;
+
+    //   }
+    // }, error => {
+    //   console.log("error :", error);
+    // })
   }
 
 

@@ -588,6 +588,7 @@ export class TillService {
     });
     
     transaction.aTransactionItems.forEach((item: any) => {
+      item.eKind = item.oType.eKind;
       if (item?.related?.length) {
         item.related.forEach((relatedItem: any) => {
           if(relatedItem?.aPayments?.some((payment: any) => payment.sMethod === 'card')){
@@ -598,7 +599,7 @@ export class TillService {
           // item.nDiscount = relatedItem.nDiscount || 0;
           // item.bDiscountOnPercentage = relatedItem?.bDiscountOnPercentage || false;
 
-          if(!relatedItem.oType.bRefund) {
+          if(!relatedItem.oType?.bRefund) {
             if (relatedItem?.bDiscountOnPercentage) {
               item.nDiscountToShow = (item.oType.bRefund === true) ? 0 : this.getPercentOf(relatedItem.nPriceIncVat, relatedItem.nDiscount);
               totalDiscount += (item.oType.bRefund === true) ? 0 : item.nDiscountToShow;
@@ -722,7 +723,9 @@ export class TillService {
   }
 
   async updateSettings() {
-    this.settings.aBagNumbers = [...this.settings.aBagNumbers.filter((el: any) => el.iLocationId !== this.iLocationId), this.settings.currentLocation];
+    if (this.settings?.aBagNumbers?.length) {
+    this.settings.aBagNumbers = [...this.settings?.aBagNumbers.filter((el: any) => el.iLocationId !== this.iLocationId), this.settings.currentLocation];
+    }
     const body = {
       aBagNumbers: this.settings.aBagNumbers
     };

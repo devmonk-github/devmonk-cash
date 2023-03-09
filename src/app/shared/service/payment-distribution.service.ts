@@ -41,10 +41,13 @@ export class PaymentDistributionService {
       
       if (i.type === 'gold-purchase') i.amountToBePaid = -(i.amountToBePaid);
 
-      if (i.tType && i.tType === 'refund') i.amountToBePaid = -(i.prePaidAmount);
+      if (i.tType && i.tType === 'refund'){
+        i.amountToBePaid = (i?.new) ? -(i.price) : -(i.nRefundAmount);
+      } 
       
-      if (bTesting)  console.log('paymentAmount', i.paymentAmount)
+      if (bTesting)  console.log('46 paymentAmount', i.paymentAmount, 'amountToBePaid', i.amountToBePaid);
       if (i.paymentAmount > i.amountToBePaid) i.paymentAmount = i.amountToBePaid;
+      if (bTesting) console.log('48 paymentAmount', i.paymentAmount)
 
       
     });

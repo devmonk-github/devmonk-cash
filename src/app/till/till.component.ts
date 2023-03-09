@@ -146,9 +146,12 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // paymentChanged: Subject<any> = new Subject<any>();
   availableAmount: any;
-  nFinalAmount: number = 0;
-  nItemsTotalToBePaid: number = 0;
-  nTotalPayment: number = 0;
+  nFinalAmount = 0;
+  nItemsTotalToBePaid = 0;
+  nItemsTotalDiscount = 0;
+  nItemsTotalQuantity = 0;
+  nTotalPayment = 0;
+
   oStaticData: any;
 
   iBusinessId = localStorage.getItem('currentBusiness') || '';
@@ -359,6 +362,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
   updateAmountVariables() {
     this.nItemsTotalToBePaid = this.getTotals('price');
+    this.nItemsTotalDiscount = this.getTotals('discount');
+    this.nItemsTotalQuantity = this.getTotals('quantity');
     this.nTotalPayment = this.totalPrepayment();
     this.nFinalAmount = Math.abs(this.availableAmount - this.nItemsTotalToBePaid);
 
@@ -379,7 +384,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
         this.transactionItems.forEach((i) => {
           if (!i.isExclude) {
             if (i.tType === 'refund') {
-              result -= i.prePaidAmount;
+              i.nTotal = i.quantity * i.price;
+              result -= (i?.new) ? i.nTotal : i.nRefundAmount;
             } else {
               const price = (typeof i.price === 'string') ? i.price.replace(',', '.') : i.price;
               let discountPrice = i.bDiscountOnPercentage ? (price - (price * ((i.nDiscount || 0) / 100))) : (price - i.nDiscount);
