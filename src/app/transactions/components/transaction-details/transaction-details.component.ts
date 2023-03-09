@@ -65,6 +65,9 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   paymentEditMode = false;
   aNewSelectedPaymentMethods: any = [];
   payMethods: any;
+  bDayStateChecking = false;
+  bIsDayStateOpened = false;
+  bIsOpeningDayState = false;
 
   translation: any = [];
 
@@ -280,10 +283,43 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
     this.filterDuplicatePaymentMethods()
   }
 
-  toggleEditPaymentMode() {
+  async toggleEditPaymentMode() {
     this.paymentEditMode = !this.paymentEditMode;
-    // this.addRow();
-    if (!this.paymentEditMode) this.aNewSelectedPaymentMethods = [];
+    if (!this.bIsDayStateOpened) {
+      const oBody = {
+        iBusinessId: this.iBusinessId,
+        iLocationId: this.iLocationId,
+        iWorkstationId: this.iWorkstationId
+      }
+      this.bDayStateChecking = true;
+      const _result: any = await this.apiService.postNew('cashregistry', `/api/v1/statistics/day-closure/check`, oBody).toPromise();
+      if (_result?.data) {
+        this.bDayStateChecking = false;
+        this.bIsDayStateOpened = _result?.data?.bIsDayStateOpened;
+      }
+    } else {
+      if (!this.paymentEditMode) this.aNewSelectedPaymentMethods = [];
+    }
+  }
+
+  openDayState() {
+    const oBody = {
+      iBusinessId: this.iBusinessId,
+      iLocationId: this.iLocationId,
+      iWorkstationId: this.iWorkstationId
+    }
+    this.bIsOpeningDayState = true;
+    this.apiService.postNew('cashregistry', `/api/v1/statistics/open/day-state`, oBody).subscribe((result: any) => {
+      this.bIsOpeningDayState = false;
+      if (result?.message === 'success') {
+        this.bIsDayStateOpened = true;
+        this.paymentEditMode = true;
+        this.toastService.show({ type: 'success', text: `Day-state is open now` });
+      }
+    }, (error) => {
+      this.bIsOpeningDayState = false;
+      this.toastService.show({ type: 'warning', text: `Day-state is not open` });
+    })
   }
 
   reCalculateTotal() {
