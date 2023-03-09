@@ -26,12 +26,13 @@
             <div class="alert alert-warning" *ngIf="!bIsPreviousDayStateClosed">
               <p class="mb-0" style="font-size: 1.2rem;font-weight: bold;">
                 <span style="margin-right:1rem; font-weight:bolder">!</span>
-                {{ "THE_PREVIOUS" | translate }} {{ tillService.settings.sDayClosurePeriod}} {{"IS_NOT_CLOSED_YET" | translate }}
-                ({{ dOpenDate  | dateTranslate:"EEEE dd-MM-YYYY hh:mm:ss aaa"}})
+                {{ "THE_PREVIOUS" | translate }} {{ tillService.settings.sDayClosurePeriod}} {{"IS_NOT_CLOSED_YET" |
+                translate }}
+                ({{ dOpenDate | date:'EEEE, dd-MM-YYYY hh:mm:ss aaa':'GMT'}})
               </p>
               <a routerLink="../day-closure"><span class="badge btn btn-primary btnclose">{{
-                "CLOSE_DAYSTATE" |
-                translate}}</span></a>
+                  "CLOSE_DAYSTATE" |
+                  translate}}</span></a>
             </div>
           </div>
         </div>
@@ -195,30 +196,20 @@
                       <div style="display:inline-table;">
                         <!-- regular -->
                         <div class="accordion-item w-100 d-table-cell" till-product
-                          *ngIf="(item.type === 'regular' || item.type === 'reservation') && item.bProductLoaded" [item]="item" [taxes]="taxes"
-                          [disablePrepayment]="!availableAmount || availableAmount === 0"
+                          *ngIf="(item.type === 'regular' || item.type === 'reservation') && item.bProductLoaded"
+                          [item]="item" [taxes]="taxes" [disablePrepayment]="!availableAmount || availableAmount === 0"
                           (itemChanged)="itemChanged($event, i)" [availableAmount]="availableAmount"></div>
                         <!-- order -->
-                        <div class="accordion-item w-100 d-table-cell" 
-                          *ngIf="item.type === 'order'"
-                          till-order 
-                          [item]="item" 
-                          [disablePrepayment]="!availableAmount || availableAmount === 0" 
-                          [taxes]="taxes"
-                          [availableAmount]="availableAmount" 
-                          [settings]="tillService.settings.currentLocation"
+                        <div class="accordion-item w-100 d-table-cell" *ngIf="item.type === 'order'" till-order
+                          [item]="item" [disablePrepayment]="!availableAmount || availableAmount === 0" [taxes]="taxes"
+                          [availableAmount]="availableAmount" [settings]="tillService.settings.currentLocation"
                           (itemChanged)="itemChanged($event, i)">
                         </div>
-                        
+
                         <!-- repair -->
-                        <div class="accordion-item w-100 d-table-cell" 
-                          till-repair 
-                          *ngIf="item.type === 'repair'"
-                          [disablePrepayment]="!availableAmount || availableAmount === 0" 
-                          [item]="item" 
-                          [taxes]="taxes"
-                          [availableAmount]="availableAmount" 
-                          [settings]="tillService.settings.currentLocation"
+                        <div class="accordion-item w-100 d-table-cell" till-repair *ngIf="item.type === 'repair'"
+                          [disablePrepayment]="!availableAmount || availableAmount === 0" [item]="item" [taxes]="taxes"
+                          [availableAmount]="availableAmount" [settings]="tillService.settings.currentLocation"
                           (itemChanged)="itemChanged($event, i)">
                         </div>
                         <!-- giftcard -->
@@ -233,7 +224,7 @@
                         <!-- empty-line -->
                         <div class="accordion-item w-100 d-table-cell w-100" till-other
                           *ngIf="item.type=== 'empty-line'" [item]="item" [taxes]="taxes"
-                          (itemChanged)="itemChanged($event, i)" ></div>
+                          (itemChanged)="itemChanged($event, i)"></div>
                         <!-- loyalty-points -->
                         <div class="accordion-item w-100 d-table-cell w-100" till-loyalty-points-discount
                           *ngIf="item.type=== 'loyalty-points'" [item]="item" [taxes]="taxes"
@@ -316,24 +307,25 @@
                         <div class="card m-1 shadow-sm h-100 custom-card">
                           <div class="card-body">
                             <!-- <div class="d-flex"> -->
-                              <div class="r-content">
-                                <img
-                                  src="{{product.aImage[0]? product.aImage[0]: '../assets/images/no-photo-available.jpg' }}"
-                                  class="">
-                              </div>
-                              <div class="l-content">
-                                <!-- <label class="business-bg-color rounded-full px-2 py-1 text-white text-sm">{{
+                            <div class="r-content">
+                              <img
+                                src="{{product.aImage[0]? product.aImage[0]: '../assets/images/no-photo-available.jpg' }}"
+                                class="">
+                            </div>
+                            <div class="l-content">
+                              <!-- <label class="business-bg-color rounded-full px-2 py-1 text-white text-sm">{{
                                   "BUSINESS_PRODUCT"| translate}}</label> -->
-                                <span>
-                                  <fa-icon [icon]="faCopy" aria-label="copy-article-number" class="ml-4"></fa-icon>
-                                </span>
-                                <p class="block mt-2 prod-name">{{ product.oName? product.oName['en'] : 'No name' }}</p>
-                                <p class="mt-2 text-gray-800">{{ product.sEan || '-'}}</p>
-                                <p class="mt-2 text-gray-800">{{ product.sProductNumber }}</p>
-                                <p class="mt-2 text-gray-800">{{ product?.sSerialNumber || '-' }}</p>
-                                <p class="mt-2 text-gray-800">{{ product?.sArticleNumber }}</p>
-                                <p class="text-gray-800">{{"STOCK"| translate}}: {{ product?.oCurrentLocation?.nStock || '-'}} </p>
-                              </div>
+                              <span>
+                                <fa-icon [icon]="faCopy" aria-label="copy-article-number" class="ml-4"></fa-icon>
+                              </span>
+                              <p class="block mt-2 prod-name">{{ product.oName? product.oName['en'] : 'No name' }}</p>
+                              <p class="mt-2 text-gray-800">{{ product.sEan || '-'}}</p>
+                              <p class="mt-2 text-gray-800">{{ product.sProductNumber }}</p>
+                              <p class="mt-2 text-gray-800">{{ product?.sSerialNumber || '-' }}</p>
+                              <p class="mt-2 text-gray-800">{{ product?.sArticleNumber }}</p>
+                              <p class="text-gray-800">{{"STOCK"| translate}}: {{ product?.oCurrentLocation?.nStock ||
+                                '-'}} </p>
+                            </div>
                             <!-- </div> -->
                           </div>
                         </div>
@@ -348,24 +340,24 @@
                         <div class="card m-1 shadow-sm custom-card common-prod">
                           <div class="card-body custom-flex">
                             <!-- <div class="d-flex"> -->
-                              <div class="r-content">
-                                <img
-                                  src="{{product.aImage[0]? product.aImage[0]: '../assets/images/no-photo-available.jpg' }}"
-                                  class="">
-                              </div>
-                              <div class="l-content">
-                                <!-- <label
+                            <div class="r-content">
+                              <img
+                                src="{{product.aImage[0]? product.aImage[0]: '../assets/images/no-photo-available.jpg' }}"
+                                class="">
+                            </div>
+                            <div class="l-content">
+                              <!-- <label
                                   class="business-bg-color rounded-full px-2 py-1 text-white text-sm">{{"BUSINESS_PRODUCT"
                                   |
                                   translate}}</label> -->
-                                <span>
-                                  <fa-icon [icon]="faCopy" aria-label="copy-article-number" class="ml-4"></fa-icon>
-                                </span>
-                                <p class="block mt-2 prod-name">{{ product.oName? product.oName['en'] : 'No name' }}</p>
-                                <p class="mt-2 text-gray-800">{{ product.sEan || '-'}}</p>
-                                <p class="mt-2 text-gray-800">{{ product.sProductNumber || '-'}}</p>
-                                <p class="mt-2 text-gray-800">{{ product?.sArticleNumber || '-'}}</p>
-                              </div>
+                              <span>
+                                <fa-icon [icon]="faCopy" aria-label="copy-article-number" class="ml-4"></fa-icon>
+                              </span>
+                              <p class="block mt-2 prod-name">{{ product.oName? product.oName['en'] : 'No name' }}</p>
+                              <p class="mt-2 text-gray-800">{{ product.sEan || '-'}}</p>
+                              <p class="mt-2 text-gray-800">{{ product.sProductNumber || '-'}}</p>
+                              <p class="mt-2 text-gray-800">{{ product?.sArticleNumber || '-'}}</p>
+                            </div>
                             <!-- </div> -->
                             <div class="absolute hover-product-option mt-n6 b-content" *ngIf="product['showOption']">
                               <div class="d-flex justify-content-end">

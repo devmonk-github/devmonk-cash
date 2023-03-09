@@ -93,7 +93,7 @@ export class ActivityDetailsComponent implements OnInit {
   quantity: Number = 0;
   userDetail: any;
   business: any;
-  oLocationName: any;
+  oLocationName: any= "";
   businessDetails: any;
   iLocationId: String = '';
   language: any;
@@ -195,7 +195,14 @@ export class ActivityDetailsComponent implements OnInit {
 
 
   async ngOnInit() {
-    //console.log('from-----------activity', this.from, this.activityItems, this.activity)
+   // console.log('from-----------transaction', this.from, this.activityItems, this.activity)
+    this.customer = this.activityItems[0].oCustomer;
+    
+    this.oCurrentCustomer = this.activityItems[0].oCustomer;
+    this.oLocationName = this.activityItems[0].oLocationName;
+    
+   // console.log("iBusinessBrandId" +this.activityItems[0].iBusinessBrandId);
+  
     this.apiService.setToastService(this.toastService);
     this.routerSub = this.routes.events.subscribe((event) => {
       if (event instanceof NavigationEnd && !(event.url.startsWith('/business/activity-items') || event.url.startsWith('/business/services'))) {
@@ -242,7 +249,8 @@ export class ActivityDetailsComponent implements OnInit {
       // this.fetchActivity(this.activity._id); //actually it is an id of activity item
       // console.log(235)
       if(this.activityItems && this.activityItems.length>0){
-        this.oLocationName = this.businessDetails.aLocation.find((location: any) => location._id === this.activityItems[0].iLocationId)?.sName;
+      
+        this.oLocationName = this.businessDetails?.aLocation.find((location: any) => location._id === this.activityItems[0].iLocationId)?.sName;
      
       }else{
         this.oLocationName ="";
@@ -259,6 +267,8 @@ export class ActivityDetailsComponent implements OnInit {
     this.getBusinessLocations();
     this.getListSuppliers()
     this.getBusinessBrands();
+      
+  
     const [_printActionSettings, _printSettings]: any = await Promise.all([
       this.getPdfPrintSetting({ oFilterBy: { sMethod: 'actions' } }),
       this.getPdfPrintSetting({ oFilterBy: { sType: ['repair', 'order', 'repair_alternative'] } }),
