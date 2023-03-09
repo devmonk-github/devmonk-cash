@@ -263,15 +263,6 @@ export class ActivityDetailsComponent implements OnInit {
     this.getBusinessLocations();
     this.getListSuppliers()
     this.getBusinessBrands();
-    this.activityItems.forEach((items: any, index: any) => {
-      console.log(this.brandsList);
-      console.log(items.iBusinessBrandId);
-      let brandIndex = this.brandsList.findIndex((brand: any) => brand._id == items.iBusinessBrandId);
-      if (brandIndex != -1) {
-        this.activityItems[index] = { ...items, "brandName": this.brandsList[brandIndex].sName }
-      }
-    })
-   
       
   
     const [_printActionSettings, _printSettings]: any = await Promise.all([
