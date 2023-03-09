@@ -136,44 +136,46 @@ export class ImportGiftCardDetailComponent implements OnInit {
   // Function for get dynamic field
   getDynamicFields(isResetAttributes: boolean) {
     console.log('getDynamicFields: ', isResetAttributes)
-    this.apiService.getNew('core', '/api/v1/properties/dynamic/list/' + this.iBusinessId).subscribe((result: any) => {
-      // console.log('getDynamicFields: ', result?.data);
-      if (result?.data?.length) {
-        result.data = this.sortTheProperty(result.data);
-        // this.allFields['all'] = result.data;
-        this.allFields['all'] = this.aDefaultAttribute;
-        if (isResetAttributes) {
-          this.giftCardDetailsForm = {};
-          this.updateTemplateForm = {};
-        }
-        this.allFields['all'].map((field: any) => {
-          const index = this.headerOptions.indexOf(field.sColumnHeader);
-          if (index > -1) {
-            this.giftCardDetailsForm[field.sColumnHeader] = field.sColumnHeader;
-            if (!this.referenceObj) this.referenceObj = {};
-            this.referenceObj[this.headerOptions[index]] = field.sDataBaseFieldName;
-            this.updateTemplateForm[field.sColumnHeader] = 'overwrite'
-          }
-        });
 
-        /* For making, de-selection works in drop-down */
-        this.allFields['all'].unshift({
-          eFormField: "input",
-          sColumnHeader: "",
-          sDataBaseFieldName: "EMPTY",
-          sName: "EMPTY",
-          aOptions: []
-        })
-
-        this.headerOptions.filter((option: any) => {
-          if (!this.giftCardDetailsForm[option]) {
-            this.giftCardDetailsForm[option] = "";
-          }
-        });
+    this.allFields['all'] = this.aDefaultAttribute;
+    if (isResetAttributes) {
+      this.giftCardDetailsForm = {};
+      this.updateTemplateForm = {};
+    }
+    this.allFields['all'].map((field: any) => {
+      const index = this.headerOptions.indexOf(field.sColumnHeader);
+      if (index > -1) {
+        this.giftCardDetailsForm[field.sColumnHeader] = field.sColumnHeader;
+        if (!this.referenceObj) this.referenceObj = {};
+        this.referenceObj[this.headerOptions[index]] = field.sDataBaseFieldName;
+        this.updateTemplateForm[field.sColumnHeader] = 'overwrite'
       }
-    }, error => {
-      console.log("error :", error);
+    });
+
+    /* For making, de-selection works in drop-down */
+    this.allFields['all'].unshift({
+      eFormField: "input",
+      sColumnHeader: "",
+      sDataBaseFieldName: "EMPTY",
+      sName: "EMPTY",
+      aOptions: []
     })
+
+    this.headerOptions.filter((option: any) => {
+      if (!this.giftCardDetailsForm[option]) {
+        this.giftCardDetailsForm[option] = "";
+      }
+    });
+    // this.apiService.getNew('core', '/api/v1/properties/dynamic/list/' + this.iBusinessId).subscribe((result: any) => {
+    //   // console.log('getDynamicFields: ', result?.data);
+    //   if (result?.data?.length) {
+    //     result.data = this.sortTheProperty(result.data);
+    //     // this.allFields['all'] = result.data;
+
+    //   }
+    // }, error => {
+    //   console.log("error :", error);
+    // })
   }
 
 
