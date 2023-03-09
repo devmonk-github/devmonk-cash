@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output, SimpleChanges } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { ApiService } from 'src/app/shared/service/api.service';
 import { faSync, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { ImportGiftCardService } from 'src/app/shared/service/import-gift-card.service';
 
 @Component({
   selector: 'import-gift-card-detail',
@@ -29,82 +29,18 @@ export class ImportGiftCardDetailComponent implements OnInit {
   translations: any = [];
   language: string = 'nl';
   iBusinessId !: string | null;
-
-  aDefaultAttribute = [
-    {
-      eFormField: "input",
-      sColumnHeader: "CREATED_DATE",
-      sDataBaseFieldName: "dCreatedDate",
-      sName: "dCreatedDate",
-      aOptions: []
-    },
-    {
-      eFormField: "input",
-      sColumnHeader: "MATCHING_CODE",
-      sDataBaseFieldName: "nMatchingCode",
-      sName: "nMatchingCode",
-      aOptions: []
-    },
-    {
-      eFormField: "input",
-      sColumnHeader: "PRODUCT_NAME",
-      sDataBaseFieldName: "sProductName",
-      sName: "sProductName",
-      aOptions: []
-    },
-    {
-      eFormField: "input",
-      sColumnHeader: "BAG_NUMBER",
-      sDataBaseFieldName: "sBagNumber",
-      sName: "sBagNumber",
-      aOptions: []
-    },
-    {
-      eFormField: "input",
-      sColumnHeader: "DESCRIPTION",
-      sDataBaseFieldName: "sDescription",
-      sName: "sDescription",
-      aOptions: []
-    },
-    {
-      eFormField: "input",
-      sColumnHeader: "PRICE_INC_VAT",
-      sDataBaseFieldName: "nPriceIncVat",
-      sName: "nPriceIncVat",
-      aOptions: []
-    },
-    {
-      eFormField: "input",
-      sColumnHeader: "TAX",
-      sDataBaseFieldName: "nVatRate",
-      sName: "nVatRate",
-      aOptions: []
-    },
-    {
-      eFormField: "input",
-      sColumnHeader: "ESTIMATE_DATE",
-      sDataBaseFieldName: "dEstimatedDate",
-      sName: "dEstimatedDate",
-      aOptions: []
-    },
-    {
-      eFormField: "input",
-      sColumnHeader: "ACTIVITY_ITEM_STATUS",
-      sDataBaseFieldName: "eActivityItemStatus",
-      sName: "eActivityItemStatus",
-      aOptions: []
-    }
-  ]
+  aDefaultAttribute: any = [];
 
   constructor(
-    private apiService: ApiService,
-    private translateService: TranslateService
+    private translateService: TranslateService,
+    private importGiftCardService: ImportGiftCardService
   ) { }
 
   ngOnInit(): void {
     const translations = ['YOU_HAVE_NOT_SET_SOME_OF_THE_ATTRIBUTES_EXISTS_IN_FILE']
     this.translateService.get(translations).subscribe(result => this.translations = result);
     this.iBusinessId = localStorage.getItem('currentBusiness') ? localStorage.getItem('currentBusiness') : '';
+    this.aDefaultAttribute = this.importGiftCardService.defaultImportGiftCardAttribute();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
