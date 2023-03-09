@@ -553,6 +553,8 @@ export class ReceiptService {
         item.elements.forEach((el: any) => {
             if (el?.type === 'image') {
                 stack.push(this.addImage(el))
+            } else if (el?.type === 'parts') {
+                stack.push(this.addParts(el, object))
             } else {
                 let bTestResult = true;
                 if (el?.ifAnd) {
@@ -710,18 +712,21 @@ export class ReceiptService {
         return obj;
     }
 
-    addParts(el: any) {
+    addParts(el: any, object?:any) {
         let obj: any = [];
         el.parts.forEach((part: any) => {
             if (part?.ifAnd) {
                 part.ifAnd.forEach((rule: any) => {
-                    let field = (el?.object) ? this.oOriginalDataSource[el.object][rule.field] : this.oOriginalDataSource[rule.field];
+                    let field = (object) ? object : (el?.object) ? this.oOriginalDataSource[el.object][rule.field] : this.oOriginalDataSource[rule.field];
                     let bTestResult = this.commonService.comparators[rule.compare](field, rule.target)
                     if (bTestResult) {
                         let text = this.pdfService.replaceVariables(part?.text, (el?.object) ? this.oOriginalDataSource[el.object] : this.oOriginalDataSource)
                         obj.push({ text: text, alignment: el?.alignment });
                     }
                 })
+            } else {
+                let text = this.pdfService.replaceVariables(part?.text,(object) ? object : (el?.object) ? this.oOriginalDataSource[el.object] : this.oOriginalDataSource)
+                obj.push({ text: text, alignment: el?.alignment });
             }
         })
         return obj;

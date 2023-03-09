@@ -588,6 +588,7 @@ export class TillService {
     });
     
     transaction.aTransactionItems.forEach((item: any) => {
+      item.eKind = item.oType.eKind;
       if (item?.related?.length) {
         item.related.forEach((relatedItem: any) => {
           if(relatedItem?.aPayments?.some((payment: any) => payment.sMethod === 'card')){
