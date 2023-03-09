@@ -93,7 +93,7 @@ export class ActivityDetailsComponent implements OnInit {
   quantity: Number = 0;
   userDetail: any;
   business: any;
-  oLocationName: any;
+  oLocationName: any= "";
   businessDetails: any;
   iLocationId: String = '';
   language: any;
@@ -195,7 +195,11 @@ export class ActivityDetailsComponent implements OnInit {
 
 
   async ngOnInit() {
-    //console.log('from-----------activity', this.from, this.activityItems, this.activity)
+    //console.log('from-----------transaction', this.from, this.activityItems, this.activity)
+    this.customer = this.activityItems[0].oCustomer;
+    
+    this.oCurrentCustomer = this.activityItems[0].oCustomer;
+  
     this.apiService.setToastService(this.toastService);
     this.routerSub = this.routes.events.subscribe((event) => {
       if (event instanceof NavigationEnd && !(event.url.startsWith('/business/activity-items') || event.url.startsWith('/business/services'))) {
@@ -259,6 +263,17 @@ export class ActivityDetailsComponent implements OnInit {
     this.getBusinessLocations();
     this.getListSuppliers()
     this.getBusinessBrands();
+    this.activityItems.forEach((items: any, index: any) => {
+      console.log(this.brandsList);
+      console.log(items.iBusinessBrandId);
+      let brandIndex = this.brandsList.findIndex((brand: any) => brand._id == items.iBusinessBrandId);
+      if (brandIndex != -1) {
+        this.activityItems[index] = { ...items, "brandName": this.brandsList[brandIndex].sName }
+      }
+    })
+   
+      
+  
     const [_printActionSettings, _printSettings]: any = await Promise.all([
       this.getPdfPrintSetting({ oFilterBy: { sMethod: 'actions' } }),
       this.getPdfPrintSetting({ oFilterBy: { sType: ['repair', 'order', 'repair_alternative'] } }),
