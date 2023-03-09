@@ -70,13 +70,20 @@ export class ImportGiftCardComponent implements OnInit {
         iWorkStationId: this.iWorkStationId,
         iEmployeeId: this.iEmployeeId
       }
+
       const { parsedGiftCardData, oBody } = this.importGiftCardService.mapTheImportGiftCardBody(oData);
       this.parsedGiftCardData = parsedGiftCardData;
-      this.apiService.postNew('cashregistry', '/api/v1/till/transaction', oBody).subscribe((result: any) => {
-        this.importInprogress = false;
-      }, (error) => {
-        console.error(error);
-      });
+      const aTransactionItem = JSON.parse(JSON.stringify(oBody?.transactionItems));
+      for (let i = 0; i < aTransactionItem?.length; i++) {
+        oBody.transactionItems = [aTransactionItem[i]];
+        oBody.bImportGiftCard = true;
+        oBody.payments = this.importGiftCardService.mapPayment(aTransactionItem[i]);
+        this.apiService.postNew('cashregistry', '/api/v1/till/transaction', oBody).subscribe((result: any) => {
+          this.importInprogress = false;
+        }, (error) => {
+          console.error(error);
+        });
+      }
     } catch (error) {
       console.log('Import Gift card');
     }

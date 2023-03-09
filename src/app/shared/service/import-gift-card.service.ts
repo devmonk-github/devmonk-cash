@@ -112,11 +112,12 @@ export class ImportGiftCardService {
         nVatRate: oData?.nVatRate,
         nMatchingCode: oData?.nMatchingCode ? parseFloat(oData?.nMatchingCode) : undefined,
         sGiftCardNumber: oData?.sGiftCardNumber,
-        dCreationDate: oData?.dCreatedDate,
+        dCreatedDate: oData?.dCreatedDate,
         nEstimatedTotal: oData?.nPriceIncVat,
         nPaymentAmount: oData?.nPriceIncVat,
         nRevenueAmount: oData?.nPriceIncVat,
-        nPaidAmount: oData?.nPriceIncVat - (oData?.nRemainingValue || 0),
+        nPaidAmount: oData?.nRemainingValue,
+        nRemainingValue: oData?.nRemainingValue,
         /* calculated */
         nPurchasePrice: nPurchasePrice,
         nProfit: oData?.nPriceIncVat - nPurchasePrice,
@@ -161,6 +162,7 @@ export class ImportGiftCardService {
         bGiftcardTaxHandling: "true",
         bDiscountOnPercentage: false,
         bImported: true,
+        bImportGiftCard: true
       }
       aTransactionItem.push(oTransactionItem);
     }
@@ -182,44 +184,51 @@ export class ImportGiftCardService {
         iBusinessId: iBusinessId,
         iLocationId: iLocationId,
         iWorkstationId: iWorkStationId,
-        iEmployeeId: iEmployeeId
+        iEmployeeId: iEmployeeId,
+        bImported: true
       },
       redeemedLoyaltyPoints: 0,
       transactionItems: aTransactionItem,
       sDefaultLanguage: localStorage.getItem('language') || 'nl',
       bImported: true,
-      payments: [
-        {
-          bIsDefaultPaymentMethod: true,
-          _id: "6243ff1a0ab1c8da110423f4",
-          sName: "Cash",
-          bStockReduction: true,
-          bInvoice: true,
-          bAssignSavingPointsLastPayment: true,
-          eIntegrationMethod: "other",
-          isDisabled: true,
-          amount: 100,
-          bImported: true
-        },
-        {
-          bIsDefaultPaymentMethod: true,
-          _id: "6243ff1a0ab1c8da110423f4",
-          sName: "Cash",
-          bStockReduction: true,
-          bInvoice: true,
-          bAssignSavingPointsLastPayment: true,
-          eIntegrationMethod: "other",
-          isDisabled: true,
-          amount: 0,
-          remark: "CHANGE_MONEY",
-          bImported: true
-        }
-      ],
     };
 
     console.log('importGiftCard: ', oBody);
     console.log('referenceObj: ', referenceObj);
     return { parsedGiftCardData, oBody };
+  }
+
+  /* Mapping the payment for the gift card */
+  mapPayment(oData: any) {
+    const aPayment = [
+      {
+        bIsDefaultPaymentMethod: true,
+        _id: "6243ff1a0ab1c8da110423f4",
+        sName: "Cash",
+        bStockReduction: true,
+        bInvoice: true,
+        bAssignSavingPointsLastPayment: true,
+        eIntegrationMethod: "other",
+        isDisabled: true,
+        amount: oData?.nPriceIncVat,
+        bImported: true
+      },
+      {
+        bIsDefaultPaymentMethod: true,
+        _id: "6243ff1a0ab1c8da110423f4",
+        sName: "Cash",
+        bStockReduction: true,
+        bInvoice: true,
+        bAssignSavingPointsLastPayment: true,
+        eIntegrationMethod: "other",
+        isDisabled: true,
+        amount: 0,
+        remark: "CHANGE_MONEY",
+        bImported: true
+      }
+    ]
+
+    return aPayment;
   }
 
 }
