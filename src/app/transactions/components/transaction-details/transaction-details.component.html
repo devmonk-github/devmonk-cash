@@ -1,5 +1,23 @@
 <!-- <app-supplier-product-slider [$data]="SupplierStockProductSliderData.asObservable()">
 </app-supplier-product-slider> -->
+<div class="overlay-full d-flex flex-column justify-content-center align-items-center" *ngIf="paymentEditMode && !bIsDayStateOpened">
+    <div *ngIf="bDayStateChecking">
+        <div class="d-flex flex-column">
+            <h1>{{ 'PLEASE_WAIT_WHILE_CHECKING_FOR_DAY_STATE' | translate}}</h1>
+            <div class="spinner-border mx-auto"></div>
+        </div>
+    </div>
+
+    <div *ngIf="!bDayStateChecking && !bIsDayStateOpened" class="d-flex flex-column align-items-center">
+        <h1>{{ 'NO_OPEN_DAY_STATE_FOUND' | translate}}</h1>
+        <button class="btn btn-white" (click)="openDayState()" [disabled]="bIsOpeningDayState">{{ 'OPEN_CASH_REGISTRY' |
+            translate}}</button>
+        <div>
+            <button class="btn btn-dark mt-5" (click)="paymentEditMode = false">{{ 'CANCEL' | translate}}</button>
+        </div>
+    </div>
+
+</div>
 
 <div class="card shadow-sm">
     <div class="card-header mt-5">
@@ -11,7 +29,7 @@
     <div class="card-body row main m-0">
 
         <div class="col-md-4">
-            <!-- CURRENT_CUSTOMER Start -->
+        <!-- CURRENT_CUSTOMER Start -->
             <div class="d-flex justify-content-between align-items-center">
                 <h3 class="fw-bolder mb-4">
                     <span>{{ "CURRENT_CUSTOMER" | translate }}</span>
@@ -273,11 +291,11 @@
                             </thead>
                             <tbody>
                                 <tr *ngFor="let item of transaction.aTransactionItems">
-                                    <td (click)="openProductInfo(item)">
+                                    <td (click)="openProductInfo(item)" class="cursor-pointer">
                                         <img src="{{ item.aImage[0] || imagePlaceHolder}}"
                                             (error)="item.aImage[0]=imagePlaceHolder" class="product_image">
                                     </td>
-                                    <td (click)="openProductInfo(item)">
+                                    <td (click)="openProductInfo(item)" class="cursor-pointer">
                                         <div>
                                             {{ item.sArticleGroupName }} {{ item.sProductNumber }} <br />
                                             <!-- {{ item.sProductName }}   -->
@@ -486,3 +504,4 @@
         <button class="btn btn-secondary cancel ml-auto" (click)="close(false)">{{"TEXT_CANCEL" | translate}}</button>
     </div>
 </div>
+<ng-template #slider></ng-template>
