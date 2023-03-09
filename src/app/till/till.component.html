@@ -520,7 +520,7 @@
                     &nbsp;<i class="close fas fa-times cursor-pointer"></i>
                   </div>
                 </div>
-                <div class="chip d-flex">
+                <div class="chip d-flex" *ngIf="savingPointsSetting">
                   {{ "LOYALTY_POINTS" | translate }}, {{redeemedLoyaltyPoints | currency: tillService.currency}}
                   <img class="ml-1" src="../assets/images/loyalty_points.png" alt="" height="20px" width="20px">
                   <div (click)="redeemedLoyaltyPoints = 0">

@@ -154,6 +154,10 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   iBusinessId = localStorage.getItem('currentBusiness') || '';
   iLocationId = localStorage.getItem('currentLocation') || '';
   iWorkstationId = localStorage.getItem('currentWorkstation') || '';
+
+  /* Check if saving points are enabled */
+  savingPointsSetting:boolean = JSON.parse(localStorage.getItem('savingPoints') || '');
+  
   bIsTransactionLoading = false;
 
   randNumber(min: number, max: number): number {

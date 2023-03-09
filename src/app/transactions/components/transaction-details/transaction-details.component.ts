@@ -39,6 +39,9 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   iBusinessId: any = localStorage.getItem("currentBusiness");
   iLocationId: any = localStorage.getItem("currentLocation");
   iWorkstationId: any = localStorage.getItem("currentWorkstation");
+
+  /* Check if saving points are enabled */
+  savingPointsSetting:boolean = JSON.parse(localStorage.getItem('savingPoints') || '');
   
   loading: boolean = true;
   customerLoading: boolean = true;

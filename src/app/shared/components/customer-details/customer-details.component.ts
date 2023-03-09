@@ -259,6 +259,9 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
   aSelectedGroups:any =[];
   businessDetails:any={};
   
+  /* Check if saving points are enabled */
+  savingPointsSetting:boolean = JSON.parse(localStorage.getItem('savingPoints') || '');
+  
   constructor(
     private viewContainerRef: ViewContainerRef,
     private apiService: ApiService,

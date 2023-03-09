@@ -49,6 +49,7 @@ export class SavingPointsComponent implements OnInit {
   fetchSetting() {
     this.apiService.getNew('cashregistry', `/api/v1/points-settings?iBusinessId=${this.iBusinessId}`).subscribe((result: any) => {
       this.savingPointsSettings = result;
+      localStorage.setItem('savingPoints', JSON.stringify(this.savingPointsSettings.bEnabled));
       // if (result.data && result.data.length > 0) {
       // this.brandsList = result.data[0].result;
       // if (this.item.iBrandId) {
@@ -61,6 +62,7 @@ export class SavingPointsComponent implements OnInit {
 
   updateSettings() {
     this.apiService.putNew('cashregistry', `/api/v1/points-settings/${this.savingPointsSettings._id}?iBusinessId=${this.iBusinessId}`, this.savingPointsSettings).subscribe((result: any) => {
+      localStorage.setItem('savingPoints', this.savingPointsSettings.bEnabled);
     });
   }
 
