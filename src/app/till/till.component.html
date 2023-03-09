@@ -250,11 +250,11 @@
                       </div>
                     </ng-container>
                     <section class="row product-row p-3 text-gray-600 align-items-center"
-                      *ngIf="getTotals('quantity') !== 0">
-                      <div class="col-1">{{getTotals('quantity')}}</div>
+                      *ngIf="nItemsTotalQuantity > 0">
+                      <div class="col-1">{{ nItemsTotalQuantity }}</div>
                       <div class="col-4">&nbsp;</div>
-                      <div class="col">{{getTotals('price') | currency: tillService.currency}}</div>
-                      <div class="col">{{getTotals('discount') | currency: tillService.currency}}</div>
+                      <div class="col">{{ nItemsTotalToBePaid | currency: tillService.currency}}</div>
+                      <div class="col">{{ nItemsTotalDiscount | currency: tillService.currency}}</div>
                       <div class="col"></div>
                     </section>
                   </div>
