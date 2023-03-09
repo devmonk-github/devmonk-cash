@@ -21,6 +21,7 @@ import { TransactionDetailsComponent } from '../../../transactions/components/tr
 import { fromEvent, Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, tap } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
+import { Router } from '@angular/router';
 export interface BarChartOptions {
   series: ApexAxisChartSeries;
   chart: ApexChart;
@@ -71,6 +72,8 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
   documentTypes: Array<any> = ['Driving license', 'Passport', 'Identity card', 'Alien document'];
   mode: string = '';
   editProfile: boolean = false;
+  bIsCurrentCustomer: boolean = false;
+  bIsCounterCustomer: boolean = false;
   showStatistics: boolean = false;
   faTimes = faTimes;
   aPaymentChartData: any = [];
@@ -239,7 +242,6 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     { type: "Shop purchase", value: 0, color: ChartColors.SHOP_PURCHASE },//$dark-success-light-color
     { type: "Quotation", value: 0, color: ChartColors.QUOTATION },//$info-active-color
     { type: "Webshop", value: 0, color: ChartColors.WEBSHOP },//$gray-700
-    // { type: "Refund", value: 0, color: ChartColors.REFUND },//$orange
     { type: "Giftcard", value: 0, color: ChartColors.GIFTCARD },//$green
     { type: "Gold purchase", value: 0, color: ChartColors.GOLD_PURCHASE },//$maroon
     { type: "Product reservation", value: 0, color: ChartColors.PRODUCT_RESERVATION }//$pink
@@ -257,13 +259,17 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
   aSelectedGroups:any =[];
   businessDetails:any={};
   
+  /* Check if saving points are enabled */
+  savingPointsSetting:boolean = JSON.parse(localStorage.getItem('savingPoints') || '');
+  
   constructor(
     private viewContainerRef: ViewContainerRef,
     private apiService: ApiService,
     private cdr: ChangeDetectorRef,
     private toastService: ToastService,
     private dialogService: DialogService,
-    private translateService: TranslateService ,
+    private translateService: TranslateService,
+    private router: Router
   ) {
     const _injector = this.viewContainerRef.parentInjector;
     this.dialogRef = _injector.get<DialogComponent>(DialogComponent);
@@ -272,7 +278,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
   ngOnInit(): void {
     this.apiService.setToastService(this.toastService);
     this.getBusinessDetails();
-    this.customer = { ... this.customer ,  ... this.dialogRef?.context?.customerData}
+    this.customer = { ... this.customer, ... this.dialogRef?.context?.customerData }
     const translations = ['SUCCESSFULLY_ADDED', 'SUCCESSFULLY_UPDATED' ,'LOYALITY_POINTS_ADDED']
     this.translateService.get(translations).subscribe(
       result => this.translations = result
@@ -291,31 +297,31 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     }
     this.fetchLoyaltyPoints();
     this.getListEmployees();
-    this.activitiesChartOptions = {
-      series: this.aActivityTitles.map((el: any) => el.value),
-      colors: this.aActivityTitles.map((el: any) => el.color),
-      chart: {
-        width: '75%',
-        type: "pie"
-      },
-      title: {
-        text: "Number of Activities",
-        style: {
-          fontWeight: 'bold',
-        },
-      },
-      legend: {
-        position: 'left',
-        itemMargin: {
-          horizontal: 15,
-          vertical: 5
-        },
-        fontWeight: 600,
-      },
-      labels: this.aActivityTitles.map((el: any) => el.type + " (" + el.value + ") "),
-    };
+    // this.activitiesChartOptions = {
+    //   series: this.aActivityTitles.map((el: any) => el.value),
+    //   colors: this.aActivityTitles.map((el: any) => el.color),
+    //   chart: {
+    //     width: '75%',
+    //     type: "pie"
+    //   },
+    //   title: {
+    //     text: "Number of Activities",
+    //     style: {
+    //       fontWeight: 'bold',
+    //     },
+    //   },
+    //   legend: {
+    //     position: 'left',
+    //     itemMargin: {
+    //       horizontal: 15,
+    //       vertical: 5
+    //     },
+    //     fontWeight: 600,
+    //   },
+    //   labels: this.aActivityTitles.map((el: any) => el.type + " (" + el.value + ") "),
+    // };
 
-    this.loadStatisticsTabData();
+    // this.loadStatisticsTabData();
     this.getCustomerGroups();
   }
 
@@ -325,21 +331,21 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
   }
 
   getCustomerGroups(){
-     this.apiService.postNew('customer' , '/api/v1/group/list' ,{iBusinessId:this.requestParams.iBusinessId , iLocationId:localStorage.getItem('currentLocation')}).subscribe((res:any)=>{
-       if(res?.message == 'success'){
-         if(res?.data?.length){
-           this.customerGroupList = res?.data[0]?.result;
-           if(this.customer?.aGroups?.length){
-             this.customer.aGroups.forEach((group:any)=>{
-               const index = this.customerGroupList.findIndex((cGroup:any)=>cGroup._id == group);
-               if(index>=0){
-                 this.aSelectedGroups.push(this.customerGroupList[index].sName);
-               }
-             })
-           }
-         }
-       }
-     })
+    this.apiService.postNew('customer', '/api/v1/group/list', { iBusinessId: this.requestParams.iBusinessId, iLocationId: localStorage.getItem('currentLocation') }).subscribe((res: any) => {
+      if (res?.message == 'success') {
+        if (res?.data?.length) {
+          this.customerGroupList = res?.data[0]?.result;
+          if (this.customer?.aGroups?.length) {
+            this.customer.aGroups.forEach((group: any) => {
+              const index = this.customerGroupList.findIndex((cGroup: any) => cGroup._id == group);
+              if (index >= 0) {
+                this.aSelectedGroups.push(this.customerGroupList[index].sName);
+              }
+            })
+          }
+        }
+      }
+    }, (error) => {})
   }
 
   getBusinessDetails() {
@@ -506,15 +512,27 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
   EditOrCreateCustomer() {
     this.customer.iBusinessId = this.requestParams.iBusinessId;
     this.customer.iEmployeeId = this.iEmployeeId?.userId;
-    // this.customer.aCustomerGroups = this.aSelectedGroups;
+    console.log('EditOrCreateCustomer called: ', this.editProfile, this.bIsCurrentCustomer);
+    
+    /* We are updating the current customer [T, A, AI] and Not the System customer */
+    if (this.editProfile && this.bIsCurrentCustomer && this.mode !== 'create') {
+      this.close({ bShouldUpdateCustomer: true, oCustomer: this.customer });
+      return;
+    }
+
     if (this.mode == 'create') {
       this.apiService.postNew('customer', '/api/v1/customer/create', this.customer).subscribe(
         (result: any) => {
           if(result.message == 'success'){
           this.toastService.show({ type: 'success', text: this.translations[`SUCCESSFULLY_ADDED`] });
+
+            /* Updating current-customer in [A, T, AI] and Not the System customer */
+            if (this.editProfile && this.bIsCurrentCustomer) {
+              this.close({ bShouldUpdateCustomer: true, oCustomer: result.data });
+              return;
+            }
           this.close({ action: true, customer: result.data });
           }else{
-           
             let errorMessage = ""
             this.translateService.get(result.message).subscribe(
               result=> errorMessage =result
@@ -911,7 +929,11 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     this.dialogService.openModal(TransactionDetailsComponent, { cssClass: "modal-xl", context: { transaction: transaction, businessDetails: this.businessDetails , eType: 'cash-register-revenue', from: 'customer' } })
       .instance.close.subscribe(
         (res: any) => {
-          // if (res) this.router.navigate(['business/till']);
+          // console.log({res});
+          if (res){
+            this.close(false);
+            this.router.navigate(['business/till']);
+          } 
         });
   }
 
@@ -939,6 +961,4 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
       ...invoiceAddress
     }
   }
-
-
 }

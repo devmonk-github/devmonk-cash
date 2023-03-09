@@ -9,12 +9,14 @@
         </button>
     </div>
     <div class="card-body row main m-0">
+
         <div class="col-md-4">
+            <!-- CURRENT_CUSTOMER Start -->
             <div class="d-flex justify-content-between align-items-center">
                 <h3 class="fw-bolder mb-4">
-                    <span>{{ "CUSTOMER" | translate }}</span>
+                    <span>{{ "CURRENT_CUSTOMER" | translate }}</span>
                 </h3>
-                <ng-container *ngIf="from === 'transactions'">
+                <ng-container *ngIf="from === 'transactions' || from === 'transactions-action' ">
                     <button class="btn btn-primary" *ngIf="!transaction?.oCustomer?.bCounter" (click)="openCustomer(transaction.oCustomer)">
                         {{ 'VIEW' | translate }}
                     </button>
@@ -22,35 +24,80 @@
             </div>
             <div class="row fw-bold gy-1">
                 <div class="col-md-12">
-                    <div class="text-gray-900 mt-2">{{ transaction?.oCustomer?.sFirstName }} {{
-                        transaction?.oCustomer?.sPrefix}} {{ transaction?.oCustomer?.sLastName }} </div>
-                </div>
-                <div class="col-md-6" *ngIf="!transaction?.oCustomer?.bCounter">
-                    <div class="mt-2 text-muted">{{ "INVOVICE_ADDRESS" | translate}}</div>
-                    <div class="text-gray-800 mt-2">
-                        <span> {{ transaction?.oCustomer?.oInvoiceAddress?.sStreet }} {{
-                            transaction?.oCustomer?.oInvoiceAddress?.sHouseNumber }} </span>
-                        <span> {{ transaction?.oCustomer?.oInvoiceAddress?.sPostalCode }} {{
-                            transaction?.oCustomer?.oInvoiceAddress?.sCity }} </span>
-                        <span> {{ transaction?.oCustomer?.oInvoiceAddress?.sCountry }}</span>
+                    <div class="text-gray-900 mt-2">
+                        {{ transaction?.oCustomer?.sFirstName }} 
+                        {{ transaction?.oCustomer?.sPrefix}} 
+                        {{ transaction?.oCustomer?.sLastName }} 
                     </div>
                 </div>
-                <div class="col-md-6" *ngIf="!transaction?.oCustomer?.bCounter">
+                
+                <ng-container *ngIf="!transaction?.oCustomer?.bCounter">
+                <div class="col-md-6">
+                    <div class="mt-2 text-muted">{{ "INVOVICE_ADDRESS" | translate}}</div>
+                    <div class="text-gray-800 mt-2">
+                        <span> 
+                            {{ transaction?.oCustomer?.oInvoiceAddress?.sStreet }} 
+                            {{ transaction?.oCustomer?.oInvoiceAddress?.sHouseNumber }} 
+                        </span>
+                        <span> 
+                            {{ transaction?.oCustomer?.oInvoiceAddress?.sPostalCode }} 
+                            {{ transaction?.oCustomer?.oInvoiceAddress?.sCity }} </span>
+                        <span> 
+                            {{ transaction?.oCustomer?.oInvoiceAddress?.sCountry }}
+                        </span>
+                    </div>
+                </div>
+                <div class="col-md-6">
                     <div class="mt-2 text-muted">{{ "SHIPPING_ADDRESS" | translate}}</div>
                     <div class="text-gray-800 mt-2">
-                        <span> {{ transaction?.oCustomer?.oShippingAddress?.sStreet }} {{
-                            transaction?.oCustomer?.oShippingAddress?.sHouseNumber }} </span>
-                        <span> {{ transaction?.oCustomer?.oShippingAddress?.sPostalCode }} {{
-                            transaction?.oCustomer?.oShippingAddress?.sCity }} </span>
-                        <span> {{ transaction?.oCustomer?.oShippingAddress?.sCountry }}</span>
+                        <span> 
+                            {{ transaction?.oCustomer?.oShippingAddress?.sStreet }} 
+                            {{ transaction?.oCustomer?.oShippingAddress?.sHouseNumber }} 
+                        </span>
+                        <span> 
+                            {{ transaction?.oCustomer?.oShippingAddress?.sPostalCode }} 
+                            {{ transaction?.oCustomer?.oShippingAddress?.sCity }} 
+                        </span>
+                        <span> 
+                            {{ transaction?.oCustomer?.oShippingAddress?.sCountry }}
+                        </span>
                     </div>
                 </div>
                 <div class="col-md-12">
-                    <div class="text-gray-800 mt-2" *ngIf="!transaction?.oCustomer?.bCounter">{{ transaction?.oCustomer?.sEmail }}</div>
+                    <div class="text-gray-800 mt-2" *ngIf="!transaction?.oCustomer?.bCounter">
+                        {{ transaction?.oCustomer?.sEmail }}
+                    </div>
                     <div class="text-gray-800 mt-2">{{ transaction?.oCustomer?.sMobile }} &nbsp; &nbsp; {{
-                        transaction?.oCustomer?.sLandLine }}</div>
+                        transaction?.oCustomer?.sLandLine }}
+                    </div>
                 </div>
+                <div class="col-md-12">
+                    <div class=" mt-2">
+                        <span class="text-muted me-5">{{ 'COMPANY_NAME' | translate}}: </span> 
+                        <span class="text-gray-800">{{ transaction?.oCustomer?.sCompanyName }}</span>
+                    </div>
+                    <div class=" mt-2">
+                        <span class="text-muted me-5">{{ 'VAT_NUMBER' | translate}}: </span> 
+                        <span class="text-gray-800">{{ transaction?.oCustomer?.sVatNumber }}</span>
+                    </div>
+                </div>
+                </ng-container>
             </div>
+            <!-- CURRENT_CUSTOMER End -->
+           
+            <!-- SYSTEM_CUSTOMER Start-->
+            <!-- WIP (uncomment this) -->
+            <!-- <div class="d-flex justify-content-between align-items-center">
+                <h3 class="fw-bolder mb-4">
+                    <span>{{ "SYSTEM_CUSTOMER" | translate }} </span>
+                </h3>
+                <ng-container>
+                    <button class="btn btn-primary" (click)="openCustomer({ _id: transaction.iCustomerId})">
+                        {{ 'VIEW' | translate }}
+                    </button>
+                </ng-container>
+            </div> -->
+            <!-- SYSTEM_CUSTOMER End -->
 
             <div class="d-flex justify-content-between align-items-center">
               <h3 class="fw-bolder mb-4">
@@ -72,6 +119,8 @@
             </div>
             </div>
         </div>
+        
+
         <div class="col-md-8 row" *ngIf="eType === 'cash-register-revenue'">
             <h3 class="fw-bolder mb-4">
                 <span>{{ "TRANSACTION_OVERVIEW" | translate }}</span>
@@ -84,7 +133,7 @@
                 </div>
                 <label class="col-md-4 mt-3 text-muted">{{"DATE_TIME" | translate}}</label>
                 <div class="col-md-8">
-                    <div class="text-gray-800 mt-3">{{ transaction.dCreatedDate }}</div>
+                    <div class="text-gray-800 mt-2">{{ transaction.dCreatedDate | date:'dd-MM-YYYY hh:mm' }}</div>
                 </div>
                 <!-- <label class="col-md-4 mt-2 text-muted">{{"PAY_METHOD" | translate}}</label>
                 <div class="col-md-8">
@@ -199,7 +248,6 @@
                 </button>
             </div>
         </div>
-        <!-- </div> -->
         <div class="row">
             <div class="col-12">
                 <h3 class="fw-bolder mb-3">
@@ -207,7 +255,7 @@
                 </h3>
                 <div class="row fw-bold gy-1 d-flex flex-wrap py-5">
                     <div class="flex-equal me-5">
-                        <table class="table table-hover table-rounded table-striped border gy-7 gs-7" *ngIf="transaction?.bCompletedProcessing">
+                        <table class="table table-hover table-rounded table-striped border gy-3 gs-7" *ngIf="transaction?.bCompletedProcessing">
                             <thead>
                                 <tr class="fw-bold fs-6 text-gray-400">
                                     <td class="text-muted">{{'IMAGE' | translate}}</td>
@@ -218,18 +266,18 @@
                                     <ng-container *ngIf="transaction.totalRedeemedLoyaltyPoints > 0">
                                         <td class="text-muted">{{'LOYALTY_POINTS_REDEEMED' | translate}}</td>
                                     </ng-container>
-                                    <td class="text-muted"> {{'SAVING_POINTS' | translate}}</td>
+                                    <td class="text-muted"  *ngIf="savingPointsSetting && !transaction?.oCustomer?.bCounter"> {{'SAVING_POINTS' | translate}}</td>
                                     <td class="text-muted">{{'TAX' | translate}}</td>
                                     <td class="text-muted">{{'TOTAL_PRICE' | translate}}</td>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr *ngFor="let item of transaction.aTransactionItems">
-                                    <td>
+                                    <td (click)="openProductInfo(item)">
                                         <img src="{{ item.aImage[0] || imagePlaceHolder}}"
                                             (error)="item.aImage[0]=imagePlaceHolder" class="product_image">
                                     </td>
-                                    <td>
+                                    <td (click)="openProductInfo(item)">
                                         <div>
                                             {{ item.sArticleGroupName }} {{ item.sProductNumber }} <br />
                                             <!-- {{ item.sProductName }}   -->
@@ -240,8 +288,8 @@
                                             
                                             <div *ngIf="item.related?.length">
                                                 {{ "ALREADY_PAID" | translate}}:<br />
-                                                {{item.sTransactionNumber}} | {{item.nPaymentAmount}} ({{"THIS_RECEIPT" | translate }})<br />
-                                                <span *ngFor="let obj of item.related">{{obj.sTransactionNumber}} | {{obj.nRevenueAmount }}<br /></span>
+                                                {{item.sTransactionNumber}} | {{item.totalPaymentAmount }} ({{"THIS_RECEIPT" | translate }})<br />
+                                                <span *ngFor="let obj of item.related">{{obj.sTransactionNumber}} | {{obj.totalPaymentAmount }}<br /></span>
                                             </div>
                                         </div>
                                         <div *ngIf="item?.aProductVariant?.length > 0">
@@ -272,7 +320,7 @@
                                     <ng-container *ngIf="item.nRedeemedLoyaltyPoints > 0">
                                         <td>{{ item.nRedeemedLoyaltyPoints }} </td>
                                     </ng-container>
-                                    <td>{{item.nSavingsPoints || 0}} </td>
+                                    <td *ngIf="savingPointsSetting && !transaction?.oCustomer?.bCounter">{{item.nSavingsPoints || 0}} </td>
                                     <td>{{item.nVatRate}} % ({{item.vat || 0 | currency: tillService.currency }})</td>
                                     <td>
                                         <div class="d-flex align-items-center justify-content-between">
@@ -306,7 +354,7 @@
                                     <ng-container *ngIf="transaction.totalRedeemedLoyaltyPoints > 0">
                                         <td>{{transaction.totalRedeemedLoyaltyPoints}}</td>
                                     </ng-container>
-                                    <td>{{ transaction.totalSavingPoints }}</td>
+                                    <td  *ngIf="savingPointsSetting && !transaction?.oCustomer?.bCounter">{{ transaction.totalSavingPoints }}</td>
                                     <td>{{ transaction.totalVat | currency: tillService.currency }}</td>
                                     <td>{{ transaction.total | currency: tillService.currency}}</td>
                                 </tr>
@@ -320,30 +368,87 @@
                     <div *ngIf="loading || !transaction?.bCompletedProcessing" class="spinner-border mx-auto"></div>
                 </div>
             </div>
-            <div class="col-4">
+            <div [ngClass]="paymentEditMode ? 'col-8' : 'col-6'">
                 <h3 class="fw-bolder mb-3">
                     <span>{{ "PAYMENTS" | translate }}</span>
+                    <ng-container *ngIf="transaction.aPayments?.length">
+                        <button class="btn" (click)="toggleEditPaymentMode()">
+                            <i class="fa fa-edit"></i>
+                        </button>
+                    </ng-container>
                 </h3>
                 <div class="row fw-bold gy-1 d-flex flex-wrap py-5">
                     <div class="flex-equal me-5">
-                        <table class="table table-hover table-rounded table-striped border gs-7">
+                        <table class="table table-hover table-rounded table-striped border gy-3 gs-7">
                             <thead>
                                 <tr class="fw-bold fs-6 text-gray-400">
                                     <td class="text-muted">{{'METHOD' | translate}}</td>
+                                    <td class="text-muted">{{'REMARKS' | translate}}</td>
                                     <td class="text-muted">{{'AMOUNT' | translate}}</td>
+                                    <th *ngIf="paymentEditMode" class="w-150px">{{ 'NEW_AMOUNT' | translate}}</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr *ngFor="let item of transaction.aPayments">
                                     <td>
                                         {{item.sMethod}} <br/> 
-                                        <span *ngIf="item?.sRemarks"> {{item.sRemarks | translate}}<br/></span>
-                                        ({{ item.dCreatedDate }})
+                                        ({{ item.dCreatedDate | date:'dd-MM-YYYY hh:mm' }})
                                     </td>
+                                    <td>{{ ((item?.sRemarks) ? item.sRemarks : '' ) | translate}}</td>
                                     <td>{{item.nAmount || 0}}</td>
+                                    <td *ngIf="paymentEditMode">
+                                        <div *ngIf="!item.bIgnore">
+                                            <input class="form-control" type="number" [(ngModel)]="item.nNewAmount" (ngModelChange)="reCalculateTotal()">
+                                        </div>
+                                    </td>
                                 </tr>
+                                <ng-container *ngIf="paymentEditMode">
+                                    <tr *ngFor="let oPayment of aNewSelectedPaymentMethods; let i = index">
+                                        <td>
+                                            <div>
+                                                <ng-select [(ngModel)]="aNewSelectedPaymentMethods[i]" [clearable]="false">
+                                                    <ng-option [value]="option" *ngFor="let option of payMethods">
+                                                        {{ option.sName | translate }}
+                                                    </ng-option>
+                                                </ng-select>
+                                            </div>
+                                        </td>
+                                        <td></td>
+                                        <td></td>
+                                        <td class="d-flex align-items-center">
+                                            <div>
+                                                <input class="form-control" type="number" [(ngModel)]="oPayment.nAmount"
+                                                (ngModelChange)="reCalculateTotal()">
+                                            </div>
+                                            <div>
+                                                <button class="btn p-0 ms-2" (click)="aNewSelectedPaymentMethods.splice(i,1)">
+                                                    <i class="fa fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="4" class="text-start">
+                                            <span class="cursor-pointer text-gray-800" (click)="addRow()"> +
+                                                {{ "CLICK_HERE_TO_ADD_MORE" | translate}}</span>
+                                        </td>
+                                    </tr>
+                                </ng-container>
                             </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th class="text-end">{{ 'TOTAL' | translate}}</th>
+                                    <th class="w-150px">{{ transaction.nPaymentMethodTotal }}</th>
+                                    <ng-container *ngIf="paymentEditMode">
+                                        <th>
+                                            <span [ngClass]="transaction.nNewPaymentMethodTotal === transaction.nPaymentMethodTotal ? 'valid' : 'invalid' ">
+                                                {{ transaction.nNewPaymentMethodTotal }}</span>
+                                        </th>
+                                    </ng-container>
+                                </tr>
+                            </tfoot>
                         </table>
+                        <button *ngIf="paymentEditMode" class="btn btn-sm btn-primary" (click)="saveUpdatedPayments($event)" [disabled]="transaction.nNewPaymentMethodTotal !== transaction.nPaymentMethodTotal"> {{ "SAVE" | translate}}</button>
                     </div>
                 </div>
             </div>

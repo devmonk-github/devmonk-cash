@@ -310,7 +310,7 @@ export class Js2zplService {
   }
 
   generateCommand(request: any, data: any, layout_command = true) {
-    if (!request || !data) return
+    if (!request) return
     if (data) { this.alldata = data; }
 
 

@@ -104,6 +104,37 @@ export class ServicesComponent implements OnInit, OnDestroy {
     }
   }
 
+  // Function for reset selected filters
+  resetFilters() {
+    this.requestParams.searchValue = "";
+    this.requestParams = {
+      selectedTransactionStatuses: [],
+      locations: [],
+      selectedLocations: [],
+      aSelectedBusinessPartner: [],
+      iEmployeeId: '',
+      iAssigneeId: '',
+      searchValue: '',
+      sortBy: { key: '_id', selected: true, sort: 'asc' },
+      sortOrder: 'asc'
+    };
+    this.selectedWorkstations = [];
+    this.filterDates = {
+      create: {
+        minDate: new Date('01-01-2015'),
+        maxDate: new Date(new Date().setHours(23, 59, 59)),
+      },
+      estimate: {
+        minDate: undefined,
+        maxDate: undefined
+        // minDate: new Date('01-01-2015'),
+        // maxDate: this.addDays(new Date(new Date().setHours(23, 59, 59)), 20),
+      }
+    }
+    this.showAdvanceSearch = false;
+    this.loadTransaction();
+  }
+
   paymentMethods: Array<any> = ['All', 'Cash', 'Credit', 'Card', 'Gift-Card'];
   transactionTypes: Array<any> = ['All', 'Refund', 'Repair', 'Gold-purchase', 'Gold-sale', 'order', 'giftcard', 'offer', 'reservation'];
   transactionStatus: string = 'all';
@@ -400,6 +431,7 @@ export class ServicesComponent implements OnInit, OnDestroy {
         const customers = result.data[0].result || [];
         for (let i = 0; i < this.activities.length; i++) {
           for (let j = 0; j < customers.length; j++) {
+            if (this.activities[i]?.oCustomer?._id) continue;
             if (this.activities[i]?.iCustomerId?.toString() == customers[j]?._id?.toString()) {
               this.activities[i].oCustomer = {
                 sFirstName: customers[j].sFirstName,

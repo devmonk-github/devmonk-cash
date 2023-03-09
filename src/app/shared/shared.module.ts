@@ -56,7 +56,8 @@ import { CustomerGroupDetailComponent } from './components/customer-group-detail
 import { CurrencyFormatPipe } from "./pipes/currency-format.pipe";
 import { ActivityItemExportComponent } from './components/activity-item-export/activity-item-export.component';
 import { TransactionsPdfService } from "./service/transactions-pdf.service";
-import { DateTranslatePipe } from './pipes/date-translate.pipe';
+//import { DateTranslatePipe } from './pipes/date-translate.pipe';
+import { SelectPrintPaperDialogComponent } from "./components/select-print-paper-dialog/select-print-paper-dialog.component";
 
 @NgModule({
   declarations: [
@@ -94,7 +95,8 @@ import { DateTranslatePipe } from './pipes/date-translate.pipe';
     CustomerGroupDetailComponent,
     CurrencyFormatPipe,
     ActivityItemExportComponent,
-    DateTranslatePipe
+    //DateTranslatePipe,
+    SelectPrintPaperDialogComponent
   ],
   imports: [
     CommonModule,
@@ -136,9 +138,10 @@ import { DateTranslatePipe } from './pipes/date-translate.pipe';
     AddEditWorkstationComponent,
     SortPipe,
     CurrencyFormatPipe,
-    DateTranslatePipe
+    //DateTranslatePipe,
+    SelectPrintPaperDialogComponent
   ],
-  providers: [CurrencyPipe, CommonPrintSettingsService, PdfService, ReceiptService,TransactionsPdfService , DateTranslatePipe]
+  providers: [CurrencyPipe, CommonPrintSettingsService, PdfService, ReceiptService, TransactionsPdfService]
 })
 
 export class SharedModule {

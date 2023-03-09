@@ -79,6 +79,7 @@ export class Pn2escposService {
       if (this.helperValidateJSON(dataObject)) {
         this.data = JSON.parse(dataObject);
       }
+      // console.log(this.data, template);
 
       var commandString = "";
 
@@ -212,7 +213,7 @@ export class Pn2escposService {
             }
 
             if (action.if) {
-              console.log('action.if 212 ', action.if);
+              // console.log('action.if 212 ', action.if);
               if (this.checkConditions(action.if, requestedData[a])) {
                 foreachString += this.doAction(action, i, a)
               }

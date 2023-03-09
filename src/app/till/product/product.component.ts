@@ -106,8 +106,10 @@ export class ProductComponent implements OnInit{
   }
 
   changeTypeArray() {
-    if (!this.item.oType.refund) {
-      this.item.price = -this.item.price;
+    if (!this.item.oType.bRefund) {
+      this.item.tType = 'pay';
+    }else{
+      this.item.tType = 'refund';
     }
     this.updatePayments();
   }

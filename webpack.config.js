@@ -222,6 +222,14 @@ module.exports = {
     //   },
     //   shared: share(sharedLibrary)
     // }),
+    new ModuleFederationPlugin({
+      name: "ImportGiftCardModule",
+      filename: "import-gift-card.js",
+      exposes: {
+        './ImportGiftCardModule': './src/app/import-gift-card/import-gift-card.module.ts',
+      },
+      shared: share(sharedLibrary)
+    }),
     sharedMappings.getPlugin()
   ],
 };

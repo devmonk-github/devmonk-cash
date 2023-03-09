@@ -9,8 +9,6 @@ import { faTimes, faSync } from '@fortawesome/free-solid-svg-icons';
   styleUrls: ['./customer-details-import.component.sass']
 })
 export class CustomerDetailsImportComponent implements OnInit, OnChanges {
-
-
   @Input() customerDetailsForm: any;
   @Output() customerDetailsFormChange: EventEmitter<any> = new EventEmitter();
   @Input() updateTemplateForm: any;

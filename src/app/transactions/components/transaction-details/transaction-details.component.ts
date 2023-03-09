@@ -3,20 +3,18 @@ import { faTimes, faSync, faFileInvoice, faDownload, faReceipt, faAt, faUndoAlt,
 import { TransactionItemsDetailsComponent } from 'src/app/shared/components/transaction-items-details/transaction-items-details.component';
 import { ApiService } from 'src/app/shared/service/api.service';
 import { DialogComponent, DialogService } from 'src/app/shared/service/dialog';
-// import { PdfService } from 'src/app/shared/service/pdf.service';
 import * as _moment from 'moment';
 import { CustomerDetailsComponent } from 'src/app/shared/components/customer-details/customer-details.component';
 import { ActivityDetailsComponent } from 'src/app/shared/components/activity-details-dialog/activity-details.component';
 import { ReceiptService } from 'src/app/shared/service/receipt.service';
-import { Pn2escposService } from 'src/app/shared/service/pn2escpos.service';
-import { PrintService } from 'src/app/shared/service/print.service';
 import { Observable } from 'rxjs';
 import { ToastService } from 'src/app/shared/components/toast';
 import * as JsBarcode from 'jsbarcode';
 import { TillService } from 'src/app/shared/service/till.service';
 import { TranslateService } from '@ngx-translate/core';
+import { TaxService } from 'src/app/shared/service/tax.service';
+
 const moment = (_moment as any).default ? (_moment as any).default : _moment;
-// import { faMagnifyingGlassPlus } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-transaction-details',
@@ -24,7 +22,7 @@ const moment = (_moment as any).default ? (_moment as any).default : _moment;
   styleUrls: ['./transaction-details.component.sass']
 })
 export class TransactionDetailsComponent implements OnInit, AfterContentInit {
-
+  componentRef: any;
   dialogRef: DialogComponent;
   faTimes = faTimes;
   faSync = faSync;
@@ -37,21 +35,26 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   faClipboard = faClipboard;
   faTrashAlt = faTrashAlt;
   transaction: any = {};
-  iBusinessId: string = '';
-  iLocationId: string = '';
-  iWorkstationId: string = '';
+  
+  iBusinessId: any = localStorage.getItem("currentBusiness");
+  iLocationId: any = localStorage.getItem("currentLocation");
+  iWorkstationId: any = localStorage.getItem("currentWorkstation");
+
+  /* Check if saving points are enabled */
+  savingPointsSetting:boolean = JSON.parse(localStorage.getItem('savingPoints') || '');
+  
   loading: boolean = true;
   customerLoading: boolean = true;
   customer: any = {};
   imagePlaceHolder: string = '../../../../assets/images/no-photo.svg';
   eType: string = '';
-  transactionId: string = '5c2f276e86a7527e67a45e9d'
+  transactionId: string;
   pdfGenerating: Boolean = false;
   downloadWithVATLoading: Boolean = false;
   businessDetails: any = {};
   ableToDownload: Boolean = false;
   from !: string;
-  thermalPrintSettings !: any;
+  // thermalPrintSettings !: any;
   employeesList:any =[];
 
   // private pn2escposService = new Pn2escposService(Object, this.translateService);
@@ -59,102 +62,70 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   printActionSettings:any;
   printWithVATLoading: boolean = false;
 
+  paymentEditMode = false;
+  aNewSelectedPaymentMethods: any = [];
+  payMethods: any;
+
+  translation: any = [];
+
   constructor(
     private viewContainerRef: ViewContainerRef,
     private apiService: ApiService,
     private dialogService: DialogService,
     private receiptService: ReceiptService,
-    private printService: PrintService,
     private toastService: ToastService,
     public tillService: TillService,
     private translateService: TranslateService,
     private cdr: ChangeDetectorRef,
-    private pn2escposService: Pn2escposService
-    // private compiler: Compiler,
-    // private injector: Injector,
+    private taxService: TaxService
   ) {
     const _injector = this.viewContainerRef.parentInjector;
     this.dialogRef = _injector.get<DialogComponent>(DialogComponent);
   }
 
   async ngOnInit() {
-    this.iBusinessId = localStorage.getItem("currentBusiness") || '';
-    this.iLocationId = localStorage.getItem("currentLocation") || '';
-    this.iWorkstationId = localStorage.getItem("currentWorkstation") || '';
-    // let language: any = localStorage.getItem('language')
+    let translationKey = ['SUCCESSFULLY_UPDATED', 'NO_DATE_SELECTED'];
+    this.translateService.get(translationKey).subscribe((res: any) => {
+      this.translation = res;
+    })
+    
+    console.log(this.transaction);
+
     this.transaction.businessDetails = this.businessDetails;
     this.transaction.currentLocation = this.businessDetails.currentLocation;
     
+    this.getPaymentMethods()
+    
     this.transaction = await this.tillService.processTransactionForPdfReceipt(this.transaction);
-    let nTotalOriginalAmount = 0, nTotalQty = 0;
+    this.transaction.nTotalOriginalAmount = 0;
+    this.transaction.nTotalQty = 0;
 
     this.transaction.aTransactionItems.forEach((item: any) => {
-      // let description = (item?.nDiscountToShow > 0) nTotalQty? `Original amount: ${item.nPriceIncVat}\n` : '';
-      nTotalQty += item.nQuantity;
+      
+      this.transaction.nTotalQty += item.nQuantity;
       let description = (item?.totalPaymentAmount != item?.nPriceIncVatAfterDiscount) ? `${this.translateService.instant('ORIGINAL_AMOUNT_INC_DISC')}: ${item.nPriceIncVatAfterDiscount}\n` : '';
       if (item?.related?.length) {
-        nTotalOriginalAmount += item.nPriceIncVatAfterDiscount;
+        this.transaction.nTotalOriginalAmount += item.nPriceIncVatAfterDiscount;
         if (item.nPriceIncVatAfterDiscount !== item.nRevenueAmount) {
-          description += `${this.translateService.instant('ALREADY_PAID')}: \n${item.sTransactionNumber} | ${item.nRevenueAmount} (${this.translateService.instant('THIS_RECEIPT')})\n`;
+          description += `${this.translateService.instant('ALREADY_PAID')}: \n${item.sTransactionNumber} | ${item.totalPaymentAmount} (${this.translateService.instant('THIS_RECEIPT')})\n`;
 
           item.related.forEach((related: any) => {
-            description += `${related.sTransactionNumber} | ${related.nRevenueAmount}\n`;
+            description += `${related.sTransactionNumber} | ${related.nRevenueAmount * related.nQuantity}\n`;
           });
         }
       }
       item.description = description;
     });
-    this.transaction.nTotalOriginalAmount = nTotalOriginalAmount;
-    this.transaction.nTotalQty = nTotalQty;
-    
+    // console.log(this.transaction);
     this.loading = false;
 
-    this.getPdfPrintSetting()
-    this.getThermalPrintSetting()
-    this.getPdfPrintSetting({ oFilterBy: { sMethod: 'actions' } })
+    this.getPrintSetting()
     this.mapEmployee();
-
-    // console.log(this.transaction)
-
   }
 
   ngAfterContentInit(): void {
     this.cdr.detectChanges();
   }
-  // fetchBusinessDetails() {
-  //   this.apiService.getNew('core', '/api/v1/business/' + this.iBusinessId)
-  //     .subscribe(
-  //       (result: any) => {
-  //         this.businessDetails = result.data;
-  //         this.businessDetails.currentLocation = this.businessDetails?.aLocation?.filter((location: any) => location?._id.toString() == this.iLocationId.toString())[0];
-  //         this.tillService.selectCurrency(this.businessDetails.currentLocation);
-  //         this.ableToDownload = true;
-  //       })
-  // }
-
-  // getRelatedTransactionItem(iActivityItemId: string, iTransactionItemId: string, index: number) {
-  //   return this.apiService.getNew('cashregistry', `/api/v1/transaction/item/activityItem/${iActivityItemId}?iBusinessId=${this.iBusinessId}&iTransactionItemId=${iTransactionItemId}`).toPromise();
-  // }
-
-  // getRelatedTransaction(iActivityId: string, iTransactionId: string) {
-  //   const body = {
-  //     iBusinessId: this.iBusinessId,
-  //     iTransactionId: iTransactionId
-  //   }
-  //   this.apiService.postNew('cashregistry', '/api/v1/transaction/activity/' + iActivityId, body)
-  //     .subscribe(
-  //       (result: any) => {
-  //         this.transaction.related = result.data || [];
-  //         this.transaction.related.forEach((obj: any) => {
-  //           obj.aPayments.forEach((obj: any) => {
-  //             obj.dCreatedDate = moment(obj.dCreatedDate).format('DD-MM-yyyy hh:mm');
-  //           });
-  //           this.transaction.aPayments = this.transaction.aPayments.concat(obj.aPayments);
-  //         })
-  //       }, (error) => {
-  //         console.log(error);
-  //       })
-  // }
 
   close(value: boolean) {
     this.dialogRef.close.emit(value);
@@ -163,21 +134,28 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   downloadWithVAT(print: boolean = false) {
     this.generatePDF(print);
   }
+  openProductInfo(product: any) {
+    
+  }
 
   downloadWebOrder() {
     this.generatePDF(false);
   }
 
-  getPdfPrintSetting(oFilterBy?: any) {
+  getPrintSetting() {
     const oBody = {
       iLocationId: this.iLocationId,
-      ...oFilterBy
     }
     this.apiService.postNew('cashregistry', `/api/v1/print-settings/list/${this.iBusinessId}`, oBody).subscribe((result:any) => {
-      if(oFilterBy) {
-        this.printActionSettings = result?.data[0]?.result[0].aActions;
-      } else {
-        this.printSettings = result?.data[0]?.result;
+      if (result?.data?.length && result?.data[0]?.result?.length) {
+        this.printSettings = [];
+        result?.data[0]?.result.forEach((settings: any) => {
+          if (settings?.sMethod === 'actions') {
+            this.printActionSettings = settings?.aActions || [];
+          } else {
+            this.printSettings.push(settings);
+          }
+        })
       }
     });
   }
@@ -196,33 +174,22 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
     else 
       this.downloadWithVATLoading = true;
 
-    
-    // for (let i = 0; i < this.businessDetails?.aLocation.length; i++) {
-    //   if (this.businessDetails.aLocation[i]?._id.toString() == this.iLocationId.toString()) {
-    //   }
-    // }
-
     const template = await this.getTemplate('regular').toPromise();
-    // const template = await this.getTemplate('single-activity').toPromise();
     const oDataSource = JSON.parse(JSON.stringify(this.transaction));
       
     oDataSource.sBarcodeURI = this.generateBarcodeURI(false, oDataSource.sNumber);
     oDataSource.sActivityBarcodeURI = this.generateBarcodeURI(false, oDataSource.sActivityNumber);
     oDataSource.sBusinessLogoUrl = (await this.getBase64FromUrl(oDataSource?.businessDetails?.sLogoLight).toPromise()).data;
-    // oDataSource.oCustomer = {
-    //   sFirstName: this.transaction.oCustomer.sFirstName,
-    //   sLastName: this.transaction.oCustomer.sLastName,
-    //   sEmail: this.transaction.oCustomer.sEmail,
-    //   sMobile: this.transaction.oCustomer.oPhone?.sCountryCode + this.transaction.oCustomer.oPhone?.sMobile,
-    //   sLandLine: this.transaction.oCustomer.oPhone?.sLandLine,
 
-    // };
     console.log(oDataSource)
 
     if(oDataSource?.oCustomer?.bCounter === true) {
       oDataSource.oCustomer = {};
     }
 
+    oDataSource?.aPayments?.forEach((payment: any) => {
+      payment.dCreatedDate = moment(payment.dCreatedDate).format('DD-MM-yyyy hh:mm');
+    })
     
     this.receiptService.exportToPdf({
       oDataSource: oDataSource,
@@ -254,83 +221,12 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
     return this.apiService.getNew('cashregistry', `/api/v1/pdf/templates/${this.iBusinessId}?eType=${type}&iLocationId=${this.iLocationId}`);
   }
 
-  fetchCustomer(customerId: any) {
-    this.apiService.getNew('customer', `/api/v1/customer/${customerId}?iBusinessId=${this.iBusinessId}`).subscribe(
-      (result: any) => {
-
-        // console.log('fetch customer result', result)
-        // this.transaction.oCustomer = result;
-        this.transaction.oCustomer = {
-          sFirstName: result?.sFirstName,
-          sPrefix: result?.sPrefix,
-          sLastName: result?.sLastName,
-          sEmail: result?.sEmail,
-          sMobile: result?.oPhone?.sCountryCode + result?.oPhone?.sMobile,
-          sLandLine: result?.oPhone?.sLandLine,
-          oInvoiceAddress: result?.oInvoiceAddress,
-          oShippingAddress: result?.oShippingAddress
-        };
-
-      },
-      (error: any) => {
-        console.error(error)
-      }
-    );
-  }
-
   openTransaction(transaction: any, itemType: any) {
     this.dialogService.openModal(TransactionItemsDetailsComponent, { cssClass: "modal-xl", context: { transaction, itemType } })
       .instance.close.subscribe(result => {
-        const transactionItems: any = [];
         if (result.transaction) {
-          result.transactionItems.forEach((transactionItem: any) => {
-            if (transactionItem.isSelected) {
-              const { tType } = transactionItem;
-              let paymentAmount = transactionItem.nQuantity * transactionItem.nPriceIncVat - transactionItem.nPaidAmount;
-              if (tType === 'refund') {
-                paymentAmount = -1 * transactionItem.nPaidAmount;
-                transactionItem.oType.bRefund = true;
-              } else if (tType === 'revert') {
-                paymentAmount = transactionItem.nPaidAmount;
-                transactionItem.oType.bRefund = false;
-              };
-              transactionItems.push({
-                name: transactionItem.sProductName || transactionItem.sProductNumber,
-                iActivityItemId: transactionItem.iActivityItemId,
-                nRefundAmount: transactionItem.nPaidAmount,
-                iLastTransactionItemId: transactionItem.iTransactionItemId,
-                prePaidAmount: tType === 'refund' ? transactionItem.nPaidAmount : transactionItem.nPaymentAmount,
-                type: transactionItem.sGiftCardNumber ? 'giftcard' : transactionItem.oType.eKind,
-                eTransactionItemType: 'regular',
-                nBrokenProduct: 0,
-                tType,
-                oType: transactionItem.oType,
-                aImage: transactionItem.aImage,
-                nonEditable: transactionItem.sGiftCardNumber ? true : false,
-                sGiftCardNumber: transactionItem.sGiftCardNumber,
-                quantity: transactionItem.nQuantity,
-                price: transactionItem.nPriceIncVat,
-                iRepairerId: transactionItem.iRepairerId,
-                oArticleGroupMetaData: transactionItem.oArticleGroupMetaData,
-                iEmployeeId: transactionItem.iEmployeeId,
-                iBrandId: transactionItem.iBrandId,
-                discount: 0,
-                tax: transactionItem.nVatRate,
-                iSupplierId: transactionItem.iSupplierId,
-                paymentAmount,
-                description: transactionItem.sDescription,
-                oBusinessProductMetaData: transactionItem.oBusinessProductMetaData,
-                sServicePartnerRemark: transactionItem.sServicePartnerRemark,
-                eActivityItemStatus: transactionItem.eActivityItemStatus,
-                eEstimatedDateAction: transactionItem.eEstimatedDateAction,
-                bGiftcardTaxHandling: transactionItem.bGiftcardTaxHandling,
-                open: true,
-              });
-            }
-          });
-          result.transactionItems = transactionItems;
-          localStorage.setItem('fromTransactionPage', JSON.stringify(result));
-          localStorage.setItem('recentUrl', '/business/transactions');
+          const data = this.tillService.processTransactionSearchResult(result);
+          localStorage.setItem('fromTransactionPage', JSON.stringify(data));
           setTimeout(() => {
             this.close(true);
           }, 100);
@@ -338,29 +234,19 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
       });
   }
 
-  getThermalPrintSetting() {
-    this.apiService.getNew('cashregistry', `/api/v1/print-settings/${this.iBusinessId}/${this.iWorkstationId}/thermal/regular`).subscribe((result:any) => {
-      if (result?.data?._id) {
-        this.thermalPrintSettings = result?.data;
-      }
-    });
-  }
-
   openCustomer(customer: any) {
-    if(customer?._id){
-      this.apiService.getNew('customer' , `/api/v1/customer/${this.iBusinessId}/${customer._id}`).subscribe((result:any)=>{
-        if(result?.data){
+    if (customer?._id) {
+      this.apiService.getNew('customer', `/api/v1/customer/${this.iBusinessId}/${customer._id}`).subscribe((result: any) => {
+        if (result?.data) {
           this.dialogService.openModal(CustomerDetailsComponent,
             { cssClass: "modal-xl position-fixed start-0 end-0", context: { customerData: result?.data, mode: 'details', from: 'transactions' } }).instance.close.subscribe(result => { });
-        }else{
-           this.toastService.show({type:'warning' , text:'No customer data available'})
+        } else {
+          this.toastService.show({ type: 'warning', text: 'No customer data available' })
         }
-      }) 
-    }else{
-      this.toastService.show({type:'warning' , text:'No customer data available'})
+      })
+    } else {
+      this.toastService.show({ type: 'warning', text: 'No customer data available' })
     }
-
- 
   }
 
   async showActivityItem(activityItem: any, event: any) {
@@ -369,59 +255,137 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
     }
     activityItem.bFetchingActivityItem = true;
     event.target.disabled = true;
-    // const _oActivityitem: any = await this.apiService.postNew('cashregistry', `/api/v1/activities/items/${activityItem.iActivityItemId}`, oBody).toPromise();
-    // const oActivityItem = _oActivityitem?.data[0]?.result[0];
+    const _oActivityitem: any = await this.apiService.postNew('cashregistry', `/api/v1/activities/activity-item/${activityItem.iActivityItemId}`, oBody).toPromise();
+    const oActivityItem = _oActivityitem?.data[0]?.result[0];
+    console.log(oActivityItem);
     activityItem.bFetchingActivityItem = false;
     event.target.disabled = false;
-    this.dialogService.openModal(ActivityDetailsComponent, { cssClass: 'w-fullscreen', context: { activity:{_id:activityItem.iActivityItemId}, items: true, from: 'transaction-details' } })
-      .instance.close.subscribe((result: any) => {
-
-      });
+    this.dialogService.openModal(ActivityDetailsComponent, { cssClass: 'w-fullscreen', context: { activityItems:[oActivityItem], items: true, from: 'transaction-details' } })
+      .instance.close.subscribe((result: any) => {});
   }
 
   getThermalReceipt(type:string) {
-    if (!this.thermalPrintSettings?.nPrinterId || !this.thermalPrintSettings?.nComputerId) {
-      this.toastService.show({ type: 'danger', text: 'Check your business -> printer settings' });
-    }
-    
+    this.receiptService.printThermalReceipt({
+      oDataSource: this.transaction,
+      printSettings: this.printSettings,
+      apikey: this.businessDetails.oPrintNode.sApiKey,
+      title: this.transaction.sNumber,
+      sType: 'regular',
+      sTemplateType: type
+    });
+  }
 
-    this.apiService.getNew('cashregistry', `/api/v1/print-template/${type}/${this.iBusinessId}/${this.iLocationId}`).subscribe((result: any) => {
-      if (result?.data?.aTemplate?.length > 0) {
-        let transactionDetails = { businessDetails: this.businessDetails, ...this.transaction };
-        transactionDetails.oCustomer = {
-          ...transactionDetails.oCustomer,
-          ...transactionDetails.oCustomer.oPhone,
-          ...transactionDetails.oCustomer.oInvoiceAddress
-        };
-        let command;
-        try {
-          command = this.pn2escposService.generate(JSON.stringify(result.data.aTemplate), JSON.stringify(transactionDetails));
-          // console.log(command);
-        } catch (e) {
-          this.toastService.show({ type: 'danger', text: 'Template not defined properly. Check browser console for more details' });
-          console.log(e);
-          return;
-        }
-        // return;
-        this.printService.createPrintJob(this.iBusinessId, command, this.thermalPrintSettings?.nPrinterId, this.thermalPrintSettings?.nComputerId, this.businessDetails.oPrintNode.sApiKey, this.transaction.sNumber).then((response: any) => {
-          if (response.status == "PRINTJOB_NOT_CREATED") {
-            let message = '';
-            if (response.computerStatus != 'online') {
-              message = 'Your computer status is : ' + response.computerStatus + '.';
-            } else if (response.printerStatus != 'online') {
-              message = 'Your printer status is : ' + response.printerStatus + '.';
-            }
-            this.toastService.show({ type: 'warning', title: 'PRINTJOB_NOT_CREATED', text: message });
-          } else {
-            this.toastService.show({ type: 'success', text: 'PRINTJOB_CREATED', apiUrl: '/api/v1/printnode/print-job', templateContext: { apiKey: this.businessDetails.oPrintNode.sApiKey, id: response.id } });
-          }
-        })
-      } else if (result?.data?.aTemplate?.length == 0) {
-        this.toastService.show({ type: 'danger', text: 'TEMPLATE_NOT_FOUND' });
-      } else {
-        this.toastService.show({ type: 'danger', text: 'Error while fetching print template' });
+  addRow() {
+    this.aNewSelectedPaymentMethods.push({})
+    this.filterDuplicatePaymentMethods()
+  }
+
+  toggleEditPaymentMode() {
+    this.paymentEditMode = !this.paymentEditMode;
+    // this.addRow();
+    if (!this.paymentEditMode) this.aNewSelectedPaymentMethods = [];
+  }
+
+  reCalculateTotal() {
+    this.transaction.nNewPaymentMethodTotal = 0;
+    this.transaction.aPayments.forEach((item: any) => {
+      if (item.nNewAmount)
+        this.transaction.nNewPaymentMethodTotal += parseFloat(item.nNewAmount);
+    });
+    if (this.aNewSelectedPaymentMethods?.length)
+      this.aNewSelectedPaymentMethods.forEach((item: any) => {
+        if (item.nAmount)
+          this.transaction.nNewPaymentMethodTotal += parseFloat(item.nAmount);
+      });
+  }
+
+  filterDuplicatePaymentMethods() {
+    const aPresent:any = [...this.transaction.aPayments.map((item: any) => item.iPaymentMethodId), ...this.aNewSelectedPaymentMethods.map((item: any) => item._id)];
+    this.payMethods = this.payMethods.filter((item: any) => !aPresent.includes(item._id));
+  }
+
+  getPaymentMethods() {
+    this.payMethods = [];
+    this.apiService.getNew('cashregistry', `/api/v1/payment-methods/${this.iBusinessId}`).subscribe((result: any) => {
+      if (result?.data?.length) {
+        this.payMethods = [...result.data];
+        this.filterDuplicatePaymentMethods();
       }
     });
   }
 
+  async saveUpdatedPayments(event: any) {
+    event.target.disabled = true;
+    const nVatRate = await this.taxService.fetchDefaultVatRate({ iLocationId: this.iLocationId });
+    const aPayments = this.transaction.aPayments.filter((payments: any) => !payments?.bIgnore);
+    for (const item of aPayments) {
+      if (item.nAmount != item.nNewAmount) {
+        this.addExpenses({
+          amount: item.nNewAmount - item.nAmount,
+          type: 'payment-method-change',
+          comment: 'Payment method change',
+          iActivityId: this.transaction.iActivityId,
+          oPayment: {
+            iPaymentMethodId: item.iPaymentMethodId,
+            nAmount: item.nNewAmount - item.nAmount,
+            sMethod: item.sMethod,
+            sRemarks: 'PAYMENT_METHOD_CHANGE'
+          },
+          nVatRate: nVatRate
+        });
+      }
+    }
+
+      for (const item of this.aNewSelectedPaymentMethods) {
+        if (item.nAmount) {
+          this.addExpenses({
+            amount: item.nAmount,
+            type: 'payment-method-change',
+            comment: 'Payment method change',
+            iActivityId: this.transaction.iActivityId,
+            oPayment: {
+              iPaymentMethodId: item._id,
+              nAmount: item.nAmount,
+              sMethod: item.sName.toLowerCase(),
+              sRemarks: 'PAYMENT_METHOD_CHANGE'
+            },
+            nVatRate: nVatRate
+          });
+        }
+      }
+    
+    this.paymentEditMode = false;
+    event.target.disabled = false;
+
+    this.toastService.show({ type: "success", text: this.translation['SUCCESSFULLY_UPDATED']  });
+    this.close(false);
+  }
+
+  addExpenses(data: any) {
+    const value = localStorage.getItem('currentUser');
+    const currentEmployeeId = (value) ? JSON.parse(value).userId : '';
+    const transactionItem = {
+      sProductName: data?.type,
+      sComment: data.comment,
+      nPriceIncVat: data.amount,
+      nPurchasePrice: data.amount,
+      iBusinessId: this.iBusinessId,
+      nTotal: data.amount,
+      nPaymentAmount: data.amount,
+      nRevenueAmount: data.amount,
+      iWorkstationId: this.iWorkstationId,
+      iEmployeeId: currentEmployeeId,
+      iLocationId: this.iLocationId,
+      iActivityId: this.transaction.iActivityId,
+      oPayment: data?.oPayment,
+      oType: {
+        eTransactionType: data?.type,
+        bRefund: false,
+        eKind: data?.type,
+        bDiscount: false,
+      },
+      nVatRate: data?.nVatRate
+    };
+    return this.apiService.postNew('cashregistry', `/api/v1/till/add-expenses`, transactionItem).toPromise();
+  }
 }

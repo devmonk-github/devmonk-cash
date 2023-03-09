@@ -19,6 +19,7 @@ import { animate, style, transition, trigger } from '@angular/animations';
 import { CustomerDetailsComponent } from '../customer-details/customer-details.component';
 import { PdfService } from '../../service/pdf.service';
 import { ImageUploadComponent } from '../image-upload/image-upload.component';
+import { CustomerDialogComponent } from '../customer-dialog/customer-dialog.component';
 @Component({
   selector: 'app-activity-details',
   templateUrl: './activity-details.component.html',
@@ -92,7 +93,7 @@ export class ActivityDetailsComponent implements OnInit {
   quantity: Number = 0;
   userDetail: any;
   business: any;
-  oLocationName: any;
+  oLocationName: any= "";
   businessDetails: any;
   iLocationId: String = '';
   language: any;
@@ -123,7 +124,8 @@ export class ActivityDetailsComponent implements OnInit {
       'iBusinessBrandId',
       'iBrand',
       'iAssigneeId',
-      'iBusinessProductId'
+      'iBusinessProductId',
+      'oCustomer'
     ]
   };
   filteredEmployees: Array<any> = [];
@@ -139,6 +141,7 @@ export class ActivityDetailsComponent implements OnInit {
   iWorkstationId: string;
   aTemplates: any;
   eKindValue = ['discount', 'loyalty-points-discount', 'loyalty-points'];
+  oCurrentCustomer: any = {}; /* We are having the same oCustomer for Activity, ActivityItem and Transaction */
   eKindValueForLayout = [
     'regular',
     'expenses',
@@ -192,7 +195,14 @@ export class ActivityDetailsComponent implements OnInit {
 
 
   async ngOnInit() {
-    // console.log('from', this.from, this.activityItems, this.activity)
+   // console.log('from-----------transaction', this.from, this.activityItems, this.activity)
+    this.customer = this.activityItems[0].oCustomer;
+    
+    this.oCurrentCustomer = this.activityItems[0].oCustomer;
+    this.oLocationName = this.activityItems[0].oLocationName;
+    
+   // console.log("iBusinessBrandId" +this.activityItems[0].iBusinessBrandId);
+  
     this.apiService.setToastService(this.toastService);
     this.routerSub = this.routes.events.subscribe((event) => {
       if (event instanceof NavigationEnd && !(event.url.startsWith('/business/activity-items') || event.url.startsWith('/business/services'))) {
@@ -207,7 +217,12 @@ export class ActivityDetailsComponent implements OnInit {
       this.translation = res;
     })
 
+    
+    
+
     if (this.activity) {
+      //console.log(this.activity);
+      //console.log("this.activity-----");
       // this.oLocationName = this.activity.oLocationName;
       this.bShowOrderDownload = true;
       this.fetchTransactionItems(this.activity._id);
@@ -228,10 +243,20 @@ export class ActivityDetailsComponent implements OnInit {
       //  })
       // }
     } else {
+      //console.log("else");
+      //console.log(this.activityItems[0].iActivityId);
       // we have opened an activity item so fetch associated activity (required for checkout)
       // this.fetchActivity(this.activity._id); //actually it is an id of activity item
       // console.log(235)
-      this.oLocationName = this.businessDetails.aLocation.find((location: any) => location._id === this.activityItems[0].iLocationId)?.sName;
+      if(this.activityItems && this.activityItems.length>0){
+      
+        this.oLocationName = this.businessDetails?.aLocation.find((location: any) => location._id === this.activityItems[0].iLocationId)?.sName;
+     
+      }else{
+        this.oLocationName ="";
+      }
+      //console.log("-this.oLocationName--");
+      //console.log(this.oLocationName);
       this.fetchActivity(this.activityItems[0].iActivityId);
       this.fetchTransactionItems(this.activityItems[0]._id);
     }
@@ -242,6 +267,8 @@ export class ActivityDetailsComponent implements OnInit {
     this.getBusinessLocations();
     this.getListSuppliers()
     this.getBusinessBrands();
+      
+  
     const [_printActionSettings, _printSettings]: any = await Promise.all([
       this.getPdfPrintSetting({ oFilterBy: { sMethod: 'actions' } }),
       this.getPdfPrintSetting({ oFilterBy: { sType: ['repair', 'order', 'repair_alternative'] } }),
@@ -280,6 +307,7 @@ export class ActivityDetailsComponent implements OnInit {
     this.apiService.getNew('cashregistry', `/api/v1/activities/${_id}?iBusinessId=${this.requestParams.iBusinessId}`).subscribe((result: any) => {
       if (result?.data?._id)
         this.activity = result.data;
+        
     });
   }
 
@@ -464,6 +492,8 @@ export class ActivityDetailsComponent implements OnInit {
 
 
   openCustomer(customer: any) {
+    //console.log("customer477");
+    //console.log(customer);
     this.dialogService.openModal(CustomerDetailsComponent,
       { cssClass: "modal-xl position-fixed start-0 end-0", context: { customerData: customer, mode: 'details', editProfile: false } }).instance.close.subscribe(result => { });
   }
@@ -611,8 +641,8 @@ export class ActivityDetailsComponent implements OnInit {
     }
 
     const template = this.aTemplates.filter((t: any) => t.eType === type)[0];
-
     oDataSource.oCustomer = this.tillService.processCustomerDetails(this.customer);
+    
     // {
     //   sFirstName: this.customer?.sFirstName || '',
     //   sLastName: this.customer?.sLastName || '',
@@ -649,6 +679,7 @@ export class ActivityDetailsComponent implements OnInit {
   getTemplate(types: any) {
     const body = {
       iBusinessId: this.iBusinessId,
+      iLocationId: this.iLocationId,
       oFilterBy: {
         eType: types
       }
@@ -657,20 +688,31 @@ export class ActivityDetailsComponent implements OnInit {
   }
 
   fetchCustomer(customerId: any, index: number) {
+    
     if (!customerId) return;
     this.apiService.getNew('customer', `/api/v1/customer/${customerId}?iBusinessId=${this.iBusinessId}`).subscribe(
       (result: any) => {
         if (index > -1) this.transactions[index].customer = result;
         this.customer = result;
+        console.log(result);console.log("result");
+
       },
       (error: any) => {
         console.error(error)
       }
-    );
+    );  
   }
 
   async processTransactionItems(result: any) {
     this.activityItems = result.data[0].result;
+    this.activityItems.forEach((items: any, index: any) => {
+        let brandIndex = this.brandsList.findIndex((brand: any) => brand._id == items.iBusinessBrandId);
+        if (brandIndex != -1) {
+          this.activityItems[index] = { ...items, "brandName": this.brandsList[brandIndex].sName }
+        }
+        
+    });
+    this.oCurrentCustomer = this.activityItems[0].oCustomer;
     this.oLocationName = this.activityItems[0].oLocationName;
     // if (this.activityItems.length == 1) this.activityItems[0].bIsVisible = true;
     this.transactions = [];
@@ -690,12 +732,11 @@ export class ActivityDetailsComponent implements OnInit {
       this.totalPrice += obj.nPaymentAmount;
       this.quantity += obj.bRefund ? (- obj.nQuantity) : obj.nQuantity
       if (obj.iStockLocationId) this.setSelectedBusinessLocation(obj.iStockLocationId, i)
+      //console.log(obj?.iCustomerId);
+      //console.log("obj?.iCustomerId");
       this.fetchCustomer(obj?.iCustomerId, i);
     }
     this.getListEmployees()
-    // setTimeout(() => {
-    //   MenuComponent.reinitialization();
-    // }, 200);
     this.loading = false;
     setTimeout(() => {
       MenuComponent.reinitialization();
@@ -716,7 +757,6 @@ export class ActivityDetailsComponent implements OnInit {
 
   submit(activityItemId: any, index: any) {
     this.submitted = true;
-    console.log(this.submitted);
     const oActivityItem = this.activityItems[index];
     oActivityItem.iBusinessId = this.iBusinessId;
     this.apiService.putNew('cashregistry', '/api/v1/activities/items/' + activityItemId, oActivityItem)
@@ -724,8 +764,6 @@ export class ActivityDetailsComponent implements OnInit {
 
         if (result.message == 'success') {
           this.submitted = false;
-          console.log(this.submitted);
-          console.log("ssthis.submitted");
           this.apiService.activityItemDetails.next(oActivityItem);
           this.toastService.show({ type: "success", text: this.translation['SUCCESSFULLY_UPDATED'] });
 
@@ -733,8 +771,6 @@ export class ActivityDetailsComponent implements OnInit {
         }
         else {
           this.submitted = false;
-          console.log(this.submitted);
-          console.log("this.submitted");
           let errorMessage = "";
           this.translationService.get(result.message).subscribe((res: any) => {
             errorMessage = res;
@@ -831,8 +867,8 @@ export class ActivityDetailsComponent implements OnInit {
     const currentLocation = this.businessDetails.aLocation[locationIndex];
     oDataSource.businessDetails.sAddressline1 = currentLocation.oAddress.street + " " + currentLocation.oAddress.houseNumber + " " + currentLocation.oAddress.houseNumberSuffix + " ,  " + currentLocation.oAddress.postalCode + " " + currentLocation.oAddress.city;
     oDataSource.businessDetails.sAddressline2 = currentLocation.oAddress.country;
-
     oDataSource.oCustomer = this.tillService.processCustomerDetails(this.customer);
+    
     // {
     //   sFirstName: this.customer?.sFirstName || '',
     //   sLastName: this.customer?.sLastName || '',
@@ -901,5 +937,58 @@ export class ActivityDetailsComponent implements OnInit {
     setTimeout(() => {
       activity.bActivityNumberCopied = false;
     }, 3000);
+  }
+
+  /* Update customer in [T, A, AI] */
+  updateCurrentCustomer(oData: any) {
+    const oBody = {
+      oCustomer: oData.oCustomer,
+      iBusinessId: this.iBusinessId,
+      iActivityItemId: this.activityItems[0]._id
+    }
+    this.apiService.postNew('cashregistry', '/api/v1/transaction/update-customer', oBody).subscribe((result: any) => {
+      console.log('Customer Updated: ', result, oBody?.oCustomer);
+      this.oCurrentCustomer = oBody?.oCustomer;
+      this.toastService.show({ type: "success", text: this.translation['SUCCESSFULLY_UPDATED'] });
+    }, (error) => {
+      console.log('update customer error: ', error);
+      this.toastService.show({ type: "warning", text: `Something went wrong` });
+    });
+  }
+
+  selectCustomer() {
+    this.dialogService.openModal(CustomerDialogComponent, { cssClass: 'modal-xl' })
+      .instance.close.subscribe((data) => {
+        console.log('after selecting customer: ', data);
+        if (!data?.customer?._id || !this.activityItems?.length || !this.activityItems[0]?._id) return;
+        this.updateCurrentCustomer({ oCustomer: data?.customer });
+      }, (error) => {
+        console.log('selectCustomer error: ', error);
+        this.toastService.show({ type: "warning", text: `Something went wrong` });
+      })
+  }
+
+  /* Here the current customer means from the Transaction/Activity/Activity-Items */
+  openCurrentCustomer(oCurrentCustomer: any) {
+    console.log('openCurrentCustomer: ', oCurrentCustomer);
+    const bIsCounterCustomer = (oCurrentCustomer?.sEmail === "balieklant@prismanote.com" || !oCurrentCustomer?._id) ? true : false /* If counter customer used then must needs to change */
+    this.dialogService.openModal(CustomerDetailsComponent,
+      {
+        cssClass: bIsCounterCustomer == true ? "modal-lg" : "modal-xl position-fixed start-0 end-0",
+        context: {
+          customerData: oCurrentCustomer,
+          mode: 'details',
+          editProfile: true,
+          bIsCurrentCustomer: true, /* We are only going to change in the A/T/AI */
+          bIsCounterCustomer: bIsCounterCustomer
+        }
+      }).instance.close.subscribe(result => {
+        console.log('result: ', result);
+        if (result?.bIsSelectingCustomer) this.selectCustomer();
+        else if (result?.bShouldUpdateCustomer) this.updateCurrentCustomer({ oCustomer: result?.oCustomer });
+      }, (error) => {
+        console.log("Error in customer: ", error);
+        this.toastService.show({ type: "warning", text: `Something went wrong` });
+      });
   }
 }

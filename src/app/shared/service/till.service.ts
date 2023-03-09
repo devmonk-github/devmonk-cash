@@ -155,6 +155,7 @@ export class TillService {
         bCounter: customer.bCounter,
         oPhone: customer.oPhone,
         sVatNumber: customer.sVatNumber,
+        sCompanyName: customer.sCompanyName,
         sCocNumber: customer.sCocNumber,
         sEmail: customer.sEmail
       }
@@ -463,11 +464,13 @@ export class TillService {
             nPurchasePrice: transactionItem.nPurchasePrice,
             oBusinessProductMetaData: transactionItem.oBusinessProductMetaData,
             sServicePartnerRemark: transactionItem.sServicePartnerRemark,
+            sCommentVisibleServicePartner:transactionItem.sCommentVisibleServicePartner,
             eActivityItemStatus: transactionItem.eActivityItemStatus,
             eEstimatedDateAction: transactionItem.eEstimatedDateAction,
             bGiftcardTaxHandling: transactionItem.bGiftcardTaxHandling,
             sArticleNumber: transactionItem?.sArticleNumber,
-            iLocationId: transactionItem?.iLocationId
+            iLocationId: transactionItem?.iLocationId,
+            // oCustomer: transactionItem?.oCustomer
           });
         }
       });
@@ -493,13 +496,18 @@ export class TillService {
 
 
     dataObject.oCustomer = this.processCustomerDetails(dataObject.oCustomer);
-
-
+    
+    dataObject.nPaymentMethodTotal = 0;
+    
     dataObject.aPayments.forEach((obj: any) => {
-      if (!obj?.sRemarks) obj.sRemarks = "";
-      obj.dCreatedDate = moment(obj.dCreatedDate).format('DD-MM-yyyy hh:mm');
+      obj.bIgnore = false;
+      dataObject.nPaymentMethodTotal += obj.nAmount;
+      if(!obj?.sRemarks) obj.sRemarks = "";
+      
+      // obj.dCreatedDate = moment(obj.dCreatedDate).format('DD-MM-yyyy hh:mm');
     });
-
+    dataObject.nNewPaymentMethodTotal = dataObject.nPaymentMethodTotal;
+    
     const aLoyaltyPointsItems = transaction.aTransactionItems.filter((item: any) => item?.oType?.eKind == 'loyalty-points-discount');
 
     dataObject.aTransactionItems = [];
@@ -509,7 +517,7 @@ export class TillService {
         for (let i = 0; i < aLoyaltyPointsItems.length; i++) {
           if (aLoyaltyPointsItems[i].iBusinessProductId === item.iBusinessProductId) {
             item.nRedeemedLoyaltyPoints = aLoyaltyPointsItems[i].nRedeemedLoyaltyPoints;
-            item.nDiscount = aLoyaltyPointsItems[i].nDiscount;
+            item.nDiscount += aLoyaltyPointsItems[i].nDiscount;
             break;
           }
         }
@@ -521,7 +529,7 @@ export class TillService {
 
     dataObject.total = 0;
     let total = 0, totalAfterDisc = 0, totalVat = 0, totalDiscount = 0, totalSavingPoints = 0, totalRedeemedLoyaltyPoints = 0;
-    const aToFetchPayments: any = [];
+    const aToFetchPayments:any = [];
     dataObject.aTransactionItems.forEach((item: any, index: number) => {
       if (item?.aPayments?.some((payment: any) => payment.sMethod === 'card')) {
         aToFetchPayments.push(item.iTransactionId);
@@ -537,22 +545,23 @@ export class TillService {
       // if (item?.oBusinessProductMetaData?.sLabelDescription){
       //   item.description = item.description + item?.oBusinessProductMetaData?.sLabelDescription + ' ' + item?.sProductNumber;
       // }
-      totalSavingPoints += (item?.nSavingsPoints || 0);
+      totalSavingPoints += ( item?.nSavingsPoints || 0);
       totalRedeemedLoyaltyPoints += item?.nRedeemedLoyaltyPoints || 0;
       let disc = parseFloat(item?.nDiscount) || 0;
+      // console.log(545, 'bDiscountOnPercentage', item.bDiscountOnPercentage)
       if (item.bDiscountOnPercentage) {
         disc = this.getPercentOf(disc, item.nPriceIncVat)
         item.nDiscountToShow = disc;//.toFixed(2);
       } else { item.nDiscountToShow = disc }
       // console.log('item.nDiscountToShow', item.nDiscountToShow)
       // item.priceAfterDiscount = parseFloat(item.nRevenueAmount.toFixed(2)) - parseFloat(item.nDiscountToShow);
-      item.nPriceIncVatAfterDiscount = (parseFloat(item.nPriceIncVat) - parseFloat(item.nDiscountToShow)) - item.nRedeemedLoyaltyPoints;
-      item.nPriceIncVatAfterDiscount = parseFloat(item.nPriceIncVatAfterDiscount.toFixed(2));
-
+      item.nPriceIncVatAfterDiscount = +(item.nPriceIncVat.toFixed(2) - item.nDiscountToShow.toFixed(2)) - item.nRedeemedLoyaltyPoints;
+      // item.nPriceIncVatAfterDiscount = parseFloat(item.nPriceIncVatAfterDiscount.toFixed(2));
       if (item.oType.bRefund === true && item.oType.eKind != 'gold-purchase') item.nPriceIncVatAfterDiscount = -(item.nPriceIncVatAfterDiscount)
       // console.log('item.nPriceIncVatAfterDiscount', item.nPriceIncVatAfterDiscount)
+      // item.nRevenueAmount = (+(item.nRevenueAmount.toFixed(2)) - item.nDiscount) * item.nQuantity;
       item.totalPaymentAmount = (parseFloat(item.nRevenueAmount) - parseFloat(item.nDiscountToShow)) * item.nQuantity - item.nRedeemedLoyaltyPoints;
-      item.totalPaymentAmount = parseFloat(item.totalPaymentAmount.toFixed(2));
+      item.totalPaymentAmount = +(item.totalPaymentAmount.toFixed(2));
       // console.log('item.totalPaymentAmount', item.totalPaymentAmount)
       // item.totalPaymentAmountAfterDisc = parseFloat(item.priceAfterDiscount.toFixed(2)) * parseFloat(item.nQuantity);
       item.bPrepayment = item?.oType?.bPrepayment || false;
@@ -566,7 +575,7 @@ export class TillService {
       item.ntotalDiscountPerItem = (item.oType.bRefund === true) ? 0 : (item.nDiscountToShow * item.nQuantity)
       totalDiscount += item.ntotalDiscountPerItem;
       // console.log('totalDiscount', totalDiscount)
-      if (!item?.bMigrate) {
+      if(!item?.bMigrate){
         relatedItemsPromises[index] = this.getRelatedTransactionItem(item?.iActivityItemId, item?._id, index);
 
       }
@@ -577,29 +586,42 @@ export class TillService {
         transaction.aTransactionItems[index].related = item.data || [];
       })
     });
-
+    
     transaction.aTransactionItems.forEach((item: any) => {
+      item.eKind = item.oType.eKind;
       if (item?.related?.length) {
         item.related.forEach((relatedItem: any) => {
-          if (relatedItem?.aPayments?.some((payment: any) => payment.sMethod === 'card')) {
+          if(relatedItem?.aPayments?.some((payment: any) => payment.sMethod === 'card')){
             aToFetchPayments.push(relatedItem.iTransactionId);
           }
-          relatedItem.aPayments = relatedItem?.aPayments.filter((payment: any) => payment?.sRemarks !== 'CHANGE_MONEY');
-          if (relatedItem.nPriceIncVat > item.nPriceIncVat) item.nPriceIncVat = relatedItem.nPriceIncVat;
-          item.nDiscount = relatedItem.nDiscount || 0;
-          item.bDiscountOnPercentage = relatedItem?.bDiscountOnPercentage || false;
+          // relatedItem.aPayments = relatedItem?.aPayments.filter((payment: any) => payment?.sRemarks !== 'CHANGE_MONEY');
+          // if (relatedItem.nPriceIncVat > item.nPriceIncVat) item.nPriceIncVat = relatedItem.nPriceIncVat;
+          // item.nDiscount = relatedItem.nDiscount || 0;
+          // item.bDiscountOnPercentage = relatedItem?.bDiscountOnPercentage || false;
 
-          if (relatedItem?.bDiscountOnPercentage) {
-            item.nDiscountToShow = (item.oType.bRefund === true) ? 0 : this.getPercentOf(relatedItem.nPriceIncVat, relatedItem.nDiscount);
-            totalDiscount += (item.oType.bRefund === true) ? 0 : item.nDiscountToShow;
-            relatedItem.nRevenueAmount = relatedItem.nRevenueAmount.toFixed(2) - this.getPercentOf(relatedItem.nPriceIncVat, relatedItem.nDiscount);
+          if(!relatedItem.oType?.bRefund) {
+            if (relatedItem?.bDiscountOnPercentage) {
+              item.nDiscountToShow = (item.oType.bRefund === true) ? 0 : this.getPercentOf(relatedItem.nPriceIncVat, relatedItem.nDiscount);
+              totalDiscount += (item.oType.bRefund === true) ? 0 : item.nDiscountToShow;
+              relatedItem.totalPaymentAmount = (+(relatedItem.nRevenueAmount.toFixed(2)) - this.getPercentOf(relatedItem.nPriceIncVat, relatedItem.nDiscount)) * relatedItem.nQuantity;
+              // console.log(600, item.nDiscountToShow, relatedItem.totalPaymentAmount);
+            } else {
+              item.nDiscountToShow = (item.oType.bRefund === true) ? 0 : relatedItem.nDiscount;
+              totalDiscount += (item.oType.bRefund === true) ? 0 : item.nDiscountToShow;
+              relatedItem.totalPaymentAmount = (+(relatedItem.nRevenueAmount.toFixed(2)) - relatedItem.nDiscount) * relatedItem.nQuantity;
+              // console.log(605, item.nDiscountToShow, relatedItem.totalPaymentAmount);
+            }
           } else {
-            item.nDiscountToShow = (item.oType.bRefund === true) ? 0 : relatedItem.nDiscount;
-            totalDiscount += (item.oType.bRefund === true) ? 0 : item.nDiscountToShow;
-            relatedItem.nRevenueAmount = relatedItem.nRevenueAmount.toFixed(2) - relatedItem.nDiscount;
+            if (relatedItem?.bDiscountOnPercentage) {
+              relatedItem.totalPaymentAmount = +(relatedItem.nRevenueAmount.toFixed(2)) - this.getPercentOf(relatedItem.nPriceIncVat, relatedItem.nDiscount);
+              // console.log(610, relatedItem.totalPaymentAmount)
+            } else {
+              relatedItem.totalPaymentAmount = (+(relatedItem.nRevenueAmount.toFixed(2)) - relatedItem.nDiscount) * relatedItem.nQuantity;
+              // console.log(613, relatedItem.totalPaymentAmount)
+            }
           }
 
-          relatedItem.nRevenueAmount = relatedItem.nRevenueAmount.toFixed(2);
+          // relatedItem.nRevenueAmount = relatedItem.nRevenueAmount.toFixed(2);
         })
       }
     })
@@ -623,10 +645,10 @@ export class TillService {
     dataObject.totalSavingPoints = totalSavingPoints;
     dataObject.totalRedeemedLoyaltyPoints = totalRedeemedLoyaltyPoints;
     dataObject.nTotalExcVat = dataObject.totalAfterDisc - dataObject.totalVat;
-    dataObject.dCreatedDate = moment(dataObject.dCreatedDate).format('DD-MM-yyyy hh:mm');
-    let _relatedResult: any, _loyaltyPointSettings: any;
-
-    if (!dataObject?.bMigrate) {
+    // dataObject.dCreatedDate = moment(dataObject.dCreatedDate).format('DD-MM-yyyy hh:mm');
+    let _relatedResult:any , _loyaltyPointSettings:any;
+    
+    if(!dataObject?.bMigrate){
       const [_relatedResultTemp, _loyaltyPointSettingsTemp]: any = await Promise.all([
         this.getRelatedTransaction(dataObject?.iActivityId, dataObject?._id).toPromise(),
         this.apiService.getNew('cashregistry', `/api/v1/points-settings?iBusinessId=${this.iBusinessId}`).toPromise()
@@ -634,18 +656,19 @@ export class TillService {
       _relatedResult = _relatedResultTemp;
       _loyaltyPointSettings = _loyaltyPointSettingsTemp;
 
-    } else {
+    }else{             
       _loyaltyPointSettings = await this.apiService.getNew('cashregistry', `/api/v1/points-settings?iBusinessId=${this.iBusinessId}`).toPromise()
     }
     dataObject.bSavingPointsSettings = _loyaltyPointSettings?.bEnabled;
     dataObject.aTransactionItems.forEach((item: any) => item.bSavingPointsSettings = _loyaltyPointSettings?.bEnabled)
     dataObject.related = _relatedResult?.data || [];
-    if (dataObject.related.length) {
+    if(dataObject.related.length){
       dataObject.related.forEach((relatedobj: any) => {
-        relatedobj.aPayments = relatedobj.aPayments.filter((payment: any) => payment?.sRemarks !== 'CHANGE_MONEY');
+        // relatedobj.aPayments = relatedobj.aPayments.filter((payment: any) => payment?.sRemarks !== 'CHANGE_MONEY');
         relatedobj.aPayments.forEach((obj: any) => {
-          obj.sRemarks = "";
-          obj.dCreatedDate = moment(obj.dCreatedDate).format('DD-MM-yyyy hh:mm');
+          if (!obj?.sRemarks) obj.sRemarks = "";
+          obj.bIgnore = true;
+          // obj.dCreatedDate = moment(obj.dCreatedDate).format('DD-MM-yyyy hh:mm');
         });
         dataObject.aPayments = dataObject.aPayments.concat(relatedobj.aPayments);
       })
@@ -656,7 +679,9 @@ export class TillService {
     return transaction;
   }
 
-  processCustomerDetails(customer: any) {
+  processCustomerDetails(customer:any) {
+    //console.log("------ustomer------");
+    //console.log(customer);
     return {
       ...customer,
       ...customer?.oPhone,
@@ -698,13 +723,15 @@ export class TillService {
   }
 
   async updateSettings() {
-    this.settings.aBagNumbers = [...this.settings.aBagNumbers.filter((el: any) => el.iLocationId !== this.iLocationId), this.settings.currentLocation];
+    if (this.settings?.aBagNumbers?.length) {
+    this.settings.aBagNumbers = [...this.settings?.aBagNumbers.filter((el: any) => el.iLocationId !== this.iLocationId), this.settings.currentLocation];
+    }
     const body = {
       aBagNumbers: this.settings.aBagNumbers
     };
     
     const _result:any = await this.apiService.putNew('cashregistry', `/api/v1/settings/update/${this.iBusinessId}`, body).toPromise();
-    console.log(693, _result);
+    // console.log(693, _result);
   }
 
   updateVariables() {

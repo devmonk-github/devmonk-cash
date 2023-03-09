@@ -39,6 +39,10 @@ export class CardsComponent implements OnInit, AfterViewInit {
   oGiftcard:any;
   activeTabIndex:number = 0;
   translation:any=[];
+
+  /* Check if saving points are enabled */
+  savingPointsSetting:boolean = JSON.parse(localStorage.getItem('savingPoints') || '');
+
   // elem ref
   constructor(
     private viewContainerRef: ViewContainerRef,
