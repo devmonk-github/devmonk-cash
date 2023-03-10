@@ -73,7 +73,6 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
   mode: string = '';
   editProfile: boolean = false;
   bIsCurrentCustomer: boolean = false;
-  bIsCounterCustomer: boolean = false;
   showStatistics: boolean = false;
   faTimes = faTimes;
   aPaymentChartData: any = [];

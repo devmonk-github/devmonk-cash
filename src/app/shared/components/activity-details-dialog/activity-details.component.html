@@ -2,7 +2,7 @@
     <div class="card-header" style="margin-top: 20px;">
         <h4>{{ 'ACTIVITY_DETAILS' | translate}}</h4>
         <div mat-dialog-actions>
-            <button mat-dialog-close type="button" class="btn btn-sm btn-light" (click)="close(false)">
+            <button mat-dialog-close type="button" class="btn btn-sm btn-light" (click)="close({action: false, oData: {oCurrentCustomer: oCurrentCustomer}})">
                 <fa-icon [icon]="faTimes"></fa-icon>
             </button>
         </div>
@@ -77,8 +77,8 @@
                         <div class="d-flex flex-wrap py-5">
                             <div class="flex-equal me-5">
                                 <p><strong>{{ "CURRENT_CUSTOMER" | translate}}</strong></p>
-                               <p *ngIf="customer?.bCounter==true"> {{ "NO_CUSTOMER_ADDED" | translate}} </p>  <!-- WIP (replace) *ngIf="!oCurrentCustomer?.sFirstName && !oCurrentCustomer?.sLastName" -->
-                                <ng-container *ngIf="customer?.bCounter==false" > <!-- WIP (replace) *ngIf="oCurrentCustomer?.sFirstName || oCurrentCustomer?.sLastName" -->
+                               <p *ngIf="!oCurrentCustomer?.sFirstName && !oCurrentCustomer?.sLastName"> {{ "NO_CUSTOMER_ADDED" | translate}} </p>  <!-- WIP (replace)  *ngIf="customer?.bCounter==true" -->
+                                <ng-container *ngIf="oCurrentCustomer?.sFirstName || oCurrentCustomer?.sLastName" > <!-- WIP (replace) *ngIf="customer?.bCounter==false" -->
                                     <div class="fs-6 ms-1">
                                         <div class="align-items-center">
                                             <div class="text-gray-600">{{oCurrentCustomer?.sFirstName || ''}} {{oCurrentCustomer?.sLastName

@@ -211,14 +211,10 @@ export class ActivityDetailsComponent implements OnInit {
       }
     });
 
-
     let translationKey = ['SUCCESSFULLY_UPDATED', 'NO_DATE_SELECTED'];
     this.translationService.get(translationKey).subscribe((res: any) => {
       this.translation = res;
     })
-
-    
-    
 
     if (this.activity) {
       //console.log(this.activity);
@@ -761,15 +757,11 @@ export class ActivityDetailsComponent implements OnInit {
     oActivityItem.iBusinessId = this.iBusinessId;
     this.apiService.putNew('cashregistry', '/api/v1/activities/items/' + activityItemId, oActivityItem)
       .subscribe((result: any) => {
-
         if (result.message == 'success') {
           this.submitted = false;
           this.apiService.activityItemDetails.next(oActivityItem);
           this.toastService.show({ type: "success", text: this.translation['SUCCESSFULLY_UPDATED'] });
-
-
-        }
-        else {
+        } else {
           this.submitted = false;
           let errorMessage = "";
           this.translationService.get(result.message).subscribe((res: any) => {
@@ -787,7 +779,6 @@ export class ActivityDetailsComponent implements OnInit {
         this.toastService.show({ type: "warning", text: errorMessage });
       })
   }
-
 
   // Function for show transaction details
   async showTransaction(transactionItem: any, event: any) {
@@ -826,11 +817,6 @@ export class ActivityDetailsComponent implements OnInit {
 
     const oDataSource = JSON.parse(JSON.stringify(this.activity));
     oDataSource.businessDetails = this.businessDetails;
-
-    // if (!this.businessDetails) {
-    //   const result: any = await this.getBusinessDetails().toPromise();
-    //   this.businessDetails = result.data;
-    // }
     const aPromises = [];
     let bBusinessLogo = false, bTemplate = false;
     if (this.businessDetails?.sBusinessLogoUrl) {
@@ -962,6 +948,7 @@ export class ActivityDetailsComponent implements OnInit {
         console.log('after selecting customer: ', data);
         if (!data?.customer?._id || !this.activityItems?.length || !this.activityItems[0]?._id) return;
         this.updateCurrentCustomer({ oCustomer: data?.customer });
+        this.customer = data?.customer;
       }, (error) => {
         console.log('selectCustomer error: ', error);
         this.toastService.show({ type: "warning", text: `Something went wrong` });
@@ -972,19 +959,21 @@ export class ActivityDetailsComponent implements OnInit {
   openCurrentCustomer(oCurrentCustomer: any) {
     console.log('openCurrentCustomer: ', oCurrentCustomer);
     const bIsCounterCustomer = (oCurrentCustomer?.sEmail === "balieklant@prismanote.com" || !oCurrentCustomer?._id) ? true : false /* If counter customer used then must needs to change */
+    if (bIsCounterCustomer) {
+      this.selectCustomer();
+      return;
+    }
     this.dialogService.openModal(CustomerDetailsComponent,
       {
-        cssClass: bIsCounterCustomer == true ? "modal-lg" : "modal-xl position-fixed start-0 end-0",
+        cssClass: "modal-xl position-fixed start-0 end-0",
         context: {
           customerData: oCurrentCustomer,
           mode: 'details',
           editProfile: true,
           bIsCurrentCustomer: true, /* We are only going to change in the A/T/AI */
-          bIsCounterCustomer: bIsCounterCustomer
         }
       }).instance.close.subscribe(result => {
-        console.log('result: ', result);
-        if (result?.bIsSelectingCustomer) this.selectCustomer();
+        if (result?.bChangeCustomer) this.selectCustomer();
         else if (result?.bShouldUpdateCustomer) this.updateCurrentCustomer({ oCustomer: result?.oCustomer });
       }, (error) => {
         console.log("Error in customer: ", error);
