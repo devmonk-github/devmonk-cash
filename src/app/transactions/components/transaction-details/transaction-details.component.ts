@@ -1,4 +1,4 @@
-import { AfterContentInit, ChangeDetectorRef, Component, OnInit, ViewContainerRef } from '@angular/core';
+import { AfterContentInit, ChangeDetectorRef, Component, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
 import { faTimes, faSync, faFileInvoice, faDownload, faReceipt, faAt, faUndoAlt, faClipboard, faTrashAlt, faPrint, faEnvelope } from '@fortawesome/free-solid-svg-icons';
 import { TransactionItemsDetailsComponent } from 'src/app/shared/components/transaction-items-details/transaction-items-details.component';
 import { ApiService } from 'src/app/shared/service/api.service';
@@ -72,6 +72,7 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   bIsOpeningDayState = false;
 
   translation: any = [];
+  @ViewChild('slider', { read: ViewContainerRef }) container!: ViewContainerRef;
 
   constructor(
     private viewContainerRef: ViewContainerRef,
@@ -138,7 +139,7 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
     this.generatePDF(print);
   }
   openProductInfo(product: any) {
-    
+    this.dialogRef.triggerEvent.emit({type:'open-slider',data: product});
   }
 
   downloadWebOrder() {
@@ -182,7 +183,13 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
       
     oDataSource.sBarcodeURI = this.generateBarcodeURI(false, oDataSource.sNumber);
     oDataSource.sActivityBarcodeURI = this.generateBarcodeURI(false, oDataSource.sActivityNumber);
-    oDataSource.sBusinessLogoUrl = (await this.getBase64FromUrl(oDataSource?.businessDetails?.sLogoLight).toPromise()).data;
+    oDataSource.sBusinessLogoUrl = '';
+    try {
+      const _result: any = await this.getBase64FromUrl(oDataSource?.businessDetails?.sLogoLight).toPromise();
+      if(_result?.data) {
+        oDataSource.sBusinessLogoUrl = _result?.data;
+      }
+    } catch (e) {}
 
     console.log(oDataSource)
 

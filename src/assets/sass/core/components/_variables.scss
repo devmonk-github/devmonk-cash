@@ -1106,7 +1106,7 @@ $sticky-toolbar: (
 
 // Drawer
 $drawer: (
-	z-index: 110, // Drawer's z-index
+	z-index: 1100, // Drawer's z-index
 	box-shadow: if(isDarkMode(), 0px 0px 30px rgba(0, 0, 0, 0.1), 0px 1px 9px -3px rgba(0,0,0, 0.05)), // Drawer's box shadow
 	bg-color: $body-bg, // Drawer's background color
 	transition-speed: 0.3s,

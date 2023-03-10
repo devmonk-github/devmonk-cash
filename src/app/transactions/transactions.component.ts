@@ -2,10 +2,11 @@ import { HttpClient } from '@angular/common/http';
 import { Component, OnDestroy, OnInit, QueryList, ViewChildren } from '@angular/core';
 import { Router } from '@angular/router';
 import { faLongArrowAltDown, faLongArrowAltUp, faMinusCircle, faPlusCircle, faSearch } from '@fortawesome/free-solid-svg-icons';
+import { BehaviorSubject } from 'rxjs';
 import { ToastService } from '../shared/components/toast';
 import { ApiService } from '../shared/service/api.service';
 import { BarcodeService } from '../shared/service/barcode.service';
-import { DialogService } from '../shared/service/dialog';
+import { DialogComponent, DialogService } from '../shared/service/dialog';
 import { TillService } from '../shared/service/till.service';
 import { MenuComponent } from '../shared/_layout/components/common';
 
@@ -99,6 +100,7 @@ export class TransactionsComponent implements OnInit, OnDestroy {
 
   @ViewChildren('transactionItems') things: QueryList<any>;
   businessDetailsLoaded: boolean = false;
+  SupplierStockProductSliderData = new BehaviorSubject<any>({});
 
   constructor(
     private apiService: ApiService,
@@ -341,7 +343,7 @@ export class TransactionsComponent implements OnInit, OnDestroy {
 
   // Function for show transaction details
   showTransaction(transaction: any) {
-    this.dialogService.openModal(TransactionDetailsComponent, 
+    const oDialogComponent: DialogComponent = this.dialogService.openModal(TransactionDetailsComponent, 
       { 
         cssClass: "w-fullscreen mt--5", 
         context: { 
@@ -354,10 +356,17 @@ export class TransactionsComponent implements OnInit, OnDestroy {
         hasBackdrop: true, 
         closeOnBackdropClick: false, 
         closeOnEsc: false 
-      }).instance.close.subscribe(
-        res => {
-          if (res) this.routes.navigate(['business/till']);
-        });
+      }).instance;
+      
+    oDialogComponent.close.subscribe(res => {
+      if (res) this.routes.navigate(['business/till']);
+    });
+
+    oDialogComponent.triggerEvent.subscribe(res => {
+      if(res?.type === 'open-slider' && res?.data) {
+        this.SupplierStockProductSliderData.next(res.data);
+      }
+    })
   }
 
   async openModal(barcode: any) {
