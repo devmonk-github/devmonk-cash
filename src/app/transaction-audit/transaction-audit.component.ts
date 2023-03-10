@@ -1166,13 +1166,13 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
     /* This is to check if day-state is not changed already (in mean-time) */
     if (
       // below allows some difference of 0.05 but not greater than that + allows difference of -0.05 but not less difference
-      (aAmount - bAmount) < -0.05 ||
-      (bAmount - aAmount) > 0.05
-      &&
-      (aAmount - bAmount) >= 0.06 ||
-      (bAmount - aAmount) <= -0.06
+      // (aAmount - bAmount) < -0.05 ||
+      // (bAmount - aAmount) > 0.05
+      // &&
+      // (aAmount - bAmount) >= 0.06 ||
+      // (bAmount - aAmount) <= -0.06
 
-
+      (bAmount - aAmount > 0.05)
       ||
       oStatisticDetail?.data?.oTransactionAudit[0]?.overall[0]?.nQuantity != this.aStatistic[0].overall[0].nQuantity) {
       this.toastService.show({ type: 'warning', text: 'Someone modified the transaction in this workstation. Please refresh the page' });
