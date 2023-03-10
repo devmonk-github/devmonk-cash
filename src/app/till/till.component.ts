@@ -827,7 +827,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
             this.activityItems = activityItems;
             this.activity = activity;
 
-            if (this.tillService.settings.currentLocation?.bAutoIncrementBagNumbers) {
+            if (this.tillService.settings?.currentLocation?.bAutoIncrementBagNumbers) {
               this.tillService.updateSettings();
             }
 
