@@ -22,7 +22,7 @@
 <div class="card shadow-sm">
     <div class="card-header mt-5">
         <h3>{{ "TRANSACTION_DETAIL" | translate}} | {{transaction.sNumber}}</h3>
-        <button type="button" class="btn btn-sm btn-secondary h-50" (click)="close(false)">
+        <button type="button" class="btn btn-sm btn-secondary h-50" (click)="close({action: false, oData: {oCurrentCustomer: transaction.oCustomer}})">
             <fa-icon [icon]="faTimes"></fa-icon>
         </button>
     </div>

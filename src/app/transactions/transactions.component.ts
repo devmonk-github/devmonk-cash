@@ -343,6 +343,7 @@ export class TransactionsComponent implements OnInit, OnDestroy {
 
   // Function for show transaction details
   showTransaction(transaction: any) {
+    console.log('.openModal(TransactionDetailsComponent 4');
     const oDialogComponent: DialogComponent = this.dialogService.openModal(TransactionDetailsComponent, 
       { 
         cssClass: "w-fullscreen mt--5", 
@@ -358,8 +359,15 @@ export class TransactionsComponent implements OnInit, OnDestroy {
         closeOnEsc: false 
       }).instance;
       
-    oDialogComponent.close.subscribe(res => {
-      if (res) this.routes.navigate(['business/till']);
+    oDialogComponent.close.subscribe(result => {
+      console.log('result: ', result);
+      if (result?.oData?.oCurrentCustomer) {
+        if (result?.oData?.oCurrentCustomer?.sFirstName) transaction.oCustomer.sFirstName = result?.oData?.oCurrentCustomer?.sFirstName;
+        if (result?.oData?.oCurrentCustomer?.sLastName) transaction.oCustomer.sLastName = result?.oData?.oCurrentCustomer?.sLastName;
+      }
+      if (result?.action) this.routes.navigate(['business/till']);
+    }, (error) => {
+      console.log('Error: ', error);
     });
 
     oDialogComponent.triggerEvent.subscribe(res => {

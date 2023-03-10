@@ -143,13 +143,11 @@ export class ImportRepairOrderDetailComponent implements OnInit {
   }
 
   setTemplate(option: any, obj: any) {
-    console.log('setTemplate: ', option, obj);
     /* for empty drop-down */
     if (obj === '') {
       this.repairOrderDetailsForm[option] = '';
       return;
     };
-    console.log('setTemplate 1: ', this.referenceObj);
     for (let i = 0; i < this.allFields.all.length; i++) {
       if (this.allFields.all[i].sColumnHeader === obj) {
         this.referenceObj[option] = this.allFields.all[i].sDataBaseFieldName;

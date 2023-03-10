@@ -226,7 +226,14 @@ export class ActivityItemsComponent implements OnInit, OnDestroy {
           employeesList: this.employees,
           from: 'activity-items'
         }
-      }).instance.close.subscribe();
+      }).instance.close.subscribe((result) => {
+        if (result?.oData?.oCurrentCustomer) {
+          if (result?.oData?.oCurrentCustomer?.sFirstName) activity.oCustomer.sFirstName = result?.oData?.oCurrentCustomer?.sFirstName;
+          if (result?.oData?.oCurrentCustomer?.sLastName) activity.oCustomer.sLastName = result?.oData?.oCurrentCustomer?.sLastName;
+        }
+      }, (error) => {
+        console.log('Error here');
+      });
   }
 
   openExportModel() {

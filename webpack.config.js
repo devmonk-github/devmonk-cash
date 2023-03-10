@@ -216,7 +216,7 @@ module.exports = {
       shared: share(sharedLibrary)
     }),
     new ModuleFederationPlugin({
-      name: "supplierProductSlider",
+      name: "SupplierProductSliderModule",
       filename: "supplier-product-slider.js",
       exposes: {
         "./SupplierProductSliderModule": './src/app/sliders/supplier-stock-product-slider/supplier-product-slider.module.ts',
