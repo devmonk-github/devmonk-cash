@@ -219,6 +219,34 @@ export class CustomerDialogMergeComponent implements OnInit {
         this.showLoader = false;
       })
   }
+
+  getMergeCustomers() {
+    if (this.requestParams?.searchValue?.length < 3) return;
+    this.showLoader = true;
+    this.customers = [];
+    this.isCustomerSearched = false;
+    this.apiService.postNew('customer', '/api/v1/customer/mergecustomerlist', this.requestParams)
+      .subscribe(async (result: any) => {
+        this.showLoader = false;
+        this.isCustomerSearched = true;
+        this.requestParams = {
+          searchValue: ''
+        }
+          if (result && result.data && result.data[0] && result.data[0].result) {
+            this.customers = result.data[0].result;
+            for(const customer of this.customers){
+             
+              customer['STATUS'] = customer.bIsConnected;
+              
+            }
+
+          }
+      },
+      (error : any) =>{
+        this.customers = [];
+        this.showLoader = false;
+      })
+  }
   
   AddCustomer(){
     this.dialogService.openModal(CustomerDetailsComponent, { cssClass:"modal-xl", context: { mode: 'create' } }).instance.close.subscribe(async (result) =>{ 
@@ -247,51 +275,18 @@ export class CustomerDialogMergeComponent implements OnInit {
   }
 
   setCustomer(customer: any): void {
-    console.log(this.iChosenCustomerId);
-
-    console.log("------sthis.iChosenCustomerId");
-
     this.iSearchedCustomerId = customer._id;
-
-    console.log(this.iSearchedCustomerId);
-
-    console.log("------sthis.iSearchedCustomerId");
-
-    console.log(this.requestParams.iBusinessId);
-
-    console.log("----- this.requestParams.iBusinessIdomerId");
-    console.log(this.requestParams.iLocationId);
-
-    console.log("------sthiChosenCustomerIdis.v");
-
     this.loading = true;
     this.customer = customer;
     this.requestParams.iChosenCustomerId = this.iChosenCustomerId;
     this.requestParams.iSearchedCustomerId = this.iSearchedCustomerId;
-
-    console.log(this.requestParams);
-
-    
-    
-
     this.apiService.postNew('customer', '/api/v1/customer/mergecustomercreate', this.requestParams)
       .subscribe(async (result: any) => {
         this.showLoader = false;
         this.isCustomerSearched = true;
-          // if (result && result.data && result.data[0] && result.data[0].result) {
-          //   this.customers = result.data[0].result;
-          //   for(const customer of this.customers){
-          //     customer['STATUS'] = customer.bIsConnected;
-              
-          //   }
-
-          // }
+        this.getMergeCustomers();
       },
-      (error : any) =>{
-       
-      })
-
-    
+      (error : any) =>{})
 
     this.dialogRef.close.emit({ action: false, customer: this.customer })
   }

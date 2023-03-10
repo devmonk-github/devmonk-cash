@@ -94,7 +94,6 @@ export class CustomersComponent implements OnInit {
         this.openCustomerDialog(this.customer,Id,null);
         break;
     }
-
   }
 
   openCustomerDialog(customer:any,Id:any,iSearchedCustomerId:any): void {
@@ -119,6 +118,8 @@ export class CustomersComponent implements OnInit {
     this.requestParams.limit = this.paginationConfig.itemsPerPage;
     this.getCustomers()
   }
+
+  
 
   getCustomers() {
     this.showLoader = true;
