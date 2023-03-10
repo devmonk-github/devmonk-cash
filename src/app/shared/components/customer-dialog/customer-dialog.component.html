@@ -33,7 +33,7 @@
                         </tr>
                     </thead>
                     <tbody class="fw-bold text-gray-600">
-                        <tr *ngFor='let customer of customers'>
+                        <tr *ngFor='let customer of customers | paginate: paginationConfig'>
                             <td *ngFor="let column of allColumns" class="">{{customer[column]}}</td>
                             <td>
                                 <button class="btn btn-primary" (click)="setCustomer(customer)"> {{"SELECT" |
@@ -53,6 +53,30 @@
     <div class="d-flex card-body pt-0">
         <h5 *ngIf='!customers.length && !showLoader && isCustomerSearched'> {{"NO_DATA_FOUND" |translate}}!</h5>
         <div *ngIf="showLoader" class="spinner-border mx-auto"></div>
+    </div>
+    <div class="row">
+        <div *ngIf="customers?.length" class="col-sm-12 col-md-3 mx-4 d-flex align-items-center justify-content-center justify-content-md-start">
+            <div class="dataTables_length" id="kt_ecommerce_sales_table_length">
+                <label>
+                    <select name="kt_ecommerce_sales_table_length"
+                        aria-controls="kt_ecommerce_sales_table"
+                        class="form-select form-select-sm form-select-solid"
+                        [(ngModel)]="requestParams.limit"
+                        (change)="changeItemsPerPage(requestParams.limit)">
+                        <option *ngFor="let pageNum of pageCounts" [value]="pageNum">{{ pageNum }}
+                        </option>
+                    </select>
+                </label>
+            </div>
+        </div>
+        <div
+            class="col-sm-12 col-md-8 d-flex align-items-center justify-content-center justify-content-md-end">
+            <pagination-controls [hidden]="customers.length === 0" (pageChange)="pageChanged($event)"
+                (pageBoundsCorrection)="pageChanged($event)" [maxSize]="setPaginateSize"
+                [previousLabel]="'PREVIOUS' | translate" [nextLabel]="'NEXT' | translate"
+                screenReaderPaginationLabel="Pagination" [screenReaderPageLabel]="'PAGE' | translate">
+            </pagination-controls>
+        </div>
     </div>
     <div class="card-footer row">
         <div class="col-md-11">
