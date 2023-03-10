@@ -43,27 +43,34 @@
                                 </div>
                                 
                                 <div class="fs-6 ms-1" *ngIf="customer?.bCounter==false">
-                                    <div class="align-items-center">
-                                        <div class="text-gray-600">{{customer?.sEmail || ''}}<a href="mailto:{{customer?.sEmail}}">
+                                    <div class="align-items-center" *ngIf="customer?.sEmail">
+                                        <div class="text-gray-600">
+                                            {{customer?.sEmail}}
+                                            <a href="mailto:{{customer?.sEmail}}" class="ml-2">
                                                 <fa-icon [icon]="faEnvelope"></fa-icon>
-                                            </a></div>
+                                            </a>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="fs-6 ms-1" *ngIf="customer?.bCounter==false">
                                     <div class="align-items-center">
-                                        <p style="margin: 0; margin-bottom: 5px;">{{'PHONE_MOBILE' | translate}}</p>
-                                        <p style="margin: 0; margin-bottom: 5px;">
-                                            <span>{{customer?.oPhone?.sMobile || '-'}}
-                                                <i class="fab fa-whatsapp ms-1" *ngIf="customer?.oPhone?.bWhatsApp" style="color: #1CB39B;"></i>
+                                        <p style="margin: 0; margin-bottom: 5px;" *ngIf="customer?.oPhone?.sMobile">{{'PHONE_MOBILE' | translate}}</p>
+                                        <p style="margin: 0; margin-bottom: 5px;" *ngIf="customer?.oPhone?.sMobile">
+                                            <span>
+                                                {{customer?.oPhone?.sMobile}}
+                                                <i class="fab fa-whatsapp ms-1 ml-2" *ngIf="customer?.oPhone?.bWhatsApp" style="color: #1CB39B;"></i>
                                             </span>
                                         </p>
                                     </div>
                                 </div>
                                 <div class="fs-6 ms-1" *ngIf="customer?.bCounter==false">
                                     <div class="align-items-center">
-                                        <p style="margin: 0; margin-bottom: 5px;">{{'PHONE_LANDLINE' | translate}}</p>
-                                        <p style="margin: 0; margin-bottom: 5px;"><span>{{customer?.oPhone?.sLandLine ||
-                                                '-'}}</span></p>
+                                        <p style="margin: 0; margin-bottom: 5px;" *ngIf="customer?.oPhone?.sLandLine">{{'PHONE_LANDLINE' | translate}}</p>
+                                        <p style="margin: 0; margin-bottom: 5px;" *ngIf="customer?.oPhone?.sLandLine">
+                                            <span>
+                                                {{customer?.oPhone?.sLandLine}}
+                                            </span>
+                                        </p>
                                     </div>
                                 </div>
 
@@ -77,8 +84,8 @@
                         <div class="d-flex flex-wrap py-5">
                             <div class="flex-equal me-5">
                                 <p><strong>{{ "CURRENT_CUSTOMER" | translate}}</strong></p>
-                               <p *ngIf="!oCurrentCustomer?.sFirstName && !oCurrentCustomer?.sLastName"> {{ "NO_CUSTOMER_ADDED" | translate}} </p>  <!-- WIP (replace)  *ngIf="customer?.bCounter==true" -->
-                                <ng-container *ngIf="oCurrentCustomer?.sFirstName || oCurrentCustomer?.sLastName" > <!-- WIP (replace) *ngIf="customer?.bCounter==false" -->
+                                <p *ngIf="customer?.bCounter==true"> {{ "NO_CUSTOMER_ADDED" | translate}} </p>
+                                <ng-container *ngIf="customer?.bCounter==false" >
                                     <div class="fs-6 ms-1">
                                         <div class="align-items-center">
                                             <div class="text-gray-600">{{oCurrentCustomer?.sFirstName || ''}} {{oCurrentCustomer?.sLastName
@@ -86,27 +93,32 @@
                                         </div>
                                     </div>
                                     <div class="fs-6 ms-1">
-                                        <div class="align-items-center">
-                                            <div class="text-gray-600">{{oCurrentCustomer?.sEmail || ''}}<a href="mailto:{{oCurrentCustomer?.sEmail}}">
+                                        <div class="align-items-center" *ngIf="oCurrentCustomer?.sEmail">
+                                            <div class="text-gray-600">
+                                                {{oCurrentCustomer?.sEmail}}
+                                                <a href="mailto:{{oCurrentCustomer?.sEmail}}" class="ml-2">
                                                     <fa-icon [icon]="faEnvelope"></fa-icon>
-                                                </a></div>
+                                                </a>
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="fs-6 ms-1">
                                         <div class="align-items-center">
-                                            <p style="margin: 0; margin-bottom: 5px;">{{'PHONE_MOBILE' | translate}}</p>
-                                            <p style="margin: 0; margin-bottom: 5px;">
-                                                <span>{{oCurrentCustomer?.oPhone?.sMobile || '-'}}
-                                                    <i class="fab fa-whatsapp ms-1" *ngIf="oCurrentCustomer?.oPhone?.bWhatsApp" style="color: #1CB39B;"></i>
+                                            <p style="margin: 0; margin-bottom: 5px;" *ngIf="oCurrentCustomer?.oPhone?.sMobile" >{{'PHONE_MOBILE' | translate}}</p>
+                                            <p style="margin: 0; margin-bottom: 5px;"  *ngIf="oCurrentCustomer?.oPhone?.sMobile">
+                                                <span>
+                                                    {{oCurrentCustomer?.oPhone?.sMobile}}
+                                                    <i class="fab fa-whatsapp ms-1 ml-2" *ngIf="oCurrentCustomer?.oPhone?.bWhatsApp" style="color: #1CB39B;"></i>
                                                 </span>
                                             </p>
                                         </div>
                                     </div>
                                     <div class="fs-6 ms-1">
                                         <div class="align-items-center">
-                                            <p style="margin: 0; margin-bottom: 5px;">{{'PHONE_LANDLINE' | translate}}</p>
-                                            <p style="margin: 0; margin-bottom: 5px;"><span>{{oCurrentCustomer?.oPhone?.sLandLine ||
-                                                    '-'}}</span></p>
+                                            <p style="margin: 0; margin-bottom: 5px;" *ngIf="oCurrentCustomer?.oPhone?.sLandLine">{{'PHONE_LANDLINE' | translate}}</p>
+                                            <p style="margin: 0; margin-bottom: 5px;" *ngIf="oCurrentCustomer?.oPhone?.sLandLine">
+                                                <span>{{oCurrentCustomer?.oPhone?.sLandLine}}</span>
+                                            </p>
                                         </div>
                                     </div>
                                 </ng-container>
@@ -960,8 +972,7 @@
                                                     [disabled]="bDownloadCustomerReceipt">
                                                     <fa-icon class="group-icon" [icon]="faPrint"></fa-icon>
                                                     <span class="indicator-label">{{
-                                                        "CUSTOMER_RECEIPT_PRINT" |
-                                                        translate}}</span>
+                                                        "PRINT_VOUCHER" |translate}}</span>
                                                 </button>
 
                                                 <span class="btn btn-secondary btn-icon fs-bold printer-button-span"
