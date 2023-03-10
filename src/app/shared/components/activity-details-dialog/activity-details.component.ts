@@ -586,7 +586,7 @@ export class ActivityDetailsComponent implements OnInit {
     return this.apiService.getNew('core', '/api/v1/business/' + this.business._id);
   }
 
-  async downloadCustomerReceipt(index: number, receipt: any) {
+  async downloadCustomerReceipt(index: number, receipt: any, sAction:any) {
     if (receipt == 'customerReceipt') {
       this.bCustomerReceipt = true;
     } else if (receipt == 'downloadCustomerReceipt') {
@@ -669,7 +669,7 @@ export class ActivityDetailsComponent implements OnInit {
     const aTemp = oDataSource.sNumber.split("-");
     oDataSource.sPartRepairNumber = aTemp[aTemp.length - 1];
     // oDataSource.sBusinessLogoUrl = (await this.getBase64FromUrl(oDataSource?.businessDetails?.sLogoLight).toPromise()).data;
-    this.sendForReceipt(oDataSource, template, oDataSource.sNumber, receipt);
+    this.sendForReceipt(oDataSource, template, oDataSource.sNumber, receipt, sAction);
   }
 
   getBase64FromUrl(url: any): Observable<any> {
@@ -817,7 +817,7 @@ export class ActivityDetailsComponent implements OnInit {
     return canvas.toDataURL("image/png");
   }
 
-  async downloadReceipt(event: any, receipt: any) {
+  async downloadReceipt(event: any, receipt: any, bPrint:boolean = false) {
     if (receipt == 'downloadReceipt') {
       this.bDownloadReceipt = true;
     }
@@ -890,12 +890,12 @@ export class ActivityDetailsComponent implements OnInit {
     });
     oDataSource.nTotalPaidAmount = nTotalPaidAmount;
 
-    this.sendForReceipt(oDataSource, template, oDataSource.sNumber, receipt);
+    this.sendForReceipt(oDataSource, template, oDataSource.sNumber, receipt, bPrint);
     this.bActivityPdfGenerationInProgress = false;
     event.target.disabled = false;
   }
 
-  async sendForReceipt(oDataSource: any, template: any, title: any, receipt: any) {
+  async sendForReceipt(oDataSource: any, template: any, title: any, receipt: any, sAction:any) {
     const oPdfSetting = template.aSettings.find((el: any) => el.sParameter === 'pdfMethod');
     if (oPdfSetting && oPdfSetting.value === 'Javascript') {
       await this.pdfService.createPdf(JSON.stringify(template), oDataSource, oDataSource.sNumber, true, null, this.iBusinessId, null);
@@ -906,7 +906,8 @@ export class ActivityDetailsComponent implements OnInit {
         templateData: template,
         printSettings: this.printSettings,
         printActionSettings: this.printActionSettings,
-        eSituation: 'is_created'
+        eSituation: 'is_created',
+        sAction
       });
     }
 
