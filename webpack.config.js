@@ -215,13 +215,14 @@ module.exports = {
       },
       shared: share(sharedLibrary)
     }),
-    // new ModuleFederationPlugin({
-    //   // For remotes (please adjust)
-    //   remotes: {
-    //     "supplierSlider": "supplierSlider@http://localhost:4202/supplierSlider.js",
-    //   },
-    //   shared: share(sharedLibrary)
-    // }),
+    new ModuleFederationPlugin({
+      name: "supplierProductSlider",
+      filename: "supplier-product-slider.js",
+      exposes: {
+        "./SupplierProductSliderModule": './src/app/sliders/supplier-stock-product-slider/supplier-product-slider.module.ts',
+      },
+      shared: share(sharedLibrary)
+    }),
     new ModuleFederationPlugin({
       name: "ImportGiftCardModule",
       filename: "import-gift-card.js",
