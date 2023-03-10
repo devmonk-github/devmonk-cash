@@ -3,8 +3,8 @@
         <h4 class="card-title" *ngIf="mode === 'create'">{{"NEW_CUSTOMER" | translate}}</h4>
         <h4 class="card-title" *ngIf="mode === 'details'">{{"CUSTOMER_DETAILS" | translate}}</h4>
         <div *ngIf="mode === 'details'" class="card-toolbar flex-row-fluid justify-content-end gap-5">
-            <button class="btn btn-primary" *ngIf="bIsCurrentCustomer" (click)="close({ bChangeCustomer: true })">
-                {{"CHANGE" | translate}}
+            <button class="btn btn-warning" *ngIf="bIsCurrentCustomer" (click)="close({ bChangeCustomer: true })">
+                {{"CHANGE_CUSTOMER" | translate}}
             </button>
             <button class="btn btn-secondary" (click)="editProfile = !editProfile">{{ ((editProfile)? "CANCEL":"EDIT" )|
                 translate}}
