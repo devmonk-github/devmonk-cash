@@ -131,8 +131,8 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
     this.cdr.detectChanges();
   }
 
-  close(value: boolean) {
-    this.dialogRef.close.emit(value);
+  close(data: any) {
+    this.dialogRef.close.emit(data);
   }
 
   downloadWithVAT(print: boolean = false) {
@@ -238,7 +238,7 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
           const data = this.tillService.processTransactionSearchResult(result);
           localStorage.setItem('fromTransactionPage', JSON.stringify(data));
           setTimeout(() => {
-            this.close(true);
+            this.close({ action: true });
           }, 100);
         }
       });
@@ -401,7 +401,7 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
     event.target.disabled = false;
 
     this.toastService.show({ type: "success", text: this.translation['SUCCESSFULLY_UPDATED']  });
-    this.close(false);
+    this.close({ action: false });
   }
 
   addExpenses(data: any) {
@@ -459,9 +459,9 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   selectCustomer() {
     this.dialogService.openModal(CustomerDialogComponent, { cssClass: 'modal-xl' })
       .instance.close.subscribe((data) => {
-        console.log('after selecting customer: ', data);
         if (!data?.customer?._id || !this.transaction?._id) return;
         this.updateCurrentCustomer({ oCustomer: data?.customer });
+        this.transaction.oSystemCustomer = data?.customer;
       }, (error) => {
         console.log('selectCustomer error: ', error);
         this.toastService.show({ type: "warning", text: `Something went wrong` });
@@ -472,19 +472,22 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   openCurrentCustomer(oCurrentCustomer: any) {
     console.log('openCurrentCustomer: ', oCurrentCustomer);
     const bIsCounterCustomer = (oCurrentCustomer?.sEmail === "balieklant@prismanote.com" || !oCurrentCustomer?._id) ? true : false /* If counter customer used then must needs to change */
+    if (bIsCounterCustomer) {
+      this.selectCustomer();
+      return;
+    }
     this.dialogService.openModal(CustomerDetailsComponent,
       {
-        cssClass: bIsCounterCustomer == true ? "modal-lg" : "modal-xl position-fixed start-0 end-0",
+        cssClass: "modal-xl position-fixed start-0 end-0",
         context: {
           customerData: oCurrentCustomer,
           mode: 'details',
           editProfile: true,
           bIsCurrentCustomer: true, /* We are only going to change in the A/T/AI */
-          bIsCounterCustomer: bIsCounterCustomer
         }
       }).instance.close.subscribe(result => {
         console.log('result: ', result);
-        if (result?.bIsSelectingCustomer) this.selectCustomer();
+        if (result?.bChangeCustomer) this.selectCustomer();
         else if (result?.bShouldUpdateCustomer) this.updateCurrentCustomer({ oCustomer: result?.oCustomer });
       }, (error) => {
         console.log("Error in customer: ", error);

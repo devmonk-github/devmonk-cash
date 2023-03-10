@@ -929,7 +929,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
       .instance.close.subscribe(
         (res: any) => {
           // console.log({res});
-          if (res){
+          if (res?.action){
             this.close(false);
             this.router.navigate(['business/till']);
           } 
