@@ -9,9 +9,7 @@
     </div>
     <div class="card-body p-5">
         <div class="row align-items-center">
-            <div class="col-4">
-                <label>{{ 'SELECT_PRINTER' | translate }}</label>
-            </div>
+            <div class="col-4"><label>{{ 'SELECT_PRINTER' | translate }}</label></div>
             <div class="col-6">
                 <ng-select [groupBy]="groupByFn" [clearable]="false" class="mt-2" [items]="printersList" bindLabel="name"
                     [(ngModel)]="oSelectedPrinter" (ngModelChange)="selectedPrinterChange()">
@@ -20,11 +18,23 @@
         </div>
         
         <div class="row align-items-center">
-            <div class="col-4">
-                <label>{{ 'SELECT_PAPER' | translate }}</label>
-            </div>
+            <div class="col-4"><label>{{ 'SELECT_PAPER' | translate }}</label></div>
             <div class="col-6">
-                <ng-select class="mt-2" [items]="aPapers" [(ngModel)]="sSelectedPaper"></ng-select>
+                <ng-select class="mt-2" [items]="aPapers" [(ngModel)]="sPrinterPageFormat"></ng-select>
+            </div>
+        </div>
+        
+        <div class="row align-items-center">
+            <div class="col-4"><label>{{ 'PAPER_TRAY' | translate }}</label></div>
+            <div class="col-6">
+                <ng-select class="mt-2" [items]="aPaperTray" [(ngModel)]="sPaperTray"></ng-select>
+            </div>
+        </div>
+        
+        <div class="row align-items-center">
+            <div class="col-4"><label>{{ 'ROTATION' | translate }}</label></div>
+            <div class="col-6">
+                <ng-select class="mt-2" [items]="aRotation" [(ngModel)]="nRotation"></ng-select>
             </div>
         </div>
         
