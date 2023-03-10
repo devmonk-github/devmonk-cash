@@ -1171,8 +1171,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
       // &&
       // (aAmount - bAmount) >= 0.06 ||
       // (bAmount - aAmount) <= -0.06
-
-      (bAmount - aAmount > 0.05)
+      (bAmount - aAmount > 0.05 || bAmount - aAmount < -0.05)
       ||
       oStatisticDetail?.data?.oTransactionAudit[0]?.overall[0]?.nQuantity != this.aStatistic[0].overall[0].nQuantity) {
       this.toastService.show({ type: 'warning', text: 'Someone modified the transaction in this workstation. Please refresh the page' });
