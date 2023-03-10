@@ -372,7 +372,8 @@ export class PrintSettingsComponent implements OnInit {
       this.labelPrintSettings?.nPrinterId,
       this.labelPrintSettings?.nComputerId,
       1,
-      { title: 'Set layout' },
+      'Set layout',
+      { },
       this.businessDetails.oPrintNode.sApiKey
     )
 
@@ -427,7 +428,8 @@ export class PrintSettingsComponent implements OnInit {
       this.labelPrintSettings?.nPrinterId,
       this.labelPrintSettings?.nComputerId,
       1,
-      { title: 'Sample print' },
+      'Sample print',
+      { },
       this.businessDetails.oPrintNode.sApiKey
     )
 
