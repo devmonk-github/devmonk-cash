@@ -4,14 +4,13 @@ import { TranslateService } from '@ngx-translate/core';
 @Injectable({
   providedIn: 'root'
 })
-
-export class ImportGiftCardService {
+export class ImportRepairOrderService {
 
   constructor(
     private translateService: TranslateService
   ) { }
 
-  defaultImportGiftCardAttribute() {
+  defaultImportRepairOrderAttribute() {
     const aDefaultAttribute = [
       {
         sColumnHeader: "CREATED_DATE",
@@ -29,14 +28,24 @@ export class ImportGiftCardService {
         sName: "nRemainingValue",
       },
       {
-        sColumnHeader: "GIFT_CARD_NUMBER",
-        sDataBaseFieldName: "sGiftCardNumber",
-        sName: "sGiftCardNumber",
-      },
-      {
         sColumnHeader: "PRICE_INC_VAT",
         sDataBaseFieldName: "nPriceIncVat",
         sName: "nPriceIncVat",
+      },
+      {
+        sColumnHeader: "TYPE",
+        sDataBaseFieldName: "oType.eKind",
+        sName: "eKind",
+      },
+      {
+        sColumnHeader: "ACTIVITY_ITEM_STATUS",
+        sDataBaseFieldName: "eActivityItemStatus",
+        sName: "eActivityItemStatus",
+      },
+      {
+        sColumnHeader: "BAG_NUMBER",
+        sDataBaseFieldName: "sBagNumber",
+        sName: "sBagNumber",
       },
       {
         sColumnHeader: "TAX",
@@ -49,26 +58,26 @@ export class ImportGiftCardService {
   }
 
   processTransactionItem(oData: any): any {
-    let { parsedGiftCardData, referenceObj, iBusinessId, iLocationId, iWorkStationId, iEmployeeId } = oData;
+    let { parsedRepairOrderData, referenceObj, iBusinessId, iLocationId, iWorkStationId, iEmployeeId } = oData;
 
     /* mapping the file's field with database name */
-    parsedGiftCardData = parsedGiftCardData.map((oGiftCard: any) => {
-      if (Object.keys(oGiftCard).length) {
-        for (let [key, value] of Object.entries(oGiftCard)) {
-          oGiftCard[referenceObj[key]] = value;
-          delete oGiftCard[key];
+    parsedRepairOrderData = parsedRepairOrderData.map((oRepairOrder: any) => {
+      if (Object.keys(oRepairOrder).length) {
+        for (let [key, value] of Object.entries(oRepairOrder)) {
+          oRepairOrder[referenceObj[key]] = value;
+          delete oRepairOrder[key];
         }
       }
-      return oGiftCard;
+      return oRepairOrder;
     })
 
-    if (!parsedGiftCardData?.length) return [];
+    if (!parsedRepairOrderData?.length) return [];
 
-    const sProductName = this.translateService.instant('GIFTCARD');
+    const sProductName = this.translateService.instant('REPAIR');
 
     /* processing Transaction-Item */
     const aTransactionItem = [];
-    for (const oData of parsedGiftCardData) {
+    for (const oData of parsedRepairOrderData) {
       if (!oData?.nPriceIncVat) throw ('something went wrong');
       const nPurchasePrice = oData?.nPriceIncVat / (1 + (100 / (oData?.nVatRate || 1)));
       const oTransactionItem = {
@@ -77,10 +86,10 @@ export class ImportGiftCardService {
         iEmployeeId: iEmployeeId,
         iLocationId: iLocationId,
         /* File */
+        sBagNumber: oData?.sBagNumber,
         nPriceIncVat: oData?.nPriceIncVat,
         nVatRate: oData?.nVatRate,
         nMatchingCode: oData?.nMatchingCode ? parseFloat(oData?.nMatchingCode) : undefined,
-        sGiftCardNumber: oData?.sGiftCardNumber,
         dCreatedDate: oData?.dCreatedDate,
         nEstimatedTotal: oData?.nPriceIncVat,
         nPaymentAmount: oData?.nPriceIncVat,
@@ -91,7 +100,7 @@ export class ImportGiftCardService {
         nPurchasePrice: nPurchasePrice,
         nProfit: oData?.nPriceIncVat - nPurchasePrice,
         /* Backend */
-        iArticleGroupId: '', /* giftcard */
+        iArticleGroupId: '', /* repair-order */
         iArticleGroupOriginalId: '',
         sUniqueIdentifier: '',
         iCustomerId: '',
@@ -104,7 +113,7 @@ export class ImportGiftCardService {
         nQuantity: 1,
         oArticleGroupMetaData: {
           aProperty: [],
-          sCategory: "Giftcard",
+          sCategory: "Repair",
           sSubCategory: "Repair",
           oName: {},
           oNameOriginal: {}
@@ -119,7 +128,7 @@ export class ImportGiftCardService {
           eTransactionType: "cash-registry",
           bRefund: false,
           nStockCorrection: 1,
-          eKind: "giftcard",
+          eKind: "repair",
           bDiscount: false,
           bPrepayment: false
         },
@@ -128,10 +137,9 @@ export class ImportGiftCardService {
         sServicePartnerRemark: "",
         eEstimatedDateAction: "call_on_ready",
         eActivityItemStatus: "delivered",
-        bGiftcardTaxHandling: "true",
         bDiscountOnPercentage: false,
         bImported: true,
-        bImportGiftCard: true
+        bImportRepairOrder: true
       }
       aTransactionItem.push(oTransactionItem);
     }
@@ -139,8 +147,8 @@ export class ImportGiftCardService {
     return aTransactionItem;
   }
 
-  mapTheImportGiftCardBody(oData: any) {
-    const { parsedGiftCardData, referenceObj, iBusinessId, iLocationId, iWorkStationId, iEmployeeId } = oData;
+  mapTheImportRepairOrderBody(oData: any) {
+    const { parsedRepairOrderData, referenceObj, iBusinessId, iLocationId, iWorkStationId, iEmployeeId } = oData;
     const aTransactionItem = this.processTransactionItem(oData);
 
     const oBody: any = {
@@ -160,14 +168,15 @@ export class ImportGiftCardService {
       transactionItems: aTransactionItem,
       sDefaultLanguage: localStorage.getItem('language') || 'nl',
       bImported: true,
+      bImportRepairOrder: true
     };
 
-    console.log('importGiftCard: ', oBody);
+    console.log('importRepairOrder: ', oBody);
     console.log('referenceObj: ', referenceObj);
-    return { parsedGiftCardData, oBody };
+    return { parsedRepairOrderData, oBody };
   }
 
-  /* Mapping the payment for the gift card */
+  /* Mapping the payment for the repair-order */
   mapPayment(oData: any) {
     const aPayment = [
       {
@@ -199,5 +208,4 @@ export class ImportGiftCardService {
 
     return aPayment;
   }
-
 }

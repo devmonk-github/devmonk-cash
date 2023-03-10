@@ -8,7 +8,7 @@ import { CustomerStructureService } from '../shared/service/customer-structure.s
 import { ToastService } from '../shared/components/toast';
 import {ExportsComponent} from '../shared/components/exports/exports.component';
 import { MenuComponent } from '../shared/_layout/components/common';
-
+import { CustomerDialogMergeComponent } from '../shared/components/customer-dialog-merge/customer-dialog-merge.component';
 // import { result } from 'lodash';
 
 // interface FSEntry {
@@ -26,6 +26,8 @@ import { MenuComponent } from '../shared/_layout/components/common';
 })
 export class CustomersComponent implements OnInit {
 
+  customer: any = null;
+
   faSearch = faSearch;
 
   business: any = {}
@@ -41,9 +43,14 @@ export class CustomersComponent implements OnInit {
     totalItems: 0
   };
 
+ 
   customColumn = 'NAME';
   defaultColumns = ['PHONE', 'EMAIL', 'SHIPPING_ADDRESS', 'INVOICE_ADDRESS'];
   allColumns = [this.customColumn, ...this.defaultColumns];  
+  customerMenu = [
+    { key: 'MERGE' }
+    
+  ];
   requestParams: any = {
     iBusinessId: "",
     skip: 0,
@@ -53,13 +60,14 @@ export class CustomersComponent implements OnInit {
     searchValue: '',
     aProjection: ['sSalutation', 'sFirstName', 'sPrefix', 'sLastName', 'dDateOfBirth', 'dDateOfBirth', 'nClientId', 'sGender', 'bIsEmailVerified',
       'bCounter', 'sEmail', 'oPhone', 'oShippingAddress', 'oInvoiceAddress', 'iBusinessId', 'sComment', 'bNewsletter', 'sCompanyName', 'oPoints',
-      'sCompanyName', 'oIdentity', 'sVatNumber', 'sCocNumber', 'nPaymentTermDays', 'nDiscount', 'bWhatsApp', 'nMatchingCode' , 'sNote' , 'iEmployeeId' , 'bIsMigrated' ,'aGroups'],
+      'sCompanyName', 'oIdentity', 'sVatNumber', 'sCocNumber', 'nPaymentTermDays','bIsConnected',
+      'bIsHidden', 'nDiscount', 'bWhatsApp', 'nMatchingCode' , 'sNote' , 'iEmployeeId' , 'bIsMigrated' ,'aGroups'],
     oFilterBy: {
       oStatic: {},
       oDynamic: {}
     }
   };
-
+  iChosenCustomerId : any;
   @ViewChildren('inputElement') inputElement!: QueryList<ElementRef>;
 
   constructor(
@@ -77,6 +85,26 @@ export class CustomersComponent implements OnInit {
     this.requestParams.iBusinessId = this.business._id;
     this.getCustomers()
 
+  }
+
+  // Function for handle event of transaction menu
+  clickMenuOpt(key: string, Id: string) {
+    switch (key) {
+      case "MERGE":
+        this.openCustomerDialog(this.customer,Id,null);
+        break;
+    }
+
+  }
+
+  openCustomerDialog(customer:any,Id:any,iSearchedCustomerId:any): void {
+    this.dialogService.openModal(CustomerDialogMergeComponent, { cssClass: 'modal-xl', context: { customer: this.customer ,iChosenCustomerId:Id,iSearchedCustomerId:null} })
+      .instance.close.subscribe((data) => {
+        if (data.customer) {
+          this.customer = data.customer;
+          //console.log(this.customer)
+        }
+      })
   }
 
   createCustomer() {

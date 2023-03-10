@@ -300,6 +300,14 @@ export class ReceiptService {
                     let img = this.addImage(row);
                     dataRow.push(img);
                     tableWidths.push(this.getWidth(row.size));
+                } else if (row?.type === 'stack') {
+                    currentDataSource = (row?.object) ? this.oOriginalDataSource[row.object] : this.oOriginalDataSource;
+                    let obj: any = {
+                        "stack": this.processStack(row, currentDataSource)
+                    };
+                    if (row?.alignment) obj.alignment = row.alignment;
+                    dataRow.push(obj);
+                    tableWidths.push(this.getWidth(row.size));
                 } else {
                     currentDataSource = (row?.object) ? this.oOriginalDataSource[row.object] : this.oOriginalDataSource;
 
@@ -427,6 +435,7 @@ export class ReceiptService {
     }
 
     addImage(el: any) {
+        if(!el?.url) return;
         let img: any = {
             image: this.oOriginalDataSource[el.url],// this.logoUri,
         };
@@ -558,11 +567,12 @@ export class ReceiptService {
             } else {
                 let bTestResult = true;
                 if (el?.ifAnd) {
-                    let field;
+                    let field, target;
                     bTestResult = true;
                     bTestResult = el.ifAnd.every((rule: any) => {
                         field = (object) ? object[rule.field] : this.oOriginalDataSource[rule.field];
-                        return (field != null) ? this.commonService.comparators[rule.compare](field, rule.target) : false;
+                        target = (rule?.targetMode === 'fetch') ? object[rule.target] : rule.target;
+                        return (field != null) ? this.commonService.comparators[rule.compare](field, target) : false;
                     });
                     if (bTestResult) {
                         // console.log('replacing', el.html)

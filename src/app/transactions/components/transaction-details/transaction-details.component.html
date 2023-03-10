@@ -1,5 +1,23 @@
 <!-- <app-supplier-product-slider [$data]="SupplierStockProductSliderData.asObservable()">
 </app-supplier-product-slider> -->
+<div class="overlay-full d-flex flex-column justify-content-center align-items-center" *ngIf="paymentEditMode && !bIsDayStateOpened">
+    <div *ngIf="bDayStateChecking">
+        <div class="d-flex flex-column">
+            <h1>{{ 'PLEASE_WAIT_WHILE_CHECKING_FOR_DAY_STATE' | translate}}</h1>
+            <div class="spinner-border mx-auto"></div>
+        </div>
+    </div>
+
+    <div *ngIf="!bDayStateChecking && !bIsDayStateOpened" class="d-flex flex-column align-items-center">
+        <h1>{{ 'NO_OPEN_DAY_STATE_FOUND' | translate}}</h1>
+        <button class="btn btn-white" (click)="openDayState()" [disabled]="bIsOpeningDayState">{{ 'OPEN_CASH_REGISTRY' |
+            translate}}</button>
+        <div>
+            <button class="btn btn-dark mt-5" (click)="paymentEditMode = false">{{ 'CANCEL' | translate}}</button>
+        </div>
+    </div>
+
+</div>
 
 <div class="card shadow-sm">
     <div class="card-header mt-5">
@@ -11,112 +29,184 @@
     <div class="card-body row main m-0">
 
         <div class="col-md-4">
+
+            <!-- SYSTEM_CUSTOMER Start-->
+            <div *ngIf="transaction?.oSystemCustomer?._id">
+                <div class="d-flex align-items-center">
+                    <h3 class="fw-bolder mb-0">
+                        <span>{{ "SYSTEM_CUSTOMER" | translate }}</span>
+                    </h3>
+                    <ng-container *ngIf="from === 'transactions' || from === 'transactions-action' ">
+                        <button *ngIf="!transaction?.oSystemCustomer?.bCounter" class="btn btn-primary cstm-btn" (click)="openCustomer(transaction.oSystemCustomer)">
+                            {{ 'VIEW' | translate }}
+                        </button>
+                    </ng-container>
+                </div>
+                <div class="row fw-bold gy-1">
+                    <div class="col-md-12">
+                        <div class="text-gray-900 mt-2">
+                            {{ transaction?.oSystemCustomer?.sFirstName }}
+                            {{ transaction?.oSystemCustomer?.sPrefix}}
+                            {{ transaction?.oSystemCustomer?.sLastName }}
+                        </div>
+                    </div>
+            
+                    <ng-container *ngIf="!transaction?.oSystemCustomer?.bCounter">
+                        <div class="col-md-6">
+                            <div class="mt-2 text-muted">{{ "INVOVICE_ADDRESS" | translate}}</div>
+                            <div class="text-gray-800 mt-2">
+                                <span>
+                                    {{ transaction?.oSystemCustomer?.oInvoiceAddress?.sStreet }}
+                                    {{ transaction?.oSystemCustomer?.oInvoiceAddress?.sHouseNumber }}
+                                </span>
+                                <span>
+                                    {{ transaction?.oSystemCustomer?.oInvoiceAddress?.sPostalCode }}
+                                    {{ transaction?.oSystemCustomer?.oInvoiceAddress?.sCity }} </span>
+                                <span>
+                                    {{ transaction?.oSystemCustomer?.oInvoiceAddress?.sCountry }}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mt-2 text-muted">{{ "SHIPPING_ADDRESS" | translate}}</div>
+                            <div class="text-gray-800 mt-2">
+                                <span>
+                                    {{ transaction?.oSystemCustomer?.oShippingAddress?.sStreet }}
+                                    {{ transaction?.oSystemCustomer?.oShippingAddress?.sHouseNumber }}
+                                </span>
+                                <span>
+                                    {{ transaction?.oSystemCustomer?.oShippingAddress?.sPostalCode }}
+                                    {{ transaction?.oSystemCustomer?.oShippingAddress?.sCity }}
+                                </span>
+                                <span>
+                                    {{ transaction?.oSystemCustomer?.oShippingAddress?.sCountry }}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="text-gray-800 mt-2" *ngIf="!transaction?.oSystemCustomer?.bCounter">
+                                {{ transaction?.oSystemCustomer?.sEmail  || '-'}}
+                            </div>
+                            <div class="text-gray-800 mt-2">
+                                {{ transaction?.oSystemCustomer?.sMobile || '-'}}
+                            </div>
+                            <div class="text-gray-800 mt-2">
+                                {{transaction?.oSystemCustomer?.sLandLine || '-'}}
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class=" mt-2">
+                                <span class="text-muted me-5">{{ 'COMPANY_NAME' | translate}}: </span>
+                                <span class="text-gray-800">{{ transaction?.oSystemCustomer?.sCompanyName }}</span>
+                            </div>
+                            <div class=" mt-2">
+                                <span class="text-muted me-5">{{ 'VAT_NUMBER' | translate}}: </span>
+                                <span class="text-gray-800">{{ transaction?.oSystemCustomer?.sVatNumber }}</span>
+                            </div>
+                        </div>
+                    </ng-container>
+                </div>
+            </div>
+            <!-- SYSTEM_CUSTOMER End -->
+
+
             <!-- CURRENT_CUSTOMER Start -->
-            <div class="d-flex justify-content-between align-items-center">
-                <h3 class="fw-bolder mb-4">
+            <div class="d-flex align-items-center mt-5">
+                <h3 class="fw-bolder mb-0">
                     <span>{{ "CURRENT_CUSTOMER" | translate }}</span>
                 </h3>
                 <ng-container *ngIf="from === 'transactions' || from === 'transactions-action' ">
-                    <button class="btn btn-primary" *ngIf="!transaction?.oCustomer?.bCounter" (click)="openCustomer(transaction.oCustomer)">
-                        {{ 'VIEW' | translate }}
+                    <button class="btn btn-primary cstm-btn" >
+                        {{'UPDATE_CURRENT_CUSTOMER'|translate}} 
                     </button>
                 </ng-container>
             </div>
             <div class="row fw-bold gy-1">
                 <div class="col-md-12">
                     <div class="text-gray-900 mt-2">
-                        {{ transaction?.oCustomer?.sFirstName }} 
-                        {{ transaction?.oCustomer?.sPrefix}} 
-                        {{ transaction?.oCustomer?.sLastName }} 
+                        {{ transaction?.oCustomer?.sFirstName }}
+                        {{ transaction?.oCustomer?.sPrefix}}
+                        {{ transaction?.oCustomer?.sLastName }}
                     </div>
                 </div>
-                
+        
                 <ng-container *ngIf="!transaction?.oCustomer?.bCounter">
-                <div class="col-md-6">
-                    <div class="mt-2 text-muted">{{ "INVOVICE_ADDRESS" | translate}}</div>
-                    <div class="text-gray-800 mt-2">
-                        <span> 
-                            {{ transaction?.oCustomer?.oInvoiceAddress?.sStreet }} 
-                            {{ transaction?.oCustomer?.oInvoiceAddress?.sHouseNumber }} 
-                        </span>
-                        <span> 
-                            {{ transaction?.oCustomer?.oInvoiceAddress?.sPostalCode }} 
-                            {{ transaction?.oCustomer?.oInvoiceAddress?.sCity }} </span>
-                        <span> 
-                            {{ transaction?.oCustomer?.oInvoiceAddress?.sCountry }}
-                        </span>
+                    <div class="col-md-6">
+                        <div class="mt-2 text-muted">{{ "INVOVICE_ADDRESS" | translate}}</div>
+                        <div class="text-gray-800 mt-2">
+                            <span>
+                                {{ transaction?.oCustomer?.oInvoiceAddress?.sStreet }}
+                                {{ transaction?.oCustomer?.oInvoiceAddress?.sHouseNumber }}
+                            </span>
+                            <span>
+                                {{ transaction?.oCustomer?.oInvoiceAddress?.sPostalCode }}
+                                {{ transaction?.oCustomer?.oInvoiceAddress?.sCity }} </span>
+                            <span>
+                                {{ transaction?.oCustomer?.oInvoiceAddress?.sCountry }}
+                            </span>
+                        </div>
                     </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="mt-2 text-muted">{{ "SHIPPING_ADDRESS" | translate}}</div>
-                    <div class="text-gray-800 mt-2">
-                        <span> 
-                            {{ transaction?.oCustomer?.oShippingAddress?.sStreet }} 
-                            {{ transaction?.oCustomer?.oShippingAddress?.sHouseNumber }} 
-                        </span>
-                        <span> 
-                            {{ transaction?.oCustomer?.oShippingAddress?.sPostalCode }} 
-                            {{ transaction?.oCustomer?.oShippingAddress?.sCity }} 
-                        </span>
-                        <span> 
-                            {{ transaction?.oCustomer?.oShippingAddress?.sCountry }}
-                        </span>
+                    <div class="col-md-6">
+                        <div class="mt-2 text-muted">{{ "SHIPPING_ADDRESS" | translate}}</div>
+                        <div class="text-gray-800 mt-2">
+                            <span>
+                                {{ transaction?.oCustomer?.oShippingAddress?.sStreet }}
+                                {{ transaction?.oCustomer?.oShippingAddress?.sHouseNumber }}
+                            </span>
+                            <span>
+                                {{ transaction?.oCustomer?.oShippingAddress?.sPostalCode }}
+                                {{ transaction?.oCustomer?.oShippingAddress?.sCity }}
+                            </span>
+                            <span>
+                                {{ transaction?.oCustomer?.oShippingAddress?.sCountry }}
+                            </span>
+                        </div>
                     </div>
-                </div>
-                <div class="col-md-12">
-                    <div class="text-gray-800 mt-2" *ngIf="!transaction?.oCustomer?.bCounter">
-                        {{ transaction?.oCustomer?.sEmail }}
+                    <div class="col-md-12">
+                        <div class="text-gray-800 mt-2" *ngIf="!transaction?.oCustomer?.bCounter">
+                            {{ transaction?.oCustomer?.sEmail  || '-'}}
+                        </div>
+                        <div class="text-gray-800 mt-2">
+                            {{ transaction?.oSystemCustomer?.sMobile || '-'}}
+                        </div>
+                        <div class="text-gray-800 mt-2">
+                            {{transaction?.oSystemCustomer?.sLandLine || '-'}}
+                        </div>
                     </div>
-                    <div class="text-gray-800 mt-2">{{ transaction?.oCustomer?.sMobile }} &nbsp; &nbsp; {{
-                        transaction?.oCustomer?.sLandLine }}
+                    <div class="col-md-12">
+                        <div class=" mt-2">
+                            <span class="text-muted me-5">{{ 'COMPANY_NAME' | translate}}: </span>
+                            <span class="text-gray-800">{{ transaction?.oCustomer?.sCompanyName }}</span>
+                        </div>
+                        <div class=" mt-2">
+                            <span class="text-muted me-5">{{ 'VAT_NUMBER' | translate}}: </span>
+                            <span class="text-gray-800">{{ transaction?.oCustomer?.sVatNumber }}</span>
+                        </div>
                     </div>
-                </div>
-                <div class="col-md-12">
-                    <div class=" mt-2">
-                        <span class="text-muted me-5">{{ 'COMPANY_NAME' | translate}}: </span> 
-                        <span class="text-gray-800">{{ transaction?.oCustomer?.sCompanyName }}</span>
-                    </div>
-                    <div class=" mt-2">
-                        <span class="text-muted me-5">{{ 'VAT_NUMBER' | translate}}: </span> 
-                        <span class="text-gray-800">{{ transaction?.oCustomer?.sVatNumber }}</span>
-                    </div>
-                </div>
                 </ng-container>
             </div>
             <!-- CURRENT_CUSTOMER End -->
-           
-            <!-- SYSTEM_CUSTOMER Start-->
-            <!-- WIP (uncomment this) -->
-            <!-- <div class="d-flex justify-content-between align-items-center">
-                <h3 class="fw-bolder mb-4">
-                    <span>{{ "SYSTEM_CUSTOMER" | translate }} </span>
-                </h3>
-                <ng-container>
-                    <button class="btn btn-primary" (click)="openCustomer({ _id: transaction.iCustomerId})">
-                        {{ 'VIEW' | translate }}
-                    </button>
-                </ng-container>
-            </div> -->
-            <!-- SYSTEM_CUSTOMER End -->
-
+        
             <div class="d-flex justify-content-between align-items-center">
-              <h3 class="fw-bolder mb-4">
-               <span>{{"CREATER_DETAIL" | translate}} </span>  
-            </h3> 
+                <h3 class="fw-bolder mb-4">
+                    <span>{{"CREATER_DETAIL" | translate}} </span>
+                </h3>
             </div>
-
+        
             <div class="row fw-bold gy-1">
-            <div class="col-md-12">
-                <div class="d-flex fs-6 ms-1 my-1">
-                    <div class="align-items-center">                                 
-                        <img alt="Logo"
-                        *ngIf="transaction?.createrDetail?.sFirstName && (!transaction?.createrDetail?.sAvatar  || transaction?.createrDetail?.sAvatar == '')"
-                        src="https://prismanote.com/public/prismanote.png" class="createrImage">
-                      <img alt="Logo" *ngIf="transaction?.createrDetail?.sAvatar" [src]="transaction?.createrDetail?.sAvatar" class="createrImage">                                                      
-                      <span> {{transaction?.createrDetail?.sFirstName || ''}} {{transaction?.createrDetail?.sLastName || ''}} </span>
-                        </div>   
-                        </div>        
-            </div>
+                <div class="col-md-12">
+                    <div class="d-flex fs-6 ms-1 my-1">
+                        <div class="align-items-center">
+                            <img alt="Logo"
+                                *ngIf="transaction?.createrDetail?.sFirstName && (!transaction?.createrDetail?.sAvatar  || transaction?.createrDetail?.sAvatar == '')"
+                                src="https://prismanote.com/public/prismanote.png" class="createrImage">
+                            <img alt="Logo" *ngIf="transaction?.createrDetail?.sAvatar"
+                                [src]="transaction?.createrDetail?.sAvatar" class="createrImage">
+                            <span> {{transaction?.createrDetail?.sFirstName || ''}} {{transaction?.createrDetail?.sLastName ||
+                                ''}} </span>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
         
@@ -248,6 +338,7 @@
                 </button>
             </div>
         </div>
+    </div>
         <div class="row">
             <div class="col-12">
                 <h3 class="fw-bolder mb-3">
@@ -273,11 +364,11 @@
                             </thead>
                             <tbody>
                                 <tr *ngFor="let item of transaction.aTransactionItems">
-                                    <td (click)="openProductInfo(item)">
+                                    <td (click)="openProductInfo(item)" class="cursor-pointer">
                                         <img src="{{ item.aImage[0] || imagePlaceHolder}}"
                                             (error)="item.aImage[0]=imagePlaceHolder" class="product_image">
                                     </td>
-                                    <td (click)="openProductInfo(item)">
+                                    <td (click)="openProductInfo(item)" class="cursor-pointer">
                                         <div>
                                             {{ item.sArticleGroupName }} {{ item.sProductNumber }} <br />
                                             <!-- {{ item.sProductName }}   -->
@@ -481,8 +572,8 @@
             </div>
             
         </div>
-    </div>
     <div class="card-footer">
         <button class="btn btn-secondary cancel ml-auto" (click)="close(false)">{{"TEXT_CANCEL" | translate}}</button>
     </div>
 </div>
+<ng-template #slider></ng-template>

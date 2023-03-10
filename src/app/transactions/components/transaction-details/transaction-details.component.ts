@@ -1,5 +1,5 @@
 import { AfterContentInit, ChangeDetectorRef, Component, OnInit, ViewContainerRef } from '@angular/core';
-import { faTimes, faSync, faFileInvoice, faDownload, faReceipt, faAt, faUndoAlt, faClipboard, faTrashAlt, faPrint } from '@fortawesome/free-solid-svg-icons';
+import { faTimes, faSync, faFileInvoice, faDownload, faReceipt, faAt, faUndoAlt, faClipboard, faTrashAlt, faPrint, faEnvelope } from '@fortawesome/free-solid-svg-icons';
 import { TransactionItemsDetailsComponent } from 'src/app/shared/components/transaction-items-details/transaction-items-details.component';
 import { ApiService } from 'src/app/shared/service/api.service';
 import { DialogComponent, DialogService } from 'src/app/shared/service/dialog';
@@ -13,6 +13,7 @@ import * as JsBarcode from 'jsbarcode';
 import { TillService } from 'src/app/shared/service/till.service';
 import { TranslateService } from '@ngx-translate/core';
 import { TaxService } from 'src/app/shared/service/tax.service';
+import { CustomerDialogComponent } from 'src/app/shared/components/customer-dialog/customer-dialog.component';
 
 const moment = (_moment as any).default ? (_moment as any).default : _moment;
 
@@ -30,6 +31,7 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   faDownload = faDownload;
   faPrint = faPrint;
   faReceipt = faReceipt;
+  faEnvelope = faEnvelope;
   faAt = faAt;
   faUndoAlt = faUndoAlt;
   faClipboard = faClipboard;
@@ -65,6 +67,9 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   paymentEditMode = false;
   aNewSelectedPaymentMethods: any = [];
   payMethods: any;
+  bDayStateChecking = false;
+  bIsDayStateOpened = false;
+  bIsOpeningDayState = false;
 
   translation: any = [];
 
@@ -89,8 +94,6 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
       this.translation = res;
     })
     
-    console.log(this.transaction);
-
     this.transaction.businessDetails = this.businessDetails;
     this.transaction.currentLocation = this.businessDetails.currentLocation;
     
@@ -116,11 +119,11 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
       }
       item.description = description;
     });
-    // console.log(this.transaction);
     this.loading = false;
 
     this.getPrintSetting()
     this.mapEmployee();
+    this.getSystemCustomer(this.transaction?.iCustomerId);
   }
 
   ngAfterContentInit(): void {
@@ -280,10 +283,43 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
     this.filterDuplicatePaymentMethods()
   }
 
-  toggleEditPaymentMode() {
+  async toggleEditPaymentMode() {
     this.paymentEditMode = !this.paymentEditMode;
-    // this.addRow();
-    if (!this.paymentEditMode) this.aNewSelectedPaymentMethods = [];
+    if (!this.bIsDayStateOpened) {
+      const oBody = {
+        iBusinessId: this.iBusinessId,
+        iLocationId: this.iLocationId,
+        iWorkstationId: this.iWorkstationId
+      }
+      this.bDayStateChecking = true;
+      const _result: any = await this.apiService.postNew('cashregistry', `/api/v1/statistics/day-closure/check`, oBody).toPromise();
+      if (_result?.data) {
+        this.bDayStateChecking = false;
+        this.bIsDayStateOpened = _result?.data?.bIsDayStateOpened;
+      }
+    } else {
+      if (!this.paymentEditMode) this.aNewSelectedPaymentMethods = [];
+    }
+  }
+
+  openDayState() {
+    const oBody = {
+      iBusinessId: this.iBusinessId,
+      iLocationId: this.iLocationId,
+      iWorkstationId: this.iWorkstationId
+    }
+    this.bIsOpeningDayState = true;
+    this.apiService.postNew('cashregistry', `/api/v1/statistics/open/day-state`, oBody).subscribe((result: any) => {
+      this.bIsOpeningDayState = false;
+      if (result?.message === 'success') {
+        this.bIsDayStateOpened = true;
+        this.paymentEditMode = true;
+        this.toastService.show({ type: 'success', text: `Day-state is open now` });
+      }
+    }, (error) => {
+      this.bIsOpeningDayState = false;
+      this.toastService.show({ type: 'warning', text: `Day-state is not open` });
+    })
   }
 
   reCalculateTotal() {
@@ -388,4 +424,66 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
     };
     return this.apiService.postNew('cashregistry', `/api/v1/till/add-expenses`, transactionItem).toPromise();
   }
+
+  getSystemCustomer(iCustomerId: string) {
+    this.apiService.getNew('customer', `/api/v1/customer/${this.iBusinessId}/${iCustomerId}`).subscribe((result: any) => {
+      if (result?.data) this.transaction.oSystemCustomer = result?.data;
+    })
+  }
+
+  /* Update customer in [T, A, AI] */
+  updateCurrentCustomer(oData: any) {
+    const oBody = {
+      oCustomer: oData.oCustomer,
+      iBusinessId: this.iBusinessId,
+      iTransactionId: this.transaction?._id
+      // iActivityItemId: this.activityItems[0]._id
+    }
+    this.apiService.postNew('cashregistry', '/api/v1/transaction/update-customer', oBody).subscribe((result: any) => {
+      console.log('Customer Updated: ', result, oBody?.oCustomer);
+      this.transaction.oCustomer = oBody?.oCustomer;
+      this.toastService.show({ type: "success", text: this.translation['SUCCESSFULLY_UPDATED'] });
+    }, (error) => {
+      console.log('update customer error: ', error);
+      this.toastService.show({ type: "warning", text: `Something went wrong` });
+    });
+  }
+
+  selectCustomer() {
+    this.dialogService.openModal(CustomerDialogComponent, { cssClass: 'modal-xl' })
+      .instance.close.subscribe((data) => {
+        console.log('after selecting customer: ', data);
+        if (!data?.customer?._id || !this.transaction?._id) return;
+        this.updateCurrentCustomer({ oCustomer: data?.customer });
+      }, (error) => {
+        console.log('selectCustomer error: ', error);
+        this.toastService.show({ type: "warning", text: `Something went wrong` });
+      })
+  }
+
+  /* Here the current customer means from the Transaction/Activity/Activity-Items */
+  openCurrentCustomer(oCurrentCustomer: any) {
+    console.log('openCurrentCustomer: ', oCurrentCustomer);
+    const bIsCounterCustomer = (oCurrentCustomer?.sEmail === "balieklant@prismanote.com" || !oCurrentCustomer?._id) ? true : false /* If counter customer used then must needs to change */
+    this.dialogService.openModal(CustomerDetailsComponent,
+      {
+        cssClass: bIsCounterCustomer == true ? "modal-lg" : "modal-xl position-fixed start-0 end-0",
+        context: {
+          customerData: oCurrentCustomer,
+          mode: 'details',
+          editProfile: true,
+          bIsCurrentCustomer: true, /* We are only going to change in the A/T/AI */
+          bIsCounterCustomer: bIsCounterCustomer
+        }
+      }).instance.close.subscribe(result => {
+        console.log('result: ', result);
+        if (result?.bIsSelectingCustomer) this.selectCustomer();
+        else if (result?.bShouldUpdateCustomer) this.updateCurrentCustomer({ oCustomer: result?.oCustomer });
+      }, (error) => {
+        console.log("Error in customer: ", error);
+        this.toastService.show({ type: "warning", text: `Something went wrong` });
+      });
+  }
+
 }
+

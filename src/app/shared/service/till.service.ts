@@ -527,7 +527,6 @@ export class TillService {
     dataObject.aTransactionItems = transaction.aTransactionItems.filter((item: any) =>
       !(item.oType?.eKind == 'discount' || item?.oType?.eKind == 'loyalty-points-discount' || item.oType.eKind == 'loyalty-points'));
 
-    dataObject.total = 0;
     let total = 0, totalAfterDisc = 0, totalVat = 0, totalDiscount = 0, totalSavingPoints = 0, totalRedeemedLoyaltyPoints = 0;
     const aToFetchPayments:any = [];
     dataObject.aTransactionItems.forEach((item: any, index: number) => {
@@ -557,6 +556,7 @@ export class TillService {
       // item.priceAfterDiscount = parseFloat(item.nRevenueAmount.toFixed(2)) - parseFloat(item.nDiscountToShow);
       item.nPriceIncVatAfterDiscount = +(item.nPriceIncVat.toFixed(2) - item.nDiscountToShow.toFixed(2)) - item.nRedeemedLoyaltyPoints;
       // item.nPriceIncVatAfterDiscount = parseFloat(item.nPriceIncVatAfterDiscount.toFixed(2));
+      // console.log('nPriceIncVatAfterDiscount', item.nPriceIncVatAfterDiscount);
       if (item.oType.bRefund === true && item.oType.eKind != 'gold-purchase') item.nPriceIncVatAfterDiscount = -(item.nPriceIncVatAfterDiscount)
       // console.log('item.nPriceIncVatAfterDiscount', item.nPriceIncVatAfterDiscount)
       // item.nRevenueAmount = (+(item.nRevenueAmount.toFixed(2)) - item.nDiscount) * item.nQuantity;
@@ -570,9 +570,14 @@ export class TillService {
       totalVat += vat * item.nQuantity;
       total = total + item.totalPaymentAmount;
       // console.log('total', total)
-      totalAfterDisc += (item.nPriceIncVatAfterDiscount * item.nQuantity);
+      if (item.oType.bRefund) {
+        totalAfterDisc += item.totalPaymentAmount;
+        item.ntotalDiscountPerItem = 0;
+      } else {
+        totalAfterDisc += (item.nPriceIncVatAfterDiscount * item.nQuantity);
+        item.ntotalDiscountPerItem = item.nDiscountToShow * item.nQuantity
+      }
       // console.log('totalAfterDisc', totalAfterDisc)
-      item.ntotalDiscountPerItem = (item.oType.bRefund === true) ? 0 : (item.nDiscountToShow * item.nQuantity)
       totalDiscount += item.ntotalDiscountPerItem;
       // console.log('totalDiscount', totalDiscount)
       if(!item?.bMigrate){
