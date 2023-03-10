@@ -1,10 +1,10 @@
-import { ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Observable, Subject, Subscription } from 'rxjs';
-import { ApiService, ToastService } from 'src/app/shared/service';
-import { DrawerComponent } from 'src/app/_layout/components/common';
 import { debounceTime, distinctUntilChanged, filter } from 'rxjs/operators';
-
+import { ToastService } from 'src/app/shared/components/toast';
+import { ApiService } from 'src/app/shared/service/api.service';
+import { DrawerComponent } from 'src/app/shared/_layout/components/common';
 
 @Component({
   selector: 'app-supplier-product-slider',
@@ -12,7 +12,7 @@ import { debounceTime, distinctUntilChanged, filter } from 'rxjs/operators';
   styleUrls: ['./supplier-product-slider.component.scss'],
 })
 
-export class SupplierProductSliderComponent implements OnInit {
+export class SupplierProductSliderComponent implements OnInit, OnDestroy {
   @Input() $data!: Observable<any>;
   subscription!: Subscription;
   productData: any = {};
@@ -56,15 +56,16 @@ export class SupplierProductSliderComponent implements OnInit {
     private activatedRoute: ActivatedRoute,
     private cdr: ChangeDetectorRef
   ) {
-    this.iSupplierId = activatedRoute.snapshot.paramMap.get('id');
+    this.iSupplierId = this.activatedRoute.snapshot.paramMap.get('id');
   }
 
   ngOnInit() {
     this.subscription = this.$data?.subscribe({
       next: async (data: any) => {
-        DrawerComponent.reinitialization();
+        console.log('data',data);
         this.reset();
         if (Object.values(data).length) {
+          DrawerComponent.reinitialization();
           if (!data?.oCurrentLocation) data.oCurrentLocation = {};
           this.productData = data;
           const response :any= await this.getSupplierDetails(data.iSupplierId)
@@ -334,6 +335,10 @@ export class SupplierProductSliderComponent implements OnInit {
     ).subscribe(() => {
       this.updateMinStock();
     });
+  }
+
+  ngOnDestroy(): void {
+    if (this.subscription) this.subscription.unsubscribe();
   }
 
 }

@@ -58,6 +58,7 @@ import { ActivityItemExportComponent } from './components/activity-item-export/a
 import { TransactionsPdfService } from "./service/transactions-pdf.service";
 //import { DateTranslatePipe } from './pipes/date-translate.pipe';
 import { SelectPrintPaperDialogComponent } from "./components/select-print-paper-dialog/select-print-paper-dialog.component";
+import { SupplierProductSliderModule } from "../sliders/supplier-stock-product-slider/supplier-product-slider.module";
 
 @NgModule({
   declarations: [
@@ -112,7 +113,8 @@ import { SelectPrintPaperDialogComponent } from "./components/select-print-paper
     FileSaverModule,
     NgApexchartsModule,
     NgxPaginationModule,
-    JsonEditorModule
+    JsonEditorModule,
+    SupplierProductSliderModule
   ],
   exports: [
     DialerComponent,
@@ -139,7 +141,8 @@ import { SelectPrintPaperDialogComponent } from "./components/select-print-paper
     SortPipe,
     CurrencyFormatPipe,
     //DateTranslatePipe,
-    SelectPrintPaperDialogComponent
+    SelectPrintPaperDialogComponent,
+    SupplierProductSliderModule
   ],
   providers: [CurrencyPipe, CommonPrintSettingsService, PdfService, ReceiptService, TransactionsPdfService]
 })
