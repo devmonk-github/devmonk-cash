@@ -4,7 +4,7 @@ import { TranslateModule, TranslateService } from "@ngx-translate/core";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { FontAwesomeModule } from "@fortawesome/angular-fontawesome";
 import { NgSelectModule } from "@ng-select/ng-select";
-
+import { PaginatePipe } from 'ngx-pagination';
 import { DialogService } from "./service/dialog";
 import { CustomerDialogComponent } from './components/customer-dialog/customer-dialog.component';
 import { DialerComponent } from './components/dialer/dialer.component';
@@ -141,7 +141,7 @@ import { SelectPrintPaperDialogComponent } from "./components/select-print-paper
     //DateTranslatePipe,
     SelectPrintPaperDialogComponent
   ],
-  providers: [CurrencyPipe, CommonPrintSettingsService, PdfService, ReceiptService, TransactionsPdfService]
+  providers: [CurrencyPipe, CommonPrintSettingsService, PdfService, ReceiptService, TransactionsPdfService , PaginatePipe]
 })
 
 export class SharedModule {
