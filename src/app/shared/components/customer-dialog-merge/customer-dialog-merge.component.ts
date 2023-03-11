@@ -124,8 +124,6 @@ export class CustomerDialogMergeComponent implements OnInit {
   }
 
   ngOnInit(): void {
-
-    
    
     this.apiService.setToastService(this.toastService);
     this.business._id = localStorage.getItem("currentBusiness") || '';
@@ -203,7 +201,7 @@ export class CustomerDialogMergeComponent implements OnInit {
         this.showLoader = false;
         this.isCustomerSearched = true;
           if (result && result.data && result.data[0] && result.data[0].result) {
-            this.customers = result.data[0].result;
+            this.customers = result.data[0].result.filter((customer: any) => customer?._id.toString() != this.iChosenCustomerId.toString());
             for(const customer of this.customers){
               customer['NAME'] = await this.makeCustomerName(customer);
               customer['SHIPPING_ADDRESS'] = this.makeCustomerAddress(customer.oShippingAddress, false);
