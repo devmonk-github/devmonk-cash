@@ -932,7 +932,6 @@ export class ActivityDetailsComponent implements OnInit {
       iActivityItemId: this.activityItems[0]._id
     }
     this.apiService.postNew('cashregistry', '/api/v1/transaction/update-customer', oBody).subscribe((result: any) => {
-      console.log('Customer Updated: ', result, oBody?.oCustomer);
       this.oCurrentCustomer = oBody?.oCustomer;
       this.toastService.show({ type: "success", text: this.translation['SUCCESSFULLY_UPDATED'] });
     }, (error) => {
@@ -944,7 +943,6 @@ export class ActivityDetailsComponent implements OnInit {
   selectCustomer() {
     this.dialogService.openModal(CustomerDialogComponent, { cssClass: 'modal-xl' })
       .instance.close.subscribe((data) => {
-        console.log('after selecting customer: ', data);
         if (!data?.customer?._id || !this.activityItems?.length || !this.activityItems[0]?._id) return;
         this.updateCurrentCustomer({ oCustomer: data?.customer });
         this.customer = data?.customer;
@@ -956,7 +954,6 @@ export class ActivityDetailsComponent implements OnInit {
 
   /* Here the current customer means from the Transaction/Activity/Activity-Items */
   openCurrentCustomer(oCurrentCustomer: any) {
-    console.log('openCurrentCustomer: ', oCurrentCustomer);
     const bIsCounterCustomer = (oCurrentCustomer?.sEmail === "balieklant@prismanote.com" || !oCurrentCustomer?._id) ? true : false /* If counter customer used then must needs to change */
     if (bIsCounterCustomer) {
       this.selectCustomer();

@@ -447,7 +447,6 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
       // iActivityItemId: this.activityItems[0]._id
     }
     this.apiService.postNew('cashregistry', '/api/v1/transaction/update-customer', oBody).subscribe((result: any) => {
-      console.log('Customer Updated: ', result, oBody?.oCustomer);
       this.transaction.oCustomer = oBody?.oCustomer;
       this.toastService.show({ type: "success", text: this.translation['SUCCESSFULLY_UPDATED'] });
     }, (error) => {
@@ -470,7 +469,6 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
 
   /* Here the current customer means from the Transaction/Activity/Activity-Items */
   openCurrentCustomer(oCurrentCustomer: any) {
-    console.log('openCurrentCustomer: ', oCurrentCustomer);
     const bIsCounterCustomer = (oCurrentCustomer?.sEmail === "balieklant@prismanote.com" || !oCurrentCustomer?._id) ? true : false /* If counter customer used then must needs to change */
     if (bIsCounterCustomer) {
       this.selectCustomer();
@@ -486,7 +484,6 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
           bIsCurrentCustomer: true, /* We are only going to change in the A/T/AI */
         }
       }).instance.close.subscribe(result => {
-        console.log('result: ', result);
         if (result?.bChangeCustomer) this.selectCustomer();
         else if (result?.bShouldUpdateCustomer) this.updateCurrentCustomer({ oCustomer: result?.oCustomer });
       }, (error) => {
