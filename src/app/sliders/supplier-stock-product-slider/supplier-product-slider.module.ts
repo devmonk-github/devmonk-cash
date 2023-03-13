@@ -1,8 +1,9 @@
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { SupplierProductSliderComponent } from 'src/app/business/sliders/supplier-stock-product-slider/supplier-product-slider.component';
+import { ComponentFactory, ComponentFactoryResolver, NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { TranslateLoader, TranslateModule } from '@ngx-translate/core'; // translation loader module
+import { TranslateModule } from '@ngx-translate/core'; // translation loader module
+import { ToastModule } from 'src/app/shared/components/toast';
+import { SupplierProductSliderComponent } from './supplier-product-slider.component';
 // import { SharedModule } from 'src/app/shared/shared.module';
 
 @NgModule({
@@ -12,15 +13,18 @@ import { TranslateLoader, TranslateModule } from '@ngx-translate/core'; // trans
   imports: [
     CommonModule,
     FormsModule,
-    TranslateModule.forChild()
+    TranslateModule.forChild(),
+    ToastModule.forRoot()
   ],
-  exports: [SupplierProductSliderComponent],
+  exports:[
+    SupplierProductSliderComponent
+  ]
 })
 
 export class SupplierProductSliderModule {
-  // constructor(private componentFactoryResolver: ComponentFactoryResolver
-  // ) {}
-  // public resolveComponent(): ComponentFactory<SupplierProductSliderComponent> {
-  //   return this.componentFactoryResolver.resolveComponentFactory(SupplierProductSliderComponent);
-  // }
+  constructor(private componentFactoryResolver: ComponentFactoryResolver
+  ) {}
+  public resolveComponent(): ComponentFactory<SupplierProductSliderComponent> {
+    return this.componentFactoryResolver.resolveComponentFactory(SupplierProductSliderComponent);
+  }
 }

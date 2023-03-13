@@ -192,8 +192,14 @@ export class PdfService {
         printSettings.nPrinterId,
         printSettings.nComputerId,
         1,
+        '',
         pdfTitle,
-        { title: pdfTitle }
+        { 
+          rotate:printSettings?.nRotation || 0,
+          paper: printSettings?.sPrinterPageFormat,
+          bin: printSettings?.sPaperTray,
+          title: pdfTitle
+        }
       ).then((response: any) => {
         if (response.status == "PRINTJOB_NOT_CREATED") {
           let message = '';

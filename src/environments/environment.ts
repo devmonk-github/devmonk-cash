@@ -31,7 +31,7 @@ export const environment = {
   apiURL: 'http://localhost:3000',
   oldPlatformUrl: `http://localhost:3000/`, // https://kassa.prismanote.com,
   fiskalyURL: 'https://kassensichv-middleware.fiskaly.com/api/v2',
-  indexedDBName: 'prismaNote',
+  indexedDBName: 'indexedDB1',
   csp: `
     default-src 'self';
     img-src https://* 'self' data:;
@@ -41,7 +41,7 @@ export const environment = {
     connect-src 'self' ${CORE_URL} ${CASH_URL} ${AUTH_URL} ${CUSTOMER_URL} ${WEBSITE_URL} ${BOOKKEEPING_URL} ${BACKUP_URL} ${ORGANIZATION_URL} ${LOG_URL} ${FISKALY_URL};
     frame-src 'self' https://wchat.eu.freshchat.com https://533155761215573.eu.webpush.freshchat.com;
     `
-    // worker-src blob:http://localhost:4202/;
+  // worker-src blob:http://localhost:4202/;
 };
 
 /*

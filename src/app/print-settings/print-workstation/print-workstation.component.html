@@ -56,9 +56,17 @@
                                 
                                 <label class="mt-3">
                                     {{ workstation[template.name][type.key]?.printerName || ''}}
+
                                     <span *ngIf="workstation[template.name][type.key]?.sPrinterPageFormat" class="text-muted">
-                                        <br />
                                         ({{ workstation[template.name][type.key]?.sPrinterPageFormat || ''}})
+                                    </span>
+
+                                    <span *ngIf="workstation[template.name][type.key]?.sPaperTray" class="text-muted">
+                                        <br /> {{ 'PAPER_TRAY' | translate}} : {{ workstation[template.name][type.key]?.sPaperTray || ''}})
+                                    </span>
+
+                                    <span *ngIf="workstation[template.name][type.key]?.nRotation" class="text-muted">
+                                        <br /> {{ 'ROTATION' | translate}} : {{ workstation[template.name][type.key]?.nRotation || ''}}
                                     </span>
                                 </label>
                                 <div class="float-end mt-2">

@@ -766,7 +766,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     }
     const changeAmount = nEnteredAmountTotal - nTotalToPay
-    this.dialogService.openModal(TerminalDialogComponent, { cssClass: 'modal-lg', context: { payments: this.payMethods, changeAmount } })
+    this.dialogService.openModal(TerminalDialogComponent, { cssClass: 'modal-lg', context: { payments: this.payMethods, changeAmount , nTotalTransactionAmount:nTotalToPay} })
       .instance.close.subscribe(async (payMethods: any) => {
         if (!payMethods) {
           this.saveInProgress = false;
@@ -827,7 +827,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
             this.activityItems = activityItems;
             this.activity = activity;
 
-            if (this.tillService.settings.currentLocation?.bAutoIncrementBagNumbers) {
+            if (this.tillService.settings?.currentLocation?.bAutoIncrementBagNumbers) {
               this.tillService.updateSettings();
             }
 
@@ -895,8 +895,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     // oDataSource.bHasPrePayments = true;
     oDataSource.sActivityNumber = oDataSource.activity.sNumber;
     oDataSource.nTotalOriginalAmount = nTotalOriginalAmount;
-    oDataSource.sBarcodeURI = this.generateBarcodeURI(false, oDataSource.sNumber);
-    oDataSource.sActivityBarcodeURI = this.generateBarcodeURI(false, oDataSource.sActivityNumber);
 
     const aUniqueItemTypes = [];
 
@@ -979,7 +977,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       oDataSource.sAdvisedEmpFirstName = this.employee?.sFirstName || 'a';
       const aTemp = oDataSource.sNumber.split("-");
       oDataSource.sPartRepairNumber = aTemp[aTemp.length - 1];
-      oDataSource.sBarcodeURI = this.generateBarcodeURI(false, oDataSource.sNumber);
       this.sendForReceipt(oDataSource, template, oDataSource.sNumber);
 
     }
@@ -990,7 +987,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       oDataSource = this.activityItems.filter((item: any) => item.oType.eKind === 'repair');
       oDataSource.sAdvisedEmpFirstName = this.employee?.sFirstName || 'a';
       oDataSource.forEach((data: any) => {
-        data.sBarcodeURI = this.generateBarcodeURI(false, data.sNumber);
         data.sBusinessLogoUrl = _oLogoData.data;
         data.businessDetails = this.businessDetails;
         this.sendForReceipt(data, template, data.sNumber);
@@ -1804,11 +1800,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     await this.updateFiskalyTransaction('ACTIVE', []);
   }
 
-  generateBarcodeURI(displayValue: boolean = true, data: any) {
-    var canvas = document.createElement("canvas");
-    JsBarcode(canvas, data, { format: "CODE128", displayValue: displayValue });
-    return canvas.toDataURL("image/png");
-  }
 
   ngOnDestroy() {
     localStorage.removeItem('fromTransactionPage');

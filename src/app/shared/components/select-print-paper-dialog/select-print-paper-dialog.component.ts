@@ -18,8 +18,16 @@ export class SelectPrintPaperDialogComponent implements OnInit {
   printersList:any;
   oWorkstation:any;
   oSelectedPrinter:any;
-  sSelectedPaper:any;
+  
+  sPrinterPageFormat:any;
   aPapers:any;
+  
+  sPaperTray:any;
+  aPaperTray:any;
+
+  aRotation = [0,90,180,270];
+  nRotation:any;
+  
   type:any;
   template:any;
   
@@ -36,27 +44,39 @@ export class SelectPrintPaperDialogComponent implements OnInit {
     // console.log({ type:this.type, workstation:this.oWorkstation, template:this.template, paper: this.sSelectedPaper });
     if (this.oWorkstation[this.template] && this.oWorkstation[this.template][this.type] && this.oWorkstation[this.template][this.type]?.nPrinterId) {
       this.oSelectedPrinter = this.printersList.find((printer: any) => printer.id === this.oWorkstation[this.template][this.type]?.nPrinterId)
-      if (this.oSelectedPrinter && !this.sSelectedPaper){
-        this.selectedPrinterChange();
-      } else if(this.oSelectedPrinter) {
-        this.aPapers = Object.keys(this.oSelectedPrinter?.capabilities?.papers) || [];    
+      // console.log(this.printersList);
+      if (this.oSelectedPrinter){
+        if (!this.sPrinterPageFormat) this.selectedPrinterChange();
+        else this.aPapers = Object.keys(this.oSelectedPrinter?.capabilities?.papers) || [];
+
+        this.aPaperTray = this.oSelectedPrinter?.capabilities?.bins || [];
       }
-      
+      // console.log(this.sPaperTray, this.nRotation)
       // console.log(this.oSelectedPrinter, this.sSelectedPaper);
     }
   }
 
   selectedPrinterChange(){
     this.aPapers = [];
-    this.sSelectedPaper = null;
+    this.sPrinterPageFormat = null;
     this.aPapers = Object.keys(this.oSelectedPrinter?.capabilities?.papers) || [];
+    
+    this.aPaperTray = [];
+    this.sPaperTray = null;
+    this.aPaperTray = this.oSelectedPrinter?.capabilities?.bins || [];
   }
   
   groupByFn = (item: any) => item.computer.name;
  
   close(data: any) {
     if(data) {
-      this.dialogRef.close.emit({ action:true, oSelectedPrinter: this.oSelectedPrinter, sSelectedPaper: this.sSelectedPaper});
+      this.dialogRef.close.emit({ 
+        action:data, 
+        oSelectedPrinter: this.oSelectedPrinter, 
+        sPrinterPageFormat: this.sPrinterPageFormat,
+        sPaperTray: this.sPaperTray,
+        nRotation: this.nRotation,
+      });
     } else {
       this.dialogRef.close.emit({action: data});
     }

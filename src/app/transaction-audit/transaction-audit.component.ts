@@ -39,7 +39,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
   aPaymentMethods: any = [];
   aDayClosure: any = [];
   oStockPerLocation: any = [];
-  isShowStockLocation:boolean= false;
+  isShowStockLocation: boolean = false;
 
   closingDayState: boolean = false;
   bShowDownload: boolean = false;
@@ -1160,22 +1160,17 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
       return;
     }
 
-    const aAmount = oStatisticDetail?.data?.oTransactionAudit[0]?.overall[0]?.nTotalRevenue
-    const bAmount = this.aStatistic[0].overall[0].nTotalRevenue
+    let aAmount = oStatisticDetail?.data?.oTransactionAudit[0]?.overall[0]?.nTotalRevenue
+    let bAmount = this.aStatistic[0].overall[0].nTotalRevenue
 
     /* This is to check if day-state is not changed already (in mean-time) */
     if (
-      // below allows some difference of 0.05 but not greater than that + allows difference of -0.05 but not less difference
-      (aAmount - bAmount) < -0.05 ||
-      (bAmount - aAmount) > 0.05
-      &&
-      (aAmount - bAmount) >= 0.06 ||
-      (bAmount - aAmount) <= -0.06
-
-
-      ||
       oStatisticDetail?.data?.oTransactionAudit[0]?.overall[0]?.nQuantity != this.aStatistic[0].overall[0].nQuantity) {
-      this.toastService.show({ type: 'warning', text: 'Someone modified the transaction in this workstation. Please refresh the page' });
+      this.toastService.show({ type: 'warning', text: 'It seems someone created an extra transaction item. Refresh this page and try again.' });
+      return;
+    } else if ((bAmount - aAmount > 0.05 || bAmount - aAmount < -0.05)) {
+      // below allows some difference of 0.05 but not greater than that + allows difference of -0.05 but not less difference
+      this.toastService.show({ type: 'warning', text: 'There seems to be a difference of more than 0.05 cts between revenue and payments total. Refresh this page and try again. In case this message keeps appearing after refresh: contact support' });
       return;
     }
 

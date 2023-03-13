@@ -372,7 +372,8 @@ export class PrintSettingsComponent implements OnInit {
       this.labelPrintSettings?.nPrinterId,
       this.labelPrintSettings?.nComputerId,
       1,
-      { title: 'Set layout' },
+      'Set layout',
+      { },
       this.businessDetails.oPrintNode.sApiKey
     )
 
@@ -407,7 +408,7 @@ export class PrintSettingsComponent implements OnInit {
       '%%BRAND_COLLECTION1%%': 'Ringen',
       '%%BRAND_COLLECTION2%%': 'Goud',
       '%%TOTALCARATWEIGHT%%': '0.13',
-      '%%LAST_DELIVIERY_DATE%%': '08-05-2020',
+      '%%LAST_DELIVERY_DATE%%': '08-05-2020',
       '%%SUPPLIER_NAME%%': 'Kasius NL',
       '%%SUPPLIER_CODE%%': 'KAS',
       '%%SUGGESTED_RETAIL_PRICE%%': '5678',
@@ -427,7 +428,8 @@ export class PrintSettingsComponent implements OnInit {
       this.labelPrintSettings?.nPrinterId,
       this.labelPrintSettings?.nComputerId,
       1,
-      { title: 'Sample print' },
+      'Sample print',
+      { },
       this.businessDetails.oPrintNode.sApiKey
     )
 

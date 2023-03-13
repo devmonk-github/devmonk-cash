@@ -1,16 +1,17 @@
-<ng-container *ngIf="bIsCounterCustomer" [ngTemplateOutlet]="counterCustomer"></ng-container>
-
-<div class="card shadow-sm" *ngIf="!bIsCounterCustomer">
+<div class="card shadow-sm">
     <div class="card-header align-items-center py-5">
         <h4 class="card-title" *ngIf="mode === 'create'">{{"NEW_CUSTOMER" | translate}}</h4>
         <h4 class="card-title" *ngIf="mode === 'details'">{{"CUSTOMER_DETAILS" | translate}}</h4>
         <div *ngIf="mode === 'details'" class="card-toolbar flex-row-fluid justify-content-end gap-5">
+            <button class="btn btn-warning" *ngIf="bIsCurrentCustomer" (click)="close({ bChangeCustomer: true })">
+                {{"CHANGE_CUSTOMER" | translate}}
+            </button>
             <button class="btn btn-secondary" (click)="editProfile = !editProfile">{{ ((editProfile)? "CANCEL":"EDIT" )|
-                translate}}</button>
+                translate}}
+            </button>
             <button class="btn btn-primary" *ngIf="editProfile" (click)="EditOrCreateCustomer()">{{"SAVE" |
-                translate}}</button>
-            <!-- <button class="btn btn-secondary cancel my-auto" *ngIf="!editProfile" (click)="close(false)">{{"CANCEL" |
-                translate}}</button> -->
+                translate}}
+            </button>
             <a class="cancel my-auto" (click)="close(false)"> <!--*ngIf="editProfile"-->
                 <i class="fa fa-times"></i>
             </a>
@@ -835,20 +836,3 @@
     <div class="card-footer">
     </div>
 </div>
-
-<ng-template #counterCustomer>
-    <div class="card shadow-sm">
-        <div class="card-header align-items-center py-5">
-            <h4 class="card-title">{{"CHOOSE_CUSTOMER" | translate}}</h4>
-            <div class="card-toolbar flex-row-fluid justify-content-end gap-5">
-                <button class="btn btn-primary" (click)="close({ bIsSelectingCustomer: true })">{{"CHANGE" |
-                    translate}}</button>
-                <a class="cancel my-auto" (click)="close(false)"> <i class="fa fa-times"></i>
-                </a>
-            </div>
-        </div>
-        <div class="card-body main">
-            <p>NO_CUSTOMER_FOUND_SELECT_ONE</p>
-        </div>
-    </div>
-</ng-template>
