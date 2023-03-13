@@ -598,16 +598,11 @@ export class ActivityDetailsComponent implements OnInit {
     if (oDataSource?.oType?.eKind === 'giftcard') {
       type = oDataSource.oType.eKind;
       oDataSource.nTotal = oDataSource.nPaidAmount;
-      sBarcodeURI = this.generateBarcodeURI(true, 'G-' + oDataSource.sGiftCardNumber);
     }
     else {
       type = (oDataSource?.oType?.eKind === 'regular') ? 'repair_alternative' : 'repair';
-      sBarcodeURI = this.generateBarcodeURI(false, oDataSource.sNumber);
     }
-    // if (!this.businessDetails) {
-    //   const result: any = await this.getBusinessDetails().toPromise();
-    //   this.businessDetails = result.data;
-    // }
+
     oDataSource.businessDetails = this.businessDetails;
     const aPromises = [];
     let bBusinessLogo = false, bTemplate = false;
@@ -801,12 +796,6 @@ export class ActivityDetailsComponent implements OnInit {
         });
   }
 
-  generateBarcodeURI(displayValue: boolean = true, data: any) {
-    var canvas = document.createElement("canvas");
-    JsBarcode(canvas, data, { format: "CODE128", displayValue: displayValue });
-    return canvas.toDataURL("image/png");
-  }
-
   async downloadReceipt(event: any, receipt: any, bPrint:boolean = false) {
     if (receipt == 'downloadReceipt') {
       this.bDownloadReceipt = true;
@@ -854,18 +843,6 @@ export class ActivityDetailsComponent implements OnInit {
     oDataSource.businessDetails.sAddressline2 = currentLocation.oAddress.country;
     oDataSource.oCustomer = this.tillService.processCustomerDetails(this.customer);
     
-    // {
-    //   sFirstName: this.customer?.sFirstName || '',
-    //   sLastName: this.customer?.sLastName || '',
-    //   sEmail: this.customer?.sEmail || '',
-    //   sMobile: this.customer?.oPhone?.sCountryCode || '' + this.customer?.oPhone?.sMobile || '',
-    //   sLandLine: this.customer?.oPhone?.sLandLine || '',
-    // };
-
-    const sActivityBarcodeURI = this.generateBarcodeURI(false, oDataSource.sNumber);
-    oDataSource.sActivityBarcodeURI = sActivityBarcodeURI;
-
-    // oDataSource.aTransactionItems = oDataSource.activityitems;
     oDataSource.sActivityNumber = oDataSource.sNumber;
     let nTotalPaidAmount = 0;
     oDataSource.activityitems.forEach((item: any) => {
