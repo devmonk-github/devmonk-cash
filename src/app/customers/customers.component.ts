@@ -8,7 +8,6 @@ import { CustomerStructureService } from '../shared/service/customer-structure.s
 import { ToastService } from '../shared/components/toast';
 import {ExportsComponent} from '../shared/components/exports/exports.component';
 import { MenuComponent } from '../shared/_layout/components/common';
-import { CustomerDialogMergeComponent } from '../shared/components/customer-dialog-merge/customer-dialog-merge.component';
 import { CustomerDialogComponent } from '../shared/components/customer-dialog/customer-dialog.component';
 // import { result } from 'lodash';
 

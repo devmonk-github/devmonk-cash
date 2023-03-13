@@ -7,7 +7,6 @@ import { NgSelectModule } from "@ng-select/ng-select";
 
 import { DialogService } from "./service/dialog";
 import { CustomerDialogComponent } from './components/customer-dialog/customer-dialog.component';
-import { CustomerDialogMergeComponent } from './components/customer-dialog-merge/customer-dialog-merge.component';
 import { DialerComponent } from './components/dialer/dialer.component';
 import { AlertComponent } from './components/alert/alert.component';
 import { CustomerDetailsComponent } from "./components/customer-details/customer-details.component";
@@ -63,7 +62,6 @@ import { SelectPrintPaperDialogComponent } from "./components/select-print-paper
 @NgModule({
   declarations: [
     CustomerDialogComponent,
-    CustomerDialogMergeComponent,
     TerminalDialogComponent,
     DialerComponent,
     AlertComponent,
@@ -120,7 +118,6 @@ import { SelectPrintPaperDialogComponent } from "./components/select-print-paper
     DialerComponent,
     AlertComponent,
     CustomerDialogComponent,
-    CustomerDialogMergeComponent,
     TerminalDialogComponent,
     CountryListComponent,
     AccordionDirective,
