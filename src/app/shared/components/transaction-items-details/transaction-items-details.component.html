@@ -1,6 +1,6 @@
 <div class="card shadow-sm">
     <div class="card-header" style="margin-top: 20px;">
-        <h4>{{itemType === 'transaction'? "TRANSACTION_ITEMS" : "ACTIVITY_ITEMS" | translate}}</h4>
+        <h4>{{(itemType === 'transaction'? "TRANSACTION_ITEMS" : "ACTIVITY_ITEMS") | translate}}</h4>
         <div>
             <button type="button" class="btn btn-sm btn-light" (click)="close({action:false}, 'close')">
                 <fa-icon [icon]="faTimes"></fa-icon>
@@ -170,7 +170,7 @@
                 </table>
             </div>
             <div class="d-flex" *ngIf="oShowWarning.bIsMoreTransaction">
-                <h5> {{ oShowWarning.sMessage }}</h5>
+                <h5> {{ oShowWarning.sMessage | translate }}</h5>
 
             </div>
             <div class="d-flex">
