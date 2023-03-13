@@ -51,7 +51,7 @@ export class SavingPointsComponent implements OnInit {
       this.savingPointsSettings = result;
       
       if(this.savingPointsSettings.bEnabled === 'undefined' || result.bEnabled === undefined){
-        localStorage.setItem('savingPoints', 'true');
+        localStorage.setItem('savingPoints', 'false');
       }else{
         localStorage.setItem('savingPoints', JSON.stringify(this.savingPointsSettings.bEnabled));
       }
