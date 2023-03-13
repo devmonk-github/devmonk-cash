@@ -35,6 +35,7 @@ export class TerminalDialogComponent implements OnInit {
   interval: any;
   selectedIndex = 0;
   restartPaymentTimer = 46;
+  nTotalTransactionAmount=0;
   totalAmount = 0;
   changeAmount = 0;
   constructor(
@@ -150,11 +151,17 @@ export class TerminalDialogComponent implements OnInit {
   continue() {
     this.cardPayments = this.cardPayments.filter((item: any) => item.status === 'SUCCESS')
     const paymentsToreturn = this.cardPayments.concat(this.otherPayments);
+    const oCashPaymentMethod = this.dialogRef.context.payments.find((o: any) => o.sName.toLowerCase() === 'cash')
+    const cashPaymentMethod = _.clone(oCashPaymentMethod);
+    cashPaymentMethod.amount = this.changeAmount;
+    cashPaymentMethod.remark = 'CHANGE_MONEY';
+    paymentsToreturn.push(cashPaymentMethod);
+    if(this.nTotalTransactionAmount - this.totalAmount <=0.05 ){
+      oCashPaymentMethod.amount =Number(oCashPaymentMethod.amount) + (this.nTotalTransactionAmount - this.totalAmount);
+      oCashPaymentMethod.remark = 'TOTAL_AMOUNT_UPDATED';
+    }
     // if (this.dialogRef.context.changeAmount > 0) {
-      const cashPaymentMethod = _.clone(this.dialogRef.context.payments.find((o: any) => o.sName.toLowerCase() === 'cash'));
-      cashPaymentMethod.amount = this.changeAmount;
-      cashPaymentMethod.remark = 'CHANGE_MONEY';
-      paymentsToreturn.push(cashPaymentMethod);
+     
     // }
     this.close(paymentsToreturn);
   }
