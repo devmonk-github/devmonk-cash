@@ -84,6 +84,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
   setPaginateSize: number = 10;
   iEmployeeId:any;
   employeesList:any;
+  mergeCustomerIdList:any;
   customerLoyalityPoints :Number;
   pointsAdded:Boolean = false;
   oPointsSettingsResult:any;
@@ -278,7 +279,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
   ngOnInit(): void {
     this.apiService.setToastService(this.toastService);
     this.getBusinessDetails();
-    this.customer = { ... this.customer, ... this.dialogRef?.context?.customerData }
+    this.customer = { ... this.customer, ... this.dialogRef?.context?.customerData };
     const translations = ['SUCCESSFULLY_ADDED', 'SUCCESSFULLY_UPDATED' ,'LOYALITY_POINTS_ADDED']
     this.translateService.get(translations).subscribe(
       result => this.translations = result
@@ -297,6 +298,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     }
     this.fetchLoyaltyPoints();
     this.getListEmployees();
+    this.getMergedCustomerIds();
     // this.activitiesChartOptions = {
     //   series: this.aActivityTitles.map((el: any) => el.value),
     //   colors: this.aActivityTitles.map((el: any) => el.color),
@@ -323,6 +325,27 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
 
     // this.loadStatisticsTabData();
     this.getCustomerGroups();
+  }
+
+
+  getMergedCustomerIds() {
+    console.log("this.getMergedCustomerIdss");
+    console.log(this.customer._id);
+    const oBody = {
+      iCustomerId: this.customer._id
+    }
+    let url = '/api/v1/customer/getmergedcustomer';
+    this.apiService.postNew('customer', url, this.requestParams.oFilterBy).subscribe((result: any) => {
+      if (result) {
+        
+        console.log(result);
+        console.log("this.mergeCustomerIdList--------");
+        this.mergeCustomerIdList = result.aUniqueCustomerId;
+        console.log("this.mergeCustomerIdList--------");
+        console.log(this.mergeCustomerIdList);
+      }
+    }, (error) => {
+    });
   }
 
 
@@ -701,12 +724,23 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
 
   loadTransactions() {
     if (this.customer.bCounter) return;
+    this.requestParams.oFilterBy = {
+      
+      iCustomerId: this.mergeCustomerIdList
+    }
+    this.getMergedCustomerIds();
+    console.log("v this.mergeCustomerIdList");
+
+    console.log(this.mergeCustomerIdList);
+
     this.bTransactionsLoader = true;
     const body = {
-      iCustomerId: this.customer._id,
+     // iCustomerId: this.customer._id,
       iBusinessId: this.requestParams.iBusinessId,
       skip:this.purchaseRequestParams.skip,
-      limit:this.purchaseRequestParams.limit
+      limit:this.purchaseRequestParams.limit,
+      oFilterBy:this.requestParams.oFilterBy
+      
     }
 
     this.apiService.postNew('cashregistry', '/api/v1/transaction/cashRegister', body).subscribe((result: any) => {
