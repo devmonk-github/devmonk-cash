@@ -30,6 +30,7 @@ export class CustomersComponent implements OnInit {
 
   faSearch = faSearch;
 
+
   business: any = {}
   customers: Array<any> = [];  //make it empty later
   showLoader: boolean = false;
@@ -46,7 +47,7 @@ export class CustomersComponent implements OnInit {
  
   customColumn = 'NAME';
   defaultColumns = ['PHONE', 'EMAIL', 'SHIPPING_ADDRESS', 'INVOICE_ADDRESS'];
-  allColumns = [this.customColumn, ...this.defaultColumns];  
+  allColumns = [...this.defaultColumns];  
   customerMenu = [
     { key: 'MERGE' }
     
@@ -55,13 +56,13 @@ export class CustomersComponent implements OnInit {
     iBusinessId: "",
     skip: 0,
     limit: 10,
-    sortBy: '',
-    sortOrder: '',
+    sortBy: '_id',
+    sortOrder: -1,
     searchValue: '',
     aProjection: ['sSalutation', 'sFirstName', 'sPrefix', 'sLastName', 'dDateOfBirth', 'dDateOfBirth', 'nClientId', 'sGender', 'bIsEmailVerified',
       'bCounter', 'sEmail', 'oPhone', 'oShippingAddress', 'oInvoiceAddress', 'iBusinessId', 'sComment', 'bNewsletter', 'sCompanyName', 'oPoints',
-      'sCompanyName', 'oIdentity', 'sVatNumber', 'sCocNumber', 'nPaymentTermDays','bIsConnected',
-      'bIsHidden', 'nDiscount', 'bWhatsApp', 'nMatchingCode' , 'sNote' , 'iEmployeeId' , 'bIsMigrated' ,'aGroups'],
+      'sCompanyName', 'oIdentity', 'sVatNumber', 'sCocNumber', 'nPaymentTermDays',
+       'nDiscount', 'bWhatsApp', 'nMatchingCode' , 'sNote' , 'iEmployeeId' , 'bIsMigrated' ,'aGroups'],
     oFilterBy: {
       oStatic: {},
       oDynamic: {}
@@ -99,11 +100,37 @@ export class CustomersComponent implements OnInit {
   openCustomerDialog(customer:any,Id:any,iSearchedCustomerId:any,key:any): void {
     this.dialogService.openModal(CustomerDialogComponent, { cssClass: 'modal-xl', context: { customer: this.customer ,iChosenCustomerId:Id,iSearchedCustomerId:null,key:"MERGE"} })
       .instance.close.subscribe((data) => {
+        this.requestParams = {
+          searchValue: ''
+        }
         if (data.customer) {
           this.customer = data.customer;
-          //console.log(this.customer)
+          // console.log(this.customer._id)
+          // console.log("main page result");
+          // console.log(this.customers)
+          // console.log("all  result");
+          let isIndex = this.customers.findIndex(i => i._id == data.customer._id);
+          //console.log("icIndex: "+ isIndex);
+          if(isIndex != -1){
+          this.customers[isIndex].isDisable = true;
+          this.customers[isIndex].isUpdated = true;
+          }
+
+          let icIndex = this.customers.findIndex(i => i._id.toString() == Id.toString());
+          //console.log("icIndex: "+ icIndex);
+          if(icIndex != -1){
+          this.customers[icIndex].isDisable = true;
+          this.customers[icIndex].isMerged = true;
+          }
+          
+         
         }
+       
+       
+
+
       })
+
   }
 
   createCustomer() {
@@ -131,6 +158,10 @@ export class CustomersComponent implements OnInit {
           this.paginationConfig.totalItems = result.data[0].count.totalData;
           this.customers = result.data[0].result;
           for (const customer of this.customers) {
+            customer.isDisable = false;
+            customer.isUpdated = false;
+            customer.isMerged = false;
+            customer.name = this.customerStructureService.makeCustomerName(customer);
             customer['NAME'] = this.customerStructureService.makeCustomerName(customer);
             customer['SHIPPING_ADDRESS'] = this.customerStructureService.makeCustomerAddress(customer.oShippingAddress, false);
             customer['INVOICE_ADDRESS'] = this.customerStructureService.makeCustomerAddress(customer.oInvoiceAddress, false);

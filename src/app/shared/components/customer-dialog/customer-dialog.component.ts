@@ -228,12 +228,15 @@ export class CustomerDialogComponent implements OnInit {
         }
           if (result && result.data && result.data[0] && result.data[0].result) {
             this.customers = result.data[0].result;
+            
             for(const customer of this.customers){
-             
-              customer['STATUS'] = customer.bIsConnected;
-              
+              customer['NAME'] = await this.makeCustomerName(customer);
+              customer['SHIPPING_ADDRESS'] = this.makeCustomerAddress(customer.oShippingAddress, false);
+              customer['INVOICE_ADDRESS'] = this.makeCustomerAddress(customer.oInvoiceAddress, false);
+              customer['EMAIL'] = customer.sEmail;
+              //customer['STATUS'] = customer.bIsConnected;
+              customer['PHONE'] = (customer.oPhone && customer.oPhone.sLandLine ? customer.oPhone.sLandLine : '') + (customer.oPhone && customer.oPhone.sLandLine && customer.oPhone.sMobile ? ' / ' : '') + (customer.oPhone && customer.oPhone.sMobile ? customer.oPhone.sMobile : '')
             }
-
           }
       },
       (error : any) =>{
@@ -280,16 +283,17 @@ export class CustomerDialogComponent implements OnInit {
         .subscribe(async (result: any) => {
           this.showLoader = false;
           this.isCustomerSearched = true;
+          //const Result: any = await this.apiService.getNew('customer', `/api/v1/customer/${this.requestParams.iBusinessId}/${this.iSearchedCustomerId}`).toPromise();  
           this.getMergeCustomers();
+          //console.log(Result);
+          //console.log("result");
         },
         (error : any) =>{})
     }else{
-
     this.loading = true
     this.customer = customer;
-
-    this.dialogRef.close.emit({ action: false, customer: this.customer })
   }
+  this.dialogRef.close.emit({ action: false, customer: this.customer })
   }
 
   save(): void {
