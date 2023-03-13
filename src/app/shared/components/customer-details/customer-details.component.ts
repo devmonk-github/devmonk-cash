@@ -954,6 +954,8 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
       sAddition: this.customer.oInvoiceAddress.sAddition,
       sPostalCode: this.customer.oInvoiceAddress.sPostalCode,
       sCity: this.customer.oInvoiceAddress.sCity,
+      sCountry: this.customer.oInvoiceAddress.sCountry,
+      sCountryCode: this.customer.oInvoiceAddress.sCountryCode
     }
     this.customer.oShippingAddress = {
       ...this.customer.oShippingAddress,
