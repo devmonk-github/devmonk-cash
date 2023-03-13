@@ -209,7 +209,7 @@ export class TillService {
       oItem.sGiftCardNumber = i?.sGiftCardNumber;
       oItem.sGiftCardNumber = i?.sGiftCardNumber;
       oItem.nEstimatedTotal = +(i?.nTotal?.toFixed(2)) || 0;
-      oItem.nPaymentAmount = +(i?.paymentAmount?.toFixed(2) || 0);
+      oItem.nPaymentAmount = ((i.price.toFixed(2) * i.quantity) - i.paymentAmount >0.05) ? +(i.paymentAmount.toFixed(2) || 0) : +((i.price.toFixed(2) * i.quantity) || 0);
       oItem.nPaidLaterAmount = 0;
       oItem.bDiscount = i.nDiscount.value > 0;
       oItem.bDiscountPercent = i.nDiscount.percent;
@@ -241,7 +241,7 @@ export class TillService {
       oItem.nDiscount = i.nDiscount;
       oItem.nRedeemedLoyaltyPoints = i.redeemedLoyaltyPoints;
       oItem.sUniqueIdentifier = i.sUniqueIdentifier || uuidv4();
-      oItem.nRevenueAmount = +((i.paymentAmount / i.quantity).toFixed(2));
+      oItem.nRevenueAmount = +((oItem.nPaymentAmount / i.quantity).toFixed(2));
       oItem.sDescription = i.description;
 
       oItem.sServicePartnerRemark = i.sServicePartnerRemark;
@@ -254,7 +254,6 @@ export class TillService {
       }
       oItem.bGiftcardTaxHandling = i.bGiftcardTaxHandling;
       oItem.bDiscountOnPercentage = i.bDiscountOnPercentage || false
-
       return oItem;
     });
     // console.log('iPayment 201: ', JSON.parse(JSON.stringify(body?.transactionItems)));

@@ -766,7 +766,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     }
     const changeAmount = nEnteredAmountTotal - nTotalToPay
-    this.dialogService.openModal(TerminalDialogComponent, { cssClass: 'modal-lg', context: { payments: this.payMethods, changeAmount } })
+    this.dialogService.openModal(TerminalDialogComponent, { cssClass: 'modal-lg', context: { payments: this.payMethods, changeAmount , nTotalTransactionAmount:nTotalToPay} })
       .instance.close.subscribe(async (payMethods: any) => {
         if (!payMethods) {
           this.saveInProgress = false;
