@@ -35,8 +35,12 @@
                     <tbody class="fw-bold text-gray-600">
                         <tr *ngFor='let customer of customers'>
                             <td *ngFor="let column of allColumns" class="">{{customer[column]}}</td>
-                            <td>
+                            <td *ngIf="key!='MERGE' || key==''">
                                 <button class="btn btn-primary" (click)="setCustomer(customer)"> {{"SELECT" |
+                                    translate}}</button>
+                            </td>
+                            <td *ngIf="key=='MERGE'">
+                                <button class="btn btn-warning" (click)="setCustomer(customer)"> {{"MERGE" |
                                     translate}}</button>
                             </td>
                             <td>

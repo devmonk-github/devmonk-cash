@@ -9,6 +9,7 @@ import { ToastService } from '../shared/components/toast';
 import {ExportsComponent} from '../shared/components/exports/exports.component';
 import { MenuComponent } from '../shared/_layout/components/common';
 import { CustomerDialogMergeComponent } from '../shared/components/customer-dialog-merge/customer-dialog-merge.component';
+import { CustomerDialogComponent } from '../shared/components/customer-dialog/customer-dialog.component';
 // import { result } from 'lodash';
 
 // interface FSEntry {
@@ -91,13 +92,13 @@ export class CustomersComponent implements OnInit {
   clickMenuOpt(key: string, Id: string) {
     switch (key) {
       case "MERGE":
-        this.openCustomerDialog(this.customer,Id,null);
+        this.openCustomerDialog(this.customer,Id,null,key);
         break;
     }
   }
 
-  openCustomerDialog(customer:any,Id:any,iSearchedCustomerId:any): void {
-    this.dialogService.openModal(CustomerDialogMergeComponent, { cssClass: 'modal-xl', context: { customer: this.customer ,iChosenCustomerId:Id,iSearchedCustomerId:null} })
+  openCustomerDialog(customer:any,Id:any,iSearchedCustomerId:any,key:any): void {
+    this.dialogService.openModal(CustomerDialogComponent, { cssClass: 'modal-xl', context: { customer: this.customer ,iChosenCustomerId:Id,iSearchedCustomerId:null,key:"MERGE"} })
       .instance.close.subscribe((data) => {
         if (data.customer) {
           this.customer = data.customer;
