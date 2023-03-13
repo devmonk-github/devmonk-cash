@@ -195,12 +195,8 @@ export class ActivityDetailsComponent implements OnInit {
 
 
   async ngOnInit() {
-   // console.log('from-----------transaction', this.from, this.activityItems, this.activity)
-    this.customer = this.activityItems[0].oCustomer;
-    
-    this.oCurrentCustomer = this.activityItems[0].oCustomer;
-    this.oLocationName = this.activityItems[0].oLocationName;
-    
+   console.log('from-----------transaction', this.from, this.activityItems, this.activity)
+  
    // console.log("iBusinessBrandId" +this.activityItems[0].iBusinessBrandId);
   
     this.apiService.setToastService(this.toastService);
@@ -708,6 +704,7 @@ export class ActivityDetailsComponent implements OnInit {
         }
         
     });
+    this.customer = this.activityItems[0].oCustomer;
     this.oCurrentCustomer = this.activityItems[0].oCustomer;
     this.oLocationName = this.activityItems[0].oLocationName;
     // if (this.activityItems.length == 1) this.activityItems[0].bIsVisible = true;
@@ -741,7 +738,7 @@ export class ActivityDetailsComponent implements OnInit {
 
   fetchTransactionItems(_id: any) {
     this.loading = true;
-    const url = (this.from === 'activity-items') ? `/api/v1/activities/activity-item/${_id}` : `/api/v1/activities/items/${_id}`;
+    const url = (this.from === 'services') ? `/api/v1/activities/items/${_id}` : `/api/v1/activities/activity-item/${_id}`;
     this.apiService.postNew('cashregistry', url, this.requestParams).subscribe((result: any) => {
       this.processTransactionItems(result)
     });
