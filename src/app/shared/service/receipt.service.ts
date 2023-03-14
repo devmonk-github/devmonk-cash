@@ -157,8 +157,8 @@ export class ReceiptService {
                 this.content.push(this.processTableData(item));
             } else if (item.type === 'absolute') {
                 this.processAbsoluteData(item.absoluteElements);
-            } else if (item.type === 'dashedLine') {
-                this.content.push(this.addDashedLine(item.coordinates, item.absolutePosition));
+            } else if (item.type === 'dashedLine', item.type === 'line') {
+                this.content.push(this.addLine(item));
             } else if (item.type === 'textAsTables') {
                 this.content.push(this.processTextAsTableData(item));
             }
@@ -173,8 +173,8 @@ export class ReceiptService {
         let tables: any = [];
         let nSize = 0;
         rows.forEach((row: any) => {
-            if (row?.type === 'dashedLine') {
-                this.content.push(this.addDashedLine(row.coordinates, row.absolutePosition));
+            if (row?.type === 'dashedLine' || row?.type === 'line') {
+                this.content.push(this.addLine(row));
             } else if (row?.type === 'rect') {
                 texts.push(this.addRect(row.coordinates, row?.absolutePosition));
                 tableWidths.push(this.getWidth(row.size));
@@ -399,8 +399,8 @@ export class ReceiptService {
             } else if (el?.type === 'barcode') {
                 let img = this.addBarcode(el);
                 columnData = img;
-            } else if (el?.type === 'dashedLine') {
-                columnData = this.addDashedLine(el.coordinates, el?.absolutePosition);
+            } else if (el?.type === 'dashedLine' || el?.type === 'line') {
+                columnData = this.addLine(el);
                 // columns.push()
             } else if (el?.type === 'table') {
                 columnData = this.processTableData(el);
@@ -475,25 +475,31 @@ export class ReceiptService {
         return img;
     }
 
-    addDashedLine(coordinates: any, absolutePosition?: any, config?: any) {
-        let obj: any = {
+    addLine(el:any) {
+        const coordinates = el?.coordinates;
+        const oLine: any = {
             canvas: [
                 {
                     type: 'line',
                     x1: coordinates.x1, y1: coordinates.y1, x2: coordinates.x2, y2: coordinates.y2,
-                    dash: {
-                        length: config?.dashLength || 2,
-                        space: config?.dashSpace || 4
-                    },
-                    lineWidth: config?.lineWidth || 1,
-                    lineColor: config?.lineColor || '#ccc'
+                    lineWidth: el?.lineWidth || 1,
+                    lineColor: el?.lineColor || '#000'
                 }
-            ]
+            ],
+            ...el?.styles
         };
-        if (absolutePosition) {
-            obj.absolutePosition = absolutePosition;
+        if (el?.type === 'dashedLine') {
+            oLine.canvas[0]['dash'] = {
+                length: el?.dashLength || 2,
+                space: el?.dashSpace || 4
+            };
         }
-        return obj;
+        
+
+        if (el?.absolutePosition) {
+            oLine.absolutePosition = el?.absolutePosition;
+        }
+        return oLine;
     }
 
     addRect(coordinates: any, absolutePosition?: any, config?: any) {
@@ -780,10 +786,10 @@ export class ReceiptService {
     }
 
     generateBarcodeURI(data: any, options: any = {}) {
-        console.log('generateBarcodeURI', data, options)
+        // console.log('generateBarcodeURI', data, options)
         var canvas = document.createElement("canvas");
         JsBarcode(canvas, data, { format: "CODE128", ...options });
-        console.log(canvas.toDataURL("image/png"))
+        // console.log(canvas.toDataURL("image/png"))
         return canvas.toDataURL("image/png");
     }
 }
