@@ -59,6 +59,7 @@ import { TransactionsPdfService } from "./service/transactions-pdf.service";
 //import { DateTranslatePipe } from './pipes/date-translate.pipe';
 import { SelectPrintPaperDialogComponent } from "./components/select-print-paper-dialog/select-print-paper-dialog.component";
 import { SupplierProductSliderModule } from "../sliders/supplier-stock-product-slider/supplier-product-slider.module";
+import { CustomerActivitiesDialogComponent } from "./components/customer-activities-dialog/customer-activities.component";
 
 @NgModule({
   declarations: [
@@ -97,7 +98,8 @@ import { SupplierProductSliderModule } from "../sliders/supplier-stock-product-s
     CurrencyFormatPipe,
     ActivityItemExportComponent,
     //DateTranslatePipe,
-    SelectPrintPaperDialogComponent
+    SelectPrintPaperDialogComponent,
+    CustomerActivitiesDialogComponent
   ],
   imports: [
     CommonModule,
