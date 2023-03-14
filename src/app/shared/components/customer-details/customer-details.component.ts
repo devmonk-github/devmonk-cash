@@ -293,6 +293,8 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
       iCustomerId: this.customer._id
     }
 
+    
+
     if (this.from === 'customer') {
       this.aTransctionTableHeaders.push({ key: 'Action', disabled: true });
     }
@@ -329,13 +331,14 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
 
 
   getMergedCustomerIds() {
-    console.log("this.getMergedCustomerIdss");
-    console.log(this.customer._id);
+    //console.log("this.getMergedCustomerIdss");
+   // console.log(this.customer._id);
+   if(this.customer && this.customer?._id){
     const oBody = {
       iCustomerId: this.customer._id
     }
     let url = '/api/v1/customer/getmergedcustomer';
-    this.apiService.postNew('customer', url, this.requestParams.oFilterBy).subscribe((result: any) => {
+    this.apiService.postNew('customer', url, oBody).subscribe((result: any) => {
       if (result) {
         
         console.log(result);
@@ -346,6 +349,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
       }
     }, (error) => {
     });
+  }
   }
 
 
@@ -724,22 +728,43 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
 
   loadTransactions() {
     if (this.customer.bCounter) return;
-    this.requestParams.oFilterBy = {
-      
-      iCustomerId: this.mergeCustomerIdList
+    //console.log("this.getMergedCustomerIdss");
+    //console.log(this.customer._id);
+    const oBody = {
+      iCustomerId: this.customer._id
     }
-    this.getMergedCustomerIds();
-    console.log("v this.mergeCustomerIdList");
+    let url = '/api/v1/customer/getmergedcustomer';
+    this.apiService.postNew('customer', url, oBody).subscribe((result: any) => {
+      if (result) {
+        
+       // console.log(result);
+       // console.log("this.mergeCustomerIdList--------");
+        this.mergeCustomerIdList = result.aUniqueCustomerId;
+        this.requestParams.oFBy = {
+      
+          iCustomerId: result.aUniqueCustomerId
+        }
+    
+       //console.log(this.requestParams.oFBy);
+    
+        //console.log("this.this.requestParams.oFBy--------");
+       
+        //console.log("this.mergeCustomerIdList--------");
+        //console.log(this.mergeCustomerIdList);
+      }
+    
 
-    console.log(this.mergeCustomerIdList);
+    
+
+    
 
     this.bTransactionsLoader = true;
     const body = {
-     // iCustomerId: this.customer._id,
+      iCustomerId: this.customer._id,
       iBusinessId: this.requestParams.iBusinessId,
       skip:this.purchaseRequestParams.skip,
       limit:this.purchaseRequestParams.limit,
-      oFilterBy:this.requestParams.oFilterBy
+      oFilterBy:this.requestParams.oFBy
       
     }
 
@@ -821,6 +846,8 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     }, (error) => {
       this.bTransactionsLoader = false;
     })
+  }, (error) => {
+  });
   }
 
   loadActivities() {
@@ -829,6 +856,10 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     this.bActivitiesLoader = true;
     let oBody:any ={... this.requestParams , ... this.activitiesRequestParams};
     delete oBody.oFilterBy._id;
+    delete oBody.oFilterBy.iCustomerId;
+   
+    oBody.oFilterBy = this.requestParams.oFBy;
+   
    
     this.apiService.postNew('cashregistry', '/api/v1/activities', oBody).subscribe((result: any) => {
       this.aActivities = result.data || [];
@@ -837,6 +868,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     }, (error) => {
       this.bActivitiesLoader = false;
     })
+  
 
   }
 
@@ -845,6 +877,8 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     this.bActivityItemsLoader = true;
     let oBody: any = { ... this.requestParams , ...this.itemsRequestParams };
     delete oBody.oFilterBy._id;
+    delete oBody.oFilterBy.iCustomerId;
+    oBody.oFilterBy = this.requestParams.oFBy;
     this.apiService.postNew('cashregistry', '/api/v1/activities/items', oBody).subscribe(
       (result: any) => {
         this.aActivityItems = result.data || [];
@@ -854,6 +888,8 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
       (error: any) => {
         this.bActivityItemsLoader = false;
       })
+
+    
   }
 
   activeTabsChanged(tab: any) {
