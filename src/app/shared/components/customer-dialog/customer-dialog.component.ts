@@ -210,7 +210,11 @@ export class CustomerDialogComponent implements OnInit {
         this.showLoader = false;
         this.isCustomerSearched = true;
           if (result && result.data && result.data[0] && result.data[0].result) {
+            if(this.key == "MERGE"){
             this.customers = result.data[0].result.filter((customer: any) => customer?._id.toString() != this.iChosenCustomerId.toString());
+            }else{
+            this.customers = result.data[0].result;
+           }
             this.paginationConfig.totalItems = result.data[0].count.totalData;
             for(const customer of this.customers){
               customer['NAME'] = await this.makeCustomerName(customer);
