@@ -10,6 +10,15 @@ export class ImportRepairOrderService {
     private translateService: TranslateService
   ) { }
 
+  // convertToDate(dateString: any) {
+  //   let _dDate;
+  //   if (dateString) {
+  //     const aDateArray = dateString.split('/');
+  //     _dDate = new Date(`${aDateArray[2]}/${aDateArray[1] - 1}/${aDateArray[0]}`);
+  //   }
+  //   return _dDate;
+  // }
+
   defaultImportRepairOrderAttribute() {
     const aDefaultAttribute = [
       {
@@ -73,13 +82,17 @@ export class ImportRepairOrderService {
 
     if (!parsedRepairOrderData?.length) return [];
 
-    const sProductName = this.translateService.instant('REPAIR');
 
     /* processing Transaction-Item */
     const aTransactionItem = [];
     for (const oData of parsedRepairOrderData) {
       if (!oData?.nPriceIncVat) throw ('something went wrong');
+      const eType = oData['oType.eKind'];
+      const sProductName = this.translateService.instant(eType === 'order' ? 'ORDER' : 'REPAIR');
       const nPurchasePrice = oData?.nPriceIncVat / (1 + (100 / (oData?.nVatRate || 1)));
+      const dDate = new Date(oData?.dCreatedDate);
+      const dCreatedDate = new Date(dDate.getTime() + Math.abs(dDate.getTimezoneOffset() * 60000));
+      // console.log('dCreatedDate: ', dCreatedDate, dDate?.getTime(), Math.abs(dDate.getTimezoneOffset() * 60000));
       const oTransactionItem = {
         iBusinessId: iBusinessId,
         iWorkStationId: iWorkStationId,
@@ -90,7 +103,7 @@ export class ImportRepairOrderService {
         nPriceIncVat: oData?.nPriceIncVat,
         nVatRate: oData?.nVatRate,
         nMatchingCode: oData?.nMatchingCode ? parseFloat(oData?.nMatchingCode) : undefined,
-        dCreatedDate: oData?.dCreatedDate,
+        dCreatedDate: dCreatedDate,
         nEstimatedTotal: oData?.nPriceIncVat,
         nPaymentAmount: oData?.nPriceIncVat,
         nRevenueAmount: oData?.nPriceIncVat,
@@ -113,8 +126,8 @@ export class ImportRepairOrderService {
         nQuantity: 1,
         oArticleGroupMetaData: {
           aProperty: [],
-          sCategory: "Repair",
-          sSubCategory: "Repair",
+          sCategory: eType,
+          sSubCategory: eType,
           oName: {},
           oNameOriginal: {}
         },
@@ -128,7 +141,7 @@ export class ImportRepairOrderService {
           eTransactionType: "cash-registry",
           bRefund: false,
           nStockCorrection: 1,
-          eKind: "repair",
+          eKind: eType,
           bDiscount: false,
           bPrepayment: false
         },

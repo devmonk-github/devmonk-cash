@@ -17,7 +17,7 @@ export class CommonService {
   async onFileChange(files: any, iBusinessId: any, fileType: any) {
     if (fileType == 'image') {
       if (files[0].type == 'image/png' || files[0].type == 'image/jpeg' || files[0].type == 'image/jpg') {
-        if (files[0].size > 102400 && files[0].size <= 2097152) {
+        if (files[0].size > 32400 && files[0].size <= 2097152) {
           this.file = files[0];
           try {
             const result: any = await this.submit(iBusinessId, fileType)
@@ -32,7 +32,7 @@ export class CommonService {
             return this.file;
           }
         } else {
-          this.toastService.show({ type: 'warning', text: 'Image size must be 100 kb to 2 mb' });
+          this.toastService.show({ type: 'warning', text: 'Image size must be 33 kb to 2 mb' });
         }
 
       } else {

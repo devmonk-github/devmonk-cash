@@ -215,18 +215,27 @@ module.exports = {
       },
       shared: share(sharedLibrary)
     }),
-    // new ModuleFederationPlugin({
-    //   // For remotes (please adjust)
-    //   remotes: {
-    //     "supplierSlider": "supplierSlider@http://localhost:4202/supplierSlider.js",
-    //   },
-    //   shared: share(sharedLibrary)
-    // }),
+    new ModuleFederationPlugin({
+      name: "SupplierProductSliderModule",
+      filename: "supplier-product-slider.js",
+      exposes: {
+        "./SupplierProductSliderModule": './src/app/sliders/supplier-stock-product-slider/supplier-product-slider.module.ts',
+      },
+      shared: share(sharedLibrary)
+    }),
     new ModuleFederationPlugin({
       name: "ImportGiftCardModule",
       filename: "import-gift-card.js",
       exposes: {
         './ImportGiftCardModule': './src/app/import-gift-card/import-gift-card.module.ts',
+      },
+      shared: share(sharedLibrary)
+    }),
+    new ModuleFederationPlugin({
+      name: "ImportRepairOrderModule",
+      filename: "import-repair-order.js",
+      exposes: {
+        './ImportRepairOrderModule': './src/app/import-repair-order/import-repair-order.module.ts',
       },
       shared: share(sharedLibrary)
     }),

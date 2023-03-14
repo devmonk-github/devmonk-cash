@@ -67,7 +67,7 @@ export class Js2zplService {
     this.width = Number(this.convertToDots(template.width));
     this.height = Number(this.convertToDots(template.height));
 
-    this.dateformat = (typeof template.dateformat !== 'undefined') ? template.dateformat : 'MMYY'; //0620
+    this.dateformat = (typeof template.dateformat !== 'undefined') ? template.dateformat : 'MM/YY'; //0620
     this.print_rate = (typeof template.print_rate !== 'undefined') ? template.print_rate : 2;
     this.media_darkness = (typeof template.media_darkness !== 'undefined') ? template.media_darkness : 12;
     this.media_type = (typeof template.media_type !== 'undefined') ? template.media_type : 'T';
@@ -553,7 +553,7 @@ export class Js2zplService {
 
           var newval = this.alldata[extractedVariable];
 
-          if (String(extractedVariable) == "%%LAST_DELIVIERY_DATE%%") {
+          if (String(extractedVariable) == "%%LAST_DELIVERY_DATE%%") {
 
             if (newval) {
               var date: any = new Date(newval)

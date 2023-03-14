@@ -1,4 +1,4 @@
-import { AfterContentInit, ChangeDetectorRef, Component, OnInit, ViewContainerRef } from '@angular/core';
+import { AfterContentInit, ChangeDetectorRef, Component, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
 import { faTimes, faSync, faFileInvoice, faDownload, faReceipt, faAt, faUndoAlt, faClipboard, faTrashAlt, faPrint, faEnvelope } from '@fortawesome/free-solid-svg-icons';
 import { TransactionItemsDetailsComponent } from 'src/app/shared/components/transaction-items-details/transaction-items-details.component';
 import { ApiService } from 'src/app/shared/service/api.service';
@@ -72,6 +72,7 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   bIsOpeningDayState = false;
 
   translation: any = [];
+  @ViewChild('slider', { read: ViewContainerRef }) container!: ViewContainerRef;
 
   constructor(
     private viewContainerRef: ViewContainerRef,
@@ -130,15 +131,15 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
     this.cdr.detectChanges();
   }
 
-  close(value: boolean) {
-    this.dialogRef.close.emit(value);
+  close(data: any) {
+    this.dialogRef.close.emit(data);
   }
 
   downloadWithVAT(print: boolean = false) {
     this.generatePDF(print);
   }
   openProductInfo(product: any) {
-    
+    this.dialogRef.triggerEvent.emit({type:'open-slider',data: product});
   }
 
   downloadWebOrder() {
@@ -179,10 +180,13 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
 
     const template = await this.getTemplate('regular').toPromise();
     const oDataSource = JSON.parse(JSON.stringify(this.transaction));
-      
-    oDataSource.sBarcodeURI = this.generateBarcodeURI(false, oDataSource.sNumber);
-    oDataSource.sActivityBarcodeURI = this.generateBarcodeURI(false, oDataSource.sActivityNumber);
-    oDataSource.sBusinessLogoUrl = (await this.getBase64FromUrl(oDataSource?.businessDetails?.sLogoLight).toPromise()).data;
+    oDataSource.sBusinessLogoUrl = '';
+    try {
+      const _result: any = await this.getBase64FromUrl(oDataSource?.businessDetails?.sLogoLight).toPromise();
+      if(_result?.data) {
+        oDataSource.sBusinessLogoUrl = _result?.data;
+      }
+    } catch (e) {}
 
     console.log(oDataSource)
 
@@ -210,11 +214,6 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
       this.downloadWithVATLoading = false;
   }
 
-  generateBarcodeURI(displayValue: boolean = true, data: any) {
-    var canvas = document.createElement("canvas");
-    JsBarcode(canvas, data, { format: "CODE128", displayValue: displayValue });
-    return canvas.toDataURL("image/png");
-  }
 
   getBase64FromUrl(url: any): Observable<any> {
     return this.apiService.getNew('cashregistry', `/api/v1/pdf/templates/getBase64/${this.iBusinessId}?url=${url}`);
@@ -231,7 +230,7 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
           const data = this.tillService.processTransactionSearchResult(result);
           localStorage.setItem('fromTransactionPage', JSON.stringify(data));
           setTimeout(() => {
-            this.close(true);
+            this.close({ action: true });
           }, 100);
         }
       });
@@ -394,7 +393,7 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
     event.target.disabled = false;
 
     this.toastService.show({ type: "success", text: this.translation['SUCCESSFULLY_UPDATED']  });
-    this.close(false);
+    this.close({ action: false });
   }
 
   addExpenses(data: any) {
@@ -440,7 +439,6 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
       // iActivityItemId: this.activityItems[0]._id
     }
     this.apiService.postNew('cashregistry', '/api/v1/transaction/update-customer', oBody).subscribe((result: any) => {
-      console.log('Customer Updated: ', result, oBody?.oCustomer);
       this.transaction.oCustomer = oBody?.oCustomer;
       this.toastService.show({ type: "success", text: this.translation['SUCCESSFULLY_UPDATED'] });
     }, (error) => {
@@ -452,9 +450,9 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   selectCustomer() {
     this.dialogService.openModal(CustomerDialogComponent, { cssClass: 'modal-xl' })
       .instance.close.subscribe((data) => {
-        console.log('after selecting customer: ', data);
         if (!data?.customer?._id || !this.transaction?._id) return;
         this.updateCurrentCustomer({ oCustomer: data?.customer });
+        this.transaction.oSystemCustomer = data?.customer;
       }, (error) => {
         console.log('selectCustomer error: ', error);
         this.toastService.show({ type: "warning", text: `Something went wrong` });
@@ -463,21 +461,22 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
 
   /* Here the current customer means from the Transaction/Activity/Activity-Items */
   openCurrentCustomer(oCurrentCustomer: any) {
-    console.log('openCurrentCustomer: ', oCurrentCustomer);
     const bIsCounterCustomer = (oCurrentCustomer?.sEmail === "balieklant@prismanote.com" || !oCurrentCustomer?._id) ? true : false /* If counter customer used then must needs to change */
+    if (bIsCounterCustomer) {
+      this.selectCustomer();
+      return;
+    }
     this.dialogService.openModal(CustomerDetailsComponent,
       {
-        cssClass: bIsCounterCustomer == true ? "modal-lg" : "modal-xl position-fixed start-0 end-0",
+        cssClass: "modal-xl position-fixed start-0 end-0",
         context: {
           customerData: oCurrentCustomer,
           mode: 'details',
           editProfile: true,
           bIsCurrentCustomer: true, /* We are only going to change in the A/T/AI */
-          bIsCounterCustomer: bIsCounterCustomer
         }
       }).instance.close.subscribe(result => {
-        console.log('result: ', result);
-        if (result?.bIsSelectingCustomer) this.selectCustomer();
+        if (result?.bChangeCustomer) this.selectCustomer();
         else if (result?.bShouldUpdateCustomer) this.updateCurrentCustomer({ oCustomer: result?.oCustomer });
       }, (error) => {
         console.log("Error in customer: ", error);

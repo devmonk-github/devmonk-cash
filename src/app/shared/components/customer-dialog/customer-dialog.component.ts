@@ -5,6 +5,8 @@ import { ApiService } from '../../service/api.service';
 import { DialogComponent, DialogService } from "../../service/dialog";
 import { CustomerDetailsComponent } from '../customer-details/customer-details.component';
 import { ToastService } from '../toast';
+import { PaginatePipe } from 'ngx-pagination';
+
 
 @Component({
   selector: 'app-customer-dialog',
@@ -26,8 +28,18 @@ export class CustomerDialogComponent implements OnInit {
   allColumns = [ this.customColumn, ...this.defaultColumns ];
   isCustomerSearched:Boolean = false;
   requestParams: any = {
-    searchValue: ''
+    searchValue: '',
+    skip:0 , 
+    limit:10
   }
+  pageCounts: Array<number> = [10, 25, 50, 100]
+  pageNumber: number = 1;
+  setPaginateSize: number = 10;
+  paginationConfig: any = {
+    itemsPerPage: 10,
+    currentPage: 1,
+    totalItems: 0
+  };
   fakeCustomer: any = {
     number: '45663',
     counter: false,
@@ -110,6 +122,7 @@ export class CustomerDialogComponent implements OnInit {
 
   constructor(
     private viewContainer: ViewContainerRef,
+    private paginationPipe: PaginatePipe,
     private dialogService: DialogService,
     private apiService: ApiService,
     private translateService: TranslateService,
@@ -198,6 +211,7 @@ export class CustomerDialogComponent implements OnInit {
         this.isCustomerSearched = true;
           if (result && result.data && result.data[0] && result.data[0].result) {
             this.customers = result.data[0].result.filter((customer: any) => customer?._id.toString() != this.iChosenCustomerId.toString());
+            this.paginationConfig.totalItems = result.data[0].count.totalData;
             for(const customer of this.customers){
               customer['NAME'] = await this.makeCustomerName(customer);
               customer['SHIPPING_ADDRESS'] = this.makeCustomerAddress(customer.oShippingAddress, false);
@@ -262,6 +276,21 @@ export class CustomerDialogComponent implements OnInit {
        this.getCustomers()
     });
   }
+
+  changeItemsPerPage(pageCount: any) {
+    this.paginationConfig.itemsPerPage = pageCount;
+    this.getCustomers();
+  }
+
+  // Function for trigger event after page changes
+  pageChanged(page: any) {
+    this.requestParams.skip = (page - 1) * parseInt(this.paginationConfig.itemsPerPage);
+    this.getCustomers();
+    this.paginationConfig.currentPage = page;
+  }
+
+
+  
 
   close(data: any): void {
     this.dialogRef.close.emit(data)

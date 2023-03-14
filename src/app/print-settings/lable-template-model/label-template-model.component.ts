@@ -18,13 +18,13 @@ export const makeDataObjectForProduct = (product: any) => {
     "%%DIAMONDINFO%%": "",
     "%%PRODUCT_WEIGHT%%": "",
     "%%DESCRIPTION%%": product.sComment,
-    "%%MY_OWN_COLLECTION%%": "",
+    "%%MY_OWN_COLLECTION%%": product?.sArticleGroupName || '',
     "%%VARIANTS_COLLECTION%%": "",
     "%%BRAND_COLLECTION1%%": "",
     "%%BRAND_COLLECTION2%%": "",
     "%%TOTALCARATWEIGHT%%": 0.08,
-    "%%LAST_DELIVIERY_DATE%%": "",
-    "%%SUPPLIER_NAME%%": "",
+    "%%LAST_DELIVERY_DATE%%": product.dDateLastPurchased,
+    "%%SUPPLIER_NAME%%": product.sBusinessPartnerName,
     "%%SUPPLIER_CODE%%": "",
     "%%SUGGESTED_RETAIL_PRICE%%": "0,00",
     "%%PRODUCT_CATEGORY%%": "",
@@ -95,13 +95,15 @@ export class LabelTemplateModelComponent implements OnInit {
       offsetleft: 0,
       offsettop: 0,
       iBusinessId: '',
-      iLocationId: ''
+      iLocationId: '',
+      "bDefault": true,
+      "nSeqOrder": 1,
     }
     let jsonKeys = Object.keys(json)
     let jsonDataKeys = Object.keys(jsonData).filter(e => {
       return !excluded.includes(e)
     })
-
+    console.log('jsonKeys', jsonKeys, 'jsonDataKeys',jsonDataKeys);
     let isMissingAnyKey = jsonKeys.sort().join() !== jsonDataKeys.sort().join();
     if (isMissingAnyKey) {
       this.toastService.show({ type: 'warning', text: 'Invalid Json Template' });
@@ -124,6 +126,8 @@ export class LabelTemplateModelComponent implements OnInit {
       sProductNumber: "product number",
       sComment: "description",
       brandName: "Brand Name",
+      dLastDeliveryDate: "dDateLastPurchased",
+      sBusinessPartnerName: "sBusinessPartnerName",
 
     })
     const JsonTemplate = JSON.parse(JSON.stringify(this.jsonEditor.jsonData));

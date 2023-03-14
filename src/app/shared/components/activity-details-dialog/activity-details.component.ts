@@ -195,12 +195,8 @@ export class ActivityDetailsComponent implements OnInit {
 
 
   async ngOnInit() {
-   // console.log('from-----------transaction', this.from, this.activityItems, this.activity)
-    this.customer = this.activityItems[0].oCustomer;
-    
-    this.oCurrentCustomer = this.activityItems[0].oCustomer;
-    this.oLocationName = this.activityItems[0].oLocationName;
-    
+   console.log('from-----------transaction', this.from, this.activityItems, this.activity)
+  
    // console.log("iBusinessBrandId" +this.activityItems[0].iBusinessBrandId);
   
     this.apiService.setToastService(this.toastService);
@@ -211,14 +207,10 @@ export class ActivityDetailsComponent implements OnInit {
       }
     });
 
-
     let translationKey = ['SUCCESSFULLY_UPDATED', 'NO_DATE_SELECTED'];
     this.translationService.get(translationKey).subscribe((res: any) => {
       this.translation = res;
     })
-
-    
-    
 
     if (this.activity) {
       //console.log(this.activity);
@@ -586,7 +578,7 @@ export class ActivityDetailsComponent implements OnInit {
     return this.apiService.getNew('core', '/api/v1/business/' + this.business._id);
   }
 
-  async downloadCustomerReceipt(index: number, receipt: any) {
+  async downloadCustomerReceipt(index: number, receipt: any, sAction:any) {
     if (receipt == 'customerReceipt') {
       this.bCustomerReceipt = true;
     } else if (receipt == 'downloadCustomerReceipt') {
@@ -602,16 +594,11 @@ export class ActivityDetailsComponent implements OnInit {
     if (oDataSource?.oType?.eKind === 'giftcard') {
       type = oDataSource.oType.eKind;
       oDataSource.nTotal = oDataSource.nPaidAmount;
-      sBarcodeURI = this.generateBarcodeURI(true, 'G-' + oDataSource.sGiftCardNumber);
     }
     else {
       type = (oDataSource?.oType?.eKind === 'regular') ? 'repair_alternative' : 'repair';
-      sBarcodeURI = this.generateBarcodeURI(false, oDataSource.sNumber);
     }
-    // if (!this.businessDetails) {
-    //   const result: any = await this.getBusinessDetails().toPromise();
-    //   this.businessDetails = result.data;
-    // }
+
     oDataSource.businessDetails = this.businessDetails;
     const aPromises = [];
     let bBusinessLogo = false, bTemplate = false;
@@ -669,7 +656,7 @@ export class ActivityDetailsComponent implements OnInit {
     const aTemp = oDataSource.sNumber.split("-");
     oDataSource.sPartRepairNumber = aTemp[aTemp.length - 1];
     // oDataSource.sBusinessLogoUrl = (await this.getBase64FromUrl(oDataSource?.businessDetails?.sLogoLight).toPromise()).data;
-    this.sendForReceipt(oDataSource, template, oDataSource.sNumber, receipt);
+    this.sendForReceipt(oDataSource, template, oDataSource.sNumber, receipt, sAction);
   }
 
   getBase64FromUrl(url: any): Observable<any> {
@@ -712,6 +699,7 @@ export class ActivityDetailsComponent implements OnInit {
         }
         
     });
+    this.customer = this.activityItems[0].oCustomer;
     this.oCurrentCustomer = this.activityItems[0].oCustomer;
     this.oLocationName = this.activityItems[0].oLocationName;
     // if (this.activityItems.length == 1) this.activityItems[0].bIsVisible = true;
@@ -745,7 +733,7 @@ export class ActivityDetailsComponent implements OnInit {
 
   fetchTransactionItems(_id: any) {
     this.loading = true;
-    const url = (this.from === 'activity-items') ? `/api/v1/activities/activity-item/${_id}` : `/api/v1/activities/items/${_id}`;
+    const url = (this.from === 'services') ? `/api/v1/activities/items/${_id}` : `/api/v1/activities/activity-item/${_id}`;
     this.apiService.postNew('cashregistry', url, this.requestParams).subscribe((result: any) => {
       this.processTransactionItems(result)
     });
@@ -761,15 +749,11 @@ export class ActivityDetailsComponent implements OnInit {
     oActivityItem.iBusinessId = this.iBusinessId;
     this.apiService.putNew('cashregistry', '/api/v1/activities/items/' + activityItemId, oActivityItem)
       .subscribe((result: any) => {
-
         if (result.message == 'success') {
           this.submitted = false;
           this.apiService.activityItemDetails.next(oActivityItem);
           this.toastService.show({ type: "success", text: this.translation['SUCCESSFULLY_UPDATED'] });
-
-
-        }
-        else {
+        } else {
           this.submitted = false;
           let errorMessage = "";
           this.translationService.get(result.message).subscribe((res: any) => {
@@ -788,7 +772,6 @@ export class ActivityDetailsComponent implements OnInit {
       })
   }
 
-
   // Function for show transaction details
   async showTransaction(transactionItem: any, event: any) {
     const oBody = {
@@ -803,7 +786,6 @@ export class ActivityDetailsComponent implements OnInit {
     const transaction = _oTransaction?.data?.result[0];
     transactionItem.bFetchingTransaction = false;
     event.target.disabled = false;
-
     this.dialogService.openModal(TransactionDetailsComponent, { cssClass: "modal-xl", context: { transaction: transaction, eType: 'cash-register-revenue', from: 'activity-details' } })
       .instance.close.subscribe(
         (res: any) => {
@@ -811,13 +793,7 @@ export class ActivityDetailsComponent implements OnInit {
         });
   }
 
-  generateBarcodeURI(displayValue: boolean = true, data: any) {
-    var canvas = document.createElement("canvas");
-    JsBarcode(canvas, data, { format: "CODE128", displayValue: displayValue });
-    return canvas.toDataURL("image/png");
-  }
-
-  async downloadReceipt(event: any, receipt: any) {
+  async downloadReceipt(event: any, receipt: any, bPrint:boolean = false) {
     if (receipt == 'downloadReceipt') {
       this.bDownloadReceipt = true;
     }
@@ -826,11 +802,6 @@ export class ActivityDetailsComponent implements OnInit {
 
     const oDataSource = JSON.parse(JSON.stringify(this.activity));
     oDataSource.businessDetails = this.businessDetails;
-
-    // if (!this.businessDetails) {
-    //   const result: any = await this.getBusinessDetails().toPromise();
-    //   this.businessDetails = result.data;
-    // }
     const aPromises = [];
     let bBusinessLogo = false, bTemplate = false;
     if (this.businessDetails?.sBusinessLogoUrl) {
@@ -869,18 +840,6 @@ export class ActivityDetailsComponent implements OnInit {
     oDataSource.businessDetails.sAddressline2 = currentLocation.oAddress.country;
     oDataSource.oCustomer = this.tillService.processCustomerDetails(this.customer);
     
-    // {
-    //   sFirstName: this.customer?.sFirstName || '',
-    //   sLastName: this.customer?.sLastName || '',
-    //   sEmail: this.customer?.sEmail || '',
-    //   sMobile: this.customer?.oPhone?.sCountryCode || '' + this.customer?.oPhone?.sMobile || '',
-    //   sLandLine: this.customer?.oPhone?.sLandLine || '',
-    // };
-
-    const sActivityBarcodeURI = this.generateBarcodeURI(false, oDataSource.sNumber);
-    oDataSource.sActivityBarcodeURI = sActivityBarcodeURI;
-
-    // oDataSource.aTransactionItems = oDataSource.activityitems;
     oDataSource.sActivityNumber = oDataSource.sNumber;
     let nTotalPaidAmount = 0;
     oDataSource.activityitems.forEach((item: any) => {
@@ -890,12 +849,12 @@ export class ActivityDetailsComponent implements OnInit {
     });
     oDataSource.nTotalPaidAmount = nTotalPaidAmount;
 
-    this.sendForReceipt(oDataSource, template, oDataSource.sNumber, receipt);
+    this.sendForReceipt(oDataSource, template, oDataSource.sNumber, receipt, bPrint);
     this.bActivityPdfGenerationInProgress = false;
     event.target.disabled = false;
   }
 
-  async sendForReceipt(oDataSource: any, template: any, title: any, receipt: any) {
+  async sendForReceipt(oDataSource: any, template: any, title: any, receipt: any, sAction:any) {
     const oPdfSetting = template.aSettings.find((el: any) => el.sParameter === 'pdfMethod');
     if (oPdfSetting && oPdfSetting.value === 'Javascript') {
       await this.pdfService.createPdf(JSON.stringify(template), oDataSource, oDataSource.sNumber, true, null, this.iBusinessId, null);
@@ -906,7 +865,8 @@ export class ActivityDetailsComponent implements OnInit {
         templateData: template,
         printSettings: this.printSettings,
         printActionSettings: this.printActionSettings,
-        eSituation: 'is_created'
+        eSituation: 'is_created',
+        sAction
       });
     }
 
@@ -947,7 +907,6 @@ export class ActivityDetailsComponent implements OnInit {
       iActivityItemId: this.activityItems[0]._id
     }
     this.apiService.postNew('cashregistry', '/api/v1/transaction/update-customer', oBody).subscribe((result: any) => {
-      console.log('Customer Updated: ', result, oBody?.oCustomer);
       this.oCurrentCustomer = oBody?.oCustomer;
       this.toastService.show({ type: "success", text: this.translation['SUCCESSFULLY_UPDATED'] });
     }, (error) => {
@@ -959,9 +918,9 @@ export class ActivityDetailsComponent implements OnInit {
   selectCustomer() {
     this.dialogService.openModal(CustomerDialogComponent, { cssClass: 'modal-xl' })
       .instance.close.subscribe((data) => {
-        console.log('after selecting customer: ', data);
         if (!data?.customer?._id || !this.activityItems?.length || !this.activityItems[0]?._id) return;
         this.updateCurrentCustomer({ oCustomer: data?.customer });
+        this.customer = data?.customer;
       }, (error) => {
         console.log('selectCustomer error: ', error);
         this.toastService.show({ type: "warning", text: `Something went wrong` });
@@ -970,21 +929,22 @@ export class ActivityDetailsComponent implements OnInit {
 
   /* Here the current customer means from the Transaction/Activity/Activity-Items */
   openCurrentCustomer(oCurrentCustomer: any) {
-    console.log('openCurrentCustomer: ', oCurrentCustomer);
     const bIsCounterCustomer = (oCurrentCustomer?.sEmail === "balieklant@prismanote.com" || !oCurrentCustomer?._id) ? true : false /* If counter customer used then must needs to change */
+    if (bIsCounterCustomer) {
+      this.selectCustomer();
+      return;
+    }
     this.dialogService.openModal(CustomerDetailsComponent,
       {
-        cssClass: bIsCounterCustomer == true ? "modal-lg" : "modal-xl position-fixed start-0 end-0",
+        cssClass: "modal-xl position-fixed start-0 end-0",
         context: {
           customerData: oCurrentCustomer,
           mode: 'details',
           editProfile: true,
           bIsCurrentCustomer: true, /* We are only going to change in the A/T/AI */
-          bIsCounterCustomer: bIsCounterCustomer
         }
       }).instance.close.subscribe(result => {
-        console.log('result: ', result);
-        if (result?.bIsSelectingCustomer) this.selectCustomer();
+        if (result?.bChangeCustomer) this.selectCustomer();
         else if (result?.bShouldUpdateCustomer) this.updateCurrentCustomer({ oCustomer: result?.oCustomer });
       }, (error) => {
         console.log("Error in customer: ", error);

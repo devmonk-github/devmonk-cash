@@ -256,8 +256,8 @@ export class PrintWorkstationComponent implements OnInit {
   }
 
   // Function for create or update print settings
-  savePrintSetting(type: any, printer?: any, sSelectedPaper?: any) {
-    // console.log(type, printer, sSelectedPaper);
+  savePrintSetting(type: any, printer?: any, sPrinterPageFormat?: any, sPaperTray?: any, nRotation?:any) {
+    // console.log(type, printer, sPrinterPageFormat);
     if (!printer) printer = this.printersList.filter((printer: any) => printer.id == type.workstation[type.name][type.type]?.nPrinterId)[0];
     // if (printer.length == 1) {
     let reqData = {
@@ -270,15 +270,20 @@ export class PrintWorkstationComponent implements OnInit {
       iBusinessId: this.businessDetails._id,
       iLocationId: this.iLocationId,
       iWorkstationId: type.workstation._id,
-      sPrinterPageFormat: sSelectedPaper
+      sPrinterPageFormat: sPrinterPageFormat,
+      sPaperTray: sPaperTray,
+      nRotation: nRotation,
     };
     if (!type.workstation[type.name][type.type]) {
       type.workstation[type.name][type.type] = { printerName : '', printSetting: {}};
     }
     type.workstation[type.name][type.type].printerName = printer.name;
-    type.workstation[type.name][type.type].sPrinterPageFormat = sSelectedPaper;
+    type.workstation[type.name][type.type].sPrinterPageFormat = sPrinterPageFormat;
+    type.workstation[type.name][type.type].sPaperTray = sPaperTray;
+    type.workstation[type.name][type.type].nRotation = nRotation;
     this.apiService.postNew('cashregistry', '/api/v1/print-settings/create', reqData).subscribe(async (result: any) => {
       if (result.message == 'success') {
+        this.toastService.show({ type: 'success', text: 'Print settings updated!' });
         if (result?.data?._id) {
           type.workstation[type.name][type.type].printSetting = result.data;
           // if (result.data?.sPrinterPageFormat) type.workstation[type.name][type.type].sPrinterPageFormat = result.data.sPrinterPageFormat;
@@ -324,7 +329,9 @@ export class PrintWorkstationComponent implements OnInit {
       // console.log(selectedSetting);
       computerId = selectedSetting[0]?.nComputerId || '';
       printerId = selectedSetting[0]?.nPrinterId || '';
-      let sPrinterPageFormat = selectedSetting[0]?.sPrinterPageFormat || '';
+      const sPrinterPageFormat = selectedSetting[0]?.sPrinterPageFormat || '';
+      const sPaperTray = selectedSetting[0]?.sPaperTray || '';
+      const nRotation = selectedSetting[0]?.nRotation || 0;
       if (printerId != '') {
         if (!event.workstation[event.name]) {
           event.workstation[event.name] = {};
@@ -333,6 +340,8 @@ export class PrintWorkstationComponent implements OnInit {
           nPrinterId: printerId,
           nComputerId: computerId,
           sPrinterPageFormat: sPrinterPageFormat,
+          sPaperTray: sPaperTray,
+          nRotation: nRotation,
           printerName: selectedSetting[0]?.sPrinterName || '',
           printSetting: selectedSetting[0]
         };
@@ -391,6 +400,8 @@ export class PrintWorkstationComponent implements OnInit {
     if (!workstation[template][type]) workstation[template][type] = {};
     
     if (!workstation[template][type]['sPrinterPageFormat']) workstation[template][type]['sPrinterPageFormat'] = '';
+    if (!workstation[template][type]['sPaperTray']) workstation[template][type]['sPaperTray'] = '';
+    if (!workstation[template][type]['nRotation']) workstation[template][type]['nRotation'] = 0;
     
     this.dialogService.openModal(SelectPrintPaperDialogComponent, 
       { 
@@ -398,14 +409,25 @@ export class PrintWorkstationComponent implements OnInit {
         context: { 
           printersList: this.printersList,
           oWorkstation: workstation,
-          sSelectedPaper: workstation[template][type]['sPrinterPageFormat'],
+          sPrinterPageFormat: workstation[template][type]['sPrinterPageFormat'],
+          sPaperTray: workstation[template][type]['sPaperTray'],
+          nRotation: workstation[template][type]['nRotation'],
           type,
           template
          } 
       }).instance.close.subscribe(result => {
-        // console.log({result});
+        console.log({result});
         if(result.action) {
-          this.savePrintSetting({name: template, type: type, workstation: workstation}, result.oSelectedPrinter, result.sSelectedPaper);
+          this.savePrintSetting(
+            {
+              name: template, 
+              type: type, 
+              workstation: workstation
+            }, 
+            result?.oSelectedPrinter, 
+            result?.sPrinterPageFormat,
+            result?.sPaperTray,
+            result?.nRotation);
         }
       });    
   }

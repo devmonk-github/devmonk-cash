@@ -71,6 +71,10 @@ export class ImportGiftCardService {
     for (const oData of parsedGiftCardData) {
       if (!oData?.nPriceIncVat) throw ('something went wrong');
       const nPurchasePrice = oData?.nPriceIncVat / (1 + (100 / (oData?.nVatRate || 1)));
+
+      const dDate = new Date(oData?.dCreatedDate);
+      const dCreatedDate = new Date(dDate.getTime() + Math.abs(dDate.getTimezoneOffset() * 60000));
+
       const oTransactionItem = {
         iBusinessId: iBusinessId,
         iWorkStationId: iWorkStationId,
@@ -81,7 +85,7 @@ export class ImportGiftCardService {
         nVatRate: oData?.nVatRate,
         nMatchingCode: oData?.nMatchingCode ? parseFloat(oData?.nMatchingCode) : undefined,
         sGiftCardNumber: oData?.sGiftCardNumber,
-        dCreatedDate: oData?.dCreatedDate,
+        dCreatedDate: dCreatedDate,
         nEstimatedTotal: oData?.nPriceIncVat,
         nPaymentAmount: oData?.nPriceIncVat,
         nRevenueAmount: oData?.nPriceIncVat,
