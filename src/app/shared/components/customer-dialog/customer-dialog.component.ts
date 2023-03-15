@@ -114,6 +114,9 @@ export class CustomerDialogComponent implements OnInit {
       }
     }
   ]
+  key:any;
+  iChosenCustomerId : any;
+  iSearchedCustomerId : any;
   aFilterFields:any = [
     { title: 'PSOTAL_CODE', key: 'sPostalCode'},
     { title: 'HOUSE_NUMBER', key: 'sHouseNumber'},
@@ -208,6 +211,7 @@ export class CustomerDialogComponent implements OnInit {
     this.showLoader = true;
     this.customers = [];
     this.isCustomerSearched = false;
+    
     if(this.sFilterField) {
       oBody.oFilterBy = {
         [this.sFilterField]:this.requestParams.searchValue,
@@ -218,7 +222,14 @@ export class CustomerDialogComponent implements OnInit {
         this.showLoader = false;
         this.isCustomerSearched = true;
           if (result && result.data && result.data[0] && result.data[0].result) {
-            this.customers = result.data[0].result;
+            
+            if(this.key == "MERGE"){
+              this.customers = result.data[0].result.filter((customer: any) => customer?._id.toString() != this.iChosenCustomerId.toString());
+              }else{
+              this.customers = result.data[0].result;
+             }
+
+
             this.paginationConfig.totalItems = result.data[0].count.totalData;
             for(const customer of this.customers){
               customer['NAME'] = await this.makeCustomerName(customer);
@@ -228,6 +239,37 @@ export class CustomerDialogComponent implements OnInit {
               customer['PHONE'] = (customer.oPhone && customer.oPhone.sLandLine ? customer.oPhone.sLandLine : '') + (customer.oPhone && customer.oPhone.sLandLine && customer.oPhone.sMobile ? ' / ' : '') + (customer.oPhone && customer.oPhone.sMobile ? customer.oPhone.sMobile : '')
             }
 
+          }
+      },
+      (error : any) =>{
+        this.customers = [];
+        this.showLoader = false;
+      })
+  }
+
+  getMergeCustomers() {
+    if (this.requestParams?.searchValue?.length < 3) return;
+    this.showLoader = true;
+    this.customers = [];
+    this.isCustomerSearched = false;
+    this.apiService.postNew('customer', '/api/v1/customer/mergecustomerlist', this.requestParams)
+      .subscribe(async (result: any) => {
+        this.showLoader = false;
+        this.isCustomerSearched = true;
+        this.requestParams = {
+          searchValue: ''
+        }
+          if (result && result.data && result.data[0] && result.data[0].result) {
+            this.customers = result.data[0].result;
+            
+            for(const customer of this.customers){
+              customer['NAME'] = await this.makeCustomerName(customer);
+              customer['SHIPPING_ADDRESS'] = this.makeCustomerAddress(customer.oShippingAddress, false);
+              customer['INVOICE_ADDRESS'] = this.makeCustomerAddress(customer.oInvoiceAddress, false);
+              customer['EMAIL'] = customer.sEmail;
+              //customer['STATUS'] = customer.bIsConnected;
+              customer['PHONE'] = (customer.oPhone && customer.oPhone.sLandLine ? customer.oPhone.sLandLine : '') + (customer.oPhone && customer.oPhone.sLandLine && customer.oPhone.sMobile ? ' / ' : '') + (customer.oPhone && customer.oPhone.sMobile ? customer.oPhone.sMobile : '')
+            }
           }
       },
       (error : any) =>{
@@ -278,10 +320,28 @@ export class CustomerDialogComponent implements OnInit {
   }
 
   setCustomer(customer: any): void {
+
+    if(this.key == "MERGE"){
+      this.iSearchedCustomerId = customer._id;
+      this.loading = true;
+      this.customer = customer;
+      this.requestParams.iChosenCustomerId = this.iChosenCustomerId;
+      this.requestParams.iSearchedCustomerId = this.iSearchedCustomerId;
+      this.apiService.postNew('customer', '/api/v1/customer/mergecustomercreate', this.requestParams)
+        .subscribe(async (result: any) => {
+          this.showLoader = false;
+          this.isCustomerSearched = true;
+          //const Result: any = await this.apiService.getNew('customer', `/api/v1/customer/${this.requestParams.iBusinessId}/${this.iSearchedCustomerId}`).toPromise();  
+          this.getMergeCustomers();
+          //console.log(Result);
+          //console.log("result");
+        },
+        (error : any) =>{})
+    }else{
     this.loading = true
     this.customer = customer;
-
-    this.dialogRef.close.emit({ action: false, customer: this.customer })
+  }
+  this.dialogRef.close.emit({ action: false, customer: this.customer })
   }
 
   save(): void {
