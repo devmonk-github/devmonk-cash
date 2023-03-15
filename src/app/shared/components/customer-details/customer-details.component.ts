@@ -148,7 +148,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
       sPostalCode: '',
       sHouseNumber: '',
       sHouseNumberSuffix: '',
-      sAddition: '',
+      //sAddition: '',
       sStreet: '',
       sCity: ''
     },
@@ -159,7 +159,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
       sPostalCode: '',
       sHouseNumber: '',
       sHouseNumberSuffix: '',
-      sAddition: '',
+      //sAddition: '',
       sStreet: '',
       sCity: ''
     },
@@ -280,6 +280,8 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     this.apiService.setToastService(this.toastService);
     this.getBusinessDetails();
     this.customer = { ... this.customer, ... this.dialogRef?.context?.customerData };
+    console.log("this.customer------");
+    console.log(this.customer);
     const translations = ['SUCCESSFULLY_ADDED', 'SUCCESSFULLY_UPDATED' ,'LOYALITY_POINTS_ADDED']
     this.translateService.get(translations).subscribe(
       result => this.translations = result
@@ -331,8 +333,6 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
 
 
   getMergedCustomerIds() {
-    //console.log("this.getMergedCustomerIdss");
-   // console.log(this.customer._id);
    if(this.customer && this.customer?._id){
     const oBody = {
       iBusinessId:this.requestParams.iBusinessId,
@@ -341,15 +341,9 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     let url = '/api/v1/customer/merged/customer';
     this.apiService.postNew('customer', url, oBody).subscribe((result: any) => {
       if (result) {
-        
-        console.log(result);
-        console.log("this.mergeCustomerIdList--------");
         this.mergeCustomerIdList = result.aUniqueCustomerId;
-        console.log("this.mergeCustomerIdList--------");
-        console.log(this.mergeCustomerIdList);
       }
-    }, (error) => {
-    });
+    }, (error) => {});
   }
   }
 
@@ -747,12 +741,6 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
           iCustomerId: result.aUniqueCustomerId
         }
     
-       //console.log(this.requestParams.oFBy);
-    
-        //console.log("this.this.requestParams.oFBy--------");
-       
-        //console.log("this.mergeCustomerIdList--------");
-        //console.log(this.mergeCustomerIdList);
       }
     
 
@@ -1024,7 +1012,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     const invoiceAddress = {
       sStreet: this.customer.oInvoiceAddress.sStreet,
       sHouseNumber: this.customer.oInvoiceAddress.sHouseNumber,
-      sAddition: this.customer.oInvoiceAddress.sAddition,
+      sHouseNumberSuffix: this.customer.oInvoiceAddress.sHouseNumberSuffix,
       sPostalCode: this.customer.oInvoiceAddress.sPostalCode,
       sCity: this.customer.oInvoiceAddress.sCity,
       sCountry: this.customer.oInvoiceAddress.sCountry,
