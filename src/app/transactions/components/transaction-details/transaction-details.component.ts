@@ -180,9 +180,6 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
 
     const template = await this.getTemplate('regular').toPromise();
     const oDataSource = JSON.parse(JSON.stringify(this.transaction));
-      
-    oDataSource.sBarcodeURI = this.generateBarcodeURI(false, oDataSource.sNumber);
-    oDataSource.sActivityBarcodeURI = this.generateBarcodeURI(false, oDataSource.sActivityNumber);
     oDataSource.sBusinessLogoUrl = '';
     try {
       const _result: any = await this.getBase64FromUrl(oDataSource?.businessDetails?.sLogoLight).toPromise();
@@ -217,11 +214,6 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
       this.downloadWithVATLoading = false;
   }
 
-  generateBarcodeURI(displayValue: boolean = true, data: any) {
-    var canvas = document.createElement("canvas");
-    JsBarcode(canvas, data, { format: "CODE128", displayValue: displayValue });
-    return canvas.toDataURL("image/png");
-  }
 
   getBase64FromUrl(url: any): Observable<any> {
     return this.apiService.getNew('cashregistry', `/api/v1/pdf/templates/getBase64/${this.iBusinessId}?url=${url}`);

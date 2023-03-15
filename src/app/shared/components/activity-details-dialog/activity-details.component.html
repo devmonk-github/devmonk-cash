@@ -18,7 +18,7 @@
             <div class="col-2 pe-0">
                 <div class="card pt-2"> <!-- style="width: 18rem;" -->
                     <span class="card-header justify-content-center align-items-center text-center m-0 ps-0 pe-0">
-                        <h3 class="my-1">{{activityItems[0].sNumber}}
+                        <h3 class="my-1">{{activityItems[0]?.sNumber}}
                         </h3>
                     </span>
 
@@ -160,7 +160,7 @@
                                         data-bs-parent="#kt_accordion_1" [class.collapsed]="activityItems.length > 1"
                                         [attr.data-bs-target]="'item'+activityindex" data-bs-toggle="collapse">
                                         <div class="col-4">
-                                            {{activity.sNumber}}
+                                            {{activity?.sNumber}}
                                             <span class="ms-5" (click)="copyToClipboard(activity)">
                                                 <i class="fa fa-copy" title="Click to copy"> </i>
                                                 <span @fade *ngIf="activity.bActivityNumberCopied"
@@ -264,11 +264,10 @@
                                         <div class="col-3 my-3">
                                             <div class="btn-group me-4 w-100 my-3">
                                                 <button class="btn btn-secondary fs-bold"
-                                                    (click)="downloadCustomerReceipt(activityindex , 'customerReceipt')"
+                                                    (click)="downloadCustomerReceipt(activityindex , 'customerReceipt', 'download')"
                                                     [disabled]="bCustomerReceipt">
-                                                    <fa-icon class="group-icon" [icon]="faUser"></fa-icon>
-                                                    <span class="indicator-label ">{{ "CUSTOMER_RECEIPT" | translate
-                                                        }}</span>
+                                                    <fa-icon [icon]="faDownload"></fa-icon>
+                                                    <span class="indicator-label">{{ "CUSTOMER_RECEIPT" | translate }}</span>
                                                 </button>
 
                                                 <div class="btn btn-secondary btn-icon fs-bold">
@@ -286,8 +285,15 @@
                                                     </span>
                                                     <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold fs-7 w-200px py-4"
                                                         data-kt-menu="true">
-                                                        <div class="menu-item px-3 text-center">
-                                                            <div class="menu-link px-3">{{ 'PRINT' | translate }}</div>
+                                                        <div class="menu-item px-3 text-center" (click)="downloadCustomerReceipt(activityindex , 'customerReceipt', 'download')">
+                                                            <div class="menu-link px-3">
+                                                                <fa-icon [icon]="faDownload"></fa-icon>
+                                                                <span class="ms-5">{{ 'DOWNLOAD' | translate }}</span></div>
+                                                        </div>
+                                                        <div class="menu-item px-3 text-center" (click)="downloadCustomerReceipt(activityindex , 'customerReceipt', 'print')">
+                                                            <div class="menu-link px-3">
+                                                                <fa-icon [icon]="faPrint"></fa-icon>
+                                                                <span class="ms-5">{{ 'PRINT' | translate }}</span></div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -935,7 +941,7 @@
                                         <div class="col-3 my-3">
                                             <div class="btn-group me-4 w-100 my-3">
                                                 <button class="btn btn-secondary fs-bold"
-                                                    (click)="downloadCustomerReceipt(activityindex , 'customerReceipt')"
+                                                    (click)="downloadCustomerReceipt(activityindex , 'customerReceipt', 'download')"
                                                     [disabled]="bCustomerReceipt">
                                                     <fa-icon class="group-icon" [icon]="faUser"></fa-icon>
                                                     <span class="indicator-label ">{{ "CUSTOMER_RECEIPT" | translate
@@ -968,7 +974,7 @@
                                             </div>
                                             <div class="btn-group me-4 w-100 my-3">
                                                 <button class="btn btn-secondary fs-bold"
-                                                    (click)="downloadCustomerReceipt(activityindex , 'downloadCustomerReceipt')"
+                                                    (click)="downloadCustomerReceipt(activityindex , 'downloadCustomerReceipt', 'print')"
                                                     [disabled]="bDownloadCustomerReceipt">
                                                     <fa-icon class="group-icon" [icon]="faPrint"></fa-icon>
                                                     <span class="indicator-label">{{
@@ -1605,7 +1611,7 @@
                                         <div class="col-3 my-3">
                                             <div class="btn-group me-4 w-100 my-3">
                                                 <button class="btn btn-secondary fs-bold"
-                                                    (click)="downloadCustomerReceipt(activityindex , 'customerReceipt')"
+                                                    (click)="downloadCustomerReceipt(activityindex , 'customerReceipt', 'download')"
                                                     [disabled]="bCustomerReceipt">
                                                     <fa-icon class="group-icon" [icon]="faUser"></fa-icon>
                                                     <span class="indicator-label ">{{ "CUSTOMER_RECEIPT" | translate
@@ -1638,7 +1644,7 @@
                                             </div>
                                             <div class="btn-group me-4 w-100 my-3">
                                                 <button class="btn btn-secondary fs-bold"
-                                                    (click)="downloadCustomerReceipt(activityindex , 'downloadCustomerReceipt')"
+                                                    (click)="downloadCustomerReceipt(activityindex , 'downloadCustomerReceipt', 'print')"
                                                     [disabled]="bDownloadCustomerReceipt">
                                                     <fa-icon class="group-icon" [icon]="faPrint"></fa-icon>
                                                     <span class="indicator-label">{{"CUSTOMER_RECEIPT_PRINT" |

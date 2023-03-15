@@ -10,7 +10,7 @@ import { Pn2escposService } from "./pn2escpos.service";
 import { PrintService } from "./print.service";
 import * as _moment from 'moment';
 const moment = (_moment as any).default ? (_moment as any).default : _moment;
-
+import * as JsBarcode from 'jsbarcode';
 @Injectable({
     providedIn: 'root'
 })
@@ -157,8 +157,8 @@ export class ReceiptService {
                 this.content.push(this.processTableData(item));
             } else if (item.type === 'absolute') {
                 this.processAbsoluteData(item.absoluteElements);
-            } else if (item.type === 'dashedLine') {
-                this.content.push(this.addDashedLine(item.coordinates, item.absolutePosition));
+            } else if (item.type === 'dashedLine', item.type === 'line') {
+                this.content.push(this.addLine(item));
             } else if (item.type === 'textAsTables') {
                 this.content.push(this.processTextAsTableData(item));
             }
@@ -173,8 +173,8 @@ export class ReceiptService {
         let tables: any = [];
         let nSize = 0;
         rows.forEach((row: any) => {
-            if (row?.type === 'dashedLine') {
-                this.content.push(this.addDashedLine(row.coordinates, row.absolutePosition));
+            if (row?.type === 'dashedLine' || row?.type === 'line') {
+                this.content.push(this.addLine(row));
             } else if (row?.type === 'rect') {
                 texts.push(this.addRect(row.coordinates, row?.absolutePosition));
                 tableWidths.push(this.getWidth(row.size));
@@ -230,6 +230,9 @@ export class ReceiptService {
                 this.content.push({ text: text, absolutePosition: { x: el.position.x * this.commonService.MM_TO_PT_CONVERSION_FACTOR, y: el.position.y * this.commonService.MM_TO_PT_CONVERSION_FACTOR } })
             } else if (el.type === 'image') {
                 const img = this.addImage(el);
+                this.content.push(img);
+            } else if (el.type === 'barcode') {
+                const img = this.addBarcode(el);
                 this.content.push(img);
             }
         }
@@ -298,6 +301,10 @@ export class ReceiptService {
             rows.forEach((row: any) => { //parsing rows
                 if (row?.type === 'image') {
                     let img = this.addImage(row);
+                    dataRow.push(img);
+                    tableWidths.push(this.getWidth(row.size));
+                } else if (row?.type === 'barcode') {
+                    let img = this.addBarcode(row);
                     dataRow.push(img);
                     tableWidths.push(this.getWidth(row.size));
                 } else if (row?.type === 'stack') {
@@ -375,6 +382,9 @@ export class ReceiptService {
             } else if (el?.type === 'image') {
                 let img = this.addImage(el);
                 this.content.push(img);
+            } else if (el?.type === 'barcode') {
+                let img = this.addBarcode(el);
+                this.content.push(img);
             }
         });
     }
@@ -386,8 +396,11 @@ export class ReceiptService {
             if (el?.type === 'image') {
                 let img = this.addImage(el);
                 columnData = img;
-            } else if (el?.type === 'dashedLine') {
-                columnData = this.addDashedLine(el.coordinates, el?.absolutePosition);
+            } else if (el?.type === 'barcode') {
+                let img = this.addBarcode(el);
+                columnData = img;
+            } else if (el?.type === 'dashedLine' || el?.type === 'line') {
+                columnData = this.addLine(el);
                 // columns.push()
             } else if (el?.type === 'table') {
                 columnData = this.processTableData(el);
@@ -437,7 +450,7 @@ export class ReceiptService {
     addImage(el: any) {
         if(!el?.url) return;
         let img: any = {
-            image: this.oOriginalDataSource[el.url],// this.logoUri,
+            image: this.oOriginalDataSource[el.url],
         };
         if (el?.margin) img.margin = el.margin;
         if (el?.fit) img.fit = el.fit;
@@ -448,25 +461,45 @@ export class ReceiptService {
         return img;
     }
 
-    addDashedLine(coordinates: any, absolutePosition?: any, config?: any) {
-        let obj: any = {
+    addBarcode(el: any) {
+        if (!el?.data) return;
+        let img: any = {
+            image: this.generateBarcodeURI(this.oOriginalDataSource[el.data], el?.barcodeOptions),// this.logoUri,
+        };
+        if (el?.margin) img.margin = el.margin;
+        if (el?.fit) img.fit = el.fit;
+        if (el?.alignment) img.alignment = el.alignment;
+        if (el?.width) img.width = el.width;
+        if (el?.absolutePosition) img.absolutePosition = { x: el.position.x * this.commonService.MM_TO_PT_CONVERSION_FACTOR, y: el.position.y * this.commonService.MM_TO_PT_CONVERSION_FACTOR };
+        if (el?.styles) img = { ...img, ...el.styles };
+        return img;
+    }
+
+    addLine(el:any) {
+        const coordinates = el?.coordinates;
+        const oLine: any = {
             canvas: [
                 {
                     type: 'line',
                     x1: coordinates.x1, y1: coordinates.y1, x2: coordinates.x2, y2: coordinates.y2,
-                    dash: {
-                        length: config?.dashLength || 2,
-                        space: config?.dashSpace || 4
-                    },
-                    lineWidth: config?.lineWidth || 1,
-                    lineColor: config?.lineColor || '#ccc'
+                    lineWidth: el?.lineWidth || 1,
+                    lineColor: el?.lineColor || '#000'
                 }
-            ]
+            ],
+            ...el?.styles
         };
-        if (absolutePosition) {
-            obj.absolutePosition = absolutePosition;
+        if (el?.type === 'dashedLine') {
+            oLine.canvas[0]['dash'] = {
+                length: el?.dashLength || 2,
+                space: el?.dashSpace || 4
+            };
         }
-        return obj;
+        
+
+        if (el?.absolutePosition) {
+            oLine.absolutePosition = el?.absolutePosition;
+        }
+        return oLine;
     }
 
     addRect(coordinates: any, absolutePosition?: any, config?: any) {
@@ -562,6 +595,8 @@ export class ReceiptService {
         item.elements.forEach((el: any) => {
             if (el?.type === 'image') {
                 stack.push(this.addImage(el))
+            } else if (el?.type === 'barcode') {
+                stack.push(this.addBarcode(el))
             } else if (el?.type === 'parts') {
                 stack.push(this.addParts(el, object))
             } else {
@@ -748,5 +783,13 @@ export class ReceiptService {
         this.printService.openDrawer(this.iBusinessId, drawerJob, nPrinterId, nComputerId, sApiKey).subscribe((result: any) => {
             // console.log('drawer response', result);
         });
+    }
+
+    generateBarcodeURI(data: any, options: any = {}) {
+        // console.log('generateBarcodeURI', data, options)
+        var canvas = document.createElement("canvas");
+        JsBarcode(canvas, data, { format: "CODE128", ...options });
+        // console.log(canvas.toDataURL("image/png"))
+        return canvas.toDataURL("image/png");
     }
 }

@@ -82,7 +82,7 @@ export class PrintService {
    * @param {String|null} transactionId
    * @param {Object|null} options
    */
-  printPDF(businessId: string, doc: string, printer: string, computer: string, qty: number, transactionId: string | null, options: any | null) {
+  printPDF(businessId: string, doc: string, printer: string, computer: string, qty: number, transactionId: string | null, title:any, options: any | null) {
     return new Promise((onSuccess, onError) => {
       this.apiService.postNew('cashregistry', '/api/v1/printnode/', {
         iBusinessId: businessId,
@@ -92,6 +92,7 @@ export class PrintService {
         printerId: printer,
         computerId: computer,
         quantity: qty,
+        title:title,
         options: options,
         APIKEY: this.businessDetails?.oPrintNode?.sApiKey
       }).subscribe(
@@ -156,7 +157,7 @@ export class PrintService {
    * @param {String} computer
    */
   createPrintJob(businessId: string, command: any, printer: any, computer: any, apikey: any, title?:any) {
-    return this.printRawContent(businessId, command, printer, computer, 1, title, { paper: '', rotation:'' }, apikey)
+    return this.printRawContent(businessId, command, printer, computer, 1, title, { paper: '', rotation: '', title:title }, apikey)
   }
 
   openDrawer(businessId: string, command: any, printer: any, computer: any, apikey: any) {

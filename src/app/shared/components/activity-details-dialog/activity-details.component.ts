@@ -195,12 +195,8 @@ export class ActivityDetailsComponent implements OnInit {
 
 
   async ngOnInit() {
-   // console.log('from-----------transaction', this.from, this.activityItems, this.activity)
-    this.customer = this.activityItems[0].oCustomer;
-    
-    this.oCurrentCustomer = this.activityItems[0].oCustomer;
-    this.oLocationName = this.activityItems[0].oLocationName;
-    
+   console.log('from-----------transaction', this.from, this.activityItems, this.activity)
+  
    // console.log("iBusinessBrandId" +this.activityItems[0].iBusinessBrandId);
   
     this.apiService.setToastService(this.toastService);
@@ -582,7 +578,7 @@ export class ActivityDetailsComponent implements OnInit {
     return this.apiService.getNew('core', '/api/v1/business/' + this.business._id);
   }
 
-  async downloadCustomerReceipt(index: number, receipt: any) {
+  async downloadCustomerReceipt(index: number, receipt: any, sAction:any) {
     if (receipt == 'customerReceipt') {
       this.bCustomerReceipt = true;
     } else if (receipt == 'downloadCustomerReceipt') {
@@ -598,16 +594,11 @@ export class ActivityDetailsComponent implements OnInit {
     if (oDataSource?.oType?.eKind === 'giftcard') {
       type = oDataSource.oType.eKind;
       oDataSource.nTotal = oDataSource.nPaidAmount;
-      sBarcodeURI = this.generateBarcodeURI(true, 'G-' + oDataSource.sGiftCardNumber);
     }
     else {
       type = (oDataSource?.oType?.eKind === 'regular') ? 'repair_alternative' : 'repair';
-      sBarcodeURI = this.generateBarcodeURI(false, oDataSource.sNumber);
     }
-    // if (!this.businessDetails) {
-    //   const result: any = await this.getBusinessDetails().toPromise();
-    //   this.businessDetails = result.data;
-    // }
+
     oDataSource.businessDetails = this.businessDetails;
     const aPromises = [];
     let bBusinessLogo = false, bTemplate = false;
@@ -665,7 +656,7 @@ export class ActivityDetailsComponent implements OnInit {
     const aTemp = oDataSource.sNumber.split("-");
     oDataSource.sPartRepairNumber = aTemp[aTemp.length - 1];
     // oDataSource.sBusinessLogoUrl = (await this.getBase64FromUrl(oDataSource?.businessDetails?.sLogoLight).toPromise()).data;
-    this.sendForReceipt(oDataSource, template, oDataSource.sNumber, receipt);
+    this.sendForReceipt(oDataSource, template, oDataSource.sNumber, receipt, sAction);
   }
 
   getBase64FromUrl(url: any): Observable<any> {
@@ -708,6 +699,7 @@ export class ActivityDetailsComponent implements OnInit {
         }
         
     });
+    this.customer = this.activityItems[0].oCustomer;
     this.oCurrentCustomer = this.activityItems[0].oCustomer;
     this.oLocationName = this.activityItems[0].oLocationName;
     // if (this.activityItems.length == 1) this.activityItems[0].bIsVisible = true;
@@ -741,7 +733,7 @@ export class ActivityDetailsComponent implements OnInit {
 
   fetchTransactionItems(_id: any) {
     this.loading = true;
-    const url = (this.from === 'activity-items') ? `/api/v1/activities/activity-item/${_id}` : `/api/v1/activities/items/${_id}`;
+    const url = (this.from === 'services') ? `/api/v1/activities/items/${_id}` : `/api/v1/activities/activity-item/${_id}`;
     this.apiService.postNew('cashregistry', url, this.requestParams).subscribe((result: any) => {
       this.processTransactionItems(result)
     });
@@ -801,13 +793,7 @@ export class ActivityDetailsComponent implements OnInit {
         });
   }
 
-  generateBarcodeURI(displayValue: boolean = true, data: any) {
-    var canvas = document.createElement("canvas");
-    JsBarcode(canvas, data, { format: "CODE128", displayValue: displayValue });
-    return canvas.toDataURL("image/png");
-  }
-
-  async downloadReceipt(event: any, receipt: any) {
+  async downloadReceipt(event: any, receipt: any, bPrint:boolean = false) {
     if (receipt == 'downloadReceipt') {
       this.bDownloadReceipt = true;
     }
@@ -854,18 +840,6 @@ export class ActivityDetailsComponent implements OnInit {
     oDataSource.businessDetails.sAddressline2 = currentLocation.oAddress.country;
     oDataSource.oCustomer = this.tillService.processCustomerDetails(this.customer);
     
-    // {
-    //   sFirstName: this.customer?.sFirstName || '',
-    //   sLastName: this.customer?.sLastName || '',
-    //   sEmail: this.customer?.sEmail || '',
-    //   sMobile: this.customer?.oPhone?.sCountryCode || '' + this.customer?.oPhone?.sMobile || '',
-    //   sLandLine: this.customer?.oPhone?.sLandLine || '',
-    // };
-
-    const sActivityBarcodeURI = this.generateBarcodeURI(false, oDataSource.sNumber);
-    oDataSource.sActivityBarcodeURI = sActivityBarcodeURI;
-
-    // oDataSource.aTransactionItems = oDataSource.activityitems;
     oDataSource.sActivityNumber = oDataSource.sNumber;
     let nTotalPaidAmount = 0;
     oDataSource.activityitems.forEach((item: any) => {
@@ -875,12 +849,12 @@ export class ActivityDetailsComponent implements OnInit {
     });
     oDataSource.nTotalPaidAmount = nTotalPaidAmount;
 
-    this.sendForReceipt(oDataSource, template, oDataSource.sNumber, receipt);
+    this.sendForReceipt(oDataSource, template, oDataSource.sNumber, receipt, bPrint);
     this.bActivityPdfGenerationInProgress = false;
     event.target.disabled = false;
   }
 
-  async sendForReceipt(oDataSource: any, template: any, title: any, receipt: any) {
+  async sendForReceipt(oDataSource: any, template: any, title: any, receipt: any, sAction:any) {
     const oPdfSetting = template.aSettings.find((el: any) => el.sParameter === 'pdfMethod');
     if (oPdfSetting && oPdfSetting.value === 'Javascript') {
       await this.pdfService.createPdf(JSON.stringify(template), oDataSource, oDataSource.sNumber, true, null, this.iBusinessId, null);
@@ -891,7 +865,9 @@ export class ActivityDetailsComponent implements OnInit {
         templateData: template,
         printSettings: this.printSettings,
         printActionSettings: this.printActionSettings,
-        eSituation: 'is_created'
+        eSituation: 'is_created',
+        sAction,
+        sApiKey: this.businessDetails?.oPrintNode?.sApiKey
       });
     }
 
