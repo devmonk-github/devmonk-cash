@@ -90,6 +90,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
 
   oStatisticsData: any = {};
   oStatisticsDocument: any;
+  aStatisticsDocuments: any;
 
   listBusinessSubscription!: Subscription;
   getStatisticSubscription!: Subscription;
@@ -652,7 +653,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
     this.oCountings.nSkim = this.oStatisticsDocument?.oCountings?.nSkim || 0;
     this.oCountings.nCashRemain = this.oStatisticsDocument?.oCountings?.nCashRemain || 0;
     this.oCountings.nCashDifference = this.oStatisticsDocument?.oCountings?.nCashDifference || 0;
-    this.bDisableCountings = !this.oStatisticsDocument.bIsDayState;
+    this.bDisableCountings = !this.oStatisticsDocument?.bIsDayState;
     if (this.aStatistic?.length && this.aStatistic[0]?.overall?.length) {
       this.aStatistic[0].overall[0].nTotalRevenue = parseFloat(this.aStatistic[0].overall[0].nTotalRevenue.toFixed(2))
       // this.oCountings.nCashInTill = this.aStatistic[0].overall[0].nTotalRevenue;
@@ -676,6 +677,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
 
   /* (Only, for Viewing statistic) Day-closure view whenever we will have the iStatisticId */
   fetchDayClosureData(sDisplayMethod?: string) {
+    console.log('fetchDayClosureData');
     /* If not closed yet then we require both data static as well and dynamic */
     if (this.oStatisticsData.bIsDayStateOpened) {
       this.getStaticData(sDisplayMethod);
@@ -688,12 +690,14 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
 
   /* Fetch Audit (Be it Static or Dynamic), where user can change filter as well */
   fetchAuditStatistic(sDisplayMethod?: string) {
+    console.log('fetchAuditStatistic');
     if (this.IsDynamicState) this.getDynamicData(sDisplayMethod);
     else this.getStaticData(sDisplayMethod);
   }
 
   /* Static Data for statistic (from statistic document) */
   getStaticData(sDisplayMethod?: string) {
+    console.log('get static data');
     this.aStatistic = [];
     this.aPaymentMethods = [];
     this.bStatisticLoading = true;
@@ -734,20 +738,24 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
         this.bStatisticLoading = false;
         if (result?.data) {
           const oData = result?.data;
-          if (oData.aStatistic?.length) this.aStatistic = oData.aStatistic;
-          if (oData?.oStatistic?._id) {
-            if (oData?.oStatistic?.aPaymentMethods?.length) {
-              this.mappingThePaymentMethod(oData?.oStatistic);
-              // this.aPaymentMethods = oData?.oStatistic?.aPaymentMethods; /* old approach */
-            }
-            this.oStatisticsDocument = oData?.oStatistic;
-            this.iWorkstationId = this.oStatisticsDocument.iWorkstationId;
-            // console.log('this.iWorkstationId', this.iWorkstationId, this.oStatisticsDocument.iWorkstationId, this.oStatisticsDocument)
-            this.sCurrentWorkstation = this.aWorkStation.filter((el: any) => el._id === this.iWorkstationId)[0]?.sName;
-            // console.log('current=', this.sCurrentWorkstation);
-            if (!this.oStatisticsDocument?.sComment) this.oStatisticsDocument.sComment = '';
+          if (oData.aStatistic?.length){
+            this.aStatistic = oData.aStatistic;
+            this.aStatisticsDocuments = oData.aStatisticDocuments;
+            console.log(739, this.aStatistic, this.aStatisticsDocuments);
+            this.mappingThePaymentMethod(this.aStatisticsDocuments);
             this.processCounting();
-          }
+          } 
+          // if (oData?.oStatistic?._id) {
+          //   if (oData?.oStatistic?.aPaymentMethods?.length) {
+          //     // this.aPaymentMethods = oData?.oStatistic?.aPaymentMethods; /* old approach */
+          //   }
+          //   // this.aStatisticsDocument = oData?.aStatistic;
+          //   // this.iWorkstationId = this.oStatisticsDocument.iWorkstationId;
+          //   // console.log('this.iWorkstationId', this.iWorkstationId, this.oStatisticsDocument.iWorkstationId, this.oStatisticsDocument)
+          //   // this.sCurrentWorkstation = this.aWorkStation.filter((el: any) => el._id === this.iWorkstationId)[0]?.sName;
+          //   // console.log('current=', this.sCurrentWorkstation);
+          //   // if (!this.oStatisticsDocument?.sComment) this.oStatisticsDocument.sComment = '';
+          // }
         }
       }, (error) => {
         this.bStatisticLoading = false;
@@ -755,25 +763,48 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
       });
   }
 
-  mappingThePaymentMethod(oData: any) {
-    if (oData.aPaymentMethods?.length) {
-      this.nPaymentMethodTotal = 0;
-      this.nNewPaymentMethodTotal = 0;
+  mappingThePaymentMethod(aData: any) {
 
-      this.aPaymentMethods = oData.aPaymentMethods;
-      this.aPaymentMethods.map((item: any) => {
-        item.nNewAmount = item.nAmount;
-        this.nPaymentMethodTotal += parseFloat(item.nAmount);
-        if (item?.sMethod === 'cash') this.oCountings.nCashInTill = item?.nAmount || 0;
-        return item;
-      });
-      this.nNewPaymentMethodTotal = this.nPaymentMethodTotal;
-      this.filterDuplicatePaymentMethods();
-    }
+    aData.forEach((oData: any) => {
 
-    if (oData?.bIsDayState === false) {
-      this.oCountings.nCashInTill = oData?.oCountings?.nCashInTill || 0;
-    }
+      if (oData.aPaymentMethods?.length) {
+        if (!this.aPaymentMethods?.length){
+          this.aPaymentMethods.push(...oData.aPaymentMethods);
+        } else {
+          oData.aPaymentMethods.forEach((el:any) => {
+            // console.log(774, el.sMethod, el.nAmount)
+            const iExistingIndex = this.aPaymentMethods.findIndex((p:any) => p.sMethod === el.sMethod);
+            if (iExistingIndex > -1) {
+              // console.log(777, el.sMethod, el.nAmount, 'before', this.aPaymentMethods[iExistingIndex].nQuantity)
+              this.aPaymentMethods[iExistingIndex].nAmount += el.nAmount;
+              this.aPaymentMethods[iExistingIndex].nQuantity += el.nQuantity;
+              // console.log(779, el.sMethod, el.nAmount, 'after', this.aPaymentMethods[iExistingIndex].nQuantity)
+            } else {
+              // console.log(781, el.sMethod, el.nAmount)
+              this.aPaymentMethods.push(el);
+            }
+          })
+        }
+        
+        this.nPaymentMethodTotal = this.aPaymentMethods.reduce((a:any, b:any) => a + b.nAmount, 0);
+        this.nNewPaymentMethodTotal = this.nPaymentMethodTotal;
+        
+        // this.aPaymentMethods.map((item: any) => {
+        //   item.nNewAmount = item.nAmount;
+        //   this.nPaymentMethodTotal += parseFloat(item.nAmount);
+        //   if (item?.sMethod === 'cash') this.oCountings.nCashInTill = item?.nAmount || 0;
+        //   return item;
+        // });
+      //   this.nNewPaymentMethodTotal = this.nPaymentMethodTotal;
+      //   this.filterDuplicatePaymentMethods();
+      }
+
+      if (oData?.bIsDayState === false) {
+        this.oCountings.nCashInTill = oData?.oCountings?.nCashInTill || 0;
+      }
+    })
+
+    console.log(787, this.aPaymentMethods)
   }
 
   processingDynamicDataRequest(sDisplayMethod?: string) {
