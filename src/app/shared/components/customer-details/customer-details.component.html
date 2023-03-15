@@ -1,7 +1,18 @@
 <div class="card shadow-sm">
     <div class="card-header align-items-center py-5">
         <h4 class="card-title" *ngIf="mode === 'create'">{{"NEW_CUSTOMER" | translate}}</h4>
-        <h4 class="card-title" *ngIf="mode === 'details'">{{"CUSTOMER_DETAILS" | translate}}</h4>
+        <h4 class="card-title" *ngIf="mode === 'details'">{{"CUSTOMER_DETAILS" | translate}}
+            <ng-container *ngIf="customer?.bIsMerged ==true && customer?.eStatus=='d'">
+                <span class="badge badge-light-warning"> Merged</span>
+            </ng-container> 
+            <ng-container *ngIf="customer?.bIsImported == true">
+                <span class="badge badge-primary"> Imported</span>
+            </ng-container> 
+            <ng-container *ngIf="customer?.eStatus=='d' && (customer?.bIsMerged ==false || customer.bIsMerged ==undefined)">
+                <span class="badge badge-danger"> Deleted</span>
+            </ng-container> 
+
+        </h4>
         <div *ngIf="mode === 'details'" class="card-toolbar flex-row-fluid justify-content-end gap-5">
             <button class="btn btn-warning" *ngIf="bIsCurrentCustomer" (click)="close({ bChangeCustomer: true })">
                 {{"CHANGE_CUSTOMER" | translate}}
@@ -39,6 +50,7 @@
                                 <h2 class="fw-bolder mx-5 mb-0">
                                     <span>{{ customer.sSalutation }} {{ customer.sFirstname }} {{ customer.sLastName
                                         }} <span *ngIf="customer.nClientId">({{customer.nClientId}})</span></span>
+                                           
                                 </h2>
                             </div>
                             <div class="d-flex justify-content-between align-items-start" *ngIf="!editProfile">
@@ -587,6 +599,7 @@
                                     placeholder="{{'LAST_NAME' | translate}}" [(ngModel)]="customer.sLastName"
                                     (ngModelChange)="convertLastNameUpper($event)" required /></div>
                         </div>
+                        
                     </div>
                     <div class="row">
                         <div class="col-6">
