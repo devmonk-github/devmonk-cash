@@ -87,11 +87,11 @@
                                 <div class="text-gray-800 mt-2" *ngIf="!transaction?.oSystemCustomer?.bCounter &&  transaction?.oSystemCustomer?.sEmail">
                                     {{ transaction?.oSystemCustomer?.sEmail}}
                                 </div>
-                                <div class="text-gray-800 mt-2" *ngIf="transaction?.oSystemCustomer?.sMobile">
-                                    {{ transaction?.oSystemCustomer?.sMobile}}
+                                <div class="text-gray-800 mt-2" *ngIf="transaction?.oSystemCustomer?.oPhone?.sMobile">
+                                    {{ transaction?.oSystemCustomer?.oPhone?.sMobile}}
                                 </div>
-                                <div class="text-gray-800 mt-2" *ngIf="transaction?.oSystemCustomer?.sMobile">
-                                    {{transaction?.oSystemCustomer?.sLandLine}}
+                                <div class="text-gray-800 mt-2" *ngIf="transaction?.oSystemCustomer?.oPhone?.sLandLine">
+                                    {{transaction?.oSystemCustomer?.oPhone?.sLandLine}}
                                 </div>
                             </div>
                             <div class="col-md-12">
@@ -166,11 +166,11 @@
                             <div class="text-gray-800 mt-2" *ngIf="!transaction?.oCustomer?.bCounter && transaction?.oCustomer?.sEmail">
                                 {{transaction?.oCustomer?.sEmail}}
                             </div>
-                            <div class="text-gray-800 mt-2" *ngIf="transaction?.oSystemCustomer?.sMobile">
-                                {{transaction?.oSystemCustomer?.sMobile}}
+                            <div class="text-gray-800 mt-2" *ngIf="transaction?.oCustomer?.oPhone?.sMobile">
+                                {{transaction?.oCustomer?.oPhone?.sMobile}}
                             </div>
-                            <div class="text-gray-800 mt-2" *ngIf="transaction?.oSystemCustomer?.sLandLine">
-                                {{transaction?.oSystemCustomer?.sLandLine}}
+                            <div class="text-gray-800 mt-2" *ngIf="transaction?.oCustomer?.oPhone?.sLandLine">
+                                {{transaction?.oCustomer?.oPhone?.sLandLine}}
                             </div>
                         </div>
                         <div class="col-md-12">
@@ -291,10 +291,10 @@
                             <fa-icon [icon]="faClipboard"></fa-icon>
                             <label class="mx-auto">{{"VIEW_LOG" | translate}}</label>
                         </button>
-                        <button class="btn btn-sm btn-secondary w-100 d-flex mb-2">
+                        <!-- <button class="btn btn-sm btn-secondary w-100 d-flex mb-2">
                             <fa-icon [icon]="faTrashAlt"></fa-icon>
                             <label class="mx-auto">{{ "DELETE" | translate}}</label>
-                        </button>
+                        </button> -->
                     </div>
                 </div>
             </div>
