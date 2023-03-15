@@ -604,7 +604,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     this.dialogService.openModal(CustomerDialogComponent, { cssClass: 'modal-xl', context: { customer: this.customer } }).instance.close.subscribe((data) => {
       if (data.customer) {
         this.customer = data.customer;
-        this.findOpenActivitiesForCustomer();
+        /*Find Customer Activities */
+        // this.findOpenActivitiesForCustomer();
       }
     })
   }

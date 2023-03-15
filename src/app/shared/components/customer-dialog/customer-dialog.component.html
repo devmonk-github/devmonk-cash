@@ -15,13 +15,14 @@
                 <input type="text" class="form-control form-control-solid ps-10" #inputElement
                     [(ngModel)]="requestParams.searchValue" name="search" value=""
                     [placeholder]="'SEARCH' | translate" />
-                    <!-- (change)="getCustomers()" -->
+                    (change)="getCustomers()"
             </div>
-            <div class="position-relative w-md-200px me-md-2">
+            <!-- Search filters -->
+            <!-- <div class="position-relative w-md-200px me-md-2">
                 <ng-select [clearable]="true" placeholder="{{ 'SELECT_FIELD' | translate }}" [(ngModel)]="sFilterField">
                     <ng-option *ngFor="let item of aFilterFields" [value]="item.key">{{ item.title | translate }}</ng-option>
                 </ng-select>
-            </div>
+            </div> -->
             <div class="d-flex align-items-center">
                 <button type="submit" (click)="getCustomers()" class="btn btn-primary me-5"> {{ "SEARCH" |
                     translate}}</button>
