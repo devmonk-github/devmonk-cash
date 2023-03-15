@@ -316,11 +316,10 @@ export class TransactionAuditUiPdfService {
 
         this.aGoldPurchases = _aGoldPurchases?.data[0]?.result.filter((item: any) => item.oType.eKind == 'gold-purchase');
 
-        if (sDisplayMethod != "aVatRates"){
+        if (sDisplayMethod != "aVatRates") {
             this.processCashCountings(tableLayout, oStatisticsDocument, aStatistic);
             this.processVatRates(columnWidths, tableLayout, oStatisticsDocument?.aVatRates);
         }
-
 
         switch (sDisplayMethod.toString()) {
             case 'revenuePerBusinessPartner':
