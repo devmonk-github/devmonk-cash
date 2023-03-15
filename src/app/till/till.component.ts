@@ -33,6 +33,7 @@ import { HttpClient } from '@angular/common/http';
 const moment = (_moment as any).default ? (_moment as any).default : _moment;
 import { debounceTime, distinctUntilChanged, filter, tap } from 'rxjs/operators';
 import { trigger, transition, style, animate } from '@angular/animations';
+import { CustomerActivitiesDialogComponent } from '../shared/components/customer-activities-dialog/customer-activities.component';
 
 @Component({
   selector: 'app-till',
@@ -599,14 +600,42 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       });
   }
 
-  openCustomerDialog(): void {
-    this.dialogService.openModal(CustomerDialogComponent, { cssClass: 'modal-xl', context: { customer: this.customer } })
-      .instance.close.subscribe((data) => {
-        if (data.customer) {
-          this.customer = data.customer;
-          console.log(this.customer)
+  openCustomerDialog() {
+    this.dialogService.openModal(CustomerDialogComponent, { cssClass: 'modal-xl', context: { customer: this.customer } }).instance.close.subscribe((data) => {
+      if (data.customer) {
+        this.customer = data.customer;
+        this.findOpenActivitiesForCustomer();
+      }
+    })
+  }
+
+  findOpenActivitiesForCustomer(){
+    this.dialogService.openModal(CustomerActivitiesDialogComponent, { cssClass: 'modal-xl', context: { customer: this.customer } }).instance.close.subscribe(async (data) => {
+      if (data?.transaction) {
+        this.bIsTransactionLoading = true;
+        // / Finding BusinessProduct and their location and stock. Need to show in the dropdown of location choosing /
+        if (data?.transactionItems?.length) {
+          let aBusinessProduct: any = [];
+          const _aBusinessProduct: any = await this.getBusinessProductList(data?.transactionItems.map((el: any) => el.iBusinessProductId)).toPromise();
+          if (_aBusinessProduct?.data?.length && _aBusinessProduct.data[0]?.result?.length) aBusinessProduct = _aBusinessProduct.data[0]?.result;
+          data.transactionItems = data.transactionItems?.map((oTI: any) => {
+            // / assigning the BusinessProduct location to transction-item /
+            const oFoundProdLoc = aBusinessProduct?.find((oBusinessProd: any) => oBusinessProd?._id?.toString() === oTI?.iBusinessProductId?.toString());
+            if (oFoundProdLoc?.aLocation?.length) {
+              oTI.aLocation = oFoundProdLoc.aLocation?.map((oProdLoc: any) => {
+                const oFound: any = this.aBusinessLocation?.find((oBusLoc: any) => oBusLoc?._id?.toString() === oProdLoc?._id?.toString());
+                oProdLoc.sName = oFound?.sName;
+                return oProdLoc;
+              });
+            }
+            oTI.oCurrentLocation = oTI.aLocation?.find((o: any) => o._id === oTI.iLocationId);
+            return oTI;
+          })
         }
-      })
+
+        this.handleTransactionResponse(data);
+      }
+    })
   }
 
   fetchCustomer(customerId: any) {
@@ -766,7 +795,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     }
     const changeAmount = nEnteredAmountTotal - nTotalToPay
-    this.dialogService.openModal(TerminalDialogComponent, { cssClass: 'modal-lg', context: { payments: this.payMethods, changeAmount } })
+    this.dialogService.openModal(TerminalDialogComponent, { cssClass: 'modal-lg', context: { payments: this.payMethods, changeAmount , nTotalTransactionAmount:nTotalToPay} })
       .instance.close.subscribe(async (payMethods: any) => {
         if (!payMethods) {
           this.saveInProgress = false;
@@ -1766,7 +1795,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   async handleTransactionResponse(data: any) {
-    // console.log('handleTransactionResponse', data)
+    console.log('handleTransactionResponse', data)
     this.clearAll();
     const { transactionItems, transaction } = data;
     this.transactionItems = transactionItems;

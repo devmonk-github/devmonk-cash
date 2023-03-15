@@ -188,7 +188,7 @@ export class PdfService {
       case 'barcode':
         return this.convertValueToBarcode(val);
       case 'date':
-        return (val === 'NO_DATE_SELECTED') ? val : moment(val).format(this.dateFormat);
+        return (val === '' || val === 'NO_DATE_SELECTED') ? val : moment(val).format(this.dateFormat);
       default:
         return val;
     }
