@@ -109,8 +109,8 @@ export class DayClosuresComponent implements OnInit, OnDestroy {
     this.dayClosureListSubscription = this.apiService.postNew('cashregistry', `/api/v1/statistics/day-closure/list`, oBody).subscribe((result: any) => {
       if (result?.data?.length) {
         this.aDayClosure = result.data[0]?.result.map((el:any) => {
-          el.nTotalRevenue = el.aRevenuePerBusinessPartner.reduce((a:any, b:any) => a + b.nTotalRevenue, 0);
-          el.nPaymentMethodTotal = el.aPaymentMethods.reduce((a:any, b:any) => a + b.nAmount, 0);
+          el.nTotalRevenue = +(el.aRevenuePerBusinessPartner.reduce((a:any, b:any) => a + b.nTotalRevenue, 0).toFixed(2));
+          el.nPaymentMethodTotal = +(el.aPaymentMethods.reduce((a: any, b: any) => a + b.nAmount, 0).toFixed(2));
           return el;
         });
         
