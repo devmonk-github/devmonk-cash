@@ -9,6 +9,8 @@ import { TransactionAuditUiPdfService } from '../shared/service/transaction-audi
 import { MenuComponent } from '../shared/_layout/components/common';
 import { ChildChild, DisplayMethod, eDisplayMethodKeysEnum, View, ViewMenuChild } from './transaction-audit.model';
 import { TaxService } from '../shared/service/tax.service';
+import { ConfirmationDialogComponent } from '../shared/components/confirmation-dialog/confirmation-dialog.component';
+import { DialogService } from '../shared/service/dialog';
 
 @Component({
   selector: 'app-transaction-audit',
@@ -197,7 +199,8 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
     private toastService: ToastService,
     private location: Location,
     public transactionAuditPdfService: TransactionAuditUiPdfService,
-    private taxService: TaxService
+    private taxService: TaxService,
+    private dialogService: DialogService,
 
   ) {
 
@@ -733,15 +736,10 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
           const oData = result?.data;
           if (oData.aStatistic?.length) this.aStatistic = oData.aStatistic;
           if (oData?.oStatistic?._id) {
-            if (oData?.oStatistic?.aPaymentMethods?.length) {
-              this.mappingThePaymentMethod(oData?.oStatistic);
-              // this.aPaymentMethods = oData?.oStatistic?.aPaymentMethods; /* old approach */
-            }
+            if (oData?.oStatistic?.aPaymentMethods?.length) this.mappingThePaymentMethod(oData?.oStatistic);
             this.oStatisticsDocument = oData?.oStatistic;
             this.iWorkstationId = this.oStatisticsDocument.iWorkstationId;
-            // console.log('this.iWorkstationId', this.iWorkstationId, this.oStatisticsDocument.iWorkstationId, this.oStatisticsDocument)
             this.sCurrentWorkstation = this.aWorkStation.filter((el: any) => el._id === this.iWorkstationId)[0]?.sName;
-            // console.log('current=', this.sCurrentWorkstation);
             if (!this.oStatisticsDocument?.sComment) this.oStatisticsDocument.sComment = '';
             this.processCounting();
           }
@@ -1145,33 +1143,59 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
   }
 
   getDynamicAuditDetail() {
-    const _oBody = this.processingDynamicDataRequest();
+    const oBody = this.processingDynamicDataRequest();
+    const _oBody = JSON.parse(JSON.stringify(oBody));
     _oBody.oFilter.dEndDate = new Date();
+    _oBody.bSkipCheckFlag = true; /*  bSkipCheckFlag is for, when there is no sell for a day and user is trying to close-the-day-state */
     return this.apiService.postNew('cashregistry', `/api/v1/statistics/transaction/audit`, _oBody).toPromise();
   }
-
-  async closeDayState() {
+  
+  async onCloseDayState() {
     this.closingDayState = true;
-
     /* fetching Audit detail for checking if day-state is changed or not */
     const oStatisticDetail: any = await this.getDynamicAuditDetail();
-    if (!oStatisticDetail?.data?.oTransactionAudit?.length || !oStatisticDetail?.data?.oTransactionAudit[0]?.overall?.length) {
-      this.toastService.show({ type: 'warning', text: 'Something went wrong' });
-      return;
+    this.closingDayState = false; /* while fetching the data, loader should show off */
+    /* isAnyTransactionDone: If any transaction is not happened then we should not throw any error */
+    if (!oStatisticDetail?.data?.isAnyTransactionDone) {
+      const confirmBtnDetails = [
+        { text: "PROCEED", value: 'proceed', status: 'success', class: 'ml-auto mr-2' },
+        { text: "CANCEL", value: 'close' }
+      ];
+      this.dialogService.openModal(ConfirmationDialogComponent, { context: { header: 'NO_TRANSACTION_CREATED', bodyText: 'IN_THIS_PERIOD_NOT_TRANSACTION_HAS_BEE_CREATED', buttonDetails: confirmBtnDetails } })
+        .instance.close.subscribe((status: any) => {
+          if (status === 'proceed') this.closeDayState(oStatisticDetail);
+        }, (error) => {
+          this.toastService.show({ type: 'warning', text: `Something went wrong` });
+        })
+    } else {
+      this.closeDayState(oStatisticDetail);
     }
+  }
 
-    let aAmount = oStatisticDetail?.data?.oTransactionAudit[0]?.overall[0]?.nTotalRevenue
-    let bAmount = this.aStatistic[0].overall[0].nTotalRevenue
+  async closeDayState(oStatisticDetail: any) {
+    this.closingDayState = true;
+    
+    /* isAnyTransactionDone: If any transaction is not happened then we should not throw any error */
+    /* Below "IF CONIDTION" only used when we do have any transaction, if not transaction created in that period then we should not check */
+    if (oStatisticDetail?.data?.isAnyTransactionDone) {
+      if (!oStatisticDetail?.data?.oTransactionAudit?.length || !oStatisticDetail?.data?.oTransactionAudit[0]?.overall?.length) {
+        this.toastService.show({ type: 'warning', text: 'Something went wrong' });
+        return;
+      }
 
-    /* This is to check if day-state is not changed already (in mean-time) */
-    if (
-      oStatisticDetail?.data?.oTransactionAudit[0]?.overall[0]?.nQuantity != this.aStatistic[0].overall[0].nQuantity) {
-      this.toastService.show({ type: 'warning', text: 'It seems someone created an extra transaction item. Refresh this page and try again.' });
-      return;
-    } else if ((bAmount - aAmount > 0.05 || bAmount - aAmount < -0.05)) {
-      // below allows some difference of 0.05 but not greater than that + allows difference of -0.05 but not less difference
-      this.toastService.show({ type: 'warning', text: 'There seems to be a difference of more than 0.05 cts between revenue and payments total. Refresh this page and try again. In case this message keeps appearing after refresh: contact support' });
-      return;
+      let aAmount = oStatisticDetail?.data?.oTransactionAudit[0]?.overall[0]?.nTotalRevenue
+      let bAmount = this.aStatistic[0].overall[0].nTotalRevenue
+
+      /* This is to check if day-state is not changed already (in mean-time) */
+      if (
+        oStatisticDetail?.data?.oTransactionAudit[0]?.overall[0]?.nQuantity != this.aStatistic[0].overall[0].nQuantity) {
+        this.toastService.show({ type: 'warning', text: 'It seems someone created an extra transaction item. Refresh this page and try again.' });
+        return;
+      } else if ((bAmount - aAmount > 0.05 || bAmount - aAmount < -0.05)) {
+        // below allows some difference of 0.05 but not greater than that + allows difference of -0.05 but not less difference
+        this.toastService.show({ type: 'warning', text: 'There seems to be a difference of more than 0.05 cts between revenue and payments total. Refresh this page and try again. In case this message keeps appearing after refresh: contact support' });
+        return;
+      }
     }
 
     this.aAmount.filter((item: any) => item.nQuantity > 0).forEach((item: any) => (this.oCountings.oCountingsCashDetails[item.key] = item.nQuantity));
@@ -1181,8 +1205,6 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
     const oBankPaymentMethod = this.allPaymentMethod.filter((el: any) => el.sName.toLowerCase() === 'bankpayment')[0];
     const nVatRate = await this.taxService.fetchDefaultVatRate({ iLocationId: this.iLocationId });
 
-    // console.log('nVatRate: ', nVatRate);
-    // console.log('nDifferenceAmount: ', this.oCountings.nCashDifference);
     const aPromises: any = [];
 
     if (this.oCountings.nCashDifference !== 0) {
@@ -1425,7 +1447,6 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
   }
 
   ngOnDestroy(): void {
-    console.log('destroy audit page')
     MenuComponent.clearEverything();
     if (this.listBusinessSubscription) this.listBusinessSubscription.unsubscribe();
     if (this.getStatisticSubscription) this.getStatisticSubscription.unsubscribe();
