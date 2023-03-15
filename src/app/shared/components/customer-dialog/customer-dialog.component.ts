@@ -119,6 +119,7 @@ export class CustomerDialogComponent implements OnInit {
     { title: 'HOUSE_NUMBER', key: 'sHouseNumber'},
   ]
   sFilterField:any;
+  key :any;
 
   @ViewChildren('inputElement') inputElement!: QueryList<ElementRef>;
 
