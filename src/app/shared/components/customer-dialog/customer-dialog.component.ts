@@ -218,8 +218,6 @@ export class CustomerDialogComponent implements OnInit {
       }
     }
 
-    oBody.customerDialog = true;
-
     this.apiService.postNew('customer', '/api/v1/customer/list', oBody)
       .subscribe(async (result: any) => {
         this.showLoader = false;
