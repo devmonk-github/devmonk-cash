@@ -15,7 +15,7 @@
             <div class="col-9 mb-5">
               <label class="form-check form-switch form-check-custom form-check-solid">{{ 'BOOK_KEEPING_MODE' |
                 translate}} -
-                CV1.0.17</label>
+                CV1.1.22</label>
             </div>
             <div class="col-3 mb-5">
               <label class="form-check form-switch form-check-custom form-check-solid">
@@ -34,9 +34,9 @@
               </label>
             </div>
           </div>
-          
+
           <h3 class="fw-bolder mb-0">{{'BAG_NUMBERS' | translate}}</h3>
-          
+
           <div class="row" *ngIf="settings?.currentLocation">
             <div class="col-9 mb-5">
               <label class="form-check form-switch form-check-custom form-check-solid">{{ 'AUTO_INCREMENT_BAG_NUMBERS' |
@@ -44,10 +44,11 @@
             </div>
             <div class="col-3">
               <label class="form-check form-switch form-check-custom form-check-solid">
-                <input type="checkbox" class="form-check-input" [(ngModel)]="settings.currentLocation.bAutoIncrementBagNumbers">
+                <input type="checkbox" class="form-check-input"
+                  [(ngModel)]="settings.currentLocation.bAutoIncrementBagNumbers">
               </label>
             </div>
-          
+
             <div class="row mb-6 align-items-center">
               <label class="col-6">{{"LAST_BAG_NUMBER" | translate}}</label>
               <div class="col-6">
@@ -76,7 +77,7 @@
 
                 </div>
 
-                
+
 
                 <div class="row mb-5">
                   <p>{{"I_WANT_TO_CLOSE_MY_CASHR_BY" | translate}}</p>
