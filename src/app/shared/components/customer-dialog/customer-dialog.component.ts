@@ -114,6 +114,11 @@ export class CustomerDialogComponent implements OnInit {
       }
     }
   ]
+  aFilterFields:any = [
+    { title: 'PSOTAL_CODE', key: 'sPostalCode'},
+    { title: 'HOUSE_NUMBER', key: 'sHouseNumber'},
+  ]
+  sFilterField:any;
 
   @ViewChildren('inputElement') inputElement!: QueryList<ElementRef>;
 
@@ -199,10 +204,16 @@ export class CustomerDialogComponent implements OnInit {
 
   getCustomers() {
     if (this.requestParams?.searchValue?.length < 3) return;
+    const oBody = {...this.requestParams};
     this.showLoader = true;
     this.customers = [];
     this.isCustomerSearched = false;
-    this.apiService.postNew('customer', '/api/v1/customer/list', this.requestParams)
+    if(this.sFilterField) {
+      oBody.oFilterBy = {
+        [this.sFilterField]:this.requestParams.searchValue,
+      }
+    }
+    this.apiService.postNew('customer', '/api/v1/customer/list', oBody)
       .subscribe(async (result: any) => {
         this.showLoader = false;
         this.isCustomerSearched = true;
