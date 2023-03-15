@@ -335,9 +335,10 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
    // console.log(this.customer._id);
    if(this.customer && this.customer?._id){
     const oBody = {
+      iBusinessId:this.requestParams.iBusinessId,
       iCustomerId: this.customer._id
     }
-    let url = '/api/v1/customer/getmergedcustomer';
+    let url = '/api/v1/customer/merged/customer';
     this.apiService.postNew('customer', url, oBody).subscribe((result: any) => {
       if (result) {
         
@@ -731,9 +732,10 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     //console.log("this.getMergedCustomerIdss");
     //console.log(this.customer._id);
     const oBody = {
+      iBusinessId:this.requestParams.iBusinessId,
       iCustomerId: this.customer._id
     }
-    let url = '/api/v1/customer/getmergedcustomer';
+    let url = '/api/v1/customer/merged/customer';
     this.apiService.postNew('customer', url, oBody).subscribe((result: any) => {
       if (result) {
         
