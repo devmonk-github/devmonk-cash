@@ -866,7 +866,8 @@ export class ActivityDetailsComponent implements OnInit {
         printSettings: this.printSettings,
         printActionSettings: this.printActionSettings,
         eSituation: 'is_created',
-        sAction
+        sAction,
+        sApiKey: this.businessDetails?.oPrintNode?.sApiKey
       });
     }
 

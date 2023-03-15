@@ -97,6 +97,7 @@ export class ToastComponent implements OnInit, OnDestroy {
         id: this.data?.templateContext?.id,
         APIKEY: this.data?.templateContext?.apiKey
       }
+      console.log('fetch status', oBody)
 
       this.apiService.postNew('cashregistry', this.data.apiUrl, oBody).subscribe((response: any) => {
         if (response?.state) {

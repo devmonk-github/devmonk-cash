@@ -331,7 +331,7 @@ export class WebOrderDetailsComponent implements OnInit {
 
     oDataSource.businessDetails = this.businessDetails;
     oDataSource.businessDetails.sMobile = this.businessDetails?.oPhone?.sMobile || '';
-    console.log(319, this.businessDetails);
+    // console.log(319, this.businessDetails);
     // const locationIndex = this.businessDetails.aLocation.findIndex((location: any) => location._id == this.iLocationId);
     // const currentLocation = this.businessDetails.aLocation[locationIndex];
     oDataSource.sAddressline1 = this.businessDetails.currentLocation.oAddress.street + " " + this.businessDetails.currentLocation.oAddress.houseNumber + " " + this.businessDetails.currentLocation.oAddress.houseNumberSuffix + " ,  " + this.businessDetails.currentLocation.oAddress.postalCode + " " + this.businessDetails.currentLocation.oAddress.city;
@@ -386,7 +386,8 @@ export class WebOrderDetailsComponent implements OnInit {
       printSettings: this.printSettings,
       printActionSettings: this.printActionSettings,
       eSituation: 'is_created',
-      sAction: sAction
+      sAction: sAction,
+      sApiKey: this.businessDetails?.oPrintNode?.sApiKey
     });
 
     if (sAction == 'sentToCustomer') {
