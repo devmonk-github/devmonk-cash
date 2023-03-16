@@ -2,6 +2,7 @@
     <div class="card-header align-items-center py-5">
         <h4 class="card-title" *ngIf="mode === 'create'">{{"NEW_CUSTOMER" | translate}}</h4>
         <h4 class="card-title" *ngIf="mode === 'details'">{{"CUSTOMER_DETAILS" | translate}}
+            <div class="top-lable">
             <ng-container *ngIf="customer?.bIsMerged && customer?.eStatus=='d'">
                 <span class="badge badge-light-warning">{{"MERGED" | translate}}</span>
             </ng-container> 
@@ -11,6 +12,7 @@
             <ng-container *ngIf="customer?.eStatus=='d' && (!customer?.bIsMerged || customer.bIsMerged ==undefined)">
                 <span class="badge badge-danger"> {{"DELETED" | translate}}</span>
             </ng-container> 
+            </div>
 
         </h4>
         <div *ngIf="mode === 'details'" class="card-toolbar flex-row-fluid justify-content-end gap-5">
