@@ -847,6 +847,9 @@
             </div>
         </ng-container>
     </div>
-    <div class="card-footer">
+    <div class="card-footer d-flex">
+        <button class="cancel btn btn-danger btn-delet" (click)="deleteCustomer(customer)">{{"DELETE" | translate}}</button>
+        <button class="cancel btn btn-warning ms-auto" (click)="mergeCustomer(customer,customer._id,null,'MERGE')">{{"MERGE" | translate}}</button>
     </div>
+    
 </div>

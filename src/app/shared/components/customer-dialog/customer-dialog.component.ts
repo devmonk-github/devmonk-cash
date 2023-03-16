@@ -141,6 +141,7 @@ export class CustomerDialogComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    console.log(this.key, this.iChosenCustomerId,this.iSearchedCustomerId)
     this.apiService.setToastService(this.toastService);
     this.business._id = localStorage.getItem("currentBusiness");
     this.requestParams.iBusinessId = this.business._id;
