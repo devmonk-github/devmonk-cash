@@ -6,7 +6,7 @@
     <!--begin::Advance form-->
     <div class="d-flex align-items-center my-3">
       <!--begin::Input group-->
-      <div class="position-relative w-md-400px me-md-2">
+      <div class="position-relative w-md-400px">
         <!--begin::Svg Icon | path: icons/duotune/general/gen021.svg-->
         <fa-icon [icon]="faSearch" class="text-gray-500 position-absolute top-50 translate-middle ms-6"></fa-icon>
         <!--end::Svg Icon-->
@@ -16,11 +16,11 @@
       <!--end::Input group-->
       <!--begin:Action-->
       <div class="d-flex align-items-center">
-        <button type="submit" class="btn btn-primary me-5" (click)="loadTransaction()">{{ 'SEARCH' | translate
+        <button type="submit" class="btn btn-primary mx-3" (click)="loadTransaction()">{{ 'SEARCH' | translate
           }}</button>
 
         <div class="d-flex align-items-center">
-          <button class="btn btn-primary" (click)="resetFilters()">
+          <button class="btn btn-secondary" (click)="resetFilters()">
             <i class='fas fa-sync-alt'></i>
           </button>
         </div>
@@ -268,12 +268,12 @@
           <td>
             <div class="btn-group me-4">
               <!--begin::Submit-->
-              <span class="btn btn-primary fs-bold px-6" (click)="showTransaction(transaction)">
+              <span class="btn btn-secondary fs-bold px-6" (click)="showTransaction(transaction)">
                 <span class="indicator-label">{{ "VIEW" | translate }}</span>
               </span>
               <!--end::Submit-->
               <!--begin::Send options-->
-              <span class="btn btn-primary btn-icon fs-bold" role="button">
+              <span class="btn btn-secondary btn-icon fs-bold" role="button">
                 <div class="btn btn-icon" data-kt-menu-trigger="hover" data-kt-menu-attach="parent"
                   data-kt-menu-placement="bottom-end" data-kt-menu-flip="bottom">
                   <!--begin::Svg Icon | path: icons/duotune/arrows/arr072.svg-->
