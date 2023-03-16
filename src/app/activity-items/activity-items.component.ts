@@ -102,11 +102,12 @@ export class ActivityItemsComponent implements OnInit, OnDestroy {
 
   tableHeaders: Array<any> = [
     { key: 'ACTIVITY_NO', selected: false, sort: 'asc' },
+    { key: 'TYPE', disabled:true },
     { key: 'REPAIR_NUMBER', selected: false, sort: 'asc' },
     { key: 'INTAKE_DATE', selected: true, sort: 'asc' },
     { key: 'ESTIMATED_DATE', selected: false, sort: 'asc' },
     { key: 'STATUS', selected: false, sort: 'asc' },
-    { key: 'SUPPLIER_REPAIR', disabled: true },
+    { key: 'SUPPLIER_REPAIRER', disabled: true },
     { key: 'CUSTOMER', disabled: true },
     { key: 'ACTION', disabled: true }
   ]
