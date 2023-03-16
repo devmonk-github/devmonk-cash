@@ -863,7 +863,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
           // this.mappingThePaymentMethod(result?.data);
           this.aPaymentMethods = result?.data?.aPaymentMethods;
 
-          if (this.oStatisticsData.bIsDayStateOpened || this.IsDynamicState) {
+          if (this.oStatisticsData.bIsDayStateOpened) {
             this.aPaymentMethods.forEach((item: any) => {
               item.nNewAmount = item.nAmount;
               this.nPaymentMethodTotal += parseFloat(item.nAmount);
