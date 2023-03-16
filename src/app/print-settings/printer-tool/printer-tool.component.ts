@@ -27,7 +27,7 @@ export class PrinterToolComponent implements OnInit {
   iLocationId = ''
   iWorkstationId !: any;
   labelPrintSettings !: any;
-  businessDetails:any;
+  businessDetails: any;
 
   constructor(
     private viewContainerRef: ViewContainerRef,
@@ -53,7 +53,7 @@ export class PrinterToolComponent implements OnInit {
       this.toastService.show({ type: 'danger', text: 'Check your business -> printer settings' });
       return;
     }
-    const printRawContentResult: any = await this.printService.printRawContent(this.iBusinessId, this.zplCode, this.labelPrintSettings?.nPrinterId, this.labelPrintSettings?.nComputerId, 1, 'Print label', { }, this.businessDetails.oPrintNode.sApiKey)
+    const printRawContentResult: any = await this.printService.printRawContent(this.iBusinessId, this.zplCode, this.labelPrintSettings?.nPrinterId, this.labelPrintSettings?.nComputerId, 1, 'Print label', { title: "Print Title" }, this.businessDetails.oPrintNode.sApiKey)
     if (printRawContentResult) {
       this.toastService.show({
         type: 'success',
