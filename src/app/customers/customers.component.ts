@@ -105,7 +105,7 @@ export class CustomersComponent implements OnInit {
   clickMenuOptions(key: string) {
     switch (key) {
       case "DELETED":
-        this.getCustomers();
+        this.getDeletedCustomers();
         break;
         case "EXPORT":
         this.export();
@@ -169,10 +169,42 @@ export class CustomersComponent implements OnInit {
     this.getCustomers()
   }
 
-  
+  getDeletedCustomers() {
+    this.showLoader = true;
+    this.requestParams.showRemovedCustomers = true;
+    this.customers = [];
+    this.apiService.postNew('customer', '/api/v1/customer/list', this.requestParams)
+      .subscribe(async (result: any) => {
+        this.showLoader = false;
+        if (result?.data?.[0]?.result) {
+          this.paginationConfig.totalItems = result.data[0].count.totalData;
+          this.customers = result.data[0].result;
+          for (const customer of this.customers) {
+            customer.isDisable = false;
+            customer.isUpdated = false;
+            customer.isMerged = false;
+            customer.name = this.customerStructureService.makeCustomerName(customer);
+            customer['NAME'] = this.customerStructureService.makeCustomerName(customer);
+            customer['SHIPPING_ADDRESS'] = this.customerStructureService.makeCustomerAddress(customer.oShippingAddress, false);
+            customer['INVOICE_ADDRESS'] = this.customerStructureService.makeCustomerAddress(customer.oInvoiceAddress, false);
+            customer['EMAIL'] = customer.sEmail;
+            customer['PHONE'] = (customer.oPhone && customer.oPhone.sLandLine ? customer.oPhone.sLandLine : '') + (customer.oPhone && customer.oPhone.sLandLine && customer.oPhone.sMobile ? ' / ' : '') + (customer.oPhone && customer.oPhone.sMobile ? customer.oPhone.sMobile : '')
+          }
+          setTimeout(() => {
+            MenuComponent.bootstrap();
+            // MenuComponent.reinitialization();
+          }, 200);
+        }
+      },
+        (error: any) => {
+          this.customers = [];
+          this.showLoader = false;
+        })
+  }
 
   getCustomers() {
     this.showLoader = true;
+    this.requestParams.showRemovedCustomers = false;
     this.customers = [];
     this.apiService.postNew('customer', '/api/v1/customer/list', this.requestParams)
       .subscribe(async (result: any) => {
