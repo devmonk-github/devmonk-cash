@@ -2,13 +2,13 @@
     <div class="card-header align-items-center py-5">
         <h4 class="card-title" *ngIf="mode === 'create'">{{"NEW_CUSTOMER" | translate}}</h4>
         <h4 class="card-title" *ngIf="mode === 'details'">{{"CUSTOMER_DETAILS" | translate}}
-            <ng-container *ngIf="customer?.bIsMerged ==true && customer?.eStatus=='d'">
+            <ng-container *ngIf="customer?.bIsMerged && customer?.eStatus=='d'">
                 <span class="badge badge-light-warning"> Merged</span>
             </ng-container> 
-            <ng-container *ngIf="customer?.bIsImported == true">
+            <ng-container *ngIf="customer?.bIsImported">
                 <span class="badge badge-primary"> Imported</span>
             </ng-container> 
-            <ng-container *ngIf="customer?.eStatus=='d' && (customer?.bIsMerged ==false || customer.bIsMerged ==undefined)">
+            <ng-container *ngIf="customer?.eStatus=='d' && (!customer?.bIsMerged || customer.bIsMerged ==undefined)">
                 <span class="badge badge-danger"> Deleted</span>
             </ng-container> 
 

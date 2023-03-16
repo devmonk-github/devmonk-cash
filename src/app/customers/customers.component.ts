@@ -101,16 +101,12 @@ export class CustomersComponent implements OnInit {
     this.dialogService.openModal(CustomerDialogComponent, { cssClass: 'modal-xl', context: { customer: this.customer ,iChosenCustomerId:Id,iSearchedCustomerId:null,key:"MERGE"} })
       .instance.close.subscribe((data) => {
         this.requestParams = {
+          iBusinessId: this.requestParams.iBusinessId,
           searchValue: ''
         }
         if (data.customer) {
           this.customer = data.customer;
-           console.log(data.customer)
-          // console.log("main page result");
-          // console.log(this.customers)
-          // console.log("all  result");
           let isIndex = this.customers.findIndex(i => i._id == data.customer._id);
-          //console.log("icIndex: "+ isIndex);
           if(isIndex != -1){
           //this.customers[isIndex].isDisable = true;
           this.customers[isIndex].isUpdated = true;
