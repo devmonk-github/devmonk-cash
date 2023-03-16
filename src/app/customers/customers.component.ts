@@ -52,6 +52,11 @@ export class CustomersComponent implements OnInit {
     { key: 'MERGE' }
     
   ];
+  options = [
+    { key: 'DELETED' },
+    { key: 'EXPORT' }
+    
+  ];
   requestParams: any = {
     iBusinessId: "",
     skip: 0,
@@ -96,6 +101,18 @@ export class CustomersComponent implements OnInit {
         break;
     }
   }
+
+  clickMenuOptions(key: string) {
+    switch (key) {
+      case "DELETED":
+        this.getCustomers();
+        break;
+        case "EXPORT":
+        this.export();
+        break;
+    }
+  }
+
 
   openCustomerDialog(customer:any,Id:any,iSearchedCustomerId:any,key:any): void {
     this.dialogService.openModal(CustomerDialogComponent, { cssClass: 'modal-xl', context: { customer: this.customer ,iChosenCustomerId:Id,iSearchedCustomerId:null,key:"MERGE"} })
