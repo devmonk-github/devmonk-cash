@@ -671,18 +671,22 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
   }
 
   fetchStatistics(sDisplayMethod?: string) {
+    // console.log('fetchStatistics')
     if (this.iStatisticId) this.fetchDayClosureData(sDisplayMethod);
     else this.fetchAuditStatistic(sDisplayMethod);
   }
 
   /* (Only, for Viewing statistic) Day-closure view whenever we will have the iStatisticId */
   fetchDayClosureData(sDisplayMethod?: string) {
-    console.log('fetchDayClosureData');
+    // console.log('fetchDayClosureData');
     /* If not closed yet then we require both data static as well and dynamic */
     if (this.oStatisticsData.bIsDayStateOpened) {
+      // console.log('if day state is opened getting static+dynamic both data');
+
       this.getStaticData(sDisplayMethod);
       this.getDynamicData(sDisplayMethod);
     } else {
+      // console.log('else day state is not opened getting only static data');
       /* Already closed then we can get all the data from one API only */
       this.getStaticData(sDisplayMethod);
     }
@@ -690,9 +694,12 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
 
   /* Fetch Audit (Be it Static or Dynamic), where user can change filter as well */
   fetchAuditStatistic(sDisplayMethod?: string) {
-    console.log('fetchAuditStatistic');
+    // console.log('fetchAuditStatistic');
     if (this.IsDynamicState) this.getDynamicData(sDisplayMethod);
-    else this.getStaticData(sDisplayMethod);
+    else{
+      if(!this.aDayClosure?.length) this.fetchDayClosureList();
+      this.getStaticData(sDisplayMethod);
+    } 
   }
 
   /* Static Data for statistic (from statistic document) */
@@ -732,7 +739,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
     }
 
     // this.checkShowDownload();
-    this.fetchDayClosureList();
+    
     this.getStatisticSubscription = this.apiService.postNew('cashregistry', `/api/v1/statistics/list`, oBody).
       subscribe((result: any) => {
         this.bStatisticLoading = false;
@@ -740,11 +747,16 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
           const oData = result?.data;
           if (oData.aStatistic?.length){
             this.aStatistic = oData.aStatistic;
-            this.aStatisticsDocuments = oData.aStatisticDocuments;
-            console.log(739, this.aStatistic, this.aStatisticsDocuments);
-            this.mappingThePaymentMethod(this.aStatisticsDocuments);
-            this.processCounting();
-          } 
+            this.aStatisticsDocuments = oData.aStaticDocument;
+            if (this.iStatisticId) {
+              // console.log(749, 'if this.iStatisticId', this.iStatisticId)
+              this.oStatisticsDocument = this.aStatisticsDocuments[0];
+              this.processCounting();
+              // console.log(755, 'if this.oStatisticsDocument', this.oStatisticsDocument)
+            }
+            // console.log(757, this.aStatistic, this.aStatisticsDocuments);
+            if (this.aStatisticsDocuments?.length) this.mappingThePaymentMethod(this.aStatisticsDocuments);
+          }
           // if (oData?.oStatistic?._id) {
           //   if (oData?.oStatistic?.aPaymentMethods?.length) {
           //     // this.aPaymentMethods = oData?.oStatistic?.aPaymentMethods; /* old approach */
@@ -764,16 +776,16 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
   }
 
   mappingThePaymentMethod(aData: any) {
-
+    
     aData.forEach((oData: any) => {
 
       if (oData.aPaymentMethods?.length) {
-        if (!this.aPaymentMethods?.length){
+        if (!this.aPaymentMethods?.length) {
           this.aPaymentMethods.push(...oData.aPaymentMethods);
         } else {
-          oData.aPaymentMethods.forEach((el:any) => {
+          oData.aPaymentMethods.forEach((el: any) => {
             // console.log(774, el.sMethod, el.nAmount)
-            const iExistingIndex = this.aPaymentMethods.findIndex((p:any) => p.sMethod === el.sMethod);
+            const iExistingIndex = this.aPaymentMethods.findIndex((p: any) => p.sMethod === el.sMethod);
             if (iExistingIndex > -1) {
               // console.log(777, el.sMethod, el.nAmount, 'before', this.aPaymentMethods[iExistingIndex].nQuantity)
               this.aPaymentMethods[iExistingIndex].nAmount += el.nAmount;
@@ -785,24 +797,14 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
             }
           })
         }
-        
-        this.nPaymentMethodTotal = this.aPaymentMethods.reduce((a:any, b:any) => a + b.nAmount, 0);
-        this.nNewPaymentMethodTotal = this.nPaymentMethodTotal;
-        
-        // this.aPaymentMethods.map((item: any) => {
-        //   item.nNewAmount = item.nAmount;
-        //   this.nPaymentMethodTotal += parseFloat(item.nAmount);
-        //   if (item?.sMethod === 'cash') this.oCountings.nCashInTill = item?.nAmount || 0;
-        //   return item;
-        // });
-      //   this.nNewPaymentMethodTotal = this.nPaymentMethodTotal;
-      //   this.filterDuplicatePaymentMethods();
       }
 
-      if (oData?.bIsDayState === false) {
-        this.oCountings.nCashInTill = oData?.oCountings?.nCashInTill || 0;
-      }
+      // if (oData?.bIsDayState === false) {
+      //   this.oCountings.nCashInTill = oData?.oCountings?.nCashInTill || 0;
+      // }
     })
+    this.nPaymentMethodTotal = this.aPaymentMethods.reduce((a:any, b:any) => a + b.nAmount, 0);
+    this.nNewPaymentMethodTotal = this.nPaymentMethodTotal;
 
     console.log(787, this.aPaymentMethods)
   }
@@ -841,7 +843,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
 
   /* Dynamic Data for statistic (from transaction-item) */
   getDynamicData(sDisplayMethod?: string) {
-
+    // console.log('getDynamicData')
     /* Below for Dynamic-data */
     this.checkShowDownload();
     const oBody = this.processingDynamicDataRequest(sDisplayMethod);
@@ -858,7 +860,20 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
             this.aStatistic[0].overall[0].nTotalRevenue = parseFloat(this.aStatistic[0].overall[0].nTotalRevenue.toFixed(2))
             // this.oCountings.nCashInTill = this.aStatistic[0].overall[0].nTotalRevenue;
           }
-          this.mappingThePaymentMethod(result?.data);
+          // this.mappingThePaymentMethod(result?.data);
+          this.aPaymentMethods = result?.data?.aPaymentMethods;
+
+          if (this.oStatisticsData.bIsDayStateOpened) {
+            this.aPaymentMethods.forEach((item: any) => {
+              item.nNewAmount = item.nAmount;
+              this.nPaymentMethodTotal += parseFloat(item.nAmount);
+              if (item?.sMethod === 'cash') this.oCountings.nCashInTill = item?.nAmount || 0;
+              return item;
+            });
+            this.nNewPaymentMethodTotal = this.nPaymentMethodTotal;
+            this.filterDuplicatePaymentMethods();
+          }
+          
         }
       },
         (error) => {
@@ -1028,6 +1043,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
     this.aAmount.forEach((amount: any) => {
       this.oCountings.nCashCounted += amount.nValue * amount.nQuantity;
     });
+    this.oCountings.nCashRemain = this.oCountings.nCashCounted - this.oCountings.nSkim;
   }
 
   async expandItem(item: any, iBusinessPartnerId: string = '', from: string = 'articlegroup') {
@@ -1055,10 +1071,18 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
         sTransactionType: this.optionMenu,
         iBusinessId: this.iBusinessId,
       };
-      if (!this.IsDynamicState && this.oStatisticsData.bIsDayStateOpened) {
+      // if (!this.IsDynamicState && this.oStatisticsData.bIsDayStateOpened) {
+      //   data.oFilterBy.dStartDate = this.statisticFilter.dFromState || this.filterDates.startDate
+      //   data.oFilterBy.dEndDate = this.statisticFilter.dToState || this.filterDates.endDate
+      // } else 
+      if (this.iStatisticId) {
+        data.oFilterBy.dStartDate = this.oStatisticsDocument?.dOpenDate;
+        data.oFilterBy.dEndDate = (this.oStatisticsDocument?.dCloseDate) ? this.oStatisticsDocument?.dCloseDate : this.oStatisticsData.dEndDate;
+      } else {
         data.oFilterBy.dStartDate = this.statisticFilter.dFromState || this.filterDates.startDate
         data.oFilterBy.dEndDate = this.statisticFilter.dToState || this.filterDates.endDate
       }
+
       if (
         this.sDisplayMethod.toString() === 'revenuePerBusinessPartner' ||
         this.sDisplayMethod.toString() === 'revenuePerSupplierAndArticleGroup' ||
@@ -1092,15 +1116,20 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
     } else if (from === 'payments') {
       if (item?.aItems) return;
       item.isLoading = true;
-      const data = {
+      const data:any = {
         iBusinessId: this.iBusinessId,
         iWorkstationId: this.iWorkstationId,
         iLocationId: this.iLocationId,
         oFilterBy: {
-          dStartDate: this.oStatisticsDocument?.dOpenDate,
-          dEndDate: (this.oStatisticsDocument?.dCloseDate) ? this.oStatisticsDocument?.dCloseDate : this.oStatisticsData.dEndDate,
           iPaymentMethodId: item.iPaymentMethodId
         }
+      }
+      if(this.iStatisticId) {
+        data.oFilterBy.dStartDate = this.oStatisticsDocument?.dOpenDate;
+        data.oFilterBy.dEndDate = (this.oStatisticsDocument?.dCloseDate) ? this.oStatisticsDocument?.dCloseDate : this.oStatisticsData.dEndDate;
+      } else {
+        data.oFilterBy.dStartDate = this.statisticFilter.dFromState || this.filterDates.startDate
+        data.oFilterBy.dEndDate = this.statisticFilter.dToState || this.filterDates.endDate
       }
       const _result: any = await this.apiService.postNew('cashregistry', '/api/v1/payments/list', data).toPromise()
       if (_result.data?.length && _result.data[0]?.result?.length) {
@@ -1420,11 +1449,15 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
       }
       this.dayClosureListSubscription = this.apiService.postNew('cashregistry', `/api/v1/statistics/day-closure/list`, oBody).subscribe((result: any) => {
         if (result?.data?.length && result.data[0]?.result?.length) {
-          const _aDayClosure = result.data[0]?.result.map((oDayClosure: any) => {
-            const oData = { _id: oDayClosure?._id, dOpenDate: oDayClosure?.dOpenDate, dCloseDate: oDayClosure?.dCloseDate, isDisable: true, sWorkStationName: oDayClosure?.sWorkStationName }
-            return oData;
+          this.aDayClosure = result.data[0]?.result.map((oDayClosure: any) => {
+            return { 
+              _id: oDayClosure?._id, 
+              dOpenDate: oDayClosure?.dOpenDate, 
+              dCloseDate: oDayClosure?.dCloseDate, 
+              isDisable: true, 
+              sWorkStationName: oDayClosure?.sWorkStationName 
+            }
           });
-          this.aDayClosure = _aDayClosure;
           this.checkShowDownload();
         }
         // this.showLoader = false;
@@ -1461,7 +1494,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
 
     const bCondition3 = (this.iStatisticId && this.iStatisticId != '' && this.oStatisticsDocument && this.oStatisticsDocument?.bIsDayState === false) || false;
 
-    this.bShowDownload = bCondition1 || bCondition2 || bCondition3;
+    this.bShowDownload = (bCondition1 || bCondition2 || bCondition3) && this.aStatistic?.length;
   }
 
   fetchStockValuePerLocation() {
