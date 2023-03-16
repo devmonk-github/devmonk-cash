@@ -253,7 +253,7 @@ export class CustomerDialogComponent implements OnInit {
     this.showLoader = true;
     this.customers = [];
     this.isCustomerSearched = false;
-    this.apiService.postNew('customer', '/api/v1/customer/mergecustomerlist', this.requestParams)
+    this.apiService.postNew('customer', '/api/v1/customer/mergecustomer/list', this.requestParams)
       .subscribe(async (result: any) => {
         this.showLoader = false;
         this.isCustomerSearched = true;
@@ -328,7 +328,7 @@ export class CustomerDialogComponent implements OnInit {
       this.customer = customer;
       this.requestParams.iChosenCustomerId = this.iChosenCustomerId;
       this.requestParams.iSearchedCustomerId = this.iSearchedCustomerId;
-      this.apiService.postNew('customer', '/api/v1/customer/mergecustomercreate', this.requestParams)
+      this.apiService.postNew('customer', '/api/v1/customer/mergecustomer/create', this.requestParams)
         .subscribe(async (result: any) => {
           this.showLoader = false;
           this.isCustomerSearched = true;
