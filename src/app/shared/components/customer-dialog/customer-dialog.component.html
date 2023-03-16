@@ -14,8 +14,8 @@
                 </fa-icon>
                 <input type="text" class="form-control form-control-solid ps-10" #inputElement
                     [(ngModel)]="requestParams.searchValue" name="search" value=""
-                    [placeholder]="'SEARCH' | translate" />
-                    (change)="getCustomers()"
+                    [placeholder]="'SEARCH' | translate" (change)="getCustomers()"/>
+                    
             </div>
             <!-- Search filters -->
             <!-- <div class="position-relative w-md-200px me-md-2">
