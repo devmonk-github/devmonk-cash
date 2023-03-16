@@ -22,6 +22,8 @@ import { fromEvent, Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, tap } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
+import { ConfirmationDialogComponent } from 'src/app/shared/components/confirmation-dialog/confirmation-dialog.component';
+import { CustomerDialogComponent } from 'src/app/shared/components/customer-dialog/customer-dialog.component';
 export interface BarChartOptions {
   series: ApexAxisChartSeries;
   chart: ApexChart;
@@ -331,6 +333,46 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     // this.loadStatisticsTabData();
     this.getCustomerGroups();
   }
+
+  mergeCustomer(customer:any,Id:any,iSearchedCustomerId:any,key:any){
+    this.dialogService.openModal(CustomerDialogComponent, { cssClass: 'modal-xl', context: { customer: this.customer,iChosenCustomerId:Id,iSearchedCustomerId:null,key:"MERGE" } })
+      .instance.close.subscribe((data) => {
+        this.requestParams = {
+          iBusinessId: this.requestParams.iBusinessId,
+          searchValue: ''
+        }
+        if (data.customer) {
+          this.close({ action: true });
+          this.customer = data.customer;
+        }
+      })
+  }
+
+  deleteCustomer(customer: any) {
+    let confirmBtnDetails = [
+      { text: "YES", value: 'remove', status: 'success', class: 'ml-auto mr-2' },
+      { text: "CANCEL", value: 'close' }
+    ];
+    this.dialogService.openModal(ConfirmationDialogComponent, { context: { header: 'DELETE', bodyText: 'Are you sure to delete?', buttonDetails: confirmBtnDetails } })
+      .instance.close.subscribe(
+        (status: any) => {
+          console.log("status");
+          console.log(status);
+          if (status == 'remove') {
+            this.apiService.postNew('customer', '/api/v1/customer/delete', { iCustomerId: customer._id, iBusinessId: this.requestParams.iBusinessId }).subscribe((res: any) => {
+              if (res?.message == 'success') {
+                this.close({ action: true });
+                this.toastService.show({ type: 'success', text: 'customer deleted successfully' })
+              } else {
+                this.toastService.show({ type: 'warning', text:'Internal Server Error' });
+              }
+            })
+            
+          }
+        })
+  }
+
+  
 
 
   getMergedCustomerIds() {
