@@ -103,6 +103,11 @@
                                     <span class="text-muted me-5">{{ 'VAT_NUMBER' | translate}}: </span>
                                     <span class="text-gray-800">{{ transaction?.oSystemCustomer?.sVatNumber }}</span>
                                 </div>
+                                <div>
+                                    <ng-container *ngIf="transaction?.oSystemCustomer?.eStatus=='d'">
+                                        <span class="badge badge-danger"> {{"DELETED" | translate}}</span>
+                                    </ng-container> 
+                               </div>
                             </div>
                         </ng-container>
                     </div>
