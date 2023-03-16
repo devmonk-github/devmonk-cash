@@ -704,7 +704,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
 
   /* Static Data for statistic (from statistic document) */
   getStaticData(sDisplayMethod?: string) {
-    console.log('get static data');
+    // console.log('get static data');
     this.aStatistic = [];
     this.aPaymentMethods = [];
     this.bStatisticLoading = true;
@@ -806,7 +806,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
     this.nPaymentMethodTotal = this.aPaymentMethods.reduce((a:any, b:any) => a + b.nAmount, 0);
     this.nNewPaymentMethodTotal = this.nPaymentMethodTotal;
 
-    console.log(787, this.aPaymentMethods)
+    // console.log(787, this.aPaymentMethods)
   }
 
   processingDynamicDataRequest(sDisplayMethod?: string) {
@@ -863,13 +863,15 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
           // this.mappingThePaymentMethod(result?.data);
           this.aPaymentMethods = result?.data?.aPaymentMethods;
 
-          if (this.oStatisticsData.bIsDayStateOpened) {
+          if (this.oStatisticsData.bIsDayStateOpened || this.IsDynamicState) {
             this.aPaymentMethods.forEach((item: any) => {
               item.nNewAmount = item.nAmount;
               this.nPaymentMethodTotal += parseFloat(item.nAmount);
               if (item?.sMethod === 'cash') this.oCountings.nCashInTill = item?.nAmount || 0;
               return item;
             });
+
+            if (this.IsDynamicState) this.nPaymentMethodTotal = this.aPaymentMethods.reduce((a: any, b: any) => a + b.nAmount, 0);
             this.nNewPaymentMethodTotal = this.nPaymentMethodTotal;
             this.filterDuplicatePaymentMethods();
           }
