@@ -2,14 +2,14 @@
     <div class="card-header align-items-center py-5">
         <h4 class="card-title" *ngIf="mode === 'create'">{{"NEW_CUSTOMER" | translate}}</h4>
         <h4 class="card-title" *ngIf="mode === 'details'">{{"CUSTOMER_DETAILS" | translate}}
-            <ng-container *ngIf="customer?.bIsMerged ==true && customer?.eStatus=='d'">
-                <span class="badge badge-light-warning"> Merged</span>
+            <ng-container *ngIf="customer?.bIsMerged && customer?.eStatus=='d'">
+                <span class="badge badge-light-warning">{{"MERGED" | translate}}</span>
             </ng-container> 
-            <ng-container *ngIf="customer?.bIsImported == true">
-                <span class="badge badge-primary"> Imported</span>
+            <ng-container *ngIf="customer?.bIsImported">
+                <span class="badge badge-primary">{{"IMPORTED" | translate}}</span>
             </ng-container> 
-            <ng-container *ngIf="customer?.eStatus=='d' && (customer?.bIsMerged ==false || customer.bIsMerged ==undefined)">
-                <span class="badge badge-danger"> Deleted</span>
+            <ng-container *ngIf="customer?.eStatus=='d' && (!customer?.bIsMerged || customer.bIsMerged ==undefined)">
+                <span class="badge badge-danger"> {{"DELETED" | translate}}</span>
             </ng-container> 
 
         </h4>
@@ -577,6 +577,7 @@
                     <div class="row mb-3">
                         <div class="col-2">
                             <ng-select [(ngModel)]="customer.sSalutation" id="sSalutation" [clearable]="false">
+                                <ng-option value="">-</ng-option>
                                 <ng-option *ngFor="let salutation of salutations" [value]="salutation">{{salutation}}
                                 </ng-option>
                             </ng-select>
