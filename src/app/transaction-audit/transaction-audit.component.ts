@@ -1273,58 +1273,6 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
     const oBankPaymentMethod = this.allPaymentMethod.filter((el: any) => el.sName.toLowerCase() === 'bankpayment')[0];
     const nVatRate = await this.taxService.fetchDefaultVatRate({ iLocationId: this.iLocationId });
 
-    /* Deprecated */
-    // const aPromises: any = [];
-
-    // if (this.oCountings.nCashDifference !== 0) {
-    //   //we have difference in cash, so add that as and expense
-    //   aPromises.push(this.addExpenses(
-    //     {
-    //       amount: this.oCountings.nCashDifference,
-    //       comment: 'DIFF_IN_CASH_COUNTING',
-    //       oPayment: {
-    //         iPaymentMethodId: oCashPaymentMethod._id,
-    //         nAmount: this.oCountings.nCashDifference,
-    //         sMethod: oCashPaymentMethod.sName.toLowerCase(),
-    //         sComment: 'DIFF_IN_CASH_COUNTING',
-    //       },
-    //       _eType: 'diff-counting',
-    //       nVatRate: nVatRate
-    //     }
-    //   ).toPromise());
-    // }
-
-    // if (this.oCountings.nSkim > 0) {
-    //   //amount to put in bank - so add create new expense with positive amount to add it as bank payment, and negative amount as cash
-    //   // so increase bank payment amount and equally decrease cash payment amount
-
-    //   aPromises.push(this.addExpenses({
-    //     amount: this.oCountings.nSkim,
-    //     comment: 'Transfer to the bank (increase bank amount)',
-    //     oPayment: {
-    //       iPaymentMethodId: oBankPaymentMethod._id,
-    //       nAmount: this.oCountings.nSkim,
-    //       sMethod: oBankPaymentMethod.sName.toLowerCase(),
-    //       sComment: 'Transfer to the bank (increase bank amount)',
-    //     },
-    //     nVatRate: nVatRate
-    //   }).toPromise());
-
-    //   aPromises.push(this.addExpenses({
-    //     amount: -this.oCountings.nSkim,
-    //     comment: 'Transfered to the bank (decrease cash amount)',
-    //     oPayment: {
-    //       iPaymentMethodId: oCashPaymentMethod._id,
-    //       nAmount: -this.oCountings.nSkim,
-    //       sMethod: oCashPaymentMethod.sName.toLowerCase(),
-    //       sComment: 'Transfered to the bank (decrease cash amount)',
-    //     },
-    //     nVatRate: nVatRate
-    //   }).toPromise());
-    // }
-
-    // await Promise.all(aPromises) /* It's happening in back-end */
-
     const oBody = {
       iBusinessId: this.iBusinessId,
       iLocationId: this.iLocationId,
