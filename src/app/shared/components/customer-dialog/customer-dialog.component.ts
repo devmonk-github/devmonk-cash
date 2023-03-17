@@ -141,6 +141,7 @@ export class CustomerDialogComponent implements OnInit {
     { title: 'HOUSE_NUMBER', key: 'sHouseNumber'},
   ]
   showFilters = false;
+  from:any;
 
   @ViewChildren('inputElement') inputElement!: QueryList<ElementRef>;
 
@@ -160,7 +161,6 @@ export class CustomerDialogComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    console.log(this.key, this.iChosenCustomerId,this.iSearchedCustomerId)
     this.apiService.setToastService(this.toastService);
     this.business._id = localStorage.getItem("currentBusiness");
     this.requestParams.iBusinessId = this.business._id;
@@ -344,7 +344,7 @@ export class CustomerDialogComponent implements OnInit {
     return Math.floor(Math.random() * (max - min +1) + min);
   }
 
-  setCustomer(customer: any): void {
+  async setCustomer(customer: any) {
 
     if(this.key == "MERGE"){
       this.iSearchedCustomerId = customer._id;
@@ -361,11 +361,23 @@ export class CustomerDialogComponent implements OnInit {
           //console.log(Result);
           //console.log("result");
         },
-        (error : any) =>{})
-    }else{
-    this.loading = true
-    this.customer = customer;
-  }
+          (error: any) => { })
+    } else {
+      if (this.from && this.from === 'cash-register') {
+        customer.loading = true;
+        const oBody = {
+          iBusinessId: this.business._id,
+          type: 'transaction'
+        }
+        
+        const _activityData:any = await this.apiService.postNew('cashregistry', `/api/v1/activities/customer/${customer._id}`, oBody).toPromise();
+        if (_activityData?.data?.length && _activityData?.data[0]?.result?.length) {
+          customer.activityData = _activityData?.data[0]?.result;
+        }
+        customer.loading = false;
+      }
+      this.customer = customer;
+    }
   this.dialogRef.close.emit({ action: false, customer: this.customer })
   }
 

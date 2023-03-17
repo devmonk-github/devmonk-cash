@@ -13,8 +13,8 @@
                 <fa-icon [icon]="faSearch" class="text-gray-500 position-absolute top-50 translate-middle ms-6">
                 </fa-icon>
                 <input type="text" class="form-control form-control-solid ps-10" #inputElement
-                    [(ngModel)]="requestParams.searchValue" name="search" value="" [placeholder]="'SEARCH' | translate"/>
-                    <!-- (change)="getCustomers()" -->
+                    [(ngModel)]="requestParams.searchValue" name="search" value="" [placeholder]="'SEARCH' | translate" (keydown.enter)="getCustomers()"/>
+                    
             </div>
             <!-- <div class="col-5">
                 <ng-select [clearable]="true" [multiple]="true" placeholder="{{ 'SELECT_FIELD' | translate }}"
@@ -55,8 +55,10 @@
                         <tr *ngFor='let customer of customers | paginate: paginationConfig'>
                             <td *ngFor="let column of allColumns" class="">{{customer[column]}}</td>
                             <td *ngIf="key!='MERGE' || key==''">
-                                <button class="btn btn-primary" (click)="setCustomer(customer)"> {{"SELECT" |
-                                    translate}}</button>
+                                <button class="btn btn-primary d-flex align-items-center" (click)="setCustomer(customer)" [disabled]="customer?.loading"> 
+                                    <div *ngIf="customer?.loading" class="spinner-border me-2"></div>
+                                    <span>{{"SELECT" | translate}}</span>
+                                </button>
                             </td>
                             <td *ngIf="key=='MERGE'">
                                 <button class="btn btn-warning" (click)="setCustomer(customer)"> {{"MERGE" |
