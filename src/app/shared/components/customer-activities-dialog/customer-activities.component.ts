@@ -22,8 +22,6 @@ export class CustomerActivitiesDialogComponent implements OnInit {
   totalActivities = 0;
   business: any = {}
   activities: Array<any> = [];
-  selectedWorkstations: Array<any> = [];
-  selectedLocations: Array<any> = [];
   
   setPaginateSize: number = 10;
   paginationConfig: any = {
@@ -55,19 +53,24 @@ export class CustomerActivitiesDialogComponent implements OnInit {
   ngOnInit(): void {
     this.apiService.setToastService(this.toastService);
     this.requestParams.iBusinessId = this.iBusinessId;
-    this.findTransactions()
+    if (this.customer?.activityData) {
+      this.activities = this.customer?.activityData;
+      this.paginationConfig.totalItems = this.activities?.length;
+    } else {
+      this.findTransactions()
+    }
   }
 
 
   changeItemsPerPage(pageCount: any) {
     this.paginationConfig.itemsPerPage = pageCount;
-    this.findTransactions();
+    // this.findTransactions();
   }
 
   // Function for trigger event after page changes
   pageChanged(page: any) {
     this.requestParams.skip = (page - 1) * parseInt(this.paginationConfig.itemsPerPage);
-    this.findTransactions();
+    // this.findTransactions();
     this.paginationConfig.currentPage = page;
   }
 
@@ -86,16 +89,13 @@ export class CustomerActivitiesDialogComponent implements OnInit {
           return item;
         });
         this.totalActivities = result?.data[0].count[0].totalData;
+      } else {
+        this.close(false);
       }
 
     }, (error) => {
       this.showLoader = false;
     })
-  }
-
-  counter(i: number) {
-    i = Math.round(i / this.requestParams.limit);
-    return new Array(i);
   }
 
   openTransaction(transaction: any, itemType: any) {
@@ -113,15 +113,5 @@ export class CustomerActivitiesDialogComponent implements OnInit {
 
   close(data: any): void {
     this.dialogRef.close.emit(data)
-  }
-
-  randNumber(min: number, max: number): number {
-    return Math.floor(Math.random() * (max - min + 1) + min);
-  }
-
-  setCustomer(customer: any): void {
-    this.loading = true
-    this.customer = customer;
-    this.dialogRef.close.emit({ action: false, customer: this.customer })
   }
 }
