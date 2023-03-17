@@ -851,7 +851,7 @@
             </div>
         </ng-container>
     </div>
-    <div class="card-footer d-flex justify-content-end align-items-center">
+    <div *ngIf="mode != 'create'" class="card-footer d-flex justify-content-end align-items-center">
         <button class="cancel btn btn-danger me-3" (click)="deleteCustomer(customer)">{{"DELETE" | translate}}</button>
         <button class="cancel btn btn-warning" (click)="mergeCustomer(customer,customer._id,null,'MERGE')">{{"MERGE" | translate}}</button>
     </div>

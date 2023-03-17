@@ -122,28 +122,30 @@ export class CustomersComponent implements OnInit {
           searchValue: ''
         }
         if (data.customer) {
-          this.customer = data.customer;
-          let isIndex = this.customers.findIndex(i => i._id == data.customer._id);
-          if(isIndex != -1){
-          //this.customers[isIndex].isDisable = true;
-          this.customers[isIndex].isUpdated = true;
-
-          this.customers[isIndex].name = this.customerStructureService.makeCustomerName(data.customer);
-          this.customers[isIndex]['NAME'] = this.customerStructureService.makeCustomerName(data.customer);
-          this.customers[isIndex]['SHIPPING_ADDRESS'] = this.customerStructureService.makeCustomerAddress(data.customer.oShippingAddress, false);
-          this.customers[isIndex]['INVOICE_ADDRESS'] = this.customerStructureService.makeCustomerAddress(data.customer.oInvoiceAddress, false);
-          this.customers[isIndex]['EMAIL'] = data.customer.sEmail;
-          this.customers[isIndex]['PHONE'] = (data.customer.oPhone && data.customer.oPhone.sLandLine ? data.customer.oPhone.sLandLine : '') + (data.customer.oPhone && data.customer.oPhone.sLandLine && data.customer.oPhone.sMobile ? ' / ' : '') + (data.customer.oPhone && data.customer.oPhone.sMobile ? data.customer.oPhone.sMobile : '')
           
-
-          }
-
           let icIndex = this.customers.findIndex(i => i._id.toString() == Id.toString());
           //console.log("icIndex: "+ icIndex);
           if(icIndex != -1){
           this.customers[icIndex].isDisable = true;
           this.customers[icIndex].isMerged = true;
           }
+          this.customer = data.customer;
+         
+          let isIndex = this.customers.findIndex(i => i._id == data.customer._id);
+          if(isIndex != -1){
+          //this.customers[isIndex].isDisable = true;
+          this.customers[isIndex].isUpdated = true;
+          this.customers[isIndex].name = this.customerStructureService.makeCustomerName(data.customer);
+          this.customers[isIndex]['NAME'] = this.customerStructureService.makeCustomerName(data.customer);
+          this.customers[isIndex]['SHIPPING_ADDRESS'] = this.customerStructureService.makeCustomerAddress(this.customers[icIndex].oShippingAddress, false);
+          this.customers[isIndex]['INVOICE_ADDRESS'] = this.customerStructureService.makeCustomerAddress(this.customers[icIndex].oInvoiceAddress, false);
+          this.customers[isIndex]['EMAIL'] = this.customers[icIndex].sEmail;
+          this.customers[isIndex]['PHONE'] = (this.customers[icIndex].oPhone && this.customers[icIndex].oPhone.sLandLine ? this.customers[icIndex].oPhone.sLandLine : '') + (this.customers[icIndex].oPhone && this.customers[icIndex].oPhone.sLandLine && this.customers[icIndex].oPhone.sMobile ? ' / ' : '') + (this.customers[icIndex].oPhone && this.customers[icIndex].oPhone.sMobile ? this.customers[icIndex].oPhone.sMobile : '')
+          
+
+          }
+
+          
 
           
          
