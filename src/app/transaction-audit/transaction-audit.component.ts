@@ -45,7 +45,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
   isShowStockLocation: boolean = false;
 
   closingDayState: boolean = false;
-  bShowDownload: boolean = false;
+  bShowDownload: boolean = true;
 
   closeSubscription!: Subscription;
   dayClosureListSubscription !: Subscription;
@@ -700,10 +700,10 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
   fetchAuditStatistic(sDisplayMethod?: string) {
     // console.log('fetchAuditStatistic');
     if (this.IsDynamicState) this.getDynamicData(sDisplayMethod);
-    else{
-      if(!this.aDayClosure?.length) this.fetchDayClosureList();
+    else {
+      if (!this.aDayClosure?.length) this.fetchDayClosureList();
       this.getStaticData(sDisplayMethod);
-    } 
+    }
   }
 
   /* Static Data for statistic (from statistic document) */
@@ -743,13 +743,13 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
     }
 
     // this.checkShowDownload();
-    
+
     this.getStatisticSubscription = this.apiService.postNew('cashregistry', `/api/v1/statistics/list`, oBody).
       subscribe((result: any) => {
         this.bStatisticLoading = false;
         if (result?.data) {
           const oData = result?.data;
-          if (oData.aStatistic?.length){
+          if (oData.aStatistic?.length) {
             this.aStatistic = oData.aStatistic;
             this.aStatisticsDocuments = oData.aStaticDocument;
             if (this.iStatisticId) {
@@ -780,7 +780,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
   }
 
   mappingThePaymentMethod(aData: any) {
-    
+
     aData.forEach((oData: any) => {
 
       if (oData.aPaymentMethods?.length) {
@@ -807,7 +807,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
       //   this.oCountings.nCashInTill = oData?.oCountings?.nCashInTill || 0;
       // }
     })
-    this.nPaymentMethodTotal = this.aPaymentMethods.reduce((a:any, b:any) => a + b.nAmount, 0);
+    this.nPaymentMethodTotal = this.aPaymentMethods.reduce((a: any, b: any) => a + b.nAmount, 0);
     this.nNewPaymentMethodTotal = this.nPaymentMethodTotal;
 
     // console.log(787, this.aPaymentMethods)
@@ -879,7 +879,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
             this.nNewPaymentMethodTotal = this.nPaymentMethodTotal;
             this.filterDuplicatePaymentMethods();
           }
-          
+
         }
       },
         (error) => {
@@ -1122,7 +1122,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
     } else if (from === 'payments') {
       if (item?.aItems) return;
       item.isLoading = true;
-      const data:any = {
+      const data: any = {
         iBusinessId: this.iBusinessId,
         iWorkstationId: this.iWorkstationId,
         iLocationId: this.iLocationId,
@@ -1130,7 +1130,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
           iPaymentMethodId: item.iPaymentMethodId
         }
       }
-      if(this.iStatisticId) {
+      if (this.iStatisticId) {
         data.oFilterBy.dStartDate = this.oStatisticsDocument?.dOpenDate;
         data.oFilterBy.dEndDate = (this.oStatisticsDocument?.dCloseDate) ? this.oStatisticsDocument?.dCloseDate : this.oStatisticsData.dEndDate;
       } else {
@@ -1217,7 +1217,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
     _oBody.bSkipCheckFlag = true; /*  bSkipCheckFlag is for, when there is no sell for a day and user is trying to close-the-day-state */
     return this.apiService.postNew('cashregistry', `/api/v1/statistics/transaction/audit`, _oBody).toPromise();
   }
-  
+
   async onCloseDayState() {
     this.closingDayState = true;
     /* fetching Audit detail for checking if day-state is changed or not */
@@ -1406,12 +1406,12 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
       this.dayClosureListSubscription = this.apiService.postNew('cashregistry', `/api/v1/statistics/day-closure/list`, oBody).subscribe((result: any) => {
         if (result?.data?.length && result.data[0]?.result?.length) {
           this.aDayClosure = result.data[0]?.result.map((oDayClosure: any) => {
-            return { 
-              _id: oDayClosure?._id, 
-              dOpenDate: oDayClosure?.dOpenDate, 
-              dCloseDate: oDayClosure?.dCloseDate, 
-              isDisable: true, 
-              sWorkStationName: oDayClosure?.sWorkStationName 
+            return {
+              _id: oDayClosure?._id,
+              dOpenDate: oDayClosure?.dOpenDate,
+              dCloseDate: oDayClosure?.dCloseDate,
+              isDisable: true,
+              sWorkStationName: oDayClosure?.sWorkStationName
             }
           });
           this.checkShowDownload();
@@ -1440,6 +1440,8 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
   }
 
   checkShowDownload() {
+
+
     const bCondition1 = this.IsDynamicState;
 
     const bCondition2 = (!this.selectedEmployee?._id &&
