@@ -6,12 +6,30 @@ import { DialogComponent, DialogService } from "../../service/dialog";
 import { CustomerDetailsComponent } from '../customer-details/customer-details.component';
 import { ToastService } from '../toast';
 import { PaginatePipe } from 'ngx-pagination';
+import { animate, state, style, transition, trigger } from '@angular/animations';
 
 
 @Component({
   selector: 'app-customer-dialog',
   templateUrl: './customer-dialog.component.html',
-  styleUrls: ['./customer-dialog.component.sass']
+  styleUrls: ['./customer-dialog.component.sass'],
+  animations: [trigger('openClose', [
+    state('open', style({
+      height: '*',
+      opacity: 1,
+    })),
+    state('closed', style({
+      height: '0',
+      opacity: 0
+    })),
+    transition('open => closed', [
+      animate('300ms')
+    ]),
+    transition('closed => open', [
+      animate('300ms')
+    ]),
+  ])
+  ]
 })
 export class CustomerDialogComponent implements OnInit {
   @Input() customer: any;
@@ -30,7 +48,8 @@ export class CustomerDialogComponent implements OnInit {
   requestParams: any = {
     searchValue: '',
     skip:0 , 
-    limit:10
+    limit:10,
+    oFilterBy: {}
   }
   pageCounts: Array<number> = [10, 25, 50, 100]
   pageNumber: number = 1;
@@ -121,7 +140,7 @@ export class CustomerDialogComponent implements OnInit {
     { title: 'PSOTAL_CODE', key: 'sPostalCode'},
     { title: 'HOUSE_NUMBER', key: 'sHouseNumber'},
   ]
-  sFilterField:any;
+  showFilters = false;
 
   @ViewChildren('inputElement') inputElement!: QueryList<ElementRef>;
 
@@ -207,19 +226,23 @@ export class CustomerDialogComponent implements OnInit {
   }
 
   getCustomers() {
-    if (this.requestParams?.searchValue?.length < 3) return;
-    const oBody = {...this.requestParams};
+    const condition1 = Object.keys(this.requestParams.oFilterBy).some((key: any) => this.requestParams.oFilterBy[key]?.length);
+    if (this.requestParams?.searchValue?.length < 3 && !condition1) return;
+    
+    
     this.showLoader = true;
     this.customers = [];
     this.isCustomerSearched = false;
     
-    if(this.sFilterField) {
-      oBody.oFilterBy = {
-        [this.sFilterField]:this.requestParams.searchValue,
-      }
-    }
+    // if(this.aFilterField?.length) {
+    //   oBody.oFilterBy = {};
+    //   this.aFilterField.forEach((field:any) => {
+    //     oBody.oFilterBy[field] = this.requestParams.searchValue;
+    //   });
+      
+    // }
 
-    this.apiService.postNew('customer', '/api/v1/customer/list', oBody)
+    this.apiService.postNew('customer', '/api/v1/customer/list', this.requestParams)
       .subscribe(async (result: any) => {
         this.showLoader = false;
         this.isCustomerSearched = true;
