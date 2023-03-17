@@ -45,6 +45,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
   isShowStockLocation: boolean = false;
 
   closingDayState: boolean = false;
+  closeButtonClicked: boolean = false;
   bShowDownload: boolean = false;
 
   closeSubscription!: Subscription;
@@ -1220,11 +1221,15 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
 
   async onCloseDayState() {
     this.closingDayState = true;
+    this.closeButtonClicked = true;
+    console.log('this.aStatistic', this.aStatistic)
     /* fetching Audit detail for checking if day-state is changed or not */
     const oStatisticDetail: any = await this.getDynamicAuditDetail();
     this.closingDayState = false; /* while fetching the data, loader should show off */
     /* isAnyTransactionDone: If any transaction is not happened then we should not throw any error */
+    console.log('just clicked2', this.closeButtonClicked)
     if (!oStatisticDetail?.data?.isAnyTransactionDone) {
+      console.log('just clicked3')
       const confirmBtnDetails = [
         { text: "PROCEED", value: 'proceed', status: 'success', class: 'ml-auto mr-2' },
         { text: "CANCEL", value: 'close' }
@@ -1236,16 +1241,19 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
           this.toastService.show({ type: 'warning', text: `Something went wrong` });
         })
     } else {
+      console.log('just clicked4')
       this.closeDayState(oStatisticDetail);
     }
   }
 
   async closeDayState(oStatisticDetail: any) {
+    console.log('just clicked6', this.aStatistic)
     this.closingDayState = true;
-    
+
     /* isAnyTransactionDone: If any transaction is not happened then we should not throw any error */
     /* Below "IF CONIDTION" only used when we do have any transaction, if not transaction created in that period then we should not check */
     if (oStatisticDetail?.data?.isAnyTransactionDone) {
+      console.log('just clicked7')
       if (!oStatisticDetail?.data?.oTransactionAudit?.length || !oStatisticDetail?.data?.oTransactionAudit[0]?.overall?.length) {
         this.toastService.show({ type: 'warning', text: 'Something went wrong' });
         return;
@@ -1253,7 +1261,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
 
       let aAmount = oStatisticDetail?.data?.oTransactionAudit[0]?.overall[0]?.nTotalRevenue
       let bAmount = this.aStatistic[0].overall[0].nTotalRevenue
-
+      console.log('just clicked8')
       /* This is to check if day-state is not changed already (in mean-time) */
       if (
         oStatisticDetail?.data?.oTransactionAudit[0]?.overall[0]?.nQuantity != this.aStatistic[0].overall[0].nQuantity) {
@@ -1265,7 +1273,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
         return;
       }
     }
-
+    console.log('witin the close daystate function0')
     this.aAmount.filter((item: any) => item.nQuantity > 0).forEach((item: any) => (this.oCountings.oCountingsCashDetails[item.key] = item.nQuantity));
     this.oCountings.nCashDifference = this.oCountings?.nCashCounted - (this.oCountings?.nCashAtStart + this.oCountings?.nCashInTill);
 
@@ -1287,13 +1295,14 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
         nVatRate,
       }
     }
-
+    console.log('witin the close daystate function')
     this.closeSubscription = this.apiService.postNew('cashregistry', `/api/v1/statistics/close/day-state`, oBody).subscribe((result: any) => {
       this.toastService.show({ type: 'success', text: `Day-state is close now` });
       this.closingDayState = false;
       this.bDisableCountings = true;
       // this.oStatisticsDocument = result?.data;
       this.getStaticData();
+      console.log('witin the close daystate functionB')
       this.checkShowDownload();
     }, (error) => {
       console.log('Error: ', error);
@@ -1452,7 +1461,23 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
 
     const bCondition3 = (this.iStatisticId && this.iStatisticId != '' && this.oStatisticsDocument && this.oStatisticsDocument?.bIsDayState === false) || false;
 
-    this.bShowDownload = (bCondition1 || bCondition2 || bCondition3) && this.aStatistic;
+    const bCondition4 = this.closeButtonClicked;
+    console.log('closeButtonClicked', this.closeButtonClicked)
+
+    if (this.aStatistic?.length) {
+      console.log('my lenght is 0 but still defined')
+    }
+    if (this.aStatistic?.length === 0) {
+      console.log('A m 0')
+    }
+    if (this.aStatistic) {
+      console.log('B m 0')
+    }
+
+    this.bShowDownload = (bCondition1 || bCondition2 || bCondition3 || bCondition4) && this.aStatistic;
+    console.log('bCondition4', bCondition4)
+    console.log('bCondition4', this.aStatistic)
+    console.log('this.bShowDownload', this.bShowDownload)
   }
 
   fetchStockValuePerLocation() {
