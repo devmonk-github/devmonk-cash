@@ -209,15 +209,12 @@ export class TillService {
       oItem.sGiftCardNumber = i?.sGiftCardNumber;
       oItem.sGiftCardNumber = i?.sGiftCardNumber;
       oItem.nEstimatedTotal = +(i?.nTotal?.toFixed(2)) || 0;
-      console.log("diff" , ((i.price.toFixed(2) * i.quantity) - i.paymentAmount) , typeof(((i.price.toFixed(2) * i.quantity) - i.paymentAmount)));
       oItem.nPaymentAmount = ((i.price.toFixed(2) * i.quantity) - i.paymentAmount >0.05) ? +(i.paymentAmount.toFixed(2) || 0) : +((i.price.toFixed(2) * i.quantity) || 0);
-      console.log("payment amount" , typeof(oItem.nPaymentAmount));
       oItem.nPaidLaterAmount = 0;
       oItem.bDiscount = i.nDiscount.value > 0;
       oItem.bDiscountPercent = i.nDiscount.percent;
       oItem.nDiscountValue = i.nDiscount.value;
       oItem.nRefundAmount = +((i?.nRefundAmount || 0).toFixed(2));
-      console.log("refund amount" , oItem.nRefundAmount , typeof(oItem.nRefundAmount));
       oItem.dEstimatedDate = i.dEstimatedDate;
       oItem.iBusinessBrandId = i.iBusinessBrandId;
       oItem.iBusinessProductId = i.iBusinessProductId;
