@@ -45,7 +45,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
   isShowStockLocation: boolean = false;
 
   closingDayState: boolean = false;
-  bShowDownload: boolean = true;
+  bShowDownload: boolean = false;
 
   closeSubscription!: Subscription;
   dayClosureListSubscription !: Subscription;
@@ -1452,7 +1452,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
 
     const bCondition3 = (this.iStatisticId && this.iStatisticId != '' && this.oStatisticsDocument && this.oStatisticsDocument?.bIsDayState === false) || false;
 
-    this.bShowDownload = (bCondition1 || bCondition2 || bCondition3) && this.aStatistic?.length;
+    this.bShowDownload = (bCondition1 || bCondition2 || bCondition3) && this.aStatistic;
   }
 
   fetchStockValuePerLocation() {
