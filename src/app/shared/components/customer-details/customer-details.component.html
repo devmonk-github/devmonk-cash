@@ -1,8 +1,8 @@
 <div class="card shadow-sm">
     <div class="card-header align-items-center py-5">
         <h4 class="card-title" *ngIf="mode === 'create'">{{"NEW_CUSTOMER" | translate}}</h4>
-        <h4 class="card-title" *ngIf="mode === 'details'">{{"CUSTOMER_DETAILS" | translate}}
-            <div class="top-lable">
+        <h4 class="card-title" *ngIf="mode === 'details'">{{"CUSTOMER_DETAILS" | translate}}</h4>
+        <div class="top-lable">
             <ng-container *ngIf="customer?.bIsMerged && customer?.eStatus=='d'">
                 <span class="badge badge-light-warning">{{"MERGED" | translate}}</span>
             </ng-container> 
@@ -12,9 +12,7 @@
             <ng-container *ngIf="customer?.eStatus=='d' && (!customer?.bIsMerged || customer.bIsMerged ==undefined)">
                 <span class="badge badge-danger"> {{"DELETED" | translate}}</span>
             </ng-container> 
-            </div>
-
-        </h4>
+        </div>
         <div *ngIf="mode === 'details'" class="card-toolbar flex-row-fluid justify-content-end gap-5">
             <button class="btn btn-warning" *ngIf="bIsCurrentCustomer" (click)="close({ bChangeCustomer: true })">
                 {{"CHANGE_CUSTOMER" | translate}}
@@ -122,6 +120,10 @@
                                                 class="text-gray-800 text-hover-primary btn btn-light">
                                                 <i class="fab fa-whatsapp ms-1" style="color: #1CB39B;"></i>
                                                 {{customer.oPhone.sMobile}}</a>
+                                        </p>
+                                        <p *ngIf="!customer.oPhone.bWhatsApp">
+                                            <span class="text-muted me-5">{{'PHONE_MOBILE' | translate}} :</span>
+                                            <span> {{ customer.oPhone.sMobile }}</span>
                                         </p>
                                         <p>
                                             <span class="text-muted me-5">{{'PHONE_LANDLINE' | translate}} :</span>
@@ -849,9 +851,9 @@
             </div>
         </ng-container>
     </div>
-    <div class="card-footer d-flex">
-        <button class="cancel btn btn-danger btn-delet" (click)="deleteCustomer(customer)">{{"DELETE" | translate}}</button>
-        <button class="cancel btn btn-warning ms-auto" (click)="mergeCustomer(customer,customer._id,null,'MERGE')">{{"MERGE" | translate}}</button>
+    <div class="card-footer d-flex justify-content-end align-items-center">
+        <button class="cancel btn btn-danger me-3" (click)="deleteCustomer(customer)">{{"DELETE" | translate}}</button>
+        <button class="cancel btn btn-warning" (click)="mergeCustomer(customer,customer._id,null,'MERGE')">{{"MERGE" | translate}}</button>
     </div>
     
 </div>
