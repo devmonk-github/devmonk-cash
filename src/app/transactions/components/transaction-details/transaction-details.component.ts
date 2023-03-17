@@ -70,7 +70,6 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   bDayStateChecking = false;
   bIsDayStateOpened = false;
   bIsOpeningDayState = false;
-
   translation: any = [];
   @ViewChild('slider', { read: ViewContainerRef }) container!: ViewContainerRef;
 
@@ -97,7 +96,6 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
     
     this.transaction.businessDetails = this.businessDetails;
     this.transaction.currentLocation = this.businessDetails.currentLocation;
-    
     this.getPaymentMethods()
     
     this.transaction = await this.tillService.processTransactionForPdfReceipt(this.transaction);

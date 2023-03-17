@@ -344,6 +344,7 @@ export class TransactionsComponent implements OnInit, OnDestroy {
   // Function for show transaction details
   showTransaction(transaction: any) {
     console.log('.openModal(TransactionDetailsComponent 4');
+    console.log(transaction);
     const oDialogComponent: DialogComponent = this.dialogService.openModal(TransactionDetailsComponent, 
       { 
         cssClass: "w-fullscreen mt--5", 
