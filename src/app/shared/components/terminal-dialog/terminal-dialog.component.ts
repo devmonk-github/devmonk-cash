@@ -156,7 +156,12 @@ export class TerminalDialogComponent implements OnInit {
     cashPaymentMethod.amount = this.changeAmount;
     cashPaymentMethod.remark = 'CHANGE_MONEY';
     paymentsToreturn.push(cashPaymentMethod);
-    if(this.nTotalTransactionAmount - this.totalAmount <=0.05 ){
+    console.log("nTotalAmount" + this.nTotalTransactionAmount);
+    console.log("total" , this.totalAmount);
+    const diff :Number=Number((this.nTotalTransactionAmount - this.totalAmount).toFixed(2));
+    console.log("diff" + diff + typeof(diff));
+    if(diff >0 && diff <= 0.05){
+      console.log("0.05 amount" + oCashPaymentMethod.amount);
       oCashPaymentMethod.amount =Number(oCashPaymentMethod.amount) + (this.nTotalTransactionAmount - this.totalAmount);
       oCashPaymentMethod.remark = 'TOTAL_AMOUNT_UPDATED';
     }
