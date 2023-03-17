@@ -61,11 +61,11 @@
             <tfoot>
                 <tr>
                     <td> {{"CHANGE(CASH)" | translate}}</td>
-                    <td> {{ -changeAmount | currency: '€' }}</td>
+                    <td> {{ changeAmount | currency: '€' }}</td>
                 </tr>
                 <tr>
                     <td> {{"TOTAL" | translate}}</td>
-                    <td> {{ totalAmount - changeAmount | currency: '€' }}</td>
+                    <td> {{ totalAmount + changeAmount | currency: '€' }}</td>
                 </tr>
             </tfoot>
         </table>
