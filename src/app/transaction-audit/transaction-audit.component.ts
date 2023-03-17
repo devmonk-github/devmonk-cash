@@ -1302,7 +1302,6 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
       this.bDisableCountings = true;
       // this.oStatisticsDocument = result?.data;
       this.getStaticData();
-      console.log('witin the close daystate functionB')
       this.checkShowDownload();
     }, (error) => {
       console.log('Error: ', error);
@@ -1476,7 +1475,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
 
     this.bShowDownload = (bCondition1 || bCondition2 || bCondition3 || bCondition4) && this.aStatistic;
     console.log('bCondition4', bCondition4)
-    console.log('bCondition4', this.aStatistic)
+    console.log('bCondition4 ', this.aStatistic)
     console.log('this.bShowDownload', this.bShowDownload)
   }
 
