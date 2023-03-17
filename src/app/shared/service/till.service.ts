@@ -343,9 +343,13 @@ export class TillService {
         if (nDiscount > gCard.amount) {
           nDiscount = gCard.amount;
           gCard.amount = 0;
-        } else {
-          gCard.amount = gCard.amount - nDiscount;
-        }
+        } 
+        
+        // not sure what is the purpose of below else condition, but it turns giftcard amount to 0 so getting wrong statistics and saving 0 in payments, so commented out
+
+        // else {
+        //   gCard.amount = gCard.amount - nDiscount;
+        // }
       }
       const tItem1 = JSON.parse(JSON.stringify(item));
       tItem1.iArticleGroupId = discountArticleGroup._id;
