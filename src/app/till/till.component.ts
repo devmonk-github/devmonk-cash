@@ -600,11 +600,13 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       });
   }
 
-  openCustomerDialog() {
-    this.dialogService.openModal(CustomerDialogComponent, { cssClass: 'modal-xl', context: { customer: this.customer } }).instance.close.subscribe((data) => {
+  async openCustomerDialog() {
+    this.dialogService.openModal(CustomerDialogComponent, { cssClass: 'modal-xl', context: { customer: this.customer, from: 'cash-register' } }).instance.close.subscribe((data) => {
       if (data.customer) {
         this.customer = data.customer;
-        this.findOpenActivitiesForCustomer();
+        if (this.customer?.activityData?.length) {
+          this.findOpenActivitiesForCustomer();
+        }
       }
     })
   }
@@ -1795,7 +1797,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   async handleTransactionResponse(data: any) {
-    console.log('handleTransactionResponse', data)
+    // console.log('handleTransactionResponse', data)
     this.clearAll();
     const { transactionItems, transaction } = data;
     this.transactionItems = transactionItems;
@@ -1803,7 +1805,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     this.sNumber = transaction?.sNumber;
 
     for (const item of this.transactionItems) {
-      if (item?.iBusinessProductId) {
+      if (item?.iBusinessProductId && !item?.oCurrentLocation) {
         const _oBusinessProductDetail: any = await this.getBusinessProduct(item?.iBusinessProductId).toPromise();
         const product = _oBusinessProductDetail.data;
         if (product?.aLocation?.length) {
@@ -1821,7 +1823,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     }
 
-    if (transaction.iCustomerId) {
+    if (transaction.iCustomerId && !this.customer) {
       this.fetchCustomer(transaction.iCustomerId);
     }
     this.changeInPayment();

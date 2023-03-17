@@ -11,7 +11,7 @@
         <button type="submit" class="btn btn-primary mx-3" (click)="loadTransaction()">{{ 'SEARCH' | translate
           }}</button>
           <div class="d-flex align-items-center">
-            <button class="btn btn-primary" (click)="resetFilters()">
+            <button class="btn btn-secondary" (click)="resetFilters()">
               <i class='fas fa-sync-alt'></i>
             </button>
           </div>
@@ -210,16 +210,16 @@
         <ng-container *ngFor="let activity of activityItems | paginate: paginationConfig, let i = index;">
           <tr *ngIf="activity.eActivityItemStatus !== 'cancelled'">
             <td style="min-width: 170px;">{{activity?.sNumber}}</td>
-            <td style="text-transform: capitalize;">{{activity?.oType.eKind}}</td>
             <td>{{activity?.sBagNumber || '-'}}</td>
-            <td style="width: 130px;"scope="row">{{activity?.dCreatedDate | date: 'yyyy-MM-dd HH:mm'}}</td>
-            <td style="width: 130px;" scope="row">{{activity?.dEstimatedDate | date: 'yyyy-MM-dd HH:mm'}}</td>
+            <td style="text-transform: capitalize;">{{activity?.oType.eKind}}</td>
+            <td style="width: 140px;"scope="row">{{activity?.dCreatedDate | date: 'yyyy-MM-dd HH:mm'}}</td>
+            <td style="width: 140px;" scope="row">{{activity?.dEstimatedDate | date: 'yyyy-MM-dd HH:mm'}}</td>
             <td>{{activity?.eActivityItemStatus}}</td>
             <td class="custom-overflow">{{activity?.sBusinessPartnerName || '-'}}</td>
             <td class="custom-overflow">{{activity?.oCustomer?.sFirstName}} {{activity?.oCustomer?.sLastName || '-'}}</td>
             <td>
-              <div class="btn-group me-4">
-                <div class="btn btn-primary fs-bold px-6" (click)="openActivities(activity)"
+              <div class="btn-group w-100">
+                <div class="btn btn-secondary fs-bold px-6" (click)="openActivities(activity)"
                   [class.disabled]="!businessDetails?._id">
                   <span class="indicator-label">
                     {{ "VIEW" | translate }}

@@ -11,7 +11,7 @@
         <button type="submit" class="btn btn-primary me-5" (click)="loadTransaction()">{{ 'SEARCH' | translate
           }}</button>
           <div class="d-flex align-items-center">
-            <button class="btn btn-primary" (click)="resetFilters()">
+            <button class="btn btn-secondary" (click)="resetFilters()">
               <i class='fas fa-sync-alt'></i>
             </button>
           </div>
@@ -197,10 +197,10 @@
 
           <td>
             <div class="btn-group">
-              <span class="btn btn-primary fs-bold px-6" (click)="openActivities(activity)" [class.disabled]="!businessDetails?._id">
+              <span class="btn btn-secondary fs-bold px-6" (click)="openActivities(activity)" [class.disabled]="!businessDetails?._id">
                 <span class="indicator-label">{{ "VIEW" | translate}}</span>
               </span>
-              <span class="btn btn-primary btn-icon fs-bold" role="button">
+              <span class="btn btn-secondary btn-icon fs-bold" role="button">
                 <div class="btn btn-icon" data-kt-menu-trigger="hover" data-kt-menu-attach="parent"
                   data-kt-menu-placement="bottom-end" data-kt-menu-flip="bottom">
                   <span class="svg-icon svg-icon-2 m-0">
