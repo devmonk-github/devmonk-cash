@@ -954,7 +954,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
           let data = w.globals.initialSeries[seriesIndex].data[dataPointIndex];
 
           let html = `<div>
-                        <div style="background:#E4E6EF;padding:10px">${data.x}</div>
+                        <div style="background:#dbf0eb;padding:10px">${data.x}</div>
                         <ul style='list-style-type:circle;padding:5px 15px;margin:5px;line-height:1.5'>`;
           data.info.forEach((el: any) => {
             html += `<li>
