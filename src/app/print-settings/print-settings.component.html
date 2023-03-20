@@ -239,9 +239,9 @@
     </ng-container>
     <ng-template #actionsLoaded>
       <div class="" *ngFor="let item of aActionSettings;let actionSettingIndex=index;">
-        <p *ngIf="item?.sWorkStationName">{{item?.sWorkStationName}}</p>
-        <p *ngIf="!item?.sWorkStationName">{{item?.iWorkstationId}}</p>
         <div *ngIf="item?.aActions?.length">
+          <p *ngIf="item?.sWorkStationName" class="fw-bold">{{item?.sWorkStationName}}</p>
+          <p *ngIf="!item?.sWorkStationName" class="fw-bold">{{item?.iWorkstationId}}</p>
           <table class="table table-row-gray-400 gx-2 mt-4 table-row-bordered table-rounded border border-gray-400">
             <thead>
               <tr>
