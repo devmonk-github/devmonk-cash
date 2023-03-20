@@ -378,7 +378,7 @@
                                     </td>
                                     <td (click)="openProductInfo(item)" class="cursor-pointer">
                                         <div>
-                                            <p  class="m-0" *ngIf="item.sArticleGroupName && item.sProductNumber">{{ item.sArticleGroupName }} {{ item.sProductNumber }}</p>
+                                            <p  class="m-0" *ngIf="!item.sProductName">{{ item.sArticleGroupName }} {{ item.sProductNumber }}</p>
                                             <p  class="m-0" *ngIf="item.sProductName">{{ item.sProductName}}</p>
                                             <span *ngIf="item.sDescription">{{ item.sDescription}} <br /></span>
                                             <span *ngIf="item?.totalPaymentAmount != item?.nPriceIncVatAfterDiscount">
