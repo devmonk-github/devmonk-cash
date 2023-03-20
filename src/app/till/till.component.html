@@ -184,6 +184,7 @@
                     <span class="col-4">{{ "DESCRIPTION" | translate}}</span>
                     <span class="col">{{ "PRICE" | translate}}</span>
                     <span class="col">{{ "DISCOUNT" | translate}}</span>
+                    <span class="col" *ngIf="appliedGiftCards?.length">{{ "GIFTCARD_DISCOUNT" | translate}}</span>
                     <span class="col">{{ "TAX" | translate}}</span>
                     <span class="col">{{ "TOTAL" | translate}}</span>
                     <span class="col">{{ "PREPAYMENT" | translate}}</span>
@@ -240,14 +241,18 @@
                         </div>
                       </div>
                     </ng-container>
-                    <section class="row product-row p-3 text-gray-600 align-items-center"
+                    <div class="row justify-content-start card-footer w-100 p-3 text-gray-600 align-items-center"
                       *ngIf="nItemsTotalQuantity > 0">
-                      <div class="col-1">{{ nItemsTotalQuantity }}</div>
-                      <div class="col-4">&nbsp;</div>
-                      <div class="col">{{ nItemsTotalToBePaid | currency: tillService.currency}}</div>
-                      <div class="col">{{ nItemsTotalDiscount | currency: tillService.currency}}</div>
-                      <div class="col"></div>
-                    </section>
+                      <span class="col-1">{{ nItemsTotalQuantity }}</span>
+                      <span class="col-4">&nbsp;</span>
+                      <span class="col"></span>
+                      <span class="col">{{ nItemsTotalDiscount | currency: tillService.currency}}</span>
+                      <span class="col" *ngIf="appliedGiftCards?.length">{{ nGiftcardAmount | currency: tillService.currency}}</span>
+                      <span class="col"></span>
+                      <span class="col">{{nItemsTotalToBePaid - nGiftcardAmount}}</span>
+                      <span class="col"></span>
+                      <span class="col-1">&nbsp;</span>
+                    </div>
                   </div>
                 </div>
               </div>

@@ -22,9 +22,9 @@ export class PaymentDistributionService {
     this.toastService = toastService;
   }
   
-  distributeAmount(transactionItems: any[], availableAmount: any): any[] {
+  distributeAmount(transactionItems: any[], availableAmount: any, nGiftcardAmount:any = 0, nRedeemedLoyaltyPoints:any = 0): any[] {
     const bTesting = false;
-    if(bTesting) console.log('distributeAmount',{availableAmount})
+    if (bTesting) console.log('distributeAmount', { availableAmount, nGiftcardAmount, nRedeemedLoyaltyPoints })
     
     transactionItems = transactionItems.filter((i:any) => i.type !== 'empty-line')
     transactionItems.forEach((i: any) => {
@@ -66,7 +66,21 @@ export class PaymentDistributionService {
     if (arrToUpdate?.length) {
       let totalAmountToBePaid = arrToUpdate.reduce((n, { amountToBePaid }) => n + amountToBePaid, 0); // + assignedAmountToManual
       if (bTesting)  console.log('totalAmountToBePaid', totalAmountToBePaid)
+      
       if (totalAmountToBePaid !== 0) {
+        
+        arrToUpdate.forEach(i => {
+          if (i.type !== 'giftcard') {
+            i.nGiftcardDiscount = +((i.amountToBePaid * nGiftcardAmount / totalAmountToBePaid).toFixed(2));
+            if (bTesting) console.log('nGiftcardDiscount', i.nGiftcardDiscount)
+
+            i.amountToBePaid -= i.nGiftcardDiscount;
+            if (bTesting) console.log('reduced amountToBePaid', i.amountToBePaid);
+          }
+        });
+
+        totalAmountToBePaid = arrToUpdate.reduce((n, { amountToBePaid }) => n + amountToBePaid, 0);
+        if (bTesting) console.log('new totalAmountToBePaid', totalAmountToBePaid)
 
         const aGiftcard = arrToUpdate.filter((el:any) => el.type === 'giftcard');
 
@@ -88,19 +102,20 @@ export class PaymentDistributionService {
         }
         arrToUpdate.map(i => {
           if(i.type !== 'giftcard') {
-            const a = this.roundToXDigits(i.amountToBePaid * availableAmount / totalAmountToBePaid);
+            const a = +((i.amountToBePaid * availableAmount / totalAmountToBePaid).toFixed(2));
+            if (bTesting) console.log('set to payment',a)
             i.paymentAmount = a;
           }
         });
       }
-      // const assignedAmount = arrToUpdate.reduce((n, { paymentAmount }) => n + paymentAmount, 0);
-      // if (bTesting) console.log('assignedAmount', assignedAmount, 'availableAmount', availableAmount)
-      // if(availableAmount > 0) arrToUpdate[arrToUpdate.length - 1].paymentAmount += (availableAmount - assignedAmount);
-      // console.log("updated last item's paymentAmount to ", (availableAmount - assignedAmount))
+      const assignedAmount = arrToUpdate.reduce((n, { paymentAmount }) => n + paymentAmount, 0);
+      if (bTesting) console.log('assignedAmount', assignedAmount, 'availableAmount', availableAmount)
+      if(availableAmount > 0) arrToUpdate[arrToUpdate.length - 1].paymentAmount += (availableAmount - assignedAmount);
+      if (bTesting) console.log("updated last item's paymentAmount to ", (availableAmount - assignedAmount))
       // console.log('last item is ', arrToUpdate[arrToUpdate.length - 1])
     }
     arrToUpdate.forEach(element => {
-      if (bTesting)  console.log(69, { paymentAmount : element.paymentAmount, nTotal: element.nTotal})
+      if (bTesting)  console.log(109, { paymentAmount : element.paymentAmount, nTotal: element.nTotal})
       // if (availableAmount === 0) {
       //   console.log('setting payment amount to 0')
       //   element.paymentAmount = 0;

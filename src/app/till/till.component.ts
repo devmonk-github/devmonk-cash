@@ -159,6 +159,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   savingPointsSetting: boolean = JSON.parse(localStorage.getItem('savingPoints') || '');
 
   bIsTransactionLoading = false;
+  nGiftcardAmount = 0;
 
   randNumber(min: number, max: number): number {
     return Math.floor(Math.random() * (max - min + 1) + min);
@@ -387,6 +388,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
               const price = (typeof i.price === 'string') ? i.price.replace(',', '.') : i.price;
               let discountPrice = i.bDiscountOnPercentage ? (price - (price * ((i.nDiscount || 0) / 100))) : (price - i.nDiscount);
               i.nTotal = i.quantity * discountPrice;
+              i.nTotal -= i.nGiftcardDiscount || 0;
               i.nTotal = i.type === 'gold-purchase' ? -1 * i.nTotal : i.nTotal;
               result += i.nTotal - (i.prePaidAmount || 0);
             }
@@ -515,7 +517,9 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
         // this.paymentDistributeService.distributeAmount(this.transactionItems, this.getUsedPayMethods(true));
         break;
       case 'prepaymentChange':
-        this.paymentDistributeService.distributeAmount(this.transactionItems, this.getUsedPayMethods(true));
+        this.availableAmount = this.getUsedPayMethods(true);
+        this.nGiftcardAmount = _.sumBy(this.appliedGiftCards, 'nAmount') || 0;
+        this.paymentDistributeService.distributeAmount(this.transactionItems, this.availableAmount, this.nGiftcardAmount, this.redeemedLoyaltyPoints);
         this.updateAmountVariables();
         break;
       case 'duplicate':
@@ -661,14 +665,18 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       return 0
     }
     if (total) {
-      return (_.sumBy(this.appliedGiftCards, 'nAmount') || 0) + (_.sumBy(this.payMethods, 'amount') || 0) + this.redeemedLoyaltyPoints;
+      return (_.sumBy(this.payMethods, 'amount') || 0);
+      
+      // not to consider giftcard and loyalty points as a payment
+      // + this.redeemedLoyaltyPoints; //(_.sumBy(this.appliedGiftCards, 'nAmount') || 0) + 
     }
     return this.payMethods.filter(p => p.amount && p.amount !== 0) || 0
   }
 
   changeInPayment() {
     this.availableAmount = this.getUsedPayMethods(true);
-    this.paymentDistributeService.distributeAmount(this.transactionItems, this.availableAmount);
+    this.nGiftcardAmount = _.sumBy(this.appliedGiftCards, 'nAmount') || 0;
+    this.paymentDistributeService.distributeAmount(this.transactionItems, this.availableAmount, this.nGiftcardAmount, this.redeemedLoyaltyPoints);
     this.allPaymentMethod = this.allPaymentMethod.map((v: any) => ({ ...v, isDisabled: true }));
     this.payMethods.map(o => o.isDisabled = true);
     const paidAmount = _.sumBy(this.payMethods, 'amount') || 0;
@@ -720,7 +728,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.payMethods.map(o => { o.amount = null, o.isDisabled = false });
     this.availableAmount = this.getUsedPayMethods(true);
-    this.paymentDistributeService.distributeAmount(this.transactionItems, this.availableAmount);
+    this.nGiftcardAmount = _.sumBy(this.appliedGiftCards, 'nAmount') || 0;
+    this.paymentDistributeService.distributeAmount(this.transactionItems, this.availableAmount, this.nGiftcardAmount, this.redeemedLoyaltyPoints);
     this.updateAmountVariables();
   }
 
@@ -795,6 +804,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     const changeAmount = nEnteredAmountTotal - nTotalToPay
     this.dialogService.openModal(TerminalDialogComponent, { cssClass: 'modal-lg', context: { payments: this.payMethods, changeAmount, nTotalTransactionAmount: nTotalToPay } })
       .instance.close.subscribe(async (payMethods: any) => {
+        console.log(payMethods)
         if (!payMethods) {
           this.saveInProgress = false;
           this.clearPaymentAmounts();
@@ -806,26 +816,29 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
             }
           });
           // payMethods = payMethods.filter((o: any) => o.amount !== 0);
-          let availableAmount = _.sumBy(payMethods, 'amount') || 0;
-          this.paymentDistributeService.distributeAmount(this.transactionItems, availableAmount);
+          this.availableAmount = this.getUsedPayMethods(true);
+          console.log(519, this.availableAmount)
+          this.nGiftcardAmount = _.sumBy(this.appliedGiftCards, 'nAmount') || 0;
+          this.paymentDistributeService.distributeAmount(this.transactionItems, this.availableAmount, this.nGiftcardAmount, this.redeemedLoyaltyPoints);
           this.transactionItems = [...this.transactionItems.filter((item: any) => item.type !== 'empty-line')]
           const body = this.tillService.createTransactionBody(this.transactionItems, payMethods, this.discountArticleGroup, this.redeemedLoyaltyPoints, this.customer);
           console.log('body: ', body);
+          return;
           if (body.transactionItems.filter((item: any) => item.oType.eKind === 'repair')[0]?.iActivityItemId) {
             this.bHasIActivityItemId = true
           }
-          if (giftCardPayment && this.appliedGiftCards.length > 0) {
-            this.appliedGiftCards.forEach(element => {
-              const cardPaymethod = _.clone(giftCardPayment);
-              cardPaymethod.amount = element.nAmount;
-              cardPaymethod.sGiftCardNumber = element.sGiftCardNumber;
-              cardPaymethod.iArticleGroupId = element.iArticleGroupId;
-              cardPaymethod.iArticleGroupOriginalId = element.iArticleGroupOriginalId;
-              cardPaymethod.type = element.type;
-              body.payments.push(cardPaymethod);
-            });
-            body.giftCards = this.appliedGiftCards;
-          }
+          // if (giftCardPayment && this.appliedGiftCards.length > 0) {
+          //   this.appliedGiftCards.forEach(element => {
+          //     const cardPaymethod = _.clone(giftCardPayment);
+          //     cardPaymethod.amount = element.nAmount;
+          //     cardPaymethod.sGiftCardNumber = element.sGiftCardNumber;
+          //     cardPaymethod.iArticleGroupId = element.iArticleGroupId;
+          //     cardPaymethod.iArticleGroupOriginalId = element.iArticleGroupOriginalId;
+          //     cardPaymethod.type = element.type;
+          //     body.payments.push(cardPaymethod);
+          //   });
+          //   body.giftCards = this.appliedGiftCards;
+          // }
           body.oTransaction.iActivityId = this.iActivityId;
           let result = body.transactionItems.map((a: any) => a.iBusinessPartnerId);
           const uniq = [...new Set(_.compact(result))];
@@ -1457,6 +1470,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
   removeGift(index: any) {
     this.appliedGiftCards.splice(index, 1);
+    this.changeInPayment();
   }
 
   fetchTerminals() {
