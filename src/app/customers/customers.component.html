@@ -74,8 +74,7 @@
                                     </tr>
                                 </thead>
                                 <tbody class="fw-bold text-gray-600">
-                                    <tr *ngFor='let customer of customers | paginate: paginationConfig'
-                                        class="bg-hover-secondary" >
+                                    <tr *ngFor='let customer of customers | paginate: paginationConfig'                                        class="bg-hover-secondary" >
                                         <td>{{customer.name}}
                                             <div>
                                             <ng-container *ngIf="customer?.isUpdated">
@@ -113,7 +112,7 @@
                                                   data-kt-menu="true">
                                                   <!--begin::Menu item-->
                                                   <div class="menu-item px-3 text-center" *ngFor="let cMenu of customerMenu">
-                                                    <div class="menu-link px-3" (click)="clickMenuOpt(cMenu.key, customer._id)">{{ cMenu.key |
+                                                    <div class="menu-link px-3" (click)="clickMenuOpt(cMenu.key, customer)">{{ cMenu.key |
                                                       translate}}</div>
                                                   </div>
                                                   <!--end::Menu item-->
