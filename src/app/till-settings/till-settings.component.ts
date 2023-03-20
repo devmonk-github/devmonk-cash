@@ -236,13 +236,15 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
   }
 
   updateSettings() {
-    this.settings.aBagNumbers = [...this.settings.aBagNumbers.filter((el: any) => el.iLocationId !== this.iLocationId), this.settings.currentLocation];
+    if(this.settings?.aBagNumbers?.length) {
+      this.settings.aBagNumbers = [...this.settings?.aBagNumbers?.filter((el: any) => el.iLocationId !== this.iLocationId), this.settings.currentLocation];
+    }
     const body = {
-      nLastInvoiceNumber: this.settings.nLastInvoiceNumber,
-      nLastReceiptNumber: this.settings.nLastReceiptNumber,
-      sDayClosurePeriod: this.settings.sDayClosurePeriod,
-      bOpenCashDrawer: this.settings.bOpenCashDrawer,
-      aBagNumbers: this.settings.aBagNumbers,
+      nLastInvoiceNumber: this.settings?.nLastInvoiceNumber,
+      nLastReceiptNumber: this.settings?.nLastReceiptNumber,
+      sDayClosurePeriod: this.settings?.sDayClosurePeriod,
+      bOpenCashDrawer: this.settings?.bOpenCashDrawer,
+      aBagNumbers: this.settings?.aBagNumbers,
     };
     this.updatingSettings = true;
     this.updateSettingsSubscription = this.apiService.putNew('cashregistry', '/api/v1/settings/update/' + this.requestParams.iBusinessId, body)

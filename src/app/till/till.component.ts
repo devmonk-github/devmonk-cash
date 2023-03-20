@@ -2,9 +2,7 @@ import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } fr
 import { faArrowRightFromBracket, faBoxesStacked, faCalculator, faCoins, faCopy, faGifts, faMoneyBill, faRing, faRotateLeft, faScrewdriverWrench, faSearch, faSpinner, faTimes, faTimesCircle, faTrashAlt, faTruck, faUser } from '@fortawesome/free-solid-svg-icons';
 import { TranslateService } from '@ngx-translate/core';
 import * as _ from 'lodash';
-import { Observable, Subject, Subscription } from 'rxjs';
-
-import * as JsBarcode from 'jsbarcode';
+import { Observable, Subscription } from 'rxjs';
 import * as _moment from 'moment';
 import { AddExpensesComponent } from '../shared/components/add-expenses-dialog/add-expenses.component';
 import { CardsComponent } from '../shared/components/cards-dialog/cards-dialog.component';
@@ -30,8 +28,6 @@ import { TillService } from '../shared/service/till.service';
 import { MenuComponent } from '../shared/_layout/components/common';
 import { SupplierWarningDialogComponent } from './dialogs/supplier-warning-dialog/supplier-warning-dialog.component';
 import { HttpClient } from '@angular/common/http';
-const moment = (_moment as any).default ? (_moment as any).default : _moment;
-import { debounceTime, distinctUntilChanged, filter, tap } from 'rxjs/operators';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { CustomerActivitiesDialogComponent } from '../shared/components/customer-activities-dialog/customer-activities.component';
 
