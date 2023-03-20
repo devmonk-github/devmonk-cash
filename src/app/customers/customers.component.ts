@@ -26,11 +26,11 @@ import { CustomerDialogComponent } from '../shared/components/customer-dialog/cu
 })
 export class CustomersComponent implements OnInit {
 
-  customer: any = null;
+   customer: any = null;
 
   faSearch = faSearch;
 
-
+  updated_customer: any = null;
   business: any = {}
   customers: Array<any> = [];  //make it empty later
   showLoader: boolean = false;
@@ -90,14 +90,15 @@ export class CustomersComponent implements OnInit {
     this.business._id = localStorage.getItem("currentBusiness");
     this.requestParams.iBusinessId = this.business._id;
     this.getCustomers()
+    
 
   }
 
   // Function for handle event of transaction menu
-  clickMenuOpt(key: string, Id: string) {
+  clickMenuOpt(key: string, customer:any) {
     switch (key) {
       case "MERGE":
-        this.openCustomerDialog(this.customer,Id,null,key);
+        this.openCustomerDialog(customer,customer?._id,null,key);
         break;
     }
   }
@@ -115,44 +116,33 @@ export class CustomersComponent implements OnInit {
 
 
   openCustomerDialog(customer:any,Id:any,iSearchedCustomerId:any,key:any): void {
-    this.dialogService.openModal(CustomerDialogComponent, { cssClass: 'modal-xl', context: { customer: this.customer ,iChosenCustomerId:Id,iSearchedCustomerId:null,key:"MERGE"} })
-      .instance.close.subscribe((data) => {
+    
+    this.dialogService.openModal(CustomerDialogComponent, { cssClass: 'modal-xl', context: { customer:customer ,iChosenCustomerId:Id,iSearchedCustomerId:null,key:"MERGE"} }).instance.close.subscribe((data:any) => {
+        
+
         this.requestParams = {
           iBusinessId: this.requestParams.iBusinessId,
           searchValue: ''
         }
-        if (data.customer) {
           
           let icIndex = this.customers.findIndex(i => i._id.toString() == Id.toString());
-          //console.log("icIndex: "+ icIndex);
+         
           if(icIndex != -1){
           this.customers[icIndex].isDisable = true;
           this.customers[icIndex].isMerged = true;
           }
-          this.customer = data.customer;
          
-          let isIndex = this.customers.findIndex(i => i._id == data.customer._id);
+          let isIndex = this.customers.findIndex(i => i._id == data?.customer?.data?._id);
           if(isIndex != -1){
-          //this.customers[isIndex].isDisable = true;
+          this.customers[isIndex] = data?.customer?.data;
           this.customers[isIndex].isUpdated = true;
-          this.customers[isIndex].name = this.customerStructureService.makeCustomerName(data.customer);
-          this.customers[isIndex]['NAME'] = this.customerStructureService.makeCustomerName(data.customer);
-          this.customers[isIndex]['SHIPPING_ADDRESS'] = this.customerStructureService.makeCustomerAddress(this.customers[icIndex].oShippingAddress, false);
-          this.customers[isIndex]['INVOICE_ADDRESS'] = this.customerStructureService.makeCustomerAddress(this.customers[icIndex].oInvoiceAddress, false);
-          this.customers[isIndex]['EMAIL'] = this.customers[icIndex].sEmail;
-          this.customers[isIndex]['PHONE'] = (this.customers[icIndex].oPhone && this.customers[icIndex].oPhone.sLandLine ? this.customers[icIndex].oPhone.sLandLine : '') + (this.customers[icIndex].oPhone && this.customers[icIndex].oPhone.sLandLine && this.customers[icIndex].oPhone.sMobile ? ' / ' : '') + (this.customers[icIndex].oPhone && this.customers[icIndex].oPhone.sMobile ? this.customers[icIndex].oPhone.sMobile : '')
-          
-
+          this.customers[isIndex].name = this.customerStructureService.makeCustomerName(data?.customer?.data);
+          this.customers[isIndex]['NAME'] = this.customerStructureService.makeCustomerName(data?.customer?.data);
+          this.customers[isIndex]['SHIPPING_ADDRESS'] = this.customerStructureService.makeCustomerAddress(data?.customer?.data?.oShippingAddress, false);
+          this.customers[isIndex]['INVOICE_ADDRESS'] = this.customerStructureService.makeCustomerAddress(data?.customer?.data?.oInvoiceAddress, false);
+          this.customers[isIndex]['EMAIL'] = data?.customer?.data?.sEmail;
+          this.customers[isIndex]['PHONE'] = (data?.customer?.data?.oPhone && data?.customer?.data?.oPhone.sLandLine ? data?.customer?.data?.oPhone.sLandLine : '') + (data?.customer?.data?.oPhone && data?.customer?.data?.oPhone.sLandLine && data?.customer?.data?.oPhone.sMobile ? ' / ' : '') + (data?.customer?.data?.oPhone && data?.customer?.data?.oPhone.sMobile ? data?.customer?.data?.oPhone.sMobile : '')
           }
-
-          
-
-          
-         
-        }
-       
-       
-
 
       })
 
@@ -253,7 +243,7 @@ export class CustomersComponent implements OnInit {
   }
 
   openCustomer(customer: any) {
-    this.dialogService.openModal(CustomerDetailsComponent, { cssClass: "modal-xl position-fixed start-0 end-0", context: { customerData: customer, mode: 'details', from: 'customer' } }).instance.close.subscribe(
+      this.dialogService.openModal(CustomerDetailsComponent, { cssClass: "modal-xl position-fixed start-0 end-0", context: { customerData: customer, mode: 'details', from: 'customer' } }).instance.close.subscribe(
       result => { if (result && result.action && result.action == true) this.getCustomers(); });
   }
 

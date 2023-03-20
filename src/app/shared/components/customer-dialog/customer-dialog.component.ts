@@ -349,19 +349,30 @@ export class CustomerDialogComponent implements OnInit {
     if(this.key == "MERGE"){
       this.iSearchedCustomerId = customer._id;
       this.loading = true;
-      this.customer = customer;
+      
+     
+      //this.customer = customer;
       this.requestParams.iChosenCustomerId = this.iChosenCustomerId;
       this.requestParams.iSearchedCustomerId = this.iSearchedCustomerId;
       this.apiService.postNew('customer', '/api/v1/customer/mergecustomer/create', this.requestParams)
         .subscribe(async (result: any) => {
           this.showLoader = false;
           this.isCustomerSearched = true;
-          //const Result: any = await this.apiService.getNew('customer', `/api/v1/customer/${this.requestParams.iBusinessId}/${this.iSearchedCustomerId}`).toPromise();  
+
+          this.apiService.getNew('customer', "/api/v1/customer/" + this.requestParams.iBusinessId+"/"+this.iSearchedCustomerId).subscribe((res: any)=>{
+           
+            this.customer = res;
+            this.close({action: true, customer: res });
+            return;
+
+          });
+          
+          
           this.getMergeCustomers();
-          //console.log(Result);
-          //console.log("result");
+          
         },
           (error: any) => { })
+        
     } else {
       if (this.from && this.from === 'cash-register') {
         customer.loading = true;
