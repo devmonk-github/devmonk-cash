@@ -250,7 +250,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     { type: "Gold purchase", value: 0, color: ChartColors.GOLD_PURCHASE },//$maroon
     { type: "Product reservation", value: 0, color: ChartColors.PRODUCT_RESERVATION }//$pink
   ];
-
+  activityTitlesEkind = ['regular', 'reservation', 'giftcard', 'gold-purchase', 'repair' , 'order'];
   aStatisticsChartData: any = [];
 
   totalActivities: number = 0;
@@ -810,31 +810,32 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
           transaction.aTransactionItems.forEach((item: any) => {
             transaction.sTotal += parseFloat(item.nPaymentAmount);
             const count = this.totalActivities;
-            if (item?.oType?.eKind) this.totalActivities = count + item.nQuantity || 0;
+            if (item?.oType?.eKind && this.activityTitlesEkind.includes(item?.oType?.eKind)) this.totalActivities = count + item.nQuantity || 0;
             // if(item?.oType.bRefund){
             //   this.aActivityTitles[5].value += 1;
             // }else{
             switch (item?.oType?.eKind) {
               case "regular":
-                this.aActivityTitles[2].value += 1;
+                this.aActivityTitles[2].value += item.nQuantity;
                 break;
               case "expenses":
                 break;
               case "reservation":
-                this.aActivityTitles[7].value += 1;
+                this.aActivityTitles[7].value += item.nQuantity;
                 break;
               case "giftcard":
-                this.aActivityTitles[5].value += 1;
+                this.aActivityTitles[5].value += item.nQuantity;
                 break;
               case "empty-line":
                 break;
               case "repair":
-                this.aActivityTitles[0].value += 1;
+                this.aActivityTitles[0].value += item.nQuantity;
                 break;
               case "order":
+                this.aActivityTitles[1].value += item.nQuantity;
                 break;
               case "gold-purchase":
-                this.aActivityTitles[6].value += 1;
+                this.aActivityTitles[6].value += item.nQuantity;
                 break;
               case "gold-sell":
                 break;
