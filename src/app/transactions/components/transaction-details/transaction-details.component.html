@@ -416,6 +416,7 @@
                                     </td>
                                     <td>{{item.nPriceIncVatAfterDiscount | currency: tillService.currency}}</td>
                                     <td>{{item.nQuantity}}</td>
+                                    <td *ngIf="item.nDiscountToShow <= 0"> {{ "0.00" | currency: tillService.currency}}</td>
                                     <td *ngIf="item.nDiscountToShow > 0">
                                         <span *ngIf="item.bDiscountOnPercentage">
                                             {{ item.nDiscount }}% ({{item.nDiscountToShow * item.nQuantity | currency:
