@@ -287,6 +287,11 @@
                             <fa-icon [icon]="faAt"></fa-icon>
                             <label class="mx-auto">{{ "MAIL" | translate}}</label>
                         </button> 
+                        <button class="btn btn-sm btn-secondary w-100 d-flex mb-2" *ngIf="(nTotalItemPayment - nTotalItemPaidPayment) > 0"
+                        (click)="openTransaction(transaction, 'activity')">
+                        <fa-icon [icon]="faUndoAlt"></fa-icon>
+                        <label class="mx-auto">{{"REST_PAYMENT" | translate}}</label>
+                    </button>
                         <button class="btn btn-sm btn-secondary w-100 d-flex mb-2"
                             (click)="openTransaction(transaction, 'activity')">
                             <fa-icon [icon]="faUndoAlt"></fa-icon>
