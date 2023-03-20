@@ -607,7 +607,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     })
   }
 
-  findOpenActivitiesForCustomer(){
+  findOpenActivitiesForCustomer() {
     this.dialogService.openModal(CustomerActivitiesDialogComponent, { cssClass: 'modal-xl', context: { customer: this.customer } }).instance.close.subscribe(async (data) => {
       if (data?.transaction) {
         this.bIsTransactionLoading = true;
@@ -793,7 +793,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     }
     const changeAmount = nEnteredAmountTotal - nTotalToPay
-    this.dialogService.openModal(TerminalDialogComponent, { cssClass: 'modal-lg', context: { payments: this.payMethods, changeAmount , nTotalTransactionAmount:nTotalToPay} })
+    this.dialogService.openModal(TerminalDialogComponent, { cssClass: 'modal-lg', context: { payments: this.payMethods, changeAmount, nTotalTransactionAmount: nTotalToPay } })
       .instance.close.subscribe(async (payMethods: any) => {
         if (!payMethods) {
           this.saveInProgress = false;
@@ -869,7 +869,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
             });
 
             const bOpenCashDrawer = payMethods.some((m: any) => m.sName === 'Cash' && m.remark != 'CHANGE_MONEY');
-            if (bOpenCashDrawer && this.tillService.settings.bOpenCashDrawer) this.openDrawer();
+            if (bOpenCashDrawer && this.tillService?.settings?.bOpenCashDrawer) this.openDrawer();
 
             this.handleReceiptPrinting(oDialogComponent);
 

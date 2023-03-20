@@ -22,6 +22,7 @@ import { DialogService } from '../shared/service/dialog';
 export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestroy {
 
   iBusinessId: any = '';
+  iEmployeeId: any = '';
   sUserType: any = '';
   iLocationId: any = '';
   iStatisticId: any;
@@ -44,6 +45,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
   isShowStockLocation: boolean = false;
 
   closingDayState: boolean = false;
+  closeButtonClicked: boolean = false;
   bShowDownload: boolean = false;
 
   closeSubscription!: Subscription;
@@ -232,6 +234,9 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
   async ngOnInit() {
     this.apiService.setToastService(this.toastService);
     this.businessDetails._id = localStorage.getItem('currentBusiness');
+    const value = localStorage.getItem('currentEmployee');
+    if (value) this.iEmployeeId = JSON.parse(value)._id;
+
     this.setOptionMenu()
 
     const [_businessData, _workstationData, _employeeData]: any = await Promise.all([
@@ -696,10 +701,10 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
   fetchAuditStatistic(sDisplayMethod?: string) {
     // console.log('fetchAuditStatistic');
     if (this.IsDynamicState) this.getDynamicData(sDisplayMethod);
-    else{
-      if(!this.aDayClosure?.length) this.fetchDayClosureList();
+    else {
+      if (!this.aDayClosure?.length) this.fetchDayClosureList();
       this.getStaticData(sDisplayMethod);
-    } 
+    }
   }
 
   /* Static Data for statistic (from statistic document) */
@@ -739,13 +744,13 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
     }
 
     // this.checkShowDownload();
-    
+
     this.getStatisticSubscription = this.apiService.postNew('cashregistry', `/api/v1/statistics/list`, oBody).
       subscribe((result: any) => {
         this.bStatisticLoading = false;
         if (result?.data) {
           const oData = result?.data;
-          if (oData.aStatistic?.length){
+          if (oData.aStatistic?.length) {
             this.aStatistic = oData.aStatistic;
             this.aStatisticsDocuments = oData.aStaticDocument;
             if (this.iStatisticId) {
@@ -776,7 +781,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
   }
 
   mappingThePaymentMethod(aData: any) {
-    
+
     aData.forEach((oData: any) => {
 
       if (oData.aPaymentMethods?.length) {
@@ -803,7 +808,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
       //   this.oCountings.nCashInTill = oData?.oCountings?.nCashInTill || 0;
       // }
     })
-    this.nPaymentMethodTotal = this.aPaymentMethods.reduce((a:any, b:any) => a + b.nAmount, 0);
+    this.nPaymentMethodTotal = this.aPaymentMethods.reduce((a: any, b: any) => a + b.nAmount, 0);
     this.nNewPaymentMethodTotal = this.nPaymentMethodTotal;
 
     // console.log(787, this.aPaymentMethods)
@@ -875,7 +880,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
             this.nNewPaymentMethodTotal = this.nPaymentMethodTotal;
             this.filterDuplicatePaymentMethods();
           }
-          
+
         }
       },
         (error) => {
@@ -1118,7 +1123,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
     } else if (from === 'payments') {
       if (item?.aItems) return;
       item.isLoading = true;
-      const data:any = {
+      const data: any = {
         iBusinessId: this.iBusinessId,
         iWorkstationId: this.iWorkstationId,
         iLocationId: this.iLocationId,
@@ -1126,7 +1131,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
           iPaymentMethodId: item.iPaymentMethodId
         }
       }
-      if(this.iStatisticId) {
+      if (this.iStatisticId) {
         data.oFilterBy.dStartDate = this.oStatisticsDocument?.dOpenDate;
         data.oFilterBy.dEndDate = (this.oStatisticsDocument?.dCloseDate) ? this.oStatisticsDocument?.dCloseDate : this.oStatisticsData.dEndDate;
       } else {
@@ -1182,9 +1187,6 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
   }
 
   addExpenses(data: any): Observable<any> {
-    const value = localStorage.getItem('currentEmployee');
-    let currentEmployeeId;
-    if (value) currentEmployeeId = JSON.parse(value)._id;
     const transactionItem = {
       sProductName: data?._eType || 'expenses',
       sComment: data.comment,
@@ -1195,7 +1197,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
       nPaymentAmount: data.amount,
       nRevenueAmount: data.amount,
       iWorkstationId: this.iWorkstationId,
-      iEmployeeId: currentEmployeeId,
+      iEmployeeId: this.iEmployeeId,
       iLocationId: this.iLocationId,
       oPayment: data?.oPayment,
       oType: {
@@ -1216,14 +1218,18 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
     _oBody.bSkipCheckFlag = true; /*  bSkipCheckFlag is for, when there is no sell for a day and user is trying to close-the-day-state */
     return this.apiService.postNew('cashregistry', `/api/v1/statistics/transaction/audit`, _oBody).toPromise();
   }
-  
+
   async onCloseDayState() {
     this.closingDayState = true;
+    this.closeButtonClicked = true;
+    console.log('this.aStatistic', this.aStatistic)
     /* fetching Audit detail for checking if day-state is changed or not */
     const oStatisticDetail: any = await this.getDynamicAuditDetail();
     this.closingDayState = false; /* while fetching the data, loader should show off */
     /* isAnyTransactionDone: If any transaction is not happened then we should not throw any error */
+    console.log('just clicked2', this.closeButtonClicked)
     if (!oStatisticDetail?.data?.isAnyTransactionDone) {
+      console.log('just clicked3')
       const confirmBtnDetails = [
         { text: "PROCEED", value: 'proceed', status: 'success', class: 'ml-auto mr-2' },
         { text: "CANCEL", value: 'close' }
@@ -1235,16 +1241,19 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
           this.toastService.show({ type: 'warning', text: `Something went wrong` });
         })
     } else {
+      console.log('just clicked4')
       this.closeDayState(oStatisticDetail);
     }
   }
 
   async closeDayState(oStatisticDetail: any) {
+    console.log('just clicked6', this.aStatistic)
     this.closingDayState = true;
-    
+
     /* isAnyTransactionDone: If any transaction is not happened then we should not throw any error */
     /* Below "IF CONIDTION" only used when we do have any transaction, if not transaction created in that period then we should not check */
     if (oStatisticDetail?.data?.isAnyTransactionDone) {
+      console.log('just clicked7')
       if (!oStatisticDetail?.data?.oTransactionAudit?.length || !oStatisticDetail?.data?.oTransactionAudit[0]?.overall?.length) {
         this.toastService.show({ type: 'warning', text: 'Something went wrong' });
         return;
@@ -1252,7 +1261,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
 
       let aAmount = oStatisticDetail?.data?.oTransactionAudit[0]?.overall[0]?.nTotalRevenue
       let bAmount = this.aStatistic[0].overall[0].nTotalRevenue
-
+      console.log('just clicked8')
       /* This is to check if day-state is not changed already (in mean-time) */
       if (
         oStatisticDetail?.data?.oTransactionAudit[0]?.overall[0]?.nQuantity != this.aStatistic[0].overall[0].nQuantity) {
@@ -1264,7 +1273,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
         return;
       }
     }
-
+    console.log('witin the close daystate function0')
     this.aAmount.filter((item: any) => item.nQuantity > 0).forEach((item: any) => (this.oCountings.oCountingsCashDetails[item.key] = item.nQuantity));
     this.oCountings.nCashDifference = this.oCountings?.nCashCounted - (this.oCountings?.nCashAtStart + this.oCountings?.nCashInTill);
 
@@ -1272,68 +1281,21 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
     const oBankPaymentMethod = this.allPaymentMethod.filter((el: any) => el.sName.toLowerCase() === 'bankpayment')[0];
     const nVatRate = await this.taxService.fetchDefaultVatRate({ iLocationId: this.iLocationId });
 
-    const aPromises: any = [];
-
-    if (this.oCountings.nCashDifference !== 0) {
-      //we have difference in cash, so add that as and expense
-      aPromises.push(this.addExpenses(
-        {
-          amount: this.oCountings.nCashDifference,
-          comment: 'DIFF_IN_CASH_COUNTING',
-          oPayment: {
-            iPaymentMethodId: oCashPaymentMethod._id,
-            nAmount: this.oCountings.nCashDifference,
-            sMethod: oCashPaymentMethod.sName.toLowerCase(),
-            sComment: 'DIFF_IN_CASH_COUNTING',
-          },
-          _eType: 'diff-counting',
-          nVatRate: nVatRate
-        }
-      ).toPromise());
-    }
-
-    if (this.oCountings.nSkim > 0) {
-      //amount to put in bank - so add create new expense with positive amount to add it as bank payment, and negative amount as cash
-      // so increase bank payment amount and equally decrease cash payment amount
-
-      aPromises.push(this.addExpenses({
-        amount: this.oCountings.nSkim,
-        comment: 'Transfer to the bank (increase bank amount)',
-        oPayment: {
-          iPaymentMethodId: oBankPaymentMethod._id,
-          nAmount: this.oCountings.nSkim,
-          sMethod: oBankPaymentMethod.sName.toLowerCase(),
-          sComment: 'Transfer to the bank (increase bank amount)',
-        },
-        nVatRate: nVatRate
-      }).toPromise());
-
-      aPromises.push(this.addExpenses({
-        amount: -this.oCountings.nSkim,
-        comment: 'Transfered to the bank (decrease cash amount)',
-        oPayment: {
-          iPaymentMethodId: oCashPaymentMethod._id,
-          nAmount: -this.oCountings.nSkim,
-          sMethod: oCashPaymentMethod.sName.toLowerCase(),
-          sComment: 'Transfered to the bank (decrease cash amount)',
-        },
-        nVatRate: nVatRate
-      }).toPromise());
-    }
-
-    await Promise.all(aPromises)
-
     const oBody = {
       iBusinessId: this.iBusinessId,
       iLocationId: this.iLocationId,
       iWorkstationId: this.iWorkstationId,
+      iEmployeeId: this.iEmployeeId,
       iStatisticId: this.iStatisticId,
       oCountings: this.oCountings,
-      sComment: this.oStatisticsDocument.sComment
+      sComment: this.oStatisticsDocument.sComment,
+      oCloseDayStateData: {
+        oCashPaymentMethod,
+        oBankPaymentMethod,
+        nVatRate,
+      }
     }
-    // console.log(oBody)
-    // return;
-
+    console.log('witin the close daystate function')
     this.closeSubscription = this.apiService.postNew('cashregistry', `/api/v1/statistics/close/day-state`, oBody).subscribe((result: any) => {
       this.toastService.show({ type: 'success', text: `Day-state is close now` });
       this.closingDayState = false;
@@ -1452,12 +1414,12 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
       this.dayClosureListSubscription = this.apiService.postNew('cashregistry', `/api/v1/statistics/day-closure/list`, oBody).subscribe((result: any) => {
         if (result?.data?.length && result.data[0]?.result?.length) {
           this.aDayClosure = result.data[0]?.result.map((oDayClosure: any) => {
-            return { 
-              _id: oDayClosure?._id, 
-              dOpenDate: oDayClosure?.dOpenDate, 
-              dCloseDate: oDayClosure?.dCloseDate, 
-              isDisable: true, 
-              sWorkStationName: oDayClosure?.sWorkStationName 
+            return {
+              _id: oDayClosure?._id,
+              dOpenDate: oDayClosure?.dOpenDate,
+              dCloseDate: oDayClosure?.dCloseDate,
+              isDisable: true,
+              sWorkStationName: oDayClosure?.sWorkStationName
             }
           });
           this.checkShowDownload();
@@ -1486,6 +1448,8 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
   }
 
   checkShowDownload() {
+
+
     const bCondition1 = this.IsDynamicState;
 
     const bCondition2 = (!this.selectedEmployee?._id &&
@@ -1496,7 +1460,23 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
 
     const bCondition3 = (this.iStatisticId && this.iStatisticId != '' && this.oStatisticsDocument && this.oStatisticsDocument?.bIsDayState === false) || false;
 
-    this.bShowDownload = (bCondition1 || bCondition2 || bCondition3) && this.aStatistic?.length;
+    const bCondition4 = this.closeButtonClicked;
+    console.log('closeButtonClicked', this.closeButtonClicked)
+
+    if (this.aStatistic?.length) {
+      console.log('my lenght is 0 but still defined')
+    }
+    if (this.aStatistic?.length === 0) {
+      console.log('A m 0')
+    }
+    if (this.aStatistic) {
+      console.log('B m 0')
+    }
+
+    this.bShowDownload = (bCondition1 || bCondition2 || bCondition3 || bCondition4) && this.aStatistic;
+    console.log('bCondition4', bCondition4)
+    console.log('bCondition4 ', this.aStatistic)
+    console.log('this.bShowDownload', this.bShowDownload)
   }
 
   fetchStockValuePerLocation() {

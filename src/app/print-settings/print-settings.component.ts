@@ -59,6 +59,7 @@ export class PrintSettingsComponent implements OnInit {
   bShowActionSettingsLoader: boolean = false;
   labelPrintSettings: any;
   iWorkstationId: any;
+  aWorkstations:any =[]
 
   constructor(
     private dialogService: DialogService,
@@ -73,6 +74,7 @@ export class PrintSettingsComponent implements OnInit {
     this.iWorkstationId = localStorage.getItem('currentWorkstation') || '';
     this.isLoadingDefaultLabel = true
     this.isLoadingTemplatesLabel = true
+    this.fetchWorkstations();
     this.getLabelTemplate();
     this.fetchBusinessDetails();
     this.fetchActionSettings();
@@ -96,6 +98,17 @@ export class PrintSettingsComponent implements OnInit {
         this.businessDetails = result.data;
       });
   }
+
+  fetchWorkstations() {
+    this.apiService.getNew('cashregistry', `/api/v1/workstations/list/${this.iBusinessId}/${this.iLocationId}`)
+      .subscribe(
+        (result: any) => {
+          if (result && result.data) {
+            this.aWorkstations = result.data;
+          }
+        });
+  }
+
 
   trackByFun(index: any, item: any) {
     return index;
@@ -313,20 +326,26 @@ export class PrintSettingsComponent implements OnInit {
     const result: any = await this.apiService.postNew('cashregistry', `/api/v1/print-settings/list/${this.iBusinessId}`, data).toPromise();
     this.bShowActionSettingsLoader = false;
     if (result?.data[0]?.result?.length) {
-      this.aActionSettings = result?.data[0]?.result[0];
+      this.aActionSettings = result?.data[0]?.result;
+      this.aActionSettings.forEach((action: any) => {
+        const workStationName = this.aWorkstations.find((workStation: any) => workStation._id == action.iWorkstationId)
+        if (workStationName) {
+          action.sWorkStationName = workStationName.sName;
+        }
+      })
     }
   }
 
-  openActionSetting(mode: string = 'create', index: number = 0) {
+  openActionSetting(mode: string = 'create',actionSettingsIndex:number=0 , index: number = 0) {
     let obj: any = {
       mode: mode
     }
     if (mode === 'update') {
-      const item = this.aActionSettings.aActions[index];
+      const item = this.aActionSettings[actionSettingsIndex].aActions[index];
       if (item?.eType) obj.eType = item?.eType;
       if (item?.eSituation) obj.eSituation = item?.eSituation;
       if (item?.aActionToPerform) obj.aActions = item?.aActionToPerform;
-      obj._id = this.aActionSettings._id
+      obj._id = this.aActionSettings[actionSettingsIndex]._id
       obj.iActionId = item._id
     }
 
@@ -339,9 +358,9 @@ export class PrintSettingsComponent implements OnInit {
       });
   }
 
-  async removeActionSetting(index: number) {
-    const iPrintSettingsId = this.aActionSettings._id;
-    const iActionId = this.aActionSettings.aActions[index]._id;
+  async removeActionSetting(actionSettingsIndex:number , index: number) {
+    const iPrintSettingsId = this.aActionSettings[actionSettingsIndex]._id;
+    const iActionId = this.aActionSettings[actionSettingsIndex].aActions[index]._id;
     await this.apiService.deleteNew('cashregistry', `/api/v1/print-settings/${this.iBusinessId}/${iPrintSettingsId}/${iActionId}`).toPromise();
     this.fetchActionSettings();
     // this.aActionSettings.splice(index, 1);

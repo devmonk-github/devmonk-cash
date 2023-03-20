@@ -121,7 +121,7 @@
                                                 <i class="fab fa-whatsapp ms-1" style="color: #1CB39B;"></i>
                                                 {{customer.oPhone.sMobile}}</a>
                                         </p>
-                                        <p *ngIf="!customer.oPhone.bWhatsApp">
+                                        <p *ngIf="!customer.oPhone.bWhatsApp && customer.oPhone.sMobile">
                                             <span class="text-muted me-5">{{'PHONE_MOBILE' | translate}} :</span>
                                             <span> {{ customer.oPhone.sMobile }}</span>
                                         </p>
@@ -851,7 +851,7 @@
             </div>
         </ng-container>
     </div>
-    <div class="card-footer d-flex justify-content-end align-items-center">
+    <div *ngIf="mode != 'create'" class="card-footer d-flex justify-content-end align-items-center">
         <button class="cancel btn btn-danger me-3" (click)="deleteCustomer(customer)">{{"DELETE" | translate}}</button>
         <button class="cancel btn btn-warning" (click)="mergeCustomer(customer,customer._id,null,'MERGE')">{{"MERGE" | translate}}</button>
     </div>
