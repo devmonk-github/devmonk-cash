@@ -52,8 +52,8 @@ export class PrintWorkstationComponent implements OnInit {
     {
       name: 'LABEL',
       typeList: [
-        { name: 'ZPL', key: 'default', enabled: false },
-        { name: 'TSPL', key: 'default', enabled: false }
+        { name: 'ZPL', key: 'zpl', enabled: false },
+        { name: 'TSPL', key: 'tspl', enabled: false }
       ]
     }
   ];

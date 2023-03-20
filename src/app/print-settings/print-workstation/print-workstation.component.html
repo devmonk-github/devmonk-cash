@@ -84,22 +84,20 @@
                                     </button>
                                 </div>
                             </div>
-                            <div
-                                *ngIf="workstation[template.name][type.key]?.withName == true; then set_workstation_printer">
-                                
-
-                            </div>
+                            <div *ngIf="workstation[template.name][type.key]?.withName == true; then set_workstation_printer"></div>
                         </div>
                         <ng-template #set_workstation_printer>
-                            <span class="text-muted">({{ 'NO_PRINTER_SELECTED' | translate }})</span>
-                            <!-- <ng-select id="printer" name="printer" [clearable]="false" class="mt-2"
-                                [items]="printersList" bindLabel="name" bindValue="keyValue" [groupBy]="groupByFn"
-                                [ngModel]="getSelectedValue({name: template.name, type: type.key, workstation: workstation})"
-                                (ngModelChange)="onChange($event, {name: template.name, type: type.key, workstation: workstation})">
-                            </ng-select> -->
-                            <button class="btn btn-sm btn-secondary px-4 py-2" (click)="openSelectPrintPaperDialog(type.key, workstation, template.name)">
-                                {{ 'SELECT_PRINTER' | translate}}
-                            </button>
+                            <div class="class select-printer-wrapper">
+                                <span class="text-muted">({{ 'NO_PRINTER_SELECTED' | translate }})</span>
+                                <!-- <ng-select id="printer" name="printer" [clearable]="false" class="mt-2"
+                                    [items]="printersList" bindLabel="name" bindValue="keyValue" [groupBy]="groupByFn"
+                                    [ngModel]="getSelectedValue({name: template.name, type: type.key, workstation: workstation})"
+                                    (ngModelChange)="onChange($event, {name: template.name, type: type.key, workstation: workstation})">
+                                </ng-select> -->
+                                <button class="btn btn-sm btn-secondary px-4 py-2 select-printer-btn" (click)="openSelectPrintPaperDialog(type.key, workstation, template.name)">
+                                    {{ 'SELECT_PRINTER' | translate}}
+                                </button>
+                            </div>
                         </ng-template>
                     </td>
                 </tr>
