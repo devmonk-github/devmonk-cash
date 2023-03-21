@@ -181,8 +181,7 @@ export class TillService {
       // console.log('Last condition: ', i.paymentAmount, i.amountToBePaid);
       // console.log('bPrepayment: ', bPrepayment, bRefund && i.oType?.bPrepayment, (this.getUsedPayMethods(true, payMethods) - this.getTotals('price', transactionItems) < 0), (i.paymentAmount !== i.amountToBePaid));
       i.price = +(parseFloat(i.price).toFixed(2));
-      i.nPurchasePrice = +(i.nPurchasePrice.toFixed(2));
-      
+      i.nPurchasePrice = +(i.nPurchasePrice?.toFixed(2) || 0);
       const oItem = new TransactionItem();
       oItem.sProductName = i.name;
       oItem.sComment = i.comment;
@@ -239,6 +238,7 @@ export class TillService {
       oItem.iActivityItemId = i.iActivityItemId;
       oItem.oGoldFor = i.oGoldFor;
       oItem.nDiscount = i.nDiscount;
+      oItem.nGiftcardDiscount = i?.nGiftcardDiscount;
       oItem.nRedeemedLoyaltyPoints = i.redeemedLoyaltyPoints;
       oItem.sUniqueIdentifier = i.sUniqueIdentifier || uuidv4();
       oItem.nRevenueAmount = +((oItem.nPaymentAmount / i.quantity).toFixed(2));
@@ -249,6 +249,7 @@ export class TillService {
       oItem.eEstimatedDateAction = i.eEstimatedDateAction;
       if (i.type === 'giftcard') { //|| (bPrepayment === false && (i.type === 'repair' || i.type === 'order'))
         oItem.eActivityItemStatus = 'delivered';
+        oItem.nGiftcardRemainingAmount = oItem.nPriceIncVat;
       } else {
         oItem.eActivityItemStatus = i.eActivityItemStatus;
       }
@@ -286,7 +287,7 @@ export class TillService {
       } else {
         if (_nDiscount && _nDiscount > 0 && !i.oType.bRefund && !i.iActivityItemId) {
           // console.log('IN ELSE: ', i, _nDiscount, i.nQuantity);
-          i.nPaymentAmount += _nDiscount * i.nQuantity;
+          i.nPaymentAmount += (_nDiscount * i.nQuantity);
           i.nRevenueAmount += _nDiscount;
           const tItem1 = JSON.parse(JSON.stringify(i));
           tItem1.iArticleGroupId = discountArticleGroup._id;
@@ -302,6 +303,8 @@ export class TillService {
           body.transactionItems.push(tItem1);
         }
       }
+      i.nPaymentAmount += i?.nGiftcardDiscount || 0;
+      i.nRevenueAmount += i?.nGiftcardDiscount || 0;
     });
     localStorage.removeItem('discountRecords');
     if (redeemedLoyaltyPoints && redeemedLoyaltyPoints > 0) {
@@ -334,19 +337,19 @@ export class TillService {
   }
 
   createGiftcardTransactionItem(body: any, discountArticleGroup: any) {
-    const originalTItems = length = body.transactionItems.filter((i: any) => i.oType.eKind !== 'loyalty-points-discount' && i.oType.eKind !== 'discount' && i.oType.eKind !== 'loyalty-points' && i.oType.eKind !== 'giftcard-discount');
-    const gCard = body.payments.find((payment: any) => payment.sName === 'Giftcards' && payment.type === 'custom');
+    const originalTItems = body.transactionItems.filter((i: any) => i.oType.eKind !== 'loyalty-points-discount' && i.oType.eKind !== 'discount' && i.oType.eKind !== 'loyalty-points' && i.oType.eKind !== 'giftcard-discount');
+    const gCard = body.giftCards[0];//.find((payment: any) => payment.sName === 'Giftcards' && payment.type === 'custom');
     let nDiscount = 0;
-    if (gCard?.amount) nDiscount = (Math.round((gCard?.amount || 0) / (originalTItems?.length || 1))) || 0;
+    if (gCard?.nAmount) nDiscount = (Math.round((gCard?.nAmount || 0) / (originalTItems?.length || 1))) || 0;
     originalTItems.map((item: any) => {
-      if (gCard) {
-        if (nDiscount > gCard.amount) {
-          nDiscount = gCard.amount;
-          gCard.amount = 0;
-        } else {
-          gCard.amount = gCard.amount - nDiscount;
-        }
-      }
+      // if (gCard) {
+      //   if (nDiscount > gCard.amount) {
+      //     nDiscount = gCard.amount;
+      //     gCard.amount = 0;
+      //   } else {
+      //     gCard.amount = gCard.amount - nDiscount;
+      //   }
+      // }
       const tItem1 = JSON.parse(JSON.stringify(item));
       tItem1.iArticleGroupId = discountArticleGroup._id;
       tItem1.oArticleGroupMetaData.sCategory = discountArticleGroup.sCategory;
@@ -524,11 +527,18 @@ export class TillService {
     })
 
     dataObject.aTransactionItems = transaction.aTransactionItems.filter((item: any) =>
-      !(item.oType?.eKind == 'discount' || item?.oType?.eKind == 'loyalty-points-discount' || item.oType.eKind == 'loyalty-points'));
-
-    let total = 0, totalAfterDisc = 0, totalVat = 0, totalDiscount = 0, totalSavingPoints = 0, totalRedeemedLoyaltyPoints = 0;
+      !(item.oType?.eKind == 'discount' || item?.oType?.eKind == 'loyalty-points-discount' || item.oType.eKind == 'loyalty-points' || item.oType?.eKind == 'giftcard-discount'));
+    let total = 0, 
+      totalAfterDisc = 0, 
+      totalVat = 0, 
+      totalDiscount = 0, 
+      totalSavingPoints = 0, 
+      totalRedeemedLoyaltyPoints = 0, 
+      totalGiftcardDiscount = 0,
+      nTotalQty = 0;
     const aToFetchPayments:any = [];
     dataObject.aTransactionItems.forEach((item: any, index: number) => {
+      nTotalQty += item?.nQuantity;
       if (item?.aPayments?.some((payment: any) => payment.sMethod === 'card')) {
         aToFetchPayments.push(item.iTransactionId);
       }
@@ -553,13 +563,15 @@ export class TillService {
       } else { item.nDiscountToShow = disc }
       // console.log('item.nDiscountToShow', item.nDiscountToShow)
       // item.priceAfterDiscount = parseFloat(item.nRevenueAmount.toFixed(2)) - parseFloat(item.nDiscountToShow);
-      item.nPriceIncVatAfterDiscount = +(item.nPriceIncVat.toFixed(2) - item.nDiscountToShow.toFixed(2)) - item.nRedeemedLoyaltyPoints;
+      item.nPriceIncVatAfterDiscount = +(item.nPriceIncVat.toFixed(2) - item.nDiscountToShow.toFixed(2)) * item.nQuantity - item.nRedeemedLoyaltyPoints - item?.nGiftcardDiscount;
+      item.nTotalPriceIncVat = item.nPriceIncVat * item.nQuantity;
       // item.nPriceIncVatAfterDiscount = parseFloat(item.nPriceIncVatAfterDiscount.toFixed(2));
       // console.log('nPriceIncVatAfterDiscount', item.nPriceIncVatAfterDiscount);
       if (item.oType.bRefund === true && item.oType.eKind != 'gold-purchase') item.nPriceIncVatAfterDiscount = -(item.nPriceIncVatAfterDiscount)
       // console.log('item.nPriceIncVatAfterDiscount', item.nPriceIncVatAfterDiscount)
       // item.nRevenueAmount = (+(item.nRevenueAmount.toFixed(2)) - item.nDiscount) * item.nQuantity;
-      item.totalPaymentAmount = (parseFloat(item.nRevenueAmount) - parseFloat(item.nDiscountToShow)) * item.nQuantity - item.nRedeemedLoyaltyPoints;
+      // console.log(566, item?.totalPaymentAmount, item.nRevenueAmount, item.nDiscountToShow, item.nRedeemedLoyaltyPoints, item.nGiftcardDiscount);
+      item.totalPaymentAmount = (parseFloat(item.nRevenueAmount) - parseFloat(item.nDiscountToShow)) * item.nQuantity - item.nRedeemedLoyaltyPoints - item?.nGiftcardDiscount;
       item.totalPaymentAmount = +(item.totalPaymentAmount.toFixed(2));
       // console.log('item.totalPaymentAmount', item.totalPaymentAmount)
       // item.totalPaymentAmountAfterDisc = parseFloat(item.priceAfterDiscount.toFixed(2)) * parseFloat(item.nQuantity);
@@ -578,6 +590,7 @@ export class TillService {
       }
       // console.log('totalAfterDisc', totalAfterDisc)
       totalDiscount += item.ntotalDiscountPerItem;
+      totalGiftcardDiscount += item.nGiftcardDiscount;
       // console.log('totalDiscount', totalDiscount)
       if(!item?.bMigrate){
         relatedItemsPromises[index] = this.getRelatedTransactionItem(item?.iActivityItemId, item?._id, index);
@@ -592,9 +605,20 @@ export class TillService {
     });
     
     transaction.aTransactionItems.forEach((item: any) => {
+      let description = (item?.nDiscountToShow || item.nGiftcardDiscount) ? `${this.translateService.instant('ORIGINAL_AMOUNT_INC_DISC')}: ${item.nTotalPriceIncVat}\n` : '';
       item.eKind = item.oType.eKind;
       if (item?.related?.length) {
+        
+        if (item.nPriceIncVatAfterDiscount !== item.nRevenueAmount) {
+          description += `${this.translateService.instant('ALREADY_PAID')}: \n${item.sTransactionNumber} | ${item.totalPaymentAmount} (${this.translateService.instant('THIS_RECEIPT')})\n`;
+        }
+
         item.related.forEach((relatedItem: any) => {
+          
+          description += `${relatedItem.sTransactionNumber} | ${relatedItem.nRevenueAmount * relatedItem.nQuantity}\n`;
+          
+          
+
           if(relatedItem?.aPayments?.some((payment: any) => payment.sMethod === 'card')){
             aToFetchPayments.push(relatedItem.iTransactionId);
           }
@@ -628,6 +652,7 @@ export class TillService {
           // relatedItem.nRevenueAmount = relatedItem.nRevenueAmount.toFixed(2);
         })
       }
+      item.description = description;
     })
     if (aToFetchPayments?.length) {
       const oBody = {
@@ -642,13 +667,15 @@ export class TillService {
       }
     }
 
-    dataObject.totalAfterDisc = parseFloat(totalAfterDisc.toFixed(2));
-    dataObject.total = parseFloat(total.toFixed(2));
-    dataObject.totalVat = parseFloat(totalVat.toFixed(2));
-    dataObject.totalDiscount = parseFloat(totalDiscount.toFixed(2));
+    dataObject.totalAfterDisc = +(totalAfterDisc.toFixed(2));
+    dataObject.total = +(total.toFixed(2));
+    dataObject.totalVat = +(totalVat.toFixed(2));
+    dataObject.totalDiscount = +(totalDiscount.toFixed(2));
+    dataObject.totalGiftcardDiscount = +(totalGiftcardDiscount.toFixed(2));
     dataObject.totalSavingPoints = totalSavingPoints;
     dataObject.totalRedeemedLoyaltyPoints = totalRedeemedLoyaltyPoints;
     dataObject.nTotalExcVat = dataObject.totalAfterDisc - dataObject.totalVat;
+    dataObject.nTotalQty = nTotalQty;
     // dataObject.dCreatedDate = moment(dataObject.dCreatedDate).format('DD-MM-yyyy hh:mm');
     let _relatedResult:any , _loyaltyPointSettings:any;
     

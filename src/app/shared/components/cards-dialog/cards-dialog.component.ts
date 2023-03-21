@@ -35,7 +35,7 @@ export class CardsComponent implements OnInit, AfterViewInit {
   redeemedLoyaltyPoints = 0;
   customer: any;
   pincode: any;
-  giftCardInfo = { sGiftCardNumber: '', pincode: '', nAmount: 0, profileIconUrl: '', type: 'custom', nPaidAmount: 0, iArticleGroupId: '' };
+  giftCardInfo = { sGiftCardNumber: '', pincode: '', nAmount: 0, profileIconUrl: '', type: 'custom', nPaidAmount: 0, iArticleGroupId: '', nGiftcardRemainingAmount:0 };
   oGiftcard:any;
   activeTabIndex:number = 0;
   translation:any=[];
@@ -101,7 +101,7 @@ export class CardsComponent implements OnInit, AfterViewInit {
     const url = `/api/v1/activities/giftcard/${sGiftCardNumber}?iBusinessId=${this.iBusinessId}`;
     this.apiService.getNew('cashregistry', url).subscribe((result: any) => {
       this.giftCardDetails = result;
-      this.giftCardInfo.nPaidAmount = result.nPaidAmount;
+      this.giftCardInfo.nGiftcardRemainingAmount = result?.nGiftcardRemainingAmount || 0;
       this.fetchInProgress = false;
     }, (error) => {
       alert(error.error.message);
@@ -144,6 +144,7 @@ export class CardsComponent implements OnInit, AfterViewInit {
   submit() {
     this.giftCardInfo.sGiftCardNumber = this.sGiftCardNumber;
     this.giftCardInfo.nAmount = this.nAmount;
+    this.giftCardInfo.nGiftcardRemainingAmount -= this.nAmount;
     this.giftCardInfo.pincode = this.pincode;
     this.giftCardInfo.profileIconUrl = this.externalGiftCardDetails.profileIconUrl;
     this.giftCardInfo.iArticleGroupId = this.giftCardDetails?.iArticleGroupId;

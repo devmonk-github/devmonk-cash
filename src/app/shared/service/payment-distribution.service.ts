@@ -43,6 +43,7 @@ export class PaymentDistributionService {
 
       if (i.tType && i.tType === 'refund'){
         i.amountToBePaid = (i?.new) ? -(i.price) : -(i.nRefundAmount);
+        availableAmount += i.price;
       } 
       
       if (bTesting)  console.log('46 paymentAmount', i.paymentAmount, 'amountToBePaid', i.amountToBePaid);
@@ -64,13 +65,13 @@ export class PaymentDistributionService {
     if (bTesting) console.log('assignedAmountToManual', assignedAmountToManual, 'availableAmount', availableAmount)
 
     if (arrToUpdate?.length) {
-      let totalAmountToBePaid = arrToUpdate.reduce((n, { amountToBePaid }) => n + amountToBePaid, 0); // + assignedAmountToManual
+      let totalAmountToBePaid = arrToUpdate.filter(el => el.amountToBePaid > 0).reduce((n, { amountToBePaid }) => n + amountToBePaid, 0); // + assignedAmountToManual
       if (bTesting)  console.log('totalAmountToBePaid', totalAmountToBePaid)
       
       if (totalAmountToBePaid !== 0) {
         
         arrToUpdate.forEach(i => {
-          if (i.type !== 'giftcard') {
+          if (i.type !== 'giftcard' && nGiftcardAmount > 0) {
             i.nGiftcardDiscount = +((i.amountToBePaid * nGiftcardAmount / totalAmountToBePaid).toFixed(2));
             if (bTesting) console.log('nGiftcardDiscount', i.nGiftcardDiscount)
 
@@ -78,9 +79,11 @@ export class PaymentDistributionService {
             if (bTesting) console.log('reduced amountToBePaid', i.amountToBePaid);
           }
         });
-
-        totalAmountToBePaid = arrToUpdate.reduce((n, { amountToBePaid }) => n + amountToBePaid, 0);
-        if (bTesting) console.log('new totalAmountToBePaid', totalAmountToBePaid)
+        
+        if(nGiftcardAmount > 0){
+          totalAmountToBePaid = arrToUpdate.reduce((n, { amountToBePaid }) => n + amountToBePaid, 0);
+          if (bTesting) console.log('new totalAmountToBePaid', totalAmountToBePaid)
+        } 
 
         const aGiftcard = arrToUpdate.filter((el:any) => el.type === 'giftcard');
 
@@ -101,17 +104,34 @@ export class PaymentDistributionService {
           })
         }
         arrToUpdate.map(i => {
-          if(i.type !== 'giftcard') {
+          if (bTesting) console.log(107, 'i.tType',i.tType);
+          if(i.type !== 'giftcard' && i.tType !== 'refund') {
             const a = +((i.amountToBePaid * availableAmount / totalAmountToBePaid).toFixed(2));
             if (bTesting) console.log('set to payment',a)
             i.paymentAmount = a;
           }
         });
       }
-      const assignedAmount = arrToUpdate.reduce((n, { paymentAmount }) => n + paymentAmount, 0);
+      let assignedAmount = arrToUpdate.reduce((n, { paymentAmount }) => n + paymentAmount, 0);
       if (bTesting) console.log('assignedAmount', assignedAmount, 'availableAmount', availableAmount)
-      if(availableAmount > 0) arrToUpdate[arrToUpdate.length - 1].paymentAmount += (availableAmount - assignedAmount);
-      if (bTesting) console.log("updated last item's paymentAmount to ", (availableAmount - assignedAmount))
+      if(availableAmount > 0 && assignedAmount != 0) {
+        if (bTesting) console.log('availableAmount > 0', availableAmount)
+        if(assignedAmount > 0) {
+          if (bTesting) console.log('assignedAmount > 0', assignedAmount)
+          arrToUpdate[arrToUpdate.length - 1].paymentAmount += (availableAmount - assignedAmount);
+          if (bTesting) console.log("updated last item's paymentAmount to ", (availableAmount - assignedAmount))
+        } else {
+          if (bTesting) console.log('assignedAmount < 0', assignedAmount)
+          assignedAmount = -assignedAmount;
+          arrToUpdate.map(i => {
+            if (i.type !== 'giftcard' && i.tType !== 'refund') {
+              const a = +((i.amountToBePaid * availableAmount / assignedAmount).toFixed(2));
+              if (bTesting) console.log('125 set to payment', a)
+              i.paymentAmount = a;
+            }
+          });
+        }
+      } 
       // console.log('last item is ', arrToUpdate[arrToUpdate.length - 1])
     }
     arrToUpdate.forEach(element => {

@@ -59,7 +59,11 @@ export class PrintSettingsComponent implements OnInit {
   bShowActionSettingsLoader: boolean = false;
   labelPrintSettings: any;
   iWorkstationId: any;
-  aWorkstations:any =[]
+  aWorkstations:any =[];
+
+  bUseZpl = true;
+  bUseTspl = false;
+  aTsplTemplates:any;
 
   constructor(
     private dialogService: DialogService,

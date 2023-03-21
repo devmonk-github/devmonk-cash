@@ -31,7 +31,7 @@
                                 </span></button>
                         </div>
                         <span *ngIf="giftCardDetails">{{"BALANCE_GIFTCARDS" | translate}}:
-                            {{giftCardDetails?.nPaidAmount}}</span>
+                            {{giftCardDetails?.nGiftcardRemainingAmount}}</span>
                     </div>
                     <div class="row">
                         <div class="col-6">
@@ -39,8 +39,8 @@
                         </div>
                         <div class="col-6">
                             <input name="" class="form-control" type="number"
-                                [disabled]="!giftCardDetails || 1 > giftCardDetails?.nPaidAmount" [(ngModel)]="nAmount">
-                            <span *ngIf="nAmount > giftCardDetails?.nPaidAmount"
+                                [disabled]="!giftCardDetails || 1 > giftCardDetails?.nGiftcardRemainingAmount" [(ngModel)]="nAmount">
+                            <span *ngIf="nAmount > giftCardDetails?.nGiftcardRemainingAmount"
                                 class="text-danger">{{"AMOUNT_ENTERED_IS_HIGHER_THAN_AVAILABLE_BALANCE" |
                                 translate}}.</span>
                         </div>

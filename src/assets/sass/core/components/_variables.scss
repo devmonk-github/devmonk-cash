@@ -5,7 +5,7 @@
 
 // Bootstrap base colors
 $white:    											#ffffff !default;
-$black:    											#000000 !default;
+$black:    											#333333 !default;
 $gray-100: 										    if(isDarkMode(), #1b1b29, #F5F8FA) !default;
 $gray-200: 										    if(isDarkMode(), #2B2B40, #EFF2F5) !default;
 $gray-300: 										    if(isDarkMode(), #323248, #ecedf4) !default;
@@ -323,7 +323,7 @@ $border-widths: (
 $rounded-pill:                                      50rem !default;
 
 $component-active-color:                            $primary-inverse !default;
-$component-active-bg:                               #E4E6EF !default;
+$component-active-bg:                               $primary !default;
 $component-hover-bg:                                $primary-light !default;
 $component-hover-color:                             $primary !default;
 
@@ -799,8 +799,8 @@ $pagination-hover-color:                            $component-hover-color !defa
 $pagination-hover-bg:                               $component-hover-bg !default;
 $pagination-hover-border-color:                     transparent !default;
 
-$pagination-active-color:                           #0a0a0a !default;
-$pagination-active-bg:                              $component-active-bg !default;
+$pagination-active-color:                           #333333 !default;
+$pagination-active-bg:                              $gray-300 !default;
 $pagination-active-border-color:                    transparent !default;
 
 $pagination-disabled-color:                         $gray-400 !default;

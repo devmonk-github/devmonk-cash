@@ -252,58 +252,58 @@
                         </div>
                     </div>
                     <div class="col-4">
-                        <button class="btn btn-sm btn-secondary w-100 d-flex mb-2">
+                        <button class="btn btn-sm btn-light btn-active-light-primary text-black w-100 d-flex mb-2">
                             <fa-icon [icon]="faFileInvoice"></fa-icon>
-                            <label class="mx-auto">{{ "GENERAL_INVOICE" | translate}}</label>
+                            <label class="mx-auto cursor-pointer">{{ "GENERAL_INVOICE" | translate}}</label>
                         </button>
-                        <button class="btn btn-sm btn-secondary w-100 d-flex mb-2" [disabled]="downloadWithVATLoading || !printSettings?.length || !businessDetails?._id" 
+                        <button class="btn btn-sm btn-light btn-active-light-primary text-black  w-100 d-flex mb-2" [disabled]="downloadWithVATLoading || !printSettings?.length || !businessDetails?._id" 
                             (click)="downloadWithVAT()">
                             <fa-icon [hidden]="downloadWithVATLoading" [icon]="faDownload"></fa-icon>
                             <span *ngIf="downloadWithVATLoading">
                                 <i class="fa fa-spinner fa-spin" [hidden]="!downloadWithVATLoading" style="font-size:15px;"></i>
                             </span>
-                            <label class="mx-auto">{{ "DOWNLOAD_WITH_VAT" | translate}}</label>
+                            <label class="mx-auto cursor-pointer">{{ "DOWNLOAD_WITH_VAT" | translate}}</label>
                         </button>
-                        <button class="btn btn-sm btn-secondary w-100 d-flex mb-2" (click)="downloadWithVAT(true)">
+                        <button class="btn btn-sm btn-light btn-active-light-primary text-black  w-100 d-flex mb-2" (click)="downloadWithVAT(true)">
                             <fa-icon [hidden]="printWithVATLoading" [icon]="faPrint"></fa-icon>
                             <span *ngIf="printWithVATLoading">
                                 <i class="fa fa-spinner fa-spin" [hidden]="!printWithVATLoading" style="font-size:15px;"></i>
                             </span>
-                            <label class="mx-auto">{{ "PRINT" | translate }}</label>
+                            <label class="mx-auto cursor-pointer">{{ "PRINT" | translate }}</label>
                         </button>
-                        <button class="btn btn-sm btn-secondary w-100 d-flex mb-2">
+                        <button class="btn btn-sm btn-light btn-active-light-primary text-black  w-100 d-flex mb-2">
                             <fa-icon [icon]="faDownload"></fa-icon>
-                            <label class="mx-auto">{{ "DOWNLOAD_WITHOUT_VAT" | translate}}</label>
+                            <label class="mx-auto cursor-pointer">{{ "DOWNLOAD_WITHOUT_VAT" | translate}}</label>
                         </button>
-                        <button [disabled]="!businessDetails?._id" class="btn btn-sm btn-secondary w-100 d-flex mb-2" (click)="getThermalReceipt('business-receipt')">
+                        <button [disabled]="!businessDetails?._id" class="btn btn-sm btn-light btn-active-light-primary text-black  w-100 d-flex mb-2" (click)="getThermalReceipt('business-receipt')">
                             <fa-icon [icon]="faReceipt"></fa-icon>
-                            <label class="mx-auto"> {{ "THERMAL_RECEIPT" | translate}}</label>
+                            <label class="mx-auto cursor-pointer"> {{ "THERMAL_RECEIPT" | translate}}</label>
                         </button>
-                        <button [disabled]="!businessDetails?._id" class="btn btn-sm btn-secondary w-100 d-flex mb-2" (click)="getThermalReceipt('warranty-receipt')">
+                        <button [disabled]="!businessDetails?._id" class="btn btn-sm btn-light btn-active-light-primary text-black  w-100 d-flex mb-2" (click)="getThermalReceipt('warranty-receipt')">
                             <fa-icon [icon]="faReceipt"></fa-icon>
-                            <label class="mx-auto"> {{ "WARRANTY_RECEIPT" | translate}}</label>
+                            <label class="mx-auto cursor-pointer"> {{ "WARRANTY_RECEIPT" | translate}}</label>
                         </button>
-                        <button class="btn btn-sm btn-secondary w-100 d-flex mb-2" *ngIf="!transaction?.oCustomer?.bCounter">
+                        <button class="btn btn-sm btn-light btn-active-light-primary text-black  w-100 d-flex mb-2" *ngIf="!transaction?.oCustomer?.bCounter">
                             <fa-icon [icon]="faAt"></fa-icon>
-                            <label class="mx-auto">{{ "MAIL" | translate}}</label>
+                            <label class="mx-auto cursor-pointer">{{ "MAIL" | translate}}</label>
                         </button> 
-                        <button class="btn btn-sm btn-secondary w-100 d-flex mb-2" *ngIf="(nTotalItemPayment - nTotalItemPaidPayment) > 0"
+                        <button class="btn btn-sm btn-light btn-active-light-primary text-black  w-100 d-flex mb-2" *ngIf="(nTotalItemPayment - nTotalItemPaidPayment) > 0"
                         (click)="openTransaction(transaction, 'activity')">
                         <fa-icon [icon]="faUndoAlt"></fa-icon>
-                        <label class="mx-auto">{{"REST_PAYMENT" | translate}}</label>
+                        <label class="mx-auto cursor-pointer">{{"REST_PAYMENT" | translate}}</label>
                     </button>
-                        <button class="btn btn-sm btn-secondary w-100 d-flex mb-2"
+                        <button class="btn btn-sm btn-light btn-active-light-primary text-black  w-100 d-flex mb-2"
                             (click)="openTransaction(transaction, 'activity')">
                             <fa-icon [icon]="faUndoAlt"></fa-icon>
-                            <label class="mx-auto">{{"REFUND" | translate}}</label>
+                            <label class="mx-auto cursor-pointer">{{"REFUND" | translate}}</label>
                         </button>
-                        <button class="btn btn-sm btn-secondary w-100 d-flex mb-2">
+                        <button class="btn btn-sm btn-light btn-active-light-primary text-black  w-100 d-flex mb-2">
                             <fa-icon [icon]="faClipboard"></fa-icon>
-                            <label class="mx-auto">{{"VIEW_LOG" | translate}}</label>
+                            <label class="mx-auto cursor-pointer">{{"VIEW_LOG" | translate}}</label>
                         </button>
-                        <!-- <button class="btn btn-sm btn-secondary w-100 d-flex mb-2">
+                        <!-- <button class="btn btn-sm btn-light btn-active-light-primary text-black  w-100 d-flex mb-2">
                             <fa-icon [icon]="faTrashAlt"></fa-icon>
-                            <label class="mx-auto">{{ "DELETE" | translate}}</label>
+                            <label class="mx-auto cursor-pointer">{{ "DELETE" | translate}}</label>
                         </button> -->
                     </div>
                 </div>
@@ -366,13 +366,15 @@
                                     <td class="text-muted">{{'QUANTITY' | translate}}</td>
                                     <td class="text-muted" *ngIf="transaction.totalDiscount > 0">{{'DISCOUNT_PER_ITEM' | translate}}
                                     </td>
+                                    <td class="text-muted" *ngIf="transaction.totalGiftcardDiscount > 0">{{'GIFTCARD_DISCOUNT' | translate}}
+                                    </td>
                                     <ng-container *ngIf="transaction.totalRedeemedLoyaltyPoints > 0">
                                         <td class="text-muted">{{'LOYALTY_POINTS_REDEEMED' | translate}}</td>
                                     </ng-container>
                                     <td class="text-muted" *ngIf="savingPointsSetting && !transaction?.oCustomer?.bCounter">
                                         {{'SAVING_POINTS' | translate}}</td>
                                     <td class="text-muted">{{'TAX' | translate}}</td>
-                                    <td class="text-muted">{{'TOTAL_PRICE' | translate}}</td>
+                                    <td class="text-muted">{{'PAID_AMOUNT' | translate}}</td>
                                 </tr>
                             </thead>
                             <tbody>
@@ -386,8 +388,8 @@
                                             <p  class="m-0" *ngIf="!item.sProductName">{{ item.sArticleGroupName }} {{ item.sProductNumber }}</p>
                                             <p  class="m-0" *ngIf="item.sProductName">{{ item.sProductName}}</p>
                                             <span *ngIf="item.sDescription">{{ item.sDescription}} <br /></span>
-                                            <span *ngIf="item?.totalPaymentAmount != item?.nPriceIncVatAfterDiscount">
-                                                {{ 'ORIGINAL_AMOUNT_INC_DISC' | translate }}: {{ item.nPriceIncVatAfterDiscount }}
+                                            <span *ngIf="item?.nDiscountToShow || item?.nGiftcardDiscount">
+                                                {{ 'ORIGINAL_AMOUNT_INC_DISC' | translate }}: {{ item.nTotalPriceIncVat }}
                                                 <br />
                                             </span>
             
@@ -414,7 +416,12 @@
                                             </div>
                                         </div>
                                     </td>
-                                    <td>{{item.nPriceIncVatAfterDiscount | currency: tillService.currency}}</td>
+                                    <td>
+                                        <span *ngIf="item.nDiscountToShow || item.nGiftcardDiscount">
+                                            <s>({{(item.nTotalPriceIncVat) | currency: tillService.currency}})</s>
+                                        </span>
+                                        {{item.nPriceIncVatAfterDiscount | currency: tillService.currency}}
+                                    </td>
                                     <td>{{item.nQuantity}}</td>
                                     <td *ngIf="item.nDiscountToShow <= 0"> {{ "0.00" | currency: tillService.currency}}</td>
                                     <td *ngIf="item.nDiscountToShow > 0">
@@ -426,6 +433,7 @@
                                             {{ item.nDiscountToShow * item.nQuantity | currency: tillService.currency}}
                                         </span>
                                     </td>
+                                    <td *ngIf="transaction.totalGiftcardDiscount > 0">{{ item.nGiftcardDiscount | currency: tillService.currency}}</td>
                                     <ng-container *ngIf="item.nRedeemedLoyaltyPoints > 0">
                                         <td>{{ item.nRedeemedLoyaltyPoints }} </td>
                                     </ng-container>
@@ -435,10 +443,7 @@
                                     <td>
                                         <div class="d-flex align-items-center justify-content-between">
                                             <div>
-                                                <span *ngIf="item.nDiscountToShow > 0">
-                                                    <s>({{(item.nPriceIncVat * item.nQuantity) | currency:
-                                                        tillService.currency}})</s>
-                                                </span>
+                                                
                                                 {{item.totalPaymentAmount || 0 | currency: tillService.currency}}
                                             </div>
                                             <ng-container *ngIf="from != 'activity-details' && !item?.bMigrate">
@@ -461,9 +466,9 @@
                                     <td>{{ 'TOTAL' | translate }}</td>
                                     <td>{{ transaction.totalAfterDisc | currency: tillService.currency }}</td>
                                     <td>{{ transaction.nTotalQty }}</td>
-                                    <td *ngIf="transaction.totalDiscount > 0">{{ transaction.totalDiscount | currency:
-                                        tillService.currency }}</td>
-                                    <ng-container *ngIf="transaction.totalRedeemedLoyaltyPoints > 0">
+                                    <td *ngIf="transaction?.totalDiscount">{{ transaction.totalDiscount | currency:tillService.currency }}</td>
+                                    <td *ngIf="transaction?.totalGiftcardDiscount">{{ transaction.totalGiftcardDiscount | currency:tillService.currency }}</td>
+                                    <ng-container *ngIf="transaction?.totalRedeemedLoyaltyPoints">
                                         <td>{{transaction.totalRedeemedLoyaltyPoints}}</td>
                                     </ng-container>
                                     <td *ngIf="savingPointsSetting && !transaction?.oCustomer?.bCounter">{{
