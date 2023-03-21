@@ -70,6 +70,9 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   bDayStateChecking = false;
   bIsDayStateOpened = false;
   bIsOpeningDayState = false;
+  aActivityItems:any=[];
+  nTotalItemPayment:any =0;
+  nTotalItemPaidPayment:any =0;
   translation: any = [];
   @ViewChild('slider', { read: ViewContainerRef }) container!: ViewContainerRef;
 
@@ -96,6 +99,7 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
     
     this.transaction.businessDetails = this.businessDetails;
     this.transaction.currentLocation = this.businessDetails.currentLocation;
+    this.fetchActivityItem();
     this.getPaymentMethods()
     
     this.transaction = await this.tillService.processTransactionForPdfReceipt(this.transaction);
@@ -122,6 +126,8 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
     this.getPrintSetting()
     this.mapEmployee();
     this.getSystemCustomer(this.transaction?.iCustomerId);
+    console.log("tranasction" , this.transaction);
+    console.log("transaction item" , this.transaction.aTransactionItems);
   }
 
   ngAfterContentInit(): void {
@@ -132,6 +138,22 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
     this.dialogRef.close.emit(data);
   }
 
+  fetchActivityItem(){
+    console.log("fetch activity item");
+    this.apiService.postNew('cashregistry', `/api/v1/activities/items/${this.transaction?.iActivityId}`, {iBusinessId:this.iBusinessId}).subscribe((result: any) => {
+      console.log("Result" , result);
+      this.aActivityItems = result.data[0].result;
+      if(this.aActivityItems?.length){
+        this.aActivityItems.forEach((items:any)=>{
+          this.nTotalItemPayment += Number((items.nPriceIncVat * items.nQuantity).toFixed(2));
+          this.nTotalItemPaidPayment += Number((items.nPaidAmount).toFixed(2));
+        })
+
+        console.log("total paid amount" + this.nTotalItemPaidPayment);
+        console.log("total amount" , this.nTotalItemPayment);
+      }
+    });
+  }
   downloadWithVAT(print: boolean = false) {
     this.generatePDF(print);
   }
@@ -254,12 +276,17 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
     }
     activityItem.bFetchingActivityItem = true;
     event.target.disabled = true;
-    const _oActivityitem: any = await this.apiService.postNew('cashregistry', `/api/v1/activities/activity-item/${activityItem.iActivityItemId}`, oBody).toPromise();
-    const oActivityItem = _oActivityitem?.data[0]?.result[0];
-    console.log(oActivityItem);
+    const aActivityItem:any=[];
+    if(this.aActivityItems?.length){
+     const items = this.aActivityItems.filter((AI:any)=> AI._id == activityItem.iActivityItemId);
+     aActivityItem.push(items[0]);
+    } else{
+      const items:any = await this.apiService.postNew('cashregistry', `/api/v1/activities/activity-item/${activityItem.iActivityItemId}`, oBody).toPromise();
+      aActivityItem.push(items?.data[0].result[0]) 
+    }
     activityItem.bFetchingActivityItem = false;
     event.target.disabled = false;
-    this.dialogService.openModal(ActivityDetailsComponent, { cssClass: 'w-fullscreen', context: { activityItems:[oActivityItem], items: true, from: 'transaction-details' } })
+    this.dialogService.openModal(ActivityDetailsComponent, { cssClass: 'w-fullscreen', context: { activityItems:aActivityItem, items: true, from: 'transaction-details' } })
       .instance.close.subscribe((result: any) => {});
   }
 

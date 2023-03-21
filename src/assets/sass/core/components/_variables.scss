@@ -5,11 +5,11 @@
 
 // Bootstrap base colors
 $white:    											#ffffff !default;
-$black:    											#000000 !default;
+$black:    											#333333 !default;
 $gray-100: 										    if(isDarkMode(), #1b1b29, #F5F8FA) !default;
 $gray-200: 										    if(isDarkMode(), #2B2B40, #EFF2F5) !default;
-$gray-300: 										    if(isDarkMode(), #323248, #dbf0eb) !default;
-$gray-400: 										    if(isDarkMode(), #474761, #B5B5C3) !default;
+$gray-300: 										    if(isDarkMode(), #323248, #ecedf4) !default;
+$gray-400: 										    if(isDarkMode(), #474761, #b5b5c3) !default;
 $gray-500: 										    if(isDarkMode(), #565674, #A1A5B7) !default;
 $gray-600: 										    if(isDarkMode(), #6D6D80, #7E8299) !default;
 $gray-700: 										    if(isDarkMode(), #92929F, #5E6278) !default;
@@ -70,14 +70,14 @@ $dark-light:          							    $gray-200 !default; // Custom variable
 $dark-inverse:         								if(isDarkMode(), $gray-100, $white) !default; // Custom variable
 
 // Primary colors
-$primary:       									#3699FF !default; // Bootstrap variable
+$primary:       									#2e8470 !default; // Bootstrap variable
 $primary-active:    								#187DE4 !default; // Custom variable
 $primary-light:    								    if(isDarkMode(), #212E48, #F1FAFF) !default; // Custom variable
 $primary-inverse:  									$white !default;  // Custom variable
 
 // Secondary colors
-$secondary:     									$gray-300 !default; // Bootstrap variable
-$secondary-active:  								$gray-400 !default; // Custom variable
+$secondary:     									$gray-400 !default; // Bootstrap variable
+$secondary-active:  								$gray-300 !default; // Custom variable
 $secondary-light:  									$gray-100 !default; // Custom variable
 $secondary-inverse:									$gray-800 !default; // Custom variable
 
@@ -322,8 +322,8 @@ $border-widths: (
 
 $rounded-pill:                                      50rem !default;
 
-$component-active-color:                            #0a0a0a !default;
-$component-active-bg:                               #E4E6EF !default;
+$component-active-color:                            $primary-inverse !default;
+$component-active-bg:                               $primary !default;
 $component-hover-bg:                                $primary-light !default;
 $component-hover-color:                             $primary !default;
 
@@ -799,8 +799,8 @@ $pagination-hover-color:                            $component-hover-color !defa
 $pagination-hover-bg:                               $component-hover-bg !default;
 $pagination-hover-border-color:                     transparent !default;
 
-$pagination-active-color:                           $component-active-color !default;
-$pagination-active-bg:                              $component-active-bg !default;
+$pagination-active-color:                           #333333 !default;
+$pagination-active-bg:                              $gray-300 !default;
 $pagination-active-border-color:                    transparent !default;
 
 $pagination-disabled-color:                         $gray-400 !default;

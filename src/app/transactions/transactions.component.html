@@ -261,8 +261,8 @@
           <td scope="row">{{transaction.dCreatedDate | date: 'medium'}}</td>
           <td>{{transaction.sNumber}}</td>
           <td>{{transaction.sReceiptNumber}}</td>
-          <td>{{transaction?.oCustomer?.sFirstName || ''}} {{transaction?.oCustomer?.sLastName || ''}}</td>
-          <td>{{transaction.sMethods}}</td>
+          <td class="text-truncate" style="max-width: 120px;">{{transaction?.oCustomer?.sFirstName || ''}} {{transaction?.oCustomer?.sLastName || ''}}</td>
+          <td>{{transaction.sMethods || '-'}}</td>
           <td> {{transaction.nTotal | currency:tillService.currency}} </td>
           <!-- <td>{{transaction.eType}}</td> -->
           <td>
