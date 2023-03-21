@@ -120,6 +120,26 @@ export class ImportRepairOrderService {
         sColumnHeader: "oShippingAddress_sCity",
         sDataBaseFieldName: "oCustomer.oShippingAddress.sCity",
         sName: "oCustomer.oShippingAddress.sCity",
+      },
+      {
+        sColumnHeader: "Title",
+        sDataBaseFieldName: "sProductName",
+        sName: "sProductName",
+      },
+      {
+        sColumnHeader: "extraComment",
+        sDataBaseFieldName: "sDescription",
+        sName: "sDescription",
+      },
+      {
+        sColumnHeader: "Creator",
+        sDataBaseFieldName: "iEmployeeId",
+        sName: "iEmployeeId",
+      },
+      {
+        sColumnHeader: "Repairer",
+        sDataBaseFieldName: "iAssigneeId",
+        sName: "iAssigneeId",
       }
       
     ]
@@ -149,9 +169,6 @@ export class ImportRepairOrderService {
     for (const oData of parsedRepairOrderData) {
       if (!oData?.nPriceIncVat) throw ('something went wrong');
       const eType = oData['oType.eKind'];
-      const sCustomerName = oData['oCustomer.sFirstName'];
-      console.log("sCustomerName :s" + sCustomerName);
-
       const street = oData['oCustomer.oShippingAddress.sStreet'];
       const HouseNumber = oData['oCustomer.oShippingAddress.sHouseNumber'];
       const HouseNumberSuffix = oData['oCustomer.oShippingAddress.sHouseNumberSuffix'];
@@ -159,11 +176,8 @@ export class ImportRepairOrderService {
       const City = oData['oCustomer.oShippingAddress.sCity'];
       const CountryCode = oData['oCustomer.oShippingAddress.sCountryCode'];
      
-
-
-      console.log(street);
-
-
+      const imageArray = oData?.aImage.split(";");
+      
 
       if(oData.contact_when_ready =="Whatsapp"){
         oData.eEstimatedDateAction = "whatsapp_on_ready";
@@ -182,7 +196,8 @@ export class ImportRepairOrderService {
       const oTransactionItem = {
         iBusinessId: iBusinessId,
         iWorkStationId: iWorkStationId,
-        iEmployeeId: iEmployeeId,
+        iEmployeeId: oData?.iEmployeeId,
+        iAssigneeId:oData?.iAssigneeId,
         iLocationId: iLocationId,
         /* File */
         sBagNumber: oData?.sBagNumber,
@@ -226,9 +241,10 @@ export class ImportRepairOrderService {
         }
       },
         /* default */
-        sProductName: sProductName,
+        
+        sProductName: oData?.sProductName,
         eStatus: "y",
-        aImage: oData?.aImage,
+        aImage:imageArray,
         nMargin: 1,
         nQuantity: 1,
         oArticleGroupMetaData: {
@@ -253,10 +269,10 @@ export class ImportRepairOrderService {
           bPrepayment: false
         },
         nDiscount: 0,
-        sDescription: "",
+        sDescription: oData?.sDescription,
         sServicePartnerRemark: oData?.sServicePartnerRemark,
-        eEstimatedDateAction: oData.eEstimatedDateAction,
-        eActivityItemStatus: oData.eActivityItemStatus,
+        eEstimatedDateAction: oData?.eEstimatedDateAction,
+        eActivityItemStatus: oData?.eActivityItemStatus,
         bDiscountOnPercentage: false,
         bImported: true,
         bImportRepairOrder: true
