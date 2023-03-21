@@ -1,6 +1,7 @@
 <!-- <app-supplier-product-slider [$data]="SupplierStockProductSliderData.asObservable()">
 </app-supplier-product-slider> -->
-<div class="overlay-full d-flex flex-column justify-content-center align-items-center" *ngIf="paymentEditMode && !bIsDayStateOpened">
+<div class="overlay-full d-flex flex-column justify-content-center align-items-center"
+    *ngIf="paymentEditMode && !bIsDayStateOpened">
     <div *ngIf="bDayStateChecking">
         <div class="d-flex flex-column">
             <h1>{{ 'PLEASE_WAIT_WHILE_CHECKING_FOR_DAY_STATE' | translate}}</h1>
@@ -22,7 +23,8 @@
 <div class="card shadow-sm">
     <div class="card-header mt-5">
         <h3>{{ "TRANSACTION_DETAIL" | translate}} | {{transaction.sNumber}}</h3>
-        <button type="button" class="btn btn-sm btn-secondary h-50" (click)="close({action: false, oData: {oCurrentCustomer: transaction.oCustomer}})">
+        <button type="button" class="btn btn-sm btn-secondary h-50"
+            (click)="close({action: false, oData: {oCurrentCustomer: transaction.oCustomer}})">
             <fa-icon [icon]="faTimes"></fa-icon>
         </button>
     </div>
@@ -37,7 +39,8 @@
                             <span>{{ "SYSTEM_CUSTOMER" | translate }}</span>
                         </h3>
                         <ng-container *ngIf="from === 'transactions' || from === 'transactions-action' ">
-                            <button *ngIf="!transaction?.oSystemCustomer?.bCounter" class="btn btn-primary cstm-btn" (click)="openCustomer(transaction.oSystemCustomer)">
+                            <button *ngIf="!transaction?.oSystemCustomer?.bCounter" class="btn btn-primary cstm-btn"
+                                (click)="openCustomer(transaction.oSystemCustomer)">
                                 {{ 'VIEW' | translate }}
                             </button>
                         </ng-container>
@@ -50,7 +53,7 @@
                                 {{ transaction?.oSystemCustomer?.sLastName }}
                             </div>
                         </div>
-                
+
                         <ng-container *ngIf="!transaction?.oSystemCustomer?.bCounter">
                             <div class="col-md-6">
                                 <div class="mt-2 text-muted">{{ "INVOVICE_ADDRESS" | translate}}</div>
@@ -84,7 +87,8 @@
                                 </div>
                             </div>
                             <div class="col-md-12">
-                                <div class="text-gray-800 mt-2" *ngIf="!transaction?.oSystemCustomer?.bCounter &&  transaction?.oSystemCustomer?.sEmail">
+                                <div class="text-gray-800 mt-2"
+                                    *ngIf="!transaction?.oSystemCustomer?.bCounter &&  transaction?.oSystemCustomer?.sEmail">
                                     {{ transaction?.oSystemCustomer?.sEmail}}
                                 </div>
                                 <div class="text-gray-800 mt-2" *ngIf="transaction?.oSystemCustomer?.oPhone?.sMobile">
@@ -106,8 +110,8 @@
                                 <div>
                                     <ng-container *ngIf="transaction?.oSystemCustomer?.eStatus=='d'">
                                         <span class="badge badge-danger"> {{"DELETED" | translate}}</span>
-                                    </ng-container> 
-                               </div>
+                                    </ng-container>
+                                </div>
                             </div>
                         </ng-container>
                     </div>
@@ -122,7 +126,7 @@
                     </h3>
                     <ng-container *ngIf="from === 'transactions' || from === 'transactions-action' ">
                         <button class="btn btn-primary cstm-btn" (click)="openCurrentCustomer(transaction.oCustomer)">
-                            {{'UPDATE_CURRENT_CUSTOMER'|translate}} 
+                            {{'UPDATE_CURRENT_CUSTOMER'|translate}}
                         </button>
                     </ng-container>
                 </div>
@@ -134,7 +138,7 @@
                             {{ transaction?.oCustomer?.sLastName }}
                         </div>
                     </div>
-            
+
                     <ng-container *ngIf="!transaction?.oCustomer?.bCounter">
                         <div class="col-md-6">
                             <div class="mt-2 text-muted">{{ "INVOVICE_ADDRESS" | translate}}</div>
@@ -168,7 +172,8 @@
                             </div>
                         </div>
                         <div class="col-md-12">
-                            <div class="text-gray-800 mt-2" *ngIf="!transaction?.oCustomer?.bCounter && transaction?.oCustomer?.sEmail">
+                            <div class="text-gray-800 mt-2"
+                                *ngIf="!transaction?.oCustomer?.bCounter && transaction?.oCustomer?.sEmail">
                                 {{transaction?.oCustomer?.sEmail}}
                             </div>
                             <div class="text-gray-800 mt-2" *ngIf="transaction?.oCustomer?.oPhone?.sMobile">
@@ -191,13 +196,13 @@
                     </ng-container>
                 </div>
                 <!-- CURRENT_CUSTOMER End -->
-            
+
                 <div class="d-flex justify-content-between align-items-center">
                     <h3 class="fw-bolder mb-4">
                         <span>{{"CREATER_DETAIL" | translate}} </span>
                     </h3>
                 </div>
-            
+
                 <div class="row fw-bold gy-1">
                     <div class="col-md-12">
                         <div class="d-flex fs-6 ms-1 my-1">
@@ -207,7 +212,8 @@
                                     src="https://prismanote.com/public/prismanote.png" class="createrImage">
                                 <img alt="Logo" *ngIf="transaction?.createrDetail?.sAvatar"
                                     [src]="transaction?.createrDetail?.sAvatar" class="createrImage">
-                                <span> {{transaction?.createrDetail?.sFirstName || ''}} {{transaction?.createrDetail?.sLastName ||
+                                <span> {{transaction?.createrDetail?.sFirstName || ''}}
+                                    {{transaction?.createrDetail?.sLastName ||
                                     ''}} </span>
                             </div>
                         </div>
@@ -221,30 +227,31 @@
                 <div class="row">
                     <div class="col-8 fw-bold gy-1">
                         <div class="row">
-                        <label class="col-md-4 mt-3 text-muted">{{"RECEIPT_NUMBER" | translate}}</label>
-                        <div class="col-md-8">
-                            <div class="text-gray-800 mt-3">{{ transaction.sInvoiceNumber || '' }}</div>
-                        </div>
-                        <label class="col-md-4 mt-3 text-muted">{{"DATE_TIME" | translate}}</label>
-                        <div class="col-md-8">
-                            <div class="text-gray-800 mt-2">{{ transaction.dCreatedDate | date:'dd-MM-YYYY hh:mm' }}</div>
-                        </div>
-                        <!-- <label class="col-md-4 mt-2 text-muted">{{"PAY_METHOD" | translate}}</label>
+                            <label class="col-md-4 mt-3 text-muted">{{"RECEIPT_NUMBER" | translate}}</label>
+                            <div class="col-md-8">
+                                <div class="text-gray-800 mt-3">{{ transaction.sInvoiceNumber || '' }}</div>
+                            </div>
+                            <label class="col-md-4 mt-3 text-muted">{{"DATE_TIME" | translate}}</label>
+                            <div class="col-md-8">
+                                <div class="text-gray-800 mt-2">{{ transaction.dCreatedDate | date:'dd-MM-YYYY hh:mm' }}
+                                </div>
+                            </div>
+                            <!-- <label class="col-md-4 mt-2 text-muted">{{"PAY_METHOD" | translate}}</label>
                         <div class="col-md-8">
                             <div *ngFor="let payment of transaction.aPayments">
                                 <div class="text-gray-800 mt-2">{{ payment.sMethod || '' }}</div>
                             </div>
 
                         </div> -->
-                        <label class="col-md-4 mt-3 text-muted">{{"CHANGE" | translate}}</label>
-                        <div class="col-md-8">
-                            <div class="text-gray-800 mt-3">{{ 0 }}</div>
-                        </div>
-                        <label class="col-md-4 mt-3 text-muted">{{"REFUNDED" | translate}}</label>
-                        <div class="col-md-8">
-                            <div class="text-gray-800 mt-3">{{ 0 }}</div>
-                        </div>
-                        <!-- <label class="col-md-4 mt-2 text-muted">{{"ASSISTED_BY" | translate}}</label>
+                            <label class="col-md-4 mt-3 text-muted">{{"CHANGE" | translate}}</label>
+                            <div class="col-md-8">
+                                <div class="text-gray-800 mt-3">{{ 0 }}</div>
+                            </div>
+                            <label class="col-md-4 mt-3 text-muted">{{"REFUNDED" | translate}}</label>
+                            <div class="col-md-8">
+                                <div class="text-gray-800 mt-3">{{ 0 }}</div>
+                            </div>
+                            <!-- <label class="col-md-4 mt-2 text-muted">{{"ASSISTED_BY" | translate}}</label>
                         <div class="col-md-8">
                             <div class="text-gray-800 mt-2">{{ transaction?.oEmployee?.sFirstName }} {{
                                 transaction?.oEmployee?.sLastName }}</div>
@@ -256,18 +263,22 @@
                             <fa-icon [icon]="faFileInvoice"></fa-icon>
                             <label class="mx-auto cursor-pointer">{{ "GENERAL_INVOICE" | translate}}</label>
                         </button>
-                        <button class="btn btn-sm btn-light btn-active-light-primary text-black  w-100 d-flex mb-2" [disabled]="downloadWithVATLoading || !printSettings?.length || !businessDetails?._id" 
+                        <button class="btn btn-sm btn-light btn-active-light-primary text-black  w-100 d-flex mb-2"
+                            [disabled]="downloadWithVATLoading || !printSettings?.length || !businessDetails?._id"
                             (click)="downloadWithVAT()">
                             <fa-icon [hidden]="downloadWithVATLoading" [icon]="faDownload"></fa-icon>
                             <span *ngIf="downloadWithVATLoading">
-                                <i class="fa fa-spinner fa-spin" [hidden]="!downloadWithVATLoading" style="font-size:15px;"></i>
+                                <i class="fa fa-spinner fa-spin" [hidden]="!downloadWithVATLoading"
+                                    style="font-size:15px;"></i>
                             </span>
                             <label class="mx-auto cursor-pointer">{{ "DOWNLOAD_WITH_VAT" | translate}}</label>
                         </button>
-                        <button class="btn btn-sm btn-light btn-active-light-primary text-black  w-100 d-flex mb-2" (click)="downloadWithVAT(true)">
+                        <button class="btn btn-sm btn-light btn-active-light-primary text-black  w-100 d-flex mb-2"
+                            (click)="downloadWithVAT(true)">
                             <fa-icon [hidden]="printWithVATLoading" [icon]="faPrint"></fa-icon>
                             <span *ngIf="printWithVATLoading">
-                                <i class="fa fa-spinner fa-spin" [hidden]="!printWithVATLoading" style="font-size:15px;"></i>
+                                <i class="fa fa-spinner fa-spin" [hidden]="!printWithVATLoading"
+                                    style="font-size:15px;"></i>
                             </span>
                             <label class="mx-auto cursor-pointer">{{ "PRINT" | translate }}</label>
                         </button>
@@ -275,23 +286,29 @@
                             <fa-icon [icon]="faDownload"></fa-icon>
                             <label class="mx-auto cursor-pointer">{{ "DOWNLOAD_WITHOUT_VAT" | translate}}</label>
                         </button>
-                        <button [disabled]="!businessDetails?._id" class="btn btn-sm btn-light btn-active-light-primary text-black  w-100 d-flex mb-2" (click)="getThermalReceipt('business-receipt')">
+                        <button [disabled]="!businessDetails?._id"
+                            class="btn btn-sm btn-light btn-active-light-primary text-black  w-100 d-flex mb-2"
+                            (click)="getThermalReceipt('business-receipt')">
                             <fa-icon [icon]="faReceipt"></fa-icon>
                             <label class="mx-auto cursor-pointer"> {{ "THERMAL_RECEIPT" | translate}}</label>
                         </button>
-                        <button [disabled]="!businessDetails?._id" class="btn btn-sm btn-light btn-active-light-primary text-black  w-100 d-flex mb-2" (click)="getThermalReceipt('warranty-receipt')">
+                        <button [disabled]="!businessDetails?._id"
+                            class="btn btn-sm btn-light btn-active-light-primary text-black  w-100 d-flex mb-2"
+                            (click)="getThermalReceipt('warranty-receipt')">
                             <fa-icon [icon]="faReceipt"></fa-icon>
                             <label class="mx-auto cursor-pointer"> {{ "WARRANTY_RECEIPT" | translate}}</label>
                         </button>
-                        <button class="btn btn-sm btn-light btn-active-light-primary text-black  w-100 d-flex mb-2" *ngIf="!transaction?.oCustomer?.bCounter">
+                        <button class="btn btn-sm btn-light btn-active-light-primary text-black  w-100 d-flex mb-2"
+                            *ngIf="!transaction?.oCustomer?.bCounter">
                             <fa-icon [icon]="faAt"></fa-icon>
                             <label class="mx-auto cursor-pointer">{{ "MAIL" | translate}}</label>
-                        </button> 
-                        <button class="btn btn-sm btn-light btn-active-light-primary text-black  w-100 d-flex mb-2" *ngIf="(nTotalItemPayment - nTotalItemPaidPayment) > 0"
-                        (click)="openTransaction(transaction, 'activity')">
-                        <fa-icon [icon]="faUndoAlt"></fa-icon>
-                        <label class="mx-auto cursor-pointer">{{"REST_PAYMENT" | translate}}</label>
-                    </button>
+                        </button>
+                        <button class="btn btn-sm btn-light btn-active-light-primary text-black  w-100 d-flex mb-2"
+                            [disabled]="!((nTotalItemPayment - nTotalItemPaidPayment) > 0)"
+                            (click)="openTransaction(transaction, 'activity')">
+                            <fa-icon [icon]="faUndoAlt"></fa-icon>
+                            <label class="mx-auto cursor-pointer">{{"REST_PAYMENT" | translate}}</label>
+                        </button>
                         <button class="btn btn-sm btn-light btn-active-light-primary text-black  w-100 d-flex mb-2"
                             (click)="openTransaction(transaction, 'activity')">
                             <fa-icon [icon]="faUndoAlt"></fa-icon>
@@ -364,14 +381,17 @@
                                     <td class="text-muted">{{'PRODUCT' | translate}}</td>
                                     <td class="text-muted">{{'PRICE' | translate}}</td>
                                     <td class="text-muted">{{'QUANTITY' | translate}}</td>
-                                    <td class="text-muted" *ngIf="transaction.totalDiscount > 0">{{'DISCOUNT_PER_ITEM' | translate}}
+                                    <td class="text-muted" *ngIf="transaction.totalDiscount > 0">{{'DISCOUNT_PER_ITEM' |
+                                        translate}}
                                     </td>
-                                    <td class="text-muted" *ngIf="transaction.totalGiftcardDiscount > 0">{{'GIFTCARD_DISCOUNT' | translate}}
+                                    <td class="text-muted" *ngIf="transaction.totalGiftcardDiscount > 0">
+                                        {{'GIFTCARD_DISCOUNT' | translate}}
                                     </td>
                                     <ng-container *ngIf="transaction.totalRedeemedLoyaltyPoints > 0">
                                         <td class="text-muted">{{'LOYALTY_POINTS_REDEEMED' | translate}}</td>
                                     </ng-container>
-                                    <td class="text-muted" *ngIf="savingPointsSetting && !transaction?.oCustomer?.bCounter">
+                                    <td class="text-muted"
+                                        *ngIf="savingPointsSetting && !transaction?.oCustomer?.bCounter">
                                         {{'SAVING_POINTS' | translate}}</td>
                                     <td class="text-muted">{{'TAX' | translate}}</td>
                                     <td class="text-muted">{{'PAID_AMOUNT' | translate}}</td>
@@ -380,22 +400,25 @@
                             <tbody>
                                 <tr *ngFor="let item of transaction.aTransactionItems">
                                     <td (click)="openProductInfo(item)" class="cursor-pointer">
-                                        <img src="{{ item.aImage[0] || imagePlaceHolder}}" (error)="item.aImage[0]=imagePlaceHolder"
-                                            class="product_image">
+                                        <img src="{{ item.aImage[0] || imagePlaceHolder}}"
+                                            (error)="item.aImage[0]=imagePlaceHolder" class="product_image">
                                     </td>
                                     <td (click)="openProductInfo(item)" class="cursor-pointer">
                                         <div>
-                                            <p  class="m-0" *ngIf="!item.sProductName">{{ item.sArticleGroupName }} {{ item.sProductNumber }}</p>
-                                            <p  class="m-0" *ngIf="item.sProductName">{{ item.sProductName}}</p>
+                                            <p class="m-0" *ngIf="!item.sProductName">{{ item.sArticleGroupName }} {{
+                                                item.sProductNumber }}</p>
+                                            <p class="m-0" *ngIf="item.sProductName">{{ item.sProductName}}</p>
                                             <span *ngIf="item.sDescription">{{ item.sDescription}} <br /></span>
                                             <span *ngIf="item?.nDiscountToShow || item?.nGiftcardDiscount">
-                                                {{ 'ORIGINAL_AMOUNT_INC_DISC' | translate }}: {{ item.nTotalPriceIncVat }}
+                                                {{ 'ORIGINAL_AMOUNT_INC_DISC' | translate }}: {{ item.nTotalPriceIncVat
+                                                }}
                                                 <br />
                                             </span>
-            
+
                                             <div *ngIf="item.related?.length">
                                                 {{ "ALREADY_PAID" | translate}}:<br />
-                                                {{item.sTransactionNumber}} | {{item.totalPaymentAmount }} ({{"THIS_RECEIPT" |
+                                                {{item.sTransactionNumber}} | {{item.totalPaymentAmount }}
+                                                ({{"THIS_RECEIPT" |
                                                 translate }})<br />
                                                 <span *ngFor="let obj of item.related">{{obj.sTransactionNumber}} |
                                                     {{obj.totalPaymentAmount }}<br /></span>
@@ -423,7 +446,8 @@
                                         {{item.nPriceIncVatAfterDiscount | currency: tillService.currency}}
                                     </td>
                                     <td>{{item.nQuantity}}</td>
-                                    <td *ngIf="item.nDiscountToShow <= 0"> {{ "0.00" | currency: tillService.currency}}</td>
+                                    <td *ngIf="item.nDiscountToShow <= 0"> {{ "0.00" | currency: tillService.currency}}
+                                    </td>
                                     <td *ngIf="item.nDiscountToShow > 0">
                                         <span *ngIf="item.bDiscountOnPercentage">
                                             {{ item.nDiscount }}% ({{item.nDiscountToShow * item.nQuantity | currency:
@@ -433,17 +457,19 @@
                                             {{ item.nDiscountToShow * item.nQuantity | currency: tillService.currency}}
                                         </span>
                                     </td>
-                                    <td *ngIf="transaction.totalGiftcardDiscount > 0">{{ item.nGiftcardDiscount | currency: tillService.currency}}</td>
+                                    <td *ngIf="transaction.totalGiftcardDiscount > 0">{{ item.nGiftcardDiscount |
+                                        currency: tillService.currency}}</td>
                                     <ng-container *ngIf="item.nRedeemedLoyaltyPoints > 0">
                                         <td>{{ item.nRedeemedLoyaltyPoints }} </td>
                                     </ng-container>
-                                    <td *ngIf="savingPointsSetting && !transaction?.oCustomer?.bCounter">{{item.nSavingsPoints ||
+                                    <td *ngIf="savingPointsSetting && !transaction?.oCustomer?.bCounter">
+                                        {{item.nSavingsPoints ||
                                         0}} </td>
                                     <td>{{item.nVatRate}} % ({{item.vat || 0 | currency: tillService.currency }})</td>
                                     <td>
                                         <div class="d-flex align-items-center justify-content-between">
                                             <div>
-                                                
+
                                                 {{item.totalPaymentAmount || 0 | currency: tillService.currency}}
                                             </div>
                                             <ng-container *ngIf="from != 'activity-details' && !item?.bMigrate">
@@ -453,12 +479,13 @@
                                                             (click)="showActivityItem(item,$event)">
                                                             <i class="fa fa-eye"></i>
                                                         </button>
-                                                        <div *ngIf="item.bFetchingActivityItem" class="spinner-border mx-2"></div>
+                                                        <div *ngIf="item.bFetchingActivityItem"
+                                                            class="spinner-border mx-2"></div>
                                                     </div>
                                                 </div>
                                             </ng-container>
                                         </div>
-            
+
                                     </td>
                                 </tr>
                                 <tr class="fw-bolder">
@@ -466,8 +493,10 @@
                                     <td>{{ 'TOTAL' | translate }}</td>
                                     <td>{{ transaction.totalAfterDisc | currency: tillService.currency }}</td>
                                     <td>{{ transaction.nTotalQty }}</td>
-                                    <td *ngIf="transaction?.totalDiscount">{{ transaction.totalDiscount | currency:tillService.currency }}</td>
-                                    <td *ngIf="transaction?.totalGiftcardDiscount">{{ transaction.totalGiftcardDiscount | currency:tillService.currency }}</td>
+                                    <td *ngIf="transaction?.totalDiscount">{{ transaction.totalDiscount |
+                                        currency:tillService.currency }}</td>
+                                    <td *ngIf="transaction?.totalGiftcardDiscount">{{ transaction.totalGiftcardDiscount
+                                        | currency:tillService.currency }}</td>
                                     <ng-container *ngIf="transaction?.totalRedeemedLoyaltyPoints">
                                         <td>{{transaction.totalRedeemedLoyaltyPoints}}</td>
                                     </ng-container>
@@ -526,7 +555,8 @@
                                     <tr *ngFor="let oPayment of aNewSelectedPaymentMethods; let i = index">
                                         <td>
                                             <div>
-                                                <ng-select [(ngModel)]="aNewSelectedPaymentMethods[i]" [clearable]="false">
+                                                <ng-select [(ngModel)]="aNewSelectedPaymentMethods[i]"
+                                                    [clearable]="false">
                                                     <ng-option [value]="option" *ngFor="let option of payMethods">
                                                         {{ option.sName | translate }}
                                                     </ng-option>
@@ -541,7 +571,8 @@
                                                     (ngModelChange)="reCalculateTotal()">
                                             </div>
                                             <div>
-                                                <button class="btn p-0 ms-2" (click)="aNewSelectedPaymentMethods.splice(i,1)">
+                                                <button class="btn p-0 ms-2"
+                                                    (click)="aNewSelectedPaymentMethods.splice(i,1)">
                                                     <i class="fa fa-trash"></i>
                                                 </button>
                                             </div>
@@ -569,8 +600,10 @@
                                 </tr>
                             </tfoot>
                         </table>
-                        <button *ngIf="paymentEditMode" class="btn btn-sm btn-primary" (click)="saveUpdatedPayments($event)"
-                            [disabled]="transaction.nNewPaymentMethodTotal !== transaction.nPaymentMethodTotal"> {{ "SAVE" |
+                        <button *ngIf="paymentEditMode" class="btn btn-sm btn-primary"
+                            (click)="saveUpdatedPayments($event)"
+                            [disabled]="transaction.nNewPaymentMethodTotal !== transaction.nPaymentMethodTotal"> {{
+                            "SAVE" |
                             translate}}</button>
                     </div>
                 </div>

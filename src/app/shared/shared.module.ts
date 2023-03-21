@@ -60,6 +60,7 @@ import { TransactionsPdfService } from "./service/transactions-pdf.service";
 import { SelectPrintPaperDialogComponent } from "./components/select-print-paper-dialog/select-print-paper-dialog.component";
 import { SupplierProductSliderModule } from "../sliders/supplier-stock-product-slider/supplier-product-slider.module";
 import { CustomerActivitiesDialogComponent } from "./components/customer-activities-dialog/customer-activities.component";
+import { BankConfirmationDialogComponent } from './components/bank-confirmation-dialog/bank-confirmation-dialog.component';
 
 @NgModule({
   declarations: [
@@ -99,7 +100,8 @@ import { CustomerActivitiesDialogComponent } from "./components/customer-activit
     ActivityItemExportComponent,
     //DateTranslatePipe,
     SelectPrintPaperDialogComponent,
-    CustomerActivitiesDialogComponent
+    CustomerActivitiesDialogComponent,
+    BankConfirmationDialogComponent
   ],
   imports: [
     CommonModule,

@@ -145,8 +145,13 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
       this.aActivityItems = result.data[0].result;
       if(this.aActivityItems?.length){
         this.aActivityItems.forEach((items:any)=>{
-          this.nTotalItemPayment += Number((items.nPriceIncVat * items.nQuantity).toFixed(2));
-          this.nTotalItemPaidPayment += Number((items.nPaidAmount).toFixed(2));
+          console.log("activity update" , this.transaction.aTransactionItems);
+          console.log("activity transaction" , items.iTransactionItemId);
+          const oTransactionItem = this.transaction.aTransactionItems.find((TI:any)=> TI._id == items.iTransactionItemId);
+          if(oTransactionItem){
+            this.nTotalItemPayment += Number((items.nPriceIncVat * items.nQuantity).toFixed(2));
+            this.nTotalItemPaidPayment += Number((items.nPaidAmount).toFixed(2));
+          }  
         })
 
         console.log("total paid amount" + this.nTotalItemPaidPayment);
