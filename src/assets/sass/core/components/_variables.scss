@@ -323,7 +323,7 @@ $border-widths: (
 $rounded-pill:                                      50rem !default;
 
 $component-active-color:                            $primary-inverse !default;
-$component-active-bg:                               #E4E6EF !default;
+$component-active-bg:                               $primary !default;
 $component-hover-bg:                                $primary-light !default;
 $component-hover-color:                             $primary !default;
 
@@ -799,8 +799,8 @@ $pagination-hover-color:                            $component-hover-color !defa
 $pagination-hover-bg:                               $component-hover-bg !default;
 $pagination-hover-border-color:                     transparent !default;
 
-$pagination-active-color:                           #0a0a0a !default;
-$pagination-active-bg:                              $component-active-bg !default;
+$pagination-active-color:                           #333333 !default;
+$pagination-active-bg:                              $gray-300 !default;
 $pagination-active-border-color:                    transparent !default;
 
 $pagination-disabled-color:                         $gray-400 !default;
