@@ -817,7 +817,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
           });
           // payMethods = payMethods.filter((o: any) => o.amount !== 0);
           this.availableAmount = this.getUsedPayMethods(true);
-          console.log(519, this.availableAmount)
           this.nGiftcardAmount = _.sumBy(this.appliedGiftCards, 'nAmount') || 0;
           this.paymentDistributeService.distributeAmount(this.transactionItems, this.availableAmount, this.nGiftcardAmount, this.redeemedLoyaltyPoints);
           this.transactionItems = [...this.transactionItems.filter((item: any) => item.type !== 'empty-line')]
@@ -827,18 +826,18 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
           if (body.transactionItems.filter((item: any) => item.oType.eKind === 'repair')[0]?.iActivityItemId) {
             this.bHasIActivityItemId = true
           }
-          // if (giftCardPayment && this.appliedGiftCards.length > 0) {
-          //   this.appliedGiftCards.forEach(element => {
-          //     const cardPaymethod = _.clone(giftCardPayment);
-          //     cardPaymethod.amount = element.nAmount;
-          //     cardPaymethod.sGiftCardNumber = element.sGiftCardNumber;
-          //     cardPaymethod.iArticleGroupId = element.iArticleGroupId;
-          //     cardPaymethod.iArticleGroupOriginalId = element.iArticleGroupOriginalId;
-          //     cardPaymethod.type = element.type;
-          //     body.payments.push(cardPaymethod);
-          //   });
-          //   body.giftCards = this.appliedGiftCards;
-          // }
+          if (giftCardPayment && this.appliedGiftCards.length > 0) {
+            // this.appliedGiftCards.forEach(element => {
+            //   const cardPaymethod = _.clone(giftCardPayment);
+            //   cardPaymethod.amount = element.nAmount;
+            //   cardPaymethod.sGiftCardNumber = element.sGiftCardNumber;
+            //   cardPaymethod.iArticleGroupId = element.iArticleGroupId;
+            //   cardPaymethod.iArticleGroupOriginalId = element.iArticleGroupOriginalId;
+            //   cardPaymethod.type = element.type;
+            //   body.payments.push(cardPaymethod);
+            // });
+            body.giftCards = this.appliedGiftCards;
+          }
           body.oTransaction.iActivityId = this.iActivityId;
           let result = body.transactionItems.map((a: any) => a.iBusinessPartnerId);
           const uniq = [...new Set(_.compact(result))];
@@ -918,23 +917,23 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     this.transaction = await this.tillService.processTransactionForPdfReceipt(this.transaction);
 
     let oDataSource = JSON.parse(JSON.stringify(this.transaction));
-    let nTotalOriginalAmount = 0;
-    oDataSource.aTransactionItems.forEach((item: any) => {
-      nTotalOriginalAmount += item.nPriceIncVatAfterDiscount;
-      let description = (item?.totalPaymentAmount != item?.nPriceIncVatAfterDiscount) ? `${this.translateService.instant('ORIGINAL_AMOUNT_INC_DISC')}: ${item.nPriceIncVatAfterDiscount}\n` : '';
-      if (item?.related?.length) {
-        description += `${this.translateService.instant('ALREADY_PAID')}: \n${item.sTransactionNumber} | ${item.nRevenueAmount} (${this.translateService.instant('THIS_RECEIPT')})\n`;
+    // let nTotalOriginalAmount = 0;
+    // oDataSource.aTransactionItems.forEach((item: any) => {
+    //   nTotalOriginalAmount += item.nPriceIncVatAfterDiscount;
+    //   let description = (item?.totalPaymentAmount != item?.nPriceIncVatAfterDiscount) ? `${this.translateService.instant('ORIGINAL_AMOUNT_INC_DISC')}: ${item.nPriceIncVatAfterDiscount}\n` : '';
+    //   if (item?.related?.length) {
+    //     description += `${this.translateService.instant('ALREADY_PAID')}: \n${item.sTransactionNumber} | ${item.nRevenueAmount} (${this.translateService.instant('THIS_RECEIPT')})\n`;
 
-        item.related.forEach((related: any) => {
-          description += `${related.sTransactionNumber} | ${related.nRevenueAmount}\n`;
-        });
-      }
+    //     item.related.forEach((related: any) => {
+    //       description += `${related.sTransactionNumber} | ${related.nRevenueAmount}\n`;
+    //     });
+    //   }
 
-      item.description = description;
-    });
+    //   item.description = description;
+    // });
     // oDataSource.bHasPrePayments = true;
     oDataSource.sActivityNumber = oDataSource.activity.sNumber;
-    oDataSource.nTotalOriginalAmount = nTotalOriginalAmount;
+    // oDataSource.nTotalOriginalAmount = nTotalOriginalAmount;
 
     const aUniqueItemTypes = [];
 

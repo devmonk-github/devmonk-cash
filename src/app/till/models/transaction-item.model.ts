@@ -76,6 +76,7 @@ export class TransactionItem {
   iActivityItemId: any;
   oGoldFor: any;
   nDiscount: number;
+  nGiftcardDiscount: number;
   nRedeemedLoyaltyPoints: number;
   sUniqueIdentifier: string;
   nRevenueAmount: number;
@@ -86,7 +87,8 @@ export class TransactionItem {
   eActivityItemStatus: string;
   bGiftcardTaxHandling: string;
   bDiscountOnPercentage: boolean;  
-  sCommentVisibleServicePartner: string;  
+  sCommentVisibleServicePartner: string;
+  nGiftcardRemainingAmount:number;  
   constructor() {}
 
 }

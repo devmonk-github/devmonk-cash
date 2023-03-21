@@ -99,25 +99,24 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
     this.getPaymentMethods()
     
     this.transaction = await this.tillService.processTransactionForPdfReceipt(this.transaction);
-    this.transaction.nTotalOriginalAmount = 0;
-    this.transaction.nTotalQty = 0;
+    // this.transaction.nTotalOriginalAmount = 0;
 
-    this.transaction.aTransactionItems.forEach((item: any) => {
+    // this.transaction.aTransactionItems.forEach((item: any) => {
       
-      this.transaction.nTotalQty += item.nQuantity;
-      let description = (item?.totalPaymentAmount != item?.nPriceIncVatAfterDiscount) ? `${this.translateService.instant('ORIGINAL_AMOUNT_INC_DISC')}: ${item.nPriceIncVatAfterDiscount}\n` : '';
-      if (item?.related?.length) {
-        this.transaction.nTotalOriginalAmount += item.nPriceIncVatAfterDiscount;
-        if (item.nPriceIncVatAfterDiscount !== item.nRevenueAmount) {
-          description += `${this.translateService.instant('ALREADY_PAID')}: \n${item.sTransactionNumber} | ${item.totalPaymentAmount} (${this.translateService.instant('THIS_RECEIPT')})\n`;
+    //   let description = (item?.nDiscountToShow || item.nGiftcardDiscount) ? `${this.translateService.instant('ORIGINAL_AMOUNT_INC_DISC')}: ${item.nTotalPriceIncVat}\n` : '';
+    //   if (item?.related?.length) {
+    //     // this.transaction.nTotalOriginalAmount += item.nPriceIncVatAfterDiscount;
+    //     if (item.nPriceIncVatAfterDiscount !== item.nRevenueAmount) {
+    //       description += `${this.translateService.instant('ALREADY_PAID')}: \n${item.sTransactionNumber} | ${item.totalPaymentAmount} (${this.translateService.instant('THIS_RECEIPT')})\n`;
 
-          item.related.forEach((related: any) => {
-            description += `${related.sTransactionNumber} | ${related.nRevenueAmount * related.nQuantity}\n`;
-          });
-        }
-      }
-      item.description = description;
-    });
+    //       item.related.forEach((related: any) => {
+    //         description += `${related.sTransactionNumber} | ${related.nRevenueAmount * related.nQuantity}\n`;
+    //       });
+    //     }
+    //   }
+    //   item.description = description;
+    // });
+    // console.log(this.transaction)
     this.loading = false;
 
     this.getPrintSetting()
