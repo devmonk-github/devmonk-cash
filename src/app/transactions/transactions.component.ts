@@ -3,6 +3,7 @@ import { Component, OnDestroy, OnInit, QueryList, ViewChildren } from '@angular/
 import { Router } from '@angular/router';
 import { faLongArrowAltDown, faLongArrowAltUp, faMinusCircle, faPlusCircle, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { BehaviorSubject } from 'rxjs';
+import { BankConfirmationDialogComponent } from '../shared/components/bank-confirmation-dialog/bank-confirmation-dialog.component';
 import { ToastService } from '../shared/components/toast';
 import { ApiService } from '../shared/service/api.service';
 import { BarcodeService } from '../shared/service/barcode.service';
@@ -295,6 +296,33 @@ export class TransactionsComponent implements OnInit, OnDestroy {
 
   // Function for handle event of transaction menu
   clickMenuOpt(key: string, transactionId: string) {
+    console.log("transactionid" , transactionId);
+    switch (key) {
+      case 'MARK_CONFIRMED':
+        this.bankConfirmation(transactionId);
+        break
+      default:
+        break;
+    }
+  }
+
+  bankConfirmation(transactionId:any) {
+    console.log("-------------------bank confirmation -----------------------");
+    const transaction = this.transactions.find((transaction:any)=>transaction._id == transactionId);
+    // console.log("transaction" , transaction);
+    this.dialogService.openModal(BankConfirmationDialogComponent, {
+      cssClass: "modal-lg",
+      context: {
+        transaction:transaction[0]
+      },
+      hasBackdrop: true,
+      closeOnBackdropClick: false,
+      closeOnEsc: false
+    }).instance.close.subscribe((result: any) => {
+      console.log("-----------------------result------------------");
+      // console.log(result);
+    });
+
 
   }
 
