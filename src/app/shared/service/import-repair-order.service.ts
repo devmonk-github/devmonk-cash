@@ -42,6 +42,11 @@ export class ImportRepairOrderService {
         sName: "nPriceIncVat",
       },
       {
+        sColumnHeader: "TOTAL_PRICE",
+        sDataBaseFieldName: "nTotalAmount",
+        sName: "nTotalAmount",
+      },
+      {
         sColumnHeader: "TYPE",
         sDataBaseFieldName: "oType.eKind",
         sName: "eKind",
@@ -61,6 +66,62 @@ export class ImportRepairOrderService {
         sDataBaseFieldName: "nVatRate",
         sName: "nVatRate",
       },
+      {
+        sColumnHeader: "Photos",
+        sDataBaseFieldName: "aImage",
+        sName: "aImage",
+      },
+      {
+        sColumnHeader: "CUSTOMER_NAME",
+        sDataBaseFieldName: "oCustomer.sFirstName",
+        sName: "oCustomer.sFirstName",
+      },
+      {
+        sColumnHeader: "customerId",
+        sDataBaseFieldName: "iCustomerId",
+        sName: "iCustomerId",
+      },
+      {
+        sColumnHeader: "Note servicepartner",
+        sDataBaseFieldName: "sServicePartnerRemark",
+        sName: "sServicePartnerRemark",
+      },
+      {
+        sColumnHeader: "contact_when_ready",
+        sDataBaseFieldName: "contact_when_ready",
+        sName: "contact_when_ready",
+      },
+      {
+        sColumnHeader: "oShippingAddress_sStreet",
+        sDataBaseFieldName: "oCustomer.oShippingAddress.sStreet",
+        sName: "oCustomer.oShippingAddress.sStreet",
+      },
+      {
+        sColumnHeader: "oShippingAddress_sHouseNumber",
+        sDataBaseFieldName: "oCustomer.oShippingAddress.sHouseNumber",
+        sName: "oCustomer.oShippingAddress.sHouseNumber",
+      },
+      {
+        sColumnHeader: "oShippingAddress_sHouseNumberSuffix",
+        sDataBaseFieldName: "oCustomer.oShippingAddress.sHouseNumberSuffix",
+        sName: "oCustomer.oShippingAddress.sHouseNumberSuffix",
+      },
+      {
+        sColumnHeader: "oShippingAddress_sCountryCode",
+        sDataBaseFieldName: "oCustomer.oShippingAddress.sCountryCode",
+        sName: "oCustomer.oShippingAddress.sCountryCode",
+      },
+      {
+        sColumnHeader: "oShippingAddress_sPostalCode",
+        sDataBaseFieldName: "oCustomer.oShippingAddress.sPostalCode",
+        sName: "oCustomer.oShippingAddress.sPostalCode",
+      },
+      {
+        sColumnHeader: "oShippingAddress_sCity",
+        sDataBaseFieldName: "oCustomer.oShippingAddress.sCity",
+        sName: "oCustomer.oShippingAddress.sCity",
+      }
+      
     ]
 
     return aDefaultAttribute;
@@ -88,6 +149,31 @@ export class ImportRepairOrderService {
     for (const oData of parsedRepairOrderData) {
       if (!oData?.nPriceIncVat) throw ('something went wrong');
       const eType = oData['oType.eKind'];
+      const sCustomerName = oData['oCustomer.sFirstName'];
+      console.log("sCustomerName :s" + sCustomerName);
+
+      const street = oData['oCustomer.oShippingAddress.sStreet'];
+      const HouseNumber = oData['oCustomer.oShippingAddress.sHouseNumber'];
+      const HouseNumberSuffix = oData['oCustomer.oShippingAddress.sHouseNumberSuffix'];
+      const PostalCode = oData['oCustomer.oShippingAddress.sPostalCode'];
+      const City = oData['oCustomer.oShippingAddress.sCity'];
+      const CountryCode = oData['oCustomer.oShippingAddress.sCountryCode'];
+     
+
+
+      console.log(street);
+
+
+
+      if(oData.contact_when_ready =="Whatsapp"){
+        oData.eEstimatedDateAction = "whatsapp_on_ready";
+      }else if (oData.contact_when_ready =="Email"){
+        oData.eEstimatedDateAction = "email_on_ready";
+      }else {
+        oData.eEstimatedDateAction = "call_on_ready";
+      }
+
+      
       const sProductName = this.translateService.instant(eType === 'order' ? 'ORDER' : 'REPAIR');
       const nPurchasePrice = oData?.nPriceIncVat / (1 + (100 / (oData?.nVatRate || 1)));
       const dDate = new Date(oData?.dCreatedDate);
@@ -101,6 +187,7 @@ export class ImportRepairOrderService {
         /* File */
         sBagNumber: oData?.sBagNumber,
         nPriceIncVat: oData?.nPriceIncVat,
+        nTotalAmount:oData?.nTotalAmount,
         nVatRate: oData?.nVatRate,
         nMatchingCode: oData?.nMatchingCode ? parseFloat(oData?.nMatchingCode) : undefined,
         dCreatedDate: dCreatedDate,
@@ -116,12 +203,32 @@ export class ImportRepairOrderService {
         iArticleGroupId: '', /* repair-order */
         iArticleGroupOriginalId: '',
         sUniqueIdentifier: '',
-        iCustomerId: '',
-        oCustomer: '',
+        iCustomerId: oData?.iCustomerId,
+        oCustomer: {
+          _id:oData?.iCustomerId,
+          oShippingAddress: {
+              sStreet: street,
+              sHouseNumber: HouseNumber,
+              sHouseNumberSuffix: HouseNumberSuffix,
+              sPostalCode: PostalCode,
+              sCity: City,
+              sCountryCode: CountryCode,
+              
+          }
+          ,oInvoiceAddress: {
+            sStreet: street,
+            sHouseNumber: HouseNumber,
+            sHouseNumberSuffix: HouseNumberSuffix,
+            sPostalCode: PostalCode,
+            sCity: City,
+            sCountryCode: CountryCode,
+            
+        }
+      },
         /* default */
         sProductName: sProductName,
         eStatus: "y",
-        aImage: [],
+        aImage: oData?.aImage,
         nMargin: 1,
         nQuantity: 1,
         oArticleGroupMetaData: {
@@ -147,9 +254,9 @@ export class ImportRepairOrderService {
         },
         nDiscount: 0,
         sDescription: "",
-        sServicePartnerRemark: "",
-        eEstimatedDateAction: "call_on_ready",
-        eActivityItemStatus: "delivered",
+        sServicePartnerRemark: oData?.sServicePartnerRemark,
+        eEstimatedDateAction: oData.eEstimatedDateAction,
+        eActivityItemStatus: oData.eActivityItemStatus,
         bDiscountOnPercentage: false,
         bImported: true,
         bImportRepairOrder: true
@@ -164,6 +271,7 @@ export class ImportRepairOrderService {
     const { parsedRepairOrderData, referenceObj, iBusinessId, iLocationId, iWorkStationId, iEmployeeId } = oData;
     const aTransactionItem = this.processTransactionItem(oData);
 
+    console.log("aTransactionItem" , aTransactionItem);
     const oBody: any = {
       iBusinessId: iBusinessId,
       iLocationId: iLocationId,
@@ -175,8 +283,11 @@ export class ImportRepairOrderService {
         iLocationId: iLocationId,
         iWorkstationId: iWorkStationId,
         iEmployeeId: iEmployeeId,
-        bImported: true
+        bImported: true,
+        //oCustomer:aTransactionItem[0]?.oCustomer,
+        //iCustomerId:aTransactionItem[0]?.iCustomerId
       },
+      
       redeemedLoyaltyPoints: 0,
       transactionItems: aTransactionItem,
       sDefaultLanguage: localStorage.getItem('language') || 'nl',
@@ -184,8 +295,9 @@ export class ImportRepairOrderService {
       bImportRepairOrder: true
     };
 
-    console.log('importRepairOrder: ', oBody);
-    console.log('referenceObj: ', referenceObj);
+    console.log("oBody" , oBody);
+    // console.log('importRepairOrder: ', oBody);
+    // console.log('referenceObj: ', referenceObj);
     return { parsedRepairOrderData, oBody };
   }
 
