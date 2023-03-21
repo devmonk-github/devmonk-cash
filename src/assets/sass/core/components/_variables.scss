@@ -5,7 +5,7 @@
 
 // Bootstrap base colors
 $white:    											#ffffff !default;
-$black:    											#000000 !default;
+$black:    											#333333 !default;
 $gray-100: 										    if(isDarkMode(), #1b1b29, #F5F8FA) !default;
 $gray-200: 										    if(isDarkMode(), #2B2B40, #EFF2F5) !default;
 $gray-300: 										    if(isDarkMode(), #323248, #ecedf4) !default;
