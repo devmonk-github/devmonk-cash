@@ -46,7 +46,7 @@ export class ImportRepairOrderDetailComponent implements OnInit {
   ngOnChanges(changes: SimpleChanges): void {
     if (this.parsedRepairOrderData?.length) {
       this.headerOptions = [...Object.keys(this.parsedRepairOrderData[0])];
-      console.log('this.headerOptions: ', this.headerOptions);
+      console.log('this.headerOptionss: ', this.headerOptions);
       this.headerOptions = this.headerOptions.sort();
       this.repairOrderDetailsForm = {};
       this.updateTemplateForm = {};

@@ -1,13 +1,16 @@
 import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
+import { ApiService } from 'src/app/shared/service/api.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ImportRepairOrderService {
-
+  EmployeeId :any;
+  AssigneeId:any;
   constructor(
-    private translateService: TranslateService
+    private translateService: TranslateService,
+    private apiService: ApiService,
   ) { }
 
   // convertToDate(dateString: any) {
@@ -141,6 +144,12 @@ export class ImportRepairOrderService {
         sDataBaseFieldName: "iAssigneeId",
         sName: "iAssigneeId",
       }
+      // ,
+      // {
+      //   sColumnHeader: "Estimated price",
+      //   sDataBaseFieldName: "nRevenueAmount",
+      //   sName: "nRevenueAmount",
+      // }
       
     ]
 
@@ -177,6 +186,48 @@ export class ImportRepairOrderService {
       const CountryCode = oData['oCustomer.oShippingAddress.sCountryCode'];
      
       const imageArray = oData?.aImage.split(";");
+
+      const em = oData?.iEmployeeId.split("-");
+      const fname = em[0];
+      const lname = em[1];
+      // console.log(em);
+      // console.log("em");
+
+      const am = oData?.iAssigneeId.split("-");
+      const afname = am[0];
+      const alname = am[1];
+      // console.log(am);
+      // console.log("ams");
+
+      const oBody = {
+        iBusinessId:iBusinessId,
+        sFirstName:fname ,
+        sLastName:lname
+      }
+      let url = '/api/v1/employee/get_detail';
+      this.apiService.postNew('auth', url, oBody).subscribe((result: any) => {
+        if (result?.data) {
+          this.EmployeeId = result?.data?._id;
+        }
+        console.log("this.EmployeeId" + this.EmployeeId);
+        
+      }, (error) => {
+      });
+
+      const oBody2 = {
+        iBusinessId:iBusinessId,
+        sFirstName:afname ,
+        sLastName:alname
+      }
+      let url2 = '/api/v1/employee/get_detail';
+      this.apiService.postNew('auth', url2, oBody2).subscribe((resultdata: any) => {
+        if (resultdata?.data) {
+          this.AssigneeId = resultdata?.data?._id;
+        }
+        console.log("this.AssigneeId" + this.AssigneeId);
+        
+      }, (error) => {
+      });
       
 
       if(oData.contact_when_ready =="Whatsapp"){
@@ -196,8 +247,8 @@ export class ImportRepairOrderService {
       const oTransactionItem = {
         iBusinessId: iBusinessId,
         iWorkStationId: iWorkStationId,
-        iEmployeeId: oData?.iEmployeeId,
-        iAssigneeId:oData?.iAssigneeId,
+        iEmployeeId: this.EmployeeId,
+        iAssigneeId:this.AssigneeId,
         iLocationId: iLocationId,
         /* File */
         sBagNumber: oData?.sBagNumber,
