@@ -59,6 +59,7 @@ export class ImportRepairOrderComponent implements OnInit {
   }
 
   importRepairOrder() {
+    console.log("timportRepairOrder============s");
     try {
       this.importInprogress = true;
       const oData = {
@@ -79,6 +80,8 @@ export class ImportRepairOrderComponent implements OnInit {
         oBody.oTransaction.oCustomer = aTransactionItem[i].oCustomer;
         oBody.eType = aTransactionItem[i].eType;
         oBody.payments = this.ImportRepairOrderService.mapPayment(aTransactionItem[i]);
+        console.log(oBody);
+        console.log("transaction s-----------soBody");
         this.apiService.postNew('cashregistry', '/api/v1/till/transaction', oBody).subscribe((result: any) => {
           this.importInprogress = false;
         }, (error) => {
