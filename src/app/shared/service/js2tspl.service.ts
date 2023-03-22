@@ -1,46 +1,46 @@
 
-export class TSCLabel {
+export class TSCLabelService {
 
 	static knownElements = ['rectangle', 'circle','barcode','datamatrix','text','scalabletext'];
-	iID:any;
-	iDpi:any;
-	iDefaultFontSize:any;
-	sName:any;
-	iMediaDarkness:any;
-	iHeightMm:any;
-	iWidthMm:any;
-	iPaddingLeft:any;
-	iPaddingTop:any;
-	iMarginLeft:any;
-	iMarginTop:any;
-	aInversion:any;
-	sCodePage:any;
-	iPrintSpeed:any;
-	iOffsetMm:any;
-	iGapMm:any;
-	bTear:any;
-	bCut:any;
+	tspl_iID:any;
+	tspl_iDpi:any;
+	tspl_iDefaultFontSize:any;
+	tspl_sName:any;
+	tspl_iMediaDarkness:any;
+	tspl_iHeightMm:any;
+	tspl_iWidthMm:any;
+	tspl_iPaddingLeft:any;
+	tspl_iPaddingTop:any;
+	tspl_iMarginLeft:any;
+	tspl_iMarginTop:any;
+	tspl_aInversion:any;
+	tspl_sCodePage:any;
+	tspl_iPrintSpeed:any;
+	tspl_iOffsetMm:any;
+	tspl_iGapMm:any;
+	tspl_bTear:any;
+	tspl_bCut:any;
 	aTemplate:any;
 	constructor(template:any) {
 
-		this.iID =              this.inTemplate(template,'iID') ? template.iID : 1
-		this.iDpi =             this.checkDpi(this.inTemplate(template,'iDpi') ? template.iDpi : 8)
-		this.iDefaultFontSize = this.inTemplate(template,'iDefaultFontSize') ? template.iDefaultFontSize : 5
-		this.sName =            this.inTemplate(template,'sName') ? template.sName : "Label 1"
-		this.iMediaDarkness =   this.inTemplate(template,'iMediaDarkness') ? template.iMediaDarkness : 6
-		this.iHeightMm =        this.inTemplate(template,'iHeightMm') ? template.iHeightMm : 10
-		this.iWidthMm =         this.inTemplate(template,'iWidthMm') ? template.iWidthMm : 72
-		this.iPaddingLeft =     this.inTemplate(template,'iPaddingLeft') ? template.iPaddingLeft : 0
-		this.iPaddingTop =      this.inTemplate(template,'iPaddingTop') ? template.iPaddingTop : 0
-		this.iMarginLeft =      this.inTemplate(template,'iMarginLeft') ? this.mmToDots(template.iMarginLeft) : 0
-		this.iMarginTop =       this.inTemplate(template,'iMarginTop') ? this.mmToDots(template.iMarginTop) : 0
-		this.aInversion =       this.inTemplate(template,'aInversion') ? template.aInversion : [1,0]
-		this.sCodePage =        this.inTemplate(template,'sCodePage') ? template.sCodePage : "UTF-8";
-		this.iPrintSpeed =      this.inTemplate(template,'iPrintSpeed') ? template.iPrintSpeed : 2;
-		this.iOffsetMm =        this.inTemplate(template,'iOffsetMm') ? template.iOffsetMm : -4;
-		this.iGapMm =           this.inTemplate(template,'iGapMm') ? template.iGapMm : 2.7;
-		this.bTear =            this.inTemplate(template,'bTear') ? template.bTear : true;
-		this.bCut =             this.inTemplate(template,'bCut') ? template.bCut : false;
+		this.tspl_iID =              this.inTemplate(template,'iID') ? template.iID : 1
+		this.tspl_iDpi =             this.checkDpi(this.inTemplate(template,'iDpi') ? template.iDpi : 8)
+		this.tspl_iDefaultFontSize = this.inTemplate(template,'iDefaultFontSize') ? template.iDefaultFontSize : 5
+		this.tspl_sName =            this.inTemplate(template,'sName') ? template.sName : "Label 1"
+		this.tspl_iMediaDarkness =   this.inTemplate(template,'iMediaDarkness') ? template.iMediaDarkness : 6
+		this.tspl_iHeightMm =        this.inTemplate(template,'iHeightMm') ? template.iHeightMm : 10
+		this.tspl_iWidthMm =         this.inTemplate(template,'iWidthMm') ? template.iWidthMm : 72
+		this.tspl_iPaddingLeft =     this.inTemplate(template,'iPaddingLeft') ? template.iPaddingLeft : 0
+		this.tspl_iPaddingTop =      this.inTemplate(template,'iPaddingTop') ? template.iPaddingTop : 0
+		this.tspl_iMarginLeft =      this.inTemplate(template,'iMarginLeft') ? this.mmToDots(template.iMarginLeft) : 0
+		this.tspl_iMarginTop =       this.inTemplate(template,'iMarginTop') ? this.mmToDots(template.iMarginTop) : 0
+		this.tspl_aInversion =       this.inTemplate(template,'aInversion') ? template.aInversion : [1,0]
+		this.tspl_sCodePage =        this.inTemplate(template,'sCodePage') ? template.sCodePage : "UTF-8";
+		this.tspl_iPrintSpeed =      this.inTemplate(template,'iPrintSpeed') ? template.iPrintSpeed : 2;
+		this.tspl_iOffsetMm =        this.inTemplate(template,'iOffsetMm') ? template.iOffsetMm : -4;
+		this.tspl_iGapMm =           this.inTemplate(template,'iGapMm') ? template.iGapMm : 2.7;
+		this.tspl_bTear =            this.inTemplate(template,'bTear') ? template.bTear : true;
+		this.tspl_bCut =             this.inTemplate(template,'bCut') ? template.bCut : false;
 		
 		this.aTemplate =       (template && typeof template.aTemplate !== 'undefined') ? template.aTemplate : [];
 		// this.aTemplate = [
@@ -108,7 +108,7 @@ export class TSCLabel {
 	}
 
 	mmToDots(mm:any):number {
-		return +(Number(mm * this.iDpi).toFixed(0));
+		return +(Number(mm * this.tspl_iDpi).toFixed(0));
 	}
 
 	boolToOnOff(val:any) {
@@ -132,7 +132,7 @@ export class TSCLabel {
 	}
 
 	getFontSize(val: any) {
-		return (val && !isNaN(val)) ? this.adjustToDpi(val) : this.adjustToDpi(this.iDefaultFontSize)
+		return (val && !isNaN(val)) ? this.adjustToDpi(val) : this.adjustToDpi(this.tspl_iDefaultFontSize)
 	}
 
 	getBarcodeLabelAlignment(val: any) {
@@ -203,7 +203,7 @@ export class TSCLabel {
 		// 200dpi = 8 dots per mm
 		// 300dpi = 12 dots per mm
 		// We keep all dimensions in 8dpmm, and convert the values if the dpi is 12
-		return !isNaN(val) ? (this.iDpi !== 8 && val !== 0 ? Math.floor(val*1.5) : val) : val
+		return !isNaN(val) ? (this.tspl_iDpi !== 8 && val !== 0 ? Math.floor(val*1.5) : val) : val
 	}
 
 	fieldText(el: any) {
@@ -347,16 +347,16 @@ export class TSCLabel {
 
 		//Create a raster of 1mm
 		
-		const gridW:number = this.mmToDots(this.iWidthMm)
-		const gridH:number = this.mmToDots(this.iHeightMm)
+		const gridW: number = this.mmToDots(this.tspl_iWidthMm)
+		const gridH: number = this.mmToDots(this.tspl_iHeightMm)
 		
 		let grid:any = ""
 
-		for (let i = 0; i < gridW; i+=this.iDpi) {
+		for (let i = 0; i < gridW; i += this.tspl_iDpi) {
 			grid += `BAR ${i},0,2,${gridH}\n`
 		}
 
-		grid = grid + `BAR 0,${this.mmToDots(this.iHeightMm)/2},${gridW},2\n`
+		grid = grid + `BAR 0,${this.mmToDots(this.tspl_iHeightMm)/2},${gridW},2\n`
 
 		// for (let i = 0; i < gridH; i+=this.iDpi) {
 		// 	grid += `BAR 0,${i},${gridW},2\n`
@@ -476,19 +476,19 @@ export class TSCLabel {
 
 	buildLayoutJob() {
 
-		let jobStr = this.startOfLayout(this.iID)
-					+ this.setSize(this.iWidthMm,this.iHeightMm)
-					+ this.setGap(this.iGapMm)
+		let jobStr = this.startOfLayout(this.tspl_iID)
+			+ this.setSize(this.tspl_iWidthMm, this.tspl_iHeightMm)
+			+ this.setGap(this.tspl_iGapMm)
 					+ this.clearBuffer()
-					+ this.setInversion(this.aInversion[0],this.aInversion[1])
-					+ this.setOrigin(this.iPaddingLeft,this.iPaddingTop)
-					+ this.setShift(this.iMarginLeft,this.iMarginTop)
-					+ this.setCodepage(this.sCodePage)
-					+ this.setSpeed(this.iPrintSpeed)
-					+ this.setDarkness(this.iMediaDarkness)
-					+ this.setPrintOffset(this.iOffsetMm)
-					+ this.setTear(this.boolToOnOff(this.bTear))
-					+ this.setCutter(this.boolToOnOff(this.bCut))
+			+ this.setInversion(this.tspl_aInversion[0], this.tspl_aInversion[1])
+			+ this.setOrigin(this.tspl_iPaddingLeft, this.tspl_iPaddingTop)
+			+ this.setShift(this.tspl_iMarginLeft, this.tspl_iMarginTop)
+			+ this.setCodepage(this.tspl_sCodePage)
+			+ this.setSpeed(this.tspl_iPrintSpeed)
+			+ this.setDarkness(this.tspl_iMediaDarkness)
+			+ this.setPrintOffset(this.tspl_iOffsetMm)
+			+ this.setTear(this.boolToOnOff(this.tspl_bTear))
+			+ this.setCutter(this.boolToOnOff(this.tspl_bCut))
 					+ this.addFieldsToCommand(this.aTemplate)
 					+ this.endOfLayout()
 
@@ -496,7 +496,7 @@ export class TSCLabel {
 	}
 
 	buildPrintJob(layoutID = 1, productData: any,printQuantity=1) {
-
+		console.log(layoutID, productData, printQuantity);
 		let jobStr = ""
 		let dataFieldCounter = 1
 
@@ -577,5 +577,3 @@ export class TSCLabel {
 		return (template && typeof template[key] !== 'undefined');
 	}
 }
-
-module.exports = TSCLabel
