@@ -306,24 +306,20 @@ export class TransactionsComponent implements OnInit, OnDestroy {
     }
   }
 
-  bankConfirmation(transactionId:any) {
+  bankConfirmation(transactionId: any) {
     console.log("-------------------bank confirmation -----------------------");
-    const transaction = this.transactions.find((transaction:any)=>transaction._id == transactionId);
-    // console.log("transaction" , transaction);
+    const transaction = this.transactions.find((transaction: any) => transaction._id == transactionId);
     this.dialogService.openModal(BankConfirmationDialogComponent, {
       cssClass: "modal-lg",
       context: {
-        transaction:transaction[0]
+        transaction: transaction
       },
       hasBackdrop: true,
       closeOnBackdropClick: false,
       closeOnEsc: false
     }).instance.close.subscribe((result: any) => {
       console.log("-----------------------result------------------");
-      // console.log(result);
     });
-
-
   }
 
   //  Function for set sort option on transaction table

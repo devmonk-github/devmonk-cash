@@ -23,8 +23,8 @@
                     <input type="number" class="form-control form-control-solid" name="amount"
                         [(ngModel)]="bankConfirmation.nAmount">
             </div>
-            <div class="col-12">
-                <button class="btn btn-primary" (click)="bankConfirmed()">{{'BANK_CONFIRMATION' | translate}}</button>
+            <div class="col-12 my-2">
+                <button class="btn btn-primary" [disabled]="bankConfirmation.nAmount == 0" (click)="submit()">{{'BANK_CONFIRMATION' | translate}}</button>
             </div>
         </div>
     </div>
