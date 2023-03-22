@@ -139,16 +139,12 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   }
 
   fetchActivityItem(){
-    console.log("fetch activity item");
     this.apiService.postNew('cashregistry', `/api/v1/activities/items/${this.transaction?.iActivityId}`, {iBusinessId:this.iBusinessId}).subscribe((result: any) => {
-      console.log("Result" , result);
       this.aActivityItems = result.data[0].result;
       if(this.aActivityItems?.length){
         this.aActivityItems.forEach((items:any)=>{
-          console.log("activity update" , this.transaction.aTransactionItems);
-          console.log("activity transaction" , items.iTransactionItemId);
           const oTransactionItem = this.transaction.aTransactionItems.find((TI:any)=> TI._id == items.iTransactionItemId);
-          if(oTransactionItem){
+          if(oTransactionItem && !items?.bIsRefunded){
             this.nTotalItemPayment += Number((items.nPriceIncVat * items.nQuantity).toFixed(2));
             this.nTotalItemPaidPayment += Number((items.nPaidAmount).toFixed(2));
           }  
