@@ -128,14 +128,13 @@ export class TestFilterComponent implements OnInit, OnDestroy {
     private serializer: UrlSerializer
   ) {
     const queryParams = {
-      type: 'repair',
+      type: ['repair','order','gold-purchase','reservation','giftcard','gold-sell','refund'],
       from_create_date: "2023-01-03",
       to_create_date: "2023-03-22",
       from_end_date: "2023-01-03",
       to_end_date: "2023-03-22",
-      repair_status: "new"
-
-
+      repair_status: ['new','processing','inspection','completed','delivered','cancelled','refund','refundInCashRegister',
+      'offer','offer-is-ok','offer-is-not-ok','to-repair','part-are-order','shipped-to-repair']
     };
     const tree = routes.createUrlTree([], { queryParams });
 
@@ -151,16 +150,21 @@ export class TestFilterComponent implements OnInit, OnDestroy {
       let data4 = params['repair_status'];
       let data5 = params['from_create_date'];
       let data6 = params['to_create_date'];
-
-      console.log("data1");
-      console.log(data1); // Print the parameter to the console. 
-
+      console.log(typeof data3);
       this.apiService.setToastService(this.toastrService);
       this.iBusinessId = localStorage.getItem('currentBusiness') || "";
       this.iLocationId = localStorage.getItem('currentLocation') || "";
-      //  this.sSearchValue = queryParams.type;
-      this.requestParams.selectedKind = [data3];
-      this.requestParams.selectedRepairStatuses = [data4];
+     
+      if(typeof data3 == "string"){
+        this.requestParams.selectedKind = [data3];
+      }else{
+        this.requestParams.selectedKind = data3;
+      }
+      if(typeof data4 == "string"){
+        this.requestParams.selectedRepairStatuses = [data4];
+      }else{
+        this.requestParams.selectedRepairStatuses = data4;
+      }
       let estimate = { minDate: data1, maxDate: data2 };
       let create = { minDate: data5, maxDate: data6 };
       this.requestParams.estimate = estimate;
@@ -168,8 +172,6 @@ export class TestFilterComponent implements OnInit, OnDestroy {
 
       this.loadTransaction();
     });
-    //console.log("this.sSearchValue",this.sSearchValue);
-
 
   }
 
