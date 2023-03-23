@@ -4,6 +4,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { ApiService } from '../../service/api.service';
 import { DialogComponent, DialogService } from "../../service/dialog";
 import { CustomerDetailsComponent } from '../customer-details/customer-details.component';
+import { CustomerAddressDialogComponent } from '../customer-address-dialog/customer-address-dialog.component';
 import { ToastService } from '../toast';
 import { PaginatePipe } from 'ngx-pagination';
 import { animate, state, style, transition, trigger } from '@angular/animations';
@@ -347,11 +348,18 @@ export class CustomerDialogComponent implements OnInit {
   async setCustomer(customer: any) {
 
     if(this.key == "MERGE"){
+
+    //   this.dialogService.openModal(CustomerAddressDialogComponent, { cssClass:"modal-lg", context: {iChosenCustomerId:this.iChosenCustomerId, mode: 'create', customerData: customer, editProfile: true } }).instance.close.subscribe(result =>{
+    //     this.getCustomers()
+    //  });
+
+
+
       this.iSearchedCustomerId = customer._id;
       this.loading = true;
       
      
-      //this.customer = customer;
+      
       this.requestParams.iChosenCustomerId = this.iChosenCustomerId;
       this.requestParams.iSearchedCustomerId = this.iSearchedCustomerId;
       this.apiService.postNew('customer', '/api/v1/customer/mergecustomer/create', this.requestParams)
