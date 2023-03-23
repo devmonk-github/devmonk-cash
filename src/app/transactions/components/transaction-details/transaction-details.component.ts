@@ -75,7 +75,7 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   nTotalItemPayment:any =0;
   nTotalItemPaidPayment:any =0;
   translation: any = [];
-  customerTest:any;
+  oCurrentCustomer:any;
   showSystemCustomer:Boolean = false;
   @ViewChild('slider', { read: ViewContainerRef }) container!: ViewContainerRef;
 
@@ -99,7 +99,7 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
     this.translateService.get(translationKey).subscribe((res: any) => {
       this.translation = res;
     })
-    this.customerTest = JSON.parse(JSON.stringify(this.transaction?.oCustomer));
+    this.oCurrentCustomer = JSON.parse(JSON.stringify(this.transaction?.oCustomer));
     this.transaction.businessDetails = this.businessDetails;
     this.transaction.currentLocation = this.businessDetails.currentLocation;
     this.fetchActivityItem();
@@ -456,7 +456,7 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
     this.apiService.getNew('customer', `/api/v1/customer/${this.iBusinessId}/${iCustomerId}`).subscribe((result: any) => {
       if (result?.data) {
         this.transaction.oSystemCustomer = result?.data;
-        this.matchSystemAndCurrentCustomer(this.transaction.oSystemCustomer , this.customerTest);
+        this.matchSystemAndCurrentCustomer(this.transaction.oSystemCustomer , this.oCurrentCustomer);
       }      
     })
   }
