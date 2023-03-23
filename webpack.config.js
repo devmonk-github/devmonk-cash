@@ -165,6 +165,15 @@ module.exports = {
     }),
     new ModuleFederationPlugin({
       // For remotes (please adjust)
+      name: "testfilter",
+      filename: "testfilter.js",
+      exposes: {
+        './TestFilterModule': './src/app/testfilter/testfilter.module.ts',
+      },
+      shared: share(sharedLibrary)
+    }),
+    new ModuleFederationPlugin({
+      // For remotes (please adjust)
       name: "customer",
       filename: "customer.js",
       exposes: {
@@ -173,10 +182,10 @@ module.exports = {
       shared: share(sharedLibrary)
     }),
     new ModuleFederationPlugin({
-      name:'customerGroup',
-      filename:'customerGroup.js',
-      exposes:{
-        './customerGroupModule':'./src/app/customers-group/customers-group.module.ts',
+      name: 'customerGroup',
+      filename: 'customerGroup.js',
+      exposes: {
+        './customerGroupModule': './src/app/customers-group/customers-group.module.ts',
       }
     }),
     new ModuleFederationPlugin({

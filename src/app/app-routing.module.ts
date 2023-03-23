@@ -63,6 +63,10 @@ const routes: Routes = [
     loadChildren: () => import('./activity-items/activity-items.module').then(module => module.ActivityItemsModule)
   },
   {
+    path: 'testfilter',
+    loadChildren: () => import('./testfilter/testfilter.module').then(module => module.TestFilterModule)
+  },
+  {
     path: 'customers',
     loadChildren: () => import('./customers/customers.module').then(module => module.CustomersModule)
   },
