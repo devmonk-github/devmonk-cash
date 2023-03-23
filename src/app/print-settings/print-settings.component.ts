@@ -364,7 +364,7 @@ export class PrintSettingsComponent implements OnInit, AfterViewInit {
     })
   }
 
-  deleteLabelTemplate(id: any, eType: string = 'zpl') {
+  deleteLabelTemplate(id: any) {
     const buttons = [
       { text: 'YES', value: true, status: 'success', class: 'btn-primary ml-auto mr-2' },
       { text: 'NO', value: false, class: 'btn-danger ' }
@@ -379,7 +379,7 @@ export class PrintSettingsComponent implements OnInit, AfterViewInit {
         if (result) {
           this.isLoadingTemplatesLabel = true
 
-          this.apiService.deleteNew('cashregistry', `/api/v1/label/templates/${id.toString()}`).subscribe((result: any) => {
+          this.apiService.deleteNew('cashregistry', `/api/v1/label/templates/${id.toString()}?iBusinessId=${this.iBusinessId}`).subscribe((result: any) => {
             this.getLabelTemplate()
             this.toastService.show({ type: 'success', text: 'label deleted successfully' });
 
