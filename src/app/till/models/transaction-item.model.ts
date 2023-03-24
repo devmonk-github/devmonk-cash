@@ -89,6 +89,7 @@ export class TransactionItem {
   bDiscountOnPercentage: boolean;  
   sCommentVisibleServicePartner: string;
   nGiftcardRemainingAmount:number;  
+  nActualCost:number;  
   constructor() {}
 
 }

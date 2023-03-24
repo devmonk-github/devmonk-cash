@@ -41,9 +41,11 @@ export class PaymentDistributionService {
       
       if (i.type === 'gold-purchase') i.amountToBePaid = -(i.amountToBePaid);
 
-      if (i.tType && i.tType === 'refund'){
+      if (i?.tType && i.tType === 'refund'){
         i.amountToBePaid = (i?.new) ? -(i.price) : -(i.nRefundAmount);
         availableAmount += i.price;
+        if (bTesting) console.log('item type is refund, increased available amount =  ', availableAmount, 'i.price=', i.price, 'setting giftcard discount to 0')
+        i.nGiftcardDiscount = 0;
       } 
       
       if (bTesting)  console.log('46 paymentAmount', i.paymentAmount, 'amountToBePaid', i.amountToBePaid);
@@ -71,13 +73,15 @@ export class PaymentDistributionService {
       if (totalAmountToBePaid !== 0) {
         
         arrToUpdate.forEach(i => {
-          if (i.type !== 'giftcard' && nGiftcardAmount > 0) {
+          if (i.type !== 'giftcard' && nGiftcardAmount > 0 && i?.tType !== 'refund') {
             i.nGiftcardDiscount = +((i.amountToBePaid * nGiftcardAmount / totalAmountToBePaid).toFixed(2));
             if (bTesting) console.log('nGiftcardDiscount', i.nGiftcardDiscount)
 
             i.amountToBePaid -= i.nGiftcardDiscount;
             if (bTesting) console.log('reduced amountToBePaid', i.amountToBePaid);
           }
+
+          if (i?.tType === 'refund') i.nGiftcardDiscount = 0;
         });
         
         if(nGiftcardAmount > 0){
@@ -105,7 +109,7 @@ export class PaymentDistributionService {
         }
         arrToUpdate.map(i => {
           if (bTesting) console.log(107, 'i.tType',i.tType);
-          if(i.type !== 'giftcard' && i.tType !== 'refund') {
+          if (i.type !== 'giftcard' && i?.tType && i.tType !== 'refund') {
             const a = +((i.amountToBePaid * availableAmount / totalAmountToBePaid).toFixed(2));
             if (bTesting) console.log('set to payment',a)
             i.paymentAmount = a;
@@ -150,6 +154,7 @@ export class PaymentDistributionService {
       }
 
     });
+    if(bTesting) console.log('final',transactionItems)
     return transactionItems;
   }
 

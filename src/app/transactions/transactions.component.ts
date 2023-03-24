@@ -246,6 +246,10 @@ export class TransactionsComponent implements OnInit, OnDestroy {
         // console.log(this.transactions);
         this.transactions.forEach((transaction:any) => {
           const aTemp = transaction.aPayments.filter((payment: any) => payment.sRemarks !== 'CHANGE_MONEY')
+          const bankPaymentIndex = transaction.aPayments.findIndex((payment:any)=> payment.sMethod == 'bankpayment');
+          if(bankPaymentIndex != -1){
+            transaction.bConfirmed = transaction.aPayments[bankPaymentIndex].bConfirmed;
+          }
           transaction.sMethods = aTemp.map((m:any) => m.sMethod).join(',');
           transaction.nTotal = 0;
           aTemp.forEach((m: any) => transaction.nTotal += m.nAmount)
@@ -296,7 +300,7 @@ export class TransactionsComponent implements OnInit, OnDestroy {
 
   // Function for handle event of transaction menu
   clickMenuOpt(key: string, transactionId: string) {
-    console.log("transactionid" , transactionId);
+    console.log("transactionid", transactionId);
     switch (key) {
       case 'MARK_CONFIRMED':
         this.bankConfirmation(transactionId);
@@ -306,24 +310,26 @@ export class TransactionsComponent implements OnInit, OnDestroy {
     }
   }
 
-  bankConfirmation(transactionId:any) {
-    console.log("-------------------bank confirmation -----------------------");
-    const transaction = this.transactions.find((transaction:any)=>transaction._id == transactionId);
-    // console.log("transaction" , transaction);
+  bankConfirmation(transactionId: any) {
+    const transactionIndex = this.transactions.findIndex((transaction: any) => transaction._id == transactionId);
+    console.log("transaction index" , this.transactions[transactionIndex]._id)
     this.dialogService.openModal(BankConfirmationDialogComponent, {
       cssClass: "modal-lg",
       context: {
-        transaction:transaction[0]
+        transaction:this.transactions[transactionIndex]
       },
       hasBackdrop: true,
       closeOnBackdropClick: false,
       closeOnEsc: false
     }).instance.close.subscribe((result: any) => {
-      console.log("-----------------------result------------------");
-      // console.log(result);
+      if(result?.res){
+        this.transactions[transactionIndex].aPayments = result?.res;
+        const bankPaymentIndex = this.transactions[transactionIndex].aPayments.findIndex((payment:any)=> payment.sMethod == 'bankpayment');
+        if(bankPaymentIndex != -1){
+          this.transactions[transactionIndex].bConfirmed = this.transactions[transactionIndex].aPayments[bankPaymentIndex].bConfirmed;
+        }
+      }
     });
-
-
   }
 
   //  Function for set sort option on transaction table

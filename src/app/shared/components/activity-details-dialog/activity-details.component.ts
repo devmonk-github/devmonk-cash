@@ -888,8 +888,8 @@ export class ActivityDetailsComponent implements OnInit {
     return this.apiService.postNew('cashregistry', `/api/v1/print-settings/list/${this.iBusinessId}`, oBody).toPromise();
   }
 
-  changeTotalAmount(activity: any) {
-    activity.nTotalAmount = activity.nPriceIncVat * activity.nQuantity;
+  changeTotalAmount(activity: any, nPrice:number) {
+    activity.nTotalAmount = nPrice * activity.nQuantity;
   }
 
   copyToClipboard(activity: any) {

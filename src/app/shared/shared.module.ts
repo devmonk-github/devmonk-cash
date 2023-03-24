@@ -10,6 +10,7 @@ import { CustomerDialogComponent } from './components/customer-dialog/customer-d
 import { DialerComponent } from './components/dialer/dialer.component';
 import { AlertComponent } from './components/alert/alert.component';
 import { CustomerDetailsComponent } from "./components/customer-details/customer-details.component";
+import { CustomerAddressDialogComponent } from "./components/customer-address-dialog/customer-address-dialog.component";
 import { AccordionDirective } from "./directives/accordion.directive";
 import { CustomPaymentMethodComponent } from './components/custom-payment-method/custom-payment-method.component';
 import { ConfirmationDialogComponent } from './components/confirmation-dialog/confirmation-dialog.component';
@@ -69,6 +70,7 @@ import { BankConfirmationDialogComponent } from './components/bank-confirmation-
     DialerComponent,
     AlertComponent,
     CustomerDetailsComponent,
+    CustomerAddressDialogComponent,
     CountryListComponent,
     AccordionDirective,
     CustomPaymentMethodComponent,

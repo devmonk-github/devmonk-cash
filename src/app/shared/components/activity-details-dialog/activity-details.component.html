@@ -255,7 +255,7 @@
                                                     </div>
                                                     <div class="col-6">
                                                         {{"STILL_TO_PAY" | translate}}:
-                                                        {{(activity.nTotalAmount - activity.nPaidAmount) |
+                                                        {{(activity.nPriceIncVat - activity.nPaidAmount) |
                                                         currency:tillService.currency}}
                                                     </div>
                                                 </div>
@@ -540,7 +540,7 @@
                                                         <div class="col-lg-8 fv-row">
                                                             <input type="number"
                                                                 class="form-control form-control-lg form-control-solid mb-3 mb-lg-0 w-100"
-                                                                [(ngModel)]="activity.nPriceIncVat" placeholder="">
+                                                                [(ngModel)]="activity.nTotalAmount" placeholder="" (ngModelChange)="changeTotalAmount(activity, $event)">
                                                             <p *ngIf="activity?.oType?.bDiscount">Discount price
                                                                 {{activity.nPriceIncVat - activity.nTotalAmount |
                                                                 currency:tillService.currency }} </p>
@@ -556,8 +556,7 @@
                                                         <div class="col-lg-8 fv-row">
                                                             <input type="number"
                                                                 class="form-control form-control-lg form-control-solid mb-3 mb-lg-0 w-100"
-                                                                [(ngModel)]="activity.nPriceIncVat"
-                                                                (input)="changeTotalAmount(activity)">
+                                                                [(ngModel)]="activity.nPriceIncVat">
                                                             <p *ngIf="activity?.oType?.bDiscount">Discount price
                                                                 {{activity.nPriceIncVat - activity.nTotalAmount |
                                                                 currency:tillService.currency }} </p>
@@ -689,7 +688,7 @@
                                                         <div class="col-lg-8 fv-row">
                                                             <input type="number"
                                                                 class="form-control form-control-lg form-control-solid mb-3 mb-lg-0 w-100"
-                                                                [(ngModel)]="activity.nPriceIncVat" placeholder="">
+                                                                [(ngModel)]="activity.nActualCost" placeholder="">
                                                             <p *ngIf="activity?.oType?.bDiscount">Discount price
                                                                 {{activity.nPriceIncVat - activity.nTotalAmount |
                                                                 currency:tillService.currency }} </p>
@@ -890,7 +889,7 @@
                                                     [(ngModel)]="activity.sDescription"></textarea>
                                             </div>
                                             <div class="form-group mb-6">
-                                                {{'REMAINING_AMOUNT' | translate}} : {{activity.nPaidAmount |
+                                                {{'REMAINING_AMOUNT' | translate}} : {{activity.nGiftcardRemainingAmount |
                                                 currency:tillService.currency}}
                                             </div>
 

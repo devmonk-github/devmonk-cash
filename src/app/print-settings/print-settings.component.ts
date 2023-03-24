@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { faPencilAlt, faRefresh, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { LabelTemplateModelComponent } from 'src/app/print-settings/lable-template-model/label-template-model.component';
 import { PrinterToolComponent } from 'src/app/print-settings/printer-tool/printer-tool.component';
@@ -11,13 +11,14 @@ import { PrintSettingsEditorComponent } from '../shared/components/print-setting
 import { DialogService } from '../shared/service/dialog';
 import { MenuComponent } from '../shared/_layout/components/common';
 import { Js2zplService } from 'src/app/shared/service/js2zpl.service';
+import { TSCLabelService } from 'src/app/shared/service/js2tspl.service';
 import { PrintService } from '../shared/service/print.service';
 @Component({
   selector: 'app-print-settings',
   templateUrl: './print-settings.component.html',
   styleUrls: ['./print-settings.component.sass']
 })
-export class PrintSettingsComponent implements OnInit {
+export class PrintSettingsComponent implements OnInit, AfterViewInit {
 
   faRefresh = faRefresh;
   faPencilAlt = faPencilAlt;
@@ -54,23 +55,99 @@ export class PrintSettingsComponent implements OnInit {
   iLocationId: string = '';
   isLoadingDefaultLabel: boolean = false;
   isLoadingTemplatesLabel: boolean = false;
-  defaultLabelsData: Array<TemplateJSON> = []
-  LabelTemplatesData: Array<TemplateJSON> = []
+  // defaultLabelsData: Array<TemplateJSON> = []
+  // LabelTemplatesData: Array<TemplateJSON> = []
   bShowActionSettingsLoader: boolean = false;
   labelPrintSettings: any;
   iWorkstationId: any;
   aWorkstations:any =[];
 
-  bUseZpl = true;
-  bUseTspl = false;
   aTsplTemplates:any;
+  aZplTemplates:any;
+  oSettings: any;
+  aDefaultZplTemplates: any;
+  aDefaultTsplTemplates: any;
+  oDefaultTsplTemplate: any = {
+    tspl_iID: 1,
+    tspl_iDpi: 8,
+    tspl_iDefaultFontSize: 5,
+    tspl_iMediaDarkness: 6,
+    tspl_iHeightMm: 10,
+    tspl_iWidthMm: 72,
+    tspl_iPaddingLeft: 0,
+    tspl_iPaddingTop: 0,
+    tspl_iMarginLeft: 0,
+    tspl_iMarginTop: 0,
+    tspl_aInversion: [1, 0],
+    tspl_iPrintSpeed: 2,
+    tspl_iOffsetMm: -4,
+    tspl_iGapMm: 2.7,
+    tspl_bTear: true,
+    tspl_bCut: false,
+    aTemplate: [
+      {
+        type: 'rectangle',
+        x1: 2,
+        y1: 2,
+        x2: 158,
+        y2: 78,
+        border_width: 1
+      },
+      {
+        type: 'barcode',
+        x: 8,
+        y: 8,
+        content: '000000123'
+      },
+      {
+        type: 'text',
+        x: 8,
+        y: 24,
+        text_align: 'left',
+        content: '000000123'
+      },
+      {
+        type: 'text',
+        x: 8,
+        y: 42,
+        font_size: 7,
+        text_align: 'left',
+        content: '%%SELLING_PRICE%%',
+        filter: 'money2'
+      },
+      {
+        type: 'text',
+        x: 180,
+        y: 8,
+        text_align: 'left',
+        content: '%%PRODUCT_NUMBER%%'
+      },
+      {
+        type: 'textblock',
+        x: 180,
+        y: 40,
+        width: 176,
+        height: 40,
+        text_align: 'left',
+        line_height: 15,
+        font_size: 5,
+        content: '%%DESCRIPTION%% en nog meer',
+        max: 10,
+        suffix: ',,'
+      }
+    ]
+  };
 
   constructor(
     private dialogService: DialogService,
     private toastService: ToastService,
     private apiService: ApiService,
     private printService: PrintService,
+    private cdr: ChangeDetectorRef
   ) { }
+  ngAfterViewInit() {
+    this.cdr.detectChanges();
+  }
 
   ngOnInit(): void {
     this.iBusinessId = localStorage.getItem('currentBusiness') || '';
@@ -128,7 +205,8 @@ export class PrintSettingsComponent implements OnInit {
     })
   }
 
-  openLabelTemplateModal(jsonData: TemplateJSON, mode: 'create' | 'edit') {
+  openLabelTemplateModal(jsonData: any, mode: 'create' | 'edit', eType:string = 'zpl') {
+    // console.log(jsonData);
     if (mode === 'create') {
       jsonData.readOnly = false
       jsonData.iBusinessId = this.iBusinessId
@@ -138,74 +216,83 @@ export class PrintSettingsComponent implements OnInit {
       delete jsonData._id
       delete jsonData.__v
     }
-    const dialogRef = this.dialogService.openModal(LabelTemplateModelComponent, {
-      cssClass: "modal-xl w-100",
-      context: {
-        mode,
-        jsonData
-      }
-    })
-
-    dialogRef.instance.close.subscribe(async (result) => {
-      if (result) {
-
-        this.isLoadingTemplatesLabel = true
-
-        if (mode === 'create') {
-          await this.createLabelTemplate(result)
-          this.getLabelTemplate()
+    let oData:any = {};
+    const _id = (mode === 'edit') ? jsonData._id : '';
+    if(eType === 'tspl') {
+      Object.keys(jsonData).forEach(key => {
+        if (key.startsWith('tspl') || key === 'aTemplate' || key === 'name') {
+          oData[key] = jsonData[key];
         }
-        if (mode === 'edit') {
-          await this.updateLabelTemplate(result._id.toString(), result)
-          this.getLabelTemplate()
-          // this.toastService.show({ type: 'warning', text: 'TODO: add put api in backend' });
-        }
-      }
-
-    });
-  }
-
-  async getLabelTemplate(): Promise<any[]> {
-    // await this.postLabelTemplate()
-    return new Promise((resolve, reject) => {
-      this.apiService.getNew('cashregistry', `/api/v1/label/templates/${this.iBusinessId}`).subscribe((result: any) => {
-        this.defaultLabelsData = result.data.filter((lable: any) => lable.readOnly)
-        this.LabelTemplatesData = result.data.filter((lable: any) => !lable.readOnly).map((template: any) => {
-          template.elements.map((element: any, i: number) => {
-            template.elements[i]['type'] = element.sType
-          })
-          return template
-        })
-        console.log(this.LabelTemplatesData)
-        this.isLoadingTemplatesLabel = false
-        this.isLoadingDefaultLabel = false
-
-        resolve(result.data)
-      }, (error) => {
-        this.isLoadingTemplatesLabel = false
-        this.isLoadingDefaultLabel = false
-        console.log('error: ', error);
-        resolve(error)
       })
+      // console.log(_id, jsonData);
+    }
+    this.dialogService.openModal(LabelTemplateModelComponent, { cssClass: "modal-xl w-100", context: { mode, jsonData: oData, eType, iTemplateId: _id }}).instance.close
+    .subscribe(async (result) => {
+      // console.log(result)
+      if (result) {
+        if (mode === 'create') {
+          this.createLabelTemplate(result, eType)
+        } else {
+          this.updateLabelTemplate(_id, result, eType)
+        }
+      }
+
     });
   }
 
-  shiftLabelButton(type: string, index: number) {
-    if (type == 'up') {
-      if (this.LabelTemplatesData[index - 1])
-        [this.LabelTemplatesData[index - 1], this.LabelTemplatesData[index]] = [this.LabelTemplatesData[index], this.LabelTemplatesData[index - 1]]
+  async getLabelTemplate() {
+    // await this.postLabelTemplate()
+    
+    this.apiService.getNew('cashregistry', `/api/v1/label/templates/${this.iBusinessId}`).subscribe((result: any) => {
+      
+      this.aDefaultZplTemplates = result.data.filter((label: any) => label.readOnly && label.eType === 'zpl')
+      this.aZplTemplates = result.data.filter((label: any) => !label.readOnly && label.eType === 'zpl').map((template: any) => {
+        template.elements.map((element: any, i: number) => {
+          template.elements[i]['type'] = element.sType
+        })
+        return template;
+      });
+      
+      this.aDefaultTsplTemplates = result.data.filter((label: any) => label.readOnly && label.eType === 'tspl');
+      this.aTsplTemplates = result.data.filter((label: any) => !label.readOnly && label.eType === 'tspl');
+      
+      this.isLoadingTemplatesLabel = false
+      this.isLoadingDefaultLabel = false
+
+    }, (error) => {
+      this.isLoadingTemplatesLabel = false
+      this.isLoadingDefaultLabel = false
+      console.log('error: ', error);
+    })
+  }
+
+  shiftLabelButton(type: string, index: number, eType:string = 'zpl') {
+    if(eType == 'zpl') {
+      if (type == 'up') {
+        if (this.aZplTemplates[index - 1])
+          [this.aZplTemplates[index - 1], this.aZplTemplates[index]] = [this.aZplTemplates[index], this.aZplTemplates[index - 1]]
+      } else {
+        if (this.aZplTemplates[index + 1])
+          [this.aZplTemplates[index + 1], this.aZplTemplates[index]] = [this.aZplTemplates[index], this.aZplTemplates[index + 1]]
+      }
 
     } else {
-      if (this.LabelTemplatesData[index + 1])
-        [this.LabelTemplatesData[index + 1], this.LabelTemplatesData[index]] = [this.LabelTemplatesData[index], this.LabelTemplatesData[index + 1]]
+      if (type == 'up') {
+        if (this.aTsplTemplates[index - 1])
+          [this.aTsplTemplates[index - 1], this.aTsplTemplates[index]] = [this.aTsplTemplates[index], this.aTsplTemplates[index - 1]]
+      } else {
+        if (this.aTsplTemplates[index + 1])
+          [this.aTsplTemplates[index + 1], this.aTsplTemplates[index]] = [this.aTsplTemplates[index], this.aTsplTemplates[index + 1]]
+      }
+      
     }
   }
 
-  markDefault(label: any) {
+  markDefault(label: any, eType:string = 'zpl') {
     try {
       this.apiService.postNew('cashregistry', '/api/v1/label/templates/changeDefaultLabel', { _id: label._id, iBusinessId: this.iBusinessId }).subscribe((result: any) => {
         if (result?.message == 'success') {
-          this.LabelTemplatesData.forEach((label: any) => {
+          this.aZplTemplates.forEach((label: any) => {
             if (label.bDefault) label.bDefault = false;
           })
           label.bDefault = true;
@@ -223,7 +310,7 @@ export class PrintSettingsComponent implements OnInit {
     event.target.disabled = true;
     this.isLoadingDefaultLabel = true;
     try {
-      this.apiService.putNew('cashregistry', '/api/v1/label/templates/updateSequence/' + this.iBusinessId, this.LabelTemplatesData).subscribe((result: any) => {
+      this.apiService.putNew('cashregistry', '/api/v1/label/templates/updateSequence/' + this.iBusinessId, this.aZplTemplates).subscribe((result: any) => {
         this.toastService.show({ type: 'success', text: `Label button order saved successfully` });
         this.isLoadingDefaultLabel = false;
         event.target.disabled = false;
@@ -237,41 +324,41 @@ export class PrintSettingsComponent implements OnInit {
     }
   }
 
-  createLabelTemplate(jsonData: TemplateJSON) {
+  createLabelTemplate(jsonData: any, eType: string = 'zpl') {
+    // console.log({jsonData});
     const oBody = {
-      "iBusinessId": jsonData.iBusinessId,
-      "iLocationId": jsonData.iLocationId,
-      "template": jsonData
+      iBusinessId: jsonData?.iBusinessId || this.iBusinessId,
+      iLocationId: jsonData?.iLocationId || this.iLocationId,
+      template: jsonData,
+      eType: eType
     }
-    return new Promise(resolve => {
-
-      this.apiService.postNew('cashregistry', `/api/v1/label/templates`, oBody).subscribe((result: any) => {
-        this.toastService.show({ type: 'success', text: 'label created successfully' });
-        resolve(result);
-      }, (error) => {
-        resolve(error);
-        console.log('error: ', error);
-        this.toastService.show({ type: 'warning', text: 'Something went wrong' });
-      })
+    this.isLoadingTemplatesLabel = true;
+    this.apiService.postNew('cashregistry', `/api/v1/label/templates`, oBody).subscribe((result: any) => {
+      if(result?.data) {
+        this.toastService.show({ type: 'success', text: 'Label created successfully' });
+        this.getLabelTemplate();
+      }
+    }, (error) => {
+      console.log('error: ', error);
+      this.toastService.show({ type: 'warning', text: 'Something went wrong' });
     })
   }
 
-  updateLabelTemplate(id: string, jsonData: TemplateJSON) {
+  updateLabelTemplate(id: string, jsonData: any, eType:string) {
     const oBody = {
-      "iBusinessId": jsonData.iBusinessId,
-      "iLocationId": jsonData.iLocationId,
-      "template": jsonData
+      iBusinessId: this.iBusinessId,
+      iLocationId: this.iLocationId,
+      template: jsonData,
+      eType
     }
-    return new Promise(resolve => {
-
-      this.apiService.putNew('cashregistry', `/api/v1/label/templates/${id.toString()}`, oBody).subscribe((result: any) => {
-        this.toastService.show({ type: 'success', text: 'label updated successfully' });
-        resolve(result);
-      }, (error) => {
-        resolve(error);
-        console.log('error: ', error);
-        this.toastService.show({ type: 'warning', text: 'Something went wrong' });
-      })
+    this.apiService.putNew('cashregistry', `/api/v1/label/templates/${id}`, oBody).subscribe((result: any) => {
+      if(result?.data) {
+        this.toastService.show({ type: 'success', text: 'Label updated successfully' });
+        this.getLabelTemplate();
+      }
+    }, (error) => {
+      console.log('error: ', error);
+      this.toastService.show({ type: 'warning', text: 'Something went wrong' });
     })
   }
 
@@ -286,30 +373,24 @@ export class PrintSettingsComponent implements OnInit {
         bodyText: 'ARE_YOU_SURE_TO_REMOVE_THIS_LABEL_TEMPLATE',
         buttonDetails: buttons
       }
-    })
-      .instance.close.subscribe(
-        (result) => {
-          if (result) {
-            this.isLoadingTemplatesLabel = true
+    }).instance.close.subscribe((result) => {
+        if (result) {
+          this.isLoadingTemplatesLabel = true
 
-            this.apiService.deleteNew('cashregistry', `/api/v1/label/templates/${id.toString()}`).subscribe((result: any) => {
-              this.getLabelTemplate()
-              this.toastService.show({ type: 'success', text: 'label deleted successfully' });
+          this.apiService.deleteNew('cashregistry', `/api/v1/label/templates/${id.toString()}?iBusinessId=${this.iBusinessId}`).subscribe((result: any) => {
+            this.getLabelTemplate()
+            this.toastService.show({ type: 'success', text: 'label deleted successfully' });
 
-            }, (error) => {
-              console.log('error: ', error);
-              this.toastService.show({ type: 'warning', text: 'Something went wrong' });
-              this.isLoadingTemplatesLabel = false
+          }, (error) => {
+            console.log('error: ', error);
+            this.toastService.show({ type: 'warning', text: 'Something went wrong' });
+            this.isLoadingTemplatesLabel = false
 
-            })
-          }
+          })
+        }
 
         }
       )
-  }
-
-  saveTemplateSettings() {
-
   }
 
   openSettingsEditor(format: any) {
@@ -371,10 +452,26 @@ export class PrintSettingsComponent implements OnInit {
   }
 
   getLabelPrintSetting() {
-    this.apiService.getNew('cashregistry', `/api/v1/print-settings/${this.iBusinessId}/${this.iWorkstationId}/labelDefinition/default`).subscribe(
+    const oBody = {
+      iLocationId: this.iLocationId,
+      oFilterBy: {
+        iWorkstationId: this.iWorkstationId
+      }
+    }
+    this.apiService.postNew('cashregistry', `/api/v1/print-settings/list/${this.iBusinessId}`, oBody).subscribe(
       (result: any) => {
-        if (result?.data?._id) {
-          this.labelPrintSettings = result?.data;
+        if (result?.data?.length && result?.data[0]?.result?.length) {
+          this.labelPrintSettings = result.data[0].result.filter((el: any) => el.sMethod === 'labelDefinition');
+          const aSettings = result.data[0].result.filter((el: any) => el.sMethod === 'settings');
+          if(aSettings?.length) {
+            this.oSettings = aSettings[0].oSettings;
+          } else {
+            this.oSettings = {
+              bUseZpl: true,
+              bUseTspl: false
+            }
+          }
+          this.cdr.detectChanges();
         } else {
           this.toastService.show({ type: 'danger', text: 'Check your business -> printer settings' });
         }
@@ -385,15 +482,118 @@ export class PrintSettingsComponent implements OnInit {
     );
   }
 
-  async sentToLayout(template: any) {
-    console.log(319, template)
-    const js2zplService = new Js2zplService(template);
-    let layoutCommand: any = js2zplService.generateCommand(template, {}, false)
+  updateSettings(){
+    // this.createLabelTemplate(this.oDefaultTsplTemplate, 'tspl')
+    const oBody = {
+      iBusinessId: this.iBusinessId,
+      iLocationId: this.iLocationId,
+      oSettings: this.oSettings,
+      iWorkstationId: this.iWorkstationId,
+      sMethod: 'settings'
+    }
+    this.apiService.putNew('cashregistry', `/api/v1/print-settings/update`, oBody).subscribe((result:any) => {
+      if(result?.data){
+        this.toastService.show({ type: 'success', text: 'Settings updated successfully!' });
+     }
+    });
+
+  }
+
+  async sentToLayout(template: any, eType:string = 'zpl') {
+    const oTemplate = JSON.parse(JSON.stringify(template));
+    const oPrintSettings = this.labelPrintSettings.find((s: any) => s.sType === eType && s.iWorkstationId === this.iWorkstationId) 
+    if(!oPrintSettings) {
+      this.toastService.show({ type: 'danger', text: 'Check your business -> printer settings' });
+      return;
+    }
+    let layoutCommand: any;
+    if(eType === 'zpl') {
+      const js2zplService = new Js2zplService(oTemplate);
+      layoutCommand = js2zplService.generateCommand(oTemplate, {}, false)
+    } else {
+      const js2tsplService = new TSCLabelService(oTemplate);
+      layoutCommand = js2tsplService.buildLayoutJob();
+    }
+    this.handlePrintNode(oPrintSettings, layoutCommand);
+  }
+
+  async printSample(template: any, eType:string = 'zpl') {
+    const oTemplate = JSON.parse(JSON.stringify(template));
+    const oPrintSettings = this.labelPrintSettings.find((s: any) => s.sType === eType && s.iWorkstationId === this.iWorkstationId)
+    if (!oPrintSettings) {
+      this.toastService.show({ type: 'danger', text: 'Check your business -> printer settings' });
+      return;
+    }
+    let layoutCommand: any;
+    if(eType === 'zpl') {
+      const js2zplService = new Js2zplService(oTemplate);
+      const sampleObject = {
+        '%%PRODUCT_NAME%%': 'Ring Diamant',
+        '%%SELLING_PRICE%%': '1234',
+        '%%PRODUCT_NUMBER%%': 'KA123456',
+        '%%ARTICLE_NUMBER%%': '000001234',
+        '%%BRAND_NAME%%': 'Kasius',
+        '%%EAN%%': '8718834442003',
+        '%%DIAMONDINFO%%': 'DI,SI2,H,0.13',
+        '%%PRODUCT_WEIGHT%%': '3.02',
+        '%%DESCRIPTION%%': 'Ring diamant 0.13ct',
+        '%%MY_OWN_COLLECTION%%': 'Ringen',
+        '%%VARIANTS_COLLECTION%%': 'Ringen',
+        '%%BRAND_COLLECTION1%%': 'Ringen',
+        '%%BRAND_COLLECTION2%%': 'Goud',
+        '%%TOTALCARATWEIGHT%%': '0.13',
+        '%%LAST_DELIVERY_DATE%%': '08-05-2020',
+        '%%SUPPLIER_NAME%%': 'Kasius NL',
+        '%%SUPPLIER_CODE%%': 'KAS',
+        '%%SUGGESTED_RETAIL_PRICE%%': '5678',
+        '%%PRODUCT_CATEGORY%%': 'RINGEN',
+        '%%PRODUCT_SIZE%%': '20',
+        '%%JEWEL_TYPE%%': 'RING',
+        '%%JEWEL_MATERIAL%%': 'Goud',
+        '%%STRAP_WIDTH%%': '30mm',
+        '%%STRAP_MATERIAL%%': 'Staal',
+        '%%QUANTITY%%': '1'
+      }
+      layoutCommand = js2zplService.generateCommand(oTemplate, sampleObject, true)
+    } else {
+      const js2tsplService = new TSCLabelService(oTemplate);
+      const sampleObject = {
+        '%%PRODUCT_NAME%%': 'Ring Diamant',
+        '%%SELLING_PRICE%%': '12.345,67',
+        '%%PRODUCT_NUMBER%%': 'KA123456',
+        '%%ARTICLE_NUMBER%%': '000001234',
+        '%%BRAND_NAME%%': 'Kasius',
+        '%%EAN%%': '8718834442003',
+        '%%DIAMONDINFO%%': 'DI,SI2,H,0.13',
+        '%%PRODUCT_WEIGHT%%': '3.02',
+        '%%DESCRIPTION%%': 'Ring diamant 0.13ct',
+        '%%MY_OWN_COLLECTION%%': 'Ringen',
+        '%%VARIANTS_COLLECTION%%': 'Ringen',
+        '%%BRAND_COLLECTION1%%': 'Ringen',
+        '%%BRAND_COLLECTION2%%': 'Goud',
+        '%%TOTALCARATWEIGHT%%': '0.13',
+        '%%LAST_DELIVIERY_DATE%%': '08-05-2020',
+        '%%SUPPLIER_NAME%%': 'Kasius NL',
+        '%%SUPPLIER_CODE%%': 'KAS',
+        '%%SUGGESTED_RETAIL_PRICE%%': '5678',
+        '%%PRODUCT_CATEGORY%%': 'RINGEN',
+        '%%PRODUCT_SIZE%%': '20',
+        '%%JEWEL_TYPE%%': 'RING',
+        '%%JEWEL_MATERIAL%%': 'Goud',
+        '%%STRAP_WIDTH%%': '30mm',
+        '%%STRAP_MATERIAL%%': 'Staal'
+      }
+      layoutCommand = js2tsplService.buildPrintJob(1, sampleObject, 1);
+    }
+    this.handlePrintNode(oPrintSettings, layoutCommand);
+  }
+
+  async handlePrintNode(oPrintSettings:any, layoutCommand:any) {
     const response: any = await this.printService.printRawContent(
       this.iBusinessId,
       layoutCommand,
-      this.labelPrintSettings?.nPrinterId,
-      this.labelPrintSettings?.nComputerId,
+      oPrintSettings?.nPrinterId,
+      oPrintSettings?.nComputerId,
       1,
       'Set layout',
       { title: 'Set layout' },
@@ -412,65 +612,6 @@ export class PrintSettingsComponent implements OnInit {
       this.toastService.show({ type: 'success', text: 'PRINTJOB_CREATED', apiUrl: '/api/v1/printnode/print-job/' + response.id });
     }
   }
-
-  async printSample(template: any) {
-    const js2zplService = new Js2zplService(template);
-
-    const sampleObject = {
-      '%%PRODUCT_NAME%%': 'Ring Diamant',
-      '%%SELLING_PRICE%%': '1234',
-      '%%PRODUCT_NUMBER%%': 'KA123456',
-      '%%ARTICLE_NUMBER%%': '000001234',
-      '%%BRAND_NAME%%': 'Kasius',
-      '%%EAN%%': '8718834442003',
-      '%%DIAMONDINFO%%': 'DI,SI2,H,0.13',
-      '%%PRODUCT_WEIGHT%%': '3.02',
-      '%%DESCRIPTION%%': 'Ring diamant 0.13ct',
-      '%%MY_OWN_COLLECTION%%': 'Ringen',
-      '%%VARIANTS_COLLECTION%%': 'Ringen',
-      '%%BRAND_COLLECTION1%%': 'Ringen',
-      '%%BRAND_COLLECTION2%%': 'Goud',
-      '%%TOTALCARATWEIGHT%%': '0.13',
-      '%%LAST_DELIVERY_DATE%%': '08-05-2020',
-      '%%SUPPLIER_NAME%%': 'Kasius NL',
-      '%%SUPPLIER_CODE%%': 'KAS',
-      '%%SUGGESTED_RETAIL_PRICE%%': '5678',
-      '%%PRODUCT_CATEGORY%%': 'RINGEN',
-      '%%PRODUCT_SIZE%%': '20',
-      '%%JEWEL_TYPE%%': 'RING',
-      '%%JEWEL_MATERIAL%%': 'Goud',
-      '%%STRAP_WIDTH%%': '30mm',
-      '%%STRAP_MATERIAL%%': 'Staal',
-      '%%QUANTITY%%': '1'
-    }
-
-    let layoutCommand: any = js2zplService.generateCommand(template, sampleObject, true)
-    const response: any = await this.printService.printRawContent(
-      this.iBusinessId,
-      layoutCommand,
-      this.labelPrintSettings?.nPrinterId,
-      this.labelPrintSettings?.nComputerId,
-      1,
-      'Sample print',
-      { title: 'Sample print' },
-      this.businessDetails.oPrintNode.sApiKey
-    )
-
-    if (response.status == "PRINTJOB_NOT_CREATED") {
-      let message = '';
-      if (response.computerStatus != 'online') {
-        message = 'Your computer status is : ' + response.computerStatus + '.';
-      } else if (response.printerStatus != 'online') {
-        message = 'Your printer status is : ' + response.printerStatus + '.';
-      }
-      this.toastService.show({ type: 'warning', title: 'PRINTJOB_NOT_CREATED', text: message });
-    } else {
-      this.toastService.show({ type: 'success', text: 'PRINTJOB_CREATED', apiUrl: '/api/v1/printnode/print-job/' + response.id });
-    }
-  }
-
-
-
 }
 // Generated by https://quicktype.io
 

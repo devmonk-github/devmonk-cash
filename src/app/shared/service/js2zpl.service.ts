@@ -194,7 +194,7 @@ export class Js2zplService {
   }
 
   isValidElement(element: any) {
-    console.log('checking element validity', element)
+    // console.log('checking element validity', element)
     //check if the element exists and if the neccesary parameters of the element type are present
     if (element.type !== undefined && Js2zplService.knownElements.indexOf(element.type) > -1) {
       switch (element.type) {
@@ -215,7 +215,7 @@ export class Js2zplService {
           break;
 
         case 'barcode':
-          console.log(218, "pnfield" in element)
+          // console.log(218, "pnfield" in element)
           return ("pnfield" in element) ? true : false;
           break;
 

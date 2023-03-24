@@ -45,9 +45,11 @@ export class LabelTemplateModelComponent implements OnInit {
   @ViewChild('jsonEditor') jsonEditor!: any
   dialogRef: DialogComponent;
   faTimes = faTimes;
-  mode: 'create' | 'edit' = 'create'
-  jsonData = {}
-  image = ''
+  mode: 'create' | 'edit' = 'create';
+  jsonData = {};
+  image = '';
+  eType:any;
+  iTemplateId:any;
 
   constructor(private viewContainerRef: ViewContainerRef,
     private toastService: ToastService,
@@ -57,15 +59,25 @@ export class LabelTemplateModelComponent implements OnInit {
   }
 
   ngOnInit() {
+    // console.log(this.mode)
   }
   saveLabelTemplate() {
-    if (this.validateTemplateJson(this.jsonEditor.jsonData))
-      this.close(this.jsonEditor.jsonData)
+    if(this.eType === 'tspl') {
+      this.close({
+        ...this.jsonEditor.jsonData, 
+        "readOnly": false,
+        "nSeqOrder": 1,
+      })  
+    } else {
+        if (this.validateTemplateJson(this.jsonEditor.jsonData)) this.close(this.jsonEditor.jsonData)
+    }
   }
+
   close(data: any) {
     this.dialogRef.close.emit(data);
   }
   validateTemplateJson(jsonData: TemplateJSON) {
+    if(this.eType === 'tspl') return true;
     let excluded = ['dCreatedDate', 'dUpdatedDate', '_id', '__v']
     let json: any = {
       "readOnly": false,

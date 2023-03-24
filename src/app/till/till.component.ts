@@ -339,7 +339,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       nBrokenProduct: 0,
       price: 0,
       nPurchasePrice: 0,
-      nMargin: 1,
+      nMargin: 2,
       nDiscount: 0,
       tax: tax,
       paymentAmount: 0,
@@ -456,7 +456,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       quantity: 1,
       nBrokenProduct: 0,
       price,
-      nMargin: 1,
+      nMargin: 2,
       nPurchasePrice: 0,
       nTotal: type === 'gold-purchase' ? -1 * price : price,
       nDiscount: 0,
@@ -590,6 +590,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
                 });
               }
               oTI.oCurrentLocation = oTI.aLocation?.find((o: any) => o._id === oTI.iLocationId);
+              oTI.bProductLoaded = true;
               return oTI;
             })
           }
@@ -1808,6 +1809,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
     for (const item of this.transactionItems) {
       if (item?.iBusinessProductId && !item?.oCurrentLocation) {
+        // console.log('fetching business product again');
         const _oBusinessProductDetail: any = await this.getBusinessProduct(item?.iBusinessProductId).toPromise();
         const product = _oBusinessProductDetail.data;
         if (product?.aLocation?.length) {

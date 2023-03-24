@@ -79,14 +79,14 @@
         <span> {{"LABEL" | translate}} {{"DEFINITIONS" | translate}}</span>
       </div>
     </div>
-    <div class="card-body">
+    <div class="card-body" *ngIf="oSettings">
       <div class="row">
         <div class="col-2 d-flex">
-          <input type="checkbox" class="form-check form-check-input form-check-custom h-25px w-25px me-2" [(ngModel)]="bUseZpl">
+          <input type="checkbox" class="form-check form-check-input form-check-custom h-25px w-25px me-2" [(ngModel)]="oSettings.bUseZpl" (ngModelChange)="updateSettings()">
           <span>{{'USE_ZPL' | translate}}</span>
         </div>
         <div class="col-2 d-flex">
-          <input type="checkbox" class="form-check form-check-input form-check-custom h-25px w-25px me-2" [(ngModel)]="bUseTspl">
+          <input type="checkbox" class="form-check form-check-input form-check-custom h-25px w-25px me-2" [(ngModel)]="oSettings.bUseTspl" (ngModelChange)="updateSettings()">
           <span>{{'USE_TSPL' | translate}}</span>
         </div>
       </div>
@@ -94,7 +94,7 @@
       <app-pn-tabs class="tab-content" addChildLinkClass="text-gray-600">
         <div class="tab-gap"></div>
       
-        <app-pn-tab tabTitle="ZPL" #zpl *ngIf="bUseZpl">
+        <app-pn-tab tabTitle="ZPL" #zpl *ngIf="oSettings.bUseZpl">
           <div class="row">
             <div class="d-flex justify-content-end">
               <button class="btn btn-primary mx-2" (click)="updateLabelSequence($event)">{{'SAVE_SEQUENCE' | translate}}</button>
@@ -104,7 +104,7 @@
           <div class="row my-3">
             <div class="col-12">
               <div class="d-flex flex-column">
-                <div class="h5">{{"LABEL_TEMPLATE"|translate}}</div>
+                <div class="h5">{{'SHOP' | translate}} {{"LABEL_TEMPLATE" | translate}}</div>
                 <div class="dataTables_wrapper dt-bootstrap4 no-footer">
           
                   <div class="table-responsive">
@@ -118,7 +118,7 @@
                       </thead>
                       <tbody class="fw-bold text-gray-600">
                         <ng-container *ngIf="!isLoadingTemplatesLabel && businessDetails?._id">
-                          <tr *ngFor='let label of LabelTemplatesData; let i = index'>
+                          <tr *ngFor='let label of aZplTemplates; let i = index'>
                             <td class="mw-100px text-truncate">
                               {{i+1}}
                             </td>
@@ -167,7 +167,7 @@
                           </tr>
                         </ng-container>
                         <div class="d-flex">
-                          <h5 *ngIf='!LabelTemplatesData.length && !isLoadingTemplatesLabel' style="text-align: center;"> {{
+                          <h5 *ngIf='(!aZplTemplates?.length || !aTsplTemplates?.length) && !isLoadingTemplatesLabel' style="text-align: center;"> {{
                             "NO_DATA_FOUND" | translate}}!</h5>
                           <div class="row h-200px" *ngIf="isLoadingTemplatesLabel || !businessDetails?._id">
                             <div class="spinner-box h-200px">
@@ -198,7 +198,7 @@
                         </tr>
                       </thead>
                       <tbody class="fw-bold text-gray-600">
-                        <tr *ngFor='let label of defaultLabelsData; let i = index'>
+                        <tr *ngFor='let label of aDefaultZplTemplates; let i = index'>
                           <td class="mw-100px text-truncate">
                             {{i+1}}
                           </td>
@@ -216,7 +216,7 @@
                           </td>
                         </tr>
                         <div class="d-flex">
-                          <h5 *ngIf='!defaultLabelsData.length && !isLoadingDefaultLabel' style="text-align: center;"> {{
+                          <h5 *ngIf='!aDefaultZplTemplates?.length && !isLoadingDefaultLabel' style="text-align: center;"> {{
                             "NO_DATA_FOUND" | translate}}!</h5>
                           <div class="row h-200px" *ngIf="isLoadingDefaultLabel">
                             <div class="spinner-box h-200px">
@@ -235,11 +235,11 @@
           </div>
         </app-pn-tab>
 
-        <app-pn-tab tabTitle="TSPL" #tspl *ngIf="bUseTspl">
+        <app-pn-tab tabTitle="TSPL" #tspl *ngIf="oSettings.bUseTspl">
           <div class="row my-3">
             <div class="col-12">
               <div class="d-flex flex-column">
-                <div class="h5">{{"LABEL_TEMPLATE"|translate}}</div>
+                <div class="h5"> {{ 'SHOP' | translate }} {{ "LABEL_TEMPLATE" | translate }}</div>
                 <div class="dataTables_wrapper dt-bootstrap4 no-footer">
           
                   <div class="table-responsive">
@@ -253,7 +253,7 @@
                       </thead>
                       <tbody class="fw-bold text-gray-600">
                         <ng-container *ngIf="!isLoadingTemplatesLabel && businessDetails?._id">
-                          <tr *ngFor='let label of LabelTemplatesData; let i = index'>
+                          <tr *ngFor='let label of aTsplTemplates; let i = index'>
                             <td class="mw-100px text-truncate">
                               {{i+1}}
                             </td>
@@ -263,7 +263,7 @@
           
                             <td>
                               <div class="d-flex">
-                                <button (click)="openLabelTemplateModal(label,'edit')" class="btn btn-primary btn-sm">
+                                <button (click)="openLabelTemplateModal(label,'edit', 'tspl')" class="btn btn-primary btn-sm">
                                   <i class="fa fa-edit"> </i>
                                   <!-- {{'EDIT'| translate}} -->
                                 </button>
@@ -272,12 +272,12 @@
                                   <i class="fa fa-trash"></i>
                                 </button>
           
-                                <button (click)="printSample(label)" class="btn btn-primary btn-sm mx-2">
+                                <button (click)="printSample(label, 'tspl')" class="btn btn-primary btn-sm mx-2">
                                   <i class="fa fa-print"> </i>
                                   <!-- {{'PRINT_SAMPLE'| translate}} -->
                                 </button>
           
-                                <button (click)="sentToLayout(label)" class="btn btn-primary btn-sm mx-2">
+                                <button (click)="sentToLayout(label, 'tspl')" class="btn btn-primary btn-sm mx-2">
                                   {{'SENT_TO_LAYOUT'| translate}}
                                 </button>
           
@@ -285,15 +285,15 @@
                                   {{'DEFAULT' | translate}}
                                 </button>
           
-                                <button *ngIf="!label?.bDefault" (click)="markDefault(label)"
+                                <button *ngIf="!label?.bDefault" (click)="markDefault(label, 'tspl')"
                                   class="btn btn-primary btn-sm mx-2 w-25">
                                   {{'MARK_AS_DEFAULT' | translate}}
                                 </button>
           
-                                <button class="btn p-3 hover btn-sm mx-2" (click)="shiftLabelButton('up', i)">
+                                <button class="btn p-3 hover btn-sm mx-2" (click)="shiftLabelButton('up', i, 'tspl')">
                                   <i class="fa fa-arrow-up"></i>
                                 </button>
-                                <button class="btn p-3 hover btn-sm mx-2" (click)="shiftLabelButton('down', i)">
+                                <button class="btn p-3 hover btn-sm mx-2" (click)="shiftLabelButton('down', i, 'tspl')">
                                   <i class="fa fa-arrow-down"></i>
                                 </button>
           
@@ -302,7 +302,7 @@
                           </tr>
                         </ng-container>
                         <div class="d-flex">
-                          <h5 *ngIf='!LabelTemplatesData.length && !isLoadingTemplatesLabel' style="text-align: center;"> {{
+                          <h5 *ngIf='!aTsplTemplates?.length && !isLoadingTemplatesLabel' style="text-align: center;"> {{
                             "NO_DATA_FOUND" | translate}}!</h5>
                           <div class="row h-200px" *ngIf="isLoadingTemplatesLabel || !businessDetails?._id">
                             <div class="spinner-box h-200px">
@@ -333,7 +333,7 @@
                         </tr>
                       </thead>
                       <tbody class="fw-bold text-gray-600">
-                        <tr *ngFor='let label of aTsplTemplates; let i = index'>
+                        <tr *ngFor='let label of aDefaultTsplTemplates; let i = index'>
                           <td class="mw-100px text-truncate">
                             {{i+1}}
                           </td>
@@ -343,7 +343,7 @@
           
                           <td>
           
-                            <button (click)="openLabelTemplateModal(label,'create')" class="btn btn-primary btn-sm">
+                            <button (click)="openLabelTemplateModal(label,'create', 'tspl')" class="btn btn-primary btn-sm">
                               {{'CREATE'| translate}}
           
                             </button>
@@ -351,7 +351,7 @@
                           </td>
                         </tr>
                         <div class="d-flex">
-                          <h5 *ngIf='!defaultLabelsData.length && !isLoadingDefaultLabel' style="text-align: center;"> {{
+                          <h5 *ngIf='!aDefaultTsplTemplates?.length && !isLoadingDefaultLabel' style="text-align: center;"> {{
                             "NO_DATA_FOUND" | translate}}!</h5>
                           <div class="row h-200px" *ngIf="isLoadingDefaultLabel">
                             <div class="spinner-box h-200px">
@@ -370,10 +370,6 @@
           </div>
         </app-pn-tab>
       </app-pn-tabs>
-
-      
-
-
     </div>
   </div>
 </div>
