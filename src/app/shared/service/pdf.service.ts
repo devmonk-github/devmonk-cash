@@ -814,7 +814,7 @@ export class PdfService {
   }
 
   replaceVariables(originalText: string, dataSourceObject: any) {
-    console.log('replaceVariables', {originalText});
+    // console.log('replaceVariables', {originalText});
     if (!this.isDefined(originalText)) {
       return;
     }

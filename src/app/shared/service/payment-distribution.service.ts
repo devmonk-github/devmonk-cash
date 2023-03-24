@@ -107,6 +107,7 @@ export class PaymentDistributionService {
             };
           })
         }
+        
         arrToUpdate.map(i => {
           if (bTesting) console.log(107, 'i.tType',i.tType);
           if (i.type !== 'giftcard' && i.amountToBePaid && (!i?.tType || i.tType !== 'refund')) {
@@ -117,7 +118,7 @@ export class PaymentDistributionService {
         });
       }
       
-      availableAmount -= arrToUpdate.reduce((n, { paymentAmount }) => n + paymentAmount, 0);
+      availableAmount -= arrToUpdate.filter(el => el.amountToBePaid > 0).reduce((n, { paymentAmount }) => n + paymentAmount, 0);
       if (bTesting) console.log('after assigning amounts, remaining availableAmount is', availableAmount);
 
       let assignedAmount = arrToUpdate.reduce((n, { paymentAmount }) => n + paymentAmount, 0);
