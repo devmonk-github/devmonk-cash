@@ -278,6 +278,7 @@ export class CustomerAddressDialogComponent implements OnInit, AfterViewInit{
   aSelectedGroups:any =[];
   businessDetails:any={};
   customerList :any=[];
+  bMUpdated:boolean=true;
   
   /* Check if saving points are enabled */
   savingPointsSetting:boolean = JSON.parse(localStorage.getItem('savingPoints') || '');
@@ -632,22 +633,18 @@ export class CustomerAddressDialogComponent implements OnInit, AfterViewInit{
 
          
 
-          
    
-     this.apiService.putNew('customer', '/api/v1/customer/update/' + this.requestParams.iBusinessId + '/' + this.iSearchedCustomerId, this.customer).subscribe(
-        (result: any) => {
-          if (result?.message === 'success') {
-            // this.toastService.show({ type: 'success', text: this.translations[`SUCCESSFULLY_UPDATED`] });
-            //this.fetchUpdatedDetails();
-            this.close({ action: true });
-          }
-          else{
-             let errorMessage = "";
-             this.translateService.get(result.message).subscribe((res:any)=>{
-              errorMessage = res;
-             })
-             this.toastService.show({type:'warning' , text:errorMessage});
-          }
+    
+    const oBody = {
+      iBusinessId:this.requestParams.iBusinessId,
+      iCustomerId:this.iSearchedCustomerId,
+      oShippingAddress : this.customer.oShippingAddress,
+      oInvoiceAddress : this.customer.oInvoiceAddress
+    }
+
+    this.apiService.postNew('customer', '/api/v1/customer/updateaddress', oBody)
+        .subscribe(async (result: any) => {
+          this.close({ action: true });
         },
         (error: any) => {
           console.log(error.message);
