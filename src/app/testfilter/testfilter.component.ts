@@ -130,9 +130,10 @@ export class TestFilterComponent implements OnInit, OnDestroy {
     const queryParams = {
       type: ['repair','order','gold-purchase','reservation','giftcard','gold-sell','refund'],
       from_create_date: "2023-01-03",
-      to_create_date: "2023-03-22",
+      to_create_date: "2023-03-24",
       from_end_date: "2023-01-03",
-      to_end_date: "2023-03-22",
+      to_end_date: "2023-03-24",
+      assignee:"",
       repair_status: ['new','processing','inspection','completed','delivered','cancelled','refund','refundInCashRegister',
       'offer','offer-is-ok','offer-is-not-ok','to-repair','part-are-order','shipped-to-repair']
     };
@@ -150,7 +151,9 @@ export class TestFilterComponent implements OnInit, OnDestroy {
       let data4 = params['repair_status'];
       let data5 = params['from_create_date'];
       let data6 = params['to_create_date'];
+      let data7 = params['assignee'];
       console.log(typeof data3);
+      console.log(data7);
       this.apiService.setToastService(this.toastrService);
       this.iBusinessId = localStorage.getItem('currentBusiness') || "";
       this.iLocationId = localStorage.getItem('currentLocation') || "";
@@ -169,6 +172,7 @@ export class TestFilterComponent implements OnInit, OnDestroy {
       let create = { minDate: data5, maxDate: data6 };
       this.requestParams.estimate = estimate;
       this.requestParams.create = create;
+      this.requestParams.iAssigneeId = data7;
 
       this.loadTransaction();
     });
