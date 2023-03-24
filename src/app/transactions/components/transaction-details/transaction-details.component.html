@@ -45,7 +45,7 @@
                             </button>
                         </ng-container>
                     </div>
-                    <div class="row fw-bold gy-1">
+                    <div class="row fw-bold gy-1" *ngIf="!showSystemCustomer">
                         <div class="col-md-12">
                             <div class="text-gray-900 mt-2">
                                 {{ transaction?.oSystemCustomer?.sFirstName }}

@@ -14,12 +14,13 @@ export class BankConfirmationDialogComponent implements OnInit {
 
   faTimes = faTimes;
   dialogRef: DialogComponent;
-  transaction:any;
-  bankConfirmation:any ={
-    dDateConfirmed:Date.now(),
-    nAmount:0
+  transaction: any;
+  bankConfirmation: any = {
+    dDateConfirmed:new Date(),
+    nAmount: 0
   }
-  iBusinessId:any="";
+  iBusinessId: any = "";
+  isShowLoading:Boolean =false;
   constructor(
     private viewContainerRef: ViewContainerRef,
     private apiService: ApiService,
@@ -30,49 +31,57 @@ export class BankConfirmationDialogComponent implements OnInit {
     const _injector = this.viewContainerRef.injector;
     this.dialogRef = _injector.get<DialogComponent>(DialogComponent);
 
-   }
+  }
 
   ngOnInit(): void {
-   console.log("transaction" , this.transaction);
-   this.iBusinessId = localStorage.getItem('currentBusiness');
+    this.iBusinessId = localStorage.getItem('currentBusiness');
   }
-  
+
   submit() {
-    console.log("submit", this.bankConfirmation);
     if (this.transaction.aPayments?.length) {
       const bankPayment = this.transaction.aPayments.filter((payment: any) => {
         if (payment.sMethod == 'bankpayment' && !payment?.bConfirmed) return payment
       });
       if (!bankPayment?.length) {
         this.toastService.show({ type: 'danger', text: 'Bank payment already confirmed' });
-        this.close({action:false});
+        this.close({ action: false });
       }
-      const nTotalBankPayment = bankPayment[0].nAmount;
+      const nTotalBankPayment = bankPayment[0]?.nAmount;
       let nTotalBankConfirmedPayment = 0;
       for (let paymentConfirmation of bankPayment[0]?.aBankConfirmation) {
-        console.log("payment confirmation", paymentConfirmation);
-        nTotalBankConfirmedPayment = Number(nTotalBankConfirmedPayment + paymentConfirmation.nAmount);
+        nTotalBankConfirmedPayment = nTotalBankConfirmedPayment + Number(paymentConfirmation?.nAmount);
       }
       if (nTotalBankConfirmedPayment < nTotalBankPayment) {
-         bankPayment[0]?.aBankConfirmation.push(this.bankConfirmation);
-      }else{
-        this.toastService.show({type:'danger' , text:'BankPayment already confirmed'});
-      }
-      const oBody = {
-        iBusinessId: this.iBusinessId,
-        iTransactionId: this.transaction._id,
-        bankPayment : bankPayment[0]
-      }
-      this.apiService.putNew('cashregistry', `/api/v1/transaction/bank/bankPaymentConfirmation`, oBody).subscribe((res: any) => {
-        console.log("res", res);
-        this.close({action:true});
-      },(error)=>{
-        console.log(error);
-        this.toastService.show({type:'danger' , text:error});
+        bankPayment[0].aBankConfirmation.push(this.bankConfirmation);
+        const oBody = {
+          iBusinessId: this.iBusinessId,
+          iTransactionId: this.transaction._id,
+          bankPayment: bankPayment[0]
+        }
+        this.isShowLoading= true;
+        this.apiService.putNew('cashregistry', `/api/v1/transaction/bank/bankPaymentConfirmation`, oBody).subscribe((res: any) => {
+          console.log("res", res);
+          this.isShowLoading = false;
+          if(res?.message == 'success'){
+            this.toastService.show({type:'success' , text:'Successfully update'});
+            this.close({ action: true , res:res?.data});
+          }else{
+            this.toastService.show({type:'danger' , text:res?.message});
+            this.close({ action: false});
+          }
+  
+        }, (error) => {
+          console.log(error);
+          this.isShowLoading = false;
+          this.toastService.show({ type: 'danger', text: error });
+          this.close({ action: false });
+        })
+      } else {
+        this.toastService.show({ type: 'danger', text: 'BankPayment already confirmed' });
         this.close({action:false});
-      })
-    }else{
-      this.close({action:false});
+      }
+    } else {
+      this.close({ action: false });
     }
 
 
