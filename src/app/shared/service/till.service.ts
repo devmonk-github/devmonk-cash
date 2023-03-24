@@ -608,7 +608,7 @@ export class TillService {
     });
     
     transaction.aTransactionItems.forEach((item: any) => {
-      item.bShowGiftcardDiscountField = ((item?.oType?.bRefund && item?.nGiftcardDiscount == 0) || (!item?.oType?.bRefund && item?.nGiftcardDiscount)) && dataObject.totalGiftcardDiscount > 0;
+      item.bShowGiftcardDiscountField = ((item?.oType?.bRefund && item?.nGiftcardDiscount == 0) || (!item?.oType?.bRefund && item?.nGiftcardDiscount)) && totalGiftcardDiscount > 0;
       let description = (item?.nDiscountToShow || item.nGiftcardDiscount) ? `${this.translateService.instant('ORIGINAL_AMOUNT_INC_DISC')}: ${item.nTotalPriceIncVat}\n` : '';
       item.eKind = item.oType.eKind;
       if (item?.related?.length) {
