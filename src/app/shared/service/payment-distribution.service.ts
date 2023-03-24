@@ -35,16 +35,17 @@ export class PaymentDistributionService {
       else if (i.nDiscount > 0 && i.bDiscountOnPercentage) _nDiscount = i.price * (i.nDiscount / 100)
       
       if (bTesting)  console.log(26, i.price, i.prePaidAmount)
-      
-      i.amountToBePaid = ((typeof i.price === 'string') ? i.price.replace(',','.') : i.price) * i.quantity - (i.prePaidAmount || 0) - (_nDiscount * i.quantity || 0);
+      const nPrice = parseFloat((typeof i.price === 'string') ? i.price.replace(',', '.') : i.price);
+      i.amountToBePaid = nPrice * i.quantity - (i.prePaidAmount || 0) - (_nDiscount * i.quantity || 0);
       if (bTesting)  console.log(28, 'amountToBePaid', i.amountToBePaid)
       
       if (i.type === 'gold-purchase') i.amountToBePaid = -(i.amountToBePaid);
 
       if (i?.tType && i.tType === 'refund'){
         i.amountToBePaid = (i?.new) ? -(i.price) : -(i.nRefundAmount);
-        availableAmount += i.price;
-        if (bTesting) console.log('item type is refund, increased available amount =  ', availableAmount, 'i.price=', i.price, 'setting giftcard discount to 0')
+        console.log('price', nPrice, 'availableAmount', availableAmount, typeof nPrice)
+        availableAmount += nPrice;
+        if (bTesting) console.log('item type is refund, increased available amount =  ', availableAmount, 'nPrice=', nPrice, 'setting giftcard discount to 0')
         i.nGiftcardDiscount = 0;
       } 
       

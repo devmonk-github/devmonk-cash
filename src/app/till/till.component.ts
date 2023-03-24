@@ -359,16 +359,17 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   updateAmountVariables() {
+    console.log('updateAmountVariables');
     this.nItemsTotalToBePaid = this.getTotals('price');
     this.nItemsTotalDiscount = this.getTotals('discount');
     this.nItemsTotalQuantity = this.getTotals('quantity');
     this.nTotalPayment = this.totalPrepayment();
     this.nFinalAmount = Math.abs(this.availableAmount - this.nItemsTotalToBePaid);
 
-    // console.log({ nItemsTotalToBePaid: this.nItemsTotalToBePaid })
-    // console.log({ nTotalPayment: this.nTotalPayment })
-    // console.log({ nFinalAmount: this.nFinalAmount })
-    // console.log({ availableAmount: this.availableAmount })
+    console.log({ nItemsTotalToBePaid: this.nItemsTotalToBePaid })
+    console.log({ nTotalPayment: this.nTotalPayment })
+    console.log({ nFinalAmount: this.nFinalAmount })
+    console.log({ availableAmount: this.availableAmount })
   }
 
   getTotals(type: string): number {
@@ -416,8 +417,10 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   totalPrepayment() {
+    console.log('totalPrepayment', this.transactionItems)
     let result = 0
     this.transactionItems.forEach((i) => {
+      console.log(i.paymentAmount);
       if (!i.isExclude) {
         result += i.paymentAmount;
       }
