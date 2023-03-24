@@ -39,7 +39,7 @@
           <div class="col-12">
             <div class="form-group mb-4">
               <select name="status" id="status" class="form-control form-control-solid"
-                [(ngModel)]="item.oType.bRefund" readonly>
+                [(ngModel)]="item.oType.bRefund" disabled="">
                 <option *ngFor="let type of typeArray" [ngValue]="type.value">{{type.title | translate}}</option>
               </select> 
             </div>
