@@ -18,7 +18,7 @@
             <span *ngIf="item.bDiscountOnPercentage">{{item.nDiscount}}%</span>
             <span *ngIf="!item.bDiscountOnPercentage">{{item.nDiscount | currencyFormat: tillService.currency:tillService.separator}}</span>
           </div>
-          <div class="col" *ngIf="item?.nGiftcardDiscount">{{item?.nGiftcardDiscount}}</div>
+          <div class="col" *ngIf="(item?.tType === 'refund' && item?.nGiftcardDiscount == 0) || (item?.tType !== 'refund' && item?.nGiftcardDiscount)">{{item.nGiftcardDiscount}}</div>
           <div class="col">{{item.tax}}%</div>
           <div class="col">{{ item.amountToBePaid | currencyFormat: tillService.currency:tillService.separator }}
           </div>

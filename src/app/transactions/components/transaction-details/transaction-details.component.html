@@ -405,8 +405,8 @@
                                     </td>
                                     <td (click)="openProductInfo(item)" class="cursor-pointer">
                                         <div>
-                                            <p class="m-0" *ngIf="!item.sProductName">{{ item.sArticleGroupName }} {{
-                                                item.sProductNumber }}</p>
+                                            <p class="m-0" *ngIf="!item.sProductName">
+                                                {{ item.sArticleGroupName }} {{item.sProductNumber }}</p>
                                             <p class="m-0" *ngIf="item.sProductName">{{ item.sProductName}}</p>
                                             <span *ngIf="item.sDescription">{{ item.sDescription}} <br /></span>
                                             <span *ngIf="item?.nDiscountToShow || item?.nGiftcardDiscount">
@@ -414,6 +414,7 @@
                                                 }}
                                                 <br />
                                             </span>
+                                            <span *ngIf="item?.oType?.bRefund" class="fw-bolder">({{'REFUNDED' | translate}})</span>
 
                                             <div *ngIf="item.related?.length">
                                                 {{ "ALREADY_PAID" | translate}}:<br />
@@ -454,7 +455,7 @@
                                         </span>
                                         <span *ngIf="!item.bDiscountOnPercentage">{{ item.nDiscountToShow * item.nQuantity | currency: tillService.currency}}</span>
                                     </td>
-                                    <td *ngIf="item?.nGiftcardDiscount > 0">{{ item.nGiftcardDiscount | currency: tillService.currency}}</td>
+                                    <td *ngIf="(item?.oType?.bRefund && item?.nGiftcardDiscount == 0) || (!item?.oType?.bRefund && item?.nGiftcardDiscount)">{{ item.nGiftcardDiscount | currency: tillService.currency}}</td>
                                     <td *ngIf="item?.nRedeemedLoyaltyPoints > 0">{{ item.nRedeemedLoyaltyPoints }} </td>
                                     <td *ngIf="savingPointsSetting && !transaction?.oCustomer?.bCounter">{{item?.nSavingsPoints || 0}} </td>
                                     <td>{{item.nVatRate}} % ({{item.vat || 0 | currency: tillService.currency }})</td>
