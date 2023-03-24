@@ -2,6 +2,7 @@ import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnInit, ViewCh
 import { DialogComponent, DialogService } from '../../service/dialog';
 import { ViewContainerRef } from '@angular/core';
 import { ApiService } from 'src/app/shared/service/api.service';
+
 import { faL, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { TranslateService } from '@ngx-translate/core';
 import {
@@ -176,9 +177,21 @@ export class CustomerAddressDialogComponent implements OnInit, AfterViewInit{
     aGroups:[]
   }
   iChosenCustomerId:any;
+  iSearchedCustomerId:any;
   CustomerId:any;
+  customers: Array<any> = [];
+ 
+  paginationConfig: any = {
+    itemsPerPage: 10,
+    currentPage: 1,
+    totalItems: 0
+  };
 
   requestParams: any = {
+    searchValue: '',
+    skip:0 , 
+    limit:10,
+    oFilterBy: {},
     iBusinessId: "",
     aProjection: ['sSalutation', 'sFirstName', 'sPrefix', 'sLastName', 'dDateOfBirth', 'dDateOfBirth', 'nClientId', 'sGender', 'bIsEmailVerified',
       'bCounter', 'sEmail', 'oPhone', 'oShippingAddress', 'oInvoiceAddress', 'iBusinessId', 'sComment', 'bNewsletter', 'sCompanyName', 'oPoints',
@@ -276,6 +289,7 @@ export class CustomerAddressDialogComponent implements OnInit, AfterViewInit{
     private toastService: ToastService,
     private dialogService: DialogService,
     private translateService: TranslateService,
+   
     private router: Router
   ) {
     const _injector = this.viewContainerRef.parentInjector;
@@ -286,13 +300,7 @@ export class CustomerAddressDialogComponent implements OnInit, AfterViewInit{
     this.apiService.setToastService(this.toastService);
     this.getBusinessDetails();
     this.customer = { ... this.customer, ... this.dialogRef?.context?.customerData };
-    console.log("selected this.customer------");
-    console.log(this.customer);
-
-    this.customerList.push(this.customer);
-   
-    console.log("selected this.iChosenCustomerId------");
-   
+    this.iSearchedCustomerId =this.customer._id;
     const translations = ['SUCCESSFULLY_ADDED', 'SUCCESSFULLY_UPDATED' ,'LOYALITY_POINTS_ADDED']
     this.translateService.get(translations).subscribe(
       result => this.translations = result
@@ -302,6 +310,7 @@ export class CustomerAddressDialogComponent implements OnInit, AfterViewInit{
     this.iEmployeeId = localStorage.getItem('currentUser') ?JSON.parse(localStorage.getItem('currentUser') || '') : "";
     console.log(this.iChosenCustomerId);
     this.getChosenCustomerdetail(this.requestParams.iBusinessId,this.iChosenCustomerId);
+    this.customerList.push(this.customer);
     this.requestParams.oFilterBy = {
       _id: this.customer._id,
       iCustomerId: this.customer._id
@@ -325,8 +334,7 @@ export class CustomerAddressDialogComponent implements OnInit, AfterViewInit{
     if(Result?.data){
       this.customerList.push(Result?.data);
     }
-    console.log(this.customerList);
-    console.log("----getChosenCustomerdetail");
+   
   }
 
   mergeCustomer(customer:any,Id:any,iSearchedCustomerId:any,key:any){
@@ -569,64 +577,72 @@ export class CustomerAddressDialogComponent implements OnInit, AfterViewInit{
     this.customer[type].sCountry = event.value;
   }
 
+  async getCustomerAddress(id: any) {
+    console.log("---getCustomerAddress------------");
+    const Result:any = await this.apiService.getNew('customer', `/api/v1/customer/${this.requestParams.iBusinessId}/${id}`).toPromise();
+    console.log(Result);
+    if(Result?.data){
+     this.customer = Result?.data;
+    }
+    console.log(this.customer);
+    console.log("---change-this.customer");
+    
+  }
+
   EditOrCreateCustomer() {
     this.customer.iBusinessId = this.requestParams.iBusinessId;
     this.customer.iEmployeeId = this.iEmployeeId?.userId;
     console.log('EditOrCreateCustomer called: ', this.editProfile, this.bIsCurrentCustomer);
     
     /* We are updating the current customer [T, A, AI] and Not the System customer */
-    if (this.editProfile && this.bIsCurrentCustomer && this.mode !== 'create') {
-      this.close({ bShouldUpdateCustomer: true, oCustomer: this.customer });
-      return;
-    }
+    // if (this.editProfile && this.bIsCurrentCustomer && this.mode !== 'create') {
+    //   this.close({ bShouldUpdateCustomer: true, oCustomer: this.customer });
+    //   return;
+    // }
 
-    if (this.mode == 'create') {
-      this.apiService.postNew('customer', '/api/v1/customer/create', this.customer).subscribe(
-        (result: any) => {
-          if(result.message == 'success'){
-          this.toastService.show({ type: 'success', text: this.translations[`SUCCESSFULLY_ADDED`] });
+     
+      this.requestParams.iChosenCustomerId = this.iChosenCustomerId;
+      this.requestParams.iSearchedCustomerId = this.iSearchedCustomerId;
+      this.apiService.postNew('customer', '/api/v1/customer/mergecustomer/create', this.requestParams)
+        .subscribe(async (result: any) => {
+         
+          this.apiService.getNew('customer', "/api/v1/customer/" + this.requestParams.iBusinessId+"/"+this.iSearchedCustomerId).subscribe((res: any)=>{
+           
+            this.customer = res;
+            //console.log("after close res")
+            //console.log(res)
+            this.close({action: true, customer: res });
+            return;
 
-            /* Updating current-customer in [A, T, AI] and Not the System customer */
-            if (this.editProfile && this.bIsCurrentCustomer) {
-              this.close({ bShouldUpdateCustomer: true, oCustomer: result.data });
-              return;
-            }
-          this.close({ action: true, customer: result.data });
-          }else{
-            let errorMessage = ""
-            this.translateService.get(result.message).subscribe(
-              result=> errorMessage =result
-            )
-            this.toastService.show({type:'warning' , text:errorMessage})
-          }
+          });
+          
         },
-        (error: any) => {
-             console.log(error.message);
-        }
-      );
-    }
-    if (this.mode == 'details') {
-      this.apiService.putNew('customer', '/api/v1/customer/update/' + this.requestParams.iBusinessId + '/' + this.customer._id, this.customer).subscribe(
-        (result: any) => {
-          if (result?.message === 'success') {
-            this.toastService.show({ type: 'success', text: this.translations[`SUCCESSFULLY_UPDATED`] });
-            this.fetchUpdatedDetails();
-            this.close({ action: true });
-          }
-          else{
-             let errorMessage = "";
-             this.translateService.get(result.message).subscribe((res:any)=>{
-              errorMessage = res;
-             })
-             this.toastService.show({type:'warning' , text:errorMessage});
-          }
-        },
-        (error: any) => {
-          console.log(error.message);
-        }
-      );
-    }
+          (error: any) => { })
+   
+    //  this.apiService.putNew('customer', '/api/v1/customer/update/' + this.requestParams.iBusinessId + '/' + this.customer._id, this.customer).subscribe(
+    //     (result: any) => {
+    //       if (result?.message === 'success') {
+    //         this.toastService.show({ type: 'success', text: this.translations[`SUCCESSFULLY_UPDATED`] });
+    //         this.fetchUpdatedDetails();
+    //         this.close({ action: true });
+    //       }
+    //       else{
+    //          let errorMessage = "";
+    //          this.translateService.get(result.message).subscribe((res:any)=>{
+    //           errorMessage = res;
+    //          })
+    //          this.toastService.show({type:'warning' , text:errorMessage});
+    //       }
+    //     },
+    //     (error: any) => {
+    //       console.log(error.message);
+    //     }
+    //   );
+   
   }
+  
+ 
+ 
 
   fetchUpdatedDetails() {
     this.apiService.postNew('customer', `/api/v1/customer/list`, this.requestParams)

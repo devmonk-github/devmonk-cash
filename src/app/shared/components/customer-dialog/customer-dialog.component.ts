@@ -8,6 +8,7 @@ import { CustomerAddressDialogComponent } from '../customer-address-dialog/custo
 import { ToastService } from '../toast';
 import { PaginatePipe } from 'ngx-pagination';
 import { animate, state, style, transition, trigger } from '@angular/animations';
+import { CustomerStructureService } from 'src/app/shared/service/customer-structure.service';
 
 
 @Component({
@@ -41,6 +42,7 @@ export class CustomerDialogComponent implements OnInit {
   loading = false
   showLoader = false;
   customers: Array<any> = [];
+  allcustomer: Array<any> = [];
   business: any = {}
   customColumn = 'NAME';
   defaultColumns = [ 'PHONE', 'EMAIL', 'SHIPPING_ADDRESS', 'INVOICE_ADDRESS'];
@@ -152,6 +154,7 @@ export class CustomerDialogComponent implements OnInit {
     private dialogService: DialogService,
     private apiService: ApiService,
     private translateService: TranslateService,
+    private customerStructureService: CustomerStructureService,
     private toastService: ToastService) {
     const _injector = this.viewContainer.parentInjector
     this.dialogRef = _injector.get<DialogComponent>(DialogComponent);
@@ -165,6 +168,8 @@ export class CustomerDialogComponent implements OnInit {
     this.apiService.setToastService(this.toastService);
     this.business._id = localStorage.getItem("currentBusiness");
     this.requestParams.iBusinessId = this.business._id;
+    this.allcustomer = this.dialogRef?.context?.allcustomer;
+    
   }
 
   makeCustomerName = async (customer: any) => {
@@ -234,15 +239,6 @@ export class CustomerDialogComponent implements OnInit {
     this.showLoader = true;
     this.customers = [];
     this.isCustomerSearched = false;
-    
-    // if(this.aFilterField?.length) {
-    //   oBody.oFilterBy = {};
-    //   this.aFilterField.forEach((field:any) => {
-    //     oBody.oFilterBy[field] = this.requestParams.searchValue;
-    //   });
-      
-    // }
-
     this.apiService.postNew('customer', '/api/v1/customer/list', this.requestParams)
       .subscribe(async (result: any) => {
         this.showLoader = false;
@@ -349,37 +345,57 @@ export class CustomerDialogComponent implements OnInit {
 
     if(this.key == "MERGE"){
 
-    //   this.dialogService.openModal(CustomerAddressDialogComponent, { cssClass:"modal-lg", context: {iChosenCustomerId:this.iChosenCustomerId, mode: 'create', customerData: customer, editProfile: true } }).instance.close.subscribe(result =>{
-    //     this.getCustomers()
-    //  });
+      this.dialogService.openModal(CustomerAddressDialogComponent, { cssClass:"modal-lg", context: {iChosenCustomerId:this.iChosenCustomerId, mode: 'create', customerData: customer, editProfile: true } }).instance.close.subscribe(data =>{
+        
+       this.requestParams = {
+        iBusinessId: this.requestParams.iBusinessId,
+        searchValue: ''
+      }
+        
+        let icIndex = this.allcustomer.findIndex(i => i._id.toString() == this.iChosenCustomerId.toString());
+       
+        if(icIndex != -1){
+          this.allcustomer[icIndex].isDisable = true;
+          this.allcustomer[icIndex].isMerged = true;
+        }
+       
+       
+        let isIndex = this.allcustomer.findIndex(i => i._id == data?.customer?.data?._id);
+       
+        if(isIndex != -1){
+          this.allcustomer[isIndex] = data?.customer?.data;
+          this.allcustomer[isIndex].isUpdated = true;
+          this.allcustomer[isIndex].name = data?.customer?.data?.sSalutation.toUpperCase() +" " + data?.customer?.data?.sFirstName + " "+  data?.customer?.data?.sPrefix + " "+  data?.customer?.data?.sLastName ;
+          this.allcustomer[isIndex]['NAME'] = data?.customer?.data?.sSalutation.toUpperCase() +" " + data?.customer?.data?.sFirstName + " "+  data?.customer?.data?.sPrefix + " "+  data?.customer?.data?.sLastName ;
+          this.allcustomer[isIndex]['SHIPPING_ADDRESS'] = this.makeCustomerAddress(data?.customer?.data?.oShippingAddress, false);
+          this.allcustomer[isIndex]['INVOICE_ADDRESS'] = this.makeCustomerAddress(data?.customer?.data?.oInvoiceAddress, false);
+          this.allcustomer[isIndex]['EMAIL'] = data?.customer?.data?.sEmail;
+          this.allcustomer[isIndex]['PHONE'] = (data?.customer?.data?.oPhone && data?.customer?.data?.oPhone.sLandLine ? data?.customer?.data?.oPhone.sLandLine : '') + (data?.customer?.data?.oPhone && data?.customer?.data?.oPhone.sLandLine && data?.customer?.data?.oPhone.sMobile ? ' / ' : '') + (data?.customer?.data?.oPhone && data?.customer?.data?.oPhone.sMobile ? data?.customer?.data?.oPhone.sMobile : '')
+        }
+     });
 
 
 
-      this.iSearchedCustomerId = customer._id;
-      this.loading = true;
-      
-     
-      
-      this.requestParams.iChosenCustomerId = this.iChosenCustomerId;
-      this.requestParams.iSearchedCustomerId = this.iSearchedCustomerId;
-      this.apiService.postNew('customer', '/api/v1/customer/mergecustomer/create', this.requestParams)
-        .subscribe(async (result: any) => {
-          this.showLoader = false;
-          this.isCustomerSearched = true;
 
-          this.apiService.getNew('customer', "/api/v1/customer/" + this.requestParams.iBusinessId+"/"+this.iSearchedCustomerId).subscribe((res: any)=>{
+      // this.iSearchedCustomerId = customer._id;
+      // this.loading = true;
+      // this.requestParams.iChosenCustomerId = this.iChosenCustomerId;
+      // this.requestParams.iSearchedCustomerId = this.iSearchedCustomerId;
+      // this.apiService.postNew('customer', '/api/v1/customer/mergecustomer/create', this.requestParams)
+      //   .subscribe(async (result: any) => {
+      //     this.showLoader = false;
+      //     this.isCustomerSearched = true;
+
+      //     this.apiService.getNew('customer', "/api/v1/customer/" + this.requestParams.iBusinessId+"/"+this.iSearchedCustomerId).subscribe((res: any)=>{
            
-            this.customer = res;
-            this.close({action: true, customer: res });
-            return;
+      //       this.customer = res;
+      //       this.close({action: true, customer: res });
+      //       return;
 
-          });
-          
-          
-          this.getMergeCustomers();
-          
-        },
-          (error: any) => { })
+      //     });
+      //     this.getMergeCustomers();
+      //   },
+      //     (error: any) => { })
         
     } else {
       if (this.from && this.from === 'cash-register') {
