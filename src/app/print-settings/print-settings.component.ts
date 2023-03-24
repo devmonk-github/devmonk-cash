@@ -68,24 +68,22 @@ export class PrintSettingsComponent implements OnInit, AfterViewInit {
   aDefaultZplTemplates: any;
   aDefaultTsplTemplates: any;
   oDefaultTsplTemplate: any = {
-    iID:1,
-    iDpi: 12,
-    iMarginLeft: 0,
-    iMarginTop: 0,
-    iOffsetMm: -4,
-    iGapMm: 2.7,
-    sCodePage: "UTF-8",
-    iDefaultFontSize:12,
-    sName:'DEFAULT',
-    iMediaDarkness:0,
-    iHeightMm:0,
-    iWidthMm:0,
-    iPaddingLeft:0,
-    iPaddingTop:0,
-    aInversion:[],
-    iPrintSpeed:0,
-    bTear:false,
-    bCut:false,
+    tspl_iID: 1,
+    tspl_iDpi: 8,
+    tspl_iDefaultFontSize: 5,
+    tspl_iMediaDarkness: 6,
+    tspl_iHeightMm: 10,
+    tspl_iWidthMm: 72,
+    tspl_iPaddingLeft: 0,
+    tspl_iPaddingTop: 0,
+    tspl_iMarginLeft: 0,
+    tspl_iMarginTop: 0,
+    tspl_aInversion: [1, 0],
+    tspl_iPrintSpeed: 2,
+    tspl_iOffsetMm: -4,
+    tspl_iGapMm: 2.7,
+    tspl_bTear: true,
+    tspl_bCut: false,
     aTemplate: [
       {
         type: 'rectangle',
@@ -147,7 +145,7 @@ export class PrintSettingsComponent implements OnInit, AfterViewInit {
     private printService: PrintService,
     private cdr: ChangeDetectorRef
   ) { }
-  ngAfterViewInit(): void {
+  ngAfterViewInit() {
     this.cdr.detectChanges();
   }
 
@@ -473,6 +471,7 @@ export class PrintSettingsComponent implements OnInit, AfterViewInit {
               bUseTspl: false
             }
           }
+          this.cdr.detectChanges();
         } else {
           this.toastService.show({ type: 'danger', text: 'Check your business -> printer settings' });
         }
@@ -512,13 +511,14 @@ export class PrintSettingsComponent implements OnInit, AfterViewInit {
       const js2zplService = new Js2zplService(oTemplate);
       layoutCommand = js2zplService.generateCommand(oTemplate, {}, false)
     } else {
-      const js2tsplService = new TSCLabelService(template);
+      const js2tsplService = new TSCLabelService(oTemplate);
       layoutCommand = js2tsplService.buildLayoutJob();
     }
     this.handlePrintNode(oPrintSettings, layoutCommand);
   }
 
   async printSample(template: any, eType:string = 'zpl') {
+    const oTemplate = JSON.parse(JSON.stringify(template));
     const oPrintSettings = this.labelPrintSettings.find((s: any) => s.sType === eType && s.iWorkstationId === this.iWorkstationId)
     if (!oPrintSettings) {
       this.toastService.show({ type: 'danger', text: 'Check your business -> printer settings' });
@@ -526,7 +526,7 @@ export class PrintSettingsComponent implements OnInit, AfterViewInit {
     }
     let layoutCommand: any;
     if(eType === 'zpl') {
-      const js2zplService = new Js2zplService(template);
+      const js2zplService = new Js2zplService(oTemplate);
       const sampleObject = {
         '%%PRODUCT_NAME%%': 'Ring Diamant',
         '%%SELLING_PRICE%%': '1234',
@@ -554,9 +554,9 @@ export class PrintSettingsComponent implements OnInit, AfterViewInit {
         '%%STRAP_MATERIAL%%': 'Staal',
         '%%QUANTITY%%': '1'
       }
-      layoutCommand = js2zplService.generateCommand(template, sampleObject, true)
+      layoutCommand = js2zplService.generateCommand(oTemplate, sampleObject, true)
     } else {
-      const js2tsplService = new TSCLabelService(template);
+      const js2tsplService = new TSCLabelService(oTemplate);
       const sampleObject = {
         '%%PRODUCT_NAME%%': 'Ring Diamant',
         '%%SELLING_PRICE%%': '12.345,67',

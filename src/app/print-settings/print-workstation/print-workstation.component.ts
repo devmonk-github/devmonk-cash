@@ -158,7 +158,7 @@ export class PrintWorkstationComponent implements OnInit {
       const current = this.workstations.splice(this.workstations.findIndex((el: any) => el._id === this.iWorkstationId), 1)
       this.workstations = [...current, ...this.workstations]
       // END
-      console.log('processWorkstations', this.workstations);
+      // console.log('processWorkstations', this.workstations);
     }
   }
 

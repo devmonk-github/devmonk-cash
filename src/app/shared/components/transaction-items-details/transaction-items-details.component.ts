@@ -61,6 +61,7 @@ export class TransactionItemsDetailsComponent implements OnInit {
       'iLocationId'
     ]
   };
+  bPriceEditMode = false;
   constructor(
     private viewContainerRef: ViewContainerRef,
     private apiService: ApiService,
@@ -212,5 +213,25 @@ export class TransactionItemsDetailsComponent implements OnInit {
         this.dialogRef.close.emit(data);
       }
     }
+  }
+
+  saveEditedPrice(item:any){
+    this.bPriceEditMode = false;
+    item.bUpdating = true;
+
+    const oBody = {
+      iBusinessId: this.requestParams.iBusinessId,
+      nPriceIncVat: parseFloat(item.nPriceIncVat),
+      nTotalAmount: parseFloat(item.nPriceIncVat),
+    }
+    this.apiService.putNew('cashregistry', `/api/v1/activities/items/${item._id}`, oBody).subscribe((result:any) => {
+      if(result?.data){
+        item.bUpdating = false;
+        this.toastrService.show({ type: 'success', text: 'Updated price successfully!' });
+        if (item.nPaidAmount < ((item.nPriceIncVat - item.nDiscount) * item.nQuantity)) {
+          item.tType = 'pay';
+        }
+      }
+    });
   }
 }

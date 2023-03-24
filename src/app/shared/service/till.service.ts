@@ -561,9 +561,9 @@ export class TillService {
         disc = this.getPercentOf(disc, item.nPriceIncVat)
         item.nDiscountToShow = disc;//.toFixed(2);
       } else { item.nDiscountToShow = disc }
-      // console.log('item.nDiscountToShow', item.nDiscountToShow)
-      // item.priceAfterDiscount = parseFloat(item.nRevenueAmount.toFixed(2)) - parseFloat(item.nDiscountToShow);
-      item.nPriceIncVatAfterDiscount = +(item.nPriceIncVat.toFixed(2) - item.nDiscountToShow.toFixed(2)) * item.nQuantity - item.nRedeemedLoyaltyPoints - item?.nGiftcardDiscount;
+      // console.log('item.nDiscountToShow', item.nDiscountToShow, 'item.nPriceIncVat', 'nPriceIncVat', item.nPriceIncVat, 'nQuantity', item.nQuantity, 'nRedeemedLoyaltyPoints', item.nRedeemedLoyaltyPoints, 'nGiftcardDiscount',item.nGiftcardDiscount);
+      
+      item.nPriceIncVatAfterDiscount = (parseFloat(item.nPriceIncVat.toFixed(2)) - parseFloat(item.nDiscountToShow.toFixed(2))) * item.nQuantity - item.nRedeemedLoyaltyPoints - (item?.nGiftcardDiscount || 0);
       item.nTotalPriceIncVat = item.nPriceIncVat * item.nQuantity;
       // item.nPriceIncVatAfterDiscount = parseFloat(item.nPriceIncVatAfterDiscount.toFixed(2));
       // console.log('nPriceIncVatAfterDiscount', item.nPriceIncVatAfterDiscount);
@@ -571,7 +571,7 @@ export class TillService {
       // console.log('item.nPriceIncVatAfterDiscount', item.nPriceIncVatAfterDiscount)
       // item.nRevenueAmount = (+(item.nRevenueAmount.toFixed(2)) - item.nDiscount) * item.nQuantity;
       // console.log(566, item?.totalPaymentAmount, item.nRevenueAmount, item.nDiscountToShow, item.nRedeemedLoyaltyPoints, item.nGiftcardDiscount);
-      item.totalPaymentAmount = (parseFloat(item.nRevenueAmount) - parseFloat(item.nDiscountToShow)) * item.nQuantity - item.nRedeemedLoyaltyPoints - item?.nGiftcardDiscount;
+      item.totalPaymentAmount = (parseFloat(item.nRevenueAmount) - parseFloat(item.nDiscountToShow)) * item.nQuantity - item.nRedeemedLoyaltyPoints - (item?.nGiftcardDiscount || 0);
       item.totalPaymentAmount = +(item.totalPaymentAmount.toFixed(2));
       // console.log('item.totalPaymentAmount', item.totalPaymentAmount)
       // item.totalPaymentAmountAfterDisc = parseFloat(item.priceAfterDiscount.toFixed(2)) * parseFloat(item.nQuantity);

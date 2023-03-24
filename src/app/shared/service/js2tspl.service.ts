@@ -23,24 +23,24 @@ export class TSCLabelService {
 	aTemplate:any;
 	constructor(template:any) {
 
-		this.tspl_iID =              this.inTemplate(template,'iID') ? template.iID : 1
-		this.tspl_iDpi =             this.checkDpi(this.inTemplate(template,'iDpi') ? template.iDpi : 8)
-		this.tspl_iDefaultFontSize = this.inTemplate(template,'iDefaultFontSize') ? template.iDefaultFontSize : 5
-		this.tspl_sName =            this.inTemplate(template,'sName') ? template.sName : "Label 1"
-		this.tspl_iMediaDarkness =   this.inTemplate(template,'iMediaDarkness') ? template.iMediaDarkness : 6
-		this.tspl_iHeightMm =        this.inTemplate(template,'iHeightMm') ? template.iHeightMm : 10
-		this.tspl_iWidthMm =         this.inTemplate(template,'iWidthMm') ? template.iWidthMm : 72
-		this.tspl_iPaddingLeft =     this.inTemplate(template,'iPaddingLeft') ? template.iPaddingLeft : 0
-		this.tspl_iPaddingTop =      this.inTemplate(template,'iPaddingTop') ? template.iPaddingTop : 0
-		this.tspl_iMarginLeft =      this.inTemplate(template,'iMarginLeft') ? this.mmToDots(template.iMarginLeft) : 0
-		this.tspl_iMarginTop =       this.inTemplate(template,'iMarginTop') ? this.mmToDots(template.iMarginTop) : 0
-		this.tspl_aInversion =       this.inTemplate(template,'aInversion') ? template.aInversion : [1,0]
-		this.tspl_sCodePage =        this.inTemplate(template,'sCodePage') ? template.sCodePage : "UTF-8";
-		this.tspl_iPrintSpeed =      this.inTemplate(template,'iPrintSpeed') ? template.iPrintSpeed : 2;
-		this.tspl_iOffsetMm =        this.inTemplate(template,'iOffsetMm') ? template.iOffsetMm : -4;
-		this.tspl_iGapMm =           this.inTemplate(template,'iGapMm') ? template.iGapMm : 2.7;
-		this.tspl_bTear =            this.inTemplate(template,'bTear') ? template.bTear : true;
-		this.tspl_bCut =             this.inTemplate(template,'bCut') ? template.bCut : false;
+		this.tspl_iID =              this.inTemplate(template,'tspl_iID') ? template.tspl_iID : 1
+		this.tspl_iDpi =             this.checkDpi(this.inTemplate(template,'tspl_iDpi') ? template.tspl_iDpi : 8)
+		this.tspl_iDefaultFontSize = this.inTemplate(template,'tspl_iDefaultFontSize') ? template.tspl_iDefaultFontSize : 5
+		this.tspl_sName =            this.inTemplate(template,'tspl_sName') ? template.tspl_sName : "Label 1"
+		this.tspl_iMediaDarkness =   this.inTemplate(template,'tspl_iMediaDarkness') ? template.tspl_iMediaDarkness : 6
+		this.tspl_iHeightMm =        this.inTemplate(template,'tspl_iHeightMm') ? template.tspl_iHeightMm : 10
+		this.tspl_iWidthMm =         this.inTemplate(template,'tspl_iWidthMm') ? template.tspl_iWidthMm : 72
+		this.tspl_iPaddingLeft =     this.inTemplate(template,'tspl_iPaddingLeft') ? template.tspl_iPaddingLeft : 0
+		this.tspl_iPaddingTop =      this.inTemplate(template,'tspl_iPaddingTop') ? template.tspl_iPaddingTop : 0
+		this.tspl_iMarginLeft = this.inTemplate(template, 'tspl_iMarginLeft') ? this.mmToDots(template.tspl_iMarginLeft) : 0
+		this.tspl_iMarginTop = this.inTemplate(template, 'tspl_iMarginTop') ? this.mmToDots(template.tspl_iMarginTop) : 0
+		this.tspl_aInversion =       this.inTemplate(template,'tspl_aInversion') ? template.tspl_aInversion : [1,0]
+		this.tspl_sCodePage =        this.inTemplate(template,'tspl_sCodePage') ? template.tspl_sCodePage : "UTF-8";
+		this.tspl_iPrintSpeed =      this.inTemplate(template,'tspl_iPrintSpeed') ? template.tspl_iPrintSpeed : 2;
+		this.tspl_iOffsetMm =        this.inTemplate(template,'tspl_iOffsetMm') ? template.tspl_iOffsetMm : -4;
+		this.tspl_iGapMm =           this.inTemplate(template,'tspl_iGapMm') ? template.tspl_iGapMm : 2.7;
+		this.tspl_bTear =            this.inTemplate(template,'tspl_bTear') ? template.tspl_bTear : true;
+		this.tspl_bCut =             this.inTemplate(template,'tspl_bCut') ? template.tspl_bCut : false;
 		
 		this.aTemplate =       (template && typeof template.aTemplate !== 'undefined') ? template.aTemplate : [];
 		// this.aTemplate = [
@@ -496,7 +496,7 @@ export class TSCLabelService {
 	}
 
 	buildPrintJob(layoutID = 1, productData: any,printQuantity=1) {
-		console.log(layoutID, productData, printQuantity);
+		// console.log(layoutID, productData, printQuantity);
 		let jobStr = ""
 		let dataFieldCounter = 1
 

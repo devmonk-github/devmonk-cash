@@ -8,8 +8,12 @@ import { ApiService } from './api.service';
   providedIn: 'root'
 })
 export class CreateArticleGroupService {
-
-  constructor(private apiService: ApiService, private translateService: TranslateService) { }
+  oInternalBusinessPartner:any;
+  iBusinessId:any = localStorage.getItem('currentBusiness');
+  aSuppliersList:any;
+  constructor(private apiService: ApiService, private translateService: TranslateService) {
+    this.fetchInternalBusinessPartner(this.iBusinessId);
+  }
 
   getSupplierList(body: any): Observable<any> {
     return this.apiService.postNew('core', '/api/v1/business/partners/supplierList', body)
@@ -30,42 +34,57 @@ export class CreateArticleGroupService {
   }
 
   async fetchInternalBusinessPartner(iBusinessId: any) {
-    const body = {
-      oFilterBy: {
-        bInternal: true,
-      },
-      iBusinessId,
-    };
-    let internalBusinessPartner: any = await this.getSupplierList(body).toPromise();
-    if (internalBusinessPartner && internalBusinessPartner.data && internalBusinessPartner.data.length > 0) {
-      const supplier = internalBusinessPartner.data[0].result;
-      return supplier[0];
-    } else {
-      const businessDetails: any = await this.getBusiness(iBusinessId).toPromise();
-      const { data } = businessDetails;
-      const order = {
-        iBusinessId, // creator of the internal businessPartner
-        iSupplierId: iBusinessId, // creator of the internal businessPartner
-        iClientGroupId: null,
-        sEmail: data.sEmail, // business.sEmail
-        sName: `${data.sName} internal supplier`, // business.sName + ' internal supplier',
-        sWebsite: data.sWebsite, // business.website
-        oPhone: data.oPhone,
-        oAddress: data.oAddress,
-        nPurchaseMargin: 2,
-        bPreFillCompanySettings: false,
-        aBankDetail: data.aBankDetail,
-        aProperty: data.aProperty,
-        aRetailerComments: [],
-        eFirm: 'private',
-        eAccess: 'n',
-        eType: 'supplier',
-        bInternal: true,
+    if (this.oInternalBusinessPartner) return this.oInternalBusinessPartner;
+    else {
+      const body = {
+        oFilterBy: {
+          bInternal: true,
+        },
+        iBusinessId,
       };
-      // internalBusinessPartner = this.createInternalBusinessPartner(order).toPromise();
-      internalBusinessPartner = await this.apiService.postNew('core', '/api/v1/business/partners', order).toPromise();
-      return internalBusinessPartner.data;
+      let internalBusinessPartner: any = await this.getSupplierList(body).toPromise();
+      if (internalBusinessPartner?.data?.length) {
+        const supplier = internalBusinessPartner.data[0].result;
+        this.oInternalBusinessPartner = supplier[0];
+        return this.oInternalBusinessPartner;
+      } else {
+        const businessDetails: any = await this.getBusiness(iBusinessId).toPromise();
+        const { data } = businessDetails;
+        const order = {
+          iBusinessId, // creator of the internal businessPartner
+          iSupplierId: iBusinessId, // creator of the internal businessPartner
+          iClientGroupId: null,
+          sEmail: data.sEmail, // business.sEmail
+          sName: `${data.sName} internal supplier`, // business.sName + ' internal supplier',
+          sWebsite: data.sWebsite, // business.website
+          oPhone: data.oPhone,
+          oAddress: data.oAddress,
+          nPurchaseMargin: 2,
+          bPreFillCompanySettings: false,
+          aBankDetail: data.aBankDetail,
+          aProperty: data.aProperty,
+          aRetailerComments: [],
+          eFirm: 'private',
+          eAccess: 'n',
+          eType: 'supplier',
+          bInternal: true,
+        };
+        // internalBusinessPartner = this.createInternalBusinessPartner(order).toPromise();
+        internalBusinessPartner = await this.apiService.postNew('core', '/api/v1/business/partners', order).toPromise();
+        this.oInternalBusinessPartner = internalBusinessPartner.data;
+        return this.oInternalBusinessPartner;
+      }
     }
+  }
+
+  saveInternalBusinessPartnerToArticleGroup(oArticleGroup:any) {
+    const oBody = {
+      aBusinessPartner: [{
+        iBusinessPartnerId: this.oInternalBusinessPartner._id,
+        nMargin: this.oInternalBusinessPartner.nPurchaseMargin
+      }]
+    }
+    return this.apiService.putNew('core', `/api/v1/business/article-group/${oArticleGroup._id}?iBusinessId=${oArticleGroup.iBusinessId}`, oBody);
   }
 
   async createArticleGroup(articleData: { name: string, sCategory: string, sSubCategory: string }) {
