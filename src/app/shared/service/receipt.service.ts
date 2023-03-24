@@ -118,7 +118,6 @@ export class ReceiptService {
 
     async exportToPdf({ oDataSource, templateData, pdfTitle, printSettings, printActionSettings, eSituation, sAction, sApiKey }: any) {
         this.oOriginalDataSource = oDataSource;
-        // this.pdfService.getTranslations();
 
         // console.log(this.oOriginalDataSource)
 

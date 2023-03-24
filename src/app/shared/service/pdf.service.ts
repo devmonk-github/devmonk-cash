@@ -814,6 +814,7 @@ export class PdfService {
   }
 
   replaceVariables(originalText: string, dataSourceObject: any) {
+    console.log('replaceVariables', {originalText});
     if (!this.isDefined(originalText)) {
       return;
     }
@@ -918,7 +919,7 @@ export class PdfService {
           let matched = false;
           let newText = '';
           if (this.isDefined(providedData)) {
-            if (providedData[variableStringFiltered]) {
+            if (providedData[variableStringFiltered] !== undefined) {
               newText = providedData[variableStringFiltered];
             } else if (variableStringFiltered.startsWith("__")) {
               newText = this.translateService.instant(variableStringFiltered.substring(2));

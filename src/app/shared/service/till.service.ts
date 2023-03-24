@@ -540,6 +540,7 @@ export class TillService {
       nTotalQty = 0;
     const aToFetchPayments:any = [];
     dataObject.aTransactionItems.forEach((item: any, index: number) => {
+      item.bShowGiftcardDiscountField = (item?.oType?.bRefund && item?.nGiftcardDiscount == 0) || (!item?.oType?.bRefund && item?.nGiftcardDiscount > 0);
       nTotalQty += item?.nQuantity;
       if (item?.aPayments?.some((payment: any) => payment.sMethod === 'card')) {
         aToFetchPayments.push(item.iTransactionId);
