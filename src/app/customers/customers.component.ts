@@ -117,32 +117,32 @@ export class CustomersComponent implements OnInit {
 
   openCustomerDialog(customer:any,Id:any,iSearchedCustomerId:any,key:any): void {
     
-    this.dialogService.openModal(CustomerDialogComponent, { cssClass: 'modal-xl', context: { customer:customer ,iChosenCustomerId:Id,iSearchedCustomerId:null,key:"MERGE"} }).instance.close.subscribe((data:any) => {
+    this.dialogService.openModal(CustomerDialogComponent, { cssClass: 'modal-xl', context: {allcustomer:this.customers, customer:customer ,iChosenCustomerId:Id,iSearchedCustomerId:null,key:"MERGE"} }).instance.close.subscribe((data:any) => {
         
 
-        this.requestParams = {
-          iBusinessId: this.requestParams.iBusinessId,
-          searchValue: ''
-        }
+        // this.requestParams = {
+        //   iBusinessId: this.requestParams.iBusinessId,
+        //   searchValue: ''
+        // }
           
-          let icIndex = this.customers.findIndex(i => i._id.toString() == Id.toString());
+        //   let icIndex = this.customers.findIndex(i => i._id.toString() == Id.toString());
          
-          if(icIndex != -1){
-          this.customers[icIndex].isDisable = true;
-          this.customers[icIndex].isMerged = true;
-          }
+        //   if(icIndex != -1){
+        //   this.customers[icIndex].isDisable = true;
+        //   this.customers[icIndex].isMerged = true;
+        //   }
          
-          let isIndex = this.customers.findIndex(i => i._id == data?.customer?.data?._id);
-          if(isIndex != -1){
-          this.customers[isIndex] = data?.customer?.data;
-          this.customers[isIndex].isUpdated = true;
-          this.customers[isIndex].name = this.customerStructureService.makeCustomerName(data?.customer?.data);
-          this.customers[isIndex]['NAME'] = this.customerStructureService.makeCustomerName(data?.customer?.data);
-          this.customers[isIndex]['SHIPPING_ADDRESS'] = this.customerStructureService.makeCustomerAddress(data?.customer?.data?.oShippingAddress, false);
-          this.customers[isIndex]['INVOICE_ADDRESS'] = this.customerStructureService.makeCustomerAddress(data?.customer?.data?.oInvoiceAddress, false);
-          this.customers[isIndex]['EMAIL'] = data?.customer?.data?.sEmail;
-          this.customers[isIndex]['PHONE'] = (data?.customer?.data?.oPhone && data?.customer?.data?.oPhone.sLandLine ? data?.customer?.data?.oPhone.sLandLine : '') + (data?.customer?.data?.oPhone && data?.customer?.data?.oPhone.sLandLine && data?.customer?.data?.oPhone.sMobile ? ' / ' : '') + (data?.customer?.data?.oPhone && data?.customer?.data?.oPhone.sMobile ? data?.customer?.data?.oPhone.sMobile : '')
-          }
+        //   let isIndex = this.customers.findIndex(i => i._id == data?.customer?.data?._id);
+        //   if(isIndex != -1){
+        //   this.customers[isIndex] = data?.customer?.data;
+        //   this.customers[isIndex].isUpdated = true;
+        //   this.customers[isIndex].name = this.customerStructureService.makeCustomerName(data?.customer?.data);
+        //   this.customers[isIndex]['NAME'] = this.customerStructureService.makeCustomerName(data?.customer?.data);
+        //   this.customers[isIndex]['SHIPPING_ADDRESS'] = this.customerStructureService.makeCustomerAddress(data?.customer?.data?.oShippingAddress, false);
+        //   this.customers[isIndex]['INVOICE_ADDRESS'] = this.customerStructureService.makeCustomerAddress(data?.customer?.data?.oInvoiceAddress, false);
+        //   this.customers[isIndex]['EMAIL'] = data?.customer?.data?.sEmail;
+        //   this.customers[isIndex]['PHONE'] = (data?.customer?.data?.oPhone && data?.customer?.data?.oPhone.sLandLine ? data?.customer?.data?.oPhone.sLandLine : '') + (data?.customer?.data?.oPhone && data?.customer?.data?.oPhone.sLandLine && data?.customer?.data?.oPhone.sMobile ? ' / ' : '') + (data?.customer?.data?.oPhone && data?.customer?.data?.oPhone.sMobile ? data?.customer?.data?.oPhone.sMobile : '')
+        //   }
 
       })
 

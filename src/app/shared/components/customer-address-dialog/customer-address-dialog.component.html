@@ -65,7 +65,7 @@
                     
                     
                     <div class="row">
-                        <ng-select class="form-control form-control-solid p-0"  [(ngModel)]="CustomerId">
+                        <ng-select class="form-control form-control-solid p-0"  [(ngModel)]="CustomerId" (change)="getCustomerAddress($event)">
                             <ng-option *ngFor="let customerdetail of customerList" [value]="customerdetail._id">
                               {{customerdetail?.sFirstName}} {{customerdetail?.sLastName}}</ng-option>
                         </ng-select>
