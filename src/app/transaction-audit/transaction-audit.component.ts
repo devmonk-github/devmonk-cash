@@ -699,7 +699,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
 
   /* Fetch Audit (Be it Static or Dynamic), where user can change filter as well */
   fetchAuditStatistic(sDisplayMethod?: string) {
-    // console.log('fetchAuditStatistic');
+    console.log('fetchAuditStatistic', this.IsDynamicState);
     if (this.IsDynamicState) this.getDynamicData(sDisplayMethod);
     else {
       if (!this.aDayClosure?.length) this.fetchDayClosureList();
@@ -754,12 +754,10 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
             this.aStatistic = oData.aStatistic;
             this.aStatisticsDocuments = oData.aStaticDocument;
             if (this.iStatisticId) {
-              // console.log(749, 'if this.iStatisticId', this.iStatisticId)
               this.oStatisticsDocument = this.aStatisticsDocuments[0];
               this.processCounting();
-              // console.log(755, 'if this.oStatisticsDocument', this.oStatisticsDocument)
             }
-            // console.log(757, this.aStatistic, this.aStatisticsDocuments);
+            console.log(757, this.aStatisticsDocuments);
             if (this.aStatisticsDocuments?.length) this.mappingThePaymentMethod(this.aStatisticsDocuments);
           }
           // if (oData?.oStatistic?._id) {
@@ -781,7 +779,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
   }
 
   mappingThePaymentMethod(aData: any) {
-
+    console.log('mappingThePaymentMethod: ', this.nPaymentMethodTotal);
     aData.forEach((oData: any) => {
 
       if (oData.aPaymentMethods?.length) {
@@ -808,7 +806,9 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
       //   this.oCountings.nCashInTill = oData?.oCountings?.nCashInTill || 0;
       // }
     })
+    console.log('mappingThePaymentMethod 808: ', this.nPaymentMethodTotal);
     this.nPaymentMethodTotal = this.aPaymentMethods.reduce((a: any, b: any) => a + b.nAmount, 0);
+    console.log('this.nPaymentMethodTotal 810: ', this.nPaymentMethodTotal);
     this.nNewPaymentMethodTotal = this.nPaymentMethodTotal;
 
     // console.log(787, this.aPaymentMethods)
@@ -867,16 +867,17 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
           }
           // this.mappingThePaymentMethod(result?.data);
           this.aPaymentMethods = result?.data?.aPaymentMethods;
-
-          if (this.oStatisticsData.bIsDayStateOpened) {
+          console.log('this.oStatisticsData.bIsDayStateOpened: ', this.oStatisticsData.bIsDayStateOpened);
+          if (this.oStatisticsData.bIsDayStateOpened || this.IsDynamicState) {
             this.aPaymentMethods.forEach((item: any) => {
               item.nNewAmount = item.nAmount;
               this.nPaymentMethodTotal += parseFloat(item.nAmount);
+              console.log('nPaymentMethodTotal 872: ', this.nPaymentMethodTotal, item.nAmount);
               if (item?.sMethod === 'cash') this.oCountings.nCashInTill = item?.nAmount || 0;
               return item;
             });
-
             if (this.IsDynamicState) this.nPaymentMethodTotal = this.aPaymentMethods.reduce((a: any, b: any) => a + b.nAmount, 0);
+            console.log('nPaymentMethodTotal 878: ', this.IsDynamicState, this.nPaymentMethodTotal, this.nPaymentMethodTotal);
             this.nNewPaymentMethodTotal = this.nPaymentMethodTotal;
             this.filterDuplicatePaymentMethods();
           }
