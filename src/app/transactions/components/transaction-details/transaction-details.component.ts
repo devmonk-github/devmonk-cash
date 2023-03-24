@@ -14,6 +14,7 @@ import { TillService } from 'src/app/shared/service/till.service';
 import { TranslateService } from '@ngx-translate/core';
 import { TaxService } from 'src/app/shared/service/tax.service';
 import { CustomerDialogComponent } from 'src/app/shared/components/customer-dialog/customer-dialog.component';
+import _, { head } from 'lodash';
 
 const moment = (_moment as any).default ? (_moment as any).default : _moment;
 
@@ -74,6 +75,8 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   nTotalItemPayment:any =0;
   nTotalItemPaidPayment:any =0;
   translation: any = [];
+  oCurrentCustomer:any;
+  showSystemCustomer:Boolean = false;
   @ViewChild('slider', { read: ViewContainerRef }) container!: ViewContainerRef;
 
   constructor(
@@ -96,7 +99,7 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
     this.translateService.get(translationKey).subscribe((res: any) => {
       this.translation = res;
     })
-    
+    this.oCurrentCustomer = JSON.parse(JSON.stringify(this.transaction?.oCustomer));
     this.transaction.businessDetails = this.businessDetails;
     this.transaction.currentLocation = this.businessDetails.currentLocation;
     this.fetchActivityItem();
@@ -278,12 +281,12 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
     activityItem.bFetchingActivityItem = true;
     event.target.disabled = true;
     const aActivityItem:any=[];
-    if(this.aActivityItems?.length){
-     const items = this.aActivityItems.filter((AI:any)=> AI._id == activityItem.iActivityItemId);
-     aActivityItem.push(items[0]);
-    } else{
-      const items:any = await this.apiService.postNew('cashregistry', `/api/v1/activities/activity-item/${activityItem.iActivityItemId}`, oBody).toPromise();
-      aActivityItem.push(items?.data[0].result[0]) 
+    if (this.aActivityItems?.length) {
+      const items = this.aActivityItems.filter((AI: any) => AI._id == activityItem.iActivityItemId);
+      aActivityItem.push(items[0]);
+    } else {
+      const items: any = await this.apiService.postNew('cashregistry', `/api/v1/activities/activity-item/${activityItem.iActivityItemId}`, oBody).toPromise();
+      aActivityItem.push(items?.data[0].result[0])
     }
     activityItem.bFetchingActivityItem = false;
     event.target.disabled = false;
@@ -451,8 +454,19 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
 
   getSystemCustomer(iCustomerId: string) {
     this.apiService.getNew('customer', `/api/v1/customer/${this.iBusinessId}/${iCustomerId}`).subscribe((result: any) => {
-      if (result?.data) this.transaction.oSystemCustomer = result?.data;
+      if (result?.data) {
+        this.transaction.oSystemCustomer = result?.data;
+        this.matchSystemAndCurrentCustomer(this.transaction.oSystemCustomer , this.oCurrentCustomer);
+      }      
     })
+  }
+
+  matchSystemAndCurrentCustomer(systemCustomer:any , currentCustomer:any){
+    for(const[key , value] of Object.entries(currentCustomer)){
+      if(!(_.isEqual(currentCustomer[key], systemCustomer[key]))){
+       this.showSystemCustomer= true
+      }
+   }
   }
 
   /* Update customer in [T, A, AI] */
@@ -465,6 +479,7 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
     }
     this.apiService.postNew('cashregistry', '/api/v1/transaction/update-customer', oBody).subscribe((result: any) => {
       this.transaction.oCustomer = oBody?.oCustomer;
+      this.matchSystemAndCurrentCustomer(this.transaction.oSystemCustomer , this.transaction.oCustomer);
       this.toastService.show({ type: "success", text: this.translation['SUCCESSFULLY_UPDATED'] });
     }, (error) => {
       console.log('update customer error: ', error);

@@ -292,8 +292,15 @@
                   data-kt-menu="true">
                   <!--begin::Menu item-->
                   <div class="menu-item px-3 text-center" *ngFor="let tMenu of transactionMenu">
-                    <div class="menu-link px-3" (click)="clickMenuOpt(tMenu.key, transaction._id)">{{ tMenu.key |
-                      translate}}</div>
+                    <div *ngIf="tMenu.key == 'MARK_CONFIRMED'">
+                      <div class="menu-link px-3" [ngClass]="{'disabled':transaction.bConfirmed}"
+                        (click)="clickMenuOpt(tMenu.key, transaction._id)">{{ tMenu.key |
+                        translate}}</div>
+                    </div>
+                    <div *ngIf="tMenu.key != 'MARK_CONFIRMED'">
+                      <div class="menu-link px-3" (click)="clickMenuOpt(tMenu.key, transaction._id)">{{ tMenu.key |
+                        translate}}</div>
+                    </div>
                   </div>
                   <!--end::Menu item-->
                 </div>
