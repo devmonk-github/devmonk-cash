@@ -1,6 +1,6 @@
 <div class="card shadow-lg">
     <div class="card-header align-items-center py-5">
-        <h4 class="card-title">Choose Invoice/shipping address</h4>
+        <h4 class="card-title">{{'CHOOSE_ADDRESSES_TO_USE' | translate}}</h4>
         
         <div class="card-toolbar flex-row-fluid justify-content-end gap-5">
             
@@ -60,7 +60,7 @@
         </ng-container>
         <ng-container *ngIf="mode === 'create' || (mode === 'details' && editProfile)">
             <div class="row">
-                <div class="col-8">
+                <div class="col-12">
                     
                     
                     <div class="row">
@@ -168,7 +168,8 @@
     
     <div class="card-footer d-flex justify-content-end align-items-center">
       
-        <button class="btn btn-primary"  (click)="EditOrCreateCustomer()">Save&Exit
+        <button class="btn btn-primary"  (click)="EditOrCreateCustomer()">
+            {{'SAVE_AND_CLOSE' | translate}}
         </button>
     </div>
     
