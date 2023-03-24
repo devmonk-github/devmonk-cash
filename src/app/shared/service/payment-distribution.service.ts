@@ -107,15 +107,20 @@ export class PaymentDistributionService {
             };
           })
         }
+        
         arrToUpdate.map(i => {
           if (bTesting) console.log(107, 'i.tType',i.tType);
-          if (i.type !== 'giftcard' && i?.tType && i.tType !== 'refund') {
+          if (i.type !== 'giftcard' && i.amountToBePaid && (!i?.tType || i.tType !== 'refund')) {
             const a = +((i.amountToBePaid * availableAmount / totalAmountToBePaid).toFixed(2));
             if (bTesting) console.log('set to payment',a)
             i.paymentAmount = a;
           }
         });
       }
+      
+      availableAmount -= arrToUpdate.filter(el => el.amountToBePaid > 0).reduce((n, { paymentAmount }) => n + paymentAmount, 0);
+      if (bTesting) console.log('after assigning amounts, remaining availableAmount is', availableAmount);
+
       let assignedAmount = arrToUpdate.reduce((n, { paymentAmount }) => n + paymentAmount, 0);
       if (bTesting) console.log('assignedAmount', assignedAmount, 'availableAmount', availableAmount)
       if(availableAmount > 0 && assignedAmount != 0) {
@@ -139,7 +144,7 @@ export class PaymentDistributionService {
       // console.log('last item is ', arrToUpdate[arrToUpdate.length - 1])
     }
     arrToUpdate.forEach(element => {
-      if (bTesting)  console.log(109, { paymentAmount : element.paymentAmount, nTotal: element.nTotal})
+      // if (bTesting)  console.log(109, { paymentAmount : element.paymentAmount, nTotal: element.nTotal})
       // if (availableAmount === 0) {
       //   console.log('setting payment amount to 0')
       //   element.paymentAmount = 0;

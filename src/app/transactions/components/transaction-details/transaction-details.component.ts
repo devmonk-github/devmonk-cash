@@ -14,7 +14,7 @@ import { TillService } from 'src/app/shared/service/till.service';
 import { TranslateService } from '@ngx-translate/core';
 import { TaxService } from 'src/app/shared/service/tax.service';
 import { CustomerDialogComponent } from 'src/app/shared/components/customer-dialog/customer-dialog.component';
-import _, { head } from 'lodash';
+import * as _ from 'lodash';
 
 const moment = (_moment as any).default ? (_moment as any).default : _moment;
 

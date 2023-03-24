@@ -540,6 +540,7 @@ export class TillService {
       nTotalQty = 0;
     const aToFetchPayments:any = [];
     dataObject.aTransactionItems.forEach((item: any, index: number) => {
+      
       nTotalQty += item?.nQuantity;
       if (item?.aPayments?.some((payment: any) => payment.sMethod === 'card')) {
         aToFetchPayments.push(item.iTransactionId);
@@ -592,7 +593,7 @@ export class TillService {
       }
       // console.log('totalAfterDisc', totalAfterDisc)
       totalDiscount += item.ntotalDiscountPerItem;
-      totalGiftcardDiscount += item.nGiftcardDiscount;
+      totalGiftcardDiscount += item?.nGiftcardDiscount || 0;
       // console.log('totalDiscount', totalDiscount)
       if(!item?.bMigrate){
         relatedItemsPromises[index] = this.getRelatedTransactionItem(item?.iActivityItemId, item?._id, index);
@@ -607,6 +608,7 @@ export class TillService {
     });
     
     transaction.aTransactionItems.forEach((item: any) => {
+      item.bShowGiftcardDiscountField = ((item?.oType?.bRefund && item?.nGiftcardDiscount == 0) || (!item?.oType?.bRefund && item?.nGiftcardDiscount)) && totalGiftcardDiscount > 0;
       let description = (item?.nDiscountToShow || item.nGiftcardDiscount) ? `${this.translateService.instant('ORIGINAL_AMOUNT_INC_DISC')}: ${item.nTotalPriceIncVat}\n` : '';
       item.eKind = item.oType.eKind;
       if (item?.related?.length) {
