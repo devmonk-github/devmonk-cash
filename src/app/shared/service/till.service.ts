@@ -188,6 +188,9 @@ export class TillService {
       oItem.sProductNumber = i.sProductNumber;
       oItem.nPriceIncVat = (i.type === 'gold-purchase') ? - (i.price) : i.price;
       oItem.nPurchasePrice = i.nPurchasePrice;
+      if (i.type === 'repair' || i.type === 'order') {
+        oItem.nActualCost = oItem.nPurchasePrice;
+      }
       oItem.nProfit = i.price - i.nPurchasePrice;
       oItem.nVatRate = i.tax;
       oItem.nQuantity = i.quantity;
@@ -205,7 +208,6 @@ export class TillService {
       oItem.bPayLater = i?.isExclude;
       oItem.bDeposit = false;
       oItem.sProductCategory = 'CATEGORY';
-      oItem.sGiftCardNumber = i?.sGiftCardNumber;
       oItem.sGiftCardNumber = i?.sGiftCardNumber;
       oItem.nEstimatedTotal = +(i?.nTotal?.toFixed(2)) || 0;
       oItem.nPaymentAmount = ((i.price.toFixed(2) * i.quantity) - i.paymentAmount >0.05) ? +(i.paymentAmount.toFixed(2) || 0) : +((i.price.toFixed(2) * i.quantity) || 0);
@@ -482,7 +484,7 @@ export class TillService {
   }
 
   async processTransactionForPdfReceipt(transaction: any) {
-    // console.log('processTransactionForPdfReceipt original', transaction);
+    console.log('processTransactionForPdfReceipt original', JSON.parse(JSON.stringify(transaction)));
     const relatedItemsPromises: any = [];
     let language: any = localStorage.getItem('language')
     let dataObject = JSON.parse(JSON.stringify(transaction));
