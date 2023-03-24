@@ -19,11 +19,10 @@
                         <div class="flex-grow-1">
                             <div class="d-flex justify-content-between align-items-start" *ngIf="!editProfile">
                                 <div class="row">
-                                    <ng-select class="form-control form-control-solid p-0"  [(ngModel)]="CustomerId">
-                                        <ng-option *ngFor="let customerdetail of customerList" [value]="customerdetail._id">
-                                          {{customerdetail?.sFirstName}} {{customerdetail?.sLastName}}</ng-option>
+                                    <ng-select class="form-control form-control-solid p-0" [clearable]="false" [(ngModel)]="CustomerId" (change)="getCustomerAddress($event)">
+                                        <ng-option *ngFor="let customerdetail of customerList" [value]="customerdetail._id">{{customerdetail?.sFirstName}}
+                                            {{customerdetail?.sLastName || ''}}</ng-option>>
                                     </ng-select>
-                                 
                                 </div>
                                 
                                 <div class="">
@@ -65,11 +64,10 @@
                     
                     
                     <div class="row">
-                        <ng-select class="form-control form-control-solid p-0"  [(ngModel)]="CustomerId" (change)="getCustomerAddress($event)">
-                            <ng-option *ngFor="let customerdetail of customerList" [value]="customerdetail._id">
-                              {{customerdetail?.sFirstName}} {{customerdetail?.sLastName}}</ng-option>
+                        <ng-select class="form-control form-control-solid p-0" [clearable]="false" [(ngModel)]="CustomerId" (change)="getCustomerAddress($event)">
+                            <ng-option *ngFor="let customerdetail of customerList" [value]="customerdetail._id">{{customerdetail?.sFirstName}}
+                                {{customerdetail?.sLastName || ''}}</ng-option>>
                         </ng-select>
-                     
                     </div>
                    
                     <div class="row">

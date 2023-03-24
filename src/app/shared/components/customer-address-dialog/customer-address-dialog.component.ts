@@ -301,6 +301,7 @@ export class CustomerAddressDialogComponent implements OnInit, AfterViewInit{
     this.getBusinessDetails();
     this.customer = { ... this.customer, ... this.dialogRef?.context?.customerData };
     this.iSearchedCustomerId =this.customer._id;
+    this.CustomerId = this.iSearchedCustomerId;
     const translations = ['SUCCESSFULLY_ADDED', 'SUCCESSFULLY_UPDATED' ,'LOYALITY_POINTS_ADDED']
     this.translateService.get(translations).subscribe(
       result => this.translations = result
@@ -599,8 +600,16 @@ export class CustomerAddressDialogComponent implements OnInit, AfterViewInit{
     //   this.close({ bShouldUpdateCustomer: true, oCustomer: this.customer });
     //   return;
     // }
+    this.customer.oShippingAddress = this.customer.oShippingAddress;
+    this.customer.oInvoiceAddress = this.customer.oInvoiceAddress;
 
-     
+    // console.log("this.customer.oShippingAddress");
+    // console.log(this.customer.oShippingAddress);
+   
+
+    // console.log("this.customer.oInvoiceAddress");
+    // console.log(this.customer.oInvoiceAddress);
+   
       this.requestParams.iChosenCustomerId = this.iChosenCustomerId;
       this.requestParams.iSearchedCustomerId = this.iSearchedCustomerId;
       this.apiService.postNew('customer', '/api/v1/customer/mergecustomer/create', this.requestParams)
@@ -617,27 +626,33 @@ export class CustomerAddressDialogComponent implements OnInit, AfterViewInit{
           });
           
         },
-          (error: any) => { })
+          (error: any) => { });
+
+          
+
+         
+
+          
    
-    //  this.apiService.putNew('customer', '/api/v1/customer/update/' + this.requestParams.iBusinessId + '/' + this.customer._id, this.customer).subscribe(
-    //     (result: any) => {
-    //       if (result?.message === 'success') {
-    //         this.toastService.show({ type: 'success', text: this.translations[`SUCCESSFULLY_UPDATED`] });
-    //         this.fetchUpdatedDetails();
-    //         this.close({ action: true });
-    //       }
-    //       else{
-    //          let errorMessage = "";
-    //          this.translateService.get(result.message).subscribe((res:any)=>{
-    //           errorMessage = res;
-    //          })
-    //          this.toastService.show({type:'warning' , text:errorMessage});
-    //       }
-    //     },
-    //     (error: any) => {
-    //       console.log(error.message);
-    //     }
-    //   );
+     this.apiService.putNew('customer', '/api/v1/customer/update/' + this.requestParams.iBusinessId + '/' + this.iSearchedCustomerId, this.customer).subscribe(
+        (result: any) => {
+          if (result?.message === 'success') {
+            // this.toastService.show({ type: 'success', text: this.translations[`SUCCESSFULLY_UPDATED`] });
+            //this.fetchUpdatedDetails();
+            this.close({ action: true });
+          }
+          else{
+             let errorMessage = "";
+             this.translateService.get(result.message).subscribe((res:any)=>{
+              errorMessage = res;
+             })
+             this.toastService.show({type:'warning' , text:errorMessage});
+          }
+        },
+        (error: any) => {
+          console.log(error.message);
+        }
+      );
    
   }
   
