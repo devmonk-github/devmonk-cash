@@ -237,11 +237,12 @@ export class TillService {
         bDiscount: i.nDiscount > 0,
         bPrepayment: bPrepayment
       };
+      console.log(oItem.oType);
       oItem.iActivityItemId = i.iActivityItemId;
       oItem.oGoldFor = i.oGoldFor;
       oItem.nDiscount = i.nDiscount;
       oItem.nGiftcardDiscount = i?.nGiftcardDiscount;
-      oItem.nRedeemedLoyaltyPoints = i.redeemedLoyaltyPoints;
+      oItem.nRedeemedLoyaltyPoints = i.nRedeemedLoyaltyPoints;
       oItem.sUniqueIdentifier = i.sUniqueIdentifier || uuidv4();
       oItem.nRevenueAmount = +((oItem.nPaymentAmount / i.quantity).toFixed(2));
       oItem.sDescription = i.description;
@@ -267,9 +268,7 @@ export class TillService {
         discountRecords = JSON.parse(discountRecords);
       }
       let _nDiscount = i?.bDiscountOnPercentage ? (i.nPriceIncVat * (i.nDiscount / 100)) : i.nDiscount;
-      // console.log('-------------------_nDiscount-----------------------------------: ', _nDiscount);
       if (i.oType.bRefund && _nDiscount !== 0) {
-        // console.log('IN IF CONDITION: ');
         i.nPaymentAmount -= _nDiscount * i.nQuantity;
         i.nRevenueAmount = i.nPaymentAmount;
         const records = discountRecords.filter((o: any) => o.sUniqueIdentifier === i.sUniqueIdentifier);
@@ -310,10 +309,12 @@ export class TillService {
     });
     localStorage.removeItem('discountRecords');
     if (redeemedLoyaltyPoints && redeemedLoyaltyPoints > 0) {
-      let nDiscount = Math.round(redeemedLoyaltyPoints / originalTItemsLength);
+      // let nDiscount = Math.round(redeemedLoyaltyPoints / originalTItemsLength);
       const reedemedTItem = body.transactionItems.find((o: any) => o.oType.eTransactionType === "loyalty-points");
+      // console.log({reedemedTItem})
       body.transactionItems.map((i: any) => {
-        if (i.oType.eKind !== 'discount' && i.oType.eKind !== 'loyalty-points' && nDiscount > 0) {
+        let nDiscount = i.nRedeemedLoyaltyPoints;
+        if (i.oType.eKind !== 'discount' && i.oType.eKind !== 'loyalty-points') {
           if (nDiscount > redeemedLoyaltyPoints) {
             nDiscount = redeemedLoyaltyPoints;
             redeemedLoyaltyPoints = 0;
@@ -330,7 +331,7 @@ export class TillService {
           tItem1.nRevenueAmount = -1 * nDiscount;
           tItem1.nRedeemedLoyaltyPoints = nDiscount;
           body.transactionItems.push(tItem1);
-          i.nDiscount += nDiscount;
+          // i.nDiscount += nDiscount;
         }
       });
     }
@@ -512,21 +513,21 @@ export class TillService {
     });
     dataObject.nNewPaymentMethodTotal = dataObject.nPaymentMethodTotal;
     
-    const aLoyaltyPointsItems = transaction.aTransactionItems.filter((item: any) => item?.oType?.eKind == 'loyalty-points-discount');
+    // const aLoyaltyPointsItems = transaction.aTransactionItems.filter((item: any) => item?.oType?.eKind == 'loyalty-points-discount');
 
-    dataObject.aTransactionItems = [];
-    transaction.aTransactionItems.map((item: any) => {
-      if (item.oType?.eKind != 'discount' || item?.oType?.eKind != 'loyalty-points-discount') {
-        item.nRedeemedLoyaltyPoints = 0;
-        for (let i = 0; i < aLoyaltyPointsItems.length; i++) {
-          if (aLoyaltyPointsItems[i].iBusinessProductId === item.iBusinessProductId) {
-            item.nRedeemedLoyaltyPoints = aLoyaltyPointsItems[i].nRedeemedLoyaltyPoints;
-            item.nDiscount += aLoyaltyPointsItems[i].nDiscount;
-            break;
-          }
-        }
-      }
-    })
+    // dataObject.aTransactionItems = [];
+    // transaction.aTransactionItems.map((item: any) => {
+    //   if (item.oType?.eKind != 'discount' || item?.oType?.eKind != 'loyalty-points-discount') {
+    //     item.nRedeemedLoyaltyPoints = 0;
+    //     for (let i = 0; i < aLoyaltyPointsItems.length; i++) {
+    //       if (aLoyaltyPointsItems[i].iBusinessProductId === item.iBusinessProductId) {
+    //         // item.nRedeemedLoyaltyPoints = aLoyaltyPointsItems[i].nRedeemedLoyaltyPoints;
+    //         // item.nDiscount += aLoyaltyPointsItems[i].nDiscount;
+    //         break;
+    //       }
+    //     }
+    //   }
+    // })
 
     dataObject.aTransactionItems = transaction.aTransactionItems.filter((item: any) =>
       !(item.oType?.eKind == 'discount' || item?.oType?.eKind == 'loyalty-points-discount' || item.oType.eKind == 'loyalty-points' || item.oType?.eKind == 'giftcard-discount'));
