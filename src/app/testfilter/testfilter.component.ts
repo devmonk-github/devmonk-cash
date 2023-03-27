@@ -127,24 +127,12 @@ export class TestFilterComponent implements OnInit, OnDestroy {
     private barcodeService: BarcodeService,
     private serializer: UrlSerializer
   ) {
-    const queryParams = {
-      type: ['repair','order','gold-purchase','reservation','giftcard','gold-sell','refund'],
-      from_create_date: "2023-01-03",
-      to_create_date: "2023-03-24",
-      from_end_date: "2023-01-03",
-      to_end_date: "2023-03-24",
-      assignee:"",
-      repair_status: ['new','processing','inspection','completed','delivered','cancelled','refund','refundInCashRegister',
-      'offer','offer-is-ok','offer-is-not-ok','to-repair','part-are-order','shipped-to-repair']
-    };
-    const tree = routes.createUrlTree([], { queryParams });
 
-    console.log(serializer.serialize(tree));
-    this.routes.navigate(
-      ['/business/testfilter'],
-      { queryParams: queryParams }
-    );
+    
+
     this.activatedRoute.queryParams.subscribe(params => {
+      
+
       let data1 = params['from_end_date'];
       let data2 = params['to_end_date'];
       let data3 = params['type'];
@@ -152,8 +140,62 @@ export class TestFilterComponent implements OnInit, OnDestroy {
       let data5 = params['from_create_date'];
       let data6 = params['to_create_date'];
       let data7 = params['assignee'];
+
+      const queryParams:any = {
+        //type: ['repair','order','gold-purchase','reservation','giftcard','gold-sell','refund'],
+        from_create_date: "2023-01-03",
+        to_create_date: "2023-03-24",
+        from_end_date: "2023-01-03",
+        to_end_date: "2023-03-24",
+        assignee:"",
+        repair_status: ['new','processing','inspection','completed','delivered','cancelled','refund','refundInCashRegister',
+        'offer','offer-is-ok','offer-is-not-ok','to-repair','part-are-order','shipped-to-repair']
+      };
+
+      if(data3 == 'repair'){
+        queryParams.type = "repair";
+        const tree = routes.createUrlTree([], { queryParams });
+        console.log(serializer.serialize(tree));
+        this.routes.navigate(
+        ['/business/testfilter'],
+        { queryParams: queryParams }
+       );
+      }
+      if(data3 == 'gold-purchase'){
+        queryParams.type = "gold-purchase";
+        const tree = routes.createUrlTree([], { queryParams });
+        console.log(serializer.serialize(tree));
+        this.routes.navigate(
+        ['/business/testfilter'],
+        { queryParams: queryParams }
+       );
+      }
+
+      if(data3 == 'order'){
+        queryParams.type = "order";
+        const tree = routes.createUrlTree([], { queryParams });
+        console.log(serializer.serialize(tree));
+        this.routes.navigate(
+        ['/business/testfilter'],
+        { queryParams: queryParams }
+       );
+      }
+      if(data3 == 'giftcard'){
+        queryParams.type = "giftcard";
+        const tree = routes.createUrlTree([], { queryParams });
+        console.log(serializer.serialize(tree));
+        this.routes.navigate(
+        ['/business/testfilter'],
+        { queryParams: queryParams }
+       );
+      }
+      
+
+     
+     
       console.log(typeof data3);
-      console.log(data7);
+      console.log(data3);
+     // console.log(data7);
       this.apiService.setToastService(this.toastrService);
       this.iBusinessId = localStorage.getItem('currentBusiness') || "";
       this.iLocationId = localStorage.getItem('currentLocation') || "";
@@ -163,6 +205,7 @@ export class TestFilterComponent implements OnInit, OnDestroy {
       }else{
         this.requestParams.selectedKind = data3;
       }
+      
       if(typeof data4 == "string"){
         this.requestParams.selectedRepairStatuses = [data4];
       }else{
