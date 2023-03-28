@@ -11,11 +11,11 @@
         <button type="submit" class="btn btn-primary mx-3" (click)="loadTransaction()">{{ 'SEARCH' | translate
           }}</button>
           <div class="d-flex align-items-center">
-            <button class="btn btn-primary" (click)="resetFilters()">
+            <button class="btn btn-secondary" (click)="resetFilters()">
               <i class='fas fa-sync-alt'></i>
             </button>
           </div>
-        <a id="kt_horizontal_search_advanced_link" class="btn btn-link ads_search" data-toggle="collapse"
+        <a id="kt_horizontal_search_advanced_link" class="btn btn-link ads_search text-info" data-toggle="collapse"
           data-target="#kt_advanced_search_form" aria-expanded="true" aria-controls="kt_advanced_search_form"
           (click)="showAdvanceSearch = !showAdvanceSearch">{{ 'ADVANCED_SEARCH' | translate }}</a>
       </div>
@@ -219,7 +219,7 @@
             <td class="custom-overflow">{{activity?.oCustomer?.sFirstName}} {{activity?.oCustomer?.sLastName || '-'}}</td>
             <td>
               <div class="btn-group me-4">
-                <div class="btn btn-primary fs-bold px-6" (click)="openActivities(activity)"
+                <div class="btn btn-secondary fs-bold px-6" (click)="openActivities(activity)"
                   [class.disabled]="!businessDetails?._id">
                   <span class="indicator-label">
                     {{ "VIEW" | translate }}
