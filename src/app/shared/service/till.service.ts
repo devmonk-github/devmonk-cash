@@ -112,6 +112,7 @@ export class TillService {
   }
 
   createTransactionBody(transactionItems: any, payMethods: any, discountArticleGroup: any, redeemedLoyaltyPoints: number, customer: any): any {
+    console.log('createTransactionBody transactionItems: ', transactionItems);
     this.updateVariables();
 
     const iLocationId = transactionItems?.length && transactionItems[0].iLocationId ? transactionItems[0].iLocationId : this.iLocationId; /* If we changed the location from the drop-down then it would change */
@@ -163,7 +164,7 @@ export class TillService {
     // console.log('length 115: ', transactionItems?.length);
     body.transactionItems = transactionItems.map((i: any) => {
       // console.log(i)
-      // console.log('i.nDiscount: ', i.nDiscount, i.price, i.oType, i.paymentAmount);
+      console.log('i.sSerialNumber: ', i.sSerialNumber);
       const bRefund =
         i.oType?.bRefund /* Indication from the User */
         || i.nDiscount.quantity < 0 /* Minus Discount (e.g. -10 discount) [TODO: Remove the quantity as its not exist at all] */
@@ -257,6 +258,7 @@ export class TillService {
       }
       oItem.bGiftcardTaxHandling = i.bGiftcardTaxHandling;
       oItem.bDiscountOnPercentage = i.bDiscountOnPercentage || false
+      if (i?.sSerialNumber) oItem.sSerialNumber = i.sSerialNumber;
       return oItem;
     });
     // console.log('iPayment 201: ', JSON.parse(JSON.stringify(body?.transactionItems)));
@@ -334,7 +336,7 @@ export class TillService {
         }
       });
     }
-    // console.log('finaly body: ', body);
+    console.log('finaly body: ', body);
     return body;
   }
 
