@@ -124,9 +124,9 @@ export class TransactionItemsDetailsComponent implements OnInit {
     this.apiService.postNew('cashregistry', url, this.requestParams).subscribe((result: any) => {
       // console.log('120 api result assiging to transaction items', result)
       this.transactionItems = result.data[0].result;
-      // console.log('this.transactionItems 2', this.transactionItems);
+      // console.log('this.transactionItems 2', JSON.parse(JSON.stringify(this.transactionItems)));
 
-      const discountRecords = this.transactionItems.filter(o => o.oType.eKind === 'discount' || o.oType.eKind === 'loyalty-points-discount');
+      const discountRecords = this.transactionItems.filter(o => o.oType.eKind === 'discount' || o.oType.eKind === 'loyalty-points-discount' || o.oType.eKind === 'giftcard-discount');
       this.bIsAnyGiftCardDiscount = this.transactionItems.find((el: any) => el?.oType?.eKind === 'giftcard-discount')
       this.transactionItems = this.transactionItems.filter(o => o.oType.eKind !== 'discount' && o.oType.eKind !== 'loyalty-points' && o.oType.eKind !== 'loyalty-points-discount' && o.oType.eKind !== 'giftcard-discount');
       // console.log('this.transactionItems 3', this.transactionItems);
@@ -134,16 +134,16 @@ export class TransactionItemsDetailsComponent implements OnInit {
         // element.nDiscount = 0;
         // if (aRelatedTransactionItem?.data?.length && element.oType.eKind==='regular') element.nRevenueAmount = 0;
         const elementDiscount = discountRecords.filter(o => o.sUniqueIdentifier === element.sUniqueIdentifier);
-        let nRedeemedLoyaltyPoints = 0;
+        // let nRedeemedLoyaltyPoints = 0;
         let nDiscountnPaymentAmount  = 0;
         
         elementDiscount.forEach(dElement => {
-          if (dElement.oType.eKind === 'loyalty-points-discount') nRedeemedLoyaltyPoints += dElement.nRedeemedLoyaltyPoints || 0;
-          if (dElement.oType.eKind === "discount"){
+          // nRedeemedLoyaltyPoints += dElement.nRedeemedLoyaltyPoints || 0;
+          if (dElement.oType.eKind === 'loyalty-points-discount' || dElement.oType.eKind === "discount" || dElement.oType.eKind === 'giftcard-discount'){
             nDiscountnPaymentAmount += dElement.nPaymentAmount || 0;
-            // element.nDiscount += dElement.nRevenueAmount || 0;
           } 
         });
+        // element.nDiscountnPaymentAmount = nDiscountnPaymentAmount;
 
         if(!elementDiscount?.length) {
           //in original transaction, we have some with discounts so need to adjust them
@@ -159,7 +159,7 @@ export class TransactionItemsDetailsComponent implements OnInit {
 
         }
 
-        element.nRedeemedLoyaltyPoints = nRedeemedLoyaltyPoints;
+        // element.nRedeemedLoyaltyPoints = nRedeemedLoyaltyPoints;
         element.nPaymentAmount += _.sumBy(elementDiscount, 'nPaymentAmount');
         element.nPaidAmount += _.sumBy(elementDiscount, 'nPaymentAmount');
         element.nPriceIncVat += (nDiscountnPaymentAmount / element.nQuantity)
@@ -169,22 +169,22 @@ export class TransactionItemsDetailsComponent implements OnInit {
       });
     
       this.transactionItems = this.transactionItems.map(v => ({ ...v, isSelected: false }));
-      // console.log('this.transactionItems 4: ', this.transactionItems);
-      this.transactionItems.forEach(transactionItem => {
-        if (transactionItem.nPaidAmount < (transactionItem.nTotalAmount - transactionItem.nDiscount * transactionItem.nQuantity)) {
-          transactionItem.tType = 'pay';
+      // console.log('this.transactionItems 4: ', JSON.parse(JSON.stringify(this.transactionItems)));
+      this.transactionItems.forEach(item => {
+        if (item.nPaidAmount < (item.nTotalAmount - item.nDiscount * item.nQuantity)) {
+          item.tType = 'pay';
         } else {
-          transactionItem.tType = 'refund';
+          item.tType = 'refund';
         }
-        if (transactionItem.oType.bRefund) {
+        if (item.oType.bRefund) {
           // to do partial refund
-          transactionItem.tType = 'refunded';
+          item.tType = 'refunded';
         }
-        if (this.aSelectedIds?.length && this.aSelectedIds.includes(transactionItem._id) || (this.selectedId && this.selectedId === transactionItem._id) &&  !transactionItem?.bIsRefunded) {
-          transactionItem.isSelected = true;
+        if (this.aSelectedIds?.length && this.aSelectedIds.includes(item._id) || (this.selectedId && this.selectedId === item._id) &&  !item?.bIsRefunded) {
+          item.isSelected = true;
         }
 
-        if (this.itemType === 'transaction') { transactionItem.tType = 'refund'; }
+        if (this.itemType === 'transaction') { item.tType = 'refund'; }
       });
       if (discountRecords?.length) localStorage.setItem('discountRecords', JSON.stringify(discountRecords));
     }, (error) => {

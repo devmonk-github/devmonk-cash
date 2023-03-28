@@ -106,31 +106,12 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
     this.getPaymentMethods()
     
     this.transaction = await this.tillService.processTransactionForPdfReceipt(this.transaction);
-    // this.transaction.nTotalOriginalAmount = 0;
-
-    // this.transaction.aTransactionItems.forEach((item: any) => {
-      
-    //   let description = (item?.nDiscountToShow || item.nGiftcardDiscount) ? `${this.translateService.instant('ORIGINAL_AMOUNT_INC_DISC')}: ${item.nTotalPriceIncVat}\n` : '';
-    //   if (item?.related?.length) {
-    //     // this.transaction.nTotalOriginalAmount += item.nPriceIncVatAfterDiscount;
-    //     if (item.nPriceIncVatAfterDiscount !== item.nRevenueAmount) {
-    //       description += `${this.translateService.instant('ALREADY_PAID')}: \n${item.sTransactionNumber} | ${item.totalPaymentAmount} (${this.translateService.instant('THIS_RECEIPT')})\n`;
-
-    //       item.related.forEach((related: any) => {
-    //         description += `${related.sTransactionNumber} | ${related.nRevenueAmount * related.nQuantity}\n`;
-    //       });
-    //     }
-    //   }
-    //   item.description = description;
-    // });
     // console.log(this.transaction)
     this.loading = false;
 
     this.getPrintSetting()
     this.mapEmployee();
     this.getSystemCustomer(this.transaction?.iCustomerId);
-    console.log("tranasction" , this.transaction);
-    console.log("transaction item" , this.transaction.aTransactionItems);
   }
 
   ngAfterContentInit(): void {
@@ -152,9 +133,6 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
             this.nTotalItemPaidPayment += Number((items.nPaidAmount).toFixed(2));
           }  
         })
-
-        console.log("total paid amount" + this.nTotalItemPaidPayment);
-        console.log("total amount" , this.nTotalItemPayment);
       }
     });
   }

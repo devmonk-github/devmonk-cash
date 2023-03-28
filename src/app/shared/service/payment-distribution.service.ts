@@ -184,7 +184,7 @@ export class PaymentDistributionService {
   }
 
   handleLoyaltyPointsDiscount(arrToUpdate:any, totalAmountToBePaid:any, nRedeemedLoyaltyPoints:any, bTesting:boolean){
-    console.log('handleLoyaltyPointsDiscount')
+    if (bTesting) console.log('handleLoyaltyPointsDiscount')
     arrToUpdate.forEach((i: any) => {
       if (i.type !== 'giftcard' && nRedeemedLoyaltyPoints > 0 && i?.tType !== 'refund') {
         i.nRedeemedLoyaltyPoints = +((i.amountToBePaid * nRedeemedLoyaltyPoints / totalAmountToBePaid).toFixed(0));
