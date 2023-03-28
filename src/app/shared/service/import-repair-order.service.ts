@@ -184,8 +184,13 @@ export class ImportRepairOrderService {
         const PostalCode = oData['oCustomer.oShippingAddress.sPostalCode'];
         const City = oData['oCustomer.oShippingAddress.sCity'];
         const CountryCode = oData['oCustomer.oShippingAddress.sCountryCode'];
+       let imageArray = "";
+         if(oData?.aImage){
+          imageArray = oData?.aImage.split(";");
+         }
        
-         const imageArray = oData?.aImage.split(";");
+          
+         
   
         // const em = oData?.iEmployeeId.split("-");
         // const fname = em[0];
