@@ -9071,6 +9071,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
             }
           }
 
+          console.log('body: ', body);
           this.apiService.postNew('cashregistry', '/api/v1/till/transaction', body).subscribe(async (data: any) => {
 
             // this.toastrService.show({ type: 'success', text: 'Transaction created.' });
@@ -9432,7 +9433,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // Add selected product into purchase order
   async onSelectProduct(product: any, isFrom: string = '', isFor: string = '', source?: any) {
-    // console.log('onSelectProduct', {product, isFrom, isFor, source})
+    console.log('onSelectProduct', product);
     let nPriceIncludesVat = 0, nVatRate = 0;
     if (isFrom === 'quick-button') {
       source.loading = true;
@@ -9448,6 +9449,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       product = _oBaseProductDetail.data;
     } else {
       const _oBusinessProductDetail = await this.getBusinessProduct(product?.iBusinessProductId || product?._id).toPromise();
+      if (_oBusinessProductDetail?.data) _oBusinessProductDetail.data.sSerialNumber = product?.sSerialNumber;
       product = _oBusinessProductDetail.data;
       if (product?.aLocation?.length) {
         product.aLocation = product.aLocation.filter((oProdLoc: any) => {
@@ -9504,8 +9506,10 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       eActivityItemStatus: (this.eKind === 'order') ? 'new' : 'delivered',
       oCurrentLocation: currentLocation,
       aLocation: product?.aLocation,
-      bProductLoaded: true
+      bProductLoaded: true,
+      sSerialNumber: this.bSerialSearchMode ? product?.sSerialNumber : undefined
     });
+    console.log('this.transactionItems', this.transactionItems);
     if (isFrom === 'quick-button') { source.loading = false }
     this.resetSearch();
     this.clearPaymentAmounts();
