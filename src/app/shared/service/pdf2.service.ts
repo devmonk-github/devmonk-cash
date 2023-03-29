@@ -102,11 +102,10 @@ export class PdfService {
       defaultStyle,
       footer
     };
-    // console.log(typeof pageSize, pageSize);
-    if (typeof pageSize === 'string') docDefinition.pageOrientation = orientation;
-    // if (footer) docDefinition.footer = footer;
-    // if (pageMargins) docDefinition.pageMargins = pageMargins;
-    // if (defaultStyle) docDefinition.defaultStyle = defaultStyle;
+    if (typeof pageSize === 'string') docDefinition.pageOrientation = orientation; 
+    if (footer) docDefinition.footer = footer;
+    if (pageMargins) docDefinition.pageMargins = pageMargins;
+    if (defaultStyle) docDefinition.defaultStyle = defaultStyle;
     // console.log({docDefinition});
     return docDefinition;
   }

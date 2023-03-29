@@ -4,14 +4,14 @@ import { Injectable } from "@angular/core";
     providedIn: 'root'
 })
 export class CommonPrintSettingsService {
-    MM_TO_PT_CONVERSION_FACTOR = 2.837; //convert mm into points
+    MM_TO_PT_CONVERSION_FACTOR = 2.835; //convert mm into points
 
     oCommonParameters: any = {
         pageSize: 'A5',
         orientation: 'portrait',
         pageMargins: [10, 0, 0, 10],
         defaultStyle: {
-            fontSize: 10
+            fontSize: 7
         }
     };
     pageWidth:number = 0;
@@ -96,23 +96,30 @@ export class CommonPrintSettingsService {
                 }
             });
 
-        // if (typeof this.oCommonParameters['pageSize'] == 'string' && this.oCommonParameters['pageSize'] != 'custom') {
-        //     this.pageWidth = (this.oCommonParameters['orientation'] === 'portrait') ? 
-        //                         this.pageSizes[this.oCommonParameters['pageSize']].pageWidth : 
-        //                         this.pageSizes[this.oCommonParameters['pageSize']].pageHeight ;
-        // } else {
-        //     this.pageWidth = (this.oCommonParameters['orientation'] === 'portrait') ?
-        //         this.oCommonParameters['pageSize'].width :
-        //         this.oCommonParameters['pageSize'].height;
-        // }
+        if (typeof this.oCommonParameters['pageSize'] == 'string' && this.oCommonParameters['pageSize'] != 'custom') {
+            this.pageWidth = (this.oCommonParameters['orientation'] === 'portrait') ? 
+                                this.pageSizes[this.oCommonParameters['pageSize']].pageWidth : 
+                                this.pageSizes[this.oCommonParameters['pageSize']].pageHeight ;
+        } else {
+            this.pageWidth = this.oCommonParameters['pageSize'].width
+        }
+        // console.log(this.pageWidth)
         
     }
 
     calcColumnWidth(size: number): number {
+        // console.log(this.oCommonParameters['pageSize'])
         size = (size === null || size > 12 || size === undefined) ? 12 : size;
         let totalMargin = this.oCommonParameters['pageMargins'][0] + this.oCommonParameters['pageMargins'][2];
-        let num = size * ((this.pageWidth * this.MM_TO_PT_CONVERSION_FACTOR - totalMargin) / 12);
-        return parseFloat(num.toFixed(2)) - 9;
+        let num = 0;
+        if (typeof this.oCommonParameters['pageSize'] == 'string' && this.oCommonParameters['pageSize'] != 'custom') {
+            num = size * ((this.pageWidth * this.MM_TO_PT_CONVERSION_FACTOR - totalMargin) / 12);
+            num = +(num.toFixed(2)) - 9;
+        } else {
+            num = size * ((this.pageWidth - totalMargin) / 12);
+        }
+        // console.log({ totalMargin, size, num, pageWidth: this.pageWidth })
+        return num;
     }
 
     comparators: any = {
