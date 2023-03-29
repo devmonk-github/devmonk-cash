@@ -369,10 +369,10 @@ export class TillService {
       tItem1.oType.eKind = 'giftcard-discount';
       tItem1.sProductName = 'Giftcard redeemed';
       tItem1.sDescription = '';
-      tItem1.nPaymentAmount = -1 * nDiscount;
-      tItem1.nRevenueAmount = -1 * nDiscount;
-      tItem1.nPriceIncVat = -1 * nDiscount;
-      tItem1.nPurchasePrice = -1 * nDiscount;
+      tItem1.nPaymentAmount = -1 * item.nGiftcardDiscount;
+      tItem1.nRevenueAmount = -1 * item.nGiftcardDiscount;
+      tItem1.nPriceIncVat = -1 * item.nGiftcardDiscount;
+      tItem1.nPurchasePrice = -1 * item.nGiftcardDiscount;
       tItem1.nDiscount = 0;
       body.transactionItems.push(tItem1);
     });
