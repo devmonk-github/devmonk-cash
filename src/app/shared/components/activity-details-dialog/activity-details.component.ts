@@ -598,6 +598,14 @@ export class ActivityDetailsComponent implements OnInit {
     else {
       type = (oDataSource?.oType?.eKind === 'regular') ? 'repair_alternative' : 'repair';
     }
+    const sEDA = oDataSource.eEstimatedDateAction;
+    
+    if (sEDA === 'call_on_ready')
+      oDataSource.eEstimatedDateAction = this.translationService.instant('CALL_ON_READY');
+    else if (sEDA === 'email_on_ready')
+      oDataSource.eEstimatedDateAction = this.translationService.instant('EMAIL_ON_READY');
+    else 
+      oDataSource.eEstimatedDateAction = this.translationService.instant('WHATSAPP_ON_READY');
 
     oDataSource.businessDetails = this.businessDetails;
     const aPromises = [];
