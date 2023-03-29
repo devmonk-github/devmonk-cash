@@ -688,7 +688,7 @@ export class TillService {
     dataObject.totalGiftcardDiscount = +(totalGiftcardDiscount.toFixed(2));
     dataObject.totalSavingPoints = totalSavingPoints;
     dataObject.totalRedeemedLoyaltyPoints = totalRedeemedLoyaltyPoints;
-    dataObject.nTotalExcVat = dataObject.totalAfterDisc - dataObject.totalVat;
+    dataObject.nTotalExcVat = +((dataObject.totalAfterDisc - dataObject.totalVat).toFixed(2));
     dataObject.nTotalQty = nTotalQty;
     // dataObject.dCreatedDate = moment(dataObject.dCreatedDate).format('DD-MM-yyyy hh:mm');
     let _relatedResult:any , _loyaltyPointSettings:any;
