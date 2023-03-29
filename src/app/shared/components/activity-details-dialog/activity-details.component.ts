@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { DialogComponent, DialogService } from '../../service/dialog';
 import { ViewContainerRef } from '@angular/core';
 import { ApiService } from 'src/app/shared/service/api.service';
@@ -7,7 +7,6 @@ import { TransactionItemsDetailsComponent } from '../transaction-items-details/t
 import { MenuComponent } from '../../_layout/components/common';
 import { NavigationEnd, Router } from '@angular/router';
 import { TransactionDetailsComponent } from 'src/app/transactions/components/transaction-details/transaction-details.component';
-import * as JsBarcode /* , { Options as jsBarcodeOptions } */ from 'jsbarcode';
 import { ReceiptService } from '../../service/receipt.service';
 import { Observable } from 'rxjs';
 import { ToastService } from '../toast';
@@ -172,6 +171,7 @@ export class ActivityDetailsComponent implements OnInit {
   aContactOption = [{ key: 'CALL_ON_READY', value: 'call_on_ready' },
   { key: 'EMAIL_ON_READY', value: 'email_on_ready' },
   { key: 'WHATSAPP_ON_READY', value: 'whatsapp_on_ready' }]
+  sNumber:any;
 
   constructor(
     private viewContainerRef: ViewContainerRef,
@@ -195,7 +195,8 @@ export class ActivityDetailsComponent implements OnInit {
 
 
   async ngOnInit() {
-   console.log('from-----------transaction', this.from, this.activityItems, this.activity)
+    this.sNumber = (this.from === 'services') ? this.activity.sNumber : '';
+  //  console.log('from-----------transaction', this.from, this.activityItems, this.activity)
   
    // console.log("iBusinessBrandId" +this.activityItems[0].iBusinessBrandId);
   
@@ -211,40 +212,18 @@ export class ActivityDetailsComponent implements OnInit {
     this.translationService.get(translationKey).subscribe((res: any) => {
       this.translation = res;
     })
-
     if (this.activity) {
+      this.sNumber = this.activity.sNumber;
       //console.log(this.activity);
       //console.log("this.activity-----");
       // this.oLocationName = this.activity.oLocationName;
       this.bShowOrderDownload = true;
       this.fetchTransactionItems(this.activity._id);
-      // if (this.activity?.activityitems?.length) {
-      // console.log(211)
-      // this.activityItems = this.activity.activityitems;
-      // if (this.activityItems?.length == 1) this.activityItems[0].bIsVisible = true; /* only item there then we will always open it */
-      //  this.activityItems.forEach((item:any , index)=>{
-      //   if(item.oType.eKind == 'order' && item?.iBusinessProductId){
-      //     this.getBusinessProduct(item.iBusinessProductId).subscribe((res:any)=>{
-      //      const productDetail = res.data;
-      //      this.activityItems[index].sArticleNumber = productDetail.sArticleNumber
-      //      this.activityItems[index].sProductNumber = productDetail.sProductNumber
-      //      this.activityItems[index].sArticleName = productDetail?.oArticleGroup?.oName[this.language]
-      //     });
-
-      //    }
-      //  })
-      // }
     } else {
-      //console.log("else");
-      //console.log(this.activityItems[0].iActivityId);
-      // we have opened an activity item so fetch associated activity (required for checkout)
-      // this.fetchActivity(this.activity._id); //actually it is an id of activity item
-      // console.log(235)
       if(this.activityItems && this.activityItems.length>0){
-      
+        this.sNumber = this.activityItems[0].sNumber;
         this.oLocationName = this.businessDetails?.aLocation.find((location: any) => location._id === this.activityItems[0].iLocationId)?.sName;
-     
-      }else{
+      } else {
         this.oLocationName ="";
       }
       //console.log("-this.oLocationName--");
@@ -689,7 +668,7 @@ export class ActivityDetailsComponent implements OnInit {
       (result: any) => {
         if (index > -1) this.transactions[index].customer = result;
         this.customer = result;
-        console.log(result);console.log("result");
+        // console.log(result);console.log("result");
 
       },
       (error: any) => {
@@ -857,7 +836,7 @@ export class ActivityDetailsComponent implements OnInit {
     });
     oDataSource.nTotalPaidAmount = nTotalPaidAmount;
 
-    this.sendForReceipt(oDataSource, template, oDataSource.sNumber, receipt, bPrint);
+    this.sendForReceipt(oDataSource, template, oDataSource.sNumber, receipt, (bPrint)?'print':'download');
     this.bActivityPdfGenerationInProgress = false;
     event.target.disabled = false;
   }
