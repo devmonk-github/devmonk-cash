@@ -178,12 +178,20 @@ export class ImportRepairOrderService {
       for (const oData of parsedRepairOrderData) {
         if (!oData?.nPriceIncVat) throw ('something went wrong');
         const eType = oData['oType.eKind'];
-        const street = oData['oCustomer.oShippingAddress.sStreet'];
-        const HouseNumber = oData['oCustomer.oShippingAddress.sHouseNumber'];
-        const HouseNumberSuffix = oData['oCustomer.oShippingAddress.sHouseNumberSuffix'];
-        const PostalCode = oData['oCustomer.oShippingAddress.sPostalCode'];
-        const City = oData['oCustomer.oShippingAddress.sCity'];
-        const CountryCode = oData['oCustomer.oShippingAddress.sCountryCode'];
+        let street = oData['oCustomer.oShippingAddress.sStreet'];
+        let HouseNumber = oData['oCustomer.oShippingAddress.sHouseNumber'];
+        let HouseNumberSuffix = oData['oCustomer.oShippingAddress.sHouseNumberSuffix'];
+        let PostalCode = oData['oCustomer.oShippingAddress.sPostalCode'];
+        let City = oData['oCustomer.oShippingAddress.sCity'];
+        let CountryCode = oData['oCustomer.oShippingAddress.sCountryCode'];
+        if(street == undefined) street = "";
+        if(HouseNumber == undefined) HouseNumber = "";
+        if(HouseNumberSuffix == undefined) HouseNumberSuffix = "";
+        if(PostalCode == undefined) PostalCode = "";
+        if(City == undefined) City = "";
+        if(CountryCode == undefined) CountryCode = "";
+        
+        
         let imageArray = "";
         if(oData?.aImage){
           imageArray = oData?.aImage.split(";");
@@ -192,6 +200,36 @@ export class ImportRepairOrderService {
         if(oData?.sDescription){
           oData.sDescription = oData?.sDescription.replace(/\\"/g, '');
         }
+
+        if(oData?.iCustomerId  == ""){
+          oData.iCustomerId = null;
+        }
+
+        const oCustomer = {
+          _id:oData.iCustomerId,
+          oShippingAddress: {
+              sStreet: street,
+              sHouseNumber: HouseNumber,
+              sHouseNumberSuffix: HouseNumberSuffix,
+              sPostalCode: PostalCode,
+              sCity: City,
+              sCountryCode: CountryCode,
+              sCountry : ""
+              
+          },oInvoiceAddress: {
+            sStreet: street,
+            sHouseNumber: HouseNumber,
+            sHouseNumberSuffix: HouseNumberSuffix,
+            sPostalCode: PostalCode,
+            sCity: City,
+            sCountryCode: CountryCode,
+            sCountry : ""
+            
+        }
+      }
+
+      console.log(oCustomer);
+      console.log("oCustomer----");
          
          
         
@@ -279,28 +317,8 @@ export class ImportRepairOrderService {
           iArticleGroupId: '', /* repair-order */
           iArticleGroupOriginalId: '',
           sUniqueIdentifier: '',
-          iCustomerId: oData?.iCustomerId,
-          oCustomer: {
-            _id:oData?.iCustomerId,
-            oShippingAddress: {
-                sStreet: street,
-                sHouseNumber: HouseNumber,
-                sHouseNumberSuffix: HouseNumberSuffix,
-                sPostalCode: PostalCode,
-                sCity: City,
-                sCountryCode: CountryCode,
-                
-            }
-            ,oInvoiceAddress: {
-              sStreet: street,
-              sHouseNumber: HouseNumber,
-              sHouseNumberSuffix: HouseNumberSuffix,
-              sPostalCode: PostalCode,
-              sCity: City,
-              sCountryCode: CountryCode,
-              
-          }
-        },
+          iCustomerId: oData.iCustomerId,
+          oCustomer:oCustomer,
           /* default */
           
           sProductName: oData?.sProductName,

@@ -29,7 +29,8 @@
     </div>
     <div class="row mb-4" *ngFor="let option of headerOptions">
         <div class="col-md-2 no-padding-left">
-            {{option}}
+            {{option}} <span *ngIf="option === 'Contact when ready' || option === 'Creation date' || option === 'Creator' || option === 'Remaining to pay' || option === 'Repairer' || option === 'Total price' || option === 'Type' || option === 'bagNumber' || option === 'customerId' || option === 'eActivityItemStatus' || option === 'vatRate' || option === 'Estimated price'" style="color: red;">*</span>
+            
         </div>
         <div class="col-md-3 no-padding-left" *ngIf="allFields?.all?.length">
             <select class="form-select" id="repair-order-attributes" [(ngModel)]="repairOrderDetailsForm[option]"
