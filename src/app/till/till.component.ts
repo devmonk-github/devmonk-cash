@@ -8624,14 +8624,14 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
         result = 0;
         break;
     }
-    return result
+    return +result.toFixed(2)
   }
 
   totalPrepayment() {
     // console.log('totalPrepayment', this.transactionItems)
     let result = 0
     this.transactionItems.forEach((i) => {
-      // console.log(i.paymentAmount);
+      // console.log(i);
       if (!i.isExclude) {
         result += i.paymentAmount;
       }
@@ -9840,7 +9840,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   assignAllAmount(index: number) {
-    this.payMethods[index].amount = -(this.getUsedPayMethods(true) - this.getTotals('price'));
+    this.payMethods[index].amount = this.nFinalAmount;
     this.changeInPayment();
     this.createTransaction();
   }
