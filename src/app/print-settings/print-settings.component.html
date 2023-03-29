@@ -185,7 +185,10 @@
             </div>
             <div class="col-12">
               <div class="d-flex flex-column">
-                <div class="h5">{{"DEFAULT_LABEL"|translate}}</div>
+                <div class="d-flex justify-content-between">
+                  <span class="h5">{{"DEFAULT_LABEL"|translate}}</span>
+                  <button class="btn btn-primary btn-sm" (click)="addDefaultZplTemplate()"><i class="fa fa-plus"></i></button>
+                </div>
                 <div class="dataTables_wrapper dt-bootstrap4 no-footer">
           
                   <div class="table-responsive">
