@@ -189,7 +189,6 @@ export class ImportRepairOrderService {
           imageArray = oData?.aImage.split(";");
         }
 
-
         if(oData?.sDescription){
           oData.sDescription = oData?.sDescription.replace(/\\"/g, '');
         }
@@ -331,7 +330,7 @@ export class ImportRepairOrderService {
             bPrepayment: false
           },
           nDiscount: 0,
-          sDescription: oData?.sDescription,
+          sDescription: oData.sDescription,
           sServicePartnerRemark: oData?.sServicePartnerRemark,
           eEstimatedDateAction: oData?.eEstimatedDateAction,
           eActivityItemStatus: oData?.eActivityItemStatus,

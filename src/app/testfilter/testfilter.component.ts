@@ -194,31 +194,18 @@ export class TestFilterComponent implements OnInit, OnDestroy {
      
      
       console.log(typeof data3);
-      console.log(data1);
-      console.log(data2);
-      console.log(data3);
-      console.log(data4);
-      console.log(data5);
-      console.log(data6);
-      console.log(data7);
+      // console.log(data1);
+      // console.log(data2);
+      // console.log(data3);
+      // console.log(data4);
+      // console.log(data5);
+      // console.log(data6);
+      // console.log(data7);
      // console.log(data7);
       this.apiService.setToastService(this.toastrService);
       this.iBusinessId = localStorage.getItem('currentBusiness') || "";
       this.iLocationId = localStorage.getItem('currentLocation') || "";
      
-      
-      if(data3 == "giftcard"){
-        this.sSearchValue = "Giftcard";
-        
-       
-       
-      }else if(data3 == "order"){
-        this.sSearchValue = "Order";
-      }else if(data3 == "gold-purchase"){
-        this.sSearchValue = "Gold purchase";
-      }else{
-        this.sSearchValue = "";
-      }
       if(typeof data3 == "string"){
         this.requestParams.selectedKind = [data3];
       }else{
