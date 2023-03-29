@@ -6,9 +6,9 @@ import { Transaction } from 'src/app/till/models/transaction.model';
 import { ApiService } from './api.service';
 import * as _ from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
-import * as _moment from 'moment';
+// import * as _moment from 'moment';
 import { TranslateService } from '@ngx-translate/core';
-const moment = (_moment as any).default ? (_moment as any).default : _moment;
+// const moment = (_moment as any).default ? (_moment as any).default : _moment;
 @Injectable({
   providedIn: 'root'
 })
@@ -520,7 +520,7 @@ export class TillService {
       dataObject.nPaymentMethodTotal += obj.nAmount;
       if(!obj?.sRemarks) obj.sRemarks = "";
       
-      // obj.dCreatedDate = moment(obj.dCreatedDate).format('DD-MM-yyyy hh:mm');
+      // obj.dCreatedDate = moment(obj.dCreatedDate);//.format('DD-MM-yyyy hh:mm');
     });
     dataObject.nNewPaymentMethodTotal = dataObject.nPaymentMethodTotal;
     

@@ -48,7 +48,7 @@ export class PdfService {
   private fontSize: string = "10pt";
   private layout: any[] = [];
   private margins: number[] = [0];
-  private dateFormat: string = "L";
+  private dateFormat: string = "DD-MM-yyyy hh:mm";
   private orientation: string = "portrait";
   private paperSize: string | PaperSize = "A4";
   private pixelsPerMm: number = 3.76;
@@ -188,6 +188,7 @@ export class PdfService {
       case 'barcode':
         return this.convertValueToBarcode(val);
       case 'date':
+        console.log('val', val, moment(val), this.dateFormat, moment(val).format(this.dateFormat))
         return (val === '' || val === 'NO_DATE_SELECTED') ? val : moment(val).format(this.dateFormat);
       default:
         return val;

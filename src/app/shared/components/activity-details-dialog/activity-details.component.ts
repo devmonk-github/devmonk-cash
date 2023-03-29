@@ -557,7 +557,7 @@ export class ActivityDetailsComponent implements OnInit {
     return this.apiService.getNew('core', '/api/v1/business/' + this.business._id);
   }
 
-  async downloadCustomerReceipt(index: number, receipt: any, sAction:any) {
+  async downloadCustomerReceipt(index: number, receipt: any, sAction:any, sType?:string) {
     if (receipt == 'customerReceipt') {
       this.bCustomerReceipt = true;
     } else if (receipt == 'downloadCustomerReceipt') {
@@ -575,8 +575,9 @@ export class ActivityDetailsComponent implements OnInit {
       oDataSource.nTotal = oDataSource.nPaidAmount;
     }
     else {
-      type = (oDataSource?.oType?.eKind === 'regular') ? 'repair_alternative' : 'repair';
+      type = (oDataSource?.oType?.eKind === 'regular' || (sType && sType === 'alternative')) ? 'repair_alternative' : 'repair';
     }
+    // console.log(type);
     const sEDA = oDataSource.eEstimatedDateAction;
     
     if (sEDA === 'call_on_ready')
