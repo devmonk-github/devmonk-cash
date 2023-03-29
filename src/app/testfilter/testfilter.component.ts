@@ -144,9 +144,9 @@ export class TestFilterComponent implements OnInit, OnDestroy {
       const queryParams:any = {
         //type: ['repair','order','gold-purchase','reservation','giftcard','gold-sell','refund'],
         from_create_date: "2023-01-03",
-        to_create_date: "2023-03-31",
+        to_create_date: "2023-03-29",
         from_end_date: "2023-01-03",
-        to_end_date: "2023-03-31",
+        to_end_date: "2023-03-29",
         assignee:"",
         repair_status: ['new','processing','inspection','completed','delivered','cancelled','refund','refundInCashRegister',
         'offer','offer-is-ok','offer-is-not-ok','to-repair','part-are-order','shipped-to-repair']
@@ -206,11 +206,31 @@ export class TestFilterComponent implements OnInit, OnDestroy {
       this.iBusinessId = localStorage.getItem('currentBusiness') || "";
       this.iLocationId = localStorage.getItem('currentLocation') || "";
      
-      if(typeof data3 == "string"){
-        this.requestParams.selectedKind = [data3];
+      
+      if(data3 == "giftcard"){
+        this.sSearchValue = "Giftcard";
+        this.requestParams.selectedKind = [];
+        this.requestParams.selectedRepairStatuses = [];
+       
+      }else if(data3 == "order"){
+        this.sSearchValue = "Order";
+        this.requestParams.selectedKind = [];
+        this.requestParams.selectedRepairStatuses = [];
+        
+      }else if(data3 == "gold-purchase"){
+        this.sSearchValue = "Gold purchase";
+        this.requestParams.selectedKind = [];
+        this.requestParams.selectedRepairStatuses = [];
+        
       }else{
-        this.requestParams.selectedKind = data3;
+        this.sSearchValue = "";
+        if(typeof data3 == "string"){
+          this.requestParams.selectedKind = [data3];
+        }else{
+          this.requestParams.selectedKind = data3;
+        }
       }
+      
 
       if(data4 == undefined){
         this.requestParams.selectedRepairStatuses = queryParams.repair_status;
@@ -224,7 +244,9 @@ export class TestFilterComponent implements OnInit, OnDestroy {
       }
 
       
-
+      if(data3 == "giftcard" || data3 == "order" || data3 == "gold-purchase"){
+        this.requestParams.estimate = {minDate:"" , maxDate: "" };
+      }else{
       if(data1 == undefined && data2 == undefined){
         let estimate = { minDate: queryParams.from_end_date, maxDate: queryParams.to_end_date };
         this.requestParams.estimate = estimate;
@@ -232,13 +254,15 @@ export class TestFilterComponent implements OnInit, OnDestroy {
         let estimate = { minDate: data1, maxDate: data2 };
         this.requestParams.estimate = estimate;
       }
+    }
 
       if(data5 == undefined && data6 == undefined){
-        let create =  { minDate: queryParams.from_create_date, maxDate: queryParams.to_create_date };
+       
+        let create =  { minDate: new Date(queryParams.from_create_date), maxDate: new Date(new Date(queryParams.to_create_date).setHours(23, 59, 59))};
         this.requestParams.create = create;
 
       }else{
-        let create = { minDate: data5, maxDate: data6 };
+        let create = { minDate: new Date(data5), maxDate: new Date(new Date(data6).setHours(23, 59, 59)) };
         this.requestParams.create = create;
       }
       
