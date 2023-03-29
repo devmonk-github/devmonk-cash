@@ -43,6 +43,11 @@ export class ImportRepairOrderFileComponent implements OnInit {
         this.csvParser.parse(values[0], { header: true, delimiter: this.delimiter })
           .pipe().subscribe((result: any) => {
             this.parsedRepairOrderData = result;
+            for (const oData of this.parsedRepairOrderData) {
+              if(oData.extraComment != "" && oData.extraComment != undefined){
+                oData.extraComment = oData.extraComment.replace(/\\"/g, '');
+              }
+            }
             this.parsedRepairOrderDataChange.emit(this.parsedRepairOrderData);
           }, (error: NgxCSVParserError) => {
             this.parsedRepairOrderData = [];
