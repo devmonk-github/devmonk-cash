@@ -63,7 +63,7 @@ export class CardsComponent implements OnInit, AfterViewInit {
     this.customer = this.dialogRef.context.customer;
     this.iBusinessId = localStorage.getItem('currentBusiness');
     this.fetchLoyaltyPoints();
-    if(Object.keys(this.oGiftcard)?.length){
+    if(this.oGiftcard && Object.keys(this.oGiftcard)?.length){
       this.sGiftCardNumber = this.oGiftcard.sGiftCardNumber;
       this.fetchGiftCard(this.sGiftCardNumber);
       this.activeTabIndex = 1;
