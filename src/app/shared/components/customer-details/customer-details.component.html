@@ -14,7 +14,7 @@
             </ng-container> 
         </div>
         <div *ngIf="mode === 'details'" class="card-toolbar flex-row-fluid justify-content-end gap-5">
-            <button class="btn btn-warning" *ngIf="bIsCurrentCustomer" (click)="close({ bChangeCustomer: true })">
+            <button class="btn btn-light-warning" *ngIf="bIsCurrentCustomer" (click)="close({ bChangeCustomer: true })">
                 {{"CHANGE_CUSTOMER" | translate}}
             </button>
             <button class="btn btn-secondary" (click)="editProfile = !editProfile">{{ ((editProfile)? "CANCEL":"EDIT" )|
