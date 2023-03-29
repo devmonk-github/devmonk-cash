@@ -209,26 +209,20 @@ export class TestFilterComponent implements OnInit, OnDestroy {
       
       if(data3 == "giftcard"){
         this.sSearchValue = "Giftcard";
-        this.requestParams.selectedKind = [];
-        this.requestParams.selectedRepairStatuses = [];
+        
+       
        
       }else if(data3 == "order"){
         this.sSearchValue = "Order";
-        this.requestParams.selectedKind = [];
-        this.requestParams.selectedRepairStatuses = [];
-        
       }else if(data3 == "gold-purchase"){
         this.sSearchValue = "Gold purchase";
-        this.requestParams.selectedKind = [];
-        this.requestParams.selectedRepairStatuses = [];
-        
       }else{
         this.sSearchValue = "";
-        if(typeof data3 == "string"){
-          this.requestParams.selectedKind = [data3];
-        }else{
-          this.requestParams.selectedKind = data3;
-        }
+      }
+      if(typeof data3 == "string"){
+        this.requestParams.selectedKind = [data3];
+      }else{
+        this.requestParams.selectedKind = data3;
       }
       
 
