@@ -58,7 +58,7 @@ export class ImportRepairOrderComponent implements OnInit {
     }
   }
 
-  importRepairOrder() {
+  importRepairOrder() : any{
   try {
       this.importInprogress = true;
       const oData = {
@@ -69,6 +69,7 @@ export class ImportRepairOrderComponent implements OnInit {
         iWorkStationId: this.iWorkStationId,
         iEmployeeId: this.iEmployeeId
       }
+      const AllRecords = [];
 
       const { parsedRepairOrderData, oBody } = this.ImportRepairOrderService.mapTheImportRepairOrderBody(oData);
       //console.log("timportRepairOrder============s 2: ", JSON.parse(JSON.stringify(this.parsedRepairOrderData)));
@@ -80,16 +81,24 @@ export class ImportRepairOrderComponent implements OnInit {
         oBody.oTransaction.oCustomer = aTransactionItem[i].oCustomer;
         oBody.eType = aTransactionItem[i].eType;
         oBody.payments = this.ImportRepairOrderService.mapPayment(aTransactionItem[i]);
+        AllRecords.push(oBody);
         // return;
         this.apiService.postNew('cashregistry', '/api/v1/till/transaction', oBody).subscribe((result: any) => {
           this.importInprogress = false;
         }, (error) => {
           console.error(error);
         });
+        
       }
+      console.log("AllRecords.length" + AllRecords.length);
+      
+
     } catch (error) {
       console.log('Import Repair Order');
     }
   }
+
+
+  
 
 }
