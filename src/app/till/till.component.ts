@@ -198,7 +198,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     this.checkDayState();
 
     this.requestParams.iBusinessId = this.iBusinessId;
-    this.tillService.fetchTaxes();
     this.getPaymentMethods();
     this.getParkedTransactions();
 
@@ -1623,7 +1622,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   assignAllAmount(index: number) {
-    this.payMethods[index].amount = this.nFinalAmount;
+    this.payMethods[index].amount = this.nItemsTotalToBePaid;
     this.changeInPayment();
     this.createTransaction();
   }

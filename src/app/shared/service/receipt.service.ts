@@ -179,26 +179,58 @@ export class ReceiptService {
                 tableWidths.push(this.getWidth(row.size));
             } else {
                 let object = row?.object;
-                let text = this.pdfService.replaceVariables(row.html, (object) ? this.oOriginalDataSource[object] : this.oOriginalDataSource);
-                let obj = { text: text };
-                if (row?.styles) obj = { ...obj, ...row.styles };
-                texts.push(obj);
-                tableWidths.push(this.getWidth(row.size));
+                if (row?.ifAnd) {
+                    let bTestResult = true;
+                    let field, target;
+                    bTestResult = row.ifAnd.every((rule: any) => {
+                        field = (object) ? object[rule.field] : this.oOriginalDataSource[rule.field];
+                        target = (rule?.targetMode === 'fetch') ? object[rule.target] : rule.target;
+                        return (field != null) ? this.commonService.comparators[rule.compare](field, target) : false;
+                    })
+                    if (bTestResult) {
+                        let text = this.pdfService.replaceVariables(row.html, (object) ? this.oOriginalDataSource[object] : this.oOriginalDataSource);
+                        let obj = { text: text };
+                        if (row?.styles) obj = { ...obj, ...row.styles };
+                        texts.push(obj);
+                        tableWidths.push(this.getWidth(row.size));
+                        nSize += Number(row.size);
+                        if (nSize >= 12) {
+                            let data: any = {
+                                table: {
+                                    widths: tableWidths,
+                                    body: [texts],
+                                },
+                                layout: (layout) ? this.getLayout(layout) : 'noBorders'
+                            };
+                            tables.push(data);
+                            tableWidths = [];
+                            nSize = 0;
+                            texts = [];
+                        }
+                    }
+                } else {
 
-                nSize += Number(row.size);
-                if (nSize >= 12) {
-                    let data: any = {
-                        table: {
-                            widths: tableWidths,
-                            body: [texts],
-                        },
-                        layout: (layout) ? this.getLayout(layout) : 'noBorders'
-                    };
-                    tables.push(data);
-                    tableWidths = [];
-                    nSize = 0;
-                    texts = [];
+                    let text = this.pdfService.replaceVariables(row.html, (object) ? this.oOriginalDataSource[object] : this.oOriginalDataSource);
+                    let obj = { text: text };
+                    if (row?.styles) obj = { ...obj, ...row.styles };
+                    texts.push(obj);
+                    tableWidths.push(this.getWidth(row.size));
+                    nSize += Number(row.size);
+                    if (nSize >= 12) {
+                        let data: any = {
+                            table: {
+                                widths: tableWidths,
+                                body: [texts],
+                            },
+                            layout: (layout) ? this.getLayout(layout) : 'noBorders'
+                        };
+                        tables.push(data);
+                        tableWidths = [];
+                        nSize = 0;
+                        texts = [];
+                    }
                 }
+
             }
 
 
@@ -410,32 +442,81 @@ export class ReceiptService {
                 columnData = this.processTextAsTableData(el);
                 this.DIVISON_FACTOR = 1;
             } else if (el?.type === 'stack') {
-                // console.log('el', el)
-                let obj: any = {
-                    "stack": this.processStack(el, (el?.object) ? this.oOriginalDataSource[el?.object] : null)
-                };
-                if (el?.width) obj.width = el.width;
-                columnData = obj;
+                if(el?.ifAnd) {
+                    let bTestResult = true;
+                    let field, target;
+                    bTestResult = el.ifAnd.every((rule: any) => {
+                        if(rule?.targetMode === 'object') {
+                            field = this.oOriginalDataSource[rule.field];
+                            target = rule.target == "{}" ? {} : rule.target;
+                            return this.commonService.comparators[rule.compare](JSON.stringify(field), JSON.stringify(target)) 
+                        } else {
+                            field = (el.object) ? el.object[rule.field] : this.oOriginalDataSource[rule.field];
+                            target = (rule?.targetMode === 'fetch') ? el.object[rule.target] : rule.target;
+                            return (field != null) ? this.commonService.comparators[rule.compare](field, target) : false;
+                        }
+                    })
+                    if(bTestResult) {
+                        let obj: any = {
+                            "stack": this.processStack(el, (el?.object) ? this.oOriginalDataSource[el?.object] : null)
+                        };
+                        if (el?.width) obj.width = el.width;
+                        columnData = obj;
+                    }
+                } else {
+                    let obj: any = {
+                        "stack": this.processStack(el, (el?.object) ? this.oOriginalDataSource[el?.object] : null)
+                    };
+                    if (el?.width) obj.width = el.width;
+                    columnData = obj;
+                }
             } else if (el?.type === 'parts') {
                 columnData = this.addParts(el)
             } else {
                 let html = el.html || '';
                 let object = el?.object;
                 let text = '';
-                if (object && Object.keys(object)?.length) {
-                    text = this.pdfService.replaceVariables(html, (object) ? this.oOriginalDataSource[object] : this.oOriginalDataSource) || '';
+                if (el?.ifAnd) {
+                    let bTestResult = true;
+                    let field, target;
+                    bTestResult = el.ifAnd.every((rule: any) => {
+                        if (rule?.targetMode === 'object') {
+                            field = this.oOriginalDataSource[rule.field];
+                            target = rule.target == "{}" ? {} : rule.target;
+                            return this.commonService.comparators[rule.compare](JSON.stringify(field), JSON.stringify(target))
+                        } else {
+                            console.log('else')
+                            field = (el?.object) ? el.object[rule.field] : this.oOriginalDataSource[rule.field];
+                            target = (rule?.targetMode === 'fetch') ? el.object[rule.target] : rule.target;
+                            return (field != null) ? this.commonService.comparators[rule.compare](field, target) : false;
+                        }
+                    })
+                    if (bTestResult) {
+                        if (object && Object.keys(object)?.length) {
+                            text = this.pdfService.replaceVariables(html, (object) ? this.oOriginalDataSource[object] : this.oOriginalDataSource) || '';
+                        } else {
+                            text = this.pdfService.replaceVariables(html, this.oOriginalDataSource) || html;
+                        }
+                        columnData = { text: text };
+                    }
                 } else {
-                    text = this.pdfService.replaceVariables(html, this.oOriginalDataSource) || html;
+                    if (object && Object.keys(object)?.length) {
+                        text = this.pdfService.replaceVariables(html, (object) ? this.oOriginalDataSource[object] : this.oOriginalDataSource) || '';
+                    } else {
+                        text = this.pdfService.replaceVariables(html, this.oOriginalDataSource) || html;
+                    }
+                    columnData = { text: text };
                 }
-                columnData = { text: text };
                 if (el?.width) columnData.width = el?.width;
                 if (el?.alignment) columnData.alignment = el?.alignment;
             }
-            if (el?.alignment) columnData.alignment = el?.alignment;
-            if (el?.styles) columnData = { ...columnData, ...el.styles }
-            if (el?.width) columnData.width = el?.width;
-            if (el?.pageBreak) columnData.pageBreak = el?.pageBreak;
-            columns.push(columnData)
+            if(columnData) {
+                if (el?.alignment) columnData.alignment = el?.alignment;
+                if (el?.styles) columnData = { ...columnData, ...el.styles }
+                if (el?.width) columnData.width = el?.width;
+                if (el?.pageBreak) columnData.pageBreak = el?.pageBreak;
+                columns.push(columnData)
+            }
         });
         let obj = { columns: columns };
         if (styles) obj = { ...obj, ...styles };
@@ -640,7 +721,12 @@ export class ReceiptService {
                         stack.push({ text: text, alignment: el?.alignment });
                     }
                 } else {
-                    let text = this.pdfService.replaceVariables(el.html, (object) ? object : this.oOriginalDataSource) || '';
+                    let text;
+                    if(el?.object) {
+                        text = this.pdfService.replaceVariables(el.html, (object) ? object[el.object] : this.oOriginalDataSource) || '';
+                    } else {
+                        text = this.pdfService.replaceVariables(el.html, (object) ? object : this.oOriginalDataSource) || '';
+                    }
                     if (text.trim() != '') {
                         let obj: any = { text: text };
                         if (el?.alignment) obj.alignment = el.alignment;

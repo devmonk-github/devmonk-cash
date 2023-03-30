@@ -77,6 +77,8 @@ export class RepairComponent implements OnInit {
     this.getBusinessBrands();
     this.checkArticleGroups();
     this.getProperties();
+    console.log(this.item);
+    console.log(this.item?.price);
     // this.listSuppliers();
     // this.getBusinessBrands();
     if (this.item.new) {
@@ -183,6 +185,18 @@ export class RepairComponent implements OnInit {
 
   deleteItem() {
     this.itemChanged.emit({type:'delete'})
+  }
+
+
+  numericOnly(event:any): boolean { 
+    let patt = /[0-9\,\ ]/; 
+    let result = patt.test(event.key);
+    var itemprice = this.item?.price.toString();
+    itemprice = itemprice.includes(",");
+    if(itemprice==true && event.keyCode==44){
+      result = false;
+    }
+    return result;
   }
 
   listEmployees() {

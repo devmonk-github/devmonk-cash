@@ -136,7 +136,7 @@ export class TestFilterComponent implements OnInit, OnDestroy {
       let data1 = params['from_end_date'];
       let data2 = params['to_end_date'];
       let data3 = params['type'];
-      let data4 = params['repair_status'];
+      //let data4 = params['repair_status'];
       let data5 = params['from_create_date'];
       let data6 = params['to_create_date'];
       let data7 = params['assignee'];
@@ -148,8 +148,8 @@ export class TestFilterComponent implements OnInit, OnDestroy {
         from_end_date: "2023-01-03",
         to_end_date: "2023-03-29",
         assignee:"",
-        repair_status: ['new','processing','inspection','completed','delivered','cancelled','refund','refundInCashRegister',
-        'offer','offer-is-ok','offer-is-not-ok','to-repair','part-are-order','shipped-to-repair']
+        // repair_status: ['new','processing','inspection','completed','delivered','cancelled','refund','refundInCashRegister',
+        // 'offer','offer-is-ok','offer-is-not-ok','to-repair','part-are-order','shipped-to-repair']
       };
 
       if(data3 == 'repair'){
@@ -213,16 +213,16 @@ export class TestFilterComponent implements OnInit, OnDestroy {
       }
       
 
-      if(data4 == undefined){
-        this.requestParams.selectedRepairStatuses = queryParams.repair_status;
-      }
-      else{
-      if(typeof data4 == "string"){
-        this.requestParams.selectedRepairStatuses = [data4];
-      }else{
-        this.requestParams.selectedRepairStatuses = data4;
-      }
-      }
+      // if(data4 == undefined){
+      //   this.requestParams.selectedRepairStatuses = queryParams.repair_status;
+      // }
+      // else{
+      // if(typeof data4 == "string"){
+      //   this.requestParams.selectedRepairStatuses = [data4];
+      // }else{
+      //   this.requestParams.selectedRepairStatuses = data4;
+      // }
+      // }
 
       
       if(data3 == "giftcard" || data3 == "order" || data3 == "gold-purchase"){

@@ -421,8 +421,9 @@
                                                 {{item.sTransactionNumber}} | {{item.totalPaymentAmount }}
                                                 ({{"THIS_RECEIPT" |
                                                 translate }})<br />
-                                                <span *ngFor="let obj of item.related">{{obj.sTransactionNumber}} |
-                                                    {{obj.totalPaymentAmount }}<br /></span>
+                                                <ng-container *ngFor="let obj of item.related">
+                                                    <span *ngIf="obj.totalPaymentAmount > 0">{{obj.sTransactionNumber}} | {{obj.totalPaymentAmount }}<br /></span>
+                                                </ng-container>
                                             </div>
                                         </div>
                                         <div *ngIf="item?.aProductVariant?.length > 0">
