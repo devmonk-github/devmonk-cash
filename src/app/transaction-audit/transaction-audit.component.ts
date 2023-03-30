@@ -676,18 +676,15 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
   }
 
   fetchStatistics(sDisplayMethod?: string) {
-    // console.log('fetchStatistics')
     if (this.iStatisticId) this.fetchDayClosureData(sDisplayMethod);
     else this.fetchAuditStatistic(sDisplayMethod);
   }
 
   /* (Only, for Viewing statistic) Day-closure view whenever we will have the iStatisticId */
   fetchDayClosureData(sDisplayMethod?: string) {
-    // console.log('fetchDayClosureData');
     /* If not closed yet then we require both data static as well and dynamic */
     if (this.oStatisticsData.bIsDayStateOpened) {
       // console.log('if day state is opened getting static+dynamic both data');
-
       this.getStaticData(sDisplayMethod);
       this.getDynamicData(sDisplayMethod);
     } else {
@@ -699,7 +696,6 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
 
   /* Fetch Audit (Be it Static or Dynamic), where user can change filter as well */
   fetchAuditStatistic(sDisplayMethod?: string) {
-    console.log('fetchAuditStatistic', this.IsDynamicState);
     if (this.IsDynamicState) this.getDynamicData(sDisplayMethod);
     else {
       if (!this.aDayClosure?.length) this.fetchDayClosureList();
@@ -709,7 +705,6 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
 
   /* Static Data for statistic (from statistic document) */
   getStaticData(sDisplayMethod?: string) {
-    // console.log('get static data');
     this.aStatistic = [];
     this.aPaymentMethods = [];
     this.bStatisticLoading = true;
@@ -742,8 +737,6 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
       oBody.oFilter.bIsArticleGroupLevel = this.bIsArticleGroupLevel;
       oBody.oFilter.bIsSupplierMode = this.bIsSupplierMode;
     }
-
-    // this.checkShowDownload();
 
     this.getStatisticSubscription = this.apiService.postNew('cashregistry', `/api/v1/statistics/list`, oBody).
       subscribe((result: any) => {
@@ -778,7 +771,6 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
   }
 
   mappingThePaymentMethod(aData: any) {
-    console.log('mappingThePaymentMethod: ', this.nPaymentMethodTotal);
     aData.forEach((oData: any) => {
 
       if (oData.aPaymentMethods?.length) {
@@ -786,31 +778,19 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
           this.aPaymentMethods.push(...oData.aPaymentMethods);
         } else {
           oData.aPaymentMethods.forEach((el: any) => {
-            // console.log(774, el.sMethod, el.nAmount)
             const iExistingIndex = this.aPaymentMethods.findIndex((p: any) => p.sMethod === el.sMethod);
             if (iExistingIndex > -1) {
-              // console.log(777, el.sMethod, el.nAmount, 'before', this.aPaymentMethods[iExistingIndex].nQuantity)
               this.aPaymentMethods[iExistingIndex].nAmount += el.nAmount;
               this.aPaymentMethods[iExistingIndex].nQuantity += el.nQuantity;
-              // console.log(779, el.sMethod, el.nAmount, 'after', this.aPaymentMethods[iExistingIndex].nQuantity)
             } else {
-              // console.log(781, el.sMethod, el.nAmount)
               this.aPaymentMethods.push(el);
             }
           })
         }
       }
-
-      // if (oData?.bIsDayState === false) {
-      //   this.oCountings.nCashInTill = oData?.oCountings?.nCashInTill || 0;
-      // }
     })
-    console.log('mappingThePaymentMethod 808: ', this.nPaymentMethodTotal);
     this.nPaymentMethodTotal = this.aPaymentMethods.reduce((a: any, b: any) => a + b.nAmount, 0);
-    console.log('this.nPaymentMethodTotal 810: ', this.nPaymentMethodTotal);
     this.nNewPaymentMethodTotal = this.nPaymentMethodTotal;
-
-    // console.log(787, this.aPaymentMethods)
   }
 
   processingDynamicDataRequest(sDisplayMethod?: string) {
@@ -847,7 +827,6 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
 
   /* Dynamic Data for statistic (from transaction-item) */
   getDynamicData(sDisplayMethod?: string) {
-    // console.log('getDynamicData')
     /* Below for Dynamic-data */
     this.checkShowDownload();
     const oBody = this.processingDynamicDataRequest(sDisplayMethod);
@@ -866,17 +845,14 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
           }
           // this.mappingThePaymentMethod(result?.data);
           this.aPaymentMethods = result?.data?.aPaymentMethods;
-          console.log('this.oStatisticsData.bIsDayStateOpened: ', this.oStatisticsData.bIsDayStateOpened);
           if (this.oStatisticsData.bIsDayStateOpened || this.IsDynamicState) {
             this.aPaymentMethods.forEach((item: any) => {
               item.nNewAmount = item.nAmount;
               this.nPaymentMethodTotal += parseFloat(item.nAmount);
-              console.log('nPaymentMethodTotal 872: ', this.nPaymentMethodTotal, item.nAmount);
               if (item?.sMethod === 'cash') this.oCountings.nCashInTill = item?.nAmount || 0;
               return item;
             });
             if (this.IsDynamicState) this.nPaymentMethodTotal = this.aPaymentMethods.reduce((a: any, b: any) => a + b.nAmount, 0);
-            console.log('nPaymentMethodTotal 878: ', this.IsDynamicState, this.nPaymentMethodTotal, this.nPaymentMethodTotal);
             this.nNewPaymentMethodTotal = this.nPaymentMethodTotal;
             this.filterDuplicatePaymentMethods();
           }
@@ -1038,6 +1014,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
       sDisplayMethodString: this.sSelectedOptionMenu,
       aStatistic: this.aStatistic,
       oStatisticsDocument: this.oStatisticsDocument,
+      aStatisticsDocuments: this.aStatisticsDocuments,
       aPaymentMethods: this.aPaymentMethods,
       bIsArticleGroupLevel: this.bIsArticleGroupLevel,
       bIsSupplierMode: this.bIsSupplierMode
@@ -1222,14 +1199,11 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
   async onCloseDayState() {
     this.closingDayState = true;
     this.closeButtonClicked = true;
-    console.log('this.aStatistic', this.aStatistic)
     /* fetching Audit detail for checking if day-state is changed or not */
     const oStatisticDetail: any = await this.getDynamicAuditDetail();
     this.closingDayState = false; /* while fetching the data, loader should show off */
     /* isAnyTransactionDone: If any transaction is not happened then we should not throw any error */
-    console.log('just clicked2', this.closeButtonClicked)
     if (!oStatisticDetail?.data?.isAnyTransactionDone) {
-      console.log('just clicked3')
       const confirmBtnDetails = [
         { text: "PROCEED", value: 'proceed', status: 'success', class: 'ml-auto mr-2' },
         { text: "CANCEL", value: 'close' }
@@ -1241,19 +1215,16 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
           this.toastService.show({ type: 'warning', text: `Something went wrong` });
         })
     } else {
-      console.log('just clicked4')
       this.closeDayState(oStatisticDetail);
     }
   }
 
   async closeDayState(oStatisticDetail: any) {
-    console.log('just clicked6', this.aStatistic)
     this.closingDayState = true;
 
     /* isAnyTransactionDone: If any transaction is not happened then we should not throw any error */
     /* Below "IF CONIDTION" only used when we do have any transaction, if not transaction created in that period then we should not check */
     if (oStatisticDetail?.data?.isAnyTransactionDone) {
-      console.log('just clicked7')
       if (!oStatisticDetail?.data?.oTransactionAudit?.length || !oStatisticDetail?.data?.oTransactionAudit[0]?.overall?.length) {
         this.toastService.show({ type: 'warning', text: 'Something went wrong' });
         return;
@@ -1261,7 +1232,6 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
 
       let aAmount = oStatisticDetail?.data?.oTransactionAudit[0]?.overall[0]?.nTotalRevenue
       let bAmount = this.aStatistic[0].overall[0].nTotalRevenue
-      console.log('just clicked8')
       /* This is to check if day-state is not changed already (in mean-time) */
       if (
         oStatisticDetail?.data?.oTransactionAudit[0]?.overall[0]?.nQuantity != this.aStatistic[0].overall[0].nQuantity) {
@@ -1273,7 +1243,6 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
         return;
       }
     }
-    console.log('witin the close daystate function0')
     this.aAmount.filter((item: any) => item.nQuantity > 0).forEach((item: any) => (this.oCountings.oCountingsCashDetails[item.key] = item.nQuantity));
     this.oCountings.nCashDifference = this.oCountings?.nCashCounted - (this.oCountings?.nCashAtStart + this.oCountings?.nCashInTill);
 
@@ -1295,12 +1264,10 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
         nVatRate,
       }
     }
-    console.log('witin the close daystate function')
     this.closeSubscription = this.apiService.postNew('cashregistry', `/api/v1/statistics/close/day-state`, oBody).subscribe((result: any) => {
       this.toastService.show({ type: 'success', text: `Day-state is close now` });
       this.closingDayState = false;
       this.bDisableCountings = true;
-      // this.oStatisticsDocument = result?.data;
       this.getStaticData();
       this.checkShowDownload();
     }, (error) => {
@@ -1461,22 +1428,18 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
     const bCondition3 = (this.iStatisticId && this.iStatisticId != '' && this.oStatisticsDocument && this.oStatisticsDocument?.bIsDayState === false) || false;
 
     const bCondition4 = this.closeButtonClicked;
-    console.log('closeButtonClicked', this.closeButtonClicked)
 
-    if (this.aStatistic?.length) {
-      console.log('my lenght is 0 but still defined')
-    }
-    if (this.aStatistic?.length === 0) {
-      console.log('A m 0')
-    }
-    if (this.aStatistic) {
-      console.log('B m 0')
-    }
+    // if (this.aStatistic?.length) {
+    //   console.log('my lenght is 0 but still defined')
+    // }
+    // if (this.aStatistic?.length === 0) {
+    //   console.log('A m 0')
+    // }
+    // if (this.aStatistic) {
+    //   console.log('B m 0')
+    // }
 
     this.bShowDownload = (bCondition1 || bCondition2 || bCondition3 || bCondition4) && this.aStatistic;
-    console.log('bCondition4', bCondition4)
-    console.log('bCondition4 ', this.aStatistic)
-    console.log('this.bShowDownload', this.bShowDownload)
   }
 
   fetchStockValuePerLocation() {

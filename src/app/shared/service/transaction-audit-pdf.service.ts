@@ -180,25 +180,25 @@ export class TransactionAuditUiPdfService {
         }
     }
 
-    async exportToPDF({ 
-        aSelectedLocation, 
-        sOptionMenu, 
-        bIsDynamicState, 
-        aLocation, 
-        aSelectedWorkStation, 
-        aWorkStation, 
-        oFilterDates, 
-        oBusinessDetails, 
+    async exportToPDF({
+        aSelectedLocation,
+        sOptionMenu,
+        bIsDynamicState,
+        aLocation,
+        aSelectedWorkStation,
+        aWorkStation,
+        oFilterDates,
+        oBusinessDetails,
         sDisplayMethod,
         sDisplayMethodString,
         aStatistic,
         oStatisticsDocument,
+        aStatisticsDocuments,
         aPaymentMethods,
         bIsArticleGroupLevel,
         bIsSupplierMode
-    }:any) {
-
-        // console.log({ aStatistic, oStatisticsDocument, aSelectedWorkStation, aWorkStation });
+    }: any) {
+        console.log('PDF service: exportToPDF: ', { oStatisticsDocument, aStatisticsDocuments });
 
         const date = moment(Date.now()).format('DD-MM-yyyy');
         const columnWidths = ['*', 60, 80, 80, 100];
