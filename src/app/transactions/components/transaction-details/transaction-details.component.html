@@ -259,11 +259,11 @@
                         </div>
                     </div>
                     <div class="col-4">
-                        <button class="btn btn-sm btn-light btn-active-light-primary text-black w-100 d-flex mb-2">
+                        <button class="btn btn-sm btn-light btn-active-light-primary  w-100 d-flex mb-2">
                             <fa-icon [icon]="faFileInvoice"></fa-icon>
                             <label class="mx-auto cursor-pointer">{{ "GENERAL_INVOICE" | translate}}</label>
                         </button>
-                        <button class="btn btn-sm btn-light btn-active-light-primary text-black  w-100 d-flex mb-2"
+                        <button class="btn btn-sm btn-light btn-active-light-primary   w-100 d-flex mb-2"
                             [disabled]="downloadWithVATLoading || !printSettings?.length || !businessDetails?._id"
                             (click)="downloadWithVAT()">
                             <fa-icon [hidden]="downloadWithVATLoading" [icon]="faDownload"></fa-icon>
@@ -273,7 +273,7 @@
                             </span>
                             <label class="mx-auto cursor-pointer">{{ "DOWNLOAD_WITH_VAT" | translate}}</label>
                         </button>
-                        <button class="btn btn-sm btn-light btn-active-light-primary text-black  w-100 d-flex mb-2"
+                        <button class="btn btn-sm btn-light btn-active-light-primary   w-100 d-flex mb-2"
                             (click)="downloadWithVAT(true)">
                             <fa-icon [hidden]="printWithVATLoading" [icon]="faPrint"></fa-icon>
                             <span *ngIf="printWithVATLoading">
@@ -282,39 +282,39 @@
                             </span>
                             <label class="mx-auto cursor-pointer">{{ "PRINT" | translate }}</label>
                         </button>
-                        <button class="btn btn-sm btn-light btn-active-light-primary text-black  w-100 d-flex mb-2">
+                        <button class="btn btn-sm btn-light btn-active-light-primary   w-100 d-flex mb-2">
                             <fa-icon [icon]="faDownload"></fa-icon>
                             <label class="mx-auto cursor-pointer">{{ "DOWNLOAD_WITHOUT_VAT" | translate}}</label>
                         </button>
                         <button [disabled]="!businessDetails?._id"
-                            class="btn btn-sm btn-light btn-active-light-primary text-black  w-100 d-flex mb-2"
+                            class="btn btn-sm btn-light btn-active-light-primary   w-100 d-flex mb-2"
                             (click)="getThermalReceipt('business-receipt')">
                             <fa-icon [icon]="faReceipt"></fa-icon>
                             <label class="mx-auto cursor-pointer"> {{ "THERMAL_RECEIPT" | translate}}</label>
                         </button>
                         <button [disabled]="!businessDetails?._id"
-                            class="btn btn-sm btn-light btn-active-light-primary text-black  w-100 d-flex mb-2"
+                            class="btn btn-sm btn-light btn-active-light-primary   w-100 d-flex mb-2"
                             (click)="getThermalReceipt('warranty-receipt')">
                             <fa-icon [icon]="faReceipt"></fa-icon>
                             <label class="mx-auto cursor-pointer"> {{ "WARRANTY_RECEIPT" | translate}}</label>
                         </button>
-                        <button class="btn btn-sm btn-light btn-active-light-primary text-black  w-100 d-flex mb-2"
+                        <button class="btn btn-sm btn-light btn-active-light-primary   w-100 d-flex mb-2"
                             *ngIf="!transaction?.oCustomer?.bCounter">
                             <fa-icon [icon]="faAt"></fa-icon>
                             <label class="mx-auto cursor-pointer">{{ "MAIL" | translate}}</label>
                         </button>
-                        <button class="btn btn-sm btn-light btn-active-light-primary text-black  w-100 d-flex mb-2"
+                        <button class="btn btn-sm btn-light btn-active-light-primary   w-100 d-flex mb-2"
                             [disabled]="!((nTotalItemPayment - nTotalItemPaidPayment) > 0)"
                             (click)="openTransaction(transaction, 'activity')">
                             <fa-icon [icon]="faUndoAlt"></fa-icon>
                             <label class="mx-auto cursor-pointer">{{"REST_PAYMENT" | translate}}</label>
                         </button>
-                        <button class="btn btn-sm btn-light btn-active-light-primary text-black  w-100 d-flex mb-2"
+                        <button class="btn btn-sm btn-light btn-active-light-primary   w-100 d-flex mb-2"
                             (click)="openTransaction(transaction, 'activity')">
                             <fa-icon [icon]="faUndoAlt"></fa-icon>
                             <label class="mx-auto cursor-pointer">{{"REFUND" | translate}}</label>
                         </button>
-                        <button class="btn btn-sm btn-light btn-active-light-primary text-black  w-100 d-flex mb-2">
+                        <button class="btn btn-sm btn-light btn-active-light-primary   w-100 d-flex mb-2">
                             <fa-icon [icon]="faClipboard"></fa-icon>
                             <label class="mx-auto cursor-pointer">{{"VIEW_LOG" | translate}}</label>
                         </button>

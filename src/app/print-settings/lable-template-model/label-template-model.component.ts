@@ -106,8 +106,8 @@ export class LabelTemplateModelComponent implements OnInit {
       "width": 72,
       offsetleft: 0,
       offsettop: 0,
-      iBusinessId: '',
-      iLocationId: '',
+      // iBusinessId: '',
+      // iLocationId: '',
       "bDefault": true,
       "nSeqOrder": 1,
     }

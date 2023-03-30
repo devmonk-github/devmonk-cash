@@ -48,7 +48,7 @@ export class PdfService {
   private fontSize: string = "10pt";
   private layout: any[] = [];
   private margins: number[] = [0];
-  private dateFormat: string = "L";
+  private dateFormat: string = "DD-MM-yyyy hh:mm";
   private orientation: string = "portrait";
   private paperSize: string | PaperSize = "A4";
   private pixelsPerMm: number = 3.76;
@@ -188,6 +188,7 @@ export class PdfService {
       case 'barcode':
         return this.convertValueToBarcode(val);
       case 'date':
+        // console.log('val', val, moment(val), this.dateFormat, moment(val).format(this.dateFormat))
         return (val === '' || val === 'NO_DATE_SELECTED') ? val : moment(val).format(this.dateFormat);
       default:
         return val;
@@ -814,7 +815,8 @@ export class PdfService {
   }
 
   replaceVariables(originalText: string, dataSourceObject: any) {
-    // console.log('replaceVariables', {originalText});
+    const bTesting = false;
+    if(bTesting) console.log('replaceVariables', {originalText});
     if (!this.isDefined(originalText)) {
       return;
     }
@@ -822,20 +824,23 @@ export class PdfService {
     originalText = this.processConditions(originalText, dataSourceObject);
 
     let extractedVariables = this.getVariables(originalText);
+    if (bTesting) console.log({extractedVariables})
     let providedData = dataSourceObject;
+    if (bTesting) console.log({ providedData })
     let finalString = originalText;
 
     if (extractedVariables) {
       for (let a = 0; a < extractedVariables.length; a++) {
         let currentMatch = extractedVariables[a];
-
+        if (bTesting) console.log({ currentMatch })
 
         const matchedMatch = currentMatch.match(/\[/g)
 
         if (matchedMatch && matchedMatch.length === 2) {
           let currentMatchClean = this.removeBrackets(currentMatch);
 
-          let variableStringFiltered = currentMatchClean
+          let variableStringFiltered = currentMatchClean;
+          if (bTesting) console.log({ variableStringFiltered })
           let format = '';
 
           if (currentMatchClean.match(/\|/g) !== null) {
@@ -919,8 +924,10 @@ export class PdfService {
           let matched = false;
           let newText = '';
           if (this.isDefined(providedData)) {
+            if (bTesting) console.log(926, 'providedData[variableStringFiltered]',providedData[variableStringFiltered])
             if (providedData[variableStringFiltered] !== undefined) {
               newText = providedData[variableStringFiltered];
+              if (bTesting) console.log(928, { newText })
             } else if (variableStringFiltered.startsWith("__")) {
               newText = this.translateService.instant(variableStringFiltered.substring(2));
             } else {

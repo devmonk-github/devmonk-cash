@@ -76,7 +76,7 @@ export class PaymentDistributionService {
       
       if (totalAmountToBePaid > 0 && nGiftcardAmount > 0){
         this.handleGiftcardDiscount(totalAmountToBePaid, arrToUpdate,nGiftcardAmount, bTesting);
-        totalAmountToBePaid = arrToUpdate.filter((el: any) => el.type !== 'giftcard').reduce((n, { amountToBePaid }) => n + amountToBePaid, 0);
+        totalAmountToBePaid = +(arrToUpdate.filter((el: any) => el.type !== 'giftcard').reduce((n, { amountToBePaid }) => n + amountToBePaid, 0).toFixed(2));
         if (bTesting) console.log('processed giftcard discount, new totalAmountToBePaid', totalAmountToBePaid)
       } else {
         arrToUpdate.forEach((i: any) => i.nGiftcardDiscount = 0);
@@ -169,11 +169,19 @@ export class PaymentDistributionService {
   }
 
   handleGiftcardDiscount(totalAmountToBePaid: any, arrToUpdate: any, nGiftcardAmount: any, bTesting: boolean) {
-    console.log('handling giftcard discount')
+    if (bTesting) console.log('handling giftcard discount')
+    let nRemaining = nGiftcardAmount;
     arrToUpdate.forEach((i: any) => {
       if (i.type !== 'giftcard' && nGiftcardAmount > 0 && i?.tType !== 'refund') {
-        i.nGiftcardDiscount = +((i.amountToBePaid * nGiftcardAmount / totalAmountToBePaid).toFixed(2));
-        if (bTesting) console.log('nGiftcardDiscount', i.nGiftcardDiscount)
+        const nAmount = +((i.amountToBePaid * nGiftcardAmount / totalAmountToBePaid).toFixed(3));
+        i.nGiftcardDiscount = +(nAmount.toFixed(2));
+        if (nRemaining < i.nGiftcardDiscount) {
+          i.nGiftcardDiscount = +(nRemaining.toFixed(3).slice(0,-1));
+        } else {
+          nRemaining -= nAmount;
+        }
+       
+        if (bTesting) console.log('nGiftcardDiscount', i.nGiftcardDiscount, nRemaining)
 
         i.amountToBePaid -= i.nGiftcardDiscount;
         if (bTesting) console.log('reduced amountToBePaid', i.amountToBePaid);

@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { DialogComponent, DialogService } from '../../service/dialog';
 import { ViewContainerRef } from '@angular/core';
 import { ApiService } from 'src/app/shared/service/api.service';
@@ -7,7 +7,6 @@ import { TransactionItemsDetailsComponent } from '../transaction-items-details/t
 import { MenuComponent } from '../../_layout/components/common';
 import { NavigationEnd, Router } from '@angular/router';
 import { TransactionDetailsComponent } from 'src/app/transactions/components/transaction-details/transaction-details.component';
-import * as JsBarcode /* , { Options as jsBarcodeOptions } */ from 'jsbarcode';
 import { ReceiptService } from '../../service/receipt.service';
 import { Observable } from 'rxjs';
 import { ToastService } from '../toast';
@@ -20,6 +19,7 @@ import { CustomerDetailsComponent } from '../customer-details/customer-details.c
 import { PdfService } from '../../service/pdf.service';
 import { ImageUploadComponent } from '../image-upload/image-upload.component';
 import { CustomerDialogComponent } from '../customer-dialog/customer-dialog.component';
+import * as _ from 'lodash';
 @Component({
   selector: 'app-activity-details',
   templateUrl: './activity-details.component.html',
@@ -169,9 +169,11 @@ export class ActivityDetailsComponent implements OnInit {
   bCustomerReceipt: boolean = false;
   bDownloadCustomerReceipt: boolean = false;
   bDownloadReceipt: boolean = false;
+  showSystemCustomer:Boolean = false;
   aContactOption = [{ key: 'CALL_ON_READY', value: 'call_on_ready' },
   { key: 'EMAIL_ON_READY', value: 'email_on_ready' },
   { key: 'WHATSAPP_ON_READY', value: 'whatsapp_on_ready' }]
+  sNumber:any;
 
   constructor(
     private viewContainerRef: ViewContainerRef,
@@ -195,10 +197,9 @@ export class ActivityDetailsComponent implements OnInit {
 
 
   async ngOnInit() {
-   console.log('from-----------transaction', this.from, this.activityItems, this.activity)
-  
-   // console.log("iBusinessBrandId" +this.activityItems[0].iBusinessBrandId);
-  
+    this.sNumber = (this.from === 'services') ? this.activity.sNumber : '';
+   //console.log('from-----------', this.from, this.activityItems, this.activity)
+   this.getSystemCustomer(this.activityItems[0]?.iCustomerId);
     this.apiService.setToastService(this.toastService);
     this.routerSub = this.routes.events.subscribe((event) => {
       if (event instanceof NavigationEnd && !(event.url.startsWith('/business/activity-items') || event.url.startsWith('/business/services'))) {
@@ -211,40 +212,18 @@ export class ActivityDetailsComponent implements OnInit {
     this.translationService.get(translationKey).subscribe((res: any) => {
       this.translation = res;
     })
-
     if (this.activity) {
+      this.sNumber = this.activity.sNumber;
       //console.log(this.activity);
       //console.log("this.activity-----");
       // this.oLocationName = this.activity.oLocationName;
       this.bShowOrderDownload = true;
       this.fetchTransactionItems(this.activity._id);
-      // if (this.activity?.activityitems?.length) {
-      // console.log(211)
-      // this.activityItems = this.activity.activityitems;
-      // if (this.activityItems?.length == 1) this.activityItems[0].bIsVisible = true; /* only item there then we will always open it */
-      //  this.activityItems.forEach((item:any , index)=>{
-      //   if(item.oType.eKind == 'order' && item?.iBusinessProductId){
-      //     this.getBusinessProduct(item.iBusinessProductId).subscribe((res:any)=>{
-      //      const productDetail = res.data;
-      //      this.activityItems[index].sArticleNumber = productDetail.sArticleNumber
-      //      this.activityItems[index].sProductNumber = productDetail.sProductNumber
-      //      this.activityItems[index].sArticleName = productDetail?.oArticleGroup?.oName[this.language]
-      //     });
-
-      //    }
-      //  })
-      // }
     } else {
-      //console.log("else");
-      //console.log(this.activityItems[0].iActivityId);
-      // we have opened an activity item so fetch associated activity (required for checkout)
-      // this.fetchActivity(this.activity._id); //actually it is an id of activity item
-      // console.log(235)
       if(this.activityItems && this.activityItems.length>0){
-      
+        this.sNumber = this.activityItems[0].sNumber;
         this.oLocationName = this.businessDetails?.aLocation.find((location: any) => location._id === this.activityItems[0].iLocationId)?.sName;
-     
-      }else{
+      } else {
         this.oLocationName ="";
       }
       //console.log("-this.oLocationName--");
@@ -267,6 +246,14 @@ export class ActivityDetailsComponent implements OnInit {
     ]);
     this.printActionSettings = _printActionSettings?.data[0]?.result[0].aActions;
     this.printSettings = _printSettings?.data[0]?.result;
+  }
+  getSystemCustomer(iCustomerId: string) {
+    this.apiService.getNew('customer', `/api/v1/customer/${this.iBusinessId}/${iCustomerId}`).subscribe((result: any) => {
+      if (result?.data) {
+        this.customer = result?.data;
+        this.matchSystemAndCurrentCustomer(this.customer , this.oCurrentCustomer);
+      }      
+    })
   }
 
   processActivityItems() {
@@ -294,6 +281,8 @@ export class ActivityDetailsComponent implements OnInit {
       })
     }
   }
+
+ 
 
   fetchActivity(_id: any) {
     this.apiService.getNew('cashregistry', `/api/v1/activities/${_id}?iBusinessId=${this.requestParams.iBusinessId}`).subscribe((result: any) => {
@@ -578,7 +567,7 @@ export class ActivityDetailsComponent implements OnInit {
     return this.apiService.getNew('core', '/api/v1/business/' + this.business._id);
   }
 
-  async downloadCustomerReceipt(index: number, receipt: any, sAction:any) {
+  async downloadCustomerReceipt(index: number, receipt: any, sAction:any, sType?:string) {
     if (receipt == 'customerReceipt') {
       this.bCustomerReceipt = true;
     } else if (receipt == 'downloadCustomerReceipt') {
@@ -596,8 +585,17 @@ export class ActivityDetailsComponent implements OnInit {
       oDataSource.nTotal = oDataSource.nPaidAmount;
     }
     else {
-      type = (oDataSource?.oType?.eKind === 'regular') ? 'repair_alternative' : 'repair';
+      type = (oDataSource?.oType?.eKind === 'regular' || (sType && sType === 'alternative')) ? 'repair_alternative' : 'repair';
     }
+    // console.log(type);
+    const sEDA = oDataSource.eEstimatedDateAction;
+    
+    if (sEDA === 'call_on_ready')
+      oDataSource.eEstimatedDateAction = this.translationService.instant('CALL_ON_READY');
+    else if (sEDA === 'email_on_ready')
+      oDataSource.eEstimatedDateAction = this.translationService.instant('EMAIL_ON_READY');
+    else 
+      oDataSource.eEstimatedDateAction = this.translationService.instant('WHATSAPP_ON_READY');
 
     oDataSource.businessDetails = this.businessDetails;
     const aPromises = [];
@@ -681,13 +679,48 @@ export class ActivityDetailsComponent implements OnInit {
       (result: any) => {
         if (index > -1) this.transactions[index].customer = result;
         this.customer = result;
-        console.log(result);console.log("result");
+        // console.log(result);console.log("result");
 
       },
       (error: any) => {
         console.error(error)
       }
     );  
+  }
+
+  matchSystemAndCurrentCustomer(systemCustomer:any , currentCustomer:any){
+    const Customer:any = [{
+      "oInvoiceAddress" : {
+          "sStreet" : "",
+          "sHouseNumber" : "",
+          "sPostalCode" : "",
+          "sCity" : "",
+          "sCountry" : "",
+          "sCountryCode" : ""
+      },
+      "oPhone" : {
+          "bWhatsApp" : true,
+          "sCountryCode" : "",
+          "sMobile" : "",
+          "sLandLine" : "",
+          "sFax" : ""
+      },
+      "bCounter" : false,
+      "_id" : null,
+      "sFirstName" : "",
+      "sLastName" : "",
+      "sPrefix" : "",
+      "sGender" : "",
+      "sVatNumber" : "",
+      "sCocNumber" : "",
+      "sEmail" : ""
+  }];
+
+  for(const[key] of Object.entries(Customer)){
+      if(!(_.isEqual(Customer[key], systemCustomer[key]))){
+       this.showSystemCustomer= true
+      }
+   }
   }
 
   async processTransactionItems(result: any) {
@@ -699,8 +732,9 @@ export class ActivityDetailsComponent implements OnInit {
         }
         
     });
-    this.customer = this.activityItems[0].oCustomer;
+    //this.customer = this.activityItems[0].oCustomer;
     this.oCurrentCustomer = this.activityItems[0].oCustomer;
+    this.matchSystemAndCurrentCustomer(this.customer , this.oCurrentCustomer);
     this.oLocationName = this.activityItems[0].oLocationName;
     // if (this.activityItems.length == 1) this.activityItems[0].bIsVisible = true;
     this.transactions = [];
@@ -849,7 +883,7 @@ export class ActivityDetailsComponent implements OnInit {
     });
     oDataSource.nTotalPaidAmount = nTotalPaidAmount;
 
-    this.sendForReceipt(oDataSource, template, oDataSource.sNumber, receipt, bPrint);
+    this.sendForReceipt(oDataSource, template, oDataSource.sNumber, receipt, (bPrint)?'print':'download');
     this.bActivityPdfGenerationInProgress = false;
     event.target.disabled = false;
   }

@@ -440,8 +440,35 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   }
 
   matchSystemAndCurrentCustomer(systemCustomer:any , currentCustomer:any){
-    for(const[key , value] of Object.entries(currentCustomer)){
-      if(!(_.isEqual(currentCustomer[key], systemCustomer[key]))){
+    const Customer:any = [{
+      "oInvoiceAddress" : {
+          "sStreet" : "",
+          "sHouseNumber" : "",
+          "sPostalCode" : "",
+          "sCity" : "",
+          "sCountry" : "",
+          "sCountryCode" : ""
+      },
+      "oPhone" : {
+          "bWhatsApp" : true,
+          "sCountryCode" : "",
+          "sMobile" : "",
+          "sLandLine" : "",
+          "sFax" : ""
+      },
+      "bCounter" : false,
+      "_id" : null,
+      "sFirstName" : "",
+      "sLastName" : "",
+      "sPrefix" : "",
+      "sGender" : "",
+      "sVatNumber" : "",
+      "sCocNumber" : "",
+      "sEmail" : ""
+  }];
+
+  for(const[key] of Object.entries(Customer)){
+      if(!(_.isEqual(Customer[key], systemCustomer[key]))){
        this.showSystemCustomer= true
       }
    }

@@ -6,9 +6,10 @@ import { Transaction } from 'src/app/till/models/transaction.model';
 import { ApiService } from './api.service';
 import * as _ from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
-import * as _moment from 'moment';
+// import * as _moment from 'moment';
 import { TranslateService } from '@ngx-translate/core';
-const moment = (_moment as any).default ? (_moment as any).default : _moment;
+import { TaxService } from './tax.service';
+// const moment = (_moment as any).default ? (_moment as any).default : _moment;
 @Injectable({
   providedIn: 'root'
 })
@@ -22,11 +23,24 @@ export class TillService {
   iWorkstationId = localStorage.getItem('currentWorkstation') || '';
 
   settings:any;
+  taxes:any;
 
   constructor(
     private apiService: ApiService,
-    private translateService: TranslateService) { }
-
+    private translateService: TranslateService,
+    private taxService: TaxService) {}
+  
+  async fetchTaxes() {
+    let taxDetails: any = await this.taxService.getLocationTax({ iLocationId: this.iLocationId });
+    if (taxDetails) {
+      this.taxes = taxDetails?.aRates || [];
+    } else {
+      setTimeout(async () => {
+        taxDetails = await this.taxService.getLocationTax({ iLocationId: this.iLocationId });
+        this.taxes = taxDetails?.aRates || [];
+      }, 1000);
+    }
+  }
   selectCurrency(oLocation: any) {
     // console.log('oLocation? currency selection', oLocation?.eCurrency)
     if (oLocation?.eCurrency) {
@@ -369,10 +383,10 @@ export class TillService {
       tItem1.oType.eKind = 'giftcard-discount';
       tItem1.sProductName = 'Giftcard redeemed';
       tItem1.sDescription = '';
-      tItem1.nPaymentAmount = -1 * nDiscount;
-      tItem1.nRevenueAmount = -1 * nDiscount;
-      tItem1.nPriceIncVat = -1 * nDiscount;
-      tItem1.nPurchasePrice = -1 * nDiscount;
+      tItem1.nPaymentAmount = -1 * item.nGiftcardDiscount;
+      tItem1.nRevenueAmount = -1 * item.nGiftcardDiscount;
+      tItem1.nPriceIncVat = -1 * item.nGiftcardDiscount;
+      tItem1.nPurchasePrice = -1 * item.nGiftcardDiscount;
       tItem1.nDiscount = 0;
       body.transactionItems.push(tItem1);
     });
@@ -424,15 +438,16 @@ export class TillService {
   }
 
   processTransactionSearchResult(result: any) {
-    // console.log(405, JSON.parse(JSON.stringify(result)));
+    // console.log('processTransactionSearchResult', JSON.parse(JSON.stringify(result)));
     const transactionItems: any = [];
     if (result.transaction) {
       result.transactionItems.forEach((item: any) => {
         if (item.isSelected) {
           const { tType } = item;
           // const nTotalDiscount = (item?.nRedeemedLoyaltyPoints || 0) - (item?.nGiftcardDiscount || 0);
-          let paymentAmount = (item.nQuantity * item.nPriceIncVat) 
-            - item.nPaymentAmount;
+
+          let paymentAmount = (item.nQuantity * item.nPriceIncVat) - item.nPaymentAmount;
+          
             // - nTotalDiscount;
           // console.log(436, {paymentAmount})
           if (tType === 'refund') {
@@ -520,7 +535,7 @@ export class TillService {
       dataObject.nPaymentMethodTotal += obj.nAmount;
       if(!obj?.sRemarks) obj.sRemarks = "";
       
-      // obj.dCreatedDate = moment(obj.dCreatedDate).format('DD-MM-yyyy hh:mm');
+      // obj.dCreatedDate = moment(obj.dCreatedDate);//.format('DD-MM-yyyy hh:mm');
     });
     dataObject.nNewPaymentMethodTotal = dataObject.nPaymentMethodTotal;
     
@@ -578,7 +593,7 @@ export class TillService {
       } else { item.nDiscountToShow = disc }
       // console.log('item.nDiscountToShow', item.nDiscountToShow, 'item.nPriceIncVat', 'nPriceIncVat', item.nPriceIncVat, 'nQuantity', item.nQuantity, 'nRedeemedLoyaltyPoints', item.nRedeemedLoyaltyPoints, 'nGiftcardDiscount',item.nGiftcardDiscount);
       
-      item.nPriceIncVatAfterDiscount = (parseFloat(item.nPriceIncVat.toFixed(2)) - parseFloat(item.nDiscountToShow.toFixed(2))) * item.nQuantity - item.nRedeemedLoyaltyPoints - (item?.nGiftcardDiscount || 0);
+      item.nPriceIncVatAfterDiscount = (+(item.nPriceIncVat.toFixed(2)) - +(item.nDiscountToShow.toFixed(2))) * item.nQuantity - (item?.nRedeemedLoyaltyPoints || 0) - (item?.nGiftcardDiscount || 0);
       item.nTotalPriceIncVat = item.nPriceIncVat * item.nQuantity;
       // item.nPriceIncVatAfterDiscount = parseFloat(item.nPriceIncVatAfterDiscount.toFixed(2));
       // console.log('nPriceIncVatAfterDiscount', item.nPriceIncVatAfterDiscount);
@@ -688,7 +703,7 @@ export class TillService {
     dataObject.totalGiftcardDiscount = +(totalGiftcardDiscount.toFixed(2));
     dataObject.totalSavingPoints = totalSavingPoints;
     dataObject.totalRedeemedLoyaltyPoints = totalRedeemedLoyaltyPoints;
-    dataObject.nTotalExcVat = dataObject.totalAfterDisc - dataObject.totalVat;
+    dataObject.nTotalExcVat = +((dataObject.totalAfterDisc - dataObject.totalVat).toFixed(2));
     dataObject.nTotalQty = nTotalQty;
     // dataObject.dCreatedDate = moment(dataObject.dCreatedDate).format('DD-MM-yyyy hh:mm');
     let _relatedResult:any , _loyaltyPointSettings:any;
@@ -725,8 +740,7 @@ export class TillService {
   }
 
   processCustomerDetails(customer:any) {
-    //console.log("------ustomer------");
-    //console.log(customer);
+    // console.log('processCustomerDetails',customer);
     return {
       ...customer,
       ...customer?.oPhone,
