@@ -179,26 +179,58 @@ export class ReceiptService {
                 tableWidths.push(this.getWidth(row.size));
             } else {
                 let object = row?.object;
-                let text = this.pdfService.replaceVariables(row.html, (object) ? this.oOriginalDataSource[object] : this.oOriginalDataSource);
-                let obj = { text: text };
-                if (row?.styles) obj = { ...obj, ...row.styles };
-                texts.push(obj);
-                tableWidths.push(this.getWidth(row.size));
+                if (row?.ifAnd) {
+                    let bTestResult = true;
+                    let field, target;
+                    bTestResult = row.ifAnd.every((rule: any) => {
+                        field = (object) ? object[rule.field] : this.oOriginalDataSource[rule.field];
+                        target = (rule?.targetMode === 'fetch') ? object[rule.target] : rule.target;
+                        return (field != null) ? this.commonService.comparators[rule.compare](field, target) : false;
+                    })
+                    if (bTestResult) {
+                        let text = this.pdfService.replaceVariables(row.html, (object) ? this.oOriginalDataSource[object] : this.oOriginalDataSource);
+                        let obj = { text: text };
+                        if (row?.styles) obj = { ...obj, ...row.styles };
+                        texts.push(obj);
+                        tableWidths.push(this.getWidth(row.size));
+                        nSize += Number(row.size);
+                        if (nSize >= 12) {
+                            let data: any = {
+                                table: {
+                                    widths: tableWidths,
+                                    body: [texts],
+                                },
+                                layout: (layout) ? this.getLayout(layout) : 'noBorders'
+                            };
+                            tables.push(data);
+                            tableWidths = [];
+                            nSize = 0;
+                            texts = [];
+                        }
+                    }
+                } else {
 
-                nSize += Number(row.size);
-                if (nSize >= 12) {
-                    let data: any = {
-                        table: {
-                            widths: tableWidths,
-                            body: [texts],
-                        },
-                        layout: (layout) ? this.getLayout(layout) : 'noBorders'
-                    };
-                    tables.push(data);
-                    tableWidths = [];
-                    nSize = 0;
-                    texts = [];
+                    let text = this.pdfService.replaceVariables(row.html, (object) ? this.oOriginalDataSource[object] : this.oOriginalDataSource);
+                    let obj = { text: text };
+                    if (row?.styles) obj = { ...obj, ...row.styles };
+                    texts.push(obj);
+                    tableWidths.push(this.getWidth(row.size));
+                    nSize += Number(row.size);
+                    if (nSize >= 12) {
+                        let data: any = {
+                            table: {
+                                widths: tableWidths,
+                                body: [texts],
+                            },
+                            layout: (layout) ? this.getLayout(layout) : 'noBorders'
+                        };
+                        tables.push(data);
+                        tableWidths = [];
+                        nSize = 0;
+                        texts = [];
+                    }
                 }
+
             }
 
 
@@ -453,7 +485,8 @@ export class ReceiptService {
                             target = rule.target == "{}" ? {} : rule.target;
                             return this.commonService.comparators[rule.compare](JSON.stringify(field), JSON.stringify(target))
                         } else {
-                            field = (el.object) ? el.object[rule.field] : this.oOriginalDataSource[rule.field];
+                            console.log('else')
+                            field = (el?.object) ? el.object[rule.field] : this.oOriginalDataSource[rule.field];
                             target = (rule?.targetMode === 'fetch') ? el.object[rule.target] : rule.target;
                             return (field != null) ? this.commonService.comparators[rule.compare](field, target) : false;
                         }
