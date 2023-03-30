@@ -19,6 +19,7 @@ import { CustomerDetailsComponent } from '../customer-details/customer-details.c
 import { PdfService } from '../../service/pdf.service';
 import { ImageUploadComponent } from '../image-upload/image-upload.component';
 import { CustomerDialogComponent } from '../customer-dialog/customer-dialog.component';
+import * as _ from 'lodash';
 @Component({
   selector: 'app-activity-details',
   templateUrl: './activity-details.component.html',
@@ -168,6 +169,7 @@ export class ActivityDetailsComponent implements OnInit {
   bCustomerReceipt: boolean = false;
   bDownloadCustomerReceipt: boolean = false;
   bDownloadReceipt: boolean = false;
+  showSystemCustomer:Boolean = false;
   aContactOption = [{ key: 'CALL_ON_READY', value: 'call_on_ready' },
   { key: 'EMAIL_ON_READY', value: 'email_on_ready' },
   { key: 'WHATSAPP_ON_READY', value: 'whatsapp_on_ready' }]
@@ -196,10 +198,8 @@ export class ActivityDetailsComponent implements OnInit {
 
   async ngOnInit() {
     this.sNumber = (this.from === 'services') ? this.activity.sNumber : '';
-  //  console.log('from-----------transaction', this.from, this.activityItems, this.activity)
-  
-   // console.log("iBusinessBrandId" +this.activityItems[0].iBusinessBrandId);
-  
+   //console.log('from-----------', this.from, this.activityItems, this.activity)
+   this.getSystemCustomer(this.activityItems[0]?.iCustomerId);
     this.apiService.setToastService(this.toastService);
     this.routerSub = this.routes.events.subscribe((event) => {
       if (event instanceof NavigationEnd && !(event.url.startsWith('/business/activity-items') || event.url.startsWith('/business/services'))) {
@@ -247,6 +247,14 @@ export class ActivityDetailsComponent implements OnInit {
     this.printActionSettings = _printActionSettings?.data[0]?.result[0].aActions;
     this.printSettings = _printSettings?.data[0]?.result;
   }
+  getSystemCustomer(iCustomerId: string) {
+    this.apiService.getNew('customer', `/api/v1/customer/${this.iBusinessId}/${iCustomerId}`).subscribe((result: any) => {
+      if (result?.data) {
+        this.customer = result?.data;
+        this.matchSystemAndCurrentCustomer(this.customer , this.oCurrentCustomer);
+      }      
+    })
+  }
 
   processActivityItems() {
     const aDiscounts = this.activityItems.filter((item: any) => item?.oType?.eKind === 'discount')
@@ -273,6 +281,8 @@ export class ActivityDetailsComponent implements OnInit {
       })
     }
   }
+
+ 
 
   fetchActivity(_id: any) {
     this.apiService.getNew('cashregistry', `/api/v1/activities/${_id}?iBusinessId=${this.requestParams.iBusinessId}`).subscribe((result: any) => {
@@ -678,6 +688,41 @@ export class ActivityDetailsComponent implements OnInit {
     );  
   }
 
+  matchSystemAndCurrentCustomer(systemCustomer:any , currentCustomer:any){
+    const Customer:any = [{
+      "oInvoiceAddress" : {
+          "sStreet" : "",
+          "sHouseNumber" : "",
+          "sPostalCode" : "",
+          "sCity" : "",
+          "sCountry" : "",
+          "sCountryCode" : ""
+      },
+      "oPhone" : {
+          "bWhatsApp" : true,
+          "sCountryCode" : "",
+          "sMobile" : "",
+          "sLandLine" : "",
+          "sFax" : ""
+      },
+      "bCounter" : false,
+      "_id" : null,
+      "sFirstName" : "",
+      "sLastName" : "",
+      "sPrefix" : "",
+      "sGender" : "",
+      "sVatNumber" : "",
+      "sCocNumber" : "",
+      "sEmail" : ""
+  }];
+
+  for(const[key] of Object.entries(Customer)){
+      if(!(_.isEqual(Customer[key], systemCustomer[key]))){
+       this.showSystemCustomer= true
+      }
+   }
+  }
+
   async processTransactionItems(result: any) {
     this.activityItems = result.data[0].result;
     this.activityItems.forEach((items: any, index: any) => {
@@ -687,8 +732,9 @@ export class ActivityDetailsComponent implements OnInit {
         }
         
     });
-    this.customer = this.activityItems[0].oCustomer;
+    //this.customer = this.activityItems[0].oCustomer;
     this.oCurrentCustomer = this.activityItems[0].oCustomer;
+    this.matchSystemAndCurrentCustomer(this.customer , this.oCurrentCustomer);
     this.oLocationName = this.activityItems[0].oLocationName;
     // if (this.activityItems.length == 1) this.activityItems[0].bIsVisible = true;
     this.transactions = [];
