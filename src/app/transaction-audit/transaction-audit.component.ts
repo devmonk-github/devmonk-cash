@@ -749,6 +749,8 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
             if (this.iStatisticId) {
               this.oStatisticsDocument = this.aStatisticsDocuments[0];
               this.processCounting();
+            } else {
+              this.oStatisticsDocument = this.transactionAuditPdfService.processingMultipleStatisticsBySummingUp(this.aStatisticsDocuments);
             }
             if (this.aStatisticsDocuments?.length) this.mappingThePaymentMethod(this.aStatisticsDocuments);
           }
@@ -1430,7 +1432,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
     const bCondition4 = this.closeButtonClicked;
 
     // if (this.aStatistic?.length) {
-    //   console.log('my lenght is 0 but still defined')
+    //   console.log('my length is 0 but still defined')
     // }
     // if (this.aStatistic?.length === 0) {
     //   console.log('A m 0')

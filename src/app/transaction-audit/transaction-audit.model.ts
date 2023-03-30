@@ -27,8 +27,8 @@ export enum eDisplayMethodKeysEnum {
     revenuePerProperty = 'revenuePerProperty',
     revenuePerArticleGroup = 'revenuePerArticleGroup',
     aVatRates = 'aVatRates',
-
 }
+
 export interface DisplayMethod {
     sKey: eDisplayMethodKeysEnum | string;
     sValue: string;

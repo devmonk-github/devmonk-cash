@@ -321,6 +321,7 @@ export class TransactionAuditUiPdfService {
             this.processVatRates(columnWidths, tableLayout, oStatisticsDocument?.aVatRates);
         }
 
+        console.log('sDisplayMethod: ', sDisplayMethod);
         switch (sDisplayMethod.toString()) {
             case 'revenuePerBusinessPartner':
                 this.processPdfByRevenuePerBusinessPartner(columnWidths,tableLayout,aStatistic);
@@ -1324,6 +1325,126 @@ export class TransactionAuditUiPdfService {
 
             const t = val.replace('.', ',')
             return t
+        }
+    }
+
+    summingUpMultiplePayment(oData: any) {
+        try {
+            const { aPaymentMethods, aProcessPayment } = oData;
+            aPaymentMethods.forEach((oPayment: any) => {
+                const oPaymentMethodFound = aProcessPayment.find((oProcessPayment: any) => oProcessPayment?.iPaymentMethodId == oPayment?.iPaymentMethodId);
+                if (!oPaymentMethodFound) {
+                    aProcessPayment.push(oPayment);
+                } else {
+                    oPaymentMethodFound.nAmount += oPayment.nAmount;
+                    oPaymentMethodFound.nQuantity += oPayment.nQuantity;
+                    /* below is constant */
+                    // iPaymentMethodId
+                    // sMethod
+                    /* What to store? */
+                    // sComment
+                    // _id
+                }
+            });
+            return aProcessPayment;
+        } catch (error) {
+            return oData?.aProcessPayment?.length ? oData?.aProcessPayment : [];
+        }
+    }
+
+    summingUpMultipleRevenuePerProperty(oData: any) {
+        try {
+            const { aRevenuePerProperty, aProcessRevenuePerProperty } = oData;
+            console.log('summingUpMultipleRevenuePerProperty: ', oData);
+            /* In process */
+            // aRevenuePerProperty.forEach((oRPAGAP: any) => {
+            //     const oReveneuPerArticleGroupAndPropertyFound = aProcessRevenuePerProperty.find((oProcessoRPAGAP: any) => oProcessoRPAGAP?._id == oRPAGAP?._id);
+            //     if (!oReveneuPerArticleGroupAndPropertyFound) {
+            //         aProcessRevenuePerProperty.push(oRPAGAP);
+            //     } else {
+            //         oReveneuPerArticleGroupAndPropertyFound.nTotalRevenue += oRPAGAP.nTotalRevenue;
+            //         oReveneuPerArticleGroupAndPropertyFound.nTotalPurchaseAmount += oRPAGAP.nTotalPurchaseAmount;
+            //         oReveneuPerArticleGroupAndPropertyFound.nQuantity += oRPAGAP.nQuantity;
+            //         oReveneuPerArticleGroupAndPropertyFound.nProfit += oRPAGAP.nProfit;
+            //         oReveneuPerArticleGroupAndPropertyFound.nMargin += oRPAGAP.nMargin;
+            //         oReveneuPerArticleGroupAndPropertyFound.aRevenueByProperty += oRPAGAP.aRevenueByProperty; /* TODO */
+            //         /* below is constant */
+            //         // _id
+            //         // sName
+            //     }
+            // });
+            console.log('AFTER summingUpMultipleRevenuePerProperty: ', aProcessRevenuePerProperty);
+            return aProcessRevenuePerProperty;
+        } catch (error) {
+            return oData?.aProcessRevenuePerProperty?.length ? oData?.aProcessRevenuePerProperty : [];
+        }
+    }
+
+    summingUpMultipleRevenuePerArticleGroupAndProperty(oData: any) {
+        try {
+            const { aRevenuePerArticleGroupAndProperty, aProcessRevenuePerArticleGroupAndProperty } = oData;
+            // console.log('summingUpMultipleRevenuePerArticleGroupAndProperty: ', oData);
+            aRevenuePerArticleGroupAndProperty.forEach((oRPAGAP: any) => {
+                const oReveneuPerArticleGroupAndPropertyFound = aProcessRevenuePerArticleGroupAndProperty.find((oProcessoRPAGAP: any) => oProcessoRPAGAP?._id == oRPAGAP?._id);
+                if (!oReveneuPerArticleGroupAndPropertyFound) {
+                    aProcessRevenuePerArticleGroupAndProperty.push(oRPAGAP);
+                } else {
+                    oReveneuPerArticleGroupAndPropertyFound.nTotalRevenue += oRPAGAP.nTotalRevenue;
+                    oReveneuPerArticleGroupAndPropertyFound.nTotalPurchaseAmount += oRPAGAP.nTotalPurchaseAmount;
+                    oReveneuPerArticleGroupAndPropertyFound.nQuantity += oRPAGAP.nQuantity;
+                    oReveneuPerArticleGroupAndPropertyFound.nProfit += oRPAGAP.nProfit;
+                    oReveneuPerArticleGroupAndPropertyFound.nMargin += oRPAGAP.nMargin;
+                    // oReveneuPerArticleGroupAndPropertyFound.aRevenueByProperty = this.summingUpMultipleRevenuePerProperty({ aRevenuePerProperty: oRPAGAP.aRevenuePerProperty, aProcessRevenuePerProperty: aProcessRevenuePerArticleGroupAndProperty?.aProcessRevenuePerProperty });
+                    // /* TODO */ oReveneuPerArticleGroupAndPropertyFound.aRevenueByProperty = oRPAGAP.aRevenueByPropertythis.summingUpMultiplePayment({ aPaymentMethods: oStatisticsDocument.aPaymentMethods, aProcessPayment: oProcessedStatisticData?.aPaymentMethods });
+                    /* below is constant */
+                    // _id
+                    // sName
+                }
+            });
+            // console.log('AFTER summingUpMultipleRevenuePerArticleGroupAndProperty: ', aProcessRevenuePerArticleGroupAndProperty);
+            return aProcessRevenuePerArticleGroupAndProperty;
+        } catch (error) {
+            return oData?.aProcessRevenuePerArticleGroupAndProperty?.length ? oData?.aProcessRevenuePerArticleGroupAndProperty : [];
+        }
+    }
+
+    processingMultipleStatisticsBySummingUp(aStatisticsDocuments: any) {
+        try {
+            if (!aStatisticsDocuments?.length) return {};
+            if (aStatisticsDocuments?.length === 1) return aStatisticsDocuments[0];
+            const oProcessedStatisticData = {
+                aPaymentMethods: [],
+                aRevenuePerArticleGroupAndProperty: [],
+                aRevenuePerBusinessPartner: [],
+                aRevenuePerProperty: [],
+                aVatRates: [],
+                oCountings: {}
+                /* What should be the value for the below field? */
+                // bIsClosingStarted: 
+                // bIsDayState: 
+                // dCloseDate
+                // dCreatedDate
+                // dOpenDate
+                // dUpdatedDate
+                // eCreationType
+                // eType
+                // iBusinessId
+                // iLocationId
+                // iWorkstationId
+                // _id
+            }
+            for (const oStatisticsDocument of aStatisticsDocuments) {
+                // console.log('aRevenuePerBusinessPartner: ', oStatisticsDocument?.aRevenuePerBusinessPartner);
+                oProcessedStatisticData.aPaymentMethods = this.summingUpMultiplePayment({ aPaymentMethods: oStatisticsDocument.aPaymentMethods, aProcessPayment: oProcessedStatisticData?.aPaymentMethods });
+                oProcessedStatisticData.aRevenuePerArticleGroupAndProperty = this.summingUpMultipleRevenuePerArticleGroupAndProperty({ aRevenuePerArticleGroupAndProperty: oStatisticsDocument.aRevenuePerArticleGroupAndProperty, aProcessRevenuePerArticleGroupAndProperty: oProcessedStatisticData?.aRevenuePerArticleGroupAndProperty });
+                oProcessedStatisticData.aRevenuePerProperty = this.summingUpMultipleRevenuePerProperty({ aRevenuePerProperty: oStatisticsDocument.aRevenuePerProperty, aProcessRevenuePerProperty: oProcessedStatisticData?.aRevenuePerProperty });
+                // oProcessedStatisticData.aPaymentMethods = this.summingUpMultiplePayment({ aPaymentMethods: oStatisticsDocument.aPaymentMethods, aProcessPayment: oProcessedStatisticData?.aPaymentMethods });
+                // oProcessedStatisticData.aPaymentMethods = this.summingUpMultiplePayment({ aPaymentMethods: oStatisticsDocument.aPaymentMethods, aProcessPayment: oProcessedStatisticData?.aPaymentMethods });
+            }
+            return oProcessedStatisticData;
+        } catch (error) {
+            console.log('Error in processingMultipleStatisticsInOne: ', error);
+            return aStatisticsDocuments?.length ? aStatisticsDocuments[0] : {};
         }
     }
 }
