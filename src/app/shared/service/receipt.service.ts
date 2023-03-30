@@ -410,32 +410,80 @@ export class ReceiptService {
                 columnData = this.processTextAsTableData(el);
                 this.DIVISON_FACTOR = 1;
             } else if (el?.type === 'stack') {
-                // console.log('el', el)
-                let obj: any = {
-                    "stack": this.processStack(el, (el?.object) ? this.oOriginalDataSource[el?.object] : null)
-                };
-                if (el?.width) obj.width = el.width;
-                columnData = obj;
+                if(el?.ifAnd) {
+                    let bTestResult = true;
+                    let field, target;
+                    bTestResult = el.ifAnd.every((rule: any) => {
+                        if(rule?.targetMode === 'object') {
+                            field = this.oOriginalDataSource[rule.field];
+                            target = rule.target == "{}" ? {} : rule.target;
+                            return this.commonService.comparators[rule.compare](JSON.stringify(field), JSON.stringify(target)) 
+                        } else {
+                            field = (el.object) ? el.object[rule.field] : this.oOriginalDataSource[rule.field];
+                            target = (rule?.targetMode === 'fetch') ? el.object[rule.target] : rule.target;
+                            return (field != null) ? this.commonService.comparators[rule.compare](field, target) : false;
+                        }
+                    })
+                    if(bTestResult) {
+                        let obj: any = {
+                            "stack": this.processStack(el, (el?.object) ? this.oOriginalDataSource[el?.object] : null)
+                        };
+                        if (el?.width) obj.width = el.width;
+                        columnData = obj;
+                    }
+                } else {
+                    let obj: any = {
+                        "stack": this.processStack(el, (el?.object) ? this.oOriginalDataSource[el?.object] : null)
+                    };
+                    if (el?.width) obj.width = el.width;
+                    columnData = obj;
+                }
             } else if (el?.type === 'parts') {
                 columnData = this.addParts(el)
             } else {
                 let html = el.html || '';
                 let object = el?.object;
                 let text = '';
-                if (object && Object.keys(object)?.length) {
-                    text = this.pdfService.replaceVariables(html, (object) ? this.oOriginalDataSource[object] : this.oOriginalDataSource) || '';
+                if (el?.ifAnd) {
+                    let bTestResult = true;
+                    let field, target;
+                    bTestResult = el.ifAnd.every((rule: any) => {
+                        if (rule?.targetMode === 'object') {
+                            field = this.oOriginalDataSource[rule.field];
+                            target = rule.target == "{}" ? {} : rule.target;
+                            return this.commonService.comparators[rule.compare](JSON.stringify(field), JSON.stringify(target))
+                        } else {
+                            field = (el.object) ? el.object[rule.field] : this.oOriginalDataSource[rule.field];
+                            target = (rule?.targetMode === 'fetch') ? el.object[rule.target] : rule.target;
+                            return (field != null) ? this.commonService.comparators[rule.compare](field, target) : false;
+                        }
+                    })
+                    if (bTestResult) {
+                        if (object && Object.keys(object)?.length) {
+                            text = this.pdfService.replaceVariables(html, (object) ? this.oOriginalDataSource[object] : this.oOriginalDataSource) || '';
+                        } else {
+                            text = this.pdfService.replaceVariables(html, this.oOriginalDataSource) || html;
+                        }
+                        columnData = { text: text };
+                    }
                 } else {
-                    text = this.pdfService.replaceVariables(html, this.oOriginalDataSource) || html;
+                    if (object && Object.keys(object)?.length) {
+                        text = this.pdfService.replaceVariables(html, (object) ? this.oOriginalDataSource[object] : this.oOriginalDataSource) || '';
+                    } else {
+                        text = this.pdfService.replaceVariables(html, this.oOriginalDataSource) || html;
+                    }
+                    columnData = { text: text };
                 }
-                columnData = { text: text };
                 if (el?.width) columnData.width = el?.width;
                 if (el?.alignment) columnData.alignment = el?.alignment;
             }
-            if (el?.alignment) columnData.alignment = el?.alignment;
-            if (el?.styles) columnData = { ...columnData, ...el.styles }
-            if (el?.width) columnData.width = el?.width;
-            if (el?.pageBreak) columnData.pageBreak = el?.pageBreak;
-            columns.push(columnData)
+            if(columnData) {
+                if (el?.alignment) columnData.alignment = el?.alignment;
+                if (el?.styles) columnData = { ...columnData, ...el.styles }
+                if (el?.width) columnData.width = el?.width;
+                if (el?.pageBreak) columnData.pageBreak = el?.pageBreak;
+                columns.push(columnData)
+            }
         });
         let obj = { columns: columns };
         if (styles) obj = { ...obj, ...styles };

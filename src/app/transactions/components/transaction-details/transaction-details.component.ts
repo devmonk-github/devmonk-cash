@@ -1,20 +1,19 @@
 import { AfterContentInit, ChangeDetectorRef, Component, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
-import { faTimes, faSync, faFileInvoice, faDownload, faReceipt, faAt, faUndoAlt, faClipboard, faTrashAlt, faPrint, faEnvelope } from '@fortawesome/free-solid-svg-icons';
+import { faAt, faClipboard, faDownload, faEnvelope, faFileInvoice, faPrint, faReceipt, faSync, faTimes, faTrashAlt, faUndoAlt } from '@fortawesome/free-solid-svg-icons';
+import { TranslateService } from '@ngx-translate/core';
+import * as _ from 'lodash';
+import * as _moment from 'moment';
+import { Observable } from 'rxjs';
+import { ActivityDetailsComponent } from 'src/app/shared/components/activity-details-dialog/activity-details.component';
+import { CustomerDetailsComponent } from 'src/app/shared/components/customer-details/customer-details.component';
+import { CustomerDialogComponent } from 'src/app/shared/components/customer-dialog/customer-dialog.component';
+import { ToastService } from 'src/app/shared/components/toast';
 import { TransactionItemsDetailsComponent } from 'src/app/shared/components/transaction-items-details/transaction-items-details.component';
 import { ApiService } from 'src/app/shared/service/api.service';
 import { DialogComponent, DialogService } from 'src/app/shared/service/dialog';
-import * as _moment from 'moment';
-import { CustomerDetailsComponent } from 'src/app/shared/components/customer-details/customer-details.component';
-import { ActivityDetailsComponent } from 'src/app/shared/components/activity-details-dialog/activity-details.component';
 import { ReceiptService } from 'src/app/shared/service/receipt.service';
-import { Observable } from 'rxjs';
-import { ToastService } from 'src/app/shared/components/toast';
-import * as JsBarcode from 'jsbarcode';
-import { TillService } from 'src/app/shared/service/till.service';
-import { TranslateService } from '@ngx-translate/core';
 import { TaxService } from 'src/app/shared/service/tax.service';
-import { CustomerDialogComponent } from 'src/app/shared/components/customer-dialog/customer-dialog.component';
-import * as _ from 'lodash';
+import { TillService } from 'src/app/shared/service/till.service';
 
 const moment = (_moment as any).default ? (_moment as any).default : _moment;
 
@@ -103,7 +102,7 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
     this.transaction.businessDetails = this.businessDetails;
     this.transaction.currentLocation = this.businessDetails.currentLocation;
     this.fetchActivityItem();
-    this.getPaymentMethods()
+    this.getPaymentMethods();
     
     this.transaction = await this.tillService.processTransactionForPdfReceipt(this.transaction);
     // console.log(this.transaction)

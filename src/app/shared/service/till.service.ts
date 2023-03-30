@@ -28,9 +28,12 @@ export class TillService {
   constructor(
     private apiService: ApiService,
     private translateService: TranslateService,
-    private taxService: TaxService) {}
+    private taxService: TaxService) {
+    this.fetchTaxes();
+    }
   
   async fetchTaxes() {
+    if(this.taxes?.length) return;
     let taxDetails: any = await this.taxService.getLocationTax({ iLocationId: this.iLocationId });
     if (taxDetails) {
       this.taxes = taxDetails?.aRates || [];
