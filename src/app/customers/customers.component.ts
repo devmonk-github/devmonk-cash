@@ -9,6 +9,7 @@ import { ToastService } from '../shared/components/toast';
 import {ExportsComponent} from '../shared/components/exports/exports.component';
 import { MenuComponent } from '../shared/_layout/components/common';
 import { CustomerDialogComponent } from '../shared/components/customer-dialog/customer-dialog.component';
+import { animate, state, style, transition, trigger } from '@angular/animations';
 // import { result } from 'lodash';
 
 // interface FSEntry {
@@ -22,7 +23,24 @@ import { CustomerDialogComponent } from '../shared/components/customer-dialog/cu
 @Component({
   selector: 'app-customers',
   templateUrl: './customers.component.html',
-  styleUrls: ['./customers.component.sass']
+  styleUrls: ['./customers.component.sass'],
+  animations: [trigger('openClose', [
+    state('open', style({
+      height: '*',
+      opacity: 1,
+    })),
+    state('closed', style({
+      height: '0',
+      opacity: 0
+    })),
+    transition('open => closed', [
+      animate('300ms')
+    ]),
+    transition('closed => open', [
+      animate('300ms')
+    ]),
+  ])
+  ]
 })
 export class CustomersComponent implements OnInit {
 
@@ -70,13 +88,16 @@ export class CustomersComponent implements OnInit {
       'sCompanyName', 'oIdentity', 'sVatNumber', 'sCocNumber', 'nPaymentTermDays',
        'nDiscount', 'bWhatsApp', 'nMatchingCode' , 'sNote' , 'iEmployeeId' , 'bIsMigrated' ,'bIsMerged','eStatus','bIsImported','aGroups'],
     oFilterBy: {
-      oStatic: {},
-      oDynamic: {}
+      
     }
   };
   iChosenCustomerId : any;
   @ViewChildren('inputElement') inputElement!: QueryList<ElementRef>;
-
+  showFilters = false;
+  aFilterFields: any = [
+    { title: 'PSOTAL_CODE', key: 'sPostalCode' },
+    { title: 'HOUSE_NUMBER', key: 'sHouseNumber' },
+  ]
   constructor(
     private apiService: ApiService,
     private toastService: ToastService,
