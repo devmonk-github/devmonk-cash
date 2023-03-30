@@ -67,7 +67,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   faSearch = faSearch;
   faCopy = faCopy;
   faRotateLeft = faRotateLeft;
-  taxes: any = [];
   transactionItems: Array<any> = [];
   selectedTransaction: any = null;
   customer: any;
@@ -167,8 +166,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
   constructor(
     private translateService: TranslateService,
-    private dialogService: DialogService,
-    private taxService: TaxService,
+    private dialogService: DialogService,    
     private paymentDistributeService: PaymentDistributionService,
     private apiService: ApiService,
     private toastrService: ToastService,
@@ -179,7 +177,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     private customerStructureService: CustomerStructureService,
     private fiskalyService: FiskalyService,
     private receiptService: ReceiptService,
-    private http: HttpClient
   ) {
 
     // import(
@@ -201,15 +198,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     this.checkDayState();
 
     this.requestParams.iBusinessId = this.iBusinessId;
-    let taxDetails: any = await this.taxService.getLocationTax({ iLocationId: this.iLocationId });
-    if (taxDetails) {
-      this.taxes = taxDetails?.aRates || [];
-    } else {
-      setTimeout(async () => {
-        taxDetails = await this.taxService.getLocationTax({ iLocationId: this.iLocationId });
-        this.taxes = taxDetails?.aRates || [];
-      }, 1000);
-    }
+    this.tillService.fetchTaxes();
     this.getPaymentMethods();
     this.getParkedTransactions();
 
@@ -447,7 +436,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     // console.log('add item,', type, type==='repair')
 
     const price = (type === 'giftcard') ? 5 : 0;
-    const tax = Math.max(...this.taxes.map((tax: any) => tax.nRate), 0);
+    const tax = Math.max(...this.tillService.taxes.map((tax: any) => tax.nRate), 0);
 
     this.transactionItems.push({
       isExclude: type === 'repair',
@@ -863,7 +852,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
             }
           }
 
-          console.log('body: ', body);
+          // console.log('body: ', body);
           this.apiService.postNew('cashregistry', '/api/v1/till/transaction', body).subscribe(async (data: any) => {
 
             // this.toastrService.show({ type: 'success', text: 'Transaction created.' });
@@ -923,6 +912,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   async handleReceiptPrinting(oDialogComponent: DialogComponent) {
     this.transaction.businessDetails = this.businessDetails;
     this.transaction.currentLocation = this.businessDetails.currentLocation;
+    this.transaction.oCustomer = this.customer;
     this.transaction = await this.tillService.processTransactionForPdfReceipt(this.transaction);
 
     let oDataSource = JSON.parse(JSON.stringify(this.transaction));
@@ -1450,7 +1440,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
   openExpenses() {
     const paymentMethod = this.payMethods.find((o: any) => o.sName.toLowerCase() === 'cash');
-    this.dialogService.openModal(AddExpensesComponent, { cssClass: 'modal-m', context: { paymentMethod, taxes: this.taxes } })
+    this.dialogService.openModal(AddExpensesComponent, { cssClass: 'modal-m', context: { paymentMethod, taxes: this.tillService.taxes } })
       .instance.close.subscribe(result => {
       });
   }
