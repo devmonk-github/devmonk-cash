@@ -199,7 +199,7 @@ export class ActivityDetailsComponent implements OnInit {
   async ngOnInit() {
     this.sNumber = (this.from === 'services') ? this.activity.sNumber : '';
    //console.log('from-----------', this.from, this.activityItems, this.activity)
-   this.getSystemCustomer(this.activityItems[0]?.iCustomerId);
+    
     this.apiService.setToastService(this.toastService);
     this.routerSub = this.routes.events.subscribe((event) => {
       if (event instanceof NavigationEnd && !(event.url.startsWith('/business/activity-items') || event.url.startsWith('/business/services'))) {
@@ -230,6 +230,7 @@ export class ActivityDetailsComponent implements OnInit {
       //console.log(this.oLocationName);
       this.fetchActivity(this.activityItems[0].iActivityId);
       this.fetchTransactionItems(this.activityItems[0]._id);
+      this.getSystemCustomer(this.activityItems[0]?.iCustomerId);
     }
     // console.log(236)
     // this.processActivityItems();
@@ -251,7 +252,7 @@ export class ActivityDetailsComponent implements OnInit {
     this.apiService.getNew('customer', `/api/v1/customer/${this.iBusinessId}/${iCustomerId}`).subscribe((result: any) => {
       if (result?.data) {
         this.customer = result?.data;
-        this.matchSystemAndCurrentCustomer(this.customer , this.oCurrentCustomer);
+        this.matchSystemAndCurrentCustomer(result?.data , this.oCurrentCustomer);
       }      
     })
   }
@@ -679,6 +680,7 @@ export class ActivityDetailsComponent implements OnInit {
       (result: any) => {
         if (index > -1) this.transactions[index].customer = result;
         this.customer = result;
+        this.matchSystemAndCurrentCustomer(result?.data , this.oCurrentCustomer);
         // console.log(result);console.log("result");
 
       },
@@ -711,13 +713,13 @@ export class ActivityDetailsComponent implements OnInit {
       "sLastName" : "",
       "sPrefix" : "",
       "sGender" : "",
-      "sVatNumber" : "",
-      "sCocNumber" : "",
+      //"sVatNumber" : "",
+      //"sCocNumber" : "",
       "sEmail" : ""
   }];
 
-  for(const[key] of Object.entries(Customer)){
-      if(!(_.isEqual(Customer[key], systemCustomer[key]))){
+  for(const[key] of Object.entries(currentCustomer)){
+      if(!(_.isEqual(currentCustomer[key], systemCustomer[key]))){
        this.showSystemCustomer= true
       }
    }
@@ -734,6 +736,8 @@ export class ActivityDetailsComponent implements OnInit {
     });
     //this.customer = this.activityItems[0].oCustomer;
     this.oCurrentCustomer = this.activityItems[0].oCustomer;
+    console.log(this.oCurrentCustomer);
+    console.log("-----this.oCurrentCustomer");
     this.matchSystemAndCurrentCustomer(this.customer , this.oCurrentCustomer);
     this.oLocationName = this.activityItems[0].oLocationName;
     // if (this.activityItems.length == 1) this.activityItems[0].bIsVisible = true;
@@ -943,6 +947,7 @@ export class ActivityDetailsComponent implements OnInit {
     }
     this.apiService.postNew('cashregistry', '/api/v1/transaction/update-customer', oBody).subscribe((result: any) => {
       this.oCurrentCustomer = oBody?.oCustomer;
+      this.matchSystemAndCurrentCustomer(this.customer , oBody?.oCustomer);
       this.toastService.show({ type: "success", text: this.translation['SUCCESSFULLY_UPDATED'] });
     }, (error) => {
       console.log('update customer error: ', error);
@@ -981,7 +986,9 @@ export class ActivityDetailsComponent implements OnInit {
       }).instance.close.subscribe(result => {
         if (result?.bChangeCustomer) this.selectCustomer();
         else if (result?.bShouldUpdateCustomer) this.updateCurrentCustomer({ oCustomer: result?.oCustomer });
+        
       }, (error) => {
+        
         console.log("Error in customer: ", error);
         this.toastService.show({ type: "warning", text: `Something went wrong` });
       });
