@@ -37,17 +37,17 @@
                         </div>
 
                         <!-- System Customer Showing Start -->
-                        <div class="d-flex flex-wrap py-5" *ngIf="!showSystemCustomer">
+                        <div class="d-flex flex-wrap py-5">
                             <div class="flex-equal me-5">
                                 <p><strong>{{ "SYSTEM_CUSTOMER" | translate}}</strong></p>
-                                <div class="fs-6 ms-1">
+                                <div class="fs-6 ms-1" *ngIf="!showSystemCustomer">
                                     <div class="align-items-center">
                                         <div class="text-gray-600">{{customer?.sFirstName || ''}} {{customer?.sLastName
                                             || ''}}</div>
                                     </div>
                                 </div>
                                 
-                                <div class="fs-6 ms-1" *ngIf="customer?.bCounter==false">
+                                <div class="fs-6 ms-1" *ngIf="customer?.bCounter==false && !showSystemCustomer">
                                     <div class="align-items-center" *ngIf="customer?.sEmail">
                                         <div class="text-gray-600">
                                             {{customer?.sEmail}}
@@ -57,7 +57,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="fs-6 ms-1" *ngIf="customer?.bCounter==false">
+                                <div class="fs-6 ms-1" *ngIf="customer?.bCounter==false && !showSystemCustomer">
                                     <div class="align-items-center">
                                         <p style="margin: 0; margin-bottom: 5px;" *ngIf="customer?.oPhone?.sMobile">{{'PHONE_MOBILE' | translate}}</p>
                                         <p style="margin: 0; margin-bottom: 5px;" *ngIf="customer?.oPhone?.sMobile">
@@ -68,7 +68,7 @@
                                         </p>
                                     </div>
                                 </div>
-                                <div class="fs-6 ms-1" *ngIf="customer?.bCounter==false">
+                                <div class="fs-6 ms-1" *ngIf="customer?.bCounter==false && !showSystemCustomer">
                                     <div class="align-items-center">
                                         <p style="margin: 0; margin-bottom: 5px;" *ngIf="customer?.oPhone?.sLandLine">{{'PHONE_LANDLINE' | translate}}</p>
                                         <p style="margin: 0; margin-bottom: 5px;" *ngIf="customer?.oPhone?.sLandLine">
