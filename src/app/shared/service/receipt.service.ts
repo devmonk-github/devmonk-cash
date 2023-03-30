@@ -640,7 +640,12 @@ export class ReceiptService {
                         stack.push({ text: text, alignment: el?.alignment });
                     }
                 } else {
-                    let text = this.pdfService.replaceVariables(el.html, (object) ? object : this.oOriginalDataSource) || '';
+                    let text;
+                    if(el?.object) {
+                        text = this.pdfService.replaceVariables(el.html, (object) ? object[el.object] : this.oOriginalDataSource) || '';
+                    } else {
+                        text = this.pdfService.replaceVariables(el.html, (object) ? object : this.oOriginalDataSource) || '';
+                    }
                     if (text.trim() != '') {
                         let obj: any = { text: text };
                         if (el?.alignment) obj.alignment = el.alignment;
