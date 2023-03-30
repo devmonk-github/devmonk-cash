@@ -37,7 +37,7 @@
                         </div>
 
                         <!-- System Customer Showing Start -->
-                        <div class="d-flex flex-wrap py-5">
+                        <div class="d-flex flex-wrap py-5" *ngIf="!showSystemCustomer">
                             <div class="flex-equal me-5">
                                 <p><strong>{{ "SYSTEM_CUSTOMER" | translate}}</strong></p>
                                 <div class="fs-6 ms-1">
