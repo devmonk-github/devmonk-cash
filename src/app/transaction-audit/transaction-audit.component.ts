@@ -757,7 +757,6 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
               this.oStatisticsDocument = this.aStatisticsDocuments[0];
               this.processCounting();
             }
-            console.log(757, this.aStatisticsDocuments);
             if (this.aStatisticsDocuments?.length) this.mappingThePaymentMethod(this.aStatisticsDocuments);
           }
           // if (oData?.oStatistic?._id) {

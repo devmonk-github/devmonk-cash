@@ -285,7 +285,7 @@ export class TransactionAuditUiPdfService {
             {
                 columns: [
                     { text: this.translations['COMMENT']+ ': ', style: ['left', 'normal'], width: 100 },
-                    { text: oStatisticsDocument.sComment, style: ['left', 'normal'], width: 200 },
+                    { text: oStatisticsDocument?.sComment, style: ['left', 'normal'], width: 200 },
                     { width: '*', text: '' },
                     { text: this.translations['TYPE']+ ': ', style: ['right', 'normal'], width: 100 },
                     { text: sType, style: ['right', 'normal'], width: 150 },
@@ -416,7 +416,7 @@ export class TransactionAuditUiPdfService {
     }
 
     processCashCountings(tableLayout: any, oStatisticsDocument:any, aStatistic:any){
-        const oCountings = oStatisticsDocument.oCountings;
+        const oCountings = oStatisticsDocument?.oCountings;
 
         const tableHeadersList: any = [
             { text: this.translations['PARTICULARS'], style: ['th', 'articleGroup'] },
@@ -426,7 +426,7 @@ export class TransactionAuditUiPdfService {
         let texts: any = [
             [
                 { text: this.translations['CASH_LEFTOVER'], style: ['td'] },
-                { text: this.convertToMoney(oCountings.nCashAtStart), style: ['td'] },
+                { text: this.convertToMoney(oCountings?.nCashAtStart), style: ['td'] },
             ],
             [
                 { text: this.translations['CASH_MUTATION'], style: ['td'] },
@@ -438,7 +438,7 @@ export class TransactionAuditUiPdfService {
             ],
             [
                 { text: this.translations['CASH_COUNTED'], style: ['td'] },
-                { text: this.convertToMoney(oCountings.nCashCounted), style: ['td'] },
+                { text: this.convertToMoney(oCountings?.nCashCounted), style: ['td'] },
             ],
             [
                 { text: this.translations['TREASURY_DIFFERENCE'], style: ['td'] },
@@ -446,11 +446,11 @@ export class TransactionAuditUiPdfService {
             ],
             [
                 { text: this.translations['SKIM'], style: ['td'] },
-                { text: this.convertToMoney(oCountings.nSkim), style: ['td'] },
+                { text: this.convertToMoney(oCountings?.nSkim), style: ['td'] },
             ],
             [
                 { text: this.translations['AMOUNT_TO_LEFT_IN_CASH'], style: ['td'] },
-                { text: this.convertToMoney(oCountings.nCashRemain), style: ['td'] }
+                { text: this.convertToMoney(oCountings?.nCashRemain), style: ['td'] }
             ],
         ];
 
