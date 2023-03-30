@@ -107,7 +107,16 @@ export class OrderComponent implements OnInit {
         }
       });
   }
-
+  numericOnly(event:any): boolean { 
+    let patt = /[0-9\,\ ]/; 
+    let result = patt.test(event.key);
+    var itemprice = this.item?.price.toString();
+    itemprice = itemprice.includes(",");
+    if(itemprice==true && event.keyCode==44){
+      result = false;
+    }
+    return result;
+  }
   settingsChanged(event?:any){
     if (this.settings.bAutoIncrementBagNumbers) {
       this.item.sBagNumber = (event) ? event : this.settings.nLastBagNumber + 1;
