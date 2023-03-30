@@ -199,24 +199,24 @@
                         <!-- regular -->
                         <div class="accordion-item w-100 d-table-cell" till-product
                           *ngIf="(item.type === 'regular' || item.type === 'reservation') && item.bProductLoaded"
-                          [item]="item" [taxes]="taxes" [disablePrepayment]="!availableAmount || availableAmount === 0"
+                          [item]="item" [taxes]="tillService.taxes" [disablePrepayment]="!availableAmount || availableAmount === 0"
                           (itemChanged)="itemChanged($event, i)" [availableAmount]="availableAmount"></div>
                         <!-- order -->
                         <div class="accordion-item w-100 d-table-cell" *ngIf="item.type === 'order'" till-order
-                          [item]="item" [disablePrepayment]="!availableAmount || availableAmount === 0" [taxes]="taxes"
+                          [item]="item" [disablePrepayment]="!availableAmount || availableAmount === 0" [taxes]="tillService.taxes"
                           [availableAmount]="availableAmount" [settings]="tillService.settings.currentLocation"
                           (itemChanged)="itemChanged($event, i)">
                         </div>
 
                         <!-- repair -->
                         <div class="accordion-item w-100 d-table-cell" till-repair *ngIf="item.type === 'repair'"
-                          [disablePrepayment]="!availableAmount || availableAmount === 0" [item]="item" [taxes]="taxes"
+                          [disablePrepayment]="!availableAmount || availableAmount === 0" [item]="item" [taxes]="tillService.taxes"
                           [availableAmount]="availableAmount" [settings]="tillService.settings.currentLocation"
                           (itemChanged)="itemChanged($event, i)">
                         </div>
                         <!-- giftcard -->
                         <div class="accordion-item w-100 d-table-cell w-100" till-gift *ngIf="item.type === 'giftcard'"
-                          [item]="item" [transactionItems]="transactionItems" [taxes]="taxes"
+                          [item]="item" [transactionItems]="transactionItems" [taxes]="tillService.taxes"
                           (itemChanged)="itemChanged($event, i)" (createGiftCard)="createGiftCard($event, i)">
                         </div>
                         <!-- gold-purchase -->
@@ -225,7 +225,7 @@
                         </div>
                         <!-- empty-line -->
                         <div class="accordion-item w-100 d-table-cell w-100" till-other
-                          *ngIf="item.type=== 'empty-line'" [item]="item" [taxes]="taxes"
+                          *ngIf="item.type=== 'empty-line'" [item]="item" [taxes]="tillService.taxes"
                           (itemChanged)="itemChanged($event, i)"></div>
                         
                           <!-- loyalty-points NOT REQUIRED TO SHOW IT BECAUSE NOW WE ARE DISPLAYING REDEEMED POINTS PER ITEM-->

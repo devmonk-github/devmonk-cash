@@ -108,7 +108,7 @@ export class CommonPrintSettingsService {
     }
 
     calcColumnWidth(size: number): number {
-        console.log(this.oCommonParameters['pageSize'])
+        // console.log(this.oCommonParameters['pageSize'])
         size = (size === null || size > 12 || size === undefined) ? 12 : size;
         let totalMargin = this.oCommonParameters['pageMargins'][0] + this.oCommonParameters['pageMargins'][2];
         let num = 0;
@@ -119,7 +119,7 @@ export class CommonPrintSettingsService {
             num = size * ((this.pageWidth - totalMargin) / 12);
             num = +(num.toFixed(2)) - 12;
         }
-        console.log({ totalMargin, size, num, pageWidth: this.pageWidth })
+        // console.log({ totalMargin, size, num, pageWidth: this.pageWidth })
         return num;
     }
 
