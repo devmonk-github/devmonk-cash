@@ -314,7 +314,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   async addOrder(product: any) {
-    let tax = Math.max(...this.taxes.map((tax: any) => tax.nRate), 0);
+    let tax = Math.max(...this.tillService.taxes.map((tax: any) => tax.nRate), 0);
     this.transactionItems.push({
       eTransactionItemType: 'regular',
       // manualUpdate: false,
@@ -1351,7 +1351,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
   getParkedTransactionBody(): Object {
     const body = {
-      aTaxes: this.taxes,
+      aTaxes: this.tillService.taxes,
       aTransactionItems: this.transactionItems,
       oCustomer: this.customer,
       // searchKeyword: this.searchKeyword,
@@ -1396,7 +1396,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     this.parkedTransactionLoading = true;
     this.apiService.getNew('cashregistry', `/api/v1/park/${this.selectedTransaction._id}?iBusinessId=${this.iBusinessId}`)
       .subscribe((transactionInfo: any) => {
-        this.taxes = transactionInfo.aTaxes;
+        this.tillService.taxes = transactionInfo.aTaxes;
         this.transactionItems = transactionInfo.aTransactionItems;
         this.customer = transactionInfo.oCustomer;
         this.iBusinessId = transactionInfo.iBusinessId;
