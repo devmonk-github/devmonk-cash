@@ -564,7 +564,7 @@ export class Js2zplService {
             if (date instanceof Date && !isNaN(date.valueOf())) {
               date = date.toISOString()
               if (moment) {
-                newval = moment(date).format(this.dateformat);
+                newval = moment(date).format('MM/YY');
               }
             } else {
               newval = ''

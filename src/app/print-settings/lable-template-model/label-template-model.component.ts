@@ -13,7 +13,7 @@ export const makeDataObjectForProduct = (product: any) => {
     "%%PRODUCT_NUMBER%%": product.sProductNumber,
     "%%ARTICLE_NUMBER%%": product.sArticleNumber,
     "%%BRAND_NAME%%": product.brandName,
-    "%%QUANTITY%%": product.nReceivedQuantity,
+    "%%QUANTITY%%": 1,
     "%%EAN%%": "",
     "%%DIAMONDINFO%%": "",
     "%%PRODUCT_WEIGHT%%": "",
