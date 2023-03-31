@@ -52,6 +52,12 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
   fetchQuickButtonsSubscription !: Subscription;
   saveFavouritesSubscription !: Subscription;
   removeQuickButtonSubscription !: Subscription;
+  aSelectedFields:any;
+  aPrefillFields:any = [
+    { key: 'bArticleGroup', title: 'ARTICLE_GROUPS' },
+    { key: 'bLabelDescription', title: 'LABEL_DESCRIPTION' },
+    { key: 'bProductNumber', title: 'PRODUCT_NUMBER' },
+  ]
 
   constructor(
     private apiService: ApiService,
@@ -96,16 +102,34 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
   getSettings() {
     this.getSettingsSubscription = this.apiService.getNew('cashregistry', `/api/v1/settings/${this.requestParams.iBusinessId}`).subscribe((result: any) => {
       this.settings = result;
-      const oCurrentLocation = {
+      const oBagNumberSettings = {
         iLocationId: this.iLocationId,
         bAutoIncrementBagNumbers: true,
         nLastBagNumber: 0,
       };
-      if (!this.settings?.aBagNumbers?.length) {
-        this.settings.currentLocation = oCurrentLocation;
-      } else {
-        this.settings.currentLocation = this.settings.aBagNumbers.find((el:any) => el.iLocationId === this.iLocationId) || oCurrentLocation;
+      
+      const oPrefillSettings = {
+        iLocationId: this.iLocationId,
+        bArticleGroup: true,
+        bProductNumber: true,
+        bLabelDescription:true
       }
+      let oMergedSettings:any = {};
+      if (!this.settings?.aBagNumbers?.length) {
+        oMergedSettings = {...oBagNumberSettings};
+      } else {
+        oMergedSettings = {...(this.settings.aBagNumbers.find((el:any) => el.iLocationId === this.iLocationId) || oBagNumberSettings) };
+      }
+      
+      if (!this.settings?.aCashRegisterPrefill?.length) {
+        oMergedSettings = { ...oMergedSettings, ...oPrefillSettings };
+        this.settings.aCashRegisterPrefill = [{...oPrefillSettings}];
+      } else {
+        oMergedSettings = { ...oMergedSettings, ...(this.settings.aCashRegisterPrefill.find((el: any) => el.iLocationId === this.iLocationId) || oPrefillSettings) };
+      }
+      // console.log({oMergedSettings}, this.settings);
+
+      this.settings.currentLocation = oMergedSettings;
     }, (error) => {
       console.log(error);
     })
@@ -239,12 +263,24 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
     if(this.settings?.aBagNumbers?.length) {
       this.settings.aBagNumbers = [...this.settings?.aBagNumbers?.filter((el: any) => el.iLocationId !== this.iLocationId), this.settings.currentLocation];
     }
+    if(this.settings?.aCashRegisterPrefill?.length) {
+      const oCurrentSettrings = {
+        iLocationId: this.settings.currentLocation.iLocationId,
+        bArticleGroup: this.settings.currentLocation.bArticleGroup,
+        bProductNumber: this.settings.currentLocation.bProductNumber,
+        bLabelDescription: this.settings.currentLocation.bLabelDescription,
+      } 
+      this.settings.aCashRegisterPrefill = [...this.settings?.aCashRegisterPrefill?.filter((el: any) => el.iLocationId !== this.iLocationId), {...oCurrentSettrings}];
+      // console.log(this.settings.aCashRegisterPrefill);
+    }
+
     const body = {
       nLastInvoiceNumber: this.settings?.nLastInvoiceNumber,
       nLastReceiptNumber: this.settings?.nLastReceiptNumber,
       sDayClosurePeriod: this.settings?.sDayClosurePeriod,
       bOpenCashDrawer: this.settings?.bOpenCashDrawer,
       aBagNumbers: this.settings?.aBagNumbers,
+      aCashRegisterPrefill: this.settings?.aCashRegisterPrefill,
     };
     this.updatingSettings = true;
     this.updateSettingsSubscription = this.apiService.putNew('cashregistry', '/api/v1/settings/update/' + this.requestParams.iBusinessId, body)

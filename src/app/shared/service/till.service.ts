@@ -771,17 +771,34 @@ export class TillService {
 
   async fetchSettings() {
     this.settings = await this.apiService.getNew('cashregistry', `/api/v1/settings/${this.iBusinessId}`).toPromise();
-    const oCurrentLocation = {
+    const oBagNumberSettings = {
       iLocationId: this.iLocationId,
       bAutoIncrementBagNumbers: true,
       nLastBagNumber: 0,
     };
 
-    if (!this.settings?.aBagNumbers?.length) {
-      this.settings.currentLocation = oCurrentLocation;
-    } else {
-      this.settings.currentLocation = this.settings.aBagNumbers.find((el: any) => el.iLocationId === this.iLocationId) || oCurrentLocation;
+    const oPrefillSettings = {
+      iLocationId: this.iLocationId,
+      bArticleGroup: true,
+      bProductNumber: true,
+      bLabelDescription: true
     }
+    let oMergedSettings: any = {};
+    if (!this.settings?.aBagNumbers?.length) {
+      oMergedSettings = { ...oBagNumberSettings };
+    } else {
+      oMergedSettings = { ...(this.settings.aBagNumbers.find((el: any) => el.iLocationId === this.iLocationId) || oBagNumberSettings) };
+    }
+
+    if (!this.settings?.aCashRegisterPrefill?.length) {
+      oMergedSettings = { ...oMergedSettings, ...oPrefillSettings };
+      this.settings.aCashRegisterPrefill = [{ ...oPrefillSettings }];
+    } else {
+      oMergedSettings = { ...oMergedSettings, ...(this.settings.aCashRegisterPrefill.find((el: any) => el.iLocationId === this.iLocationId) || oPrefillSettings) };
+    }
+    console.log(this.settings);
+
+    this.settings.currentLocation = oMergedSettings;
     // console.log(this.settings);
     return this.settings;
   }

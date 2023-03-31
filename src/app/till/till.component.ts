@@ -1186,7 +1186,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // Add selected product into purchase order
   async onSelectProduct(product: any, isFrom: string = '', isFor: string = '', source?: any) {
-    console.log('onSelectProduct', product);
+    // console.log('onSelectProduct', product);
     let nPriceIncludesVat = 0, nVatRate = 0;
     if (isFrom === 'quick-button') {
       source.loading = true;
@@ -1222,9 +1222,14 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
         }
       }
     }
-    let name = (product?.oArticleGroup?.oName) ? ((product.oArticleGroup?.oName[this.selectedLanguage]) ? product.oArticleGroup?.oName[this.selectedLanguage] : product.oArticleGroup.oName['en']) : '';
+    let name = '';
+    if (this.tillService.settings.currentLocation.bArticleGroup)
+      name += (product?.oArticleGroup?.oName) ? ((product.oArticleGroup?.oName[this.selectedLanguage]) ? product.oArticleGroup?.oName[this.selectedLanguage] : product.oArticleGroup.oName['en']) : '';
+    
     name += ' ' + (product?.sLabelDescription || '');
-    name += ' ' + (product?.sProductNumber || '');
+
+    if (this.tillService.settings.currentLocation.bProductNumber) name += ' ' + (product?.sProductNumber || '');
+    
     this.transactionItems.push({
       name: name,
       eTransactionItemType: 'regular',
