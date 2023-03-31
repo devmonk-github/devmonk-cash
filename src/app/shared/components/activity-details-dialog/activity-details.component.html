@@ -305,6 +305,11 @@
                                                                 <fa-icon [icon]="faPrint"></fa-icon>
                                                                 <span class="ms-5">{{ 'PRINT' | translate }}</span></div>
                                                         </div>
+                                                        <div class="menu-item px-3 text-center" (click)="downloadCustomerReceipt(activityindex , 'customerReceipt', 'print', 'alternative')">
+                                                            <div class="menu-link px-3">
+                                                                <fa-icon [icon]="faPrint"></fa-icon>
+                                                                <span class="ms-5">{{ 'PRINT_ALTERNATIVE' | translate }}</span></div>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>

@@ -655,7 +655,7 @@ export class ActivityDetailsComponent implements OnInit {
     const aTemp = oDataSource.sNumber.split("-");
     oDataSource.sPartRepairNumber = aTemp[aTemp.length - 1];
     // oDataSource.sBusinessLogoUrl = (await this.getBase64FromUrl(oDataSource?.businessDetails?.sLogoLight).toPromise()).data;
-    this.sendForReceipt(oDataSource, template, oDataSource.sNumber, receipt, sAction);
+    this.sendForReceipt(oDataSource, template, oDataSource.sNumber, receipt, type, sAction);
   }
 
   getBase64FromUrl(url: any): Observable<any> {
@@ -887,21 +887,28 @@ export class ActivityDetailsComponent implements OnInit {
     });
     oDataSource.nTotalPaidAmount = nTotalPaidAmount;
 
-    this.sendForReceipt(oDataSource, template, oDataSource.sNumber, receipt, (bPrint)?'print':'download');
+    this.sendForReceipt(oDataSource, template, oDataSource.sNumber, receipt, 'order', (bPrint)?'print':'download');
     this.bActivityPdfGenerationInProgress = false;
     event.target.disabled = false;
   }
 
-  async sendForReceipt(oDataSource: any, template: any, title: any, receipt: any, sAction:any) {
+  async sendForReceipt(oDataSource: any, template: any, title: any, receipt: any, sType:any, sAction:any) {
     const oPdfSetting = template.aSettings.find((el: any) => el.sParameter === 'pdfMethod');
     if (oPdfSetting && oPdfSetting.value === 'Javascript') {
       await this.pdfService.createPdf(JSON.stringify(template), oDataSource, oDataSource.sNumber, true, null, this.iBusinessId, null);
     } else {
+      const oSettings = this.printSettings.find((s: any) => s.sType === sType && s.sMethod === 'pdf' && s.iWorkstationId === this.iWorkstationId)
+      // console.log(oSettings)
+      if (!oSettings && sAction === 'PRINT_PDF') {
+        this.toastService.show({ type: 'danger', text: 'Check your business -> printer settings' });
+        return;
+      }
+
       this.receiptService.exportToPdf({
         oDataSource: oDataSource,
         pdfTitle: title,
         templateData: template,
-        printSettings: this.printSettings,
+        printSettings: oSettings,
         printActionSettings: this.printActionSettings,
         eSituation: 'is_created',
         sAction,

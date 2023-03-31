@@ -181,7 +181,7 @@ export class TillService {
     // console.log('length 115: ', transactionItems?.length);
     body.transactionItems = transactionItems.map((i: any) => {
       // console.log(i)
-      console.log('i.sSerialNumber: ', i.sSerialNumber);
+      // console.log('i.sSerialNumber: ', i.sSerialNumber);
       const bRefund =
         i.oType?.bRefund /* Indication from the User */
         || i.nDiscount.quantity < 0 /* Minus Discount (e.g. -10 discount) [TODO: Remove the quantity as its not exist at all] */
@@ -198,7 +198,7 @@ export class TillService {
       // console.log('getTotal: ', this.getTotals('price', transactionItems));//0.03
       // console.log('Last condition: ', i.paymentAmount, i.amountToBePaid);
       // console.log('bPrepayment: ', bPrepayment, bRefund && i.oType?.bPrepayment, (this.getUsedPayMethods(true, payMethods) - this.getTotals('price', transactionItems) < 0), (i.paymentAmount !== i.amountToBePaid));
-      i.price = +(parseFloat(i.price).toFixed(2));
+      i.price = +(Number(String(i.price).replace(',','.')).toFixed(2));
       i.nPurchasePrice = +(i.nPurchasePrice?.toFixed(2) || 0);
       const oItem = new TransactionItem();
       oItem.sProductName = i.name;
@@ -639,8 +639,13 @@ export class TillService {
     });
     
     transaction.aTransactionItems.forEach((item: any) => {
-      item.bShowGiftcardDiscountField = ((item?.oType?.bRefund && item?.nGiftcardDiscount == 0) || (!item?.oType?.bRefund && (item?.nGiftcardDiscount)) && totalGiftcardDiscount > 0);
-      item.bShowLoyaltyPointsDiscountField = ((item?.oType?.bRefund && item?.nRedeemedLoyaltyPoints == 0) || (!item?.oType?.bRefund && item?.nRedeemedLoyaltyPoints) && totalRedeemedLoyaltyPoints > 0);
+      if (item?.oType?.bRefund) {
+        item.bShowGiftcardDiscountField = false;  
+        item.bShowLoyaltyPointsDiscountField = false;
+      } else {
+        item.bShowGiftcardDiscountField = item?.nGiftcardDiscount && totalGiftcardDiscount > 0;
+        item.bShowLoyaltyPointsDiscountField = item?.nRedeemedLoyaltyPoints && totalRedeemedLoyaltyPoints > 0;
+      }
       let description = (item?.nDiscountToShow || item.bShowGiftcardDiscountField || item.bShowLoyaltyPointsDiscountField) ? `${this.translateService.instant('ORIGINAL_AMOUNT_INC_DISC')}: ${item.nTotalPriceIncVat}\n` : '';
       item.eKind = item.oType.eKind;
       if (item?.related?.length) {
@@ -772,17 +777,34 @@ export class TillService {
 
   async fetchSettings() {
     this.settings = await this.apiService.getNew('cashregistry', `/api/v1/settings/${this.iBusinessId}`).toPromise();
-    const oCurrentLocation = {
+    const oBagNumberSettings = {
       iLocationId: this.iLocationId,
       bAutoIncrementBagNumbers: true,
       nLastBagNumber: 0,
     };
 
-    if (!this.settings?.aBagNumbers?.length) {
-      this.settings.currentLocation = oCurrentLocation;
-    } else {
-      this.settings.currentLocation = this.settings.aBagNumbers.find((el: any) => el.iLocationId === this.iLocationId) || oCurrentLocation;
+    const oPrefillSettings = {
+      iLocationId: this.iLocationId,
+      bArticleGroup: true,
+      bProductNumber: true,
+      bLabelDescription: true
     }
+    let oMergedSettings: any = {};
+    if (!this.settings?.aBagNumbers?.length) {
+      oMergedSettings = { ...oBagNumberSettings };
+    } else {
+      oMergedSettings = { ...(this.settings.aBagNumbers.find((el: any) => el.iLocationId === this.iLocationId) || oBagNumberSettings) };
+    }
+
+    if (!this.settings?.aCashRegisterPrefill?.length) {
+      oMergedSettings = { ...oMergedSettings, ...oPrefillSettings };
+      this.settings.aCashRegisterPrefill = [{ ...oPrefillSettings }];
+    } else {
+      oMergedSettings = { ...oMergedSettings, ...(this.settings.aCashRegisterPrefill.find((el: any) => el.iLocationId === this.iLocationId) || oPrefillSettings) };
+    }
+    console.log(this.settings);
+
+    this.settings.currentLocation = oMergedSettings;
     // console.log(this.settings);
     return this.settings;
   }
@@ -795,8 +817,9 @@ export class TillService {
       aBagNumbers: this.settings.aBagNumbers
     };
     
-    const _result:any = await this.apiService.putNew('cashregistry', `/api/v1/settings/update/${this.iBusinessId}`, body).toPromise();
-    // console.log(693, _result);
+    this.apiService.putNew('cashregistry', `/api/v1/settings/update/${this.iBusinessId}`, body).subscribe((result:any)=> {
+      // console.log('settings result', result);
+    });
   }
 
   updateVariables() {

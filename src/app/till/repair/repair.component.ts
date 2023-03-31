@@ -77,8 +77,9 @@ export class RepairComponent implements OnInit {
     this.getBusinessBrands();
     this.checkArticleGroups();
     this.getProperties();
-    console.log(this.item);
-    console.log(this.item?.price);
+    // console.log(this.item);
+    // console.log(this.item?.price);
+    // console.log(this.item?.nPurchasePrice);
     // this.listSuppliers();
     // this.getBusinessBrands();
     if (this.item.new) {
@@ -140,7 +141,8 @@ export class RepairComponent implements OnInit {
   }
 
   changeInMargin() {
-    this.item.nPurchasePrice = this.item.price / (this.item.nMargin || 1);
+    const nPrice:number = +(String(this.item.price).replace(',','.'));
+    this.item.nPurchasePrice = nPrice / (this.item.nMargin || 1);
   }
 
   changeInPurchasePrice() {
