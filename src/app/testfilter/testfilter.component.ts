@@ -144,9 +144,9 @@ export class TestFilterComponent implements OnInit, OnDestroy {
       const queryParams:any = {
         //type: ['repair','order','gold-purchase','reservation','giftcard','gold-sell','refund'],
         from_create_date: "2023-01-03",
-        to_create_date: "2023-03-29",
+        to_create_date: "2023-03-31",
         from_end_date: "2023-01-03",
-        to_end_date: "2023-03-29",
+        to_end_date: "2023-03-31",
         assignee:"",
         // repair_status: ['new','processing','inspection','completed','delivered','cancelled','refund','refundInCashRegister',
         // 'offer','offer-is-ok','offer-is-not-ok','to-repair','part-are-order','shipped-to-repair']
