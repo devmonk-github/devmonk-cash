@@ -181,7 +181,7 @@ export class TillService {
     // console.log('length 115: ', transactionItems?.length);
     body.transactionItems = transactionItems.map((i: any) => {
       // console.log(i)
-      console.log('i.sSerialNumber: ', i.sSerialNumber);
+      // console.log('i.sSerialNumber: ', i.sSerialNumber);
       const bRefund =
         i.oType?.bRefund /* Indication from the User */
         || i.nDiscount.quantity < 0 /* Minus Discount (e.g. -10 discount) [TODO: Remove the quantity as its not exist at all] */
@@ -198,7 +198,7 @@ export class TillService {
       // console.log('getTotal: ', this.getTotals('price', transactionItems));//0.03
       // console.log('Last condition: ', i.paymentAmount, i.amountToBePaid);
       // console.log('bPrepayment: ', bPrepayment, bRefund && i.oType?.bPrepayment, (this.getUsedPayMethods(true, payMethods) - this.getTotals('price', transactionItems) < 0), (i.paymentAmount !== i.amountToBePaid));
-      i.price = +(parseFloat(i.price).toFixed(2));
+      i.price = +(Number(String(i.price).replace(',','.')).toFixed(2));
       i.nPurchasePrice = +(i.nPurchasePrice?.toFixed(2) || 0);
       const oItem = new TransactionItem();
       oItem.sProductName = i.name;
