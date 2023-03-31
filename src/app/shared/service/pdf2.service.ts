@@ -143,10 +143,10 @@ export class PdfService {
     } else if (printActionSettings?.length) {
       printActionSettings = printActionSettings.filter((s: any) => s.eType === eType && s.eSituation === eSituation);
     }
-    printSettings = printSettings.filter((s: any) => s.sType === eType && s.iWorkstationId === this.iWorkstationId);
+    // printSettings = printSettings.filter((s: any) => s.sType === eType && s.iWorkstationId === this.iWorkstationId);
     if (sAction && sAction === 'print') {
       // console.log('if sAction= print')
-      printSettings = printSettings.filter((s: any) => s.sMethod === 'pdf')[0];
+      // printSettings = printSettings.filter((s: any) => s.sMethod === 'pdf')[0];
       // console.log('if filter', printSettings)
       this.handlePrint(pdfObject, printSettings, pdfTitle, sApiKey);
     } else if (sAction && sAction === 'download') {

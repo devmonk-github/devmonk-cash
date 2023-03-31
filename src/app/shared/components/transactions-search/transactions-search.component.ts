@@ -117,9 +117,9 @@ export class TransactionsSearchComponent implements OnInit, AfterViewInit {
     this.dialogService.openModal(TransactionItemsDetailsComponent, { cssClass: "modal-xl", context: { transaction, itemType } }).instance.close.subscribe(result => {
       // console.log('transaction search response of transaction item details component: ', result);
       if(result?.transaction) {
-        // console.log('now sending to tillservice processTransactionSearchResult')
+        // console.log('now sending to tillservice processTransactionSearchResult: ', result);
         const temp = this.tillService.processTransactionSearchResult(result);
-        // console.log('response of tillservice processTransactionSearchResult closing search dialog', JSON.parse(JSON.stringify(temp)))
+        console.log('response of tillservice processTransactionSearchResult closing search dialog', JSON.parse(JSON.stringify(temp)))
         this.close(temp);
       }
     });

@@ -565,7 +565,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     // console.log('open transaction search dialog')
     this.dialogService.openModal(TransactionsSearchComponent, { cssClass: 'modal-xl', context: { customer: this.customer } })
       .instance.close.subscribe(async (data) => {
-        // console.log('response of transaction search component', data)
+        console.log('response of transaction search component', data)
         if (data?.transaction) {
           this.bIsTransactionLoading = true;
           // / Finding BusinessProduct and their location and stock. Need to show in the dropdown of location choosing /
@@ -817,7 +817,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
           this.paymentDistributeService.distributeAmount(this.transactionItems, this.availableAmount, this.nGiftcardAmount, this.redeemedLoyaltyPoints);
           this.transactionItems = [...this.transactionItems.filter((item: any) => item.type !== 'empty-line')]
           const body = this.tillService.createTransactionBody(this.transactionItems, payMethods, this.discountArticleGroup, this.redeemedLoyaltyPoints, this.customer);
-          console.log('body: ', body);
+          // console.log('body: ', body);
           // return;
           if (body.transactionItems.filter((item: any) => item.oType.eKind === 'repair')[0]?.iActivityItemId) {
             this.bHasIActivityItemId = true
@@ -854,7 +854,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
           // console.log('body: ', body);
           this.apiService.postNew('cashregistry', '/api/v1/till/transaction', body).subscribe(async (data: any) => {
 
-            // this.toastrService.show({ type: 'success', text: 'Transaction created.' });
             this.saveInProgress = false;
             const { transaction, aTransactionItems, activityItems, activity } = data;
             transaction.aTransactionItems = aTransactionItems;
@@ -881,7 +880,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
             if (bOpenCashDrawer && this.tillService?.settings?.bOpenCashDrawer) this.openDrawer();
 
             this.handleReceiptPrinting(oDialogComponent);
-
 
             setTimeout(() => {
               this.saveInProgress = false;
@@ -915,23 +913,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     this.transaction = await this.tillService.processTransactionForPdfReceipt(this.transaction);
 
     let oDataSource = JSON.parse(JSON.stringify(this.transaction));
-    // let nTotalOriginalAmount = 0;
-    // oDataSource.aTransactionItems.forEach((item: any) => {
-    //   nTotalOriginalAmount += item.nPriceIncVatAfterDiscount;
-    //   let description = (item?.totalPaymentAmount != item?.nPriceIncVatAfterDiscount) ? `${this.translateService.instant('ORIGINAL_AMOUNT_INC_DISC')}: ${item.nPriceIncVatAfterDiscount}\n` : '';
-    //   if (item?.related?.length) {
-    //     description += `${this.translateService.instant('ALREADY_PAID')}: \n${item.sTransactionNumber} | ${item.nRevenueAmount} (${this.translateService.instant('THIS_RECEIPT')})\n`;
-
-    //     item.related.forEach((related: any) => {
-    //       description += `${related.sTransactionNumber} | ${related.nRevenueAmount}\n`;
-    //     });
-    //   }
-
-    //   item.description = description;
-    // });
-    // oDataSource.bHasPrePayments = true;
+    
     oDataSource.sActivityNumber = oDataSource.activity.sNumber;
-    // oDataSource.nTotalOriginalAmount = nTotalOriginalAmount;
 
     const aUniqueItemTypes = [];
 
@@ -949,12 +932,9 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
     aUniqueItemTypes.push(...['repair', 'repair_alternative', 'giftcard']);
 
-    // oDataSource.businessDetails = this.businessDetails;
-    // oDataSource.currentLocation = this.businessDetails.currentLocation;
 
     const [_template, _oLogoData]: any = await Promise.all([
       this.getTemplate(aUniqueItemTypes),
-      // if no logo is there, use a default logo. or show a message: please upload your shop logo
       this.getBase64FromUrl(oDataSource?.businessDetails?.sLogoLight),
     ]);
 
@@ -963,16 +943,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     if (oDataSource.oCustomer && oDataSource.oCustomer.bCounter === true) {
       oDataSource.oCustomer = {};
     } 
-    // else {
-    //   oDataSource.oCustomer = {
-    //     sFirstName: oDataSource.oCustomer.sFirstName,
-    //     sLastName: oDataSource.oCustomer.sLastName,
-    //     sEmail: oDataSource.oCustomer.sEmail,
-    //     sMobile: oDataSource.oCustomer.oPhone?.sCountryCode + oDataSource.oCustomer.oPhone?.sMobile,
-    //     sLandLine: oDataSource.oCustomer.oPhone?.sLandLine,
-    //     oInvoiceAddress: oDataSource.oCustomer?.oInvoiceAddress
-    //   };
-    // }
+    
     const aTemplates = _template.data;
 
     oDialogComponent.contextChanged.next({
@@ -1215,7 +1186,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // Add selected product into purchase order
   async onSelectProduct(product: any, isFrom: string = '', isFor: string = '', source?: any) {
-    console.log('onSelectProduct', product);
+    // console.log('onSelectProduct', product);
     let nPriceIncludesVat = 0, nVatRate = 0;
     if (isFrom === 'quick-button') {
       source.loading = true;
@@ -1251,9 +1222,14 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
         }
       }
     }
-    let name = (product?.oArticleGroup?.oName) ? ((product.oArticleGroup?.oName[this.selectedLanguage]) ? product.oArticleGroup?.oName[this.selectedLanguage] : product.oArticleGroup.oName['en']) : '';
+    let name = '';
+    if (this.tillService.settings.currentLocation.bArticleGroup)
+      name += (product?.oArticleGroup?.oName) ? ((product.oArticleGroup?.oName[this.selectedLanguage]) ? product.oArticleGroup?.oName[this.selectedLanguage] : product.oArticleGroup.oName['en']) : '';
+    
     name += ' ' + (product?.sLabelDescription || '');
-    name += ' ' + (product?.sProductNumber || '');
+
+    if (this.tillService.settings.currentLocation.bProductNumber) name += ' ' + (product?.sProductNumber || '');
+    
     this.transactionItems.push({
       name: name,
       eTransactionItemType: 'regular',

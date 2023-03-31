@@ -475,6 +475,20 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     }, (error) => {
     });
   }
+
+  convertFirstLetterUpper(event: any, fieldName: any) {
+    const aField: any = fieldName.split('.');
+    console.log(aField?.length)
+    if (aField?.length > 1) {
+      if (this.customer[aField[0]][aField[1]]?.length == 1) {
+        this.customer[aField[0]][aField[1]] = this.customer[aField[0]][aField[1]].toUpperCase();
+      }
+    } else {
+      if (this.customer[fieldName]?.length == 1) {
+        this.customer[fieldName] = this.customer[fieldName].toUpperCase();
+      }
+    }
+  }
   convertFirstNameUpper(event:any){
     if(this.customer.sFirstName.length ==1){
       this.customer.sFirstName = this.customer.sFirstName.toUpperCase();

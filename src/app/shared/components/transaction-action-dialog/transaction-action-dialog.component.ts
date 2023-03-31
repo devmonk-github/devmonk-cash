@@ -1,14 +1,11 @@
-import { Component, Input, OnInit, ViewContainerRef, ViewChildren, QueryList, ElementRef, HostListener } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { faTimes, faSearch, faSpinner, faRefresh, faCheck } from "@fortawesome/free-solid-svg-icons";
-import * as _ from 'lodash';
-import { DialogComponent, DialogService } from "../../service/dialog";
-import { TerminalService } from '../../service/terminal.service';
-import { ToastService } from '../toast';
-import { ReceiptService } from '../../service/receipt.service';
+import { Component, OnInit, ViewContainerRef } from '@angular/core';
+import { faCheck, faRefresh, faSearch, faSpinner, faTimes } from "@fortawesome/free-solid-svg-icons";
 import * as JsBarcode from 'jsbarcode';
-import { ApiService } from '../../service/api.service';
 import { TransactionDetailsComponent } from 'src/app/transactions/components/transaction-details/transaction-details.component';
+import { ApiService } from '../../service/api.service';
+import { DialogComponent, DialogService } from "../../service/dialog";
+import { ReceiptService } from '../../service/receipt.service';
+import { ToastService } from '../toast';
 
 @Component({
   selector: 'app-transaction-action',
@@ -54,7 +51,8 @@ export class TransactionActionDialogComponent implements OnInit {
   bRepairAlternativeDisabled : boolean = false;
   eType = 'cash-register-revenue';
   bReceiveNewsletter: boolean = false;
-  iBusinessId:any;
+  iBusinessId: any = localStorage.getItem('currentBusiness');
+  iWorkstationId: any = localStorage.getItem('currentWorkstation');
 
   constructor(
     private viewContainer: ViewContainerRef,
@@ -68,7 +66,6 @@ export class TransactionActionDialogComponent implements OnInit {
   }
 
   ngOnInit(): void {  
-    this.iBusinessId = localStorage.getItem('currentBusiness');
     this.dialogRef.contextChanged.subscribe((context: any) => {
       this.transaction = context.transaction;
       this.transactionDetail = context.transactionDetail;
@@ -85,7 +82,6 @@ export class TransactionActionDialogComponent implements OnInit {
 
       this.bRegularCondition = this.transaction.total > 0.02 || this.transaction.total < -0.02;
       this.bOrderCondition = this.nOrderCount === 1 && this.nRepairCount === 1 || this.nRepairCount > 1 || this.nOrderCount >= 1;
-
 
       if (this.bRegularCondition) this.aUniqueTypes.push('regular');
       if (this.bOrderCondition) this.aUniqueTypes.push('order');
@@ -212,8 +208,7 @@ export class TransactionActionDialogComponent implements OnInit {
         }
       )
     } else {
-
-      const oSettings = this.printSettings.find((s: any) => s.sType === type && s.sMethod === 'pdf')
+      const oSettings = this.printSettings.find((s: any) => s.sType === type && s.sMethod === 'pdf' && s.iWorkstationId === this.iWorkstationId)
       if (!oSettings && action === 'PRINT_PDF') {
         this.toastService.show({ type: 'danger', text: 'Check your business -> printer settings' });
         this.bRegularDisabled = false;
