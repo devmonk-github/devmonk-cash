@@ -504,6 +504,7 @@ export class TillService {
             bGiftcardTaxHandling: item.bGiftcardTaxHandling,
             sArticleNumber: item?.sArticleNumber,
             iLocationId: item?.iLocationId,
+            sBagNumber: item?.sBagNumber
             // oCustomer: transactionItem?.oCustomer
           });
         }

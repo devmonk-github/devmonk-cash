@@ -565,7 +565,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     // console.log('open transaction search dialog')
     this.dialogService.openModal(TransactionsSearchComponent, { cssClass: 'modal-xl', context: { customer: this.customer } })
       .instance.close.subscribe(async (data) => {
-        // console.log('response of transaction search component', data)
+        console.log('response of transaction search component', data)
         if (data?.transaction) {
           this.bIsTransactionLoading = true;
           // / Finding BusinessProduct and their location and stock. Need to show in the dropdown of location choosing /
