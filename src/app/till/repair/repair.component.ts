@@ -191,7 +191,7 @@ export class RepairComponent implements OnInit {
 
 
   numericOnly(event:any): boolean { 
-    let patt = /[0-9\,\ ]/; 
+    let patt = /[0-9\,\.\ ]/;
     let result = patt.test(event.key);
     var itemprice = this.item?.price.toString();
     itemprice = itemprice.includes(",");
