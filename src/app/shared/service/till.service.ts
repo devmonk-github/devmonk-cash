@@ -794,8 +794,9 @@ export class TillService {
       aBagNumbers: this.settings.aBagNumbers
     };
     
-    const _result:any = await this.apiService.putNew('cashregistry', `/api/v1/settings/update/${this.iBusinessId}`, body).toPromise();
-    // console.log(693, _result);
+    this.apiService.putNew('cashregistry', `/api/v1/settings/update/${this.iBusinessId}`, body).subscribe((result:any)=> {
+      // console.log('settings result', result);
+    });
   }
 
   updateVariables() {
