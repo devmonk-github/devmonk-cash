@@ -159,7 +159,6 @@ export class TransactionActionDialogComponent implements OnInit {
       oDataSource.oCustomer = this.transaction.oCustomer
       oDataSource.businessDetails = this.businessDetails;
       oDataSource.sBusinessLogoUrl = this.transaction.sBusinessLogoUrl
-      oDataSource.sActivityBarcodeURI = this.transaction.sActivityBarcodeURI
       oDataSource.sAdvisedEmpFirstName = this.transaction?.sAdvisedEmpFirstName || 'a';
 
       let nTotalPaidAmount = 0;
