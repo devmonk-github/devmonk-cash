@@ -948,7 +948,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
     oDialogComponent.contextChanged.next({
       transaction: oDataSource,
-      transactionDetail: this.transaction,
       printActionSettings: this.printActionSettings,
       printSettings: this.printSettings,
       aUniqueItemTypes: aUniqueItemTypes,
@@ -966,8 +965,28 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     if (bOrderCondition) {
       // print order receipt
       const orderTemplate = aTemplates.filter((template: any) => template.eType === 'order')[0];
-      oDataSource.sActivityNumber = oDataSource.activity.sNumber;
-      this.sendForReceipt(oDataSource, orderTemplate, oDataSource.activity.sNumber);
+      // oDataSource.sActivityNumber = oDataSource.activity.sNumber;
+      const oOrderReceiptDataSource = {
+        ...this.activity,
+        activityitems: this.activityItems,
+        aTransactionItems: this.transaction.aTransactionItems,
+        
+      };
+
+      oOrderReceiptDataSource.oCustomer = oDataSource.oCustomer
+      oOrderReceiptDataSource.businessDetails = this.businessDetails;
+      oOrderReceiptDataSource.sBusinessLogoUrl = oDataSource.sBusinessLogoUrl;
+      oOrderReceiptDataSource.sAdvisedEmpFirstName = oDataSource?.sAdvisedEmpFirstName || 'a';
+
+      let nTotalPaidAmount = 0;
+      oOrderReceiptDataSource.activityitems.forEach((item: any) => {
+        item.sActivityItemNumber = item.sNumber;
+        item.sOrderDescription = item.sProductName + '\n' + item.sDescription;
+        nTotalPaidAmount += item.nPaidAmount;
+      });
+      oOrderReceiptDataSource.nTotalPaidAmount = nTotalPaidAmount;
+      oOrderReceiptDataSource.sActivityNumber = this.transaction.activity.sNumber;
+      this.sendForReceipt(oOrderReceiptDataSource, orderTemplate, oOrderReceiptDataSource.sNumber,'order');
     }
     if (bRegularCondition) {
       //print proof of payments receipt
@@ -982,11 +1001,13 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       }
       //use two column layout
       const template = aTemplates.filter((template: any) => template.eType === 'repair')[0];
-      oDataSource = this.activityItems.filter((item: any) => item.oType.eKind === 'repair')[0];
-      oDataSource.sAdvisedEmpFirstName = this.employee?.sFirstName || 'a';
-      const aTemp = oDataSource.sNumber.split("-");
-      oDataSource.sPartRepairNumber = aTemp[aTemp.length - 1];
-      this.sendForReceipt(oDataSource, template, oDataSource.sNumber);
+      const oRepairDataSource = this.activityItems.filter((item: any) => item.oType.eKind === 'repair')[0];
+      oRepairDataSource.oCustomer = this.transaction.oCustomer
+      oRepairDataSource.businessDetails = this.businessDetails;
+      oRepairDataSource.sAdvisedEmpFirstName = this.employee?.sFirstName || 'a';
+      const aTemp = oRepairDataSource.sNumber.split("-");
+      oRepairDataSource.sPartRepairNumber = aTemp[aTemp.length - 1];
+      this.sendForReceipt(oRepairDataSource, template, oRepairDataSource.sNumber, 'repair');
 
     }
 
@@ -998,7 +1019,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       oDataSource.forEach((data: any) => {
         data.sBusinessLogoUrl = _oLogoData.data;
         data.businessDetails = this.businessDetails;
-        this.sendForReceipt(data, template, data.sNumber);
+        this.sendForReceipt(data, template, data.sNumber, 'repair_alternative');
       })
     }
   }
@@ -1036,19 +1057,16 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   getPrintSettings() {
-    // console.log('gitprintsettings called')
     let oBody = {
       iLocationId: this.iLocationId,
-      // oFilterBy: {}
+      iWorkstationId: this.iWorkstationId
     }
-    // if (action) {
-    //   oBody.oFilterBy = { sMethod: 'actions' };
-    // }
+    
     this.apiService.postNew('cashregistry', `/api/v1/print-settings/list/${this.iBusinessId}`, oBody).subscribe((result: any) => {
       if (result?.data?.length && result?.data[0]?.result?.length) {
         this.printSettings = [];
         result?.data[0]?.result.forEach((settings: any) => {
-          if (settings?.sMethod === 'actions') {
+          if (settings?.sMethod === 'actions' && settings.iWorkstationId === this.iWorkstationId) {
             this.printActionSettings = settings?.aActions || [];
           } else {
             this.printSettings.push(settings);

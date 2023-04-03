@@ -94,21 +94,23 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   }
 
   async ngOnInit() {
+    // console.log(this.transaction, this.from, this.printSettings);
     let translationKey = ['SUCCESSFULLY_UPDATED', 'NO_DATE_SELECTED'];
     this.translateService.get(translationKey).subscribe((res: any) => {
       this.translation = res;
     })
     this.oCurrentCustomer = JSON.parse(JSON.stringify(this.transaction?.oCustomer));
-    this.transaction.businessDetails = this.businessDetails;
-    this.transaction.currentLocation = this.businessDetails.currentLocation;
+    if (this.from && this.from === 'transactions-action') {
+      this.loading = false;
+    } else {
+      this.transaction.businessDetails = this.businessDetails;
+      this.transaction.currentLocation = this.businessDetails.currentLocation;
+      this.getPrintSetting();
+      this.transaction = await this.tillService.processTransactionForPdfReceipt(this.transaction);
+      this.loading = false;
+    }
     this.fetchActivityItem();
     this.getPaymentMethods();
-    
-    this.transaction = await this.tillService.processTransactionForPdfReceipt(this.transaction);
-    // console.log(this.transaction)
-    this.loading = false;
-
-    this.getPrintSetting()
     this.mapEmployee();
     this.getSystemCustomer(this.transaction?.iCustomerId);
   }
@@ -149,6 +151,9 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   getPrintSetting() {
     const oBody = {
       iLocationId: this.iLocationId,
+      oFilterBy: {
+        iWorkstationId: this.iWorkstationId
+      }
     }
     this.apiService.postNew('cashregistry', `/api/v1/print-settings/list/${this.iBusinessId}`, oBody).subscribe((result:any) => {
       if (result?.data?.length && result?.data[0]?.result?.length) {
@@ -188,7 +193,7 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
       }
     } catch (e) {}
 
-    console.log(oDataSource)
+    // console.log(oDataSource)
 
     if(oDataSource?.oCustomer?.bCounter === true) {
       oDataSource.oCustomer = {};
@@ -197,13 +202,12 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
     oDataSource?.aPayments?.forEach((payment: any) => {
       payment.dCreatedDate = moment(payment.dCreatedDate).format('DD-MM-yyyy hh:mm');
     })
-    
+    const oSettings = this.printSettings.find((s: any) => s.sType === 'regular' && s.sMethod === 'pdf' && s.iWorkstationId === this.iWorkstationId)
     this.receiptService.exportToPdf({
       oDataSource: oDataSource,
       pdfTitle: oDataSource.sNumber,
       templateData: template.data,
-      printSettings: this.printSettings,
-      printActionSettings: this.printActionSettings,
+      printSettings: oSettings,      
       eSituation: 'is_created',
       sAction: (print) ? 'print': 'download',
       sApiKey: this.businessDetails.oPrintNode.sApiKey,
