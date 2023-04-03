@@ -38,6 +38,7 @@ export class TerminalDialogComponent implements OnInit {
   nTotalTransactionAmount=0;
   totalAmount = 0;
   changeAmount = 0;
+  isProceed:Boolean = false;
   constructor(
     private viewContainer: ViewContainerRef,
     private terminalService: TerminalService,
@@ -56,7 +57,14 @@ export class TerminalDialogComponent implements OnInit {
       this.changeAmount = 0;
     }
     this.totalAmount = _.sumBy(this.dialogRef.context.payments, 'amount');
-    this.cardPayments.map((o: any) => { o.status = 'PROCEED'; o.remark = 'NOT_PAID'; o.sCardName = ''; o.oPayNL = { sTransactionId: '', sTransactionStatus: '', sTicketHash: '' }; return o; });
+    this.cardPayments.map((o: any) => {
+      o.status = 'PROCEED';
+      o.remark = 'NOT_PAID';
+      o.sCardName = '';
+      o.oPayNL = { sTransactionId: '', sTransactionStatus: '', sTicketHash: '' };
+      this.isProceed = true;
+      return o;
+    });
     // if (this.cardPayments.length > 0) {
     //   this.startTerminal(this.cardPayments[this.paymentSequenceNo]);
     //   this.paymentSequenceNo += this.paymentSequenceNo + 1;
