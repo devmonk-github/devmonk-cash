@@ -66,7 +66,6 @@ export class TransactionItemsDetailsComponent implements OnInit {
     private viewContainerRef: ViewContainerRef,
     private apiService: ApiService,
     private route: ActivatedRoute,
-    private router: Router,
     private toastrService: ToastService,
     private transaltionService:TranslateService
     ) {

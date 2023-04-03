@@ -129,7 +129,7 @@ export class TillService {
   }
 
   createTransactionBody(transactionItems: any, payMethods: any, discountArticleGroup: any, redeemedLoyaltyPoints: number, customer: any): any {
-    console.log('createTransactionBody transactionItems: ', transactionItems);
+    // console.log('createTransactionBody transactionItems: ', transactionItems);
     this.updateVariables();
 
     const iLocationId = transactionItems?.length && transactionItems[0].iLocationId ? transactionItems[0].iLocationId : this.iLocationId; /* If we changed the location from the drop-down then it would change */
@@ -277,6 +277,8 @@ export class TillService {
       if (i.type === 'giftcard') { //|| (bPrepayment === false && (i.type === 'repair' || i.type === 'order'))
         oItem.eActivityItemStatus = 'delivered';
         oItem.nGiftcardRemainingAmount = oItem.nPriceIncVat;
+      } else if (i.type === 'repair' && i.amountToBePaid === 0 && i.paymentAmount === 0 && !i?.isExclude) {
+          oItem.eActivityItemStatus = 'delivered';
       } else {
         oItem.eActivityItemStatus = i.eActivityItemStatus;
       }
@@ -285,8 +287,7 @@ export class TillService {
       if (i?.sSerialNumber) oItem.sSerialNumber = i.sSerialNumber;
       return oItem;
     });
-    // console.log('iPayment 201: ', JSON.parse(JSON.stringify(body?.transactionItems)));
-    const originalTItemsLength = length = body.transactionItems.filter((i: any) => i.oType.eKind !== 'loyalty-points').length;
+    // const originalTItemsLength = length = body.transactionItems.filter((i: any) => i.oType.eKind !== 'loyalty-points').length;
     body.transactionItems.map((i: any) => {
       let discountRecords: any = localStorage.getItem('discountRecords');
       if (discountRecords) {
@@ -802,7 +803,7 @@ export class TillService {
     } else {
       oMergedSettings = { ...oMergedSettings, ...(this.settings.aCashRegisterPrefill.find((el: any) => el.iLocationId === this.iLocationId) || oPrefillSettings) };
     }
-    console.log(this.settings);
+    // console.log(this.settings);
 
     this.settings.currentLocation = oMergedSettings;
     // console.log(this.settings);
