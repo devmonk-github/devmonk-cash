@@ -63,6 +63,17 @@ export class ProductComponent implements OnInit{
       });
   }
 
+  numericOnly(event:any): boolean { 
+    let patt = /[0-9\,\.\ ]/;
+    let result = patt.test(event.key);
+    var itemprice = this.item?.price.toString();
+    itemprice = itemprice.includes(",");
+    if(itemprice==true && event.keyCode==44){
+      result = false;
+    }
+    return result;
+  }
+
   deleteItem(): void {
     this.itemChanged.emit({type: 'delete'})
   }
