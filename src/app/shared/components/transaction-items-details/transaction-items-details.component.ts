@@ -161,10 +161,11 @@ export class TransactionItemsDetailsComponent implements OnInit {
         // element.nRedeemedLoyaltyPoints = nRedeemedLoyaltyPoints;
         element.nPaymentAmount += _.sumBy(elementDiscount, 'nPaymentAmount');
         element.nPaidAmount += _.sumBy(elementDiscount, 'nPaymentAmount');
-        element.nPriceIncVat += (nDiscountnPaymentAmount / element.nQuantity)
+        element.nPriceIncVat += (nDiscountnPaymentAmount / element.nQuantity);
         
-        element.nPaidAmount = parseFloat(element.nPaidAmount.toFixed(2));
-        element.nPaymentAmount = parseFloat(element.nPaymentAmount.toFixed(2));
+        element.nPaidAmount = +(element.nPaidAmount.toFixed(2));
+        element.nPaymentAmount = +(element.nPaymentAmount.toFixed(2));
+        element.nPriceIncVat = +(element.nPriceIncVat.toFixed(2));
       });
     
       this.transactionItems = this.transactionItems.map(v => ({ ...v, isSelected: false }));

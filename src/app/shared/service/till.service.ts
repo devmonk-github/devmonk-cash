@@ -293,7 +293,7 @@ export class TillService {
       if (discountRecords) {
         discountRecords = JSON.parse(discountRecords);
       }
-      let _nDiscount = i?.bDiscountOnPercentage ? (i.nPriceIncVat * (i.nDiscount / 100)) : i.nDiscount;
+      let _nDiscount = +((i?.bDiscountOnPercentage ? (i.nPriceIncVat * (i.nDiscount / 100)) : i.nDiscount).toFixed(2));
       if (i.oType.bRefund && _nDiscount !== 0) {
         i.nPaymentAmount -= _nDiscount * i.nQuantity;
         i.nRevenueAmount = i.nPaymentAmount;
@@ -459,11 +459,16 @@ export class TillService {
             paymentAmount = 0;
             // console.log(404, 'paymentAmount', paymentAmount)
             item.oType.bRefund = true;
+            item.bShowGiftcardDiscountField = false;
+            item.bShowLoyaltyPointsDiscountField = false;
           } else if (tType === 'revert') {
             paymentAmount = item.nPaidAmount;
             // console.log(408, 'paymentAmount', paymentAmount)
             item.oType.bRefund = false;
-          };
+          } else {
+            item.bShowGiftcardDiscountField = item.nGiftcardDiscount > 0;
+            item.bShowLoyaltyPointsDiscountField = item.nRedeemedLoyaltyPoints > 0;
+          }
           transactionItems.push({
             name: item.sProductName || item.sProductNumber,
             iActivityItemId: item.iActivityItemId,
@@ -505,8 +510,9 @@ export class TillService {
             bGiftcardTaxHandling: item.bGiftcardTaxHandling,
             sArticleNumber: item?.sArticleNumber,
             iLocationId: item?.iLocationId,
-            sBagNumber: item?.sBagNumber
-            // oCustomer: transactionItem?.oCustomer
+            sBagNumber: item?.sBagNumber,
+            bShowGiftcardDiscountField: item?.bShowGiftcardDiscountField,
+            bShowLoyaltyPointsDiscountField:  item?.bShowLoyaltyPointsDiscountField,
           });
         }
       });
@@ -594,7 +600,7 @@ export class TillService {
       // console.log(545, 'bDiscountOnPercentage', item.bDiscountOnPercentage)
       if (item.bDiscountOnPercentage) {
         disc = this.getPercentOf(disc, item.nPriceIncVat)
-        item.nDiscountToShow = disc;//.toFixed(2);
+        item.nDiscountToShow = +(disc.toFixed(2));
       } else { item.nDiscountToShow = disc }
       // console.log('item.nDiscountToShow', item.nDiscountToShow, 'item.nPriceIncVat', 'nPriceIncVat', item.nPriceIncVat, 'nQuantity', item.nQuantity, 'nRedeemedLoyaltyPoints', item.nRedeemedLoyaltyPoints, 'nGiftcardDiscount',item.nGiftcardDiscount);
       
@@ -687,8 +693,8 @@ export class TillService {
               // console.log(613, relatedItem.totalPaymentAmount)
             }
           }
+          relatedItem.totalPaymentAmount = +(relatedItem.totalPaymentAmount.toFixed(2));
           if (relatedItem.totalPaymentAmount > 0) {
-            console.log(684)
             description += `${relatedItem.sTransactionNumber} | ${relatedItem.totalPaymentAmount}\n`;
           }
         })
