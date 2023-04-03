@@ -24,7 +24,7 @@
                     <td>{{paymethod.amount | currency: '€'}}</td>
                     <td>
                         <button class="btn btn-primary w-80"
-                            (click)="restartPaymentTimer = 45; startTerminal(paymethod, i)"
+                            (click)="restartPaymentTimer = 45; isProceed = false ; startTerminal(paymethod, i)"
                             [disabled]="(restartPaymentTimer > 0 && 46 > restartPaymentTimer) || paymethod.status === 'SUCCESS'">
                             <span *ngIf="paymethod.status !== 'PROGRESS'">
                                 {{ 'START' | translate}}
@@ -87,7 +87,7 @@
                 [disabled]="restartPaymentTimer > 0 && 46 > restartPaymentTimer" (click)="close(false)">{{"CANCEL" |
                 translate}}</button>
             <button type="button" class="btn btn-primary" (click)="continue()"
-                [disabled]="restartPaymentTimer > 0 && 46 > restartPaymentTimer">{{"PROCEED" | translate}}</button>
+                [disabled]="(restartPaymentTimer > 0 && 46 > restartPaymentTimer) || isProceed ">{{"PROCEED" | translate}}</button>
         </div>
     </div>
 </div>
