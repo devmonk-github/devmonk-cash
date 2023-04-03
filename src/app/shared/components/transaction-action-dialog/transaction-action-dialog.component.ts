@@ -242,16 +242,17 @@ export class TransactionActionDialogComponent implements OnInit {
     return canvas.toDataURL("image/png");
   }
   
-  openTransactionDetail(transaction: any) {
+  openTransactionDetail() {
     this.dialogService.openModal(TransactionDetailsComponent, 
       { 
         cssClass: "w-fullscreen mt--5", 
         context: { 
-          transaction: transaction, 
+          transaction: this.transaction, 
           businessDetails: this.businessDetails, 
           eType: this.eType, 
           from: 'transactions-action',
-          employeesList: this.employees
+          employeesList: this.employees,
+          printSettings: this.printSettings
         }, 
         hasBackdrop: true, 
         closeOnBackdropClick: false, 
