@@ -467,7 +467,7 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   }];
 
   for(const[key] of Object.entries(Customer)){
-      if(!(_.isEqual(Customer[key], systemCustomer[key]))){
+      if(!(_.isEqual(systemCustomer[key], currentCustomer[key]))){
        this.showSystemCustomer= true
       }
    }
