@@ -11,6 +11,7 @@ import { ChildChild, DisplayMethod, eDisplayMethodKeysEnum, View, ViewMenuChild 
 import { TaxService } from '../shared/service/tax.service';
 import { ConfirmationDialogComponent } from '../shared/components/confirmation-dialog/confirmation-dialog.component';
 import { DialogService } from '../shared/service/dialog';
+import { TillService } from '../shared/service/till.service';
 
 @Component({
   selector: 'app-transaction-audit',
@@ -21,10 +22,11 @@ import { DialogService } from '../shared/service/dialog';
 
 export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestroy {
 
-  iBusinessId: any = '';
+  iBusinessId: any = localStorage.getItem('currentBusiness');
+  iLocationId: any = localStorage.getItem('currentLocation');
+  iWorkstationId:any = localStorage.getItem('currentWorkstation');
   iEmployeeId: any = '';
-  sUserType: any = '';
-  iLocationId: any = '';
+  sUserType: any = localStorage.getItem('type');
   iStatisticId: any;
   aLocation: any = [];
   aStatistic: any = [];
@@ -47,9 +49,6 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
   closingDayState: boolean = false;
   closeButtonClicked: boolean = false;
   bShowDownload: boolean = false;
-
-  closeSubscription!: Subscription;
-  dayClosureListSubscription !: Subscription;
 
   statisticsData$: any;
   businessDetails: any = {};
@@ -93,103 +92,15 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
   oStatisticsData: any = {};
   oStatisticsDocument: any;
   aStatisticsDocuments: any;
-
-  listBusinessSubscription!: Subscription;
-  getStatisticSubscription!: Subscription;
-  statisticAuditSubscription!: Subscription;
-  greenRecordsSubscription!: Subscription;
-  propertyListSubscription!: Subscription;
-  workstationListSubscription!: Subscription;
-  employeeListSubscription!: Subscription;
-  transactionItemListSubscription!: Subscription;
   sCurrentLocation: any;
   sCurrentWorkstation: any;
   pdfGenerationInProgress: boolean = false;
   bShowProperty: boolean = false;
   bDisableCountings: boolean = false;
 
-  groupingHelper(item: any) {
-    return item.child[0];
-  }
-
-  aOptionMenu: View[] = [];
-  public sOptionMenu: {
-    parent: View,
-    child1: ViewMenuChild,
-    child2: ChildChild,
-  } = {} as {
-    parent: View,
-    child1: ViewMenuChild,
-    child2: ChildChild,
-  };
-  public sSelectedOptionMenu = '';
-
-  aVatRateMethod: any = [
-    'oShopPurchase',
-    'oWebShop',
-    'oDeliverySupplier',
-    'oDeliveryRetailer',
-    'oSalesOrderSupplier',
-  ];
-
-  aDisplayMethod: DisplayMethod[] = [
-    {
-      sKey: eDisplayMethodKeysEnum.revenuePerBusinessPartner,
-      sValue: 'Supplier And Article-Group And Dynamic Property',
-    },
-    {
-      // sKey: 'revenuePerArticleGroupAndProperty',
-      sKey: eDisplayMethodKeysEnum.revenuePerArticleGroupAndProperty,
-      sValue: 'Article Group and Dynamic Property',
-    },
-    {
-      sKey: eDisplayMethodKeysEnum.revenuePerSupplierAndArticleGroup, // Use the revenuePerBusinessPartner and Remove the Dynamic Property
-      sValue: 'Supplier And Article-Group',
-    },
-    {
-      sKey: eDisplayMethodKeysEnum.revenuePerProperty,
-      sValue: 'Revenue Per Property',
-    },
-    {
-      sKey: eDisplayMethodKeysEnum.revenuePerArticleGroup, // Use the revenuePerArticleGroupAndProperty and remove the Dynamic Property
-      sValue: 'Article Group',
-    },
-    {
-      sKey: eDisplayMethodKeysEnum.aVatRates,
-      sValue: 'Vat Rates',
-    },
-  ];
-  sDisplayMethod: eDisplayMethodKeysEnum = eDisplayMethodKeysEnum.revenuePerBusinessPartner
-
-  aAmount: any = [
-    { sLabel: '500.00', nValue: 500, nQuantity: 0, key: 'nType500' },
-    { sLabel: '200.00', nValue: 200, nQuantity: 0, key: 'nType200' },
-    { sLabel: '100.00', nValue: 100, nQuantity: 0, key: 'nType100' },
-    { sLabel: '50.00', nValue: 50, nQuantity: 0, key: 'nType50' },
-    { sLabel: '20.00', nValue: 20, nQuantity: 0, key: 'nType20' },
-    { sLabel: '10.00', nValue: 10, nQuantity: 0, key: 'nType10' },
-    { sLabel: '5.00', nValue: 5, nQuantity: 0, key: 'nType5' },
-    { sLabel: '2.00', nValue: 2, nQuantity: 0, key: 'nType2' },
-    { sLabel: '1.00', nValue: 1, nQuantity: 0, key: 'nType1' },
-    { sLabel: '0.50', nValue: 0.5, nQuantity: 0, key: 'nType0_5' },
-    { sLabel: '0.20', nValue: 0.2, nQuantity: 0, key: 'nType0_2' },
-    { sLabel: '0.10', nValue: 0.1, nQuantity: 0, key: 'nType0_1' },
-    { sLabel: '0.05', nValue: 0.05, nQuantity: 0, key: 'nType0_05' },
-  ];
-
-  oCountings: any = {
-    nCashCounted: 0,
-    nCashInTill: 0,
-    nSkim: 0,
-    nCashDifference: 0,
-    nCashRemain: 0,
-    nCashAtStart: 0,
-    oCountingsCashDetails: {},
-  };
   aRefundItems: any;
   aDiscountItems: any;
   aRepairItems: any;
-  iWorkstationId: string | null;
   aGoldPurchases: any;
   aGiftItems: any;
   previousPage = 0
@@ -204,13 +115,8 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
     public transactionAuditPdfService: TransactionAuditUiPdfService,
     private taxService: TaxService,
     private dialogService: DialogService,
-
+    private tillService: TillService
   ) {
-
-    this.iBusinessId = localStorage.getItem('currentBusiness') || '';
-    this.iLocationId = localStorage.getItem('currentLocation') || '';
-    this.iWorkstationId = localStorage.getItem('currentWorkstation') || '';
-    this.sUserType = localStorage.getItem('type') || '';
     const _oUser = localStorage.getItem('currentUser');
     if (_oUser) this.oUser = JSON.parse(_oUser);
     this.previousPage = this.route?.snapshot?.queryParams?.page || 0
@@ -233,7 +139,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
 
   async ngOnInit() {
     this.apiService.setToastService(this.toastService);
-    this.businessDetails._id = localStorage.getItem('currentBusiness');
+    await this.tillService.fetchSettings();
     const value = localStorage.getItem('currentEmployee');
     if (value) this.iEmployeeId = JSON.parse(value)._id;
 
@@ -720,6 +626,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
     const oBody: any = {
       iBusinessId: this.iBusinessId,
       iStatisticId: this.iStatisticId,
+      sDayClosureMethod: this.tillService.settings?.sDayClosureMethod || 'workstation',
       oFilter: {
         aLocationId: aLocation,
         // iWorkstationId: iWorkstationId,
@@ -805,6 +712,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
     }
     const oBody = {
       iBusinessId: this.iBusinessId,
+      sDayClosureMethod: this.tillService.settings?.sDayClosureMethod || 'workstation',
       oFilter: {
         aLocationId: aLocation,
         iWorkstationId: iWorkstationId,
@@ -997,7 +905,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
   }
 
   fetchBusinessDetails() {
-    return this.apiService.getNew('core', '/api/v1/business/' + this.businessDetails._id).toPromise();
+    return this.apiService.getNew('core', '/api/v1/business/' + this.iBusinessId).toPromise();
   }
 
   async exportToPDF() {
@@ -1374,6 +1282,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
 
       const oBody = {
         iBusinessId: this.iBusinessId,
+        sDayClosureMethod: this.tillService.settings?.sDayClosureMethod || 'workstation',
         oFilter: {
           iLocationId: this.iLocationId,
           aLocationId: this?.aSelectedLocation?.length ? this.aSelectedLocation : [],
@@ -1475,4 +1384,92 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
     if (this.dayClosureListSubscription) this.dayClosureListSubscription.unsubscribe();
   }
 
+  listBusinessSubscription!: Subscription;
+  getStatisticSubscription!: Subscription;
+  statisticAuditSubscription!: Subscription;
+  greenRecordsSubscription!: Subscription;
+  propertyListSubscription!: Subscription;
+  workstationListSubscription!: Subscription;
+  employeeListSubscription!: Subscription;
+  transactionItemListSubscription!: Subscription;
+  closeSubscription!: Subscription;
+  dayClosureListSubscription !: Subscription;
+  groupingHelper(item: any) {
+    return item.child[0];
+  }
+
+  aOptionMenu: View[] = [];
+  public sOptionMenu: {
+    parent: View,
+    child1: ViewMenuChild,
+    child2: ChildChild,
+  } = {} as {
+    parent: View,
+    child1: ViewMenuChild,
+    child2: ChildChild,
+  };
+  public sSelectedOptionMenu = '';
+
+  aVatRateMethod: any = [
+    'oShopPurchase',
+    'oWebShop',
+    'oDeliverySupplier',
+    'oDeliveryRetailer',
+    'oSalesOrderSupplier',
+  ];
+
+  aDisplayMethod: DisplayMethod[] = [
+    {
+      sKey: eDisplayMethodKeysEnum.revenuePerBusinessPartner,
+      sValue: 'Supplier And Article-Group And Dynamic Property',
+    },
+    {
+      // sKey: 'revenuePerArticleGroupAndProperty',
+      sKey: eDisplayMethodKeysEnum.revenuePerArticleGroupAndProperty,
+      sValue: 'Article Group and Dynamic Property',
+    },
+    {
+      sKey: eDisplayMethodKeysEnum.revenuePerSupplierAndArticleGroup, // Use the revenuePerBusinessPartner and Remove the Dynamic Property
+      sValue: 'Supplier And Article-Group',
+    },
+    {
+      sKey: eDisplayMethodKeysEnum.revenuePerProperty,
+      sValue: 'Revenue Per Property',
+    },
+    {
+      sKey: eDisplayMethodKeysEnum.revenuePerArticleGroup, // Use the revenuePerArticleGroupAndProperty and remove the Dynamic Property
+      sValue: 'Article Group',
+    },
+    {
+      sKey: eDisplayMethodKeysEnum.aVatRates,
+      sValue: 'Vat Rates',
+    },
+  ];
+  sDisplayMethod: eDisplayMethodKeysEnum = eDisplayMethodKeysEnum.revenuePerBusinessPartner
+
+  aAmount: any = [
+    { sLabel: '500.00', nValue: 500, nQuantity: 0, key: 'nType500' },
+    { sLabel: '200.00', nValue: 200, nQuantity: 0, key: 'nType200' },
+    { sLabel: '100.00', nValue: 100, nQuantity: 0, key: 'nType100' },
+    { sLabel: '50.00', nValue: 50, nQuantity: 0, key: 'nType50' },
+    { sLabel: '20.00', nValue: 20, nQuantity: 0, key: 'nType20' },
+    { sLabel: '10.00', nValue: 10, nQuantity: 0, key: 'nType10' },
+    { sLabel: '5.00', nValue: 5, nQuantity: 0, key: 'nType5' },
+    { sLabel: '2.00', nValue: 2, nQuantity: 0, key: 'nType2' },
+    { sLabel: '1.00', nValue: 1, nQuantity: 0, key: 'nType1' },
+    { sLabel: '0.50', nValue: 0.5, nQuantity: 0, key: 'nType0_5' },
+    { sLabel: '0.20', nValue: 0.2, nQuantity: 0, key: 'nType0_2' },
+    { sLabel: '0.10', nValue: 0.1, nQuantity: 0, key: 'nType0_1' },
+    { sLabel: '0.05', nValue: 0.05, nQuantity: 0, key: 'nType0_05' },
+  ];
+
+  oCountings: any = {
+    nCashCounted: 0,
+    nCashInTill: 0,
+    nSkim: 0,
+    nCashDifference: 0,
+    nCashRemain: 0,
+    nCashAtStart: 0,
+    oCountingsCashDetails: {},
+  };
 }

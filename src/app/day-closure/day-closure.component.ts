@@ -4,6 +4,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ApiService } from '../shared/service/api.service';
 import { ToastService } from '../shared/components/toast/toast.service';
+import { TillService } from '../shared/service/till.service';
 
 @Component({
   selector: 'app-day-closure',
@@ -23,14 +24,16 @@ export class DayClosureComponent implements OnInit, OnDestroy {
     private apiService: ApiService,
     private toastService: ToastService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private tillService: TillService
   ) { }
 
-  ngOnInit(): void {
+  async ngOnInit() {
     this.apiService.setToastService(this.toastService);
     this.iBusinessId = localStorage.getItem('currentBusiness');
     this.iLocationId = localStorage.getItem('currentLocation');
     this.iWorkstationId = localStorage.getItem('currentWorkstation');
+    await this.tillService.fetchSettings();
     this.isAnyDayStateOpened();
   }
 
@@ -42,7 +45,8 @@ export class DayClosureComponent implements OnInit, OnDestroy {
     const oBody = {
       iBusinessId: this.iBusinessId,
       iLocationId: this.iLocationId,
-      iWorkstationId: this.iWorkstationId
+      iWorkstationId: this.iWorkstationId,
+      sDayClosureMethod: this.tillService.settings?.sDayClosureMethod || 'workstation'
     }
     this.bIsDayStateOpenLoading = true;
     this.apiService.postNew('cashregistry', `/api/v1/statistics/day-closure/check`, oBody).subscribe((result: any) => {
