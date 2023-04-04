@@ -395,7 +395,6 @@ export class TransactionsComponent implements OnInit, OnDestroy {
       }).instance;
       
     oDialogComponent.close.subscribe(result => {
-      console.log('result: ', result);
       if (result?.oData?.oCurrentCustomer) {
         if (result?.oData?.oCurrentCustomer?.sFirstName) transaction.oCustomer.sFirstName = result?.oData?.oCurrentCustomer?.sFirstName;
         if (result?.oData?.oCurrentCustomer?.sLastName) transaction.oCustomer.sLastName = result?.oData?.oCurrentCustomer?.sLastName;

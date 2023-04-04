@@ -79,7 +79,6 @@ export class TillService {
       return 0
     }
     let result = 0
-    // console.log('result: ', result);
     switch (type) {
       case 'price':
         transactionItems.forEach((i: any) => {
@@ -783,6 +782,7 @@ export class TillService {
   }
 
   async fetchSettings() {
+    if(this.settings) return this.settings;
     this.settings = await this.apiService.getNew('cashregistry', `/api/v1/settings/${this.iBusinessId}`).toPromise();
     const oBagNumberSettings = {
       iLocationId: this.iLocationId,
@@ -809,7 +809,7 @@ export class TillService {
     } else {
       oMergedSettings = { ...oMergedSettings, ...(this.settings.aCashRegisterPrefill.find((el: any) => el.iLocationId === this.iLocationId) || oPrefillSettings) };
     }
-    // console.log(this.settings);
+    console.log(this.settings);
 
     this.settings.currentLocation = oMergedSettings;
     // console.log(this.settings);

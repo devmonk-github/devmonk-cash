@@ -20,7 +20,7 @@
                         </ng-select>
                     </div>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-4" *ngIf="sDayClosureMethod === 'workstation' ">
                     <label class="fs-6 form-label fw-bolder text-dark">{{'WORK_STATION' | translate}}</label>
                     <ng-select class="form-control p-0" [(ngModel)]="oSelectedWorkStation" placeholder="{{'SELECT' | translate}}"
                         [clearable]="true">
