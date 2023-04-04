@@ -809,7 +809,7 @@ export class TillService {
     } else {
       oMergedSettings = { ...oMergedSettings, ...(this.settings.aCashRegisterPrefill.find((el: any) => el.iLocationId === this.iLocationId) || oPrefillSettings) };
     }
-    // console.log(this.settings);
+    console.log(this.settings);
 
     this.settings.currentLocation = oMergedSettings;
     // console.log(this.settings);

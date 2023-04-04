@@ -195,6 +195,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     this.apiService.setToastService(this.toastrService)
     this.paymentDistributeService.setToastService(this.toastrService)
     this.tillService.updateVariables();
+    this.bDayStateChecking = true;
+    await this.tillService.fetchSettings();
     this.checkDayState();
 
     this.requestParams.iBusinessId = this.iBusinessId;
@@ -1580,9 +1582,10 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     const oBody = {
       iBusinessId: this.iBusinessId,
       iLocationId: this.iLocationId,
-      iWorkstationId: this.iWorkstationId
+      iWorkstationId: this.iWorkstationId,
+      sDayClosureMethod: this.tillService.settings?.sDayClosureMethod || 'workstation'
     }
-    this.bDayStateChecking = true;
+    
     this.dayClosureCheckSubscription = this.apiService.postNew('cashregistry', `/api/v1/statistics/day-closure/check`, oBody).subscribe(async (result: any) => {
       if (result?.data) {
         this.bDayStateChecking = false;
@@ -1593,7 +1596,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
         }
         if (result?.data?.oStatisticDetail?.dOpenDate) {
           this.dOpenDate = result?.data?.oStatisticDetail?.dOpenDate;
-          await this.tillService.fetchSettings();
+          
           let nDayClosurePeriodAllowed = 0;
           if (this.tillService.settings?.sDayClosurePeriod && this.tillService.settings.sDayClosurePeriod === 'week') {
             nDayClosurePeriodAllowed = 3600 * 24 * 7;
