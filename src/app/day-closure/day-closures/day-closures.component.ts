@@ -108,9 +108,12 @@ export class DayClosuresComponent implements OnInit, OnDestroy {
       oFilter: {
         iLocationId: this.iLocationId,
         aLocationId: this?.aSelectedLocation?.length ? this.aSelectedLocation : [],
-        iWorkstationId: [this.oSelectedWorkStation?._id],
       },
       ...this.requestParams
+    }
+
+    if (this.tillService.settings?.sDayClosureMethod === 'workstation') {
+      oBody.iWorkstationId = [this.oSelectedWorkStation?._id];
     }
     this.dayClosureListSubscription = this.apiService.postNew('cashregistry', `/api/v1/statistics/day-closure/list`, oBody).subscribe((result: any) => {
       if (result?.data?.length) {

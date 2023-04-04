@@ -1526,7 +1526,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     const oBody = {
       iBusinessId: this.iBusinessId,
       iLocationId: this.iLocationId,
-      iWorkstationId: this.iWorkstationId
+      iWorkstationId: this.iWorkstationId,
+      sDayClosureMethod: this.tillService.settings?.sDayClosureMethod || 'workstation',
     }
     this.bIsOpeningDayState = true;
     this.apiService.postNew('cashregistry', `/api/v1/statistics/open/day-state`, oBody).subscribe((result: any) => {
