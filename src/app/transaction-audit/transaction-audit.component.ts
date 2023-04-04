@@ -104,7 +104,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
   aGoldPurchases: any;
   aGiftItems: any;
   previousPage = 0
-
+  sDayClosureMethod:any;
   constructor(
     private apiService: ApiService,
     private translate: TranslateService,
@@ -120,7 +120,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
     const _oUser = localStorage.getItem('currentUser');
     if (_oUser) this.oUser = JSON.parse(_oUser);
     this.previousPage = this.route?.snapshot?.queryParams?.page || 0
-
+    
     this.iStatisticId = this.route.snapshot?.params?.iStatisticId;
     if (this.iStatisticId) {
       this.oStatisticsData.dStartDate = this.router.getCurrentNavigation()?.extras?.state?.dStartDate ?? null;
@@ -140,6 +140,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
   async ngOnInit() {
     this.apiService.setToastService(this.toastService);
     await this.tillService.fetchSettings();
+    this.sDayClosureMethod = this.tillService.settings?.sDayClosureMethod || 'workstation';
     const value = localStorage.getItem('currentEmployee');
     if (value) this.iEmployeeId = JSON.parse(value)._id;
 
