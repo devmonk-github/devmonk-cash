@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { ToastService } from 'src/app/shared/components/toast';
 import { ApiService } from 'src/app/shared/service/api.service';
+import { TillService } from 'src/app/shared/service/till.service';
 
 @Component({
   selector: 'app-day-closures',
@@ -42,10 +43,12 @@ export class DayClosuresComponent implements OnInit, OnDestroy {
     currentPage: 1,
     totalItems: 0
   };
+  sDayClosureMethod:any;
   constructor(private apiService: ApiService,
     private route: ActivatedRoute,
     private router: Router,
-    private toastrService: ToastService
+    private toastrService: ToastService,
+    public tillService: TillService
   ) {
     this.iBusinessId = localStorage.getItem('currentBusiness') || '';
     this.iLocationId = localStorage.getItem('currentLocation') || '';
@@ -54,11 +57,14 @@ export class DayClosuresComponent implements OnInit, OnDestroy {
     const _oUser = localStorage.getItem('currentUser');
     if (_oUser) this.oUser = JSON.parse(_oUser);
     this.paginationConfig.currentPage = this.route?.snapshot?.queryParams?.page ? this.route?.snapshot?.queryParams?.page : this.paginationConfig.currentPage
-
+    
   }
-
-  ngOnInit(): void {
+  
+  async ngOnInit() {
     this.apiService.setToastService(this.toastrService);
+    await this.tillService.fetchSettings();
+    this.sDayClosureMethod = this.tillService.settings?.sDayClosureMethod || 'workstation';
+    console.log(this.sDayClosureMethod, this.tillService.settings);
     this.fetchDayClosureList();
     this.fetchBusinessLocation();
     this.getWorkstations();

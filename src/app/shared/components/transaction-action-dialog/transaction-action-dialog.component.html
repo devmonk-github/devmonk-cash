@@ -95,7 +95,7 @@
                 </div>
             </div>
         </div>
-        <div class="row mt-5" *ngIf="nRepairCount > 0">
+        <div class="row mt-5" *ngIf="nRepairCount > 0 || bOrderCondition">
             <div class="col-12">
                 <table class="table table-row-bordered table-row-gray-300 gy-5 gs-5 mb-0 text-gray-600 fw-bold border">
                     <thead class="bg-gray-100">
@@ -141,7 +141,7 @@
 
     <div class="card-footer">
         <div class="text-end" *ngIf="transaction">
-            <button class="btn btn-primary mx-2" (click)="openTransactionDetail(transactionDetail)">{{'OPEN' | translate}} </button>
+            <button class="btn btn-primary mx-2" (click)="openTransactionDetail()">{{'OPEN' | translate}} </button>
             <button type="button" class="btn btn-primary" (click)="close(false)">{{"FINISH" | translate}}</button>
         </div>
     </div>

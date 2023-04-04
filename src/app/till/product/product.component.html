@@ -18,8 +18,8 @@
             <span *ngIf="item.bDiscountOnPercentage">{{item.nDiscount}}%</span>
             <span *ngIf="!item.bDiscountOnPercentage">{{item.nDiscount | currencyFormat: tillService.currency:tillService.separator}}</span>
           </div>
-          <div class="col" *ngIf="(item?.tType === 'refund' && item?.nGiftcardDiscount == 0) || (item?.tType !== 'refund' && item?.nGiftcardDiscount)">{{item.nGiftcardDiscount}}</div>
-          <div class="col" *ngIf="(item?.tType === 'refund' && item?.nRedeemedLoyaltyPoints == 0) || (item?.tType !== 'refund' && item?.nRedeemedLoyaltyPoints)">{{item.nRedeemedLoyaltyPoints}}</div>
+          <div class="col" *ngIf="item.bShowGiftcardDiscountField">{{item.nGiftcardDiscount}}</div>
+          <div class="col" *ngIf="item.bShowLoyaltyPointsDiscountField">{{item.nRedeemedLoyaltyPoints}}</div>
           <div class="col">{{item.tax}}%</div>
           <div class="col">{{ item.amountToBePaid | currencyFormat: tillService.currency:tillService.separator }}
           </div>
@@ -104,7 +104,7 @@
           <div class="col-9">
             <div class="form-group mb-4">
               <label class="form-control-label mb-3">{{ "PRICE" | translate}}</label>:
-              <input class="form-control  mb-3 mb-lg-0" type="text" name="price" (change)="updatePayments()"
+              <input class="form-control  mb-3 mb-lg-0" type="text" name="price" (keypress)="numericOnly($event)" (change)="updatePayments()"
                 placeholder="{{ 'PRICE' | translate}}" id="price" [(ngModel)]="item.price">
             </div>
           </div>

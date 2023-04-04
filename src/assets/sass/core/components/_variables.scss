@@ -71,7 +71,7 @@ $dark-inverse:         								if(isDarkMode(), $gray-100, $white) !default; // 
 
 // Primary colors
 $primary:       									#3ba68c  !default; // Bootstrap variable
-$primary-active:    								#187DE4 !default; // Custom variable
+$primary-active:    								#109070 !default; // Custom variable
 $primary-light:    								    if(isDarkMode(), #212E48, #F1FAFF) !default; // Custom variable
 $primary-inverse:  									$white !default;  // Custom variable
 
@@ -88,28 +88,28 @@ $light-inverse:									    if(isDarkMode(),$gray-800, $gray-600) !default; // C
 $lighten:                                           rgba($light, 0.5); // Custom variable
 
 // Success colors
-$success:       									#1BC5BD !default; // Bootstrap variable
-$success-active:    								#0BB7AF !default; // Custom variable
+$success:       									#52C2A7 !default; // Bootstrap variable
+$success-active:    								#419b85 !default; // Custom variable
 $success-light:    									if(isDarkMode(), #1C3833, #C9F7F5) !default; // Custom variable
 $success-inverse:  									$white !default; // Custom variable
 
-// Inco colors
-$info:         		 								#8950FC !default; // Bootstrap variable
-$info-active:   		 							#7337EE !default; // Custom variable
-$info-light:   		 								if(isDarkMode(), #2F264F, #EEE5FF) !default; // Custom variable
-$info-inverse: 		 								$white !default; // Custom variable
+// Info colors
+$info:                                              #3b8aa6 !default; // Bootstrap variable
+$info-active:                                       #2e6d84 !default; // Custom variable
+$info-light:                                        if(isDarkMode(), #1d4553, #ebf3f6) !default; // Custom variable
+$info-inverse:                                      $white  !default; // Custom variable
 
 // Warning colors
-$warning:       									#FFA800 !default; // Bootstrap variable
-$warning-active:    								#EE9D01 !default; // Custom variable
-$warning-light:    									if(isDarkMode(), #392F28, #FFF4DE) !default; // Custom variable
-$warning-inverse:  									$white !default; // Custom variable
+$warning:                                          #f29c33 !default; // Bootstrap variable
+$warning-active:                                   #c17c28 !default; // Custom variable
+$warning-light:                                    if(isDarkMode(), #392F28, #FFF4DE) !default; // Custom variable
+$warning-inverse:                                  $white  !default; // Custom variable
 
 // Danger colors
-$danger:        									#F64E60 !default; // Bootstrap variable
-$danger-active:     								#EE2D41 !default; // Custom variable
-$danger-light:     									if(isDarkMode(), #3A2434, #FFE2E5) !default; // Custom variable
-$danger-inverse:   									$white !default; // Custom variable
+$danger:                                           #a63b55!default; // Bootstrap variable
+$danger-active:                                    #95354c !default; // Custom variable
+$danger-light:                                     if(isDarkMode(), #3A2434, #FFE2E5) !default; // Custom variable
+$danger-inverse:                                   $white  !default; // Custom variable
 
 // White colors
 $white:    											$white !default; // Bootstrap variable

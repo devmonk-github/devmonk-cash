@@ -78,10 +78,9 @@ export class TransactionActionDialogComponent implements OnInit {
       this.printActionSettings = context.printActionSettings;
       this.printSettings = context.printSettings;
 
-      this.aRepairItems = this.activityItems.filter((item: any) => item.oType.eKind === 'repair');
-
+      this.aRepairItems = this.activityItems.filter((item: any) => item.oType.eKind === 'repair' || item.oType.eKind === 'order');
       this.bRegularCondition = this.transaction.total > 0.02 || this.transaction.total < -0.02;
-      this.bOrderCondition = this.nOrderCount === 1 && this.nRepairCount === 1 || this.nRepairCount > 1 || this.nOrderCount >= 1;
+      this.bOrderCondition = this.nOrderCount === 1 || this.nRepairCount >= 1 || this.nOrderCount >= 1; //&& this.nRepairCount === 1
 
       if (this.bRegularCondition) this.aUniqueTypes.push('regular');
       if (this.bOrderCondition) this.aUniqueTypes.push('order');
@@ -159,7 +158,6 @@ export class TransactionActionDialogComponent implements OnInit {
       oDataSource.oCustomer = this.transaction.oCustomer
       oDataSource.businessDetails = this.businessDetails;
       oDataSource.sBusinessLogoUrl = this.transaction.sBusinessLogoUrl
-      oDataSource.sActivityBarcodeURI = this.transaction.sActivityBarcodeURI
       oDataSource.sAdvisedEmpFirstName = this.transaction?.sAdvisedEmpFirstName || 'a';
 
       let nTotalPaidAmount = 0;
@@ -243,16 +241,17 @@ export class TransactionActionDialogComponent implements OnInit {
     return canvas.toDataURL("image/png");
   }
   
-  openTransactionDetail(transaction: any) {
+  openTransactionDetail() {
     this.dialogService.openModal(TransactionDetailsComponent, 
       { 
         cssClass: "w-fullscreen mt--5", 
         context: { 
-          transaction: transaction, 
+          transaction: this.transaction, 
           businessDetails: this.businessDetails, 
           eType: this.eType, 
           from: 'transactions-action',
-          employeesList: this.employees
+          employeesList: this.employees,
+          printSettings: this.printSettings
         }, 
         hasBackdrop: true, 
         closeOnBackdropClick: false, 

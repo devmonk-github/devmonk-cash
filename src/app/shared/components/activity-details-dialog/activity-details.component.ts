@@ -169,7 +169,7 @@ export class ActivityDetailsComponent implements OnInit {
   bCustomerReceipt: boolean = false;
   bDownloadCustomerReceipt: boolean = false;
   bDownloadReceipt: boolean = false;
-  showSystemCustomer:Boolean = false;
+  showSystemCustomer:boolean = false;
   aContactOption = [{ key: 'CALL_ON_READY', value: 'call_on_ready' },
   { key: 'EMAIL_ON_READY', value: 'email_on_ready' },
   { key: 'WHATSAPP_ON_READY', value: 'whatsapp_on_ready' }]
@@ -252,7 +252,9 @@ export class ActivityDetailsComponent implements OnInit {
     this.apiService.getNew('customer', `/api/v1/customer/${this.iBusinessId}/${iCustomerId}`).subscribe((result: any) => {
       if (result?.data) {
         this.customer = result?.data;
-        this.matchSystemAndCurrentCustomer(result?.data , this.oCurrentCustomer);
+        console.log(this.customer);
+    console.log("-----this.customer");
+        this.matchSystemAndCurrentCustomer(this.customer , this.oCurrentCustomer);
       }      
     })
   }
@@ -680,7 +682,7 @@ export class ActivityDetailsComponent implements OnInit {
       (result: any) => {
         if (index > -1) this.transactions[index].customer = result;
         this.customer = result;
-        this.matchSystemAndCurrentCustomer(result?.data , this.oCurrentCustomer);
+        
         // console.log(result);console.log("result");
 
       },
@@ -718,9 +720,12 @@ export class ActivityDetailsComponent implements OnInit {
       "sEmail" : ""
   }];
 
-  for(const[key] of Object.entries(currentCustomer)){
-      if(!(_.isEqual(currentCustomer[key], systemCustomer[key]))){
-       this.showSystemCustomer= true
+  for(const [key,value] of Object.entries(currentCustomer)){
+    
+    console.log(_.isEqual(systemCustomer[key], currentCustomer[key]));
+      if(!(_.isEqual(systemCustomer[key], currentCustomer[key]))){
+       this.showSystemCustomer = true;
+       //console.log(this.showSystemCustomer);
       }
    }
   }
@@ -953,8 +958,15 @@ export class ActivityDetailsComponent implements OnInit {
       iActivityItemId: this.activityItems[0]._id
     }
     this.apiService.postNew('cashregistry', '/api/v1/transaction/update-customer', oBody).subscribe((result: any) => {
+      
+      
       this.oCurrentCustomer = oBody?.oCustomer;
-      this.matchSystemAndCurrentCustomer(this.customer , oBody?.oCustomer);
+      console.log(this.customer)
+      console.log("this.customer")
+      console.log(oBody?.oCustomer)
+      console.log("---oBody?.oCustomer")
+      this.matchSystemAndCurrentCustomer(this.customer , this.oCurrentCustomer);
+
       this.toastService.show({ type: "success", text: this.translation['SUCCESSFULLY_UPDATED'] });
     }, (error) => {
       console.log('update customer error: ', error);

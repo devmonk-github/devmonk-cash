@@ -128,7 +128,7 @@ export class TillService {
   }
 
   createTransactionBody(transactionItems: any, payMethods: any, discountArticleGroup: any, redeemedLoyaltyPoints: number, customer: any): any {
-    console.log('createTransactionBody transactionItems: ', transactionItems);
+    // console.log('createTransactionBody transactionItems: ', transactionItems);
     this.updateVariables();
 
     const iLocationId = transactionItems?.length && transactionItems[0].iLocationId ? transactionItems[0].iLocationId : this.iLocationId; /* If we changed the location from the drop-down then it would change */
@@ -276,6 +276,8 @@ export class TillService {
       if (i.type === 'giftcard') { //|| (bPrepayment === false && (i.type === 'repair' || i.type === 'order'))
         oItem.eActivityItemStatus = 'delivered';
         oItem.nGiftcardRemainingAmount = oItem.nPriceIncVat;
+      } else if (i.type === 'repair' && i.amountToBePaid === 0 && i.paymentAmount === 0 && !i?.isExclude) {
+          oItem.eActivityItemStatus = 'delivered';
       } else {
         oItem.eActivityItemStatus = i.eActivityItemStatus;
       }
@@ -284,14 +286,13 @@ export class TillService {
       if (i?.sSerialNumber) oItem.sSerialNumber = i.sSerialNumber;
       return oItem;
     });
-    // console.log('iPayment 201: ', JSON.parse(JSON.stringify(body?.transactionItems)));
-    const originalTItemsLength = length = body.transactionItems.filter((i: any) => i.oType.eKind !== 'loyalty-points').length;
+    // const originalTItemsLength = length = body.transactionItems.filter((i: any) => i.oType.eKind !== 'loyalty-points').length;
     body.transactionItems.map((i: any) => {
       let discountRecords: any = localStorage.getItem('discountRecords');
       if (discountRecords) {
         discountRecords = JSON.parse(discountRecords);
       }
-      let _nDiscount = i?.bDiscountOnPercentage ? (i.nPriceIncVat * (i.nDiscount / 100)) : i.nDiscount;
+      let _nDiscount = +((i?.bDiscountOnPercentage ? (i.nPriceIncVat * (i.nDiscount / 100)) : i.nDiscount).toFixed(2));
       if (i.oType.bRefund && _nDiscount !== 0) {
         i.nPaymentAmount -= _nDiscount * i.nQuantity;
         i.nRevenueAmount = i.nPaymentAmount;
@@ -457,11 +458,16 @@ export class TillService {
             paymentAmount = 0;
             // console.log(404, 'paymentAmount', paymentAmount)
             item.oType.bRefund = true;
+            item.bShowGiftcardDiscountField = false;
+            item.bShowLoyaltyPointsDiscountField = false;
           } else if (tType === 'revert') {
             paymentAmount = item.nPaidAmount;
             // console.log(408, 'paymentAmount', paymentAmount)
             item.oType.bRefund = false;
-          };
+          } else {
+            item.bShowGiftcardDiscountField = item.nGiftcardDiscount > 0;
+            item.bShowLoyaltyPointsDiscountField = item.nRedeemedLoyaltyPoints > 0;
+          }
           transactionItems.push({
             name: item.sProductName || item.sProductNumber,
             iActivityItemId: item.iActivityItemId,
@@ -503,8 +509,9 @@ export class TillService {
             bGiftcardTaxHandling: item.bGiftcardTaxHandling,
             sArticleNumber: item?.sArticleNumber,
             iLocationId: item?.iLocationId,
-            sBagNumber: item?.sBagNumber
-            // oCustomer: transactionItem?.oCustomer
+            sBagNumber: item?.sBagNumber,
+            bShowGiftcardDiscountField: item?.bShowGiftcardDiscountField,
+            bShowLoyaltyPointsDiscountField:  item?.bShowLoyaltyPointsDiscountField,
           });
         }
       });
@@ -592,7 +599,7 @@ export class TillService {
       // console.log(545, 'bDiscountOnPercentage', item.bDiscountOnPercentage)
       if (item.bDiscountOnPercentage) {
         disc = this.getPercentOf(disc, item.nPriceIncVat)
-        item.nDiscountToShow = disc;//.toFixed(2);
+        item.nDiscountToShow = +(disc.toFixed(2));
       } else { item.nDiscountToShow = disc }
       // console.log('item.nDiscountToShow', item.nDiscountToShow, 'item.nPriceIncVat', 'nPriceIncVat', item.nPriceIncVat, 'nQuantity', item.nQuantity, 'nRedeemedLoyaltyPoints', item.nRedeemedLoyaltyPoints, 'nGiftcardDiscount',item.nGiftcardDiscount);
       
@@ -685,8 +692,8 @@ export class TillService {
               // console.log(613, relatedItem.totalPaymentAmount)
             }
           }
+          relatedItem.totalPaymentAmount = +(relatedItem.totalPaymentAmount.toFixed(2));
           if (relatedItem.totalPaymentAmount > 0) {
-            console.log(684)
             description += `${relatedItem.sTransactionNumber} | ${relatedItem.totalPaymentAmount}\n`;
           }
         })
@@ -775,6 +782,7 @@ export class TillService {
   }
 
   async fetchSettings() {
+    if(this.settings) return this.settings;
     this.settings = await this.apiService.getNew('cashregistry', `/api/v1/settings/${this.iBusinessId}`).toPromise();
     const oBagNumberSettings = {
       iLocationId: this.iLocationId,
