@@ -79,7 +79,6 @@ export class TillService {
       return 0
     }
     let result = 0
-    // console.log('result: ', result);
     switch (type) {
       case 'price':
         transactionItems.forEach((i: any) => {

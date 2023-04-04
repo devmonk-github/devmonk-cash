@@ -26,7 +26,11 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
   updatingSettings: boolean = false;
   iLocationId: any = localStorage.getItem('currentLocation');
   
-  settings: any = { nLastReceiptNumber: 0, nLastInvoiceNumber: 0, id: null };
+  settings: any = {
+    nLastReceiptNumber: 0,
+    nLastInvoiceNumber: 0,
+    id: null
+  };
   overviewColumns = [
     // { key:'', name:'action'}, 
     { key: 'sDescription', name: 'DESCRIPTION' },
@@ -52,6 +56,7 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
   fetchQuickButtonsSubscription !: Subscription;
   saveFavouritesSubscription !: Subscription;
   removeQuickButtonSubscription !: Subscription;
+  dayClosureCheckSubscription !: Subscription;
   aSelectedFields:any;
   aPrefillFields:any = [
     { key: 'bArticleGroup', title: 'ARTICLE_GROUPS' },
@@ -97,8 +102,6 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
       )
   }
 
-  
-
   getSettings() {
     this.getSettingsSubscription = this.apiService.getNew('cashregistry', `/api/v1/settings/${this.requestParams.iBusinessId}`).subscribe((result: any) => {
       this.settings = result;
@@ -127,7 +130,6 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
       } else {
         oMergedSettings = { ...oMergedSettings, ...(this.settings.aCashRegisterPrefill.find((el: any) => el.iLocationId === this.iLocationId) || oPrefillSettings) };
       }
-      // console.log({oMergedSettings}, this.settings);
 
       this.settings.currentLocation = oMergedSettings;
     }, (error) => {
@@ -278,6 +280,7 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
       nLastInvoiceNumber: this.settings?.nLastInvoiceNumber,
       nLastReceiptNumber: this.settings?.nLastReceiptNumber,
       sDayClosurePeriod: this.settings?.sDayClosurePeriod,
+      sDayClosureMethod: this.settings?.sDayClosureMethod,
       bOpenCashDrawer: this.settings?.bOpenCashDrawer,
       aBagNumbers: this.settings?.aBagNumbers,
       aCashRegisterPrefill: this.settings?.aCashRegisterPrefill,
@@ -367,6 +370,23 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
         this.fetchQuickButtons();
     });
   }
+
+  onChangeDayClosureMethod(sRevertDayClosureMethod: string) {
+    const oBody = {
+      iBusinessId: this.requestParams.iBusinessId,
+      iLocationId: this.iLocationId,
+      sDayClosureMethod: 'location' /* passing default because we need to check in all workstation for particular location */
+    }
+    this.dayClosureCheckSubscription = this.apiService.postNew('cashregistry', `/api/v1/statistics/day-closure/check`, oBody).subscribe(async (result: any) => {
+      /* if any day-state is open then we don't allow to change the method as it will create the calculation problem in statistics */
+      if (result?.data?.bIsDayStateOpened) {
+        this.settings.sDayClosureMethod = sRevertDayClosureMethod;
+        this.toastService.show({ type: 'warning', text: 'Please close all the day-state first then and only you can change the method' });
+      }
+    }, (error) => {
+      this.toastService.show({ type: 'warning', text: 'something went wrong' });
+    });
+  }
  
   ngOnDestroy(): void {
     if (this.deleteMethodModalSub) this.deleteMethodModalSub.unsubscribe();
@@ -385,5 +405,6 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
     if (this.fetchQuickButtonsSubscription) this.fetchQuickButtonsSubscription.unsubscribe();
     if (this.saveFavouritesSubscription) this.saveFavouritesSubscription.unsubscribe();
     if (this.removeQuickButtonSubscription) this.removeQuickButtonSubscription.unsubscribe();
+    if (this.dayClosureCheckSubscription) this.dayClosureCheckSubscription.unsubscribe();
   }
 }

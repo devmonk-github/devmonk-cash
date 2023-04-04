@@ -684,11 +684,11 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
   fetchDayClosureData(sDisplayMethod?: string) {
     /* If not closed yet then we require both data static as well and dynamic */
     if (this.oStatisticsData.bIsDayStateOpened) {
-      // console.log('if day state is opened getting static+dynamic both data');
+      console.log('if day state is opened getting static+dynamic both data');
       this.getStaticData(sDisplayMethod);
       this.getDynamicData(sDisplayMethod);
     } else {
-      // console.log('else day state is not opened getting only static data');
+      console.log('else day state is not opened getting only static data');
       /* Already closed then we can get all the data from one API only */
       this.getStaticData(sDisplayMethod);
     }
