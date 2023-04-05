@@ -61,7 +61,7 @@
                     </button>
                 </div>
                 <div class="col-md-7">
-                    <button class="btn btn-sm btn-secondary w-100" (click)="isAddNewType = true;" *ngIf="selectedType.sType != 'default'">
+                    <button class="btn btn-sm btn-secondary w-100" (click)="removeSelectedType()" *ngIf="selectedType.sType != 'default'">
                         {{ 'REMOVE_SELECTED' | translate }}
                     </button>
                 </div>
@@ -71,12 +71,19 @@
                 <div class="col-md-7">
                     <input name="input14" id="input14" type="text" [(ngModel)]="engravingTypeName" class="form-control">
                 </div>
-                <div class="col-md-5">
-                    <button class="btn btn-sm btn-primary w-100" (click)="addEngravingType()">
+                <div class="col-md-12 text-warning" *ngIf="engravingTypeExist">
+                    {{ 'ENGRAVING_TYPE_ALEADY_EXIST' | translate}}
+                </div>
+                <div class="col-md-5 mt-2">
+                    <button class="btn btn-sm btn-primary w-100" (click)="addEngravingType()" [disabled]="engravingTypeName.trim() == ''">
                         + {{ 'ADD' | translate }}
                     </button>
                 </div>
-                <div class="col-md-7"></div>
+                <div class="col-md-7 mt-2">
+                    <button class="btn btn-sm btn-secondary w-100" (click)="isAddNewType = false">
+                        {{ 'CANCEL' | translate }}
+                    </button>
+                </div>
             </ng-container>
             <div class="col-md-5 mt-2"><label> {{ "TYPES" | translate}}</label></div>
             <div class="col-md-7 mt-2">
@@ -109,7 +116,6 @@
                 <div class="form-check form-check-solid form-switch fv-row lh-xxl">
                     <input name="input0" id="input0" type="checkbox" class="form-check-input w-45px h-30px"
                         [(ngModel)]="selectedType.oFontDetails.isForArticleGroup" />
-                    <span class="form-check-label fw-bold text-muted">{{ 'ENGRAVING' | translate }} </span>
                 </div>
             </div>
             <div class="col-md-5 mt-2" *ngIf="selectedType.oFontDetails.isForArticleGroup"><label> {{ "ARTICLE_GROUPS" | translate}}</label></div>
