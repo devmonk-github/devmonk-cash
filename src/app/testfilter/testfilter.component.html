@@ -5,7 +5,7 @@
         <fa-icon [icon]="faSearch" class="text-gray-500 position-absolute top-50 translate-middle ms-6"></fa-icon>
         <!--end::Svg Icon-->
         <input type="text" class="form-control form-control-solid ps-10" [(ngModel)]='sSearchValue' name="search"
-          value="" (keyup.enter)="loadTransaction()" placeholder="Search test" />
+          value="" (keyup.enter)="loadTransaction()" placeholder="Search" />
       </div>
       <div class="d-flex align-items-center">
         <button type="submit" class="btn btn-primary mx-3" (click)="loadTransaction()">{{ 'SEARCH' | translate
@@ -15,9 +15,11 @@
               <i class='fas fa-sync-alt'></i>
             </button>
           </div>
-        <a id="kt_horizontal_search_advanced_link" class="btn btn-link ads_search text-info" data-toggle="collapse"
-          data-target="#kt_advanced_search_form" aria-expanded="true" aria-controls="kt_advanced_search_form"
-          (click)="showAdvanceSearch = !showAdvanceSearch">{{ 'ADVANCED_SEARCH' | translate }}</a>
+          <div class="d-flex align-items-center ads_search">
+            <button type="button" (click)="showAdvanceSearch = !showAdvanceSearch" class="btn btn-info me-5">
+              <i class="fa fa-filter"></i>
+            </button>
+          </div>
       </div>
       
       <div class="d-flex align-items-right ms-auto">
@@ -198,12 +200,25 @@
     <table class="table table-hover table-rounded table-striped gy-7 gs-7">
       <thead>
         <tr class="fw-bold fs-6 text-gray-400 border-gray-200 text-uppercase">
-          <th scope="col" *ngFor="let th of tableHeaders"
+          <th>{{"ACTIVITY_NO" | translate}}</th>
+          <th>{{"TYPE" | translate}}</th>
+          <th *ngIf="type !== 'giftcard'">{{"REPAIR_NUMBER" | translate}}</th>
+          <th *ngIf="type == 'repair' || type == 'gold-purchase'">{{"AINAME" | translate}}</th>
+          <th>{{"INTAKE_DATE" | translate}}</th>
+          <th *ngIf="type !== 'giftcard'">{{"ESTIMATED_DATE" | translate}}</th>
+          <th>{{"STATUS" | translate}}</th>
+          <th *ngIf="type == 'giftcard'">{{"AIAMOUNT" | translate}}</th>
+          <th *ngIf="type == 'giftcard'">{{ "REM_AMOUNT" | translate}}</th>
+          <th *ngIf="type !== 'giftcard'">{{"SUPPLIER_REPAIRER" | translate}}</th>
+          <th>{{"CUSTOMER" | translate}}</th>
+          <th>{{"ACTION" | translate}}</th>
+
+          <!-- <th scope="col" *ngFor="let th of tableHeaders"
             [ngClass]="{'fw-bolder': th.selected, 'cursor-pointer': !th.disabled, 'pe-none': th.disabled}"
             (click)="setSortOption(th)">
             {{ th.key | translate}}
             <fa-icon *ngIf="th.selected" [icon]=" th.sort ==='asc' ? faArrowDown : faArrowUp"></fa-icon>
-          </th>
+          </th> -->
         </tr>
       </thead>
       <tbody class="fw-bold text-gray-600">
@@ -211,11 +226,17 @@
           <tr *ngIf="activity.eActivityItemStatus !== 'cancelled'">
             <td style="min-width: 170px;">{{activity?.sNumber}}</td>
             <td style="text-transform: capitalize;">{{activity?.oType.eKind}}</td>
-            <td>{{activity?.sBagNumber || '-'}}</td>
+            <td *ngIf="type !== 'giftcard'">{{activity?.sBagNumber || '-'}}</td>
+            <td *ngIf="type == 'repair' || type == 'gold-purchase'">{{activity?.sProductName || '-'}}</td>
             <td style="width: 130px;"scope="row">{{activity?.dCreatedDate | date: 'yyyy-MM-dd HH:mm'}}</td>
-            <td style="width: 130px;" scope="row">{{activity?.dEstimatedDate | date: 'yyyy-MM-dd HH:mm'}}</td>
+            <td *ngIf="type !== 'giftcard'" style="width: 130px;" scope="row">{{activity?.dEstimatedDate | date: 'yyyy-MM-dd HH:mm'}}</td>
             <td>{{activity?.eActivityItemStatus}}</td>
-            <td class="custom-overflow">{{activity?.sBusinessPartnerName || '-'}}</td>
+            <td *ngIf="type == 'giftcard'">{{activity?.nPriceIncVat || '0'}}</td>
+            <td *ngIf="type == 'giftcard'"><div *ngIf="activity?.nGiftcardRemainingAmount">{{activity?.nGiftcardRemainingAmount.toFixed(2)}}</div>
+              <div *ngIf="activity.nGiftcardRemainingAmount == undefined">0</div>
+            
+            </td>
+            <td *ngIf="type !== 'giftcard'" class="custom-overflow">{{activity?.sBusinessPartnerName || '-'}}</td>
             <td class="custom-overflow">{{activity?.oCustomer?.sFirstName}} {{activity?.oCustomer?.sLastName || '-'}}</td>
             <td>
               <div class="btn-group me-4">

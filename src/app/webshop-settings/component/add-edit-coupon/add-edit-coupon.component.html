@@ -29,13 +29,13 @@
                 <label> {{"COUPON_AMOUNT" | translate}}</label>
             </div>
             <div class="col-md-9 mt-2">
-                <input formControlName="nAmount" id="coupon_code" type="text" class="form-control w-100" required="true">
+                <input formControlName="nAmount" id="coupon_code" type="number" class="form-control w-100" required="true">
             </div>
             <div class="col-md-3 mt-2">
                 <label> {{"COUPON_MIN_SPEND" | translate}}</label>
             </div>
             <div class="col-md-9 mt-2">
-                <input formControlName="nMinSpend" id="coupon_code" type="text" class="form-control w-100" required="true">
+                <input formControlName="nMinSpend" id="coupon_code" type="number" class="form-control w-100" min="0" required="true">
             </div>
             <div class="col-md-3 mt-2">
                 <label> {{"COUPON_EXPIRY_DATE" | translate}}</label>
@@ -49,7 +49,7 @@
                 <label> {{"USAGE_LIMIT_PER_COUPON" | translate}}</label>
             </div>
             <div class="col-md-9 mt-2">
-                <input formControlName="nLimit" id="coupon_code" type="text" class="form-control w-100" required="true">
+                <input formControlName="nLimit" id="coupon_code" type="number" class="form-control w-100" min="0" required="true">
             </div>
             <div class="col-md-3 mt-2">
                 <label> {{"ONLY_SELECTED_ARTICLE_GROUP" | translate}}</label>
@@ -93,7 +93,7 @@
         </div>
         <div class="card-footer row">
             <div class="col-md-11">
-                <button type="submit" class="btn btn-secondary">{{ "SAVE" | translate}}</button>
+                <button type="submit" class="btn btn-primary">{{ "SAVE" | translate}}</button>
             </div>
             <div class="col-md-1">
                 <button type="reset" class="btn btn-secondary" (click)="close({ action: false })">{{ "CLOSE" |

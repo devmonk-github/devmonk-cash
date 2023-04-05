@@ -64,6 +64,7 @@ export class TestFilterComponent implements OnInit, OnDestroy {
   sSearchValue: string = '';
   showAdvanceSearch = false;
   isDownloadEnable = false;
+  type : string = '';
 
 
   workstations: Array<any> = [];
@@ -140,6 +141,10 @@ export class TestFilterComponent implements OnInit, OnDestroy {
       let data5 = params['from_create_date'];
       let data6 = params['to_create_date'];
       let data7 = params['assignee'];
+
+      this.type = data3;
+
+      console.log("this.type", this.type);
 
       const queryParams:any = {
         //type: ['repair','order','gold-purchase','reservation','giftcard','gold-sell','refund'],
@@ -264,6 +269,8 @@ export class TestFilterComponent implements OnInit, OnDestroy {
     this.apiService.setToastService(this.toastrService);
     this.iBusinessId = localStorage.getItem('currentBusiness') || "";
     this.iLocationId = localStorage.getItem('currentLocation') || "";
+    this.type = this.type;
+    console.log("this.type"+ this.type);
     this.fetchBusinessDetails();
     this.loadTransaction();
 
