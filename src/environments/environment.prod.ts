@@ -22,7 +22,7 @@ export const environment = {
   ORGANIZATION_URL: ORGANIZATION_URL,
   LOG_URL: LOG_URL,
   FISKALY_URL: FISKALY_URL,
-  apiURL: 'http://prismanote.com',
+  apiURL: 'https://prismanote.com',
   oldPlatformUrl: 'https://kassa.prismanote.com',
   fiskalyURL: 'https://kassensichv-middleware.fiskaly.com/api/v2',
   indexedDBName: 'indexedDB1',
