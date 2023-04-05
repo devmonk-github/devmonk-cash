@@ -204,7 +204,6 @@
                                 *ngIf="eKindValueForLayout.includes(activity.oType.eKind)"
                                 data-bs-parent="#kt_accordion_1" [id]="'item'+activityindex"
                                 [class.show]="activityItems.length == 1">
-                                <!-- [class.show]="activity.bIsVisible == true" -->
                                 <div class="accordion-body">
                                     <div class="row">
                                         <div class="col-4">
@@ -216,13 +215,13 @@
                                             <div class="form-group mb-6">
                                                 <label class="form-control-label mb-3">{{ "DESCRIPTION" |
                                                     translate}}</label>
-                                                <textarea class="form-control form-control-solid" name="description"
+                                                <textarea class="form-control form-control-solid text-area-hidden" cdkTextareaAutosize name="description"
                                                     placeholder="{{ 'DESCRIPTION' | translate}}" lines="10"
                                                     [(ngModel)]="activity.sDescription"></textarea>
                                             </div>
 
                                         </div>
-                                        <div class="col-5">
+                                        <div class="col-5 ml-3">
 
                                             <div class="form-group mb-6">
                                                 <label class="form-control-label mb-3">{{ "STATUS" | translate}}
@@ -247,7 +246,7 @@
                                                 <div class="row">
                                                     <div class="col-8">
                                                         <input class="form-control form-control-solid w-100"
-                                                            type="number" [(ngModel)]="activity.nPriceIncVat">
+                                                            type="number" [(ngModel)]="activity.nPriceIncVatAfterDiscount">
                                                     </div>
                                                     <div class="col-4">
                                                         <button class="btn btn-primary">{{ "MAIL_CUSTOMER" |
@@ -261,7 +260,7 @@
                                                     </div>
                                                     <div class="col-6">
                                                         {{"STILL_TO_PAY" | translate}}:
-                                                        {{(activity.nPriceIncVat - activity.nPaidAmount) |
+                                                        {{(activity.nPriceIncVatAfterDiscount - activity.nPaidAmount) |
                                                         currency:tillService.currency}}
                                                     </div>
                                                 </div>
@@ -572,10 +571,10 @@
                                                         <div class="col-lg-8 fv-row">
                                                             <input type="number"
                                                                 class="form-control form-control-lg form-control-solid mb-3 mb-lg-0 w-100"
-                                                                [(ngModel)]="activity.nPriceIncVat">
-                                                            <p *ngIf="activity?.oType?.bDiscount">Discount price
-                                                                {{activity.nPriceIncVat - activity.nTotalAmount |
-                                                                currency:tillService.currency }} </p>
+                                                                [(ngModel)]="activity.nPriceIncVatAfterDiscount">
+                                                            <p *ngIf="activity?.oType?.bDiscount">
+                                                                Discount price {{activity.nPriceIncVat - activity.nTotalAmount | currency:tillService.currency }} 
+                                                            </p>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -674,10 +673,7 @@
                                                     {{activity?.sArticleNumber}} - {{activity?.sArticleName}}
                                                 </div>
                                                 <div class="col-12">
-                                                    <button class="btn btn-success"
-                                                        (click)="AssignOrderProduct(activity , activityindex)"> {{'ADD /
-                                                        CHANGE'
-                                                        | translate}}</button>
+                                                    <button class="btn btn-success" (click)="AssignOrderProduct(activity , activityindex)"> {{'ADD / CHANGE' | translate}}</button>
                                                 </div>
                                             </div>
 
@@ -900,7 +896,7 @@
                                             <div class="form-group mb-6">
                                                 <label class="form-control-label mb-3">{{ "DESCRIPTION" |
                                                     translate}}</label>
-                                                <textarea class="form-control form-control-solid" name="description"
+                                                <textarea class="form-control form-control-solid text-area-hidden" cdkTextareaAutosize name="description"
                                                     placeholder="{{ 'DESCRIPTION' | translate}}" lines="10"
                                                     [(ngModel)]="activity.sDescription"></textarea>
                                             </div>
@@ -1572,7 +1568,7 @@
                                             <div class="form-group mb-6">
                                                 <label class="form-control-label mb-3">{{ "DESCRIPTION" |
                                                     translate}}</label>
-                                                <textarea class="form-control form-control-solid" name="description"
+                                                <textarea class="form-control form-control-solid text-area-hidden" cdkTextareaAutosize name="description"
                                                     placeholder="{{ 'DESCRIPTION' | translate}}" lines="10"
                                                     [(ngModel)]="activity.sDescription"></textarea>
                                             </div>

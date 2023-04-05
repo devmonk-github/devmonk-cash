@@ -6,6 +6,7 @@ import { ApiService } from '../../service/api.service';
 import { DialogComponent, DialogService } from "../../service/dialog";
 import { ReceiptService } from '../../service/receipt.service';
 import { ToastService } from '../toast';
+import { TillService } from '../../service/till.service';
 
 @Component({
   selector: 'app-transaction-action',
@@ -59,7 +60,8 @@ export class TransactionActionDialogComponent implements OnInit {
     private receiptService: ReceiptService,
     private toastService: ToastService,
     private apiService: ApiService,
-    private dialogService:DialogService
+    private dialogService:DialogService,
+    private tillService:TillService
   ) {
     const _injector = this.viewContainer.injector;
     this.dialogRef = _injector.get<DialogComponent>(DialogComponent);
@@ -120,16 +122,8 @@ export class TransactionActionDialogComponent implements OnInit {
         this.bRepairAlternativeDisabled = true
       }
       // console.log('repair items index=', index, this.aRepairItems[index], this.activityItems);
-      oDataSource = this.aRepairItems[index];
-      const aTemp = oDataSource.sNumber.split("-");
-      oDataSource.sPartRepairNumber = aTemp[aTemp.length - 1];
-
       template = this.aTemplates.filter((template: any) => template.eType === type)[0];
-      oDataSource.sBarcodeURI = this.generateBarcodeURI(false, oDataSource.sNumber);
-      oDataSource.oCustomer = this.transaction.oCustomer
-      oDataSource.businessDetails = this.businessDetails;
-      oDataSource.sAdvisedEmpFirstName = this.transaction?.sAdvisedEmpFirstName || 'a';
-      oDataSource.sBusinessLogoUrl = this.transaction.sBusinessLogoUrl
+      oDataSource = this.tillService.prepareDataForRepairReceipt(this.aRepairItems, this.transaction, null, index);
       pdfTitle = oDataSource.sNumber;
 
     } else if (type === 'regular') {
@@ -149,26 +143,7 @@ export class TransactionActionDialogComponent implements OnInit {
     } else if (type === 'order') {
       this.bOrderDisabled = true;
       template = this.aTemplates.filter((template: any) => template.eType === 'order')[0];
-      oDataSource = {
-        ...this.activity,
-        activityitems: this.activityItems,
-        aTransactionItems: this.transaction.aTransactionItems
-      };
-
-      oDataSource.oCustomer = this.transaction.oCustomer
-      oDataSource.businessDetails = this.businessDetails;
-      oDataSource.sBusinessLogoUrl = this.transaction.sBusinessLogoUrl
-      oDataSource.sAdvisedEmpFirstName = this.transaction?.sAdvisedEmpFirstName || 'a';
-
-      let nTotalPaidAmount = 0;
-      oDataSource.activityitems.forEach((item: any) => {
-        item.sActivityItemNumber = item.sNumber;
-        item.sOrderDescription = item.sProductName + '\n' + item.sDescription;
-        nTotalPaidAmount += item.nPaidAmount;
-      });
-      oDataSource.nTotalPaidAmount = nTotalPaidAmount;
-      oDataSource.sActivityNumber = this.transaction.activity.sNumber;
-
+      oDataSource = this.tillService.prepareDataForOrderReceipt(this.activity, this.activityItems, this.transaction); 
       pdfTitle = oDataSource.sActivityNumber;
     }
 

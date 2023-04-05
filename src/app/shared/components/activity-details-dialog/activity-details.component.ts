@@ -214,7 +214,7 @@ export class ActivityDetailsComponent implements OnInit {
     })
     if (this.activity) {
       this.sNumber = this.activity.sNumber;
-      //console.log(this.activity);
+      // console.log(this.activity);
       //console.log("this.activity-----");
       // this.oLocationName = this.activity.oLocationName;
       this.bShowOrderDownload = true;
@@ -257,31 +257,31 @@ export class ActivityDetailsComponent implements OnInit {
     })
   }
 
-  processActivityItems() {
-    const aDiscounts = this.activityItems.filter((item: any) => item?.oType?.eKind === 'discount')
-    this.activityItems = this.activityItems.filter((item: any) => item?.oType?.eKind !== 'discount')
+  // processActivityItems() {
+  //   const aDiscounts = this.activityItems.filter((item: any) => item?.oType?.eKind === 'discount')
+  //   this.activityItems = this.activityItems.filter((item: any) => item?.oType?.eKind !== 'discount')
 
-    if (this.activityItems?.length == 1) {
+  //   if (this.activityItems?.length == 1) {
 
-      this.activityItems[0].bIsVisible = true;
+  //     this.activityItems[0].bIsVisible = true;
 
-    } else if (this.openActivityId) {
+  //   } else if (this.openActivityId) {
 
-      this.activityItems.find((item: any) => item._id === this.openActivityId).bIsVisible = true
+  //     this.activityItems.find((item: any) => item._id === this.openActivityId).bIsVisible = true
 
-    } else {
-      this.activityItems.forEach((item: any) => item.bIsVisible = false)
-    }
+  //   } else {
+  //     this.activityItems.forEach((item: any) => item.bIsVisible = false)
+  //   }
 
-    if (aDiscounts?.length) {
-      this.activityItems.forEach((item: any) => {
-        const discountRecord = aDiscounts.find((d: any) => d.sUniqueIdentifier === item.sUniqueIdentifier)
-        if (discountRecord) {
-          item.nPaidAmount = item.nPaidAmount + discountRecord.nPaidAmount;
-        }
-      })
-    }
-  }
+  //   if (aDiscounts?.length) {
+  //     this.activityItems.forEach((item: any) => {
+  //       const discountRecord = aDiscounts.find((d: any) => d.sUniqueIdentifier === item.sUniqueIdentifier)
+  //       if (discountRecord) {
+  //         item.nPaidAmount = item.nPaidAmount + discountRecord.nPaidAmount;
+  //       }
+  //     })
+  //   }
+  // }
 
  
 
@@ -721,15 +721,26 @@ export class ActivityDetailsComponent implements OnInit {
    }
   }
 
-  async processTransactionItems(result: any) {
-    this.activityItems = result.data[0].result;
-    this.activityItems.forEach((items: any, index: any) => {
-        let brandIndex = this.brandsList.findIndex((brand: any) => brand._id == items.iBusinessBrandId);
-        if (brandIndex != -1) {
-          this.activityItems[index] = { ...items, "brandName": this.brandsList[brandIndex].sName }
-        }
-        
+  async processTransactionItems(oData: any) {
+    const aDiscountRecords = oData.filter((el: any) =>  ['discount'].includes(el.oType.eKind));
+    this.activityItems = oData.map((item: any) => {
+      const oBrand = this.brandsList.find((brand: any) => brand._id === item.iBusinessBrandId);
+      if (oBrand) item.brandName = oBrand.sName;
+      const aDiscounts = aDiscountRecords.filter((el:any) => item.sUniqueIdentifier === el.sUniqueIdentifier);
+      item.nPriceIncVatAfterDiscount = item.nPriceIncVat;
+      // let nTotalDiscount = 0;
+      aDiscounts.forEach((discount:any) => {
+        item.nPriceIncVatAfterDiscount -= discount.nDiscount;
+        // nTotalDiscount += discount.nDiscount;
+        item.nPaidAmount -= discount.nDiscount;
+      });
+      item.nPriceIncVatAfterDiscount = +(item.nPriceIncVatAfterDiscount.toFixed(2));
+      // item.nPaidAmount = +(item.nPaidAmount.toFixed(2));
+      // console.log({ aDiscounts });
+
+      return item;
     });
+    console.log(this.activityItems);
     //this.customer = this.activityItems[0].oCustomer;
     this.oCurrentCustomer = this.activityItems[0].oCustomer;
     this.matchSystemAndCurrentCustomer(this.customer , this.oCurrentCustomer);
@@ -767,7 +778,9 @@ export class ActivityDetailsComponent implements OnInit {
     this.loading = true;
     const url = (this.from === 'services') ? `/api/v1/activities/items/${_id}` : `/api/v1/activities/activity-item/${_id}`;
     this.apiService.postNew('cashregistry', url, this.requestParams).subscribe((result: any) => {
-      this.processTransactionItems(result)
+      this.loading = false;
+      if(result?.data?.length && result?.data[0]?.result?.length)
+        this.processTransactionItems(result?.data[0]?.result)
     });
   }
 
@@ -778,6 +791,9 @@ export class ActivityDetailsComponent implements OnInit {
   submit(activityItemId: any, index: any) {
     this.submitted = true;
     const oActivityItem = this.activityItems[index];
+    oActivityItem.nPriceIncVat = +((oActivityItem.nPriceIncVatAfterDiscount + oActivityItem.nDiscount).toFixed(2));
+    oActivityItem.nTotalAmount = oActivityItem.nPriceIncVat;
+    oActivityItem.nPaidAmount = +((oActivityItem.nPaidAmount + oActivityItem.nDiscount).toFixed(2));
     oActivityItem.iBusinessId = this.iBusinessId;
     this.apiService.putNew('cashregistry', '/api/v1/activities/items/' + activityItemId, oActivityItem)
       .subscribe((result: any) => {

@@ -17,17 +17,18 @@
       <!--begin:Action-->
       <div class="d-flex align-items-center">
         <button type="submit" class="btn btn-primary mx-3" (click)="loadTransaction()">{{ 'SEARCH' | translate
-          }}</button>
-
+          }}
+        </button>
         <div class="d-flex align-items-center">
           <button class="btn btn-secondary" (click)="resetFilters()">
             <i class='fas fa-sync-alt'></i>
           </button>
         </div>
-
-        <a id="kt_horizontal_search_advanced_link" class="btn btn-link ads_search text-info" data-toggle="collapse"
-          data-target="#kt_advanced_search_form" aria-expanded="true" aria-controls="kt_advanced_search_form"
-          (click)="showAdvanceSearch = !showAdvanceSearch">{{ 'ADVANCED_SEARCH' | translate }}</a>
+        <div class="d-flex align-items-center ads_search">
+          <button type="button" (click)="showAdvanceSearch = !showAdvanceSearch" class="btn btn-info me-5">
+            <i class="fa fa-filter"></i>
+          </button>
+        </div>
 
 
       </div>

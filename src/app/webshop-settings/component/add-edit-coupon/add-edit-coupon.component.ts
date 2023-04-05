@@ -42,13 +42,20 @@ export class AddEditCouponComponent implements OnInit {
   ) {
     const _injector = this.viewContainer.parentInjector
     this.dialogRef = _injector.get<DialogComponent>(DialogComponent);
+    let currentDate = new Date();
+    
+    currentDate.setFullYear(currentDate.getFullYear() + 10);
+    var day = ("0" + currentDate.getDate()).slice(-2);
+    var month = ("0" + (currentDate.getMonth() + 1)).slice(-2);
+
+    var today = currentDate.getFullYear()+"-"+(month)+"-"+(day) ;
     this.couponFormGroup = formBuilder.group({
       sCouponCode: ['', Validators.required],
       nAmount: [0, Validators.required],
       nMinSpend: [0],
       sDiscountType: ['fixedAmount', Validators.required],
-      dDateExpired: ['', Validators.required],
-      nLimit: [0],
+      dDateExpired: [today, Validators.required],
+      nLimit: [10000],
       nTimesUsed: [0],
       bExcludeProduct: [false],
       aProductArticleGroup: [[]],
