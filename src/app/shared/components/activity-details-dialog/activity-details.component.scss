@@ -191,6 +191,11 @@
   font-size: .925rem;
 }
 
+.text-area-hidden{
+  overflow-y: hidden;
+  box-sizing: content-box;
+}
+
 .table-custom{
   display: flex;
   flex-direction: column;
