@@ -252,8 +252,6 @@ export class ActivityDetailsComponent implements OnInit {
     this.apiService.getNew('customer', `/api/v1/customer/${this.iBusinessId}/${iCustomerId}`).subscribe((result: any) => {
       if (result?.data) {
         this.customer = result?.data;
-        // console.log(this.customer);
-    // console.log("-----this.customer");
         this.matchSystemAndCurrentCustomer(this.customer , this.oCurrentCustomer);
       }      
     })
@@ -476,8 +474,6 @@ export class ActivityDetailsComponent implements OnInit {
 
 
   openCustomer(customer: any) {
-    //console.log("customer477");
-    //console.log(customer);
     this.dialogService.openModal(CustomerDetailsComponent,
       { cssClass: "modal-xl position-fixed start-0 end-0", context: { customerData: customer, mode: 'details', editProfile: false } }).instance.close.subscribe(result => { });
   }
@@ -682,9 +678,6 @@ export class ActivityDetailsComponent implements OnInit {
       (result: any) => {
         if (index > -1) this.transactions[index].customer = result;
         this.customer = result;
-        
-        // console.log(result);console.log("result");
-
       },
       (error: any) => {
         console.error(error)
@@ -721,8 +714,6 @@ export class ActivityDetailsComponent implements OnInit {
   }];
 
   for(const [key,value] of Object.entries(currentCustomer)){
-    
-    console.log(_.isEqual(systemCustomer[key], currentCustomer[key]));
       if(!(_.isEqual(systemCustomer[key], currentCustomer[key]))){
        this.showSystemCustomer = true;
        //console.log(this.showSystemCustomer);
@@ -752,8 +743,6 @@ export class ActivityDetailsComponent implements OnInit {
     console.log(this.activityItems);
     //this.customer = this.activityItems[0].oCustomer;
     this.oCurrentCustomer = this.activityItems[0].oCustomer;
-    // console.log(this.oCurrentCustomer);
-    // console.log("-----this.oCurrentCustomer");
     this.matchSystemAndCurrentCustomer(this.customer , this.oCurrentCustomer);
     this.oLocationName = this.activityItems[0].oLocationName;
     // if (this.activityItems.length == 1) this.activityItems[0].bIsVisible = true;
@@ -975,12 +964,7 @@ export class ActivityDetailsComponent implements OnInit {
     }
     this.apiService.postNew('cashregistry', '/api/v1/transaction/update-customer', oBody).subscribe((result: any) => {
       
-      
       this.oCurrentCustomer = oBody?.oCustomer;
-      console.log(this.customer)
-      console.log("this.customer")
-      console.log(oBody?.oCustomer)
-      console.log("---oBody?.oCustomer")
       this.matchSystemAndCurrentCustomer(this.customer , this.oCurrentCustomer);
 
       this.toastService.show({ type: "success", text: this.translation['SUCCESSFULLY_UPDATED'] });
