@@ -279,6 +279,7 @@ export class ReceiptService {
         let tableHeadersList: any = [];
         let bWidthsPushedFromColumns = false;
         if (columns) { // parsing columns if present
+            // console.log('has columns')
             columns.forEach((column: any) => {
                 let bInclude: boolean = true;
                 if (column?.condition) {
@@ -308,20 +309,42 @@ export class ReceiptService {
 
                     let dataRow: any = [];
                     rows.forEach((row: any) => {
-                        let bInclude: boolean = true;
-                        if (row?.condition) {
-                            bInclude = this.checkCondition(row.condition, dataSource);
-                        }
-
-                        if (bInclude) {
-                            this.addRow(dataRow, row, dataSource, tableWidths);
+                        // console.log('311, row', row);
+                        if (row?.type === 'image') {
+                            let img = this.addImage(row);
+                            dataRow.push(img);
+                            tableWidths.push(this.getWidth(row.size));
+                        } else if (row?.type === 'stack') {
+                            // currentDataSource = (row?.object) ? this.oOriginalDataSource[row.object] : this.oOriginalDataSource;
+                            // console.log({ dataSource });
+                            let obj: any = {
+                                "stack": this.processStack(row, dataSource)
+                            };
+                            if (row?.alignment) obj.alignment = row.alignment;
+                            dataRow.push(obj);
                             if (!bWidthPushed && !bWidthsPushedFromColumns) {
+                                // console.log('pushing width')
                                 tableWidths.push(this.getWidth(row.size));
                             }
+                        } else {
+                            // console.log(330, 'else');
+                            let bInclude: boolean = true;
+                            if (row?.condition) {
+                                bInclude = this.checkCondition(row.condition, dataSource);
+                            }
+                            
+                            if (bInclude) {
+                                console.log('adding row', { bWidthPushed, bWidthsPushedFromColumns })
+                                this.addRow(dataRow, row, dataSource, tableWidths);
+                                if (!bWidthPushed && !bWidthsPushedFromColumns) {
+                                    // console.log('pushing width')
+                                    tableWidths.push(this.getWidth(row.size));
+                                }
+                            }
                         }
-
                     });
                     texts.push(dataRow);
+                    // console.log({texts, tableWidths})
                     bWidthPushed = true;
 
                 });
@@ -329,6 +352,7 @@ export class ReceiptService {
         } else { //we don't have foreach so only parsing single row
             let dataRow: any = [];
             rows.forEach((row: any) => { //parsing rows
+                // console.log({row});
                 if (row?.type === 'image') {
                     let img = this.addImage(row);
                     dataRow.push(img);
@@ -339,6 +363,7 @@ export class ReceiptService {
                     tableWidths.push(this.getWidth(row.size));
                 } else if (row?.type === 'stack') {
                     currentDataSource = (row?.object) ? this.oOriginalDataSource[row.object] : this.oOriginalDataSource;
+                    // console.log({ currentDataSource });
                     let obj: any = {
                         "stack": this.processStack(row, currentDataSource)
                     };
@@ -670,6 +695,7 @@ export class ReceiptService {
     }
 
     processStack(item: any, object?: any) {
+        // console.log('processStack', item, object);
         const stack: any = [];
         item.elements.forEach((el: any) => {
             if (el?.type === 'image') {
@@ -677,6 +703,7 @@ export class ReceiptService {
             } else if (el?.type === 'barcode') {
                 stack.push(this.addBarcode(el))
             } else if (el?.type === 'parts') {
+                // console.log('add parts with el, object', el, object)
                 stack.push(this.addParts(el, object))
             } else {
                 let bTestResult = true;
@@ -817,6 +844,7 @@ export class ReceiptService {
         let testResult = text.match('(<strike>(.*)</strike>)(.*)');
         // console.log({testResult});
         if (text.indexOf('<strike>') > 1) {
+            // console.log('if')
             obj = [
                 { text: testResult[1], alignment: row?.alignment || '' },
                 {
@@ -829,6 +857,7 @@ export class ReceiptService {
                 }
             ];
         } else {
+            // console.log('else')
             obj = {
                 columns: [
                     { text: testResult[2], decoration: 'lineThrough' },
@@ -842,19 +871,38 @@ export class ReceiptService {
     }
 
     addParts(el: any, object?:any) {
+        // console.log(872, 'addparts', el, object);
+        let oDS:any;
+        if(object) {
+            oDS = object;
+        } else {
+            if(el?.object) {
+                oDS = this.oOriginalDataSource[el.object];
+            } else {
+                oDS = this.oOriginalDataSource;
+            }
+        }
+        // console.log({oDS})
         let obj: any = [];
         el.parts.forEach((part: any) => {
             if (part?.ifAnd) {
                 part.ifAnd.forEach((rule: any) => {
-                    let field = (object) ? object : (el?.object) ? this.oOriginalDataSource[el.object][rule.field] : this.oOriginalDataSource[rule.field];
-                    let bTestResult = this.commonService.comparators[rule.compare](field, rule.target)
+                    // console.log(rule);
+                    let field = oDS[rule.field];
+                    let target = (rule?.targetMode === 'fetch') ? oDS[rule.target] : rule.target;
+                    let bTestResult = this.commonService.comparators[rule.compare](field, target)
+                    // console.log({field, bTestResult, target})
                     if (bTestResult) {
-                        let text = this.pdfService.replaceVariables(part?.text, (el?.object) ? this.oOriginalDataSource[el.object] : this.oOriginalDataSource)
-                        obj.push({ text: text, alignment: el?.alignment });
+                        let text = this.pdfService.replaceVariables(part?.text, oDS)
+                        let oContent = { text: text, alignment: el?.alignment };
+                        if (text?.indexOf('<strike>') != -1) {
+                            oContent = this.addStrikenData(obj, text, part);
+                        }
+                        obj.push(oContent);
                     }
                 })
             } else {
-                let text = this.pdfService.replaceVariables(part?.text,(object) ? object : (el?.object) ? this.oOriginalDataSource[el.object] : this.oOriginalDataSource)
+                let text = this.pdfService.replaceVariables(part?.text,oDS)
                 obj.push({ text: text, alignment: el?.alignment });
             }
         })
