@@ -177,20 +177,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     private customerStructureService: CustomerStructureService,
     private fiskalyService: FiskalyService,
     private receiptService: ReceiptService,
-  ) {
+  ) {}
 
-    // import(
-    //   `@angular/common/locales/${this.selectedLanguage}.js`
-    // ).then(module => registerLocaleData(module.default))
-
-    // this.translateService.onLangChange
-    //   .subscribe((langChangeEvent: LangChangeEvent) => {
-    //     import(
-    //       `@angular/common/locales/${langChangeEvent.lang}.js`
-    //     ).then(module => registerLocaleData(module.default))
-    //   })
-
-  }
   async ngOnInit() {
     this.apiService.setToastService(this.toastrService)
     this.paymentDistributeService.setToastService(this.toastrService)
@@ -967,28 +955,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     if (bOrderCondition) {
       // print order receipt
       const orderTemplate = aTemplates.filter((template: any) => template.eType === 'order')[0];
-      // oDataSource.sActivityNumber = oDataSource.activity.sNumber;
-      const oOrderReceiptDataSource = {
-        ...this.activity,
-        activityitems: this.activityItems,
-        aTransactionItems: this.transaction.aTransactionItems,
-        
-      };
-
-      oOrderReceiptDataSource.oCustomer = oDataSource.oCustomer
-      oOrderReceiptDataSource.businessDetails = this.businessDetails;
-      oOrderReceiptDataSource.sBusinessLogoUrl = oDataSource.sBusinessLogoUrl;
-      oOrderReceiptDataSource.sAdvisedEmpFirstName = oDataSource?.sAdvisedEmpFirstName || 'a';
-
-      let nTotalPaidAmount = 0;
-      oOrderReceiptDataSource.activityitems.forEach((item: any) => {
-        item.sActivityItemNumber = item.sNumber;
-        item.sOrderDescription = item.sProductName + '\n' + item.sDescription;
-        nTotalPaidAmount += item.nPaidAmount;
-      });
-      oOrderReceiptDataSource.nTotalPaidAmount = nTotalPaidAmount;
-      oOrderReceiptDataSource.sActivityNumber = this.transaction.activity.sNumber;
-      this.sendForReceipt(oOrderReceiptDataSource, orderTemplate, oOrderReceiptDataSource.sNumber,'order');
+      const oOrderData:any = this.tillService.prepareDataForOrderReceipt(this.activity, this.activityItems, oDataSource);
+      this.sendForReceipt(oOrderData, orderTemplate, oOrderData.sNumber,'order');
     }
     if (bRegularCondition) {
       //print proof of payments receipt
@@ -1003,22 +971,16 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       }
       //use two column layout
       const template = aTemplates.filter((template: any) => template.eType === 'repair')[0];
-      const oRepairDataSource = this.activityItems.filter((item: any) => item.oType.eKind === 'repair')[0];
-      oRepairDataSource.oCustomer = this.transaction.oCustomer
-      oRepairDataSource.businessDetails = this.businessDetails;
-      oRepairDataSource.sAdvisedEmpFirstName = this.employee?.sFirstName || 'a';
-      const aTemp = oRepairDataSource.sNumber.split("-");
-      oRepairDataSource.sPartRepairNumber = aTemp[aTemp.length - 1];
+      const oRepairDataSource:any = this.tillService.prepareDataForRepairReceipt(this.activityItems,oDataSource, this.employee)
       this.sendForReceipt(oRepairDataSource, template, oRepairDataSource.sNumber, 'repair');
-
     }
 
     if (bRepairAlternativeCondition) {
       // use repair_alternative laYout
       const template = aTemplates.filter((template: any) => template.eType === 'repair_alternative')[0];
-      oDataSource = this.activityItems.filter((item: any) => item.oType.eKind === 'repair');
-      oDataSource.sAdvisedEmpFirstName = this.employee?.sFirstName || 'a';
-      oDataSource.forEach((data: any) => {
+      const oAlternativeDataSource = this.activityItems.filter((item: any) => item.oType.eKind === 'repair');
+      oAlternativeDataSource.sAdvisedEmpFirstName = this.employee?.sFirstName || 'a';
+      oAlternativeDataSource.forEach((data: any) => {
         data.sBusinessLogoUrl = _oLogoData.data;
         data.businessDetails = this.businessDetails;
         this.sendForReceipt(data, template, data.sNumber, 'repair_alternative');

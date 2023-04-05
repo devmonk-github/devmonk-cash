@@ -75,7 +75,7 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   nTotalItemPaidPayment:any =0;
   translation: any = [];
   oCurrentCustomer:any;
-  showSystemCustomer:Boolean = false;
+  showSystemCustomer:boolean = false;
   @ViewChild('slider', { read: ViewContainerRef }) container!: ViewContainerRef;
 
   constructor(
@@ -465,14 +465,14 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
       "sLastName" : "",
       "sPrefix" : "",
       "sGender" : "",
-      "sVatNumber" : "",
-      "sCocNumber" : "",
+      //"sVatNumber" : "",
+      //"sCocNumber" : "",
       "sEmail" : ""
   }];
 
-  for(const[key] of Object.entries(Customer)){
+  for(const [key,value] of Object.entries(currentCustomer)){
       if(!(_.isEqual(systemCustomer[key], currentCustomer[key]))){
-       this.showSystemCustomer= true
+       this.showSystemCustomer = true;
       }
    }
   }

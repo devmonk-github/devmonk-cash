@@ -809,7 +809,7 @@ export class TillService {
     } else {
       oMergedSettings = { ...oMergedSettings, ...(this.settings.aCashRegisterPrefill.find((el: any) => el.iLocationId === this.iLocationId) || oPrefillSettings) };
     }
-    console.log(this.settings);
+    // console.log(this.settings);
 
     this.settings.currentLocation = oMergedSettings;
     // console.log(this.settings);
@@ -833,5 +833,49 @@ export class TillService {
     this.iBusinessId = localStorage.getItem('currentBusiness') || '';
     this.iLocationId = localStorage.getItem('currentLocation') || '';
     this.iWorkstationId = localStorage.getItem('currentWorkstation') || '';
+  }
+
+  prepareDataForOrderReceipt(activity:any, activityItems:any, transaction:any) {
+    const oDataSource = {
+        ...activity,
+        activityitems: activityItems,
+        aTransactionItems: transaction.aTransactionItems,
+      }
+    oDataSource.oCustomer = transaction.oCustomer
+    oDataSource.businessDetails = transaction.businessDetails;
+    oDataSource.sBusinessLogoUrl = transaction.sBusinessLogoUrl;
+    oDataSource.sAdvisedEmpFirstName = transaction?.sAdvisedEmpFirstName || 'a';
+
+    let nTotalPaidAmount = 0;
+    oDataSource.activityitems.forEach((item: any) => {
+      item.sActivityItemNumber = item.sNumber;
+      item.sOrderDescription = item.sProductName + '\n' + item.sDescription;
+      nTotalPaidAmount += item.nPaidAmount;
+    });
+    oDataSource.nTotalPaidAmount = nTotalPaidAmount;
+    oDataSource.sActivityNumber = activity.sNumber;
+    
+    return oDataSource;
+  }
+
+  prepareDataForRepairReceipt(activityItems: any, transaction: any, employee:any, index:number = 0) {
+    const oDS = activityItems.filter((item: any) => item.oType.eKind === 'repair')[index];
+    oDS.oCustomer = transaction.oCustomer
+    oDS.businessDetails = transaction.businessDetails;
+    oDS.sAdvisedEmpFirstName = employee?.sFirstName || transaction?.sAdvisedEmpFirstName || 'a';
+    const aParts = oDS.sNumber.split("-");
+    oDS.sPartRepairNumber = aParts[aParts.length - 1];
+    oDS.sBusinessLogoUrl = transaction.sBusinessLogoUrl;
+    
+    const sEDA = oDS.eEstimatedDateAction;
+
+    if (sEDA === 'call_on_ready')
+      oDS.eEstimatedDateAction = this.translateService.instant('CALL_ON_READY');
+    else if (sEDA === 'email_on_ready')
+      oDS.eEstimatedDateAction = this.translateService.instant('EMAIL_ON_READY');
+    else
+      oDS.eEstimatedDateAction = this.translateService.instant('WHATSAPP_ON_READY');
+
+    return oDS;
   }
 }
