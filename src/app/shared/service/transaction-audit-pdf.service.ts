@@ -3,6 +3,7 @@ import { TranslateService } from '@ngx-translate/core';
 import * as _moment from 'moment';
 import { PdfService } from 'src/app/shared/service/pdf2.service';
 import { ApiService } from './api.service';
+import { TillService } from './till.service';
 const moment = (_moment as any).default ? (_moment as any).default : _moment;
 
 @Injectable()
@@ -13,9 +14,9 @@ export class TransactionAuditUiPdfService {
     aRepairItems: any;
     aGoldPurchases: any;
     aGiftItems: any;
-    iBusinessId: any = '';
-    iLocationId: any = '';
-    iWorkstationId: any = '';
+    iBusinessId: any = localStorage.getItem('currentBusiness');
+    iLocationId: any = localStorage.getItem('currentLocation');
+    iWorkstationId: any = localStorage.getItem('currentWorkstation');
     content: any = [];
     currency: string = "€";
 
@@ -93,10 +94,8 @@ export class TransactionAuditUiPdfService {
         private pdf: PdfService,
         private apiService: ApiService,
         private translateService: TranslateService,
+        private tillService: TillService
         ) {
-        this.iBusinessId = localStorage.getItem('currentBusiness') || '';
-        this.iLocationId = localStorage.getItem('currentLocation') || '';
-        this.iWorkstationId = localStorage.getItem('currentWorkstation') || '';
 
         const aKeywords: any = [
             'CASH_LEFTOVER', 
@@ -236,24 +235,29 @@ export class TransactionAuditUiPdfService {
 
         //get selected workstations
         let sWorkstation = '';
-        
-        if (aSelectedWorkStation?.length) {
-            // aWorkStation = [];
-            sWorkstation = aWorkStation
-                .filter((workstation: any) => aSelectedWorkStation.includes(workstation._id))
-                .map((workstation: any) => workstation.sName)
-                .join(', ');
-            if (!sWorkstation){
-                const temp = aWorkStation.filter((workstation: any) => workstation._id === aSelectedWorkStation);
-                if(temp?.length){
-                    sWorkstation = temp[0].sName;
-                } else {
-                    sWorkstation = aSelectedWorkStation;
+        if(this.tillService.settings.sDayClosureMethod === 'workstation') {
+            if (aSelectedWorkStation?.length) {
+                // aWorkStation = [];
+                sWorkstation = aWorkStation
+                    .filter((workstation: any) => aSelectedWorkStation.includes(workstation._id))
+                    .map((workstation: any) => workstation.sName)
+                    .join(', ');
+                if (!sWorkstation) {
+                    const temp = aWorkStation.filter((workstation: any) => workstation._id === aSelectedWorkStation);
+                    if (temp?.length) {
+                        sWorkstation = temp[0].sName;
+                    } else {
+                        sWorkstation = aSelectedWorkStation;
+                    }
                 }
+            } else {
+                sWorkstation = aWorkStation.map((workstation: any) => workstation.sName).join(', ');
             }
         } else {
             sWorkstation = aWorkStation.map((workstation: any) => workstation.sName).join(', ');
         }
+        
+        
 
         let dataFromTo =
             '( ' + this.translations['FROM'] + ': ' + moment(oFilterDates.startDate).format('DD-MM-yyyy hh:mm A') + " "+  this.translations['TO']  + " " +

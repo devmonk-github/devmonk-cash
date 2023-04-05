@@ -51,8 +51,8 @@
                                                 (change)="onStateChange($event, true, aDayClosure)">
                                                 <ng-option *ngFor="let oDayClosure of aDayClosure"
                                                     [value]="oDayClosure.dOpenDate">
-                                                    {{oDayClosure?.dOpenDate | date: 'yyyy-MM-dd HH:mm'}} |
-                                                    {{oDayClosure?.sWorkStationName}}
+                                                    {{oDayClosure?.dOpenDate | date: 'yyyy-MM-dd HH:mm'}} 
+                                                    <span *ngIf="sDayClosureMethod === 'workstation' ">| {{oDayClosure?.sWorkStationName}}</span>
                                                 </ng-option>
                                             </ng-select>
                                         </div>
@@ -66,8 +66,8 @@
                                                 <ng-option *ngFor="let oDayClosure of aDayClosure"
                                                     [value]="oDayClosure.dCloseDate"
                                                     [disabled]="oDayClosure?.isDisable ? true : false">
-                                                    {{oDayClosure?.dCloseDate | date: 'yyyy-MM-dd HH:mm' }} |
-                                                    {{oDayClosure?.sWorkStationName}}
+                                                    {{oDayClosure?.dCloseDate | date: 'yyyy-MM-dd HH:mm' }} 
+                                                    <span *ngIf="sDayClosureMethod === 'workstation' ">| {{oDayClosure?.sWorkStationName}}</span>
                                                 </ng-option>
                                             </ng-select>
                                         </div>
@@ -209,7 +209,7 @@
                                             </ng-select>
                                         </div>
                                         <!-- WORK_STATION -->
-                                        <div class="col-md-6">
+                                        <div class="col-md-6" *ngIf="sDayClosureMethod === 'workstation' || IsDynamicState">
                                             <label class="fs-6 form-label fw-bolder text-dark">{{'WORK_STATION' |
                                                 translate}}</label>
 
