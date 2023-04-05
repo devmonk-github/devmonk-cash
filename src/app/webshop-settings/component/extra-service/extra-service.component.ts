@@ -58,6 +58,7 @@ export class ExtraServiceComponent implements OnInit {
   articlesLoading: boolean = false;
   engravingList: Observable<any> = of([]);
   engravingListLoading: boolean = false;
+  engravingTypeExist: boolean = false;
   requestParams : any = {
     skip: 0,
     limit: 25,
@@ -157,24 +158,38 @@ export class ExtraServiceComponent implements OnInit {
 
   addEngravingType(){
     this.engravingListLoading = true;
-    this.service.aEngravingDetails.push({
-      sType: this.engravingTypeName,
-      oFontDetails : {
-        bEnabled : false,
-        nPrice : 0,
-        aFontList : [],
-        isForArticleGroup: false,
-        aArticleGroup: []
-      }
-    });
-    this.engravingList = of(this.service.aEngravingDetails);
-    this.selectedType = this.service.aEngravingDetails[this.service.aEngravingDetails.length - 1];
+    this.engravingTypeExist = false;
+    let existingIndex = this.service.aEngravingDetails.findIndex((type : any) => type.sType == this.engravingTypeName);
+    if(existingIndex > -1){
+      this.engravingTypeExist = true;
+
+    } else{
+      this.service.aEngravingDetails.push({
+        sType: this.engravingTypeName,
+        oFontDetails : {
+          bEnabled : false,
+          nPrice : 0,
+          aFontList : [],
+          isForArticleGroup: false,
+          aArticleGroup: []
+        }
+      });
+      this.engravingList = of(this.service.aEngravingDetails);
+      this.selectedType = this.service.aEngravingDetails[this.service.aEngravingDetails.length - 1];
+      this.isAddNewType = false;
+    }
     setTimeout(()=>{ this.engravingListLoading = false}, 50);
     this.engravingTypeName = '';
-    this.isAddNewType = false;
   }
   
   trackByFn(item: any) {
     return item.sType || item._id;
+  }
+  removeSelectedType(){
+    this.engravingListLoading = false;
+    this.service.aEngravingDetails = this.service.aEngravingDetails.filter((type: any) => this.selectedType.sType != type.sType);
+    this.engravingList = of(this.service.aEngravingDetails);
+    this.selectedType = this.service.aEngravingDetails[this.service.aEngravingDetails.length - 1];
+    setTimeout(()=>{ this.engravingListLoading = false}, 50);
   }
 }
