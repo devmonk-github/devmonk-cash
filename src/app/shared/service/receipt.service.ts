@@ -274,6 +274,12 @@ export class ReceiptService {
         const forEach = element.forEach;
         const layout = element.layout;
         const styles = element.styles;
+        console.log({styles})
+        let nReduceWidthByMargin = 0;
+        if(styles && styles?.margin?.length) {
+            nReduceWidthByMargin = styles.margin[0] + styles.margin[2];
+        }
+        console.log({ nReduceWidthByMargin });
 
         let tableWidths: any = [];
         let tableHeadersList: any = [];
@@ -293,7 +299,8 @@ export class ReceiptService {
                         obj = { ...obj, ...column.styles };
                     }
                     tableHeadersList.push(obj);
-                    tableWidths.push(this.getWidth(column.size));
+                    const nWidth = (column.size === '*') ? this.getWidth(column.size) : this.getWidth(column.size) - nReduceWidthByMargin;
+                    tableWidths.push(nWidth);
                 }
             });
             bWidthsPushedFromColumns = true;
@@ -309,22 +316,16 @@ export class ReceiptService {
 
                     let dataRow: any = [];
                     rows.forEach((row: any) => {
-                        // console.log('311, row', row);
+                        console.log('311, row', row.size, row.size - nReduceWidthByMargin, this.getWidth(row.size - nReduceWidthByMargin), this.getWidth(row.size) - nReduceWidthByMargin);
                         if (row?.type === 'image') {
                             let img = this.addImage(row);
                             dataRow.push(img);
                             tableWidths.push(this.getWidth(row.size));
                         } else if (row?.type === 'stack') {
-                            // currentDataSource = (row?.object) ? this.oOriginalDataSource[row.object] : this.oOriginalDataSource;
-                            // console.log({ dataSource });
-                            let obj: any = {
-                                "stack": this.processStack(row, dataSource)
-                            };
-                            if (row?.alignment) obj.alignment = row.alignment;
-                            dataRow.push(obj);
+                            dataRow.push(this.processStack(row, dataSource));
                             if (!bWidthPushed && !bWidthsPushedFromColumns) {
-                                // console.log('pushing width')
-                                tableWidths.push(this.getWidth(row.size));
+                                const nWidth = (row.size === '*') ? this.getWidth(row.size) : this.getWidth(row.size) - nReduceWidthByMargin;
+                                tableWidths.push(nWidth);
                             }
                         } else {
                             // console.log(330, 'else');
@@ -337,8 +338,8 @@ export class ReceiptService {
                                 // console.log('adding row', { bWidthPushed, bWidthsPushedFromColumns })
                                 this.addRow(dataRow, row, dataSource, tableWidths);
                                 if (!bWidthPushed && !bWidthsPushedFromColumns) {
-                                    // console.log('pushing width')
-                                    tableWidths.push(this.getWidth(row.size));
+                                    const nWidth = (row.size === '*') ? this.getWidth(row.size) : this.getWidth(row.size) - nReduceWidthByMargin;
+                                    tableWidths.push(nWidth);
                                 }
                             }
                         }
@@ -352,7 +353,6 @@ export class ReceiptService {
         } else { //we don't have foreach so only parsing single row
             let dataRow: any = [];
             rows.forEach((row: any) => { //parsing rows
-                // console.log({row});
                 if (row?.type === 'image') {
                     let img = this.addImage(row);
                     dataRow.push(img);
@@ -363,13 +363,9 @@ export class ReceiptService {
                     tableWidths.push(this.getWidth(row.size));
                 } else if (row?.type === 'stack') {
                     currentDataSource = (row?.object) ? this.oOriginalDataSource[row.object] : this.oOriginalDataSource;
-                    // console.log({ currentDataSource });
-                    let obj: any = {
-                        "stack": this.processStack(row, currentDataSource)
-                    };
-                    if (row?.alignment) obj.alignment = row.alignment;
-                    dataRow.push(obj);
-                    tableWidths.push(this.getWidth(row.size));
+                    dataRow.push(this.processStack(row, currentDataSource));
+                    const nWidth = (row.size === '*') ? this.getWidth(row.size) : this.getWidth(row.size) - nReduceWidthByMargin;
+                    tableWidths.push(nWidth);
                 } else {
                     currentDataSource = (row?.object) ? this.oOriginalDataSource[row.object] : this.oOriginalDataSource;
 
@@ -380,7 +376,8 @@ export class ReceiptService {
 
                     if (bInclude) {
                         this.addRow(dataRow, row, currentDataSource, tableWidths);
-                        tableWidths.push(this.getWidth(row.size));
+                        const nWidth = (row.size === '*') ? this.getWidth(row.size) : this.getWidth(row.size) - nReduceWidthByMargin;
+                        tableWidths.push(nWidth);
                     }
                 }
             });
@@ -481,18 +478,10 @@ export class ReceiptService {
                         }
                     })
                     if(bTestResult) {
-                        let obj: any = {
-                            "stack": this.processStack(el, (el?.object) ? this.oOriginalDataSource[el?.object] : null)
-                        };
-                        if (el?.width) obj.width = el.width;
-                        columnData = obj;
+                        columnData = this.processStack(el, (el?.object) ? this.oOriginalDataSource[el?.object] : null);
                     }
                 } else {
-                    let obj: any = {
-                        "stack": this.processStack(el, (el?.object) ? this.oOriginalDataSource[el?.object] : null)
-                    };
-                    if (el?.width) obj.width = el.width;
-                    columnData = obj;
+                    columnData = this.processStack(el, (el?.object) ? this.oOriginalDataSource[el?.object] : null);
                 }
             } else if (el?.type === 'parts') {
                 columnData = this.addParts(el)
@@ -686,10 +675,7 @@ export class ReceiptService {
             dataRow.push(obj);
         } else if (row?.type) {
             if (row?.type === 'stack') {
-                let obj = {
-                    "stack": this.processStack(row, dataSource)
-                };
-                dataRow.push(obj);
+                dataRow.push(this.processStack(row, dataSource));
             }
         }
     }
@@ -705,6 +691,8 @@ export class ReceiptService {
             } else if (el?.type === 'parts') {
                 // console.log('add parts with el, object', el, object)
                 stack.push(this.addParts(el, object))
+            } else if (el?.type === 'table') {
+                stack.push(this.processTableData(el));
             } else {
                 let bTestResult = true;
                 if (el?.ifAnd) {
@@ -733,7 +721,7 @@ export class ReceiptService {
                         }
 
                         obj = { ...obj, ...styles, ...el?.styles };
-                        // console.log(obj)
+                        console.log({obj})
                         stack.push(obj);
                     }
 
@@ -765,7 +753,12 @@ export class ReceiptService {
                 }
             }
         });
-        return stack;
+        let obj:any = {
+            "stack": stack
+        };
+        if (item?.width) obj.width = item.width;
+        if (item?.alignment) obj.alignment = item.alignment;
+        return obj;
     }
 
     cleanUp() {
