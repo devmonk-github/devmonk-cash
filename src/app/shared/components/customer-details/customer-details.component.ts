@@ -173,7 +173,13 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     nLoyaltyPointsValue: 0 ,
     createrDetail:{},
     iEmployeeId:'',
-    aGroups:[]
+    aGroups:[],
+    bIsCompany:false,
+    oContactPerson:{
+      sFirstName: '',
+      sPrefix: '',
+      sLastName: ''
+    }
   }
 
   requestParams: any = {
@@ -393,6 +399,12 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
 
   customerNotesChanged(event:any){
     this.customerNotesChangedSubject.next(event);
+  }
+
+  customerType(event:any){
+    // console.log("customer type" , event);
+    if(event == 'Firm') this.customer.bIsCompany = true;
+    else this.customer.bIsCompany = false;
   }
 
   getCustomerGroups(){

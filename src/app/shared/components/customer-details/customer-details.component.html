@@ -578,9 +578,10 @@
         <ng-container *ngIf="mode === 'create' || (mode === 'details' && editProfile)">
             <div class="row">
                 <div class="col-8">
-                    <div class="row mb-3">
+                    <div class="row mb-3" *ngIf="!customer?.bIsCompany">
                         <div class="col-2">
-                            <ng-select [(ngModel)]="customer.sSalutation" id="sSalutation" [clearable]="false">
+                            <ng-select [(ngModel)]="customer.sSalutation" id="sSalutation" [clearable]="false"
+                                (ngModelChange)="customerType($event)">
                                 <ng-option value="">-</ng-option>
                                 <ng-option *ngFor="let salutation of salutations" [value]="salutation">{{salutation}}
                                 </ng-option>
@@ -588,9 +589,8 @@
                         </div>
                         <div class="col-4">
                             <div>
-                                <input class="form-control capitalize-first" id="sFirstName"
-                                    placeholder="{{'FIRST_NAME' | translate}}" [(ngModel)]="customer.sFirstName"
-                                    (ngModelChange)="convertFirstLetterUpper($event , 'sFirstName')" />
+                                <input class="form-control capitalize-first" id="sFirstName" placeholder="{{'FIRST_NAME' | translate}}"
+                                    [(ngModel)]="customer.sFirstName" (ngModelChange)="convertFirstLetterUpper($event , 'sFirstName')" />
                             </div>
                         </div>
                         <div class="col-2">
@@ -600,11 +600,49 @@
                             </div>
                         </div>
                         <div class="col-4">
-                            <div><input class="form-control capitalize-first" id="sLastName"
-                                    placeholder="{{'LAST_NAME' | translate}}" [(ngModel)]="customer.sLastName"
-                                    (ngModelChange)="convertFirstLetterUpper($event , 'sLastName')" required /></div>
+                            <div><input class="form-control capitalize-first" id="sLastName" placeholder="{{'LAST_NAME' | translate}}"
+                                    [(ngModel)]="customer.sLastName" (ngModelChange)="convertFirstLetterUpper($event , 'sLastName')"
+                                    required /></div>
                         </div>
-                        
+                    </div>
+                    
+                    <div class="row mb-3" *ngIf="customer?.bIsCompany">
+                        <div class="col-2">
+                            <ng-select [(ngModel)]="customer.sSalutation" id="sSalutation" [clearable]="false"
+                                (ngModelChange)="customerType($event)">
+                                <ng-option value="">-</ng-option>
+                                <ng-option *ngFor="let salutation of salutations" [value]="salutation">{{salutation}}
+                                </ng-option>
+                            </ng-select>
+                        </div>
+                        <div class="col-10">
+                            <input class="form-control" id="sCompanyName" [(ngModel)]="customer.sCompanyName"
+                                (ngModelChange)="convertFirstLetterUpper($event , 'sCompanyName')" />
+                        </div>
+                    
+                    </div>
+
+                    <div class="row" *ngIf="customer?.bIsCompany">
+                        <div class="col-12">
+                            <p>{{'CONTACT_PERSON' | translate}}</p>
+                        </div>
+                        <div class="row">
+                            <div class="col-4">
+                                <div>
+                                    <input class="form-control" placeholder="{{'FIRST_NAME' | translate}}" [(ngModel)]="customer.oContactPerson.sFirstName" />
+                                </div>
+                            </div>
+                            <div class="col-2">
+                                <div>
+                                    <input class="form-control"  placeholder="{{'INSERT' | translate}}"
+                                        [(ngModel)]="customer.oContactPerson.sPrefix" />
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div><input class="form-control"placeholder="{{'LAST_NAME' | translate}}" [(ngModel)]="customer.oContactPerson.sLastName"/>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div class="row">
                         <div class="col-6">
@@ -812,13 +850,13 @@
 
                     <h3>{{'COMPANY_DETAILS' | translate}}</h3>
 
-                    <div class="mb-3">
+                    <!-- <div class="mb-3">
                         <label for="sCompanyName">{{'COMPANY_NAME' | translate}}</label>
                         <input class="form-control mb-6" id="sCompanyName" [(ngModel)]="customer.sCompanyName"(ngModelChange)="convertFirstLetterUpper($event , 'sCompanyName')"  />
-                    </div>
+                    </div> -->
 
 
-                    <div class="mb-3">
+                    <!-- <div class="mb-3">
                         <label for="nPaymentTermDays">{{'PAYMENT_TERM_IN_DAYS' | translate}}</label>
                         <input class="form-control" id="nPaymentTermDays" [(ngModel)]="customer.nPaymentTermDays" />
                     </div>
@@ -826,7 +864,7 @@
                     <div class="mb-3">
                         <label for="sVatNumber">{{'VAT_NUMBER' | translate}}</label>
                         <input class="form-control" [(ngModel)]="customer.sVatNumber" />
-                    </div>
+                    </div> -->
 
                     <div class="mb-3" *ngIf="customer?.sCocNumber">
                         <label for="sCocNumber">{{'COC_NUMBER' | translate}}</label>
