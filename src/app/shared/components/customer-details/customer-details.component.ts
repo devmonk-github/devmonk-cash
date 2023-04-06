@@ -780,8 +780,6 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
 
   loadTransactions() {
     if (this.customer.bCounter) return;
-    //console.log("this.getMergedCustomerIdss");
-    //console.log(this.customer._id);
     const oBody = {
       iBusinessId:this.requestParams.iBusinessId,
       iCustomerId: this.customer._id
@@ -789,21 +787,11 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     let url = '/api/v1/customer/merged/customer';
     this.apiService.postNew('customer', url, oBody).subscribe((result: any) => {
       if (result) {
-        
-       // console.log(result);
-       // console.log("this.mergeCustomerIdList--------");
         this.mergeCustomerIdList = result.aUniqueCustomerId;
         this.requestParams.oFBy = {
-      
           iCustomerId: result.aUniqueCustomerId
         }
-    
       }
-    
-
-    
-
-    
 
     this.bTransactionsLoader = true;
     const body = {
