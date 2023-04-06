@@ -600,18 +600,18 @@ export class TillService {
       if (item.bDiscountOnPercentage) {
         disc = this.getPercentOf(disc, item.nPriceIncVat)
         item.nDiscountToShow = +(disc.toFixed(2));
-      } else { item.nDiscountToShow = disc }
+      } else { item.nDiscountToShow = +(disc.toFixed(2)); }
       // console.log('item.nDiscountToShow', item.nDiscountToShow, 'item.nPriceIncVat', 'nPriceIncVat', item.nPriceIncVat, 'nQuantity', item.nQuantity, 'nRedeemedLoyaltyPoints', item.nRedeemedLoyaltyPoints, 'nGiftcardDiscount',item.nGiftcardDiscount);
       
-      item.nPriceIncVatAfterDiscount = (+(item.nPriceIncVat.toFixed(2)) - +(item.nDiscountToShow.toFixed(2))) * item.nQuantity - (item?.nRedeemedLoyaltyPoints || 0) - (item?.nGiftcardDiscount || 0);
+      item.nPriceIncVatAfterDiscount = (+(item.nPriceIncVat.toFixed(2)) - item.nDiscountToShow) * item.nQuantity - (item?.nRedeemedLoyaltyPoints || 0) - (item?.nGiftcardDiscount || 0);
       item.nTotalPriceIncVat = item.nPriceIncVat * item.nQuantity;
-      // item.nPriceIncVatAfterDiscount = parseFloat(item.nPriceIncVatAfterDiscount.toFixed(2));
+      item.nPriceIncVatAfterDiscount = +(item.nPriceIncVatAfterDiscount.toFixed(2));
       // console.log('nPriceIncVatAfterDiscount', item.nPriceIncVatAfterDiscount);
       if (item.oType.bRefund === true && item.oType.eKind != 'gold-purchase') item.nPriceIncVatAfterDiscount = -(item.nPriceIncVatAfterDiscount)
       // console.log('item.nPriceIncVatAfterDiscount', item.nPriceIncVatAfterDiscount)
       // item.nRevenueAmount = (+(item.nRevenueAmount.toFixed(2)) - item.nDiscount) * item.nQuantity;
       // console.log(566, item?.totalPaymentAmount, item.nRevenueAmount, item.nDiscountToShow, item.nRedeemedLoyaltyPoints, item.nGiftcardDiscount);
-      item.totalPaymentAmount = (parseFloat(item.nRevenueAmount) - parseFloat(item.nDiscountToShow)) * item.nQuantity - (item?.nRedeemedLoyaltyPoints || 0) - (item?.nGiftcardDiscount || 0);
+      item.totalPaymentAmount = (parseFloat(item.nRevenueAmount) - item.nDiscountToShow) * item.nQuantity - (item?.nRedeemedLoyaltyPoints || 0) - (item?.nGiftcardDiscount || 0);
       item.totalPaymentAmount = +(item.totalPaymentAmount.toFixed(2));
       // console.log('item.totalPaymentAmount', item.totalPaymentAmount)
       // item.totalPaymentAmountAfterDisc = parseFloat(item.priceAfterDiscount.toFixed(2)) * parseFloat(item.nQuantity);
@@ -652,12 +652,13 @@ export class TillService {
         item.bShowGiftcardDiscountField = item?.nGiftcardDiscount && totalGiftcardDiscount > 0;
         item.bShowLoyaltyPointsDiscountField = item?.nRedeemedLoyaltyPoints && totalRedeemedLoyaltyPoints > 0;
       }
-      let description = (item?.nDiscountToShow || item.bShowGiftcardDiscountField || item.bShowLoyaltyPointsDiscountField) ? `${this.translateService.instant('ORIGINAL_AMOUNT_INC_DISC')}: ${item.nTotalPriceIncVat}\n` : '';
+      let description = '';
+      let sRelatedDescription = '';
       item.eKind = item.oType.eKind;
       if (item?.related?.length) {
         
         if (item.nPriceIncVatAfterDiscount !== item.nRevenueAmount) {
-          description += `${this.translateService.instant('ALREADY_PAID')}: \n${item.sTransactionNumber} | ${item.totalPaymentAmount} (${this.translateService.instant('THIS_RECEIPT')})\n`;
+          sRelatedDescription += `${this.translateService.instant('ALREADY_PAID')}: \n${item.sTransactionNumber} | ${item.totalPaymentAmount} (${this.translateService.instant('THIS_RECEIPT')})\n`;
         }
 
         item.related.forEach((relatedItem: any) => {
@@ -670,35 +671,41 @@ export class TillService {
           // item.nDiscount = relatedItem.nDiscount || 0;
           // item.bDiscountOnPercentage = relatedItem?.bDiscountOnPercentage || false;
 
-          if(!relatedItem.oType?.bRefund) {
-            if (relatedItem?.bDiscountOnPercentage) {
-              item.nDiscountToShow = (item.oType.bRefund === true) ? 0 : this.getPercentOf(relatedItem.nPriceIncVat, relatedItem.nDiscount);
-              totalDiscount += (item.oType.bRefund === true) ? 0 : item.nDiscountToShow;
-              relatedItem.totalPaymentAmount = (+(relatedItem.nRevenueAmount.toFixed(2)) - this.getPercentOf(relatedItem.nPriceIncVat, relatedItem.nDiscount)) * relatedItem.nQuantity;
-              // console.log(600, item.nDiscountToShow, relatedItem.totalPaymentAmount);
-            } else {
-              item.nDiscountToShow = (item.oType.bRefund === true) ? 0 : relatedItem.nDiscount;
-              totalDiscount += (item.oType.bRefund === true) ? 0 : item.nDiscountToShow;
-              relatedItem.totalPaymentAmount = (relatedItem.nRevenueAmount > 0) ? (+(relatedItem.nRevenueAmount.toFixed(2)) - relatedItem.nDiscount) * relatedItem.nQuantity : 0;
-              // console.log(605, item.nDiscountToShow, relatedItem.totalPaymentAmount);
-            }
-            relatedItem.totalPaymentAmount -= (relatedItem?.nRedeemedLoyaltyPoints || 0);
-          } else {
+          if(relatedItem.oType?.bRefund) {
             if (relatedItem?.bDiscountOnPercentage) {
               relatedItem.totalPaymentAmount = +(relatedItem.nRevenueAmount.toFixed(2)) - this.getPercentOf(relatedItem.nPriceIncVat, relatedItem.nDiscount);
-              // console.log(610, relatedItem.totalPaymentAmount)
             } else {
               relatedItem.totalPaymentAmount = (relatedItem.nRevenueAmount > 0) ? (+(relatedItem.nRevenueAmount.toFixed(2)) - relatedItem.nDiscount) * relatedItem.nQuantity : 0;
-              // console.log(613, relatedItem.totalPaymentAmount)
             }
+          } else {
+            if (relatedItem?.bDiscountOnPercentage) {
+              item.nDiscountToShow = (item.oType.bRefund === true) ? 0 : this.getPercentOf(relatedItem.nPriceIncVat, relatedItem.nDiscount);
+              item.nTotalPriceIncVat += item.nDiscountToShow;
+              item.bDiscountOnPercentage = true;
+              item.nDiscount = relatedItem.nDiscount;
+              totalDiscount += (item.oType.bRefund === true) ? 0 : item.nDiscountToShow;
+              relatedItem.totalPaymentAmount = (+(relatedItem.nRevenueAmount.toFixed(2)) - this.getPercentOf(relatedItem.nPriceIncVat, relatedItem.nDiscount)) * relatedItem.nQuantity;
+            } else {
+              if(relatedItem.oType.bPrepayment) {
+                item.nDiscountToShow = relatedItem.nDiscount;
+                item.nTotalPriceIncVat += item.nDiscountToShow;
+                totalDiscount += relatedItem.nDiscountToShow;
+              }
+              relatedItem.totalPaymentAmount = (relatedItem.nRevenueAmount > 0) ? (+(relatedItem.nRevenueAmount.toFixed(2)) - relatedItem.nDiscount) * relatedItem.nQuantity : 0;
+            }
+            relatedItem.totalPaymentAmount -= (relatedItem?.nRedeemedLoyaltyPoints || 0);
           }
+          item.nDiscountToShow = +(item.nDiscountToShow.toFixed(2));
           relatedItem.totalPaymentAmount = +(relatedItem.totalPaymentAmount.toFixed(2));
           if (relatedItem.totalPaymentAmount > 0) {
-            description += `${relatedItem.sTransactionNumber} | ${relatedItem.totalPaymentAmount}\n`;
+            sRelatedDescription += `${relatedItem.sTransactionNumber} | ${relatedItem.totalPaymentAmount}\n`;
           }
         })
       }
-      item.description = description;
+      description = (item.nDiscountToShow || item.bShowGiftcardDiscountField || item.bShowLoyaltyPointsDiscountField || item.bPrepayment) ? `${this.translateService.instant('ORIGINAL_AMOUNT_INC_DISC')}: ${item.nPriceIncVatAfterDiscount}\n` : '';
+      if(item.nPriceIncVatAfterDiscount == item.totalPaymentAmount) description = '';
+
+      item.description = description + sRelatedDescription;
     })
     if (aToFetchPayments?.length) {
       const oBody = {
