@@ -200,18 +200,19 @@
                         <div class="accordion-item w-100 d-table-cell" till-product
                           *ngIf="(item.type === 'regular' || item.type === 'reservation') && item.bProductLoaded"
                           [item]="item" [taxes]="tillService.taxes" [disablePrepayment]="!availableAmount || availableAmount === 0"
-                          (itemChanged)="itemChanged($event, i)" [availableAmount]="availableAmount"></div>
+                          (itemChanged)="itemChanged($event, i)" [bSerialSearchMode]="bSerialSearchMode" [availableAmount]="availableAmount"></div>
                         <!-- order -->
                         <div class="accordion-item w-100 d-table-cell" *ngIf="item.type === 'order'" till-order
                           [item]="item" [disablePrepayment]="!availableAmount || availableAmount === 0" [taxes]="tillService.taxes"
-                          [availableAmount]="availableAmount" [settings]="tillService.settings.currentLocation"
+                          [availableAmount]="availableAmount"  [settings]="tillService.settings.currentLocation"
                           (itemChanged)="itemChanged($event, i)">
                         </div>
+                        
 
                         <!-- repair -->
                         <div class="accordion-item w-100 d-table-cell" till-repair *ngIf="item.type === 'repair'"
                           [disablePrepayment]="!availableAmount || availableAmount === 0" [item]="item" [taxes]="tillService.taxes"
-                          [availableAmount]="availableAmount" [settings]="tillService.settings.currentLocation"
+                          [availableAmount]="availableAmount"  [settings]="tillService.settings.currentLocation"
                           (itemChanged)="itemChanged($event, i)">
                         </div>
                         <!-- giftcard -->

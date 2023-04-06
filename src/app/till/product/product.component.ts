@@ -16,7 +16,9 @@ import { TillService } from 'src/app/shared/service/till.service';
 export class ProductComponent implements OnInit{
   @Input() item: any
   @Input() taxes: any
+  @Input() bSerialSearchMode: any
   @Output() itemChanged = new EventEmitter<any>();
+  
 
   faMinus = faMinus;
   faArrowDown = faArrowDown;
