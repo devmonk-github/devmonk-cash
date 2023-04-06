@@ -206,63 +206,76 @@
                                 [class.show]="activityItems.length == 1">
                                 <div class="accordion-body">
                                     <div class="row">
-                                        <div class="col-4">
-                                            <div class="form-group mb-6">
-                                                <label class="form-control-label mb-3">{{ "NAME" | translate}}</label>
-                                                <input class="form-control form-control-solid mb-3 mb-lg-0" type="text"
-                                                    name="activityName" [(ngModel)]="activity.sProductName">
-                                            </div>
-                                            <div class="form-group mb-6">
-                                                <label class="form-control-label mb-3">{{ "DESCRIPTION" |
-                                                    translate}}</label>
-                                                <textarea class="form-control form-control-solid text-area-hidden" cdkTextareaAutosize name="description"
-                                                    placeholder="{{ 'DESCRIPTION' | translate}}" lines="10"
-                                                    [(ngModel)]="activity.sDescription"></textarea>
-                                            </div>
-
-                                        </div>
-                                        <div class="col-5 ml-3">
-
-                                            <div class="form-group mb-6">
-                                                <label class="form-control-label mb-3">{{ "STATUS" | translate}}
-                                                </label>
-                                                <select name="status" id="status"
-                                                    class="form-control form-control-solid"
-                                                    [(ngModel)]="activity.eActivityItemStatus">
-                                                    <option *ngFor="let type of repairStatus" [value]="type.value">
-                                                        {{type.key | translate}}
-                                                    </option>
-                                                </select>
-                                            </div>
-
-                                            <div>
-                                                <p class="mb-3"> {{"INFORM_CUSTOMER_THAT_PRODUCT_CAN_BE_PICKED_UP" |
-                                                    translate}}</p>
-                                            </div>
-                                            <div class="border p-2 mb-5">
-                                                <div>
-                                                    <p class="mb-2">{{ "TOTAL_PRICE" | translate}}</p>
-                                                </div>
-                                                <div class="row">
-                                                    <div class="col-8">
-                                                        <input class="form-control form-control-solid w-100"
-                                                            type="number" [(ngModel)]="activity.nPriceIncVatAfterDiscount">
+                                        <div class="col-9">
+                                            <div class="row">
+                                                <div class="col-6">
+                                                    <div class="form-group mb-6">
+                                                        <label class="form-control-label mb-3">{{ "NAME" | translate}}</label>
+                                                        <input class="form-control form-control-solid mb-3 mb-lg-0" type="text" name="activityName"
+                                                            [(ngModel)]="activity.sProductName">
                                                     </div>
-                                                    <div class="col-4">
-                                                        <button class="btn btn-primary">{{ "MAIL_CUSTOMER" |
-                                                            translate}}</button>
+                                        
+                                        
+                                                    <div class="form-group mb-6">
+                                                        <label class="form-control-label mb-3">{{ "STATUS" | translate}}
+                                                        </label>
+                                                        <select name="status" id="status" class="form-control form-control-solid"
+                                                            [(ngModel)]="activity.eActivityItemStatus">
+                                                            <option *ngFor="let type of repairStatus" [value]="type.value">
+                                                                {{type.key | translate}}
+                                                            </option>
+                                                        </select>
                                                     </div>
                                                 </div>
-                                                <div class="row mt-2">
-                                                    <div class="col-6">
-                                                        {{"ALREADY_PAID" | translate}}:
-                                                        {{activity.nPaidAmount | currency:tillService.currency}}
+                                        
+                                                <div class="col-6">
+                                                    <div class="form-group mb-6">
+                                                        <div>
+                                                            <p class="mb-3"> {{"INFORM_CUSTOMER_THAT_PRODUCT_CAN_BE_PICKED_UP" |
+                                                                translate}}</p>
+                                                        </div>
+                                                        <div class="border p-2 mb-5">
+                                                            <div>
+                                                                <p class="mb-2">{{ "TOTAL_PRICE" | translate}}</p>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-8">
+                                                                    <input class="form-control form-control-solid w-100" type="number"
+                                                                        [(ngModel)]="activity.nPriceIncVatAfterDiscount">
+                                                                </div>
+                                                                <div class="col-4">
+                                                                    <button class="btn btn-primary">{{ "MAIL_CUSTOMER" |
+                                                                        translate}}</button>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row mt-2">
+                                                                <div class="col-6">
+                                                                    {{"ALREADY_PAID" | translate}}:
+                                                                    {{activity.nPaidAmount | currency:tillService.currency}}
+                                                                </div>
+                                                                <div class="col-6">
+                                                                    {{"STILL_TO_PAY" | translate}}:
+                                                                    {{(activity.nPriceIncVatAfterDiscount - activity.nPaidAmount) |
+                                                                    currency:tillService.currency}}
+                                                                </div>
+                                                            </div>
+                                                        </div>
                                                     </div>
-                                                    <div class="col-6">
-                                                        {{"STILL_TO_PAY" | translate}}:
-                                                        {{(activity.nPriceIncVatAfterDiscount - activity.nPaidAmount) |
-                                                        currency:tillService.currency}}
+                                                </div>
+                                            </div>
+                                         
+                                        
+                                            <div class="row">
+                                                <div class="col-12">
+                                                    <div class="form-group mb-6">
+                                                        <label class="form-control-label mb-3">{{ "DESCRIPTION" |
+                                                            translate}}</label>
+                                                        <textarea cols="30" rows="3" class="form-control form-control-solid" name="description"
+                                                            placeholder="{{ 'DESCRIPTION' | translate}}" lines="10"
+                                                            [(ngModel)]="activity.sDescription"></textarea>
                                                     </div>
+                                        
+                                        
                                                 </div>
                                             </div>
                                         </div>
@@ -887,67 +900,77 @@
                                 [class.show]="activityItems.length == 1">
                                 <div class="accordion-body">
                                     <div class="row">
-                                        <div class="col-4">
-                                            <div class="form-group mb-6">
-                                                <label class="form-control-label mb-3">{{ "NAME" | translate}}</label>
-                                                <input class="form-control form-control-solid mb-3 mb-lg-0" type="text"
-                                                    name="activityName" [(ngModel)]="activity.sProductName">
+                                        <div class="col-9">
+                                            <div class="row">
+                                                <div class="col-6">
+                                                    <div class="form-group mb-6">
+                                                        <label class="form-control-label mb-3">{{ "NAME" | translate}}</label>
+                                                        <input class="form-control form-control-solid mb-3 mb-lg-0" type="text" name="activityName"
+                                                            [(ngModel)]="activity.sProductName">
+                                                    </div>
+                                                    <div class="form-group mb-6">
+                                                        <label class="form-control-label mb-3">{{ "GIFT_CARD_NUMBER" |
+                                                            translate}} </label>
+                                                        <input type="text" name="giftCardNumber" class="form-control form-control-solid mb-3 mb-lg-0"
+                                                            [(ngModel)]="activity.sGiftCardNumber" readonly />
+                                                    </div>
+                                    
+                                                
+                                                </div>
+                                                <div class="col-6">
+                                                    <div class="border p-3 mb-5">
+                                                        <div>
+                                                            <p class="mb-2">{{ "TOTAL_PRICE" | translate}}</p>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-12">
+                                                                <input class="form-control form-control-solid w-100" type="number"
+                                                                    [(ngModel)]="activity.nPriceIncVat">
+                                                            </div>
+                                                            
+                                                        </div>
+                                                        <div class="row mt-2">
+                                                            <div class="col-6">
+                                                                {{"ALREADY_PAID" | translate}}: {{activity.nPaidAmount |
+                                                                currency:
+                                                                tillService.currency}}
+                                                            </div>
+                                                            <div class="col-6">
+                                                                {{"STILL_TO_PAY" | translate}}: {{(activity.nTotalAmount -
+                                                                activity.nPaidAmount)
+                                                                |
+                                                                currency:
+                                                                tillService.currency}}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group mb-6">
+                                                        {{'REMAINING_AMOUNT' | translate}} : {{activity.nGiftcardRemainingAmount |
+                                                        currency:tillService.currency}}
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <div class="form-group mb-6">
-                                                <label class="form-control-label mb-3">{{ "DESCRIPTION" |
-                                                    translate}}</label>
-                                                <textarea class="form-control form-control-solid text-area-hidden" cdkTextareaAutosize name="description"
-                                                    placeholder="{{ 'DESCRIPTION' | translate}}" lines="10"
-                                                    [(ngModel)]="activity.sDescription"></textarea>
+                                            <div class="row">
+                                                <div class="col-12">
+                                                    <div class="form-group mb-6">
+                                                        <label class="form-control-label mb-3">{{ "DESCRIPTION" |
+                                                            translate}}</label>
+                                                        <textarea class="form-control form-control-solid" cols="30" rows="3" name="description"
+                                                            placeholder="{{ 'DESCRIPTION' | translate}}" lines="10"
+                                                            [(ngModel)]="activity.sDescription"></textarea>
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <div class="form-group mb-6">
-                                                {{'REMAINING_AMOUNT' | translate}} : {{activity.nGiftcardRemainingAmount |
-                                                currency:tillService.currency}}
-                                            </div>
-
-                                        </div>
-                                        <div class="col-5">
-
-                                            <div class="form-group mb-6">
-                                                <label class="form-control-label mb-3">{{ "GIFT_CARD_NUMBER" |
-                                                    translate}} </label>
-                                                <input type="text" name="giftCardNumber"
-                                                    class="form-control form-control-solid mb-3 mb-lg-0"
-                                                    [(ngModel)]="activity.sGiftCardNumber" readonly />
-                                            </div>
+                                    
+                                            <!-- </div> -->
+                                            <!-- <div class="col-5"> -->
+                                    
+                                    
                                             <!-- 
-                                            <div>
-                                                {{"INFORM_CUSTOMER_THAT_PRODUCT_CAN_BE_PICKED_UP" | translate}}
-                                            </div> -->
-                                            <div class="border p-3 mb-5">
-                                                <div>
-                                                    <p class="mb-2">{{ "TOTAL_PRICE" | translate}}</p>
-                                                </div>
-                                                <div class="row">
-                                                    <div class="col-12">
-                                                        <input class="form-control form-control-solid w-100"
-                                                            type="number" [(ngModel)]="activity.nPriceIncVat">
-                                                    </div>
-                                                    <!-- <div class="col-4">
-                                                        <button class="btn btn-primary">{{ "MAIL_CUSTOMER" |
-                                                            translate}}</button>
-                                                    </div> -->
-                                                </div>
-                                                <div class="row mt-2">
-                                                    <div class="col-6">
-                                                        {{"ALREADY_PAID" | translate}}: {{activity.nPaidAmount |
-                                                        currency:
-                                                        tillService.currency}}
-                                                    </div>
-                                                    <div class="col-6">
-                                                        {{"STILL_TO_PAY" | translate}}: {{(activity.nTotalAmount -
-                                                        activity.nPaidAmount)
-                                                        |
-                                                        currency:
-                                                        tillService.currency}}
-                                                    </div>
-                                                </div>
-                                            </div>
+                                                                                <div>
+                                                                                    {{"INFORM_CUSTOMER_THAT_PRODUCT_CAN_BE_PICKED_UP" | translate}}
+                                                                                </div> -->
+                                    
                                         </div>
                                         <div class="col-3 my-3">
                                             <div class="btn-group me-4 w-100 my-3">
@@ -1559,63 +1582,54 @@
                                 [id]="'item'+activityindex" [class.show]="activityItems.length == 1">
                                 <div class="accordion-body">
                                     <div class="row">
-                                        <div class="col-4">
-                                            <div class="form-group mb-6">
-                                                <label class="form-control-label mb-3">{{ "NAME" | translate}}</label>
-                                                <input class="form-control form-control-solid mb-3 mb-lg-0" type="text"
-                                                    name="activityName" [(ngModel)]="activity.sProductName">
-                                            </div>
-                                            <div class="form-group mb-6">
-                                                <label class="form-control-label mb-3">{{ "DESCRIPTION" |
-                                                    translate}}</label>
-                                                <textarea class="form-control form-control-solid text-area-hidden" cdkTextareaAutosize name="description"
-                                                    placeholder="{{ 'DESCRIPTION' | translate}}" lines="10"
-                                                    [(ngModel)]="activity.sDescription"></textarea>
-                                            </div>
-
-                                        </div>
-                                        <div class="col-5">
-
-                                            <!-- <div class="form-group mb-6">
-                                                <label class="form-control-label mb-3">{{ "STATUS" | translate}}
-                                                </label>
-                                                <select name="status" id="status"
-                                                    class="form-control form-control-solid"
-                                                    [(ngModel)]="activity.eActivityItemStatus">
-                                                    <option *ngFor="let type of repairStatus" [value]="type.value">{{type.key | translate}}
-                                                    </option>
-                                                </select>
-                                            </div> -->
-                                            <!-- <div>
-                                                {{"INFORM_CUSTOMER_THAT_PRODUCT_CAN_BE_PICKED_UP" | translate}}
-                                            </div> -->
-                                            <div class="border p-3 mb-5">
-                                                <div>
-                                                    <p class="mb-2">{{ "TOTAL_PRICE" | translate}}</p>
-                                                </div>
-                                                <div class="row">
-                                                    <div class="col-8">
-                                                        <input class="form-control form-control-solid w-100" type="text"
-                                                            [(ngModel)]="activity.nPriceIncVat">
-                                                    </div>
-                                                    <div class="col-4">
-                                                        <button class="btn btn-primary">{{ "MAIL_CUSTOMER" |
-                                                            translate}}</button>
+                                        <div class="col-9">
+                                            <div class="row">
+                                                <div class="col-6">
+                                                    <div class="form-group mb-6">
+                                                        <label class="form-control-label mb-3">{{ "NAME" | translate}}</label>
+                                                        <input class="form-control form-control-solid mb-3 mb-lg-0" type="text" name="activityName"
+                                                            [(ngModel)]="activity.sProductName">
                                                     </div>
                                                 </div>
-                                                <div class="row mt-2">
-                                                    <div class="col-6">
-                                                        {{"ALREADY_PAID" | translate}}: {{activity.nPaidAmount |
-                                                        currency:
-                                                        tillService.currency}}
+                                        
+                                                <div class="col-6">
+                                                    <div class="border p-3 mb-5">
+                                                        <div>
+                                                            <p class="mb-2">{{ "TOTAL_PRICE" | translate}}</p>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-8">
+                                                                <input class="form-control form-control-solid w-100" type="text"
+                                                                    [(ngModel)]="activity.nPriceIncVat">
+                                                            </div>
+                                                            <div class="col-4">
+                                                                <button class="btn btn-primary">{{ "MAIL_CUSTOMER" |
+                                                                    translate}}</button>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row mt-2">
+                                                            <div class="col-6">
+                                                                {{"ALREADY_PAID" | translate}}: {{activity.nPaidAmount |
+                                                                currency:
+                                                                tillService.currency}}
+                                                            </div>
+                                                            <div class="col-6">
+                                                                {{"STILL_TO_PAY" | translate}}: {{(activity.nTotalAmount -
+                                                                activity.nPaidAmount)
+                                                                |
+                                                                currency:
+                                                                tillService.currency}}
+                                                            </div>
+                                                        </div>
                                                     </div>
-                                                    <div class="col-6">
-                                                        {{"STILL_TO_PAY" | translate}}: {{(activity.nTotalAmount -
-                                                        activity.nPaidAmount)
-                                                        |
-                                                        currency:
-                                                        tillService.currency}}
-                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="form-group col-12 mb-6">
+                                                    <label class="form-control-label mb-3">{{ "DESCRIPTION" |
+                                                        translate}}</label>
+                                                    <textarea class="form-control form-control-solid" cols="30" rows="3" name="description"
+                                                        placeholder="{{ 'DESCRIPTION' | translate}}" lines="10" [(ngModel)]="activity.sDescription"></textarea>
                                                 </div>
                                             </div>
                                         </div>
