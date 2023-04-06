@@ -904,10 +904,6 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     this.bActivitiesLoader = true;
     let oBody:any ={... this.requestParams , ... this.activitiesRequestParams};
     delete oBody.oFilterBy._id;
-    delete oBody.oFilterBy.iCustomerId;
-   
-    oBody.oFilterBy = this.requestParams.oFBy;
-   
    
     this.apiService.postNew('cashregistry', '/api/v1/activities', oBody).subscribe((result: any) => {
       this.aActivities = result.data || [];
@@ -916,7 +912,6 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     }, (error) => {
       this.bActivitiesLoader = false;
     })
-  
 
   }
 
@@ -925,8 +920,6 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     this.bActivityItemsLoader = true;
     let oBody: any = { ... this.requestParams , ...this.itemsRequestParams };
     delete oBody.oFilterBy._id;
-    delete oBody.oFilterBy.iCustomerId;
-    oBody.oFilterBy = this.requestParams.oFBy;
     this.apiService.postNew('cashregistry', '/api/v1/activities/items', oBody).subscribe(
       (result: any) => {
         this.aActivityItems = result.data || [];
@@ -936,8 +929,6 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
       (error: any) => {
         this.bActivityItemsLoader = false;
       })
-
-    
   }
 
   activeTabsChanged(tab: any) {
