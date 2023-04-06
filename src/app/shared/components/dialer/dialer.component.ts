@@ -25,6 +25,8 @@ export class DialerComponent implements OnChanges, OnInit {
   get quantity() {
     return this.qty
   }
+  @Input() bSerialSearchMode: any
+  @Input() item: any
   @Output() quantityChange = new EventEmitter<number>()
 
   faPlus = faPlus
@@ -37,6 +39,9 @@ export class DialerComponent implements OnChanges, OnInit {
   }
   ngOnInit() {
     // this.qty = JSON.parse(JSON.stringify(this.quantity))
+    console.log(this.bSerialSearchMode);
+   
+    console.log("this.item",this.item );
   }
 
   increase(): void {

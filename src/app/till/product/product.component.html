@@ -38,7 +38,7 @@
         <div class="row">
 
           <div class="col-12">
-            <app-dialer [(quantity)]="item.quantity" (quantityChange)="quantityChangeHandler($event)"></app-dialer>
+            <app-dialer [(quantity)]="item.quantity"  [item]="item"  [bSerialSearchMode]="bSerialSearchMode" (quantityChange)="quantityChangeHandler($event)"></app-dialer>
           </div>
 
           <div class="col-12">
