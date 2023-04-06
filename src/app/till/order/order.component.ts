@@ -21,6 +21,7 @@ import { DiscountDialogComponent } from '../dialogs/discount-dialog/discount-dia
 export class OrderComponent implements OnInit {
   @Input() item: any
   @Input() taxes: any
+  @Input() bSerialSearchMode: any
   @Output() itemChanged = new EventEmitter<any>();
 
   faTimes = faTimes

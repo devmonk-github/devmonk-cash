@@ -204,7 +204,7 @@
                         <!-- order -->
                         <div class="accordion-item w-100 d-table-cell" *ngIf="item.type === 'order'" till-order
                           [item]="item" [disablePrepayment]="!availableAmount || availableAmount === 0" [taxes]="tillService.taxes"
-                          [availableAmount]="availableAmount"  [settings]="tillService.settings.currentLocation"
+                          [availableAmount]="availableAmount" [bSerialSearchMode]="bSerialSearchMode"  [settings]="tillService.settings.currentLocation"
                           (itemChanged)="itemChanged($event, i)">
                         </div>
                         
