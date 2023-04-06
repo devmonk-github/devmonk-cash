@@ -334,7 +334,7 @@ export class ReceiptService {
                             }
                             
                             if (bInclude) {
-                                console.log('adding row', { bWidthPushed, bWidthsPushedFromColumns })
+                                // console.log('adding row', { bWidthPushed, bWidthsPushedFromColumns })
                                 this.addRow(dataRow, row, dataSource, tableWidths);
                                 if (!bWidthPushed && !bWidthsPushedFromColumns) {
                                     // console.log('pushing width')
@@ -871,7 +871,7 @@ export class ReceiptService {
     }
 
     addParts(el: any, object?:any) {
-        // console.log(872, 'addparts', el, object);
+        // console.log('addparts', el, object);
         let oDS:any;
         if(object) {
             oDS = object;
