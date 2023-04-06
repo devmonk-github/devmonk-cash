@@ -90,6 +90,43 @@
                 <input type="checkbox" class="form-check-input" [(ngModel)]="settings.currentLocation.bProductNumber">
               </label>
             </div>
+
+            <div class="col-9 mb-5">
+              <label class="form-check form-switch form-check-custom form-check-solid">{{"ORDER" |
+                translate}}</label>
+            </div>
+            <div class="col-3 mb-5">
+              <label class="form-check form-switch form-check-custom form-check-solid">
+                <input type="checkbox" class="form-check-input" [(ngModel)]="settings.bShowOrder">
+              </label>
+            </div>
+            
+
+
+            <div class="col-9 mb-5">
+              <label class="form-check form-switch form-check-custom form-check-solid">{{"GOLD_PURCHASE" |
+                translate}}</label>
+            </div>
+            <div class="col-3 mb-5">
+              <label class="form-check form-switch form-check-custom form-check-solid">
+                <input type="checkbox" class="form-check-input" [(ngModel)]="settings.bShowGoldPurchase">
+              </label>
+            </div>
+           
+
+
+            <div class="col-9 mb-5">
+              <label class="form-check form-switch form-check-custom form-check-solid">{{"OPEN_DRAWER" | translate}}</label>
+            </div>
+            <div class="col-3 mb-5">
+              <label class="form-check form-switch form-check-custom form-check-solid">
+                <input type="checkbox" class="form-check-input" [(ngModel)]="settings.bShowOpenDrawer">
+              </label>
+            </div>
+            
+
+
+
           </div>
         </div>
 

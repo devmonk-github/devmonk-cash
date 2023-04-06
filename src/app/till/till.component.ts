@@ -187,6 +187,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     await this.tillService.fetchSettings();
     this.checkDayState();
 
+    console.log("this.tillService.settings",this.tillService.settings);
+
     this.requestParams.iBusinessId = this.iBusinessId;
     this.getPaymentMethods();
     this.getParkedTransactions();

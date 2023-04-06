@@ -282,6 +282,9 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
       sDayClosurePeriod: this.settings?.sDayClosurePeriod,
       sDayClosureMethod: this.settings?.sDayClosureMethod,
       bOpenCashDrawer: this.settings?.bOpenCashDrawer,
+      bShowOrder: this.settings?.bShowOrder,
+      bShowGoldPurchase: this.settings?.bShowGoldPurchase,
+      bShowOpenDrawer: this.settings?.bShowOpenDrawer,
       aBagNumbers: this.settings?.aBagNumbers,
       aCashRegisterPrefill: this.settings?.aCashRegisterPrefill,
     };
