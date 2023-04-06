@@ -32,7 +32,7 @@
         <div class="row">
           <!-- quantity  -->
           <div class="col-12">
-            <app-dialer [(quantity)]="item.quantity" (quantityChange)="updatePayments()"></app-dialer>
+            <app-dialer [(quantity)]="item.quantity" [item]="item"  [bSerialSearchMode]="bSerialSearchMode" (quantityChange)="updatePayments()"></app-dialer>
           </div>
 
           <!-- Transaction Item Type -->

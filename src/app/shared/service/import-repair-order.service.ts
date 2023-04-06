@@ -164,15 +164,15 @@ export class ImportRepairOrderService {
         if (Object.keys(oRepairOrder).length) {
           for (let [key, value] of Object.entries(oRepairOrder)) {
             oRepairOrder[referenceObj[key]] = value;
-           // delete oRepairOrder[key];
+            // delete oRepairOrder[key];
           }
         }
         return oRepairOrder;
       })
-  
+
       if (!parsedRepairOrderData?.length) return [];
-  
-  
+
+
       /* processing Transaction-Item */
       const aTransactionItem = [];
       for (const oData of parsedRepairOrderData) {
@@ -184,127 +184,75 @@ export class ImportRepairOrderService {
         let PostalCode = oData['oCustomer.oShippingAddress.sPostalCode'];
         let City = oData['oCustomer.oShippingAddress.sCity'];
         let CountryCode = oData['oCustomer.oShippingAddress.sCountryCode'];
-        if(street == undefined) street = "";
-        if(HouseNumber == undefined) HouseNumber = "";
-        if(HouseNumberSuffix == undefined) HouseNumberSuffix = "";
-        if(PostalCode == undefined) PostalCode = "";
-        if(City == undefined) City = "";
-        if(CountryCode == undefined) CountryCode = "";
-        
-        
+        if (street == undefined) street = "";
+        if (HouseNumber == undefined) HouseNumber = "";
+        if (HouseNumberSuffix == undefined) HouseNumberSuffix = "";
+        if (PostalCode == undefined) PostalCode = "";
+        if (City == undefined) City = "";
+        if (CountryCode == undefined) CountryCode = "";
         let imageArray = "";
-        if(oData?.aImage){
+        if (oData?.aImage) {
           imageArray = oData?.aImage.split(";");
         }
 
-        if(oData?.sDescription){
+        if (oData?.sDescription) {
           oData.sDescription = oData?.sDescription.replace(/\\"/g, '');
         }
 
-        if(oData?.iCustomerId  == ""){
+        if (oData?.iCustomerId == "") {
           oData.iCustomerId = null;
         }
 
         const oCustomer = {
-          _id:oData.iCustomerId,
+          _id: oData.iCustomerId,
           oShippingAddress: {
-              sStreet: street,
-              sHouseNumber: HouseNumber,
-              sHouseNumberSuffix: HouseNumberSuffix,
-              sPostalCode: PostalCode,
-              sCity: City,
-              sCountryCode: CountryCode,
-              sCountry : ""
-              
-          },oInvoiceAddress: {
             sStreet: street,
             sHouseNumber: HouseNumber,
             sHouseNumberSuffix: HouseNumberSuffix,
             sPostalCode: PostalCode,
             sCity: City,
             sCountryCode: CountryCode,
-            sCountry : ""
-            
-        }
-      }
+            sCountry: ""
 
-      console.log(oCustomer);
-      console.log("oCustomer----");
-         
-         
-        
-       
-          
-         
-  
-        // const em = oData?.iEmployeeId.split("-");
-        // const fname = em[0];
-        // const lname = em[1];
-        
-  
-        // const am = oData?.iAssigneeId.split("-");
-        // const afname = am[0];
-        // const alname = am[1];
-        
-  
-        // const oBody = {
-        //   iBusinessId:iBusinessId,
-        //   sFirstName:fname ,
-        //   sLastName:lname
-        // }
-        // let url = '/api/v1/employee/get_detail';
-        // this.apiService.postNew('auth', url, oBody).subscribe((result: any) => {
-        //   if (result?.data) {
-        //     this.EmployeeId = result?.data?._id;
-        //   }
-        //  // console.log("this.EmployeeId" + this.EmployeeId);
-          
-        // }, (error) => {
-        //   console.log('error : ', error);
-        // });
-  
-        // const oBody2 = {
-        //   iBusinessId:iBusinessId,
-        //   sFirstName:afname ,
-        //   sLastName:alname
-        // }
-        // let url2 = '/api/v1/employee/get_detail';
-        // this.apiService.postNew('auth', url2, oBody2).subscribe((resultdata: any) => {
-        //   if (resultdata?.data) {
-        //     this.AssigneeId = resultdata?.data?._id;
-        //   }
-        //  // console.log("this.AssigneeId" + this.AssigneeId);
-          
-        // }, (error) => {
-        //   console.log('error : ', error);
-        // });
-        
-  
-        if(oData.contact_when_ready =="Whatsapp"){
+          }, oInvoiceAddress: {
+            sStreet: street,
+            sHouseNumber: HouseNumber,
+            sHouseNumberSuffix: HouseNumberSuffix,
+            sPostalCode: PostalCode,
+            sCity: City,
+            sCountryCode: CountryCode,
+            sCountry: ""
+
+          }
+        }
+
+        if (oData.contact_when_ready == "Whatsapp") {
           oData.eEstimatedDateAction = "whatsapp_on_ready";
-        }else if (oData.contact_when_ready =="Email"){
+        } else if (oData.contact_when_ready == "Email") {
           oData.eEstimatedDateAction = "email_on_ready";
-        }else {
+        } else {
           oData.eEstimatedDateAction = "call_on_ready";
         }
+
+        const formatdate = new Date(oData?.dCreatedDate.split('-').reverse().join('/'));
+        const dCreatedDate = new Date(formatdate).setHours(5, 30, 0, 0);
+        const finaldate = new Date(dCreatedDate);
+
         const sProductName = this.translateService.instant(eType === 'order' ? 'ORDER' : 'REPAIR');
         const nPurchasePrice = oData?.nPriceIncVat / (1 + (100 / (oData?.nVatRate || 1)));
-        const dDate = new Date(oData?.dCreatedDate);
-        const dCreatedDate = new Date(dDate.getTime() + Math.abs(dDate.getTimezoneOffset() * 60000));
-        // console.log('dCreatedDate: ', dCreatedDate, dDate?.getTime(), Math.abs(dDate.getTimezoneOffset() * 60000));
         const oTransactionItem = {
           iBusinessId: iBusinessId,
           iWorkStationId: iWorkStationId,
           iEmployeeId: oData?.iEmployeeId,
-          iAssigneeId:oData?.iAssigneeId,
+          iAssigneeId: oData?.iAssigneeId,
           iLocationId: iLocationId,
           /* File */
           sBagNumber: oData?.sBagNumber,
           nPriceIncVat: oData?.nPriceIncVat,
-          nTotalAmount:oData?.nTotalAmount,
+          nTotalAmount: oData?.nTotalAmount,
           nVatRate: oData?.nVatRate,
           nMatchingCode: oData?.nMatchingCode ? parseFloat(oData?.nMatchingCode) : undefined,
-          dCreatedDate: dCreatedDate,
+          dCreatedDate: finaldate,
           nEstimatedTotal: oData?.nPriceIncVat,
           nPaymentAmount: oData?.nPriceIncVat,
           nRevenueAmount: oData?.nPriceIncVat,
@@ -318,12 +266,12 @@ export class ImportRepairOrderService {
           iArticleGroupOriginalId: '',
           sUniqueIdentifier: '',
           iCustomerId: oData.iCustomerId,
-          oCustomer:oCustomer,
+          oCustomer: oCustomer,
           /* default */
-          
+
           sProductName: oData?.sProductName,
           eStatus: "y",
-          aImage:imageArray,
+          aImage: imageArray,
           nMargin: 1,
           nQuantity: 1,
           oArticleGroupMetaData: {
@@ -358,7 +306,7 @@ export class ImportRepairOrderService {
         }
         aTransactionItem.push(oTransactionItem);
       }
-  
+
       return aTransactionItem;
     } catch (error) {
       console.log('error : ', error, error?.toString());

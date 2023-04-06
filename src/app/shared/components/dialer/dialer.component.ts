@@ -39,9 +39,6 @@ export class DialerComponent implements OnChanges, OnInit {
   }
   ngOnInit() {
     // this.qty = JSON.parse(JSON.stringify(this.quantity))
-    console.log(this.bSerialSearchMode);
-   
-    console.log("this.item",this.item );
   }
 
   increase(): void {

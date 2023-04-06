@@ -780,8 +780,6 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
 
   loadTransactions() {
     if (this.customer.bCounter) return;
-    //console.log("this.getMergedCustomerIdss");
-    //console.log(this.customer._id);
     const oBody = {
       iBusinessId:this.requestParams.iBusinessId,
       iCustomerId: this.customer._id
@@ -789,21 +787,11 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     let url = '/api/v1/customer/merged/customer';
     this.apiService.postNew('customer', url, oBody).subscribe((result: any) => {
       if (result) {
-        
-       // console.log(result);
-       // console.log("this.mergeCustomerIdList--------");
         this.mergeCustomerIdList = result.aUniqueCustomerId;
         this.requestParams.oFBy = {
-      
           iCustomerId: result.aUniqueCustomerId
         }
-    
       }
-    
-
-    
-
-    
 
     this.bTransactionsLoader = true;
     const body = {
@@ -904,10 +892,6 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     this.bActivitiesLoader = true;
     let oBody:any ={... this.requestParams , ... this.activitiesRequestParams};
     delete oBody.oFilterBy._id;
-    delete oBody.oFilterBy.iCustomerId;
-   
-    oBody.oFilterBy = this.requestParams.oFBy;
-   
    
     this.apiService.postNew('cashregistry', '/api/v1/activities', oBody).subscribe((result: any) => {
       this.aActivities = result.data || [];
@@ -916,7 +900,6 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     }, (error) => {
       this.bActivitiesLoader = false;
     })
-  
 
   }
 
@@ -925,8 +908,6 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     this.bActivityItemsLoader = true;
     let oBody: any = { ... this.requestParams , ...this.itemsRequestParams };
     delete oBody.oFilterBy._id;
-    delete oBody.oFilterBy.iCustomerId;
-    oBody.oFilterBy = this.requestParams.oFBy;
     this.apiService.postNew('cashregistry', '/api/v1/activities/items', oBody).subscribe(
       (result: any) => {
         this.aActivityItems = result.data || [];
@@ -936,8 +917,6 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
       (error: any) => {
         this.bActivityItemsLoader = false;
       })
-
-    
   }
 
   activeTabsChanged(tab: any) {
