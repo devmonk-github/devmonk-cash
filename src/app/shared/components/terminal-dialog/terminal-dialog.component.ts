@@ -6,6 +6,7 @@ import * as _ from 'lodash';
 import { DialogComponent } from "../../service/dialog";
 import { TerminalService } from '../../service/terminal.service';
 import { ToastService } from '../toast';
+import { TillService } from '../../service/till.service';
 
 @Component({
   selector: 'app-terminal-dialog',
@@ -37,13 +38,14 @@ export class TerminalDialogComponent implements OnInit {
   restartPaymentTimer = 46;
   nTotalTransactionAmount=0;
   totalAmount = 0;
-  changeAmount = 0;
+  changeAmount:any = 0;
   isProceed:Boolean = false;
   constructor(
     private viewContainer: ViewContainerRef,
     private terminalService: TerminalService,
     private toastrService: ToastService,
-    private httpClient: HttpClient) {
+    private httpClient: HttpClient,
+    public tillService:TillService) {
     const _injector = this.viewContainer.injector;
     this.dialogRef = _injector.get<DialogComponent>(DialogComponent);
   }
