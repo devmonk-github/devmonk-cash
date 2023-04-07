@@ -402,9 +402,13 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
   }
 
   customerType(event:any){
-    // console.log("customer type" , event);
-    if(event == 'Firm') this.customer.bIsCompany = true;
-    else this.customer.bIsCompany = false;
+    if(event == 'Firm'){
+      this.customer.bIsCompany = true;
+      this.customer.sGender = 'other';
+    } 
+    else{
+      this.customer.bIsCompany = false;
+    } 
   }
 
   getCustomerGroups(){
@@ -501,17 +505,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
       }
     }
   }
-  convertFirstNameUpper(event:any){
-    if(this.customer.sFirstName.length ==1){
-      this.customer.sFirstName = this.customer.sFirstName.toUpperCase();
-    }
-  }
-
-  convertLastNameUpper(event:any){
-    if(this.customer.sLastName.length ==1){
-      this.customer.sLastName = this.customer.sLastName.toUpperCase();
-    }
-  }
+ 
   handleCustomerNotesUpdate(){
           if (this.mode == 'details') {
             this.apiService.putNew('customer', '/api/v1/customer/update/' + this.requestParams.iBusinessId + '/' + this.customer._id, this.customer).subscribe(
@@ -603,6 +597,11 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
   EditOrCreateCustomer() {
     this.customer.iBusinessId = this.requestParams.iBusinessId;
     this.customer.iEmployeeId = this.iEmployeeId?.userId;
+    if(this.customer?.bIsCompany){
+      this.customer.sFirstName="";
+      this.customer.sLastName="";
+      this.customer.sPrefix="";
+    }
     console.log('EditOrCreateCustomer called: ', this.editProfile, this.bIsCurrentCustomer);
     
     /* We are updating the current customer [T, A, AI] and Not the System customer */
