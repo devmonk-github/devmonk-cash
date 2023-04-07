@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { DialogComponent, DialogService } from '../../service/dialog';
 import { ViewContainerRef } from '@angular/core';
 import { ApiService } from 'src/app/shared/service/api.service';
-import { faTimes, faMessage, faEnvelope, faEnvelopeSquare, faUser, faUpload, faReceipt, faEuro, faChevronRight, faDownload, faPrint,faPhone, faAt } from "@fortawesome/free-solid-svg-icons";
+import { faTimes, faShare, faMessage, faEnvelope, faEnvelopeSquare, faUser, faUpload, faReceipt, faEuro, faChevronRight, faDownload, faPrint,faPhone, faAt } from "@fortawesome/free-solid-svg-icons";
 import { TransactionItemsDetailsComponent } from '../transaction-items-details/transaction-items-details.component';
 import { MenuComponent } from '../../_layout/components/common';
 import { NavigationEnd, Router } from '@angular/router';
@@ -56,6 +56,7 @@ export class ActivityDetailsComponent implements OnInit {
   faPhone = faPhone;
   faAt = faAt;
   faEnvelope = faEnvelope;
+  faShare = faShare;
   faEnvelopeSquare = faEnvelopeSquare;
   faUser = faUser;
   faPrint = faPrint;
