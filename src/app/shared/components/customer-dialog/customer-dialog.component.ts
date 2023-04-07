@@ -252,9 +252,13 @@ export class CustomerDialogComponent implements OnInit {
              }
 
 
-            this.paginationConfig.totalItems = result.data[0].count.totalData;
+            this.paginationConfig.totalItems = result.data[0].count.totalData;        
             for(const customer of this.customers){
-              customer['NAME'] = await this.makeCustomerName(customer);
+              if(customer?.bIsCompany){
+                customer['NAME'] = customer.sCompanyName;
+              }else{
+                customer['NAME'] = this.customerStructureService.makeCustomerName(customer);
+              }
               customer['SHIPPING_ADDRESS'] = this.makeCustomerAddress(customer.oShippingAddress, false);
               customer['INVOICE_ADDRESS'] = this.makeCustomerAddress(customer.oInvoiceAddress, false);
               customer['EMAIL'] = customer.sEmail;

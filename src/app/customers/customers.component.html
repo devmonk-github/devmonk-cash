@@ -52,6 +52,16 @@
                         </div> -->
                         <div class="btn-group me-4">
                             <label class="form-check form-switch form-check-custom form-check-solid">
+                            <ng-select class="form-control form-control-solid p-0 w-150px"
+                              [(ngModel)]="requestParams.customerType" [clearable]="false" (change)="getCustomers()">
+                              <ng-option *ngFor="let customerType of customerTypes" [value]="customerType.value">{{customerType.key |
+                                translate}}
+                              </ng-option>
+                            </ng-select>
+                            </label>
+                        </div>
+                        <div class="btn-group me-4">
+                            <label class="form-check form-switch form-check-custom form-check-solid">
                                 <input class="form-check-input" type="checkbox" [(ngModel)]="bIsShowDeletedCustomer" (ngModelChange)="getCustomers()" />
                                 <span class="form-check-label fw-bold">{{'SHOW_DELETED_CUSTOMERS' | translate}}</span>
                             </label>
