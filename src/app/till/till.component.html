@@ -65,7 +65,7 @@
                   </div>
                 </button>
 
-                <button *ngIf="tillService.settings.bShowOrder" class="btn d-flex btn-white  rounded p-4 mb-3 me-3 text-hover-primary min-w-90px"
+                <button *ngIf="tillService.settings?.bShowOrder" class="btn d-flex btn-white  rounded p-4 mb-3 me-3 text-hover-primary min-w-90px"
                   [ngClass]="{'btn-color-primary': eKind === 'order' }" (click)="onSelectOrder()">
                   <div class="d-flex flex-column justify-center align-items-center flex-grow-1">
                     <div class="symbol symbol-40px mb-2">
@@ -118,7 +118,7 @@
                   </div>
                 </button>
 
-                <button *ngIf="tillService.settings.bShowGoldPurchase" class="btn d-flex btn-white  rounded p-4 mb-3 me-3 text-hover-primary min-w-90px"
+                <button *ngIf="tillService.settings?.bShowGoldPurchase" class="btn d-flex btn-white  rounded p-4 mb-3 me-3 text-hover-primary min-w-90px"
                   (click)="eKind = 'gold-purchase'; addItem('gold-purchase')">
                   <div class="d-flex flex-column justify-center align-items-center flex-grow-1">
                     <div class="symbol symbol-40px mb-2">
@@ -152,7 +152,7 @@
                   </div>
                 </button>
 
-                <button *ngIf="tillService.settings.bShowOpenDrawer"  class="btn d-flex btn-white rounded p-4 mb-3 me-3 text-hover-primary min-w-90px"
+                <button *ngIf="tillService.settings?.bShowOpenDrawer"  class="btn d-flex btn-white rounded p-4 mb-3 me-3 text-hover-primary min-w-90px"
                   (click)="openDrawer()">
                   <div class="d-flex flex-column justify-center align-items-center flex-grow-1">
                     <div class="symbol symbol-40px mb-2">
