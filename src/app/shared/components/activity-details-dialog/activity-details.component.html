@@ -43,8 +43,10 @@
                                     
                                 <div class="fs-6 ms-1" *ngIf="showSystemCustomer">
                                     <div class="align-items-center">
-                                        <div class="text-gray-600">{{customer?.sFirstName || ''}} {{customer?.sLastName
-                                            || ''}}</div>
+                                        <div class="text-gray-600">
+                                          <span *ngIf="!customer?.bIsCompany">  {{customer?.sFirstName || ''}} {{customer?.sLastName|| ''}}</span>
+                                          <span *ngIf="customer?.bIsCompany"> {{customer?.sCompanyName || "-"}}</span>
+                                        </div>
                                     </div>
                                 </div>
                        
@@ -94,8 +96,11 @@
                                 <ng-container *ngIf="customer?.bCounter==false" >
                                     <div class="fs-6 ms-1">
                                         <div class="align-items-center">
-                                            <div class="text-gray-600">{{oCurrentCustomer?.sFirstName || ''}} {{oCurrentCustomer?.sLastName
-                                                || ''}}</div>
+                                            <div class="text-gray-600">
+                                               <span *ngIf="!oCurrentCustomer?.bIsCompany"> {{oCurrentCustomer?.sFirstName || ''}} {{oCurrentCustomer?.sLastName|| ''}}</span>
+                                               <span *ngIf="oCurrentCustomer?.bIsCompany"> {{oCurrentCustomer?.sCompanyName || "-"}}</span>
+
+                                               </div>
                                         </div>
                                     </div>
                                     <div class="fs-6 ms-1">

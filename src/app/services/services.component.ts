@@ -436,7 +436,9 @@ export class ServicesComponent implements OnInit, OnDestroy {
               this.activities[i].oCustomer = {
                 sFirstName: customers[j].sFirstName,
                 sPrefix: customers[j].sPrefix,
-                sLastName: customers[j].sLastName
+                sLastName: customers[j].sLastName,
+                sCompanyName: customers[j]?.sCompanyName,
+                bIsCompany: customers[j]?.bIsCompany
               }
             }
           }
