@@ -174,6 +174,7 @@ export class TillService {
         sVatNumber: customer.sVatNumber,
         sCompanyName: customer.sCompanyName,
         sCocNumber: customer.sCocNumber,
+        bIsCompany:customer?.bIsCompany,
         sEmail: customer.sEmail
       }
     };
