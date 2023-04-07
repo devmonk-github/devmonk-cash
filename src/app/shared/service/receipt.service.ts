@@ -274,12 +274,10 @@ export class ReceiptService {
         const forEach = element.forEach;
         const layout = element.layout;
         const styles = element.styles;
-        console.log({styles})
         let nReduceWidthByMargin = 0;
         if(styles && styles?.margin?.length) {
             nReduceWidthByMargin = styles.margin[0] + styles.margin[2];
         }
-        console.log({ nReduceWidthByMargin });
 
         let tableWidths: any = [];
         let tableHeadersList: any = [];
@@ -316,7 +314,7 @@ export class ReceiptService {
 
                     let dataRow: any = [];
                     rows.forEach((row: any) => {
-                        console.log('311, row', row.size, row.size - nReduceWidthByMargin, this.getWidth(row.size - nReduceWidthByMargin), this.getWidth(row.size) - nReduceWidthByMargin);
+                        // console.log('311, row', row.size, row.size - nReduceWidthByMargin, this.getWidth(row.size - nReduceWidthByMargin), this.getWidth(row.size) - nReduceWidthByMargin);
                         if (row?.type === 'image') {
                             let img = this.addImage(row);
                             dataRow.push(img);
@@ -721,7 +719,7 @@ export class ReceiptService {
                         }
 
                         obj = { ...obj, ...styles, ...el?.styles };
-                        console.log({obj})
+                        // console.log({obj})
                         stack.push(obj);
                     }
 
