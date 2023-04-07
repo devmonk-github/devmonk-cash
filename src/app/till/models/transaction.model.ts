@@ -28,7 +28,8 @@ export class Transaction {
       sVatNumber: string,
       sCocNumber: string,
       sEmail: string,
-      sCompanyName:string
+      sCompanyName:string,
+      bIsCompany:boolean
     }
   ) {
   }

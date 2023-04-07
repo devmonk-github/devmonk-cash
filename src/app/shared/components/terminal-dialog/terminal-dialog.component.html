@@ -21,7 +21,7 @@
                 <tr *ngFor="let paymethod of cardPayments; index as i">
                     <td>{{paymethod.sCardName? paymethod.sName +"("+paymethod.sCardName+")":
                         paymethod.sName}}</td>
-                    <td>{{paymethod.amount | currency: '€'}}</td>
+                    <td>{{paymethod.amount | currencyFormat: tillService.currency:tillService.separator}}</td>
                     <td>
                         <button class="btn btn-primary w-80"
                             (click)="restartPaymentTimer = 45; isProceed = false ; startTerminal(paymethod, i)"
@@ -50,7 +50,7 @@
                 </tr>
                 <tr *ngFor="let paymethod of otherPayments">
                     <td>{{paymethod.sName}}</td>
-                    <td>{{paymethod.amount | currency: '€'}}</td>
+                    <td>{{paymethod.amount | currencyFormat: tillService.currency:tillService.separator}}</td>
                     <td>
                         <button class="btn btn-primary"> {{ "DONE" | translate}}</button>
                     </td>
@@ -61,11 +61,11 @@
             <tfoot>
                 <tr>
                     <td> {{"CHANGE(CASH)" | translate}}</td>
-                    <td> {{ changeAmount | currency: '€' }}</td>
+                    <td> {{ changeAmount | currencyFormat: tillService.currency:tillService.separator }}</td>
                 </tr>
                 <tr>
                     <td> {{"TOTAL" | translate}}</td>
-                    <td> {{ totalAmount + changeAmount | currency: '€' }}</td>
+                    <td> {{ (totalAmount + changeAmount) | currencyFormat: tillService.currency:tillService.separator }}</td>
                 </tr>
             </tfoot>
         </table>

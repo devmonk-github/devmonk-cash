@@ -262,7 +262,10 @@
           <td scope="row">{{transaction.dCreatedDate | date: 'medium'}}</td>
           <td>{{transaction.sNumber}}</td>
           <td>{{transaction.sReceiptNumber}}</td>
-          <td class="text-truncate" style="max-width: 120px;">{{transaction?.oCustomer?.sFirstName || ''}} {{transaction?.oCustomer?.sLastName || ''}}</td>
+          <td class="text-truncate" style="max-width: 120px;">
+            <span *ngIf="!transaction?.oCustomer?.bIsCompany">{{transaction?.oCustomer?.sFirstName || ''}} {{transaction?.oCustomer?.sLastName || ''}}</span>
+           <span *ngIf="transaction?.oCustomer?.bIsCompany">{{transaction?.oCustomer?.sCompanyName}} </span>
+          </td>
           <td>{{transaction.sMethods || '-'}}</td>
           <td> {{transaction.nTotal | currency:tillService.currency}} </td>
           <!-- <td>{{transaction.eType}}</td> -->

@@ -48,9 +48,10 @@
                     <div class="row fw-bold gy-1" *ngIf="showSystemCustomer">
                         <div class="col-md-12">
                             <div class="text-gray-900 mt-2">
-                                {{ transaction?.oSystemCustomer?.sFirstName }}
-                                {{ transaction?.oSystemCustomer?.sPrefix}}
-                                {{ transaction?.oSystemCustomer?.sLastName }}
+                                <span *ngIf="!transaction?.oSystemCustomer?.bIsCompany"> {{ transaction?.oSystemCustomer?.sFirstName }}</span>
+                                <span *ngIf="!transaction?.oSystemCustomer?.bIsCompany"> {{ transaction?.oSystemCustomer?.sPrefix}} </span>
+                                <span *ngIf="!transaction?.oSystemCustomer?.bIsCompany">   {{transaction?.oSystemCustomer?.sLastName }} </span>
+                                <span *ngIf="transaction?.oSystemCustomer?.bIsCompany">   {{transaction?.oSystemCustomer?.sCompanyName}}</span>
                             </div>
                         </div>
 
@@ -99,10 +100,10 @@
                                 </div>
                             </div>
                             <div class="col-md-12">
-                                <div class=" mt-2" *ngIf="transaction?.oSystemCustomer?.sCompanyName">
+                                <!-- <div class=" mt-2" *ngIf="transaction?.oSystemCustomer?.sCompanyName">
                                     <span class="text-muted me-5">{{ 'COMPANY_NAME' | translate}}: </span>
                                     <span class="text-gray-800">{{ transaction?.oSystemCustomer?.sCompanyName }}</span>
-                                </div>
+                                </div> -->
                                 <div class=" mt-2" *ngIf="transaction?.oSystemCustomer?.sVatNumber">
                                     <span class="text-muted me-5">{{ 'VAT_NUMBER' | translate}}: </span>
                                     <span class="text-gray-800">{{ transaction?.oSystemCustomer?.sVatNumber }}</span>
@@ -133,9 +134,10 @@
                 <div class="row fw-bold gy-1 mb-5">
                     <div class="col-md-12">
                         <div class="text-gray-900 mt-2">
-                            {{ transaction?.oCustomer?.sFirstName }}
-                            {{ transaction?.oCustomer?.sPrefix}}
-                            {{ transaction?.oCustomer?.sLastName }}
+                           <span *ngIf="!transaction?.oCustomer?.bIsCompany"> {{ transaction?.oCustomer?.sFirstName }} </span>
+                           <span *ngIf="!transaction?.oCustomer?.bIsCompany"> {{ transaction?.oCustomer?.sPrefix}} </span>
+                           <span *ngIf="!transaction?.oCustomer?.bIsCompany">   {{ transaction?.oCustomer?.sLastName }} </span>
+                           <span *ngIf="transaction?.oCustomer?.bIsCompany">   {{transaction?.oCustomer?.sCompanyName}}</span>
                         </div>
                     </div>
 
@@ -184,10 +186,10 @@
                             </div>
                         </div>
                         <div class="col-md-12">
-                            <div class=" mt-2" *ngIf="transaction?.oCustomer?.sCompanyName">
+                            <!-- <div class=" mt-2" *ngIf="transaction?.oCustomer?.sCompanyName">
                                 <span class="text-muted me-5">{{ 'COMPANY_NAME' | translate}}: </span>
                                 <span class="text-gray-800">{{ transaction?.oCustomer?.sCompanyName }}</span>
-                            </div>
+                            </div> -->
                             <div class=" mt-2" *ngIf="transaction?.oCustomer?.sVatNumber">
                                 <span class="text-muted me-5">{{ 'VAT_NUMBER' | translate}}: </span>
                                 <span class="text-gray-800">{{ transaction?.oCustomer?.sVatNumber }}</span>

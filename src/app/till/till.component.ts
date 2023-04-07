@@ -361,13 +361,15 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       case 'price':
         this.transactionItems.forEach((i) => {
           if (!i.isExclude) {
+            const nPrice = (typeof i.price === 'string') ? i.price.replace(',', '.') : i.price;
+            let discountPrice = i.bDiscountOnPercentage ? (nPrice - this.tillService.getPercentOf(nPrice,i?.nDiscount || 0)) : i.nDiscount;
+            discountPrice = +(discountPrice.toFixed(2));
+            // console.log({nPrice, discountPrice})
             if (i.tType === 'refund') {
-              i.nTotal = i.quantity * i.price;
+              i.nTotal = (i.quantity * (nPrice - discountPrice)) - (i?.nGiftcardDiscount || 0) - (i?.nRedeemedLoyaltyPoints || 0);
               result -= (i?.new) ? i.nTotal : i.nRefundAmount;
             } else {
-              const price = (typeof i.price === 'string') ? i.price.replace(',', '.') : i.price;
-              let discountPrice = i.bDiscountOnPercentage ? (price - (price * ((i.nDiscount || 0) / 100))) : (price - i.nDiscount);
-              i.nTotal = i.quantity * discountPrice;
+              i.nTotal = i.quantity * (nPrice - discountPrice);
               i.nTotal -= i.nGiftcardDiscount || 0;
               i.nTotal -= i.nRedeemedLoyaltyPoints || 0;
               i.nTotal = i.type === 'gold-purchase' ? -1 * i.nTotal : i.nTotal;

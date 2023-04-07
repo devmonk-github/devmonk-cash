@@ -114,24 +114,25 @@ export class TransactionActionDialogComponent implements OnInit {
     let oDataSource = undefined;
     let template = undefined;
     let pdfTitle = '';
+    let sThermalTemplateType = '';
 
     if (index != undefined && (type === 'repair' || type === 'repair_alternative')) {
-      if(type == 'repair'){
-        this.bRepairDisabled = true
-      }else if(type == 'repair_alternative'){
-        this.bRepairAlternativeDisabled = true
-      }
+      if(type == 'repair') this.bRepairDisabled = true;
+      else if(type == 'repair_alternative') this.bRepairAlternativeDisabled = true;
+      
       // console.log('repair items index=', index, this.aRepairItems[index], this.activityItems);
       template = this.aTemplates.filter((template: any) => template.eType === type)[0];
       oDataSource = this.tillService.prepareDataForRepairReceipt(this.aRepairItems, this.transaction, null, index);
       pdfTitle = oDataSource.sNumber;
-
+      sThermalTemplateType = 'repair-receipt';
+    
     } else if (type === 'regular') {
       this.bRegularDisabled = true;
       oDataSource = this.transaction;
       pdfTitle = this.transaction.sNumber;
       template = this.aTemplates.filter((template: any) => template.eType === 'regular')[0];
-
+      sThermalTemplateType = 'business-receipt';
+    
     } else if (type === 'giftcard') {
       this.bGiftCardDisabled = true;
       oDataSource = this.activityItems.filter((item: any) => item.oType.eKind === 'giftcard')[0];
@@ -154,7 +155,8 @@ export class TransactionActionDialogComponent implements OnInit {
         sAction: 'thermal',
         apikey: this.businessDetails.oPrintNode.sApiKey,
         title: this.transaction.sNumber,
-        sType: type
+        sType: type,
+        sTemplateType: sThermalTemplateType
       });
     } else if (action == 'EMAIL') {
       const response = await this.receiptService.exportToPdf({

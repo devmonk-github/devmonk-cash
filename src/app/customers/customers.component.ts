@@ -86,10 +86,11 @@ export class CustomersComponent implements OnInit {
     aProjection: ['sSalutation', 'sFirstName', 'sPrefix', 'sLastName', 'dDateOfBirth', 'dDateOfBirth', 'nClientId', 'sGender', 'bIsEmailVerified',
       'bCounter', 'sEmail', 'oPhone', 'oShippingAddress', 'oInvoiceAddress', 'iBusinessId', 'sComment', 'bNewsletter', 'sCompanyName', 'oPoints',
       'sCompanyName', 'oIdentity', 'sVatNumber', 'sCocNumber', 'nPaymentTermDays',
-       'nDiscount', 'bWhatsApp', 'nMatchingCode' , 'sNote' , 'iEmployeeId' , 'bIsMigrated' ,'bIsMerged','eStatus','bIsImported','aGroups'],
+       'nDiscount', 'bWhatsApp', 'nMatchingCode' , 'sNote' , 'iEmployeeId' , 'bIsMigrated' ,'bIsMerged','eStatus','bIsImported','aGroups' , 'bIsCompany' , 'oContactPerson'],
     oFilterBy: {
       
-    }
+    },
+    customerType:'all',
   };
   iChosenCustomerId : any;
   @ViewChildren('inputElement') inputElement!: QueryList<ElementRef>;
@@ -97,6 +98,12 @@ export class CustomersComponent implements OnInit {
   aFilterFields: any = [
     { title: 'PSOTAL_CODE', key: 'sPostalCode' },
     { title: 'HOUSE_NUMBER', key: 'sHouseNumber' },
+  ]
+  customerTypes:any=[
+   { key:'ALL' , value:'all'},
+    {key:'PRIVATE' , value:'private'},
+    {key:'COMPANY' , value:'company'}
+
   ]
   constructor(
     private apiService: ApiService,
@@ -233,8 +240,14 @@ export class CustomersComponent implements OnInit {
             customer.isDisable = false;
             customer.isUpdated = false;
             customer.isMerged = false;
-            customer.name = this.customerStructureService.makeCustomerName(customer);
-            customer['NAME'] = this.customerStructureService.makeCustomerName(customer);
+            if(customer?.bIsCompany){
+              customer.name = customer.sCompanyName;
+              customer['NAME'] = customer.sCompanyName;
+            }else{
+              customer.name = this.customerStructureService.makeCustomerName(customer);
+              customer['NAME'] = this.customerStructureService.makeCustomerName(customer);
+            }
+           
             customer['SHIPPING_ADDRESS'] = this.customerStructureService.makeCustomerAddress(customer.oShippingAddress, false);
             customer['INVOICE_ADDRESS'] = this.customerStructureService.makeCustomerAddress(customer.oInvoiceAddress, false);
             customer['EMAIL'] = customer.sEmail;

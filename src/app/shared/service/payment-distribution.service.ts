@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ToastService } from '../components/toast';
+import { TillService } from './till.service';
 
 @Injectable({
   providedIn: 'root'
@@ -8,7 +9,7 @@ export class PaymentDistributionService {
   
   toastService: ToastService;
 
-  constructor() { }
+  constructor(private tillService:TillService) { }
 
   roundToXDigits(value: number) {
     const digits = 2;
@@ -30,21 +31,20 @@ export class PaymentDistributionService {
     transactionItems.forEach((i: any) => {
       // if (bTesting) console.log(31, i, i.nTotal);
       
-      let _nDiscount = 0;
-      if (i.nDiscount > 0 && !i.bDiscountOnPercentage) _nDiscount = i.nDiscount
-      else if (i.nDiscount > 0 && i.bDiscountOnPercentage) _nDiscount = i.price * (i.nDiscount / 100)
-      
       const nPrice = parseFloat((typeof i.price === 'string') ? i.price.replace(',', '.') : i.price);
-      // if (bTesting)  console.log({nPrice})
-      i.amountToBePaid = nPrice * i.quantity - (i.prePaidAmount || 0) - (_nDiscount * i.quantity || 0);
+      let nDiscount = (i.bDiscountOnPercentage ? (nPrice - this.tillService.getPercentOf(nPrice, i.nDiscount || 0)) : i.nDiscount) * i.quantity;
+      nDiscount = +(nDiscount.toFixed(2));
+      i.amountToBePaid = nPrice - nDiscount - (i.prePaidAmount || 0) - (i?.nGiftcardDiscount || 0) - (i?.nRedeemedLoyaltyPoints || 0);
+      if (bTesting) console.log(38, nPrice, nDiscount, i.nTotalDiscount, i.amountToBePaid)
       
-      if (i.type === 'gold-purchase') i.amountToBePaid = -(i.amountToBePaid);
+      if (i.type === 'gold-purchase') i.amountToBePaid = -(i.amountToBePaid) ;
 
       if (i?.tType && i.tType === 'refund'){
-        i.amountToBePaid = (i?.new) ? -(i.price) : -(i.nRefundAmount);
-        // if (bTesting) console.log({nPrice, availableAmount}, typeof nPrice)
+        i.amountToBePaid = (i?.new) ? -(nPrice - nDiscount - (i?.nGiftcardDiscount || 0) - (i?.nRedeemedLoyaltyPoints || 0)) : -(i.nRefundAmount);
+        i.nTotal = nPrice * i.quantity;
+        if (bTesting) console.log({ nTotal: i.nTotal, i: JSON.parse(JSON.stringify(i))})
         availableAmount += nPrice;
-        // if (bTesting) console.log('item type is refund, increased available amount =  ', availableAmount, 'nPrice=', nPrice, 'setting giftcard discount to 0')
+        
         i.nGiftcardDiscount = 0;
       } 
       
@@ -175,6 +175,7 @@ export class PaymentDistributionService {
       if (i.type !== 'giftcard' && nGiftcardAmount > 0 && i?.tType !== 'refund') {
         const nAmount = +((i.amountToBePaid * nGiftcardAmount / totalAmountToBePaid).toFixed(3));
         i.nGiftcardDiscount = +(nAmount.toFixed(2));
+        i.bShowGiftcardDiscountField = true;
         if (nRemaining < i.nGiftcardDiscount) {
           i.nGiftcardDiscount = +(nRemaining.toFixed(3).slice(0,-1));
         } else {

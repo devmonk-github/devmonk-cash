@@ -256,7 +256,7 @@
                       <span class="col">{{ nItemsTotalDiscount | currency: tillService.currency}}</span>
                       <span class="col" *ngIf="appliedGiftCards?.length">{{ nGiftcardAmount | currency: tillService.currency}}</span>
                       <span class="col" *ngIf="redeemedLoyaltyPoints">{{ redeemedLoyaltyPoints }}</span>
-                      <span class="col">{{nItemsTotalToBePaid - nGiftcardAmount - redeemedLoyaltyPoints}}</span>
+                      <span class="col">{{nItemsTotalToBePaid}}</span>
                       <span class="col"></span>
                       <span class="col-1">&nbsp;</span>
                     </div>

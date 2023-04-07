@@ -231,6 +231,8 @@ export class ActivityItemsComponent implements OnInit, OnDestroy {
         if (result?.oData?.oCurrentCustomer) {
           if (result?.oData?.oCurrentCustomer?.sFirstName) activity.oCustomer.sFirstName = result?.oData?.oCurrentCustomer?.sFirstName;
           if (result?.oData?.oCurrentCustomer?.sLastName) activity.oCustomer.sLastName = result?.oData?.oCurrentCustomer?.sLastName;
+          if(result?.oData?.oCurrentCustomer?.sCompanyName) activity.oCustomer.sCompanyName = result?.oData.oCurrentCustomer?.sCompanyName
+          if(result?.oData?.oCurrentCustomer?.bIsCompany) activity.oCustomer.bIsCompany = result?.oData.oCurrentCustomer?.bIsCompany
         }
       }, (error) => {
         console.log('Error here');
