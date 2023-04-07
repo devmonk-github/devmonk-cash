@@ -768,6 +768,7 @@ export class ReceiptService {
     }
 
     async printThermalReceipt({ oDataSource, printSettings, apikey, title, sType, sTemplateType }: any) {
+       
         if(oDataSource?.aPayments?.length) {
             // console.log(oDataSource?.aPayments);
             oDataSource?.aPayments?.forEach((payment:any) => {
@@ -786,6 +787,7 @@ export class ReceiptService {
         this.apiService.getNew('cashregistry', `/api/v1/print-template/${sTemplateType}/${this.iBusinessId}/${this.iLocationId}`).subscribe((result: any) => {
             
             if (result?.data?.aTemplate?.length > 0) {
+                //console.log(result?.data?.aTemplate);
                 let transactionDetails = { business: this.businessDetails, ...oDataSource };
                 transactionDetails.oCustomer = {
                     ...transactionDetails.oCustomer,
@@ -795,7 +797,7 @@ export class ReceiptService {
                 let command;
                 try {
                     command = this.pn2escposService.generate(JSON.stringify(result.data.aTemplate), JSON.stringify(transactionDetails));
-                    // console.log(command);
+                    console.log(command);
                     // return;
                 } catch (e) {
                     this.toastService.show({ type: 'danger', text: 'Template not defined properly. Check browser console for more details' });
@@ -830,6 +832,7 @@ export class ReceiptService {
                 (result: any) => {
                     this.businessDetails = result.data;
                     this.businessDetails.currentLocation = this.businessDetails?.aLocation?.filter((location: any) => location?._id.toString() == this.iLocationId.toString())[0];
+                    
                 })
     }
 

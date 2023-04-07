@@ -95,6 +95,7 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
 
   async ngOnInit() {
     // console.log(this.transaction, this.from, this.printSettings);
+    console.log("this.tillService",this.tillService);
     let translationKey = ['SUCCESSFULLY_UPDATED', 'NO_DATE_SELECTED'];
     this.translateService.get(translationKey).subscribe((res: any) => {
       this.translation = res;
@@ -276,6 +277,9 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   }
 
   getThermalReceipt(type:string) {
+    
+    this.transaction.currentLocation.currency = this.tillService.currency;
+    //console.log("this.transaction", this.transaction);
     this.receiptService.printThermalReceipt({
       oDataSource: this.transaction,
       printSettings: this.printSettings,

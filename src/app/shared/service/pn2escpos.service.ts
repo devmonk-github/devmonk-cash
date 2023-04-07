@@ -50,17 +50,18 @@ export class Pn2escposService {
     //var euro = this.epSetEncoding('CP1253_ALT') + this.helperSanitizeCommand("€")
     this.symbols = {
       'euro': '\x1b\x74\x10\x1B\x74\x13\xD5',
-      '\u20AC': '\x1b\x74\x10\x1B\x74\x13\xD5',
-      // '€': '\x1B\x74\x13\xD5'
+      '\u20AC': '&#8364',
+      //'€': '\x1B\x74\x13\xD5'
       //
       //'€': cptable.utils.encode(1252, '€'),
       // 'euro': cptable.utils.encode(1253, '€'),
       // '\u20AC': cptable.utils.encode(1253, '€'),
       // '\u20ac': cptable.utils.encode(1253, '€'),
     };
+    console.log(this.symbols, this.symbols);
 
     //1253
-
+    
     //If Epson syntax doesn't work, try star
     if (this.parameters.syntax === "star") {
       this.syntaxname = 'star';
