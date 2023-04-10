@@ -279,9 +279,7 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   getThermalReceipt(type:string) {
     
     this.transaction.currentLocation.currency = this.tillService.currency;
-    //console.log("this.transaction", this.transaction);
     this.receiptService.printThermalReceipt({
-     // currency:"$", for test
       currency:this.tillService.currency,
       oDataSource: this.transaction,
       printSettings: this.printSettings,

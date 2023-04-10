@@ -785,9 +785,8 @@ export class ReceiptService {
         this.apiService.getNew('cashregistry', `/api/v1/print-template/${sTemplateType}/${this.iBusinessId}/${this.iLocationId}`).subscribe((result: any) => {
             
             if (result?.data?.aTemplate?.length > 0) {
-               // console.log(result?.data?.aTemplate);
-                let transactionDetails = { currency:currency,business: this.businessDetails, ...oDataSource };
-                //console.log("transactionDetails", transactionDetails);
+               let transactionDetails = { currency:currency,business: this.businessDetails, ...oDataSource };
+                console.log("transactionDetails", transactionDetails);
                 transactionDetails.oCustomer = {
                     ...transactionDetails.oCustomer,
                     ...transactionDetails.oCustomer.oPhone,
