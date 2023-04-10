@@ -95,7 +95,7 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
 
   async ngOnInit() {
     // console.log(this.transaction, this.from, this.printSettings);
-    console.log("this.tillService",this.tillService);
+    //console.log("this.tillService",this.tillService);
     let translationKey = ['SUCCESSFULLY_UPDATED', 'NO_DATE_SELECTED'];
     this.translateService.get(translationKey).subscribe((res: any) => {
       this.translation = res;
