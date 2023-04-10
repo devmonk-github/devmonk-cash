@@ -32,7 +32,7 @@ export class PaymentDistributionService {
       // if (bTesting) console.log(31, i, i.nTotal);
       
       const nPrice = parseFloat((typeof i.price === 'string') ? i.price.replace(',', '.') : i.price);
-      let nDiscount = (i.bDiscountOnPercentage ? (nPrice - this.tillService.getPercentOf(nPrice, i.nDiscount || 0)) : i.nDiscount) * i.quantity;
+      let nDiscount = (i.bDiscountOnPercentage ? this.tillService.getPercentOf(nPrice, i.nDiscount || 0) : i.nDiscount) * i.quantity;
       nDiscount = +(nDiscount.toFixed(2));
       i.amountToBePaid = nPrice - nDiscount - (i.prePaidAmount || 0);// - (i?.nGiftcardDiscount || 0) - (i?.nRedeemedLoyaltyPoints || 0);
       if (bTesting) console.log(38, { nPrice, nDiscount, amountToBePaid: i.amountToBePaid})
