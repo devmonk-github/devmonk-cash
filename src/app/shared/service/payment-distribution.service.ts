@@ -32,10 +32,10 @@ export class PaymentDistributionService {
       // if (bTesting) console.log(31, i, i.nTotal);
       
       const nPrice = parseFloat((typeof i.price === 'string') ? i.price.replace(',', '.') : i.price);
-      let nDiscount = (i.bDiscountOnPercentage ? (nPrice - this.tillService.getPercentOf(nPrice, i.nDiscount || 0)) : i.nDiscount) * i.quantity;
+      let nDiscount = (i.bDiscountOnPercentage ? this.tillService.getPercentOf(nPrice, i.nDiscount || 0) : i.nDiscount) * i.quantity;
       nDiscount = +(nDiscount.toFixed(2));
-      i.amountToBePaid = nPrice - nDiscount - (i.prePaidAmount || 0) - (i?.nGiftcardDiscount || 0) - (i?.nRedeemedLoyaltyPoints || 0);
-      if (bTesting) console.log(38, nPrice, nDiscount, i.nTotalDiscount, i.amountToBePaid)
+      i.amountToBePaid = nPrice - nDiscount - (i.prePaidAmount || 0);// - (i?.nGiftcardDiscount || 0) - (i?.nRedeemedLoyaltyPoints || 0);
+      if (bTesting) console.log(38, { nPrice, nDiscount, amountToBePaid: i.amountToBePaid})
       
       if (i.type === 'gold-purchase') i.amountToBePaid = -(i.amountToBePaid) ;
 
@@ -49,7 +49,7 @@ export class PaymentDistributionService {
       } 
       
       // if (bTesting)  console.log('46 paymentAmount before', i.paymentAmount, 'amountToBePaid', i.amountToBePaid);
-      if (i.paymentAmount > i.amountToBePaid) i.paymentAmount = i.amountToBePaid;
+      if (i.paymentAmount > i.amountToBePaid && !['loyalty-points'].includes(i.type)) i.paymentAmount = i.amountToBePaid;
       // if (bTesting) console.log('48 paymentAmount after', i.paymentAmount)
     });
     
@@ -193,11 +193,13 @@ export class PaymentDistributionService {
   }
 
   handleLoyaltyPointsDiscount(arrToUpdate:any, totalAmountToBePaid:any, nRedeemedLoyaltyPoints:any, bTesting:boolean){
-    if (bTesting) console.log('handleLoyaltyPointsDiscount')
+    if (bTesting) console.log('handleLoyaltyPointsDiscount', { totalAmountToBePaid, nRedeemedLoyaltyPoints, arrToUpdate: JSON.parse(JSON.stringify(arrToUpdate)) })
     arrToUpdate.forEach((i: any) => {
-      if (i.type !== 'giftcard' && nRedeemedLoyaltyPoints > 0 && i?.tType !== 'refund') {
+      if (!['giftcard', 'loyalty-points'].includes(i.type) && nRedeemedLoyaltyPoints > 0 && i?.tType !== 'refund') {
+
         i.nRedeemedLoyaltyPoints = +((i.amountToBePaid * nRedeemedLoyaltyPoints / totalAmountToBePaid).toFixed(0));
-        if (bTesting) console.log('nGiftcardDiscount', i.nGiftcardDiscount)
+        i.bShowLoyaltyPointsDiscountField = true;
+        if (bTesting) console.log({ amountToBePaid : i.amountToBePaid })
 
         i.amountToBePaid -= i.nRedeemedLoyaltyPoints;
         if (bTesting) console.log('reduced amountToBePaid', i.amountToBePaid);

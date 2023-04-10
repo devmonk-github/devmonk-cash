@@ -341,13 +341,14 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     this.nItemsTotalDiscount = this.getTotals('discount');
     this.nItemsTotalQuantity = this.getTotals('quantity');
     this.nTotalPayment = this.totalPrepayment();
-    this.nFinalAmount = Math.abs(this.availableAmount - this.nItemsTotalToBePaid);
+    this.nFinalAmount = +(Math.abs(this.availableAmount - this.nItemsTotalToBePaid).toFixed(2));
 
     // console.log({ 
     //   nItemsTotalToBePaid: this.nItemsTotalToBePaid, 
     //   nTotalPayment: this.nTotalPayment,
     //   nFinalAmount: this.nFinalAmount,
-    //   availableAmount: this.availableAmount 
+    //   availableAmount: this.availableAmount,
+    //   nItemsTotalDiscount: this.nItemsTotalDiscount
     // })
   }
 
@@ -359,7 +360,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     let result = 0
     switch (type) {
       case 'price':
-        this.transactionItems.forEach((i) => {
+        this.transactionItems.filter((el:any) => !['loyalty-points'].includes(el.type)).forEach((i) => {
           if (!i.isExclude) {
             const nPrice = (typeof i.price === 'string') ? i.price.replace(',', '.') : i.price;
             let discountPrice = i.bDiscountOnPercentage ? (nPrice - this.tillService.getPercentOf(nPrice,i?.nDiscount || 0)) : i.nDiscount;
@@ -369,11 +370,11 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
               i.nTotal = (i.quantity * (nPrice - discountPrice)) - (i?.nGiftcardDiscount || 0) - (i?.nRedeemedLoyaltyPoints || 0);
               result -= (i?.new) ? i.nTotal : i.nRefundAmount;
             } else {
-              i.nTotal = i.quantity * (nPrice - discountPrice);
-              i.nTotal -= i.nGiftcardDiscount || 0;
-              i.nTotal -= i.nRedeemedLoyaltyPoints || 0;
-              i.nTotal = i.type === 'gold-purchase' ? -1 * i.nTotal : i.nTotal;
-              result += i.nTotal - (i.prePaidAmount || 0);
+              // i.nTotal = i.quantity * (nPrice - discountPrice);
+              // i.nTotal -= i.nGiftcardDiscount || 0;
+              // i.nTotal -= i.nRedeemedLoyaltyPoints || 0;
+              // i.nTotal = i.type === 'gold-purchase' ? -1 * i.nTotal : i.nTotal;
+              result += i.amountToBePaid - (i.prePaidAmount || 0);
             }
           } else {
             i.paymentAmount = 0;
@@ -385,9 +386,11 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
         break;
       case 'discount':
         let sum = 0;
-        this.transactionItems.forEach(element => {
+        this.transactionItems.filter((el: any) => !['loyalty-points'].includes(el.type)).forEach(element => {
           let discountPrice = element.bDiscountOnPercentage ? (element.price * ((element.nDiscount || 0) / 100)) : element.nDiscount;
           sum += element.quantity * discountPrice;
+          sum += element?.nGiftcardDiscount || 0;
+          sum += element.nRedeemedLoyaltyPoints || 0;
         });
         result = sum;
         break;
@@ -700,8 +703,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     // console.log('this.transactionItems: ', this.transactionItems);
 
     this.transactionItems.forEach((item: any) => {
+      if (item.type === 'loyalty-points') return;
       item.paymentAmount = 0;
-
       if (item.type === 'repair' || item.type === 'order') {
         if (item?.prepaymentTouched) {
           item.manualUpdate = false;
@@ -1471,6 +1474,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       quantity: 1,
       iArticleGroupId: iArticleGroupId,
       nRedeemedLoyaltyPoints: redeemedLoyaltyPoints,
+      paymentAmount: 0,
       redeemedLoyaltyPoints,
       price: 0,
       nDiscount: 0,
@@ -1480,6 +1484,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       description: '',
       oArticleGroupMetaData: { aProperty: [], sCategory: '', sSubCategory: '', oName: {}, oNameOriginal: {} },
       open: false,
+      isExclude: true
     });
     this.redeemedLoyaltyPoints = redeemedLoyaltyPoints;
     this.clearPaymentAmounts();
@@ -1837,5 +1842,11 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   articleGroupDataChange(oStaticData: any) {
     // console.log('articleGroupDataChange', oStaticData)
     this.oStaticData = oStaticData;
+  }
+
+  removeLoyaltyPoints(){
+    this.redeemedLoyaltyPoints = 0; 
+    this.transactionItems.splice(this.transactionItems.findIndex(el => el.type === 'loyalty-points'), 1);
+    this.changeInPayment();
   }
 }
