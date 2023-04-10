@@ -337,7 +337,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
   updateAmountVariables() {
     // console.log('updateAmountVariables');
-    this.nItemsTotalToBePaid = this.getTotals('price');
+    this.nItemsTotalToBePaid = _.sumBy(this.transactionItems, 'amountToBePaid');//this.getTotals('price');
     this.nItemsTotalDiscount = this.getTotals('discount');
     this.nItemsTotalQuantity = this.getTotals('quantity');
     this.nTotalPayment = this.totalPrepayment();
@@ -407,7 +407,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     this.transactionItems.forEach((i) => {
       // console.log(i);
       if (!i.isExclude) {
-        result += i.paymentAmount;
+        result += (i.paymentAmount - i?.nGiftcardDiscount || 0 - i?.nRedeemedLoyaltyPoints || 0);
       }
     });
     return result;
@@ -780,19 +780,19 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     const giftCardPayment = this.allPaymentMethod.find((o) => o.sName === 'Giftcards');
     this.saveInProgress = true;
-    const nTotalToPay = this.getTotals('price');
-    const nEnteredAmountTotal = this.getUsedPayMethods(true);
+    // const nTotalToPay = this.nItemsTotalToBePaid;
+    // const nEnteredAmountTotal = this.availableAmount;
 
-    if (nTotalToPay < 0) {
-      let nDiff = parseFloat((nTotalToPay - nEnteredAmountTotal).toFixed(2));
+    if (this.nItemsTotalToBePaid < 0) {
+      let nDiff = parseFloat((this.nItemsTotalToBePaid - this.availableAmount).toFixed(2));
       if (nDiff < -0.02 || nDiff > 0.02) {
         this.toastrService.show({ type: 'warning', text: `We do not allow prepayment on negative transactions and also we do not support negative change money.` });
         this.saveInProgress = false;
         return;
       }
     }
-    const changeAmount = nEnteredAmountTotal - nTotalToPay
-    this.dialogService.openModal(TerminalDialogComponent, { cssClass: 'modal-lg', context: { payments: this.payMethods, changeAmount, nTotalTransactionAmount: nTotalToPay } })
+    const changeAmount = this.availableAmount - this.nItemsTotalToBePaid
+    this.dialogService.openModal(TerminalDialogComponent, { cssClass: 'modal-lg', context: { payments: this.payMethods, changeAmount, nTotalTransactionAmount: this.nItemsTotalToBePaid } })
       .instance.close.subscribe(async (payMethods: any) => {
         // console.log(payMethods)
         if (!payMethods) {
@@ -812,26 +812,26 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
           this.transactionItems = [...this.transactionItems.filter((item: any) => item.type !== 'empty-line')]
           const body = this.tillService.createTransactionBody(this.transactionItems, payMethods, this.discountArticleGroup, this.redeemedLoyaltyPoints, this.customer);
           // console.log('body: ', body);
-          // return;
           if (body.transactionItems.filter((item: any) => item.oType.eKind === 'repair')[0]?.iActivityItemId) {
             this.bHasIActivityItemId = true
           }
           if (giftCardPayment && this.appliedGiftCards.length > 0) {
             // this.appliedGiftCards.forEach(element => {
-            //   const cardPaymethod = _.clone(giftCardPayment);
-            //   cardPaymethod.amount = element.nAmount;
-            //   cardPaymethod.sGiftCardNumber = element.sGiftCardNumber;
-            //   cardPaymethod.iArticleGroupId = element.iArticleGroupId;
-            //   cardPaymethod.iArticleGroupOriginalId = element.iArticleGroupOriginalId;
-            //   cardPaymethod.type = element.type;
-            //   body.payments.push(cardPaymethod);
-            // });
-            body.giftCards = this.appliedGiftCards;
-          }
+              //   const cardPaymethod = _.clone(giftCardPayment);
+              //   cardPaymethod.amount = element.nAmount;
+              //   cardPaymethod.sGiftCardNumber = element.sGiftCardNumber;
+              //   cardPaymethod.iArticleGroupId = element.iArticleGroupId;
+              //   cardPaymethod.iArticleGroupOriginalId = element.iArticleGroupOriginalId;
+              //   cardPaymethod.type = element.type;
+              //   body.payments.push(cardPaymethod);
+              // });
+              body.giftCards = this.appliedGiftCards;
+            }
           body.oTransaction.iActivityId = this.iActivityId;
           let result = body.transactionItems.map((a: any) => a.iBusinessPartnerId);
           const uniq = [...new Set(_.compact(result))];
           if (this.appliedGiftCards?.length) this.tillService.createGiftcardTransactionItem(body, this.discountArticleGroup);
+          // return;
 
           const oDialogComponent: DialogComponent = this.dialogService.openModal(TransactionActionDialogComponent, {
             cssClass: 'modal-lg', hasBackdrop: true, closeOnBackdropClick: true, closeOnEsc: true,

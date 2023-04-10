@@ -705,7 +705,7 @@ export class TillService {
               }
               relatedItem.totalPaymentAmount = (relatedItem.nRevenueAmount > 0) ? (+(relatedItem.nRevenueAmount.toFixed(2)) - relatedItem.nDiscount) * relatedItem.nQuantity : 0;
             }
-            relatedItem.totalPaymentAmount -= (relatedItem?.nRedeemedLoyaltyPoints || 0);
+            relatedItem.totalPaymentAmount -= ((relatedItem?.nRedeemedLoyaltyPoints || 0) + (relatedItem?.nGiftcardDiscount || 0));
           }
           item.nDiscountToShow = +(item.nDiscountToShow.toFixed(2));
           relatedItem.totalPaymentAmount = +(relatedItem.totalPaymentAmount.toFixed(2));
@@ -771,7 +771,7 @@ export class TillService {
     }
     transaction = dataObject;
     transaction.bCompletedProcessing = true;
-    // console.log('processTransactionForPdfReceipt after processing', transaction);
+    console.log('processTransactionForPdfReceipt after processing', transaction);
     return transaction;
   }
 
