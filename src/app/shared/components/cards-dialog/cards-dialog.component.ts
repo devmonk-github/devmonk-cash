@@ -143,12 +143,13 @@ export class CardsComponent implements OnInit, AfterViewInit {
 
   submit() {
     this.giftCardInfo.sGiftCardNumber = this.sGiftCardNumber;
-    this.giftCardInfo.nAmount = this.nAmount;
+    // this.giftCardInfo.nAmount = this.nAmount;
     this.giftCardInfo.nGiftcardRemainingAmount -= this.nAmount;
     this.giftCardInfo.pincode = this.pincode;
     this.giftCardInfo.profileIconUrl = this.externalGiftCardDetails.profileIconUrl;
     this.giftCardInfo.iArticleGroupId = this.giftCardDetails?.iArticleGroupId;
     this.giftCardInfo.type = this.externalGiftCardDetails.type ? this.externalGiftCardDetails.type : 'custom';
+    console.log(this.giftCardInfo.nAmount);
     this.close({ giftCardInfo: this.giftCardInfo, redeemedLoyaltyPoints: this.redeemedLoyaltyPoints });
   }
 }

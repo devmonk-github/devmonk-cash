@@ -330,8 +330,8 @@ export class TillService {
           body.transactionItems.push(tItem1);
         }
       }
-      i.nPaymentAmount += (i?.nGiftcardDiscount || 0 + i?.nRedeemedLoyaltyPoints || 0);
-      i.nRevenueAmount += (i?.nGiftcardDiscount || 0 + i?.nRedeemedLoyaltyPoints || 0);
+      i.nPaymentAmount += i?.nGiftcardDiscount || 0;
+      i.nRevenueAmount += i?.nGiftcardDiscount || 0;
     });
     localStorage.removeItem('discountRecords');
     if (redeemedLoyaltyPoints && redeemedLoyaltyPoints > 0) {
@@ -339,14 +339,16 @@ export class TillService {
       const reedemedTItem = body.transactionItems.find((o: any) => o.oType.eTransactionType === "loyalty-points");
       // console.log({reedemedTItem})
       body.transactionItems.map((i: any) => {
-        let nDiscount = i.nRedeemedLoyaltyPoints;
+        let nDiscount = i?.nRedeemedLoyaltyPoints || 0;
         if (i.oType.eKind !== 'discount' && i.oType.eKind !== 'loyalty-points') {
-          if (nDiscount > redeemedLoyaltyPoints) {
-            nDiscount = redeemedLoyaltyPoints;
-            redeemedLoyaltyPoints = 0;
-          } else {
-            redeemedLoyaltyPoints = redeemedLoyaltyPoints - nDiscount;
-          }
+          i.nPaymentAmount += nDiscount;
+          i.nRevenueAmount += nDiscount;
+          // if (nDiscount > redeemedLoyaltyPoints) {
+          //   nDiscount = redeemedLoyaltyPoints;
+          //   redeemedLoyaltyPoints = 0;
+          // } else {
+          //   redeemedLoyaltyPoints = redeemedLoyaltyPoints - nDiscount;
+          // }
           const tItem1 = JSON.parse(JSON.stringify(i));
           tItem1.iArticleGroupId = reedemedTItem.iArticleGroupId;
           tItem1.oArticleGroupMetaData.sCategory = discountArticleGroup.sCategory;
@@ -565,7 +567,8 @@ export class TillService {
     //     }
     //   }
     // })
-
+    const aDiscountRecords = transaction.aTransactionItems.filter((item: any) =>
+      (item.oType?.eKind == 'discount' || item?.oType?.eKind == 'loyalty-points-discount' || item.oType?.eKind == 'giftcard-discount'));
     dataObject.aTransactionItems = transaction.aTransactionItems.filter((item: any) =>
       !(item.oType?.eKind == 'discount' || item?.oType?.eKind == 'loyalty-points-discount' || item.oType.eKind == 'loyalty-points' || item.oType?.eKind == 'giftcard-discount'));
     let total = 0, 
@@ -594,7 +597,15 @@ export class TillService {
       // if (item?.oBusinessProductMetaData?.sLabelDescription){
       //   item.description = item.description + item?.oBusinessProductMetaData?.sLabelDescription + ' ' + item?.sProductNumber;
       // }
-      totalSavingPoints += ( item?.nSavingsPoints || 0);
+      let nDiscountSavingsPoints = 0;
+      if(aDiscountRecords?.length) {
+        const aDiscounts = aDiscountRecords.filter((s:any) => s.sUniqueIdentifier === item.sUniqueIdentifier);
+        if(aDiscounts.length) {
+          nDiscountSavingsPoints = _.sumBy(aDiscounts, 'nSavingsPoints');
+        }
+      }
+      item.nSavingsPoints += nDiscountSavingsPoints;
+      totalSavingPoints += (item?.nSavingsPoints || 0);
       totalRedeemedLoyaltyPoints += item?.nRedeemedLoyaltyPoints || 0;
       let disc = parseFloat(item?.nDiscount) || 0;
       // console.log(545, 'bDiscountOnPercentage', item.bDiscountOnPercentage)
@@ -694,7 +705,7 @@ export class TillService {
               }
               relatedItem.totalPaymentAmount = (relatedItem.nRevenueAmount > 0) ? (+(relatedItem.nRevenueAmount.toFixed(2)) - relatedItem.nDiscount) * relatedItem.nQuantity : 0;
             }
-            relatedItem.totalPaymentAmount -= (relatedItem?.nRedeemedLoyaltyPoints || 0);
+            relatedItem.totalPaymentAmount -= ((relatedItem?.nRedeemedLoyaltyPoints || 0) + (relatedItem?.nGiftcardDiscount || 0));
           }
           item.nDiscountToShow = +(item.nDiscountToShow.toFixed(2));
           relatedItem.totalPaymentAmount = +(relatedItem.totalPaymentAmount.toFixed(2));
@@ -760,7 +771,7 @@ export class TillService {
     }
     transaction = dataObject;
     transaction.bCompletedProcessing = true;
-    // console.log('processTransactionForPdfReceipt after processing', transaction);
+    console.log('processTransactionForPdfReceipt after processing', transaction);
     return transaction;
   }
 
