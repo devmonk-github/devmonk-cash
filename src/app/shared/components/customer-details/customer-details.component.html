@@ -286,6 +286,7 @@
                                                     (click)="setSortOption(th)">
                                                     {{ th.key }}
                                                 </th>
+                                                
                                             </ng-container>
                                         </tr>
                                     </thead>
@@ -363,6 +364,7 @@
                                                 (click)="setSortOption(th)">
                                                 {{ th.key }}
                                             </th>
+                                            <th>{{ "ACTION" | translate }}</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -375,6 +377,14 @@
                                             <td scope="row">{{activity?.dEstimatedDate | date: 'yyyy-MM-dd HH:mm'}}</td>
                                             <td>{{activity?.eActivityItemStatus || '-'}}</td>
                                             <td>{{activity?.sBusinessPartnerName || '-'}}</td>
+                                            <ng-container *ngIf="from === 'customer'">
+                                                <td>
+                                                    <button class="btn btn-primary"
+                                                    (click)="openActivities(activity)" >
+                                                        {{ 'VIEW' | translate }}
+                                                    </button>
+                                                </td>
+                                            </ng-container>
                                         </tr>
                                         <tr *ngIf="bActivitiesLoader">
                                             <td colspan="7" class="text-center">
@@ -428,6 +438,7 @@
                                                 (click)="setSortOption(th)">
                                                 {{ th.key }}
                                             </th>
+                                            <th>{{ "ACTION" | translate }}</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -440,6 +451,14 @@
                                             <td scope="row">{{activity?.dEstimatedDate | date: 'yyyy-MM-dd HH:mm'}}</td>
                                             <td>{{activity?.eActivityItemStatus || '-'}}</td>
                                             <td>{{activity?.sBusinessPartnerName || '-'}}</td>
+                                            <ng-container *ngIf="from === 'customer'">
+                                                <td>
+                                                    <button class="btn btn-primary"
+                                                    (click)="openActivityItems(activity)" >
+                                                        {{ 'VIEW' | translate }}
+                                                    </button>
+                                                </td>
+                                            </ng-container>
                                         </tr>
                                         <tr *ngIf="bActivityItemsLoader">
                                             <td colspan="7" class="text-center">

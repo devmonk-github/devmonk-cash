@@ -17,6 +17,8 @@ import {
   ApexLegend
 } from "ng-apexcharts";
 import { ToastService } from '../toast';
+import { WebOrderDetailsComponent } from '../../../shared/components/web-order-details/web-order-details.component';
+import { ActivityDetailsComponent } from '../../../shared/components/activity-details-dialog/activity-details.component';
 import { TransactionDetailsComponent } from '../../../transactions/components/transaction-details/transaction-details.component';
 import { fromEvent, Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, tap } from 'rxjs/operators';
@@ -90,7 +92,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
   customerLoyalityPoints :Number;
   pointsAdded:Boolean = false;
   oPointsSettingsResult:any;
-
+  employees: Array<any> = [];
   purchasePaginationConfig: any = {
     id: 'purchases_paginate',
     itemsPerPage: 10,
@@ -181,7 +183,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
       sLastName: ''
     }
   }
-
+  webOrders: Boolean = false;
   requestParams: any = {
     iBusinessId: "",
     aProjection: ['sSalutation', 'sFirstName', 'sPrefix', 'sLastName', 'dDateOfBirth', 'dDateOfBirth', 'nClientId', 'sGender', 'bIsEmailVerified',
@@ -896,8 +898,16 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
   }, (error) => {
   });
   }
+  listEmployee() {
+    this.apiService.postNew('auth', '/api/v1/employee/list', { iBusinessId: this.requestParams.iBusinessId }).subscribe((result: any) => {
+      if (result?.data?.length && result.data[0].result?.length) {
+        this.employees = result.data[0].result
+      }
+    })
+  }
 
   loadActivities() {
+    this.listEmployee();
     if (this.customer.bCounter) return;
     this.aActivities = [];
     this.bActivitiesLoader = true;
@@ -1043,6 +1053,60 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
             this.router.navigate(['business/till']);
           } 
         });
+  }
+  openActivityItems(activity: any, openActivityId?: any) {
+    this.dialogService.openModal(ActivityDetailsComponent,
+      {
+        cssClass: 'modal-xl',
+        //hasBackdrop: true,
+        // closeOnBackdropClick: true,
+        //closeOnEsc: true,
+        context: {
+          activityItems: [activity],
+          businessDetails: this.businessDetails,
+          openActivityId,
+          items: true,
+          employeesList: this.employees,
+          from: 'activity-items'
+        }
+      }).instance.close.subscribe((result) => {
+        if (result?.oData?.oCurrentCustomer) {
+          if (result?.oData?.oCurrentCustomer?.sFirstName) activity.oCustomer.sFirstName = result?.oData?.oCurrentCustomer?.sFirstName;
+          if (result?.oData?.oCurrentCustomer?.sLastName) activity.oCustomer.sLastName = result?.oData?.oCurrentCustomer?.sLastName;
+          if(result?.oData?.oCurrentCustomer?.sCompanyName) activity.oCustomer.sCompanyName = result?.oData.oCurrentCustomer?.sCompanyName
+          if(result?.oData?.oCurrentCustomer?.bIsCompany) activity.oCustomer.bIsCompany = result?.oData.oCurrentCustomer?.bIsCompany
+        }
+      }, (error) => {
+        console.log('Error here');
+      });
+  }
+
+  openActivities(activity: any, openActivityId?: any) {
+    if (this.webOrders) {
+      let isFrom = this.router.url.includes('/business/webshop-orders') ? 'web-orders' : 'web-reservations';
+      this.dialogService.openModal(WebOrderDetailsComponent, { cssClass: 'w-fullscreen', context: { activity, businessDetails: this.businessDetails, from: isFrom } })
+        .instance.close.subscribe(result => {
+          if (this.webOrders && result) this.router.navigate(['business/till']);
+        });
+    } else {
+      this.dialogService.openModal(ActivityDetailsComponent, {
+        cssClass: 'modal-xl',
+        //hasBackdrop: true,
+        //closeOnBackdropClick: true,
+       // closeOnEsc: true,
+        context: {
+          activity,
+          businessDetails: this.businessDetails,
+          openActivityId,
+          items: false,
+          webOrders: this.webOrders,
+          from: 'services',
+          employeesList: this.employees
+        }
+      }).instance.close.subscribe(result => {
+        if (this.webOrders && result) this.router.navigate(['business/till']);
+      });
+    }
   }
 
 
