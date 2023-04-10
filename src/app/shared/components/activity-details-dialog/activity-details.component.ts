@@ -715,13 +715,14 @@ export class ActivityDetailsComponent implements OnInit {
       //"sCocNumber" : "",
       "sEmail" : ""
   }];
-
+  if(this.from == 'activity-items'){
   for(const [key,value] of Object.entries(currentCustomer)){
       if(!(_.isEqual(systemCustomer[key], currentCustomer[key]))){
        this.showSystemCustomer = true;
        //console.log(this.showSystemCustomer);
       }
    }
+  }
   }
 
   async processTransactionItems(oData: any) {
