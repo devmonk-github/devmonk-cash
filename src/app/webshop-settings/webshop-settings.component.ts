@@ -13,7 +13,7 @@ export class WebshopSettingsComponent implements OnInit {
   @ViewChild(ExtraServiceComponent) extraService!: ExtraServiceComponent;
   faPlus = faPlus;
 
-  deliveryMethods: Array<any> = ['ExpressShipping', 'RegisteredShipping', 'Pick-upInStore', 'Neighborhood'];
+  deliveryMethods: Array<any> = ['ExpressShipping', 'RegisteredShipping', 'Neighborhood'];
   paymentMethodFormGroup: FormGroup;
   paymentProviderDetails: any;
   showPaymentMethodError: boolean = false;
@@ -179,5 +179,14 @@ export class WebshopSettingsComponent implements OnInit {
       (error : any) => {
       }
     )
+  }
+
+  filteredDeliveryMethods(){
+    return this.deliveryMethods.filter((method : string) => this.webShop.aShippingOptions.findIndex((option : any) => option.type == method) == -1);
+  }
+
+  removeShippingOption(option : any){
+    let index = this.webShop.aShippingOptions.findIndex((sOption : any) => sOption.type == option.type);
+    this.webShop.aShippingOptions.splice(index);
   }
 }

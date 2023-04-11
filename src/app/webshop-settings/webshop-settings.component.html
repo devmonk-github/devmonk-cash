@@ -106,118 +106,83 @@
     </div>
     <div class="card-body p-9">
         <form name="labelForm" class="row">
-            <div class="col-md-4">
+            <div class="col-md-3 offset-md-3">
                 <label for="label8" name="label8" class="form-label">{{"DOMESTIC" | translate}}</label>
-                <input name="input7" id="input7" type="number" class="form-control"
-                    [(ngModel)]="webShop.oShippingCost.domestic" (focusout)="updateWebShopSettings()" fullWidth
-                    required="true">
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <label for="label9" name="label9" class="form-label">{{"EUROPE" | translate}}</label>
-                <input name="input8" id="input8" type="number" class="form-control"
-                    [(ngModel)]="webShop.oShippingCost.europe" (focusout)="updateWebShopSettings()" fullWidth
-                    required="true">
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <label for="label10" name="label10" class="form-label">{{"WORLDWIDE" | translate}}</label>
+            </div>
+            <div class="col-md-3 mt-2">
+                <label for="label11" name="label11" class="form-label form-control-solid mt-2 fw-bolder">{{"STANDARD_SHIPPING" | translate}}</label>
+            </div>
+            <div class="col-md-3 mt-2">
+                <input name="input7" id="input7" type="number" class="form-control"
+                    [(ngModel)]="webShop.oShippingCost.domestic" required="true">
+            </div>
+            <div class="col-md-3 mt-2">                
+                <input name="input8" id="input8" type="number" class="form-control"
+                    [(ngModel)]="webShop.oShippingCost.europe" required="true">
+            </div>
+            <div class="col-md-3 mt-2">
                 <input name="input9" id="input9" type="number" class="form-control"
-                    [(ngModel)]="webShop.oShippingCost.abroad" (focusout)="updateWebShopSettings()" fullWidth
-                    required="true">
+                    [(ngModel)]="webShop.oShippingCost.abroad" required="true">
             </div>
-            <label for="label11" name="label11"
-                class="form-label form-control-solid mt-6">{{'FREE_SHIPPING_FROM'}}</label>
-            <div class="col-md-4">
-                <label for="label12" name="label12" class="form-label">{{"DOMESTIC" | translate}}</label>
+            <div class="col-md-3 mt-2"> 
+                <label for="label11" name="label11" class="form-label form-control-solid mt-2 fw-bolder">
+                    {{'FREE_SHIPPING_FROM' | translate }}
+                </label>
+            </div>
+            <div class="col-md-3 mt-2">
                 <input name="input10" id="input10" type="number" class="form-control"
-                    [(ngModel)]="webShop.oFreeShippingFrom.domestic" (value)="webShop.oFreeShippingFrom.domestic"
-                    (focusout)="updateWebShopSettings()" fullWidth required="true">
+                    [(ngModel)]="webShop.oFreeShippingFrom.domestic" (value)="webShop.oFreeShippingFrom.domestic" required="true">
             </div>
-            <div class="col-md-4">
-                <label for="label13" name="label13" class="form-label">{{"EUROPE" | translate}}</label>
+            <div class="col-md-3 mt-2">
                 <input name="input11" id="input11" type="number" class="form-control"
-                    [(ngModel)]="webShop.oFreeShippingFrom.europe" (value)="webShop.oFreeShippingFrom.europe"
-                    (focusout)="updateWebShopSettings()" fullWidth required="true">
+                    [(ngModel)]="webShop.oFreeShippingFrom.europe" (value)="webShop.oFreeShippingFrom.europe" required="true">
             </div>
-            <div class="col-md-4">
-                <label for="label14" name="label14" class="form-label">{{"WORLDWIDE" | translate}}</label>
+            <div class="col-md-3 mt-2">
                 <input name="input12" id="input12" type="number" class="form-control"
-                    [(ngModel)]="webShop.oFreeShippingFrom.abroad" (value)="webShop.oFreeShippingFrom.abroad"
-                    (focusout)="updateWebShopSettings()" fullWidth required="true">
+                    [(ngModel)]="webShop.oFreeShippingFrom.abroad" (value)="webShop.oFreeShippingFrom.abroad" required="true">
             </div>
         </form>
-    </div>
-</div>
-
-<div *ngFor="let cMethod of webShop.aShippingOptions" class="card mb-6 mb-xl-10 d-flex">
-    <div class="card-header row">
-        <div class="card-title">
-            <div class="col-md-12">
-                <span>{{ cMethod.type | translate}}</span>
-            </div>
-        </div>
-    </div>
-    <div class="card-body p-9">
-        <form name="labelForm" class="row mt-6">
-            <div class="col-md-3">
-                <label class="form-label">{{"DOMESTIC" | translate}}</label>
-                <input type="number" name="input23" [(ngModel)]="cMethod.domestic" class="form-control" fullWidth
-                    required="true">
-            </div>
-            <div class="col-md-3">
-                <label class="form-label">{{"EUROPE" | translate}}</label>
-                <input type="number" name="input24" [(ngModel)]="cMethod.europe" class="form-control" fullWidth
-                    required="true">
-            </div>
-            <div class="col-md-3">
-                <label class="form-label">{{"WORLDWIDE" | translate}}</label>
-                <input type="number" name="input25" [(ngModel)]="cMethod.abroad" class="form-control" fullWidth
-                    required="true">
-            </div>
-            <div class="col-md-3 d-flex">
-                <button class="btn mt-auto btn-primary" (click)="updateWebShopSettings()"> {{ 'UPDATE' | translate}}</button>
-            </div>
-        </form>
-    </div>
-</div>
-
-<div class="card mb-6 mb-xl-10 d-flex" data-kt-scroll-section="other_delivery_methods">
-    <div class="card-header row">
-        <div class="card-title">
-            <div class="col-md-12">
-                <span>{{ 'OTHER_DELIVERY_METHODS' | translate}}</span>
-            </div>
-        </div>
-    </div>
-    <div class="card-body p-9">
+        <hr/>
         <div class="row">
-            <div class="col-md-5">
+            <div class="col-md-3">
+                <label for="deliveryMethods" name="deliveryMethodLabel" class="form-label">{{"OTHER_DELIVERY_METHODS" | translate}}</label>
+            </div>
+            <div class="col-md-6">
                 <select class="form-select form-select-sm form-select-solid" [(ngModel)]="newShipping.type"
-                    name="profile" class="form-select w-100" id="profile" [(ngModel)]="method">
-                    <option *ngFor="let method of deliveryMethods" [value]="method">{{method | translate }}</option>
+                    name="deliveryMethods" class="form-select w-100" id="deliveryMethods" [(ngModel)]="method">
+                    <option *ngFor="let method of filteredDeliveryMethods()" [value]="method">{{method | translate }}</option>
                 </select>
             </div>
         </div>
-        <form name="labelForm" class="row mt-6">
-            <div class="col-md-4">
-                <label for="label15" name="label15" class="form-label">{{"DOMESTIC" | translate}}</label>
-                <input name="input13" id="input13" type="number" [(ngModel)]="newShipping.domestic" class="form-control"
-                    fullWidth required="true">
+        <div class="row" *ngFor="let cMethod of webShop.aShippingOptions">
+            <div class="col-md-3 mt-2 d-flex"> 
+                <label for="label11" name="label11" class="form-label form-control-solid my-auto fw-bolder">
+                    {{ cMethod.type | translate }}
+                </label>
+                <span class="ms-auto my-auto" (click)="removeShippingOption(cMethod)">
+                    <i class="fa fa-trash" style="color: red;"></i>
+                </span>
             </div>
-            <div class="col-md-4">
-                <label for="label16" name="label16" class="form-label">{{"EUROPE" | translate}}</label>
-                <input name="input14" id="input14" type="number" [(ngModel)]="newShipping.europe" class="form-control"
-                    fullWidth required="true">
+            <div class="col-md-3 mt-2">
+                <input name="input10" id="input10" type="number" class="form-control" [(ngModel)]="cMethod.domestic" fullWidth required="true">
             </div>
-            <div class="col-md-4">
-                <label for="label17" name="label17" class="form-label">{{"WORLDWIDE" | translate}}</label>
-                <input name="input15" id="input15" type="number" [(ngModel)]="newShipping.abroad" class="form-control"
-                    fullWidth required="true">
+            <div class="col-md-3 mt-2">
+                <input name="input11" id="input11" type="number" class="form-control" [(ngModel)]="cMethod.europe" fullWidth required="true">
             </div>
-        </form>
-        <div class="row mt-6 col-md-3">
-            <button class="btn btn-sm btn-primary" (click)="AddDeliveryMethod(newShipping)">
-                <fa-icon [icon]="faPlus"></fa-icon> &nbsp; {{ "ADD_DELIVERY_METHOD" | translate }}
-            </button>
+            <div class="col-md-3 mt-2">
+                <input name="input12" id="input12" type="number" class="form-control" [(ngModel)]="cMethod.europe" fullWidth required="true">
+            </div>
+        </div>
+        <div class="row mt-2">
+            <div class="col-md-12 d-flex">
+                <button class="btn ms-auto btn-primary" (click)="updateWebShopSettings()"> {{ 'UPDATE' | translate}}</button>
+            </div>
         </div>
     </div>
 </div>
