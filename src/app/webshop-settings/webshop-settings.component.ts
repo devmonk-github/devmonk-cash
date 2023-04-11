@@ -180,4 +180,13 @@ export class WebshopSettingsComponent implements OnInit {
       }
     )
   }
+
+  filteredDeliveryMethods(){
+    return this.deliveryMethods.filter((method : string) => this.webShop.aShippingOptions.findIndex((option : any) => option.type == method) == -1);
+  }
+
+  removeShippingOption(option : any){
+    let index = this.webShop.aShippingOptions.findIndex((sOption : any) => sOption.type == option.type);
+    this.webShop.aShippingOptions.splice(index);
+  }
 }
