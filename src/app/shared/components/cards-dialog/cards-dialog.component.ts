@@ -144,7 +144,7 @@ export class CardsComponent implements OnInit, AfterViewInit {
   submit() {
     this.giftCardInfo.sGiftCardNumber = this.sGiftCardNumber;
     // this.giftCardInfo.nAmount = this.nAmount;
-    this.giftCardInfo.nGiftcardRemainingAmount -= this.nAmount;
+    this.giftCardInfo.nGiftcardRemainingAmount -= this.giftCardInfo.nAmount;
     this.giftCardInfo.pincode = this.pincode;
     this.giftCardInfo.profileIconUrl = this.externalGiftCardDetails.profileIconUrl;
     this.giftCardInfo.iArticleGroupId = this.giftCardDetails?.iArticleGroupId;

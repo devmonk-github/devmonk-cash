@@ -126,7 +126,7 @@ export class TransactionItemsDetailsComponent implements OnInit {
       // console.log('this.transactionItems 2', JSON.parse(JSON.stringify(this.transactionItems)));
 
       const discountRecords = this.transactionItems.filter(o => o.oType.eKind === 'discount' || o.oType.eKind === 'loyalty-points-discount' || o.oType.eKind === 'giftcard-discount');
-      this.bIsAnyGiftCardDiscount = this.transactionItems.find((el: any) => el?.oType?.eKind === 'giftcard-discount')
+      this.bIsAnyGiftCardDiscount = discountRecords.some((el: any) => el?.oType?.eKind === 'giftcard-discount')
       this.transactionItems = this.transactionItems.filter(o => o.oType.eKind !== 'discount' && o.oType.eKind !== 'loyalty-points' && o.oType.eKind !== 'loyalty-points-discount' && o.oType.eKind !== 'giftcard-discount');
       // console.log('this.transactionItems 3', this.transactionItems);
       this.transactionItems.forEach(element => {
@@ -171,7 +171,8 @@ export class TransactionItemsDetailsComponent implements OnInit {
       this.transactionItems = this.transactionItems.map(v => ({ ...v, isSelected: false }));
       // console.log('this.transactionItems 4: ', JSON.parse(JSON.stringify(this.transactionItems)));
       this.transactionItems.forEach(item => {
-        if (item.nPaidAmount < (item.nTotalAmount - item.nDiscount * item.nQuantity)) {
+        const nTotalDiscount = (item.nDiscount * item.nQuantity) + (item?.nRedeemedLoyaltyPoints || 0) + (item?.nRedeemedGiftcardAmount || 0);
+        if (item.nPaidAmount < (item.nTotalAmount - nTotalDiscount)) {
           item.tType = 'pay';
         } else {
           item.tType = 'refund';
