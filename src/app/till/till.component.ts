@@ -407,7 +407,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     this.transactionItems.forEach((i) => {
       // console.log(i);
       if (!i.isExclude) {
-        result += (i.paymentAmount - i?.nGiftcardDiscount || 0 - i?.nRedeemedLoyaltyPoints || 0);
+        result += (i.paymentAmount)// - i?.nGiftcardDiscount || 0 - i?.nRedeemedLoyaltyPoints || 0);
       }
     });
     return result;
@@ -915,8 +915,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     const nRepairCount = oDataSource.aTransactionItemType.filter((e: any) => e === 'repair')?.length;
     const nOrderCount = oDataSource.aTransactionItemType.filter((e: any) => e === 'order')?.length;
 
-    const bRegularCondition = oDataSource.total >= 0.02 || oDataSource.total <= -0.02;
-    const bOrderCondition = nOrderCount === 1 && nRepairCount === 1 || nRepairCount > 1 || nOrderCount >= 1;
+    const bRegularCondition = oDataSource.total >= 0.02 || oDataSource.total <= -0.02 || this.transaction.totalGiftcardDiscount || this.transaction.totalRedeemedLoyaltyPoints;
+    const bOrderCondition = nOrderCount === 1 && nRepairCount >= 1 || nOrderCount >= 1;
     const bRepairCondition = nRepairCount === 1 && nOrderCount === 0;
     const bRepairAlternativeCondition = nRepairCount >= 1 && nOrderCount >= 1;
 
@@ -950,7 +950,9 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       activityItems: this.activityItems,
       activity: this.activity,
       aTemplates: aTemplates,
-      businessDetails: this.businessDetails
+      businessDetails: this.businessDetails,
+      bRegularCondition:bRegularCondition,
+      bOrderCondition:bOrderCondition
     });
 
     oDialogComponent.close.subscribe(() => { this.clearAll(); });

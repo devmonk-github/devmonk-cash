@@ -79,14 +79,17 @@ export class TransactionActionDialogComponent implements OnInit {
       this.nRepairCount = context.nRepairCount;
       this.printActionSettings = context.printActionSettings;
       this.printSettings = context.printSettings;
+      this.printSettings = context.printSettings;
+      this.bRegularCondition = context.bRegularCondition;
+      this.bOrderCondition = context.bOrderCondition;
 
       this.aRepairItems = this.activityItems.filter((item: any) => item.oType.eKind === 'repair' || item.oType.eKind === 'order');
-      this.bRegularCondition = this.transaction.total > 0.02 || this.transaction.total < -0.02;
-      this.bOrderCondition = this.nOrderCount === 1 || this.nRepairCount >= 1 || this.nOrderCount >= 1; //&& this.nRepairCount === 1
+      // this.bRegularCondition = this.transaction.total > 0.02 || this.transaction.total < -0.02 || this.transaction.totalGiftcardDiscount || this.transaction.totalRedeemedLoyaltyPoints;
+      // this.bOrderCondition = this.nOrderCount === 1 || this.nRepairCount >= 1 || this.nOrderCount >= 1; //&& this.nRepairCount === 1
 
       if (this.bRegularCondition) this.aUniqueTypes.push('regular');
       if (this.bOrderCondition) this.aUniqueTypes.push('order');
-      // console.log(this.transaction)
+      
       if (this.transaction.aTransactionItemType.includes('giftcard')) {
         this.bGiftcardCondition = true;
         this.aUniqueTypes.push('giftcard')
