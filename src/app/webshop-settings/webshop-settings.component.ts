@@ -13,7 +13,7 @@ export class WebshopSettingsComponent implements OnInit {
   @ViewChild(ExtraServiceComponent) extraService!: ExtraServiceComponent;
   faPlus = faPlus;
 
-  deliveryMethods: Array<any> = ['ExpressShipping', 'RegisteredShipping', 'Pick-upInStore', 'Neighborhood'];
+  deliveryMethods: Array<any> = ['ExpressShipping', 'RegisteredShipping', 'Neighborhood'];
   paymentMethodFormGroup: FormGroup;
   paymentProviderDetails: any;
   showPaymentMethodError: boolean = false;
