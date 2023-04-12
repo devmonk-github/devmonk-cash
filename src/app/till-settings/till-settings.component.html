@@ -51,8 +51,12 @@
             </div>
 
             <div class="row mb-6 align-items-center">
-              <label class="col-6">{{"LAST_BAG_NUMBER" | translate}}</label>
-              <div class="col-6">
+              <label class="col-2">{{"PREFIX" | translate}}</label>
+              <div class="col-2">
+                <input type="text" class="form-control" [(ngModel)]="settings.currentLocation.sPrefix">
+              </div>
+              <label class="col-4">{{"LAST_BAG_NUMBER" | translate}}</label>
+              <div class="col-4">
                 <input type="number" class="form-control" [(ngModel)]="settings.currentLocation.nLastBagNumber">
               </div>
             </div>

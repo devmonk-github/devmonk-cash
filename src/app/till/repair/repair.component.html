@@ -15,7 +15,12 @@
           </div>
           <div class="col-4 text-truncate">{{ item.name }}</div>
           <div class="col">{{ item.price | currencyFormat: tillService.currency:tillService.separator }}</div>
-          <div class="col">{{ item.nDiscount | currencyFormat: tillService.currency:tillService.separator }}</div>
+          <div class="col">
+            <span *ngIf="item.bDiscountOnPercentage">{{item.nDiscount}}%</span>
+            <span *ngIf="!item.bDiscountOnPercentage">{{item.nDiscount | currencyFormat: tillService.currency:tillService.separator}}</span>
+          </div>
+          <div class="col" *ngIf="item.bShowGiftcardDiscountField">{{item.nGiftcardDiscount| currencyFormat: tillService.currency:tillService.separator}}</div>
+          <div class="col" *ngIf="item.bShowLoyaltyPointsDiscountField">{{item.nRedeemedLoyaltyPoints | currencyFormat: tillService.currency:tillService.separator}}</div>
           <div class="col">{{ item.tax }}%</div>
           <div class="col">{{ item.amountToBePaid | currencyFormat: tillService.currency:tillService.separator }}</div>
           <div class="col">{{ item.paymentAmount | currencyFormat: tillService.currency:tillService.separator }}</div>

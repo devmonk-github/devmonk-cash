@@ -40,9 +40,9 @@ export class PaymentDistributionService {
       
       if (i.type === 'gold-purchase') i.amountToBePaid = -(i.amountToBePaid) ;
 
+      i.nTotal = nPrice * i.quantity;
       if (i?.tType && i.tType === 'refund'){
         i.amountToBePaid = (i?.new) ? -(nPrice - nDiscount - (i?.nGiftcardDiscount || 0) - (i?.nRedeemedLoyaltyPoints || 0)) : -(i.nRefundAmount);
-        i.nTotal = nPrice * i.quantity;
         if (bTesting) console.log({ nTotal: i.nTotal, i: JSON.parse(JSON.stringify(i))})
         availableAmount += nPrice;
         
