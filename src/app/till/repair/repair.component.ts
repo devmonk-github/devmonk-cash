@@ -77,7 +77,7 @@ export class RepairComponent implements OnInit {
     this.getBusinessBrands();
     this.checkArticleGroups();
     this.getProperties();
-    // console.log(this.item);
+     console.log(this.item);
     // console.log(this.item?.price);
     // console.log(this.item?.nPurchasePrice);
     // this.listSuppliers();
