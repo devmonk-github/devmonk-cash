@@ -189,4 +189,9 @@ export class WebshopSettingsComponent implements OnInit {
     let index = this.webShop.aShippingOptions.findIndex((sOption : any) => sOption.type == option.type);
     this.webShop.aShippingOptions.splice(index);
   }
+  addShippingOption(){
+    let shippingOption = JSON.parse(JSON.stringify(this.newShipping));
+    this.webShop.aShippingOptions.push(shippingOption);
+    this.newShipping.type = '';
+  }
 }

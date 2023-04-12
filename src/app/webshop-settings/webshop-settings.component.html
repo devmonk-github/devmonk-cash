@@ -149,17 +149,19 @@
             </div>
         </form>
         <hr/>
-        <div class="row">
-            <div class="col-md-3">
-                <label for="deliveryMethods" name="deliveryMethodLabel" class="form-label">{{"OTHER_DELIVERY_METHODS" | translate}}</label>
+        <ng-container *ngIf="filteredDeliveryMethods() as deliveryMethods;">
+            <div class="row" *ngIf="deliveryMethods.length > 0;">
+                <div class="col-md-3">
+                    <label for="deliveryMethods" name="deliveryMethodLabel" class="form-label">{{"OTHER_DELIVERY_METHODS" | translate}}</label>
+                </div>
+                <div class="col-md-6">
+                    <select class="form-select form-select-sm form-select-solid" [(ngModel)]="newShipping.type"
+                        name="deliveryMethods" class="form-select w-100" id="deliveryMethods" (ngModelChange)="addShippingOption()">
+                        <option *ngFor="let method of deliveryMethods" [value]="method">{{method | translate }}</option>
+                    </select>
+                </div>
             </div>
-            <div class="col-md-6">
-                <select class="form-select form-select-sm form-select-solid" [(ngModel)]="newShipping.type"
-                    name="deliveryMethods" class="form-select w-100" id="deliveryMethods" [(ngModel)]="method">
-                    <option *ngFor="let method of filteredDeliveryMethods()" [value]="method">{{method | translate }}</option>
-                </select>
-            </div>
-        </div>
+        </ng-container>
         <div class="row" *ngFor="let cMethod of webShop.aShippingOptions">
             <div class="col-md-3 mt-2 d-flex"> 
                 <label for="label11" name="label11" class="form-label form-control-solid my-auto fw-bolder">
