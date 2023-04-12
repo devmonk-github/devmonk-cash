@@ -52,7 +52,7 @@ export class CustomerDialogComponent implements OnInit {
     searchValue: '',
     skip:0 , 
     limit:10,
-    oFilterBy: {}
+    oFilterBy: []
   }
   pageCounts: Array<number> = [10, 25, 50, 100]
   pageNumber: number = 1;
@@ -139,10 +139,22 @@ export class CustomerDialogComponent implements OnInit {
   key:any;
   iChosenCustomerId : any;
   iSearchedCustomerId : any;
-  aFilterFields:any = [
-    { title: 'PSOTAL_CODE', key: 'sPostalCode'},
-    { title: 'HOUSE_NUMBER', key: 'sHouseNumber'},
-  ]
+  // aFilterFields:any = [
+  //   { title: 'PSOTAL_CODE', key: 'sPostalCode'},
+  //   { title: 'HOUSE_NUMBER', key: 'sHouseNumber'},
+  // ]
+
+  oFilterFields: Array<any> = [
+    { key: 'FIRSTNAME', value: 'sFirstName' },
+    { key: 'LASTNAME', value: 'sLastName' },
+    { key: 'ADDRESS', value: 'sAddress' },
+    // { key: 'PSOTAL_CODE', value: 'sPostalCode' },
+    // { key: 'HOUSE_NUMBER', value: 'sHouseNumber' },
+    // { key: 'STREET', value: 'sStreet' },
+    { key: 'COMPANY_NAME', value: 'sCompanyName' },
+    { key: 'CONTACT_PERSON', value: 'oContactPerson' }
+  ];
+  
   showFilters = false;
   from:any;
 
@@ -232,8 +244,8 @@ export class CustomerDialogComponent implements OnInit {
   }
 
   getCustomers() {
-    const condition1 = Object.keys(this.requestParams.oFilterBy).some((key: any) => this.requestParams.oFilterBy[key]?.length);
-    if (this.requestParams?.searchValue?.length < 3 && !condition1) return;
+    //const condition1 = Object.keys(this.requestParams.oFilterBy).some((key: any) => this.requestParams.oFilterBy[key]?.length);
+    if (this.requestParams?.searchValue?.length < 3) return; // && !condition1
     
     
     this.showLoader = true;
