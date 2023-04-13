@@ -46,7 +46,7 @@
                                         [disabled]="transactionItem.bIsRefunded" />
                                 </label>
                             </td>
-                            <td class="">{{transactionItem.sProductName}}</td>
+                            <td class="custom-overflow">{{transactionItem.sProductName}}</td>
                             <td class="">{{transactionItem.nTotalAmount}}</td>
                             <td class="">{{transactionItem.nQuantity}}</td>
                             <td class="">{{transactionItem.nPaidAmount}}</td>
@@ -107,7 +107,7 @@
                                     </label>
                                 </td>
                                 <td class="">{{transactionItem.sNumber}}</td>
-                                <td class="">{{transactionItem.sProductName}}</td>
+                                <td class="custom-overflow">{{transactionItem.sProductName}}</td>
                                 <td class="">{{transactionItem?.sBagNumber || ''}}</td>
                                 <td class="">
                                     <div *ngIf="!bPriceEditMode" class="d-flex align-items-center justify-content-center">

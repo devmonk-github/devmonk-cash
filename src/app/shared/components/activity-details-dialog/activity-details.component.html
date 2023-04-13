@@ -38,7 +38,7 @@
                         </div>
 
                         <!-- System Customer Showing Start -->
-                        <div class="d-flex flex-wrap py-5">
+                        <!-- <div class="d-flex flex-wrap py-5">
                             <div class="flex-equal me-5">
                                 <p><strong>{{ "SYSTEM_CUSTOMER" | translate}}</strong></p>
 
@@ -90,11 +90,11 @@
                                 <button class="btn btn-primary my-3 btn-custom" *ngIf="customer?.bCounter==false"
                                     (click)="openCustomer(customer)">{{'VIEW'|translate}} </button>
                             </div>
-                        </div>
+                        </div> -->
                         <!-- System Customer Showing End -->
 
                         <!-- Activity/Activity-Item/Transaction Customer Showing Start -->
-                        <div class="d-flex flex-wrap py-5">
+                        <div class="d-flex flex-wrap pb-5">
                             <div class="flex-equal me-5">
                                 <p><strong>{{ "CURRENT_CUSTOMER" | translate}}</strong></p>
                                 <p *ngIf="customer?.bCounter==true"> {{ "NO_CUSTOMER_ADDED" | translate}} </p>
@@ -113,12 +113,12 @@
                                     </div>
                                     <div class="fs-6 ms-1">
                                         <div class="align-items-center" *ngIf="oCurrentCustomer?.sEmail">
-                                            <div class="text-gray-600">
+                                            <p class="text-gray-600 m-0">
                                                 {{oCurrentCustomer?.sEmail}}
-                                                <a href="mailto:{{oCurrentCustomer?.sEmail}}" class="ml-2">
+                                                <a href="mailto:{{oCurrentCustomer?.sEmail}}" class="ms-2">
                                                     <fa-icon [icon]="faEnvelope"></fa-icon>
                                                 </a>
-                                            </div>
+                                            </p>
                                         </div>
                                     </div>
                                     <div class="fs-6 ms-1">
@@ -130,9 +130,11 @@
                                                 *ngIf="oCurrentCustomer?.oPhone?.sMobile">
                                                 <span>
                                                     {{oCurrentCustomer?.oPhone?.sMobile}}
-                                                    <i class="fab fa-whatsapp ms-1 ml-2"
+                                                    <a href="https://wa.me/{{customer.oPhone.sMobile}}">
+                                                        <i class="fab fa-whatsapp ms-1 ml-2"
                                                         *ngIf="oCurrentCustomer?.oPhone?.bWhatsApp"
                                                         style="color: #1CB39B;"></i>
+                                                    </a>
                                                 </span>
                                             </p>
                                         </div>
@@ -152,11 +154,22 @@
                                 <button class="btn btn-primary my-3 btn-custom"
                                     (click)="openCurrentCustomer(oCurrentCustomer)">{{'UPDATE_CURRENT_CUSTOMER'|translate}}
                                 </button>
+                                <!--IF CUSTOMER IS DIFFERENT FROM SYSTEM CUSTOMER-->
+                                <div class="alert alert-warning" role="alert" *ngIf="showSystemCustomer">
+                                    {{"DIFFERENT_CUSTOMER_INFORMATION" | translate}}
+                                    <button class="btn btn-info my-3 btn-sm" *ngIf="customer?.bCounter==false" (click)="openCustomer(customer)">
+                                        {{'VIEW'|translate}} 
+                                    </button>
+                                    <!--TODO: create function to update transaction's customer with latest information-->
+                                    <button class="btn btn-light-warning ms-2 my-3 btn-sm" *ngIf="customer?.bCounter==false">
+                                        {{'SYNC_DATA'|translate}} 
+                                    </button>
+                                </div>
                             </div>
                         </div>
                         <!-- Activity/Activity-Item/Transaction Customer Showing End -->
 
-                        <div class="d-flex flex-wrap py-5">
+                        <div class="d-flex flex-wrap pb-5">
                             <div class="flex-equal me-5">
                                 {{ 'CREATER_DETAIL' | translate}}
 
@@ -268,7 +281,7 @@
                                                                 [(ngModel)]="activity.nPriceIncVatAfterDiscount">
                                                         </div>
                                                         <div class="col-2 p-0">
-                                                            <button class="btn btn-light-primary w-100">
+                                                            <button class="btn btn-light-primary w-100" (click)="contactCustomer(activity.eEstimatedDateAction)">
                                                                 <fa-icon [icon]="faShare"></fa-icon>
                                                             </button>
                                                         </div>
@@ -299,21 +312,22 @@
                                                                 title="{{ 'THE_CUSTOMER_WILL_CONTACTED_USING_THIS_METHOD' | translate}}">
                                                                 <button
                                                                     (click)="activity.eEstimatedDateAction='call_on_ready'"
-                                                                    [ngClass]="{active:activity.eEstimatedDateAction==='call_on_ready'}"
+                                                                    [ngClass]="{disabled: !oCurrentCustomer?.oPhone?.sLandLine, active:activity.eEstimatedDateAction==='call_on_ready' && oCurrentCustomer?.oPhone?.sLandLine }"
                                                                     type="button"
                                                                     class="btn btn-light-primary fs-6 p-2">
                                                                     <fa-icon [icon]="faPhone"></fa-icon>
                                                                 </button>
                                                                 <button
                                                                     (click)="activity.eEstimatedDateAction='email_on_ready'"
-                                                                    [ngClass]="{active:activity.eEstimatedDateAction==='email_on_ready'}"
+                                                                    [ngClass]="{disabled: !oCurrentCustomer?.sEmail, active:activity.eEstimatedDateAction==='email_on_ready' && oCurrentCustomer?.sEmail}"
                                                                     type="button"
                                                                     class="btn btn-light-primary fs-6 p-2">
                                                                     <fa-icon [icon]="faAt"></fa-icon>
                                                                 </button>
                                                                 <button
                                                                     (click)="activity.eEstimatedDateAction='whatsapp_on_ready'"
-                                                                    [ngClass]="{active:activity.eEstimatedDateAction==='whatsapp_on_ready'}"
+                                                                    [ngClass]="{disabled: !oCurrentCustomer?.oPhone?.bWhatsApp, 
+                                                                        active:activity.eEstimatedDateAction==='whatsapp_on_ready' && oCurrentCustomer?.oPhone?.bWhatsApp}"
                                                                     type="button"
                                                                     class="btn btn-light-primary fs-6 p-2">
                                                                     <i class="bi bi-whatsapp"></i>
@@ -615,15 +629,15 @@
                                                     </div>
                                                     <div *ngIf="activity?.aImage?.length">
                                                         {{'IMAGES' | translate}}
+                                                        <button
+                                                            *ngIf="activity.oType.eKind == 'repair' || activity.oType.eKind == 'order'"
+                                                            class="btn btn-bg-light btn-active-color-primary ms-5 my-2"
+                                                            (click)="openImageModal(activityindex)"> {{ "PHOTO" |
+                                                            translate}}
+                                                                <fa-icon [icon]="faUpload"></fa-icon>
+                                                        </button>
                                                     </div>
-                                                    <button
-                                                        *ngIf="activity.oType.eKind == 'repair' || activity.oType.eKind == 'order'"
-                                                        class="btn btn-bg-light btn-active-color-primary my-2"
-                                                        (click)="openImageModal(activityindex)"> {{ "PHOTO" |
-                                                        translate}}
-                                                        <fa-icon [icon]="faUpload"></fa-icon>
-                                                    </button>
-                                                    <div class="d-flex flex-wrap">
+                                                    <div class="d-flex flex-wrap my-3">
                                                         <div class="image-input p-1"
                                                             *ngFor="let image of activity.aImage ; let imageIndex = index"
                                                             data-kt-image-input="true"
@@ -647,25 +661,26 @@
                                             </div>
                                             <div class="row mb-6" *ngIf="activity.oType.eKind == 'order'">
                                                 <div class="col-12">
-                                                    {{'PRODUCT_SELECTED' | translate}}
+                                                    <p><strong>{{'PRODUCT_SELECTED' | translate}}</strong></p>
                                                 </div>
-                                                <div class="col-12">
-                                                    <label>{{'PRODUCT_NUMBER' | translate}} : </label>
-                                                    <span
+                                                <div class="col-6">
+                                                    <label>{{'PRODUCT_NUMBER' | translate}} : </label> <br>
+                                                    <p>
+                                                        <span
                                                         *ngIf="activity?.iBusinessProductId">{{activity?.sProductNumber}}
                                                     </span>
                                                     <span
                                                         *ngIf="activity?.iBusinessProductId == undefined">{{'NO_PRODUCT_SELECTED'
                                                         | translate}} </span>
+                                                    </p>
+                                                </div>
+                                                <div class="col-6">
+                                                    <label>{{'ARTICLE_DETAIL' | translate}} : </label> <br>
+                                                    <p>{{activity?.sArticleNumber}} - {{activity?.sArticleName || '-'}}</p>
                                                 </div>
                                                 <div class="col-12">
-                                                    <label>{{'ARTICLE_DETAIL' | translate}} : </label>
-                                                    {{activity?.sArticleNumber}} - {{activity?.sArticleName}}
-                                                </div>
-                                                <div class="col-12">
-                                                    <button class="btn btn-success"
-                                                        (click)="AssignOrderProduct(activity , activityindex)"> {{'ADD /
-                                                        CHANGE' | translate}}</button>
+                                                    <button class="btn btn-sm btn-warning"
+                                                        (click)="AssignOrderProduct(activity , activityindex)"> {{'ADD / CHANGE' | translate}}</button>
                                                 </div>
                                             </div>
                                         </div>
@@ -839,7 +854,7 @@
                                                         <ng-container *ngIf="from != 'transaction-details'">
                                                             <td>
                                                                 <div class="d-flex align-items-center">
-                                                                    <button class="btn btn-primary"
+                                                                    <button class="btn btn-light-primary"
                                                                         (click)="showTransaction(receipt, $event)">
                                                                         {{ 'VIEW' | translate }}
                                                                     </button>

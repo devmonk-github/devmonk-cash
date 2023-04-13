@@ -6,3 +6,10 @@
     flex-direction: row;
     column-gap: 15px;
 }
+
+.custom-overflow{
+    max-width: 120px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}

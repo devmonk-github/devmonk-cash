@@ -33,7 +33,7 @@
             <div class="col-4">
 
                 <!-- SYSTEM_CUSTOMER Start-->
-                <div *ngIf="transaction?.oSystemCustomer?._id">
+                <!-- <div *ngIf="transaction?.oSystemCustomer?._id">
                     <div class="d-flex align-items-center">
                         <h3 class="fw-bolder mb-0">
                             <span>{{ "SYSTEM_CUSTOMER" | translate }}</span>
@@ -99,12 +99,12 @@
                                     {{transaction?.oSystemCustomer?.oPhone?.sLandLine}}
                                 </div>
                             </div>
-                            <div class="col-md-12">
+                            <div class="col-md-12"> -->
                                 <!-- <div class=" mt-2" *ngIf="transaction?.oSystemCustomer?.sCompanyName">
                                     <span class="text-muted me-5">{{ 'COMPANY_NAME' | translate}}: </span>
                                     <span class="text-gray-800">{{ transaction?.oSystemCustomer?.sCompanyName }}</span>
                                 </div> -->
-                                <div class=" mt-2" *ngIf="transaction?.oSystemCustomer?.sVatNumber">
+                                <!-- <div class=" mt-2" *ngIf="transaction?.oSystemCustomer?.sVatNumber">
                                     <span class="text-muted me-5">{{ 'VAT_NUMBER' | translate}}: </span>
                                     <span class="text-gray-800">{{ transaction?.oSystemCustomer?.sVatNumber }}</span>
                                 </div>
@@ -116,11 +116,23 @@
                             </div>
                         </ng-container>
                     </div>
-                </div>
+                </div> -->
                 <!-- SYSTEM_CUSTOMER End -->
 
 
                 <!-- CURRENT_CUSTOMER Start -->
+                <div class="alert alert-warning" role="alert" *ngIf="showSystemCustomer">
+                    <p>{{"DIFFERENT_CUSTOMER_INFORMATION" | translate}}</p>
+                    <div class="d-flex">
+                        <button class="btn btn-info btn-sm" *ngIf="!transaction?.oSystemCustomer?.bCounter" (click)="openCustomer(transaction.oSystemCustomer)">
+                            {{'VIEW'|translate}} 
+                        </button>
+                        <!--TODO: create function to update transaction's customer with latest information-->
+                        <button class="btn btn-light-warning ms-2 btn-sm" *ngIf="!transaction?.oSystemCustomer?.bCounter">
+                            {{'SYNC_DATA'|translate}} 
+                        </button>
+                    </div>
+                </div>
                 <div class="d-flex align-items-center mt-5">
                     <h3 class="fw-bolder mb-0">
                         <span>{{ "CURRENT_CUSTOMER" | translate }}</span>

@@ -1016,4 +1016,20 @@ export class ActivityDetailsComponent implements OnInit {
         this.toastService.show({ type: "warning", text: `Something went wrong` });
       });
   }
+
+  contactCustomer(action: any){
+    console.log(action);
+
+    switch (action){
+      case 'call_on_ready':
+        window.location.href = "tel:" + this.customer.oPhone.sLandLine;
+        break;
+      case 'email_on_ready':
+        window.location.href = "mailto:" + this.customer.sEmail;
+        break;
+      case 'whatsapp_on_ready':
+        window.location.href = "https://wa.me/" + this.customer.oPhone.sMobile;
+        break;
+    }
+  }
 }
