@@ -46,17 +46,17 @@
                     <div class="d-flex">
                         <div class="flex-grow-1">
                             <div class="d-flex align-items-center mb-5">
-                                <i class="fa fa-user fs-1"></i>
+                                <i *ngIf="!customer?.bIsCompany" class="fa fa-user fs-1"></i>
+                                <i *ngIf="customer?.bIsCompany" class="fa fa-building fs-1"></i>
                                 <h2 class="fw-bolder mx-5 mb-0">
-                                    <span *ngIf="!customer?.bIsCompany">{{ customer.sSalutation }} {{ customer.sFirstname }} {{ customer.sLastName}} </span>
-                                    <span *ngIf="customer?.bIsCompany">{{customer.sCompanyName}} </span>
-                                         <span *ngIf="customer.nClientId">({{customer.nClientId}})</span>
-                                           
+                                    <span *ngIf="!customer?.bIsCompany" style="text-transform: capitalize;">{{ customer.sSalutation }} {{ customer.sFirstname }} {{ customer.sLastName}} </span>
+                                    <span *ngIf="customer?.bIsCompany" style="text-transform: capitalize;">{{customer.sCompanyName}}</span>
+                                    <span *ngIf="customer.nClientId">({{customer.nClientId}})</span>
                                 </h2>
                             </div>
                             <div class="d-flex justify-content-between align-items-start" *ngIf="!editProfile">
 
-                                <div class="">
+                                <div class="col-3">
                                     <h4 class="text-gray-700 fw-bolder mb-2">{{'About' | translate}}</h4>
                                     <div class="d-flex flex-column mb-5">
                                         <div class="d-flex">
@@ -72,14 +72,16 @@
                                  
                                     </div>
                                     <div class="d-flex flex-column mb-3">
-                                        <div >
-                                            <span>{{'CUSTOMER_GROUP' | translate}}</span>
-                                            <div class="row">
-                                            <div class="col-4">
-                                            <p *ngFor="let selectedGroups of aSelectedGroups ; let index = index"
-                                            class="group-text-align"> <span class="badge rounded-pill bg-light text-dark">{{selectedGroups}} </span> </p>
-                                          
-                                            </div>
+                                        <div>
+                                            <h5 class="text-gray-700 fw-bolder mb-2">{{'CUSTOMER_GROUP' | translate}}</h5>
+                                            <div class="row mt-2">
+                                                <div class="col-12 d-flex flex-wrap">
+                                                    <p *ngFor="let selectedGroups of aSelectedGroups ; let index = index" class="group-text-align me-3"> 
+                                                        <span class="badge rounded-pill bg-light text-dark">
+                                                            {{selectedGroups}} 
+                                                        </span> 
+                                                    </p>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -106,7 +108,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="">
+                                <div class="col-3">
                                     <h4 class="text-gray-700 fw-bolder mb-2">{{'CONTACT' | translate}}</h4>
                                     <div class="d-flex flex-column block-buttons">
                                         <p>
@@ -120,7 +122,8 @@
                                                 *ngIf="customer.oPhone.bWhatsApp" target="_blank"
                                                 class="text-gray-800 text-hover-primary btn btn-light">
                                                 <i class="fab fa-whatsapp ms-1" style="color: #1CB39B;"></i>
-                                                {{customer.oPhone.sMobile}}</a>
+                                                {{customer.oPhone.sMobile}}
+                                            </a>
                                         </p>
                                         <p *ngIf="!customer.oPhone.bWhatsApp && customer.oPhone.sMobile">
                                             <span class="text-muted me-5">{{'PHONE_MOBILE' | translate}} :</span>
@@ -130,28 +133,33 @@
                                             <span class="text-muted me-5">{{'PHONE_LANDLINE' | translate}} :</span>
                                             <span> {{ customer.oPhone.sLandLine }}</span>
                                         </p>
-                                    </div>
-                                </div>
-                                <div class="">
-                                    <h4 class="text-gray-700 fw-bolder mb-2">{{'SHIPPING_ADDRESS' | translate}}</h4>
-                                    <div class="" *ngIf="customer.oShippingAddress">
-                                        <p>
-                                            {{ customer.oShippingAddress.sHouseNumber }}
-                                            {{ customer.oShippingAddress.sStreet }}<br>
-                                            {{ customer.oShippingAddress.sPostalCode }}
-                                            {{ customer.oShippingAddress.sCity }}
+                                        <p *ngIf="customer.bIsCompany">
+                                            <span class="text-muted me-5">{{'CONTACT_PERSON' | translate}} :</span>
+                                            <span> {{ customer.oContactPerson.sFirstName }} {{ customer.oContactPerson.sPrefix }} {{ customer.oContactPerson.sLastName }}</span>
                                         </p>
                                     </div>
                                 </div>
-
-                                <div class="">
+                                <div class="col-2">
+                                    <h4 class="text-gray-700 fw-bolder mb-2">{{'SHIPPING_ADDRESS' | translate}}</h4>
+                                    <div class="" *ngIf="customer.oShippingAddress">
+                                        <p>
+                                            {{ customer.oShippingAddress.sStreet || '-'}}
+                                            {{ customer.oShippingAddress.sHouseNumber || '-'}}<span style="text-transform: uppercase;">{{ customer.oShippingAddress.sHouseNumberSuffix }}</span><br>
+                                            <span style="text-transform: uppercase;">{{ customer.oShippingAddress.sPostalCode || '-'}}</span>,
+                                            {{ customer.oShippingAddress.sCity || '-'}} <br>
+                                            {{ customer.oShippingAddress.sCountry || '-'}}
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="col-2">
                                     <h4 class="text-gray-700 fw-bolder mb-2">{{'INVOICE_ADDRESS' | translate}}</h4>
                                     <div class="" *ngIf="customer.oInvoiceAddress">
                                         <p>
-                                            {{ customer.oInvoiceAddress.sHouseNumber }} -
-                                            {{ customer.oInvoiceAddress.sStreet }},<br>
-                                            {{ customer.oInvoiceAddress.sPostalCode }},
-                                            {{ customer.oInvoiceAddress.sCity }}
+                                            {{ customer.oInvoiceAddress.sStreet || '-'}}
+                                            {{ customer.oInvoiceAddress.sHouseNumber || '-'}}<span style="text-transform: uppercase;">{{ customer.oInvoiceAddress.sHouseNumberSuffix }}</span> <br>
+                                            <span style="text-transform: uppercase;">{{ customer.oInvoiceAddress.sPostalCode || '-'}}</span>,
+                                            {{ customer.oInvoiceAddress.sCity || '-'}} <br>
+                                            {{ customer.oInvoiceAddress.sCountry || '-'}}
                                         </p>
                                     </div>
                                 </div>
@@ -160,34 +168,34 @@
                     </div>
 
                     
-                    <div *ngIf="!editProfile" class="row mb-6">
+                    <div *ngIf="!editProfile" class="row my-6">
                         <div class="col-3">
-                        <label class="col-form-label text-gray-700  fw-bolder fs-6 mb-2">{{'DATE_OF_BIRTH'  | translate}} </label>                       
-                        <p class="fs-6 mb-2">{{customer?.dDateOfBirth | date:'yyyy-MM-dd' || '-'}} </p>
-                      </div>
-                      <div class="col-3">
-                        <label class="col-form-label text-gray-700  fw-bolder fs-6 mb-2">{{'DOCUMENT_NAME'  | translate}} </label>
-                            <p class="fs-6 mb-2">{{customer?.oIdentity?.documentName || '-'}} </p>
-                      </div>
-                      <div class="col-3">
-                        <label class="col-form-label text-gray-700 fw-bolder fs-6 mb-2">{{'DOCUMENT_NUMBER'  | translate}} </label>
-                            <p class="fs-6 mb-2">{{customer?.oIdentity?.documentNumber || '-'}} </p>
-                      </div>
-                      <div class="col-3">
-                        <label class="col-form-label text-gray-700  fw-bolder fs-6 mb-2">{{'COMPANY_NAME'  | translate}} </label>                       
-                        <p class="fs-6 mb-2">{{customer?.sCompanyName || '-'}} </p>
-                      </div>
+                            <label class="col-form-label text-gray-700  fw-bolder fs-6 mb-2">{{'DATE_OF_BIRTH'  | translate}} </label>                       
+                            <p class="fs-6 mb-2">{{(customer?.dDateOfBirth | date:'yyyy-MM-dd') || '-'}} </p>
+                        </div>
+                        <div class="col-3">
+                            <label class="col-form-label text-gray-700  fw-bolder fs-6 mb-2">{{'DOCUMENT_NAME'  | translate}} </label>
+                                <p class="fs-6 mb-2">{{customer?.oIdentity?.documentName || '-'}} </p>
+                        </div>
+                        <div class="col-3">
+                            <label class="col-form-label text-gray-700 fw-bolder fs-6 mb-2">{{'DOCUMENT_NUMBER'  | translate}} </label>
+                                <p class="fs-6 mb-2">{{customer?.oIdentity?.documentNumber || '-'}} </p>
+                        </div>
                     </div>
 
                     <div *ngIf="!editProfile" class="row mb-6">
-                      <div class="col-3">
-                        <label class="col-form-label text-gray-700  fw-bolder fs-6 mb-2">{{'PAYMENT_TERM_IN_DAYS'  | translate}} </label>
-                            <p class="fs-6 mb-2">{{customer?.nPaymentTermDays || '-'}} </p>
-                      </div>
-                      <div class="col-3">
-                        <label class="col-form-label text-gray-700  fw-bolder fs-6 mb-2">{{'VAT_NUMBER'  | translate}} </label>
-                            <p class="fs-6 mb-2">{{customer?.sVatNumber || '-'}} </p>
-                      </div>
+                        <div class="col-3">
+                            <label class="col-form-label text-gray-700  fw-bolder fs-6 mb-2">{{'COMPANY_NAME'  | translate}} </label>                       
+                            <p class="fs-6 mb-2">{{customer?.sCompanyName || '-'}} </p>
+                        </div>
+                        <div class="col-3">
+                            <label class="col-form-label text-gray-700  fw-bolder fs-6 mb-2">{{'PAYMENT_TERM_IN_DAYS'  | translate}} </label>
+                                <p class="fs-6 mb-2">{{customer?.nPaymentTermDays || '-'}} </p>
+                        </div>
+                        <div class="col-3">
+                            <label class="col-form-label text-gray-700  fw-bolder fs-6 mb-2">{{'VAT_NUMBER'  | translate}} </label>
+                                <p class="fs-6 mb-2">{{customer?.sVatNumber || '-'}} </p>
+                        </div>
                     </div>
                
                     <div *ngIf="!editProfile" class="row mb-6">
