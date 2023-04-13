@@ -69,7 +69,7 @@ export class CustomerStructureService {
       return '';
     }
     return zipcode.replace(/([0-9]{4})([a-z]{2})/gi, (original, group1, group2) => {
-      return group1 + ' ' + group2.toUpperCase();
+      return group1+group2.toUpperCase();
     });
   }
 
