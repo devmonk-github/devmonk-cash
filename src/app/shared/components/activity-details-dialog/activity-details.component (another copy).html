@@ -2,8 +2,7 @@
     <div class="card-header" style="margin-top: 20px;">
         <h4>{{ 'ACTIVITY_DETAILS' | translate}}</h4>
         <div mat-dialog-actions>
-            <button mat-dialog-close type="button" class="btn btn-sm btn-light"
-                (click)="close({action: false, oData: {oCurrentCustomer: oCurrentCustomer}})">
+            <button mat-dialog-close type="button" class="btn btn-sm btn-light" (click)="close({action: false, oData: {oCurrentCustomer: oCurrentCustomer}})">
                 <fa-icon [icon]="faTimes"></fa-icon>
             </button>
         </div>
@@ -40,18 +39,17 @@
                         <!-- System Customer Showing Start -->
                         <div class="d-flex flex-wrap py-5">
                             <div class="flex-equal me-5">
-                                <p><strong>{{ "SYSTEM_CUSTOMER" | translate}}</strong></p>
-
+                                <p><strong>{{ "SYSTEM_CUSTOMER" | translate}}</strong></p>     
+                                    
                                 <div class="fs-6 ms-1" *ngIf="showSystemCustomer">
                                     <div class="align-items-center">
                                         <div class="text-gray-600">
-                                            <span *ngIf="!customer?.bIsCompany"> {{customer?.sFirstName || ''}}
-                                                {{customer?.sLastName|| ''}}</span>
-                                            <span *ngIf="customer?.bIsCompany"> {{customer?.sCompanyName || "-"}}</span>
+                                          <span *ngIf="!customer?.bIsCompany">  {{customer?.sFirstName || ''}} {{customer?.sLastName|| ''}}</span>
+                                          <span *ngIf="customer?.bIsCompany"> {{customer?.sCompanyName || "-"}}</span>
                                         </div>
                                     </div>
                                 </div>
-
+                       
                                 <div class="fs-6 ms-1" *ngIf="customer?.bCounter==false && showSystemCustomer">
                                     <div class="align-items-center" *ngIf="customer?.sEmail">
                                         <div class="text-gray-600">
@@ -64,21 +62,18 @@
                                 </div>
                                 <div class="fs-6 ms-1" *ngIf="customer?.bCounter==false && showSystemCustomer">
                                     <div class="align-items-center">
-                                        <p style="margin: 0; margin-bottom: 5px;" *ngIf="customer?.oPhone?.sMobile">
-                                            {{'PHONE_MOBILE' | translate}}</p>
+                                        <p style="margin: 0; margin-bottom: 5px;" *ngIf="customer?.oPhone?.sMobile">{{'PHONE_MOBILE' | translate}}</p>
                                         <p style="margin: 0; margin-bottom: 5px;" *ngIf="customer?.oPhone?.sMobile">
                                             <span>
                                                 {{customer?.oPhone?.sMobile}}
-                                                <i class="fab fa-whatsapp ms-1 ml-2" *ngIf="customer?.oPhone?.bWhatsApp"
-                                                    style="color: #1CB39B;"></i>
+                                                <i class="fab fa-whatsapp ms-1 ml-2" *ngIf="customer?.oPhone?.bWhatsApp" style="color: #1CB39B;"></i>
                                             </span>
                                         </p>
                                     </div>
                                 </div>
                                 <div class="fs-6 ms-1" *ngIf="customer?.bCounter==false && showSystemCustomer">
                                     <div class="align-items-center">
-                                        <p style="margin: 0; margin-bottom: 5px;" *ngIf="customer?.oPhone?.sLandLine">
-                                            {{'PHONE_LANDLINE' | translate}}</p>
+                                        <p style="margin: 0; margin-bottom: 5px;" *ngIf="customer?.oPhone?.sLandLine">{{'PHONE_LANDLINE' | translate}}</p>
                                         <p style="margin: 0; margin-bottom: 5px;" *ngIf="customer?.oPhone?.sLandLine">
                                             <span>
                                                 {{customer?.oPhone?.sLandLine}}
@@ -98,17 +93,14 @@
                             <div class="flex-equal me-5">
                                 <p><strong>{{ "CURRENT_CUSTOMER" | translate}}</strong></p>
                                 <p *ngIf="customer?.bCounter==true"> {{ "NO_CUSTOMER_ADDED" | translate}} </p>
-                                <ng-container *ngIf="customer?.bCounter==false">
+                                <ng-container *ngIf="customer?.bCounter==false" >
                                     <div class="fs-6 ms-1">
                                         <div class="align-items-center">
                                             <div class="text-gray-600">
-                                                <span *ngIf="!oCurrentCustomer?.bIsCompany">
-                                                    {{oCurrentCustomer?.sFirstName || ''}}
-                                                    {{oCurrentCustomer?.sLastName|| ''}}</span>
-                                                <span *ngIf="oCurrentCustomer?.bIsCompany">
-                                                    {{oCurrentCustomer?.sCompanyName || "-"}}</span>
+                                               <span *ngIf="!oCurrentCustomer?.bIsCompany"> {{oCurrentCustomer?.sFirstName || ''}} {{oCurrentCustomer?.sLastName|| ''}}</span>
+                                               <span *ngIf="oCurrentCustomer?.bIsCompany"> {{oCurrentCustomer?.sCompanyName || "-"}}</span>
 
-                                            </div>
+                                               </div>
                                         </div>
                                     </div>
                                     <div class="fs-6 ms-1">
@@ -123,35 +115,25 @@
                                     </div>
                                     <div class="fs-6 ms-1">
                                         <div class="align-items-center">
-                                            <p style="margin: 0; margin-bottom: 5px;"
-                                                *ngIf="oCurrentCustomer?.oPhone?.sMobile">{{'PHONE_MOBILE' | translate}}
-                                            </p>
-                                            <p style="margin: 0; margin-bottom: 5px;"
-                                                *ngIf="oCurrentCustomer?.oPhone?.sMobile">
+                                            <p style="margin: 0; margin-bottom: 5px;" *ngIf="oCurrentCustomer?.oPhone?.sMobile" >{{'PHONE_MOBILE' | translate}}</p>
+                                            <p style="margin: 0; margin-bottom: 5px;"  *ngIf="oCurrentCustomer?.oPhone?.sMobile">
                                                 <span>
                                                     {{oCurrentCustomer?.oPhone?.sMobile}}
-                                                    <i class="fab fa-whatsapp ms-1 ml-2"
-                                                        *ngIf="oCurrentCustomer?.oPhone?.bWhatsApp"
-                                                        style="color: #1CB39B;"></i>
+                                                    <i class="fab fa-whatsapp ms-1 ml-2" *ngIf="oCurrentCustomer?.oPhone?.bWhatsApp" style="color: #1CB39B;"></i>
                                                 </span>
                                             </p>
                                         </div>
                                     </div>
                                     <div class="fs-6 ms-1">
                                         <div class="align-items-center">
-                                            <p style="margin: 0; margin-bottom: 5px;"
-                                                *ngIf="oCurrentCustomer?.oPhone?.sLandLine">{{'PHONE_LANDLINE' |
-                                                translate}}</p>
-                                            <p style="margin: 0; margin-bottom: 5px;"
-                                                *ngIf="oCurrentCustomer?.oPhone?.sLandLine">
+                                            <p style="margin: 0; margin-bottom: 5px;" *ngIf="oCurrentCustomer?.oPhone?.sLandLine">{{'PHONE_LANDLINE' | translate}}</p>
+                                            <p style="margin: 0; margin-bottom: 5px;" *ngIf="oCurrentCustomer?.oPhone?.sLandLine">
                                                 <span>{{oCurrentCustomer?.oPhone?.sLandLine}}</span>
                                             </p>
                                         </div>
                                     </div>
                                 </ng-container>
-                                <button class="btn btn-primary my-3 btn-custom"
-                                    (click)="openCurrentCustomer(oCurrentCustomer)">{{'UPDATE_CURRENT_CUSTOMER'|translate}}
-                                </button>
+                                <button class="btn btn-primary my-3 btn-custom" (click)="openCurrentCustomer(oCurrentCustomer)">{{'UPDATE_CURRENT_CUSTOMER'|translate}} </button>
                             </div>
                         </div>
                         <!-- Activity/Activity-Item/Transaction Customer Showing End -->
@@ -233,104 +215,83 @@
                                             <div class="row">
                                                 <div class="col-6">
                                                     <div class="form-group mb-6">
-                                                        <label class="form-control-label mb-3">{{ "NAME" |
-                                                            translate}}</label>
-                                                        <input class="form-control form-control-solid mb-3 mb-lg-0"
-                                                            type="text" name="activityName"
+                                                        <label class="form-control-label mb-3">{{ "NAME" | translate}}</label>
+                                                        <input class="form-control form-control-solid mb-3 mb-lg-0" type="text" name="activityName"
                                                             [(ngModel)]="activity.sProductName">
                                                     </div>
-
-
+                                        
+                                        
                                                     <div class="form-group mb-6">
                                                         <label class="form-control-label mb-3">{{ "STATUS" | translate}}
                                                         </label>
-                                                        <select name="status" id="status"
-                                                            class="form-control form-control-solid"
+                                                        <select name="status" id="status" class="form-control form-control-solid"
                                                             [(ngModel)]="activity.eActivityItemStatus">
-                                                            <option *ngFor="let type of repairStatus"
-                                                                [value]="type.value">
+                                                            <option *ngFor="let type of repairStatus" [value]="type.value">
                                                                 {{type.key | translate}}
                                                             </option>
                                                         </select>
                                                     </div>
                                                 </div>
-
+                                        
                                                 <div class="col-6 border">
-                                                    <div class="row d-flex align-items-center p-3">
-                                                        <p class="col-12 p-0 mb-3">
-                                                            {{"INFORM_CUSTOMER_THAT_PRODUCT_CAN_BE_PICKED_UP" |
-                                                            translate}}</p>
-                                                        <p class="col-3 p-0 m-0">{{ "TOTAL_PRICE" | translate}}</p>
-
-                                                        <div class="col-7">
-                                                            <input class="form-control form-control-solid w-100"
-                                                                type="number"
-                                                                [(ngModel)]="activity.nPriceIncVatAfterDiscount">
-                                                        </div>
-                                                        <div class="col-2 p-0">
-                                                            <button class="btn btn-light-primary w-100">
-                                                                <fa-icon [icon]="faShare"></fa-icon>
-                                                            </button>
-                                                        </div>
-                                                        <div class="row mt-3 p-0">
-                                                            <div class="col-6">
-                                                                <p class="fw-bold m-0" style="font-weight: 600;">
-                                                                    {{"ALREADY_PAID" | translate}}:
-                                                                    {{activity.nPaidAmount |
-                                                                    currency:tillService.currency}}
-                                                                </p>
-
+                                                        <div class="row d-flex align-items-center p-3">
+                                                            <p class="col-12 p-0 mb-3"> {{"INFORM_CUSTOMER_THAT_PRODUCT_CAN_BE_PICKED_UP" |  translate}}</p>
+                                                            <p class="col-3 p-0 m-0">{{ "TOTAL_PRICE" | translate}}</p>
+                                                            
+                                                            <div class="col-7">
+                                                                <input class="form-control form-control-solid w-100" type="number"
+                                                                    [(ngModel)]="activity.nPriceIncVatAfterDiscount">
                                                             </div>
-                                                            <div class="col-6">
-                                                                <p class="fw-bold m-0" style="font-weight: 600;">
-                                                                    {{"STILL_TO_PAY" | translate}}:
-                                                                    {{(activity.nPriceIncVatAfterDiscount -
-                                                                    activity.nPaidAmount) |
-                                                                    currency:tillService.currency}}
-                                                                </p>
+                                                            <div class="col-2 p-0">
+                                                                <button class="btn btn-light-primary w-100">
+                                                                    <fa-icon [icon]="faShare"></fa-icon>
+                                                                </button>
+                                                            </div>
+                                                            <div class="row mt-3 p-0">
+                                                                <div class="col-6">
+                                                                    <p class="fw-bold m-0" style="font-weight: 600;">
+                                                                        {{"ALREADY_PAID" | translate}}: {{activity.nPaidAmount | currency:tillService.currency}}
+                                                                    </p>
+                                                                    
+                                                                </div>
+                                                                <div class="col-6">
+                                                                    <p class="fw-bold m-0" style="font-weight: 600;">
+                                                                        {{"STILL_TO_PAY" | translate}}:  {{(activity.nPriceIncVatAfterDiscount - activity.nPaidAmount) | currency:tillService.currency}}
+                                                                    </p>
+                                                                </div>
                                                             </div>
                                                         </div>
-                                                    </div>
 
-                                                    <div class="col-12">
-                                                        <div class="row my-3">
-                                                            <div class="btn-group" role="group"
-                                                                aria-label="Basic example"
-                                                                title="{{ 'THE_CUSTOMER_WILL_CONTACTED_USING_THIS_METHOD' | translate}}">
-                                                                <button
-                                                                    (click)="activity.eEstimatedDateAction='call_on_ready'"
-                                                                    [ngClass]="{active:activity.eEstimatedDateAction==='call_on_ready'}"
-                                                                    type="button"
+                                                        <div class="col-12">
+                                                            <div class="row my-3">
+                                                                <div class="btn-group" role="group" aria-label="Basic example" title="{{ 'THE_CUSTOMER_WILL_CONTACTED_USING_THIS_METHOD' | translate}}">
+                                                                    <button (click)="activity.eEstimatedDateAction='call_on_ready'"
+                                                                    [ngClass]="{active:activity.eEstimatedDateAction==='call_on_ready'}" type="button"
                                                                     class="btn btn-light-primary fs-6 p-2">
                                                                     <fa-icon [icon]="faPhone"></fa-icon>
-                                                                </button>
-                                                                <button
-                                                                    (click)="activity.eEstimatedDateAction='email_on_ready'"
-                                                                    [ngClass]="{active:activity.eEstimatedDateAction==='email_on_ready'}"
-                                                                    type="button"
+                                                                    </button>
+                                                                    <button (click)="activity.eEstimatedDateAction='email_on_ready'"
+                                                                    [ngClass]="{active:activity.eEstimatedDateAction==='email_on_ready'}" type="button"
                                                                     class="btn btn-light-primary fs-6 p-2">
                                                                     <fa-icon [icon]="faAt"></fa-icon>
-                                                                </button>
-                                                                <button
-                                                                    (click)="activity.eEstimatedDateAction='whatsapp_on_ready'"
-                                                                    [ngClass]="{active:activity.eEstimatedDateAction==='whatsapp_on_ready'}"
-                                                                    type="button"
+                                                                    </button>
+                                                                    <button (click)="activity.eEstimatedDateAction='whatsapp_on_ready'"
+                                                                    [ngClass]="{active:activity.eEstimatedDateAction==='whatsapp_on_ready'}" type="button"
                                                                     class="btn btn-light-primary fs-6 p-2">
                                                                     <i class="bi bi-whatsapp"></i>
-                                                                </button>
+                                                                    </button>
+                                                                </div>
                                                             </div>
                                                         </div>
-                                                    </div>
                                                 </div>
                                             </div>
-
+                    
                                             <div class="row">
                                                 <div class="col-12">
                                                     <div class="form-group mb-6">
                                                         <label class="form-control-label mb-3">{{ "DESCRIPTION" |
                                                             translate}}</label>
-                                                        <textarea cols="30" rows="3"
-                                                            class="form-control form-control-solid" name="description"
+                                                        <textarea cols="30" rows="3" class="form-control form-control-solid" name="description"
                                                             placeholder="{{ 'DESCRIPTION' | translate}}" lines="10"
                                                             [(ngModel)]="activity.sDescription"></textarea>
                                                     </div>
@@ -343,8 +304,7 @@
                                                     (click)="downloadCustomerReceipt(activityindex , 'customerReceipt', 'download')"
                                                     [disabled]="bCustomerReceipt">
                                                     <fa-icon [icon]="faDownload"></fa-icon>
-                                                    <span class="indicator-label">{{ "CUSTOMER_RECEIPT" | translate
-                                                        }}</span>
+                                                    <span class="indicator-label">{{ "CUSTOMER_RECEIPT" | translate }}</span>
                                                 </button>
 
                                                 <div class="btn btn-secondary btn-icon fs-bold">
@@ -362,41 +322,61 @@
                                                     </span>
                                                     <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold fs-7 w-200px py-4"
                                                         data-kt-menu="true">
-                                                        <div class="menu-item px-3 text-center"
-                                                            (click)="downloadCustomerReceipt(activityindex , 'customerReceipt', 'download')">
+                                                        <div class="menu-item px-3 text-center" (click)="downloadCustomerReceipt(activityindex , 'customerReceipt', 'download')">
                                                             <div class="menu-link px-3">
                                                                 <fa-icon [icon]="faDownload"></fa-icon>
-                                                                <span class="ms-5">{{ 'DOWNLOAD' | translate }}</span>
-                                                            </div>
+                                                                <span class="ms-5">{{ 'DOWNLOAD' | translate }}</span></div>
                                                         </div>
-                                                        <div *ngIf="activity.oType.eKind == 'repair'"
-                                                            class="menu-item px-3 text-center"
-                                                            (click)="downloadCustomerReceipt(activityindex , 'customerReceipt', 'download', 'alternative')">
+                                                        <div *ngIf="activity.oType.eKind == 'repair'" class="menu-item px-3 text-center" (click)="downloadCustomerReceipt(activityindex , 'customerReceipt', 'download', 'alternative')">
                                                             <div class="menu-link px-3">
                                                                 <fa-icon [icon]="faDownload"></fa-icon>
-                                                                <span class="ms-5">{{ 'DOWNLOAD_ALTERNATIVE' | translate
-                                                                    }}</span>
-                                                            </div>
+                                                                <span class="ms-5">{{ 'DOWNLOAD_ALTERNATIVE' | translate }}</span></div>
                                                         </div>
-                                                        <div class="menu-item px-3 text-center"
-                                                            (click)="downloadCustomerReceipt(activityindex , 'customerReceipt', 'print')">
+                                                        <div class="menu-item px-3 text-center" (click)="downloadCustomerReceipt(activityindex , 'customerReceipt', 'print')">
                                                             <div class="menu-link px-3">
                                                                 <fa-icon [icon]="faPrint"></fa-icon>
-                                                                <span class="ms-5">{{ 'PRINT' | translate }}</span>
-                                                            </div>
+                                                                <span class="ms-5">{{ 'PRINT' | translate }}</span></div>
                                                         </div>
-                                                        <div class="menu-item px-3 text-center"
-                                                            (click)="downloadCustomerReceipt(activityindex , 'customerReceipt', 'print', 'alternative')">
+                                                        <div class="menu-item px-3 text-center" (click)="downloadCustomerReceipt(activityindex , 'customerReceipt', 'print', 'alternative')">
                                                             <div class="menu-link px-3">
                                                                 <fa-icon [icon]="faPrint"></fa-icon>
-                                                                <span class="ms-5">{{ 'PRINT_ALTERNATIVE' | translate
-                                                                    }}</span>
-                                                            </div>
+                                                                <span class="ms-5">{{ 'PRINT_ALTERNATIVE' | translate }}</span></div>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
+                                            <!-- <div class="btn-group me-4 w-100 mb-4">
+                                                <button class="btn btn-primary fs-bold"
+                                                    (click)="downloadCustomerReceipt(activityindex , 'downloadCustomerReceipt')" [disabled]="bDownloadCustomerReceipt">
+                                                    <fa-icon class="group-icon" [icon]="faPrint"></fa-icon>
+                                                    <span class="indicator-label">{{
+                                                        "CUSTOMER_RECEIPT_PRINT" |
+                                                        translate}}</span>
+                                                </button>
 
+                                                <span class="btn btn-primary btn-icon fs-bold printer-button-span"
+                                                    role="button">
+                                                    <div class="btn btn-icon" data-kt-menu-trigger="hover"
+                                                        data-kt-menu-attach="parent"
+                                                        data-kt-menu-placement="bottom-start"
+                                                        data-kt-menu-flip="bottom">
+                                                        <span class="svg-icon svg-icon-2 m-0">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24"
+                                                                height="24" viewBox="0 0 24 24" fill="none">
+                                                                <path
+                                                                    d="M11.4343 12.7344L7.25 8.55005C6.83579 8.13583 6.16421 8.13584 5.75 8.55005C5.33579 8.96426 5.33579 9.63583 5.75 10.05L11.2929 15.5929C11.6834 15.9835 12.3166 15.9835 12.7071 15.5929L18.25 10.05C18.6642 9.63584 18.6642 8.96426 18.25 8.55005C17.8358 8.13584 17.1642 8.13584 16.75 8.55005L12.5657 12.7344C12.2533 13.0468 11.7467 13.0468 11.4343 12.7344Z"
+                                                                    fill="black"></path>
+                                                            </svg>
+                                                        </span>
+                                                    </div>
+                                                    <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold fs-7 w-200px py-4"
+                                                        data-kt-menu="true">
+                                                        <div class="menu-item px-3 text-center">
+                                                            <div class="menu-link px-3">tMenu</div>
+                                                        </div>
+                                                    </div>
+                                                </span>
+                                            </div> -->
                                             <div class="btn-group me-4 w-100 mb-4">
                                                 <span class="btn btn-secondary fs-bold">
                                                     <fa-icon class="group-icon" [icon]="faReceipt"></fa-icon>
@@ -519,10 +499,18 @@
                                         </div>
                                     </div>
 
-                                    <!-- changed here -->
-
+                                    <!-- <div class="row my-5">
+                                        <div class="col">
+                                            <div class="form-group w-100">
+                                                <input type="text" name="activityName"
+                                                    [(ngModel)]="activity.sProductName"
+                                                    class="form-control form-control-solid">
+                                            </div>
+                                        </div>
+                                    </div> -->
                                     <div class="row">
-                                        <div class="col-4">
+
+                                        <div class="col-5">
                                             <div class="row mb-6">
                                                 <label class="col-lg-4 col-form-label fw-bold fs-6">{{ "INTAKE_DATE" |
                                                     translate}}</label>
@@ -572,7 +560,25 @@
                                                     </div>
                                                 </div>
                                             </div>
+                                            <!-- <div class="row mb-6">
+                                                <label class="col-lg-4 col-form-label fw-bold fs-6">{{
+                                                    "CONTACT_WHEN_READY"
+                                                    | translate}}</label>
+                                                <div class="col-lg-8">
+                                                    <div class="row">
+                                                        <div class="col-lg-8 fv-row">
+                                                            <ng-select [(ngModel)]="activity.eEstimatedDateAction"
+                                                                class="form-control form-control-solid p-0 w-100 custom"
+                                                                [clearable]="false">
+                                                                <ng-option *ngFor="let option of aContactOption"
+                                                                    [value]="option.value">
+                                                                    {{option.key | translate}}</ng-option>
+                                                            </ng-select>
 
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div> -->
                                             <div class="row mb-6">
                                                 <label class="col-lg-4 col-form-label fw-bold fs-6"> {{
                                                     "ESTIMATED_PRICE_UPON_INGESTION" | translate}}</label>
@@ -581,8 +587,7 @@
                                                         <div class="col-lg-8 fv-row">
                                                             <input type="number"
                                                                 class="form-control form-control-lg form-control-solid mb-3 mb-lg-0 w-100"
-                                                                [(ngModel)]="activity.nTotalAmount" placeholder=""
-                                                                (ngModelChange)="changeTotalAmount(activity, $event)">
+                                                                [(ngModel)]="activity.nTotalAmount" placeholder="" (ngModelChange)="changeTotalAmount(activity, $event)">
                                                             <p *ngIf="activity?.oType?.bDiscount">Discount price
                                                                 {{activity.nPriceIncVat - activity.nTotalAmount |
                                                                 currency:tillService.currency }} </p>
@@ -600,16 +605,51 @@
                                                                 class="form-control form-control-lg form-control-solid mb-3 mb-lg-0 w-100"
                                                                 [(ngModel)]="activity.nPriceIncVatAfterDiscount">
                                                             <p *ngIf="activity?.oType?.bDiscount">
-                                                                Discount price {{activity.nPriceIncVat -
-                                                                activity.nTotalAmount | currency:tillService.currency }}
+                                                                Discount price {{activity.nPriceIncVat - activity.nTotalAmount | currency:tillService.currency }} 
                                                             </p>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
 
+                                            <div class="table-responsive">
+                                                <table
+                                                    class="table align-middle table-row-dashed fs-6 gy-5 dataTable no-footer">
+                                                    <thead>
+                                                        <tr
+                                                            class="text-start text-gray-400 fw-bolder fs-7 text-uppercase gs-0">
+                                                            <th>{{ "RECEIPT_NUMBER" | translate}}</th>
+                                                            <th>{{ "CREATED_DATE" | translate}}</th>
+                                                            <th>{{ "AMOUNT" |translate}}</th>
+                                                            <ng-container *ngIf="from != 'transaction-details'">
+                                                                <th>{{ 'ACTION' | translate }}</th>
+                                                            </ng-container>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody class="fw-bold text-gray-600">
+                                                        <tr *ngFor='let receipt of activity.receipts'>
+                                                            <td>{{receipt.sTransactionNumber}}</td>
+                                                            <td>{{receipt.dCreatedDate | date: 'medium'}}</td>
+                                                            <td>{{receipt.nPaymentAmount | currency:
+                                                                tillService.currency}}</td>
+                                                            <ng-container *ngIf="from != 'transaction-details'">
+                                                                <td>
+                                                                    <div class="d-flex align-items-center">
+                                                                        <button class="btn btn-primary"
+                                                                            (click)="showTransaction(receipt, $event)">
+                                                                            {{ 'VIEW' | translate }}
+                                                                        </button>
+                                                                        <div *ngIf="receipt.bFetchingTransaction"
+                                                                            class="spinner-border mx-2"></div>
+                                                                    </div>
+                                                                </td>
+                                                            </ng-container>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
                                         </div>
-                                        <div class="col-4">
+                                        <div class="col-3">
                                             <div class="row mb-6">
                                                 <div class="col-12">
                                                     <div *ngIf="!activity?.aImage?.length">
@@ -665,11 +705,10 @@
                                                     {{activity?.sArticleNumber}} - {{activity?.sArticleName}}
                                                 </div>
                                                 <div class="col-12">
-                                                    <button class="btn btn-success"
-                                                        (click)="AssignOrderProduct(activity , activityindex)"> {{'ADD /
-                                                        CHANGE' | translate}}</button>
+                                                    <button class="btn btn-success" (click)="AssignOrderProduct(activity , activityindex)"> {{'ADD / CHANGE' | translate}}</button>
                                                 </div>
                                             </div>
+
                                         </div>
                                         <div class="col-4">
                                             <div class="row mb-6">
@@ -816,104 +855,68 @@
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    <div class="row table-responsive">
-                                        <div class="col-6">
-                                            <table
-                                                class="table align-middle table-row-dashed fs-6 gy-5 dataTable no-footer">
-                                                <thead>
-                                                    <tr
-                                                        class="text-start text-gray-400 fw-bolder fs-7 text-uppercase gs-0">
-                                                        <th>{{ "RECEIPT_NUMBER" | translate}}</th>
-                                                        <th>{{ "CREATED_DATE" | translate}}</th>
-                                                        <th>{{ "AMOUNT" |translate}}</th>
-                                                        <ng-container *ngIf="from != 'transaction-details'">
-                                                            <th>{{ 'ACTION' | translate }}</th>
-                                                        </ng-container>
-                                                    </tr>
-                                                </thead>
-                                                <tbody class="fw-bold text-gray-600">
-                                                    <tr *ngFor='let receipt of activity.receipts'>
-                                                        <td>{{receipt.sTransactionNumber}}</td>
-                                                        <td>{{receipt.dCreatedDate | date: 'medium'}}</td>
-                                                        <td>{{receipt.nPaymentAmount | currency:
-                                                            tillService.currency}}</td>
-                                                        <ng-container *ngIf="from != 'transaction-details'">
-                                                            <td>
-                                                                <div class="d-flex align-items-center">
-                                                                    <button class="btn btn-primary"
-                                                                        (click)="showTransaction(receipt, $event)">
-                                                                        {{ 'VIEW' | translate }}
-                                                                    </button>
-                                                                    <div *ngIf="receipt.bFetchingTransaction"
-                                                                        class="spinner-border mx-2"></div>
-                                                                </div>
-                                                            </td>
-                                                        </ng-container>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-
+                                        <div class="row">
+                                            
                                         </div>
 
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-6">
-                                            <div class="row mb-6">
-                                                <label class="col-lg-12 col-form-label fw-bold fs-6">{{
-                                                    "REMARK_FOR_SERVICE_PARTNERS" | translate}}</label>
-                                                <div class="col-lg-12">
-                                                    <div class="row">
-                                                        <div class="col-lg-12 fv-row">
-                                                            <textarea
-                                                                class="form-control form-control-lg form-control-solid mb-3 mb-lg-0 w-100"
-                                                                placeholder="{{ 'REMARK_FOR_SERVICE_PARTNERS' | translate}}"
-                                                                lines="10"
-                                                                [(ngModel)]="activity.sCommentVisibleServicePartner"></textarea>
+                                        <div class="row">
+                                            <div class="col-6">
+                                                <div class="row mb-6">
+                                                    <label class="col-lg-12 col-form-label fw-bold fs-6">{{
+                                                        "REMARK_FOR_SERVICE_PARTNERS" | translate}}</label>
+                                                    <div class="col-lg-12">
+                                                        <div class="row">
+                                                            <div class="col-lg-12 fv-row">
+                                                                <textarea
+                                                                    class="form-control form-control-lg form-control-solid mb-3 mb-lg-0 w-100"
+                                                                    placeholder="{{ 'REMARK_FOR_SERVICE_PARTNERS' | translate}}"
+                                                                    lines="10"
+                                                                    [(ngModel)]="activity.sCommentVisibleServicePartner"></textarea>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div class="col-6">
-                                            <div class="row mb-6">
-                                                <label
-                                                    class="col-lg-12 col-form-label fw-bold fs-6">{{"REMARK_FOR_COLLEAGUES"
-                                                    | translate}}</label>
-                                                <div class="col-lg-12">
-                                                    <div class="row">
-                                                        <div class="col-lg-12 fv-row">
-                                                            <textarea
-                                                                class="form-control form-control-lg form-control-solid mb-3 mb-lg-0 w-100"
-                                                                placeholder="{{ 'REMARK_FOR_COLLEAGUES' | translate}}"
-                                                                lines="10"
-                                                                [(ngModel)]="activity.sCommentVisibleCollegues"></textarea>
+                                            <div class="col-6">
+                                                <div class="row mb-6">
+                                                    <label
+                                                        class="col-lg-12 col-form-label fw-bold fs-6">{{"REMARK_FOR_COLLEAGUES"
+                                                        | translate}}</label>
+                                                    <div class="col-lg-12">
+                                                        <div class="row">
+                                                            <div class="col-lg-12 fv-row">
+                                                                <textarea
+                                                                    class="form-control form-control-lg form-control-solid mb-3 mb-lg-0 w-100"
+                                                                    placeholder="{{ 'REMARK_FOR_COLLEAGUES' | translate}}"
+                                                                    lines="10"
+                                                                    [(ngModel)]="activity.sCommentVisibleCollegues"></textarea>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
-
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-3">
-                                            <button [disabled]="submitted" [class.btn-pulse]="submitted"
-                                                class="btn btn-lg btn-primary"
-                                                (click)="submit(activity._id , activityindex)" type="submit">
-                                                <span *ngIf="submitted" class="mx-3">
-                                                    <i class="fa fa-spinner fa-spin" [hidden]="!submitted"
-                                                        style="font-size:15px;"></i>
-                                                </span>
-
-                                                <span class="indicator-label">{{"SUBMIT" | translate}}</span>
-
-                                            </button>
 
                                         </div>
-                                    </div>
+                                        <div class="row">
+                                            <div class="col-3">
+                                                <button [disabled]="submitted" [class.btn-pulse]="submitted"
+                                                    class="btn btn-lg btn-primary"
+                                                    (click)="submit(activity._id , activityindex)" type="submit">
+                                                    <span *ngIf="submitted" class="mx-3">
+                                                        <i class="fa fa-spinner fa-spin" [hidden]="!submitted"
+                                                            style="font-size:15px;"></i>
+                                                    </span>
 
+                                                    <span class="indicator-label">{{"SUBMIT" | translate}}</span>
+
+                                                </button>
+
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
+
                             <div class="accordion-collapse collapse giftcard" *ngIf="activity.oType.eKind == 'giftcard'"
                                 data-bs-parent="#kt_accordion_1" [id]="'item'+activityindex"
                                 [class.show]="activityItems.length == 1">
@@ -923,21 +926,18 @@
                                             <div class="row">
                                                 <div class="col-6">
                                                     <div class="form-group mb-6">
-                                                        <label class="form-control-label mb-3">{{ "NAME" |
-                                                            translate}}</label>
-                                                        <input class="form-control form-control-solid mb-3 mb-lg-0"
-                                                            type="text" name="activityName"
+                                                        <label class="form-control-label mb-3">{{ "NAME" | translate}}</label>
+                                                        <input class="form-control form-control-solid mb-3 mb-lg-0" type="text" name="activityName"
                                                             [(ngModel)]="activity.sProductName">
                                                     </div>
                                                     <div class="form-group mb-6">
                                                         <label class="form-control-label mb-3">{{ "GIFT_CARD_NUMBER" |
                                                             translate}} </label>
-                                                        <input type="text" name="giftCardNumber"
-                                                            class="form-control form-control-solid mb-3 mb-lg-0"
+                                                        <input type="text" name="giftCardNumber" class="form-control form-control-solid mb-3 mb-lg-0"
                                                             [(ngModel)]="activity.sGiftCardNumber" readonly />
                                                     </div>
-
-
+                                    
+                                                
                                                 </div>
                                                 <div class="col-6">
                                                     <div class="border p-3 mb-5">
@@ -946,10 +946,10 @@
                                                         </div>
                                                         <div class="row">
                                                             <div class="col-12">
-                                                                <input class="form-control form-control-solid w-100"
-                                                                    type="number" [(ngModel)]="activity.nPriceIncVat">
+                                                                <input class="form-control form-control-solid w-100" type="number"
+                                                                    [(ngModel)]="activity.nPriceIncVat">
                                                             </div>
-
+                                                            
                                                         </div>
                                                         <div class="row mt-2">
                                                             <div class="col-6">
@@ -958,8 +958,7 @@
                                                                 tillService.currency}}
                                                             </div>
                                                             <div class="col-6">
-                                                                {{"STILL_TO_PAY" | translate}}: {{(activity.nTotalAmount
-                                                                -
+                                                                {{"STILL_TO_PAY" | translate}}: {{(activity.nTotalAmount -
                                                                 activity.nPaidAmount)
                                                                 |
                                                                 currency:
@@ -968,8 +967,7 @@
                                                         </div>
                                                     </div>
                                                     <div class="form-group mb-6">
-                                                        {{'REMAINING_AMOUNT' | translate}} :
-                                                        {{activity.nGiftcardRemainingAmount |
+                                                        {{'REMAINING_AMOUNT' | translate}} : {{activity.nGiftcardRemainingAmount |
                                                         currency:tillService.currency}}
                                                     </div>
                                                 </div>
@@ -979,19 +977,22 @@
                                                     <div class="form-group mb-6">
                                                         <label class="form-control-label mb-3">{{ "DESCRIPTION" |
                                                             translate}}</label>
-                                                        <textarea class="form-control form-control-solid" cols="30"
-                                                            rows="3" name="description"
+                                                        <textarea class="form-control form-control-solid" cols="30" rows="3" name="description"
                                                             placeholder="{{ 'DESCRIPTION' | translate}}" lines="10"
                                                             [(ngModel)]="activity.sDescription"></textarea>
                                                     </div>
                                                 </div>
                                             </div>
-
-
-
-
-
-
+                                    
+                                            <!-- </div> -->
+                                            <!-- <div class="col-5"> -->
+                                    
+                                    
+                                            <!-- 
+                                                                                <div>
+                                                                                    {{"INFORM_CUSTOMER_THAT_PRODUCT_CAN_BE_PICKED_UP" | translate}}
+                                                                                </div> -->
+                                    
                                         </div>
                                         <div class="col-3">
                                             <div class="btn-group me-4 w-100 mb-4">
@@ -1059,7 +1060,70 @@
                                                     </div>
                                                 </span>
                                             </div>
-
+                                            <!-- <div class="btn-group me-4 w-100 mb-4">
+                                                <span class="btn btn-primary fs-bold">
+                                                    <fa-icon class="group-icon" [icon]="faReceipt"></fa-icon>
+                                                    <span class="indicator-label">{{ "RECEIPT_PARTNER" |
+                                                        translate}}</span>
+                                                </span>
+                                                <span class="btn btn-primary btn-icon fs-bold" role="button">
+                                                    <div class="btn btn-icon" data-kt-menu-trigger="hover"
+                                                        data-kt-menu-attach="parent"
+                                                        data-kt-menu-placement="bottom-start"
+                                                        data-kt-menu-flip="bottom">
+                                                        <span class="svg-icon svg-icon-2 m-0">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24"
+                                                                height="24" viewBox="0 0 24 24" fill="none">
+                                                                <path
+                                                                    d="M11.4343 12.7344L7.25 8.55005C6.83579 8.13583 6.16421 8.13584 5.75 8.55005C5.33579 8.96426 5.33579 9.63583 5.75 10.05L11.2929 15.5929C11.6834 15.9835 12.3166 15.9835 12.7071 15.5929L18.25 10.05C18.6642 9.63584 18.6642 8.96426 18.25 8.55005C17.8358 8.13584 17.1642 8.13584 16.75 8.55005L12.5657 12.7344C12.2533 13.0468 11.7467 13.0468 11.4343 12.7344Z"
+                                                                    fill="black"></path>
+                                                            </svg>
+                                                        </span>
+                                                    </div>
+                                                    <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold fs-7 w-200px py-4"
+                                                        data-kt-menu="true">
+                                                        <div class="menu-item px-3 text-center">
+                                                            <div class="menu-link px-3">tMenu</div>
+                                                        </div>
+                                                    </div>
+                                                </span>
+                                            </div>
+                                            <div class="btn-group me-4 w-100 mb-4">
+                                                <span class="btn btn-primary fs-bold">
+                                                    <span>
+                                                        <fa-icon class="group-icon" [icon]="faReceipt"></fa-icon>
+                                                    </span>
+                                                    <span class="indicator-label">{{ "RECEIPT_FOR_BOTH" |
+                                                        translate}}</span>
+                                                </span>
+                                                <span class="btn btn-primary btn-icon fs-bold" role="button">
+                                                    <div class="btn btn-icon" data-kt-menu-trigger="hover"
+                                                        data-kt-menu-attach="parent"
+                                                        data-kt-menu-placement="bottom-start"
+                                                        data-kt-menu-flip="bottom">
+                                                        <span class="svg-icon svg-icon-2 m-0">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24"
+                                                                height="24" viewBox="0 0 24 24" fill="none">
+                                                                <path
+                                                                    d="M11.4343 12.7344L7.25 8.55005C6.83579 8.13583 6.16421 8.13584 5.75 8.55005C5.33579 8.96426 5.33579 9.63583 5.75 10.05L11.2929 15.5929C11.6834 15.9835 12.3166 15.9835 12.7071 15.5929L18.25 10.05C18.6642 9.63584 18.6642 8.96426 18.25 8.55005C17.8358 8.13584 17.1642 8.13584 16.75 8.55005L12.5657 12.7344C12.2533 13.0468 11.7467 13.0468 11.4343 12.7344Z"
+                                                                    fill="black"></path>
+                                                            </svg>
+                                                        </span>
+                                                    </div>
+                                                    <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold fs-7 w-200px py-4"
+                                                        data-kt-menu="true">
+                                                        <div class="menu-item px-3 text-center">
+                                                            <div class="menu-link px-3">tMenu</div>
+                                                        </div>
+                                                    </div>
+                                                </span>
+                                            </div>
+                                            <div class="btn-group me-4 w-100 mb-4">
+                                                <span class="btn btn-primary fs-bold">
+                                                    <fa-icon class="group-icon" [icon]="faEnvelope"></fa-icon>
+                                                    <span class="indicator-label">{{ "MAIL" | translate}}</span>
+                                                </span>
+                                            </div> -->
                                             <div class="btn-group me-4 w-100 mb-4">
                                                 <span class="btn btn-secondary fs-bold"
                                                     (click)="loadCashRegister = true; openTransaction(activity, 'activity')">
@@ -1117,8 +1181,18 @@
                                         </div>
                                     </div>
 
+                                    <!-- <div class="row my-5">
+                                        <div class="col">
+                                            <div class="form-group w-100">
+                                                <input type="text" name="activityName"
+                                                    [(ngModel)]="activity.sProductName"
+                                                    class="form-control form-control-solid">
+                                            </div>
+                                        </div>
+                                    </div> -->
                                     <div class="row">
-                                        <div class="col-4">
+
+                                        <div class="col-6">
                                             <div class="row mb-6">
                                                 <label class="col-lg-4 col-form-label fw-bold fs-6">{{ "INTAKE_DATE" |
                                                     translate}}</label>
@@ -1149,6 +1223,34 @@
                                                     </div>
                                                 </div>
                                             </div>
+                                            <!-- <div class="row mb-6">
+                                <label class="col-lg-4 col-form-label fw-bold fs-6">{{
+                                    "ESTIMATED_DATE_READY" | translate}}</label>
+                                <div class="col-lg-8">
+                                    <div class="row">
+                                        <div class="col-lg-8 fv-row">
+
+                                            <input type="date"
+                                                class="form-control form-control form-control-solid"
+                                                name="dEstimatedDate"
+                                                [ngModel]="activity.dEstimatedDate | date:'yyyy-MM-dd'"
+                                                (ngModelChange)="activity.dEstimatedDate = $event" />
+                                         
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mb-6">
+                                <label class="col-lg-4 col-form-label fw-bold fs-6">{{ "CONTACT_WHEN_READY"
+                                    | translate}}</label>
+                                <div class="col-lg-8">
+                                    <div class="row">
+                                        <div class="col-lg-8 fv-row">
+                                            {{ "INTAKE_DATE" | translate}}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div> -->
                                             <div class="row mb-6">
                                                 <label class="col-lg-4 col-form-label fw-bold fs-6"> {{
                                                     "ESTIMATED_PRICE_UPON_INGESTION" | translate}}</label>
@@ -1165,72 +1267,338 @@
                                                     </div>
                                                 </div>
                                             </div>
+                                            <!-- <div class="row mb-6">
+                                                <label class="col-lg-4 col-form-label fw-bold fs-6">
+                                                    {{"TOTAL_PRICE" | translate}}</label>
+                                                <div class="col-lg-8">
+                                                    <div class="row">
+                                                        <div class="col-lg-8 fv-row">
+                                                            <input type="number"
+                                                                class="form-control form-control-lg form-control-solid mb-3 mb-lg-0 w-100"
+                                                                [(ngModel)]="activity.nPriceIncVat" placeholder="">
+                                                            <p *ngIf="activity?.oType?.bDiscount">Discount price
+                                                                {{activity.nPriceIncVat - activity.nTotalAmount |
+                                                                currency:tillService.currency }} </p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div> -->
 
+
+
+
+                                            <div class="table-responsive">
+                                                <table
+                                                    class="table align-middle table-row-dashed fs-6 gy-5 dataTable no-footer">
+                                                    <thead>
+                                                        <tr
+                                                            class="text-start text-gray-400 fw-bolder fs-7 text-uppercase gs-0">
+                                                            <th>{{ "RECEIPT_NUMBER" | translate}}</th>
+                                                            <th>{{ "CREATED_DATE" | translate}}</th>
+                                                            <th>{{ "AMOUNT" |translate}}</th>
+                                                            <ng-container *ngIf="from != 'transaction-details'">
+                                                                <th>{{ 'ACTION' | translate }}</th>
+                                                            </ng-container>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody class="fw-bold text-gray-600">
+                                                        <tr *ngFor='let receipt of activity.receipts'>
+                                                            <td>{{receipt.sTransactionNumber}}</td>
+                                                            <td>{{receipt.dCreatedDate | date: 'medium'}}</td>
+                                                            <td>{{receipt.nPaymentAmount | currency:
+                                                                tillService.currency}}</td>
+                                                            <ng-container *ngIf="from != 'transaction-details'">
+                                                                <td>
+                                                                    <div class="d-flex align-items-center">
+                                                                        <button class="btn btn-primary"
+                                                                            (click)="showTransaction(receipt, $event)">
+                                                                            {{ 'VIEW' | translate }}
+                                                                        </button>
+                                                                        <div *ngIf="receipt.bFetchingTransaction"
+                                                                            class="spinner-border mx-2"></div>
+                                                                    </div>
+                                                                </td>
+                                                            </ng-container>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
                                         </div>
-                                        <div class="col-4">
-
-                                        </div>
-                                        <div class="col-4">
-
-                                        </div>
-
+                                        <!-- <div class="col-3">
+                            <div *ngIf="!activity?.aImage?.length">
+                                {{"NO_IMAGES" | translate}}
+                            </div>
+                            <div class="d-flex">
+                                <div class="image-input p-1 d-flex"
+                                    *ngFor="let image of activity.aImage; let i = activityindex"
+                                    data-kt-image-input="true"
+                                    style="background-image: url('assets/media/svg/avatars/blank.svg')">
+                                    <div class="image-input-wrapper w-100px h-100px"
+                                        style="background-image: url(assets/media/avatars/300-1.jpg)">
+                                        <img src={{image}} width="100px" height="100px">
                                     </div>
-                                    <div class="row table-responsive">
-                                        <div class="col-6">
-                                            <table
-                                                class="table align-middle table-row-dashed fs-6 gy-5 dataTable no-footer">
-                                                <thead>
-                                                    <tr
-                                                        class="text-start text-gray-400 fw-bolder fs-7 text-uppercase gs-0">
-                                                        <th>{{ "RECEIPT_NUMBER" | translate}}</th>
-                                                        <th>{{ "CREATED_DATE" | translate}}</th>
-                                                        <th>{{ "AMOUNT" |translate}}</th>
-                                                        <ng-container *ngIf="from != 'transaction-details'">
-                                                            <th>{{ 'ACTION' | translate }}</th>
-                                                        </ng-container>
-                                                    </tr>
-                                                </thead>
-                                                <tbody class="fw-bold text-gray-600">
-                                                    <tr *ngFor='let receipt of activity.receipts'>
-                                                        <td>{{receipt.sTransactionNumber}}</td>
-                                                        <td>{{receipt.dCreatedDate | date: 'medium'}}</td>
-                                                        <td>{{receipt.nPaymentAmount | currency:
-                                                            tillService.currency}}</td>
-                                                        <ng-container *ngIf="from != 'transaction-details'">
-                                                            <td>
-                                                                <div class="d-flex align-items-center">
-                                                                    <button class="btn btn-primary"
-                                                                        (click)="showTransaction(receipt, $event)">
-                                                                        {{ 'VIEW' | translate }}
-                                                                    </button>
-                                                                    <div *ngIf="receipt.bFetchingTransaction"
-                                                                        class="spinner-border mx-2"></div>
-                                                                </div>
-                                                            </td>
-                                                        </ng-container>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-3">
-                                            <button [disabled]="submitted" [class.btn-pulse]="submitted"
-                                                class="btn btn-lg btn-primary"
-                                                (click)="submit(activity._id , activityindex)" type="submit">
-                                                <span *ngIf="submitted" class="mx-3">
-                                                    <i class="fa fa-spinner fa-spin" [hidden]="!submitted"
-                                                        style="font-size:15px;"></i>
-                                                </span>
-
-                                                <span class="indicator-label">{{"SUBMIT" | translate}}</span>
-
+                                    <div class="mt-2 ">
+                                        <div data-kt-image-input-action="reorder" class="d-flex">
+                                            <button
+                                                class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow"
+                                                data-kt-image-input-action="remove" data-bs-toggle="tooltip"
+                                                title="Remove image">
+                                                <i class="bi bi-x fs-2"></i>
                                             </button>
+                                        </div>
 
+                                    </div>
+
+
+                                </div>
+                            </div>
+                        </div> -->
+                                        <div class="col-6">
+                                            <!-- <div class="row mb-6">
+                                <label class="col-lg-4 col-form-label fw-bold fs-6"> {{ "BRAND" |
+                                    translate}}</label>
+                                <div class="col-lg-8">
+                                    <div class="row">
+                                        <div class="col-lg-8 fv-row">
+                                            <input type="text"
+                                                class="form-control form-control-lg form-control-solid mb-3 mb-lg-0 w-100"
+                                                [(ngModel)]="activity.iBrandId" placeholder="">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div> -->
+                                            <!-- <div class="row mb-6">
+                                <label class="col-lg-4 col-form-label fw-bold fs-6">{{ "REPAIR_NUMBER"
+                                    |translate}}</label>
+                                <div class="col-lg-8">
+                                    <div class="row">
+                                        <div class="col-lg-8 fv-row">
+                                            <input type="text"
+                                                class="form-control form-control-lg form-control-solid mb-3 mb-lg-0 w-100"
+                                                [(ngModel)]="activity.sBagNumber" placeholder="">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div> -->
+                                            <div class="row mb-6">
+                                                <!-- <label class="col-lg-4 col-form-label fw-bold fs-6">{{
+                                                    "COST_INCURRED(EXCL_VAT)" | translate}}</label>
+                                                <div class="col-lg-8">
+                                                    <div class="row">
+                                                        <div class="col-lg-8 fv-row">
+                                                            <input type="number"
+                                                                class="form-control form-control-lg form-control-solid mb-3 mb-lg-0 w-100"
+                                                                [(ngModel)]="activity.nPriceIncVat" placeholder="">
+                                                            <p *ngIf="activity?.oType?.bDiscount">Discount price
+                                                                {{activity.nPriceIncVat - activity.nTotalAmount |
+                                                                currency:tillService.currency }} </p>
+                                                        </div>
+                                                    </div>
+                                                </div> -->
+
+                                                <!-- <div class="row mb-6">
+                                <label class="col-lg-4 col-form-label fw-bold fs-6">{{ "PRODUCT_CATEGORY" |
+                                    translate}}</label>
+                                <div class="col-lg-8">
+                                    <div class="row">
+                                        <div class="col-lg-8 fv-row">
+                                            <input type="text"
+                                                class="form-control form-control-lg form-control-solid mb-3 mb-lg-0 w-100"
+                                                [(ngModel)]="activity.iArticleGroupId" placeholder="">
                                         </div>
                                     </div>
                                 </div>
                             </div>
+                            <div class="row mb-6">
+                                <label class="col-lg-4 col-form-label fw-bold fs-6">{{ "PRODUCT_MATERIAL" |
+                                    translate}}</label>
+                                <div class="col-lg-8">
+                                    <div class="row">
+                                        <div class="col-lg-8 fv-row">
+                                            <input type="text"
+                                                class="form-control form-control-lg form-control-solid mb-3 mb-lg-0 w-100"
+                                                [(ngModel)]="activity.iArticleGroupId" placeholder="">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div> -->
+                                                <!-- <div class="row mb-6">
+                                <label class="col-lg-4 col-form-label fw-bold fs-6"> {{ "SUPPLIER" |
+                                    translate}}</label>
+                                <div class="col-lg-8">
+                                    <div class="row">
+                                        <div class="col-lg-8 fv-row">
+                                            <input type="text"
+                                                class="form-control form-control-lg form-control-solid mb-3 mb-lg-0 w-100"
+                                                [(ngModel)]="activity.iSupplierId" placeholder="">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div> -->
+
+
+                                                <!-- <div class="row">
+
+                                <div class="fw-bold fs-6 my-2">
+                                    {{ "I_REPAIR_THIS_MYSELF" | translate}}
+                                </div>
+                                <div class="col">
+
+                                    <div class="row mb-6">
+                                        <label class="col-lg-4 col-form-label fw-bold fs-6">{{ "REPAIRER" |
+                                            translate}}</label>
+                                        <div class="col-lg-8">
+                                            <div class="row ">
+                                                <div class="col-lg-8 fv-row">
+                                                    <ng-select *ngIf="!employee" [(ngModel)]="employee"
+                                                        (search)="searchEmployees($event.term)"
+                                                        class="form-control form-control-solid p-0 w-100 custom"
+                                                        placeholder="Search employee" [minTermLength]="2"
+                                                        [clearable]="false"
+                                                        [isOpen]="filteredEmployees.length > 0"
+                                                        (change)="onEmployeeChange($event)">
+                                                        <ng-option *ngFor="let option of filteredEmployees"
+                                                            [value]="option">
+                                                            {{option.sName ||
+                                                            'Unknown'}}</ng-option>
+                                                    </ng-select>
+
+                                                    <div class="chip d-flex" *ngIf="employee">
+                                                        {{employee}}
+                                                        <div (click)="employee=null">
+                                                            &nbsp;<i
+                                                                class="close fas fa-times cursor-pointer"></i>
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                            <div class="row my-4">
+                                                <div class="col-md-8 text-center">
+                                                    <label>{{ "OR" | translate}}</label>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-lg-8 fv-row">
+                                                    <ng-select *ngIf="!supplier" [(ngModel)]="supplier"
+                                                        (search)="searchSuppliers($event.term)"
+                                                        class="form-control form-control-solid p-0 w-100 custom"
+                                                        placeholder="Search repairer" [minTermLength]="2"
+                                                        [clearable]="false"
+                                                        [isOpen]="supplierOptions.length > 0"
+                                                        (change)="onSupplierChange($event)">
+                                                        <ng-option *ngFor="let option of supplierOptions"
+                                                            [value]="option">
+                                                            {{option.sName ||
+                                                            'Unknown'}}</ng-option>
+                                                    </ng-select>
+                                                    <div class="chip d-flex" *ngIf="supplier">
+                                                        {{supplier}}
+                                                        <div (click)="supplier=null">
+                                                            &nbsp;<i
+                                                                class="close fas fa-times cursor-pointer"></i>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row mb-6">
+                                        <label class="col-lg-4 col-form-label fw-bold fs-6"><label
+                                                for="brand">{{ "BRAND" | translate}}</label></label>
+                                        <div class="col-lg-8">
+                                            <div class="row">
+                                                <div class="col-lg-8 fv-row">
+                                                    <ng-select *ngIf="!brand" [(ngModel)]="brand"
+                                                        (search)="searchBrands($event.term)"
+                                                        class="form-control form-control-solid p-0 w-100 custom"
+                                                        placeholder="Search brand" [minTermLength]="2"
+                                                        [clearable]="false"
+                                                        [isOpen]="filteredBrands.length > 0"
+                                                        (change)="onBrandChange($event)">
+                                                        <ng-option *ngFor="let option of filteredBrands"
+                                                            [value]="option">
+                                                            {{option.sName ||
+                                                            'Unknown'}}</ng-option>
+                                                    </ng-select>
+                                                    <div class="chip d-flex" *ngIf="brand">
+                                                        {{brand}}
+                                                        <div (click)="brand=null">
+                                                            &nbsp;<i
+                                                                class="close fas fa-times cursor-pointer"></i>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+
+                                </div>
+                            </div> -->
+                                            </div>
+                                        </div>
+                                        <!-- 
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="row mb-6">
+                                <label class="col-lg-12 col-form-label fw-bold fs-6">{{
+                                    "REMARK_FOR_SERVICE_PARTNERS" | translate}}</label>
+                                <div class="col-lg-12">
+                                    <div class="row">
+                                        <div class="col-lg-12 fv-row">
+                                            <textarea
+                                                class="form-control form-control-lg form-control-solid mb-3 mb-lg-0 w-100"
+                                                placeholder="{{ 'REMARK_FOR_SERVICE_PARTNERS' | translate}}"
+                                                lines="10"
+                                                [(ngModel)]="activity.sCommentVisibleServicePartner"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="row mb-6">
+                                <label class="col-lg-12 col-form-label fw-bold fs-6">{{
+                                    "REMARK_FOR_COLLEAGUES" |
+                                    translate}}</label>
+                                <div class="col-lg-12">
+                                    <div class="row">
+                                        <div class="col-lg-12 fv-row">
+                                            <textarea
+                                                class="form-control form-control-lg form-control-solid mb-3 mb-lg-0 w-100"
+                                                placeholder="{{ 'REMARK_FOR_SERVICE_PARTNERS' | translate}}"
+                                                lines="10"
+                                                [(ngModel)]="activity.sCommentVisibleCollegues"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div> -->
+                                        <div class="row">
+                                            <div class="col-3">
+                                                <button [disabled]="submitted" [class.btn-pulse]="submitted"
+                                                    class="btn btn-lg btn-primary"
+                                                    (click)="submit(activity._id , activityindex)" type="submit">
+                                                    <span *ngIf="submitted" class="mx-3">
+                                                        <i class="fa fa-spinner fa-spin" [hidden]="!submitted"
+                                                            style="font-size:15px;"></i>
+                                                    </span>
+
+                                                    <span class="indicator-label">{{"SUBMIT" | translate}}</span>
+
+                                                </button>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                             <div class="accordion-collapse collapse gold-purchase"
                                 *ngIf="activity.oType.eKind == 'gold-purchase'" data-bs-parent="#kt_accordion_1"
                                 [id]="'item'+activityindex" [class.show]="activityItems.length == 1">
@@ -1240,21 +1608,19 @@
                                             <div class="row">
                                                 <div class="col-6">
                                                     <div class="form-group mb-6">
-                                                        <label class="form-control-label mb-3">{{ "NAME" |
-                                                            translate}}</label>
-                                                        <input class="form-control form-control-solid mb-3 mb-lg-0"
-                                                            type="text" name="activityName"
+                                                        <label class="form-control-label mb-3">{{ "NAME" | translate}}</label>
+                                                        <input class="form-control form-control-solid mb-3 mb-lg-0" type="text" name="activityName"
                                                             [(ngModel)]="activity.sProductName">
                                                     </div>
                                                 </div>
-
+                                        
                                                 <div class="col-6 border">
                                                     <div class="row d-flex align-items-center p-3">
                                                         <p class="col-3 p-0 m-0">{{ "TOTAL_PRICE" | translate}}</p>
 
                                                         <div class="col-7">
-                                                            <input class="form-control form-control-solid w-100"
-                                                                type="text" [(ngModel)]="activity.nPriceIncVat">
+                                                            <input class="form-control form-control-solid w-100" type="text"
+                                                            [(ngModel)]="activity.nPriceIncVat">
                                                         </div>
                                                         <div class="col-2 p-0">
                                                             <button class="btn btn-light-primary w-100 disabled">
@@ -1264,17 +1630,13 @@
                                                         <div class="row mt-3 p-0">
                                                             <div class="col-6">
                                                                 <p class="fw-bold m-0" style="font-weight: 600;">
-                                                                    {{"ALREADY_PAID" | translate}}:
-                                                                    {{activity.nPaidAmount |
-                                                                    currency:tillService.currency}}
+                                                                    {{"ALREADY_PAID" | translate}}: {{activity.nPaidAmount | currency:tillService.currency}}
                                                                 </p>
-
+                                                                
                                                             </div>
                                                             <div class="col-6">
                                                                 <p class="fw-bold m-0" style="font-weight: 600;">
-                                                                    {{"STILL_TO_PAY" | translate}}:
-                                                                    {{(activity.nTotalAmount - activity.nPaidAmount) |
-                                                                    currency:tillService.currency}}
+                                                                    {{"STILL_TO_PAY" | translate}}:  {{(activity.nTotalAmount - activity.nPaidAmount) | currency:tillService.currency}}
                                                                 </p>
                                                             </div>
                                                         </div>
@@ -1285,9 +1647,8 @@
                                                 <div class="form-group col-12 mb-6">
                                                     <label class="form-control-label mb-3">{{ "DESCRIPTION" |
                                                         translate}}</label>
-                                                    <textarea class="form-control form-control-solid" cols="30" rows="3"
-                                                        name="description" placeholder="{{ 'DESCRIPTION' | translate}}"
-                                                        lines="10" [(ngModel)]="activity.sDescription"></textarea>
+                                                    <textarea class="form-control form-control-solid" cols="30" rows="3" name="description"
+                                                        placeholder="{{ 'DESCRIPTION' | translate}}" lines="10" [(ngModel)]="activity.sDescription"></textarea>
                                                 </div>
                                             </div>
                                         </div>
@@ -1390,8 +1751,7 @@
                                                     <span>
                                                         <fa-icon class="group-icon" [icon]="faReceipt"></fa-icon>
                                                     </span>
-                                                    <span class="indicator-label">{{ "RECEIPT_FOR_BOTH" |
-                                                        translate}}</span>
+                                                    <span class="indicator-label">{{ "RECEIPT_FOR_BOTH" | translate}}</span>
                                                 </span>
                                                 <span class="btn btn-secondary btn-icon fs-bold" role="button">
                                                     <div class="btn btn-icon" data-kt-menu-trigger="hover"
@@ -1478,8 +1838,10 @@
                                         </div>
                                     </div>
 
+                                  
                                     <div class="row">
-                                        <div class="col-4">
+
+                                        <div class="col-6">
                                             <div class="row mb-6">
                                                 <label class="col-lg-4 col-form-label fw-bold fs-6">{{ "INTAKE_DATE" |
                                                     translate}}</label>
@@ -1510,7 +1872,7 @@
                                                     </div>
                                                 </div>
                                             </div>
-
+                                           
                                             <div class="row mb-6">
                                                 <label class="col-lg-4 col-form-label fw-bold fs-6"> {{
                                                     "ESTIMATED_PRICE_UPON_INGESTION" | translate}}</label>
@@ -1527,8 +1889,51 @@
                                                     </div>
                                                 </div>
                                             </div>
+                                            
+
+
+
+
+                                            <div class="table-responsive">
+                                                <table
+                                                    class="table align-middle table-row-dashed fs-6 gy-5 dataTable no-footer">
+                                                    <thead>
+                                                        <tr
+                                                            class="text-start text-gray-400 fw-bolder fs-7 text-uppercase gs-0">
+                                                            <th>{{ "RECEIPT_NUMBER" | translate}}</th>
+                                                            <th>{{ "CREATED_DATE" | translate}}</th>
+                                                            <th>{{ "AMOUNT" |translate}}</th>
+                                                            <ng-container *ngIf="from != 'transaction-details'">
+                                                                <th>{{ 'ACTION' | translate }}</th>
+                                                            </ng-container>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody class="fw-bold text-gray-600">
+                                                        <tr *ngFor='let receipt of activity.receipts'>
+                                                            <td>{{receipt.sTransactionNumber}}</td>
+                                                            <td>{{receipt.dCreatedDate | date: 'medium'}}</td>
+                                                            <td>{{receipt.nPaymentAmount | currency:
+                                                                tillService.currency}}</td>
+                                                            <ng-container *ngIf="from != 'transaction-details'">
+                                                                <td>
+                                                                    <div class="d-flex align-items-center">
+                                                                        <button class="btn btn-primary"
+                                                                            (click)="showTransaction(receipt, $event)">
+                                                                            {{ 'VIEW' | translate }}
+                                                                        </button>
+                                                                        <div *ngIf="receipt.bFetchingTransaction"
+                                                                            class="spinner-border mx-2"></div>
+                                                                    </div>
+                                                                </td>
+                                                            </ng-container>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
                                         </div>
-                                        <div class="col-4">
+                                        
+                                        <div class="col-6">
+                                           
                                             <div class="row mb-6">
                                                 <label class="col-lg-4 col-form-label fw-bold fs-6">{{ "REPAIR_NUMBER"
                                                     |translate}}</label>
@@ -1557,7 +1962,7 @@
                                                         </div>
                                                     </div>
                                                 </div>
-
+                                               
 
 
                                                 <div class="row">
@@ -1673,114 +2078,65 @@
                                                     </div>
                                                 </div>
                                             </div>
-
-                                        </div>
-                                        <div class="col-4">
-
                                         </div>
 
-                                    </div>
-                                    <div class="row table-responsive">
-                                        <div class="col-6">
-                                            <table
-                                                class="table align-middle table-row-dashed fs-6 gy-5 dataTable no-footer">
-                                                <thead>
-                                                    <tr
-                                                        class="text-start text-gray-400 fw-bolder fs-7 text-uppercase gs-0">
-                                                        <th>{{ "RECEIPT_NUMBER" | translate}}</th>
-                                                        <th>{{ "CREATED_DATE" | translate}}</th>
-                                                        <th>{{ "AMOUNT" |translate}}</th>
-                                                        <ng-container *ngIf="from != 'transaction-details'">
-                                                            <th>{{ 'ACTION' | translate }}</th>
-                                                        </ng-container>
-                                                    </tr>
-                                                </thead>
-                                                <tbody class="fw-bold text-gray-600">
-                                                    <tr *ngFor='let receipt of activity.receipts'>
-                                                        <td>{{receipt.sTransactionNumber}}</td>
-                                                        <td>{{receipt.dCreatedDate | date: 'medium'}}</td>
-                                                        <td>{{receipt.nPaymentAmount | currency:
-                                                            tillService.currency}}</td>
-                                                        <ng-container *ngIf="from != 'transaction-details'">
-                                                            <td>
-                                                                <div class="d-flex align-items-center">
-                                                                    <button class="btn btn-primary"
-                                                                        (click)="showTransaction(receipt, $event)">
-                                                                        {{ 'VIEW' | translate }}
-                                                                    </button>
-                                                                    <div *ngIf="receipt.bFetchingTransaction"
-                                                                        class="spinner-border mx-2"></div>
-                                                                </div>
-                                                            </td>
-                                                        </ng-container>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                        </div>
-
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-6">
-                                            <div class="row mb-6">
-                                                <label class="col-lg-12 col-form-label fw-bold fs-6">{{
-                                                    "REMARK_FOR_SERVICE_PARTNERS" | translate}}</label>
-                                                <div class="col-lg-12">
-                                                    <div class="row">
-                                                        <div class="col-lg-12 fv-row">
-                                                            <textarea
-                                                                class="form-control form-control-lg form-control-solid mb-3 mb-lg-0 w-100"
-                                                                placeholder="{{ 'REMARK_FOR_SERVICE_PARTNERS' | translate}}"
-                                                                lines="10"
-                                                                [(ngModel)]="activity.sCommentVisibleServicePartner"></textarea>
+                                        <div class="row">
+                                            <div class="col-6">
+                                                <div class="row mb-6">
+                                                    <label class="col-lg-12 col-form-label fw-bold fs-6">{{
+                                                        "REMARK_FOR_SERVICE_PARTNERS" | translate}}</label>
+                                                    <div class="col-lg-12">
+                                                        <div class="row">
+                                                            <div class="col-lg-12 fv-row">
+                                                                <textarea
+                                                                    class="form-control form-control-lg form-control-solid mb-3 mb-lg-0 w-100"
+                                                                    placeholder="{{ 'REMARK_FOR_SERVICE_PARTNERS' | translate}}"
+                                                                    lines="10"
+                                                                    [(ngModel)]="activity.sCommentVisibleServicePartner"></textarea>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div class="col-6">
-                                            <div class="row mb-6">
-                                                <label class="col-lg-12 col-form-label fw-bold fs-6">{{
-                                                    "REMARK_FOR_COLLEAGUES" |
-                                                    translate}}</label>
-                                                <div class="col-lg-12">
-                                                    <div class="row">
-                                                        <div class="col-lg-12 fv-row">
-                                                            <textarea
-                                                                class="form-control form-control-lg form-control-solid mb-3 mb-lg-0 w-100"
-                                                                placeholder="{{ 'REMARK_FOR_SERVICE_PARTNERS' | translate}}"
-                                                                lines="10"
-                                                                [(ngModel)]="activity.sCommentVisibleCollegues"></textarea>
+                                            <div class="col-6">
+                                                <div class="row mb-6">
+                                                    <label class="col-lg-12 col-form-label fw-bold fs-6">{{
+                                                        "REMARK_FOR_COLLEAGUES" |
+                                                        translate}}</label>
+                                                    <div class="col-lg-12">
+                                                        <div class="row">
+                                                            <div class="col-lg-12 fv-row">
+                                                                <textarea
+                                                                    class="form-control form-control-lg form-control-solid mb-3 mb-lg-0 w-100"
+                                                                    placeholder="{{ 'REMARK_FOR_SERVICE_PARTNERS' | translate}}"
+                                                                    lines="10"
+                                                                    [(ngModel)]="activity.sCommentVisibleCollegues"></textarea>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
-
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-3">
-                                            <button [disabled]="submitted" [class.btn-pulse]="submitted"
-                                                class="btn btn-lg btn-primary"
-                                                (click)="submit(activity._id , activityindex)" type="submit">
-                                                <span *ngIf="submitted" class="mx-3">
-                                                    <i class="fa fa-spinner fa-spin" [hidden]="!submitted"
-                                                        style="font-size:15px;"></i>
-                                                </span>
-
-                                                <span class="indicator-label">{{"SUBMIT" | translate}}</span>
-
-                                            </button>
 
                                         </div>
-                                    </div>
+                                        <div class="row">
+                                            <div class="col-3">
+                                                <button [disabled]="submitted" [class.btn-pulse]="submitted"
+                                                    class="btn btn-lg btn-primary"
+                                                    (click)="submit(activity._id , activityindex)" type="submit">
+                                                    <span *ngIf="submitted" class="mx-3">
+                                                        <i class="fa fa-spinner fa-spin" [hidden]="!submitted"
+                                                            style="font-size:15px;"></i>
+                                                    </span>
 
+                                                    <span class="indicator-label">{{"SUBMIT" | translate}}</span>
+
+                                                </button>
+
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-
-
-
-
-
                         </div>
 
                     </div>
