@@ -109,6 +109,7 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
         iLocationId: this.iLocationId,
         bAutoIncrementBagNumbers: true,
         nLastBagNumber: 0,
+        sPrefix:""
       };
       
       const oPrefillSettings = {

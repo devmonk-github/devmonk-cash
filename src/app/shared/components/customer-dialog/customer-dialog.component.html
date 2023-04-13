@@ -9,12 +9,18 @@
     </div>
     <div class="card-body">
         <div class="row align-items-center mb-5">
-            <div class="col-5 position-relative">
+            <div class="col-4 position-relative">
                 <fa-icon [icon]="faSearch" class="text-gray-500 position-absolute top-50 translate-middle ms-6">
                 </fa-icon>
                 <input type="text" class="form-control form-control-solid ps-10" #inputElement
                     [(ngModel)]="requestParams.searchValue" name="search" value="" [placeholder]="'SEARCH' | translate" (keydown.enter)="getCustomers()"/>
                     
+            </div>
+            <div class="col-lg-3">
+                <ng-select class="form-control form-control-solid p-0" [multiple]="true"
+                  [(ngModel)]="requestParams.oFilterBy" [clearable]="false" placeholder="{{'ALL' | translate}}">
+                    <ng-option *ngFor="let item of oFilterFields" [value]="item.value">{{item.key | translate}}</ng-option>
+                </ng-select>
             </div>
             <!-- <div class="col-5">
                 <ng-select [clearable]="true" [multiple]="true" placeholder="{{ 'SELECT_FIELD' | translate }}"
@@ -22,18 +28,18 @@
                     <ng-option *ngFor="let item of aFilterFields" [value]="item.key">{{ item.title | translate }}</ng-option>
                 </ng-select>
             </div> -->
-            <div class="col-4">
+            <div class="col-3">
                 <button type="submit" (click)="getCustomers()" class="btn btn-primary me-5"> {{ "SEARCH" |
                     translate}}</button>
-                <button type="button" (click)="showFilters = !showFilters" class="btn btn-info me-5">
+                <!-- <button type="button" (click)="showFilters = !showFilters" class="btn btn-info me-5">
                     <i class="fa fa-filter"></i>
-                </button>
+                </button> -->
             </div>
-            <div class="col-3 d-flex justify-content-end">
+            <div class="col-2 d-flex justify-content-end">
                 <button type="button" class="btn btn-secondary" (click)="AddCustomer()"> {{ "ADD_CUSTOMER" | translate}}</button>
             </div>
         </div>
-        <div class="row align-items-center mb-5" [@openClose]="showFilters ? 'open' : 'closed'">
+        <!-- <div class="row align-items-center mb-5" [@openClose]="showFilters ? 'open' : 'closed'">
             <ng-container *ngFor="let item of aFilterFields">
                 <div class="col-2">
                     <label>{{item.title | translate}}</label>
@@ -42,7 +48,7 @@
                     <input [(ngModel)]="requestParams.oFilterBy[item.key]" class="form-control">
                 </div>
             </ng-container>
-        </div>
+        </div> -->
     </div>
     <div *ngIf="customers.length" class="card-body pt-0">
         <div class="dataTables_wrapper dt-bootstrap4 no-footer">

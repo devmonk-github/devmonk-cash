@@ -132,7 +132,7 @@ export class TestFilterComponent implements OnInit, OnDestroy {
     
 
     this.activatedRoute.queryParams.subscribe(params => {
-      
+
 
       let data1 = params['from_end_date'];
       let data2 = params['to_end_date'];
@@ -146,58 +146,69 @@ export class TestFilterComponent implements OnInit, OnDestroy {
 
       console.log("this.type", this.type);
 
-      const queryParams:any = {
+      var fromdate = new Date();
+      fromdate = new Date(fromdate.getTime());
+      fromdate.setDate(fromdate.getDate() - 30);
+      let fromDate = this.convert(fromdate);
+      //console.log("fromDate", fromDate);
+
+      let ToDate = this.convert(new Date());
+      //console.log("ToDate", ToDate);
+
+
+
+      const queryParams: any = {
         //type: ['repair','order','gold-purchase','reservation','giftcard','gold-sell','refund'],
-        from_create_date: "2023-01-03",
-        to_create_date: "2023-03-31",
-        from_end_date: "2023-01-03",
-        to_end_date: "2023-03-31",
-        assignee:"",
+        from_create_date: fromDate,
+        to_create_date: ToDate,
+        from_end_date: fromDate,
+        to_end_date: ToDate,
+        assignee: "",
         // repair_status: ['new','processing','inspection','completed','delivered','cancelled','refund','refundInCashRegister',
         // 'offer','offer-is-ok','offer-is-not-ok','to-repair','part-are-order','shipped-to-repair']
       };
 
-      if(data3 == 'repair'){
+      if (data3 == 'repair') {
         queryParams.type = "repair";
         const tree = routes.createUrlTree([], { queryParams });
         console.log(serializer.serialize(tree));
         this.routes.navigate(
-        ['/business/testfilter'],
-        { queryParams: queryParams }
-       );
+          ['/business/testfilter'],
+          { queryParams: queryParams }
+        );
       }
-      if(data3 == 'gold-purchase'){
+      if (data3 == 'gold-purchase') {
         queryParams.type = "gold-purchase";
         const tree = routes.createUrlTree([], { queryParams });
         console.log(serializer.serialize(tree));
         this.routes.navigate(
-        ['/business/testfilter'],
-        { queryParams: queryParams }
-       );
+          ['/business/testfilter'],
+          { queryParams: queryParams }
+        );
       }
 
-      if(data3 == 'order'){
+      if (data3 == 'order') {
         queryParams.type = "order";
         const tree = routes.createUrlTree([], { queryParams });
         console.log(serializer.serialize(tree));
         this.routes.navigate(
-        ['/business/testfilter'],
-        { queryParams: queryParams }
-       );
+          ['/business/testfilter'],
+          { queryParams: queryParams }
+        );
       }
-      if(data3 == 'giftcard'){
+      if (data3 == 'giftcard') {
         queryParams.type = "giftcard";
         const tree = routes.createUrlTree([], { queryParams });
         console.log(serializer.serialize(tree));
         this.routes.navigate(
-        ['/business/testfilter'],
-        { queryParams: queryParams }
-       );
+          ['/business/testfilter'],
+          { queryParams: queryParams }
+        );
       }
-      
 
-     
-     
+
+
+
       console.log(typeof data3);
       // console.log(data1);
       // console.log(data2);
@@ -206,17 +217,17 @@ export class TestFilterComponent implements OnInit, OnDestroy {
       // console.log(data5);
       // console.log(data6);
       // console.log(data7);
-     // console.log(data7);
+      // console.log(data7);
       this.apiService.setToastService(this.toastrService);
       this.iBusinessId = localStorage.getItem('currentBusiness') || "";
       this.iLocationId = localStorage.getItem('currentLocation') || "";
-     
-      if(typeof data3 == "string"){
+
+      if (typeof data3 == "string") {
         this.requestParams.selectedKind = [data3];
-      }else{
+      } else {
         this.requestParams.selectedKind = data3;
       }
-      
+
 
       // if(data4 == undefined){
       //   this.requestParams.selectedRepairStatuses = queryParams.repair_status;
@@ -229,36 +240,36 @@ export class TestFilterComponent implements OnInit, OnDestroy {
       // }
       // }
 
-      
-      if(data3 == "giftcard" || data3 == "order" || data3 == "gold-purchase"){
-        this.requestParams.estimate = {minDate:"" , maxDate: "" };
-      }else{
-      if(data1 == undefined && data2 == undefined){
-        let estimate = { minDate: queryParams.from_end_date, maxDate: queryParams.to_end_date };
-        this.requestParams.estimate = estimate;
-      }else{
-        let estimate = { minDate: data1, maxDate: data2 };
-        this.requestParams.estimate = estimate;
-      }
-    }
 
-      if(data5 == undefined && data6 == undefined){
-       
-        let create =  { minDate: new Date(queryParams.from_create_date), maxDate: new Date(new Date(queryParams.to_create_date).setHours(23, 59, 59))};
+      if (data3 == "giftcard" || data3 == "order" || data3 == "gold-purchase") {
+        this.requestParams.estimate = { minDate: "", maxDate: "" };
+      } else {
+        if (data1 == undefined && data2 == undefined) {
+          let estimate = { minDate: queryParams.from_end_date, maxDate: queryParams.to_end_date };
+          this.requestParams.estimate = estimate;
+        } else {
+          let estimate = { minDate: data1, maxDate: data2 };
+          this.requestParams.estimate = estimate;
+        }
+      }
+
+      if (data5 == undefined && data6 == undefined) {
+
+        let create = { minDate: new Date(queryParams.from_create_date), maxDate: new Date(new Date(queryParams.to_create_date).setHours(23, 59, 59)) };
         this.requestParams.create = create;
 
-      }else{
+      } else {
         let create = { minDate: new Date(data5), maxDate: new Date(new Date(data6).setHours(23, 59, 59)) };
         this.requestParams.create = create;
       }
-      
 
-      if(data7 == undefined){
+
+      if (data7 == undefined) {
         this.requestParams.iAssigneeId = queryParams.assignee;
-      }else{
+      } else {
         this.requestParams.iAssigneeId = data7;
       }
-      
+
 
       this.loadTransaction();
     });
@@ -290,7 +301,13 @@ export class TestFilterComponent implements OnInit, OnDestroy {
       this.openModal(barcode);
     });
   }
-
+  
+  convert(str:any) {
+    var date = new Date(str),
+      mnth = ("0" + (date.getMonth() + 1)).slice(-2),
+      day = ("0" + date.getDate()).slice(-2);
+    return [date.getFullYear(), mnth, day].join("-");
+  }
   fetchBusinessDetails() {
     this.apiService.getNew('core', '/api/v1/business/' + this.iBusinessId).subscribe((result: any) => {
       this.businessDetails = result.data;

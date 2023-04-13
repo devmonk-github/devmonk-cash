@@ -87,18 +87,27 @@ export class CustomersComponent implements OnInit {
       'bCounter', 'sEmail', 'oPhone', 'oShippingAddress', 'oInvoiceAddress', 'iBusinessId', 'sComment', 'bNewsletter', 'sCompanyName', 'oPoints',
       'sCompanyName', 'oIdentity', 'sVatNumber', 'sCocNumber', 'nPaymentTermDays',
        'nDiscount', 'bWhatsApp', 'nMatchingCode' , 'sNote' , 'iEmployeeId' , 'bIsMigrated' ,'bIsMerged','eStatus','bIsImported','aGroups' , 'bIsCompany' , 'oContactPerson'],
-    oFilterBy: {
-      
-    },
+    oFilterby: [ ],
     customerType:'all',
   };
   iChosenCustomerId : any;
   @ViewChildren('inputElement') inputElement!: QueryList<ElementRef>;
   showFilters = false;
-  aFilterFields: any = [
-    { title: 'PSOTAL_CODE', key: 'sPostalCode' },
-    { title: 'HOUSE_NUMBER', key: 'sHouseNumber' },
-  ]
+  // aFilterFields: any = [
+  //   { title: 'PSOTAL_CODE', key: 'sPostalCode' },
+  //   { title: 'HOUSE_NUMBER', key: 'sHouseNumber' },
+  // ]
+
+  oFilterFields: Array<any> = [
+    { key: 'FIRSTNAME', value: 'sFirstName' },
+    { key: 'LASTNAME', value: 'sLastName' },
+    { key: 'ADDRESS', value: 'sAddress' },
+    // { key: 'PSOTAL_CODE', value: 'sPostalCode' },
+    // { key: 'HOUSE_NUMBER', value: 'sHouseNumber' },
+    // { key: 'STREET', value: 'sStreet' },
+    { key: 'COMPANY_NAME', value: 'sCompanyName' },
+    { key: 'CONTACT_PERSON', value: 'oContactPerson' }
+  ];
   customerTypes:any=[
    { key:'ALL' , value:'all'},
     {key:'PRIVATE' , value:'private'},
