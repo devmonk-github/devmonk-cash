@@ -574,7 +574,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
     let aKeys: any = [];
     if (this.oStatisticsDocument?.oCountings?.oCountingsCashDetails) aKeys = Object.keys(this.oStatisticsDocument?.oCountings?.oCountingsCashDetails);
     if (aKeys?.length) {
-      this.aAmount.map((item: any) => {
+      this.transactionAuditPdfService.aAmount.map((item: any) => {
         if (aKeys.includes(item.key)) {
           item.nQuantity = this.oStatisticsDocument?.oCountings?.oCountingsCashDetails[item.key];
         }
@@ -654,11 +654,12 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
           if (oData.aStatistic?.length) {
             this.aStatistic = oData.aStatistic;
             this.aStatisticsDocuments = oData.aStaticDocument;
+            console.log('response body: ', result?.data);
             if (this.iStatisticId) {
               this.oStatisticsDocument = this.aStatisticsDocuments[0];
               this.processCounting();
             } else {
-              this.oStatisticsDocument = this.transactionAuditPdfService.processingMultipleStatisticsBySummingUp(this.aStatisticsDocuments);
+              this.oStatisticsDocument = this.transactionAuditPdfService.processingMultipleStatisticsBySummingUp({ aStatisticsDocuments: this.aStatisticsDocuments, aStatistic: this.aStatistic });
             }
             if (this.aStatisticsDocuments?.length) this.mappingThePaymentMethod(this.aStatisticsDocuments);
           }
@@ -752,7 +753,6 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
 
           if (this.aStatistic?.length && this.aStatistic[0]?.overall?.length) {
             this.aStatistic[0].overall[0].nTotalRevenue = parseFloat(this.aStatistic[0].overall[0].nTotalRevenue.toFixed(2))
-            // this.oCountings.nCashInTill = this.aStatistic[0].overall[0].nTotalRevenue;
           }
           // this.mappingThePaymentMethod(result?.data);
           this.aPaymentMethods = result?.data?.aPaymentMethods;
@@ -935,7 +935,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
 
   calculateTotalCounting() {
     this.oCountings.nCashCounted = 0;
-    this.aAmount.forEach((amount: any) => {
+    this.transactionAuditPdfService.aAmount.forEach((amount: any) => {
       this.oCountings.nCashCounted += amount.nValue * amount.nQuantity;
     });
     this.oCountings.nCashRemain = this.oCountings.nCashCounted - this.oCountings.nSkim;
@@ -1154,7 +1154,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
         return;
       }
     }
-    this.aAmount.filter((item: any) => item.nQuantity > 0).forEach((item: any) => (this.oCountings.oCountingsCashDetails[item.key] = item.nQuantity));
+    this.transactionAuditPdfService.aAmount.filter((item: any) => item.nQuantity > 0).forEach((item: any) => (this.oCountings.oCountingsCashDetails[item.key] = item.nQuantity));
     this.oCountings.nCashDifference = this.oCountings?.nCashCounted - (this.oCountings?.nCashAtStart + this.oCountings?.nCashInTill);
 
     const oCashPaymentMethod = this.allPaymentMethod.filter((el: any) => el.sName.toLowerCase() === 'cash')[0];

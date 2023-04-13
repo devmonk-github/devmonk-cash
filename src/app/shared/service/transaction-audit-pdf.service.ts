@@ -19,7 +19,7 @@ export class TransactionAuditUiPdfService {
     iWorkstationId: any = localStorage.getItem('currentWorkstation');
     content: any = [];
     currency: string = "€";
-
+    aFieldsToInclude = ['oShopPurchase', 'oWebShop'];
     styles:any = {
         right: {
             alignment: 'right',
@@ -197,7 +197,7 @@ export class TransactionAuditUiPdfService {
         bIsArticleGroupLevel,
         bIsSupplierMode
     }: any) {
-        console.log('PDF service: exportToPDF: ', { oStatisticsDocument, aStatisticsDocuments });
+        console.log('PDF service: exportToPDF: ', { oStatisticsDocument, aStatisticsDocuments, aStatistic });
 
         const date = moment(Date.now()).format('DD-MM-yyyy');
         const columnWidths = ['*', 60, 80, 80, 100];
@@ -420,6 +420,22 @@ export class TransactionAuditUiPdfService {
         });
     }
 
+    aAmount: any = [
+        { sLabel: '500.00', nValue: 500, nQuantity: 0, key: 'nType500' },
+        { sLabel: '200.00', nValue: 200, nQuantity: 0, key: 'nType200' },
+        { sLabel: '100.00', nValue: 100, nQuantity: 0, key: 'nType100' },
+        { sLabel: '50.00', nValue: 50, nQuantity: 0, key: 'nType50' },
+        { sLabel: '20.00', nValue: 20, nQuantity: 0, key: 'nType20' },
+        { sLabel: '10.00', nValue: 10, nQuantity: 0, key: 'nType10' },
+        { sLabel: '5.00', nValue: 5, nQuantity: 0, key: 'nType5' },
+        { sLabel: '2.00', nValue: 2, nQuantity: 0, key: 'nType2' },
+        { sLabel: '1.00', nValue: 1, nQuantity: 0, key: 'nType1' },
+        { sLabel: '0.50', nValue: 0.5, nQuantity: 0, key: 'nType0_5' },
+        { sLabel: '0.20', nValue: 0.2, nQuantity: 0, key: 'nType0_2' },
+        { sLabel: '0.10', nValue: 0.1, nQuantity: 0, key: 'nType0_1' },
+        { sLabel: '0.05', nValue: 0.05, nQuantity: 0, key: 'nType0_05' },
+      ];
+
     processCashCountings(tableLayout: any, oStatisticsDocument:any, aStatistic:any){
         const oCountings = oStatisticsDocument?.oCountings;
 
@@ -491,14 +507,13 @@ export class TransactionAuditUiPdfService {
             });
         });
         let texts: any = [];
-        const aFieldsToInclude = ['oShopPurchase', 'oWebShop'];
 
         if (aVatRates?.length) {
             let nOverallTotalRevenue = 0, nOverallTotalPurchaseValue =0, nOverallTotalProfit=0, nOverallTotalVatAmount=0;
             aVatRates.forEach((oItem: any) => {
                 let nTotalRevenue = 0, nTotalPurchaseValue =0, nTotalProfit=0, nTotalVatAmount=0;
                 texts.push([{ text: this.translations['VAT_RATE'] + ((oItem?.nVat) ? oItem?.nVat : ''), colSpan: 5, style: ['articleGroup', 'center', 'td'] }, {}, {}, {}, {}]);
-                aFieldsToInclude.forEach((field: any) => {
+                this.aFieldsToInclude.forEach((field: any) => {
                     nTotalRevenue += oItem[field].nTotalRevenue;
                     nTotalPurchaseValue += oItem[field].nPurchaseValue;
                     nTotalProfit += oItem[field].nProfit;
@@ -1232,8 +1247,6 @@ export class TransactionAuditUiPdfService {
             obj['nTotalRevenue'] = el.nTotalRevenue;
             obj['nTotalPurchaseAmount'] = el.nTotalPurchaseAmount;
             obj['nProfit'] = Math.round(el.nProfit).toFixed(2);
-            // obj['nMargin'] = Math.round(el.nMargin).toFixed(2);
-            
             arr.push(obj);
         });
         let texts:any = [];
@@ -1314,6 +1327,7 @@ export class TransactionAuditUiPdfService {
     }
 
     convertToMoney(val: any) {
+        console.log('convertToMoney: ', val);
         const nNum = val; 
         if (val % 1 === 0) {
             //no decimals
@@ -1321,7 +1335,7 @@ export class TransactionAuditUiPdfService {
         } else {
             val = String(val);
             let parts = val.split('.');
-
+            console.log('parts: ', parts, val);
             if (parts[1].length === 1) {
                 val = (nNum < 0) ? ('-' + this.currency + Math.abs(nNum) + '0') : (this.currency + val + '0');
             }
@@ -1332,30 +1346,7 @@ export class TransactionAuditUiPdfService {
         }
     }
 
-    summingUpMultiplePayment(oData: any) {
-        try {
-            const { aPaymentMethods, aProcessPayment } = oData;
-            aPaymentMethods.forEach((oPayment: any) => {
-                const oPaymentMethodFound = aProcessPayment.find((oProcessPayment: any) => oProcessPayment?.iPaymentMethodId == oPayment?.iPaymentMethodId);
-                if (!oPaymentMethodFound) {
-                    aProcessPayment.push(oPayment);
-                } else {
-                    oPaymentMethodFound.nAmount += oPayment.nAmount;
-                    oPaymentMethodFound.nQuantity += oPayment.nQuantity;
-                    /* below is constant */
-                    // iPaymentMethodId
-                    // sMethod
-                    /* What to store? */
-                    // sComment
-                    // _id
-                }
-            });
-            return aProcessPayment;
-        } catch (error) {
-            return oData?.aProcessPayment?.length ? oData?.aProcessPayment : [];
-        }
-    }
-
+    /* on hold */
     summingUpMultipleRevenuePerProperty(oData: any) {
         try {
             const { aRevenuePerProperty, aProcessRevenuePerProperty } = oData;
@@ -1384,27 +1375,29 @@ export class TransactionAuditUiPdfService {
         }
     }
 
+    /* on hold */
     summingUpMultipleRevenuePerArticleGroupAndProperty(oData: any) {
         try {
             const { aRevenuePerArticleGroupAndProperty, aProcessRevenuePerArticleGroupAndProperty } = oData;
             // console.log('summingUpMultipleRevenuePerArticleGroupAndProperty: ', oData);
-            aRevenuePerArticleGroupAndProperty.forEach((oRPAGAP: any) => {
-                const oReveneuPerArticleGroupAndPropertyFound = aProcessRevenuePerArticleGroupAndProperty.find((oProcessoRPAGAP: any) => oProcessoRPAGAP?._id == oRPAGAP?._id);
-                if (!oReveneuPerArticleGroupAndPropertyFound) {
-                    aProcessRevenuePerArticleGroupAndProperty.push(oRPAGAP);
-                } else {
-                    oReveneuPerArticleGroupAndPropertyFound.nTotalRevenue += oRPAGAP.nTotalRevenue;
-                    oReveneuPerArticleGroupAndPropertyFound.nTotalPurchaseAmount += oRPAGAP.nTotalPurchaseAmount;
-                    oReveneuPerArticleGroupAndPropertyFound.nQuantity += oRPAGAP.nQuantity;
-                    oReveneuPerArticleGroupAndPropertyFound.nProfit += oRPAGAP.nProfit;
-                    oReveneuPerArticleGroupAndPropertyFound.nMargin += oRPAGAP.nMargin;
-                    // oReveneuPerArticleGroupAndPropertyFound.aRevenueByProperty = this.summingUpMultipleRevenuePerProperty({ aRevenuePerProperty: oRPAGAP.aRevenuePerProperty, aProcessRevenuePerProperty: aProcessRevenuePerArticleGroupAndProperty?.aProcessRevenuePerProperty });
-                    // /* TODO */ oReveneuPerArticleGroupAndPropertyFound.aRevenueByProperty = oRPAGAP.aRevenueByPropertythis.summingUpMultiplePayment({ aPaymentMethods: oStatisticsDocument.aPaymentMethods, aProcessPayment: oProcessedStatisticData?.aPaymentMethods });
-                    /* below is constant */
-                    // _id
-                    // sName
-                }
-            });
+            /* In process */
+            // aRevenuePerArticleGroupAndProperty.forEach((oRPAGAP: any) => {
+            //     const oReveneuPerArticleGroupAndPropertyFound = aProcessRevenuePerArticleGroupAndProperty.find((oProcessoRPAGAP: any) => oProcessoRPAGAP?._id == oRPAGAP?._id);
+            //     if (!oReveneuPerArticleGroupAndPropertyFound) {
+            //         aProcessRevenuePerArticleGroupAndProperty.push(oRPAGAP);
+            //     } else {
+            //         oReveneuPerArticleGroupAndPropertyFound.nTotalRevenue += oRPAGAP.nTotalRevenue;
+            //         oReveneuPerArticleGroupAndPropertyFound.nTotalPurchaseAmount += oRPAGAP.nTotalPurchaseAmount;
+            //         oReveneuPerArticleGroupAndPropertyFound.nQuantity += oRPAGAP.nQuantity;
+            //         oReveneuPerArticleGroupAndPropertyFound.nProfit += oRPAGAP.nProfit;
+            //         oReveneuPerArticleGroupAndPropertyFound.nMargin += oRPAGAP.nMargin;
+            //         // oReveneuPerArticleGroupAndPropertyFound.aRevenueByProperty = this.summingUpMultipleRevenuePerProperty({ aRevenuePerProperty: oRPAGAP.aRevenuePerProperty, aProcessRevenuePerProperty: aProcessRevenuePerArticleGroupAndProperty?.aProcessRevenuePerProperty });
+            //         // /* TODO */ oReveneuPerArticleGroupAndPropertyFound.aRevenueByProperty = oRPAGAP.aRevenueByPropertythis.summingUpMultiplePayment({ aPaymentMethods: oStatisticsDocument.aPaymentMethods, aProcessPayment: oProcessedStatisticData?.aPaymentMethods });
+            //         /* below is constant */
+            //         // _id
+            //         // sName
+            //     }
+            // });
             // console.log('AFTER summingUpMultipleRevenuePerArticleGroupAndProperty: ', aProcessRevenuePerArticleGroupAndProperty);
             return aProcessRevenuePerArticleGroupAndProperty;
         } catch (error) {
@@ -1412,17 +1405,107 @@ export class TransactionAuditUiPdfService {
         }
     }
 
-    processingMultipleStatisticsBySummingUp(aStatisticsDocuments: any) {
+    summingUpMultiplePayment(oData: any) {
         try {
+            const { aPaymentMethods, aProcessPayment } = oData;
+            aPaymentMethods.forEach((oPayment: any) => {
+                const oPaymentMethodFound = aProcessPayment.find((oProcessPayment: any) => oProcessPayment?.iPaymentMethodId == oPayment?.iPaymentMethodId);
+                if (!oPaymentMethodFound) {
+                    aProcessPayment.push(oPayment);
+                } else {
+                    oPaymentMethodFound.nAmount += oPayment.nAmount;
+                    oPaymentMethodFound.nQuantity += oPayment.nQuantity;
+                    /* below is constant */
+                    // iPaymentMethodId
+                    // sMethod
+                    /* What to store? */
+                    // sComment
+                    // _id
+                }
+            });
+            return aProcessPayment;
+        } catch (error) {
+            return oData?.aProcessPayment?.length ? oData?.aProcessPayment : [];
+        }
+    }
+
+    summingUpCounting(oData: any) {
+        try {
+            const { oCountings, oProcessCountings } = oData;
+            // console.log('summingUpCounting oCountings: ', oCountings);
+            // console.log('summingUpCounting oProcessCountings Before: ', oProcessCountings);
+            oProcessCountings.nCashAtStart += (oCountings?.nCashAtStart || 0);
+            oProcessCountings.nCashCounted += (oCountings?.nCashCounted || 0);
+            oProcessCountings.nSkim += (oCountings?.nSkim || 0);
+            oProcessCountings.nCashRemain += (oCountings?.nCashRemain || 0);
+            oProcessCountings.nCashDifference += (oCountings?.nCashDifference || 0);
+            oProcessCountings.nCashInTill += (oCountings?.nCashInTill || 0);
+            // console.log('summingUpCounting oProcessCountings After: ', oProcessCountings);
+            // let aKeys: any = [];
+            // if (oCountings?.oCountingsCashDetails) aKeys = Object.keys(oCountings?.oCountingsCashDetails);
+            // if (aKeys?.length) {
+            //   this.aAmount.map((item: any) => {
+            //     if (aKeys.includes(item.key)) {
+            //       item.nQuantity = oCountings?.oCountingsCashDetails[item.key];
+            //     }
+            //   });
+            // }
+
+            return oProcessCountings;
+        } catch (error) {
+            console.log('Error: ', error);
+            return oData?.oProcessCountings?.length ? oData?.oProcessCountings : [];
+        }
+    }
+
+    summingUpVatRate(oData: any) {
+        try {
+            const { aVatRates, aProcessVatRates } = oData;
+            if (aVatRates?.length) {
+                aVatRates.forEach((oItem: any) => {
+                    console.log('oItem oShopPurchase: ', oItem?.oShopPurchase);
+                    const oFoundVat = aProcessVatRates.find((oProcessVat: any) => oProcessVat.nVat == oItem?.nVat);
+                    if (!oFoundVat) {
+                        aProcessVatRates.push(oItem);
+                        return;
+                    }
+                    this.aFieldsToInclude.forEach((field: any) => {
+                        oFoundVat[field].nTotalRevenue += (oItem[field].nTotalRevenue || 0);
+                        oFoundVat[field].nPurchaseValue += (oItem[field].nPurchaseValue || 0);
+                        oFoundVat[field].nProfit += (oItem[field].nProfit || 0);
+                        oFoundVat[field].nVatAmount += (oItem[field].nVatAmount || 0);
+                        // console.log('nTotalVatAmount: ', oFoundVat[field].nTotalVatAmount, oItem[field].nTotalVatAmount);
+                    });
+                    console.log('summingUpVatRate aProcessVatRates: ', aProcessVatRates);
+                })
+            }
+
+            return aProcessVatRates;
+        } catch (error) {
+            return oData?.aProcessVatRates?.length ? oData?.aProcessVatRates : [];
+        }
+    }
+
+    processingMultipleStatisticsBySummingUp(oBody: any) {
+        try {
+            const { aStatisticsDocuments, aStatistic } = oBody;
+            console.log('processingMultipleStatisticsBySummingUp: oBody: ');
             if (!aStatisticsDocuments?.length) return {};
             if (aStatisticsDocuments?.length === 1) return aStatisticsDocuments[0];
             const oProcessedStatisticData = {
                 aPaymentMethods: [],
-                aRevenuePerArticleGroupAndProperty: [],
-                aRevenuePerBusinessPartner: [],
-                aRevenuePerProperty: [],
+                // aRevenuePerArticleGroupAndProperty: [],
+                // aRevenuePerBusinessPartner: [],
+                // aRevenuePerProperty: [],
                 aVatRates: [],
-                oCountings: {}
+                oCountings: {
+                    nCashAtStart: 0,
+                    nCashCounted: 0,
+                    nSkim: 0,
+                    nCashRemain: 0,
+                    nCashDifference: 0,
+                    nCashInTill: 0
+                }
                 /* What should be the value for the below field? */
                 // bIsClosingStarted: 
                 // bIsDayState: 
@@ -1438,17 +1521,17 @@ export class TransactionAuditUiPdfService {
                 // _id
             }
             for (const oStatisticsDocument of aStatisticsDocuments) {
-                // console.log('aRevenuePerBusinessPartner: ', oStatisticsDocument?.aRevenuePerBusinessPartner);
                 oProcessedStatisticData.aPaymentMethods = this.summingUpMultiplePayment({ aPaymentMethods: oStatisticsDocument.aPaymentMethods, aProcessPayment: oProcessedStatisticData?.aPaymentMethods });
-                oProcessedStatisticData.aRevenuePerArticleGroupAndProperty = this.summingUpMultipleRevenuePerArticleGroupAndProperty({ aRevenuePerArticleGroupAndProperty: oStatisticsDocument.aRevenuePerArticleGroupAndProperty, aProcessRevenuePerArticleGroupAndProperty: oProcessedStatisticData?.aRevenuePerArticleGroupAndProperty });
-                oProcessedStatisticData.aRevenuePerProperty = this.summingUpMultipleRevenuePerProperty({ aRevenuePerProperty: oStatisticsDocument.aRevenuePerProperty, aProcessRevenuePerProperty: oProcessedStatisticData?.aRevenuePerProperty });
-                // oProcessedStatisticData.aPaymentMethods = this.summingUpMultiplePayment({ aPaymentMethods: oStatisticsDocument.aPaymentMethods, aProcessPayment: oProcessedStatisticData?.aPaymentMethods });
-                // oProcessedStatisticData.aPaymentMethods = this.summingUpMultiplePayment({ aPaymentMethods: oStatisticsDocument.aPaymentMethods, aProcessPayment: oProcessedStatisticData?.aPaymentMethods });
+                oProcessedStatisticData.oCountings = this.summingUpCounting({ oCountings: oStatisticsDocument.oCountings, oProcessCountings: oProcessedStatisticData?.oCountings });
+                oProcessedStatisticData.aVatRates = this.summingUpVatRate({ aVatRates: oStatisticsDocument.aVatRates, aProcessVatRates: oProcessedStatisticData?.aVatRates });
+                // oProcessedStatisticData.aRevenuePerArticleGroupAndProperty = this.summingUpMultipleRevenuePerArticleGroupAndProperty({ aRevenuePerArticleGroupAndProperty: oStatisticsDocument.aRevenuePerArticleGroupAndProperty, aProcessRevenuePerArticleGroupAndProperty: oProcessedStatisticData?.aRevenuePerArticleGroupAndProperty });
+                // oProcessedStatisticData.aRevenuePerProperty = this.summingUpMultipleRevenuePerProperty({ aRevenuePerProperty: oStatisticsDocument.aRevenuePerProperty, aProcessRevenuePerProperty: oProcessedStatisticData?.aRevenuePerProperty });
+                // console.log('counting: ', oProcessedStatisticData?.oCountings);
             }
             return oProcessedStatisticData;
         } catch (error) {
             console.log('Error in processingMultipleStatisticsInOne: ', error);
-            return aStatisticsDocuments?.length ? aStatisticsDocuments[0] : {};
+            return oBody?.aStatisticsDocuments?.length ? oBody?.aStatisticsDocuments[0] : {};
         }
     }
 }
