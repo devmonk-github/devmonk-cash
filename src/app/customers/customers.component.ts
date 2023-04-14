@@ -44,8 +44,8 @@ import { animate, state, style, transition, trigger } from '@angular/animations'
 })
 export class CustomersComponent implements OnInit {
 
-   customer: any = null;
-
+  customer: any = null;
+  bIsSearch:boolean = false;
   faSearch = faSearch;
   bIsShowDeletedCustomer: boolean = false;
 
@@ -163,11 +163,15 @@ export class CustomersComponent implements OnInit {
 
   getCustomers() {
     this.showLoader = true;
-    if(this.bIsShowDeletedCustomer){
+    if(this.bIsSearch){
+      this.requestParams.skip = 0;
+    }
+    console.log(this.bIsSearch);
+    if (this.bIsShowDeletedCustomer) {
       this.requestParams.showRemovedCustomers = true;
-    }else{
-    this.requestParams.showRemovedCustomers = false;
-  }
+    } else {
+      this.requestParams.showRemovedCustomers = false;
+    }
     this.customers = [];
     this.apiService.postNew('customer', '/api/v1/customer/list', this.requestParams)
       .subscribe(async (result: any) => {
@@ -179,14 +183,14 @@ export class CustomersComponent implements OnInit {
             customer.isDisable = false;
             customer.isUpdated = false;
             customer.isMerged = false;
-            if(customer?.bIsCompany){
+            if (customer?.bIsCompany) {
               customer.name = customer.sCompanyName;
               customer['NAME'] = customer.sCompanyName;
-            }else{
+            } else {
               customer.name = this.customerStructureService.makeCustomerName(customer);
               customer['NAME'] = this.customerStructureService.makeCustomerName(customer);
             }
-           
+
             customer['SHIPPING_ADDRESS'] = this.customerStructureService.makeCustomerAddress(customer.oShippingAddress, false);
             customer['INVOICE_ADDRESS'] = this.customerStructureService.makeCustomerAddress(customer.oInvoiceAddress, false);
             customer['EMAIL'] = customer.sEmail;

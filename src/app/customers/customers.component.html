@@ -18,7 +18,7 @@
                                     <ng-option *ngFor="let item of oFilterFields" [value]="item.value">{{item.key | translate}}</ng-option>
                                 </ng-select>
                             </div>
-                            <button class="btn btn-primary me-2" (click)="getCustomers()">{{'SEARCH' | translate}} </button>
+                            <button class="btn btn-primary me-2" (click)="bIsSearch = true ; getCustomers();">{{'SEARCH' | translate}} </button>
                             <!-- <button type="button" (click)="showFilters = !showFilters" class="btn btn-info me-5">
                                 <i class="fa fa-filter"></i>
                             </button> -->
