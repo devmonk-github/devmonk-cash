@@ -19,6 +19,7 @@ import { MenuComponent } from '../shared/_layout/components/common';
 export class ServicesComponent implements OnInit, OnDestroy {
 
   option: boolean = true;
+  bIsSearch:boolean = false;
   faSearch = faSearch;
   faIncrease = faPlusCircle;
   faDecrease = faMinusCircle;
@@ -381,8 +382,12 @@ export class ServicesComponent implements OnInit, OnDestroy {
       if (this.iLocationId) this.requestParams.iLocationId = this.iLocationId
     }
     this.activities = [];
+    if(this.bIsSearch){
+      this.requestParams.skip = 0;
+    }else{
+      this.requestParams.skip = this.requestParams.skip || 0;
+    }
     this.requestParams.iBusinessId = this.iBusinessId;
-    this.requestParams.skip = this.requestParams.skip || 0;
     this.requestParams.limit = this.paginationConfig.itemsPerPage || 50;
     this.requestParams.importStatus = this.importStatus == 'all' ? undefined : this.importStatus;
     // if (this.iLocationId && !this.requestParams.selectedLocations?.length) this.requestParams.selectedLocations.push(this.requestParams.selectedLocations);

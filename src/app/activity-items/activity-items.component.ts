@@ -18,7 +18,7 @@ import { ActivityItemExportComponent } from '../shared/components/activity-item-
   providers: [BarcodeService]
 })
 export class ActivityItemsComponent implements OnInit, OnDestroy {
-
+  bIsSearch:boolean = false;
   pageCounts: Array<number> = [10, 25, 50, 100]
   pageCount: number = 10;
   pageNumber: number = 1;
@@ -185,6 +185,9 @@ export class ActivityItemsComponent implements OnInit, OnDestroy {
   }
 
   loadTransaction() {
+    if(this.bIsSearch){
+      this.requestParams.skip = 0;
+    }
     this.activityItems = [];
     this.requestParams.iBusinessId = this.iBusinessId;
     this.requestParams.limit = this.paginationConfig.itemsPerPage || 50;

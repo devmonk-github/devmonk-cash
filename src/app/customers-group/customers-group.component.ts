@@ -13,6 +13,7 @@ import { CustomerGroupDetailComponent } from '../shared/components/customer-grou
 })
 export class CustomersGroupComponent implements OnInit {
 
+  bIsSearch:boolean = false;
   faSearch = faSearch;
   faTrash = faTrash;
   faEdit = faEdit;
@@ -56,6 +57,9 @@ export class CustomersGroupComponent implements OnInit {
   }
 
   getCustomersGroupList() {
+    if(this.bIsSearch){
+      this.requestParams.skip = 0;
+    }
     this.showLoader = true;
     this.groupList = [];
     this.requestParams.iBusinessId = this.iBusinessId;

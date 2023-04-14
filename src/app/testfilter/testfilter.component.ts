@@ -18,7 +18,8 @@ import { ActivityItemExportComponent } from '../shared/components/activity-item-
   providers: [BarcodeService]
 })
 export class TestFilterComponent implements OnInit, OnDestroy {
-
+  
+  bIsSearch:boolean = false;
   pageCounts: Array<number> = [10, 25, 50, 100]
   pageCount: number = 10;
   pageNumber: number = 1;

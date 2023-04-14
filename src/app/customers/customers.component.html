@@ -10,7 +10,7 @@
                                 <i class="fas fa-xs fa-search"></i>
                             </span>
                             <input type="text" class="form-control form-control-solid w-250px ps-14 me-4" #inputElement
-                                (keyup.enter)="getCustomers()" [(ngModel)]="requestParams.searchValue" name="search"
+                                (keyup.enter)="bIsSearch = true ; getCustomers();" [(ngModel)]="requestParams.searchValue" name="search"
                                 placeholder="{{'SEARCH' | translate}}">
                             <div class="col-lg-4 me-4">
                                 <ng-select class="form-control form-control-solid p-0" [multiple]="true"

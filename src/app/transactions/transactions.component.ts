@@ -23,6 +23,7 @@ import { TransactionDetailsComponent } from './components/transaction-details/tr
 export class TransactionsComponent implements OnInit, OnDestroy {
   dialogRef: DialogComponent
   option: boolean = true;
+  bIsSearch:boolean = false;
   faSearch = faSearch;
   faIncrease = faPlusCircle;
   faDecrease = faMinusCircle;
@@ -237,6 +238,9 @@ export class TransactionsComponent implements OnInit, OnDestroy {
   }
 
   loadTransaction() {
+    if(this.bIsSearch){
+      this.requestParams.skip = 0;
+    }
     this.transactions = [];
     this.requestParams.iBusinessId = this.iBusinessId;
     this.requestParams.type = 'transaction';
