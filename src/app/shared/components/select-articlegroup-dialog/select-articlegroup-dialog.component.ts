@@ -24,6 +24,7 @@ export class SelectArticleDialogComponent implements OnInit {
   articlegroup: any = null;
   supplier: any = null;
   iBusinessId = localStorage.getItem('currentBusiness');
+  selectedLanguage: string;
   iArticleGroupId: any = null;
   iBusinessBrandId: any = null;
   from: any;
@@ -42,6 +43,8 @@ export class SelectArticleDialogComponent implements OnInit {
 
   ngOnInit() {
     // this.fetchArticleGroups(null);
+    this.selectedLanguage = localStorage.getItem('language') || 'nl';
+    //console.log("this.selectedLanguage", this.selectedLanguage);
     this.fetchBusinessPartners([]);
     this.getBusinessBrands();
   }
@@ -78,6 +81,7 @@ export class SelectArticleDialogComponent implements OnInit {
     this.apiService.postNew('core', '/api/v1/business/article-group/list', data).subscribe((result: any) => {
         if (result.data?.length && result.data[0]?.result?.length) {
           this.articleGroupsList = result.data[0].result;
+          console.log("this.articleGroupsList", this.articleGroupsList);
           this.articleGroupLoading = false;
           
           // setTimeout(() => {
@@ -98,7 +102,8 @@ export class SelectArticleDialogComponent implements OnInit {
   searchArticlegroup(searchStr: string) {
     if (searchStr && searchStr.length > 2) {
       this.filteredArticleGroups = this.articleGroupsList.filter((articlegroup: any) => {
-        return articlegroup.oName && articlegroup.oName.en && articlegroup.oName.en.toLowerCase().includes(searchStr.toLowerCase());
+        //console.log("articlegroup.oName", articlegroup.oName);
+        return articlegroup.oName;
       });
     } else {
       this.filteredArticleGroups = [];
