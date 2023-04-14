@@ -241,7 +241,7 @@ export class TestFilterComponent implements OnInit, OnDestroy {
       // }
 
 
-      if (data3 == "giftcard" || data3 == "order" || data3 == "gold-purchase") {
+      if (data3 == "giftcard" || data3 == "order" || data3 == "gold-purchase" || data3 == "repair") {
         this.requestParams.estimate = { minDate: "", maxDate: "" };
       } else {
         if (data1 == undefined && data2 == undefined) {
