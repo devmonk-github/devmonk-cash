@@ -689,6 +689,7 @@ export class ActivityDetailsComponent implements OnInit {
   }
 
   matchSystemAndCurrentCustomer(systemCustomer:any , currentCustomer:any){
+    this.showSystemCustomer = false;
     const Customer:any = [{
       "oInvoiceAddress" : {
           "sStreet" : "",
@@ -1018,8 +1019,6 @@ export class ActivityDetailsComponent implements OnInit {
   }
 
   contactCustomer(action: any){
-    console.log(action);
-
     switch (action){
       case 'call_on_ready':
         if(this.customer.oPhone.sLandLine){

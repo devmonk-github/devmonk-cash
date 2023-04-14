@@ -447,6 +447,7 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   }
 
   matchSystemAndCurrentCustomer(systemCustomer:any , currentCustomer:any){
+    this.showSystemCustomer = false;
     const Customer:any = [{
       "oInvoiceAddress" : {
           "sStreet" : "",
