@@ -212,6 +212,24 @@ export class ActivityItemsComponent implements OnInit, OnDestroy {
       })
   }
 
+  openActivity(activity: any, openActivityId?: any) {
+    this.dialogService.openModal(ActivityDetailsComponent, {
+      cssClass: 'w-fullscreen mt--5',
+      hasBackdrop: true,
+      closeOnBackdropClick: true,
+      closeOnEsc: true,
+      context: {
+        activity,
+        businessDetails: this.businessDetails,
+        openActivityId,
+        items: false,
+        from: 'services',
+        employeesList: this.employees
+      }
+    }).instance.close.subscribe(result => {
+    });
+  }
+
   openActivities(activity: any, openActivityId?: any) {
     this.dialogService.openModal(ActivityDetailsComponent,
       {
@@ -363,7 +381,7 @@ export class ActivityItemsComponent implements OnInit, OnDestroy {
         const activityResult: any = await this.apiService.postNew('cashregistry', '/api/v1/activities', oBody).toPromise();
 
         if (activityResult.data?.length) {
-          this.openActivities(activityResult.data[0], iActivityItemId);
+          this.openActivities(activityItemResult?.data[0].result[0], iActivityItemId);
         }
       }
     } else if (barcode.startsWith("A")) {
@@ -377,7 +395,7 @@ export class ActivityItemsComponent implements OnInit, OnDestroy {
       const activityResult: any = await this.apiService.postNew('cashregistry', '/api/v1/activities', oBody).toPromise();
 
       if (activityResult.data?.length) {
-        this.openActivities(activityResult.data[0]);
+        this.openActivity(activityResult.data[0] ,activityResult.data[0]?._id);
       }
 
       //activity.find({sNumber: barcode})
