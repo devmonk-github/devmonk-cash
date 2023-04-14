@@ -312,22 +312,21 @@
                                                                 title="{{ 'THE_CUSTOMER_WILL_CONTACTED_USING_THIS_METHOD' | translate}}">
                                                                 <button
                                                                     (click)="activity.eEstimatedDateAction='call_on_ready'"
-                                                                    [ngClass]="{disabled: !oCurrentCustomer?.oPhone?.sLandLine, active:activity.eEstimatedDateAction==='call_on_ready' && oCurrentCustomer?.oPhone?.sLandLine }"
+                                                                    [ngClass]="{active:activity.eEstimatedDateAction==='call_on_ready'}"
                                                                     type="button"
                                                                     class="btn btn-light-primary fs-6 p-2">
                                                                     <fa-icon [icon]="faPhone"></fa-icon>
                                                                 </button>
                                                                 <button
                                                                     (click)="activity.eEstimatedDateAction='email_on_ready'"
-                                                                    [ngClass]="{disabled: !oCurrentCustomer?.sEmail, active:activity.eEstimatedDateAction==='email_on_ready' && oCurrentCustomer?.sEmail}"
+                                                                    [ngClass]="{active:activity.eEstimatedDateAction==='email_on_ready'}"
                                                                     type="button"
                                                                     class="btn btn-light-primary fs-6 p-2">
                                                                     <fa-icon [icon]="faAt"></fa-icon>
                                                                 </button>
                                                                 <button
                                                                     (click)="activity.eEstimatedDateAction='whatsapp_on_ready'"
-                                                                    [ngClass]="{disabled: !oCurrentCustomer?.oPhone?.bWhatsApp, 
-                                                                        active:activity.eEstimatedDateAction==='whatsapp_on_ready' && oCurrentCustomer?.oPhone?.bWhatsApp}"
+                                                                    [ngClass]="{active:activity.eEstimatedDateAction==='whatsapp_on_ready'}"
                                                                     type="button"
                                                                     class="btn btn-light-primary fs-6 p-2">
                                                                     <i class="bi bi-whatsapp"></i>
