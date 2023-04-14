@@ -298,7 +298,7 @@
                   <div class="menu-item px-3 text-center" *ngFor="let tMenu of transactionMenu">
                     <div *ngIf="tMenu.key == 'MARK_CONFIRMED'">
                       <div class="menu-link px-3" [ngClass]="{'disabled':transaction.bConfirmed}"
-                        (click)="clickMenuOpt(tMenu.key, transaction._id)">{{ tMenu.key |
+                        (click)="clickMenuOpt(tMenu.key, transaction)">{{ tMenu.key |
                         translate}}</div>
                     </div>
                     <div *ngIf="tMenu.key != 'MARK_CONFIRMED'">
