@@ -211,7 +211,7 @@ export class ActivityDetailsComponent implements OnInit {
       }
     });
 
-    let translationKey = ['SUCCESSFULLY_UPDATED', 'NO_DATE_SELECTED'];
+    let translationKey = ['SUCCESSFULLY_UPDATED', 'NO_DATE_SELECTED', 'NO_PHONE', 'NO_EMAIL', 'NO_PHONE_OR_WHATSAPP'];
     this.translationService.get(translationKey).subscribe((res: any) => {
       this.translation = res;
     })
@@ -1022,13 +1022,25 @@ export class ActivityDetailsComponent implements OnInit {
 
     switch (action){
       case 'call_on_ready':
-        window.location.href = "tel:" + this.customer.oPhone.sLandLine;
+        if(this.customer.oPhone.sLandLine){
+          window.location.href = "tel:" + this.customer.oPhone.sLandLine;
+        }else{
+          this.toastService.show({ type: "warning", text:  this.translation['NO_PHONE']});
+        }
         break;
       case 'email_on_ready':
-        window.location.href = "mailto:" + this.customer.sEmail;
+        if(this.customer.sEmail){
+          window.location.href = "mailto:" + this.customer.sEmail
+        }else{
+          this.toastService.show({ type: "warning", text: this.translation['NO_EMAIL'] });
+        }
         break;
       case 'whatsapp_on_ready':
-        window.location.href = "https://wa.me/" + this.customer.oPhone.sMobile;
+        if(this.customer.oPhone.sMobile && this.customer.oPhone.bWhatsApp){
+          window.location.href = "https://wa.me/" + this.customer.oPhone.sMobile;
+        }else{
+          this.toastService.show({ type: "warning", text: this.translation['NO_PHONE_OR_WHATSAPP'] });
+        }
         break;
     }
   }
