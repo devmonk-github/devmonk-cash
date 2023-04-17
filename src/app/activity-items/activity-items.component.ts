@@ -18,7 +18,7 @@ import { ActivityItemExportComponent } from '../shared/components/activity-item-
   providers: [BarcodeService]
 })
 export class ActivityItemsComponent implements OnInit, OnDestroy {
-
+  bIsSearch:boolean = false;
   pageCounts: Array<number> = [10, 25, 50, 100]
   pageCount: number = 10;
   pageNumber: number = 1;
@@ -185,6 +185,9 @@ export class ActivityItemsComponent implements OnInit, OnDestroy {
   }
 
   loadTransaction() {
+    if(this.bIsSearch){
+      this.requestParams.skip = 0;
+    }
     this.activityItems = [];
     this.requestParams.iBusinessId = this.iBusinessId;
     this.requestParams.limit = this.paginationConfig.itemsPerPage || 50;
@@ -210,6 +213,24 @@ export class ActivityItemsComponent implements OnInit, OnDestroy {
       (error: any) => {
         this.showLoader = false;
       })
+  }
+
+  openActivity(activity: any, openActivityId?: any) {
+    this.dialogService.openModal(ActivityDetailsComponent, {
+      cssClass: 'w-fullscreen mt--5',
+      hasBackdrop: true,
+      closeOnBackdropClick: true,
+      closeOnEsc: true,
+      context: {
+        activity,
+        businessDetails: this.businessDetails,
+        openActivityId,
+        items: false,
+        from: 'services',
+        employeesList: this.employees
+      }
+    }).instance.close.subscribe(result => {
+    });
   }
 
   openActivities(activity: any, openActivityId?: any) {
@@ -363,7 +384,7 @@ export class ActivityItemsComponent implements OnInit, OnDestroy {
         const activityResult: any = await this.apiService.postNew('cashregistry', '/api/v1/activities', oBody).toPromise();
 
         if (activityResult.data?.length) {
-          this.openActivities(activityResult.data[0], iActivityItemId);
+          this.openActivities(activityItemResult?.data[0].result[0], iActivityItemId);
         }
       }
     } else if (barcode.startsWith("A")) {
@@ -377,7 +398,7 @@ export class ActivityItemsComponent implements OnInit, OnDestroy {
       const activityResult: any = await this.apiService.postNew('cashregistry', '/api/v1/activities', oBody).toPromise();
 
       if (activityResult.data?.length) {
-        this.openActivities(activityResult.data[0]);
+        this.openActivity(activityResult.data[0] ,activityResult.data[0]?._id);
       }
 
       //activity.find({sNumber: barcode})

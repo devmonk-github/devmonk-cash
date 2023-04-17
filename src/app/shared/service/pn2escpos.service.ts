@@ -58,7 +58,7 @@ export class Pn2escposService {
       // '\u20AC': cptable.utils.encode(1253, '€'),
       // '\u20ac': cptable.utils.encode(1253, '€'),
     };
-    console.log(this.symbols, this.symbols);
+    // console.log(this.symbols, this.symbols);
 
     //1253
     

@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, OnDestroy, OnInit, QueryList, ViewChildren } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewContainerRef,QueryList, ViewChildren } from '@angular/core';
 import { Router } from '@angular/router';
 import { faLongArrowAltDown, faLongArrowAltUp, faMinusCircle, faPlusCircle, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { BehaviorSubject } from 'rxjs';
@@ -10,6 +10,7 @@ import { BarcodeService } from '../shared/service/barcode.service';
 import { DialogComponent, DialogService } from '../shared/service/dialog';
 import { TillService } from '../shared/service/till.service';
 import { MenuComponent } from '../shared/_layout/components/common';
+import { TransactionItemsDetailsComponent } from '../shared/components/transaction-items-details/transaction-items-details.component';
 
 import { TransactionDetailsComponent } from './components/transaction-details/transaction-details.component';
 
@@ -20,7 +21,9 @@ import { TransactionDetailsComponent } from './components/transaction-details/tr
   providers: [BarcodeService]
 })
 export class TransactionsComponent implements OnInit, OnDestroy {
+  dialogRef: DialogComponent
   option: boolean = true;
+  bIsSearch:boolean = false;
   faSearch = faSearch;
   faIncrease = faPlusCircle;
   faDecrease = faMinusCircle;
@@ -65,8 +68,8 @@ export class TransactionsComponent implements OnInit, OnDestroy {
   showAdvanceSearch = false;
   transactionMenu = [
     { key: 'REST_PAYMENT' },
-    { key: 'REFUND/REVERT' },
-    { key: 'PREPAYMENT' },
+    //{ key: 'REFUND/REVERT' },
+    //{ key: 'PREPAYMENT' },
     { key: 'MARK_CONFIRMED' },
   ];
   
@@ -104,6 +107,7 @@ export class TransactionsComponent implements OnInit, OnDestroy {
   SupplierStockProductSliderData = new BehaviorSubject<any>({});
 
   constructor(
+    private viewContainer: ViewContainerRef,
     private apiService: ApiService,
     private dialogService: DialogService,
     private routes: Router,
@@ -111,7 +115,10 @@ export class TransactionsComponent implements OnInit, OnDestroy {
     private barcodeService: BarcodeService,
     public tillService: TillService,
     private http: HttpClient
-  ) {  }
+    
+  ) {
+    const _injector = this.viewContainer.injector
+    this.dialogRef = _injector.get<DialogComponent>(DialogComponent);  }
   
 
   async ngOnInit() {
@@ -231,6 +238,9 @@ export class TransactionsComponent implements OnInit, OnDestroy {
   }
 
   loadTransaction() {
+    if(this.bIsSearch){
+      this.requestParams.skip = 0;
+    }
     this.transactions = [];
     this.requestParams.iBusinessId = this.iBusinessId;
     this.requestParams.type = 'transaction';
@@ -299,15 +309,33 @@ export class TransactionsComponent implements OnInit, OnDestroy {
   }
 
   // Function for handle event of transaction menu
-  clickMenuOpt(key: string, transactionId: string) {
-    console.log("transactionid", transactionId);
+  clickMenuOpt(key: string, transaction: any) {
+    console.log("transactionid", transaction._id);
     switch (key) {
       case 'MARK_CONFIRMED':
-        this.bankConfirmation(transactionId);
+        this.bankConfirmation(transaction._id);
+        break
+      case 'REST_PAYMENT':
+        this.openTransaction(transaction,'activity');
         break
       default:
         break;
     }
+  }
+  openTransaction(transaction: any, itemType: any) {
+    this.dialogService.openModal(TransactionItemsDetailsComponent, { cssClass: "modal-xl", context: { transaction, itemType } })
+      .instance.close.subscribe(result => {
+        if (result?.transaction) {
+          const data = this.tillService.processTransactionSearchResult(result);
+          //console.log("data", data);
+          localStorage.setItem('fromTransactionPage', JSON.stringify(data));
+          if (result?.action) this.routes.navigate(['business/till']);
+        }
+      });
+  }
+  
+  close(data: any): void {
+    this.dialogRef.close.emit(data)
   }
 
   bankConfirmation(transactionId: any) {

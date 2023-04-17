@@ -211,7 +211,7 @@ export class ActivityDetailsComponent implements OnInit {
       }
     });
 
-    let translationKey = ['SUCCESSFULLY_UPDATED', 'NO_DATE_SELECTED'];
+    let translationKey = ['SUCCESSFULLY_UPDATED', 'NO_DATE_SELECTED', 'NO_PHONE', 'NO_EMAIL', 'NO_PHONE_OR_WHATSAPP'];
     this.translationService.get(translationKey).subscribe((res: any) => {
       this.translation = res;
     })
@@ -611,10 +611,10 @@ export class ActivityDetailsComponent implements OnInit {
       }
     }
 
-    if (!this.aTemplates?.length) {
-      aPromises.push(this.getTemplate(['repair', 'order', 'repair_alternative', 'giftcard']));
-      bTemplate = true;
-    }
+    // if (!this.aTemplates?.length) {
+    aPromises.push(this.getTemplate(['repair', 'order', 'repair_alternative', 'giftcard']));
+      // bTemplate = true;
+    // }
 
     const aResultPromises: any = await Promise.all(aPromises);
 
@@ -623,9 +623,9 @@ export class ActivityDetailsComponent implements OnInit {
       this.businessDetails.sBusinessLogoUrl = aResultPromises[0].data;
     }
 
-    if (bTemplate) {
-      this.aTemplates = (bBusinessLogo) ? aResultPromises[1].data : aResultPromises[0].data;
-    }
+    // if (bTemplate) {
+    this.aTemplates = (bBusinessLogo) ? aResultPromises[1].data : aResultPromises[0].data;
+    // }
 
     const template = this.aTemplates.filter((t: any) => t.eType === type)[0];
     oDataSource.oCustomer = this.tillService.processCustomerDetails(this.customer);
@@ -689,6 +689,7 @@ export class ActivityDetailsComponent implements OnInit {
   }
 
   matchSystemAndCurrentCustomer(systemCustomer:any , currentCustomer:any){
+    this.showSystemCustomer = false;
     const Customer:any = [{
       "oInvoiceAddress" : {
           "sStreet" : "",
@@ -744,7 +745,7 @@ export class ActivityDetailsComponent implements OnInit {
 
       return item;
     });
-    console.log(this.activityItems);
+    // console.log(this.activityItems);
     //this.customer = this.activityItems[0].oCustomer;
     this.oCurrentCustomer = this.activityItems[0].oCustomer;
     this.matchSystemAndCurrentCustomer(this.customer , this.oCurrentCustomer);
@@ -1018,17 +1019,27 @@ export class ActivityDetailsComponent implements OnInit {
   }
 
   contactCustomer(action: any){
-    console.log(action);
-
     switch (action){
       case 'call_on_ready':
-        window.location.href = "tel:" + this.customer.oPhone.sLandLine;
+        if(this.customer.oPhone.sLandLine){
+          window.location.href = "tel:" + this.customer.oPhone.sLandLine;
+        }else{
+          this.toastService.show({ type: "warning", text:  this.translation['NO_PHONE']});
+        }
         break;
       case 'email_on_ready':
-        window.location.href = "mailto:" + this.customer.sEmail;
+        if(this.customer.sEmail){
+          window.location.href = "mailto:" + this.customer.sEmail
+        }else{
+          this.toastService.show({ type: "warning", text: this.translation['NO_EMAIL'] });
+        }
         break;
       case 'whatsapp_on_ready':
-        window.location.href = "https://wa.me/" + this.customer.oPhone.sMobile;
+        if(this.customer.oPhone.sMobile && this.customer.oPhone.bWhatsApp){
+          window.location.href = "https://wa.me/" + this.customer.oPhone.sMobile;
+        }else{
+          this.toastService.show({ type: "warning", text: this.translation['NO_PHONE_OR_WHATSAPP'] });
+        }
         break;
     }
   }

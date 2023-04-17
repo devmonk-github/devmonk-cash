@@ -786,7 +786,7 @@ export class ReceiptService {
             
             if (result?.data?.aTemplate?.length > 0) {
                let transactionDetails = { currency:currency,business: this.businessDetails, ...oDataSource };
-                console.log("transactionDetails", transactionDetails);
+                // console.log("transactionDetails", transactionDetails);
                 transactionDetails.oCustomer = {
                     ...transactionDetails.oCustomer,
                     ...transactionDetails.oCustomer.oPhone,
@@ -795,7 +795,7 @@ export class ReceiptService {
                 let command;
                 try {
                     command = this.pn2escposService.generate(JSON.stringify(result.data.aTemplate), JSON.stringify(transactionDetails));
-                    console.log(command);
+                    // console.log(command);
                     // return;
                 } catch (e) {
                     this.toastService.show({ type: 'danger', text: 'Template not defined properly. Check browser console for more details' });

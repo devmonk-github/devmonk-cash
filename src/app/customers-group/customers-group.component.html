@@ -12,7 +12,7 @@
                                 name="searchValue" (keyup.enter)="getCustomersGroupList()"
                                 [(ngModel)]="requestParams.searchValue"
                                 placeholder="{{'SEARCH_CUSTOMER_GROUP' | translate}}">
-                            <button class="btn btn-primary" (click)="getCustomersGroupList()">{{'SEARCH' | translate}}
+                            <button class="btn btn-primary" (click)="bIsSearch = true;getCustomersGroupList();">{{'SEARCH' | translate}}
                             </button>
                         </div>
                     </div>

@@ -10,13 +10,13 @@
         <!--begin::Svg Icon | path: icons/duotune/general/gen021.svg-->
         <fa-icon [icon]="faSearch" class="text-gray-500 position-absolute top-50 translate-middle ms-6"></fa-icon>
         <!--end::Svg Icon-->
-        <input type="text" class="form-control form-control-solid ps-10" (keyup.enter)="loadTransaction()"
+        <input type="text" class="form-control form-control-solid ps-10" (keyup.enter)="bIsSearch = true ;loadTransaction();"
           [(ngModel)]="requestParams.searchValue" name="search" value="" placeholder="{{'SEARCH' | translate}}" />
       </div>
       <!--end::Input group-->
       <!--begin:Action-->
       <div class="d-flex align-items-center">
-        <button type="submit" class="btn btn-primary mx-3" (click)="loadTransaction()">{{ 'SEARCH' | translate
+        <button type="submit" class="btn btn-primary mx-3" (click)="bIsSearch = true ;loadTransaction();">{{ 'SEARCH' | translate
           }}
         </button>
         <div class="d-flex align-items-center">
@@ -298,11 +298,11 @@
                   <div class="menu-item px-3 text-center" *ngFor="let tMenu of transactionMenu">
                     <div *ngIf="tMenu.key == 'MARK_CONFIRMED'">
                       <div class="menu-link px-3" [ngClass]="{'disabled':transaction.bConfirmed}"
-                        (click)="clickMenuOpt(tMenu.key, transaction._id)">{{ tMenu.key |
+                        (click)="clickMenuOpt(tMenu.key, transaction)">{{ tMenu.key |
                         translate}}</div>
                     </div>
                     <div *ngIf="tMenu.key != 'MARK_CONFIRMED'">
-                      <div class="menu-link px-3" (click)="clickMenuOpt(tMenu.key, transaction._id)">{{ tMenu.key |
+                      <div class="menu-link px-3" (click)="clickMenuOpt(tMenu.key, transaction)">{{ tMenu.key |
                         translate}}</div>
                     </div>
                   </div>

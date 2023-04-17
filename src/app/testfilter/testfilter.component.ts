@@ -18,7 +18,8 @@ import { ActivityItemExportComponent } from '../shared/components/activity-item-
   providers: [BarcodeService]
 })
 export class TestFilterComponent implements OnInit, OnDestroy {
-
+  
+  bIsSearch:boolean = false;
   pageCounts: Array<number> = [10, 25, 50, 100]
   pageCount: number = 10;
   pageNumber: number = 1;
@@ -241,7 +242,7 @@ export class TestFilterComponent implements OnInit, OnDestroy {
       // }
 
 
-      if (data3 == "giftcard" || data3 == "order" || data3 == "gold-purchase") {
+      if (data3 == "giftcard" || data3 == "order" || data3 == "gold-purchase" || data3 == "repair") {
         this.requestParams.estimate = { minDate: "", maxDate: "" };
       } else {
         if (data1 == undefined && data2 == undefined) {

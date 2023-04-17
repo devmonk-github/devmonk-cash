@@ -127,8 +127,7 @@
                         <button class="btn btn-info btn-sm" *ngIf="!transaction?.oSystemCustomer?.bCounter" (click)="openCustomer(transaction.oSystemCustomer)">
                             {{'VIEW'|translate}} 
                         </button>
-                        <!--TODO: create function to update transaction's customer with latest information-->
-                        <button class="btn btn-light-warning ms-2 btn-sm" *ngIf="!transaction?.oSystemCustomer?.bCounter">
+                        <button class="btn btn-light-warning ms-2 btn-sm" *ngIf="!transaction?.oSystemCustomer?.bCounter" (click)="updateCurrentCustomer({ oCustomer: transaction.oSystemCustomer })">
                             {{'SYNC_DATA'|translate}} 
                         </button>
                     </div>

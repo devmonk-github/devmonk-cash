@@ -1216,7 +1216,9 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     
     name += ' ' + (product?.sLabelDescription || '');
 
-    if (this.tillService.settings.currentLocation.bProductNumber) name += ' ' + (product?.sProductNumber || '');
+    let bPrefillConditionViaBusinessBrand = true;
+    if (product?.iBusinessBrandId && product?.oBusinessBrand?.sAlias) bPrefillConditionViaBusinessBrand = false;
+    if (this.tillService.settings.currentLocation.bProductNumber && bPrefillConditionViaBusinessBrand) name += ' ' + (product?.sProductNumber || '');
     
     this.transactionItems.push({
       name: name,
@@ -1255,11 +1257,11 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       bProductLoaded: true,
       sSerialNumber: this.bSerialSearchMode ? product?.sSerialNumber : undefined
     });
-    console.log('this.transactionItems', this.transactionItems);
+    // console.log('this.transactionItems', this.transactionItems);
     if (isFrom === 'quick-button') { source.loading = false }
     this.resetSearch();
     this.clearPaymentAmounts();
-    await this.updateFiskalyTransaction('ACTIVE', []);
+    if (this.bIsFiscallyEnabled) await this.updateFiskalyTransaction('ACTIVE', []);
   }
 
   resetSearch() {

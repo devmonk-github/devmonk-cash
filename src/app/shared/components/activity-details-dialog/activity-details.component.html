@@ -2,7 +2,7 @@
     <div class="card-header" style="margin-top: 20px;">
         <h4>{{ 'ACTIVITY_DETAILS' | translate}}</h4>
         <div mat-dialog-actions>
-            <button mat-dialog-close type="button" class="btn btn-sm btn-light"
+            <button type="button" class="btn btn-sm btn-light"
                 (click)="close({action: false, oData: {oCurrentCustomer: oCurrentCustomer}})">
                 <fa-icon [icon]="faTimes"></fa-icon>
             </button>
@@ -160,8 +160,7 @@
                                     <button class="btn btn-info my-3 btn-sm" *ngIf="customer?.bCounter==false" (click)="openCustomer(customer)">
                                         {{'VIEW'|translate}} 
                                     </button>
-                                    <!--TODO: create function to update transaction's customer with latest information-->
-                                    <button class="btn btn-light-warning ms-2 my-3 btn-sm" *ngIf="customer?.bCounter==false">
+                                    <button class="btn btn-light-warning ms-2 my-3 btn-sm" *ngIf="customer?.bCounter==false" (click)="updateCurrentCustomer({ oCustomer: customer })">
                                         {{'SYNC_DATA'|translate}} 
                                     </button>
                                 </div>
@@ -312,22 +311,21 @@
                                                                 title="{{ 'THE_CUSTOMER_WILL_CONTACTED_USING_THIS_METHOD' | translate}}">
                                                                 <button
                                                                     (click)="activity.eEstimatedDateAction='call_on_ready'"
-                                                                    [ngClass]="{disabled: !oCurrentCustomer?.oPhone?.sLandLine, active:activity.eEstimatedDateAction==='call_on_ready' && oCurrentCustomer?.oPhone?.sLandLine }"
+                                                                    [ngClass]="{active:activity.eEstimatedDateAction==='call_on_ready'}"
                                                                     type="button"
                                                                     class="btn btn-light-primary fs-6 p-2">
                                                                     <fa-icon [icon]="faPhone"></fa-icon>
                                                                 </button>
                                                                 <button
                                                                     (click)="activity.eEstimatedDateAction='email_on_ready'"
-                                                                    [ngClass]="{disabled: !oCurrentCustomer?.sEmail, active:activity.eEstimatedDateAction==='email_on_ready' && oCurrentCustomer?.sEmail}"
+                                                                    [ngClass]="{active:activity.eEstimatedDateAction==='email_on_ready'}"
                                                                     type="button"
                                                                     class="btn btn-light-primary fs-6 p-2">
                                                                     <fa-icon [icon]="faAt"></fa-icon>
                                                                 </button>
                                                                 <button
                                                                     (click)="activity.eEstimatedDateAction='whatsapp_on_ready'"
-                                                                    [ngClass]="{disabled: !oCurrentCustomer?.oPhone?.bWhatsApp, 
-                                                                        active:activity.eEstimatedDateAction==='whatsapp_on_ready' && oCurrentCustomer?.oPhone?.bWhatsApp}"
+                                                                    [ngClass]="{active:activity.eEstimatedDateAction==='whatsapp_on_ready'}"
                                                                     type="button"
                                                                     class="btn btn-light-primary fs-6 p-2">
                                                                     <i class="bi bi-whatsapp"></i>

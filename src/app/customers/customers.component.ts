@@ -35,8 +35,7 @@ import { animate, state, style, transition, trigger } from '@angular/animations'
 })
 export class CustomersComponent implements OnInit {
 
-   customer: any = null;
-
+  customer: any = null;
   faSearch = faSearch;
   bIsShowDeletedCustomer: boolean = false;
 
@@ -129,48 +128,10 @@ export class CustomersComponent implements OnInit {
     }
   }
 
-  // clickMenuOptions(key: string) {
-  //   switch (key) {
-  //     case "DELETED":
-  //       this.getDeletedCustomers();
-  //       break;
-  //       case "EXPORT":
-  //       this.export();
-  //       break;
-  //   }
-  // }
-
 
   openCustomerDialog(customer:any,Id:any,iSearchedCustomerId:any,key:any): void {
-    
     this.dialogService.openModal(CustomerDialogComponent, { cssClass: 'modal-xl', context: {allcustomer:this.customers, customer:customer ,iChosenCustomerId:Id,iSearchedCustomerId:null,key:"MERGE"} }).instance.close.subscribe((data:any) => {
-        
-
-        // this.requestParams = {
-        //   iBusinessId: this.requestParams.iBusinessId,
-        //   searchValue: ''
-        // }
-          
-        //   let icIndex = this.customers.findIndex(i => i._id.toString() == Id.toString());
-         
-        //   if(icIndex != -1){
-        //   this.customers[icIndex].isDisable = true;
-        //   this.customers[icIndex].isMerged = true;
-        //   }
-         
-        //   let isIndex = this.customers.findIndex(i => i._id == data?.customer?.data?._id);
-        //   if(isIndex != -1){
-        //   this.customers[isIndex] = data?.customer?.data;
-        //   this.customers[isIndex].isUpdated = true;
-        //   this.customers[isIndex].name = this.customerStructureService.makeCustomerName(data?.customer?.data);
-        //   this.customers[isIndex]['NAME'] = this.customerStructureService.makeCustomerName(data?.customer?.data);
-        //   this.customers[isIndex]['SHIPPING_ADDRESS'] = this.customerStructureService.makeCustomerAddress(data?.customer?.data?.oShippingAddress, false);
-        //   this.customers[isIndex]['INVOICE_ADDRESS'] = this.customerStructureService.makeCustomerAddress(data?.customer?.data?.oInvoiceAddress, false);
-        //   this.customers[isIndex]['EMAIL'] = data?.customer?.data?.sEmail;
-        //   this.customers[isIndex]['PHONE'] = (data?.customer?.data?.oPhone && data?.customer?.data?.oPhone.sLandLine ? data?.customer?.data?.oPhone.sLandLine : '') + (data?.customer?.data?.oPhone && data?.customer?.data?.oPhone.sLandLine && data?.customer?.data?.oPhone.sMobile ? ' / ' : '') + (data?.customer?.data?.oPhone && data?.customer?.data?.oPhone.sMobile ? data?.customer?.data?.oPhone.sMobile : '')
-        //   }
-
-      })
+    })
 
   }
 
@@ -187,13 +148,15 @@ export class CustomersComponent implements OnInit {
     this.getCustomers()
   }
 
-  getCustomers() {
+
+  getCustomers(bIsSearch?: boolean) {
     this.showLoader = true;
-    if(this.bIsShowDeletedCustomer){
+    if (bIsSearch) this.requestParams.skip = 0;
+    if (this.bIsShowDeletedCustomer) {
       this.requestParams.bShowRemovedCustomers = true;
-    }else{
-    this.requestParams.bShowRemovedCustomers = false;
-  }
+    } else {
+      this.requestParams.bShowRemovedCustomers = false;
+    }
     this.customers = [];
     this.apiService.postNew('customer', '/api/v1/customer/list', this.requestParams)
       .subscribe(async (result: any) => {
@@ -205,14 +168,14 @@ export class CustomersComponent implements OnInit {
             customer.isDisable = false;
             customer.isUpdated = false;
             customer.isMerged = false;
-            if(customer?.bIsCompany){
+            if (customer?.bIsCompany) {
               customer.name = customer.sCompanyName;
               customer['NAME'] = customer.sCompanyName;
-            }else{
+            } else {
               customer.name = this.customerStructureService.makeCustomerName(customer);
               customer['NAME'] = this.customerStructureService.makeCustomerName(customer);
             }
-           
+
             customer['SHIPPING_ADDRESS'] = this.customerStructureService.makeCustomerAddress(customer.oShippingAddress, false);
             customer['INVOICE_ADDRESS'] = this.customerStructureService.makeCustomerAddress(customer.oInvoiceAddress, false);
             customer['EMAIL'] = customer.sEmail;
