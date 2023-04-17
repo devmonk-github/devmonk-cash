@@ -96,7 +96,7 @@ export class CustomersComponent implements OnInit {
     // { key: 'HOUSE_NUMBER', value: 'sHouseNumber' },
     // { key: 'STREET', value: 'sStreet' },
     { key: 'COMPANY_NAME', value: 'sCompanyName' },
-    { key: 'CONTACT_PERSON', value: 'oContactPerson' }
+    //{ key: 'CONTACT_PERSON', value: 'oContactPerson' }
   ];
   customerTypes:any=[
    { key:'ALL', value:'all'},
