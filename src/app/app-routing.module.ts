@@ -31,6 +31,10 @@ const routes: Routes = [
     loadChildren: () => import('./saving-points/saving-points.module').then(module => module.SavingPointsModule)
   },
   {
+    path: 'statistics-settings',
+    loadChildren: () => import('./statistics-settings/statistics-settings.module').then(module => module.StatisticsSettingsModule)
+  },
+  {
     path: 'fiskaly-settings',
     loadChildren: () => import('./fiskaly-settings/fiskaly-settings.module').then(module => module.FiskalySettingsModule)
   },

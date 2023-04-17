@@ -20,8 +20,10 @@
                             <div class="d-flex justify-content-between align-items-start" *ngIf="!editProfile">
                                 <div class="row">
                                     <ng-select class="form-control form-control-solid p-0" [clearable]="false" [(ngModel)]="CustomerId" (change)="getCustomerAddress($event)">
-                                        <ng-option *ngFor="let customerdetail of customerList" [value]="customerdetail._id">{{customerdetail?.sFirstName}}
-                                            {{customerdetail?.sLastName || ''}}</ng-option>>
+                                        <ng-option *ngFor="let customerdetail of customerList" [value]="customerdetail._id">
+                                            <p class="m-0" *ngIf="!customerdetail?.bIsCompany">{{customerdetail?.sFirstName || ''}} {{customerdetail?.sLastName || ''}}</p>
+                                            <p class="m-0" *ngIf="customerdetail?.bIsCompany">{{customerdetail?.sCompanyName || ''}}</p>
+                                        </ng-option>
                                     </ng-select>
                                 </div>
                                 
@@ -65,8 +67,10 @@
                     
                     <div class="row">
                         <ng-select class="form-control form-control-solid p-0" [clearable]="false" [(ngModel)]="CustomerId" (change)="getCustomerAddress($event)">
-                            <ng-option *ngFor="let customerdetail of customerList" [value]="customerdetail._id">{{customerdetail?.sFirstName}}
-                                {{customerdetail?.sLastName || ''}}</ng-option>>
+                            <ng-option *ngFor="let customerdetail of customerList" [value]="customerdetail._id">
+                                <p class="m-0" *ngIf="!customerdetail?.bIsCompany">{{customerdetail?.sFirstName || ''}} {{customerdetail?.sLastName || ''}}</p>
+                                <p class="m-0" *ngIf="customerdetail?.bIsCompany">{{customerdetail?.sCompanyName || ''}}</p>
+                            </ng-option>
                         </ng-select>
                     </div>
                    
@@ -154,7 +158,7 @@
                                         [(ngModel)]="customer.oShippingAddress.sCountry" ngDefaultControl
                                         (customerCountryChanged)="customerCountryChanged('oShippingAddress', $event)"
                                         name="country"></country-list>
-                                </div>
+                                </div>class="m-0" 
                             </div>
 
                         </div>

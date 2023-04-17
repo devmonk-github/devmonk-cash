@@ -93,6 +93,15 @@ module.exports = {
     }),
     new ModuleFederationPlugin({
       // For remotes (please adjust)
+      name: "statisticsSettings",
+      filename: "statistics-settings.js",
+      exposes: {
+        './StatisticsSettingsModule': './src/app/statistics-settings/statistics-settings.module.ts',
+      },
+      shared: share(sharedLibrary)
+    }),
+    new ModuleFederationPlugin({
+      // For remotes (please adjust)
       name: "fiskalySettings",
       filename: "fiskaly-settings.js",
       exposes: {

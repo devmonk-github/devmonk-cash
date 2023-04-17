@@ -10,15 +10,6 @@ import {ExportsComponent} from '../shared/components/exports/exports.component';
 import { MenuComponent } from '../shared/_layout/components/common';
 import { CustomerDialogComponent } from '../shared/components/customer-dialog/customer-dialog.component';
 import { animate, state, style, transition, trigger } from '@angular/animations';
-// import { result } from 'lodash';
-
-// interface FSEntry {
-//   NAME: string;
-//   PHONE: string;
-//   EMAIL: string;
-//   SHIPPING_ADDRESS?: string;
-//   INVOICE_ADDRESS?: string;
-// }
 
 @Component({
   selector: 'app-customers',
@@ -45,7 +36,6 @@ import { animate, state, style, transition, trigger } from '@angular/animations'
 export class CustomersComponent implements OnInit {
 
   customer: any = null;
-  bIsSearch:boolean = false;
   faSearch = faSearch;
   bIsShowDeletedCustomer: boolean = false;
 
@@ -63,7 +53,6 @@ export class CustomersComponent implements OnInit {
     totalItems: 0
   };
 
- 
   customColumn = 'NAME';
   defaultColumns = ['PHONE', 'EMAIL', 'SHIPPING_ADDRESS', 'INVOICE_ADDRESS'];
   allColumns = [...this.defaultColumns];  
@@ -72,9 +61,8 @@ export class CustomersComponent implements OnInit {
     
   ];
   options = [
-    { key: 'DELETED' },
+    { key: 'SHOW_DELETED_CUSTOMERS' },
     { key: 'EXPORT' }
-    
   ];
   requestParams: any = {
     iBusinessId: "",
@@ -86,9 +74,11 @@ export class CustomersComponent implements OnInit {
     aProjection: ['sSalutation', 'sFirstName', 'sPrefix', 'sLastName', 'dDateOfBirth', 'dDateOfBirth', 'nClientId', 'sGender', 'bIsEmailVerified',
       'bCounter', 'sEmail', 'oPhone', 'oShippingAddress', 'oInvoiceAddress', 'iBusinessId', 'sComment', 'bNewsletter', 'sCompanyName', 'oPoints',
       'sCompanyName', 'oIdentity', 'sVatNumber', 'sCocNumber', 'nPaymentTermDays',
-       'nDiscount', 'bWhatsApp', 'nMatchingCode' , 'sNote' , 'iEmployeeId' , 'bIsMigrated' ,'bIsMerged','eStatus','bIsImported','aGroups' , 'bIsCompany' , 'oContactPerson'],
-    oFilterby: [ ],
-    customerType:'all',
+      'nDiscount', 'bWhatsApp', 'nMatchingCode', 'sNote', 'iEmployeeId', 'bIsMigrated', 'bIsMerged', 'eStatus', 'bIsImported', 'aGroups', 'bIsCompany', 'oContactPerson'],
+    oFilterBy: {
+      aSearchField: []
+    },
+    customerType: 'all',
   };
   iChosenCustomerId : any;
   @ViewChildren('inputElement') inputElement!: QueryList<ElementRef>;
@@ -106,13 +96,12 @@ export class CustomersComponent implements OnInit {
     // { key: 'HOUSE_NUMBER', value: 'sHouseNumber' },
     // { key: 'STREET', value: 'sStreet' },
     { key: 'COMPANY_NAME', value: 'sCompanyName' },
-    { key: 'CONTACT_PERSON', value: 'oContactPerson' }
+    //{ key: 'CONTACT_PERSON', value: 'oContactPerson' }
   ];
   customerTypes:any=[
-   { key:'ALL' , value:'all'},
+   { key:'ALL', value:'all'},
     {key:'PRIVATE' , value:'private'},
     {key:'COMPANY' , value:'company'}
-
   ]
   constructor(
     private apiService: ApiService,
@@ -128,7 +117,6 @@ export class CustomersComponent implements OnInit {
     this.business._id = localStorage.getItem("currentBusiness");
     this.requestParams.iBusinessId = this.business._id;
     this.getCustomers()
-
   }
 
   // Function for handle event of transaction menu
@@ -140,6 +128,18 @@ export class CustomersComponent implements OnInit {
     }
   }
 
+  // Function for menu options
+  clickMenuOptions(key: string) {
+    switch (key) {
+      case "SHOW_DELETED_CUSTOMERS":
+        this.bIsShowDeletedCustomer = !this.bIsShowDeletedCustomer;
+        this.getCustomers();
+        break;
+      case "EXPORT":
+        this.export();
+        break;
+    }
+  }
 
   openCustomerDialog(customer:any,Id:any,iSearchedCustomerId:any,key:any): void {
     this.dialogService.openModal(CustomerDialogComponent, { cssClass: 'modal-xl', context: {allcustomer:this.customers, customer:customer ,iChosenCustomerId:Id,iSearchedCustomerId:null,key:"MERGE"} }).instance.close.subscribe((data:any) => {
@@ -161,16 +161,13 @@ export class CustomersComponent implements OnInit {
   }
 
 
-  getCustomers() {
+  getCustomers(bIsSearch?: boolean) {
     this.showLoader = true;
-    if(this.bIsSearch){
-      this.requestParams.skip = 0;
-    }
-    console.log(this.bIsSearch);
+    if (bIsSearch) this.requestParams.skip = 0;
     if (this.bIsShowDeletedCustomer) {
-      this.requestParams.showRemovedCustomers = true;
+      this.requestParams.bShowRemovedCustomers = true;
     } else {
-      this.requestParams.showRemovedCustomers = false;
+      this.requestParams.bShowRemovedCustomers = false;
     }
     this.customers = [];
     this.apiService.postNew('customer', '/api/v1/customer/list', this.requestParams)

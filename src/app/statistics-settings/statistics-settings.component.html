@@ -1,0 +1,65 @@
+<div class="card mb-5 mb-xl-10 d-flex">
+    <div class="card-header row">
+        <div class="card-title">
+            <span>Statistics Settings</span>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-6 card mb-5 mb-xl-10 d-flex">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-9">
+                    <label>I want to sum up my articlegroups statistics based on my turnover groups</label>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-check form-switch form-check-custom form-check-solid">
+                        <input type="checkbox" name="loyaltyProgram" class="form-check-input"
+                            [(ngModel)]="settings.bSumUpArticleGroupStatistics">
+                    </label>
+                </div>
+            </div>
+            <div class="row" *ngIf="settings?.bSumUpArticleGroupStatistics">
+                <div class="col-md-9">
+                    <label><a routerLink="/business/article-groups" [queryParams]="{type: '2'}">Check your turnover groups here</a></label>
+                </div>
+            </div>
+            <div class="row" *ngIf="settings?.bSumUpArticleGroupStatistics">
+                <div class="col-md-9">
+                    <label><a routerLink="/business/article-groups" [queryParams]="{type: '1'}">Go to the articlegroups page</a></label>
+                </div>
+            </div>
+            <div class="row" *ngIf="settings?.bSumUpArticleGroupStatistics">
+                <div class="col-md-9">
+                    <label>Show my daystates based on my turnover groups</label>
+                </div>
+                <!-- <div class="col-md-3">
+                    <label class="form-check form-switch form-check-custom form-check-solid">
+                        <input type="checkbox" name="loyaltyProgram" id="kt_roles_select_all" class="form-check-input"
+                            [(ngModel)]="settings.bShowDayStates"  [disabled]="settings?.bSumUpArticleGroupStatistics">
+                    </label>
+                </div> -->
+                <div class="col-md-3">
+                    <label class="form-check form-switch form-check-custom form-check-solid">
+                        <input type="checkbox" name="loyaltyProgram"  class="form-check-input"
+                            [(ngModel)]="settings.bShowDayStates" (click)="enableTurnoverGroups()" >
+                    </label>
+                </div>
+            </div>
+
+            
+
+
+
+        </div>
+    </div>
+
+
+</div>
+
+
+
+<div>
+    <button class="btn btn-primary" (click)="updateSettings()"> {{ "SAVE" | translate}}</button>
+</div>
