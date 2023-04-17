@@ -611,10 +611,10 @@ export class ActivityDetailsComponent implements OnInit {
       }
     }
 
-    if (!this.aTemplates?.length) {
-      aPromises.push(this.getTemplate(['repair', 'order', 'repair_alternative', 'giftcard']));
-      bTemplate = true;
-    }
+    // if (!this.aTemplates?.length) {
+    aPromises.push(this.getTemplate(['repair', 'order', 'repair_alternative', 'giftcard']));
+      // bTemplate = true;
+    // }
 
     const aResultPromises: any = await Promise.all(aPromises);
 
@@ -623,9 +623,9 @@ export class ActivityDetailsComponent implements OnInit {
       this.businessDetails.sBusinessLogoUrl = aResultPromises[0].data;
     }
 
-    if (bTemplate) {
-      this.aTemplates = (bBusinessLogo) ? aResultPromises[1].data : aResultPromises[0].data;
-    }
+    // if (bTemplate) {
+    this.aTemplates = (bBusinessLogo) ? aResultPromises[1].data : aResultPromises[0].data;
+    // }
 
     const template = this.aTemplates.filter((t: any) => t.eType === type)[0];
     oDataSource.oCustomer = this.tillService.processCustomerDetails(this.customer);
@@ -745,7 +745,7 @@ export class ActivityDetailsComponent implements OnInit {
 
       return item;
     });
-    console.log(this.activityItems);
+    // console.log(this.activityItems);
     //this.customer = this.activityItems[0].oCustomer;
     this.oCurrentCustomer = this.activityItems[0].oCustomer;
     this.matchSystemAndCurrentCustomer(this.customer , this.oCurrentCustomer);

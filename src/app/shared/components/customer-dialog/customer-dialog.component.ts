@@ -52,7 +52,9 @@ export class CustomerDialogComponent implements OnInit {
     searchValue: '',
     skip:0 , 
     limit:10,
-    oFilterBy: []
+    oFilterBy: {
+      aSearchField: []
+    },
   }
   pageCounts: Array<number> = [10, 25, 50, 100]
   pageNumber: number = 1;
@@ -152,7 +154,7 @@ export class CustomerDialogComponent implements OnInit {
     // { key: 'HOUSE_NUMBER', value: 'sHouseNumber' },
     // { key: 'STREET', value: 'sStreet' },
     { key: 'COMPANY_NAME', value: 'sCompanyName' },
-    { key: 'CONTACT_PERSON', value: 'oContactPerson' }
+    //{ key: 'CONTACT_PERSON', value: 'oContactPerson' }
   ];
   
   showFilters = false;
