@@ -1135,7 +1135,7 @@
                                     <tfoot>
                                         <tr>
                                             <th class="text-end">{{ 'TOTAL' | translate}}</th>
-                                            <th class="w-150px">{{ nPaymentMethodTotal }}</th>
+                                            <th class="w-150px">{{ nPaymentMethodTotal | number: '.2'}}</th>
                                             <ng-container *ngIf="paymentEditMode">
                                                 <th>
                                                     <span
