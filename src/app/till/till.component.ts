@@ -337,7 +337,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
   updateAmountVariables() {
     // console.log('updateAmountVariables');
-    this.nItemsTotalToBePaid = _.sumBy(this.transactionItems, 'amountToBePaid');//this.getTotals('price');
+    this.nItemsTotalToBePaid = _.sumBy(this.transactionItems, (item:any) => (!item.isExclude) ? item.amountToBePaid : 0);//this.getTotals('price');
     this.nItemsTotalDiscount = this.getTotals('discount');
     this.nItemsTotalQuantity = this.getTotals('quantity');
     this.nTotalPayment = this.totalPrepayment();
@@ -695,7 +695,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     const paidAmount = _.sumBy(this.payMethods, 'amount') || 0;
 
     const aGiftcard = this.transactionItems.filter((v: any) => v.type == 'giftcard');
-    this.bAllGiftcardPaid = aGiftcard.every((el: any) => el.paymentAmount == el.amountToBePaid)
+    this.bAllGiftcardPaid = aGiftcard.filter((el:any) => !el.isExclude).every((el: any) => el.paymentAmount == el.amountToBePaid)
 
     if (paidAmount === 0) {
       this.payMethods.map(o => o.isDisabled = false);
@@ -734,6 +734,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
           item.prepaymentTouched = false;
         }
       } else {
+        if(item.type === 'giftcard') return;
         item.isExclude = false;
         item.manualUpdate = (item.type === 'gold-purchase') ? true : false;
       }
