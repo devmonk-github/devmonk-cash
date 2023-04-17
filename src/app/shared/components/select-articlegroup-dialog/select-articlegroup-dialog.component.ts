@@ -81,7 +81,7 @@ export class SelectArticleDialogComponent implements OnInit {
     this.apiService.postNew('core', '/api/v1/business/article-group/list', data).subscribe((result: any) => {
         if (result.data?.length && result.data[0]?.result?.length) {
           this.articleGroupsList = result.data[0].result;
-          console.log("this.articleGroupsList", this.articleGroupsList);
+          // console.log("this.articleGroupsList", this.articleGroupsList);
           this.articleGroupLoading = false;
           
           // setTimeout(() => {
