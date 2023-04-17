@@ -98,7 +98,7 @@ export class TransactionsSearchComponent implements OnInit, AfterViewInit {
       this.paginationConfig.totalItems = result.activities.count;
       this.activities = result.activities.records;
       this.activities.forEach((item: any) =>{
-        item.sBagNumbers = (item?.aActivityItemMetaData?.length) ? item.aActivityItemMetaData.map((el:any) => el.sBagNumber).join(',') : '';
+        item.sBagNumbers = (item?.aActivityItemMetaData?.length) ? [... new Set(item.aActivityItemMetaData.map((el:any) => el.sBagNumber))].join(',') : '';
       });
       this.totalActivities = result.activities.count;
       this.showLoader = false;
@@ -115,11 +115,11 @@ export class TransactionsSearchComponent implements OnInit, AfterViewInit {
   openTransaction(transaction: any, itemType: any) {
     // console.log('transaction search openTransaction: ', transaction, itemType);
     this.dialogService.openModal(TransactionItemsDetailsComponent, { cssClass: "modal-xl", context: { transaction, itemType } }).instance.close.subscribe(result => {
-      // console.log('transaction search response of transaction item details component: ', result);
+      console.log('transaction search response of transaction item details component: ', JSON.parse(JSON.stringify(result)));
       if(result?.transaction) {
         // console.log('now sending to tillservice processTransactionSearchResult: ', result);
         const temp = this.tillService.processTransactionSearchResult(result);
-        // console.log('response of tillservice processTransactionSearchResult closing search dialog', JSON.parse(JSON.stringify(temp)))
+        console.log('response of tillservice processTransactionSearchResult closing search dialog', JSON.parse(JSON.stringify(temp)))
         this.close(temp);
       }
     });
