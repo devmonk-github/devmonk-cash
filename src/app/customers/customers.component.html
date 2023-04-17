@@ -14,7 +14,7 @@
                                 placeholder="{{'SEARCH' | translate}}">
                             <div class="col-lg-4 me-4">
                                 <ng-select class="form-control form-control-solid p-0" [multiple]="true"
-                                    [(ngModel)]="requestParams.oFilterBy" [clearable]="false" placeholder="{{'ALL_FIELDS' | translate}}">
+                                    [(ngModel)]="requestParams.oFilterBy.aSearchField" [clearable]="false" placeholder="{{'ALL_FIELDS' | translate}}">
                                     <ng-option *ngFor="let item of oFilterFields" [value]="item.value">{{item.key | translate}}</ng-option>
                                 </ng-select>
                             </div>
@@ -79,16 +79,6 @@
                         </div>
                     </div>
                 
-                    <!-- <div class="row align-items-center mb-5" [@openClose]="showFilters ? 'open' : 'closed'">
-                        <ng-container *ngFor="let item of aFilterFields">
-                            <div class="col-2">
-                                <label>{{item.title | translate}}</label>
-                            </div>
-                            <div class="col-3">
-                                <input [(ngModel)]="requestParams.oFilterBy[item.key]" class="form-control">
-                            </div>
-                        </ng-container>
-                    </div>   -->
                 </div>
                 <div class="card-body pt-0">
                     <div class="dataTables_wrapper dt-bootstrap4 no-footer">

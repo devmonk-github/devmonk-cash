@@ -10,15 +10,6 @@ import {ExportsComponent} from '../shared/components/exports/exports.component';
 import { MenuComponent } from '../shared/_layout/components/common';
 import { CustomerDialogComponent } from '../shared/components/customer-dialog/customer-dialog.component';
 import { animate, state, style, transition, trigger } from '@angular/animations';
-// import { result } from 'lodash';
-
-// interface FSEntry {
-//   NAME: string;
-//   PHONE: string;
-//   EMAIL: string;
-//   SHIPPING_ADDRESS?: string;
-//   INVOICE_ADDRESS?: string;
-// }
 
 @Component({
   selector: 'app-customers',
@@ -63,7 +54,6 @@ export class CustomersComponent implements OnInit {
     totalItems: 0
   };
 
- 
   customColumn = 'NAME';
   defaultColumns = ['PHONE', 'EMAIL', 'SHIPPING_ADDRESS', 'INVOICE_ADDRESS'];
   allColumns = [...this.defaultColumns];  
@@ -74,7 +64,6 @@ export class CustomersComponent implements OnInit {
   options = [
     { key: 'DELETED' },
     { key: 'EXPORT' }
-    
   ];
   requestParams: any = {
     iBusinessId: "",
@@ -86,9 +75,11 @@ export class CustomersComponent implements OnInit {
     aProjection: ['sSalutation', 'sFirstName', 'sPrefix', 'sLastName', 'dDateOfBirth', 'dDateOfBirth', 'nClientId', 'sGender', 'bIsEmailVerified',
       'bCounter', 'sEmail', 'oPhone', 'oShippingAddress', 'oInvoiceAddress', 'iBusinessId', 'sComment', 'bNewsletter', 'sCompanyName', 'oPoints',
       'sCompanyName', 'oIdentity', 'sVatNumber', 'sCocNumber', 'nPaymentTermDays',
-       'nDiscount', 'bWhatsApp', 'nMatchingCode' , 'sNote' , 'iEmployeeId' , 'bIsMigrated' ,'bIsMerged','eStatus','bIsImported','aGroups' , 'bIsCompany' , 'oContactPerson'],
-    oFilterby: [ ],
-    customerType:'all',
+      'nDiscount', 'bWhatsApp', 'nMatchingCode', 'sNote', 'iEmployeeId', 'bIsMigrated', 'bIsMerged', 'eStatus', 'bIsImported', 'aGroups', 'bIsCompany', 'oContactPerson'],
+    oFilterBy: {
+      aSearchField: []
+    },
+    customerType: 'all',
   };
   iChosenCustomerId : any;
   @ViewChildren('inputElement') inputElement!: QueryList<ElementRef>;
@@ -109,10 +100,9 @@ export class CustomersComponent implements OnInit {
     { key: 'CONTACT_PERSON', value: 'oContactPerson' }
   ];
   customerTypes:any=[
-   { key:'ALL' , value:'all'},
+   { key:'ALL', value:'all'},
     {key:'PRIVATE' , value:'private'},
     {key:'COMPANY' , value:'company'}
-
   ]
   constructor(
     private apiService: ApiService,
@@ -128,7 +118,6 @@ export class CustomersComponent implements OnInit {
     this.business._id = localStorage.getItem("currentBusiness");
     this.requestParams.iBusinessId = this.business._id;
     this.getCustomers()
-
   }
 
   // Function for handle event of transaction menu
@@ -198,45 +187,12 @@ export class CustomersComponent implements OnInit {
     this.getCustomers()
   }
 
-  // getDeletedCustomers() {
-  //   this.showLoader = true;
-  //   this.requestParams.showRemovedCustomers = true;
-  //   this.customers = [];
-  //   this.apiService.postNew('customer', '/api/v1/customer/list', this.requestParams)
-  //     .subscribe(async (result: any) => {
-  //       this.showLoader = false;
-  //       if (result?.data?.[0]?.result) {
-  //         this.paginationConfig.totalItems = result.data[0].count.totalData;
-  //         this.customers = result.data[0].result;
-  //         for (const customer of this.customers) {
-  //           customer.isDisable = false;
-  //           customer.isUpdated = false;
-  //           customer.isMerged = false;
-  //           customer.name = this.customerStructureService.makeCustomerName(customer);
-  //           customer['NAME'] = this.customerStructureService.makeCustomerName(customer);
-  //           customer['SHIPPING_ADDRESS'] = this.customerStructureService.makeCustomerAddress(customer.oShippingAddress, false);
-  //           customer['INVOICE_ADDRESS'] = this.customerStructureService.makeCustomerAddress(customer.oInvoiceAddress, false);
-  //           customer['EMAIL'] = customer.sEmail;
-  //           customer['PHONE'] = (customer.oPhone && customer.oPhone.sLandLine ? customer.oPhone.sLandLine : '') + (customer.oPhone && customer.oPhone.sLandLine && customer.oPhone.sMobile ? ' / ' : '') + (customer.oPhone && customer.oPhone.sMobile ? customer.oPhone.sMobile : '')
-  //         }
-  //         setTimeout(() => {
-  //           MenuComponent.bootstrap();
-  //           // MenuComponent.reinitialization();
-  //         }, 200);
-  //       }
-  //     },
-  //       (error: any) => {
-  //         this.customers = [];
-  //         this.showLoader = false;
-  //       })
-  // }
-
   getCustomers() {
     this.showLoader = true;
     if(this.bIsShowDeletedCustomer){
-      this.requestParams.showRemovedCustomers = true;
+      this.requestParams.bShowRemovedCustomers = true;
     }else{
-    this.requestParams.showRemovedCustomers = false;
+    this.requestParams.bShowRemovedCustomers = false;
   }
     this.customers = [];
     this.apiService.postNew('customer', '/api/v1/customer/list', this.requestParams)
