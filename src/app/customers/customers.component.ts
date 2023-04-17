@@ -61,7 +61,7 @@ export class CustomersComponent implements OnInit {
     
   ];
   options = [
-    { key: 'DELETED' },
+    { key: 'SHOW_DELETED_CUSTOMERS' },
     { key: 'EXPORT' }
   ];
   requestParams: any = {
@@ -128,6 +128,18 @@ export class CustomersComponent implements OnInit {
     }
   }
 
+  // Function for menu options
+  clickMenuOptions(key: string) {
+    switch (key) {
+      case "SHOW_DELETED_CUSTOMERS":
+        this.bIsShowDeletedCustomer = !this.bIsShowDeletedCustomer;
+        this.getCustomers();
+        break;
+      case "EXPORT":
+        this.export();
+        break;
+    }
+  }
 
   openCustomerDialog(customer:any,Id:any,iSearchedCustomerId:any,key:any): void {
     this.dialogService.openModal(CustomerDialogComponent, { cssClass: 'modal-xl', context: {allcustomer:this.customers, customer:customer ,iChosenCustomerId:Id,iSearchedCustomerId:null,key:"MERGE"} }).instance.close.subscribe((data:any) => {
