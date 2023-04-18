@@ -12,6 +12,7 @@ import { TaxService } from '../shared/service/tax.service';
 import { ConfirmationDialogComponent } from '../shared/components/confirmation-dialog/confirmation-dialog.component';
 import { DialogService } from '../shared/service/dialog';
 import { TillService } from '../shared/service/till.service';
+import { ClosingDaystateDialogComponent } from '../shared/components/closing-daystate-dialog/closing-daystate-dialog.component';
 
 @Component({
   selector: 'app-transaction-audit',
@@ -185,7 +186,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
         children: [
           {
             sKey: 'ArticleGroup',
-            sValue: this.translate.instant('ARTICLE GROUP'),
+            sValue: this.translate.instant('ARTICLE_GROUP'),
             children: [
               {
                 sKey: 'Compact',
@@ -745,7 +746,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
     this.bStatisticLoading = true;
     this.statisticAuditSubscription = this.apiService
       .postNew('cashregistry', `/api/v1/statistics/transaction/audit`, oBody).subscribe((result: any) => {
-        this.bStatisticLoading = false;
+        
         if (result?.data) {
 
           if (result.data?.oTransactionAudit?.length)
@@ -769,6 +770,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
           }
 
         }
+        this.bStatisticLoading = false;
       },
         (error) => {
           this.bStatisticLoading = false;
@@ -1107,6 +1109,26 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
     return this.apiService.postNew('cashregistry', `/api/v1/statistics/transaction/audit`, _oBody).toPromise();
   }
 
+  checkAndAskForQuickCountings() {
+    if (this.oCountings.nCashInTill != 0 && this.oCountings.nCashCounted == 0) {
+      this.dialogService.openModal(ClosingDaystateDialogComponent, {
+        cssClass: 'modal-m', context: { nCashInTill: this.oCountings.nCashInTill }, hasBackdrop: true, closeOnBackdropClick: false
+      }).instance.close.subscribe((result: any) => {
+        if (result?.type) {
+          this.oCountings.nCashCounted = this.oCountings.nCashInTill;
+          if (result?.data === 'leave_in_till') {
+            this.oCountings.nCashRemain = this.oCountings.nCashInTill;
+            this.oCountings.nSkim = 0;
+          } else if (result?.data === 'skim_all') {
+            this.oCountings.nSkim = this.oCountings.nCashInTill;
+            this.oCountings.nCashRemain = 0;
+          }
+          this.onCloseDayState();
+        }
+      });
+    } else this.onCloseDayState();
+  }
+
   async onCloseDayState() {
     this.closingDayState = true;
     this.closeButtonClicked = true;
@@ -1119,7 +1141,17 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
         { text: "PROCEED", value: 'proceed', status: 'success', class: 'ml-auto mr-2' },
         { text: "CANCEL", value: 'close' }
       ];
-      this.dialogService.openModal(ConfirmationDialogComponent, { context: { header: 'NO_TRANSACTION_CREATED', bodyText: 'IN_THIS_PERIOD_NOT_TRANSACTION_HAS_BEE_CREATED', buttonDetails: confirmBtnDetails } })
+      this.dialogService.openModal(ConfirmationDialogComponent, 
+        { 
+          context: { 
+            header: 'NO_TRANSACTION_CREATED', 
+            bodyText: 'IN_THIS_PERIOD_NOT_TRANSACTION_HAS_BEE_CREATED', 
+            buttonDetails: confirmBtnDetails 
+          },
+          hasBackdrop: true,
+          closeOnBackdropClick: false,
+          closeOnEsc: false 
+          })
         .instance.close.subscribe((status: any) => {
           if (status === 'proceed') this.closeDayState(oStatisticDetail);
         }, (error) => {
