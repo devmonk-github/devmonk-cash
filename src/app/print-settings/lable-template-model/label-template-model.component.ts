@@ -115,7 +115,7 @@ export class LabelTemplateModelComponent implements OnInit {
     let jsonDataKeys = Object.keys(jsonData).filter(e => {
       return !excluded.includes(e)
     })
-    console.log('jsonKeys', jsonKeys, 'jsonDataKeys',jsonDataKeys);
+    // console.log('jsonKeys', jsonKeys, 'jsonDataKeys',jsonDataKeys);
     let isMissingAnyKey = jsonKeys.sort().join() !== jsonDataKeys.sort().join();
     if (isMissingAnyKey) {
       this.toastService.show({ type: 'warning', text: 'Invalid Json Template' });

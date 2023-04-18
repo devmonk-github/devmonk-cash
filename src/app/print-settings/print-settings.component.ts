@@ -226,14 +226,24 @@ export class PrintSettingsComponent implements OnInit, AfterViewInit {
       })
     } else {
       Object.keys(jsonData).forEach(key => {
-        if (!key.startsWith('tspl')) {
+        if (!key.startsWith('tspl') && !['eType', 'iBusinessId', 'iLocationId', 'aTemplate'].includes(key)) {
           oData[key] = jsonData[key];
         }
       })
     }
     oData = JSON.parse(JSON.stringify(oData));
-    this.dialogService.openModal(LabelTemplateModelComponent, { cssClass: "modal-xl w-100", context: { mode, jsonData: oData, eType, iTemplateId: _id }}).instance.close
-    .subscribe(async (result) => {
+    this.dialogService.openModal(LabelTemplateModelComponent, { 
+      cssClass: "modal-xl w-100", 
+      context: { 
+        mode, 
+        jsonData: oData, 
+        eType, 
+        iTemplateId: _id 
+      },
+      hasBackdrop: true,
+      closeOnBackdropClick: false,
+      closeOnEsc: false
+    }).instance.close.subscribe(async (result) => {
       // console.log(result)
       if (result) {
         if (mode === 'create') {
