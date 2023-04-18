@@ -62,6 +62,7 @@ import { SelectPrintPaperDialogComponent } from "./components/select-print-paper
 import { SupplierProductSliderModule } from "../sliders/supplier-stock-product-slider/supplier-product-slider.module";
 import { CustomerActivitiesDialogComponent } from "./components/customer-activities-dialog/customer-activities.component";
 import { BankConfirmationDialogComponent } from './components/bank-confirmation-dialog/bank-confirmation-dialog.component';
+import { ClosingDaystateDialogComponent } from "./components/closing-daystate-dialog/closing-daystate-dialog.component";
 
 @NgModule({
   declarations: [
@@ -103,7 +104,8 @@ import { BankConfirmationDialogComponent } from './components/bank-confirmation-
     //DateTranslatePipe,
     SelectPrintPaperDialogComponent,
     CustomerActivitiesDialogComponent,
-    BankConfirmationDialogComponent
+    BankConfirmationDialogComponent,
+    ClosingDaystateDialogComponent
   ],
   imports: [
     CommonModule,
@@ -148,7 +150,8 @@ import { BankConfirmationDialogComponent } from './components/bank-confirmation-
     CurrencyFormatPipe,
     //DateTranslatePipe,
     SelectPrintPaperDialogComponent,
-    SupplierProductSliderModule
+    SupplierProductSliderModule,
+    ClosingDaystateDialogComponent
   ],
   providers: [CurrencyPipe, CommonPrintSettingsService, PdfService, ReceiptService, TransactionsPdfService , PaginatePipe]
 })
