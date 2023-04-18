@@ -132,12 +132,12 @@ export class CustomersComponent implements OnInit {
   clickMenuOptions(key: string) {
     switch (key) {
       case "SHOW_DELETED_CUSTOMERS":
-        this.options[0].key = "HIDE_DELETED_CUSTOMER";
+        this.options[0].key = "HIDE_DELETED_CUSTOMERS";
         this.bIsShowDeletedCustomer = true;
         this.getCustomers();
         break;
       case "HIDE_DELETED_CUSTOMERS":
-        this.options[0].key = "SHOW_DELETED_CUSTOMER";
+        this.options[0].key = "SHOW_DELETED_CUSTOMERS";
         this.bIsShowDeletedCustomer = false;
         this.getCustomers();
         break;
