@@ -186,7 +186,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
         children: [
           {
             sKey: 'ArticleGroup',
-            sValue: this.translate.instant('ARTICLE GROUP'),
+            sValue: this.translate.instant('ARTICLE_GROUP'),
             children: [
               {
                 sKey: 'Compact',

@@ -258,11 +258,11 @@
                         </div> -->
                             <label class="col-md-4 mt-3 text-muted">{{"CHANGE" | translate}}</label>
                             <div class="col-md-8">
-                                <div class="text-gray-800 mt-3">{{ 0 }}</div>
+                                <div class="text-gray-800 mt-3">{{ changeAmount | currency: tillService.currency }}</div>
                             </div>
                             <label class="col-md-4 mt-3 text-muted">{{"REFUNDED" | translate}}</label>
                             <div class="col-md-8">
-                                <div class="text-gray-800 mt-3">{{ 0 }}</div>
+                                <div class="text-gray-800 mt-3">{{ refundedAmount | currency: tillService.currency }}</div>
                             </div>
                             <!-- <label class="col-md-4 mt-2 text-muted">{{"ASSISTED_BY" | translate}}</label>
                         <div class="col-md-8">
@@ -272,7 +272,7 @@
                         </div>
                     </div>
                     <div class="col-4">
-                        <button class="btn btn-sm btn-light btn-active-light-primary  w-100 d-flex mb-2">
+                        <button class="btn btn-sm btn-light btn-active-light-primary  w-100 d-flex mb-2" (click)="generatePDF(false,1);" [disabled]="transaction?.oCustomer?.bCounter || !transaction?.oCustomer?.bIsCompany" >
                             <fa-icon [icon]="faFileInvoice"></fa-icon>
                             <label class="mx-auto cursor-pointer">{{ "GENERAL_INVOICE" | translate}}</label>
                         </button>
@@ -549,7 +549,7 @@
                                         ({{ item.dCreatedDate | date:'dd-MM-YYYY hh:mm' }})
                                     </td>
                                     <td>{{ ((item?.sRemarks) ? item.sRemarks : '' ) | translate}}</td>
-                                    <td>{{item.nAmount || 0}}</td>
+                                    <td>{{item.nAmount || 0 | currency: tillService.currency}}</td>
                                     <td *ngIf="paymentEditMode">
                                         <div *ngIf="!item.bIgnore">
                                             <input class="form-control" type="number" [(ngModel)]="item.nNewAmount"
@@ -595,7 +595,7 @@
                             <tfoot>
                                 <tr>
                                     <th class="text-end">{{ 'TOTAL' | translate}}</th>
-                                    <th class="w-150px">{{ transaction.nPaymentMethodTotal }}</th>
+                                    <th class="w-150px">{{ transaction.nPaymentMethodTotal | currency: tillService.currency }}</th>
                                     <ng-container *ngIf="paymentEditMode">
                                         <th>
                                             <span
@@ -634,7 +634,7 @@
                                     <td>{{ (item?.oPayNL) ? 'PayNL' : 'CCV' }}</td>
                                     <td>{{ item?.sCardName }}</td>
                                     <td>{{ (item?.oPayNL) ? item.oPayNL.sTransactionId : ''}}</td>
-                                    <td>{{ item.nAmount || 0 }}</td>
+                                    <td>{{ item.nAmount || 0 | currency: tillService.currency}}</td>
                                 </tr>
                             </tbody>
                         </table>
