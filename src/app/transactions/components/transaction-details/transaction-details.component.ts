@@ -3,6 +3,7 @@ import { faAt, faClipboard, faDownload, faEnvelope, faFileInvoice, faPrint, faRe
 import { TranslateService } from '@ngx-translate/core';
 import * as _ from 'lodash';
 import * as _moment from 'moment';
+import * as JsBarcode from 'jsbarcode';
 import { Observable } from 'rxjs';
 import { ActivityDetailsComponent } from 'src/app/shared/components/activity-details-dialog/activity-details.component';
 import { CustomerDetailsComponent } from 'src/app/shared/components/customer-details/customer-details.component';
@@ -12,6 +13,7 @@ import { TransactionItemsDetailsComponent } from 'src/app/shared/components/tran
 import { ApiService } from 'src/app/shared/service/api.service';
 import { DialogComponent, DialogService } from 'src/app/shared/service/dialog';
 import { ReceiptService } from 'src/app/shared/service/receipt.service';
+import { TransactionsPdfService } from 'src/app/shared/service/transactions-pdf.service';
 import { TaxService } from 'src/app/shared/service/tax.service';
 import { TillService } from 'src/app/shared/service/till.service';
 
@@ -37,6 +39,10 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   faClipboard = faClipboard;
   faTrashAlt = faTrashAlt;
   transaction: any = {};
+  aTemplates: any = [];
+  aRepairItems: any = [];
+
+  filterdata: any = [];
   
   iBusinessId: any = localStorage.getItem("currentBusiness");
   iLocationId: any = localStorage.getItem("currentLocation");
@@ -76,6 +82,8 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   translation: any = [];
   oCurrentCustomer:any;
   showSystemCustomer:boolean = false;
+  changeAmount:number= 0;
+  refundedAmount:number=0;
   @ViewChild('slider', { read: ViewContainerRef }) container!: ViewContainerRef;
 
   constructor(
@@ -83,6 +91,7 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
     private apiService: ApiService,
     private dialogService: DialogService,
     private receiptService: ReceiptService,
+    private transactionsPdfService: TransactionsPdfService,
     private toastService: ToastService,
     public tillService: TillService,
     private translateService: TranslateService,
@@ -94,7 +103,17 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   }
 
   async ngOnInit() {
-    // console.log(this.transaction, this.from, this.printSettings);
+     //console.log(this.transaction, this.from, this.printSettings);
+    let sIndex = this.transaction.aPayments.findIndex((value: any) => value.sRemarks == "CHANGE_MONEY");
+    if (sIndex > -1) {
+      this.changeAmount = this.transaction.aPayments[sIndex].nAmount;
+    }
+
+    this.filterdata = this.transaction.aTransactionItems.filter((data: any) => data?.oType?.bRefund === true);
+    this.filterdata.forEach((items:any)=>{
+      this.refundedAmount += Number((items.nRefundAmount));
+    })
+
     //console.log("this.tillService",this.tillService);
     let translationKey = ['SUCCESSFULLY_UPDATED', 'NO_DATE_SELECTED'];
     this.translateService.get(translationKey).subscribe((res: any) => {
@@ -138,15 +157,83 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
       }
     });
   }
+  
+  // async generateInvoice(type: any, action: any, index?: number){
+
+  //   const aUniqueItemTypes:any = ['regular','order' ,'repair', 'repair_alternative', 'giftcard'];
+    
+  //   let oDataSource = undefined;
+  //   let template = undefined;
+  //   let pdfTitle = '';
+  //   let sThermalTemplateType = '';
+  //   this.aRepairItems = this.transaction.aTransactionItems;
+  //   const [_template, _oLogoData]: any = await Promise.all([
+  //     this.getTemplate(aUniqueItemTypes),
+  //     this.getBase64FromUrl(this.businessDetails?.sLogoLight),
+  //   ]);
+  //   const aTemplates = _template.data;
+
+  //   console.log("aTemplates", aTemplates);
+
+  //   this.aTemplates =  _template.data;
+  //   if (index != undefined && (type === 'repair' || type === 'repair_alternative')) {
+  //     // console.log('repair items index=', index, this.aRepairItems[index], this.activityItems);
+  //     template = this.aTemplates.filter((template: any) => template.eType === type)[0];
+  //     oDataSource = this.tillService.prepareDataForRepairReceipt(this.aRepairItems, this.transaction, null, index);
+  //     pdfTitle = oDataSource.sNumber;
+  //     sThermalTemplateType = 'repair-receipt';
+    
+  //   } else if (type === 'regular') {
+  //     oDataSource = this.transaction;
+  //     pdfTitle = this.transaction.sNumber;
+  //     template = this.aTemplates.filter((template: any) => template.eType === 'regular')[0];
+  //     sThermalTemplateType = 'business-receipt';
+    
+  //   } else if (type === 'giftcard') {
+  //     console.log("this.aTemplates", this.aTemplates);
+  //     oDataSource = this.aActivityItems.filter((item: any) => item.oType.eKind === 'giftcard')[0];
+  //     console.log("this.transaction?.nTotal", this.transaction?.nTotal);
+  //     oDataSource = this.transaction;
+  //    // oDataSource.nTotal = this.transaction?.nTotal;
+  //     oDataSource.sBarcodeURI = this.generateBarcodeURI(true, 'G-' + this.transaction?.sGiftCardNumber);
+  //     pdfTitle = this.transaction?.sGiftCardNumber;
+  //     template = this.aTemplates;
+  //     //template = this.aTemplates.filter((template: any) => template.eType === 'giftcard')[0];
+
+  //   } else if (type === 'order') {
+  //     template = this.aTemplates.filter((template: any) => template.eType === 'order')[0];
+  //    // oDataSource = this.tillService.prepareDataForOrderReceipt(this.activity, this.aActivityItems, this.transaction);
+  //     oDataSource = this.tillService.prepareDataForOrderReceipt(null, this.aActivityItems, this.transaction); 
+  //     pdfTitle = oDataSource.sActivityNumber;
+  //   }
+    
+  //   const oSettings = this.printSettings.find((s: any) => s.sMethod === 'pdf' && s.iWorkstationId === this.iWorkstationId)
+  //   this.receiptService.exportToPdf({
+  //     oDataSource: oDataSource,
+  //     pdfTitle: pdfTitle,
+  //     templateData: template,
+  //     printSettings: oSettings,
+  //     sAction: (action === 'DOWNLOAD') ? 'download' : 'print',
+  //     sApiKey: this.businessDetails.oPrintNode.sApiKey
+  //   });
+  // }
+
+
+  generateBarcodeURI(displayValue: boolean = true, data: any) {
+    var canvas = document.createElement("canvas");
+    JsBarcode(canvas, data, { format: "CODE128", displayValue: displayValue });
+    return canvas.toDataURL("image/png");
+  }
+
   downloadWithVAT(print: boolean = false) {
-    this.generatePDF(print);
+    this.generatePDF(print,0);
   }
   openProductInfo(product: any) {
     this.dialogRef.triggerEvent.emit({type:'open-slider',data: product});
   }
 
   downloadWebOrder() {
-    this.generatePDF(false);
+    this.generatePDF(false,0);
   }
 
   getPrintSetting() {
@@ -178,25 +265,27 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
     }
   }
 
-  async generatePDF(print: boolean) {
-    if(print)
-      this.printWithVATLoading = true;
-    else 
-      this.downloadWithVATLoading = true;
+  async generatePDF(print: boolean, type: any) {
+    if (type == 0) {
+      if (print)
+        this.printWithVATLoading = true;
+      else
+        this.downloadWithVATLoading = true;
+    }
 
     const template = await this.getTemplate('regular').toPromise();
     const oDataSource = JSON.parse(JSON.stringify(this.transaction));
     oDataSource.sBusinessLogoUrl = '';
     try {
       const _result: any = await this.getBase64FromUrl(oDataSource?.businessDetails?.sLogoLight).toPromise();
-      if(_result?.data) {
+      if (_result?.data) {
         oDataSource.sBusinessLogoUrl = _result?.data;
       }
-    } catch (e) {}
+    } catch (e) { }
 
     // console.log(oDataSource)
 
-    if(oDataSource?.oCustomer?.bCounter === true) {
+    if (oDataSource?.oCustomer?.bCounter === true) {
       oDataSource.oCustomer = {};
     }
 
@@ -204,19 +293,37 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
       payment.dCreatedDate = moment(payment.dCreatedDate).format('DD-MM-yyyy hh:mm');
     })
     const oSettings = this.printSettings.find((s: any) => s.sType === 'regular' && s.sMethod === 'pdf' && s.iWorkstationId === this.iWorkstationId)
-    this.receiptService.exportToPdf({
-      oDataSource: oDataSource,
-      pdfTitle: oDataSource.sNumber,
-      templateData: template.data,
-      printSettings: oSettings,      
-      eSituation: 'is_created',
-      sAction: (print) ? 'print': 'download',
-      sApiKey: this.businessDetails.oPrintNode.sApiKey,
-    });
-    if(print)
-      this.printWithVATLoading = false
-    else 
-      this.downloadWithVATLoading = false;
+   
+
+    // if(type == 1){
+    //   this.transactionsPdfService.exportToPdf({
+    //     oDataSource: oDataSource,
+    //     pdfTitle: oDataSource.sNumber,
+    //     templateData: template.data,
+    //     printSettings: oSettings,
+    //     eSituation: 'is_created',
+    //     sAction: (print) ? 'print' : 'download',
+    //     sApiKey: this.businessDetails.oPrintNode.sApiKey,
+    //   });
+    // } else{
+      this.receiptService.exportToPdf({
+        oDataSource: oDataSource,
+        pdfTitle: oDataSource.sNumber,
+        templateData: template.data,
+        printSettings: oSettings,
+        eSituation: 'is_created',
+        sAction: (print) ? 'print' : 'download',
+        sApiKey: this.businessDetails.oPrintNode.sApiKey,
+      });
+    //}   
+
+
+    if (type == 0) {
+      if (print)
+        this.printWithVATLoading = false
+      else
+        this.downloadWithVATLoading = false;
+    }
   }
 
 
