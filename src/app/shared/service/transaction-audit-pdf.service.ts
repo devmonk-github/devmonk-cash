@@ -1521,7 +1521,7 @@ export class TransactionAuditUiPdfService {
                 // _id
             }
             for (const oStatisticsDocument of aStatisticsDocuments) {
-                oProcessedStatisticData.aPaymentMethods = this.summingUpMultiplePayment({ aPaymentMethods: oStatisticsDocument.aPaymentMethods, aProcessPayment: oProcessedStatisticData?.aPaymentMethods });
+                // oProcessedStatisticData.aPaymentMethods = this.summingUpMultiplePayment({ aPaymentMethods: oStatisticsDocument.aPaymentMethods, aProcessPayment: oProcessedStatisticData?.aPaymentMethods });
                 oProcessedStatisticData.oCountings = this.summingUpCounting({ oCountings: oStatisticsDocument.oCountings, oProcessCountings: oProcessedStatisticData?.oCountings });
                 oProcessedStatisticData.aVatRates = this.summingUpVatRate({ aVatRates: oStatisticsDocument.aVatRates, aProcessVatRates: oProcessedStatisticData?.aVatRates });
                 // oProcessedStatisticData.aRevenuePerArticleGroupAndProperty = this.summingUpMultipleRevenuePerArticleGroupAndProperty({ aRevenuePerArticleGroupAndProperty: oStatisticsDocument.aRevenuePerArticleGroupAndProperty, aProcessRevenuePerArticleGroupAndProperty: oProcessedStatisticData?.aRevenuePerArticleGroupAndProperty });
