@@ -337,7 +337,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
   updateAmountVariables() {
     // console.log('updateAmountVariables');
-    this.nItemsTotalToBePaid = _.sumBy(this.transactionItems, (item:any) => (!item.isExclude) ? item.amountToBePaid : 0);//this.getTotals('price');
+    this.nItemsTotalToBePaid = +(_.sumBy(this.transactionItems, (item:any) => (!item.isExclude) ? item.amountToBePaid : 0).toFixed(2));//this.getTotals('price');
     this.nItemsTotalDiscount = this.getTotals('discount');
     this.nItemsTotalQuantity = this.getTotals('quantity');
     this.nTotalPayment = this.totalPrepayment();
@@ -410,7 +410,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
         result += (i.paymentAmount)// - i?.nGiftcardDiscount || 0 - i?.nRedeemedLoyaltyPoints || 0);
       }
     });
-    return result;
+    return +(result.toFixed(2));
   }
 
   checkout(): any {
