@@ -270,13 +270,13 @@
             <div class="mb-4">
               <label class="form-control-label mb-3">{{ "REPAIRER" | translate }}</label>
               <ng-select *ngIf="!oRepairer.sName" [(ngModel)]="oRepairer.sName" (search)="searchEmployees($event.term)"
-                class="form-control form-control-solid p-0 w-100 custom" placeholder="{{ 'SEARCH_EMPLOYEES' | translate }}"
+                class="form-control form-control-solid p-0" placeholder="{{ 'SEARCH_EMPLOYEES' | translate }}"
                 [minTermLength]="2" [clearable]="false" [isOpen]="filteredEmployees.length > 0"
                 (change)="selectAssignee($event, item)">
                 <ng-option *ngFor="let option of filteredEmployees" [value]="option">{{ option.sName || "Unknown" }}
                 </ng-option>
               </ng-select>
-              <div class="chip d-flex py-4 px-8" *ngIf="oRepairer.sName">
+              <div class="form-control form-control-solid p-0" *ngIf="oRepairer.sName">
                 {{ oRepairer.sName }}
                 <div (click)="oRepairer.sName = null">
                   &nbsp;<i class="close fas fa-times cursor-pointer"></i>
@@ -294,7 +294,7 @@
           <div class="col-12">
             <div class="mb-4">
               <ng-select *ngIf="!supplier" [(ngModel)]="supplier" (search)="searchSuppliers($event.term)"
-                class="form-control form-control-solid p-0 w-100 custom" placeholder="{{'SEARCH_SUPPLIER' | translate}}"
+                class="form-control form-control-solid p-0" placeholder="{{'SEARCH_SUPPLIER' | translate}}"
                 [minTermLength]="2" [clearable]="false" [isOpen]="supplierOptions.length > 0" (change)="
               supplier = $event.sName;
               item.iSupplierId = $event._id;
@@ -304,7 +304,7 @@
                   option.sName || "Unknown"
                   }}</ng-option>
               </ng-select>
-              <div class="chip d-flex py-4 px-8" *ngIf="supplier">
+              <div class="form-control form-control-solid p-0" *ngIf="supplier">
                 {{ supplier }}
                 <div (click)="supplier = null">
                   &nbsp;<i class="close fas fa-times cursor-pointer"></i>
@@ -316,7 +316,7 @@
             <div class="mb-4">
               <label class="form-control-label mb-3">{{ "BRAND" | translate }}</label>
               <ng-select *ngIf="!brand" [(ngModel)]="brand" (search)="searchBrands($event.term)"
-                class="form-control form-control-solid p-0 w-100 custom" placeholder="{{'SEARCH_BRAND' | translate}}" [minTermLength]="2"
+                class="form-control form-control-solid p-0" placeholder="{{'SEARCH_BRAND' | translate}}" [minTermLength]="2"
                 [clearable]="false" [isOpen]="filteredBrands.length > 0" (change)="
             brand = $event.sName;
             item.iBusinessBrandId = $event._id;
@@ -326,7 +326,7 @@
                   option.sName || "Unknown"
                   }}</ng-option>
               </ng-select>
-              <div class="chip d-flex py-4 px-8" *ngIf="brand">
+              <div class="form-control form-control-solid p-0" *ngIf="brand">
                 {{ brand }}
                 <div (click)="brand = null">
                   &nbsp;<i class="close fas fa-times cursor-pointer"></i>
