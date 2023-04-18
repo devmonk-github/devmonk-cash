@@ -21,7 +21,7 @@
     data-bs-parent="#kt_accordion_1">
     <div class="accordion-body px-3 py-4">
       <section class="row product-row ">
-        <div class="col-3">
+        <div class="col-2">
           <div class="row">
             <div class="col-12">
               <button class="btn btn-bg-light btn-active-color-primary mb-2 w-100" (click)="create()"
@@ -53,7 +53,7 @@
           </div>
         </div>
 
-        <div class="col-3">
+        <div class="col-2">
           <!-- <div class="form-floating mb-7"> -->
             <label class="form-contrl-label mb-3" for="number">{{ "VALUE" | translate}}</label>
             <input type="number" class="form-control" name="number" id="value" [(ngModel)]="item.price"
@@ -84,13 +84,19 @@
             </ng-select>
           <!-- </div> -->
         </div>
-        <div class="col-1">
+        <div class="col-2">
           <!-- <button class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary w-30px h-30px" (click)="create()"
             [disabled]="!item.nonEditable && numberIcon === faBan">
             <span class="svg-icon svg-icon-1qx me-0">
               <fa-icon [icon]="faPrint"></fa-icon>
             </span>
           </button> -->
+          <div class="form-group mb-4">
+            <label class="form-control-label mb-3">{{ "FOR_REFUND" | translate}}</label>:
+            <label class="form-check form-switch form-check-custom form-check-solid mb-3 mb-lg-0">
+              <input type="checkbox" class="form-check-input" [(ngModel)]="item.isExclude" (change)="updatePayments()">
+            </label>
+          </div>
         </div>
       </section>
     </div>

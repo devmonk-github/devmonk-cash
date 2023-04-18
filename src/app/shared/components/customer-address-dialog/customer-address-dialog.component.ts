@@ -174,7 +174,8 @@ export class CustomerAddressDialogComponent implements OnInit, AfterViewInit{
     nLoyaltyPointsValue: 0 ,
     createrDetail:{},
     iEmployeeId:'',
-    aGroups:[]
+    aGroups:[],
+    bIsCompany: false
   }
   iChosenCustomerId:any;
   iSearchedCustomerId:any;

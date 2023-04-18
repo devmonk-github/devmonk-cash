@@ -337,7 +337,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
   updateAmountVariables() {
     // console.log('updateAmountVariables');
-    this.nItemsTotalToBePaid = _.sumBy(this.transactionItems, 'amountToBePaid');//this.getTotals('price');
+    this.nItemsTotalToBePaid = +(_.sumBy(this.transactionItems, (item:any) => (!item.isExclude) ? item.amountToBePaid : 0).toFixed(2));//this.getTotals('price');
     this.nItemsTotalDiscount = this.getTotals('discount');
     this.nItemsTotalQuantity = this.getTotals('quantity');
     this.nTotalPayment = this.totalPrepayment();
@@ -410,7 +410,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
         result += (i.paymentAmount)// - i?.nGiftcardDiscount || 0 - i?.nRedeemedLoyaltyPoints || 0);
       }
     });
-    return result;
+    return +(result.toFixed(2));
   }
 
   checkout(): any {
@@ -479,7 +479,10 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
           header: 'CLEAR_TRANSACTION',
           bodyText: 'ARE_YOU_SURE_TO_CLEAR_THIS_TRANSACTION',
           buttonDetails: buttons
-        }
+        },
+        hasBackdrop: true,
+        closeOnBackdropClick: false,
+        closeOnEsc: false
       }).instance.close.subscribe(result => {
         if (result) {
           this.transactionItems = []
@@ -557,8 +560,14 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
   openTransactionSearchDialog() {
     // console.log('open transaction search dialog')
-    this.dialogService.openModal(TransactionsSearchComponent, { cssClass: 'modal-xl', context: { customer: this.customer } })
-      .instance.close.subscribe(async (data) => {
+    this.dialogService.openModal(TransactionsSearchComponent, 
+      { 
+        cssClass: 'modal-xl', 
+        context: { customer: this.customer },
+        hasBackdrop: true,
+        closeOnBackdropClick: false,
+        closeOnEsc: false
+      }).instance.close.subscribe(async (data) => {
         // console.log('response of transaction search component', data)
         if (data?.transaction) {
           this.bIsTransactionLoading = true;
@@ -590,7 +599,14 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   async openCustomerDialog() {
-    this.dialogService.openModal(CustomerDialogComponent, { cssClass: 'modal-xl', context: { customer: this.customer, from: 'cash-register' } }).instance.close.subscribe((data) => {
+    this.dialogService.openModal(CustomerDialogComponent, 
+      { 
+        cssClass: 'modal-xl', 
+        context: { customer: this.customer, from: 'cash-register' },
+        hasBackdrop: true,
+        closeOnBackdropClick: false,
+        closeOnEsc: false
+      }).instance.close.subscribe((data) => {
       if (data.customer) {
         this.customer = data.customer;
         console.log(this.customer);
@@ -602,7 +618,14 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   findOpenActivitiesForCustomer() {
-    this.dialogService.openModal(CustomerActivitiesDialogComponent, { cssClass: 'modal-xl', context: { customer: this.customer } }).instance.close.subscribe(async (data) => {
+    this.dialogService.openModal(CustomerActivitiesDialogComponent, 
+      { 
+        cssClass: 'modal-xl', 
+        context: { customer: this.customer },
+        hasBackdrop: true,
+        closeOnBackdropClick: false,
+        closeOnEsc: false
+      }).instance.close.subscribe(async (data) => {
       if (data?.transaction) {
         this.bIsTransactionLoading = true;
         // / Finding BusinessProduct and their location and stock. Need to show in the dropdown of location choosing /
@@ -672,7 +695,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     const paidAmount = _.sumBy(this.payMethods, 'amount') || 0;
 
     const aGiftcard = this.transactionItems.filter((v: any) => v.type == 'giftcard');
-    this.bAllGiftcardPaid = aGiftcard.every((el: any) => el.paymentAmount == el.amountToBePaid)
+    this.bAllGiftcardPaid = aGiftcard.filter((el:any) => !el.isExclude).every((el: any) => el.paymentAmount == el.amountToBePaid)
 
     if (paidAmount === 0) {
       this.payMethods.map(o => o.isDisabled = false);
@@ -711,6 +734,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
           item.prepaymentTouched = false;
         }
       } else {
+        if(item.type === 'giftcard') return;
         item.isExclude = false;
         item.manualUpdate = (item.type === 'gold-purchase') ? true : false;
       }
@@ -725,8 +749,14 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
 
   startTerminalPayment() {
-    this.dialogService.openModal(TerminalDialogComponent, { cssClass: 'modal-lg', context: { payments: this.payMethods } })
-      .instance.close.subscribe((data) => {
+    this.dialogService.openModal(TerminalDialogComponent, 
+      { 
+        cssClass: 'modal-lg', 
+        context: { payments: this.payMethods },
+        hasBackdrop: true,
+        closeOnBackdropClick: false,
+        closeOnEsc: false
+      }).instance.close.subscribe((data) => {
         if (data) {
           data.forEach((pay: any) => {
             if (pay.sName === 'Card' && pay.status !== 'SUCCESS') {
@@ -792,8 +822,18 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     }
     const changeAmount = this.availableAmount - this.nItemsTotalToBePaid
-    this.dialogService.openModal(TerminalDialogComponent, { cssClass: 'modal-lg', context: { payments: this.payMethods, changeAmount, nTotalTransactionAmount: this.nItemsTotalToBePaid } })
-      .instance.close.subscribe(async (payMethods: any) => {
+    this.dialogService.openModal(TerminalDialogComponent, 
+      { 
+        cssClass: 'modal-lg', 
+        context: { 
+          payments: this.payMethods, 
+          changeAmount, 
+          nTotalTransactionAmount: this.nItemsTotalToBePaid 
+        },
+        hasBackdrop: true,
+        closeOnBackdropClick: false,
+        closeOnEsc: false
+      }).instance.close.subscribe(async (payMethods: any) => {
         // console.log(payMethods)
         if (!payMethods) {
           this.saveInProgress = false;
@@ -833,9 +873,12 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
           if (this.appliedGiftCards?.length) this.tillService.createGiftcardTransactionItem(body, this.discountArticleGroup);
           // return;
 
-          const oDialogComponent: DialogComponent = this.dialogService.openModal(TransactionActionDialogComponent, {
-            cssClass: 'modal-lg', hasBackdrop: true, closeOnBackdropClick: true, closeOnEsc: true,
-          }).instance;
+          const oDialogComponent: DialogComponent = this.dialogService.openModal(TransactionActionDialogComponent, 
+            {
+              cssClass: 'modal-lg', 
+              hasBackdrop: true, 
+              closeOnBackdropClick: true, 
+              closeOnEsc: true}).instance;
 
           if (this.bIsFiscallyEnabled) {
             const result: any = await this.fiskalyService.updateFiskalyTransaction(this.transactionItems, _.clone(body.payments), 'FINISHED');
@@ -1405,13 +1448,28 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
   openExpenses() {
     const paymentMethod = this.payMethods.find((o: any) => o.sName.toLowerCase() === 'cash');
-    this.dialogService.openModal(AddExpensesComponent, { cssClass: 'modal-m', context: { paymentMethod, taxes: this.tillService.taxes } })
-      .instance.close.subscribe(result => {
-      });
+    this.dialogService.openModal(AddExpensesComponent, 
+      { 
+        cssClass: 'modal-m', 
+        context: { 
+          paymentMethod, 
+          taxes: this.tillService.taxes 
+        },
+        hasBackdrop: true,
+        closeOnBackdropClick: false,
+        closeOnEsc: false 
+      }).instance.close.subscribe(result => {});
   }
 
   openCardsModal(oGiftcard?: any) {
-    this.dialogService.openModal(CardsComponent, { cssClass: 'modal-lg', context: { customer: this.customer, oGiftcard } })
+    this.dialogService.openModal(CardsComponent, 
+      { 
+        cssClass: 'modal-lg', 
+        context: { customer: this.customer, oGiftcard },
+        hasBackdrop: true,
+        closeOnBackdropClick: false,
+        closeOnEsc: false
+      })
       .instance.close.subscribe(result => {
         if (result) {
           if (result.giftCardInfo.nAmount > 0) {
@@ -1427,8 +1485,14 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
 
   openMorePaymentMethodModal() {
-    this.dialogService.openModal(MorePaymentsDialogComponent, { cssClass: 'modal-l', context: this.allPaymentMethod })
-      .instance.close.subscribe(result => {
+    this.dialogService.openModal(MorePaymentsDialogComponent, 
+      { 
+        cssClass: 'modal-l', 
+        context: this.allPaymentMethod,
+        hasBackdrop: true,
+        closeOnBackdropClick: false,
+        closeOnEsc: false
+      }).instance.close.subscribe(result => {
         if (result) {
           this.payMethods.push(_.clone(result));
         }

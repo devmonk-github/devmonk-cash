@@ -77,7 +77,7 @@ export class RepairComponent implements OnInit {
     this.getBusinessBrands();
     this.checkArticleGroups();
     this.getProperties();
-     console.log(this.item);
+    //  console.log(this.item);
     // console.log(this.item?.price);
     // console.log(this.item?.nPurchasePrice);
     // this.listSuppliers();
@@ -99,7 +99,10 @@ export class RepairComponent implements OnInit {
           articleGroupsList: this.oStaticData?.articleGroupsList || [],
           brandsList: this.oStaticData?.brandsList || [],
           partnersList: this.oStaticData?.partnersList || [],
-        } 
+        },
+        hasBackdrop: true,
+        closeOnBackdropClick: false,
+        closeOnEsc: false 
       }).instance.close.subscribe((data) => {
         // console.log({data});
         if (data.action) {
@@ -432,8 +435,13 @@ export class RepairComponent implements OnInit {
   }
 
   openDiscountDialog(): void {
-    this.dialogService.openModal(DiscountDialogComponent, { context: { item: JSON.parse(JSON.stringify(this.item)) } })
-      .instance.close.subscribe((data) => {
+    this.dialogService.openModal(DiscountDialogComponent, 
+      { 
+        context: { item: JSON.parse(JSON.stringify(this.item)) },
+        hasBackdrop: true,
+        closeOnBackdropClick: false,
+        closeOnEsc: false
+      }).instance.close.subscribe((data) => {
         if (data.item) {
           this.item.nDiscount = data.item.nDiscount;
           this.item.bDiscountOnPercentage = data.item?.discount?.percent || false;

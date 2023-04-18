@@ -65,7 +65,7 @@ export class PaymentDistributionService {
     if (bTesting) console.log('assignedAmountToManual', assignedAmountToManual, 'availableAmount', availableAmount)
     
     if (arrToUpdate?.length) {
-      let totalAmountToBePaid = arrToUpdate.filter(el => el.amountToBePaid > 0).reduce((n, { amountToBePaid }) => n + amountToBePaid, 0); // + assignedAmountToManual
+      let totalAmountToBePaid = +(arrToUpdate.filter(el => el.amountToBePaid > 0).reduce((n, { amountToBePaid }) => n + amountToBePaid, 0).toFixed(2)); // + assignedAmountToManual
       if (bTesting) console.log({totalAmountToBePaid})
 
       if (totalAmountToBePaid > 0 && arrToUpdate.filter((el: any) => el.type === 'giftcard')?.length) {
@@ -101,11 +101,11 @@ export class PaymentDistributionService {
           }
         });
       }
-      
-      availableAmount -= arrToUpdate.filter(el => el.amountToBePaid > 0).reduce((n, { paymentAmount }) => n + paymentAmount, 0);
+      const nDistributedAmount = +(arrToUpdate.filter(el => el.amountToBePaid > 0).reduce((n, { paymentAmount }) => n + paymentAmount, 0).toFixed(2))
+      availableAmount -= nDistributedAmount;
       if (bTesting) console.log('after assigning amounts, remaining availableAmount is', availableAmount);
 
-      let assignedAmount = arrToUpdate.reduce((n, { paymentAmount }) => n + paymentAmount, 0);
+      let assignedAmount = +(arrToUpdate.reduce((n, { paymentAmount }) => n + paymentAmount, 0).toFixed(2));
       if (bTesting) console.log('assignedAmount', assignedAmount, 'availableAmount', availableAmount)
       if(availableAmount > 0 && assignedAmount != 0) {
         if (bTesting) console.log('availableAmount > 0', availableAmount)

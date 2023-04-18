@@ -1135,7 +1135,7 @@
                                     <tfoot>
                                         <tr>
                                             <th class="text-end">{{ 'TOTAL' | translate}}</th>
-                                            <th class="w-150px">{{ nPaymentMethodTotal }}</th>
+                                            <th class="w-150px">{{ nPaymentMethodTotal | number: '.2'}}</th>
                                             <ng-container *ngIf="paymentEditMode">
                                                 <th>
                                                     <span
@@ -1508,16 +1508,14 @@
                                         [disabled]="bDisableCountings">
                                 </div>
                                 <br>
-                                <ng-container *ngIf="oStatisticsDocument?.bIsDayState">
-                                    <div class="d-flex justify-content-start">
-                                        <button type="button" class="btn btn-primary"
-                                            data-kt-roles-modal-action="submit" (click)="onCloseDayState()"
-                                            [class.disabled]="closingDayState">
-                                            <span class="indicator-label">{{ "CLOSE_DAYSTATE" | translate}}</span>
-                                        </button>
-                                        <div *ngIf="closingDayState" class="spinner-border mx-5"></div>
-                                    </div>
-                                </ng-container>
+                                
+                                <div class="d-flex justify-content-start" *ngIf="oStatisticsDocument?.bIsDayState">
+                                    <button type="button" class="btn btn-primary"
+                                        data-kt-roles-modal-action="submit" [disabled]="bStatisticLoading || closingDayState" (click)="checkAndAskForQuickCountings()">
+                                        <span class="indicator-label">{{ "CLOSE_DAYSTATE" | translate}}</span>
+                                    </button>
+                                    <div *ngIf="closingDayState" class="spinner-border mx-5"></div>
+                                </div>
 
                             </div>
                         </div>

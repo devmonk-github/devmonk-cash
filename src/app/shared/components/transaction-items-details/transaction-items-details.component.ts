@@ -171,8 +171,11 @@ export class TransactionItemsDetailsComponent implements OnInit {
       this.transactionItems = this.transactionItems.map(v => ({ ...v, isSelected: false }));
       // console.log('this.transactionItems 4: ', JSON.parse(JSON.stringify(this.transactionItems)));
       this.transactionItems.forEach(item => {
-        const nTotalDiscount = (item.nDiscount * item.nQuantity) + (item?.nRedeemedLoyaltyPoints || 0) + (item?.nRedeemedGiftcardAmount || 0);
-        if (item.nPaidAmount < (item.nTotalAmount - nTotalDiscount)) {
+        
+        // const nTotalDiscount = (+((item?.bDiscountOnPercentage ? (item.nPriceIncVat * (item.nDiscount / 100)) : item.nDiscount).toFixed(2)) * item.nQuantity) 
+        //                         + (item?.nRedeemedLoyaltyPoints || 0) 
+        //                         + (item?.nRedeemedGiftcardAmount || 0);
+        if (item.nPaidAmount < item.nTotalAmount) {
           item.tType = 'pay';
         } else {
           item.tType = 'refund';

@@ -18,7 +18,7 @@
             </div>
             <div class="col-lg-3">
                 <ng-select class="form-control form-control-solid p-0" [multiple]="true"
-                  [(ngModel)]="requestParams.oFilterBy" [clearable]="false" placeholder="{{'ALL' | translate}}">
+                  [(ngModel)]="requestParams.oFilterBy.aSearchField" [clearable]="false" placeholder="{{'ALL' | translate}}">
                     <ng-option *ngFor="let item of oFilterFields" [value]="item.value">{{item.key | translate}}</ng-option>
                 </ng-select>
             </div>
