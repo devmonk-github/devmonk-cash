@@ -57,6 +57,7 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   imagePlaceHolder: string = '../../../../assets/images/no-photo.svg';
   eType: string = '';
   transactionId: string;
+  invoiceNumber:any;
   pdfGenerating: Boolean = false;
   downloadWithVATLoading: Boolean = false;
   businessDetails: any = {};
@@ -84,6 +85,7 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   showSystemCustomer:boolean = false;
   changeAmount:number= 0;
   refundedAmount:number=0;
+  bGenerateInvoice:boolean= false;
   @ViewChild('slider', { read: ViewContainerRef }) container!: ViewContainerRef;
 
   constructor(
@@ -266,6 +268,18 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   }
 
   async generatePDF(print: boolean, type: any) {
+    if(type == 1) this.bGenerateInvoice = true;
+    const template = await this.getTemplate('regular').toPromise();
+    const oDataSource = JSON.parse(JSON.stringify(this.transaction));
+    if(type == 1) {
+      const result:any =  await this.updateInvoiceNumber();
+      //console.log("result", result);
+      oDataSource.sInvoiceNumber = result?.data?.sInvoiceNumber;
+      //console.log("oDataSource.sInvoiceNumber", oDataSource.sInvoiceNumber);
+    }
+
+    
+
     if (type == 0) {
       if (print)
         this.printWithVATLoading = true;
@@ -273,8 +287,8 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
         this.downloadWithVATLoading = true;
     }
 
-    const template = await this.getTemplate('regular').toPromise();
-    const oDataSource = JSON.parse(JSON.stringify(this.transaction));
+   
+   
     oDataSource.sBusinessLogoUrl = '';
     try {
       const _result: any = await this.getBase64FromUrl(oDataSource?.businessDetails?.sLogoLight).toPromise();
@@ -587,6 +601,11 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
        this.showSystemCustomer = true;
       }
    }
+  }
+
+  async updateInvoiceNumber() {
+   return await this.apiService.putNew('cashregistry', `/api/v1/transaction/${this.transaction._id}`, { iBusinessId:this.iBusinessId,bGenerateInvoice: true }).toPromise();
+      
   }
 
   /* Update customer in [T, A, AI] */

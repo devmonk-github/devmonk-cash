@@ -234,28 +234,24 @@
                 </div>
             </div>
             <div class="col-8" *ngIf="eType === 'cash-register-revenue'">
-                <h3 class="fw-bolder mb-4">
-                    <span>{{ "TRANSACTION_OVERVIEW" | translate }}</span>
-                </h3>
+               
                 <div class="row">
+                    
                     <div class="col-8 fw-bold gy-1">
                         <div class="row">
+                            <h3 class="fw-bolder mb-4">
+                                <span>{{ "TRANSACTION_OVERVIEW" | translate }}</span>
+                            </h3>
                             <label class="col-md-4 mt-3 text-muted">{{"RECEIPT_NUMBER" | translate}}</label>
                             <div class="col-md-8">
-                                <div class="text-gray-800 mt-3">{{ transaction.sInvoiceNumber || '' }}</div>
+                                <div class="text-gray-800 mt-3">{{ transaction.sReceiptNumber || '' }}</div>
                             </div>
                             <label class="col-md-4 mt-3 text-muted">{{"DATE_TIME" | translate}}</label>
                             <div class="col-md-8">
                                 <div class="text-gray-800 mt-2">{{ transaction.dCreatedDate | date:'dd-MM-YYYY hh:mm' }}
                                 </div>
                             </div>
-                            <!-- <label class="col-md-4 mt-2 text-muted">{{"PAY_METHOD" | translate}}</label>
-                        <div class="col-md-8">
-                            <div *ngFor="let payment of transaction.aPayments">
-                                <div class="text-gray-800 mt-2">{{ payment.sMethod || '' }}</div>
-                            </div>
-
-                        </div> -->
+                            
                             <label class="col-md-4 mt-3 text-muted">{{"CHANGE" | translate}}</label>
                             <div class="col-md-8">
                                 <div class="text-gray-800 mt-3">{{ changeAmount | currency: tillService.currency }}</div>
@@ -264,15 +260,35 @@
                             <div class="col-md-8">
                                 <div class="text-gray-800 mt-3">{{ refundedAmount | currency: tillService.currency }}</div>
                             </div>
-                            <!-- <label class="col-md-4 mt-2 text-muted">{{"ASSISTED_BY" | translate}}</label>
-                        <div class="col-md-8">
-                            <div class="text-gray-800 mt-2">{{ transaction?.oEmployee?.sFirstName }} {{
-                                transaction?.oEmployee?.sLastName }}</div>
-                        </div> -->
+                            
+                        </div>
+                        <div class="row invoice" *ngIf="bGenerateInvoice">
+                            <h3 class="fw-bolder mb-4">
+                                <span>Invoice</span>
+                            </h3>
+                            <label class="col-md-4 mt-3 text-muted">Invoice number</label>
+                            <div class="col-md-8">
+                                <div class="text-gray-800 mt-3">{{ transaction.sInvoiceNumber || '' }}</div>
+                            </div>
+                            <label class="col-md-4 mt-3 text-muted">{{"DATE_TIME" | translate}}</label>
+                            <div class="col-md-8">
+                                <div class="text-gray-800 mt-2">{{ transaction.dCreatedDate | date:'dd-MM-YYYY hh:mm' }}
+                                </div>
+                            </div>
+                            
+                            <label class="col-md-4 mt-3 text-muted">{{"CHANGE" | translate}}</label>
+                            <div class="col-md-8">
+                                <div class="text-gray-800 mt-3">{{ changeAmount | currency: tillService.currency }}</div>
+                            </div>
+                            <label class="col-md-4 mt-3 text-muted">{{"REFUNDED" | translate}}</label>
+                            <div class="col-md-8">
+                                <div class="text-gray-800 mt-3">{{ refundedAmount | currency: tillService.currency }}</div>
+                            </div>
+                            
                         </div>
                     </div>
                     <div class="col-4">
-                        <button class="btn btn-sm btn-light btn-active-light-primary  w-100 d-flex mb-2" (click)="generatePDF(false,1);" [disabled]="transaction?.oCustomer?.bCounter || !transaction?.oCustomer?.bIsCompany" >
+                        <button class="btn btn-sm btn-light btn-active-light-primary  w-100 d-flex mb-2" (click)="generatePDF(false,1);" [disabled]="transaction?.oCustomer?.bCounter" >
                             <fa-icon [icon]="faFileInvoice"></fa-icon>
                             <label class="mx-auto cursor-pointer">{{ "GENERAL_INVOICE" | translate}}</label>
                         </button>
