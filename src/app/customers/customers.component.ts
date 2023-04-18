@@ -78,7 +78,7 @@ export class CustomersComponent implements OnInit {
     oFilterBy: {
       aSearchField: []
     },
-    customerType: 'all',
+    customerType: 'all'
   };
   iChosenCustomerId : any;
   @ViewChildren('inputElement') inputElement!: QueryList<ElementRef>;
