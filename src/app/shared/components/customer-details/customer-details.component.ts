@@ -291,9 +291,9 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     this.apiService.setToastService(this.toastService);
     this.getBusinessDetails();
     this.customer = { ... this.customer, ... this.dialogRef?.context?.customerData };
-    console.log("this.customer------");
-    console.log(this.customer);
-    const translations = ['SUCCESSFULLY_ADDED', 'SUCCESSFULLY_UPDATED' ,'LOYALITY_POINTS_ADDED']
+    //console.log("this.customer------");
+    //console.log(this.customer);
+    const translations = ['SUCCESSFULLY_ADDED', 'SUCCESSFULLY_UPDATED' ,'LOYALITY_POINTS_ADDED', 'ARE_YOU_SURE_TO_DELETE_THIS_CUSTOMER']
     this.translateService.get(translations).subscribe(
       result => this.translations = result
     )
@@ -358,10 +358,10 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
 
   deleteCustomer(customer: any) {
     let confirmBtnDetails = [
-      { text: "YES", value: 'remove', status: 'success', class: 'ml-auto mr-2' },
-      { text: "CANCEL", value: 'close' }
+      { text: "CANCEL", value: 'close', class: 'btn btn-secondary ml-auto mr-2'  },
+      { text: "YES", value: 'remove', status: 'success', class: 'btn btn-success ml-auto mr-2' }
     ];
-    this.dialogService.openModal(ConfirmationDialogComponent, { context: { header: 'DELETE', bodyText: 'Are you sure to delete?', buttonDetails: confirmBtnDetails } })
+    this.dialogService.openModal(ConfirmationDialogComponent, { context: { header: 'DELETE', bodyText: this.translations[`ARE_YOU_SURE_TO_DELETE_THIS_CUSTOMER`], buttonDetails: confirmBtnDetails } })
       .instance.close.subscribe(
         (status: any) => {
           console.log("status");
@@ -1134,5 +1134,16 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
       ...this.customer.oShippingAddress,
       ...invoiceAddress
     }
+  }
+
+  onlyLetters(event: any) {
+    let charCode = event.keyCode;
+    let pattern =  /[0-9]/;
+    let char = String.fromCharCode(charCode);
+    // invalid character, prevent input
+    if (pattern.test(char)){
+      event.preventDefault();
+    }    
+    console.log(String.fromCharCode(charCode),' - ', pattern.test(char));
   }
 }

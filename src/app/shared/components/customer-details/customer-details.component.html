@@ -788,13 +788,13 @@
                                         [(ngModel)]="customer.oInvoiceAddress.sStreet" (ngModelChange)="convertFirstLetterUpper($event , 'oInvoiceAddress.sStreet')" />
                                 </div>
 
-                                <div class="col-3">
-                                    <input class="form-control" placeholder="{{'HOUSE_NUMBER' | translate}}"
+                                <div class="col-3 custom-number">
+                                    <input class="form-control" type="number" placeholder="{{'HOUSE_NUMBER' | translate}}"
                                         [(ngModel)]="customer.oInvoiceAddress.sHouseNumber" />
                                 </div>
                                 <div class="col-2">
                                     <input class="form-control" placeholder="{{'HOUSE_NUMBER_SUFFIX' | translate}}"
-                                        [(ngModel)]="customer.oInvoiceAddress.sHouseNumberSuffix" />
+                                        [(ngModel)]="customer.oInvoiceAddress.sHouseNumberSuffix" (keydown)="onlyLetters($event)"/>
                                 </div>
                             </div>
                             <div class="row mb-3">
@@ -828,13 +828,13 @@
                                         [(ngModel)]="customer.oShippingAddress.sStreet" (ngModelChange)="convertFirstLetterUpper($event , 'oShippingAddress.sStreet')" />
                                 </div>
 
-                                <div class="col-3">
-                                    <input class="form-control" placeholder="{{'HOUSE_NUMBER' | translate}}"
+                                <div class="col-3 custom-number">
+                                    <input class="form-control" type="number" placeholder="{{'HOUSE_NUMBER' | translate}}"
                                         [(ngModel)]="customer.oShippingAddress.sHouseNumber" />
                                 </div>
                                 <div class="col-2">
                                     <input class="form-control" placeholder="{{'HOUSE_NUMBER_SUFFIX' | translate}}"
-                                        [(ngModel)]="customer.oShippingAddress.sHouseNumberSuffix" />
+                                        [(ngModel)]="customer.oShippingAddress.sHouseNumberSuffix" (keydown)="onlyLetters($event)"/>
                                 </div>
                             </div>
                             <div class="row mb-3">
