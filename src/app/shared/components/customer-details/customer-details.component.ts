@@ -407,10 +407,28 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     if(event == 'Firm'){
       this.customer.bIsCompany = true;
       this.customer.sGender = 'other';
+      if(this.mode === 'create'){
+        this.customer.oContactPerson.sFirstName = this.customer.sFirstName;
+        this.customer.oContactPerson.sPrefix = this.customer.sPrefix;
+        this.customer.oContactPerson.sLastName = this.customer.sLastName;
+        this.customer.sFirstName = '';
+        this.customer.sPrefix = '';
+        this.customer.sLastName = '';
+      }else{
+        this.customer.oContactPerson.sFirstName = this.customer.sFirstName;
+        this.customer.oContactPerson.sPrefix = this.customer.sPrefix;
+        this.customer.oContactPerson.sLastName = this.customer.sLastName;
+      }
+      
     } 
     else{
       this.customer.bIsCompany = false;
-    } 
+      if(this.mode === 'details'){
+        this.customer.oContactPerson.sFirstName = '';
+        this.customer.oContactPerson.sPrefix = '';
+        this.customer.oContactPerson.sLastName = '';
+      }
+    }
   }
 
   getCustomerGroups(){

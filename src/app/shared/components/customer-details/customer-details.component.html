@@ -14,7 +14,7 @@
             </ng-container> 
         </div>
         <div *ngIf="mode === 'details'" class="card-toolbar flex-row-fluid justify-content-end gap-5">
-            <button class="btn btn-light-warning" *ngIf="bIsCurrentCustomer" (click)="close({ bChangeCustomer: true })">
+            <button class="btn btn-secondary" *ngIf="bIsCurrentCustomer" (click)="close({ bChangeCustomer: true })">
                 {{"CHANGE_CUSTOMER" | translate}}
             </button>
             <button class="btn btn-secondary" (click)="editProfile = !editProfile">{{ ((editProfile)? "CANCEL":"EDIT" )|
@@ -46,8 +46,7 @@
                     <div class="d-flex">
                         <div class="flex-grow-1">
                             <div class="d-flex align-items-center mb-5">
-                                <i *ngIf="!customer?.bIsCompany" class="fa fa-user fs-1"></i>
-                                <i *ngIf="customer?.bIsCompany" class="fa fa-building fs-1"></i>
+                                <i [class]="customer?.bIsCompany?'fa fa-building fs-1':'fa fa-user fs-1'"></i>
                                 <h2 class="fw-bolder mx-5 mb-0">
                                     <span *ngIf="!customer?.bIsCompany" style="text-transform: capitalize;">{{ customer.sSalutation }} {{ customer.sFirstName }} {{ customer.sLastName}} </span>
                                     <span *ngIf="customer?.bIsCompany" style="text-transform: capitalize;">{{customer.sCompanyName}}</span>
@@ -877,42 +876,6 @@
                                 (ngModelChange)="customer.dDateOfBirth = $event" />
                         </div>
                     </div>
-
-
-                    <div class="mb-3" *ngIf="customer?.oIdentity?.documentName">
-                        <label for="documentName">{{'DOCUMENT_NAME' | translate}}</label>
-                        <ng-select id="documentName" [(ngModel)]="customer.oIdentity.documentName" [clearable]="false">
-                            <ng-option *ngFor="let type of documentTypes" [value]="type">{{type}}</ng-option>
-                        </ng-select>
-                    </div>
-                    <div class="mb-6" *ngIf="customer?.oIdentity?.documentNumber">
-                        <input class="form-control" placeholder="{{'DOCUMENT_NUMBER' | translate}}"
-                            [(ngModel)]="customer.oIdentity.documentNumber" />
-                    </div>
-
-                    <!-- <h3>{{'COMPANY_DETAILS' | translate}}</h3> -->
-
-                    <!-- <div class="mb-3">
-                        <label for="sCompanyName">{{'COMPANY_NAME' | translate}}</label>
-                        <input class="form-control mb-6" id="sCompanyName" [(ngModel)]="customer.sCompanyName"(ngModelChange)="convertFirstLetterUpper($event , 'sCompanyName')"  />
-                    </div> -->
-
-
-                    <!-- <div class="mb-3">
-                        <label for="nPaymentTermDays">{{'PAYMENT_TERM_IN_DAYS' | translate}}</label>
-                        <input class="form-control" id="nPaymentTermDays" [(ngModel)]="customer.nPaymentTermDays" />
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="sVatNumber">{{'VAT_NUMBER' | translate}}</label>
-                        <input class="form-control" [(ngModel)]="customer.sVatNumber" />
-                    </div> -->
-
-                    <div class="mb-3" *ngIf="customer?.sCocNumber">
-                        <label for="sCocNumber">{{'COC_NUMBER' | translate}}</label>
-                        <input class="form-control" [(ngModel)]="customer.sCocNumber" />
-                    </div>
-
                     <div class="mb-3">
                         <label for="customersGroup">{{'CUSTOMER_GROUP' | translate}} </label>
                         <ng-select [multiple]="true" [items]="customerGroupList" [(ngModel)]="this.customer.aGroups"
@@ -926,6 +889,58 @@
                             </ng-template>
 
                         </ng-select>
+                    </div>
+
+                    <div class="mb-3" *ngIf="customer?.oIdentity?.documentName">
+                        <label for="documentName">{{'DOCUMENT_NAME' | translate}}</label>
+                        <ng-select id="documentName" [(ngModel)]="customer.oIdentity.documentName" [clearable]="false">
+                            <ng-option *ngFor="let type of documentTypes" [value]="type">{{type}}</ng-option>
+                        </ng-select>
+                    </div>
+                    <div class="mb-6" *ngIf="customer?.oIdentity?.documentNumber">
+                        <input class="form-control" placeholder="{{'DOCUMENT_NUMBER' | translate}}"
+                            [(ngModel)]="customer.oIdentity.documentNumber" />
+                    </div>
+                    <div class="" *ngIf="!customer?.bIsCompany && customer?.sCompanyName">
+                        <h3 class="my-3">{{'COMPANY_DETAILS' | translate}}</h3> 
+                        <div class="mb-3">
+                           <label for="sCompanyName">{{'COMPANY_NAME' | translate}}</label>
+                           <input class="form-control mb-3" id="sCompanyName" [(ngModel)]="customer.sCompanyName"(ngModelChange)="convertFirstLetterUpper($event , 'sCompanyName')"  />
+                        </div>
+   
+                        <div class="mb-3 row">
+                            <label class="col-12" for="contactDetail">{{'CONTACT_PERSON' | translate}}</label>
+                            <div class="col-5">
+                                <div>
+                                    <input class="form-control" placeholder="{{'FIRST_NAME' | translate}}" [(ngModel)]="customer.oContactPerson.sFirstName" />
+                                </div>
+                            </div>
+                            <div class="col-2">
+                                <div>
+                                    <input class="form-control"  placeholder="{{'INSERT' | translate}}"
+                                        [(ngModel)]="customer.oContactPerson.sPrefix" />
+                                </div>
+                            </div>
+                            <div class="col-5">
+                                <div><input class="form-control"placeholder="{{'LAST_NAME' | translate}}" [(ngModel)]="customer.oContactPerson.sLastName"/>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="nPaymentTermDays">{{'PAYMENT_TERM_IN_DAYS' | translate}}</label>
+                            <input class="form-control" id="nPaymentTermDays" [(ngModel)]="customer.nPaymentTermDays" />
+                        </div>
+    
+                        <div class="mb-3">
+                            <label for="sVatNumber">{{'VAT_NUMBER' | translate}}</label>
+                            <input class="form-control" [(ngModel)]="customer.sVatNumber" />
+                        </div> 
+    
+                        <div class="mb-3" *ngIf="customer?.sCocNumber">
+                            <label for="sCocNumber">{{'COC_NUMBER' | translate}}</label>
+                            <input class="form-control" [(ngModel)]="customer.sCocNumber" />
+                        </div>
                     </div>
                 </div>
             </div>
