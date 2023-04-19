@@ -288,17 +288,14 @@
                                                             <div class="col-6">
                                                                 <p class="fw-bold m-0" style="font-weight: 600;">
                                                                     {{"ALREADY_PAID" | translate}}:
-                                                                    {{activity.nPaidAmount |
-                                                                    currency:tillService.currency}}
+                                                                    {{activity.nPaidAmount | currency:tillService.currency}}
                                                                 </p>
 
                                                             </div>
                                                             <div class="col-6">
                                                                 <p class="fw-bold m-0" style="font-weight: 600;">
                                                                     {{"STILL_TO_PAY" | translate}}:
-                                                                    {{(activity.nPriceIncVatAfterDiscount -
-                                                                    activity.nPaidAmount) |
-                                                                    currency:tillService.currency}}
+                                                                    {{(activity.nPriceIncVatAfterDiscount - activity.nPaidAmount) | currency:tillService.currency}}
                                                                 </p>
                                                             </div>
                                                         </div>
@@ -593,9 +590,9 @@
                                                                 class="form-control form-control-lg form-control-solid mb-3 mb-lg-0 w-100"
                                                                 [(ngModel)]="activity.nTotalAmount" placeholder=""
                                                                 (ngModelChange)="changeTotalAmount(activity, $event)">
-                                                            <p *ngIf="activity?.oType?.bDiscount">Discount price
-                                                                {{activity.nPriceIncVat - activity.nTotalAmount |
-                                                                currency:tillService.currency }} </p>
+                                                            <p *ngIf="activity?.oType?.bDiscount">
+                                                                {{ 'DISCOUNT_PRICE' | translate }}
+                                                                {{ activity.nDiscountToShow | currency:tillService.currency }} </p>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -610,8 +607,8 @@
                                                                 class="form-control form-control-lg form-control-solid mb-3 mb-lg-0 w-100"
                                                                 [(ngModel)]="activity.nPriceIncVatAfterDiscount">
                                                             <p *ngIf="activity?.oType?.bDiscount">
-                                                                Discount price {{activity.nPriceIncVat -
-                                                                activity.nTotalAmount | currency:tillService.currency }}
+                                                                {{ 'DISCOUNT_PRICE' | translate }}
+                                                                {{ activity.nDiscountToShow | currency:tillService.currency }}
                                                             </p>
                                                         </div>
                                                     </div>

@@ -297,6 +297,10 @@ export class TillService {
       if (i.oType.bRefund && _nDiscount !== 0) {
         i.nPaymentAmount -= _nDiscount * i.nQuantity;
         i.nRevenueAmount = i.nPaymentAmount;
+
+        i.nPaymentAmount = +(i.nPaymentAmount.toFixed(2));
+        i.nRevenueAmount = +(i.nRevenueAmount.toFixed(2));
+        
         const records = discountRecords.filter((o: any) => o.sUniqueIdentifier === i.sUniqueIdentifier);
         records.forEach((record: any) => {
           // console.log('IN IF CONDITION record: ', record);
@@ -316,6 +320,10 @@ export class TillService {
           // console.log('IN ELSE: ', i, _nDiscount, i.nQuantity);
           i.nPaymentAmount += (_nDiscount * i.nQuantity);
           i.nRevenueAmount += _nDiscount;
+
+          i.nPaymentAmount = +(i.nPaymentAmount.toFixed(2));
+          i.nRevenueAmount = +(i.nRevenueAmount.toFixed(2));
+
           const tItem1 = JSON.parse(JSON.stringify(i));
           tItem1.iArticleGroupId = discountArticleGroup._id;
           tItem1.iArticleGroupOriginalId = i.iArticleGroupId;
@@ -343,6 +351,9 @@ export class TillService {
         if (i.oType.eKind !== 'discount' && i.oType.eKind !== 'loyalty-points') {
           i.nPaymentAmount += nDiscount;
           i.nRevenueAmount += nDiscount;
+
+          i.nPaymentAmount = +(i.nPaymentAmount.toFixed(2));
+          i.nRevenueAmount = +(i.nRevenueAmount.toFixed(2));
           // if (nDiscount > redeemedLoyaltyPoints) {
           //   nDiscount = redeemedLoyaltyPoints;
           //   redeemedLoyaltyPoints = 0;
@@ -468,7 +479,7 @@ export class TillService {
             // console.log(408, 'paymentAmount', paymentAmount)
             item.oType.bRefund = false;
           } else {
-            item.bShowGiftcardDiscountField = item.nGiftcardDiscount > 0;
+            item.bShowGiftcardDiscountField = item.nRedeemedGiftcardAmount > 0;
             item.bShowLoyaltyPointsDiscountField = item.nRedeemedLoyaltyPoints > 0;
           }
           transactionItems.push({
@@ -692,7 +703,7 @@ export class TillService {
           } else {
             if (relatedItem?.bDiscountOnPercentage) {
               item.nDiscountToShow = (item.oType.bRefund === true) ? 0 : this.getPercentOf(relatedItem.nPriceIncVat, relatedItem.nDiscount);
-              item.nTotalPriceIncVat += item.nDiscountToShow;
+              item.nTotalPriceIncVat += (item.nDiscountToShow) + (relatedItem?.nRedeemedLoyaltyPoints || 0) + (relatedItem?.nGiftcardDiscount || 0);
               item.bDiscountOnPercentage = true;
               item.nDiscount = relatedItem.nDiscount;
               totalDiscount += (item.oType.bRefund === true) ? 0 : item.nDiscountToShow;
@@ -700,7 +711,7 @@ export class TillService {
             } else {
               if(relatedItem.oType.bPrepayment) {
                 item.nDiscountToShow = relatedItem.nDiscount;
-                item.nTotalPriceIncVat += item.nDiscountToShow;
+                item.nTotalPriceIncVat += item.nDiscountToShow + (relatedItem?.nRedeemedLoyaltyPoints || 0) + (relatedItem?.nGiftcardDiscount || 0);
                 totalDiscount += relatedItem.nDiscountToShow;
               }
               relatedItem.totalPaymentAmount = (relatedItem.nRevenueAmount > 0) ? (+(relatedItem.nRevenueAmount.toFixed(2)) - relatedItem.nDiscount) * relatedItem.nQuantity : 0;

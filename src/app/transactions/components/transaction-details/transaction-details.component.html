@@ -151,7 +151,16 @@
                            <span *ngIf="transaction?.oCustomer?.bIsCompany">   {{transaction?.oCustomer?.sCompanyName}}</span>
                         </div>
                     </div>
-
+                    <div class="col-md-12" *ngIf="!transaction?.oCustomer?.bIsCompany">
+                        <div class=" mt-2">
+                            <span class="text-muted me-5">{{ 'COMPANY_NAME' | translate}}: </span>
+                            <span class="text-gray-800">{{ transaction?.oCustomer?.sCompanyName }}</span>
+                        </div>
+                        <div class=" mt-2" *ngIf="transaction?.oCustomer?.sVatNumber">
+                            <span class="text-muted me-5">{{ 'VAT_NUMBER' | translate}}: </span>
+                            <span class="text-gray-800">{{ transaction?.oCustomer?.sVatNumber }}</span>
+                        </div>
+                    </div>
                     <ng-container *ngIf="!transaction?.oCustomer?.bCounter">
                         <div class="col-md-6">
                             <div class="mt-2 text-muted">{{ "INVOVICE_ADDRESS" | translate}}</div>
@@ -194,16 +203,6 @@
                             </div>
                             <div class="text-gray-800 mt-2" *ngIf="transaction?.oCustomer?.oPhone?.sLandLine">
                                 {{transaction?.oCustomer?.oPhone?.sLandLine}}
-                            </div>
-                        </div>
-                        <div class="col-md-12">
-                            <!-- <div class=" mt-2" *ngIf="transaction?.oCustomer?.sCompanyName">
-                                <span class="text-muted me-5">{{ 'COMPANY_NAME' | translate}}: </span>
-                                <span class="text-gray-800">{{ transaction?.oCustomer?.sCompanyName }}</span>
-                            </div> -->
-                            <div class=" mt-2" *ngIf="transaction?.oCustomer?.sVatNumber">
-                                <span class="text-muted me-5">{{ 'VAT_NUMBER' | translate}}: </span>
-                                <span class="text-gray-800">{{ transaction?.oCustomer?.sVatNumber }}</span>
                             </div>
                         </div>
                     </ng-container>
@@ -262,11 +261,11 @@
                             </div>
                             
                         </div>
-                        <div class="row invoice" *ngIf="transaction?.sInvoiceNumber != '' &&  transaction.sInvoiceNumber != undefined">
+                        <div class="row invoice bg-gray-100 py-5" *ngIf="transaction?.sInvoiceNumber != '' &&  transaction.sInvoiceNumber != undefined">
                             <h3 class="fw-bolder mb-4">
-                                <span>Invoice</span>
+                                <span>{{"INVOICE_OVERVIEW" | translate}}</span>
                             </h3>
-                            <label class="col-md-4 mt-3 text-muted">Invoice number</label>
+                            <label class="col-md-4 mt-3 text-muted">{{"INVOICE_NUMBER" | translate}}</label>
                             <div class="col-md-8">
                                 <div class="text-gray-800 mt-3">{{ transaction.sInvoiceNumber || '' }}</div>
                             </div>
@@ -288,9 +287,23 @@
                         </div>
                     </div>
                     <div class="col-4">
-                        <button class="btn btn-sm btn-light btn-active-light-primary  w-100 d-flex mb-2" (click)="generatePDF(false,1);" [disabled]="transaction?.oCustomer?.bCounter" >
-                            <fa-icon [icon]="faFileInvoice"></fa-icon>
-                            <label class="mx-auto cursor-pointer">{{ "GENERAL_INVOICE" | translate}}</label>
+                        <button class="btn btn-sm btn-light btn-active-light-primary  w-100 d-flex mb-2" (click)="generatePDF(false,1);" [disabled]="transaction?.oCustomer?.bCounter">
+                            <fa-icon  [hidden]="downloadInvoiceLoading" [icon]="faFileInvoice"></fa-icon>
+                            <span *ngIf="downloadInvoiceLoading">
+                                <i class="fa fa-spinner fa-spin" [hidden]="!downloadInvoiceLoading"
+                                    style="font-size:15px;"></i>
+                            </span>
+                            <label *ngIf="!transaction?.sInvoiceNumber" class="mx-auto cursor-pointer">{{ "GENERAL_INVOICE" | translate}}</label>
+                            <label *ngIf="transaction?.sInvoiceNumber" class="mx-auto cursor-pointer">{{ "DOWNLOAD_INVOICE" | translate}}</label>
+                        </button>
+                        <button class="btn btn-sm btn-light btn-active-light-primary   w-100 d-flex mb-2"
+                            (click)="generatePDF(true, 1)" *ngIf="transaction?.sInvoiceNumber">
+                            <fa-icon [hidden]="printInvoiceLoading" [icon]="faPrint"></fa-icon>
+                            <span *ngIf="printInvoiceLoading">
+                                <i class="fa fa-spinner fa-spin" [hidden]="!printInvoiceLoading"
+                                    style="font-size:15px;"></i>
+                            </span>
+                            <label class="mx-auto cursor-pointer">{{ "PRINT_INVOICE" | translate }}</label>
                         </button>
                         <button class="btn btn-sm btn-light btn-active-light-primary   w-100 d-flex mb-2"
                             [disabled]="downloadWithVATLoading || !printSettings?.length || !businessDetails?._id"

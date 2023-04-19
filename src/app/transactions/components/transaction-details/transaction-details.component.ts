@@ -71,6 +71,9 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   printActionSettings:any;
   printWithVATLoading: boolean = false;
 
+  downloadInvoiceLoading: boolean = false;
+  printInvoiceLoading:  boolean = false;
+
   paymentEditMode = false;
   aNewSelectedPaymentMethods: any = [];
   payMethods: any;
@@ -167,6 +170,7 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   downloadWithVAT(print: boolean = false) {
     this.generatePDF(print,0);
   }
+
   openProductInfo(product: any) {
     this.dialogRef.triggerEvent.emit({type:'open-slider',data: product});
   }
@@ -205,13 +209,21 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   }
 
   async generatePDF(print: boolean, type: any) {
-    if(type == 1) this.bGenerateInvoice = true;
+    //if(type == 1) this.bGenerateInvoice = true;
     const template = await this.getTemplate('regular').toPromise();
     const oDataSource = JSON.parse(JSON.stringify(this.transaction));
-    if(type == 1) {
+    if(type == 1 && !this.transaction.sInvoiceNumber) {
       const result:any =  await this.updateInvoiceNumber();
+      /*THIS SHOULD BE sInvoiceNumber */
       oDataSource.sReceiptNumber = result?.data?.sInvoiceNumber;
       this.transaction.sInvoiceNumber = result?.data?.sInvoiceNumber;
+    }else if(type == 1) {
+      /*THIS SHOULD BE sInvoiceNumber */
+      oDataSource.sReceiptNumber = this.transaction.sInvoiceNumber;
+      if(print)
+        this.printInvoiceLoading = true;
+      else
+        this.downloadInvoiceLoading = true;
     }
     if (type == 0) {
       if (print)
@@ -261,14 +273,15 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
         sApiKey: this.businessDetails.oPrintNode.sApiKey,
       });
     //}   
-
-
-    if (type == 0) {
-      if (print)
-        this.printWithVATLoading = false
-      else
-        this.downloadWithVATLoading = false;
+   
+    if (print){
+      this.printWithVATLoading = false
+      this.printInvoiceLoading = false
+    }else{
+      this.downloadWithVATLoading = false;
+      this.downloadInvoiceLoading = false;
     }
+    
   }
 
 
