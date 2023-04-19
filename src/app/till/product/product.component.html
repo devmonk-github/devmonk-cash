@@ -63,7 +63,7 @@
               class="form-control form-control-solid p-0" [clearable]="false" [disabled]="item.price != item.amountToBePaid && !item.oType.bRefund">
               <ng-option *ngFor="let oLocation of item.aLocation" [value]="oLocation._id">{{oLocation.sName | translate }} - ( {{ oLocation?.nStock}} ) </ng-option>
             </ng-select>
-          
+            <!-- TODO : add message if stock is 0 -->
           </div>
           
         </div>
