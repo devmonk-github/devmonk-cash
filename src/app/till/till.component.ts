@@ -1,12 +1,14 @@
+import { animate, style, transition, trigger } from '@angular/animations';
 import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { faArrowRightFromBracket, faBoxesStacked, faCalculator, faCoins, faCopy, faGifts, faMoneyBill, faRing, faRotateLeft, faScrewdriverWrench, faSearch, faSpinner, faTimes, faTimesCircle, faTrashAlt, faTruck, faUser } from '@fortawesome/free-solid-svg-icons';
 import { TranslateService } from '@ngx-translate/core';
 import * as _ from 'lodash';
 import { Observable, Subscription } from 'rxjs';
-import * as _moment from 'moment';
+import { MenuComponent } from '../shared/_layout/components/common';
 import { AddExpensesComponent } from '../shared/components/add-expenses-dialog/add-expenses.component';
 import { CardsComponent } from '../shared/components/cards-dialog/cards-dialog.component';
 import { ConfirmationDialogComponent } from '../shared/components/confirmation-dialog/confirmation-dialog.component';
+import { CustomerActivitiesDialogComponent } from '../shared/components/customer-activities-dialog/customer-activities.component';
 import { CustomerDialogComponent } from '../shared/components/customer-dialog/customer-dialog.component';
 import { MorePaymentsDialogComponent } from '../shared/components/more-payments-dialog/more-payments-dialog.component';
 import { TerminalDialogComponent } from '../shared/components/terminal-dialog/terminal-dialog.component';
@@ -22,14 +24,9 @@ import { DialogComponent, DialogService } from '../shared/service/dialog';
 import { FiskalyService } from '../shared/service/fiskaly.service';
 import { PaymentDistributionService } from '../shared/service/payment-distribution.service';
 import { ReceiptService } from '../shared/service/receipt.service';
-import { TaxService } from '../shared/service/tax.service';
 import { TerminalService } from '../shared/service/terminal.service';
 import { TillService } from '../shared/service/till.service';
-import { MenuComponent } from '../shared/_layout/components/common';
 import { SupplierWarningDialogComponent } from './dialogs/supplier-warning-dialog/supplier-warning-dialog.component';
-import { HttpClient } from '@angular/common/http';
-import { trigger, transition, style, animate } from '@angular/animations';
-import { CustomerActivitiesDialogComponent } from '../shared/components/customer-activities-dialog/customer-activities.component';
 
 @Component({
   selector: 'app-till',
