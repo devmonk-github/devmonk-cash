@@ -34,20 +34,20 @@ export class PaymentDistributionService {
       const nPrice = parseFloat((typeof i.price === 'string') ? i.price.replace(',', '.') : i.price);
       let nDiscount = (i.bDiscountOnPercentage ? this.tillService.getPercentOf(nPrice, i.nDiscount || 0) : i.nDiscount) * i.quantity;
       nDiscount = +(nDiscount.toFixed(2));
-      i.amountToBePaid = nPrice - nDiscount - (i.prePaidAmount || 0);// - (i?.nGiftcardDiscount || 0) - (i?.nRedeemedLoyaltyPoints || 0);
+      i.amountToBePaid = ((nPrice - nDiscount) * i.quantity) - (i.prePaidAmount || 0);// - (i?.nGiftcardDiscount || 0) - (i?.nRedeemedLoyaltyPoints || 0);
       i.amountToBePaid = +(i.amountToBePaid.toFixed(2))
-      if (bTesting) console.log(38, { nPrice, nDiscount, amountToBePaid: i.amountToBePaid})
+      if (bTesting) console.log(38, { nPrice, nDiscount, amountToBePaid: i.amountToBePaid, qty: i.quantity})
       
       if (i.type === 'gold-purchase') i.amountToBePaid = -(i.amountToBePaid) ;
 
       i.nTotal = nPrice * i.quantity;
       if (i?.tType && i.tType === 'refund'){
         i.amountToBePaid = (i?.new) ? -(nPrice - nDiscount - (i?.nGiftcardDiscount || 0) - (i?.nRedeemedLoyaltyPoints || 0)) : -(i.nRefundAmount);
-        if (bTesting) console.log({ nTotal: i.nTotal, i: JSON.parse(JSON.stringify(i))})
         availableAmount += nPrice;
         
         i.nGiftcardDiscount = 0;
-      } 
+      }
+      if (bTesting) console.log({ nTotal: i.nTotal, i: JSON.parse(JSON.stringify(i)) }) 
       
       // if (bTesting)  console.log('46 paymentAmount before', i.paymentAmount, 'amountToBePaid', i.amountToBePaid);
       if (i.paymentAmount > i.amountToBePaid && !['loyalty-points'].includes(i.type)) i.paymentAmount = i.amountToBePaid;

@@ -692,7 +692,7 @@ export class TillService {
           } else {
             if (relatedItem?.bDiscountOnPercentage) {
               item.nDiscountToShow = (item.oType.bRefund === true) ? 0 : this.getPercentOf(relatedItem.nPriceIncVat, relatedItem.nDiscount);
-              item.nTotalPriceIncVat += item.nDiscountToShow;
+              item.nTotalPriceIncVat += (item.nDiscountToShow) + (relatedItem?.nRedeemedLoyaltyPoints || 0) + (relatedItem?.nGiftcardDiscount || 0);
               item.bDiscountOnPercentage = true;
               item.nDiscount = relatedItem.nDiscount;
               totalDiscount += (item.oType.bRefund === true) ? 0 : item.nDiscountToShow;
@@ -700,7 +700,7 @@ export class TillService {
             } else {
               if(relatedItem.oType.bPrepayment) {
                 item.nDiscountToShow = relatedItem.nDiscount;
-                item.nTotalPriceIncVat += item.nDiscountToShow;
+                item.nTotalPriceIncVat += item.nDiscountToShow + (relatedItem?.nRedeemedLoyaltyPoints || 0) + (relatedItem?.nGiftcardDiscount || 0);
                 totalDiscount += relatedItem.nDiscountToShow;
               }
               relatedItem.totalPaymentAmount = (relatedItem.nRevenueAmount > 0) ? (+(relatedItem.nRevenueAmount.toFixed(2)) - relatedItem.nDiscount) * relatedItem.nQuantity : 0;
