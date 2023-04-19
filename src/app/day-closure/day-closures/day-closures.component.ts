@@ -64,7 +64,7 @@ export class DayClosuresComponent implements OnInit, OnDestroy {
     this.apiService.setToastService(this.toastrService);
     await this.tillService.fetchSettings();
     this.sDayClosureMethod = this.tillService.settings?.sDayClosureMethod || 'workstation';
-    console.log(this.sDayClosureMethod, this.tillService.settings);
+    // console.log(this.sDayClosureMethod, this.tillService.settings);
     this.fetchDayClosureList();
     this.fetchBusinessLocation();
     this.getWorkstations();
@@ -139,8 +139,18 @@ export class DayClosuresComponent implements OnInit, OnDestroy {
     this.aWorkStation = this.aWorkStationList.filter((workstation:any)=> this.aSelectedLocation.includes(workstation.iLocationId));
   }
 
-  goToView(iStatisticsId: any, dOpenDate: any, dCloseDate:any){
-    this.router.navigate(['../../transactions-audit/view', iStatisticsId], { relativeTo: this.route, state: { dStartDate: dOpenDate, dEndDate: dCloseDate } }); 
+  goToView(item:any){
+    this.router.navigate(
+      ['../../transactions-audit/view', item._id], 
+      { 
+        relativeTo: this.route, 
+        state: { 
+          dStartDate: item.dOpenDate, 
+          dEndDate: item.dCloseDate,
+          iLocationId: item.iLocationId,
+          iWorkstationId: item.iWorkstationId
+        }
+      }); 
   }
 
   ngOnDestroy(): void {

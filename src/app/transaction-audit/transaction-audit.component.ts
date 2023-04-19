@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { Observable, Subscription } from 'rxjs';
@@ -21,7 +21,7 @@ import { ClosingDaystateDialogComponent } from '../shared/components/closing-day
   providers: [TransactionAuditUiPdfService]
 })
 
-export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestroy {
+export class TransactionAuditComponent implements OnInit, OnDestroy {
 
   iBusinessId: any = localStorage.getItem('currentBusiness');
   iLocationId: any = localStorage.getItem('currentLocation');
@@ -106,6 +106,13 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
   aGiftItems: any;
   previousPage = 0
   sDayClosureMethod:any;
+
+  bOpeningDayClosure = false;
+  bOpeningHistoricalDayState = false;
+
+  nTotalRevenue = 0;
+  nTotalQuantity = 0;
+
   constructor(
     private apiService: ApiService,
     private translate: TranslateService,
@@ -124,9 +131,16 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
     
     this.iStatisticId = this.route.snapshot?.params?.iStatisticId;
     if (this.iStatisticId) {
-      this.oStatisticsData.dStartDate = this.router.getCurrentNavigation()?.extras?.state?.dStartDate ?? null;
-      this.oStatisticsData.dEndDate = this.router.getCurrentNavigation()?.extras?.state?.dEndDate ?? null;
-      this.oStatisticsData.bIsDayStateOpened = this.router.getCurrentNavigation()?.extras?.state?.bIsDayStateOpened ? true : false;
+      const oState = this.router.getCurrentNavigation()?.extras?.state;
+      this.oStatisticsData.dStartDate = oState?.dStartDate;
+      this.oStatisticsData.dEndDate = oState?.dEndDate;
+      this.oStatisticsData.bIsDayStateOpened = oState?.bIsDayStateOpened ? true : false;
+      this.oStatisticsData.iLocationId = oState?.iLocationId;
+      this.oStatisticsData.iWorkstationId = oState?.iWorkstationId;
+
+      if (this.oStatisticsData.bIsDayStateOpened) this.bOpeningDayClosure = true;
+      else this.bOpeningHistoricalDayState = true;
+
       if (this.oStatisticsData.dStartDate) {
         this.filterDates.startDate = this.oStatisticsData.dStartDate;
         const endDate = (this.oStatisticsData.dEndDate) ? this.oStatisticsData.dEndDate : new Date();
@@ -147,35 +161,19 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
 
     this.setOptionMenu()
 
-    const [_businessData, _workstationData, _employeeData]: any = await Promise.all([
-      this.fetchBusinessDetails(),
-      this.getWorkstations(),
-      this.getEmployees()
-    ])
-
-    this.businessDetails = _businessData.data;
-
-    if (_workstationData && _workstationData.data?.length) {
-      this.aWorkStation = _workstationData.data;
-      this.sCurrentWorkstation = this.aWorkStation.filter((el: any) => el._id === this.iWorkstationId)[0]?.sName;
-    }
-
-    if (_employeeData?.data?.length) {
-      this.aEmployee = _employeeData.data[0].result;
-    }
-
+    this.fetchBusinessDetails();
+    this.getEmployees();
+    this.getWorkstations();
+    
     this.fetchStatistics(this.sDisplayMethod.toString()); /* Only for view or dynamic or static document */
 
-    this.fetchBusinessLocation();
+    // this.fetchBusinessLocation();
     this.getProperties();
     this.getPaymentMethods();
 
     setTimeout(() => {
       MenuComponent.bootstrap();
     }, 200);
-  }
-
-  ngAfterViewInit(): void {
   }
 
   setOptionMenu() {
@@ -567,10 +565,7 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
     this.oCountings.nCashRemain = this.oStatisticsDocument?.oCountings?.nCashRemain || 0;
     this.oCountings.nCashDifference = this.oStatisticsDocument?.oCountings?.nCashDifference || 0;
     this.bDisableCountings = !this.oStatisticsDocument?.bIsDayState;
-    if (this.aStatistic?.length && this.aStatistic[0]?.overall?.length) {
-      this.aStatistic[0].overall[0].nTotalRevenue = parseFloat(this.aStatistic[0].overall[0].nTotalRevenue.toFixed(2))
-      // this.oCountings.nCashInTill = this.aStatistic[0].overall[0].nTotalRevenue;
-    }
+    
 
     let aKeys: any = [];
     if (this.oStatisticsDocument?.oCountings?.oCountingsCashDetails) aKeys = Object.keys(this.oStatisticsDocument?.oCountings?.oCountingsCashDetails);
@@ -584,23 +579,26 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
   }
 
   fetchStatistics(sDisplayMethod?: string) {
-    if (this.iStatisticId) this.fetchDayClosureData(sDisplayMethod);
+    if (this.bOpeningDayClosure) {
+      /* If not closed yet then we require both data static as well and dynamic */
+      this.getStaticData(sDisplayMethod);
+      this.getDynamicData(sDisplayMethod);
+    } else if (this.bOpeningHistoricalDayState) {
+      /* Already closed then we can get all the data from one API only */
+      this.getStaticData(sDisplayMethod);
+    }
     else this.fetchAuditStatistic(sDisplayMethod);
   }
 
   /* (Only, for Viewing statistic) Day-closure view whenever we will have the iStatisticId */
-  fetchDayClosureData(sDisplayMethod?: string) {
-    /* If not closed yet then we require both data static as well and dynamic */
-    if (this.oStatisticsData.bIsDayStateOpened) {
-      console.log('if day state is opened getting static+dynamic both data');
-      this.getStaticData(sDisplayMethod);
-      this.getDynamicData(sDisplayMethod);
-    } else {
-      console.log('else day state is not opened getting only static data');
-      /* Already closed then we can get all the data from one API only */
-      this.getStaticData(sDisplayMethod);
-    }
-  }
+  // fetchDayClosureData(sDisplayMethod?: string) {
+  //   if (this.oStatisticsData.bIsDayStateOpened) {
+  //     console.log('if day state is opened getting static+dynamic both data');
+      
+  //   } else {
+  //     console.log('else day state is not opened getting only static data');
+  //   }
+  // }
 
   /* Fetch Audit (Be it Static or Dynamic), where user can change filter as well */
   fetchAuditStatistic(sDisplayMethod?: string) {
@@ -619,12 +617,15 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
 
     let aLocation = this?.aSelectedLocation?.length ? this.aSelectedLocation : [];
     let iWorkstationId = this.selectedWorkStation?.length ? this.selectedWorkStation : [];
-    if (this.iStatisticId) {
+    if (this.bOpeningDayClosure) {
       /* It's only for view purpose and we can only view for the current location and current workstation */
       aLocation = [this.iLocationId];
       iWorkstationId = [this.iWorkstationId]
+    } else if(this.bOpeningHistoricalDayState) {
+      aLocation = [this.oStatisticsData.iLocationId];
+      iWorkstationId = [this.oStatisticsData.iWorkstationId]
     }
-
+    // console.log(this.statisticFilter)
     const oBody: any = {
       iBusinessId: this.iBusinessId,
       iStatisticId: this.iStatisticId,
@@ -654,8 +655,13 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
           const oData = result?.data;
           if (oData.aStatistic?.length) {
             this.aStatistic = oData.aStatistic;
+            
+            if (this.aStatistic?.length && this.aStatistic[0]?.overall?.length) {
+              this.nTotalRevenue = +(this.aStatistic[0].overall[0].nTotalRevenue.toFixed(2))
+              this.nTotalQuantity = this.aStatistic[0].overall[0].nQuantity;
+            }
+
             this.aStatisticsDocuments = oData.aStaticDocument;
-            console.log('response body: ', result?.data);
             if (this.iStatisticId) {
               this.oStatisticsDocument = this.aStatisticsDocuments[0];
               this.processCounting();
@@ -753,7 +759,8 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
             this.aStatistic = result.data.oTransactionAudit;
 
           if (this.aStatistic?.length && this.aStatistic[0]?.overall?.length) {
-            this.aStatistic[0].overall[0].nTotalRevenue = parseFloat(this.aStatistic[0].overall[0].nTotalRevenue.toFixed(2))
+            this.nTotalRevenue = +(this.aStatistic[0].overall[0].nTotalRevenue.toFixed(2));
+            this.nTotalQuantity = this.aStatistic[0].overall[0].nQuantity;
           }
           // this.mappingThePaymentMethod(result?.data);
           this.aPaymentMethods = result?.data?.aPaymentMethods;
@@ -900,15 +907,41 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
   }
 
   getWorkstations() {
-    return this.apiService.getNew('cashregistry', `/api/v1/workstations/list/${this.iBusinessId}/${this.iLocationId}`).toPromise();
+    this.apiService.getNew('cashregistry', `/api/v1/workstations/list/${this.iBusinessId}/${this.iLocationId}`).subscribe((result:any) => {
+      if (result?.data?.length) {
+        this.aWorkStation = result.data;
+        this.sCurrentWorkstation = this.aWorkStation.filter((el: any) => el._id === this.iWorkstationId)[0]?.sName;
+      }
+    });
   }
 
   getEmployees() {
-    return this.apiService.postNew('auth', '/api/v1/employee/list', { iBusinessId: this.iBusinessId }).toPromise();
+    this.apiService.postNew('auth', '/api/v1/employee/list', { iBusinessId: this.iBusinessId }).subscribe((result:any) => {
+      if (result?.data?.length && result?.data[0]?.result?.length) {
+        this.aEmployee = result.data[0].result;
+      }
+    });
   }
 
   fetchBusinessDetails() {
-    return this.apiService.getNew('core', '/api/v1/business/' + this.iBusinessId).toPromise();
+    this.apiService.getNew('core', '/api/v1/business/' + this.iBusinessId).subscribe((result:any) => {
+      this.businessDetails = result.data;
+      this.aLocation = this.businessDetails.aLocation;
+      this.fetchStockValuePerLocation();
+      let oLocation;
+      if (this.bOpeningDayClosure) { // opened closing cash register
+        oLocation = this.aLocation.find((el: any) => el._id === this.iLocationId);
+      } else if(this.bOpeningHistoricalDayState){
+        oLocation = this.aLocation.find((el: any) => el._id === this.oStatisticsData.iLocationId);
+      }
+      if(oLocation) {
+        this.transactionAuditPdfService.selectCurrency(oLocation);
+        this.sCurrentLocation = this.businessDetails.sName + " (" + oLocation?.sName + ")";
+        this.aSelectedLocation.push(oLocation._id);
+      }
+      
+      // console.log(this.businessDetails, this.sCurrentLocation, this.aSelectedLocation)
+    });
   }
 
   async exportToPDF() {
