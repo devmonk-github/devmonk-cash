@@ -262,7 +262,7 @@
                             </div>
                             
                         </div>
-                        <div class="row invoice" *ngIf="bGenerateInvoice">
+                        <div class="row invoice" *ngIf="transaction?.sInvoiceNumber != '' &&  transaction.sInvoiceNumber != undefined">
                             <h3 class="fw-bolder mb-4">
                                 <span>Invoice</span>
                             </h3>
