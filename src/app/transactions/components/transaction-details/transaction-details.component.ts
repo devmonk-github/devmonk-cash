@@ -57,6 +57,7 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   imagePlaceHolder: string = '../../../../assets/images/no-photo.svg';
   eType: string = '';
   transactionId: string;
+  invoiceNumber:any;
   pdfGenerating: Boolean = false;
   downloadWithVATLoading: Boolean = false;
   businessDetails: any = {};
@@ -69,6 +70,9 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   printSettings: any;
   printActionSettings:any;
   printWithVATLoading: boolean = false;
+
+  downloadInvoiceLoading: boolean = false;
+  printInvoiceLoading:  boolean = false;
 
   paymentEditMode = false;
   aNewSelectedPaymentMethods: any = [];
@@ -84,6 +88,7 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   showSystemCustomer:boolean = false;
   changeAmount:number= 0;
   refundedAmount:number=0;
+  bGenerateInvoice:boolean= false;
   @ViewChild('slider', { read: ViewContainerRef }) container!: ViewContainerRef;
 
   constructor(
@@ -108,13 +113,10 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
     if (sIndex > -1) {
       this.changeAmount = this.transaction.aPayments[sIndex].nAmount;
     }
-
     this.filterdata = this.transaction.aTransactionItems.filter((data: any) => data?.oType?.bRefund === true);
     this.filterdata.forEach((items:any)=>{
       this.refundedAmount += Number((items.nRefundAmount));
     })
-
-    //console.log("this.tillService",this.tillService);
     let translationKey = ['SUCCESSFULLY_UPDATED', 'NO_DATE_SELECTED'];
     this.translateService.get(translationKey).subscribe((res: any) => {
       this.translation = res;
@@ -158,66 +160,6 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
     });
   }
   
-  // async generateInvoice(type: any, action: any, index?: number){
-
-  //   const aUniqueItemTypes:any = ['regular','order' ,'repair', 'repair_alternative', 'giftcard'];
-    
-  //   let oDataSource = undefined;
-  //   let template = undefined;
-  //   let pdfTitle = '';
-  //   let sThermalTemplateType = '';
-  //   this.aRepairItems = this.transaction.aTransactionItems;
-  //   const [_template, _oLogoData]: any = await Promise.all([
-  //     this.getTemplate(aUniqueItemTypes),
-  //     this.getBase64FromUrl(this.businessDetails?.sLogoLight),
-  //   ]);
-  //   const aTemplates = _template.data;
-
-  //   console.log("aTemplates", aTemplates);
-
-  //   this.aTemplates =  _template.data;
-  //   if (index != undefined && (type === 'repair' || type === 'repair_alternative')) {
-  //     // console.log('repair items index=', index, this.aRepairItems[index], this.activityItems);
-  //     template = this.aTemplates.filter((template: any) => template.eType === type)[0];
-  //     oDataSource = this.tillService.prepareDataForRepairReceipt(this.aRepairItems, this.transaction, null, index);
-  //     pdfTitle = oDataSource.sNumber;
-  //     sThermalTemplateType = 'repair-receipt';
-    
-  //   } else if (type === 'regular') {
-  //     oDataSource = this.transaction;
-  //     pdfTitle = this.transaction.sNumber;
-  //     template = this.aTemplates.filter((template: any) => template.eType === 'regular')[0];
-  //     sThermalTemplateType = 'business-receipt';
-    
-  //   } else if (type === 'giftcard') {
-  //     console.log("this.aTemplates", this.aTemplates);
-  //     oDataSource = this.aActivityItems.filter((item: any) => item.oType.eKind === 'giftcard')[0];
-  //     console.log("this.transaction?.nTotal", this.transaction?.nTotal);
-  //     oDataSource = this.transaction;
-  //    // oDataSource.nTotal = this.transaction?.nTotal;
-  //     oDataSource.sBarcodeURI = this.generateBarcodeURI(true, 'G-' + this.transaction?.sGiftCardNumber);
-  //     pdfTitle = this.transaction?.sGiftCardNumber;
-  //     template = this.aTemplates;
-  //     //template = this.aTemplates.filter((template: any) => template.eType === 'giftcard')[0];
-
-  //   } else if (type === 'order') {
-  //     template = this.aTemplates.filter((template: any) => template.eType === 'order')[0];
-  //    // oDataSource = this.tillService.prepareDataForOrderReceipt(this.activity, this.aActivityItems, this.transaction);
-  //     oDataSource = this.tillService.prepareDataForOrderReceipt(null, this.aActivityItems, this.transaction); 
-  //     pdfTitle = oDataSource.sActivityNumber;
-  //   }
-    
-  //   const oSettings = this.printSettings.find((s: any) => s.sMethod === 'pdf' && s.iWorkstationId === this.iWorkstationId)
-  //   this.receiptService.exportToPdf({
-  //     oDataSource: oDataSource,
-  //     pdfTitle: pdfTitle,
-  //     templateData: template,
-  //     printSettings: oSettings,
-  //     sAction: (action === 'DOWNLOAD') ? 'download' : 'print',
-  //     sApiKey: this.businessDetails.oPrintNode.sApiKey
-  //   });
-  // }
-
 
   generateBarcodeURI(displayValue: boolean = true, data: any) {
     var canvas = document.createElement("canvas");
@@ -228,6 +170,7 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   downloadWithVAT(print: boolean = false) {
     this.generatePDF(print,0);
   }
+
   openProductInfo(product: any) {
     this.dialogRef.triggerEvent.emit({type:'open-slider',data: product});
   }
@@ -266,15 +209,29 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   }
 
   async generatePDF(print: boolean, type: any) {
+    //if(type == 1) this.bGenerateInvoice = true;
+    const template = await this.getTemplate('regular').toPromise();
+    const oDataSource = JSON.parse(JSON.stringify(this.transaction));
+    if(type == 1 && !this.transaction.sInvoiceNumber) {
+      const result:any =  await this.updateInvoiceNumber();
+      /*THIS SHOULD BE sInvoiceNumber */
+      oDataSource.sReceiptNumber = result?.data?.sInvoiceNumber;
+      this.transaction.sInvoiceNumber = result?.data?.sInvoiceNumber;
+    }else if(type == 1) {
+      /*THIS SHOULD BE sInvoiceNumber */
+      oDataSource.sReceiptNumber = this.transaction.sInvoiceNumber;
+      if(print)
+        this.printInvoiceLoading = true;
+      else
+        this.downloadInvoiceLoading = true;
+    }
     if (type == 0) {
       if (print)
         this.printWithVATLoading = true;
       else
         this.downloadWithVATLoading = true;
     }
-
-    const template = await this.getTemplate('regular').toPromise();
-    const oDataSource = JSON.parse(JSON.stringify(this.transaction));
+   
     oDataSource.sBusinessLogoUrl = '';
     try {
       const _result: any = await this.getBase64FromUrl(oDataSource?.businessDetails?.sLogoLight).toPromise();
@@ -316,14 +273,15 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
         sApiKey: this.businessDetails.oPrintNode.sApiKey,
       });
     //}   
-
-
-    if (type == 0) {
-      if (print)
-        this.printWithVATLoading = false
-      else
-        this.downloadWithVATLoading = false;
+   
+    if (print){
+      this.printWithVATLoading = false
+      this.printInvoiceLoading = false
+    }else{
+      this.downloadWithVATLoading = false;
+      this.downloadInvoiceLoading = false;
     }
+    
   }
 
 
@@ -587,6 +545,10 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
        this.showSystemCustomer = true;
       }
    }
+  }
+
+  async updateInvoiceNumber() {
+    return await this.apiService.putNew('cashregistry', `/api/v1/transaction/${this.transaction._id}`, { iBusinessId:this.iBusinessId,bGenerateInvoice: true }).toPromise();
   }
 
   /* Update customer in [T, A, AI] */

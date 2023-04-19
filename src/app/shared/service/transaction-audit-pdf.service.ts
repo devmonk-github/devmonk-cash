@@ -1488,8 +1488,8 @@ export class TransactionAuditUiPdfService {
 
     processingMultipleStatisticsBySummingUp(oBody: any) {
         try {
-            const { aStatisticsDocuments, aStatistic } = oBody;
-            console.log('processingMultipleStatisticsBySummingUp: oBody: ');
+            const { aStatisticsDocuments } = oBody;
+            // console.log('processingMultipleStatisticsBySummingUp: oBody: ');
             if (!aStatisticsDocuments?.length) return {};
             if (aStatisticsDocuments?.length === 1) return aStatisticsDocuments[0];
             const oProcessedStatisticData = {

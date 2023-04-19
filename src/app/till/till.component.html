@@ -335,7 +335,8 @@
                               <p class="mt-2 text-gray-800">{{ product.sProductNumber }}</p>
                               <p [ngClass]="bSerialSearchMode? 'bmt-2 text-gray-800': 'bmt-2 text-muted'"><strong>{{"SERIAL_NO_ABB" | translate}}</strong>: {{ product?.sSerialNumber || "-" }}</p>
                               <p class="mt-2 text-gray-800">{{ product?.sArticleNumber }}</p>
-                              <p class="text-gray-800">{{"STOCK"| translate}}: {{ product?.oCurrentLocation?.nStock ||  '-'}} </p>
+                              <p *ngIf="product?.oCurrentLocation?.nStock == 0" class="text break text-danger">{{"NO_STOCK_AVAILABLE_IN_CURRENT_LOCATION"| translate}}</p>
+                              <p class="text-gray-800">{{"STOCK"| translate}}: {{ product?.oCurrentLocation?.nStock || "0"}} </p>
                             </div>
                             <!-- </div> -->
                           </div>
@@ -458,9 +459,10 @@
                   </button>
                 </div>
                 <div>
+                 
                   <p class="mt-5 mb-0 text-gray-800">
                     <span *ngIf="customer.number">{{customer.number}} <br> </span>
-                    <span *ngIf="customer.NAME">{{customer.NAME}} <br> </span>
+                    <span *ngIf="customer.NAME && !customer.bIsCompany">{{customer.NAME}} <br> </span>
                     <span *ngIf="customer.oShippingAddress?.street || customer.oShippingAddress?.number">
                       {{customer.oShippingAddress?.street}} {{customer.oShippingAddress?.number}}
                       <br>
@@ -468,7 +470,8 @@
                     <span *ngIf="customer.oShippingAddress?.zip || customer.oShippingAddress?.city">
                       {{customer.oShippingAddress?.zip}} {{customer.oShippingAddress?.city}}<br>
                     </span>
-                    <span *ngIf="customer.sEmail"> {{customer.sEmail}} </span>
+                    <span *ngIf="customer.sEmail">{{customer.sEmail}} <br> </span>
+                    <span *ngIf="customer.sCompanyName"> {{customer.sCompanyName}} <br> </span>
                   </p>
                 </div>
               </div>

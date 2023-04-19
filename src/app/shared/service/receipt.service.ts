@@ -440,12 +440,15 @@ export class ReceiptService {
     }
 
     processColumns(row: any, styles?: any) {
+        // console.log('processColumns', row)
         let columns: any = [];
         row.forEach((el: any) => {
             let columnData: any;
             if (el?.type === 'image') {
                 let img = this.addImage(el);
                 columnData = img;
+            } else if(el?.type === 'columns') {
+                columnData = this.processColumns(el.row);
             } else if (el?.type === 'barcode') {
                 let img = this.addBarcode(el);
                 columnData = img;
@@ -682,15 +685,20 @@ export class ReceiptService {
         // console.log('processStack', item, object);
         const stack: any = [];
         item.elements.forEach((el: any) => {
-            if (el?.type === 'image') {
-                stack.push(this.addImage(el))
-            } else if (el?.type === 'barcode') {
-                stack.push(this.addBarcode(el))
-            } else if (el?.type === 'parts') {
-                // console.log('add parts with el, object', el, object)
-                stack.push(this.addParts(el, object))
-            } else if (el?.type === 'table') {
-                stack.push(this.processTableData(el));
+            if(el?.type) {
+                stack.push(this.handleNestedTypes(el, object))
+            // if (el?.type === 'image') {
+            //     stack.push(this.addImage(el))
+            // } else if (el?.type === 'barcode') {
+            //     stack.push(this.addBarcode(el))
+            // } else if (el?.type === 'parts') {
+            //     // console.log('add parts with el, object', el, object)
+            //     stack.push(this.addParts(el, object))
+            // } else if (el?.type === 'table') {
+            //     stack.push(this.processTableData(el));
+            // } else if (el?.type === 'stack') {
+            //     console.log('process stack', el, object)
+            //     stack.push(this.processStack(el, object))
             } else {
                 let bTestResult = true;
                 if (el?.ifAnd) {
@@ -917,5 +925,22 @@ export class ReceiptService {
         JsBarcode(canvas, data, { format: "CODE128", ...options });
         // console.log(canvas.toDataURL("image/png"))
         return canvas.toDataURL("image/png");
+    }
+
+    handleNestedTypes(el: any, object: any) {
+        switch (el.type) {
+            case 'image':
+                return this.addImage(el);
+            case 'barcode':
+                return this.addBarcode(el);
+            case 'parts':
+                return this.addParts(el, object);
+            case 'table':
+                return this.processTableData(el);
+            case 'stack':
+                return this.processStack(el, object);
+            case 'columns':
+                return this.processColumns(el.row, el?.styles);
+        }
     }
 }

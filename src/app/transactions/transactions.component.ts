@@ -398,6 +398,7 @@ export class TransactionsComponent implements OnInit, OnDestroy {
 
   // Function for trigger event after page changes
   pageChanged(page: any) {
+    this.bIsSearch = false;
     this.requestParams.skip = (page - 1) * parseInt(this.paginationConfig.itemsPerPage);
     this.loadTransaction();
     this.paginationConfig.currentPage = page;
