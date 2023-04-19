@@ -232,6 +232,13 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
                   displayMethod: eDisplayMethodKeysEnum.aVatRates
                 }
               },
+              {
+                sKey: 'Turnover Group',
+                sValue: this.translate.instant('TURN_OVER_GROUP'),
+                data: {
+                  displayMethod: eDisplayMethodKeysEnum.aRevenuePerTurnoverGroup
+                }
+              },
             ]
           },
           {
@@ -332,6 +339,13 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
                 sValue: this.translate.instant('ARTICLE_GROUP'),
                 data: {
                   displayMethod: eDisplayMethodKeysEnum.aVatRates
+                }
+              },
+              {
+                sKey: 'Turnover Group',
+                sValue: this.translate.instant('TURN_OVER_GROUP'),
+                data: {
+                  displayMethod: eDisplayMethodKeysEnum.aRevenuePerTurnoverGroup
                 }
               },
             ]
@@ -435,6 +449,13 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
                 sValue: this.translate.instant('ARTICLE_GROUP'),
                 data: {
                   displayMethod: eDisplayMethodKeysEnum.aVatRates
+                }
+              },
+              {
+                sKey: 'Turnover Group',
+                sValue: this.translate.instant('TURN_OVER_GROUP'),
+                data: {
+                  displayMethod: eDisplayMethodKeysEnum.aRevenuePerTurnoverGroup
                 }
               },
             ]
@@ -655,7 +676,6 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
           if (oData.aStatistic?.length) {
             this.aStatistic = oData.aStatistic;
             this.aStatisticsDocuments = oData.aStaticDocument;
-            console.log('response body: ', result?.data);
             if (this.iStatisticId) {
               this.oStatisticsDocument = this.aStatisticsDocuments[0];
               this.processCounting();
@@ -664,17 +684,6 @@ export class TransactionAuditComponent implements OnInit, AfterViewInit, OnDestr
             }
             if (this.aStatisticsDocuments?.length) this.mappingThePaymentMethod(this.aStatisticsDocuments);
           }
-          // if (oData?.oStatistic?._id) {
-          //   if (oData?.oStatistic?.aPaymentMethods?.length) {
-          //     // this.aPaymentMethods = oData?.oStatistic?.aPaymentMethods; /* old approach */
-          //   }
-          //   // this.aStatisticsDocument = oData?.aStatistic;
-          //   // this.iWorkstationId = this.oStatisticsDocument.iWorkstationId;
-          //   // console.log('this.iWorkstationId', this.iWorkstationId, this.oStatisticsDocument.iWorkstationId, this.oStatisticsDocument)
-          //   // this.sCurrentWorkstation = this.aWorkStation.filter((el: any) => el._id === this.iWorkstationId)[0]?.sName;
-          //   // console.log('current=', this.sCurrentWorkstation);
-          //   // if (!this.oStatisticsDocument?.sComment) this.oStatisticsDocument.sComment = '';
-          // }
         }
       }, (error) => {
         this.bStatisticLoading = false;

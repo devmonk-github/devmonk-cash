@@ -275,7 +275,7 @@
 
                             <div class="row mb-5">
                                 <ng-container
-                                    *ngIf="sDisplayMethod === this.edisplayMethodKeysEnum.revenuePerBusinessPartner || sDisplayMethod === this.edisplayMethodKeysEnum.revenuePerArticleGroupAndProperty ">
+                                    *ngIf="sDisplayMethod === this.edisplayMethodKeysEnum.revenuePerBusinessPartner || sDisplayMethod === this.edisplayMethodKeysEnum.revenuePerArticleGroupAndProperty">
                                     <!-- LEVEL_FILTER -->
                                     <div class="col-md-3">
                                         <label class="fs-6 form-label fw-bolder text-dark">{{ "LEVEL_FILTER" |
@@ -450,6 +450,105 @@
                                                 <tr>
                                                     <th><span class="">{{ 'SUPPLIER' | translate}}</span>
                                                         <h3 class="text-black">{{oSupplier.sBusinessPartnerName}}</h3>
+                                                    </th>
+                                                    <th class="w-150px"><span class="">{{"QUANTITY" | translate}}</span>
+                                                        <h4 class="text-black">{{oSupplier.nQuantity}}</h4>
+                                                    </th>
+                                                    <th class="w-150px"><span class="">{{"PRICE_WITH_VAT" |
+                                                            translate}}</span>
+                                                        <h4 class="text-black">{{oSupplier.nTotalRevenue | number
+                                                            :'1.2-2'}}</h4>
+                                                    </th>
+                                                    <th class="w-150px"><span class="">{{"PURCHASE_PRICE" |
+                                                            translate}}</span>
+                                                        <h4 class="text-black">{{oSupplier.nTotalPurchaseAmount | number
+                                                            :'1.2-2'}}</h4>
+                                                    </th>
+                                                    <th class="w-150px"><span class="">{{"GROSS_PROFIT" |
+                                                            translate}}</span>
+                                                        <h4 class="text-black">{{oSupplier.nProfit | number :'1.2-2'}}
+                                                        </h4>
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td colspan="6" class="p-2">
+                                                        <table
+                                                            class="table table-row-bordered table-row-gray-300 gy-5 gs-5 mb-0 text-gray-600 fw-bold border"
+                                                            *ngFor="let oArticleGroup of oSupplier.aArticleGroups; let articleGroupIndex = index">
+                                                            <!-- start of articlegroup -->
+                                                            <thead class="bg-gray-100">
+                                                                <tr class="fw-bold fs-6 text-gray-800">
+                                                                    <th scope="col">{{oArticleGroup.sName}}
+                                                                        <div class="mx-5">
+                                                                            <i *ngIf="!oArticleGroup.bIsCollapseItem"
+                                                                                class="px-sm-2 cursor-pointer bi bi-chevron-down"
+                                                                                (click)="oArticleGroup.bIsCollapseItem = true;">
+                                                                            </i>
+                                                                            <i *ngIf="oArticleGroup.bIsCollapseItem"
+                                                                                class="px-sm-2 cursor-pointer bi bi-chevron-up"
+                                                                                (click)="oArticleGroup.bIsCollapseItem = false;"></i>
+                                                                        </div>
+                                                                    </th>
+                                                                    <th scope="col" class="w-150px">
+                                                                        {{oArticleGroup.nQuantity}}</th>
+                                                                    <th scope="col" class="w-150px">
+                                                                        {{oArticleGroup.nTotalRevenue | number
+                                                                        :'1.2-2'}}
+                                                                    </th>
+                                                                    <th scope="col" class="w-150px">
+                                                                        {{oArticleGroup.nTotalPurchaseAmount | number
+                                                                        :'1.2-2'}}
+                                                                    </th>
+                                                                    <th scope="col" class="w-150px">
+                                                                        {{oArticleGroup.nProfit| number :'1.2-2'}}</th>
+
+                                                                </tr>
+                                                            </thead>
+                                                            <ng-container
+                                                                *ngIf="oArticleGroup.aRevenueByProperty.length && oArticleGroup.bIsCollapseItem">
+                                                                <tbody class="p-2"
+                                                                    *ngFor="let oRevenueByProperty of oArticleGroup.aRevenueByProperty; let revenuePropertyIndex = index">
+                                                                    <!--start of dyamic property -->
+                                                                    <tr>
+                                                                        <td class="ps-9">
+                                                                            {{oRevenueByProperty.aCategory.join(' |')}}
+                                                                        </td>
+                                                                        <td>{{oRevenueByProperty.nQuantity}}</td>
+                                                                        <td>{{oRevenueByProperty.nTotalRevenue | number
+                                                                            :'1.2-2'}}</td>
+                                                                        <td>{{oRevenueByProperty.nTotalPurchaseAmount |
+                                                                            number :'1.2-2'}}
+                                                                        </td>
+                                                                        <td>{{oRevenueByProperty.nProfit| number
+                                                                            :'1.2-2'}}</td>
+                                                                        <td>{{oRevenueByProperty.nMargin}}</td>
+                                                                    </tr>
+                                                                </tbody>
+                                                            </ng-container>
+                                                            <!-- start of articlegroup -->
+                                                        </table>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card overflow-y-auto" *ngIf="sDisplayMethod === 'aRevenuePerTurnoverGroup'">
+                                <strong> {{ 'REVENUE_PER_TURNOVER_GROUP' | translate}} </strong>
+                                <div class="card-body">
+                                    <div class="table-responsive"
+                                        *ngFor="let oStatistic of aStatistic; let statisticIndex = index">
+                                        <table
+                                            class="table table-rounded border border-gray-300 table-row-bordered table-row-gray-300 gy-5 gs-5 text-gray-600"
+                                            *ngFor="let oSupplier of oStatistic.individual; let supplierIndex = index">
+                                            <thead>
+                                                <tr>
+                                                    <th><span class="">{{ 'CATEGORY' | translate}}</span>
+                                                        <h3 class="text-black">{{oSupplier.sCategory}}</h3>
                                                     </th>
                                                     <th class="w-150px"><span class="">{{"QUANTITY" | translate}}</span>
                                                         <h4 class="text-black">{{oSupplier.nQuantity}}</h4>
