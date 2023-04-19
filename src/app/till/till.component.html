@@ -458,9 +458,10 @@
                   </button>
                 </div>
                 <div>
+                 
                   <p class="mt-5 mb-0 text-gray-800">
                     <span *ngIf="customer.number">{{customer.number}} <br> </span>
-                    <span *ngIf="customer.NAME">{{customer.NAME}} <br> </span>
+                    <span *ngIf="customer.NAME && !customer.bIsCompany">{{customer.NAME}} <br> </span>
                     <span *ngIf="customer.oShippingAddress?.street || customer.oShippingAddress?.number">
                       {{customer.oShippingAddress?.street}} {{customer.oShippingAddress?.number}}
                       <br>
@@ -468,7 +469,8 @@
                     <span *ngIf="customer.oShippingAddress?.zip || customer.oShippingAddress?.city">
                       {{customer.oShippingAddress?.zip}} {{customer.oShippingAddress?.city}}<br>
                     </span>
-                    <span *ngIf="customer.sEmail"> {{customer.sEmail}} </span>
+                    <span *ngIf="customer.sEmail">{{customer.sEmail}} <br> </span>
+                    <span *ngIf="customer.sCompanyName"> {{customer.sCompanyName}} <br> </span>
                   </p>
                 </div>
               </div>
