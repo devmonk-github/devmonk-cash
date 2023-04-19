@@ -27,12 +27,12 @@ export class PaymentDistributionService {
     const bTesting = false;
     if (bTesting) console.log('distributeAmount', { availableAmount, nGiftcardAmount, nRedeemedLoyaltyPoints, original: JSON.parse(JSON.stringify(transactionItems)) })
     
-    transactionItems = transactionItems.filter((i:any) => i.type !== 'empty-line')
+    transactionItems = transactionItems.filter((i: any) => !['empty-line', 'loyalty-points'].includes(i.type))
     transactionItems.forEach((i: any) => {
       // if (bTesting) console.log(31, i, i.nTotal);
       
       const nPrice = parseFloat((typeof i.price === 'string') ? i.price.replace(',', '.') : i.price);
-      let nDiscount = (i.bDiscountOnPercentage ? this.tillService.getPercentOf(nPrice, i.nDiscount || 0) : i.nDiscount) * i.quantity;
+      let nDiscount = (i.bDiscountOnPercentage ? this.tillService.getPercentOf(nPrice, i.nDiscount || 0) : i.nDiscount);
       nDiscount = +(nDiscount.toFixed(2));
       i.amountToBePaid = ((nPrice - nDiscount) * i.quantity) - (i.prePaidAmount || 0);// - (i?.nGiftcardDiscount || 0) - (i?.nRedeemedLoyaltyPoints || 0);
       i.amountToBePaid = +(i.amountToBePaid.toFixed(2))
