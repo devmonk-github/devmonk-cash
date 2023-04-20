@@ -36,8 +36,9 @@
                 </div>
             </div>
 
+
             <div class="row col-12 mb-5" *ngIf="settings?.bSumUpArticleGroupStatistics">
-                <div class="row col-3 link" *ngFor="let article of articleGroupList">
+                <div class="row col-5 link" *ngFor="let article of articleGroupList">
                     <a routerLink='/business/article-groups/{{article._id}}'>{{article?.oName[selectedLanguage]}}</a>
                 </div>
             </div>
@@ -53,8 +54,8 @@
                 <div class="col-3 mb-5">
                     <label class="form-check form-switch form-check-custom form-check-solid">
                         <input type="checkbox" name="loyaltyProgram" class="form-check-input"
-                            [(ngModel)]="settings.bShowDayStates" (click)="enableTurnoverGroups()"
-                            [disabled]="articleGroupList.length>0">
+                            [(ngModel)]="settings.bShowDayStatesBasedOnTurnover" (click)="enableTurnoverGroups()"
+                            [disabled]="articleGroupList.length > 0 || bIsDisable">
                     </label>
                 </div>
             </div>
