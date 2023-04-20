@@ -21,7 +21,7 @@ export class StatisticsSettingsComponent implements OnInit {
     sDescription: ''
   }
   loading: boolean = false;
-  bIsDisable: Boolean = true;
+  bIsDisable: boolean = true;
   workstations: Array<any> = [];
   aLanguages:any;
   settings: any;
@@ -82,6 +82,20 @@ export class StatisticsSettingsComponent implements OnInit {
         if (result?.data?.length && result.data[0]?.result?.length) {
           this.bIsDisable = false;
           this.articleGroupList = result.data[0].result.filter((item: any) => !item.sCategory);
+          for (const article of this.articleGroupList){
+            if (article?.oName) {
+              for(let [key,value] of Object.entries(article.oName)){
+                if(!article.oName[this.selectedLanguage]){
+                  article.oName[this.selectedLanguage] = value;
+                }else if(article.oName[this.selectedLanguage] == ""){
+                  article.oName[this.selectedLanguage] = "No name";
+                }
+              }
+             }else{
+              article.oName[this.selectedLanguage] = "No name";
+             }
+          }
+          
         }
       }, (error) => {
         this.loading = false;

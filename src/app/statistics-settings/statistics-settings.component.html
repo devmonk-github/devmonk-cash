@@ -38,7 +38,7 @@
 
 
             <div class="row col-12 mb-5" *ngIf="settings?.bSumUpArticleGroupStatistics">
-                <div class="row col-3 link" *ngFor="let article of articleGroupList">
+                <div class="row col-5 link" *ngFor="let article of articleGroupList">
                     <a routerLink='/business/article-groups/{{article._id}}'>{{article?.oName[selectedLanguage]}}</a>
                 </div>
             </div>
