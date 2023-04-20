@@ -22,7 +22,6 @@ export class StatisticsSettingsComponent implements OnInit {
   }
   loading: boolean = false;
   workstations: Array<any> = [];
-  //settings: Array<any> = [];
   settings: any;
   iBusinessId = localStorage.getItem('currentBusiness')
   downloadOptions = [
@@ -40,7 +39,7 @@ export class StatisticsSettingsComponent implements OnInit {
   ];
   updateSettingsSubscription !: Subscription;
   getSettingsSubscription !: Subscription;
-  updatingSettings: boolean = false;
+  bIsUpdated:boolean = false;
   savingPointsSettings: any = {};
   selectedLanguage: string;
   articleGroupList!: Array<any>;
@@ -84,13 +83,12 @@ export class StatisticsSettingsComponent implements OnInit {
   enableTurnoverGroups() {
     if (this.settings.bShowDayStates) {
       let confirmBtnDetails = [
-        { text: "YES", value: 'remove', status: 'success', class: 'ml-auto mr-2' },
+        { text: "YES", value: 'success', status: 'success', class: 'ml-auto mr-2' },
         { text: "CANCEL", value: 'close' }
       ];
       this.dialogService.openModal(ConfirmationDialogComponent, { context: { header: '', bodyText: 'Are you sure you want to enable turnover groups on your daystates/statistics?', buttonDetails: confirmBtnDetails } })
-        .instance.close.subscribe(
-          (status: any) => {
-            if (status == 'remove') {
+        .instance.close.subscribe((status: any) => {
+            if (status == 'success') {
               this.loading = true;
               this.apiService.postNew('cashregistry', '/api/v1/transaction/item/get-transactionitems-by-businessId', { iBusinessId: this.requestParams.iBusinessId }).subscribe((res: any) => {
                 this.loading = false;
@@ -113,13 +111,10 @@ export class StatisticsSettingsComponent implements OnInit {
       bSumUpArticleGroupStatistics: this.settings?.bSumUpArticleGroupStatistics,
       bShowDayStates: this.settings?.bShowDayStates
     };
-    this.updatingSettings = true;
     this.updateSettingsSubscription = this.apiService.putNew('cashregistry', '/api/v1/settings/update/' + this.requestParams.iBusinessId, body)
       .subscribe((result: any) => {
         if (result) {
-          console.log("result", result);
-          this.updatingSettings = false;
-          //this.toastService.show({ type: 'success', text: 'Saved Successfully' });
+          this.bIsUpdated = true;
         }
       }, (error) => {
         console.log(error);
