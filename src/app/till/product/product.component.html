@@ -61,11 +61,14 @@
             <ng-select
             [(ngModel)]="iSelectedLocationId" (change)="updatePayments()"
               class="form-control form-control-solid p-0" [clearable]="false" [disabled]="item.price != item.amountToBePaid && !item.oType.bRefund">
-              <ng-option *ngFor="let oLocation of item.aLocation" [value]="oLocation._id">{{oLocation.sName | translate }} - ( {{ oLocation?.nStock}} ) </ng-option>
+              <ng-option *ngFor="let oLocation of item.aLocation" [value]="oLocation._id">
+                <span [class]=" !oLocation?.nStock ? 'text-danger': 'text-default'">{{oLocation.sName | translate }} - ( {{ oLocation?.nStock}} )</span>
+              </ng-option>
             </ng-select>
-            <!-- TODO : add message if stock is 0 -->
           </div>
-          
+          <div *ngFor="let oLocation of item.aLocation">
+            <p *ngIf="oLocation._id === iSelectedLocationId && oLocation?.nStock == 0" class="text-break text-danger m-0 mt-3">{{"WARNING_STOCK_QUANTITY_IS_0"| translate}}</p>
+          </div>
         </div>
 
       </div>
