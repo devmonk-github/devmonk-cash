@@ -80,7 +80,7 @@ export class StatisticsSettingsComponent implements OnInit {
       (result: any) => {
         this.loading = false;
         if (result?.data?.length && result.data[0]?.result?.length) {
-          this.bIsDisable = false;
+          //this.bIsDisable = false;
           this.articleGroupList = result.data[0].result.filter((item: any) => !item.sCategory);
           for (const article of this.articleGroupList){
             if (article?.oName) {
