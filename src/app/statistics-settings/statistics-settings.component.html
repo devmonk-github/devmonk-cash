@@ -32,7 +32,7 @@
             </div>
             <div class="row" *ngIf="settings?.bSumUpArticleGroupStatistics">
                 <div class="col-9 mb-5">
-                    <label class="link">B. These articlegroups have no turnover group/category assigned:</label>
+                    <label class="link">B. {{"ARTICLE_GROUP_WITHOUT_CATEGORY_OR_TURNOVER_GROUP" | translate}}</label>
                 </div>
             </div>
 
@@ -45,8 +45,7 @@
             <div class="row" *ngIf="settings?.bSumUpArticleGroupStatistics">
                 <div class="col-9 mb-5">
                     <ul>
-                        <li> <label class="form-check form-switch form-check-custom form-check-solid">Show my daystates
-                                based on my turnover groups
+                        <li> <label class="form-check form-switch form-check-custom form-check-solid">{{"SHOW_DATSTATES_BASED_ON_TURNOVER_GROUP" | translate }}
                             </label>
                         </li>
                     </ul>
@@ -64,5 +63,6 @@
     </div>
 </div>
 <div>
-    <button class="btn btn-primary" (click)="updateSettings()"> {{ "SAVE" | translate}}</button>
+    <button class="btn btn-primary" *ngIf="!bIsUpdated" (click)="updateSettings()"> {{ "SAVE" | translate}}</button>
+    <button class="btn btn-primary" *ngIf="bIsUpdated" (click)="updateSettings()"> {{ "UPDATED" | translate}}</button>
 </div>

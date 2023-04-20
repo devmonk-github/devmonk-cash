@@ -22,7 +22,6 @@ export class StatisticsSettingsComponent implements OnInit {
   }
   loading: boolean = false;
   workstations: Array<any> = [];
-  //settings: Array<any> = [];
   settings: any;
   iBusinessId = localStorage.getItem('currentBusiness')
   downloadOptions = [
@@ -40,7 +39,7 @@ export class StatisticsSettingsComponent implements OnInit {
   ];
   updateSettingsSubscription !: Subscription;
   getSettingsSubscription !: Subscription;
-  updatingSettings: boolean = false;
+  bIsUpdated:boolean = false;
   savingPointsSettings: any = {};
   selectedLanguage: string;
   articleGroupList!: Array<any>;
@@ -87,17 +86,13 @@ export class StatisticsSettingsComponent implements OnInit {
         { text: "CANCEL", value: 'close' }
       ];
       this.dialogService.openModal(ConfirmationDialogComponent, { context: { header: '', bodyText: 'Are you sure you want to enable turnover groups on your daystates/statistics?', buttonDetails: confirmBtnDetails } })
-        .instance.close.subscribe(
-          (status: any) => {
-            console.log("status");
-            console.log(status);
+        .instance.close.subscribe((status: any) => {
             if (status == 'remove') {
               this.apiService.postNew('cashregistry', '/api/v1/transaction/item/get-transactionitems-by-businessId', { iBusinessId: this.requestParams.iBusinessId }).subscribe((res: any) => {
                 if (res?.message == 'success') {
                   this.close({ action: true });
                 }
               })
-
             }
           })
     }
@@ -110,15 +105,12 @@ export class StatisticsSettingsComponent implements OnInit {
     const body = {
       bSumUpArticleGroupStatistics: this.settings?.bSumUpArticleGroupStatistics,
       bShowDayStates: this.settings?.bShowDayStates
-
     };
-    this.updatingSettings = true;
     this.updateSettingsSubscription = this.apiService.putNew('cashregistry', '/api/v1/settings/update/' + this.requestParams.iBusinessId, body)
       .subscribe((result: any) => {
         if (result) {
-          console.log("result", result);
-          this.updatingSettings = false;
-          //this.toastService.show({ type: 'success', text: 'Saved Successfully' });
+          this.bIsUpdated = true;
+          //console.log("result", result);
         }
       }, (error) => {
         console.log(error);
