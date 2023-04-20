@@ -277,8 +277,8 @@ export class TillService {
       if (i.type === 'giftcard') { //|| (bPrepayment === false && (i.type === 'repair' || i.type === 'order'))
         oItem.eActivityItemStatus = 'delivered';
         oItem.nGiftcardRemainingAmount = oItem.nPriceIncVat;
-      } else if (i.type === 'repair' && i.amountToBePaid === 0 && i.paymentAmount === 0 && !i?.isExclude) {
-          oItem.eActivityItemStatus = 'delivered';
+      } else if (i.type === 'repair') { 
+        oItem.eActivityItemStatus = ((i.amountToBePaid === 0 && i.paymentAmount === 0 && !i?.isExclude) || i.amountToBePaid === i.paymentAmount && !i?.isExclude) ? 'delivered' : i.eActivityItemStatus;
       } else {
         oItem.eActivityItemStatus = i.eActivityItemStatus;
       }
