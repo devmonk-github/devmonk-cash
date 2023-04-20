@@ -139,7 +139,10 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
       this.oStatisticsData.iWorkstationId = oState?.iWorkstationId;
 
       if (this.oStatisticsData.bIsDayStateOpened) this.bOpeningDayClosure = true;
-      else this.bOpeningHistoricalDayState = true;
+      else {
+        this.bOpeningHistoricalDayState = true;
+        this.bShowDownload = true;
+      } 
 
       if (this.oStatisticsData.dStartDate) {
         this.filterDates.startDate = this.oStatisticsData.dStartDate;
