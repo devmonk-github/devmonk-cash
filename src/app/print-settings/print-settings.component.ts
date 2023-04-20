@@ -304,7 +304,12 @@ export class PrintSettingsComponent implements OnInit, AfterViewInit {
 
   markDefault(label: any, eType:string = 'zpl') {
     try {
-      this.apiService.postNew('cashregistry', '/api/v1/label/templates/changeDefaultLabel', { _id: label._id, iBusinessId: this.iBusinessId }).subscribe((result: any) => {
+      const oBody = {
+        _id: label._id,
+        iBusinessId: this.iBusinessId,
+        iLocationId: this.iLocationId
+      }
+      this.apiService.postNew('cashregistry', '/api/v1/label/templates/changeDefaultLabel', oBody).subscribe((result: any) => {
         if (result?.message == 'success') {
           this.aZplTemplates.forEach((label: any) => {
             if (label.bDefault) label.bDefault = false;
