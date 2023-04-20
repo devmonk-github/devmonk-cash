@@ -771,11 +771,9 @@ export class TillService {
     dataObject.related = _relatedResult?.data || [];
     if(dataObject.related.length){
       dataObject.related.forEach((relatedobj: any) => {
-        // relatedobj.aPayments = relatedobj.aPayments.filter((payment: any) => payment?.sRemarks !== 'CHANGE_MONEY');
         relatedobj.aPayments.forEach((obj: any) => {
           if (!obj?.sRemarks) obj.sRemarks = "";
           obj.bIgnore = true;
-          // obj.dCreatedDate = moment(obj.dCreatedDate).format('DD-MM-yyyy hh:mm');
         });
         dataObject.aPayments = dataObject.aPayments.concat(relatedobj.aPayments);
       })
