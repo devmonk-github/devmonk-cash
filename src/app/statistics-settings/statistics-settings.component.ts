@@ -23,7 +23,6 @@ export class StatisticsSettingsComponent implements OnInit {
   loading: boolean = false;
   bIsDisable: boolean = true;
   workstations: Array<any> = [];
-  aLanguages:any;
   settings: any;
   iBusinessId = localStorage.getItem('currentBusiness')
   downloadOptions = [
@@ -41,9 +40,8 @@ export class StatisticsSettingsComponent implements OnInit {
   ];
   updateSettingsSubscription !: Subscription;
   getSettingsSubscription !: Subscription;
-  bIsUpdated:boolean = false;
   savingPointsSettings: any = {};
-  selectedLanguage: string;
+  selectedLanguage: any;
   articleGroupList!: Array<any>;
   requestParams: any = {
     iBusinessId: localStorage.getItem('currentBusiness')
@@ -56,10 +54,7 @@ export class StatisticsSettingsComponent implements OnInit {
 
   ngOnInit(): void {
     this.apiService.setToastService(this.toastService);
-    let aLanguages : any = JSON.parse(localStorage.getItem('org') || '');
-    this.aLanguages = aLanguages.aLanguage;
-    console.log("this.aLanguages", this.aLanguages);
-    this.selectedLanguage = localStorage.getItem('language') || 'nl' || 'fr' || 'en' || 'es' || 'de' || 'sv' || 'da' || 'ar' ||  'is' || 'ms';
+    this.selectedLanguage = localStorage.getItem('language');
     this.getSettings();
     this.getArticleGroups();
   }
@@ -80,22 +75,18 @@ export class StatisticsSettingsComponent implements OnInit {
       (result: any) => {
         this.loading = false;
         if (result?.data?.length && result.data[0]?.result?.length) {
-          //this.bIsDisable = false;
-          this.articleGroupList = result.data[0].result.filter((item: any) => !item.sCategory);
-          for (const article of this.articleGroupList){
-            if (article?.oName) {
-              for(let [key,value] of Object.entries(article.oName)){
-                if(!article.oName[this.selectedLanguage]){
-                  article.oName[this.selectedLanguage] = value;
-                }else if(article.oName[this.selectedLanguage] == ""){
-                  article.oName[this.selectedLanguage] = "No name";
+          this.articleGroupList = result.data[0].result.filter((item: any) => {
+            if (!item?.oName?.[this.selectedLanguage]) {
+              for (const sName of Object.values(item.oName)) {
+                if (sName) {
+                  item.oName[this.selectedLanguage] = sName;
+                  break;
                 }
               }
-             }else{
-              article.oName[this.selectedLanguage] = "No name";
-             }
-          }
-          
+            }
+            if (!item?.oName?.[this.selectedLanguage]) item.oName[this.selectedLanguage] = 'NO_NAME';
+            return !item.sCategory
+          });
         }
       }, (error) => {
         this.loading = false;
@@ -138,9 +129,7 @@ export class StatisticsSettingsComponent implements OnInit {
     };
     this.updateSettingsSubscription = this.apiService.putNew('cashregistry', '/api/v1/settings/update/' + this.requestParams.iBusinessId, body)
       .subscribe((result: any) => {
-        if (result) {
-          this.toastService.show({ type: 'success', text: 'Saved Successfully' });
-        }
+        this.toastService.show({ type: 'success', text: 'Saved Successfully' });
       }, (error) => {
         this.toastService.show({ type: 'warning', text: 'something went wrong' });
         console.log(error);
