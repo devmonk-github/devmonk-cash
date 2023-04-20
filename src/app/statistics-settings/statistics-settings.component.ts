@@ -42,6 +42,8 @@ export class StatisticsSettingsComponent implements OnInit {
   getSettingsSubscription !: Subscription;
   updatingSettings: boolean = false;
   savingPointsSettings: any = {};
+  selectedLanguage: string;
+  articleGroupList!: Array<any>;
   requestParams: any = {
     iBusinessId: localStorage.getItem('currentBusiness')
   }
@@ -53,20 +55,29 @@ export class StatisticsSettingsComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    this.selectedLanguage = localStorage.getItem('language') || 'nl';
     //this.apiService.setToastService(this.toastService);
     // this.business._id = localStorage.getItem('currentBusiness');
-    //this.fetchSetting();
     this.getSettings();
+    this.getArticleGroups();
   }
   getSettings() {
     this.getSettingsSubscription = this.apiService.getNew('cashregistry', `/api/v1/settings/${this.requestParams.iBusinessId}`).subscribe((result: any) => {
       this.settings = result;
-      console.log("this.settings",this.settings);
-
-      
     }, (error) => {
       console.log(error);
     })
+  }
+  getArticleGroups() {
+    this.articleGroupList = [];
+    this.apiService.postNew('core', '/api/v1/business/article-group/list', this.requestParams).subscribe(
+      (result: any) => {
+        this.loading = false;
+        if (result.data && result.data.length > 0) {
+          this.articleGroupList = result.data[0].result.filter((item: any) => item.sCategory === '');
+        }
+      }
+    )
   }
   enableTurnoverGroups() {
     //console.log("enableTurnoverGroups", this.settings.bShowDayStates);
@@ -81,12 +92,9 @@ export class StatisticsSettingsComponent implements OnInit {
             console.log("status");
             console.log(status);
             if (status == 'remove') {
-              this.apiService.postNew('cashregistry', '/api/v1/transaction/item/get-transactionitems-by-businessId', {  iBusinessId: this.requestParams.iBusinessId }).subscribe((res: any) => {
+              this.apiService.postNew('cashregistry', '/api/v1/transaction/item/get-transactionitems-by-businessId', { iBusinessId: this.requestParams.iBusinessId }).subscribe((res: any) => {
                 if (res?.message == 'success') {
                   this.close({ action: true });
-
-                } else {
-
                 }
               })
 
@@ -99,28 +107,25 @@ export class StatisticsSettingsComponent implements OnInit {
     this.dialogRef.close.emit(data);
   }
   updateSettings() {
-
     const body = {
       bSumUpArticleGroupStatistics: this.settings?.bSumUpArticleGroupStatistics,
-      bShowDayStates:this.settings?.bShowDayStates
-     
-    };
-    console.log("body",body);
+      bShowDayStates: this.settings?.bShowDayStates
 
+    };
     this.updatingSettings = true;
     this.updateSettingsSubscription = this.apiService.putNew('cashregistry', '/api/v1/settings/update/' + this.requestParams.iBusinessId, body)
       .subscribe((result: any) => {
-        if (result){
-          console.log("result",result);
+        if (result) {
+          console.log("result", result);
           this.updatingSettings = false;
           //this.toastService.show({ type: 'success', text: 'Saved Successfully' });
-        } 
+        }
       }, (error) => {
         console.log(error);
       })
   }
-  
 
- 
+
+
 
 }
