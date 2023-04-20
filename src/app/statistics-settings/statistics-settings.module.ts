@@ -6,14 +6,15 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { SharedModule } from 'primeng/api';
 import { TranslateModule } from '@ngx-translate/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-//import { ApiService } from '../shared/service/api.service';
-//import { ToastService } from '../shared/components/toast';
-
+import { ApiService } from '../shared/service/api.service';
+import { ToastService } from '../shared/components/toast';
+import { OverlayModule } from '@angular/cdk/overlay';
 @NgModule({
   declarations: [
     StatisticsSettingsComponent
   ],
   imports: [
+    OverlayModule,
     CommonModule,
     StatisticsSettingsRoutingModule,
     FormsModule,
@@ -22,9 +23,9 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
     TranslateModule,
     FontAwesomeModule
   ],
-  // providers:[
-  //   ToastService,
-  //   ApiService
-  // ]
+  providers:[
+    ApiService,
+    ToastService
+  ]
 })
 export class StatisticsSettingsModule { }
