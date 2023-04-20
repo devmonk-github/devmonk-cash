@@ -106,10 +106,11 @@ export class StatisticsSettingsComponent implements OnInit {
   close(data: any) {
     this.dialogRef.close.emit(data);
   }
+  
   updateSettings() {
     const body = {
       bSumUpArticleGroupStatistics: this.settings?.bSumUpArticleGroupStatistics,
-      bShowDayStates: this.settings?.bShowDayStates
+      bShowDayStates: !this.settings?.bSumUpArticleGroupStatistics ? false : this.settings?.bShowDayStates
     };
     this.updateSettingsSubscription = this.apiService.putNew('cashregistry', '/api/v1/settings/update/' + this.requestParams.iBusinessId, body)
       .subscribe((result: any) => {
