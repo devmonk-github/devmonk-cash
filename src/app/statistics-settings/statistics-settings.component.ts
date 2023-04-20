@@ -51,16 +51,14 @@ export class StatisticsSettingsComponent implements OnInit {
     private apiService: ApiService,
     private dialogService: DialogService,
     //private toastService: ToastService
-
   ) { }
 
   ngOnInit(): void {
     this.selectedLanguage = localStorage.getItem('language') || 'nl';
-    //this.apiService.setToastService(this.toastService);
-    // this.business._id = localStorage.getItem('currentBusiness');
     this.getSettings();
     this.getArticleGroups();
   }
+
   getSettings() {
     this.getSettingsSubscription = this.apiService.getNew('cashregistry', `/api/v1/settings/${this.requestParams.iBusinessId}`).subscribe((result: any) => {
       this.settings = result;
@@ -68,19 +66,22 @@ export class StatisticsSettingsComponent implements OnInit {
       console.log(error);
     })
   }
+
   getArticleGroups() {
     this.articleGroupList = [];
+    this.loading = true;
     this.apiService.postNew('core', '/api/v1/business/article-group/list', this.requestParams).subscribe(
       (result: any) => {
         this.loading = false;
-        if (result.data && result.data.length > 0) {
-          this.articleGroupList = result.data[0].result.filter((item: any) => item.sCategory === '');
+        if (result?.data?.length && result.data[0]?.result?.length) {
+          this.articleGroupList = result.data[0].result.filter((item: any) => !item.sCategory);
         }
-      }
-    )
+      }, (error) => {
+        this.loading = false;
+      })
   }
+
   enableTurnoverGroups() {
-    //console.log("enableTurnoverGroups", this.settings.bShowDayStates);
     if (this.settings.bShowDayStates) {
       let confirmBtnDetails = [
         { text: "YES", value: 'remove', status: 'success', class: 'ml-auto mr-2' },
@@ -89,15 +90,16 @@ export class StatisticsSettingsComponent implements OnInit {
       this.dialogService.openModal(ConfirmationDialogComponent, { context: { header: '', bodyText: 'Are you sure you want to enable turnover groups on your daystates/statistics?', buttonDetails: confirmBtnDetails } })
         .instance.close.subscribe(
           (status: any) => {
-            console.log("status");
-            console.log(status);
             if (status == 'remove') {
+              this.loading = true;
               this.apiService.postNew('cashregistry', '/api/v1/transaction/item/get-transactionitems-by-businessId', { iBusinessId: this.requestParams.iBusinessId }).subscribe((res: any) => {
+                this.loading = false;
                 if (res?.message == 'success') {
                   this.close({ action: true });
                 }
+              }, (error) =>{
+                this.loading = false;
               })
-
             }
           })
     }
@@ -110,7 +112,6 @@ export class StatisticsSettingsComponent implements OnInit {
     const body = {
       bSumUpArticleGroupStatistics: this.settings?.bSumUpArticleGroupStatistics,
       bShowDayStates: this.settings?.bShowDayStates
-
     };
     this.updatingSettings = true;
     this.updateSettingsSubscription = this.apiService.putNew('cashregistry', '/api/v1/settings/update/' + this.requestParams.iBusinessId, body)
@@ -124,8 +125,4 @@ export class StatisticsSettingsComponent implements OnInit {
         console.log(error);
       })
   }
-
-
-
-
 }
