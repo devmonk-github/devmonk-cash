@@ -257,9 +257,7 @@ export class PrintSettingsComponent implements OnInit, AfterViewInit {
   }
 
   async getLabelTemplate() {
-    // await this.postLabelTemplate()
-    
-    this.apiService.getNew('cashregistry', `/api/v1/label/templates/${this.iBusinessId}`).subscribe((result: any) => {
+    this.apiService.getNew('cashregistry', `/api/v1/label/templates/${this.iBusinessId}?iLocationId=${this.iLocationId}`).subscribe((result: any) => {
       
       this.aDefaultZplTemplates = result.data.filter((label: any) => label.readOnly && label.eType === 'zpl')
       this.aZplTemplates = result.data.filter((label: any) => !label.readOnly && label.eType === 'zpl').map((template: any) => {
