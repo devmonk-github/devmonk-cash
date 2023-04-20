@@ -21,7 +21,9 @@ export class StatisticsSettingsComponent implements OnInit {
     sDescription: ''
   }
   loading: boolean = false;
+  bIsDisable: Boolean = true;
   workstations: Array<any> = [];
+  aLanguages:any;
   settings: any;
   iBusinessId = localStorage.getItem('currentBusiness')
   downloadOptions = [
@@ -54,6 +56,9 @@ export class StatisticsSettingsComponent implements OnInit {
 
   ngOnInit(): void {
     this.apiService.setToastService(this.toastService);
+    let aLanguages : any = JSON.parse(localStorage.getItem('org') || '');
+    this.aLanguages = aLanguages.aLanguage;
+    console.log("this.aLanguages", this.aLanguages);
     this.selectedLanguage = localStorage.getItem('language') || 'nl' || 'fr' || 'en' || 'es' || 'de' || 'sv' || 'da' || 'ar' ||  'is' || 'ms';
     this.getSettings();
     this.getArticleGroups();
@@ -63,6 +68,7 @@ export class StatisticsSettingsComponent implements OnInit {
     this.getSettingsSubscription = this.apiService.getNew('cashregistry', `/api/v1/settings/${this.requestParams.iBusinessId}`).subscribe((result: any) => {
       this.settings = result;
     }, (error) => {
+      this.toastService.show({ type: 'warning', text: 'something went wrong' });
       console.log(error);
     })
   }
@@ -74,15 +80,17 @@ export class StatisticsSettingsComponent implements OnInit {
       (result: any) => {
         this.loading = false;
         if (result?.data?.length && result.data[0]?.result?.length) {
+          this.bIsDisable = false;
           this.articleGroupList = result.data[0].result.filter((item: any) => !item.sCategory);
         }
       }, (error) => {
         this.loading = false;
+        this.toastService.show({ type: 'warning', text: 'something went wrong' });
       })
   }
 
   enableTurnoverGroups() {
-    if (this.settings.bShowDayStates) {
+    if (this.settings.bShowDayStatesBasedOnTurnover) {
       let confirmBtnDetails = [
         { text: "YES", value: 'success', status: 'success', class: 'ml-auto mr-2' },
         { text: "CANCEL", value: 'close' }
@@ -98,6 +106,7 @@ export class StatisticsSettingsComponent implements OnInit {
                 }
               }, (error) =>{
                 this.loading = false;
+                this.toastService.show({ type: 'warning', text: 'something went wrong' });
               })
             }
           })
@@ -110,7 +119,7 @@ export class StatisticsSettingsComponent implements OnInit {
   updateSettings() {
     const body = {
       bSumUpArticleGroupStatistics: this.settings?.bSumUpArticleGroupStatistics,
-      bShowDayStates: this.settings?.bShowDayStates
+      bShowDayStatesBasedOnTurnover: this.settings?.bShowDayStatesBasedOnTurnover
     };
     this.updateSettingsSubscription = this.apiService.putNew('cashregistry', '/api/v1/settings/update/' + this.requestParams.iBusinessId, body)
       .subscribe((result: any) => {
@@ -118,6 +127,7 @@ export class StatisticsSettingsComponent implements OnInit {
           this.toastService.show({ type: 'success', text: 'Saved Successfully' });
         }
       }, (error) => {
+        this.toastService.show({ type: 'warning', text: 'something went wrong' });
         console.log(error);
       })
   }
