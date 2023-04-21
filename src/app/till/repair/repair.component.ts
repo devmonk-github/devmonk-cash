@@ -46,6 +46,7 @@ export class RepairComponent implements OnInit {
   showDeleteBtn: boolean = false;
   collapsedBtn: Boolean = false;
   repairer: any = null;
+  iBusinessId:any;
   oRepairer: any = {
     sName: '',
     _id: ''
@@ -69,7 +70,7 @@ export class RepairComponent implements OnInit {
     public tillService: TillService,
     private createArticleGroupService: CreateArticleGroupService) { }
 
-  ngOnInit(): void {
+    async ngOnInit() {
     // console.log(this.settings.nLastBagNumber, this.settings.bAutoIncrementBagNumbers);
     
     this.listSuppliers();
@@ -77,11 +78,15 @@ export class RepairComponent implements OnInit {
     this.getBusinessBrands();
     this.checkArticleGroups();
     this.getProperties();
-    //  console.log(this.item);
+    //console.log("this.item", this.tillService.settings.currentLocation.nLastBagNumber);
+    //console.log("this.settings.bAutoIncrementBagNumbers ", this.settings.bAutoIncrementBagNumbers);
     // console.log(this.item?.price);
     // console.log(this.item?.nPurchasePrice);
     // this.listSuppliers();
     // this.getBusinessBrands();
+    if (this.settings.bAutoIncrementBagNumbers) {
+      this.item.sBagNumber =  this.settings.sPrefix + (this.settings.nLastBagNumber + 1).toString();
+    }
     if (this.item.new) {
       this.selectArticleGroup();
       this.item.new = false;
@@ -90,6 +95,12 @@ export class RepairComponent implements OnInit {
   }
 
   selectArticleGroup() {
+    console.log("this.settings", this.settings)
+    
+    if (this.settings.bAutoIncrementBagNumbers) {
+      this.item.sBagNumber =  this.settings.sPrefix + (this.settings.nLastBagNumber + 1).toString();
+    }
+    console.log("this.item.sBagNumber", this.item.sBagNumber);
     this.dialogService.openModal(SelectArticleDialogComponent, 
       { 
         cssClass: 'modal-m', 
