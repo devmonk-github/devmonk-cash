@@ -451,7 +451,7 @@
                                                 {{ item.sArticleGroupName }} {{item.sProductNumber }}</p>
                                             <p class="m-0" *ngIf="item.sProductName">{{ item.sProductName}}</p>
                                             <span *ngIf="item.sDescription">{{ item.sDescription}} <br /></span>
-                                            <span *ngIf="item?.nDiscountToShow || item?.bShowGiftcardDiscountField || item?.bShowLoyaltyPointsDiscountField">
+                                            <span *ngIf="item?.bPrepayment">
                                                 {{ 'ORIGINAL_AMOUNT_INC_DISC' | translate }}: {{ item.nPriceIncVatAfterDiscount}}
                                                 <br />
                                             </span>
@@ -484,29 +484,26 @@
                                     </td>
                                     <td>
                                         <span *ngIf="item.nDiscountToShow || item?.bShowGiftcardDiscountField || item?.bShowLoyaltyPointsDiscountField">
-                                            <s>({{(item.nTotalPriceIncVat) | currency: tillService.currency}})</s>
+                                            <s>({{(item.nPriceIncVat) | currency: tillService.currency}})</s>
                                         </span>
                                         {{item.nPriceIncVatAfterDiscount | currency: tillService.currency}}
                                     </td>
                                     <td>{{item.nQuantity}}</td>
                                     <!-- <td *ngIf="item.nDiscountToShow <= 0"> {{ "0.00" | currency: tillService.currency}}
                                     </td> -->
-                                    <td *ngIf="item.nDiscountToShow > 0">
+                                    <td *ngIf="item.nDiscountToShow > 0 || transaction.totalDiscount > 0">
                                         <span *ngIf="item.bDiscountOnPercentage">
-                                            {{ item.nDiscount }}% ({{item.nDiscountToShow * item.nQuantity | currency:tillService.currency}})
+                                            {{ item.nDiscount }}% ({{item.nDiscountToShow | currency:tillService.currency}})
                                         </span>
-                                        <span *ngIf="!item.bDiscountOnPercentage">{{ item.nDiscountToShow * item.nQuantity | currency: tillService.currency}}</span>
+                                        <span *ngIf="!item.bDiscountOnPercentage">{{ item.nDiscountToShow | currency: tillService.currency}}</span>
                                     </td>
                                     <td *ngIf="item.bShowGiftcardDiscountField">{{ item.nGiftcardDiscount | currency: tillService.currency}}</td>
-                                    <td *ngIf="item?.bShowLoyaltyPointsDiscountField">{{ item.nRedeemedLoyaltyPoints }} </td>
+                                    <td *ngIf="item?.bShowLoyaltyPointsDiscountField">{{ item.nRedeemedPointsPerQty }} </td>
                                     <td *ngIf="savingPointsSetting && !transaction?.oCustomer?.bCounter">{{item?.nSavingsPoints || 0}} </td>
                                     <td>{{item.nVatRate}} % ({{item.vat || 0 | currency: tillService.currency }})</td>
                                     <td>
                                         <div class="d-flex align-items-center justify-content-between">
-                                            <div>
-
-                                                {{item.totalPaymentAmount || 0 | currency: tillService.currency}}
-                                            </div>
+                                            <div>{{item.totalPaymentAmount || 0 | currency: tillService.currency}}</div>
                                             <ng-container *ngIf="from != 'activity-details' && !item?.bMigrate">
                                                 <div class="mx-2">
                                                     <div class="d-flex align-items-center">
