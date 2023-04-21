@@ -24,6 +24,7 @@ export class TillService {
 
   settings:any;
   taxes:any;
+  aDiscountTypes = ['loyalty-points-discount', 'discount', 'giftcard-discount'];
 
   constructor(
     private apiService: ApiService,
@@ -359,7 +360,7 @@ export class TillService {
       body.transactionItems.forEach((i: any) => {
         if (i.oType.eKind !== 'loyalty-points') {
           let nDiscount = i?.nRedeemedLoyaltyPoints || 0;
-          console.log(369, {nDiscount});
+          if (bTesting) console.log(369, {nDiscount});
           i.nPaymentAmount += nDiscount;
           i.nRevenueAmount += (nDiscount / i.nQuantity);
           
@@ -595,10 +596,8 @@ export class TillService {
     //     }
     //   }
     // })
-    const aDiscountRecords = transaction.aTransactionItems.filter((item: any) =>
-      (item.oType?.eKind == 'discount' || item?.oType?.eKind == 'loyalty-points-discount' || item.oType?.eKind == 'giftcard-discount'));
-    dataObject.aTransactionItems = transaction.aTransactionItems.filter((item: any) =>
-      !(item.oType?.eKind == 'discount' || item?.oType?.eKind == 'loyalty-points-discount' || item.oType.eKind == 'loyalty-points' || item.oType?.eKind == 'giftcard-discount'));
+    const aDiscountRecords = transaction.aTransactionItems.filter((item: any) => this.aDiscountTypes.includes(item.oType?.eKind));
+    dataObject.aTransactionItems = transaction.aTransactionItems.filter((item: any) => ![...this.aDiscountTypes, 'loyalty-points'].includes(item.oType?.eKind));
     if (bTesting) console.log({ aDiscountRecords: aDiscountRecords, aTransactionItems: dataObject.aTransactionItems })
     let total = 0, 
       totalAfterDisc = 0, 
@@ -900,11 +899,20 @@ export class TillService {
   }
 
   prepareDataForOrderReceipt(activity:any, activityItems:any, transaction:any) {
+    // console.log('prepareDataForOrderReceipt',{activity, activityItems, transaction})
     const oDataSource = {
-        ...activity,
-        activityitems: activityItems,
-        aTransactionItems: transaction.aTransactionItems,
-      }
+      ...activity,
+      activityitems: activityItems.filter((el: any) => !['loyalty-points', ...this.aDiscountTypes].includes(el.oType.eKind)),
+      aTransactionItems: transaction.aTransactionItems,
+    }
+    oDataSource.activityitems.forEach((item:any) => {
+      let nDiscount = ((item?.bDiscountOnPercentage) ? this.getPercentOf(item.nPriceIncVat, item.nDiscount) : item.nDiscount) * item.nQuantity;
+      nDiscount += item.nRedeemedLoyaltyPoints;
+      item.nRevenueAmount -= nDiscount;
+      item.nPaidAmount -= nDiscount;
+      item.nPriceIncVat -= nDiscount
+      
+    });
     oDataSource.oCustomer = transaction.oCustomer
     oDataSource.businessDetails = transaction.businessDetails;
     oDataSource.sBusinessLogoUrl = transaction.sBusinessLogoUrl;
@@ -918,7 +926,7 @@ export class TillService {
     });
     oDataSource.nTotalPaidAmount = nTotalPaidAmount;
     oDataSource.sActivityNumber = activity.sNumber;
-    
+    // console.log({oDataSource})
     return oDataSource;
   }
 
