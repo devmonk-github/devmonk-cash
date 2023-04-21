@@ -950,4 +950,11 @@ export class TillService {
 
     return oDS;
   }
+
+  processBusinessDetails(businessDetails:any) {
+    const oLocation = businessDetails.aLocation.find((l:any) => l._id === this.iLocationId);
+    businessDetails.sBusinessAddress = (oLocation.oAddress?.street || '') + ' ' + (oLocation.oAddress?.houseNumber || '') + ' ' + 
+      (oLocation.oAddress?.postalCode || '') + ' ' + (oLocation.oAddress?.city || '');
+    return businessDetails;
+  }
 }
