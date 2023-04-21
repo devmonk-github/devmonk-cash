@@ -956,7 +956,11 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     const nRepairCount = oDataSource.aTransactionItemType.filter((e: any) => e === 'repair')?.length;
     const nOrderCount = oDataSource.aTransactionItemType.filter((e: any) => e === 'order')?.length;
 
-    const bRegularCondition = oDataSource.total >= 0.02 || oDataSource.total <= -0.02 || this.transaction.totalGiftcardDiscount || this.transaction.totalRedeemedLoyaltyPoints;
+    const bRegularCondition = oDataSource.total >= 0.02 || oDataSource.total <= -0.02 || 
+    oDataSource.totalGiftcardDiscount || 
+    oDataSource.totalRedeemedLoyaltyPoints || 
+    oDataSource.aTransactionItems.some((item:any) => item.oType.bRefund);
+
     const bOrderCondition = nOrderCount === 1 && nRepairCount >= 1 || nOrderCount >= 1;
     const bRepairCondition = nRepairCount === 1 && nOrderCount === 0;
     const bRepairAlternativeCondition = nRepairCount >= 1 && nOrderCount >= 1;

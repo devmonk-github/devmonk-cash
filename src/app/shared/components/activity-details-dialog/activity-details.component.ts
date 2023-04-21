@@ -600,7 +600,7 @@ export class ActivityDetailsComponent implements OnInit {
     else 
       oDataSource.eEstimatedDateAction = this.translationService.instant('WHATSAPP_ON_READY');
 
-    oDataSource.businessDetails = this.businessDetails;
+    oDataSource.businessDetails = this.tillService.processBusinessDetails(this.businessDetails);
     const aPromises = [];
     let bBusinessLogo = false, bTemplate = false;
     if (this.businessDetails?.sBusinessLogoUrl) {
@@ -728,14 +728,13 @@ export class ActivityDetailsComponent implements OnInit {
   }
 
   async processTransactionItems(oData: any) {
-    // console.log({oData})
-    const aDiscountRecords = oData.filter((el: any) =>  ['discount', 'loyalty-points-discount', 'giftcard-discount'].includes(el.oType.eKind));
-    this.activityItems = oData.filter((el: any) => !['discount', 'loyalty-points-discount', 'giftcard-discount', 'loyalty-points'].includes(el.oType.eKind)).map((item: any) => {
+    console.log({oData})
+    const aDiscountRecords = oData.filter((el: any) =>  this.tillService.aDiscountTypes.includes(el.oType.eKind));
+    this.activityItems = oData.filter((el: any) => ![...this.tillService.aDiscountTypes, 'loyalty-points'].includes(el.oType.eKind)).map((item: any) => {
       const oBrand = this.brandsList.find((brand: any) => brand._id === item.iBusinessBrandId);
       if (oBrand) item.brandName = oBrand.sName;
       const aDiscounts = aDiscountRecords.filter((el:any) => item.sUniqueIdentifier === el.sUniqueIdentifier);
       item.nPriceIncVatAfterDiscount = item.nPriceIncVat;
-      // let nTotalDiscount = 0;
       aDiscounts.forEach((el:any) => {
         if(el.oType.eKind === 'discount') {
           item.nDiscountToShow = +((el.bDiscountOnPercentage ? this.tillService.getPercentOf(item.nPriceIncVat, el?.nDiscount || 0) : el.nDiscount).toFixed(2));
@@ -755,7 +754,7 @@ export class ActivityDetailsComponent implements OnInit {
 
       return item;
     });
-    // console.log(749, this.activityItems);
+    console.log(749, this.activityItems);
     //this.customer = this.activityItems[0].oCustomer;
     this.oCurrentCustomer = this.activityItems[0].oCustomer;
     this.matchSystemAndCurrentCustomer(this.customer , this.oCurrentCustomer);
@@ -807,9 +806,10 @@ export class ActivityDetailsComponent implements OnInit {
     this.submitted = true;
     const oActivityItem = this.activityItems[index];
     oActivityItem.nPriceIncVat = +((oActivityItem.nPriceIncVatAfterDiscount + oActivityItem.nDiscount).toFixed(2));
-    oActivityItem.nTotalAmount = oActivityItem.nPriceIncVat;
+    // oActivityItem.nTotalAmount = oActivityItem.nPriceIncVat;
     oActivityItem.nPaidAmount = +((oActivityItem.nPaidAmount + oActivityItem.nDiscount).toFixed(2));
     oActivityItem.iBusinessId = this.iBusinessId;
+    // return;
     this.apiService.putNew('cashregistry', '/api/v1/activities/items/' + activityItemId, oActivityItem)
       .subscribe((result: any) => {
         if (result.message == 'success') {
@@ -864,7 +864,7 @@ export class ActivityDetailsComponent implements OnInit {
     event.target.disabled = true;
 
     const oDataSource = JSON.parse(JSON.stringify(this.activity));
-    oDataSource.businessDetails = this.businessDetails;
+    oDataSource.businessDetails = this.tillService.processBusinessDetails(this.businessDetails);
     const aPromises = [];
     let bBusinessLogo = false, bTemplate = false;
     if (this.businessDetails?.sBusinessLogoUrl) {

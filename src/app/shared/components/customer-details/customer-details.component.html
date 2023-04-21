@@ -305,7 +305,7 @@
                                             <td>{{transaction.sReceiptNumber}}</td>
                                             <td>{{transaction.eType}}</td>
                                             <td>{{transaction.sTotal || 0}}</td>
-                                            <ng-container *ngIf="from === 'customer'">
+                                            <ng-container> <!--*ngIf="from === 'customer'"-->
                                                 <td>
                                                     <button class="btn btn-primary"
                                                         (click)="showTransaction(transaction)">
@@ -384,7 +384,7 @@
                                             <td scope="row">{{activity?.dEstimatedDate | date: 'yyyy-MM-dd HH:mm'}}</td>
                                             <td>{{activity?.eActivityItemStatus || '-'}}</td>
                                             <td>{{activity?.sBusinessPartnerName || '-'}}</td>
-                                            <ng-container *ngIf="from === 'customer'">
+                                            <ng-container>  <!--*ngIf="from === 'customer'"-->
                                                 <td>
                                                     <button class="btn btn-primary"
                                                     (click)="openActivities(activity)" >
@@ -458,7 +458,7 @@
                                             <td scope="row">{{activity?.dEstimatedDate | date: 'yyyy-MM-dd HH:mm'}}</td>
                                             <td>{{activity?.eActivityItemStatus || '-'}}</td>
                                             <td>{{activity?.sBusinessPartnerName || '-'}}</td>
-                                            <ng-container *ngIf="from === 'customer'">
+                                            <ng-container>  <!--*ngIf="from === 'customer'"-->
                                                 <td>
                                                     <button class="btn btn-primary"
                                                     (click)="openActivityItems(activity)" >

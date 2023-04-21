@@ -149,7 +149,7 @@ export class CardsComponent implements OnInit, AfterViewInit {
     this.giftCardInfo.profileIconUrl = this.externalGiftCardDetails.profileIconUrl;
     this.giftCardInfo.iArticleGroupId = this.giftCardDetails?.iArticleGroupId;
     this.giftCardInfo.type = this.externalGiftCardDetails.type ? this.externalGiftCardDetails.type : 'custom';
-    console.log(this.giftCardInfo.nAmount);
+    // console.log(this.giftCardInfo.nAmount);
     this.close({ giftCardInfo: this.giftCardInfo, redeemedLoyaltyPoints: this.redeemedLoyaltyPoints });
   }
 }
