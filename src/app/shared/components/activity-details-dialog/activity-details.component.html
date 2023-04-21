@@ -157,12 +157,14 @@
                                 <!--IF CUSTOMER IS DIFFERENT FROM SYSTEM CUSTOMER-->
                                 <div class="alert alert-warning" role="alert" *ngIf="showSystemCustomer">
                                     {{"DIFFERENT_CUSTOMER_INFORMATION" | translate}}
-                                    <button class="btn btn-info my-3 btn-sm" *ngIf="customer?.bCounter==false" (click)="openCustomer(customer)">
-                                        {{'VIEW'|translate}} 
-                                    </button>
-                                    <button class="btn btn-light-warning ms-2 my-3 btn-sm" *ngIf="customer?.bCounter==false" (click)="updateCurrentCustomer({ oCustomer: customer })">
-                                        {{'SYNC_DATA'|translate}} 
-                                    </button>
+                                    <div class="d-flex">
+                                        <button class="btn btn-info my-3 btn-sm" *ngIf="customer?.bCounter==false" (click)="openCustomer(customer)">
+                                            {{'VIEW'|translate}} 
+                                        </button>
+                                        <button class="btn btn-light-warning ms-2 my-3 btn-sm" *ngIf="customer?.bCounter==false" (click)="updateCurrentCustomer({ oCustomer: customer })">
+                                            {{'SYNC_DATA'|translate}} 
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -464,12 +466,12 @@
                                                     </div>
                                                 </span>
                                             </div>
-                                            <div class="btn-group me-4 w-100 mb-4" *ngIf="customer?.bCounter==false">
+                                            <!-- <div class="btn-group me-4 w-100 mb-4" *ngIf="customer?.bCounter==false">
                                                 <span class="btn btn-secondary fs-bold">
                                                     <fa-icon class="group-icon" [icon]="faEnvelope"></fa-icon>
                                                     <span class="indicator-label">{{ "MAIL" | translate}}</span>
                                                 </span>
-                                            </div>
+                                            </div> -->
                                             <!-- [ngClass]="bShowOrderDownload ? 'btn-group me-4 w-100 mb-4': 'btn-group me-4 w-100 mb-4 disabled'" -->
                                             <div class="btn-group me-4 w-100 mb-4">
                                                 <span class="btn btn-secondary fs-bold"
