@@ -308,9 +308,9 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
 
     
 
-    if (this.from === 'customer') {
-      this.aTransctionTableHeaders.push({ key: 'Action', disabled: true });
-    }
+    //if (this.from === 'customer') {
+    this.aTransctionTableHeaders.push({ key: 'Action', disabled: true });
+    //}
     this.fetchLoyaltyPoints();
     this.getListEmployees();
     this.getMergedCustomerIds();

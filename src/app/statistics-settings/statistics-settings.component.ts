@@ -6,6 +6,7 @@ import { Subscription } from 'rxjs';
 import { DialogComponent, DialogService } from '../shared/service/dialog';
 import { ConfirmationDialogComponent } from 'src/app/shared/components/confirmation-dialog/confirmation-dialog.component';
 import { ToastService } from '../shared/components/toast';
+import { ActivatedRoute, Router } from '@angular/router';
 @Component({
   selector: 'app-statistics-settings',
   templateUrl: './statistics-settings.component.html',
@@ -16,6 +17,7 @@ export class StatisticsSettingsComponent implements OnInit {
   addNew: boolean = false;
   faPencilAlt = faPencilAlt;
   faTrash = faTrash;
+  routerLink:any;
   workstation: any = {
     sName: '',
     sDescription: ''
@@ -49,7 +51,8 @@ export class StatisticsSettingsComponent implements OnInit {
   constructor(
     private apiService: ApiService,
     private dialogService: DialogService,
-    private toastService: ToastService
+    private toastService: ToastService,
+    private router: Router
   ) { }
 
   ngOnInit(): void {
@@ -94,7 +97,15 @@ export class StatisticsSettingsComponent implements OnInit {
       })
   }
 
+  goToArticleGroup(id: string){
+    const url = this.router.serializeUrl(
+      this.router.createUrlTree(['/business/article-groups/'+id])
+    );
+    window.open("/#"+url, '_blank');
+  }
+
   enableTurnoverGroups() {
+    //console.log("this.settings.bShowDayStatesBasedOnTurnover", this.settings.bShowDayStatesBasedOnTurnover);
     if (this.settings.bShowDayStatesBasedOnTurnover) {
       let confirmBtnDetails = [
         { text: "YES", value: 'success', status: 'success', class: 'ml-auto mr-2' },

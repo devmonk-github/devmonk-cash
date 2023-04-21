@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { TranslateService } from "@ngx-translate/core";
 import { CommonPrintSettingsService } from "./common-print-settings.service";
-
+import * as moment from 'moment';
 @Injectable({
   providedIn: 'root',
 })
@@ -24,6 +24,7 @@ export class Pn2escposService {
   syntax: any
   data: any;
   parameters: any = Object;
+  dateFormat: string = "DD-MM-yyyy hh:mm";
   constructor( 
       private translateService: TranslateService,
       private commonService: CommonPrintSettingsService
@@ -574,6 +575,39 @@ export class Pn2escposService {
     }
 
     return finalString;
+  }
+
+  private formatContent(val: any, type: string): any {
+    console.log('formatContent', val, type)
+    //1. make a 'global' array of translations used in the receipts.
+    //2. translate all the keywords in the language that the user has selected.
+    //3. make sure the array is available in this function
+    //4. add an option below to replace the keyword with the translation
+
+    switch (type) {
+      case 'money':
+        return this.convertStringToMoney(val);
+      case 'date':
+        // console.log('val', val, moment(val), this.dateFormat, moment(val).format(this.dateFormat))
+        return (val === '' || val === 'NO_DATE_SELECTED') ? val : moment(val).format(this.dateFormat);
+      default:
+        return val;
+    }
+  }
+
+  private convertStringToMoney(val: any): any {
+    if (val % 1 === 0) {
+      //no decimals
+      return (val) ? String(val + ',00') : '0,00';
+    } else {
+      val = String(val);
+      let parts = val.split('.');
+
+      if (parts[1].length === 1) {
+        val = val + '0';
+      }
+      return val.replace('.', ',')
+    }
   }
 
   helperJustifyInColumn(newtext: any = null, colcount: any, colwidth: any, colpos: any, pullright = false, multiple_vars_in_column = false) {
