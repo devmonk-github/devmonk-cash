@@ -257,9 +257,7 @@ export class PrintSettingsComponent implements OnInit, AfterViewInit {
   }
 
   async getLabelTemplate() {
-    // await this.postLabelTemplate()
-    
-    this.apiService.getNew('cashregistry', `/api/v1/label/templates/${this.iBusinessId}`).subscribe((result: any) => {
+    this.apiService.getNew('cashregistry', `/api/v1/label/templates/${this.iBusinessId}?iLocationId=${this.iLocationId}`).subscribe((result: any) => {
       
       this.aDefaultZplTemplates = result.data.filter((label: any) => label.readOnly && label.eType === 'zpl')
       this.aZplTemplates = result.data.filter((label: any) => !label.readOnly && label.eType === 'zpl').map((template: any) => {
@@ -306,7 +304,12 @@ export class PrintSettingsComponent implements OnInit, AfterViewInit {
 
   markDefault(label: any, eType:string = 'zpl') {
     try {
-      this.apiService.postNew('cashregistry', '/api/v1/label/templates/changeDefaultLabel', { _id: label._id, iBusinessId: this.iBusinessId }).subscribe((result: any) => {
+      const oBody = {
+        _id: label._id,
+        iBusinessId: this.iBusinessId,
+        iLocationId: this.iLocationId
+      }
+      this.apiService.postNew('cashregistry', '/api/v1/label/templates/changeDefaultLabel', oBody).subscribe((result: any) => {
         if (result?.message == 'success') {
           this.aZplTemplates.forEach((label: any) => {
             if (label.bDefault) label.bDefault = false;

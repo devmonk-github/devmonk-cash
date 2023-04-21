@@ -5,7 +5,7 @@ import { MenuComponent } from '../shared/_layout/components/common';
 import { Subscription } from 'rxjs';
 import { DialogComponent, DialogService } from '../shared/service/dialog';
 import { ConfirmationDialogComponent } from 'src/app/shared/components/confirmation-dialog/confirmation-dialog.component';
-//import { ToastService } from '../shared/components/toast';
+import { ToastService } from '../shared/components/toast';
 @Component({
   selector: 'app-statistics-settings',
   templateUrl: './statistics-settings.component.html',
@@ -21,8 +21,8 @@ export class StatisticsSettingsComponent implements OnInit {
     sDescription: ''
   }
   loading: boolean = false;
+  bIsDisable: boolean = true;
   workstations: Array<any> = [];
-  //settings: Array<any> = [];
   settings: any;
   iBusinessId = localStorage.getItem('currentBusiness')
   downloadOptions = [
@@ -40,56 +40,79 @@ export class StatisticsSettingsComponent implements OnInit {
   ];
   updateSettingsSubscription !: Subscription;
   getSettingsSubscription !: Subscription;
-  updatingSettings: boolean = false;
   savingPointsSettings: any = {};
+  selectedLanguage: any;
+  articleGroupList!: Array<any>;
   requestParams: any = {
     iBusinessId: localStorage.getItem('currentBusiness')
   }
   constructor(
     private apiService: ApiService,
     private dialogService: DialogService,
-    //private toastService: ToastService
-
+    private toastService: ToastService
   ) { }
 
   ngOnInit(): void {
-    //this.apiService.setToastService(this.toastService);
-    // this.business._id = localStorage.getItem('currentBusiness');
-    //this.fetchSetting();
+    this.apiService.setToastService(this.toastService);
+    this.selectedLanguage = localStorage.getItem('language');
     this.getSettings();
+    this.getArticleGroups();
   }
+
   getSettings() {
     this.getSettingsSubscription = this.apiService.getNew('cashregistry', `/api/v1/settings/${this.requestParams.iBusinessId}`).subscribe((result: any) => {
       this.settings = result;
-      console.log("this.settings",this.settings);
-
-      
     }, (error) => {
+      this.toastService.show({ type: 'warning', text: 'something went wrong' });
       console.log(error);
     })
   }
+
+  getArticleGroups() {
+    this.articleGroupList = [];
+    this.loading = true;
+    this.apiService.postNew('core', '/api/v1/business/article-group/list', this.requestParams).subscribe(
+      (result: any) => {
+        this.loading = false;
+        if (result?.data?.length && result.data[0]?.result?.length) {
+          this.articleGroupList = result.data[0].result.filter((item: any) => {
+            if (!item?.oName?.[this.selectedLanguage]) {
+              for (const sName of Object.values(item.oName)) {
+                if (sName) {
+                  item.oName[this.selectedLanguage] = sName;
+                  break;
+                }
+              }
+            }
+            if (!item?.oName?.[this.selectedLanguage]) item.oName[this.selectedLanguage] = 'NO_NAME';
+            return !item.sCategory
+          });
+        }
+      }, (error) => {
+        this.loading = false;
+        this.toastService.show({ type: 'warning', text: 'something went wrong' });
+      })
+  }
+
   enableTurnoverGroups() {
-    //console.log("enableTurnoverGroups", this.settings.bShowDayStates);
-    if (this.settings.bShowDayStates) {
+    if (this.settings.bShowDayStatesBasedOnTurnover) {
       let confirmBtnDetails = [
-        { text: "YES", value: 'remove', status: 'success', class: 'ml-auto mr-2' },
+        { text: "YES", value: 'success', status: 'success', class: 'ml-auto mr-2' },
         { text: "CANCEL", value: 'close' }
       ];
       this.dialogService.openModal(ConfirmationDialogComponent, { context: { header: '', bodyText: 'Are you sure you want to enable turnover groups on your daystates/statistics?', buttonDetails: confirmBtnDetails } })
-        .instance.close.subscribe(
-          (status: any) => {
-            console.log("status");
-            console.log(status);
-            if (status == 'remove') {
-              this.apiService.postNew('cashregistry', '/api/v1/transaction/item/get-transactionitems-by-businessId', {  iBusinessId: this.requestParams.iBusinessId }).subscribe((res: any) => {
+        .instance.close.subscribe((status: any) => {
+            if (status == 'success') {
+              this.loading = true;
+              this.apiService.postNew('cashregistry', '/api/v1/transaction/item/get-transactionitems-by-businessId', { iBusinessId: this.requestParams.iBusinessId }).subscribe((res: any) => {
+                this.loading = false;
                 if (res?.message == 'success') {
                   this.close({ action: true });
-
-                } else {
-
                 }
+              }, (error) =>{
+                this.loading = false;
+                this.toastService.show({ type: 'warning', text: 'something went wrong' });
               })
-
             }
           })
     }
@@ -98,29 +121,18 @@ export class StatisticsSettingsComponent implements OnInit {
   close(data: any) {
     this.dialogRef.close.emit(data);
   }
+  
   updateSettings() {
-
     const body = {
       bSumUpArticleGroupStatistics: this.settings?.bSumUpArticleGroupStatistics,
-      bShowDayStates:this.settings?.bShowDayStates
-     
+      bShowDayStates: !this.settings?.bSumUpArticleGroupStatistics ? false : this.settings?.bShowDayStates
     };
-    console.log("body",body);
-
-    this.updatingSettings = true;
     this.updateSettingsSubscription = this.apiService.putNew('cashregistry', '/api/v1/settings/update/' + this.requestParams.iBusinessId, body)
       .subscribe((result: any) => {
-        if (result){
-          console.log("result",result);
-          this.updatingSettings = false;
-          //this.toastService.show({ type: 'success', text: 'Saved Successfully' });
-        } 
+        this.toastService.show({ type: 'success', text: 'Saved Successfully' });
       }, (error) => {
+        this.toastService.show({ type: 'warning', text: 'something went wrong' });
         console.log(error);
       })
   }
-  
-
- 
-
 }

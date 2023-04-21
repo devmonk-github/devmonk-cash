@@ -266,8 +266,59 @@
              
               <div class="card card-flush">
                 <div class="card-body p-3">
-                  <div class="mb-5">
-                    <div class="d-flex">
+                  <div class="d-flex flex-wrap-reverse align-items-center mb-5" style="row-gap: 10px;">
+                    <div class="d-flex col-xxl-6 col-sm-12 align-items-center me-3">
+                      <div class="flex-grow-1 me-3">
+                        <input type="text" *ngIf="eKind == 'order'" class="form-control highlight-search"
+                          placeholder="{{'SEARCH_ORDER' | translate}} ..." [(ngModel)]="searchKeyword"
+                          (ngModelChange)="searchKeyword? shopProducts = shopProducts: shopProducts = []"
+                          (keyup.enter)="search()" (focus)="switchMode()" #searchField>
+                        <input type="text" *ngIf="eKind != 'order'" class="form-control highlight-search"
+                          placeholder="{{'SEARCH' | translate}} ..." [(ngModel)]="searchKeyword"
+                          (ngModelChange)="searchKeyword? shopProducts = shopProducts: shopProducts = []"
+                          (keyup.enter)="search()" (focus)="switchMode()" #searchField>
+                      </div>
+                  
+                      <label class="form-check form-switch form-check-custom form-check-solid">
+                        <input class="form-check-input" type="checkbox" [(ngModel)]="bSerialSearchMode" />
+                        <span class="form-check-label fw-bold">{{ "SERIAL_NUMBER_MODE" | translate }}</span>
+                      </label>
+                    </div>
+                    <div class="d-flex align-items-center">
+                      <button class="btn btn-secondary d-flex"
+                        (click)="openTransactionSearchDialog()">
+                        <fa-icon [icon]="faSearch" style="margin-right: 10px;"></fa-icon>{{ "TRANSACTION" | translate}}
+                      </button>
+
+                      <button class="btn btn-secondary min-w-120px mx-3" style="white-space: nowrap;"
+                        (click)="addNewLine()">{{"TEXT_LINE" |translate}}
+                      </button>
+
+                      <button class="btn btn-secondary min-w-100px" (click)="addNewLine()">{{ "EMPTY_LINE" | translate}}</button>
+
+                      <button class="btn btn-icon btn-secondary min-w-85px ms-3" (click)="cancelItems()"
+                        [disabled]="transactionItems.length === 0">
+                        <i class="fa fa-trash"></i>
+                      </button>
+
+                    </div>
+                  </div>
+                  <div class="d-flex create-order p-5 mb-3" *ngIf="searchKeyword && eKind === 'order'">
+                    <fa-icon [icon]="faTimes" class="topright cursor-pointer" (click)="searchKeyword = ''"></fa-icon>
+                    <div>
+                      <span class="text-danger"> {{"USE_ENTER_KEY_TO_SEARCH" | translate }} </span>
+                      <br>
+                      <button type="button" class="btn btn-primary mt-2" (click)="addOrder({ name: searchKeyword })">
+                        <h4 class="mb-0 text-white">{{searchKeyword}}</h4>
+                        <span>
+                          {{ "USE_THIS_INPUT" |translate}}
+                        </span>
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- <div class="mb-5">
+                    <div class="d-flex flex-wrap">
                       <input type="text" *ngIf="eKind == 'order'" class="form-control me-3 highlight-search"
                         placeholder="{{'SEARCH_ORDER' | translate}} ..." [(ngModel)]="searchKeyword"
                         (ngModelChange)="searchKeyword? shopProducts = shopProducts: shopProducts = []"
@@ -311,7 +362,8 @@
                         </button>
                       </div>
                     </div>
-                  </div>
+                  </div> -->
+
                   <div class="row bg-light py-5" *ngIf="shopProducts && shopProducts.length > 0">
                     <div class="col-md-6 cursor-pointer py-5 px-2" *ngFor="let product of shopProducts"
                       (mouseenter)="product['showOption'] = true" (mouseleave)="product['showOption'] = false">
@@ -335,7 +387,7 @@
                               <p class="mt-2 text-gray-800">{{ product.sProductNumber }}</p>
                               <p [ngClass]="bSerialSearchMode? 'bmt-2 text-gray-800': 'bmt-2 text-muted'"><strong>{{"SERIAL_NO_ABB" | translate}}</strong>: {{ product?.sSerialNumber || "-" }}</p>
                               <p class="mt-2 text-gray-800">{{ product?.sArticleNumber }}</p>
-                              <p *ngIf="product?.oCurrentLocation?.nStock == 0" class="text break text-danger">{{"NO_STOCK_AVAILABLE_IN_CURRENT_LOCATION"| translate}}</p>
+                              <p *ngIf="product?.oCurrentLocation?.nStock == 0" class="text break text-danger">{{"WARNING_STOCK_QUANTITY_IS_0"| translate}}</p>
                               <p class="text-gray-800">{{"STOCK"| translate}}: {{ product?.oCurrentLocation?.nStock || "0"}} </p>
                             </div>
                             <!-- </div> -->

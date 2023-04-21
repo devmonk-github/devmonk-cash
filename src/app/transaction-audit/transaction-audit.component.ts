@@ -233,13 +233,6 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
                   displayMethod: eDisplayMethodKeysEnum.aVatRates
                 }
               },
-              {
-                sKey: 'Turnover Group',
-                sValue: this.translate.instant('TURN_OVER_GROUP'),
-                data: {
-                  displayMethod: eDisplayMethodKeysEnum.aRevenuePerTurnoverGroup
-                }
-              },
             ]
           },
           {
@@ -340,13 +333,6 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
                 sValue: this.translate.instant('ARTICLE_GROUP'),
                 data: {
                   displayMethod: eDisplayMethodKeysEnum.aVatRates
-                }
-              },
-              {
-                sKey: 'Turnover Group',
-                sValue: this.translate.instant('TURN_OVER_GROUP'),
-                data: {
-                  displayMethod: eDisplayMethodKeysEnum.aRevenuePerTurnoverGroup
                 }
               },
             ]
@@ -452,13 +438,6 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
                   displayMethod: eDisplayMethodKeysEnum.aVatRates
                 }
               },
-              {
-                sKey: 'Turnover Group',
-                sValue: this.translate.instant('TURN_OVER_GROUP'),
-                data: {
-                  displayMethod: eDisplayMethodKeysEnum.aRevenuePerTurnoverGroup
-                }
-              },
             ]
           },
           {
@@ -512,6 +491,25 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
     ]
 
     const eUserType = localStorage.getItem('type') ?? ''
+
+    /* Showing this menu only if the all the article-group has category and showDayState is turned on */
+    if (this.tillService.settings?.bShowDayStates) {
+      const oTurnoverGroup = {
+        sKey: 'Turnover Group',
+        sValue: this.translate.instant('TURN_OVER_GROUP'),
+        data: {
+          displayMethod: eDisplayMethodKeysEnum.aRevenuePerTurnoverGroup
+        }
+      }
+      for (const oOption of this.aOptionMenu) {
+        for (const oChild of oOption?.children) {
+          if (oChild?.sKey == 'Bookkeeping') {
+            oChild.children.push(oTurnoverGroup);
+            break;
+          }
+        }
+      }
+    }
     if (eUserType && eUserType.toLowerCase() !== 'supplier') {
       let iPurchaseIndex = this.aOptionMenu.findIndex(i => i.sValue.toLowerCase() === 'sales-order')
       this.aOptionMenu.splice(iPurchaseIndex, 1)
