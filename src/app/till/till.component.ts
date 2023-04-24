@@ -1302,7 +1302,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       oCurrentLocation: currentLocation,
       aLocation: product?.aLocation,
       bProductLoaded: true,
-      sSerialNumber: this.bSerialSearchMode ? product?.sSerialNumber : undefined
+      sSerialNumber: this.bSerialSearchMode ? product?.sSerialNumber : undefined,
+      bQuickButton: isFrom === 'quick-button'? true : false
     });
     // console.log('this.transactionItems', this.transactionItems);
     if (isFrom === 'quick-button') { source.loading = false }
