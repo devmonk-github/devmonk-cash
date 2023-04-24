@@ -94,7 +94,7 @@ export class CustomerSyncDialogComponent implements OnInit, AfterViewInit {
     bIsCompany: false
   }
 
-  CustomerId: any ;
+  selectedCustomer: any = 'system' ;
   customers: Array<any> = [];
 
   requestParams: any = {
@@ -153,10 +153,30 @@ export class CustomerSyncDialogComponent implements OnInit, AfterViewInit {
   }
 
   UpdateCustomerData() {
-    if (this.CustomerId == 0) {
-      this.updateCurrentCustomer(this.CustomerId);
-    } else {
-      this.openCustomer(this.customer);
+    if (this.selectedCustomer == 'system') {
+      this.updateCurrentCustomer(this.selectedCustomer);
+    } else { // current
+      console.log("else", this.systemCustomer);
+      this.apiService.putNew('customer', '/api/v1/customer/update/' + this.requestParams.iBusinessId + '/' + this.systemCustomer._id, this.customer).subscribe(
+        (result: any) => {
+          if (result?.message === 'success') {
+            this.toastService.show({ type: 'success', text:`SUCCESSFULLY_UPDATED` });
+          
+            this.close({ action: true });
+          }
+          else{
+             let errorMessage = "";
+             this.translateService.get(result.message).subscribe((res:any)=>{
+              errorMessage = res;
+             })
+             this.toastService.show({type:'warning' , text:errorMessage});
+          }
+        },
+        (error: any) => {
+          console.log(error.message);
+        }
+      );
+      //this.openCustomer(this.systemCustomer);
     }
   }
 
