@@ -71,7 +71,6 @@ export class StatisticsSettingsComponent implements OnInit {
     })
   }
   onChange(event: any) {
-    console.log("onChange", event);
     if(event){
         let confirmBtnDetails = [
           { text: "YES", value: 'success', status: 'success', class: 'ml-auto mr-2' },
