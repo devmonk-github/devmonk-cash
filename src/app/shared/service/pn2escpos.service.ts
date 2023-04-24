@@ -506,11 +506,14 @@ export class Pn2escposService {
           //Detect nested variables, e.g. {shop.address}
           if (variableStringFilteredIndex0 && variableStringFilteredIndex0.match(/\./g)) {
             if (variableStringFilteredIndex0.match(/\./g).length <= 3) {
-              var parts = variableStringFilteredIndex0.split('.');
+              const parts = variableStringFilteredIndex0.split('.');
+              // console.log({parts})
               providedData = this.data[parts[0]];
+              // console.log({ providedData })
               variableStringFilteredIndex0 = parts[1];
               variableStringFilteredIndex1 = parts[2];
               variableStringFilteredIndex2 = parts[3];
+              // console.log('nested', { variableStringFilteredIndex0, variableStringFilteredIndex1, variableStringFilteredIndex2 })
             } else {
               this.cerror('Cannot use "' + variableStringFilteredIndex0 + '", nesting is limited to three level', variableStringFilteredIndex0);
             }
@@ -527,14 +530,16 @@ export class Pn2escposService {
                 providedData[variableStringFilteredIndex0] && 
                 providedData[variableStringFilteredIndex0][variableStringFilteredIndex1] &&
                 providedData[variableStringFilteredIndex0][variableStringFilteredIndex1][variableStringFilteredIndex2]) {
+                // console.log(534, 'if', { newtext })
                 newtext = providedData[variableStringFilteredIndex0][variableStringFilteredIndex1][variableStringFilteredIndex2];
               } else if (variableStringFilteredIndex1?.length && providedData[variableStringFilteredIndex0][variableStringFilteredIndex1]){
                 newtext = providedData[variableStringFilteredIndex0][variableStringFilteredIndex1];
+                // console.log(537, 'else if', {newtext})
               }
-              // console.log({format, newtext})
               if(format) {
                 newtext = this.formatContent(newtext, format)
               }
+              // console.log({format, newtext})
 
               // finalString = finalString.replace(currentMatch, newtext, 0);
               matched = true;
@@ -595,10 +600,11 @@ export class Pn2escposService {
   private convertStringToMoney(val: any): any {
     const sCurrencyName = this.data.businessDetails.currentLocation.eCurrency;
     const currency:any = this.symbols[sCurrencyName]
-    // console.log({sCurrencyName, currency})
+    // console.log('sCurrencyName', sCurrencyName, 'currency',currency)
+
     if (val % 1 === 0) {
       //no decimals
-      return currency + (val) ? String(val + ',00') : '0,00';
+      return currency + ((val) ? String(val + ',00') : '0,00');
     } else {
       val = String(val);
       let parts = val.split('.');
@@ -670,14 +676,17 @@ export class Pn2escposService {
           } else {
             var colwidth = Math.floor((this.default_line_length - (nr_of_cols - 1)) / nr_of_cols);
           }
-
-          col = this.replaceVariables(col, command.source, i, colwidth, nr_of_cols, command.pullright, itemIndex)
+          const source = (command?.object) ? this.data[command.object] : command.source;
+          // console.log('source', source, command.object)
+          col = this.replaceVariables(col, source, i, colwidth, nr_of_cols, command.pullright, itemIndex)
           table.push(col);
         }
         dataString = table.join('');
       }
     } else {
-      dataString = this.replaceVariables(dataString, command.source, command.columnpos, command.columnwidth, command.colcount, command.pullright, itemIndex)
+      const source = (command?.object) ? this.data[command.object] : command.source;
+      // console.log('source', source, command.object)
+      dataString = this.replaceVariables(dataString, source, command.columnpos, command.columnwidth, command.colcount, command.pullright, itemIndex)
     }
 
     if (dataString.indexOf('<<>>') > -1) {
@@ -691,7 +700,7 @@ export class Pn2escposService {
     }
 
     text += dataString;
-
+    // console.log({text}, text.length)
     if (breakafter && text.length != 0)
       text += this.epBreak();
 
@@ -751,13 +760,13 @@ export class Pn2escposService {
   }
 
   helperSanitizeCommand(string: any) {
-
+    // console.log('helperSanitizeCommand')
     for (const [key, value] of Object.entries(this.symbols)) {
       if (string.indexOf(key) > -1) {
         string = string.replaceAll(key, value);
       }
     }
-
+    // console.log('returning', string)
     return string;
   }
 
@@ -868,14 +877,18 @@ export class Pn2escposService {
   }
 
   checkConditions(conditions: any, dataSourceObject: any) {
+    // console.log('checking conditions', {conditions, dataSourceObject});
     // dataSourceObject = JSON.parse(dataSourceObject);
 
     // var item = dataSourceObject; //Used for the eval() function
     const bTestResult = conditions.every((rule: any) => {
       const target = (rule?.type === 'var') ? dataSourceObject[rule.target] : rule.target;
-      return (target) ? this.commonService.comparators[rule.compare](dataSourceObject[rule.field], target) : false;
+      
+      // console.log({ rule, target }, dataSourceObject[rule.field]);
+      return (target != null) ? this.commonService.comparators[rule.compare](dataSourceObject[rule.field], target) : false;
       
     })
+    // console.log({bTestResult})
     return bTestResult;
     
 
