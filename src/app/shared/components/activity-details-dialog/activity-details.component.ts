@@ -1028,6 +1028,19 @@ export class ActivityDetailsComponent implements OnInit {
       });
   }
 
+  syncCustomerData(){
+    /*TODO: make user choose which data to save in the system
+    *
+    * This function will open another little modal, that will make user choose which customer data he/she 
+    * wants to use in the system, if the data are different. So this modal will show a select element, with two options:
+    * - IF user choose CURRENT CUSTOMER then UPDATE SYSTEM CUSTOMER with CURRENT CUSTOMER data.
+    * - IF user choose SYSTEM CUSTOMER then UPDATE CURRENT CUSTOMER with SYSTEM CUSTOMER data.
+    * 
+    * Also this function should be also in the Transaction Details companent.
+    */
+
+  }
+
   contactCustomer(action: any){
     switch (action){
       case 'call_on_ready':
