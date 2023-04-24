@@ -518,7 +518,9 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
         this.clearPaymentAmounts();
         break;
       case 'settingsChanged':
-        //this.tillService.settings.currentLocation.nLastBagNumber = Number(event.data);
+        //console.log('Here', event.data);
+        let number =  event.data.match(/\d+/g);
+        this.tillService.settings.currentLocation.nLastBagNumber = Number(number);
         break;
       default:
         this.transactionItems[index] = event.data;
