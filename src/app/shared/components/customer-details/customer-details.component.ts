@@ -432,6 +432,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
         this.customer.oContactPerson.sLastName = "";
         this.customer.sCompanyName = "";
         this.customer.sVatNumber = "";
+        this.customer.nPaymentTermDays = null;
       }
       if(this.mode === 'details'){
         this.customer.oContactPerson.sFirstName = '';
