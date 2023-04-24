@@ -623,6 +623,22 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
       this.customer.sPrefix="";
     }
     console.log('EditOrCreateCustomer called: ', this.editProfile, this.bIsCurrentCustomer);
+
+    
+
+    if (this.customer?.oShippingAddress?.sPostalCode != "") {
+      let oShippingAddressPostalCode = this.customer?.oShippingAddress?.sPostalCode;
+      oShippingAddressPostalCode = oShippingAddressPostalCode.replace(/[ ]+/g, "");
+      oShippingAddressPostalCode = oShippingAddressPostalCode.trim();
+      this.customer.oShippingAddress.sPostalCode = oShippingAddressPostalCode;
+    }
+    if (this.customer?.oInvoiceAddress?.sPostalCode != "") {
+      let oInvoiceAddressPostalCode = this.customer?.oInvoiceAddress?.sPostalCode;
+      oInvoiceAddressPostalCode = oInvoiceAddressPostalCode.replace(/[ ]+/g, "");
+      oInvoiceAddressPostalCode = oInvoiceAddressPostalCode.trim();
+      this.customer.oInvoiceAddress.sPostalCode = oInvoiceAddressPostalCode;
+    }
+
     
     /* We are updating the current customer [T, A, AI] and Not the System customer */
     if (this.editProfile && this.bIsCurrentCustomer && this.mode !== 'create') {
