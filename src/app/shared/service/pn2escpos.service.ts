@@ -19,7 +19,7 @@ export class Pn2escposService {
   excerpt_suffix: any;
   replace_symbols: any;
   do_validate: any;
-  symbols: { euro: string; '€': string; };
+  symbols: any;
   syntaxname: string;
   syntax: any
   data: any;
@@ -50,18 +50,10 @@ export class Pn2escposService {
      */
     //var euro = this.epSetEncoding('CP1253_ALT') + this.helperSanitizeCommand("€")
     this.symbols = {
-      'euro': '\x1b\x74\x10\x1B\x74\x13\xD5',
-      '\u20AC': '&#8364',
-      //'€': '\x1B\x74\x13\xD5'
-      //
-      //'€': cptable.utils.encode(1252, '€'),
-      // 'euro': cptable.utils.encode(1253, '€'),
-      // '\u20AC': cptable.utils.encode(1253, '€'),
-      // '\u20ac': cptable.utils.encode(1253, '€'),
+      'euro': '\x1B\x74\x13\xD5',
+      'pound': '\x1B\x74\x13\x9C',
+      'swiss': '\x1B\x74\x13\x9F',
     };
-    // console.log(this.symbols, this.symbols);
-
-    //1253
     
     //If Epson syntax doesn't work, try star
     if (this.parameters.syntax === "star") {
@@ -92,6 +84,7 @@ export class Pn2escposService {
 
       Object.keys(template).forEach((key: any) => {
         const action: any = this.createObjectFromTemplateLine(template[key]);
+        // console.log({action})
         if (action.do) {
           //this.clog('EXECUTING {"'+action.do+'":"'+action.data+'"}')
           let a;
@@ -426,7 +419,9 @@ export class Pn2escposService {
   replaceVariables(commandText: any, itemData = null, colpos = 0, colwidth = 0, colcount = 0, pullright = false, itemIndex?:number) {
 
     //match on any text between "[[" and "]]"
+    // console.log({commandText})
     const extractedVariables = commandText.match(/\[\[(.*?)]]/ig); //includes child variables
+    // console.log({commandText, extractedVariables})
     let multiple_vars_in_column = false;
     let providedData;
     
@@ -447,12 +442,14 @@ export class Pn2escposService {
        */
       if (extractedVariables.length > 1) {
         multiple_vars_in_column = true;
+        // console.log({ multiple_vars_in_column })
       }
 
       //for each variable, we loop over the data array to find a match
       for (let a = 0; a < extractedVariables.length; a++) {
 
         let currentMatch = extractedVariables[a];
+        // console.log({currentMatch})
         let placeholder = "";
         let maxlength = 0;
 
@@ -470,13 +467,16 @@ export class Pn2escposService {
             finalString = this.helperJustifyInColumn(finalString, colcount, colwidth, colpos, pullright);
             continue;
           } 
-          const hasFormat = variableStringFilteredIndex0.includes('|');
+          const hasFormat = variableStringFilteredIndex0.includes('^');
+          // console.log({ variableStringFilteredIndex0, hasFormat})
           let aFormatParts;
           let format;
           if(hasFormat) {
-            aFormatParts = variableStringFilteredIndex0.split('|');
+            // console.log('hasFormat if')
+            aFormatParts = variableStringFilteredIndex0.split('^');
             variableStringFilteredIndex0 = aFormatParts[0]
             format = aFormatParts[1];
+            // console.log({variableStringFilteredIndex0, aFormatParts, format })
           }
           
           //check for "|"
@@ -531,6 +531,10 @@ export class Pn2escposService {
               } else if (variableStringFilteredIndex1?.length && providedData[variableStringFilteredIndex0][variableStringFilteredIndex1]){
                 newtext = providedData[variableStringFilteredIndex0][variableStringFilteredIndex1];
               }
+              // console.log({format, newtext})
+              if(format) {
+                newtext = this.formatContent(newtext, format)
+              }
 
               // finalString = finalString.replace(currentMatch, newtext, 0);
               matched = true;
@@ -578,27 +582,23 @@ export class Pn2escposService {
   }
 
   private formatContent(val: any, type: string): any {
-    console.log('formatContent', val, type)
-    //1. make a 'global' array of translations used in the receipts.
-    //2. translate all the keywords in the language that the user has selected.
-    //3. make sure the array is available in this function
-    //4. add an option below to replace the keyword with the translation
-
+    // console.log('formatContent', val, type, typeof val)
     switch (type) {
       case 'money':
         return this.convertStringToMoney(val);
       case 'date':
-        // console.log('val', val, moment(val), this.dateFormat, moment(val).format(this.dateFormat))
-        return (val === '' || val === 'NO_DATE_SELECTED') ? val : moment(val).format(this.dateFormat);
-      default:
-        return val;
+        // console.log({val, dateFormat: this.dateFormat, 'moment(val)': moment(val), 'moment(val).format': moment(val).format(this.dateFormat)})
+        return (val === '' || val === 'NO_DATE_SELECTED' || moment(val).format(this.dateFormat) == 'Invalid date') ? val : moment(val).format(this.dateFormat);
     }
   }
 
   private convertStringToMoney(val: any): any {
+    const sCurrencyName = this.data.businessDetails.currentLocation.eCurrency;
+    const currency:any = this.symbols[sCurrencyName]
+    // console.log({sCurrencyName, currency})
     if (val % 1 === 0) {
       //no decimals
-      return (val) ? String(val + ',00') : '0,00';
+      return currency + (val) ? String(val + ',00') : '0,00';
     } else {
       val = String(val);
       let parts = val.split('.');
@@ -606,7 +606,7 @@ export class Pn2escposService {
       if (parts[1].length === 1) {
         val = val + '0';
       }
-      return val.replace('.', ',')
+      return currency + val.replace('.', ',')
     }
   }
 
@@ -646,6 +646,7 @@ export class Pn2escposService {
   }
 
   addText(command: any, breakafter = false, itemIndex?:number) {
+    // console.log('addText', {command, breakafter})
     let text = "";
     let dataString = String(command.data);
 
@@ -847,7 +848,7 @@ export class Pn2escposService {
     } else {
       if (action_keys[1] == "if") {
         action.if = action_vals[1]
-        console.log('IF CONDITION: ', action_vals[1]);
+        // console.log('IF CONDITION: ', action_vals[1]);
       }
     }
 
