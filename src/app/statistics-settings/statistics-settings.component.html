@@ -7,7 +7,7 @@
 </div>
 
 <div class="row">
-    <div class="col-8 card mb-5 mb-xl-10 d-flex">
+    <div class="col-12 card mb-5 mb-xl-10 d-flex">
         <div class="card-body">
             <div class="row">
                 <div class="col-9 mb-5">
@@ -39,7 +39,7 @@
 
             <div class="row col-12 mb-5" *ngIf="settings?.bSumUpArticleGroupStatistics">
                 <div class="row col-5 link" *ngFor="let article of articleGroupList">
-                    <a routerLink='/business/article-groups/{{article._id}}'>{{article?.oName[selectedLanguage]}}</a>
+                    <a  (click)="goToArticleGroup(article._id)" class="btag">{{article?.oName[selectedLanguage]}}</a>
                 </div>
             </div>
 
@@ -53,8 +53,8 @@
                 </div>
                 <div class="col-3 mb-5">
                     <label class="form-check form-switch form-check-custom form-check-solid">
-                        <input type="checkbox" name="loyaltyProgram" class="form-check-input"
-                            [(ngModel)]="settings.bShowDayStatesBasedOnTurnover" (click)="enableTurnoverGroups()"
+                        <input type="checkbox" name="loyaltyProgram" style="background-color: #aebaf2;" class="form-check-input"
+                            [(ngModel)]="settings.bShowDayStatesBasedOnTurnover"  (ngModelChange)="onChangeShowDayStatesBasedOnTurnover($event)"
                             [disabled]="articleGroupList.length > 0 || bIsDisable">
                     </label>
                 </div>

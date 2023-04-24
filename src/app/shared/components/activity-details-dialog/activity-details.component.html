@@ -157,12 +157,14 @@
                                 <!--IF CUSTOMER IS DIFFERENT FROM SYSTEM CUSTOMER-->
                                 <div class="alert alert-warning" role="alert" *ngIf="showSystemCustomer">
                                     {{"DIFFERENT_CUSTOMER_INFORMATION" | translate}}
-                                    <button class="btn btn-info my-3 btn-sm" *ngIf="customer?.bCounter==false" (click)="openCustomer(customer)">
-                                        {{'VIEW'|translate}} 
-                                    </button>
-                                    <button class="btn btn-light-warning ms-2 my-3 btn-sm" *ngIf="customer?.bCounter==false" (click)="updateCurrentCustomer({ oCustomer: customer })">
-                                        {{'SYNC_DATA'|translate}} 
-                                    </button>
+                                    <div class="d-flex">
+                                        <button class="btn btn-info my-3 btn-sm" *ngIf="customer?.bCounter==false" (click)="openCustomer(customer)">
+                                            {{'VIEW'|translate}} 
+                                        </button>
+                                        <button class="btn btn-light-warning ms-2 my-3 btn-sm" *ngIf="customer?.bCounter==false" (click)="syncCustomerData(oCurrentCustomer,customer)">
+                                            {{'SYNC_DATA'|translate}} 
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -464,12 +466,12 @@
                                                     </div>
                                                 </span>
                                             </div>
-                                            <div class="btn-group me-4 w-100 mb-4" *ngIf="customer?.bCounter==false">
+                                            <!-- <div class="btn-group me-4 w-100 mb-4" *ngIf="customer?.bCounter==false">
                                                 <span class="btn btn-secondary fs-bold">
                                                     <fa-icon class="group-icon" [icon]="faEnvelope"></fa-icon>
                                                     <span class="indicator-label">{{ "MAIL" | translate}}</span>
                                                 </span>
-                                            </div>
+                                            </div> -->
                                             <!-- [ngClass]="bShowOrderDownload ? 'btn-group me-4 w-100 mb-4': 'btn-group me-4 w-100 mb-4 disabled'" -->
                                             <div class="btn-group me-4 w-100 mb-4">
                                                 <span class="btn btn-secondary fs-bold"
@@ -619,19 +621,19 @@
                                         <div class="col-4">
                                             <div class="row mb-6">
                                                 <div class="col-12">
-                                                    <div *ngIf="!activity?.aImage?.length">
-                                                        {{"NO_IMAGES" | translate}}
-                                                    </div>
-                                                    <div *ngIf="activity?.aImage?.length">
-                                                        {{'IMAGES' | translate}}
+                                                    <div class="d-flex align-items-center mb-3">
+                                                        <p *ngIf="!activity?.aImage?.length"class="m-0">{{"NO_IMAGES" | translate}}</p>
+                                                        <p *ngIf="activity?.aImage?.length" class="m-0">{{'IMAGES' | translate}}</p>
+
                                                         <button
                                                             *ngIf="activity.oType.eKind == 'repair' || activity.oType.eKind == 'order'"
-                                                            class="btn btn-bg-light btn-active-color-primary ms-5 my-2"
+                                                            class="btn btn-bg-light btn-active-color-primary ms-2"
                                                             (click)="openImageModal(activityindex)"> {{ "PHOTO" |
                                                             translate}}
                                                                 <fa-icon [icon]="faUpload"></fa-icon>
                                                         </button>
                                                     </div>
+                                                  
                                                     <div class="d-flex flex-wrap my-3">
                                                         <div class="image-input p-1"
                                                             *ngFor="let image of activity.aImage ; let imageIndex = index"

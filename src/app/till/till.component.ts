@@ -518,7 +518,9 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
         this.clearPaymentAmounts();
         break;
       case 'settingsChanged':
-        //this.tillService.settings.currentLocation.nLastBagNumber = Number(event.data);
+        //console.log('Here', event.data);
+        let number =  event.data.match(/\d+/g);
+        this.tillService.settings.currentLocation.nLastBagNumber = Number(number);
         break;
       default:
         this.transactionItems[index] = event.data;
@@ -1300,7 +1302,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       oCurrentLocation: currentLocation,
       aLocation: product?.aLocation,
       bProductLoaded: true,
-      sSerialNumber: this.bSerialSearchMode ? product?.sSerialNumber : undefined
+      sSerialNumber: this.bSerialSearchMode ? product?.sSerialNumber : undefined,
+      bQuickButton: isFrom === 'quick-button'? true : false
     });
     // console.log('this.transactionItems', this.transactionItems);
     if (isFrom === 'quick-button') { source.loading = false }

@@ -9,6 +9,7 @@ import { DialogService } from "./service/dialog";
 import { CustomerDialogComponent } from './components/customer-dialog/customer-dialog.component';
 import { DialerComponent } from './components/dialer/dialer.component';
 import { AlertComponent } from './components/alert/alert.component';
+import { CustomerSyncDialogComponent } from "./components/customer-sync-dialog/customer-sync-dialog.component";
 import { CustomerDetailsComponent } from "./components/customer-details/customer-details.component";
 import { CustomerAddressDialogComponent } from "./components/customer-address-dialog/customer-address-dialog.component";
 import { AccordionDirective } from "./directives/accordion.directive";
@@ -72,6 +73,7 @@ import { ClosingDaystateDialogComponent } from "./components/closing-daystate-di
     AlertComponent,
     CustomerDetailsComponent,
     CustomerAddressDialogComponent,
+    CustomerSyncDialogComponent,
     CountryListComponent,
     AccordionDirective,
     CustomPaymentMethodComponent,

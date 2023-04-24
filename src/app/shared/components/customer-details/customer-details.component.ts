@@ -308,9 +308,9 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
 
     
 
-    if (this.from === 'customer') {
-      this.aTransctionTableHeaders.push({ key: 'Action', disabled: true });
-    }
+    //if (this.from === 'customer') {
+    this.aTransctionTableHeaders.push({ key: 'Action', disabled: true });
+    //}
     this.fetchLoyaltyPoints();
     this.getListEmployees();
     this.getMergedCustomerIds();
@@ -423,6 +423,17 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     } 
     else{
       this.customer.bIsCompany = false;
+      if(this.mode === 'create'){
+        this.customer.sFirstName = this.customer.oContactPerson.sFirstName;
+        this.customer.sPrefix = this.customer.oContactPerson.sPrefix;
+        this.customer.sLastName = this.customer.oContactPerson.sLastName;
+        this.customer.oContactPerson.sFirstName = "";
+        this.customer.oContactPerson.sPrefix = "";
+        this.customer.oContactPerson.sLastName = "";
+        this.customer.sCompanyName = "";
+        this.customer.sVatNumber = "";
+        this.customer.nPaymentTermDays = null;
+      }
       if(this.mode === 'details'){
         this.customer.oContactPerson.sFirstName = '';
         this.customer.oContactPerson.sPrefix = '';
@@ -622,7 +633,19 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
       this.customer.sLastName="";
       this.customer.sPrefix="";
     }
-    console.log('EditOrCreateCustomer called: ', this.editProfile, this.bIsCurrentCustomer);
+    if (this.customer?.oShippingAddress?.sPostalCode != "") {
+      let oShippingAddressPostalCode = this.customer?.oShippingAddress?.sPostalCode;
+      oShippingAddressPostalCode = oShippingAddressPostalCode.replace(/[ ]+/g, "");
+      oShippingAddressPostalCode = oShippingAddressPostalCode.trim();
+      this.customer.oShippingAddress.sPostalCode = oShippingAddressPostalCode;
+    }
+    if (this.customer?.oInvoiceAddress?.sPostalCode != "") {
+      let oInvoiceAddressPostalCode = this.customer?.oInvoiceAddress?.sPostalCode;
+      oInvoiceAddressPostalCode = oInvoiceAddressPostalCode.replace(/[ ]+/g, "");
+      oInvoiceAddressPostalCode = oInvoiceAddressPostalCode.trim();
+      this.customer.oInvoiceAddress.sPostalCode = oInvoiceAddressPostalCode;
+    }
+
     
     /* We are updating the current customer [T, A, AI] and Not the System customer */
     if (this.editProfile && this.bIsCurrentCustomer && this.mode !== 'create') {
