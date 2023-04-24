@@ -70,7 +70,7 @@ export class StatisticsSettingsComponent implements OnInit {
       console.log(error);
     })
   }
-  onChange(event: any) {
+  onChangeShowDayStatesBasedOnTurnover(event: any) {
     if(event){
         let confirmBtnDetails = [
           { text: "YES", value: 'success', status: 'success', class: 'ml-auto mr-2' },
