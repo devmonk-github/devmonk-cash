@@ -633,10 +633,6 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
       this.customer.sLastName="";
       this.customer.sPrefix="";
     }
-    console.log('EditOrCreateCustomer called: ', this.editProfile, this.bIsCurrentCustomer);
-
-    
-
     if (this.customer?.oShippingAddress?.sPostalCode != "") {
       let oShippingAddressPostalCode = this.customer?.oShippingAddress?.sPostalCode;
       oShippingAddressPostalCode = oShippingAddressPostalCode.replace(/[ ]+/g, "");
