@@ -70,6 +70,32 @@ export class StatisticsSettingsComponent implements OnInit {
       console.log(error);
     })
   }
+  onChange(event: any) {
+    console.log("onChange", event);
+    if(event){
+        let confirmBtnDetails = [
+          { text: "YES", value: 'success', status: 'success', class: 'ml-auto mr-2' },
+          { text: "CANCEL", value: 'close' }
+        ];
+        this.dialogService.openModal(ConfirmationDialogComponent, { context: { header: '', bodyText: 'Are you sure you want to enable turnover groups on your daystates/statistics?', buttonDetails: confirmBtnDetails } })
+          .instance.close.subscribe((status: any) => {
+              if (status == 'success') {
+                this.loading = true;
+                this.apiService.postNew('cashregistry', '/api/v1/transaction/item/get-transactionitems-by-businessId', { iBusinessId: this.requestParams.iBusinessId }).subscribe((res: any) => {
+                  this.loading = false;
+                  if (res?.message == 'success') {
+                    this.close({ action: true });
+                  }
+                }, (error) =>{
+                  this.loading = false;
+                  this.toastService.show({ type: 'warning', text: 'something went wrong' });
+                })
+              }
+            })
+      
+    }
+
+  }
 
   getArticleGroups() {
     this.articleGroupList = [];
@@ -102,31 +128,6 @@ export class StatisticsSettingsComponent implements OnInit {
       this.router.createUrlTree(['/business/article-groups/'+id])
     );
     window.open("/#"+url, '_blank');
-  }
-
-  enableTurnoverGroups() {
-    //console.log("this.settings.bShowDayStatesBasedOnTurnover", this.settings.bShowDayStatesBasedOnTurnover);
-    if (this.settings.bShowDayStatesBasedOnTurnover) {
-      let confirmBtnDetails = [
-        { text: "YES", value: 'success', status: 'success', class: 'ml-auto mr-2' },
-        { text: "CANCEL", value: 'close' }
-      ];
-      this.dialogService.openModal(ConfirmationDialogComponent, { context: { header: '', bodyText: 'Are you sure you want to enable turnover groups on your daystates/statistics?', buttonDetails: confirmBtnDetails } })
-        .instance.close.subscribe((status: any) => {
-            if (status == 'success') {
-              this.loading = true;
-              this.apiService.postNew('cashregistry', '/api/v1/transaction/item/get-transactionitems-by-businessId', { iBusinessId: this.requestParams.iBusinessId }).subscribe((res: any) => {
-                this.loading = false;
-                if (res?.message == 'success') {
-                  this.close({ action: true });
-                }
-              }, (error) =>{
-                this.loading = false;
-                this.toastService.show({ type: 'warning', text: 'something went wrong' });
-              })
-            }
-          })
-    }
   }
 
   close(data: any) {

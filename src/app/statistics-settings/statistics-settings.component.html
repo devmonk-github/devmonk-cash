@@ -53,8 +53,8 @@
                 </div>
                 <div class="col-3 mb-5">
                     <label class="form-check form-switch form-check-custom form-check-solid">
-                        <input type="checkbox" name="loyaltyProgram" class="form-check-input"
-                            [(ngModel)]="settings.bShowDayStatesBasedOnTurnover" (click)="enableTurnoverGroups()"
+                        <input type="checkbox" name="loyaltyProgram" style="background-color: #aebaf2;" class="form-check-input"
+                            [(ngModel)]="settings.bShowDayStatesBasedOnTurnover"  (ngModelChange)="onChange($event)"
                             [disabled]="articleGroupList.length > 0 || bIsDisable">
                     </label>
                 </div>
