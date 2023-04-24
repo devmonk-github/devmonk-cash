@@ -161,7 +161,7 @@
                                         <button class="btn btn-info my-3 btn-sm" *ngIf="customer?.bCounter==false" (click)="openCustomer(customer)">
                                             {{'VIEW'|translate}} 
                                         </button>
-                                        <button class="btn btn-light-warning ms-2 my-3 btn-sm" *ngIf="customer?.bCounter==false" (click)="syncCustomerData()">
+                                        <button class="btn btn-light-warning ms-2 my-3 btn-sm" *ngIf="customer?.bCounter==false" (click)="syncCustomerData(oCurrentCustomer,customer)">
                                             {{'SYNC_DATA'|translate}} 
                                         </button>
                                     </div>

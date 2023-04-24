@@ -1,0 +1,38 @@
+<div class="card shadow-lg">
+    <div class="card-header align-items-center py-5">
+        <h4 class="card-title">{{'WHICH_DATA_YOU_WANT_TO_USE' | translate}}</h4>
+        <div class="card-toolbar flex-row-fluid justify-content-end gap-5">
+            <a class="cancel my-auto" (click)="close(false)">
+                <i class="fa fa-times"></i>
+            </a>
+        </div>
+    </div>
+    <div class="card-body main">
+        <ng-container>
+            <div class="row">
+                <div class="col-12">
+                    <div class="d-flex">
+                        <div class="flex-grow-1">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div class="row col-12">
+                                    <ng-select fullWidth class="form-control form-control-solid p-0" [clearable]="false"
+                                        name="CustomerId" [(ngModel)]="CustomerId">
+                                        <ng-option class="m-0" value="1">{{"CURRENT_CUSTOMER" | translate}}</ng-option>
+                                        <ng-option class="m-0" value="0">{{"SYSTEM_CUSTOMER" | translate}}</ng-option>
+                                    </ng-select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </ng-container>
+    </div>
+
+    <div class="card-footer d-flex justify-content-end align-items-center">
+        <button class="btn btn-primary" (click)="UpdateCustomerData()">
+            {{'SAVE_AND_CLOSE' | translate}}
+        </button>
+    </div>
+
+</div>

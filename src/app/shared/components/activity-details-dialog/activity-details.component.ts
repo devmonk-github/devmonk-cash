@@ -16,6 +16,7 @@ import { AddFavouritesComponent } from '../add-favourites/favourites.component';
 import { Clipboard } from '@angular/cdk/clipboard';
 import { animate, style, transition, trigger } from '@angular/animations';
 import { CustomerDetailsComponent } from '../customer-details/customer-details.component';
+import { CustomerSyncDialogComponent } from '../customer-sync-dialog/customer-sync-dialog.component';
 import { PdfService } from '../../service/pdf.service';
 import { ImageUploadComponent } from '../image-upload/image-upload.component';
 import { CustomerDialogComponent } from '../customer-dialog/customer-dialog.component';
@@ -1028,7 +1029,22 @@ export class ActivityDetailsComponent implements OnInit {
       });
   }
 
-  syncCustomerData(){
+  syncCustomerData(currenCustomer:any , systemCustomer:any){
+    this.dialogService.openModal(CustomerSyncDialogComponent,
+      {
+        cssClass: "modal-md",
+        context: {
+          activityItems:this.activityItems,
+          currenCustomer: currenCustomer,
+          systemCustomer:systemCustomer
+        }
+      }).instance.close.subscribe(result => {
+
+       
+      }, (error) => {
+        console.log("Error in customer: ", error);
+        this.toastService.show({ type: "warning", text: `Something went wrong` });
+      });
     /*TODO: make user choose which data to save in the system
     *
     * This function will open another little modal, that will make user choose which customer data he/she 
