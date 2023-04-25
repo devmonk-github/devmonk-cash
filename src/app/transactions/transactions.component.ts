@@ -464,7 +464,7 @@ export class TransactionsComponent implements OnInit, OnDestroy {
           let aLocation = result.data.aLocation;
           aLocation.forEach((oLocation: any) => {
             if (oLocation._id == transaction.aTransactionItems[0].iLocationId) {
-              transaction.locationName = oLocation?.sName;
+              transaction.sLocationName = oLocation?.sName;
             }
           });
         }
