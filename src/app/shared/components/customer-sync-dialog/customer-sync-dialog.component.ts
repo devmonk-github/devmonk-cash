@@ -157,6 +157,7 @@ export class CustomerSyncDialogComponent implements OnInit, AfterViewInit {
       this.updateCurrentCustomer(this.selectedCustomer);
     } else { // current
       console.log("else", this.systemCustomer);
+      this.customer.iBusinessId = this.requestParams.iBusinessId;
       this.apiService.putNew('customer', '/api/v1/customer/update/' + this.requestParams.iBusinessId + '/' + this.systemCustomer._id, this.customer).subscribe(
         (result: any) => {
           if (result?.message === 'success') {
