@@ -65,15 +65,18 @@ export class Pn2escposService {
     }
   }
 
-  generate(template: any, dataObject: any) {
+  generate(template: any, dataObject: any, parameters?:any) {
     if (this.helperValidateJSON(template)) {
 
       template = JSON.parse(template);
+      
+      if (parameters?.nLineLength_normal) this.default_line_length = parameters?.nLineLength_normal;
+      // console.log(this.default_line_length);
 
       if (this.helperValidateJSON(dataObject)) {
         this.data = JSON.parse(dataObject);
       }
-      // console.log(this.data, template);
+      // console.log({data: this.data, template, parameters});
 
       var commandString = "";
 
