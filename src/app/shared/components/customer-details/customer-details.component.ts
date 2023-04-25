@@ -633,13 +633,13 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
       this.customer.sLastName="";
       this.customer.sPrefix="";
     }
-    if (this.customer?.oShippingAddress?.sPostalCode != "" && this.customer?.oShippingAddress?.sPostalCode != undefined) {
+    if (this.customer?.oShippingAddress?.sPostalCode != "" && this.customer?.oShippingAddress?.sPostalCode) {
       let oShippingAddressPostalCode = this.customer?.oShippingAddress?.sPostalCode;
       oShippingAddressPostalCode = oShippingAddressPostalCode.replace(/[ ]+/g, "");
       oShippingAddressPostalCode = oShippingAddressPostalCode.trim();
       this.customer.oShippingAddress.sPostalCode = oShippingAddressPostalCode;
     }
-    if (this.customer?.oInvoiceAddress?.sPostalCode != "" && this.customer?.oInvoiceAddress?.sPostalCode != undefined) {
+    if (this.customer?.oInvoiceAddress?.sPostalCode != "" && this.customer?.oInvoiceAddress?.sPostalCode) {
       let oInvoiceAddressPostalCode = this.customer?.oInvoiceAddress?.sPostalCode;
       oInvoiceAddressPostalCode = oInvoiceAddressPostalCode.replace(/[ ]+/g, "");
       oInvoiceAddressPostalCode = oInvoiceAddressPostalCode.trim();
