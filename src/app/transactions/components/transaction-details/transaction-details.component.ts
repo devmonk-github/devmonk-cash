@@ -61,6 +61,7 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   pdfGenerating: Boolean = false;
   downloadWithVATLoading: Boolean = false;
   businessDetails: any = {};
+  businessLocationName: string;
   ableToDownload: Boolean = false;
   from !: string;
   // thermalPrintSettings !: any;
@@ -135,6 +136,7 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
     this.getPaymentMethods();
     this.mapEmployee();
     this.getSystemCustomer(this.transaction?.iCustomerId);
+    this.fetchLocationName();
   }
 
   ngAfterContentInit(): void {
@@ -625,5 +627,17 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
       });
   }
 
+  fetchLocationName(){
+    this.apiService.postNew('core', `/api/v1/business/${this.iBusinessId}/list-location`, { iBusinessId: this.iBusinessId }).subscribe((result: any) => {
+      if (result?.data?.aLocation?.length) {
+        let aLocation = result.data.aLocation;
+        aLocation.forEach((oLocation: any) => {
+          if (oLocation._id == this.transaction.aTransactionItems[0].iLocationId) {
+            this.businessLocationName = oLocation?.sName;
+          }
+        });
+      }
+    });
+  }
 }
 

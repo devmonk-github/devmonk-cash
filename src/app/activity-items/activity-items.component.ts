@@ -102,6 +102,7 @@ export class ActivityItemsComponent implements OnInit, OnDestroy {
 
   tableHeaders: Array<any> = [
     { key: 'ACTIVITY_NO', selected: false, sort: 'asc' },
+    { key: 'LOCATION', disabled: true },
     { key: 'REPAIR_NUMBER', selected: false, sort: 'asc' },
     { key: 'TYPE', disabled:true },
     { key: 'INTAKE_DATE', selected: true, sort: 'asc' },
@@ -204,6 +205,7 @@ export class ActivityItemsComponent implements OnInit, OnDestroy {
         this.isDownloadEnable = true;
         this.activityItems = result.data;
         this.paginationConfig.totalItems = result.count;
+        this.fetchLocationName();
         this.showLoader = false;
         setTimeout(() => {
           MenuComponent.bootstrap();
@@ -213,6 +215,7 @@ export class ActivityItemsComponent implements OnInit, OnDestroy {
       (error: any) => {
         this.showLoader = false;
       })
+      
   }
 
   openActivity(activity: any, openActivityId?: any) {
@@ -489,6 +492,21 @@ export class ActivityItemsComponent implements OnInit, OnDestroy {
         }
       }
     }
+  }
+
+  fetchLocationName(){
+    this.activityItems.forEach((activity: any)=>{
+      this.apiService.postNew('core', `/api/v1/business/${this.iBusinessId}/list-location`, { iBusinessId: this.iBusinessId }).subscribe((result: any) => {
+        if (result?.data?.aLocation?.length) {
+          let aLocation = result.data.aLocation;
+          aLocation.forEach((oLocation: any) => {
+            if (oLocation._id == activity.iLocationId) {
+              activity.sLocationName = oLocation?.sName;
+            }
+          });
+        }
+      });
+    });
   }
 
   ngOnDestroy(): void {
