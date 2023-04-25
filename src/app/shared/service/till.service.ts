@@ -581,21 +581,6 @@ export class TillService {
     });
     dataObject.nNewPaymentMethodTotal = dataObject.nPaymentMethodTotal;
     
-    // const aLoyaltyPointsItems = transaction.aTransactionItems.filter((item: any) => item?.oType?.eKind == 'loyalty-points-discount');
-
-    // dataObject.aTransactionItems = [];
-    // transaction.aTransactionItems.map((item: any) => {
-    //   if (item.oType?.eKind != 'discount' || item?.oType?.eKind != 'loyalty-points-discount') {
-    //     item.nRedeemedLoyaltyPoints = 0;
-    //     for (let i = 0; i < aLoyaltyPointsItems.length; i++) {
-    //       if (aLoyaltyPointsItems[i].iBusinessProductId === item.iBusinessProductId) {
-    //         // item.nRedeemedLoyaltyPoints = aLoyaltyPointsItems[i].nRedeemedLoyaltyPoints;
-    //         // item.nDiscount += aLoyaltyPointsItems[i].nDiscount;
-    //         break;
-    //       }
-    //     }
-    //   }
-    // })
     const aDiscountRecords = transaction.aTransactionItems.filter((item: any) => this.aDiscountTypes.includes(item.oType?.eKind));
     dataObject.aTransactionItems = transaction.aTransactionItems.filter((item: any) => ![...this.aDiscountTypes, 'loyalty-points'].includes(item.oType?.eKind));
     if (bTesting) console.log({ aDiscountRecords: aDiscountRecords, aTransactionItems: dataObject.aTransactionItems })

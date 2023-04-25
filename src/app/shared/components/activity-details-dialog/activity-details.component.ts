@@ -21,6 +21,7 @@ import { PdfService } from '../../service/pdf.service';
 import { ImageUploadComponent } from '../image-upload/image-upload.component';
 import { CustomerDialogComponent } from '../customer-dialog/customer-dialog.component';
 import * as _ from 'lodash';
+
 @Component({
   selector: 'app-activity-details',
   templateUrl: './activity-details.component.html',
@@ -37,8 +38,8 @@ import * as _ from 'lodash';
     ])
   ]
 })
-export class ActivityDetailsComponent implements OnInit {
 
+export class ActivityDetailsComponent implements OnInit {
   $element = HTMLInputElement
   dialogRef: DialogComponent;
   customer: any;
@@ -82,8 +83,6 @@ export class ActivityDetailsComponent implements OnInit {
     { key: 'SHIPPED_TO_REPAIR', value: 'shipped-to-repair' },
     { key: 'DELIVERED', value: 'delivered' }
   ]
-  // repairStatus = ['new', 'info', 'processing', 'cancelled', 'inspection', 'completed', 'refundInCashRegister',
-  // 'offer', 'offer-is-ok', 'offer-is-not-ok', 'to-repair', 'part-are-order', 'shipped-to-repair', 'delivered'];
 
   carriers = ['PostNL', 'DHL', 'DPD', 'bpost', 'other'];
   printOptions = ['Portrait', 'Landscape'];
@@ -199,10 +198,8 @@ export class ActivityDetailsComponent implements OnInit {
     this.language = localStorage.getItem('language') || 'en';
   }
 
-
   async ngOnInit() {
     this.sNumber = (this.from === 'services') ? this.activity.sNumber : '';
-   //console.log('from-----------', this.from, this.activityItems, this.activity)
     
     this.apiService.setToastService(this.toastService);
     this.routerSub = this.routes.events.subscribe((event) => {
@@ -218,34 +215,24 @@ export class ActivityDetailsComponent implements OnInit {
     })
     if (this.activity) {
       this.sNumber = this.activity.sNumber;
-      // console.log(this.activity);
-      //console.log("this.activity-----");
-      // this.oLocationName = this.activity.oLocationName;
       this.bShowOrderDownload = true;
       this.fetchTransactionItems(this.activity._id);
     } else {
       if(this.activityItems && this.activityItems.length>0){
-        // console.log(this.activityItems)
         this.sNumber = this.activityItems[0].sNumber;
         this.oLocationName = this.businessDetails?.aLocation.find((location: any) => location._id === this.activityItems[0].iLocationId)?.sName;
       } else {
         this.oLocationName ="";
       }
-      //console.log("-this.oLocationName--");
-      //console.log(this.oLocationName);
       this.fetchActivity(this.activityItems[0].iActivityId);
       this.fetchTransactionItems(this.activityItems[0]._id);
       this.getSystemCustomer(this.activityItems[0]?.iCustomerId);
     }
-    // console.log(236)
-    // this.processActivityItems();
 
-    // if (this.activity?.iCustomerId) this.fetchCustomer(this.activity.iCustomerId, -1);
     this.getBusinessLocations();
     this.getListSuppliers()
     this.getBusinessBrands();
       
-  
     const [_printActionSettings, _printSettings]: any = await Promise.all([
       this.getPdfPrintSetting({ oFilterBy: { sMethod: 'actions' } }),
       this.getPdfPrintSetting({ oFilterBy: { sType: ['repair', 'order', 'repair_alternative'] } }),
@@ -262,39 +249,10 @@ export class ActivityDetailsComponent implements OnInit {
     })
   }
 
-  // processActivityItems() {
-  //   const aDiscounts = this.activityItems.filter((item: any) => item?.oType?.eKind === 'discount')
-  //   this.activityItems = this.activityItems.filter((item: any) => item?.oType?.eKind !== 'discount')
-
-  //   if (this.activityItems?.length == 1) {
-
-  //     this.activityItems[0].bIsVisible = true;
-
-  //   } else if (this.openActivityId) {
-
-  //     this.activityItems.find((item: any) => item._id === this.openActivityId).bIsVisible = true
-
-  //   } else {
-  //     this.activityItems.forEach((item: any) => item.bIsVisible = false)
-  //   }
-
-  //   if (aDiscounts?.length) {
-  //     this.activityItems.forEach((item: any) => {
-  //       const discountRecord = aDiscounts.find((d: any) => d.sUniqueIdentifier === item.sUniqueIdentifier)
-  //       if (discountRecord) {
-  //         item.nPaidAmount = item.nPaidAmount + discountRecord.nPaidAmount;
-  //       }
-  //     })
-  //   }
-  // }
-
- 
-
   fetchActivity(_id: any) {
     this.apiService.getNew('cashregistry', `/api/v1/activities/${_id}?iBusinessId=${this.requestParams.iBusinessId}`).subscribe((result: any) => {
       if (result?.data?._id)
         this.activity = result.data;
-        
     });
   }
 
@@ -311,12 +269,6 @@ export class ActivityDetailsComponent implements OnInit {
   }
 
   getListEmployees() {
-    // const oBody = {
-    //   iBusinessId: localStorage.getItem('currentBusiness') || '',
-    // }
-    // this.apiService.postNew('auth', `/api/v1/employee/list`, oBody).subscribe((result: any) => {
-    //   if (result && result.data && result.data.length) {
-    // this.employeesList = result.data[0].result;
     if (this.activity?.iEmployeeId) {
       let createerIndex = this.employeesList.findIndex((employee: any) => employee._id == this.activity.iEmployeeId);
       if (createerIndex != -1) {
@@ -338,7 +290,6 @@ export class ActivityDetailsComponent implements OnInit {
         this.activityItems[index] = { ...items, "employeeName": employee.sName }
       }
     })
-    // }
   }
 
   getListSuppliers() {
@@ -349,10 +300,6 @@ export class ActivityDetailsComponent implements OnInit {
     this.apiService.postNew('core', url, oBody).subscribe((result: any) => {
       if (result && result.data && result.data.length) {
         this.suppliersList = result.data[0].result;
-        // if (this.item.iSupplierId) {
-        //   const tempsupp = this.suppliersList.find(o => o._id === this.item.iSupplierId);
-        //   this.supplier = tempsupp.sName;
-        // }
       }
     }, (error) => {
     });
@@ -371,10 +318,6 @@ export class ActivityDetailsComponent implements OnInit {
             this.activityItems[index] = { ...items, "brandName": this.brandsList[brandIndex].sName }
           }
         })
-        // if (this.item.iBusinessBrandId) {
-        //   const tempsupp = this.brandsList.find(o => o._id === this.item.iBusinessBrandId);
-        //   this.brand = tempsupp.sName;
-        // }
       }
     })
   }
@@ -476,8 +419,6 @@ export class ActivityDetailsComponent implements OnInit {
     window.open(url, "_blank");
   }
 
-
-
   openCustomer(customer: any) {
     this.dialogService.openModal(CustomerDetailsComponent,
       { cssClass: "modal-xl position-fixed start-0 end-0", context: { customerData: customer, mode: 'details', editProfile: false } }).instance.close.subscribe(result => { });
@@ -545,15 +486,11 @@ export class ActivityDetailsComponent implements OnInit {
   }
 
   openTransaction(transaction: any, itemType: any) {
-    // console.log('openTransaction: ', this.activity, itemType);
     transaction.iActivityId = this.activity._id;
     this.dialogService.openModal(TransactionItemsDetailsComponent, { cssClass: "modal-xl", context: { transaction: this.activity, itemType, selectedId: transaction._id } })
       .instance.close.subscribe((result: any) => {
-        // console.log(514, result)
         if (result?.action) {
-          // console.log(516, 'calling process transaction search result')
           const data = this.tillService.processTransactionSearchResult(result);
-          // console.log(518, data)
           localStorage.setItem('fromTransactionPage', JSON.stringify(data));
           localStorage.setItem('recentUrl', '/business/transactions');
           setTimeout(() => {
@@ -579,9 +516,6 @@ export class ActivityDetailsComponent implements OnInit {
     }
 
     let oDataSource = JSON.parse(JSON.stringify(this.activityItems[index]));
-    // if (oDataSource?.activityitems) {
-    //   oDataSource = oDataSource.activityitems[index];
-    // }
     let type: any;
     let sBarcodeURI: any;
     if (oDataSource?.oType?.eKind === 'giftcard') {
@@ -591,7 +525,6 @@ export class ActivityDetailsComponent implements OnInit {
     else {
       type = (oDataSource?.oType?.eKind === 'regular' || (sType && sType === 'alternative')) ? 'repair_alternative' : 'repair';
     }
-    // console.log(type);
     const sEDA = oDataSource.eEstimatedDateAction;
     
     if (sEDA === 'call_on_ready')
@@ -613,11 +546,7 @@ export class ActivityDetailsComponent implements OnInit {
       }
     }
 
-    // if (!this.aTemplates?.length) {
     aPromises.push(this.getTemplate(['repair', 'order', 'repair_alternative', 'giftcard']));
-      // bTemplate = true;
-    // }
-
     const aResultPromises: any = await Promise.all(aPromises);
 
     if (bBusinessLogo) {
@@ -625,22 +554,11 @@ export class ActivityDetailsComponent implements OnInit {
       this.businessDetails.sBusinessLogoUrl = aResultPromises[0].data;
     }
 
-    // if (bTemplate) {
     this.aTemplates = (bBusinessLogo) ? aResultPromises[1].data : aResultPromises[0].data;
-    // }
 
     const template = this.aTemplates.filter((t: any) => t.eType === type)[0];
     oDataSource.oCustomer = this.tillService.processCustomerDetails(this.customer);
-    
-    // {
-    //   sFirstName: this.customer?.sFirstName || '',
-    //   sLastName: this.customer?.sLastName || '',
-    //   sEmail: this.customer?.sEmail || '',
-    //   sMobile: this.customer?.oPhone?.sCountryCode || '' + this.customer?.oPhone?.sMobile || '',
-    //   sLandLine: this.customer?.oPhone?.sLandLine || '',
-    //   sAddressLine1: this.customer?.oShippingAddress?.sStreet + " " + this.customer?.oShippingAddress?.sHouseNumber + " " + this.customer?.oShippingAddress?.sHouseNumberSuffix + " , " + this.customer?.oShippingAddress?.sPostalCode + " " + this.customer?.oShippingAddress?.sCity,
-    //   sAddressLine2: this.customer?.oShippingAddress?.sCountry
-    // };
+
     if (!oDataSource.dEstimatedDate) {
       oDataSource.dEstimatedDate = this.translation['NO_DATE_SELECTED'];
     }
@@ -649,15 +567,11 @@ export class ActivityDetailsComponent implements OnInit {
       if (employeeIndex != -1) {
         oDataSource.sEmployeeName = this.employeesList[employeeIndex]['sName'];
         oDataSource.sAdvisedEmpFirstName = this.employeesList[employeeIndex]['sFirstName'] || 'a';
-        // if(type==='repair')
-        // else
-        //   oDataSource.sAdvisedEmpFirstName = `Advised By: ${this.employeesList[employeeIndex]['sFirstName']}`;
       }
     }
     oDataSource.sBarcodeURI = sBarcodeURI;
     const aTemp = oDataSource.sNumber.split("-");
     oDataSource.sPartRepairNumber = aTemp[aTemp.length - 1];
-    // oDataSource.sBusinessLogoUrl = (await this.getBase64FromUrl(oDataSource?.businessDetails?.sLogoLight).toPromise()).data;
     this.sendForReceipt(oDataSource, template, oDataSource.sNumber, receipt, type, sAction);
   }
 
@@ -714,15 +628,12 @@ export class ActivityDetailsComponent implements OnInit {
       "sLastName" : "",
       "sPrefix" : "",
       "sGender" : "",
-      //"sVatNumber" : "",
-      //"sCocNumber" : "",
       "sEmail" : ""
   }];
   if(this.from == 'activity-items'){
   for(const [key,value] of Object.entries(currentCustomer)){
       if(!(_.isEqual(systemCustomer[key], currentCustomer[key]))){
        this.showSystemCustomer = true;
-       //console.log(this.showSystemCustomer);
       }
    }
   }
@@ -750,17 +661,12 @@ export class ActivityDetailsComponent implements OnInit {
       });
       item.nPriceIncVatAfterDiscount = +(item.nPriceIncVatAfterDiscount.toFixed(2));
       item.nTotalAmount = +(item.nTotalAmount.toFixed(2));
-      // item.nPaidAmount = +(item.nPaidAmount.toFixed(2));
-      // console.log({ aDiscounts });
-
       return item;
     });
     console.log(749, this.activityItems);
-    //this.customer = this.activityItems[0].oCustomer;
     this.oCurrentCustomer = this.activityItems[0].oCustomer;
     this.matchSystemAndCurrentCustomer(this.customer , this.oCurrentCustomer);
     this.oLocationName = this.activityItems[0].oLocationName;
-    // if (this.activityItems.length == 1) this.activityItems[0].bIsVisible = true;
     this.transactions = [];
     for (const obj of this.activityItems) {
       if (obj.oType.eKind == 'order' && obj?.iBusinessProductId) {
@@ -778,8 +684,6 @@ export class ActivityDetailsComponent implements OnInit {
       this.totalPrice += obj.nPaymentAmount;
       this.quantity += obj.bRefund ? (- obj.nQuantity) : obj.nQuantity
       if (obj.iStockLocationId) this.setSelectedBusinessLocation(obj.iStockLocationId, i)
-      //console.log(obj?.iCustomerId);
-      //console.log("obj?.iCustomerId");
       this.fetchCustomer(obj?.iCustomerId, i);
     }
     this.getListEmployees()
@@ -807,10 +711,8 @@ export class ActivityDetailsComponent implements OnInit {
     this.submitted = true;
     const oActivityItem = this.activityItems[index];
     oActivityItem.nPriceIncVat = +((oActivityItem.nPriceIncVatAfterDiscount + oActivityItem.nDiscount).toFixed(2));
-    // oActivityItem.nTotalAmount = oActivityItem.nPriceIncVat;
     oActivityItem.nPaidAmount = +((oActivityItem.nPaidAmount + oActivityItem.nDiscount).toFixed(2));
     oActivityItem.iBusinessId = this.iBusinessId;
-    // return;
     this.apiService.putNew('cashregistry', '/api/v1/activities/items/' + activityItemId, oActivityItem)
       .subscribe((result: any) => {
         if (result.message == 'success') {
@@ -853,7 +755,6 @@ export class ActivityDetailsComponent implements OnInit {
     this.dialogService.openModal(TransactionDetailsComponent, { cssClass: "modal-xl", context: { transaction: transaction, eType: 'cash-register-revenue', from: 'activity-details' } })
       .instance.close.subscribe(
         (res: any) => {
-          // if (res) this.router.navigate(['business/till']);
         });
   }
 
@@ -893,9 +794,7 @@ export class ActivityDetailsComponent implements OnInit {
       this.aTemplates = (bBusinessLogo) ? aResultPromises[1].data : aResultPromises[0].data;
     }
 
-
     const template = this.aTemplates.filter((t: any) => t.eType === 'order')[0];
-
     oDataSource.businessDetails.sMobile = this.businessDetails.oPhone.sMobile;
     oDataSource.businessDetails.sLandLine = this.businessDetails?.oPhone?.sLandLine;
     const locationIndex = this.businessDetails.aLocation.findIndex((location: any) => location._id == this.iLocationId);
@@ -924,7 +823,6 @@ export class ActivityDetailsComponent implements OnInit {
       await this.pdfService.createPdf(JSON.stringify(template), oDataSource, oDataSource.sNumber, true, null, this.iBusinessId, null);
     } else {
       const oSettings = this.printSettings.find((s: any) => s.sType === sType && s.sMethod === 'pdf' && s.iWorkstationId === this.iWorkstationId)
-      // console.log(oSettings)
       if (!oSettings && sAction === 'PRINT_PDF') {
         this.toastService.show({ type: 'danger', text: 'Check your business -> printer settings' });
         return;

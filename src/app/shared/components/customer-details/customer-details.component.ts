@@ -628,15 +628,11 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
   EditOrCreateCustomer() {
     this.customer.iBusinessId = this.requestParams.iBusinessId;
     this.customer.iEmployeeId = this.iEmployeeId?.userId;
-    if(this.customer?.bIsCompany){
-      this.customer.sFirstName="";
-      this.customer.sLastName="";
-      this.customer.sPrefix="";
+    if (this.customer?.bIsCompany) {
+      this.customer.sFirstName = "";
+      this.customer.sLastName = "";
+      this.customer.sPrefix = "";
     }
-    console.log('EditOrCreateCustomer called: ', this.editProfile, this.bIsCurrentCustomer);
-
-    
-
     if (this.customer?.oShippingAddress?.sPostalCode != "") {
       let oShippingAddressPostalCode = this.customer?.oShippingAddress?.sPostalCode;
       oShippingAddressPostalCode = oShippingAddressPostalCode.replace(/[ ]+/g, "");
@@ -650,7 +646,6 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
       this.customer.oInvoiceAddress.sPostalCode = oInvoiceAddressPostalCode;
     }
 
-    
     /* We are updating the current customer [T, A, AI] and Not the System customer */
     if (this.editProfile && this.bIsCurrentCustomer && this.mode !== 'create') {
       this.close({ bShouldUpdateCustomer: true, oCustomer: this.customer });
@@ -858,7 +853,6 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
       skip:this.purchaseRequestParams.skip,
       limit:this.purchaseRequestParams.limit,
       oFilterBy:this.requestParams.oFBy
-      
     }
 
     this.apiService.postNew('cashregistry', '/api/v1/transaction/cashRegister', body).subscribe((result: any) => {
@@ -871,9 +865,6 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
             transaction.sTotal += parseFloat(item.nPaymentAmount);
             const count = this.totalActivities;
             if (item?.oType?.eKind && this.activityTitlesEkind.includes(item?.oType?.eKind)) this.totalActivities = count + item.nQuantity || 0;
-            // if(item?.oType.bRefund){
-            //   this.aActivityTitles[5].value += 1;
-            // }else{
             switch (item?.oType?.eKind) {
               case "regular":
                 this.aActivityTitles[2].value += item.nQuantity;
@@ -908,7 +899,6 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
               case "payment-discount":
                 break;
             }
-            // }
           })
         });
         this.purchasePaginationConfig.totalItems = result.data.totalCount;

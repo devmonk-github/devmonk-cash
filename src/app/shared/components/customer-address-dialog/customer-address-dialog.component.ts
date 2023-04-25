@@ -790,8 +790,6 @@ export class CustomerAddressDialogComponent implements OnInit, AfterViewInit{
 
   loadTransactions() {
     if (this.customer.bCounter) return;
-    //console.log("this.getMergedCustomerIdss");
-    //console.log(this.customer._id);
     const oBody = {
       iBusinessId:this.requestParams.iBusinessId,
       iCustomerId: this.customer._id
@@ -799,22 +797,12 @@ export class CustomerAddressDialogComponent implements OnInit, AfterViewInit{
     let url = '/api/v1/customer/merged/customer';
     this.apiService.postNew('customer', url, oBody).subscribe((result: any) => {
       if (result) {
-        
-       // console.log(result);
-       // console.log("this.mergeCustomerIdList--------");
         this.mergeCustomerIdList = result.aUniqueCustomerId;
         this.requestParams.oFBy = {
-      
           iCustomerId: result.aUniqueCustomerId
         }
-    
       }
     
-
-    
-
-    
-
     this.bTransactionsLoader = true;
     const body = {
       iCustomerId: this.customer._id,
@@ -822,7 +810,6 @@ export class CustomerAddressDialogComponent implements OnInit, AfterViewInit{
       skip:this.purchaseRequestParams.skip,
       limit:this.purchaseRequestParams.limit,
       oFilterBy:this.requestParams.oFBy
-      
     }
 
     this.apiService.postNew('cashregistry', '/api/v1/transaction/cashRegister', body).subscribe((result: any) => {
@@ -835,9 +822,6 @@ export class CustomerAddressDialogComponent implements OnInit, AfterViewInit{
             transaction.sTotal += parseFloat(item.nPaymentAmount);
             const count = this.totalActivities;
             if (item?.oType?.eKind && this.activityTitlesEkind.includes(item?.oType?.eKind)) this.totalActivities = count + item.nQuantity || 0;
-            // if(item?.oType.bRefund){
-            //   this.aActivityTitles[5].value += 1;
-            // }else{
             switch (item?.oType?.eKind) {
               case "regular":
                 this.aActivityTitles[2].value += item.nQuantity;
@@ -872,7 +856,6 @@ export class CustomerAddressDialogComponent implements OnInit, AfterViewInit{
               case "payment-discount":
                 break;
             }
-            // }
           })
         });
         this.purchasePaginationConfig.totalItems = result.data.totalCount;
