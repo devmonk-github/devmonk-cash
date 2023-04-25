@@ -140,7 +140,7 @@ export class CustomerSyncDialogComponent implements OnInit, AfterViewInit {
     }
     
     this.apiService.postNew('cashregistry', '/api/v1/transaction/update-customer', oBody).subscribe((result: any) => {
-      this.close({ action: true });
+      this.close({ action: true, data:this.systemCustomer });
       this.toastService.show({ type: "success", text: 'SUCCESSFULLY_UPDATED' });
     }, (error) => {
       console.log('update customer error: ', error);
@@ -157,12 +157,12 @@ export class CustomerSyncDialogComponent implements OnInit, AfterViewInit {
       this.updateCurrentCustomer(this.selectedCustomer);
     } else { // current
       console.log("else", this.systemCustomer);
+      this.customer.iBusinessId = this.requestParams.iBusinessId;
       this.apiService.putNew('customer', '/api/v1/customer/update/' + this.requestParams.iBusinessId + '/' + this.systemCustomer._id, this.customer).subscribe(
         (result: any) => {
           if (result?.message === 'success') {
             this.toastService.show({ type: 'success', text:`SUCCESSFULLY_UPDATED` });
-          
-            this.close({ action: true });
+            this.close({ action: true,  data:this.customer});
           }
           else{
              let errorMessage = "";
