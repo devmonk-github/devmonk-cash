@@ -389,7 +389,6 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
         sKey: 'SALES_ORDERS',
         sValue: 'sales-order',
         children: [
-          // ArticleGroup
           {
             sKey: 'ArticleGroup',
             sValue: this.translate.instant('ARTICLE GROUP'),
@@ -612,21 +611,11 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
     else this.fetchAuditStatistic(sDisplayMethod);
   }
 
-  /* (Only, for Viewing statistic) Day-closure view whenever we will have the iStatisticId */
-  // fetchDayClosureData(sDisplayMethod?: string) {
-  //   if (this.oStatisticsData.bIsDayStateOpened) {
-  //     console.log('if day state is opened getting static+dynamic both data');
-      
-  //   } else {
-  //     console.log('else day state is not opened getting only static data');
-  //   }
-  // }
-
   /* Fetch Audit (Be it Static or Dynamic), where user can change filter as well */
   fetchAuditStatistic(sDisplayMethod?: string) {
     if (this.IsDynamicState) this.getDynamicData(sDisplayMethod);
     else {
-      if (!this.aDayClosure?.length) this.fetchDayClosureList();
+      this.fetchDayClosureList();
       this.getStaticData(sDisplayMethod);
     }
   }
@@ -647,7 +636,6 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
       aLocation = [this.oStatisticsData.iLocationId];
       iWorkstationId = [this.oStatisticsData.iWorkstationId]
     }
-    // console.log(this.statisticFilter)
     const oBody: any = {
       iBusinessId: this.iBusinessId,
       iStatisticId: this.iStatisticId,
@@ -1012,10 +1000,6 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
         sTransactionType: this.optionMenu,
         iBusinessId: this.iBusinessId,
       };
-      // if (!this.IsDynamicState && this.oStatisticsData.bIsDayStateOpened) {
-      //   data.oFilterBy.dStartDate = this.statisticFilter.dFromState || this.filterDates.startDate
-      //   data.oFilterBy.dEndDate = this.statisticFilter.dToState || this.filterDates.endDate
-      // } else 
       if (this.iStatisticId) {
         data.oFilterBy.dStartDate = this.oStatisticsDocument?.dOpenDate;
         data.oFilterBy.dEndDate = (this.oStatisticsDocument?.dCloseDate) ? this.oStatisticsDocument?.dCloseDate : this.oStatisticsData.dEndDate;
@@ -1379,10 +1363,8 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
           });
           this.checkShowDownload();
         }
-        // this.showLoader = false;
       }, (error) => {
         console.log('error: ', error);
-        // this.showLoader = false;
       })
     } catch (error) {
       console.log('error: ', error);
@@ -1403,30 +1385,14 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
   }
 
   checkShowDownload() {
-
-
     const bCondition1 = this.IsDynamicState;
-
     const bCondition2 = (!this.selectedEmployee?._id &&
       !this.selectedWorkStation?._id &&
       !(this.aSelectedLocation?.length > 1) &&
       this.statisticFilter.dFromState != '' &&
       this.statisticFilter.dToState != '');
-
     const bCondition3 = (this.iStatisticId && this.iStatisticId != '' && this.oStatisticsDocument && this.oStatisticsDocument?.bIsDayState === false) || false;
-
     const bCondition4 = this.closeButtonClicked;
-
-    // if (this.aStatistic?.length) {
-    //   console.log('my length is 0 but still defined')
-    // }
-    // if (this.aStatistic?.length === 0) {
-    //   console.log('A m 0')
-    // }
-    // if (this.aStatistic) {
-    //   console.log('B m 0')
-    // }
-
     this.bShowDownload = (bCondition1 || bCondition2 || bCondition3 || bCondition4) && this.aStatistic;
   }
 
