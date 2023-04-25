@@ -155,7 +155,7 @@
                                     (click)="openCurrentCustomer(oCurrentCustomer)">{{'UPDATE_CURRENT_CUSTOMER'|translate}}
                                 </button>
                                 <!--IF CUSTOMER IS DIFFERENT FROM SYSTEM CUSTOMER-->
-                                <div class="alert alert-warning" role="alert" *ngIf="showSystemCustomer">
+                                <div class="alert alert-warning" role="alert" *ngIf="showSystemCustomer && !customer?.bCounter">
                                     {{"DIFFERENT_CUSTOMER_INFORMATION" | translate}}
                                     <div class="d-flex">
                                         <button class="btn btn-info my-3 btn-sm" *ngIf="customer?.bCounter==false" (click)="openCustomer(customer)">
