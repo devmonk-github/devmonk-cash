@@ -151,7 +151,7 @@
                            <span *ngIf="transaction?.oCustomer?.bIsCompany">   {{transaction?.oCustomer?.sCompanyName}}</span>
                         </div>
                     </div>
-                    <div class="col-md-12" *ngIf="!transaction?.oCustomer?.bIsCompany">
+                    <div class="col-md-12" *ngIf="!transaction?.oCustomer?.bIsCompany && transaction?.oCustomer?.bCounter">
                         <div class=" mt-2">
                             <span class="text-muted me-5">{{ 'COMPANY_NAME' | translate}}: </span>
                             <span class="text-gray-800">{{ transaction?.oCustomer?.sCompanyName }}</span>
@@ -230,6 +230,9 @@
                             </div>
                         </div>
                     </div>
+                </div>
+                <div class="row my-3 d-flex align-items-center">
+                    <p class="m-0"><span class="text-muted">{{"LOCATION" | translate}}:</span> {{businessLocationName || '-'}}</p>
                 </div>
             </div>
             <div class="col-8" *ngIf="eType === 'cash-register-revenue'">
