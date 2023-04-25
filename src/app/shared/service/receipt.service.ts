@@ -802,7 +802,12 @@ export class ReceiptService {
                 };
                 let command;
                 try {
-                    command = this.pn2escposService.generate(JSON.stringify(result.data.aTemplate), JSON.stringify(transactionDetails));
+                    const oParameters:any = {
+                        nLineLength_large: result.data?.nLineLength_large,
+                        nLineLength_normal: result.data?.nLineLength_normal
+                    }
+
+                    command = this.pn2escposService.generate(JSON.stringify(result.data.aTemplate), JSON.stringify(transactionDetails), oParameters);
                     // console.log(command);
                     // return;
                 } catch (e) {
