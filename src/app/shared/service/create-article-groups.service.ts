@@ -78,6 +78,7 @@ export class CreateArticleGroupService {
   }
 
   saveInternalBusinessPartnerToArticleGroup(oArticleGroup:any) {
+    // console.log('saveInternalBusinessPartnerToArticleGroup')
     const oBody = {
       aBusinessPartner: [{
         iBusinessPartnerId: this.oInternalBusinessPartner._id,

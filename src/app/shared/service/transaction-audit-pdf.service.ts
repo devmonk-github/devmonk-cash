@@ -89,6 +89,7 @@ export class TransactionAuditUiPdfService {
         },
     };
     translations: any;
+    sDisplayMethod: any;
 
     constructor(
         private pdf: PdfService,
@@ -151,7 +152,9 @@ export class TransactionAuditUiPdfService {
             'PARTICULARS',
             'PRICE_INCL_VAT',
             'SUPPLIER' ,
-            'ARTICLE'           ]
+            'ARTICLE',
+            'CATEGORY'
+        ]
         this.translateService.get(aKeywords).subscribe(
             (result: any) => {aKeywords
                 this.translations = result
@@ -197,7 +200,23 @@ export class TransactionAuditUiPdfService {
         bIsArticleGroupLevel,
         bIsSupplierMode
     }: any) {
-        console.log('PDF service: exportToPDF: ', { oStatisticsDocument, aStatisticsDocuments, aStatistic });
+        // console.log('PDF service: exportToPDF: ', {
+        //     aSelectedLocation,
+        //     sOptionMenu,
+        //     bIsDynamicState,
+        //     aLocation,
+        //     aSelectedWorkStation,
+        //     aWorkStation,
+        //     oFilterDates,
+        //     oBusinessDetails,
+        //     sDisplayMethod,
+        //     sDisplayMethodString,
+        //     aStatistic,
+        //     oStatisticsDocument,
+        //     aStatisticsDocuments,
+        //     aPaymentMethods,
+        //     bIsArticleGroupLevel,
+        //     bIsSupplierMode });
 
         const date = moment(Date.now()).format('DD-MM-yyyy');
         const columnWidths = ['*', 60, 80, 80, 100];
@@ -304,14 +323,12 @@ export class TransactionAuditUiPdfService {
             this.fetchGoldPurchaseItems(oFilterDates)
         ]);
 
-        const aTransactionItems = _aTransactionItems?.data[0]?.result;
+        const aTransactionItems = (_aTransactionItems?.data?.length && _aTransactionItems?.data[0]?.result?.length) ? _aTransactionItems?.data[0]?.result : [];
 
-        this.aRefundItems = aTransactionItems.filter(
-            (item: any) => item.oType.bRefund
-        );
-        this.aDiscountItems = aTransactionItems.filter(
-            (item: any) => item.oType.bDiscount
-        );
+        if (aTransactionItems?.length) {
+            this.aRefundItems = aTransactionItems.filter((item: any) => item.oType.bRefund);
+            this.aDiscountItems = aTransactionItems.filter((item: any) => item.oType.bDiscount);
+        }
 
         if (_aActivityItems?.data?.length) {
             this.aRepairItems = _aActivityItems?.data.filter((item: any) => item.oType.eKind == 'repair');
@@ -324,8 +341,9 @@ export class TransactionAuditUiPdfService {
             this.processCashCountings(tableLayout, oStatisticsDocument, aStatistic);
             this.processVatRates(columnWidths, tableLayout, oStatisticsDocument?.aVatRates);
         }
-
-        console.log('sDisplayMethod: ', sDisplayMethod);
+        this.sDisplayMethod = sDisplayMethod;
+        
+        // console.log('sDisplayMethod: ', sDisplayMethod);
         switch (sDisplayMethod.toString()) {
             case 'revenuePerBusinessPartner':
                 this.processPdfByRevenuePerBusinessPartner(columnWidths,tableLayout,aStatistic);
@@ -345,7 +363,11 @@ export class TransactionAuditUiPdfService {
             case 'aVatRates':
                 aStatistic.forEach((oStatistic:any)=> {
                     this.processVatRates(columnWidths, tableLayout, oStatistic?.aVatRates);
-                })
+                });
+                break;
+            case 'aRevenuePerTurnoverGroup':
+                this.processRevenuePerTurnoverGroup(columnWidths, tableLayout, aStatistic);
+                break;
         }
 
         this.content.push({text: this.translations['PAYMENT_METHODS'] ,style: ['left', 'normal'],margin: [0, 30, 0, 10],});
@@ -491,114 +513,184 @@ export class TransactionAuditUiPdfService {
 
     }
 
-    processVatRates(columnWidths: any, tableLayout: any, aVatRates:any){
-        const tableHeaders = [
-            this.translations['VAT_TYPE'],
-            this.translations['PRICE_WITH_VAT'],
-            this.translations['PURCHASE_PRICE_EX_VAT'],
-            this.translations['GROSS_PROFIT'],
-            this.translations['VAT_AMOUNT'],
-        ]
-        const tableHeadersList: any = [];
-        tableHeaders.forEach((header: any) => {
-            tableHeadersList.push({
-                text: header,
-                style: ['th', 'articleGroup'],
-            });
-        });
-        let texts: any = [];
-
-        if (aVatRates?.length) {
-            let nOverallTotalRevenue = 0, nOverallTotalPurchaseValue =0, nOverallTotalProfit=0, nOverallTotalVatAmount=0;
-            aVatRates.forEach((oItem: any) => {
-                let nTotalRevenue = 0, nTotalPurchaseValue =0, nTotalProfit=0, nTotalVatAmount=0;
-                texts.push([{ text: this.translations['VAT_RATE'] + ((oItem?.nVat) ? oItem?.nVat : ''), colSpan: 5, style: ['articleGroup', 'center', 'td'] }, {}, {}, {}, {}]);
-                this.aFieldsToInclude.forEach((field: any) => {
-                    nTotalRevenue += oItem[field].nTotalRevenue;
-                    nTotalPurchaseValue += oItem[field].nPurchaseValue;
-                    nTotalProfit += oItem[field].nProfit;
-                    nTotalVatAmount += oItem[field].nVatAmount;
-                    texts.push([
-                        { text: field, style: ['td'] },
-                        { text: parseFloat(oItem[field].nTotalRevenue.toFixed(2)), style: ['td'] },
-                        { text: parseFloat(oItem[field].nPurchaseValue.toFixed(2)), style: ['td'] },
-                        { text: parseFloat(oItem[field].nProfit.toFixed(2)), style: ['td'] },
-                        { text: parseFloat(oItem[field].nVatAmount.toFixed(2)), style: ['td'] },
-                    ])
-                });
-                nOverallTotalRevenue += nTotalRevenue; 
-                nOverallTotalPurchaseValue += nTotalPurchaseValue; 
-                nOverallTotalProfit += nTotalProfit; 
-                nOverallTotalVatAmount += nTotalVatAmount;
-
-                texts.push([
-                    { text: this.translations['TOTAL_OF_VAT_RATE'] + ' '+ oItem?.nVat + '%', style: ['td', 'bold'] },
-                    { text: parseFloat(nTotalRevenue.toFixed(2)), style: ['td', 'bold'] },
-                    { text: parseFloat(nTotalPurchaseValue.toFixed(2)), style: ['td', 'bold'] },
-                    { text: parseFloat(nTotalProfit.toFixed(2)), style: ['td', 'bold'] },
-                    { text: parseFloat(nTotalVatAmount.toFixed(2)), style: ['td', 'bold'] },
-                ])
-            });
-
-            texts.push([
-                { text: this.translations['TOTAL_OF_ALL_VAT_RATE'] , style: ['td', 'bold', 'bgGray'] },
-                { text: parseFloat(nOverallTotalRevenue.toFixed(2)), style: ['td', 'bold', 'bgGray'] },
-                { text: parseFloat(nOverallTotalPurchaseValue.toFixed(2)), style: ['td', 'bold', 'bgGray'] },
-                { text: parseFloat(nOverallTotalProfit.toFixed(2)), style: ['td', 'bold', 'bgGray'] },
-                { text: parseFloat(nOverallTotalVatAmount.toFixed(2)), style: ['td', 'bold', 'bgGray'] },
-            ])
-
-
-            const finalData = [[...tableHeadersList], ...texts];
-            this.content.push({
-                table: {
-                    widths: columnWidths,
-                    body: finalData,
-                    dontBreakRows: true,
-                },
-                margin: [0, 0,0,20],
-                layout: tableLayout,
-            });
-        } else {
-            this.content.push({
-                table: {
-                    widths: columnWidths,
-                    body: [
-                        [...tableHeadersList],
-                        [{ text: this.translations['NO_RECORDS_FOUND'], colSpan: 5, alignment: 'center', style: ['td'] }, {}, {}, {}, {}]
-                    ],
-                    dontBreakRows: true,
-                },
-                margin: [0, 0, 0, 20],
-                layout: tableLayout,
-            });
-        }
-        // this.pushSeparatorLine();
-    }
-
-    pushSeparatorLine() {
+    
+    processRevenuePerTurnoverGroup(columnWidths: any, tableLayout: any, aStatistic: any) {
+        // console.log("processRevenuePerTurnoverGroup", { columnWidths, tableLayout, aStatistic })
         this.content.push({
-            canvas: [{ type: 'line', x1: 0, y1: 0, x2: 575, y2: 0, lineWidth: 1 }],
-            margin: [0, 0, 20, 0],
-            style: ['afterLine'],
-        });
-    }
-
-    addRefundToPdf() {
-        this.content.push({
-            text: this.translations['REFUND'],
+            text: this.translateService.instant('REVENUE_PER_TURNOVER_GROUP'),
             style: ['left', 'normal'],
             margin: [0, 30, 0, 10],
         });
-
-        const refundHeaders = [this.translations['DESCRIPTION'], this.translations['PRICE'], this.translations['TAX'], this.translations['TOTAL']];
-
-        const tableHeadersList: any = [];
-        refundHeaders.forEach((header: any) => {
-            tableHeadersList.push({text: header,style: ['th', 'articleGroup']});
+        const header: Array<any> = [
+            this.translateService.instant('CATEGORY'),
+            this.translateService.instant('QUANTITY'),
+            this.translateService.instant('PRICE_INCL_VAT'),
+            this.translateService.instant('PURCHASE_PRICE'),
+            this.translateService.instant('GROSS_PROFIT')
+        ];
+        const headerList: Array<any> = [];
+        header.forEach((singleHeader: any) => {
+            headerList.push({ text: singleHeader, style: ['td'] });
         });
+        const aTexts:any = [];
+        aStatistic.forEach((oStatistic: any) => {
+            // console.log({oStatistic})
+            oStatistic.individual.forEach((oSupplier: any) => {
+                // console.log({ oSupplier })
+                aTexts.push([
+                    { text: header[0] + '\n' + oSupplier.sCategory, style:['td', 'bold'] },
+                    { text: header[1] + '\n' + oSupplier.nQuantity, style:['td', 'bold'] },
+                    { text: header[2] + '\n' + oSupplier.nTotalRevenue.toFixed(2), style:['td', 'bold'] },
+                    { text: header[3] + '\n' + oSupplier.nTotalPurchaseAmount.toFixed(2), style:['td', 'bold'] },
+                    { text: header[4] + '\n' + oSupplier.nProfit.toFixed(2), style: ['td', 'bold'] }
+                ]);
+                
+                oSupplier.aArticleGroups.forEach((oArticleGroup: any) => {
+                    // console.log({ oArticleGroup })
+                    aTexts.push([
+                        { text: oArticleGroup.sName, style: ['td', 'articleGroup'] },
+                        { text: oArticleGroup.nQuantity, style: ['td', 'articleGroup'] },
+                        { text: oArticleGroup.nTotalRevenue.toFixed(2), style: ['td', 'articleGroup'] },
+                        { text: oArticleGroup.nTotalPurchaseAmount.toFixed(2), style: ['td', 'articleGroup'] },
+                        { text: oArticleGroup.nProfit.toFixed(2), style: ['td', 'articleGroup'] },
+                    ]);
 
-        if (this.aRefundItems?.length) {
+                    oArticleGroup.aRevenueByProperty.forEach((oRevenueByProperty: any) => {
+                        // console.log({ oRevenueByProperty })
+                        aTexts.push([
+                            { text: oRevenueByProperty.aCategory.join(' |'), style: ['td', 'property'] },
+                            { text: oRevenueByProperty.nQuantity, style: ['td', 'property'] },
+                            { text: oRevenueByProperty.nTotalRevenue.toFixed(2), style: ['td', 'property'] },
+                            { text: oRevenueByProperty.nTotalPurchaseAmount.toFixed(2), style: ['td', 'property'] },
+                            { text: oRevenueByProperty.nProfit.toFixed(2), style: ['td', 'property'] },
+                        ]);
+                    });
+                });
+            });
+        });
+        const data = {
+            table: {
+                headerRows: 1,
+                widths: columnWidths,
+                heights: [35],
+                body: aTexts,
+                dontBreakRows: true,
+                keepWithHeaderRows: true
+            },
+            layout: tableLayout,
+        };
+        // console.log(data, aTexts)
+        this.content.push(data);
+    }
+
+    processVatRates(columnWidths: any, tableLayout: any, aVatRates: any){
+            const tableHeaders = [
+                this.translations['VAT_TYPE'],
+                this.translations['PRICE_WITH_VAT'],
+                this.translations['PURCHASE_PRICE_EX_VAT'],
+                this.translations['GROSS_PROFIT'],
+                this.translations['VAT_AMOUNT'],
+            ]
+        const tableHeadersList: any =[];
+            tableHeaders.forEach((header: any) => {
+                tableHeadersList.push({
+                    text: header,
+                    style: ['th', 'articleGroup'],
+                });
+            });
+            let texts: any = [];
+
+            if(aVatRates?.length) {
+                let nOverallTotalRevenue = 0, nOverallTotalPurchaseValue = 0, nOverallTotalProfit = 0, nOverallTotalVatAmount = 0;
+                aVatRates.forEach((oItem: any) => {
+                    let nTotalRevenue = 0, nTotalPurchaseValue = 0, nTotalProfit = 0, nTotalVatAmount = 0;
+                    texts.push([{ text: this.translations['VAT_RATE'] + ((oItem?.nVat) ? oItem?.nVat : ''), colSpan: 5, style: ['articleGroup', 'center', 'td'] }, {}, {}, {}, {}]);
+                    this.aFieldsToInclude.forEach((field: any) => {
+                        nTotalRevenue += oItem[field].nTotalRevenue;
+                        nTotalPurchaseValue += oItem[field].nPurchaseValue;
+                        nTotalProfit += oItem[field].nProfit;
+                        nTotalVatAmount += oItem[field].nVatAmount;
+                        texts.push([
+                            { text: field, style: ['td'] },
+                            { text: parseFloat(oItem[field].nTotalRevenue.toFixed(2)), style: ['td'] },
+                            { text: parseFloat(oItem[field].nPurchaseValue.toFixed(2)), style: ['td'] },
+                            { text: parseFloat(oItem[field].nProfit.toFixed(2)), style: ['td'] },
+                            { text: parseFloat(oItem[field].nVatAmount.toFixed(2)), style: ['td'] },
+                        ])
+                    });
+                    nOverallTotalRevenue += nTotalRevenue;
+                    nOverallTotalPurchaseValue += nTotalPurchaseValue;
+                    nOverallTotalProfit += nTotalProfit;
+                    nOverallTotalVatAmount += nTotalVatAmount;
+
+                    texts.push([
+                        { text: this.translations['TOTAL_OF_VAT_RATE'] + ' ' + oItem?.nVat + '%', style: ['td', 'bold'] },
+                        { text: parseFloat(nTotalRevenue.toFixed(2)), style: ['td', 'bold'] },
+                        { text: parseFloat(nTotalPurchaseValue.toFixed(2)), style: ['td', 'bold'] },
+                        { text: parseFloat(nTotalProfit.toFixed(2)), style: ['td', 'bold'] },
+                        { text: parseFloat(nTotalVatAmount.toFixed(2)), style: ['td', 'bold'] },
+                    ])
+                });
+
+                texts.push([
+                    { text: this.translations['TOTAL_OF_ALL_VAT_RATE'], style: ['td', 'bold', 'bgGray'] },
+                    { text: parseFloat(nOverallTotalRevenue.toFixed(2)), style: ['td', 'bold', 'bgGray'] },
+                    { text: parseFloat(nOverallTotalPurchaseValue.toFixed(2)), style: ['td', 'bold', 'bgGray'] },
+                    { text: parseFloat(nOverallTotalProfit.toFixed(2)), style: ['td', 'bold', 'bgGray'] },
+                    { text: parseFloat(nOverallTotalVatAmount.toFixed(2)), style: ['td', 'bold', 'bgGray'] },
+                ])
+
+
+                const finalData = [[...tableHeadersList], ...texts];
+                this.content.push({
+                    table: {
+                        widths: columnWidths,
+                        body: finalData,
+                        dontBreakRows: true,
+                    },
+                    margin: [0, 0, 0, 20],
+                    layout: tableLayout,
+                });
+            } else {
+                this.content.push({
+                    table: {
+                        widths: columnWidths,
+                        body: [
+                            [...tableHeadersList],
+                            [{ text: this.translations['NO_RECORDS_FOUND'], colSpan: 5, alignment: 'center', style: ['td'] }, {}, {}, {}, {}]
+                        ],
+                        dontBreakRows: true,
+                    },
+                    margin: [0, 0, 0, 20],
+                    layout: tableLayout,
+                });
+            }
+            // this.pushSeparatorLine();
+        }
+
+    pushSeparatorLine() {
+            this.content.push({
+                canvas: [{ type: 'line', x1: 0, y1: 0, x2: 575, y2: 0, lineWidth: 1 }],
+                margin: [0, 0, 20, 0],
+                style: ['afterLine'],
+            });
+    }
+
+    addRefundToPdf() {
+            this.content.push({
+                text: this.translations['REFUND'],
+                style: ['left', 'normal'],
+                margin: [0, 30, 0, 10],
+            });
+
+            const refundHeaders = [this.translations['DESCRIPTION'], this.translations['PRICE'], this.translations['TAX'], this.translations['TOTAL']];
+
+            const tableHeadersList: any =[];
+            refundHeaders.forEach((header: any) => {
+                tableHeadersList.push({ text: header, style: ['th', 'articleGroup'] });
+            });
+
+            if(this.aRefundItems?.length) {
             let texts: any = [];
             this.aRefundItems.forEach((item: any) => {
                 let itemDescription = item.nQuantity;
@@ -611,7 +703,7 @@ export class TransactionAuditUiPdfService {
                     { text: item.nVatRate, style: 'td' },
                     { text: item.nTotal, style: 'td' },
                 ]);
-                
+
             });
             this.content.push({
                 table: {
@@ -625,12 +717,12 @@ export class TransactionAuditUiPdfService {
                 table: {
                     widths: '*',
                     body: [[...tableHeadersList],
-                        [
-                            { text: this.translations['NO_RECORDS_FOUND'], colSpan: 4, alignment: 'center', style: ['td'] },
-                            {},
-                            {},
-                            {},
-                        ],
+                    [
+                        { text: this.translations['NO_RECORDS_FOUND'], colSpan: 4, alignment: 'center', style: ['td'] },
+                        {},
+                        {},
+                        {},
+                    ],
                     ],
                 }
             });
@@ -1327,7 +1419,7 @@ export class TransactionAuditUiPdfService {
     }
 
     convertToMoney(val: any) {
-        console.log('convertToMoney: ', val);
+        // console.log('convertToMoney: ', val);
         const nNum = val; 
         if (val % 1 === 0) {
             //no decimals
@@ -1335,7 +1427,7 @@ export class TransactionAuditUiPdfService {
         } else {
             val = String(val);
             let parts = val.split('.');
-            console.log('parts: ', parts, val);
+            // console.log('parts: ', parts, val);
             if (parts[1].length === 1) {
                 val = (nNum < 0) ? ('-' + this.currency + Math.abs(nNum) + '0') : (this.currency + val + '0');
             }
