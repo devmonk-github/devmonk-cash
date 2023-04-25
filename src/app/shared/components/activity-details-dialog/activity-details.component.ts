@@ -731,22 +731,26 @@ export class ActivityDetailsComponent implements OnInit {
   async processTransactionItems(oData: any) {
     console.log({oData})
     const aDiscountRecords = oData.filter((el: any) =>  this.tillService.aDiscountTypes.includes(el.oType.eKind));
+    console.log({aDiscountRecords})
     this.activityItems = oData.filter((el: any) => ![...this.tillService.aDiscountTypes, 'loyalty-points'].includes(el.oType.eKind)).map((item: any) => {
       const oBrand = this.brandsList.find((brand: any) => brand._id === item.iBusinessBrandId);
       if (oBrand) item.brandName = oBrand.sName;
       const aDiscounts = aDiscountRecords.filter((el:any) => item.sUniqueIdentifier === el.sUniqueIdentifier);
       item.nPriceIncVatAfterDiscount = item.nPriceIncVat;
       aDiscounts.forEach((el:any) => {
-        if(el.oType.eKind === 'discount') {
-          item.nDiscountToShow = +((el.bDiscountOnPercentage ? this.tillService.getPercentOf(item.nPriceIncVat, el?.nDiscount || 0) : el.nDiscount).toFixed(2));
-          item.nPriceIncVatAfterDiscount -= item.nDiscountToShow;
-          item.nTotalAmount -= item.nDiscountToShow;
-          item.nPaidAmount -= item.nDiscountToShow;
+        let nDiscountAmount = 0;
+        if (el.oType.eKind === 'discount') {
+          nDiscountAmount = +((el.bDiscountOnPercentage ? this.tillService.getPercentOf(item.nPriceIncVat, el?.nDiscount || 0) : el.nDiscount).toFixed(2));
+          item.nDiscountToShow = nDiscountAmount;
         } else if (el.oType.eKind === 'loyalty-points-discount') { 
-          item.nPriceIncVatAfterDiscount -= item.nRedeemedLoyaltyPoints;
-          item.nTotalAmount -= item.nRedeemedLoyaltyPoints;
-          item.nPaidAmount -= item.nRedeemedLoyaltyPoints;
+          nDiscountAmount = el.nRedeemedLoyaltyPoints
         }
+        console.log('nDiscountAmount', nDiscountAmount)
+        
+        item.nPriceIncVatAfterDiscount -= nDiscountAmount;
+        item.nTotalAmount -= nDiscountAmount;
+        item.nPaidAmount -= nDiscountAmount;
+        
       });
       item.nPriceIncVatAfterDiscount = +(item.nPriceIncVatAfterDiscount.toFixed(2));
       item.nTotalAmount = +(item.nTotalAmount.toFixed(2));
@@ -957,10 +961,6 @@ export class ActivityDetailsComponent implements OnInit {
       ...oFilterBy
     }
     return this.apiService.postNew('cashregistry', `/api/v1/print-settings/list/${this.iBusinessId}`, oBody).toPromise();
-  }
-
-  changeTotalAmount(activity: any, nPrice:number) {
-    activity.nTotalAmount = nPrice * activity.nQuantity;
   }
 
   copyToClipboard(activity: any) {
