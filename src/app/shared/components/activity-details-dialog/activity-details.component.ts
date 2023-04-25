@@ -1028,40 +1028,30 @@ export class ActivityDetailsComponent implements OnInit {
       });
   }
 
-  syncCustomerData(currenCustomer:any , systemCustomer:any){
+  syncCustomerData(currenCustomer: any, systemCustomer: any) {
     this.dialogService.openModal(CustomerSyncDialogComponent,
       {
         cssClass: "modal-md",
         context: {
-          activityItems:this.activityItems,
+          activityItems: this.activityItems,
           currenCustomer: currenCustomer,
-          systemCustomer:systemCustomer
+          systemCustomer: systemCustomer
         }
       }).instance.close.subscribe(result => {
-        if(result && result?.data){
+        if (result && result?.data) {
           this.oCurrentCustomer = result.data;
         }
       }, (error) => {
         console.log("Error in customer: ", error);
         this.toastService.show({ type: "warning", text: `Something went wrong` });
       });
-    /*TODO: make user choose which data to save in the system
-    *
-    * This function will open another little modal, that will make user choose which customer data he/she 
-    * wants to use in the system, if the data are different. So this modal will show a select element, with two options:
-    * - IF user choose CURRENT CUSTOMER then UPDATE SYSTEM CUSTOMER with CURRENT CUSTOMER data.
-    * - IF user choose SYSTEM CUSTOMER then UPDATE CURRENT CUSTOMER with SYSTEM CUSTOMER data.
-    * 
-    * Also this function should be also in the Transaction Details companent.
-    */
-
   }
 
   contactCustomer(action: any){
     switch (action){
       case 'call_on_ready':
         if(this.customer.oPhone.sLandLine){
-          window.location.href = "tel:" + this.customer.oPhone.sLandLine;
+          window.location.href = "tel:+31" + this.customer.oPhone.sLandLine;
         }else{
           this.toastService.show({ type: "warning", text:  this.translation['NO_PHONE']});
         }
@@ -1075,7 +1065,7 @@ export class ActivityDetailsComponent implements OnInit {
         break;
       case 'whatsapp_on_ready':
         if(this.customer.oPhone.sMobile && this.customer.oPhone.bWhatsApp){
-          window.location.href = "https://wa.me/" + this.customer.oPhone.sMobile;
+          window.location.href = "https://wa.me/+31" + this.customer.oPhone.sMobile;
         }else{
           this.toastService.show({ type: "warning", text: this.translation['NO_PHONE_OR_WHATSAPP'] });
         }

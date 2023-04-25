@@ -8,6 +8,7 @@ import { Observable } from 'rxjs';
 import { ActivityDetailsComponent } from 'src/app/shared/components/activity-details-dialog/activity-details.component';
 import { CustomerDetailsComponent } from 'src/app/shared/components/customer-details/customer-details.component';
 import { CustomerDialogComponent } from 'src/app/shared/components/customer-dialog/customer-dialog.component';
+import { CustomerSyncDialogComponent } from 'src/app/shared/components/customer-sync-dialog/customer-sync-dialog.component';
 import { ToastService } from 'src/app/shared/components/toast';
 import { TransactionItemsDetailsComponent } from 'src/app/shared/components/transaction-items-details/transaction-items-details.component';
 import { ApiService } from 'src/app/shared/service/api.service';
@@ -16,7 +17,6 @@ import { ReceiptService } from 'src/app/shared/service/receipt.service';
 import { TransactionsPdfService } from 'src/app/shared/service/transactions-pdf.service';
 import { TaxService } from 'src/app/shared/service/tax.service';
 import { TillService } from 'src/app/shared/service/till.service';
-
 const moment = (_moment as any).default ? (_moment as any).default : _moment;
 
 @Component({
@@ -61,6 +61,7 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   pdfGenerating: Boolean = false;
   downloadWithVATLoading: Boolean = false;
   businessDetails: any = {};
+  businessLocationName: string;
   ableToDownload: Boolean = false;
   from !: string;
   // thermalPrintSettings !: any;
@@ -135,10 +136,30 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
     this.getPaymentMethods();
     this.mapEmployee();
     this.getSystemCustomer(this.transaction?.iCustomerId);
+    this.fetchLocationName();
   }
 
   ngAfterContentInit(): void {
     this.cdr.detectChanges();
+  }
+
+  syncCustomerData(currenCustomer: any, systemCustomer: any) {
+    this.dialogService.openModal(CustomerSyncDialogComponent,
+      {
+        cssClass: "modal-md",
+        context: {
+          activityItems: this.aActivityItems,
+          currenCustomer: currenCustomer,
+          systemCustomer: systemCustomer
+        }
+      }).instance.close.subscribe(result => {
+        if (result && result?.data) {
+          this.transaction.oCustomer = result.data;
+        }
+      }, (error) => {
+        console.log("Error in customer: ", error);
+        this.toastService.show({ type: "warning", text: `Something went wrong` });
+      });
   }
 
   close(data: any) {
@@ -606,5 +627,17 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
       });
   }
 
+  fetchLocationName(){
+    this.apiService.postNew('core', `/api/v1/business/${this.iBusinessId}/list-location`, { iBusinessId: this.iBusinessId }).subscribe((result: any) => {
+      if (result?.data?.aLocation?.length) {
+        let aLocation = result.data.aLocation;
+        aLocation.forEach((oLocation: any) => {
+          if (oLocation._id == this.transaction.aTransactionItems[0].iLocationId) {
+            this.businessLocationName = oLocation?.sName;
+          }
+        });
+      }
+    });
+  }
 }
 
