@@ -1061,7 +1061,7 @@ export class ActivityDetailsComponent implements OnInit {
     switch (action){
       case 'call_on_ready':
         if(this.customer.oPhone.sLandLine){
-          window.location.href = "tel:" + this.customer.oPhone.sLandLine;
+          window.location.href = "tel:+31" + this.customer.oPhone.sLandLine;
         }else{
           this.toastService.show({ type: "warning", text:  this.translation['NO_PHONE']});
         }
@@ -1075,7 +1075,7 @@ export class ActivityDetailsComponent implements OnInit {
         break;
       case 'whatsapp_on_ready':
         if(this.customer.oPhone.sMobile && this.customer.oPhone.bWhatsApp){
-          window.location.href = "https://wa.me/" + this.customer.oPhone.sMobile;
+          window.location.href = "https://wa.me/+31" + this.customer.oPhone.sMobile;
         }else{
           this.toastService.show({ type: "warning", text: this.translation['NO_PHONE_OR_WHATSAPP'] });
         }
