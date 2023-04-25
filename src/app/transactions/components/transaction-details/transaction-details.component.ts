@@ -8,6 +8,7 @@ import { Observable } from 'rxjs';
 import { ActivityDetailsComponent } from 'src/app/shared/components/activity-details-dialog/activity-details.component';
 import { CustomerDetailsComponent } from 'src/app/shared/components/customer-details/customer-details.component';
 import { CustomerDialogComponent } from 'src/app/shared/components/customer-dialog/customer-dialog.component';
+import { CustomerSyncDialogComponent } from 'src/app/shared/components/customer-sync-dialog/customer-sync-dialog.component';
 import { ToastService } from 'src/app/shared/components/toast';
 import { TransactionItemsDetailsComponent } from 'src/app/shared/components/transaction-items-details/transaction-items-details.component';
 import { ApiService } from 'src/app/shared/service/api.service';
@@ -16,7 +17,6 @@ import { ReceiptService } from 'src/app/shared/service/receipt.service';
 import { TransactionsPdfService } from 'src/app/shared/service/transactions-pdf.service';
 import { TaxService } from 'src/app/shared/service/tax.service';
 import { TillService } from 'src/app/shared/service/till.service';
-
 const moment = (_moment as any).default ? (_moment as any).default : _moment;
 
 @Component({
@@ -141,6 +141,25 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
 
   ngAfterContentInit(): void {
     this.cdr.detectChanges();
+  }
+
+  syncCustomerData(currenCustomer: any, systemCustomer: any) {
+    this.dialogService.openModal(CustomerSyncDialogComponent,
+      {
+        cssClass: "modal-md",
+        context: {
+          activityItems: this.aActivityItems,
+          currenCustomer: currenCustomer,
+          systemCustomer: systemCustomer
+        }
+      }).instance.close.subscribe(result => {
+        if (result && result?.data) {
+          this.transaction.oCustomer = result.data;
+        }
+      }, (error) => {
+        console.log("Error in customer: ", error);
+        this.toastService.show({ type: "warning", text: `Something went wrong` });
+      });
   }
 
   close(data: any) {
