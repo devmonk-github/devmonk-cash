@@ -85,7 +85,11 @@ export class RepairComponent implements OnInit {
     // this.listSuppliers();
     // this.getBusinessBrands();
     if (this.settings.bAutoIncrementBagNumbers) {
-      this.item.sBagNumber =  this.settings.sPrefix + (this.settings.nLastBagNumber + 1).toString();
+      if(this.settings?.sPrefix != undefined){
+        this.item.sBagNumber =  this.settings?.sPrefix + (this.settings.nLastBagNumber + 1).toString();
+      }else{
+        this.item.sBagNumber = (this.settings.nLastBagNumber + 1).toString();
+      }
     }
     if (this.item.new) {
       this.selectArticleGroup();
