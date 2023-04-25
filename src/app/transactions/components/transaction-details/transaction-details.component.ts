@@ -153,8 +153,14 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
           systemCustomer: systemCustomer
         }
       }).instance.close.subscribe(result => {
-        if (result && result?.data) {
-          this.transaction.oCustomer = result.data;
+        if (result) {
+          if(result?.currentCustomer){
+            this.transaction.oCustomer = result.currentCustomer;
+          }
+          if(result?.systemCustomer){
+            this.transaction.oSystemCustomer = result.systemCustomer;
+          }
+          this.matchSystemAndCurrentCustomer(this.transaction.oSystemCustomer, this.transaction.oCustomer);
         }
       }, (error) => {
         console.log("Error in customer: ", error);

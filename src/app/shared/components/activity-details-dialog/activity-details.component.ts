@@ -1038,8 +1038,15 @@ export class ActivityDetailsComponent implements OnInit {
           systemCustomer: systemCustomer
         }
       }).instance.close.subscribe(result => {
-        if (result && result?.data) {
-          this.oCurrentCustomer = result.data;
+        if (result) {
+          if(result?.currentCustomer){
+            this.oCurrentCustomer = result?.currentCustomer;
+          }
+          if(result?.systemCustomer){
+            this.customer = result?.systemCustomer;
+          }
+
+          this.matchSystemAndCurrentCustomer(this.customer, this.oCurrentCustomer);
         }
       }, (error) => {
         console.log("Error in customer: ", error);
