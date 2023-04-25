@@ -49,6 +49,7 @@ export class PdfService {
   private layout: any[] = [];
   private margins: number[] = [0];
   private dateFormat: string = "DD-MM-yyyy hh:mm";
+  private dateOnlyFormat: string = "DD-MM-yyyy";
   private orientation: string = "portrait";
   private paperSize: string | PaperSize = "A4";
   private pixelsPerMm: number = 3.76;
@@ -190,6 +191,9 @@ export class PdfService {
       case 'date':
         // console.log('val', val, moment(val), this.dateFormat, moment(val).format(this.dateFormat))
         return (val === '' || val === 'NO_DATE_SELECTED') ? val : moment(val).format(this.dateFormat);
+      case 'dateonly':
+        // console.log('val', val, moment(val), this.dateFormat, moment(val).format(this.dateFormat))
+        return (val === '' || val === 'NO_DATE_SELECTED') ? val : moment(val).format(this.dateOnlyFormat);
       default:
         return val;
     }

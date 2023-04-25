@@ -921,7 +921,6 @@ export class ActivityDetailsComponent implements OnInit {
         else if (result?.bShouldUpdateCustomer) this.updateCurrentCustomer({ oCustomer: result?.oCustomer });
         
       }, (error) => {
-        
         console.log("Error in customer: ", error);
         this.toastService.show({ type: "warning", text: `Something went wrong` });
       });
@@ -937,8 +936,9 @@ export class ActivityDetailsComponent implements OnInit {
           systemCustomer:systemCustomer
         }
       }).instance.close.subscribe(result => {
-
-       
+        if(result && result?.data){
+          this.oCurrentCustomer = result.data;
+        }
       }, (error) => {
         console.log("Error in customer: ", error);
         this.toastService.show({ type: "warning", text: `Something went wrong` });
