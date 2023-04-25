@@ -50,6 +50,7 @@ export class SelectArticleDialogComponent implements OnInit {
   }
 
   async fetchArticleGroups(iBusinessPartnerId: any, bIsSupplierUpdated:boolean = false) {
+    // console.log('fetchArticleGroups', { iBusinessPartnerId, bIsSupplierUpdated})
     if (!bIsSupplierUpdated) {
       const oDefaultArticle: any = await this.createArticleGroupService.checkArticleGroups(this.from).toPromise();
       // console.log('oDefaultArticle', oDefaultArticle)
@@ -57,11 +58,12 @@ export class SelectArticleDialogComponent implements OnInit {
         this.articlegroup = oDefaultArticle?.data[0]?.result[0];
         // console.log('this.articlegroup', this.articlegroup);
         if (!this.articlegroup.aBusinessPartner?.length) {
+          // console.log('need to save internal business partner')
           const result:any = await this.createArticleGroupService.saveInternalBusinessPartnerToArticleGroup(this.articlegroup).toPromise();
           this.articlegroup = result?.data;
         }
         this.supplier = this.partnersList.find((el: any) => el._id === this.articlegroup.aBusinessPartner[0]?.iBusinessPartnerId);
-        // console.log(55, this.articlegroup);
+        // console.log(55, this.articlegroup, this.supplier);
       } else {
         const articleBody = { name: (this.from === 'repair') ? 'Repair' : 'Order', sCategory: this.from, sSubCategory: this.from };
         const result: any = await this.createArticleGroupService.createArticleGroup(articleBody);
@@ -145,6 +147,7 @@ export class SelectArticleDialogComponent implements OnInit {
       (result: any) => {
         if (result?.data?.length && result.data[0]?.result?.length) {
           this.partnersList = result.data[0].result;
+          // console.log(this.partnersList)
           this.fetchArticleGroups(null);
           if (aBusinessPartnerId.length > 0) {
             this.supplier = this.partnersList[0];

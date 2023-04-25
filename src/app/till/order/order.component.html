@@ -215,7 +215,17 @@
               </ng-select>
             </div>
           </div>
-        </div>
+          <div class="col-12">
+            <div class="form-group mb-4">
+              <label class="form-control-label mb-3">
+                <span *ngIf="item.eActivityItemStatus === 'new'; else otherstatus">{{"ESTIMATED_DATE_READY" | translate}}</span>
+                <ng-template #otherstatus>{{"ESTIMATED_QUOTE_DATE" | translate}}</ng-template>
+              </label>:
+              <input type="date" class="form-control mb-3 mb-lg-0 datetimepicker-input" [ngModel]="item.dEstimatedDate"
+                (ngModelChange)="item.dEstimatedDate = $event" />
+            </div>
+          </div>
+        
         <div class="col-12">
           <div class="row my-3">
             <div class="btn-group" role="group" aria-label="Basic example" title="{{ 'THE_CUSTOMER_WILL_CONTACTED_USING_THIS_METHOD' | translate}}">
@@ -258,6 +268,7 @@
           <button class="btn btn-bg-light btn-active-color-primary mt-2" (click)="openImageModal()"> {{ "PHOTO" | translate}}
             <fa-icon [icon]="faUpload"></fa-icon>
           </button>
+        </div>
         </div>
         <!-- <div class="col-12" style="height: 15%;"></div> -->
         <!-- MORE collapsed fields  -->
