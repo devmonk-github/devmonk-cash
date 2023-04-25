@@ -1041,7 +1041,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  sendForReceipt(oDataSource: any, template: any, title: any, type?: any) {
+  async sendForReceipt(oDataSource: any, template: any, title: any, type?: any) {
     const printActionSettings = this.printActionSettings?.filter((pas: any) => pas.eType === type);
     if (printActionSettings?.length) {
       const aActionToPerform = printActionSettings[0].aActionToPerform;
@@ -1057,9 +1057,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
           sTemplateType: 'business-receipt'
         });
       }
+      const settings = this.printSettings.filter((s: any) => s.sMethod === 'pdf' && s.sType === type && s.iWorkstationId === this.iWorkstationId);
       if (aActionToPerform.includes('DOWNLOAD') || aActionToPerform.includes('PRINT_PDF')) {
-        const settings = this.printSettings.filter((s: any) => s.sMethod === 'pdf' && s.sType === type && s.iWorkstationId === this.iWorkstationId);
-
         this.receiptService.exportToPdf({
           oDataSource: oDataSource,
           pdfTitle: title,
@@ -1069,6 +1068,38 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
           eSituation: 'is_created',
           sApiKey: this.businessDetails.oPrintNode.sApiKey
         });
+      }
+
+      if(oDataSource?.oCustomer?.bCounter == false){
+        const response =  await this.receiptService.exportToPdf({
+          oDataSource: oDataSource,
+          pdfTitle: title,
+          templateData: template,
+          printSettings: settings,
+          // printActionSettings: this.printActionSettings,
+          // eSituation: 'is_created',
+          sAction: 'sentToCustomer',
+          // sApiKey: this.businessDetails.oPrintNode.sApiKey
+        });
+  
+        const body = {
+          pdfContent: response,
+          iTransactionId: this.transaction._id,
+          receiptType: 'purchase-receipt',
+          sCustomerEmail: oDataSource.oCustomer.sEmail
+        }
+  
+        this.apiService.postNew('cashregistry', '/api/v1/till/send-to-customer', body).subscribe(
+          (result: any) => {
+            console.log("------------------successfully mail sent-----------------");
+            console.log(result);
+            if (result) {
+              // this.toastService.show({ type: 'success', text: 'Mail send to customer.' });
+            }
+          }, (error: any) => {
+  
+          }
+        )
       }
     }
   }
