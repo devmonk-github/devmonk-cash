@@ -56,7 +56,7 @@ export class ImportGiftCardService {
       if (Object.keys(oGiftCard).length) {
         for (let [key, value] of Object.entries(oGiftCard)) {
           oGiftCard[referenceObj[key]] = value;
-          delete oGiftCard[key];
+          //delete oGiftCard[key];
         }
       }
       return oGiftCard;
@@ -71,9 +71,9 @@ export class ImportGiftCardService {
     for (const oData of parsedGiftCardData) {
       if (!oData?.nPriceIncVat) throw ('something went wrong');
       const nPurchasePrice = oData?.nPriceIncVat / (1 + (100 / (oData?.nVatRate || 1)));
-
-      const dDate = new Date(oData?.dCreatedDate);
-      const dCreatedDate = new Date(dDate.getTime() + Math.abs(dDate.getTimezoneOffset() * 60000));
+      const formatdate = new Date(oData?.dCreatedDate.split('/').reverse().join('/'));
+      const dCreatedDate = new Date(formatdate).setHours(5, 30, 0, 0);
+      const finaldate = new Date(dCreatedDate);
 
       const oTransactionItem = {
         iBusinessId: iBusinessId,
@@ -85,7 +85,7 @@ export class ImportGiftCardService {
         nVatRate: oData?.nVatRate,
         nMatchingCode: oData?.nMatchingCode ? parseFloat(oData?.nMatchingCode) : undefined,
         sGiftCardNumber: oData?.sGiftCardNumber,
-        dCreatedDate: dCreatedDate,
+        dCreatedDate: finaldate,
         nEstimatedTotal: oData?.nPriceIncVat,
         nPaymentAmount: oData?.nPriceIncVat,
         nRevenueAmount: oData?.nPriceIncVat,
@@ -98,7 +98,7 @@ export class ImportGiftCardService {
         iArticleGroupId: '', /* giftcard */
         iArticleGroupOriginalId: '',
         sUniqueIdentifier: '',
-        iCustomerId: '',
+        iCustomerId: oData?.nMatchingCode,
         oCustomer: '',
         /* default */
         sProductName: sProductName,

@@ -93,6 +93,7 @@ export class TransactionsComponent implements OnInit, OnDestroy {
 
   tableHeaders: Array<any> = [
     { key: 'DATE', selected: true, sort: 'desc' },
+    { key: 'LOCATION', disabled: true },
     { key: 'TRANSACTION_NUMBER', selected: false, sort: '' },
     { key: 'RECEIPT_NUMBER', selected: false, sort: '' },
     { key: 'CUSTOMER', selected: false, sort: '' },
@@ -132,7 +133,7 @@ export class TransactionsComponent implements OnInit, OnDestroy {
     // this.businessDetails._id = localStorage.getItem("currentBusiness");
     this.fetchBusinessDetails();
     this.loadTransaction();
-    
+  
     this.listEmployee();
     this.getWorkstations();
     this.getLocations();
@@ -266,8 +267,8 @@ export class TransactionsComponent implements OnInit, OnDestroy {
         })
         this.paginationConfig.totalItems = result.data.totalCount;
       }
+      this.fetchLocationName();
       this.showLoader = false;
-
       setTimeout(() => {
         MenuComponent.bootstrap();
       }, 200);
@@ -452,6 +453,21 @@ export class TransactionsComponent implements OnInit, OnDestroy {
       this.toastrService.show({ type: 'warning', text: 'Please go to different page to process this barcode !' })
     }
 
+  }
+
+  fetchLocationName(){
+    this.transactions.forEach((transaction: any)=>{
+      this.apiService.postNew('core', `/api/v1/business/${this.iBusinessId}/list-location`, { iBusinessId: this.iBusinessId }).subscribe((result: any) => {
+        if (result?.data?.aLocation?.length) {
+          let aLocation = result.data.aLocation;
+          aLocation.forEach((oLocation: any) => {
+            if (oLocation._id == transaction.aTransactionItems[0].iLocationId) {
+              transaction.sLocationName = oLocation?.sName;
+            }
+          });
+        }
+      });
+    });
   }
 
   ngOnDestroy(): void {
