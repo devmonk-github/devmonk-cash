@@ -39,6 +39,7 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
     { key: 'nNumber', name: 'LEDGER_NUMBER' },
   ];
   articleGroupList!: Array<any>;
+  selectedLanguage: any;
   loading: boolean = false;
   quickButtons: Array<any> = [];
   quickButtonsLoading: boolean = false;
@@ -71,6 +72,7 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
     { key: 'ADDRESS', value: 'sAddress' },
     { key: 'COMPANY_NAME', value: 'sCompanyName' }
   ];
+  
 
   constructor(
     private apiService: ApiService,
@@ -80,10 +82,38 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.apiService.setToastService(this.toastService);
+    this.selectedLanguage = localStorage.getItem('language');
     this.getPaymentMethods();
     this.getBookkeepingSetting();
     this.getSettings();
     this.fetchQuickButtons();
+    this.getArticleGroups();
+  }
+
+  getArticleGroups() {
+    this.articleGroupList = [];
+    this.loading = true;
+    this.apiService.postNew('core', '/api/v1/business/article-group/list', this.requestParams).subscribe(
+      (result: any) => {
+        this.loading = false;
+        if (result?.data?.length && result.data[0]?.result?.length) {
+          this.articleGroupList = result.data[0].result.filter((item: any) => {
+            if (!item?.oName?.[this.selectedLanguage]) {
+              for (const sName of Object.values(item.oName)) {
+                if (sName) {
+                  item.oName[this.selectedLanguage] = sName;
+                  break;
+                }
+              }
+            }
+            if (!item?.oName?.[this.selectedLanguage]) item.oName[this.selectedLanguage] = 'NO_NAME';
+            return item.sCategory
+          });
+        }
+      }, (error) => {
+        this.loading = false;
+        this.toastService.show({ type: 'warning', text: 'something went wrong' });
+      })
   }
 
   deleteMethod(method: any) {
@@ -297,7 +327,9 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
       aBagNumbers: this.settings?.aBagNumbers,
       aCashRegisterPrefill: this.settings?.aCashRegisterPrefill,
       nLastnClientID:this.settings?.nLastnClientID,
-      aCustomerSearch:this.settings?.aCustomerSearch
+      aCustomerSearch:this.settings?.aCustomerSearch,
+      iDefualtArticleGroupForOrder:this.settings?.iDefualtArticleGroupForOrder,
+      iDefualtArticleGroupForRepair:this.settings?.iDefualtArticleGroupForRepair
     };
     this.updatingSettings = true;
     this.updateSettingsSubscription = this.apiService.putNew('cashregistry', '/api/v1/settings/update/' + this.requestParams.iBusinessId, body)

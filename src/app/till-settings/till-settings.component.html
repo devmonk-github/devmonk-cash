@@ -124,6 +124,24 @@
                 <input type="checkbox" class="form-check-input" [(ngModel)]="settings.bShowOpenDrawer">
               </label>
             </div>
+            <div class="col-6 mb-6">
+              <label class="form-check form-switch form-check-custom form-check-solid">{{"DEFUALT_ARTICLE_GROUP_FOR_ORDER" | translate}}</label>
+            </div>
+            <div class="col-6 mb-6">
+              <ng-select class="form-control form-control-solid p-0" [clearable]="false" [(ngModel)]="settings.iDefualtArticleGroupForOrder">
+                <ng-option *ngFor="let article of articleGroupList" [value]="article._id">{{article?.oName[selectedLanguage]}} </ng-option>
+              </ng-select>
+            </div>
+
+            <div class="col-6 mb-6">
+              <label class="form-check form-switch form-check-custom form-check-solid">{{"DEFUALT_ARTICLE_GROUP_FOR_REPAIR" | translate}}</label>
+            </div>
+            <div class="col-6 mb-6">
+              <ng-select class="form-control form-control-solid p-0" [clearable]="false" [(ngModel)]="settings.iDefualtArticleGroupForRepair">
+                <ng-option *ngFor="let article of articleGroupList" [value]="article._id">{{article?.oName[selectedLanguage]}} </ng-option>
+              </ng-select>
+            </div>
+
           </div>
           <div class="row" *ngIf="settings?.currentLocation">
             <h3 class="fw-bolder mb-0">{{'CUSTOMERS_SETTINGS' | translate}}</h3>

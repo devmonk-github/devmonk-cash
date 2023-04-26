@@ -6,6 +6,8 @@ import { ApiService } from '../../service/api.service';
 import { CreateArticleGroupService } from '../../service/create-article-groups.service';
 import { DialogComponent } from "../../service/dialog";
 import { ToastService } from '../toast';
+import { Subscription, Observable } from 'rxjs';
+
 @Component({
   selector: 'app-select-articlegroup-dialog',
   templateUrl: './select-articlegroup-dialog.component.html',
@@ -28,6 +30,9 @@ export class SelectArticleDialogComponent implements OnInit {
   iArticleGroupId: any = null;
   iBusinessBrandId: any = null;
   from: any;
+  settings:any;
+  getSettingsSubscription !: Subscription;
+  
   @ViewChild('articleGroupRef') articleGroupRef!: NgSelectComponent
   articleGroupLoading = false;
 
@@ -43,11 +48,32 @@ export class SelectArticleDialogComponent implements OnInit {
 
   ngOnInit() {
     // this.fetchArticleGroups(null);
+    console.log("this.from" , this.from);
     this.selectedLanguage = localStorage.getItem('language') || 'nl';
     //console.log("this.selectedLanguage", this.selectedLanguage);
+    this.getSettings();
     this.fetchBusinessPartners([]);
     this.getBusinessBrands();
   }
+
+  getSettings() {
+    this.getSettingsSubscription = this.apiService.getNew('cashregistry', `/api/v1/settings/${this.iBusinessId}`).subscribe((result: any) => {
+      this.settings = result;
+      if(this.from == 'repair'){
+        this.iArticleGroupId = this.settings?.iDefualtArticleGroupForRepair;
+      }
+      if(this.from == 'order'){
+        this.iArticleGroupId = this.settings?.iDefualtArticleGroupForOrder;
+      }
+    }, (error) => {
+      console.log(error);
+    })
+  }
+
+  async getArticleGroupDetail() {
+    return this.apiService.getNew('core', `/api/v1/business/article-group/${this.iArticleGroupId}?iBusinessId=${this.iBusinessId}`).toPromise();
+  }
+
 
   async fetchArticleGroups(iBusinessPartnerId: any, bIsSupplierUpdated:boolean = false) {
     // console.log('fetchArticleGroups', { iBusinessPartnerId, bIsSupplierUpdated})
@@ -55,12 +81,22 @@ export class SelectArticleDialogComponent implements OnInit {
       const oDefaultArticle: any = await this.createArticleGroupService.checkArticleGroups(this.from).toPromise();
       // console.log('oDefaultArticle', oDefaultArticle)
       if (oDefaultArticle?.data?.length && oDefaultArticle?.data[0]?.result?.length) {
-        this.articlegroup = oDefaultArticle?.data[0]?.result[0];
-        // console.log('this.articlegroup', this.articlegroup);
+        if(this.iArticleGroupId){
+          const articlegroup:any = await this.getArticleGroupDetail();
+          this.articlegroup = articlegroup?.data;
+        }else{
+          this.articlegroup = oDefaultArticle?.data[0]?.result[0];
+        }
         if (!this.articlegroup.aBusinessPartner?.length) {
           // console.log('need to save internal business partner')
           const result:any = await this.createArticleGroupService.saveInternalBusinessPartnerToArticleGroup(this.articlegroup).toPromise();
-          this.articlegroup = result?.data;
+          if(this.iArticleGroupId){
+            const articlegroup:any = await this.getArticleGroupDetail();
+            this.articlegroup = articlegroup?.data;
+          }else{
+            this.articlegroup = result?.data;
+          }
+          
         }
         this.supplier = this.partnersList.find((el: any) => el._id === this.articlegroup.aBusinessPartner[0]?.iBusinessPartnerId);
         // console.log(55, this.articlegroup, this.supplier);
@@ -68,7 +104,12 @@ export class SelectArticleDialogComponent implements OnInit {
         const articleBody = { name: (this.from === 'repair') ? 'Repair' : 'Order', sCategory: this.from, sSubCategory: this.from };
         const result: any = await this.createArticleGroupService.createArticleGroup(articleBody);
         // console.log(59, {result});
-        this.articlegroup = result?.data;//[0]?.result[0];
+        if(this.iArticleGroupId){
+          const articlegroup:any = await this.getArticleGroupDetail();
+          this.articlegroup = articlegroup?.data;
+        }else{
+          this.articlegroup = result?.data;//[0]?.result[0];
+        }
         // console.log(61, this.articlegroup)
         this.supplier = this.partnersList.find((el: any) => el._id === this.articlegroup.aBusinessPartner[0].iBusinessPartnerId);
 
