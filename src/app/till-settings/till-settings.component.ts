@@ -308,6 +308,24 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
     });
   }
 
+  
+  updateCustomerSettings() {
+    const CustomerSettingsbody = {
+      nLastnClientID:this.settings?.nLastnClientID,
+      aCustomerSearch:this.settings?.aCustomerSearch
+    }
+
+  this.updateSettingsSubscription = this.apiService.putNew('customer', '/api/v1/customer/settings/update/' + this.requestParams.iBusinessId, CustomerSettingsbody)
+    .subscribe((result: any) => {
+      if (result){
+        this.updatingSettings = false;
+        this.toastService.show({ type: 'success', text: 'Saved Successfully' });
+      } 
+    }, (error) => {
+      console.log(error);
+    })
+  }
+
   updateSettings() {
     if(this.settings?.aBagNumbers?.length) {
       this.settings.aBagNumbers = [...this.settings?.aBagNumbers?.filter((el: any) => el.iLocationId !== this.iLocationId), this.settings.currentLocation];
@@ -347,22 +365,6 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
       }, (error) => {
         console.log(error);
       })
-
-      const CustomerSettingsbody = {
-        nLastnClientID:this.settings?.nLastnClientID,
-        aCustomerSearch:this.settings?.aCustomerSearch
-      }
-
-    this.updateSettingsSubscription = this.apiService.putNew('customer', '/api/v1/customer/settings/update/' + this.requestParams.iBusinessId, CustomerSettingsbody)
-      .subscribe((result: any) => {
-        if (result){
-          this.updatingSettings = false;
-          //this.toastService.show({ type: 'success', text: 'Saved Successfully' });
-        } 
-      }, (error) => {
-        console.log(error);
-      })
-
       
   }
 
