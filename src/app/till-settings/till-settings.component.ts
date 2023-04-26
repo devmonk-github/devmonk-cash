@@ -17,6 +17,7 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
   faTrash = faTrash;
   payMethodsLoading: boolean = false;
   payMethods: Array<any> = [];
+  aCustomerSearch: Array<any> = [];
   bookKeepingMode: boolean = false;
   bookKeepings: Array<any> = [];
   searchValue: string = '';
@@ -29,6 +30,7 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
   settings: any = {
     nLastReceiptNumber: 0,
     nLastInvoiceNumber: 0,
+    nLastnClientID:0,
     id: null
   };
   overviewColumns = [
@@ -63,6 +65,12 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
     { key: 'bLabelDescription', title: 'LABEL_DESCRIPTION' },
     { key: 'bProductNumber', title: 'PRODUCT_NUMBER' },
   ]
+  aFilterFields: Array<any> = [
+    { key: 'FIRSTNAME', value: 'sFirstName' },
+    { key: 'LASTNAME', value: 'sLastName' },
+    { key: 'ADDRESS', value: 'sAddress' },
+    { key: 'COMPANY_NAME', value: 'sCompanyName' }
+  ];
 
   constructor(
     private apiService: ApiService,
@@ -288,6 +296,8 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
       bShowOpenDrawer: this.settings?.bShowOpenDrawer,
       aBagNumbers: this.settings?.aBagNumbers,
       aCashRegisterPrefill: this.settings?.aCashRegisterPrefill,
+      nLastnClientID:this.settings?.nLastnClientID,
+      aCustomerSearch:this.settings?.aCustomerSearch
     };
     this.updatingSettings = true;
     this.updateSettingsSubscription = this.apiService.putNew('cashregistry', '/api/v1/settings/update/' + this.requestParams.iBusinessId, body)
