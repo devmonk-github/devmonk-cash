@@ -674,15 +674,11 @@
                                                     <p><strong>{{'PRODUCT_SELECTED' | translate}}</strong></p>
                                                 </div>
                                                 <div class="col-6">
-                                                    <label>{{'PRODUCT_NUMBER' | translate}} : </label> <br>
-                                                    <p>
-                                                        <span
-                                                        *ngIf="activity?.iBusinessProductId">{{activity?.sProductNumber}}
-                                                    </span>
-                                                    <span
-                                                        *ngIf="activity?.iBusinessProductId == undefined">{{'NO_PRODUCT_SELECTED'
-                                                        | translate}} </span>
+                                                    <p *ngIf="activity?.iBusinessProductId">
+                                                        <label>{{'PRODUCT_NUMBER' | translate}} : </label> <br>
+                                                        <span >{{activity?.sProductNumber}}</span>
                                                     </p>
+                                                    <p *ngIf="!activity?.iBusinessProductId">{{'NO_PRODUCT_SELECTED' | translate}}</p>
                                                 </div>
                                                 <div class="col-6">
                                                     <label>{{'ARTICLE_DETAIL' | translate}} : </label> <br>

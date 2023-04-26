@@ -640,9 +640,9 @@ export class ActivityDetailsComponent implements OnInit {
   }
 
   async processTransactionItems(oData: any) {
-    console.log({oData})
+    // console.log({oData})
     const aDiscountRecords = oData.filter((el: any) =>  this.tillService.aDiscountTypes.includes(el.oType.eKind));
-    console.log({aDiscountRecords})
+    // console.log({aDiscountRecords})
     this.activityItems = oData.filter((el: any) => ![...this.tillService.aDiscountTypes, 'loyalty-points'].includes(el.oType.eKind)).map((item: any) => {
       const oBrand = this.brandsList.find((brand: any) => brand._id === item.iBusinessBrandId);
       if (oBrand) item.brandName = oBrand.sName;
@@ -656,7 +656,7 @@ export class ActivityDetailsComponent implements OnInit {
         } else if (el.oType.eKind === 'loyalty-points-discount') { 
           nDiscountAmount = el.nRedeemedLoyaltyPoints
         }
-        console.log('nDiscountAmount', nDiscountAmount)
+        // console.log('nDiscountAmount', nDiscountAmount)
         
         item.nPriceIncVatAfterDiscount -= nDiscountAmount;
         item.nTotalAmount -= nDiscountAmount;
@@ -667,7 +667,7 @@ export class ActivityDetailsComponent implements OnInit {
       item.nTotalAmount = +(item.nTotalAmount.toFixed(2));
       return item;
     });
-    console.log(749, this.activityItems);
+    // console.log(749, this.activityItems);
     this.oCurrentCustomer = this.activityItems[0].oCustomer;
     this.matchSystemAndCurrentCustomer(this.customer , this.oCurrentCustomer);
     this.oLocationName = this.activityItems[0].oLocationName;
