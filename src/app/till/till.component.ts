@@ -492,7 +492,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   itemChanged(event: any, index: number): void {
-    console.log("event", event);
+    // console.log("event", event);
     // console.log('itemChanged: ', event);
     switch (event.type) {
       case 'delete':

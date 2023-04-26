@@ -3,6 +3,7 @@ import { DialogComponent } from '../../service/dialog';
 import { ApiService } from '../../service/api.service';
 import { ToastService } from '../toast';
 import { TranslateService } from '@ngx-translate/core';
+import { TillService } from '../../service/till.service';
 
 @Component({
   selector: 'app-favourites',
@@ -62,6 +63,7 @@ export class AddFavouritesComponent implements OnInit {
     private apiService: ApiService,
     private toastService: ToastService,
     private translateService: TranslateService,
+    private tillService: TillService
 
   ) {
     const _injector = this.viewContainer.parentInjector;
@@ -129,9 +131,15 @@ export class AddFavouritesComponent implements OnInit {
   assignProduct(){
     this.oActivityItem.iBusinessId = this.business._id;
     this.oActivityItem.sProductName = this.newSelectedProduct.sName;
-    this.oActivityItem.nPriceIncVat = this.newSelectedProduct.nPrice
     this.oActivityItem.aImage = this.newSelectedProduct.aImage
     this.oActivityItem.iBusinessProductId = this.newSelectedProduct.iBusinessProductId
+    
+    const nPrice = this.newSelectedProduct.nPrice;
+    this.oActivityItem.nPriceIncVat = nPrice
+    this.oActivityItem.nTotalAmount = nPrice
+    const nDiscountAmount = +((this.oActivityItem.bDiscountOnPercentage ? this.tillService.getPercentOf(nPrice, this.oActivityItem?.nDiscount || 0) : this.oActivityItem.nDiscount).toFixed(2));
+    this.oActivityItem.nPaidAmount += nDiscountAmount;
+    
     this.apiService.putNew('cashregistry', '/api/v1/activities/items/' + this.oActivityItem._id, this.oActivityItem)
       .subscribe((result: any) => {
         if(result.message == 'success'){

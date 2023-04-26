@@ -177,6 +177,7 @@ export class ActivityDetailsComponent implements OnInit {
   { key: 'EMAIL_ON_READY', value: 'email_on_ready' },
   { key: 'WHATSAPP_ON_READY', value: 'whatsapp_on_ready' }]
   sNumber:any;
+  aDiscountRecords: any;
 
   constructor(
     private viewContainerRef: ViewContainerRef,
@@ -475,9 +476,10 @@ export class ActivityDetailsComponent implements OnInit {
       if (result?.action != false) {
         this.getBusinessProduct(result.action.iBusinessProductId).subscribe((res: any) => {
           const productDetail = res.data;
-          this.activityItems[index].sArticleNumber = productDetail.sArticleNumber
-          this.activityItems[index].sProductNumber = productDetail.sProductNumber
-          this.activityItems[index].sArticleName = productDetail?.oArticleGroup?.oName[this.language]
+          activity.sArticleNumber = productDetail.sArticleNumber
+          activity.sProductNumber = productDetail.sProductNumber
+          activity.sArticleName = productDetail?.oArticleGroup?.oName[this.language]
+          this.processTransactionItems()
         });
       }
     }, (error) => {
@@ -487,8 +489,12 @@ export class ActivityDetailsComponent implements OnInit {
 
   openTransaction(transaction: any, itemType: any) {
     transaction.iActivityId = this.activity._id;
-    this.dialogService.openModal(TransactionItemsDetailsComponent, { cssClass: "modal-xl", context: { transaction: this.activity, itemType, selectedId: transaction._id } })
-      .instance.close.subscribe((result: any) => {
+    this.dialogService.openModal(TransactionItemsDetailsComponent, { cssClass: "modal-xl", 
+      context: { transaction: this.activity, itemType, selectedId: transaction._id },
+      hasBackdrop: true,
+      closeOnBackdropClick: false,
+      closeOnEsc: false
+    }).instance.close.subscribe((result: any) => {
         if (result?.action) {
           const data = this.tillService.processTransactionSearchResult(result);
           localStorage.setItem('fromTransactionPage', JSON.stringify(data));
@@ -639,14 +645,19 @@ export class ActivityDetailsComponent implements OnInit {
   }
   }
 
-  async processTransactionItems(oData: any) {
-    // console.log({oData})
-    const aDiscountRecords = oData.filter((el: any) =>  this.tillService.aDiscountTypes.includes(el.oType.eKind));
-    // console.log({aDiscountRecords})
-    this.activityItems = oData.filter((el: any) => ![...this.tillService.aDiscountTypes, 'loyalty-points'].includes(el.oType.eKind)).map((item: any) => {
+  async processTransactionItems(aData?: any) {
+    // console.log({aData})
+    if(!aData?.length){
+      aData = this.activityItems;
+    } else {
+      this.aDiscountRecords = aData.filter((el: any) =>  this.tillService.aDiscountTypes.includes(el.oType.eKind));
+    }
+    // console.log('after oData',JSON.parse(JSON.stringify(aData)))
+    // console.log('aDiscountRecords',JSON.parse(JSON.stringify(this.aDiscountRecords)))
+    this.activityItems = aData.filter((el: any) => ![...this.tillService.aDiscountTypes, 'loyalty-points'].includes(el.oType.eKind)).map((item: any) => {
       const oBrand = this.brandsList.find((brand: any) => brand._id === item.iBusinessBrandId);
       if (oBrand) item.brandName = oBrand.sName;
-      const aDiscounts = aDiscountRecords.filter((el:any) => item.sUniqueIdentifier === el.sUniqueIdentifier);
+      const aDiscounts = this.aDiscountRecords.filter((el:any) => item.sUniqueIdentifier === el.sUniqueIdentifier);
       item.nPriceIncVatAfterDiscount = item.nPriceIncVat;
       aDiscounts.forEach((el:any) => {
         let nDiscountAmount = 0;
@@ -656,11 +667,16 @@ export class ActivityDetailsComponent implements OnInit {
         } else if (el.oType.eKind === 'loyalty-points-discount') { 
           nDiscountAmount = el.nRedeemedLoyaltyPoints
         }
-        // console.log('nDiscountAmount', nDiscountAmount)
         
         item.nPriceIncVatAfterDiscount -= nDiscountAmount;
         item.nTotalAmount -= nDiscountAmount;
         item.nPaidAmount -= nDiscountAmount;
+        // console.log({
+        //   nDiscountAmount,
+        //   nPriceIncVatAfterDiscount: item.nPriceIncVatAfterDiscount,
+        //   nTotalAmount: item.nTotalAmount,
+        //   nPaidAmount: item.nPaidAmount,
+        // })
         
       });
       item.nPriceIncVatAfterDiscount = +(item.nPriceIncVatAfterDiscount.toFixed(2));
@@ -711,13 +727,16 @@ export class ActivityDetailsComponent implements OnInit {
     this.dialogRef.close.emit(data);
   }
 
-  submit(activityItemId: any, index: any) {
+  submit(oActivityItem:any) {
     this.submitted = true;
-    const oActivityItem = this.activityItems[index];
-    oActivityItem.nPriceIncVat = +((oActivityItem.nPriceIncVatAfterDiscount + oActivityItem.nDiscount).toFixed(2));
-    oActivityItem.nPaidAmount = +((oActivityItem.nPaidAmount + oActivityItem.nDiscount).toFixed(2));
+    // const oActivityItem = this.activityItems[index];
+    oActivityItem.nPriceIncVat = +((oActivityItem.nPriceIncVatAfterDiscount + oActivityItem.nDiscountToShow).toFixed(2));
+    oActivityItem.nTotalAmount = oActivityItem.nPriceIncVat;
+    oActivityItem.nPaidAmount = +((oActivityItem.nPaidAmount + oActivityItem.nDiscountToShow).toFixed(2));
     oActivityItem.iBusinessId = this.iBusinessId;
-    this.apiService.putNew('cashregistry', '/api/v1/activities/items/' + activityItemId, oActivityItem)
+    // console.log({oActivityItem});
+    // return;
+    this.apiService.putNew('cashregistry', '/api/v1/activities/items/' + oActivityItem._id, oActivityItem)
       .subscribe((result: any) => {
         if (result.message == 'success') {
           this.submitted = false;
