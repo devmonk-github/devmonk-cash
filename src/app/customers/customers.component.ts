@@ -96,6 +96,7 @@ export class CustomersComponent implements OnInit {
     // { key: 'HOUSE_NUMBER', value: 'sHouseNumber' },
     // { key: 'STREET', value: 'sStreet' },
     { key: 'COMPANY_NAME', value: 'sCompanyName' },
+    { key: 'NCLIENTID', value: 'nClientId'}
     //{ key: 'CONTACT_PERSON', value: 'oContactPerson' }
   ];
   customerTypes:any=[
@@ -121,7 +122,7 @@ export class CustomersComponent implements OnInit {
     this.getCustomers();
   }
   getSettings() {
-    this.getSettingsSubscription = this.apiService.getNew('cashregistry', `/api/v1/settings/${this.requestParams.iBusinessId}`).subscribe((result: any) => {
+    this.getSettingsSubscription = this.apiService.getNew('customer', `/api/v1/customer/settings/get/${this.requestParams.iBusinessId}`).subscribe((result: any) => {
       this.settings = result;
       if(this.settings?.aCustomerSearch){
         this.requestParams.oFilterBy.aSearchField = this.settings?.aCustomerSearch;

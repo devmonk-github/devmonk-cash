@@ -9,7 +9,7 @@ import { ToastService } from '../toast';
 import { PaginatePipe } from 'ngx-pagination';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { CustomerStructureService } from 'src/app/shared/service/customer-structure.service';
-
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-customer-dialog',
@@ -43,6 +43,8 @@ export class CustomerDialogComponent implements OnInit {
   showLoader = false;
   customers: Array<any> = [];
   allcustomer: Array<any> = [];
+  settings:any;
+  getSettingsSubscription !: Subscription;
   business: any = {}
   customColumn = 'NAME';
   defaultColumns = [ 'PHONE', 'EMAIL', 'SHIPPING_ADDRESS', 'INVOICE_ADDRESS'];
@@ -146,7 +148,7 @@ export class CustomerDialogComponent implements OnInit {
   //   { title: 'HOUSE_NUMBER', key: 'sHouseNumber'},
   // ]
 
-  oFilterFields: Array<any> = [
+  aFilterFields: Array<any> = [
     { key: 'FIRSTNAME', value: 'sFirstName' },
     { key: 'LASTNAME', value: 'sLastName' },
     { key: 'ADDRESS', value: 'sAddress' },
@@ -154,6 +156,7 @@ export class CustomerDialogComponent implements OnInit {
     // { key: 'HOUSE_NUMBER', value: 'sHouseNumber' },
     // { key: 'STREET', value: 'sStreet' },
     { key: 'COMPANY_NAME', value: 'sCompanyName' },
+    { key: 'NCLIENTID', value: 'nClientId'}
     //{ key: 'CONTACT_PERSON', value: 'oContactPerson' }
   ];
   
@@ -182,8 +185,18 @@ export class CustomerDialogComponent implements OnInit {
     this.apiService.setToastService(this.toastService);
     this.business._id = localStorage.getItem("currentBusiness");
     this.requestParams.iBusinessId = this.business._id;
+    this.getSettings();
     this.allcustomer = this.dialogRef?.context?.allcustomer;
-    
+  }
+  getSettings() {
+    this.getSettingsSubscription = this.apiService.getNew('customer', `/api/v1/customer/settings/get/${this.requestParams.iBusinessId}`).subscribe((result: any) => {
+      this.settings = result;
+      if (this.settings?.aCustomerSearch) {
+        this.requestParams.oFilterBy.aSearchField = this.settings?.aCustomerSearch;
+      }
+    }, (error) => {
+      console.log(error);
+    })
   }
 
   makeCustomerName = async (customer: any) => {

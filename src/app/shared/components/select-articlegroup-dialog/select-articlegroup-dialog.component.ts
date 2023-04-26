@@ -60,10 +60,10 @@ export class SelectArticleDialogComponent implements OnInit {
     this.getSettingsSubscription = this.apiService.getNew('cashregistry', `/api/v1/settings/${this.iBusinessId}`).subscribe((result: any) => {
       this.settings = result;
       if(this.from == 'repair'){
-        this.iArticleGroupId = this.settings?.iDefualtArticleGroupForRepair;
+        this.iArticleGroupId = this.settings?.iDefaultArticleGroupForRepair;
       }
       if(this.from == 'order'){
-        this.iArticleGroupId = this.settings?.iDefualtArticleGroupForOrder;
+        this.iArticleGroupId = this.settings?.iDefaultArticleGroupForOrder;
       }
     }, (error) => {
       console.log(error);
