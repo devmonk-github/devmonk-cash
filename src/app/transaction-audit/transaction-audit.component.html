@@ -604,21 +604,29 @@
                                                                     <th scope="col" class="w-150px">
                                                                         {{oArticleGroup.nProfit| number :'1.2-2'}}</th>
                                                                 </tr>
-                                                            </thead>
+`                                                            </thead>
                                                             <tbody>
-                                                                <div *ngIf="sOptionMenu?.child1?.sKey === 'Bookkeeping'">
-                                                                    <ng-container [ngTemplateOutlet]="turnOverGroupTemplateWithTransactionItem"
-                                                                        [ngTemplateOutletContext]="{ data: { oArticleGroup: oArticleGroup } }"
-                                                                        *ngIf="oArticleGroup.bIsCollapseItem">
-                                                                    </ng-container>
-                                                                </div>
-    
-                                                                <div *ngIf="sOptionMenu?.child1?.sKey === 'ArticleGroup'">
-                                                                    <ng-container [ngTemplateOutlet]="turnOverGroupTemplateWithProperty"
-                                                                        [ngTemplateOutletContext]="{ data: { oArticleGroup: oArticleGroup } }"
-                                                                        *ngIf="oArticleGroup.aRevenueByProperty?.length && oArticleGroup.bIsCollapseItem">
-                                                                    </ng-container>
-                                                                </div>
+                                                                <ng-container *ngIf="oArticleGroup.bIsCollapseItem && sOptionMenu?.child1?.sKey === 'Bookkeeping'">
+                                                                    <tr class="bg-white" *ngFor="let item of oArticleGroup.aTransactionItems">
+                                                                        <td> {{ item.sProductName || item?.sProductNumber }} </td>
+                                                                        <td> {{ item.nQuantity }} </td>
+                                                                        <td> {{ item.nRevenueAmount | number :'1.2-2' }} </td>
+                                                                        <td> {{ item.nCostOfRevenue | number :'1.2-2' }} </td>
+                                                                        <td> {{ item.nProfitOfRevenue | number :'1.2-2' }} </td>
+                                                                        <td></td>
+                                                                    </tr>
+                                                                </ng-container>
+
+                                                                <ng-container *ngIf="oArticleGroup.bIsCollapseItem && sOptionMenu?.child1?.sKey === 'ArticleGroup'">
+                                                                    <tr class="bg-white"
+                                                                        *ngFor="let oRevenueByProperty of oArticleGroup.aRevenueByProperty; let revenuePropertyIndex = index">
+                                                                        <td class="ps-9"> {{oRevenueByProperty.aCategory.join(' |')}} </td>
+                                                                        <td> {{oRevenueByProperty.nQuantity}} </td>
+                                                                        <td> {{oRevenueByProperty.nTotalRevenue | number :'1.2-2'}} </td>
+                                                                        <td> {{oRevenueByProperty.nTotalPurchaseAmount | number :'1.2-2'}} </td>
+                                                                        <td> {{oRevenueByProperty.nProfit| number :'1.2-2'}} </td>
+                                                                    </tr>
+                                                                </ng-container>
                                                             </tbody>
                                                         </table>
                                                     </td>
@@ -1563,11 +1571,6 @@
                                     <label>{{ "CASH_IN_TILL" | translate}}</label>
                                     <label class="">
                                         {{ oCountings.nCashInTill | currency: transactionAuditPdfService.currency }}
-                                        <!-- <ng-container *ngIf="bDisableCountings">
-                                        </ng-container>
-                                        <ng-container *ngIf="!bDisableCountings">
-                                            {{ oCountings.nCashInTill | currency: transactionAuditPdfService.currency }}
-                                        </ng-container> -->
                                     </label>
                                 </div>
                                 <div>
@@ -1620,34 +1623,3 @@
         <!-- COUNTING SECTION END -->
     </ng-container>
 </div>
-
-<!-- Turnover-Group with Property -->
-<ng-template let-data="data" #turnOverGroupTemplateWithProperty>
-    <div
-        *ngFor="let oRevenueByProperty of data.oArticleGroup.aRevenueByProperty; let revenuePropertyIndex = index">
-        <tr>
-            <td class="ps-9"> {{oRevenueByProperty.aCategory.join(' |')}} </td>
-            <td> {{oRevenueByProperty.nQuantity}} </td>
-            <td> {{oRevenueByProperty.nTotalRevenue | number :'1.2-2'}} </td>
-            <td> {{oRevenueByProperty.nTotalPurchaseAmount | number :'1.2-2'}} </td>
-            <td> {{oRevenueByProperty.nProfit| number :'1.2-2'}} </td>
-        </tr>
-    </div>
-</ng-template>
-
-<!-- Turnover-Group with Transaction-item -->
-<ng-template let-data="data" #turnOverGroupTemplateWithTransactionItem>
-    <p *ngIf="!data?.oArticleGroup.aTransactionItems?.length">
-        {{ "LOADING" | translate }}
-    </p>
-    <div *ngFor="let item of data.oArticleGroup.aTransactionItems">
-        <tr>
-            <td> {{ item.sProductName || item?.sProductNumber }} </td>
-            <td> {{ item.nQuantity }} </td>
-            <td> {{ item.nRevenueAmount | number :'1.2-2' }} </td>
-            <td> {{ item.nCostOfRevenue | number :'1.2-2' }} </td>
-            <td> {{ item.nProfitOfRevenue | number :'1.2-2' }} </td>
-            <td></td>
-        </tr>
-    </div>
-</ng-template>

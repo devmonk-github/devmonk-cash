@@ -364,7 +364,6 @@ export class TransactionAuditUiPdfService {
         }
         this.sDisplayMethod = sDisplayMethod;
         
-        // console.log('sDisplayMethod: ', sDisplayMethod);
         switch (sDisplayMethod.toString()) {
             case 'revenuePerBusinessPartner':
                 this.processPdfByRevenuePerBusinessPartner(columnWidths,tableLayout,aStatistic);
@@ -540,7 +539,6 @@ export class TransactionAuditUiPdfService {
 
     
     processRevenuePerTurnoverGroup(columnWidths: any, tableLayout: any, aStatistic: any) {
-        // console.log("processRevenuePerTurnoverGroup", { columnWidths, tableLayout, aStatistic })
         this.content.push({
             text: this.translateService.instant('REVENUE_PER_TURNOVER_GROUP'),
             style: ['left', 'normal'],
@@ -611,7 +609,6 @@ export class TransactionAuditUiPdfService {
                 // console.log({ oSupplier })
                 // const aArticleGroupTexts: any = [];
                 oSupplier.aArticleGroups.forEach((oArticleGroup: any) => {
-                    // console.log({ oArticleGroup })
                     aTexts.push([
                         { text: '', style: ['td', 'bold'] },
                         { text: this.translateService.instant('CASH_GROUP') + ': group number', style: ['td', 'bold'], colSpan: 2, border: [false, false, false, true] },
@@ -627,7 +624,6 @@ export class TransactionAuditUiPdfService {
                     ]);
                     
                     oArticleGroup.aRevenueByProperty.forEach((oRevenueByProperty: any) => {
-                        // console.log({ oRevenueByProperty })
                         aTexts.push([
                             { text: 'receipt number', style: ['td', 'property'] },
                             { text: 'article number', style: ['td', 'property'] },
@@ -1510,7 +1506,6 @@ export class TransactionAuditUiPdfService {
     }
 
     convertToMoney(val: any) {
-        // console.log('convertToMoney: ', val);
         const nNum = val; 
         if (val % 1 === 0) {
             //no decimals
@@ -1518,7 +1513,6 @@ export class TransactionAuditUiPdfService {
         } else {
             val = String(val);
             let parts = val.split('.');
-            // console.log('parts: ', parts, val);
             if (parts[1].length === 1) {
                 val = (nNum < 0) ? ('-' + this.currency + Math.abs(nNum) + '0') : (this.currency + val + '0');
             }
@@ -1550,7 +1544,6 @@ export class TransactionAuditUiPdfService {
             const { aVatRates, aProcessVatRates } = oData;
             if (aVatRates?.length) {
                 aVatRates.forEach((oItem: any) => {
-                    console.log('oItem oShopPurchase: ', oItem?.oShopPurchase);
                     const oFoundVat = aProcessVatRates.find((oProcessVat: any) => oProcessVat.nVat == oItem?.nVat);
                     if (!oFoundVat) {
                         aProcessVatRates.push(oItem);
@@ -1561,9 +1554,7 @@ export class TransactionAuditUiPdfService {
                         oFoundVat[field].nPurchaseValue += (oItem[field].nPurchaseValue || 0);
                         oFoundVat[field].nProfit += (oItem[field].nProfit || 0);
                         oFoundVat[field].nVatAmount += (oItem[field].nVatAmount || 0);
-                        // console.log('nTotalVatAmount: ', oFoundVat[field].nTotalVatAmount, oItem[field].nTotalVatAmount);
                     });
-                    console.log('summingUpVatRate aProcessVatRates: ', aProcessVatRates);
                 })
             }
 
