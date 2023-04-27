@@ -26,6 +26,7 @@ import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
 import { ConfirmationDialogComponent } from 'src/app/shared/components/confirmation-dialog/confirmation-dialog.component';
 import { CustomerDialogComponent } from 'src/app/shared/components/customer-dialog/customer-dialog.component';
+import countryPhoneCodeList from 'src/assets/json/country_phone_code_list.json';
 export interface BarChartOptions {
   series: ApexAxisChartSeries;
   chart: ApexChart;
@@ -69,7 +70,7 @@ export const ChartColors = {
 })
 
 export class CustomerDetailsComponent implements OnInit, AfterViewInit{
-
+  aCountryPhoneCodes: Array<any> = countryPhoneCodeList;
   dialogRef: DialogComponent;
   salutations: Array<any> = ['Mr', 'Mrs', 'Mr/Mrs', 'Family', 'Firm']
   gender: Array<any> = ['Male', 'Female', "Other"]
