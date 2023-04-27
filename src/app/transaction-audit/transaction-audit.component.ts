@@ -565,7 +565,6 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
             this.aSelectedLocation.push(oLocation._id);
           }
         });
-
       }
     },
       (error) => {
