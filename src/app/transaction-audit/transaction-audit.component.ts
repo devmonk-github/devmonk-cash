@@ -490,8 +490,8 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
     ]
 
     const eUserType = localStorage.getItem('type') ?? ''
-
-    /* Showing this menu only if the all the article-group has category and showDayState is turned on */
+    /* TurnOver Start */
+    /* Showing this menu only if the all the article-group has category and bShowDayStatesBasedOnTurnover is turned on */
     if (this.tillService.settings?.bShowDayStatesBasedOnTurnover) {
       const oTurnoverGroup = {
         sKey: 'Turnover Group',
@@ -502,18 +502,18 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
       }
       for (const oOption of this.aOptionMenu) {
         for (const oChild of oOption?.children) {
-          if (oChild?.sKey == 'Bookkeeping') {
+          if (oChild?.sKey == 'Bookkeeping' || oChild?.sKey == 'ArticleGroup') {
             oChild.children.push(oTurnoverGroup);
-            break;
           }
         }
       }
     }
+    /* TurnOver End */
     if (eUserType && eUserType.toLowerCase() !== 'supplier') {
       let iPurchaseIndex = this.aOptionMenu.findIndex(i => i.sValue.toLowerCase() === 'sales-order')
       this.aOptionMenu.splice(iPurchaseIndex, 1)
     }
-    this.onDropdownItemSelected(this.aOptionMenu[0], this.aOptionMenu[0].children[0], this.aOptionMenu[0].children[0].children[0])
+    this.onDropdownItemSelected(this.aOptionMenu[0], this.aOptionMenu[0].children[1], this.aOptionMenu[0].children[1].children[3])
   }
 
   goBack() {
@@ -565,7 +565,6 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
             this.aSelectedLocation.push(oLocation._id);
           }
         });
-
       }
     },
       (error) => {
@@ -622,6 +621,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
 
   /* Static Data for statistic (from statistic document) */
   getStaticData(sDisplayMethod?: string) {
+    console.log('getStaticData', sDisplayMethod)
     this.aStatistic = [];
     this.aPaymentMethods = [];
     this.bStatisticLoading = true;
@@ -679,6 +679,8 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
               this.oStatisticsDocument = this.transactionAuditPdfService.processingMultipleStatisticsBySummingUp({ aStatisticsDocuments: this.aStatisticsDocuments, aStatistic: this.aStatistic });
             }
             if (this.aStatisticsDocuments?.length) this.mappingThePaymentMethod(this.aStatisticsDocuments);
+            this.checkShowDownload();
+            this.exportToPDF();
           }
         }
       }, (error) => {
@@ -746,7 +748,8 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
   /* Dynamic Data for statistic (from transaction-item) */
   getDynamicData(sDisplayMethod?: string) {
     /* Below for Dynamic-data */
-    this.checkShowDownload();
+    console.log('getDynamicData', sDisplayMethod)
+    
     const oBody = this.processingDynamicDataRequest(sDisplayMethod);
     this.bStatisticLoading = true;
     this.statisticAuditSubscription = this.apiService
@@ -774,7 +777,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
             this.nNewPaymentMethodTotal = this.nPaymentMethodTotal;
             this.filterDuplicatePaymentMethods();
           }
-
+          this.checkShowDownload();
         }
         this.bStatisticLoading = false;
       },
@@ -938,8 +941,6 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
         this.sCurrentLocation = this.businessDetails.sName + " (" + oLocation?.sName + ")";
         this.aSelectedLocation.push(oLocation._id);
       }
-      
-      // console.log(this.businessDetails, this.sCurrentLocation, this.aSelectedLocation)
     });
   }
 
@@ -975,7 +976,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
     this.oCountings.nCashRemain = this.oCountings.nCashCounted - this.oCountings.nSkim;
   }
 
-  async expandItem(item: any, iBusinessPartnerId: string = '', from: string = 'articlegroup') {
+  async expandItem(item: any, iBusinessPartnerId: any = undefined, from: string = 'articlegroup') {
     item.bIsCollapseItem = !item.bIsCollapseItem;
 
     if (from === 'articlegroup') {
@@ -994,6 +995,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
           // IsDynamicState
           bIsArticleGroupLevel: this.bIsArticleGroupLevel,
           bIsSupplierMode: this.bIsSupplierMode,
+          iArticleGroupOriginalId: item?._id,
           iLocationId: this?.aSelectedLocation?.length ? this.aSelectedLocation : [],
           iWorkstationId: this.selectedWorkStation?.length ? this.selectedWorkStation : []
         },
@@ -1361,7 +1363,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
               sWorkStationName: oDayClosure?.sWorkStationName
             }
           });
-          this.checkShowDownload();
+          
         }
       }, (error) => {
         console.log('error: ', error);
@@ -1394,6 +1396,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
     const bCondition3 = (this.iStatisticId && this.iStatisticId != '' && this.oStatisticsDocument && this.oStatisticsDocument?.bIsDayState === false) || false;
     const bCondition4 = this.closeButtonClicked;
     this.bShowDownload = (bCondition1 || bCondition2 || bCondition3 || bCondition4) && this.aStatistic;
+    this.bShowDownload = true;
   }
 
   fetchStockValuePerLocation() {

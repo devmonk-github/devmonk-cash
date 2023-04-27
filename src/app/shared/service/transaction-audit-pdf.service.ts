@@ -4,6 +4,7 @@ import * as _moment from 'moment';
 import { PdfService } from 'src/app/shared/service/pdf2.service';
 import { ApiService } from './api.service';
 import { TillService } from './till.service';
+import { CommonPrintSettingsService } from './common-print-settings.service';
 const moment = (_moment as any).default ? (_moment as any).default : _moment;
 
 @Injectable()
@@ -79,7 +80,7 @@ export class TransactionAuditUiPdfService {
 
         td: {
             fontSize: 9,
-            margin: [0, 5],
+            // margin: [0, 5],
         },
         articleGroup: {
             fillColor: '#F5F8FA',
@@ -87,15 +88,35 @@ export class TransactionAuditUiPdfService {
         bgGray:{
             fillColor: '#F5F8FA',
         },
+        doubleHeaderLines: {
+            hLineWidth: (i:any) => {
+                return (i === 0 || i === 1) ? 1 : 0;
+            },
+            vLineWidth: () => {
+                return 0
+            },
+            // defaultBorder: false,
+        },
+        'border-bottom':{
+            border: [false, false, false, true]
+        },
+        'border-top-bottom':{
+            border: [false, true, false, true]
+        },
+
     };
+    
     translations: any;
     sDisplayMethod: any;
+    pageMargins: any = [10, 10,10,10];
+    pageSize: any = 'A4';
 
     constructor(
         private pdf: PdfService,
         private apiService: ApiService,
         private translateService: TranslateService,
-        private tillService: TillService
+        private tillService: TillService,
+        private commonPrintSettingsService: CommonPrintSettingsService
         ) {
 
         const aKeywords: any = [
@@ -200,23 +221,23 @@ export class TransactionAuditUiPdfService {
         bIsArticleGroupLevel,
         bIsSupplierMode
     }: any) {
-        // console.log('PDF service: exportToPDF: ', {
-        //     aSelectedLocation,
-        //     sOptionMenu,
-        //     bIsDynamicState,
-        //     aLocation,
-        //     aSelectedWorkStation,
-        //     aWorkStation,
-        //     oFilterDates,
-        //     oBusinessDetails,
-        //     sDisplayMethod,
-        //     sDisplayMethodString,
-        //     aStatistic,
-        //     oStatisticsDocument,
-        //     aStatisticsDocuments,
-        //     aPaymentMethods,
-        //     bIsArticleGroupLevel,
-        //     bIsSupplierMode });
+        console.log('PDF service: exportToPDF: ', {
+            aSelectedLocation,
+            sOptionMenu,
+            bIsDynamicState,
+            aLocation,
+            aSelectedWorkStation,
+            aWorkStation,
+            oFilterDates,
+            oBusinessDetails,
+            sDisplayMethod,
+            sDisplayMethodString,
+            aStatistic,
+            oStatisticsDocument,
+            aStatisticsDocuments,
+            aPaymentMethods,
+            bIsArticleGroupLevel,
+            bIsSupplierMode });
 
         const date = moment(Date.now()).format('DD-MM-yyyy');
         const columnWidths = ['*', 60, 80, 80, 100];
@@ -317,25 +338,25 @@ export class TransactionAuditUiPdfService {
             
         ];
 
-        const [_aTransactionItems, _aActivityItems, _aGoldPurchases]:any = await Promise.all([
-            this.fetchTransactionItems(oFilterDates,bIsArticleGroupLevel,bIsSupplierMode),
-            this.fetchActivityItems(oFilterDates),
-            this.fetchGoldPurchaseItems(oFilterDates)
-        ]);
+        // const [_aTransactionItems]: any = await Promise.all([ //, _aActivityItems, _aGoldPurchases
+        //     this.fetchTransactionItems(oFilterDates,bIsArticleGroupLevel,bIsSupplierMode),
+        //     // this.fetchActivityItems(oFilterDates),
+        //     // this.fetchGoldPurchaseItems(oFilterDates)
+        // ]);
 
-        const aTransactionItems = (_aTransactionItems?.data?.length && _aTransactionItems?.data[0]?.result?.length) ? _aTransactionItems?.data[0]?.result : [];
+        // const aTransactionItems = (_aTransactionItems?.data?.length && _aTransactionItems?.data[0]?.result?.length) ? _aTransactionItems?.data[0]?.result : [];
 
-        if (aTransactionItems?.length) {
-            this.aRefundItems = aTransactionItems.filter((item: any) => item.oType.bRefund);
-            this.aDiscountItems = aTransactionItems.filter((item: any) => item.oType.bDiscount);
-        }
+        // if (aTransactionItems?.length) {
+        //     this.aRefundItems = aTransactionItems.filter((item: any) => item.oType.bRefund);
+        //     this.aDiscountItems = aTransactionItems.filter((item: any) => item.oType.bDiscount);
+        // }
 
-        if (_aActivityItems?.data?.length) {
-            this.aRepairItems = _aActivityItems?.data.filter((item: any) => item.oType.eKind == 'repair');
-            this.aGiftItems = _aActivityItems?.data.filter((item: any) => item.oType.eKind == 'giftcard');
-        }
+        // if (_aActivityItems?.data?.length) {
+        //     this.aRepairItems = _aActivityItems?.data.filter((item: any) => item.oType.eKind == 'repair');
+        //     this.aGiftItems = _aActivityItems?.data.filter((item: any) => item.oType.eKind == 'giftcard');
+        // }
 
-        this.aGoldPurchases = _aGoldPurchases?.data[0]?.result.filter((item: any) => item.oType.eKind == 'gold-purchase');
+        // this.aGoldPurchases = _aGoldPurchases?.data[0]?.result.filter((item: any) => item.oType.eKind == 'gold-purchase');
 
         if (sDisplayMethod != "aVatRates") {
             this.processCashCountings(tableLayout, oStatisticsDocument, aStatistic);
@@ -343,7 +364,6 @@ export class TransactionAuditUiPdfService {
         }
         this.sDisplayMethod = sDisplayMethod;
         
-        // console.log('sDisplayMethod: ', sDisplayMethod);
         switch (sDisplayMethod.toString()) {
             case 'revenuePerBusinessPartner':
                 this.processPdfByRevenuePerBusinessPartner(columnWidths,tableLayout,aStatistic);
@@ -427,18 +447,22 @@ export class TransactionAuditUiPdfService {
             });
         }
 
-        this.addRefundToPdf();
-        this.addDiscountToPdf();
-        this.addRepairsToPdf();
-        this.addGiftcardsToPdf();
-        this.addGoldPurchasesToPdf();
+        // this.addRefundToPdf();
+        // this.addDiscountToPdf();
+        // this.addRepairsToPdf();
+        // this.addGiftcardsToPdf();
+        // this.addGoldPurchasesToPdf();
 
         this.pdf.getPdfData({
             styles: this.styles,
             content: this.content,
             orientation: 'portrait',
-            pageSize: 'A4',
-            pdfTitle: oBusinessDetails.sName + '-' + this.translations['TRANSACTION_AUDIT_REPORT']
+            pageSize: this.pageSize,
+            pdfTitle: oBusinessDetails.sName + '-' + this.translateService.instant('TRANSACTION_AUDIT_REPORT'),
+            defaultStyle:{
+                fontSize: 5
+            },
+            pageMargins: this.pageMargins
         });
     }
 
@@ -515,71 +539,134 @@ export class TransactionAuditUiPdfService {
 
     
     processRevenuePerTurnoverGroup(columnWidths: any, tableLayout: any, aStatistic: any) {
-        // console.log("processRevenuePerTurnoverGroup", { columnWidths, tableLayout, aStatistic })
         this.content.push({
             text: this.translateService.instant('REVENUE_PER_TURNOVER_GROUP'),
             style: ['left', 'normal'],
             margin: [0, 30, 0, 10],
         });
-        const header: Array<any> = [
-            this.translateService.instant('CATEGORY'),
-            this.translateService.instant('QUANTITY'),
-            this.translateService.instant('PRICE_INCL_VAT'),
-            this.translateService.instant('PURCHASE_PRICE'),
-            this.translateService.instant('GROSS_PROFIT')
-        ];
-        const headerList: Array<any> = [];
-        header.forEach((singleHeader: any) => {
-            headerList.push({ text: singleHeader, style: ['td'] });
-        });
-        const aTexts:any = [];
+        const aHeaders = [
+            { key: 'RECEIPT_NO', weight: 1 },
+            { key: 'ARTICLE_NUMBER', weight: 1 },
+            { key: 'QUANTITY', weight: 1 },
+            { key: 'DESCRIPTION', weight: 2, colSpan: 2 },
+            { key: 'PRODUCT_NUMBER', weight: 1 },
+            { key: 'PRICE', weight: 1 },
+            { key: 'DISCOUNT', weight: 1 },
+            { key: 'REVENUE', weight: 1 },
+            { key: 'VAT', weight: 1 },
+            { key: 'EMPLOYEE', weight: 1 },
+            { key: 'DATE', weight: 1 },
+        ]; 
+
+        /*
+            1. Receipt number from the transaction
+            2. sArticleNumber from the transactionitem
+            3. transItem.quantity
+            4. transItem.description
+            5. transItem.sProductNumber
+            6. transItem.Price
+            7. transitem.nDiscount
+            8. transitem.nRevenueAmount * qt
+            9. transitem.nRevenueAmount - ( transitem.nRevenueAmount / (1+ transItem.nVatRate / 100) )
+            10. Firstname employee
+            11. hh:mm (transaction.dCreationDate)
+        */
+        this.commonPrintSettingsService.oCommonParameters['pageMargins'] = this.pageMargins;
+        this.commonPrintSettingsService.oCommonParameters['pageSize'] = this.pageSize;
+        this.commonPrintSettingsService.pageWidth = this.commonPrintSettingsService.pageSizes[this.pageSize].pageWidth
+        // const nWidth = (100 - nMarginWidth) / headerList.length;
+        const aWidths = [...aHeaders.map((el:any) => this.commonPrintSettingsService.calcColumnWidth(el.weight))];
+        // console.log({nWidth, aWidths});
+
+        const headerList: any = [];
+        aHeaders.forEach(el => {
+            const obj:any =  { 
+                text: this.translateService.instant(el.key), 
+                style: ['td'], 
+                border: [false, true, false, true] 
+            };
+            if(el?.colSpan) obj.colSpan = el.colSpan;
+            headerList.push(obj) 
+        })
+        const aTexts = [headerList];
+        // const data = {
+        //     table: {
+        //         headerRows: 1,
+        //         widths: aWidths,
+        //         body: [aTexts],
+        //         dontBreakRows: true,
+        //         keepWithHeaderRows: true
+        //     },
+        //     layout: this.styles.doubleHeaderLines,
+        // };
+        console.log(590, {aTexts})
+        // this.content.push(data);
+        const aDummy = [...headerList];
+        aTexts.push([...aDummy.fill(' ')]);
         aStatistic.forEach((oStatistic: any) => {
-            // console.log({oStatistic})
+            console.log({oStatistic})
             oStatistic.individual.forEach((oSupplier: any) => {
                 // console.log({ oSupplier })
-                aTexts.push([
-                    { text: header[0] + '\n' + oSupplier.sCategory, style:['td', 'bold'] },
-                    { text: header[1] + '\n' + oSupplier.nQuantity, style:['td', 'bold'] },
-                    { text: header[2] + '\n' + oSupplier.nTotalRevenue.toFixed(2), style:['td', 'bold'] },
-                    { text: header[3] + '\n' + oSupplier.nTotalPurchaseAmount.toFixed(2), style:['td', 'bold'] },
-                    { text: header[4] + '\n' + oSupplier.nProfit.toFixed(2), style: ['td', 'bold'] }
-                ]);
-                
+                // const aArticleGroupTexts: any = [];
                 oSupplier.aArticleGroups.forEach((oArticleGroup: any) => {
-                    // console.log({ oArticleGroup })
                     aTexts.push([
-                        { text: oArticleGroup.sName, style: ['td', 'articleGroup'] },
-                        { text: oArticleGroup.nQuantity, style: ['td', 'articleGroup'] },
-                        { text: oArticleGroup.nTotalRevenue.toFixed(2), style: ['td', 'articleGroup'] },
-                        { text: oArticleGroup.nTotalPurchaseAmount.toFixed(2), style: ['td', 'articleGroup'] },
-                        { text: oArticleGroup.nProfit.toFixed(2), style: ['td', 'articleGroup'] },
+                        { text: '', style: ['td', 'bold'] },
+                        { text: this.translateService.instant('CASH_GROUP') + ': group number', style: ['td', 'bold'], colSpan: 2, border: [false, false, false, true] },
+                        { text: '', style: ['td', 'bold'], border: [false, false, false, true] },
+                        { text: oArticleGroup.sName, style: ['td'], border: [false, false, false, true] },
+                        { text: this.translateService.instant('TRANSACTIONS'), style: ['td', 'bold'], border: [false, false, false, true] }, //colSpan: 2,
+                        { text: '', style: ['td', 'bold'] },
+                        { text: '', style: ['td', 'bold'] },
+                        { text: '', style: ['td', 'bold'] },
+                        { text: '', style: ['td', 'bold'] },
+                        { text: '', style: ['td', 'bold'] },
+                        { text: '', style: ['td', 'bold'] }
                     ]);
-
+                    
                     oArticleGroup.aRevenueByProperty.forEach((oRevenueByProperty: any) => {
-                        // console.log({ oRevenueByProperty })
                         aTexts.push([
-                            { text: oRevenueByProperty.aCategory.join(' |'), style: ['td', 'property'] },
+                            { text: 'receipt number', style: ['td', 'property'] },
+                            { text: 'article number', style: ['td', 'property'] },
                             { text: oRevenueByProperty.nQuantity, style: ['td', 'property'] },
-                            { text: oRevenueByProperty.nTotalRevenue.toFixed(2), style: ['td', 'property'] },
+                            { text: 'description' + oRevenueByProperty.aCategory.join(' |'), style: ['td', 'property'] },
+                            { text: 'product number', style: ['td', 'property'] },
                             { text: oRevenueByProperty.nTotalPurchaseAmount.toFixed(2), style: ['td', 'property'] },
-                            { text: oRevenueByProperty.nProfit.toFixed(2), style: ['td', 'property'] },
+                            { text: 'discount', style: ['td', 'property'] },
+                            { text: 'revenue * qt', style: ['td', 'property'] },
+                            { text: 'revenue - vat', style: ['td', 'property'] },
+                            { text: 'emp', style: ['td', 'property'] },
+                            { text: 'dt', style: ['td', 'property'] },
                         ]);
                     });
+                    aTexts.push([
+                        { text: '', style: ['td', 'bold'] },
+                        { text: this.translateService.instant('SUBTOTAL'), style: ['td'], colSpan: 2, border: [false, true, false, false] },
+                        { text: '', style: ['td'], border: [false, true, false, false] },
+                        { text: '', style: ['td'], border: [false, true, false, false] },
+                        { text: oArticleGroup.nQuantity, style: ['td', 'bold'], border: [false, true, false, false] },
+                        { text: '', style: ['td', 'bold'] },
+                        { text: 'subtotal discount', style: ['td', 'bold'], border: [false, true, false, false] },
+                        { text: 'subtotal qty * price', style: ['td', 'bold'], border: [false, true, false, false] },
+                        { text: 'vat', style: ['td', 'bold'], border: [false, true, false, false] },
+                        { text: '', style: ['td', 'bold'] },
+                        { text: '', style: ['td', 'bold'] }
+                    ])
                 });
             });
         });
         const data = {
             table: {
                 headerRows: 1,
-                widths: columnWidths,
-                heights: [35],
+                widths: aWidths,
                 body: aTexts,
                 dontBreakRows: true,
                 keepWithHeaderRows: true
             },
-            layout: tableLayout,
+            layout: {
+                defaultBorder: false
+            },
         };
-        // console.log(data, aTexts)
+        console.log(data, aTexts)
         this.content.push(data);
     }
 
@@ -1419,7 +1506,6 @@ export class TransactionAuditUiPdfService {
     }
 
     convertToMoney(val: any) {
-        // console.log('convertToMoney: ', val);
         const nNum = val; 
         if (val % 1 === 0) {
             //no decimals
@@ -1427,7 +1513,6 @@ export class TransactionAuditUiPdfService {
         } else {
             val = String(val);
             let parts = val.split('.');
-            // console.log('parts: ', parts, val);
             if (parts[1].length === 1) {
                 val = (nNum < 0) ? ('-' + this.currency + Math.abs(nNum) + '0') : (this.currency + val + '0');
             }
@@ -1459,7 +1544,6 @@ export class TransactionAuditUiPdfService {
             const { aVatRates, aProcessVatRates } = oData;
             if (aVatRates?.length) {
                 aVatRates.forEach((oItem: any) => {
-                    console.log('oItem oShopPurchase: ', oItem?.oShopPurchase);
                     const oFoundVat = aProcessVatRates.find((oProcessVat: any) => oProcessVat.nVat == oItem?.nVat);
                     if (!oFoundVat) {
                         aProcessVatRates.push(oItem);
@@ -1470,9 +1554,7 @@ export class TransactionAuditUiPdfService {
                         oFoundVat[field].nPurchaseValue += (oItem[field].nPurchaseValue || 0);
                         oFoundVat[field].nProfit += (oItem[field].nProfit || 0);
                         oFoundVat[field].nVatAmount += (oItem[field].nVatAmount || 0);
-                        // console.log('nTotalVatAmount: ', oFoundVat[field].nTotalVatAmount, oItem[field].nTotalVatAmount);
                     });
-                    console.log('summingUpVatRate aProcessVatRates: ', aProcessVatRates);
                 })
             }
 
