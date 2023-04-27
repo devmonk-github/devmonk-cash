@@ -490,8 +490,8 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
     ]
 
     const eUserType = localStorage.getItem('type') ?? ''
-
-    /* Showing this menu only if the all the article-group has category and showDayState is turned on */
+    /* TurnOver Start */
+    /* Showing this menu only if the all the article-group has category and bShowDayStatesBasedOnTurnover is turned on */
     if (this.tillService.settings?.bShowDayStatesBasedOnTurnover) {
       const oTurnoverGroup = {
         sKey: 'Turnover Group',
@@ -502,13 +502,13 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
       }
       for (const oOption of this.aOptionMenu) {
         for (const oChild of oOption?.children) {
-          if (oChild?.sKey == 'Bookkeeping') {
+          if (oChild?.sKey == 'Bookkeeping' || oChild?.sKey == 'ArticleGroup') {
             oChild.children.push(oTurnoverGroup);
-            break;
           }
         }
       }
     }
+    /* TurnOver End */
     if (eUserType && eUserType.toLowerCase() !== 'supplier') {
       let iPurchaseIndex = this.aOptionMenu.findIndex(i => i.sValue.toLowerCase() === 'sales-order')
       this.aOptionMenu.splice(iPurchaseIndex, 1)
@@ -938,8 +938,6 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
         this.sCurrentLocation = this.businessDetails.sName + " (" + oLocation?.sName + ")";
         this.aSelectedLocation.push(oLocation._id);
       }
-      
-      // console.log(this.businessDetails, this.sCurrentLocation, this.aSelectedLocation)
     });
   }
 
@@ -975,7 +973,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
     this.oCountings.nCashRemain = this.oCountings.nCashCounted - this.oCountings.nSkim;
   }
 
-  async expandItem(item: any, iBusinessPartnerId: string = '', from: string = 'articlegroup') {
+  async expandItem(item: any, iBusinessPartnerId: any = undefined, from: string = 'articlegroup') {
     item.bIsCollapseItem = !item.bIsCollapseItem;
 
     if (from === 'articlegroup') {
@@ -994,6 +992,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
           // IsDynamicState
           bIsArticleGroupLevel: this.bIsArticleGroupLevel,
           bIsSupplierMode: this.bIsSupplierMode,
+          iArticleGroupOriginalId: item?._id,
           iLocationId: this?.aSelectedLocation?.length ? this.aSelectedLocation : [],
           iWorkstationId: this.selectedWorkStation?.length ? this.selectedWorkStation : []
         },
