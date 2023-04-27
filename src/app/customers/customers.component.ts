@@ -10,7 +10,7 @@ import {ExportsComponent} from '../shared/components/exports/exports.component';
 import { MenuComponent } from '../shared/_layout/components/common';
 import { CustomerDialogComponent } from '../shared/components/customer-dialog/customer-dialog.component';
 import { animate, state, style, transition, trigger } from '@angular/animations';
-
+import { Subscription } from 'rxjs';
 @Component({
   selector: 'app-customers',
   templateUrl: './customers.component.html',
@@ -38,12 +38,12 @@ export class CustomersComponent implements OnInit {
   customer: any = null;
   faSearch = faSearch;
   bIsShowDeletedCustomer: boolean = false;
-
   updated_customer: any = null;
   business: any = {}
   customers: Array<any> = [];  //make it empty later
   showLoader: boolean = false;
-
+  settings:any;
+  getSettingsSubscription !: Subscription;
   pageCounts: Array<number> = [10, 25, 50, 100]
   pageNumber: number = 1;
   setPaginateSize: number = 10;
@@ -52,7 +52,6 @@ export class CustomersComponent implements OnInit {
     currentPage: 1,
     totalItems: 0
   };
-
   customColumn = 'NAME';
   defaultColumns = ['PHONE', 'EMAIL', 'SHIPPING_ADDRESS', 'INVOICE_ADDRESS'];
   allColumns = [...this.defaultColumns];  
@@ -81,6 +80,7 @@ export class CustomersComponent implements OnInit {
     customerType: 'all'
   };
   iChosenCustomerId : any;
+  
   @ViewChildren('inputElement') inputElement!: QueryList<ElementRef>;
   showFilters = false;
   // aFilterFields: any = [
@@ -88,7 +88,7 @@ export class CustomersComponent implements OnInit {
   //   { title: 'HOUSE_NUMBER', key: 'sHouseNumber' },
   // ]
 
-  oFilterFields: Array<any> = [
+  aFilterFields: Array<any> = [
     { key: 'FIRSTNAME', value: 'sFirstName' },
     { key: 'LASTNAME', value: 'sLastName' },
     { key: 'ADDRESS', value: 'sAddress' },
@@ -96,6 +96,7 @@ export class CustomersComponent implements OnInit {
     // { key: 'HOUSE_NUMBER', value: 'sHouseNumber' },
     // { key: 'STREET', value: 'sStreet' },
     { key: 'COMPANY_NAME', value: 'sCompanyName' },
+    { key: 'NCLIENTID', value: 'nClientId'}
     //{ key: 'CONTACT_PERSON', value: 'oContactPerson' }
   ];
   customerTypes:any=[
@@ -103,6 +104,7 @@ export class CustomersComponent implements OnInit {
     {key:'PRIVATE' , value:'private'},
     {key:'COMPANY' , value:'company'}
   ]
+  aCustomerSearch:Array<any> = [String];
   constructor(
     private apiService: ApiService,
     private toastService: ToastService,
@@ -112,11 +114,22 @@ export class CustomersComponent implements OnInit {
   ) {
   }
 
-  ngOnInit(): void {
+  async ngOnInit() {
     this.apiService.setToastService(this.toastService);
     this.business._id = localStorage.getItem("currentBusiness");
     this.requestParams.iBusinessId = this.business._id;
-    this.getCustomers()
+    this.getSettings();
+    this.getCustomers();
+  }
+  getSettings() {
+    this.getSettingsSubscription = this.apiService.getNew('customer', `/api/v1/customer/settings/get/${this.requestParams.iBusinessId}`).subscribe((result: any) => {
+      this.settings = result;
+      if(this.settings?.aCustomerSearch){
+        this.requestParams.oFilterBy.aSearchField = this.settings?.aCustomerSearch;
+      }
+    }, (error) => {
+      console.log(error);
+    })
   }
 
   // Function for handle event of transaction menu

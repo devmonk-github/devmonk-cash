@@ -155,7 +155,7 @@
                                     (click)="openCurrentCustomer(oCurrentCustomer)">{{'UPDATE_CURRENT_CUSTOMER'|translate}}
                                 </button>
                                 <!--IF CUSTOMER IS DIFFERENT FROM SYSTEM CUSTOMER-->
-                                <div class="alert alert-warning" role="alert" *ngIf="showSystemCustomer">
+                                <div class="alert alert-warning" role="alert" *ngIf="showSystemCustomer && !customer?.bCounter">
                                     {{"DIFFERENT_CUSTOMER_INFORMATION" | translate}}
                                     <div class="d-flex">
                                         <button class="btn btn-info my-3 btn-sm" *ngIf="customer?.bCounter==false" (click)="openCustomer(customer)">
@@ -582,26 +582,35 @@
                                                 </div>
                                             </div>
 
+                                            <div class="row mb-6" *ngIf="!activity?.nDiscountToShow">
+                                                <label class="col-4">{{ 'PRICE_PER_QTY' | translate }}</label>
+                                                <div class="col-8">
+                                                    <input type="number" class="form-control form-control-lg form-control-solid mb-3 mb-lg-0"
+                                                    [(ngModel)]="activity.nPriceIncVat" (ngModelChange)="updatePriceIncVatWithoutDiscount(activity)">
+                                                </div>
+                                            </div>
                                             <div class="row mb-6">
                                                 <label class="col-4">{{ 'QUANTITY' | translate }}</label>
                                                 <div class="col-8">{{ activity.nQuantity }}</div>
                                             </div>
-                                            <div class="row mb-6">
-                                                <label class="col-4">{{ 'ORIGINAL_PRICE_PER_QTY' | translate }}</label>
-                                                <div class="col-8"><s> {{ activity.nPriceIncVat | currency:tillService.currency}}</s></div>
-                                            </div>
-                                            <div class="row mb-6">
-                                                <label class="col-4">{{ 'DISCOUNT_PER_QTY' | translate }}</label>
-                                                <div class="col-8">
-                                                    <span *ngIf="activity.bDiscountOnPercentage">
-                                                        {{ activity.nDiscount }}%
-                                                        ({{ activity.nDiscountToShow | currency:tillService.currency }})
-                                                    </span>
-                                                    <span *ngIf="!activity.bDiscountOnPercentage">
-                                                        {{ activity.nDiscountToShow | currency:tillService.currency }}
-                                                    </span>
+                                            <ng-container *ngIf="activity?.nDiscountToShow">
+                                                <div class="row mb-6">
+                                                    <label class="col-4">{{ 'PRICE_PER_QTY_INC_DISCOUNT' | translate }}</label>
+                                                    <div class="col-8"><s> {{ activity.nPriceIncVat | currency:tillService.currency}}</s></div>
                                                 </div>
-                                            </div>
+                                                <div class="row mb-6">
+                                                    <label class="col-4">{{ 'DISCOUNT_PER_QTY' | translate }}</label>
+                                                    <div class="col-8">
+                                                        <span *ngIf="activity.bDiscountOnPercentage">
+                                                            {{ activity.nDiscount }}%
+                                                            ({{ activity.nDiscountToShow | currency:tillService.currency }})
+                                                        </span>
+                                                        <span *ngIf="!activity.bDiscountOnPercentage">
+                                                            {{ activity.nDiscountToShow | currency:tillService.currency }}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </ng-container>
                                             <div class="row mb-6">
                                                 <label class="col-lg-4 col-form-label fw-bold fs-6"> {{
                                                     "ESTIMATED_PRICE_UPON_INGESTION" | translate}}</label>
@@ -674,15 +683,11 @@
                                                     <p><strong>{{'PRODUCT_SELECTED' | translate}}</strong></p>
                                                 </div>
                                                 <div class="col-6">
-                                                    <label>{{'PRODUCT_NUMBER' | translate}} : </label> <br>
-                                                    <p>
-                                                        <span
-                                                        *ngIf="activity?.iBusinessProductId">{{activity?.sProductNumber}}
-                                                    </span>
-                                                    <span
-                                                        *ngIf="activity?.iBusinessProductId == undefined">{{'NO_PRODUCT_SELECTED'
-                                                        | translate}} </span>
+                                                    <p *ngIf="activity?.iBusinessProductId">
+                                                        <label>{{'PRODUCT_NUMBER' | translate}} : </label> <br>
+                                                        <span >{{activity?.sProductNumber}}</span>
                                                     </p>
+                                                    <p *ngIf="!activity?.iBusinessProductId">{{'NO_PRODUCT_SELECTED' | translate}}</p>
                                                 </div>
                                                 <div class="col-6">
                                                     <label>{{'ARTICLE_DETAIL' | translate}} : </label> <br>
@@ -914,7 +919,7 @@
                                         <div class="col-3">
                                             <button [disabled]="submitted" [class.btn-pulse]="submitted"
                                                 class="btn btn-lg btn-primary"
-                                                (click)="submit(activity._id , activityindex)" type="submit">
+                                                (click)="submit(activity)" type="submit">
                                                 <span *ngIf="submitted" class="mx-3">
                                                     <i class="fa fa-spinner fa-spin" [hidden]="!submitted"
                                                         style="font-size:15px;"></i>
@@ -1226,7 +1231,7 @@
                                         <div class="col-3">
                                             <button [disabled]="submitted" [class.btn-pulse]="submitted"
                                                 class="btn btn-lg btn-primary"
-                                                (click)="submit(activity._id , activityindex)" type="submit">
+                                                (click)="submit(activity)" type="submit">
                                                 <span *ngIf="submitted" class="mx-3">
                                                     <i class="fa fa-spinner fa-spin" [hidden]="!submitted"
                                                         style="font-size:15px;"></i>
@@ -1770,7 +1775,7 @@
                                         <div class="col-3">
                                             <button [disabled]="submitted" [class.btn-pulse]="submitted"
                                                 class="btn btn-lg btn-primary"
-                                                (click)="submit(activity._id , activityindex)" type="submit">
+                                                (click)="submit(activity)" type="submit">
                                                 <span *ngIf="submitted" class="mx-3">
                                                     <i class="fa fa-spinner fa-spin" [hidden]="!submitted"
                                                         style="font-size:15px;"></i>

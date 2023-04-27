@@ -7,6 +7,7 @@ import * as _ from 'lodash';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastService } from '../toast';
 import { TranslateService } from '@ngx-translate/core';
+import { TillService } from '../../service/till.service';
 
 @Component({
   selector: 'app-transaction-items-details',
@@ -67,7 +68,8 @@ export class TransactionItemsDetailsComponent implements OnInit {
     private apiService: ApiService,
     private route: ActivatedRoute,
     private toastrService: ToastService,
-    private transaltionService:TranslateService
+    private transaltionService:TranslateService,
+    private tillService: TillService
     ) {
       const _injector = this.viewContainerRef.parentInjector;
       this.dialogRef = _injector.get<DialogComponent>(DialogComponent);
@@ -137,9 +139,10 @@ export class TransactionItemsDetailsComponent implements OnInit {
         let nDiscountnPaymentAmount  = 0;
         
         elementDiscount.forEach(dElement => {
-          // nRedeemedLoyaltyPoints += dElement.nRedeemedLoyaltyPoints || 0;
+          // console.log({ dElement })
           if (dElement.oType.eKind === 'loyalty-points-discount' || dElement.oType.eKind === "discount" || dElement.oType.eKind === 'giftcard-discount'){
             nDiscountnPaymentAmount += dElement.nPaymentAmount || 0;
+            // console.log('increased nDiscountnPaymentAmount', nDiscountnPaymentAmount)
           } 
         });
         // element.nDiscountnPaymentAmount = nDiscountnPaymentAmount;
@@ -158,14 +161,20 @@ export class TransactionItemsDetailsComponent implements OnInit {
 
         }
 
+        // console.log('before', element.nPaymentAmount, element.nPaidAmount, element.nPriceIncVat)
+
         // element.nRedeemedLoyaltyPoints = nRedeemedLoyaltyPoints;
-        element.nPaymentAmount += _.sumBy(elementDiscount, 'nPaymentAmount');
-        element.nPaidAmount += _.sumBy(elementDiscount, 'nPaymentAmount');
-        element.nPriceIncVat += (nDiscountnPaymentAmount / element.nQuantity);
+        const nDiscountAmount = +((element.bDiscountOnPercentage ? this.tillService.getPercentOf(element.nPriceIncVat, element?.nDiscount || 0) : element.nDiscount).toFixed(2));
+        // console.log({ nDiscountAmount })
+        element.nPaymentAmount -= nDiscountAmount;
+        element.nPaidAmount -= nDiscountAmount;
+        element.nPriceIncVat -= nDiscountAmount;
         
         element.nPaidAmount = +(element.nPaidAmount.toFixed(2));
         element.nPaymentAmount = +(element.nPaymentAmount.toFixed(2));
         element.nPriceIncVat = +(element.nPriceIncVat.toFixed(2));
+
+        // console.log('after',element.nPaymentAmount, element.nPaidAmount, element.nPriceIncVat)
       });
     
       this.transactionItems = this.transactionItems.map(v => ({ ...v, isSelected: false }));

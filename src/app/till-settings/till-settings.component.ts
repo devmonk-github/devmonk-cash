@@ -17,6 +17,7 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
   faTrash = faTrash;
   payMethodsLoading: boolean = false;
   payMethods: Array<any> = [];
+  aCustomerSearch: Array<any> = [];
   bookKeepingMode: boolean = false;
   bookKeepings: Array<any> = [];
   searchValue: string = '';
@@ -29,6 +30,7 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
   settings: any = {
     nLastReceiptNumber: 0,
     nLastInvoiceNumber: 0,
+    nLastnClientID:0,
     id: null
   };
   overviewColumns = [
@@ -37,11 +39,13 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
     { key: 'nNumber', name: 'LEDGER_NUMBER' },
   ];
   articleGroupList!: Array<any>;
+  selectedLanguage: any;
   loading: boolean = false;
   quickButtons: Array<any> = [];
   quickButtonsLoading: boolean = false;
   deleteMethodModalSub !: Subscription;
   getSettingsSubscription !: Subscription;
+  getCustomerSettingsSubscription!: Subscription;
   getLedgerSubscription !: Subscription;
   geBookkeepingUpdateSubscription !: Subscription;
   geBookkeepingListSubscription !: Subscription;
@@ -63,6 +67,14 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
     { key: 'bLabelDescription', title: 'LABEL_DESCRIPTION' },
     { key: 'bProductNumber', title: 'PRODUCT_NUMBER' },
   ]
+  aFilterFields: Array<any> = [
+    { key: 'FIRSTNAME', value: 'sFirstName' },
+    { key: 'LASTNAME', value: 'sLastName' },
+    { key: 'ADDRESS', value: 'sAddress' },
+    { key: 'COMPANY_NAME', value: 'sCompanyName' },
+    { key: 'NCLIENTID', value: 'nClientId'}
+  ];
+  
 
   constructor(
     private apiService: ApiService,
@@ -72,10 +84,38 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.apiService.setToastService(this.toastService);
+    this.selectedLanguage = localStorage.getItem('language');
     this.getPaymentMethods();
     this.getBookkeepingSetting();
     this.getSettings();
     this.fetchQuickButtons();
+    this.getArticleGroups();
+  }
+
+  getArticleGroups() {
+    this.articleGroupList = [];
+    this.loading = true;
+    this.apiService.postNew('core', '/api/v1/business/article-group/list', this.requestParams).subscribe(
+      (result: any) => {
+        this.loading = false;
+        if (result?.data?.length && result.data[0]?.result?.length) {
+          this.articleGroupList = result.data[0].result.filter((item: any) => {
+            if (!item?.oName?.[this.selectedLanguage]) {
+              for (const sName of Object.values(item.oName)) {
+                if (sName) {
+                  item.oName[this.selectedLanguage] = sName;
+                  break;
+                }
+              }
+            }
+            if (!item?.oName?.[this.selectedLanguage]) item.oName[this.selectedLanguage] = 'NO_NAME';
+            return item.sCategory
+          });
+        }
+      }, (error) => {
+        this.loading = false;
+        this.toastService.show({ type: 'warning', text: 'something went wrong' });
+      })
   }
 
   deleteMethod(method: any) {
@@ -103,8 +143,14 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
   }
 
   getSettings() {
-    this.getSettingsSubscription = this.apiService.getNew('cashregistry', `/api/v1/settings/${this.requestParams.iBusinessId}`).subscribe((result: any) => {
+      this.getSettingsSubscription = this.apiService.getNew('cashregistry', `/api/v1/settings/${this.requestParams.iBusinessId}`).subscribe((result: any) => {
       this.settings = result;
+      this.getCustomerSettingsSubscription = this.apiService.getNew('customer', `/api/v1/customer/settings/get/${this.requestParams.iBusinessId}`).subscribe((result: any) => {
+        this.settings.nLastnClientID = result?.nLastnClientID;
+        this.settings.aCustomerSearch = result?.aCustomerSearch;
+      }, (error) => {
+        console.log(error);
+      });
       const oBagNumberSettings = {
         iLocationId: this.iLocationId,
         bAutoIncrementBagNumbers: true,
@@ -262,6 +308,24 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
     });
   }
 
+  
+  updateCustomerSettings() {
+    const CustomerSettingsbody = {
+      nLastnClientID:this.settings?.nLastnClientID,
+      aCustomerSearch:this.settings?.aCustomerSearch
+    }
+
+  this.updateSettingsSubscription = this.apiService.putNew('customer', '/api/v1/customer/settings/update/' + this.requestParams.iBusinessId, CustomerSettingsbody)
+    .subscribe((result: any) => {
+      if (result){
+        this.updatingSettings = false;
+        this.toastService.show({ type: 'success', text: 'Saved Successfully' });
+      } 
+    }, (error) => {
+      console.log(error);
+    })
+  }
+
   updateSettings() {
     if(this.settings?.aBagNumbers?.length) {
       this.settings.aBagNumbers = [...this.settings?.aBagNumbers?.filter((el: any) => el.iLocationId !== this.iLocationId), this.settings.currentLocation];
@@ -288,6 +352,8 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
       bShowOpenDrawer: this.settings?.bShowOpenDrawer,
       aBagNumbers: this.settings?.aBagNumbers,
       aCashRegisterPrefill: this.settings?.aCashRegisterPrefill,
+      iDefaultArticleGroupForOrder:this.settings?.iDefaultArticleGroupForOrder,
+      iDefaultArticleGroupForRepair:this.settings?.iDefaultArticleGroupForRepair
     };
     this.updatingSettings = true;
     this.updateSettingsSubscription = this.apiService.putNew('cashregistry', '/api/v1/settings/update/' + this.requestParams.iBusinessId, body)
@@ -299,6 +365,7 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
       }, (error) => {
         console.log(error);
       })
+      
   }
 
 
@@ -395,6 +462,7 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     if (this.deleteMethodModalSub) this.deleteMethodModalSub.unsubscribe();
     if (this.getSettingsSubscription) this.getSettingsSubscription.unsubscribe();
+    if (this.getCustomerSettingsSubscription) this.getCustomerSettingsSubscription.unsubscribe();
     if (this.getLedgerSubscription) this.getLedgerSubscription.unsubscribe();
     if (this.geBookkeepingUpdateSubscription) this.geBookkeepingUpdateSubscription.unsubscribe();
     if (this.geBookkeepingListSubscription) this.geBookkeepingListSubscription.unsubscribe();
