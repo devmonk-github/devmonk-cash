@@ -963,7 +963,8 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
       aStatisticsDocuments: this.aStatisticsDocuments,
       aPaymentMethods: this.aPaymentMethods,
       bIsArticleGroupLevel: this.bIsArticleGroupLevel,
-      bIsSupplierMode: this.bIsSupplierMode
+      bIsSupplierMode: this.bIsSupplierMode,
+      aEmployee: this.aEmployee
     });
     this.pdfGenerationInProgress = false;
   }
