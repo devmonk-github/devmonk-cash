@@ -513,7 +513,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
       let iPurchaseIndex = this.aOptionMenu.findIndex(i => i.sValue.toLowerCase() === 'sales-order')
       this.aOptionMenu.splice(iPurchaseIndex, 1)
     }
-    this.onDropdownItemSelected(this.aOptionMenu[0], this.aOptionMenu[0].children[0], this.aOptionMenu[0].children[0].children[0])
+    this.onDropdownItemSelected(this.aOptionMenu[0], this.aOptionMenu[0].children[1], this.aOptionMenu[0].children[1].children[3])
   }
 
   goBack() {
@@ -622,6 +622,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
 
   /* Static Data for statistic (from statistic document) */
   getStaticData(sDisplayMethod?: string) {
+    console.log('getStaticData', sDisplayMethod)
     this.aStatistic = [];
     this.aPaymentMethods = [];
     this.bStatisticLoading = true;
@@ -679,6 +680,8 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
               this.oStatisticsDocument = this.transactionAuditPdfService.processingMultipleStatisticsBySummingUp({ aStatisticsDocuments: this.aStatisticsDocuments, aStatistic: this.aStatistic });
             }
             if (this.aStatisticsDocuments?.length) this.mappingThePaymentMethod(this.aStatisticsDocuments);
+            this.checkShowDownload();
+            this.exportToPDF();
           }
         }
       }, (error) => {
@@ -746,7 +749,8 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
   /* Dynamic Data for statistic (from transaction-item) */
   getDynamicData(sDisplayMethod?: string) {
     /* Below for Dynamic-data */
-    this.checkShowDownload();
+    console.log('getDynamicData', sDisplayMethod)
+    
     const oBody = this.processingDynamicDataRequest(sDisplayMethod);
     this.bStatisticLoading = true;
     this.statisticAuditSubscription = this.apiService
@@ -774,7 +778,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
             this.nNewPaymentMethodTotal = this.nPaymentMethodTotal;
             this.filterDuplicatePaymentMethods();
           }
-
+          this.checkShowDownload();
         }
         this.bStatisticLoading = false;
       },
@@ -1360,7 +1364,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
               sWorkStationName: oDayClosure?.sWorkStationName
             }
           });
-          this.checkShowDownload();
+          
         }
       }, (error) => {
         console.log('error: ', error);
@@ -1393,6 +1397,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
     const bCondition3 = (this.iStatisticId && this.iStatisticId != '' && this.oStatisticsDocument && this.oStatisticsDocument?.bIsDayState === false) || false;
     const bCondition4 = this.closeButtonClicked;
     this.bShowDownload = (bCondition1 || bCondition2 || bCondition3 || bCondition4) && this.aStatistic;
+    this.bShowDownload = true;
   }
 
   fetchStockValuePerLocation() {

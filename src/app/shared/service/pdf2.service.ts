@@ -118,7 +118,9 @@ export class PdfService {
   getPdfData({ styles, content, orientation, pageSize, pdfTitle, footer, pageMargins, defaultStyle,
     printSettings, printActionSettings, eType, eSituation, sAction, sApiKey }: any) {
     return new Promise((resolve, reject) => {
-      // console.log('getPdfData', { orientation, pageSize, pdfTitle, pageMargins, printSettings, printActionSettings, sAction, eType })
+      // console.log('getPdfData', {
+      //   styles, content, orientation, pageSize, pdfTitle, footer, pageMargins, defaultStyle,
+      //   printSettings, printActionSettings, eType, eSituation, sAction, sApiKey })
       const docDefinition = this.getDocDefinition(styles, content, orientation, pageSize, footer, pageMargins, defaultStyle);
       const pdfObject = this.generatePdf(docDefinition);
       if (sAction == 'sentToCustomer') {
