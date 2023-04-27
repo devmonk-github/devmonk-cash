@@ -680,7 +680,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
             }
             if (this.aStatisticsDocuments?.length) this.mappingThePaymentMethod(this.aStatisticsDocuments);
             this.checkShowDownload();
-            this.exportToPDF();
+            // this.exportToPDF();
           }
         }
       }, (error) => {
@@ -1397,7 +1397,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
     const bCondition3 = (this.iStatisticId && this.iStatisticId != '' && this.oStatisticsDocument && this.oStatisticsDocument?.bIsDayState === false) || false;
     const bCondition4 = this.closeButtonClicked;
     this.bShowDownload = (bCondition1 || bCondition2 || bCondition3 || bCondition4) && this.aStatistic;
-    this.bShowDownload = true;
+    // this.bShowDownload = true;
   }
 
   fetchStockValuePerLocation() {
