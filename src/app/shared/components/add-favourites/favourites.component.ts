@@ -136,9 +136,9 @@ export class AddFavouritesComponent implements OnInit {
     
     const nPrice = this.newSelectedProduct.nPrice;
     this.oActivityItem.nPriceIncVat = nPrice
-    this.oActivityItem.nTotalAmount = nPrice
+    this.oActivityItem.nTotalAmount = nPrice * this.oActivityItem.nQuantity;
     const nDiscountAmount = +((this.oActivityItem.bDiscountOnPercentage ? this.tillService.getPercentOf(nPrice, this.oActivityItem?.nDiscount || 0) : this.oActivityItem.nDiscount).toFixed(2));
-    this.oActivityItem.nPaidAmount += nDiscountAmount;
+    this.oActivityItem.nPaidAmount += (nDiscountAmount * this.oActivityItem.nQuantity);
     
     this.apiService.putNew('cashregistry', '/api/v1/activities/items/' + this.oActivityItem._id, this.oActivityItem)
       .subscribe((result: any) => {

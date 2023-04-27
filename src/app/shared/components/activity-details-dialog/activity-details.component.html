@@ -582,26 +582,35 @@
                                                 </div>
                                             </div>
 
+                                            <div class="row mb-6" *ngIf="!activity?.nDiscountToShow">
+                                                <label class="col-4">{{ 'PRICE_PER_QTY' | translate }}</label>
+                                                <div class="col-8">
+                                                    <input type="number" class="form-control form-control-lg form-control-solid mb-3 mb-lg-0"
+                                                    [(ngModel)]="activity.nPriceIncVat" (ngModelChange)="updatePriceIncVatWithoutDiscount(activity)">
+                                                </div>
+                                            </div>
                                             <div class="row mb-6">
                                                 <label class="col-4">{{ 'QUANTITY' | translate }}</label>
                                                 <div class="col-8">{{ activity.nQuantity }}</div>
                                             </div>
-                                            <div class="row mb-6">
-                                                <label class="col-4">{{ 'ORIGINAL_PRICE_PER_QTY' | translate }}</label>
-                                                <div class="col-8"><s> {{ activity.nPriceIncVat | currency:tillService.currency}}</s></div>
-                                            </div>
-                                            <div class="row mb-6">
-                                                <label class="col-4">{{ 'DISCOUNT_PER_QTY' | translate }}</label>
-                                                <div class="col-8">
-                                                    <span *ngIf="activity.bDiscountOnPercentage">
-                                                        {{ activity.nDiscount }}%
-                                                        ({{ activity.nDiscountToShow | currency:tillService.currency }})
-                                                    </span>
-                                                    <span *ngIf="!activity.bDiscountOnPercentage">
-                                                        {{ activity.nDiscountToShow | currency:tillService.currency }}
-                                                    </span>
+                                            <ng-container *ngIf="activity?.nDiscountToShow">
+                                                <div class="row mb-6">
+                                                    <label class="col-4">{{ 'PRICE_PER_QTY_INC_DISCOUNT' | translate }}</label>
+                                                    <div class="col-8"><s> {{ activity.nPriceIncVat | currency:tillService.currency}}</s></div>
                                                 </div>
-                                            </div>
+                                                <div class="row mb-6">
+                                                    <label class="col-4">{{ 'DISCOUNT_PER_QTY' | translate }}</label>
+                                                    <div class="col-8">
+                                                        <span *ngIf="activity.bDiscountOnPercentage">
+                                                            {{ activity.nDiscount }}%
+                                                            ({{ activity.nDiscountToShow | currency:tillService.currency }})
+                                                        </span>
+                                                        <span *ngIf="!activity.bDiscountOnPercentage">
+                                                            {{ activity.nDiscountToShow | currency:tillService.currency }}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </ng-container>
                                             <div class="row mb-6">
                                                 <label class="col-lg-4 col-form-label fw-bold fs-6"> {{
                                                     "ESTIMATED_PRICE_UPON_INGESTION" | translate}}</label>

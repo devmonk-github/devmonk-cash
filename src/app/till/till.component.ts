@@ -72,7 +72,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   commonProducts: any;
   supplierId!: string;
   iActivityId!: string;
-  sNumber !: string;
+  sNumber : string = '';
   isStockSelected = true;
   payMethods: Array<any> = [];
   allPaymentMethod: Array<any> = [];
@@ -1886,11 +1886,11 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
   async handleTransactionResponse(data: any) {
     // console.log('handleTransactionResponse', data)
-    this.clearAll();
+    // this.clearAll();
     const { transactionItems, transaction } = data;
-    this.transactionItems = transactionItems;
+    this.transactionItems.push(...transactionItems);
     this.iActivityId = transaction.iActivityId || transaction._id;
-    this.sNumber = transaction?.sNumber;
+    this.sNumber += transaction?.sNumber + '\n';
 
     for (const item of this.transactionItems) {
       if (item?.iBusinessProductId && !item?.oCurrentLocation) {
