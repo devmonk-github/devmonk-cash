@@ -60,8 +60,6 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
     isProductLevel: false,
     dFromState: '',
     dToState: '',
-    // dFromState: new Date(new Date().setHours(0, 0, 0)),
-    // dToState: new Date(new Date().setHours(23, 59, 59))
   };
   filterDates = {
     startDate: new Date(new Date().setHours(0, 0, 0)),
@@ -1338,7 +1336,8 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
   fetchDayClosureList() {
     try {
       this.aDayClosure = [];
-
+      this.statisticFilter.dFromState = '';
+      this.statisticFilter.dToState = '';
       const oBody = {
         iBusinessId: this.iBusinessId,
         sDayClosureMethod: this.tillService.settings?.sDayClosureMethod || 'workstation',
