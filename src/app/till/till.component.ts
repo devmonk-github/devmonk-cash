@@ -1070,37 +1070,37 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
         });
       }
 
-      if(oDataSource?.oCustomer?.bCounter == false){
-        const response =  await this.receiptService.exportToPdf({
-          oDataSource: oDataSource,
-          pdfTitle: title,
-          templateData: template,
-          printSettings: settings,
-          // printActionSettings: this.printActionSettings,
-          // eSituation: 'is_created',
-          sAction: 'sentToCustomer',
-          // sApiKey: this.businessDetails.oPrintNode.sApiKey
-        });
+      // if(oDataSource?.oCustomer?.bCounter == false){
+      //   const response =  await this.receiptService.exportToPdf({
+      //     oDataSource: oDataSource,
+      //     pdfTitle: title,
+      //     templateData: template,
+      //     printSettings: settings,
+      //     // printActionSettings: this.printActionSettings,
+      //     // eSituation: 'is_created',
+      //     sAction: 'sentToCustomer',
+      //     // sApiKey: this.businessDetails.oPrintNode.sApiKey
+      //   });
   
-        const body = {
-          pdfContent: response,
-          iTransactionId: this.transaction._id,
-          receiptType: 'purchase-receipt',
-          sCustomerEmail: oDataSource.oCustomer.sEmail
-        }
+      //   const body = {
+      //     pdfContent: response,
+      //     iTransactionId: this.transaction._id,
+      //     receiptType: 'purchase-receipt',
+      //     sCustomerEmail: oDataSource.oCustomer.sEmail
+      //   }
   
-        this.apiService.postNew('cashregistry', '/api/v1/till/send-to-customer', body).subscribe(
-          (result: any) => {
-            console.log("------------------successfully mail sent-----------------");
-            console.log(result);
-            if (result) {
-              // this.toastService.show({ type: 'success', text: 'Mail send to customer.' });
-            }
-          }, (error: any) => {
+      //   this.apiService.postNew('cashregistry', '/api/v1/till/send-to-customer', body).subscribe(
+      //     (result: any) => {
+      //       console.log("------------------successfully mail sent-----------------");
+      //       console.log(result);
+      //       if (result) {
+      //         // this.toastService.show({ type: 'success', text: 'Mail send to customer.' });
+      //       }
+      //     }, (error: any) => {
   
-          }
-        )
-      }
+      //     }
+      //   )
+      // }
     }
   }
 
