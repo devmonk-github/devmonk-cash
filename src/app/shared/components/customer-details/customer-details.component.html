@@ -687,24 +687,43 @@
 
                     <div class="row">
                         <div class="col-6">
-                            <div class="mb-3">
-                                <input class="form-control" id="sEmail" placeholder="{{'EMAIL' | translate}}"
-                                    [(ngModel)]="customer.sEmail" />
+                            <div class="row">
+                                <div class="col-4">
+                                    <ng-select class="form-control form-control-solid p-0" [(ngModel)]="customer.oPhone.sPrefixMobile"
+                                        [clearable]="false" placeholder="">
+                                        <ng-option *ngFor="let countryPhoneCode of aCountryPhoneCodes"
+                                            [value]="countryPhoneCode.value">{{countryPhoneCode.value}}</ng-option>
+                                    </ng-select>
+                                </div>
+                                <div class="col-8">
+                                    <input class="form-control" id="sMobile" placeholder="{{'PHONE_MOBILE' | translate}}"
+                                        [(ngModel)]="customer.oPhone.sMobile" />
+                                </div>
                             </div>
-
                         </div>
                         <div class="col-6">
-                            <div class="mb-3">
-                                <input class="form-control" id="sMobile" placeholder="{{'PHONE_MOBILE' | translate}}"
-                                    [(ngModel)]="customer.oPhone.sMobile" />
+                            <div class="row">
+                                <div class="col-4">
+                                    <ng-select class="form-control form-control-solid p-0" [(ngModel)]="customer.oPhone.sPrefixLandline"
+                                        [clearable]="false" placeholder="">
+                                        <ng-option *ngFor="let countryPhoneCode of aCountryPhoneCodes"
+                                            [value]="countryPhoneCode.value">{{countryPhoneCode.value}}</ng-option>
+                                    </ng-select>
+                                </div>
+                                <div class="col-8">
+                                    <input class="form-control" id="sLandLine" placeholder="{{'PHONE_LANDLINE' | translate}}"
+                                        [(ngModel)]="customer.oPhone.sLandLine" />
+                    
+                                </div>
                             </div>
                         </div>
+                    
                     </div>
                     <div class="row mt-3">
 
                         <div class="col-4">
-                            <input class="form-control" id="sLandLine" placeholder="{{'PHONE_LANDLINE' | translate}}"
-                                [(ngModel)]="customer.oPhone.sLandLine" />
+                            <input class="form-control" id="sEmail" placeholder="{{'EMAIL' | translate}}"
+                            [(ngModel)]="customer.sEmail" />
                         </div>
                         <div class="d-flex col-4">
                             <label class="form-check form-switch form-check-custom form-check-solid">

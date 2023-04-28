@@ -80,7 +80,7 @@ export class PdfService {
     return body;
   }
 
-  getDocDefinition(styles: any, content: any, orientation: string, pageSize?: any, footer?: any, pageMargins?: any, defaultStyle?: any) {
+  getDocDefinition(styles: any, content: any, orientation: string, pageSize?: any, footer?: any, pageMargins?: any, defaultStyle?: any, addPageBreakBefore?:any) {
     // console.log(pageSize)
     // let pageMargin;
     // let headerFont;
@@ -100,8 +100,12 @@ export class PdfService {
       content: content,
       styles: styles,
       defaultStyle,
-      footer
+      footer,
     };
+    if(addPageBreakBefore) docDefinition.pageBreakBefore = (currentNode:any, followingNodesOnPage:any, nodesOnNextPage:any, previousNodesOnPage:any) => {
+            // console.log({currentNode, followingNodesOnPage})
+            return currentNode.headlineLevel === 1;
+        }
     if (typeof pageSize === 'string') docDefinition.pageOrientation = orientation; 
     if (footer) docDefinition.footer = footer;
     if (pageMargins) docDefinition.pageMargins = pageMargins;
@@ -116,10 +120,12 @@ export class PdfService {
   }
 
   getPdfData({ styles, content, orientation, pageSize, pdfTitle, footer, pageMargins, defaultStyle,
-    printSettings, printActionSettings, eType, eSituation, sAction, sApiKey }: any) {
+    printSettings, printActionSettings, eType, eSituation, sAction, sApiKey, addPageBreakBefore }: any) {
     return new Promise((resolve, reject) => {
-      // console.log('getPdfData', { orientation, pageSize, pdfTitle, pageMargins, printSettings, printActionSettings, sAction, eType })
-      const docDefinition = this.getDocDefinition(styles, content, orientation, pageSize, footer, pageMargins, defaultStyle);
+      // console.log('getPdfData', {
+      //   styles, content, orientation, pageSize, pdfTitle, footer, pageMargins, defaultStyle,
+      //   printSettings, printActionSettings, eType, eSituation, sAction, sApiKey })
+      const docDefinition = this.getDocDefinition(styles, content, orientation, pageSize, footer, pageMargins, defaultStyle, addPageBreakBefore);
       const pdfObject = this.generatePdf(docDefinition);
       if (sAction == 'sentToCustomer') {
         pdfObject.getBase64(async (response: any) => resolve(response));
