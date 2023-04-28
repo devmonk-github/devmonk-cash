@@ -78,9 +78,10 @@ export class RepairComponent implements OnInit {
     this.getBusinessBrands();
     this.checkArticleGroups();
     this.getProperties();
+
     //console.log("this.item", this.tillService.settings.currentLocation.nLastBagNumber);
     //console.log("this.settings.bAutoIncrementBagNumbers ", this.settings.bAutoIncrementBagNumbers);
-    // console.log(this.item?.price);
+     //console.log("this.item", this.item);
     // console.log(this.item?.nPurchasePrice);
     // this.listSuppliers();
     // this.getBusinessBrands();
@@ -99,7 +100,7 @@ export class RepairComponent implements OnInit {
   }
 
   selectArticleGroup() {
-    console.log("this.settings", this.settings)
+   // console.log("this.settings", this.settings)
     
     if (this.settings.bAutoIncrementBagNumbers) {
       this.item.sBagNumber =  this.settings.sPrefix + (this.settings.nLastBagNumber + 1).toString();
@@ -119,7 +120,7 @@ export class RepairComponent implements OnInit {
         closeOnBackdropClick: false,
         closeOnEsc: false 
       }).instance.close.subscribe((data) => {
-        // console.log({data});
+         console.log("data", data);
         if (data.action) {
           if (this.descriptionRef) {
             this.descriptionRef.nativeElement.focus();

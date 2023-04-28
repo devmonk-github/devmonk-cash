@@ -145,8 +145,7 @@ export class SelectArticleDialogComponent implements OnInit {
   searchArticlegroup(searchStr: string) {
     if (searchStr && searchStr.length > 2) {
       this.filteredArticleGroups = this.articleGroupsList.filter((articlegroup: any) => {
-        //console.log("articlegroup.oName", articlegroup.oName);
-        return articlegroup.oName;
+        return articlegroup;
       });
     } else {
       this.filteredArticleGroups = [];
@@ -192,6 +191,7 @@ export class SelectArticleDialogComponent implements OnInit {
           this.fetchArticleGroups(null);
           if (aBusinessPartnerId.length > 0) {
             this.supplier = this.partnersList[0];
+            console.log("this.supplier", this.supplier);
           }
         }
       },
@@ -203,8 +203,8 @@ export class SelectArticleDialogComponent implements OnInit {
 
   changeInArticleGroup() {
     const aBusinessPartnerId: Array<any> = [];
-    if (this.articlegroup.aBusinessPartner && this.articlegroup.aBusinessPartner.length) {
-      this.articlegroup.aBusinessPartner.forEach((bPartner: any) => {
+    if (this.articlegroup?.aBusinessPartner && this.articlegroup?.aBusinessPartner.length) {
+      this.articlegroup?.aBusinessPartner.forEach((bPartner: any) => {
         aBusinessPartnerId.push(bPartner.iBusinessPartnerId);
       });
     };
@@ -249,6 +249,7 @@ export class SelectArticleDialogComponent implements OnInit {
         return
       };
       const businessPartner = this.articlegroup.aBusinessPartner.find((o: any) => o.iBusinessPartnerId === this.supplier._id);
+      console.log(businessPartner, businessPartner);
       let nMargin = businessPartner ? businessPartner.nMargin : 1;
       
       this.dialogRef.close.emit({ 

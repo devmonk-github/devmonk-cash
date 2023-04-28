@@ -295,8 +295,7 @@
             <div class="mb-4">
               <ng-select *ngIf="!supplier" [(ngModel)]="supplier" (search)="searchSuppliers($event.term)"
                 class="form-control form-control-solid p-0" placeholder="{{'SEARCH_SUPPLIER' | translate}}"
-                [minTermLength]="2" [clearable]="false" [isOpen]="supplierOptions.length > 0" (change)="
-              supplier = $event.sName;
+                [minTermLength]="2" [clearable]="false" [isOpen]="supplierOptions.length > 0" (change)="supplier = $event.sName;
               item.iSupplierId = $event._id;
               supplierOptions = []
             ">
@@ -345,7 +344,7 @@
             <div class="form-group mb-4">
               <label class="form-control-label mb-3">{{ "EXCLUDE_ITEM" | translate}}</label>:
               <label class="form-check form-switch form-check-custom form-check-solid mb-3 mb-lg-0"> 
-                <input type="checkbox" class="form-check-input" [(ngModel)]="item.isExclude" (change)="updatePayments()">
+                <input type="checkbox" class="form-check-input" [(ngModel)]="item.isExclude" (ngModelChange)="updatePayments()" >
               </label>
             </div>
           </div>
@@ -362,6 +361,7 @@
                       <div class="col-md-4">
                           <div>{{property?.sPropertyName | translate}}</div>
                       </div>
+                      
                       <div class="col-md-8">
                           <div *ngIf="propertyOptions[property.iPropertyId]?.length > 0">
                               <ng-select class="w-100" [multiple]="true"
