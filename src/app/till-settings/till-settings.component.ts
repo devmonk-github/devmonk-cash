@@ -323,6 +323,7 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
           this.toastService.show({ type: 'success', text: 'Saved Successfully' });
         } 
       }, (error) => {
+        this.updatingCustomerSettings = false;
         console.log(error);
       })
   }
