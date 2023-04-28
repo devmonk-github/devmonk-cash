@@ -316,9 +316,9 @@
         </div> -->
       
         <div class="d-flex justify-content-end align-items-center">
-          <div *ngIf="updatingSettings" class="spinner-border mx-2"></div>
+          <div *ngIf="updatingCustomerSettings" class="spinner-border mx-2"></div>
           <button type="submit" class="btn btn-primary" (click)="updateCustomerSettings()"
-            [disabled]="updatingSettings">
+            [disabled]="updatingCustomerSettings">
             {{"CUSTOMER_SETTINGS_SAVE" | translate}}
           </button>
         </div>
