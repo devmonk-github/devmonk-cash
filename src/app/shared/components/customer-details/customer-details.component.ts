@@ -135,7 +135,9 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     oPhone: {
       sCountryCode: '',
       sMobile: '',
+      sPrefixMobile: '+31',
       sLandLine: '',
+      sPrefixLandline: '+31',
       sFax: '',
       bWhatsApp: true
     },

@@ -130,7 +130,7 @@
                                                 *ngIf="oCurrentCustomer?.oPhone?.sMobile">
                                                 <span>
                                                     {{oCurrentCustomer?.oPhone?.sMobile}}
-                                                    <a href="https://wa.me/+31{{customer.oPhone.sMobile}}">
+                                                    <a href="https://wa.me/{{customer.oPhone.sPrefixMobile}}{{customer.oPhone.sMobile}}">
                                                         <i class="fab fa-whatsapp ms-1 ml-2"
                                                         *ngIf="oCurrentCustomer?.oPhone?.bWhatsApp"
                                                         style="color: #1CB39B;"></i>
