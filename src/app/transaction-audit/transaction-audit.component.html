@@ -1518,7 +1518,7 @@
                             <div class="counting-list mb-5">
                                 <table style="display: block;column-count: 2">
                                     <tbody>
-                                        <tr *ngFor="let amount of aAmount">
+                                        <tr *ngFor="let amount of transactionAuditPdfService.aAmount">
                                             <td class="w-50">
                                                 <label class="currency">
                                                     {{ amount.sLabel | currency: transactionAuditPdfService.currency }} x

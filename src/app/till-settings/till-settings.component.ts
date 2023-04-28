@@ -25,6 +25,7 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
     iBusinessId: localStorage.getItem('currentBusiness')
   }
   updatingSettings: boolean = false;
+  updatingCustomerSettings: boolean = false;
   iLocationId: any = localStorage.getItem('currentLocation');
   
   settings: any = {
@@ -314,16 +315,16 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
       nLastnClientID:this.settings?.nLastnClientID,
       aCustomerSearch:this.settings?.aCustomerSearch
     }
-
-  this.updateSettingsSubscription = this.apiService.putNew('customer', '/api/v1/customer/settings/update/' + this.requestParams.iBusinessId, CustomerSettingsbody)
-    .subscribe((result: any) => {
-      if (result){
-        this.updatingSettings = false;
-        this.toastService.show({ type: 'success', text: 'Saved Successfully' });
-      } 
-    }, (error) => {
-      console.log(error);
-    })
+    this.updatingCustomerSettings = true;
+    this.updateSettingsSubscription = this.apiService.putNew('customer', '/api/v1/customer/settings/update/' + this.requestParams.iBusinessId, CustomerSettingsbody)
+      .subscribe((result: any) => {
+        if (result){
+          this.updatingCustomerSettings = false;
+          this.toastService.show({ type: 'success', text: 'Saved Successfully' });
+        } 
+      }, (error) => {
+        console.log(error);
+      })
   }
 
   updateSettings() {
