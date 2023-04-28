@@ -201,7 +201,6 @@ export class ActivityDetailsComponent implements OnInit {
 
   async ngOnInit() {
     this.sNumber = (this.from === 'services') ? this.activity.sNumber : '';
-    
     this.apiService.setToastService(this.toastService);
     this.routerSub = this.routes.events.subscribe((event) => {
       if (event instanceof NavigationEnd && !(event.url.startsWith('/business/activity-items') || event.url.startsWith('/business/services'))) {
