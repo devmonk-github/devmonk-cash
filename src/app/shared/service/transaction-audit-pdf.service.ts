@@ -78,12 +78,15 @@ export class TransactionAuditUiPdfService {
             alignment:'center'
         },
 
+        td_no_margin: {
+            fontSize: 9,
+        },
         td: {
             fontSize: 9,
-            // margin: [0, 5],
+            margin: [0, 5],
         },
-        articleGroup: {
-            fillColor: '#F5F8FA',
+        "margin-5": {
+            margin: [0, 5],
         },
         bgGray:{
             fillColor: '#F5F8FA',
@@ -97,9 +100,38 @@ export class TransactionAuditUiPdfService {
             },
             // defaultBorder: false,
         },
+        horizontalLinesSlim: {
+            hLineWidth: (i: any) => {
+                return (i === 1) ? 1 : 0;
+            },
+            vLineWidth: () => {
+                return 0
+            },
+            // defaultBorder: false,
+        },
+        horizontalLinesSlimWithTotal: {
+            hLineWidth: (i: any, node:any) => {
+                return (i === 1 || i === node.table.body.length - 1) ? 1 : 0;
+            },
+            vLineWidth: () => {
+                return 0
+            },
+            // defaultBorder: false,
+        },
         border_bottom:[false, false, false, true],
         border_top:[false, true, false, false],
-        border_top_bottom: [false, true, false, true]
+        border_top_bottom: [false, true, false, true],
+        tableLayout : {
+            hLineWidth: function (i: number, node: any) {
+                return i === 0 || i === node.table.body.length ? 0.5 : 0.5;
+            },
+            vLineWidth: function (i: number, node: any) {
+                return i === 0 || i === node.table.widths.length ? 0 : 0.5;
+            },
+            hLineColor: function (i: number, node: any) {
+                return i === 0 || i === node.table.body.length ? '#999' : '#999';
+            },
+        }
     };
     
     translations: any;
@@ -109,6 +141,22 @@ export class TransactionAuditUiPdfService {
     aTransactionItems: any;
     oEmployee: any = {};
 
+    aAmount: any = [
+        { sLabel: '500.00', nValue: 500, nQuantity: 0, key: 'nType500' },
+        { sLabel: '200.00', nValue: 200, nQuantity: 0, key: 'nType200' },
+        { sLabel: '100.00', nValue: 100, nQuantity: 0, key: 'nType100' },
+        { sLabel: '50.00', nValue: 50, nQuantity: 0, key: 'nType50' },
+        { sLabel: '20.00', nValue: 20, nQuantity: 0, key: 'nType20' },
+        { sLabel: '10.00', nValue: 10, nQuantity: 0, key: 'nType10' },
+        { sLabel: '5.00', nValue: 5, nQuantity: 0, key: 'nType5' },
+        { sLabel: '2.00', nValue: 2, nQuantity: 0, key: 'nType2' },
+        { sLabel: '1.00', nValue: 1, nQuantity: 0, key: 'nType1' },
+        { sLabel: '0.50', nValue: 0.5, nQuantity: 0, key: 'nType0_5' },
+        { sLabel: '0.20', nValue: 0.2, nQuantity: 0, key: 'nType0_2' },
+        { sLabel: '0.10', nValue: 0.1, nQuantity: 0, key: 'nType0_1' },
+        { sLabel: '0.05', nValue: 0.05, nQuantity: 0, key: 'nType0_05' },
+    ];
+
     constructor(
         private pdf: PdfService,
         private apiService: ApiService,
@@ -117,64 +165,64 @@ export class TransactionAuditUiPdfService {
         private commonPrintSettingsService: CommonPrintSettingsService
         ) {
 
-        const aKeywords: any = [
-            'CASH_LEFTOVER', 
-            'CASH_MUTATION', 
-            'CASH_IN_TILL', 
-            'CASH_COUNTED',
-            'TREASURY_DIFFERENCE',
-            'SKIM',
-            'AMOUNT_TO_LEFT_IN_CASH' ,
-            'AMOUNT',
-            'DYANAMIC_DATA',
-            'STATIC_DATA',
-            'TRANSACTION_AUDIT_REPORT',
-            'LOCATION(S)',
-            'DISPLAY_METHOD',
-            'WORKSTATION(S)',
-            'TYPE_OF_DATA',
-            'COMMENT',
-            'TYPE' ,
-            'PAYMENT_METHODS',
-            'METHOD',
-            'TOTAL_AMOUNT',
-            'QUANTITY',
-            'TOTAL' ,
-            'REFUND' ,
-            'PRICE' ,
-            'TAX',
-            'DESCRIPTION' ,
-            'DISCOUNT(S)',
-            'DISCOUNT',
-            'PRODUCT_NAME' ,
-            'REPAIR(S)',
-            'NO_RECORDS_FOUND',
-            'EMPLOYEE',
-            'GIFTCARD(S)',
-            'PAYMENT_TYPE',
-            'DATE',
-            'VAT_RATE',
-            'NUMBER',
-            'PAYMENT_TRANSACTION_NUMBER' ,
-            'GOLD_PURCHASE(S)',
-            'GIFT_CARD_NUMBER',
-            'VAT_TYPE',
-            'PRICE_WITH_VAT',
-            'PURCHASE_PRICE_EX_VAT',
-            'TOTAL_OF_VAT_RATE',
-            'TOTAL_OF_ALL_VAT_RATE',
-            'GROSS_PROFIT',
-            'VAT_AMOUNT',
-            'FROM',
-            'TO' ,
-            'PURCHASE_PRICE',
-            'PARTICULARS',
-            'PRICE_INCL_VAT',
-            'SUPPLIER' ,
-            'ARTICLE',
-            'CATEGORY'
-        ]
-        this.translateService.get(aKeywords).subscribe((result: any) => this.translations = result)
+        // const aKeywords: any = [
+        //     'CASH_LEFTOVER', 
+        //     'CASH_MUTATION', 
+        //     'CASH_IN_TILL', 
+        //     'CASH_COUNTED',
+        //     'TREASURY_DIFFERENCE',
+        //     'SKIM',
+        //     'AMOUNT_TO_LEFT_IN_CASH' ,
+        //     'AMOUNT',
+        //     'DYANAMIC_DATA',
+        //     'STATIC_DATA',
+        //     'TRANSACTION_AUDIT_REPORT',
+        //     'LOCATION(S)',
+        //     'DISPLAY_METHOD',
+        //     'WORKSTATION(S)',
+        //     'TYPE_OF_DATA',
+        //     'COMMENT',
+        //     'TYPE' ,
+        //     'PAYMENT_METHODS',
+        //     'METHOD',
+        //     'TOTAL_AMOUNT',
+        //     'QUANTITY',
+        //     'TOTAL' ,
+        //     'REFUND' ,
+        //     'PRICE' ,
+        //     'TAX',
+        //     'DESCRIPTION' ,
+        //     'DISCOUNT(S)',
+        //     'DISCOUNT',
+        //     'PRODUCT_NAME' ,
+        //     'REPAIR(S)',
+        //     'NO_RECORDS_FOUND',
+        //     'EMPLOYEE',
+        //     'GIFTCARD(S)',
+        //     'PAYMENT_TYPE',
+        //     'DATE',
+        //     'VAT_RATE',
+        //     'NUMBER',
+        //     'PAYMENT_TRANSACTION_NUMBER' ,
+        //     'GOLD_PURCHASE(S)',
+        //     'GIFT_CARD_NUMBER',
+        //     'VAT_TYPE',
+        //     'PRICE_WITH_VAT',
+        //     'PURCHASE_PRICE_EX_VAT',
+        //     'TOTAL_OF_VAT_RATE',
+        //     'TOTAL_OF_ALL_VAT_RATE',
+        //     'GROSS_PROFIT',
+        //     'VAT_AMOUNT',
+        //     'FROM',
+        //     'TO' ,
+        //     'PURCHASE_PRICE',
+        //     'PARTICULARS',
+        //     'PRICE_INCL_VAT',
+        //     'SUPPLIER' ,
+        //     'ARTICLE',
+        //     'CATEGORY'
+        // ]
+        // this.translateService.get(aKeywords).subscribe((result: any) => this.translations = result)
     }
 
     selectCurrency(oLocation: any) {
@@ -237,19 +285,8 @@ export class TransactionAuditUiPdfService {
 
         const date = moment(Date.now()).format('DD-MM-yyyy');
         const columnWidths = ['*', 60, 80, 80, 100];
-        const tableLayout = {
-            hLineWidth: function (i: number, node: any) {
-                return i === 0 || i === node.table.body.length ? 0.5 : 0.5;
-            },
-            vLineWidth: function (i: number, node: any) {
-                return i === 0 || i === node.table.widths.length ? 0 : 0.5;
-            },
-            hLineColor: function (i: number, node: any) {
-                return i === 0 || i === node.table.body.length ? '#999' : '#999';
-            },
-        };
         let sType = sOptionMenu.parent.sValue
-        let dataType = bIsDynamicState ? this.translations['DYANAMIC_DATA']: this.translations['STATIC_DATA'];
+        let dataType = bIsDynamicState ? this.translateService.instant('DYANAMIC_DATA'): this.translateService.instant('STATIC_DATA');
 
         // get selected locaions
         let sLocations = '';
@@ -294,167 +331,106 @@ export class TransactionAuditUiPdfService {
         }
 
         this.prepareEmployeeList(aEmployee);
-        
-        
 
         let dataFromTo =
-            '( ' + this.translations['FROM'] + ': ' + moment(oFilterDates.startDate).format('DD-MM-yyyy hh:mm A') + " "+  this.translations['TO']  + " " +
+            '( ' + this.translateService.instant('FROM') + ': ' + moment(oFilterDates.startDate).format('DD-MM-yyyy hh:mm A') + " "+  this.translateService.instant('TO')  + " " +
             moment(oFilterDates.endDate).format('DD-MM-yyyy hh:mm A') + ')';
 
         this.content = [
             { text: date, style: ['right', 'normal'] },
-            { text: this.translations['TRANSACTION_AUDIT_REPORT'], style: ['header', 'center'] },
+            { text: this.translateService.instant('TRANSACTION_AUDIT_REPORT'), style: ['header', 'center'] },
             { text: dataFromTo, style: ['center', 'normal'] },
             { text: oBusinessDetails.sName, style: 'businessName' },
             {
                 columns: [
-                    { text: this.translations['LOCATION(S)'] + ': ', style: ['left', 'normal'], width: 100 },
-                    { text: sLocations, style: ['left', 'normal'], width: 150 },
+                    { text: this.translateService.instant('LOCATION(S)') + ': ', style: ['left', 'normal'], width: '15%' },
+                    { text: sLocations, style: ['left', 'normal'], width: '35%' },
                     { width: '*', text: '' },
-                    { text: this.translations['DISPLAY_METHOD'] + ': ', style: ['right', 'normal'], width: 100 },
-                    { text: sDisplayMethodString, style: ['right', 'normal'], width: 150 },
+                    { text: this.translateService.instant('DISPLAY_METHOD') + ': ', style: ['right', 'normal'], width: '15%' },
+                    { text: sDisplayMethodString, style: ['right', 'normal'], width: '35%' },
                 ],
             },
             {
                 columns: [
-                    { text: this.translations['WORKSTATION(S)'] + ': ', style: ['left', 'normal'], width: 100 },
-                    { text: sWorkstation, style: ['left', 'normal'], width: 200 },
+                    { text: this.translateService.instant('WORKSTATION(S)') + ': ', style: ['left', 'normal'], width: '15%' },
+                    { text: sWorkstation, style: ['left', 'normal'], width: '35%' },
                     { width: '*', text: '' },
-                    { text: this.translations['TYPE_OF_DATA']+': ', style: ['right', 'normal'], width: 100 },
-                    { text: dataType, style: ['right', 'normal'], width: 150 },
+                    { text: this.translateService.instant('TYPE_OF_DATA')+': ', style: ['right', 'normal'], width: '15%' },
+                    { text: dataType, style: ['right', 'normal'], width: '35%' },
                 ],
             },
             {
                 columns: [
-                    { text: this.translations['COMMENT']+ ': ', style: ['left', 'normal'], width: 100 },
-                    { text: oStatisticsDocument?.sComment, style: ['left', 'normal'], width: 200 },
+                    { text: this.translateService.instant('COMMENT') + ': ', style: ['left', 'normal'], width: '15%' },
+                    { text: oStatisticsDocument?.sComment, style: ['left', 'normal'], width: '35%' },
                     { width: '*', text: '' },
-                    { text: this.translations['TYPE']+ ': ', style: ['right', 'normal'], width: 100 },
-                    { text: sType, style: ['right', 'normal'], width: 150 },
+                    { text: this.translateService.instant('TYPE') + ': ', style: ['right', 'normal'], width: '15%' },
+                    { text: sType, style: ['right', 'normal'], width: '35%' },
                 ],
             },
             
         ];
 
-        const [_aTransactionItems]: any = await Promise.all([ //, _aActivityItems, _aGoldPurchases
+        const [_aTransactionItems, _aActivityItems, _aGoldPurchases]: any = await Promise.all([ //, 
             this.fetchTransactionItems(oFilterDates,bIsArticleGroupLevel,bIsSupplierMode),
-            // this.fetchActivityItems(oFilterDates),
-            // this.fetchGoldPurchaseItems(oFilterDates)
+            this.fetchActivityItems(oFilterDates),
+            this.fetchGoldPurchaseItems(oFilterDates)
         ]);
         // console.log(_aTransactionItems);
 
         this.aTransactionItems = (_aTransactionItems?.data?.length && _aTransactionItems?.data[0]?.result?.length) ? _aTransactionItems?.data[0]?.result : [];
 
-        // if (aTransactionItems?.length) {
-        //     this.aRefundItems = aTransactionItems.filter((item: any) => item.oType.bRefund);
-        //     this.aDiscountItems = aTransactionItems.filter((item: any) => item.oType.bDiscount);
-        // }
+        if (this.aTransactionItems?.length) {
+            this.aRefundItems = this.aTransactionItems.filter((item: any) => item.oType.bRefund);
+            this.aDiscountItems = this.aTransactionItems.filter((item: any) => item.oType.bDiscount);
+        }
 
-        // if (_aActivityItems?.data?.length) {
-        //     this.aRepairItems = _aActivityItems?.data.filter((item: any) => item.oType.eKind == 'repair');
-        //     this.aGiftItems = _aActivityItems?.data.filter((item: any) => item.oType.eKind == 'giftcard');
-        // }
+        if (_aActivityItems?.data?.length) {
+            this.aRepairItems = _aActivityItems?.data.filter((item: any) => item.oType.eKind == 'repair');
+            this.aGiftItems = _aActivityItems?.data.filter((item: any) => item.oType.eKind == 'giftcard');
+        }
 
-        // this.aGoldPurchases = _aGoldPurchases?.data[0]?.result.filter((item: any) => item.oType.eKind == 'gold-purchase');
+        this.aGoldPurchases = _aGoldPurchases?.data[0]?.result.filter((item: any) => item.oType.eKind == 'gold-purchase');
 
         if (sDisplayMethod != "aVatRates") {
-            this.processCashCountings(tableLayout, oStatisticsDocument, aStatistic);
-            this.processVatRates(columnWidths, tableLayout, oStatisticsDocument?.aVatRates);
+            this.processCashCountings(oStatisticsDocument);
+            this.processVatRates(oStatisticsDocument?.aVatRates);
         }
         this.sDisplayMethod = sDisplayMethod;
         
         switch (sDisplayMethod.toString()) {
             case 'revenuePerBusinessPartner':
-                this.processPdfByRevenuePerBusinessPartner(columnWidths,tableLayout,aStatistic);
+                this.processPdfByRevenuePerBusinessPartner(columnWidths,aStatistic);
                 break;
             case 'revenuePerSupplierAndArticleGroup':
-                this.processPdfByRevenuePerSupplierAndArticleGroup(columnWidths,tableLayout,aStatistic);
+                this.processPdfByRevenuePerSupplierAndArticleGroup(columnWidths,aStatistic);
                 break;
             case 'revenuePerArticleGroupAndProperty':
-                this.processPdfByRevenuePerArticleGroupAndProperty(columnWidths,tableLayout,aStatistic);
+                this.processPdfByRevenuePerArticleGroupAndProperty(columnWidths,aStatistic);
                 break;
             case 'revenuePerProperty':
-                this.processPdfByRevenuePerProperty(columnWidths, tableLayout, aStatistic);
+                this.processPdfByRevenuePerProperty(columnWidths,  aStatistic);
                 break;
             case 'revenuePerArticleGroup':
-                this.processPdfByRevenuePerArticleGroup(columnWidths,tableLayout,aStatistic);
+                this.processPdfByRevenuePerArticleGroup(columnWidths,aStatistic);
                 break;
             case 'aVatRates':
                 aStatistic.forEach((oStatistic:any)=> {
-                    this.processVatRates(columnWidths, tableLayout, oStatistic?.aVatRates);
+                    this.processVatRates(oStatistic?.aVatRates);
                 });
                 break;
             case 'aRevenuePerTurnoverGroup':
-                this.processRevenuePerTurnoverGroup(columnWidths, tableLayout, aStatistic);
+                this.processRevenuePerTurnoverGroup(aStatistic);
                 break;
         }
+        this.processPaymentMethods(aPaymentMethods);
 
-        this.content.push({text: this.translations['PAYMENT_METHODS'] ,style: ['left', 'normal'],margin: [0, 30, 0, 10],});
-
-        const tableHeaders = [this.translations['METHOD'], this.translations['TOTAL_AMOUNT'], this.translations['QUANTITY']];
-
-        const tableHeadersList: Array<any> = [];
-        tableHeaders.forEach((header: any) => {
-            tableHeadersList.push({
-                text: header,
-                style: ['th', 'articleGroup'],
-            });
-        });
-
-        if (aPaymentMethods?.length) {
-            let texts: any = [];
-            let nTotalAmount = 0, nTotalQuantity = 0;
-            aPaymentMethods.forEach((paymentMethod: any) => {
-                nTotalAmount += parseFloat(paymentMethod.nAmount);
-                nTotalQuantity += parseFloat(paymentMethod.nQuantity);
-
-                texts.push([
-                    { text: paymentMethod.sMethod, style: ['td'] },
-                    { text: paymentMethod.nAmount, style: ['td'] },
-                    { text: paymentMethod.nQuantity, style: ['td'] },
-                ]);
-                
-            });
-            texts.push([
-                {text: this.translations['TOTAL'], style:['td', 'bold','bgGray']},
-                {text: nTotalAmount, style:['td', 'bold','bgGray']},
-                {text: nTotalQuantity, style:['td', 'bold','bgGray']},
-            ])
-            const finalData = [[...tableHeadersList], ...texts];
-            this.content.push({
-                table: {
-                    widths: '*',
-                    body: finalData,
-                    dontBreakRows: true,
-                },
-            });
-
-        } else {
-            this.content.push({
-                table: {
-                    widths: '*',
-                    body: [
-                        [...tableHeadersList],
-                        [
-                            { text: this.translations['NO_RECORDS_FOUND'], colSpan: 3, alignment: 'center', style: ['td'] },
-                            {},
-                            {},
-                        ],
-                    ],
-                    dontBreakRows: true,
-                }
-            });
-        }
-
-        // this.addRefundToPdf();
-        // this.addDiscountToPdf();
-        // this.addRepairsToPdf();
-        // this.addGiftcardsToPdf();
-        // this.addGoldPurchasesToPdf();
-        this.content['pageBreakBefore'] = function(currentNode:any, followingNodesOnPage:any, nodesOnNextPage:any, previousNodesOnPage:any) {
-            // console.log({currentNode, followingNodesOnPage})
-            return followingNodesOnPage.length === 0;
-        }
+        this.addRefundToPdf();
+        this.addDiscountToPdf();
+        this.addRepairsToPdf();
+        this.addGiftcardsToPdf();
+        this.addGoldPurchasesToPdf();
+        
         // console.log(this.content);
         this.pdf.getPdfData({
             styles: this.styles,
@@ -470,57 +446,93 @@ export class TransactionAuditUiPdfService {
         });
     }
 
-    aAmount: any = [
-        { sLabel: '500.00', nValue: 500, nQuantity: 0, key: 'nType500' },
-        { sLabel: '200.00', nValue: 200, nQuantity: 0, key: 'nType200' },
-        { sLabel: '100.00', nValue: 100, nQuantity: 0, key: 'nType100' },
-        { sLabel: '50.00', nValue: 50, nQuantity: 0, key: 'nType50' },
-        { sLabel: '20.00', nValue: 20, nQuantity: 0, key: 'nType20' },
-        { sLabel: '10.00', nValue: 10, nQuantity: 0, key: 'nType10' },
-        { sLabel: '5.00', nValue: 5, nQuantity: 0, key: 'nType5' },
-        { sLabel: '2.00', nValue: 2, nQuantity: 0, key: 'nType2' },
-        { sLabel: '1.00', nValue: 1, nQuantity: 0, key: 'nType1' },
-        { sLabel: '0.50', nValue: 0.5, nQuantity: 0, key: 'nType0_5' },
-        { sLabel: '0.20', nValue: 0.2, nQuantity: 0, key: 'nType0_2' },
-        { sLabel: '0.10', nValue: 0.1, nQuantity: 0, key: 'nType0_1' },
-        { sLabel: '0.05', nValue: 0.05, nQuantity: 0, key: 'nType0_05' },
-      ];
+    addTableHeading(text:string){
+        this.content.push({ text: this.translateService.instant(text), style: ['normal'], margin: [0, 30, 0, 10], });
+    }
 
-    processCashCountings(tableLayout: any, oStatisticsDocument:any, aStatistic:any){
+    processPaymentMethods(aPaymentMethods:any) {
+        this.addTableHeading('PAYMENT_METHODS');
+
+        const aHeaderList = [
+            { text: this.translateService.instant('METHOD'), style: ['th', 'bgGray'] },
+            { text: this.translateService.instant('TOTAL_AMOUNT'), style: ['th', 'bgGray'] },
+            { text: this.translateService.instant('QUANTITY'), style: ['th', 'bgGray'] },
+        ];
+        const aTexts:any = [aHeaderList];
+        if (aPaymentMethods?.length) {
+            let nTotalAmount = 0, nTotalQuantity = 0;
+            aPaymentMethods.forEach((paymentMethod: any) => {
+                nTotalAmount += parseFloat(paymentMethod.nAmount);
+                nTotalQuantity += parseFloat(paymentMethod.nQuantity);
+
+                aTexts.push([
+                    { text: paymentMethod.sMethod, style: ['td', 'margin-5', 'center'] },
+                    { text: paymentMethod.nAmount, style: ['td', 'margin-5', 'center'] },
+                    { text: paymentMethod.nQuantity, style: ['td', 'margin-5', 'center'] },
+                ]);
+            });
+            aTexts.push([
+                { text: this.translateService.instant('TOTAL'), style: ['td', 'bold', 'bgGray', 'center'], border: this.styles.border_top },
+                { text: nTotalAmount, style: ['td', 'bold', 'bgGray', 'center'], border: this.styles.border_top },
+                { text: nTotalQuantity, style: ['td', 'bold', 'bgGray', 'center'], border: this.styles.border_top },
+            ])
+        } else {
+            aTexts.push([
+                { text: this.translateService.instant('NO_RECORDS_FOUND'), colSpan: 3, style: ['td', 'center'] },
+                {},
+                {}
+            ]);
+        }
+        const data = {
+            table: {
+                headerRows: 1,
+                widths: '*',
+                body: aTexts,
+                dontBreakRows: true,
+                keepWithHeaderRows: true
+            },
+            layout: this.styles.horizontalLinesSlimWithTotal
+        };
+        this.content.push(data);
+    }
+
+    
+
+    processCashCountings(oStatisticsDocument:any){
         const oCountings = oStatisticsDocument?.oCountings;
 
         const tableHeadersList: any = [
-            { text: this.translations['PARTICULARS'], style: ['th', 'articleGroup'] },
-            { text: this.translations['AMOUNT'], style: ['th', 'articleGroup'], }
+            { text: this.translateService.instant('PARTICULARS'), style: ['th', 'bgGray'] },
+            { text: this.translateService.instant('AMOUNT'), style: ['th', 'bgGray'], }
         ];
 
         let texts: any = [
             [
-                { text: this.translations['CASH_LEFTOVER'], style: ['td'] },
+                { text: this.translateService.instant('CASH_LEFTOVER'), style: ['td'] },
                 { text: this.convertToMoney(oCountings?.nCashAtStart), style: ['td'] },
             ],
             [
-                { text: this.translations['CASH_MUTATION'], style: ['td'] },
+                { text: this.translateService.instant('CASH_MUTATION'), style: ['td'] },
                 { text: this.convertToMoney(0), style: ['td'] },
             ],
             [
-                { text: this.translations['CASH_IN_TILL'], style: ['td'] },
+                { text: this.translateService.instant('CASH_IN_TILL'), style: ['td'] },
                 { text: this.convertToMoney(oCountings?.nCashInTill || 0), style: ['td'] },
             ],
             [
-                { text: this.translations['CASH_COUNTED'], style: ['td'] },
+                { text: this.translateService.instant('CASH_COUNTED'), style: ['td'] },
                 { text: this.convertToMoney(oCountings?.nCashCounted), style: ['td'] },
             ],
             [
-                { text: this.translations['TREASURY_DIFFERENCE'], style: ['td'] },
+                { text: this.translateService.instant('TREASURY_DIFFERENCE'), style: ['td'] },
                 { text: this.convertToMoney(oCountings?.nCashDifference || 0) , style: ['td'] }
             ],
             [
-                { text: this.translations['SKIM'], style: ['td'] },
+                { text: this.translateService.instant('SKIM'), style: ['td'] },
                 { text: this.convertToMoney(oCountings?.nSkim), style: ['td'] },
             ],
             [
-                { text: this.translations['AMOUNT_TO_LEFT_IN_CASH'], style: ['td'] },
+                { text: this.translateService.instant('AMOUNT_TO_LEFT_IN_CASH'), style: ['td'] },
                 { text: this.convertToMoney(oCountings?.nCashRemain), style: ['td'] }
             ],
         ];
@@ -535,24 +547,25 @@ export class TransactionAuditUiPdfService {
                     dontBreakRows: true,
                 },
                 margin:[0,20],
-                layout: tableLayout,
+                layout: this.styles.tableLayout,
             }
         );
 
     }
 
     
-    processRevenuePerTurnoverGroup(columnWidths: any, tableLayout: any, aStatistic: any) {
-        this.content.push({
-            text: this.translateService.instant('REVENUE_PER_TURNOVER_GROUP'),
-            style: ['left', 'normal'],
-            margin: [0, 30, 0, 10],
-        });
+    processRevenuePerTurnoverGroup(aStatistic: any) {
+        this.addTableHeading('REVENUE_PER_TURNOVER_GROUP');
+        // this.content.push({
+        //     text: this.translateService.instant('REVENUE_PER_TURNOVER_GROUP'),
+        //     style: ['left', 'normal'],
+        //     margin: [0, 30, 0, 10],
+        // });
         const aHeaders = [
             { key: 'RECEIPT_NO', weight: 1 },
             { key: 'ARTICLE_NUMBER', weight: 1 },
             { key: 'QUANTITY', weight: 1 },
-            { key: 'DESCRIPTION', weight: 1 },//colSpan: 2
+            { key: 'DESCRIPTION', weight: 1, colSpan: 2 },//
             { key: '', weight: 1 },
             { key: 'PRODUCT_NUMBER', weight: 1 },
             { key: 'PRICE', weight: 1 },
@@ -563,25 +576,10 @@ export class TransactionAuditUiPdfService {
             { key: 'DATE', weight: 1 },
         ]; 
 
-        /*
-            1. Receipt number from the transaction
-            2. sArticleNumber from the transactionitem
-            3. transItem.quantity
-            4. transItem.description
-            5. transItem.sProductNumber
-            6. transItem.Price
-            7. transitem.nDiscount
-            8. transitem.nRevenueAmount * qt
-            9. transitem.nRevenueAmount - ( transitem.nRevenueAmount / (1+ transItem.nVatRate / 100) )
-            10. Firstname employee
-            11. hh:mm (transaction.dCreationDate)
-        */
         this.commonPrintSettingsService.oCommonParameters['pageMargins'] = this.pageMargins;
         this.commonPrintSettingsService.oCommonParameters['pageSize'] = this.pageSize;
         this.commonPrintSettingsService.pageWidth = this.commonPrintSettingsService.pageSizes[this.pageSize].pageWidth
-        // const nWidth = (100 - nMarginWidth) / headerList.length;
         const aWidths = [...aHeaders.map((el:any) => this.commonPrintSettingsService.calcColumnWidth(el.weight))];
-        // console.log({nWidth, aWidths});
 
         const headerList: any = [];
         aHeaders.forEach((el:any) => {
@@ -594,18 +592,7 @@ export class TransactionAuditUiPdfService {
             headerList.push(obj) 
         })
         const aTexts = [headerList];
-        // const data = {
-        //     table: {
-        //         headerRows: 1,
-        //         widths: aWidths,
-        //         body: [aTexts],
-        //         dontBreakRows: true,
-        //         keepWithHeaderRows: true
-        //     },
-        //     layout: this.styles.doubleHeaderLines,
-        // };
-        // console.log(590, {aTexts})
-        // this.content.push(data);
+        
         const aDummy = [...headerList];
         aTexts.push([...aDummy.fill(' ')]);
         let nTotalDiscount = 0, nTotalRevenue = 0, nTotalVat = 0;
@@ -613,11 +600,10 @@ export class TransactionAuditUiPdfService {
             // console.log({oStatistic})
             oStatistic.individual.forEach((oSupplier: any) => {
                 // console.log({ oSupplier })
-                // const aArticleGroupTexts: any = [];
                 oSupplier.aArticleGroups.forEach((oArticleGroup: any) => {
                     aTexts.push([
                         { text: '', style: ['td', 'bold'], headlineLevel: 1 },
-                        { text: this.translateService.instant('CASH_GROUP'), style: ['td', 'bold'], colSpan: 2, border: this.styles.border_bottom }, //+ ': group number'
+                        { text: this.translateService.instant('CASH_GROUP') + ': ' + oSupplier.sCategory , style: ['td', 'bold'], colSpan: 2, border: this.styles.border_bottom }, //+ ': group number'
                         { text: '', style: ['td', 'bold'], border: this.styles.border_bottom },
                         { text: oArticleGroup.sName, style: ['td'], border: this.styles.border_bottom },
                         { text: this.translateService.instant('TRANSACTIONS'), style: ['td', 'bold'], border: this.styles.border_bottom }, //colSpan: 2,
@@ -641,9 +627,9 @@ export class TransactionAuditUiPdfService {
                         nSubTotalRevenue += oItem.nRevenueAmount;
                         nSubTotalVat += nVat;
 
-                        nTotalDiscount += nSubTotalDiscount;
-                        nTotalRevenue += nSubTotalRevenue;
-                        nTotalVat += nSubTotalVat;
+                        nTotalDiscount += +(nSubTotalDiscount);
+                        nTotalRevenue += +(nSubTotalRevenue);
+                        nTotalVat += +(nSubTotalVat);
                         
                         aTexts.push([
                             { text: oItem?.sReceiptNumber, style: ['td', 'property'] },
@@ -680,7 +666,7 @@ export class TransactionAuditUiPdfService {
         });
 
         aTexts.push([
-            { text: '', style: ['td'], headlineLevel: 1 },
+            { text: '', style: ['td'], headlineLevel: 1, border: this.styles.border_top_bottom },
             { text: '', style: ['td'], colSpan: 2, border: this.styles.border_top_bottom }, //+ ': group number'
             { text: '', style: ['td'], border: this.styles.border_top_bottom },
             { text: '', style: ['td'], border: this.styles.border_top_bottom },
@@ -711,90 +697,72 @@ export class TransactionAuditUiPdfService {
         this.content.push(data);
     }
 
-    processVatRates(columnWidths: any, tableLayout: any, aVatRates: any){
-            const tableHeaders = [
-                this.translations['VAT_TYPE'],
-                this.translations['PRICE_WITH_VAT'],
-                this.translations['PURCHASE_PRICE_EX_VAT'],
-                this.translations['GROSS_PROFIT'],
-                this.translations['VAT_AMOUNT'],
-            ]
-        const tableHeadersList: any =[];
-            tableHeaders.forEach((header: any) => {
-                tableHeadersList.push({
-                    text: header,
-                    style: ['th', 'articleGroup'],
-                });
-            });
-            let texts: any = [];
+    processVatRates(aVatRates: any) {
+        const aHeaderList = [
+            { text: this.translateService.instant('VAT_TYPE'), style: ['th', 'bgGray'] },
+            { text: this.translateService.instant('PRICE_WITH_VAT'), style: ['th', 'bgGray'] },
+            { text: this.translateService.instant('PURCHASE_PRICE_EX_VAT'), style: ['th', 'bgGray'] },
+            { text: this.translateService.instant('GROSS_PROFIT'), style: ['th', 'bgGray'] },
+            { text: this.translateService.instant('VAT_AMOUNT'), style: ['th', 'bgGray'] }
+        ]
+        const aTexts: any = [aHeaderList];
 
-            if(aVatRates?.length) {
-                let nOverallTotalRevenue = 0, nOverallTotalPurchaseValue = 0, nOverallTotalProfit = 0, nOverallTotalVatAmount = 0;
-                aVatRates.forEach((oItem: any) => {
-                    let nTotalRevenue = 0, nTotalPurchaseValue = 0, nTotalProfit = 0, nTotalVatAmount = 0;
-                    texts.push([{ text: this.translations['VAT_RATE'] + ((oItem?.nVat) ? oItem?.nVat : ''), colSpan: 5, style: ['articleGroup', 'center', 'td'] }, {}, {}, {}, {}]);
-                    this.aFieldsToInclude.forEach((field: any) => {
-                        nTotalRevenue += oItem[field].nTotalRevenue;
-                        nTotalPurchaseValue += oItem[field].nPurchaseValue;
-                        nTotalProfit += oItem[field].nProfit;
-                        nTotalVatAmount += oItem[field].nVatAmount;
-                        texts.push([
-                            { text: field, style: ['td'] },
-                            { text: parseFloat(oItem[field].nTotalRevenue.toFixed(2)), style: ['td'] },
-                            { text: parseFloat(oItem[field].nPurchaseValue.toFixed(2)), style: ['td'] },
-                            { text: parseFloat(oItem[field].nProfit.toFixed(2)), style: ['td'] },
-                            { text: parseFloat(oItem[field].nVatAmount.toFixed(2)), style: ['td'] },
-                        ])
-                    });
-                    nOverallTotalRevenue += nTotalRevenue;
-                    nOverallTotalPurchaseValue += nTotalPurchaseValue;
-                    nOverallTotalProfit += nTotalProfit;
-                    nOverallTotalVatAmount += nTotalVatAmount;
-
-                    texts.push([
-                        { text: this.translations['TOTAL_OF_VAT_RATE'] + ' ' + oItem?.nVat + '%', style: ['td', 'bold'] },
-                        { text: parseFloat(nTotalRevenue.toFixed(2)), style: ['td', 'bold'] },
-                        { text: parseFloat(nTotalPurchaseValue.toFixed(2)), style: ['td', 'bold'] },
-                        { text: parseFloat(nTotalProfit.toFixed(2)), style: ['td', 'bold'] },
-                        { text: parseFloat(nTotalVatAmount.toFixed(2)), style: ['td', 'bold'] },
+        if (aVatRates?.length) {
+            let nOverallTotalRevenue = 0, nOverallTotalPurchaseValue = 0, nOverallTotalProfit = 0, nOverallTotalVatAmount = 0;
+            aVatRates.forEach((oItem: any) => {
+                let nTotalRevenue = 0, nTotalPurchaseValue = 0, nTotalProfit = 0, nTotalVatAmount = 0;
+                aTexts.push([{ text: this.translateService.instant('VAT_RATE') + ((oItem?.nVat) ? oItem?.nVat : ''), colSpan: 5, style: ['bgGray', 'center', 'td'] }, {}, {}, {}, {}]);
+                this.aFieldsToInclude.forEach((field: any) => {
+                    nTotalRevenue += oItem[field].nTotalRevenue;
+                    nTotalPurchaseValue += oItem[field].nPurchaseValue;
+                    nTotalProfit += oItem[field].nProfit;
+                    nTotalVatAmount += oItem[field].nVatAmount;
+                    aTexts.push([
+                        { text: field, style: ['td'] },
+                        { text: parseFloat(oItem[field].nTotalRevenue.toFixed(2)), style: ['td', 'center'] },
+                        { text: parseFloat(oItem[field].nPurchaseValue.toFixed(2)), style: ['td', 'center'] },
+                        { text: parseFloat(oItem[field].nProfit.toFixed(2)), style: ['td', 'center'] },
+                        { text: parseFloat(oItem[field].nVatAmount.toFixed(2)), style: ['td', 'center'] },
                     ])
                 });
+                nOverallTotalRevenue += nTotalRevenue;
+                nOverallTotalPurchaseValue += nTotalPurchaseValue;
+                nOverallTotalProfit += nTotalProfit;
+                nOverallTotalVatAmount += nTotalVatAmount;
 
-                texts.push([
-                    { text: this.translations['TOTAL_OF_ALL_VAT_RATE'], style: ['td', 'bold', 'bgGray'] },
-                    { text: parseFloat(nOverallTotalRevenue.toFixed(2)), style: ['td', 'bold', 'bgGray'] },
-                    { text: parseFloat(nOverallTotalPurchaseValue.toFixed(2)), style: ['td', 'bold', 'bgGray'] },
-                    { text: parseFloat(nOverallTotalProfit.toFixed(2)), style: ['td', 'bold', 'bgGray'] },
-                    { text: parseFloat(nOverallTotalVatAmount.toFixed(2)), style: ['td', 'bold', 'bgGray'] },
+                aTexts.push([
+                    { text: this.translateService.instant('TOTAL_OF_VAT_RATE') + ' ' + oItem?.nVat + '%', style: ['td', 'bold'] },
+                    { text: parseFloat(nTotalRevenue.toFixed(2)), style: ['td', 'center', 'bold'] },
+                    { text: parseFloat(nTotalPurchaseValue.toFixed(2)), style: ['td', 'center', 'bold'] },
+                    { text: parseFloat(nTotalProfit.toFixed(2)), style: ['td', 'center', 'bold'] },
+                    { text: parseFloat(nTotalVatAmount.toFixed(2)), style: ['td', 'center', 'bold'] },
                 ])
+            });
 
-
-                const finalData = [[...tableHeadersList], ...texts];
-                this.content.push({
-                    table: {
-                        widths: columnWidths,
-                        body: finalData,
-                        dontBreakRows: true,
-                    },
-                    margin: [0, 0, 0, 20],
-                    layout: tableLayout,
-                });
-            } else {
-                this.content.push({
-                    table: {
-                        widths: columnWidths,
-                        body: [
-                            [...tableHeadersList],
-                            [{ text: this.translations['NO_RECORDS_FOUND'], colSpan: 5, alignment: 'center', style: ['td'] }, {}, {}, {}, {}]
-                        ],
-                        dontBreakRows: true,
-                    },
-                    margin: [0, 0, 0, 20],
-                    layout: tableLayout,
-                });
-            }
-            // this.pushSeparatorLine();
+            aTexts.push([
+                { text: this.translateService.instant('TOTAL_OF_ALL_VAT_RATE'), style: ['td', 'bold', 'bgGray'], border: this.styles.border_top },
+                { text: parseFloat(nOverallTotalRevenue.toFixed(2)), style: ['td', 'center', 'bold', 'bgGray'], border: this.styles.border_top },
+                { text: parseFloat(nOverallTotalPurchaseValue.toFixed(2)), style: ['td', 'center', 'bold', 'bgGray'], border: this.styles.border_top },
+                { text: parseFloat(nOverallTotalProfit.toFixed(2)), style: ['td', 'center', 'bold', 'bgGray'], border: this.styles.border_top },
+                { text: parseFloat(nOverallTotalVatAmount.toFixed(2)), style: ['td', 'center', 'bold', 'bgGray'], border: this.styles.border_top },
+            ])
+        } else {
+            aTexts.push([{ text: this.translateService.instant('NO_RECORDS_FOUND'), colSpan: 5, style: ['td', 'center'] }, {}, {}, {}, {}]);
         }
+
+        const data = {
+            table: {
+                headerRows: 1,
+                widths: '*',
+                body: aTexts,
+                dontBreakRows: true,
+                keepWithHeaderRows: true
+            },
+            layout: this.styles.horizontalLinesSlimWithTotal
+        };
+        this.content.push(data);
+        // this.pushSeparatorLine();
+    }
 
     pushSeparatorLine() {
             this.content.push({
@@ -805,27 +773,23 @@ export class TransactionAuditUiPdfService {
     }
 
     addRefundToPdf() {
-            this.content.push({
-                text: this.translations['REFUND'],
-                style: ['left', 'normal'],
-                margin: [0, 30, 0, 10],
-            });
+        this.addTableHeading('REFUND');
 
-            const refundHeaders = [this.translations['DESCRIPTION'], this.translations['PRICE'], this.translations['TAX'], this.translations['TOTAL']];
+        const aHeaderList = [
+            { text: this.translateService.instant('DESCRIPTION'), style: ['th', 'bgGray'] },
+            { text: this.translateService.instant('PRICE'), style: ['th', 'bgGray'] },
+            { text: this.translateService.instant('TAX'), style: ['th', 'bgGray'] },
+            { text: this.translateService.instant('TOTAL'), style: ['th', 'bgGray'] }
+        ];
+        const aTexts: any = [aHeaderList];
 
-            const tableHeadersList: any =[];
-            refundHeaders.forEach((header: any) => {
-                tableHeadersList.push({ text: header, style: ['th', 'articleGroup'] });
-            });
-
-            if(this.aRefundItems?.length) {
-            let texts: any = [];
+        if (this.aRefundItems?.length) {
             this.aRefundItems.forEach((item: any) => {
                 let itemDescription = item.nQuantity;
                 if (item.sComment) {
                     itemDescription += 'x' + item.sComment;
                 }
-                texts.push([
+                aTexts.push([
                     { text: itemDescription, style: 'td' },
                     { text: item.nPriceIncVat, style: 'td' },
                     { text: item.nVatRate, style: 'td' },
@@ -833,48 +797,47 @@ export class TransactionAuditUiPdfService {
                 ]);
 
             });
-            this.content.push({
-                table: {
-                    widths: '*',
-                    body: [[...tableHeadersList], ...texts],
-                    dontBreakRows: true,
-                }
-            });
         } else {
-            this.content.push({
-                table: {
-                    widths: '*',
-                    body: [[...tableHeadersList],
-                    [
-                        { text: this.translations['NO_RECORDS_FOUND'], colSpan: 4, alignment: 'center', style: ['td'] },
-                        {},
-                        {},
-                        {},
-                    ],
-                    ],
-                }
-            });
+            aTexts.push([
+                { text: this.translateService.instant('NO_RECORDS_FOUND'), colSpan: 4, style: ['td', 'center'] }, 
+                {}, 
+                {}, 
+                {}, 
+            ]);
         }
+        this.addTableToContent(aTexts, this.styles.horizontalLinesSlim);
+    }
+
+    addTableToContent(aTexts:any, layout:any, widths:any = '*'){
+        const data = {
+            table: {
+                headerRows: 1,
+                widths: widths,
+                body: aTexts,
+                dontBreakRows: true,
+                keepWithHeaderRows: true
+            },
+            layout: layout
+        };
+        this.content.push(data);
     }
 
     addDiscountToPdf() {
-        this.content.push({
-            text: this.translations['DISCOUNT(S)'],
-            style: ['left', 'normal'],
-            margin: [0, 30, 0, 10],
-        });
+        this.addTableHeading('DISCOUNT(S)');
 
-        const aHeaders = [this.translations['PRODUCT_NAME'], this.translations['QUANTITY'], this.translations['DISCOUNT'], this.translations['PRICE'], this.translations['TAX']];
+        const aHeaderList = [
+            { text: this.translateService.instant('PRODUCT_NAME'),style: ['th', 'bgGray']}, 
+            { text: this.translateService.instant('QUANTITY'),style: ['th', 'bgGray']}, 
+            { text: this.translateService.instant('DISCOUNT'),style: ['th', 'bgGray']}, 
+            { text: this.translateService.instant('PRICE'),style: ['th', 'bgGray']}, 
+            { text: this.translateService.instant('TAX'),style: ['th', 'bgGray']},
+        ];
 
-        const tableHeadersList: any = [];
-        aHeaders.forEach((header: any) => {
-            tableHeadersList.push({text: header,style: ['th', 'articleGroup', 'bold'],});
-        });
+        const aTexts: any = [aHeaderList];
 
         if (this.aDiscountItems?.length) {
-            let texts: any = [];
             this.aDiscountItems.forEach((item: any) => {
-                texts.push([
+                aTexts.push([
                     { text: item.sProductName, style: 'td' },
                     { text: item.nQuantity, style: 'td' },
                     { text: item.nDiscount, style: 'td' },
@@ -882,55 +845,31 @@ export class TransactionAuditUiPdfService {
                     { text: item.nVatRate, style: 'td' },
                 ]);    
             });
-            this.content.push({
-                table: {
-                    widths: '*',
-                    body: [[...tableHeadersList], ...texts],
-                    dontBreakRows: true,
-                }
-            });
+            
         } else {
-            this.content.push({
-                table: {
-                    widths: '*',
-                    body: [[...tableHeadersList],
-                    [
-                        { text: this.translations['NO_RECORDS_FOUND'], colSpan: 5, alignment: 'center', style: ['td'] },
-                        {},
-                        {},
-                        {},
-                        {},
-                    ],
-                    ],
-                }
-            });
+
+            aTexts.push([
+                { text: this.translateService.instant('NO_RECORDS_FOUND'), colSpan: 5 , style: ['td', 'center'] }, 
+                {}, 
+                {}, 
+                {}, 
+                {}
+            ]);
         }
+
+        this.addTableToContent(aTexts, this.styles.horizontalLinesSlim);
     }
 
     addRepairsToPdf() {
-        this.content.push({
-            text: this.translations['REPAIR(S)'],
-            style: ['left', 'normal'],
-            margin: [0, 30, 0, 10],
-        });
-
-        const aHeaders = [
-            this.translations['PRODUCT_NAME'],
-            this.translations['COMMENT'],
-            this.translations['QUANTITY'],
-            this.translations['EMPLOYEE'],
-            this.translations['TOTAL'],
-        ];
-
-        const tableHeadersList: any = [];
-        aHeaders.forEach((header: any) => {
-            tableHeadersList.push({ text: header, style: ['th', 'articleGroup'] });
-        });
+        this.addTableHeading('REPAIR(S)');
+        const aHeaders = ['PRODUCT_NAME', 'COMMENT', 'QUANTITY', 'EMPLOYEE', 'TOTAL']
+        const aHeaderList: any = [];
+        aHeaders.forEach((el: any) => aHeaderList.push({ text: this.translateService.instant(el), style: ['th', 'bgGray'] }))
+        const aTexts: any = [aHeaderList];
 
         if (this.aRepairItems?.length) {
-            let texts: any = [];
             this.aRepairItems.forEach((item: any) => {
-                texts.push([
+                aTexts.push([
                     { text: item.sProductName, style: 'td' },
                     { text: item.sCommentVisibleCustomer, style: 'td' },
                     { text: item.nQuantity, style: 'td' },
@@ -938,101 +877,66 @@ export class TransactionAuditUiPdfService {
                     { text: item.nTotalAmount, style: 'td' },
                 ]);
             });
-            this.content.push({
-                table: {
-                    widths: '*',
-                    body: [[...tableHeadersList], ...texts],
-                    dontBreakRows: true,
-                }
-            });
+            
         } else {
-            this.content.push({
-                table: {
-                    widths: '*',
-                    body: [[...tableHeadersList],
-                    [
-                        { text: this.translations['NO_RECORDS_FOUND'], colSpan: 5, alignment: 'center', style: ['td'] },
-                        {},
-                        {},
-                        {},
-                        {},
-                    ],
-                    ],
-                }
-            });
+            aTexts.push([
+                { text: this.translateService.instant('NO_RECORDS_FOUND'), colSpan: 5, style: ['td', 'center'] },
+                {},
+                {},
+                {},
+                {},
+            ],
+            );
         }
+
+        this.addTableToContent(aTexts, this.styles.horizontalLinesSlim);
     }
 
     addGiftcardsToPdf() {
-        this.content.push({
-            text: this.translations['GIFTCARD(S)'],
-            style: ['left', 'normal'],
-            margin: [0, 30, 0, 10],
-        });
-        const aHeaders = [
-            this.translations['GIFT_CARD_NUMBER'],
-             this.translations['COMMENT'],
-             this.translations['QUANTITY'],
-             this.translations['EMPLOYEE'],
-             this.translations['TOTAL'],
-        ];
-
-        const tableHeadersList: any = [];
-        aHeaders.forEach((header: any) => {
-            tableHeadersList.push({ text: header, style: ['th', 'articleGroup'] });
-        });
+        this.addTableHeading('GIFTCARD(S)');
+        const aHeaders = ['GIFT_CARD_NUMBER','COMMENT','QUANTITY','EMPLOYEE','TOTAL'];
+        const aHeaderList: any = [];
+        aHeaders.forEach((el: any) => aHeaderList.push({ text: this.translateService.instant(el), style: ['th', 'bgGray'] }))
+        const aTexts: any = [aHeaderList];
 
         if (this.aGiftItems?.length) {
-            let texts: any = [];
             this.aGiftItems.forEach((item: any) => {
-                texts.push([
-                    { text: item.sGiftCardNumber, style: 'td' },
-                    { text: item.sCommentVisibleCustomer, style: 'td' },
-                    { text: item.nQuantity, style: 'td' },
-                    { text: item.sEmployeeName, style: 'td' },
-                    { text: item.nTotalAmount, style: 'td' },
+                aTexts.push([
+                    { text: item.sGiftCardNumber, style: ['td', 'center'] },
+                    { text: item.sCommentVisibleCustomer, style: ['td', 'center'] },
+                    { text: item.nQuantity, style: ['td', 'center'] },
+                    { text: item.sEmployeeName, style: ['td', 'center'] },
+                    { text: item.nTotalAmount, style: ['td', 'center'] },
                 ]);
             });
-            this.content.push({
-                table: {
-                    widths: '*',
-                    body: [[...tableHeadersList], ...texts],
-                    dontBreakRows: true,
-                }
-            });
         } else {
-            this.content.push({
-                table: {
-                    widths: '*',
-                    body: [[...tableHeadersList],
-                    [
-                        { text: this.translations['NO_RECORD_FOUND'], colSpan: 5, alignment: 'center', style: ['td'] },
-                        {},
-                        {},
-                        {},
-                        {},
-                    ],
-                    ],
-                }
-            });
+            aTexts.push([
+                { text: this.translateService.instant('NO_RECORD_FOUND'), colSpan: 5, style: ['td', 'center'] },
+                {},
+                {},
+                {},
+                {},
+            ]);
         }
+
+        this.addTableToContent(aTexts, this.styles.horizontalLinesSlim);
     }
 
     addGoldPurchasesToPdf() {
         this.content.push({
-            text: this.translations['GOLD_PURCHASE(S)'],
+            text: this.translateService.instant('GOLD_PURCHASE(S)'),
             style: ['left', 'normal'],
             margin: [0, 30, 0, 10],
         });
         const widths = [100, 70, 50, 50, 50, '*', 80];
         const aHeaders = [
-            this.translations['NUMBER'],
-            this.translations['DATE'],
-            this.translations['QUANTITY'],
-            this.translations['PRICE'],
-            this.translations['TOTAL'],
-            this.translations['PAYMENT_TRANSACTION_NUMBER'],
-            this.translations['PAYMENT_TYPE'],
+            this.translateService.instant('NUMBER'),
+            this.translateService.instant('DATE'),
+            this.translateService.instant('QUANTITY'),
+            this.translateService.instant('PRICE'),
+            this.translateService.instant('TOTAL'),
+            this.translateService.instant('PAYMENT_TRANSACTION_NUMBER'),
+            this.translateService.instant('PAYMENT_TYPE'),
         ];
 
         const tableHeadersList: any = [];
@@ -1105,7 +1009,7 @@ export class TransactionAuditUiPdfService {
             this.content.push({
                 table: {
                     widths: widths,
-                    body: [[{ text:this.translations['NO_RECORDS_FOUND'], colSpan: 7, alignment: 'center', style: ['td'] }, {}, {}, {}, {}, {}, {},],],
+                    body: [[{ text:this.translateService.instant('NO_RECORDS_FOUND'), colSpan: 7, alignment: 'center', style: ['td'] }, {}, {}, {}, {}, {}, {},],],
                 },
                 layout: {
                     hLineWidth: function (i: any) {
@@ -1116,14 +1020,14 @@ export class TransactionAuditUiPdfService {
         }
     }
 
-    processPdfByRevenuePerBusinessPartner(columnWidths: any,tableLayout: any,aStatistic:any) {
+    processPdfByRevenuePerBusinessPartner(columnWidths: any,aStatistic:any) {
         let arr: Array<any> = [];
         const header: Array<any> = [
-           this.translations['SUPPLIER'],
-           this.translations['QUANTITY'],
-           this.translations['PRICE_INCL_VAT'],
-           this.translations['PURCHASE_PRICE'],
-           this.translations['GROSS_PROFIT']
+           this.translateService.instant('SUPPLIER'),
+           this.translateService.instant('QUANTITY'),
+           this.translateService.instant('PRICE_INCL_VAT'),
+           this.translateService.instant('PURCHASE_PRICE'),
+           this.translateService.instant('GROSS_PROFIT')
         ];
         const headerList: Array<any> = [];
         header.forEach((singleHeader: any) => {
@@ -1183,20 +1087,20 @@ export class TransactionAuditUiPdfService {
                     heights: [30],
                     body: [[...headerList],texts],
                 },
-                layout: tableLayout,
+                layout: this.styles.tableLayout,
             };
             this.content.push(data);
             singleRecord.aArticleGroups.forEach((articleGroup: any) => {
                 let texts: any = [
-                    { text: articleGroup.sName, style: ['td', 'articleGroup'] },
-                    { text: articleGroup.nQuantity, style: ['td', 'articleGroup'] },
-                    { text: articleGroup.nTotalRevenue, style: ['td', 'articleGroup'] },
+                    { text: articleGroup.sName, style: ['td', 'bgGray'] },
+                    { text: articleGroup.nQuantity, style: ['td', 'bgGray'] },
+                    { text: articleGroup.nTotalRevenue, style: ['td', 'bgGray'] },
                     {
                         text: articleGroup.nTotalPurchaseAmount,
-                        style: ['td', 'articleGroup'],
+                        style: ['td', 'bgGray'],
                     },
-                    { text: articleGroup.nProfit, style: ['td', 'articleGroup'] },
-                    // { text: articleGroup.nMargin, style: ['td', 'articleGroup'] },
+                    { text: articleGroup.nProfit, style: ['td', 'bgGray'] },
+                    // { text: articleGroup.nMargin, style: ['td', 'bgGray'] },
                 ];
                 const data = {
                     table: {
@@ -1204,7 +1108,7 @@ export class TransactionAuditUiPdfService {
                         widths: columnWidths,
                         body: [texts],
                     },
-                    layout: tableLayout,
+                    layout: this.styles.tableLayout,
                 };
                 this.content.push(data);
 
@@ -1223,7 +1127,7 @@ export class TransactionAuditUiPdfService {
                             body: [texts],
                             dontBreakRows: true,
                         },
-                        layout: tableLayout,
+                        layout: this.styles.tableLayout,
                     };
                     this.content.push(data);
                 });
@@ -1252,7 +1156,7 @@ export class TransactionAuditUiPdfService {
                 widths: columnWidths,
                 body: [headerList],
             },
-            layout: tableLayout,
+            layout: this.styles.tableLayout,
         });
         this.pushSeparatorLine();
         this.content.push({
@@ -1260,12 +1164,12 @@ export class TransactionAuditUiPdfService {
                 widths: columnWidths,
                 body: [texts],
             },
-            layout: tableLayout,
+            layout: this.styles.tableLayout,
         });
         this.pushSeparatorLine();
     }
 
-    processPdfByRevenuePerArticleGroupAndProperty(columnWidths: any,tableLayout: any,aStatistic:any) {
+    processPdfByRevenuePerArticleGroupAndProperty(columnWidths: any,aStatistic:any) {
         let arr: Array<any> = [];
 
         aStatistic[0].individual.forEach((el: any) => {
@@ -1293,15 +1197,15 @@ export class TransactionAuditUiPdfService {
         });
         arr.forEach((singleRecord: any) => {
             let texts: any = [
-                { text: singleRecord.sName, style: ['td', 'articleGroup'] },
-                { text: singleRecord.nQuantity, style: ['td', 'articleGroup'] },
-                { text: singleRecord.nTotalRevenue, style: ['td', 'articleGroup'] },
+                { text: singleRecord.sName, style: ['td', 'bgGray'] },
+                { text: singleRecord.nQuantity, style: ['td', 'bgGray'] },
+                { text: singleRecord.nTotalRevenue, style: ['td', 'bgGray'] },
                 {
                     text: singleRecord.nTotalPurchaseAmount,
-                    style: ['td', 'articleGroup'],
+                    style: ['td', 'bgGray'],
                 },
-                { text: singleRecord.nProfit, style: ['td', 'articleGroup'] },
-                // { text: singleRecord.nMargin, style: ['td', 'articleGroup'] },
+                { text: singleRecord.nProfit, style: ['td', 'bgGray'] },
+                // { text: singleRecord.nMargin, style: ['td', 'bgGray'] },
             ];
             const data = {
                 table: {
@@ -1310,7 +1214,7 @@ export class TransactionAuditUiPdfService {
                     heights: [30],
                     body: [texts],
                 },
-                layout: tableLayout,
+                layout: this.styles.tableLayout,
             };
             this.content.push(data);
             singleRecord.aRevenueByProperty.forEach((property: any) => {
@@ -1327,14 +1231,14 @@ export class TransactionAuditUiPdfService {
                         widths: columnWidths,
                         body: [texts],
                     },
-                    layout: tableLayout,
+                    layout: this.styles.tableLayout,
                 };
                 this.content.push(data);
             });
         });
     }
 
-    processPdfByRevenuePerSupplierAndArticleGroup(columnWidths: any,tableLayout: any,aStatistic: any) {
+    processPdfByRevenuePerSupplierAndArticleGroup(columnWidths: any,aStatistic: any) {
         let arr: Array<any> = [];
 
         aStatistic[0].individual.forEach((el: any) => {
@@ -1376,20 +1280,20 @@ export class TransactionAuditUiPdfService {
                     heights: [30],
                     body: [texts],
                 },
-                layout: tableLayout,
+                layout: this.styles.tableLayout,
             };
             this.content.push(data);
             singleRecord.aArticleGroups.forEach((articleGroup: any) => {
                 let texts: any = [
-                    { text: articleGroup.sName, style: ['td', 'articleGroup'] },
-                    { text: articleGroup.nQuantity, style: ['td', 'articleGroup'] },
-                    { text: articleGroup.nTotalRevenue, style: ['td', 'articleGroup'] },
+                    { text: articleGroup.sName, style: ['td', 'bgGray'] },
+                    { text: articleGroup.nQuantity, style: ['td', 'bgGray'] },
+                    { text: articleGroup.nTotalRevenue, style: ['td', 'bgGray'] },
                     {
                         text: articleGroup.nTotalPurchaseAmount,
-                        style: ['td', 'articleGroup'],
+                        style: ['td', 'bgGray'],
                     },
-                    { text: articleGroup.nProfit, style: ['td', 'articleGroup'] },
-                    // { text: articleGroup.nMargin, style: ['td', 'articleGroup'] },
+                    { text: articleGroup.nProfit, style: ['td', 'bgGray'] },
+                    // { text: articleGroup.nMargin, style: ['td', 'bgGray'] },
                 ];
                 const data = {
                     table: {
@@ -1397,14 +1301,14 @@ export class TransactionAuditUiPdfService {
                         widths: columnWidths,
                         body: [texts],
                     },
-                    layout: tableLayout,
+                    layout: this.styles.tableLayout,
                 };
                 this.content.push(data);
             });
         });
     }
 
-    processPdfByRevenuePerProperty(columnWidths: any,tableLayout: any,aStatistic: any) {
+    processPdfByRevenuePerProperty(columnWidths: any,aStatistic: any) {
         let arr: Array<any> = [];
 
         aStatistic[0].individual.forEach((property: any) => {
@@ -1436,28 +1340,28 @@ export class TransactionAuditUiPdfService {
                     widths: columnWidths,
                     body: [texts],
                 },
-                layout: tableLayout,
+                layout: this.styles.tableLayout,
             };
             this.content.push(data);
         });
     }
 
-    processPdfByRevenuePerArticleGroup(columnWidths: any,tableLayout: any,aStatistic: any) {
+    processPdfByRevenuePerArticleGroup(columnWidths: any,aStatistic: any) {
         let arr: Array<any> = [];
 
         const tableHeaders = [
-            this.translations['ARTICLE'],
-            this.translations['QUANTITY'],
-            this.translations['PRICE_WITH_VAT'],
-            this.translations['PURCHASE_PRICE_EX_VAT'],
-            this.translations['GROSS_PROFIT'],
+            this.translateService.instant('ARTICLE'),
+            this.translateService.instant('QUANTITY'),
+            this.translateService.instant('PRICE_WITH_VAT'),
+            this.translateService.instant('PURCHASE_PRICE_EX_VAT'),
+            this.translateService.instant('GROSS_PROFIT'),
         ];
 
         const tableHeadersList: any = [];
         tableHeaders.forEach((header: any, index:number) => {
             tableHeadersList.push({
                 text: header,
-                style: ['th', 'articleGroup'],
+                style: ['th', 'bgGray'],
             });
         });
         aStatistic[0].individual.forEach((el: any) => {
@@ -1488,7 +1392,7 @@ export class TransactionAuditUiPdfService {
             ]);
         });
         texts.push([
-            { text: this.translations['TOTAL'], style: ['td', 'bold','bgGray'] },
+            { text: this.translateService.instant('TOTAL'), style: ['td', 'bold','bgGray'] },
             { text: nTotalQuantity, style:['td', 'bold','bgGray'] },
             { text: parseFloat(nTotalRevenue.toFixed(2)), style:['td', 'bold','bgGray'] },
             { text: parseFloat(nTotalPurchaseAmount.toFixed(2)), style:['td', 'bold','bgGray'] },
@@ -1503,7 +1407,7 @@ export class TransactionAuditUiPdfService {
                     body: [[...tableHeadersList], ...texts],
                 },
                 margin: [0, 20],
-                layout: tableLayout,
+                layout: this.styles.tableLayout,
             });
     }
 

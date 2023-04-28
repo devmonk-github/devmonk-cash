@@ -677,8 +677,8 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
               this.oStatisticsDocument = this.transactionAuditPdfService.processingMultipleStatisticsBySummingUp({ aStatisticsDocuments: this.aStatisticsDocuments, aStatistic: this.aStatistic });
             }
             if (this.aStatisticsDocuments?.length) this.mappingThePaymentMethod(this.aStatisticsDocuments);
-            this.checkShowDownload();
             // this.exportToPDF();
+            this.checkShowDownload();
           }
         }
       }, (error) => {
@@ -1387,16 +1387,22 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
   }
 
   checkShowDownload() {
+    
     const bCondition1 = this.IsDynamicState;
     const bCondition2 = (!this.selectedEmployee?._id &&
       !this.selectedWorkStation?._id &&
-      !(this.aSelectedLocation?.length > 1) &&
-      this.statisticFilter.dFromState != '' &&
-      this.statisticFilter.dToState != '');
+      !(this.aSelectedLocation?.length > 1));
     const bCondition3 = (this.iStatisticId && this.iStatisticId != '' && this.oStatisticsDocument && this.oStatisticsDocument?.bIsDayState === false) || false;
     const bCondition4 = this.closeButtonClicked;
-    this.bShowDownload = (bCondition1 || bCondition2 || bCondition3 || bCondition4) && this.aStatistic;
+    this.bShowDownload = (bCondition1 || bCondition2 || bCondition3 || bCondition4) && 
+    (
+      this.statisticFilter.dFromState != '' &&
+      this.statisticFilter.dToState != '' && 
+      this.aStatistic?.length && this.aStatistic[0]?.individual?.length
+    );
+    // console.log({ bCondition1, bCondition2, bCondition3, bCondition4, f: this.statisticFilter.dFromState, t: this.statisticFilter.dToState, len: this.aStatistic?.length && this.aStatistic[0]?.individual?.length })
     // this.bShowDownload = true;
+    // console.log(this.aStatistic)
   }
 
   fetchStockValuePerLocation() {
@@ -1492,22 +1498,6 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
     },
   ];
   sDisplayMethod: eDisplayMethodKeysEnum = eDisplayMethodKeysEnum.revenuePerBusinessPartner
-
-  aAmount: any = [
-    { sLabel: '500.00', nValue: 500, nQuantity: 0, key: 'nType500' },
-    { sLabel: '200.00', nValue: 200, nQuantity: 0, key: 'nType200' },
-    { sLabel: '100.00', nValue: 100, nQuantity: 0, key: 'nType100' },
-    { sLabel: '50.00', nValue: 50, nQuantity: 0, key: 'nType50' },
-    { sLabel: '20.00', nValue: 20, nQuantity: 0, key: 'nType20' },
-    { sLabel: '10.00', nValue: 10, nQuantity: 0, key: 'nType10' },
-    { sLabel: '5.00', nValue: 5, nQuantity: 0, key: 'nType5' },
-    { sLabel: '2.00', nValue: 2, nQuantity: 0, key: 'nType2' },
-    { sLabel: '1.00', nValue: 1, nQuantity: 0, key: 'nType1' },
-    { sLabel: '0.50', nValue: 0.5, nQuantity: 0, key: 'nType0_5' },
-    { sLabel: '0.20', nValue: 0.2, nQuantity: 0, key: 'nType0_2' },
-    { sLabel: '0.10', nValue: 0.1, nQuantity: 0, key: 'nType0_1' },
-    { sLabel: '0.05', nValue: 0.05, nQuantity: 0, key: 'nType0_05' },
-  ];
 
   oCountings: any = {
     nCashCounted: 0,
