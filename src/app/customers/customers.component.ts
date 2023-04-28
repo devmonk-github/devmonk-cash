@@ -105,6 +105,9 @@ export class CustomersComponent implements OnInit {
     {key:'COMPANY' , value:'company'}
   ]
   aCustomerSearch:Array<any> = [String];
+  aPlaceHolder: Array<any> = ["Search"];
+  addressString :any = "STREET HOUSE_NUMBER HOUSE_NUMBER_SUFFIX PSOTAL_CODE CITY COUNTRY";
+  
   constructor(
     private apiService: ApiService,
     private toastService: ToastService,
@@ -126,10 +129,34 @@ export class CustomersComponent implements OnInit {
       this.settings = result;
       if(this.settings?.aCustomerSearch){
         this.requestParams.oFilterBy.aSearchField = this.settings?.aCustomerSearch;
+        if(this.requestParams.oFilterBy.aSearchField.length !=0){
+          let index = this.requestParams.oFilterBy.aSearchField.indexOf("sAddress");
+          if(index != -1){
+            this.aPlaceHolder[index] =  this.addressString;
+          }else{
+            this.aPlaceHolder = this.requestParams.oFilterBy.aSearchField;
+          }
+        }else{
+          this.aPlaceHolder = ["Search"];
+        }
+        
       }
     }, (error) => {
       console.log(error);
     })
+  }
+
+  setPlaceHolder(){
+    if(this.requestParams.oFilterBy.aSearchField.length !=0){
+      let index = this.requestParams.oFilterBy.aSearchField.indexOf("sAddress");
+      if(index != -1){
+        this.aPlaceHolder[index] =  this.addressString;
+      }else{
+        this.aPlaceHolder = this.requestParams.oFilterBy.aSearchField;
+      }
+    }else{
+      this.aPlaceHolder = ["Search"];
+    }    
   }
 
   // Function for handle event of transaction menu
