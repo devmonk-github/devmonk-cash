@@ -8,6 +8,7 @@ import { DialogComponent } from '../../service/dialog';
 import { TerminalService } from '../../service/terminal.service';
 import { ToastService } from '../toast';
 import { TranslateService } from '@ngx-translate/core';
+import { TillService } from '../../service/till.service';
 
 @Component({
   selector: 'app-cards-dialog',
@@ -42,24 +43,21 @@ export class CardsComponent implements OnInit, AfterViewInit {
 
   /* Check if saving points are enabled */
   savingPointsSetting:boolean = JSON.parse(localStorage.getItem('savingPoints') || '');
-
+  redeemedPointsValue:number = 0;
   // elem ref
   constructor(
     private viewContainerRef: ViewContainerRef,
     private apiService: ApiService,
     private terminalService: TerminalService,
     private toastService:ToastService , 
-    private translateService:TranslateService
+    private translateService:TranslateService,
+    public tillService: TillService
   ) {
     const _injector = this.viewContainerRef.injector;;
     this.dialogRef = _injector.get<DialogComponent>(DialogComponent);
   }
 
   ngOnInit() {
-    const translation = ["GIFT_CARD_APPLIED_SUCCESSFULLY"];
-    this.translateService.get(translation).subscribe((res:any)=>{
-      this.translation=res;
-    })
     this.customer = this.dialogRef.context.customer;
     this.iBusinessId = localStorage.getItem('currentBusiness');
     this.fetchLoyaltyPoints();
@@ -119,7 +117,7 @@ export class CardsComponent implements OnInit, AfterViewInit {
       .subscribe(res => {
         this.externalGiftCardDetails = res;
         if(res?.message == 'success'){
-          this.toastService.show({type:'success' , text:this.translation['GIFT_CARD_APPLIED_SUCCESSFULLY']})
+          this.toastService.show({type:'success' , text:this.translateService.instant('GIFT_CARD_APPLIED_SUCCESSFULLY')})
         }
       }, (error) => {
         let errorMessage:any;
@@ -150,6 +148,6 @@ export class CardsComponent implements OnInit, AfterViewInit {
     this.giftCardInfo.iArticleGroupId = this.giftCardDetails?.iArticleGroupId;
     this.giftCardInfo.type = this.externalGiftCardDetails.type ? this.externalGiftCardDetails.type : 'custom';
     // console.log(this.giftCardInfo.nAmount);
-    this.close({ giftCardInfo: this.giftCardInfo, redeemedLoyaltyPoints: this.redeemedLoyaltyPoints });
+    this.close({ giftCardInfo: this.giftCardInfo, redeemedLoyaltyPoints: this.redeemedPointsValue });
   }
 }
