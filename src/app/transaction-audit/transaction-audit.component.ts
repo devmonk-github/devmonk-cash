@@ -612,7 +612,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
   fetchAuditStatistic(sDisplayMethod?: string) {
     if (this.IsDynamicState) this.getDynamicData(sDisplayMethod);
     else {
-      this.fetchDayClosureList();
+      if (!this.aDayClosure?.length) this.fetchDayClosureList();
       this.getStaticData(sDisplayMethod);
     }
   }
@@ -1337,12 +1337,17 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
     this.fetchStatistics();
   }
 
+  onChangeLocation() {
+    this.statisticFilter.dFromState = '';
+    this.statisticFilter.dToState = '';
+    this.aDayClosure = [];
+    this.fetchAuditStatistic();
+  }
+
   /* For FROM State and TO State */
   fetchDayClosureList() {
     try {
       this.aDayClosure = [];
-      this.statisticFilter.dFromState = '';
-      this.statisticFilter.dToState = '';
       const oBody = {
         iBusinessId: this.iBusinessId,
         sDayClosureMethod: this.tillService.settings?.sDayClosureMethod || 'workstation',
