@@ -178,7 +178,7 @@
                                     <div class="w-100" *ngIf="aLocation?.length">
                                         <ng-select [multiple]="true" [items]="aLocation" [(ngModel)]="aSelectedLocation"
                                             name="iLocationId" bindValue="_id" bindLabel="sName" placeholder="Select"
-                                            required [closeOnSelect]="false" (change)="fetchAuditStatistic()">
+                                            required [closeOnSelect]="false" (change)="onChangeLocation()">
 
                                             <ng-template ng-option-tmp let-item="item" let-item$="item$"
                                                 let-index="index">
