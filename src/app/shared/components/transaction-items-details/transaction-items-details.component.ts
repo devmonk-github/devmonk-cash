@@ -109,7 +109,6 @@ export class TransactionItemsDetailsComponent implements OnInit {
       if (this.transaction?.iActivityId) id = this.transaction.iActivityId
       else id = this.transaction._id
       url = `/api/v1/activities/items/${id}`;
-      
       /* If comes from the Activity-item then URL will change and it will fetch the AI */
       if (this.isFor !== 'activity' && this.transaction?.iActivityItemId) url = `/api/v1/activities/activity-item/${this.transaction.iActivityItemId}`;
     } else {
@@ -126,9 +125,6 @@ export class TransactionItemsDetailsComponent implements OnInit {
       // console.log('120 api result assiging to transaction items', result)
       this.transactionItems = result.data[0].result;
       // console.log('this.transactionItems ', JSON.parse(JSON.stringify(this.transactionItems)));
-
-       
-
       const discountRecords = this.transactionItems.filter(o => o.oType.eKind === 'discount' || o.oType.eKind === 'loyalty-points-discount' || o.oType.eKind === 'giftcard-discount');
       this.bIsAnyGiftCardDiscount = discountRecords.some((el: any) => el?.oType?.eKind === 'giftcard-discount')
       this.transactionItems = this.transactionItems.filter(o => o.oType.eKind !== 'discount' && o.oType.eKind !== 'loyalty-points' && o.oType.eKind !== 'loyalty-points-discount' && o.oType.eKind !== 'giftcard-discount');
@@ -151,7 +147,6 @@ export class TransactionItemsDetailsComponent implements OnInit {
           } 
         });
         // element.nDiscountnPaymentAmount = nDiscountnPaymentAmount;
-
         if(!elementDiscount?.length) {
           //in original transaction, we have some with discounts so need to adjust them
           const relatedItem = aRelatedTransactionItem?.data?.find((relatedItem:any)=> 
@@ -163,28 +158,22 @@ export class TransactionItemsDetailsComponent implements OnInit {
             element.nDiscount = -(relatedItem.nDiscount);
             element.nPaidAmount += element.nDiscount;
           }
-
         }
-
         // console.log('before', element.nPaymentAmount, element.nPaidAmount, element.nPriceIncVat)
-
         // element.nRedeemedLoyaltyPoints = nRedeemedLoyaltyPoints;
         const nDiscountAmount = +((element.bDiscountOnPercentage ? this.tillService.getPercentOf(element.nPriceIncVat, element?.nDiscount || 0) : element.nDiscount).toFixed(2));
         // console.log({ nDiscountAmount })
         element.nPaymentAmount -= nDiscountAmount;
         element.nPaidAmount -= nDiscountAmount;
         element.nPriceIncVat -= nDiscountAmount;
-        
         element.nPaidAmount = +(element.nPaidAmount.toFixed(2));
         element.nPaymentAmount = +(element.nPaymentAmount.toFixed(2));
         element.nPriceIncVat = +(element.nPriceIncVat.toFixed(2));
         // console.log('after',element.nPaymentAmount, element.nPaidAmount, element.nPriceIncVat)
       });
-    
       this.transactionItems = this.transactionItems.map(v => ({ ...v }));
       // console.log('this.transactionItems 4: ', JSON.parse(JSON.stringify(this.transactionItems)));
       this.transactionItems.forEach(item => {
-        
         // const nTotalDiscount = (+((item?.bDiscountOnPercentage ? (item.nTotalAmount * item.nDiscount / 100) : item.nDiscount).toFixed(2)) * item.nQuantity) 
         //                         + (item?.nRedeemedLoyaltyPoints || 0) 
         //                         + (item?.nRedeemedGiftcardAmount || 0);
@@ -201,10 +190,8 @@ export class TransactionItemsDetailsComponent implements OnInit {
         if (this.aSelectedIds?.length && this.aSelectedIds.includes(item._id) || (this.selectedId && this.selectedId === item._id) &&  !item?.bIsRefunded) {
           item.isSelected = true;
         }
-
         if (this.itemType === 'transaction') { item.tType = 'refund'; }
       });
-
       if (discountRecords?.length) localStorage.setItem('discountRecords', JSON.stringify(discountRecords));
     }, (error) => {
       alert(error.error.message);
@@ -216,12 +203,11 @@ export class TransactionItemsDetailsComponent implements OnInit {
 
   selectAll(event: any) {
     // this.transactionItems = this.transactionItems.map(v => ({ ...v, isSelected: $event.checked }));
-    //console.log('this.event 6:', event);
     this.transactionItems.forEach(element => {
       if (element.bIsRefunded) element.isSelected = false;
       else element.isSelected = event.checked;
     });
-    console.log('this.transactionItems 6:', this.transactionItems);
+    
 
   }
 
