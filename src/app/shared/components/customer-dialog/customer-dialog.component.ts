@@ -163,7 +163,7 @@ export class CustomerDialogComponent implements OnInit {
   showFilters = false;
   from:any;
   aPlaceHolder: Array<any> = ["Search"];
-  addressString :any = "STREETHOUSE_NUMBERHOUSE_NUMBER_SUFFIXPOSTAL_CODECITYCOUNTRY";
+  addressString :any = "STREETHOUSE_NUMBERPOSTAL_CODE";
   fNameString :any = "FIRSTNAME";
   LNameString :any = "LASTNAME";
   CNameString :any = "COMPANY_NAME";

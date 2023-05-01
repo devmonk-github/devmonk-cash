@@ -108,7 +108,7 @@ export class CustomersComponent implements OnInit {
   translations:any;
   aCustomerSearch:Array<any> = [String];
   aPlaceHolder: Array<any> = ["Search"];
-  addressString :any = "STREETHOUSE_NUMBERHOUSE_NUMBER_SUFFIXPOSTAL_CODECITYCOUNTRY";
+  addressString :any = "STREETHOUSE_NUMBERPOSTAL_CODE";
   fNameString :any = "FIRSTNAME";
   LNameString :any = "LASTNAME";
   CNameString :any = "COMPANY_NAME";
