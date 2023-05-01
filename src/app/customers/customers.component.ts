@@ -139,12 +139,11 @@ export class CustomersComponent implements OnInit {
    })
   this.getCustomers();
   }
-  
+
   getSettings() {
     this.getSettingsSubscription = this.apiService.getNew('customer', `/api/v1/customer/settings/get/${this.requestParams.iBusinessId}`).subscribe((result: any) => {
       this.settings = result;
       if (this.settings?.aCustomerSearch) {
-        
         this.requestParams.oFilterBy.aSearchField = this.settings?.aCustomerSearch;
         this.setPlaceHolder();
       }
