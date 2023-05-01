@@ -312,7 +312,6 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
   
   updateCustomerSettings() {
     const CustomerSettingsbody = {
-      nLastnClientID:this.settings?.nLastnClientID,
       aCustomerSearch:this.settings?.aCustomerSearch
     }
     this.updatingCustomerSettings = true;

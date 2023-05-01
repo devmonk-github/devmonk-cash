@@ -79,6 +79,8 @@ export class RepairComponent implements OnInit {
     this.checkArticleGroups();
     this.getProperties();
 
+    console.log("this.item", this.item.sName)
+
     //console.log("this.item", this.tillService.settings.currentLocation.nLastBagNumber);
     //console.log("this.settings.bAutoIncrementBagNumbers ", this.settings.bAutoIncrementBagNumbers);
      //console.log("this.item", this.item);
@@ -360,6 +362,8 @@ export class RepairComponent implements OnInit {
             }
           });
           this.item.oArticleGroupMetaData.aProperty = data;
+          
+
         }
       }
     );
