@@ -296,7 +296,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     this.customer = { ... this.customer, ... this.dialogRef?.context?.customerData };
     //console.log("this.customer------");
     //console.log(this.customer);
-    const translations = ['SUCCESSFULLY_ADDED', 'SUCCESSFULLY_UPDATED' ,'LOYALITY_POINTS_ADDED', 'ARE_YOU_SURE_TO_DELETE_THIS_CUSTOMER']
+    const translations = ['SUCCESSFULLY_ADDED', 'SUCCESSFULLY_UPDATED', 'SUCCESSFULLY_DELETED' ,'LOYALITY_POINTS_ADDED', 'ARE_YOU_SURE_TO_DELETE_THIS_CUSTOMER', 'ONLY_LETTERS_ARE_ALLOWED']
     this.translateService.get(translations).subscribe(
       result => this.translations = result
     )
@@ -373,7 +373,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
             this.apiService.postNew('customer', '/api/v1/customer/delete', { iCustomerId: customer._id, iBusinessId: this.requestParams.iBusinessId }).subscribe((res: any) => {
               if (res?.message == 'success') {
                 this.close({ action: true });
-                this.toastService.show({ type: 'success', text: 'customer deleted successfully' })
+                this.toastService.show({ type: 'success', text: this.translations[`SUCCESSFULLY_DELETED`] })
               } else {
                 this.toastService.show({ type: 'warning', text:'Internal Server Error' });
               }
@@ -528,7 +528,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
 
   convertFirstLetterUpper(event: any, fieldName: any) {
     const aField: any = fieldName.split('.');
-    console.log(aField?.length)
+    //console.log(aField?.length)
     if (aField?.length > 1) {
       if (this.customer[aField[0]][aField[1]]?.length == 1) {
         this.customer[aField[0]][aField[1]] = this.customer[aField[0]][aField[1]].toUpperCase();
@@ -1178,10 +1178,11 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     let charCode = event.keyCode;
     let pattern =  /[0-9]/;
     let char = String.fromCharCode(charCode);
+    //console.log(char, ' - ', charCode, ' - ', String.fromCharCode(charCode),' - ', pattern.test(char) || (charCode >= 96 && charCode <= 105 ));
     // invalid character, prevent input
-    if (pattern.test(char)){
+    if (pattern.test(char) || (charCode >= 96 && charCode <= 105 )){
       event.preventDefault();
+      this.toastService.show({ type: 'warning', text: this.translations['ONLY_LETTERS_ARE_ALLOWED'] });
     }    
-    console.log(String.fromCharCode(charCode),' - ', pattern.test(char));
   }
 }
