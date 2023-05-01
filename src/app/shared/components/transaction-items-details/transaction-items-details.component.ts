@@ -125,13 +125,18 @@ export class TransactionItemsDetailsComponent implements OnInit {
     this.apiService.postNew('cashregistry', url, this.requestParams).subscribe((result: any) => {
       // console.log('120 api result assiging to transaction items', result)
       this.transactionItems = result.data[0].result;
-      // console.log('this.transactionItems 2', JSON.parse(JSON.stringify(this.transactionItems)));
+      // console.log('this.transactionItems ', JSON.parse(JSON.stringify(this.transactionItems)));
+
+       
 
       const discountRecords = this.transactionItems.filter(o => o.oType.eKind === 'discount' || o.oType.eKind === 'loyalty-points-discount' || o.oType.eKind === 'giftcard-discount');
       this.bIsAnyGiftCardDiscount = discountRecords.some((el: any) => el?.oType?.eKind === 'giftcard-discount')
       this.transactionItems = this.transactionItems.filter(o => o.oType.eKind !== 'discount' && o.oType.eKind !== 'loyalty-points' && o.oType.eKind !== 'loyalty-points-discount' && o.oType.eKind !== 'giftcard-discount');
       // console.log('this.transactionItems 3', this.transactionItems);
       this.transactionItems.forEach(element => {
+        if(!element.bIsRefunded){
+          element.isSelected = true;
+        }
         // element.nDiscount = 0;
         // if (aRelatedTransactionItem?.data?.length && element.oType.eKind==='regular') element.nRevenueAmount = 0;
         const elementDiscount = discountRecords.filter(o => o.sUniqueIdentifier === element.sUniqueIdentifier);
@@ -173,11 +178,10 @@ export class TransactionItemsDetailsComponent implements OnInit {
         element.nPaidAmount = +(element.nPaidAmount.toFixed(2));
         element.nPaymentAmount = +(element.nPaymentAmount.toFixed(2));
         element.nPriceIncVat = +(element.nPriceIncVat.toFixed(2));
-
         // console.log('after',element.nPaymentAmount, element.nPaidAmount, element.nPriceIncVat)
       });
     
-      this.transactionItems = this.transactionItems.map(v => ({ ...v, isSelected: false }));
+      this.transactionItems = this.transactionItems.map(v => ({ ...v }));
       // console.log('this.transactionItems 4: ', JSON.parse(JSON.stringify(this.transactionItems)));
       this.transactionItems.forEach(item => {
         
@@ -200,6 +204,7 @@ export class TransactionItemsDetailsComponent implements OnInit {
 
         if (this.itemType === 'transaction') { item.tType = 'refund'; }
       });
+
       if (discountRecords?.length) localStorage.setItem('discountRecords', JSON.stringify(discountRecords));
     }, (error) => {
       alert(error.error.message);
@@ -207,13 +212,17 @@ export class TransactionItemsDetailsComponent implements OnInit {
     });
   }
 
+  
+
   selectAll(event: any) {
     // this.transactionItems = this.transactionItems.map(v => ({ ...v, isSelected: $event.checked }));
-    // console.log('this.transactionItems 6:', this.transactionItems);
+    //console.log('this.event 6:', event);
     this.transactionItems.forEach(element => {
       if (element.bIsRefunded) element.isSelected = false;
       else element.isSelected = event.checked;
     });
+    console.log('this.transactionItems 6:', this.transactionItems);
+
   }
 
   close(data: any, sFrom:string = '') {
