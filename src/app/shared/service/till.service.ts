@@ -25,13 +25,21 @@ export class TillService {
   settings:any;
   taxes:any;
   aDiscountTypes = ['loyalty-points-discount', 'discount', 'giftcard-discount'];
+  oSavingPointSettings:any;
 
   constructor(
     private apiService: ApiService,
     private translateService: TranslateService,
     private taxService: TaxService) {
     this.fetchTaxes();
-    }
+    this.fetchPointsSettings();
+  }
+
+  fetchPointsSettings() {
+    this.apiService.getNew('cashregistry', `/api/v1/points-settings?iBusinessId=${this.iBusinessId}`).subscribe((result:any) => {
+      this.oSavingPointSettings = result;
+    });
+  }
   
   async fetchTaxes() {
     if(this.taxes?.length) return;
@@ -771,21 +779,17 @@ export class TillService {
     dataObject.nTotalExcVat = +((dataObject.totalAfterDisc - dataObject.totalVat).toFixed(2));
     dataObject.nTotalQty = nTotalQty;
     // dataObject.dCreatedDate = moment(dataObject.dCreatedDate).format('DD-MM-yyyy hh:mm');
-    let _relatedResult:any , _loyaltyPointSettings:any;
+    let _relatedResult:any;
     
     if(!dataObject?.bMigrate){
-      const [_relatedResultTemp, _loyaltyPointSettingsTemp]: any = await Promise.all([
+      const [_relatedResultTemp]: any = await Promise.all([
         this.getRelatedTransaction(dataObject?.iActivityId, dataObject?._id).toPromise(),
-        this.apiService.getNew('cashregistry', `/api/v1/points-settings?iBusinessId=${this.iBusinessId}`).toPromise()
       ])
       _relatedResult = _relatedResultTemp;
-      _loyaltyPointSettings = _loyaltyPointSettingsTemp;
-
-    }else{             
-      _loyaltyPointSettings = await this.apiService.getNew('cashregistry', `/api/v1/points-settings?iBusinessId=${this.iBusinessId}`).toPromise()
     }
-    dataObject.bSavingPointsSettings = _loyaltyPointSettings?.bEnabled;
-    dataObject.aTransactionItems.forEach((item: any) => item.bSavingPointsSettings = _loyaltyPointSettings?.bEnabled)
+
+    dataObject.bSavingPointsSettings = this.oSavingPointSettings?.bEnabled;
+    dataObject.aTransactionItems.forEach((item: any) => item.bSavingPointsSettings = this.oSavingPointSettings?.bEnabled)
     dataObject.related = _relatedResult?.data || [];
     if(dataObject.related.length){
       dataObject.related.forEach((relatedobj: any) => {

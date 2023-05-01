@@ -264,24 +264,24 @@ export class TransactionAuditUiPdfService {
         aEmployee
     }: any) {
 
-        // console.log('PDF service: exportToPDF: ', {
-        //     aSelectedLocation,
-        //     sOptionMenu,
-        //     bIsDynamicState,
-        //     aLocation,
-        //     aSelectedWorkStation,
-        //     aWorkStation,
-        //     oFilterDates,
-        //     oBusinessDetails,
-        //     sDisplayMethod,
-        //     sDisplayMethodString,
-        //     aStatistic,
-        //     oStatisticsDocument,
-        //     aStatisticsDocuments,
-        //     aPaymentMethods,
-        //     bIsArticleGroupLevel,
-        //     bIsSupplierMode,
-        //     aEmployee });
+        console.log('PDF service: exportToPDF: ', {
+            aSelectedLocation,
+            sOptionMenu,
+            bIsDynamicState,
+            aLocation,
+            aSelectedWorkStation,
+            aWorkStation,
+            oFilterDates,
+            oBusinessDetails,
+            sDisplayMethod,
+            sDisplayMethodString,
+            aStatistic,
+            oStatisticsDocument,
+            aStatisticsDocuments,
+            aPaymentMethods,
+            bIsArticleGroupLevel,
+            bIsSupplierMode,
+            aEmployee });
 
         const date = moment(Date.now()).format('DD-MM-yyyy');
         const columnWidths = ['*', 60, 80, 80, 100];
@@ -454,28 +454,45 @@ export class TransactionAuditUiPdfService {
         this.addTableHeading('PAYMENT_METHODS');
 
         const aHeaderList = [
-            { text: this.translateService.instant('METHOD'), style: ['th', 'bgGray'] },
+            { text: this.translateService.instant('METHOD'), style: ['th', 'bgGray', 'left'] },
             { text: this.translateService.instant('TOTAL_AMOUNT'), style: ['th', 'bgGray'] },
             { text: this.translateService.instant('QUANTITY'), style: ['th', 'bgGray'] },
         ];
+        const oSafe = aPaymentMethods.find((el:any) => el.sMethod === 'cash_in_safe');
+        if(oSafe) {
+            const oCash = aPaymentMethods.find((el:any) => el.sMethod === 'cash');
+            oCash.nOriginalAmount = oCash.nAmount + oSafe.nAmount;
+        }
         const aTexts:any = [aHeaderList];
         if (aPaymentMethods?.length) {
+            // console.log({ aPaymentMethods })
             let nTotalAmount = 0, nTotalQuantity = 0;
-            aPaymentMethods.forEach((paymentMethod: any) => {
-                nTotalAmount += parseFloat(paymentMethod.nAmount);
-                nTotalQuantity += parseFloat(paymentMethod.nQuantity);
-
+            aPaymentMethods.forEach((oPayment: any) => {
+                nTotalAmount += parseFloat(oPayment.nAmount);
+                nTotalQuantity += parseFloat(oPayment.nQuantity);
+                let sMethod = oPayment.sMethod;
+                if(oPayment?.nOriginalAmount) sMethod += ' ('+this.translateService.instant('ORIGINAL_AMOUNT') + ': ' + oPayment.nOriginalAmount.toFixed(2) + ')';
                 aTexts.push([
-                    { text: paymentMethod.sMethod, style: ['td', 'margin-5', 'center'] },
-                    { text: paymentMethod.nAmount, style: ['td', 'margin-5', 'center'] },
-                    { text: paymentMethod.nQuantity, style: ['td', 'margin-5', 'center'] },
+                    { text: sMethod, style: ['td', 'margin-5', 'bgGray'] },
+                    { text: oPayment.nAmount.toFixed(2), style: ['td', 'margin-5', 'center', 'bgGray'] },
+                    { text: oPayment.nQuantity, style: ['td', 'margin-5', 'center', 'bgGray'] },
                 ]);
+
+                // oPayment.aItems.forEach((oItem:any) => {
+                //     aTexts.push([
+                //         { text: oItem.sComment, style: ['td', 'margin-5', 'center'] },
+                //         { text: oItem.nAmount.toFixed(2), style: ['td', 'margin-5', 'center'] },
+                //         { text: '', style: ['td', 'margin-5', 'center'] },
+                //     ]);
+                // })
             });
             aTexts.push([
                 { text: this.translateService.instant('TOTAL'), style: ['td', 'bold', 'bgGray', 'center'], border: this.styles.border_top },
                 { text: nTotalAmount, style: ['td', 'bold', 'bgGray', 'center'], border: this.styles.border_top },
                 { text: nTotalQuantity, style: ['td', 'bold', 'bgGray', 'center'], border: this.styles.border_top },
             ])
+
+
         } else {
             aTexts.push([
                 { text: this.translateService.instant('NO_RECORDS_FOUND'), colSpan: 3, style: ['td', 'center'] },

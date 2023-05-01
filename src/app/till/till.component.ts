@@ -855,6 +855,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
           if (body.transactionItems.filter((item: any) => item.oType.eKind === 'repair')[0]?.iActivityItemId) {
             this.bHasIActivityItemId = true
           }
+          console.log(giftCardPayment, this.appliedGiftCards)
           if (giftCardPayment && this.appliedGiftCards.length > 0) {
             // this.appliedGiftCards.forEach(element => {
               //   const cardPaymethod = _.clone(giftCardPayment);

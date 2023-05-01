@@ -126,7 +126,10 @@
                             <span>{{"POINTS_SPENDABLE"| translate}}: {{loyaltyPoints}}</span>
                         </div>
                         <div class="col-6">
-                            <input name="" class="form-control" type="number" [(ngModel)]="redeemedLoyaltyPoints">
+                            <input name="" class="form-control" type="number" [(ngModel)]="redeemedLoyaltyPoints" (ngModelChange)="redeemedPointsValue = +(redeemedLoyaltyPoints / tillService.oSavingPointSettings.nPerEuro2).toFixed(2)"> 
+                            <span *ngIf="redeemedLoyaltyPoints > 0">
+                                = {{ redeemedPointsValue | currency: tillService.currency }}
+                            </span>
                         </div>
                         <!-- <div class="col-2">
                             <button class="btn btn-primary" type="submit">{{"REDEEM" | translate}}</button>

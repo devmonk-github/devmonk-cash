@@ -1577,7 +1577,7 @@
                                     <label>{{ "CASH_COUNTED" | translate}}</label>
                                     <input type="number" class="form-control p-2 w-30"
                                         [(ngModel)]="oCountings.nCashCounted"
-                                        (ngModelChange)="oCountings.nCashRemain = oCountings.nCashCounted - oCountings.nSkim"
+                                        (ngModelChange)="oCountings.nCashRemain = +((oCountings.nCashCounted - oCountings.nSkim).toFixed(2))"
                                         [disabled]="bDisableCountings">
                                 </div>
                                 <div>
@@ -1594,14 +1594,14 @@
                                 <div>
                                     <label>{{ "SKIM" | translate}}</label>
                                     <input type="number" class="form-control p-2 w-30" [(ngModel)]="oCountings.nSkim"
-                                        (ngModelChange)="oCountings.nCashRemain = oCountings.nCashCounted - oCountings.nSkim"
+                                        (ngModelChange)="oCountings.nCashRemain = +((oCountings.nCashCounted - oCountings.nSkim).toFixed(2))"
                                         [disabled]="bDisableCountings">
                                 </div>
                                 <div>
                                     <label>{{ "AMOUNT_TO_LEFT_IN_CASH" | translate}}</label>
                                     <input type="number" class="form-control p-2 w-30"
                                         [(ngModel)]="oCountings.nCashRemain"
-                                        (ngModelChange)="oCountings.nSkim = oCountings.nCashCounted - oCountings.nCashRemain"
+                                        (ngModelChange)="oCountings.nSkim = +((oCountings.nCashCounted - oCountings.nCashRemain).toFixed(2))"
                                         [disabled]="bDisableCountings">
                                 </div>
                                 <br>
