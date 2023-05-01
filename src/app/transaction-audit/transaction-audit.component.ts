@@ -511,7 +511,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
       let iPurchaseIndex = this.aOptionMenu.findIndex(i => i.sValue.toLowerCase() === 'sales-order')
       this.aOptionMenu.splice(iPurchaseIndex, 1)
     }
-    this.onDropdownItemSelected(this.aOptionMenu[0], this.aOptionMenu[0].children[1], this.aOptionMenu[0].children[1].children[3])
+    this.onDropdownItemSelected(this.aOptionMenu[0], this.aOptionMenu[0].children[1], this.aOptionMenu[0].children[0].children[0])
   }
 
   goBack() {
@@ -1146,10 +1146,10 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
         if (result?.type) {
           this.oCountings.nCashCounted = this.oCountings.nCashInTill;
           if (result?.data === 'leave_in_till') {
-            this.oCountings.nCashRemain = this.oCountings.nCashInTill;
+            this.oCountings.nCashRemain = +(this.oCountings.nCashInTill.toFixed(2));
             this.oCountings.nSkim = 0;
           } else if (result?.data === 'skim_all') {
-            this.oCountings.nSkim = this.oCountings.nCashInTill;
+            this.oCountings.nSkim = +(this.oCountings.nCashInTill.toFixed(2));
             this.oCountings.nCashRemain = 0;
           }
           this.onCloseDayState();
@@ -1219,7 +1219,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
     this.oCountings.nCashDifference = this.oCountings?.nCashCounted - (this.oCountings?.nCashAtStart + this.oCountings?.nCashInTill);
 
     const oCashPaymentMethod = this.allPaymentMethod.filter((el: any) => el.sName.toLowerCase() === 'cash')[0];
-    const oBankPaymentMethod = this.allPaymentMethod.filter((el: any) => el.sName.toLowerCase() === 'bankpayment')[0];
+    const oCashInSafePaymentMethod = this.allPaymentMethod.filter((el: any) => el.sName.toLowerCase() === 'cash_in_safe')[0];
     const nVatRate = await this.taxService.fetchDefaultVatRate({ iLocationId: this.iLocationId });
 
     const oBody = {
@@ -1232,7 +1232,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
       sComment: this.oStatisticsDocument.sComment,
       oCloseDayStateData: {
         oCashPaymentMethod,
-        oBankPaymentMethod,
+        oCashInSafePaymentMethod,
         nVatRate,
       }
     }
@@ -1240,6 +1240,10 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
       this.toastService.show({ type: 'success', text: `Day-state is close now` });
       this.closingDayState = false;
       this.bDisableCountings = true;
+      if(result?.data?._id) {
+        this.statisticFilter.dFromState = result?.data.dOpenDate;
+        this.statisticFilter.dToState = result?.data.dCloseDate;
+      }
       this.getStaticData();
       this.checkShowDownload();
     }, (error) => {
@@ -1405,9 +1409,9 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
       this.statisticFilter.dToState != '' && 
       this.aStatistic?.length && this.aStatistic[0]?.individual?.length
     );
-    // console.log({ bCondition1, bCondition2, bCondition3, bCondition4, f: this.statisticFilter.dFromState, t: this.statisticFilter.dToState, len: this.aStatistic?.length && this.aStatistic[0]?.individual?.length })
+    console.log({ bCondition1, bCondition2, bCondition3, bCondition4, f: this.statisticFilter.dFromState, t: this.statisticFilter.dToState, len: this.aStatistic?.length && this.aStatistic[0]?.individual?.length })
     // this.bShowDownload = true;
-    // console.log(this.aStatistic)
+    console.log(this.aStatistic)
   }
 
   fetchStockValuePerLocation() {
