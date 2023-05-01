@@ -272,11 +272,11 @@
                         <input type="text" *ngIf="eKind == 'order'" class="form-control highlight-search"
                           placeholder="{{'SEARCH_ORDER' | translate}} ..." [(ngModel)]="searchKeyword"
                           (ngModelChange)="searchKeyword? shopProducts = shopProducts: shopProducts = []"
-                          (keyup.enter)="search()" (focus)="switchMode()" #searchField>
+                          (keydown.enter)="search()" (focus)="switchMode()" #searchField>
                         <input type="text" *ngIf="eKind != 'order'" class="form-control highlight-search"
                           placeholder="{{'SEARCH' | translate}} ..." [(ngModel)]="searchKeyword"
                           (ngModelChange)="searchKeyword? shopProducts = shopProducts: shopProducts = []"
-                          (keyup.enter)="search()" (focus)="switchMode()" #searchField>
+                          (keydown.enter)="search()" (focus)="switchMode()" #searchField>
                       </div>
                   
                       <label class="form-check form-switch form-check-custom form-check-solid">

@@ -9,9 +9,9 @@
                                 <span class="svg-icon svg-icon-4 position-absolute ms-4">
                                     <i class="fas fa-xs fa-search"></i>
                                 </span>
-                                <input type="text" class="form-control form-control-solid w-250px ps-14 me-4" #inputElement
+                                <input type="text" class="form-control form-control-solid w-450px ps-14 me-4" #inputElement
                                     (keyup.enter)="getCustomers(true)" [(ngModel)]="requestParams.searchValue" name="search"
-                                    placeholder="{{(aPlaceHolder).toString()}}">
+                                    placeholder="{{(aPlaceHolder).join(' ')}}">
                                 <div class="col-lg-4 me-4 customers-fields">
                                     <ng-select class="form-control form-control-solid p-0" [multiple]="true"
                                         [(ngModel)]="requestParams.oFilterBy.aSearchField" [clearable]="false" placeholder="" (ngModelChange)="setPlaceHolder()">
