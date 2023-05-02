@@ -25,12 +25,13 @@ export class PaymentDistributionService {
   
   distributeAmount(transactionItems: any[], availableAmount: any, nGiftcardAmount:any = 0, nRedeemedLoyaltyPoints:any = 0): any[] {
     const bTesting = false;
-    if (bTesting) console.log('distributeAmount', { availableAmount, nGiftcardAmount, nRedeemedLoyaltyPoints, original: JSON.parse(JSON.stringify(transactionItems)) })
-    
+    if (bTesting) console.log('distributeAmount before', { availableAmount, nGiftcardAmount, nRedeemedLoyaltyPoints, original: JSON.parse(JSON.stringify(transactionItems)) })
     transactionItems = transactionItems.filter((i: any) => !['empty-line', 'loyalty-points'].includes(i.type))
     transactionItems.forEach((i: any) => {
       // if (bTesting) console.log(31, i, i.nTotal);
-      
+      i.nGiftcardDiscount = 0;
+      i.nRedeemedLoyaltyPoints = 0;
+
       const nPrice = parseFloat((typeof i.price === 'string') ? i.price.replace(',', '.') : i.price);
       i.nTotal = nPrice * i.quantity;
       let nDiscount = (i.bDiscountOnPercentage ? this.tillService.getPercentOf(nPrice, i.nDiscount || 0) : i.nDiscount) * i.quantity;
@@ -68,45 +69,49 @@ export class PaymentDistributionService {
       let totalAmountToBePaid = +(arrToUpdate.filter(el => el.amountToBePaid > 0).reduce((n, { amountToBePaid }) => n + amountToBePaid, 0).toFixed(2)); // + assignedAmountToManual
       if (bTesting) console.log({totalAmountToBePaid})
 
-      if (totalAmountToBePaid > 0 && arrToUpdate.filter((el: any) => el.type === 'giftcard')?.length) {
-        if (bTesting) console.log('handling giftcard payment first', { availableAmount, totalAmountToBePaid })
-        availableAmount = this.assignPaymentToGiftcardFirst(arrToUpdate, availableAmount, totalAmountToBePaid, bTesting);
+      const aGiftcards = arrToUpdate.filter((el: any) => el.type === 'giftcard');
+      const aItems = arrToUpdate.filter((el: any) => el.type !== 'giftcard');
+
+      if (bTesting) console.log({ aGiftcards })
+      if (totalAmountToBePaid > 0 && aGiftcards?.length) {
+        const { nAvailable, nPoints }:any = this.assignPaymentToGiftcardFirst(aGiftcards, availableAmount, totalAmountToBePaid, bTesting, nRedeemedLoyaltyPoints);
+        if (bTesting) console.log({ nAvailable, nPoints })
+        availableAmount = nAvailable;
+        nRedeemedLoyaltyPoints = nPoints;
+
         totalAmountToBePaid = arrToUpdate.filter((el: any) => el.type !== 'giftcard').reduce((n, { amountToBePaid }) => n + amountToBePaid, 0);
-        if (bTesting) console.log('now we have available', { availableAmount, totalAmountToBePaid })
+        if (bTesting) console.log('now we have available', { availableAmount, totalAmountToBePaid, nRedeemedLoyaltyPoints })
       }
       
       if (totalAmountToBePaid > 0 && nGiftcardAmount > 0){
-        this.handleGiftcardDiscount(totalAmountToBePaid, arrToUpdate,nGiftcardAmount, bTesting);
-        totalAmountToBePaid = +(arrToUpdate.filter((el: any) => el.type !== 'giftcard').reduce((n, { amountToBePaid }) => n + amountToBePaid, 0).toFixed(2));
+        this.handleGiftcardDiscount(totalAmountToBePaid, aItems, nGiftcardAmount, bTesting);
+        totalAmountToBePaid = +(aItems.reduce((n, { amountToBePaid }) => n + amountToBePaid, 0).toFixed(2));
         if (bTesting) console.log('processed giftcard discount, new totalAmountToBePaid', totalAmountToBePaid)
-      } else {
-        arrToUpdate.forEach((i: any) => i.nGiftcardDiscount = 0);
       }
       
       if (totalAmountToBePaid > 0 && nRedeemedLoyaltyPoints > 0) {
-        this.handleLoyaltyPointsDiscount(arrToUpdate, totalAmountToBePaid, nRedeemedLoyaltyPoints, bTesting);
-        totalAmountToBePaid = arrToUpdate.filter((el: any) => el.type !== 'giftcard').reduce((n, { amountToBePaid }) => n + amountToBePaid, 0);
-      } else {
-        arrToUpdate.forEach((i: any) => i.nRedeemedLoyaltyPoints = 0);
+        this.handleLoyaltyPointsDiscount(aItems, totalAmountToBePaid, nRedeemedLoyaltyPoints, bTesting);
+        totalAmountToBePaid = aItems.reduce((n, { amountToBePaid }) => n + amountToBePaid, 0);
       }
 
       if (totalAmountToBePaid !== 0) {
 
-        arrToUpdate.forEach(i => {
+        aItems.forEach(i => {
           if (bTesting) console.log(107, 'i.tType',i.tType);
-          if (i.type !== 'giftcard' && i.amountToBePaid && (!i?.tType || i.tType !== 'refund')) {
+          if (i.amountToBePaid && (!i?.tType || i.tType !== 'refund')) {
             const a = +((i.amountToBePaid * availableAmount / totalAmountToBePaid).toFixed(2));
             if (bTesting) console.log('set to payment',a)
             i.paymentAmount = a;
           }
         });
       }
-      const nDistributedAmount = +(arrToUpdate.filter(el => el.amountToBePaid > 0).reduce((n, { paymentAmount }) => n + paymentAmount, 0).toFixed(2))
+      const nDistributedAmount = +(aItems.filter(el => el.amountToBePaid > 0).reduce((n, { paymentAmount }) => n + paymentAmount, 0).toFixed(2))
       availableAmount -= nDistributedAmount;
       if (bTesting) console.log('after assigning amounts, remaining availableAmount is', availableAmount);
 
-      let assignedAmount = +(arrToUpdate.reduce((n, { paymentAmount }) => n + paymentAmount, 0).toFixed(2));
+      let assignedAmount = +(aItems.reduce((n, { paymentAmount }) => n + paymentAmount, 0).toFixed(2));
       if (bTesting) console.log('assignedAmount', assignedAmount, 'availableAmount', availableAmount)
+      
       if(availableAmount > 0 && assignedAmount != 0) {
         if (bTesting) console.log('availableAmount > 0', availableAmount)
         if(assignedAmount > 0) {
@@ -127,56 +132,78 @@ export class PaymentDistributionService {
       } 
       // console.log('last item is ', arrToUpdate[arrToUpdate.length - 1])
     }
-    arrToUpdate.forEach(element => {
-      // if (bTesting)  console.log(109, { paymentAmount : element.paymentAmount, nTotal: element.nTotal})
-      // if (availableAmount === 0) {
-      //   console.log('setting payment amount to 0')
-      //   element.paymentAmount = 0;
-      //   return;
-      // }
-
-      if (element.paymentAmount >= element.nTotal){
-        element.paymentAmount = element.nTotal;
-        element.oType.bPrepayment = false;
-      } else if (element.paymentAmount < element.nTotal){
-        element.oType.bPrepayment = true;
+    const bShowGiftcardDiscountField = arrToUpdate.some(el => el.nGiftcardDiscount);
+    const bShowLoyaltyPointsDiscountField = arrToUpdate.some(el => el.nRedeemedLoyaltyPoints);
+    if (bTesting) console.log({ bShowGiftcardDiscountField, bShowLoyaltyPointsDiscountField })
+    arrToUpdate.forEach(i => {
+      i.bShowGiftcardDiscountField = bShowGiftcardDiscountField;
+      i.bShowLoyaltyPointsDiscountField = bShowLoyaltyPointsDiscountField;
+      
+      if (i.paymentAmount >= i.nTotal){
+        i.paymentAmount = i.nTotal;
+        i.oType.bPrepayment = false;
+      } else if (i.paymentAmount < i.nTotal){
+        i.oType.bPrepayment = true;
       }
-
     });
     if(bTesting) console.log('final',transactionItems)
     return transactionItems;
   }
   
-  assignPaymentToGiftcardFirst(arrToUpdate: any, availableAmount:any, totalAmountToBePaid:any, bTesting:boolean) {
-    arrToUpdate.forEach((i: any) => {
-      console.log('assignPaymentToGiftcardFirst', i)
-      if (i.type === 'giftcard') {
-        console.log('if 154')
+  assignPaymentToGiftcardFirst(aGiftcards: any, availableAmount: any, totalAmountToBePaid: any, bTesting: boolean, nRedeemedLoyaltyPoints:number) {
+    if (bTesting) console.log('assignPaymentToGiftcardFirst', { availableAmount, nRedeemedLoyaltyPoints, aGiftcards })
+    
+    aGiftcards.forEach((i: any) => {
+      if (bTesting) console.log({ i: i })
+      
+      if (nRedeemedLoyaltyPoints > 0) {
+        
+        if (bTesting) console.log('nRedeemedLoyaltyPoints > 0')
+        
+        if (nRedeemedLoyaltyPoints >= i.amountToBePaid) {
+          if (bTesting) console.log('nRedeemedLoyaltyPoints >= i.amountToBePaid')
+          i.nRedeemedLoyaltyPoints = i.amountToBePaid;
+          nRedeemedLoyaltyPoints -= i.amountToBePaid;
+          i.amountToBePaid = 0;
+        } else {
+          if (bTesting) console.log('else', { nRedeemedLoyaltyPoints })
+          i.nRedeemedLoyaltyPoints = nRedeemedLoyaltyPoints;
+          i.amountToBePaid -= nRedeemedLoyaltyPoints
+          nRedeemedLoyaltyPoints = 0;
+        }
+        
+        if (bTesting) console.log('after redeemed loyalty points', { main: nRedeemedLoyaltyPoints, paymentAmount: i.paymentAmount, amountToBePaid: i.amountToBePaid, nRedeemedLoyaltyPoints: i.nRedeemedLoyaltyPoints })
+      } 
+      // else {
+      //   console.log('else 176 setting redeemed point to 0 for', i.name)
+      //   i.nRedeemedLoyaltyPoints = 0;
+      // }
+
+      if(availableAmount > 0) {
         if (availableAmount >= i.amountToBePaid) {
-          console.log('if 156')
+          if (bTesting) console.log('if 156 availableAmount >= i.amountToBePaid', { availableAmount, amountToBePaid: i.amountToBePaid})
           i.paymentAmount = i.amountToBePaid;
           availableAmount -= i.amountToBePaid;
           // totalAmountToBePaid -= i.amountToBePaid;
           if (bTesting) console.log('giftcard full payment amount', i.paymentAmount);
         } else {
-          console.log('if 162')
+          if (bTesting) console.log('else 162')
           i.paymentAmount = availableAmount;
           availableAmount -= i.paymentAmount;
           if (bTesting) console.log('73 giftcard part payment amount', i.paymentAmount);
         };
       }
     })
-    return availableAmount;
+    return { nAvailable: availableAmount, nPoints: nRedeemedLoyaltyPoints };
   }
 
   handleGiftcardDiscount(totalAmountToBePaid: any, arrToUpdate: any, nGiftcardAmount: any, bTesting: boolean) {
     if (bTesting) console.log('handling giftcard discount')
     let nRemaining = nGiftcardAmount;
     arrToUpdate.forEach((i: any) => {
-      if (i.type !== 'giftcard' && nGiftcardAmount > 0 && i?.tType !== 'refund') {
+      if (nGiftcardAmount > 0 && i?.tType !== 'refund') {
         const nAmount = +((i.amountToBePaid * nGiftcardAmount / totalAmountToBePaid).toFixed(3));
         i.nGiftcardDiscount = +(nAmount.toFixed(2));
-        i.bShowGiftcardDiscountField = true;
         if (nRemaining < i.nGiftcardDiscount) {
           i.nGiftcardDiscount = +(nRemaining.toFixed(3).slice(0,-1));
         } else {
@@ -196,10 +223,9 @@ export class PaymentDistributionService {
   handleLoyaltyPointsDiscount(arrToUpdate:any, totalAmountToBePaid:any, nRedeemedLoyaltyPoints:any, bTesting:boolean){
     if (bTesting) console.log('handleLoyaltyPointsDiscount', { totalAmountToBePaid, nRedeemedLoyaltyPoints, arrToUpdate: JSON.parse(JSON.stringify(arrToUpdate)) })
     arrToUpdate.forEach((i: any) => {
-      if (!['giftcard', 'loyalty-points'].includes(i.type) && nRedeemedLoyaltyPoints > 0 && i?.tType !== 'refund') {
+      if (nRedeemedLoyaltyPoints > 0 && i?.tType !== 'refund') {
 
         i.nRedeemedLoyaltyPoints = +((i.amountToBePaid * nRedeemedLoyaltyPoints / totalAmountToBePaid).toFixed(0));
-        i.bShowLoyaltyPointsDiscountField = true;
         if (bTesting) console.log({ amountToBePaid : i.amountToBePaid })
 
         i.amountToBePaid -= i.nRedeemedLoyaltyPoints;
