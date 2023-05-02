@@ -77,7 +77,7 @@ export class GiftComponent implements OnInit {
   }
 
   checkArticleGroups() {
-    this.createArticleGroupService.checkArticleGroups('Giftcard')
+    this.createArticleGroupService.checkArticleGroups('giftcard')
       .subscribe((res: any) => {
         if (1 > res.data.length) {
           this.createArticleGroup();

@@ -357,7 +357,7 @@
             </thead>
             <tbody class="fw-bold">
               <tr *ngFor="let method of payMethods" class="bg-hover-secondary">
-                <div class="row">
+                <div class="row d-flex align-items-center">
                   <div class="col-md-8" (click)="viewDetails(method)">
                     <label>{{method.sName}}</label>
                   </div>
@@ -365,8 +365,11 @@
                     <input type="number" *ngIf="bookKeepingMode" class="form-control form-control-solid"
                       [(ngModel)]="method.sLedgerNumber" (focusout)="updateLedgerNumber(method)" />
                   </div>
-                  <div class="col-md-1 text-gray-500" (click)="deleteMethod(method)">
-                    <fa-icon icon="trash"></fa-icon>
+                  <div class="col-md-1 d-flex justify-content-center">
+                    <button class="btn btn-danger" (click)="deleteMethod(method)">
+                      <fa-icon icon="trash" aria-label="location"></fa-icon>
+                    </button>
+                    <!-- <i class="fa fa-trash" style="color:#a63b55"></i> -->
                   </div>
                 </div>
               </tr>
@@ -418,7 +421,7 @@
                   <i class="fa fa-edit"></i>
                 </button>
                 <button class="btn p-3 hover" (click)="removeQuickButton(button)">
-                  <i class="fa fa-trash" style="color:red"></i>
+                  <i class="fa fa-trash" style="color:#a63b55"></i>
                 </button>
               </div>
             </div>

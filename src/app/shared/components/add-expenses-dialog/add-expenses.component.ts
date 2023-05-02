@@ -27,15 +27,15 @@ export class AddExpensesComponent implements OnInit {
   name: any;
   submitted = false;
   ledgerDescriptions = [
-    { title: 'drinks', type: 'negative' },
-    { title: 'food', type: 'negative' },
-    { title: 'cleaning costs', type: 'negative' },
-    { title: 'office supplies', type: 'negative' },
-    { title: 'promotional material', type: 'negative' },
-    { title: 'shipping costs', type: 'negative' },
-    { title: 'car costs', type: 'negative' },
-    { title: 'Add money to cash register', type: 'positive' },
-    { title: 'Lost money/money difference', type: 'negative' },
+    { title: 'drinks', type: 'negative', eDefaultArticleType: 'expense-drinks' },
+    { title: 'food', type: 'negative', eDefaultArticleType: 'expense-food' },
+    { title: 'cleaning costs', type: 'negative', eDefaultArticleType: 'expense-cleaning-cost' },
+    { title: 'office supplies', type: 'negative', eDefaultArticleType: 'expense-office-supplies' },
+    { title: 'promotional material', type: 'negative', eDefaultArticleType: 'expense-promotional-material' },
+    { title: 'shipping costs', type: 'negative', eDefaultArticleType: 'expense-shipping-cost' },
+    { title: 'car costs', type: 'negative', eDefaultArticleType: 'expense-car-cost' },
+    { title: 'Add money to cash register', type: 'positive', eDefaultArticleType: 'expense-add-to-cash' },
+    { title: 'Lost money/money difference', type: 'negative', eDefaultArticleType: 'expense-lost-money' },
   ];
   selectedArticleGroup: any;
   allArticleGroups: any = [];
@@ -45,6 +45,7 @@ export class AddExpensesComponent implements OnInit {
   iLocationId: any = localStorage.getItem('currentLocation');
   iBusinessId: any = localStorage.getItem('currentBusiness');
   iWorkstationId: any = localStorage.getItem('currentWorkstation');
+  bLoading = false;
 
   constructor(
     private viewContainerRef: ViewContainerRef,
@@ -65,7 +66,7 @@ export class AddExpensesComponent implements OnInit {
     if (value) {
       this.currentEmployeeId = JSON.parse(value)._id;
     }
-    this.getArticleGroup();
+    // this.getArticleGroup();
     this.expenseForm = this.fb.group({
       amount: new FormControl('', [Validators.required, Validators.min(1)]),
       expenseType: new FormControl('', [Validators.required]),
@@ -76,27 +77,28 @@ export class AddExpensesComponent implements OnInit {
 
   get f() { return this.expenseForm.controls };
 
-  assignArticleGroup(type:any) {
-    this.selectedArticleGroup = null;
-    const expenseType = this.expenseForm.value.expenseType;
-    this.selectedArticleGroup = this.allArticleGroups.find((o: any) => o.sSubCategory === this.expenseForm.value.expenseType);
-    if (!this.selectedArticleGroup) {
-      this.createArticleGroup(expenseType);
-    }
-  }
-  getArticleGroup() {
-    this.createArticleGroupService.checkArticleGroups('expenses')
-      .subscribe((res: any) => {
-        if (res.data[0]) {
-          this.allArticleGroups = res.data[0].result;
-          this.selectedArticleGroup = this.allArticleGroups[0];
-        } else {
-          this.createArticleGroup('food');
-        }
-      }, err => {
-        this.toastrService.show({ type: 'danger', text: err.message });
-      });
-  }
+  // assignArticleGroup(type:any) {
+  //   this.selectedArticleGroup = null;
+  //   const expenseType = this.expenseForm.value.expenseType;
+  //   this.selectedArticleGroup = this.allArticleGroups.find((o: any) => o.sSubCategory === this.expenseForm.value.expenseType);
+  //   if (!this.selectedArticleGroup) {
+  //     this.createArticleGroup(expenseType);
+  //   }
+  // }
+  // getArticleGroup(eDefaultArticleGroup:string) {
+    
+  //   this.createArticleGroupService.checkArticleGroups(eDefaultArticleGroup).subscribe((result: any) => {
+  //     if (result?.data) {
+  //       this.allArticleGroups = result.data;
+  //       this.selectedArticleGroup = this.allArticleGroups[0];
+  //     } 
+  //     // else {
+  //     //   this.createArticleGroup('food');
+  //     // }
+  //   }, err => {
+  //     this.toastrService.show({ type: 'danger', text: err.message });
+  //   });
+  // }
 
   async createArticleGroup(sSubCategory: string) {
     const articleBody = { name: 'expenses', sCategory: 'expenses', sSubCategory };
@@ -109,15 +111,20 @@ export class AddExpensesComponent implements OnInit {
     this.dialogRef.close.emit(data);
   }
 
-  submit() {
+  async submit() {
     if (this.expenseForm.invalid) return;
+    this.bLoading = true;
     const { amount, expenseType, description, tax } = this.expenseForm.value;
 
+    const _result: any = await this.createArticleGroupService.checkArticleGroups(expenseType.eDefaultArticleType).toPromise();
+
+    const oArticleGroup = _result.data;
+    
     const oArticleGroupMetaData = {
-      aProperty: this.selectedArticleGroup?.aProperty,
-      sCategory: this.selectedArticleGroup?.sCategory,
-      sSubCategory: this.selectedArticleGroup?.sSubCategory,
-      oName: this.selectedArticleGroup?.oName
+      aProperty: oArticleGroup?.aProperty,
+      sCategory: oArticleGroup?.sCategory,
+      sSubCategory: oArticleGroup?.sSubCategory,
+      oName: oArticleGroup?.oName
     }
     const oPayment = {
       iPaymentMethodId: this.paymentMethod._id,
@@ -150,6 +157,7 @@ export class AddExpensesComponent implements OnInit {
     }
     this.apiService.postNew('cashregistry', '/api/v1/till/add-expenses', transactionItem)
       .subscribe((res: any) => {
+        this.bLoading = true;
         this.toastrService.show({ type: 'success', text: res.message });
         this.close(res);
       }, err => {

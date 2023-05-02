@@ -111,7 +111,7 @@ export class GoldPurchaseComponent implements OnInit {
   }
 
   checkArticleGroups() {
-    this.createArticleGroupService.checkArticleGroups('Gold purchase')
+    this.createArticleGroupService.checkArticleGroups('gold-purchase')
       .subscribe((res: any) => {
         if (1 > res.data.length) {
           this.createArticleGroup();

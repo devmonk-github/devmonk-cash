@@ -35,7 +35,7 @@ export class LoyaltyPointsDiscountComponent implements OnInit {
   }
 
   checkArticleGroups() {
-    this.createArticleGroupService.checkArticleGroups('Loyalty Points')
+    this.createArticleGroupService.checkArticleGroups('loyalty-points')
       .subscribe((res: any) => {
         if (1 > res.data.length) {
           this.createArticleGroup();

@@ -11,8 +11,12 @@ export class CreateArticleGroupService {
   oInternalBusinessPartner:any;
   iBusinessId:any = localStorage.getItem('currentBusiness');
   aSuppliersList:any;
+  org = localStorage.getItem('org');
+  aLanguage:any;
   constructor(private apiService: ApiService, private translateService: TranslateService) {
     this.fetchInternalBusinessPartner(this.iBusinessId);
+    if(this.org)
+    this.aLanguage = JSON.parse(this.org)['aLanguage']
   }
 
   getSupplierList(body: any): Observable<any> {
@@ -119,16 +123,13 @@ export class CreateArticleGroupService {
     return await this.apiService.postNew('core', '/api/v1/business/article-group/general', data).toPromise();
   }
 
-  checkArticleGroups(searchValue: string): Observable<any> {
+  checkArticleGroups(eDefaultArticleGroup: string): Observable<any> {
     let data = {
-      skip: 0,
-      limit: 20,
-      searchValue,
-      oFilterBy: {
-      },
+      eDefaultArticleGroup,
+      aLanguage: this.aLanguage,
       iBusinessId: localStorage.getItem('currentBusiness'),
     };
-    return this.apiService.postNew('core', '/api/v1/business/article-group/list', data).pipe(retry(1), catchError(this.processError));
+    return this.apiService.postNew('core', '/api/v1/business/article-group/get/default-article', data);
   }
 
   processError(err: any) {

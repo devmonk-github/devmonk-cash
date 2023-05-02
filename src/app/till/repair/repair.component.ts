@@ -249,7 +249,7 @@ export class RepairComponent implements OnInit {
   }
 
   checkArticleGroups() {
-    this.createArticleGroupService.checkArticleGroups('Repair')
+    this.createArticleGroupService.checkArticleGroups('repair')
       .subscribe((res: any) => {
         if (1 > res.data.length) {
           this.createArticleGroup();
