@@ -28,7 +28,7 @@
                             *ngIf="itemType === 'activity'">
                             <th>
                                 <label class="form-check form-check-custom form-check-solid me-9">
-                                    <input class="form-check-input" type="checkbox" id="kt_roles_select_all1"
+                                    <input class="form-check-input" type="checkbox" [checked]="bAllSelected" id="kt_roles_select_all1"
                                         (change)="selectAll($event.target)" />
                                 </label>
                             </th>

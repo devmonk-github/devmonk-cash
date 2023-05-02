@@ -63,6 +63,7 @@ export class TransactionItemsDetailsComponent implements OnInit {
     ]
   };
   bPriceEditMode = false;
+  bAllSelected = false;
   constructor(
     private viewContainerRef: ViewContainerRef,
     private apiService: ApiService,
@@ -130,7 +131,7 @@ export class TransactionItemsDetailsComponent implements OnInit {
       this.transactionItems = this.transactionItems.filter(o => o.oType.eKind !== 'discount' && o.oType.eKind !== 'loyalty-points' && o.oType.eKind !== 'loyalty-points-discount' && o.oType.eKind !== 'giftcard-discount');
       // console.log('this.transactionItems 3', this.transactionItems);
       this.transactionItems.forEach(element => {
-        if(!element.bIsRefunded){
+        if(!element.bIsRefunded && !element.oType.bRefund){
           element.isSelected = true;
         }
         // element.nDiscount = 0;
@@ -172,6 +173,9 @@ export class TransactionItemsDetailsComponent implements OnInit {
         // console.log('after',element.nPaymentAmount, element.nPaidAmount, element.nPriceIncVat)
       });
       this.transactionItems = this.transactionItems.map(v => ({ ...v }));
+      if(!this.transactionItems.filter((item:any)=> !item.isSelected)?.length) {
+        this.bAllSelected = true;
+      }
       // console.log('this.transactionItems 4: ', JSON.parse(JSON.stringify(this.transactionItems)));
       this.transactionItems.forEach(item => {
         // const nTotalDiscount = (+((item?.bDiscountOnPercentage ? (item.nTotalAmount * item.nDiscount / 100) : item.nDiscount).toFixed(2)) * item.nQuantity) 
