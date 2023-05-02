@@ -975,14 +975,11 @@ export class ActivityDetailsComponent implements OnInit {
   }
 
   contactCustomer(action: any){
-    if( !this.customer.bIsCounterCustomer && !this.customer.oPhone.sPrefixLandline && !this.customer.oPhone.sPrefixMobile){
-      this.toastService.show({ type: "warning", title:  this.translation['NO_PREFIX'], text: this.translation['PLEASE_ADD_COUNTRY_CODE_IN_CUSTOMER_DATA']});
-      return;
-    }
     switch (action){
       case 'call_on_ready':
         if( !this.customer.bIsCounterCustomer && !this.customer.oPhone.sPrefixLandline && !this.customer.oPhone.sPrefixMobile){
           this.toastService.show({ type: "warning", title:  this.translation['NO_PREFIX'], text: this.translation['PLEASE_ADD_COUNTRY_CODE_IN_CUSTOMER_DATA']});
+          return;
         }
 
         if(this.customer.oPhone.sLandLine && this.customer.oPhone.sPrefixLandline){
@@ -991,6 +988,7 @@ export class ActivityDetailsComponent implements OnInit {
           this.toastService.show({ type: "warning", text:  this.translation['NO_PHONE']});
         }
         break;
+
       case 'email_on_ready':
         if(this.customer.sEmail){
           window.location.href = "mailto:" + this.customer.sEmail
@@ -998,9 +996,11 @@ export class ActivityDetailsComponent implements OnInit {
           this.toastService.show({ type: "warning", text: this.translation['NO_EMAIL'] });
         }
         break;
+
       case 'whatsapp_on_ready':
         if( !this.customer.bIsCounterCustomer && !this.customer.oPhone.sPrefixLandline && !this.customer.oPhone.sPrefixMobile){
           this.toastService.show({ type: "warning", title:  this.translation['NO_PREFIX'], text: this.translation['PLEASE_ADD_COUNTRY_CODE_IN_CUSTOMER_DATA']});
+          return;
         }
 
         if(this.customer.oPhone.sMobile && this.customer.oPhone.bWhatsApp  && this.customer.oPhone.sPrefixMobile){
