@@ -619,7 +619,6 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
 
   /* Static Data for statistic (from statistic document) */
   getStaticData(sDisplayMethod?: string) {
-    console.log('getStaticData', sDisplayMethod)
     this.aStatistic = [];
     this.aPaymentMethods = [];
     this.bStatisticLoading = true;
@@ -746,8 +745,6 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
   /* Dynamic Data for statistic (from transaction-item) */
   getDynamicData(sDisplayMethod?: string) {
     /* Below for Dynamic-data */
-    console.log('getDynamicData', sDisplayMethod)
-    
     const oBody = this.processingDynamicDataRequest(sDisplayMethod);
     this.bStatisticLoading = true;
     this.statisticAuditSubscription = this.apiService
@@ -1383,6 +1380,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
   }
 
   onStateChange(dDate: any, isOpenDate: boolean, aDayClosure: any) {
+    this.aStatistic = [];
     const dFromStateTime = new Date(this.statisticFilter.dFromState).getTime();
     const dToStateTime = new Date(this.statisticFilter.dToState).getTime();
     /* Disabling the date which is smaller than the dFromState in dToState */
@@ -1409,9 +1407,6 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
       this.statisticFilter.dToState != '' && 
       this.aStatistic?.length && this.aStatistic[0]?.individual?.length
     );
-    console.log({ bCondition1, bCondition2, bCondition3, bCondition4, f: this.statisticFilter.dFromState, t: this.statisticFilter.dToState, len: this.aStatistic?.length && this.aStatistic[0]?.individual?.length })
-    // this.bShowDownload = true;
-    console.log(this.aStatistic)
   }
 
   fetchStockValuePerLocation() {
