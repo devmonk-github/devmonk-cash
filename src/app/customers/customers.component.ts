@@ -11,6 +11,7 @@ import { MenuComponent } from '../shared/_layout/components/common';
 import { CustomerDialogComponent } from '../shared/components/customer-dialog/customer-dialog.component';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { Subscription } from 'rxjs';
+import { TranslateService } from '@ngx-translate/core';
 @Component({
   selector: 'app-customers',
   templateUrl: './customers.component.html',
@@ -104,15 +105,22 @@ export class CustomersComponent implements OnInit {
     {key:'PRIVATE' , value:'private'},
     {key:'COMPANY' , value:'company'}
   ]
+  translations:any;
   aCustomerSearch:Array<any> = [String];
   aPlaceHolder: Array<any> = ["Search"];
-  addressString :any = "STREET HOUSE_NUMBER HOUSE_NUMBER_SUFFIX PSOTAL_CODE CITY COUNTRY";
+  addressString :any = "STREETHOUSE_NUMBERPOSTAL_CODE";
+  fNameString :any = "FIRSTNAME";
+  LNameString :any = "LASTNAME";
+  CNameString :any = "COMPANY_NAME";
+  nCNameString :any = "NCLIENTID";
+  //aKeywords = ['FIRSTNAME', 'LASTNAME']
   
   constructor(
     private apiService: ApiService,
     private toastService: ToastService,
     private paginationPipe: PaginatePipe,
     private dialogService: DialogService,
+    private translateService: TranslateService,
     private customerStructureService: CustomerStructureService
   ) {
   }
@@ -122,41 +130,47 @@ export class CustomersComponent implements OnInit {
     this.business._id = localStorage.getItem("currentBusiness");
     this.requestParams.iBusinessId = this.business._id;
     this.getSettings();
-    this.getCustomers();
+    this.translateService.onTranslationChange.subscribe((result:any) => {
+    this.translateService.get(this.aPlaceHolder).subscribe((result:any) => {
+      this.aPlaceHolder.forEach((el:any, index:any) => {
+        this.aPlaceHolder[index] = result[el];
+      })
+     });
+   })
+  this.getCustomers();
   }
+
   getSettings() {
     this.getSettingsSubscription = this.apiService.getNew('customer', `/api/v1/customer/settings/get/${this.requestParams.iBusinessId}`).subscribe((result: any) => {
       this.settings = result;
-      if(this.settings?.aCustomerSearch){
+      if (this.settings?.aCustomerSearch) {
         this.requestParams.oFilterBy.aSearchField = this.settings?.aCustomerSearch;
-        if(this.requestParams.oFilterBy.aSearchField.length !=0){
-          let index = this.requestParams.oFilterBy.aSearchField.indexOf("sAddress");
-          if(index != -1){
-            this.aPlaceHolder[index] =  this.addressString;
-          }else{
-            this.aPlaceHolder = this.requestParams.oFilterBy.aSearchField;
-          }
-        }else{
-          this.aPlaceHolder = ["Search"];
-        }
-        
+        this.setPlaceHolder();
       }
     }, (error) => {
       console.log(error);
     })
   }
 
-  setPlaceHolder(){
-    if(this.requestParams.oFilterBy.aSearchField.length !=0){
-      let index = this.requestParams.oFilterBy.aSearchField.indexOf("sAddress");
-      if(index != -1){
-        this.aPlaceHolder[index] =  this.addressString;
-      }else{
+  setPlaceHolder() {
+    if (this.requestParams.oFilterBy.aSearchField.length != 0) {
+      let aIndex = this.requestParams.oFilterBy.aSearchField.indexOf("sAddress");
+      let fIndex = this.requestParams.oFilterBy.aSearchField.indexOf("sFirstName");
+      let lIndex = this.requestParams.oFilterBy.aSearchField.indexOf("sLastName");
+      let cIndex = this.requestParams.oFilterBy.aSearchField.indexOf("sCompanyName");
+      let nIndex = this.requestParams.oFilterBy.aSearchField.indexOf("nClientId");
+      if (aIndex != -1 || fIndex != -1 || lIndex != -1 || cIndex != -1 || nIndex != -1) {
+        this.aPlaceHolder[aIndex] = this.translateService.instant(this.addressString);
+        this.aPlaceHolder[fIndex] = this.translateService.instant(this.fNameString);
+        this.aPlaceHolder[lIndex] = this.translateService.instant(this.LNameString);
+        this.aPlaceHolder[cIndex] = this.translateService.instant(this.CNameString);
+        this.aPlaceHolder[nIndex] = this.translateService.instant(this.nCNameString);
+      } else {
         this.aPlaceHolder = this.requestParams.oFilterBy.aSearchField;
       }
-    }else{
+    } else {
       this.aPlaceHolder = ["Search"];
-    }    
+    }
   }
 
   // Function for handle event of transaction menu

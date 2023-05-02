@@ -162,6 +162,12 @@ export class CustomerDialogComponent implements OnInit {
   
   showFilters = false;
   from:any;
+  aPlaceHolder: Array<any> = ["Search"];
+  addressString :any = "STREETHOUSE_NUMBERPOSTAL_CODE";
+  fNameString :any = "FIRSTNAME";
+  LNameString :any = "LASTNAME";
+  CNameString :any = "COMPANY_NAME";
+  nCNameString :any = "NCLIENTID";
 
   @ViewChildren('inputElement') inputElement!: QueryList<ElementRef>;
 
@@ -186,6 +192,13 @@ export class CustomerDialogComponent implements OnInit {
     this.business._id = localStorage.getItem("currentBusiness");
     this.requestParams.iBusinessId = this.business._id;
     this.getSettings();
+    this.translateService.onTranslationChange.subscribe((result:any) => {
+      this.translateService.get(this.aPlaceHolder).subscribe((result:any) => {
+        this.aPlaceHolder.forEach((el:any, index:any) => {
+          this.aPlaceHolder[index] = result[el];
+        })
+       });
+     })
     this.allcustomer = this.dialogRef?.context?.allcustomer;
   }
   getSettings() {
@@ -193,12 +206,33 @@ export class CustomerDialogComponent implements OnInit {
       this.settings = result;
       if (this.settings?.aCustomerSearch) {
         this.requestParams.oFilterBy.aSearchField = this.settings?.aCustomerSearch;
+        this.setPlaceHolder();
       }
     }, (error) => {
       console.log(error);
     })
   }
 
+  setPlaceHolder() {
+    if (this.requestParams.oFilterBy.aSearchField.length != 0) {
+      let aIndex = this.requestParams.oFilterBy.aSearchField.indexOf("sAddress");
+      let fIndex = this.requestParams.oFilterBy.aSearchField.indexOf("sFirstName");
+      let lIndex = this.requestParams.oFilterBy.aSearchField.indexOf("sLastName");
+      let cIndex = this.requestParams.oFilterBy.aSearchField.indexOf("sCompanyName");
+      let nIndex = this.requestParams.oFilterBy.aSearchField.indexOf("nClientId");
+      if (aIndex != -1 || fIndex != -1 || lIndex != -1 || cIndex != -1 || nIndex != -1) {
+        this.aPlaceHolder[aIndex] = this.translateService.instant(this.addressString);
+        this.aPlaceHolder[fIndex] = this.translateService.instant(this.fNameString);
+        this.aPlaceHolder[lIndex] = this.translateService.instant(this.LNameString);
+        this.aPlaceHolder[cIndex] = this.translateService.instant(this.CNameString);
+        this.aPlaceHolder[nIndex] = this.translateService.instant(this.nCNameString);
+      } else {
+        this.aPlaceHolder = this.requestParams.oFilterBy.aSearchField;
+      }
+    } else {
+      this.aPlaceHolder = ["Search"];
+    }
+  }
   makeCustomerName = async (customer: any) => {
     if (!customer) {
       return '';

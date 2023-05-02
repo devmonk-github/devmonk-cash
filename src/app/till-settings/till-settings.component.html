@@ -288,7 +288,7 @@
         <div class="col-5 mb-6 d-flex align-items-center">
           <label class="col-5 form-check form-switch form-check-custom form-check-solid me-3">{{ 'LAST_NCLIENT_ID' | translate}}</label>
           <label class="form-check form-switch form-check-custom form-check-solid">
-            <input type="number" class="form-control" min="0" [(ngModel)]="settings.nLastnClientID">
+            <input type="number" class="form-control" min="0" [(ngModel)]="settings.nLastnClientID" disabled>
           </label>
         </div>
         <!-- <div class="col-6 mb-6">
@@ -387,7 +387,7 @@
           </span>
         </div>
         <div class="col-md-3">
-          <button class="btn btn-primary float-end" (click)="saveFavourites($event)">{{ 'SAVE_SEQUENCE' |
+          <button class="btn btn-light-primary float-end" (click)="saveFavourites($event)">{{ 'SAVE_SEQUENCE' |
             translate}}</button>
         </div>
         <div class="col-md-1">

@@ -605,7 +605,7 @@
         <ng-container *ngIf="mode === 'create' || (mode === 'details' && editProfile)">
             <div class="row">
                 <div class="col-8">
-                    <div class="row mb-3" *ngIf="!customer?.bIsCompany">
+                    <div class="row d-flex align-items-center mb-3" *ngIf="!customer?.bIsCompany">
                         <div class="col-2">
                             <ng-select [(ngModel)]="customer.sSalutation" id="sSalutation" [clearable]="false"
                                 (ngModelChange)="customerType($event)">
@@ -633,7 +633,7 @@
                         </div>
                     </div>
                     
-                    <div class="row mb-3" *ngIf="customer?.bIsCompany">
+                    <div class="row mb-3 d-flex align-items-center" *ngIf="customer?.bIsCompany">
                         <div class="col-2">
                             <ng-select [(ngModel)]="customer.sSalutation" id="sSalutation" [clearable]="false"
                                 (ngModelChange)="customerType($event)">
@@ -649,25 +649,25 @@
                     
                     </div>
 
-                    <div class="row mb-3" *ngIf="customer?.bIsCompany">
+                    <div class="row mb-2" *ngIf="customer?.bIsCompany">
                         <div class="col-12">
                             <label for="contactDetail">{{'CONTACT_PERSON' | translate}}</label>
                         </div>
-                        <div class="row">
-                            <div class="col-5">
-                                <div>
-                                    <input class="form-control" placeholder="{{'FIRST_NAME' | translate}}" [(ngModel)]="customer.oContactPerson.sFirstName" />
-                                </div>
+                    </div>
+                    <div class="row mb-3" *ngIf="customer?.bIsCompany">
+                        <div class="col-5">
+                            <div>
+                                <input class="form-control" placeholder="{{'FIRST_NAME' | translate}}" [(ngModel)]="customer.oContactPerson.sFirstName" />
                             </div>
-                            <div class="col-2">
-                                <div>
-                                    <input class="form-control"  placeholder="{{'INSERT' | translate}}"
-                                        [(ngModel)]="customer.oContactPerson.sPrefix" />
-                                </div>
+                        </div>
+                        <div class="col-2">
+                            <div>
+                                <input class="form-control"  placeholder="{{'INSERT' | translate}}"
+                                    [(ngModel)]="customer.oContactPerson.sPrefix" />
                             </div>
-                            <div class="col-5">
-                                <div><input class="form-control"placeholder="{{'LAST_NAME' | translate}}" [(ngModel)]="customer.oContactPerson.sLastName"/>
-                                </div>
+                        </div>
+                        <div class="col-5">
+                            <div><input class="form-control"placeholder="{{'LAST_NAME' | translate}}" [(ngModel)]="customer.oContactPerson.sLastName"/>
                             </div>
                         </div>
                     </div>
@@ -695,8 +695,8 @@
                                             [value]="countryPhoneCode.value">{{countryPhoneCode.value}}</ng-option>
                                     </ng-select>
                                 </div>
-                                <div class="col-8">
-                                    <input class="form-control" id="sMobile" placeholder="{{'PHONE_MOBILE' | translate}}"
+                                <div class="col-8 custom-number">
+                                    <input class="form-control" type="number" id="sMobile" placeholder="{{'PHONE_MOBILE' | translate}}"
                                         [(ngModel)]="customer.oPhone.sMobile" />
                                 </div>
                             </div>
@@ -710,10 +710,9 @@
                                             [value]="countryPhoneCode.value">{{countryPhoneCode.value}}</ng-option>
                                     </ng-select>
                                 </div>
-                                <div class="col-8">
-                                    <input class="form-control" id="sLandLine" placeholder="{{'PHONE_LANDLINE' | translate}}"
+                                <div class="col-8 custom-number">
+                                    <input class="form-control" type="number" id="sLandLine" placeholder="{{'PHONE_LANDLINE' | translate}}"
                                         [(ngModel)]="customer.oPhone.sLandLine" />
-                    
                                 </div>
                             </div>
                         </div>
@@ -792,7 +791,7 @@
                     <div class="row">
                         <div class="col-12 mt-6">
                             <div class="d-flex justify-content-between align-items-center mb-6">
-                                <h3>{{'INVOICE_ADDRESS' | translate}}</h3>
+                                <h3 class="m-0">{{'INVOICE_ADDRESS' | translate}}</h3>
                                 <div>
                                     <button (click)="CopyInvoiceAddressToShipping()"
                                         class="btn btn-sm btn-secondary">{{'COPY_TO_SHIPPING_ADDRESS' |
@@ -803,7 +802,7 @@
                             <div class="row mb-3">
                                 <div class="col-7">
                                     <input class="form-control" placeholder="{{'STREET' | translate}}"
-                                        [(ngModel)]="customer.oInvoiceAddress.sStreet" (ngModelChange)="convertFirstLetterUpper($event , 'oInvoiceAddress.sStreet')" />
+                                        [(ngModel)]="customer.oInvoiceAddress.sStreet" (ngModelChange)="convertFirstLetterUpper($event , 'oInvoiceAddress.sStreet')" (keydown)="onlyLetters($event)"/>
                                 </div>
 
                                 <div class="col-3 custom-number">
@@ -823,7 +822,7 @@
                                 </div>
                                 <div class="col-8">
                                     <input class="form-control" placeholder="{{'CITY' | translate}}"
-                                        [(ngModel)]="customer.oInvoiceAddress.sCity" (ngModelChange)="convertFirstLetterUpper($event , 'oInvoiceAddress.sCity')" />
+                                        [(ngModel)]="customer.oInvoiceAddress.sCity" (ngModelChange)="convertFirstLetterUpper($event , 'oInvoiceAddress.sCity')"  (keydown)="onlyLetters($event)" />
                                 </div>
                             </div>
                             <div class="row mb-3">
@@ -838,12 +837,12 @@
 
                         </div>
                         <div class="col-12 mt-6">
-                            <h3>{{'SHIPPING_ADDRESS' | translate}}</h3>
+                            <h3  class="m-0 mb-6">{{'SHIPPING_ADDRESS' | translate}}</h3>
 
                             <div class="row mb-3">
                                 <div class="col-7">
                                     <input class="form-control" placeholder="{{'STREET' | translate}}"
-                                        [(ngModel)]="customer.oShippingAddress.sStreet" (ngModelChange)="convertFirstLetterUpper($event , 'oShippingAddress.sStreet')" />
+                                        [(ngModel)]="customer.oShippingAddress.sStreet" (ngModelChange)="convertFirstLetterUpper($event , 'oShippingAddress.sStreet')" (keydown)="onlyLetters($event)"/>
                                 </div>
 
                                 <div class="col-3 custom-number">
@@ -863,7 +862,7 @@
                                 </div>
                                 <div class="col-8">
                                     <input class="form-control" placeholder="{{'CITY' | translate}}"
-                                        [(ngModel)]="customer.oShippingAddress.sCity"  (ngModelChange)="convertFirstLetterUpper($event , 'oShippingAddress.sCity')" />
+                                        [(ngModel)]="customer.oShippingAddress.sCity"  (ngModelChange)="convertFirstLetterUpper($event , 'oShippingAddress.sCity')"  (keydown)="onlyLetters($event)"/>
                                 </div>
                             </div>
                             <div class="row mb-3">

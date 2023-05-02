@@ -140,7 +140,7 @@
                   <div class="form-group mb-1">
                     <label class="form-control-label mb-1">{{ "MARGIN" | translate}}</label>:
                     <input class="form-control mb-3 mb-lg-0" type="number" step="any" (keyup)="changeInMargin()"
-                      [(ngModel)]="item.nMargin" [disabled]="item.oType.bRefund || item.oType.bPrepayment">
+                      [(ngModel)]="item.nMargin" [disabled]="item.oType.bRefund">
                   </div>
                 </div>
                 <!-- PURCHASE_PRICE -->
@@ -361,7 +361,7 @@
                       <div class="col-md-4">
                           <div>{{property?.sPropertyName | translate}}</div>
                       </div>
-                      
+                     
                       <div class="col-md-8">
                           <div *ngIf="propertyOptions[property.iPropertyId]?.length > 0">
                               <ng-select class="w-100" [multiple]="true"
@@ -374,9 +374,10 @@
 
                                   <ng-template ng-option-tmp let-item="item"
                                       let-item$="item$" let-index="index">
+                                      
                                       <input id="item-{{index}}" type="checkbox"
                                           name="item-{{index}}"
-                                          [ngModel]="item$.selected" />
+                                          [ngModel]="item$.selected" [checked]="item$.selected"  />
                                       {{item.sName}}
                                   </ng-template>
 
