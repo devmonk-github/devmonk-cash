@@ -159,7 +159,9 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
     this.sDayClosureMethod = this.tillService.settings?.sDayClosureMethod || 'workstation';
     const value = localStorage.getItem('currentEmployee');
     if (value) this.iEmployeeId = JSON.parse(value)._id;
-
+    if(this.bOpeningDayClosure) {
+      if(this.tillService.settings.bShowDayStatesBasedOnTurnover) this.sDisplayMethod = eDisplayMethodKeysEnum.aRevenuePerTurnoverGroup
+    }
     this.setOptionMenu()
 
     this.fetchBusinessDetails();
@@ -1140,17 +1142,18 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
   }
 
   checkAndAskForQuickCountings() {
-    if (this.oCountings.nCashInTill != 0 && this.oCountings.nCashCounted == 0) {
+    const nTotalCash = this.oCountings.nCashInTill + this.oCountings.nCashAtStart;
+    if (nTotalCash != 0 && !this.oCountings.nCashCounted) {
       this.dialogService.openModal(ClosingDaystateDialogComponent, {
-        cssClass: 'modal-m', context: { nCashInTill: this.oCountings.nCashInTill }, hasBackdrop: true, closeOnBackdropClick: false
+        cssClass: 'modal-m', context: { nCashInTill: nTotalCash }, hasBackdrop: true, closeOnBackdropClick: false
       }).instance.close.subscribe((result: any) => {
         if (result?.type) {
-          this.oCountings.nCashCounted = this.oCountings.nCashInTill;
+          this.oCountings.nCashCounted = nTotalCash;
           if (result?.data === 'leave_in_till') {
-            this.oCountings.nCashRemain = +(this.oCountings.nCashInTill.toFixed(2));
+            this.oCountings.nCashRemain = +(nTotalCash.toFixed(2));
             this.oCountings.nSkim = 0;
           } else if (result?.data === 'skim_all') {
-            this.oCountings.nSkim = +(this.oCountings.nCashInTill.toFixed(2));
+            this.oCountings.nSkim = +(nTotalCash.toFixed(2));
             this.oCountings.nCashRemain = 0;
           }
           this.onCloseDayState();
