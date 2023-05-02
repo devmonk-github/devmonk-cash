@@ -362,8 +362,6 @@ export class RepairComponent implements OnInit {
             }
           });
           this.item.oArticleGroupMetaData.aProperty = data;
-          
-
         }
       }
     );
