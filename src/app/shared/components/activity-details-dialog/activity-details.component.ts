@@ -209,7 +209,7 @@ export class ActivityDetailsComponent implements OnInit {
       }
     });
 
-    let translationKey = ['SUCCESSFULLY_UPDATED', 'NO_DATE_SELECTED', 'NO_PHONE', 'NO_EMAIL', 'NO_PHONE_OR_WHATSAPP'];
+    let translationKey = ['SUCCESSFULLY_UPDATED', 'NO_DATE_SELECTED', 'NO_PHONE', 'NO_EMAIL','NO_PREFIX', 'PLEASE_ADD_COUNTRY_CODE_IN_CUSTOMER_DATA', 'NO_PHONE_OR_WHATSAPP'];
     this.translationService.get(translationKey).subscribe((res: any) => {
       this.translation = res;
     })
@@ -900,7 +900,6 @@ export class ActivityDetailsComponent implements OnInit {
       iActivityItemId: this.activityItems[0]._id
     }
     this.apiService.postNew('cashregistry', '/api/v1/transaction/update-customer', oBody).subscribe((result: any) => {
-      
       this.oCurrentCustomer = oBody?.oCustomer;
       this.matchSystemAndCurrentCustomer(this.customer , this.oCurrentCustomer);
 
@@ -978,12 +977,18 @@ export class ActivityDetailsComponent implements OnInit {
   contactCustomer(action: any){
     switch (action){
       case 'call_on_ready':
+        if( !this.customer.bIsCounterCustomer && !this.customer.oPhone.sPrefixLandline && !this.customer.oPhone.sPrefixMobile){
+          this.toastService.show({ type: "warning", title:  this.translation['NO_PREFIX'], text: this.translation['PLEASE_ADD_COUNTRY_CODE_IN_CUSTOMER_DATA']});
+          return;
+        }
+
         if(this.customer.oPhone.sLandLine && this.customer.oPhone.sPrefixLandline){
           window.location.href = "tel:"+ this.customer.oPhone.sPrefixLandline + this.customer.oPhone.sLandLine;
         }else{
           this.toastService.show({ type: "warning", text:  this.translation['NO_PHONE']});
         }
         break;
+
       case 'email_on_ready':
         if(this.customer.sEmail){
           window.location.href = "mailto:" + this.customer.sEmail
@@ -991,7 +996,13 @@ export class ActivityDetailsComponent implements OnInit {
           this.toastService.show({ type: "warning", text: this.translation['NO_EMAIL'] });
         }
         break;
+
       case 'whatsapp_on_ready':
+        if( !this.customer.bIsCounterCustomer && !this.customer.oPhone.sPrefixLandline && !this.customer.oPhone.sPrefixMobile){
+          this.toastService.show({ type: "warning", title:  this.translation['NO_PREFIX'], text: this.translation['PLEASE_ADD_COUNTRY_CODE_IN_CUSTOMER_DATA']});
+          return;
+        }
+
         if(this.customer.oPhone.sMobile && this.customer.oPhone.bWhatsApp  && this.customer.oPhone.sPrefixMobile){
           window.location.href = "https://wa.me/"+  this.customer.oPhone.sPrefixMobile + this.customer.oPhone.sMobile;
         }else{
