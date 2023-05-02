@@ -80,12 +80,12 @@ export class SelectArticleDialogComponent implements OnInit {
     if (!bIsSupplierUpdated) {
       const oDefaultArticle: any = await this.createArticleGroupService.checkArticleGroups(this.from).toPromise();
       // console.log('oDefaultArticle', oDefaultArticle)
-      if (oDefaultArticle?.data?.length && oDefaultArticle?.data[0]?.result?.length) {
+      if (oDefaultArticle?.data?._id) {
         if(this.iArticleGroupId){
           const articlegroup:any = await this.getArticleGroupDetail();
           this.articlegroup = articlegroup?.data;
         }else{
-          this.articlegroup = oDefaultArticle?.data[0]?.result[0];
+          this.articlegroup = oDefaultArticle?.data;
         }
         if (!this.articlegroup.aBusinessPartner?.length) {
           // console.log('need to save internal business partner')
@@ -101,7 +101,7 @@ export class SelectArticleDialogComponent implements OnInit {
         this.supplier = this.partnersList.find((el: any) => el._id === this.articlegroup.aBusinessPartner[0]?.iBusinessPartnerId);
         // console.log(55, this.articlegroup, this.supplier);
       } else {
-        const articleBody = { name: (this.from === 'repair') ? 'Repair' : 'Order', sCategory: this.from, sSubCategory: this.from };
+        const articleBody:any = { name: this.from, eDefaultArticleGroup: this.from };
         const result: any = await this.createArticleGroupService.createArticleGroup(articleBody);
         // console.log(59, {result});
         if(this.iArticleGroupId){

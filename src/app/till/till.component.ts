@@ -1561,7 +1561,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
   async addReedemedPoints(redeemedLoyaltyPoints: number) {
     let result:any;
-    result = await this.createArticleGroupService.checkArticleGroups('Loyalty Points').toPromise();
+    result = await this.createArticleGroupService.checkArticleGroups('loyalty-points').toPromise();
     let iArticleGroupId = '';
     if(result?.data?.length && result?.data[0]?.result?.length) {
       iArticleGroupId = result?.data[0]?.result[0]?._id;
@@ -1617,12 +1617,12 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   checkArticleGroups() {
-    this.createArticleGroupService.checkArticleGroups('Discount')
+    this.createArticleGroupService.checkArticleGroups('discount')
       .subscribe((res: any) => {
-        if (1 > res.data.length) {
-          this.createArticleGroup();
+        if (res.data) {
+          this.discountArticleGroup = res.data;
         } else {
-          this.discountArticleGroup = res.data[0].result[0];
+          this.createArticleGroup();
         }
       }, err => {
         this.toastrService.show({ type: 'danger', text: err.message });

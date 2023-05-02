@@ -29,8 +29,7 @@
                 
                 <div class="row mb-5">
                     <label>{{ "LEDGER_NUMBER_DESCRIPTION" | translate}}</label>
-                    <ng-select class="" formControlName="expenseType"
-                        (change)="assignArticleGroup($event)" [clearable]="false">
+                    <ng-select class="" formControlName="expenseType" [clearable]="false">
                         <ng-option *ngFor="let option of ledgerDescriptions" [value]="option">{{option.title| titlecase}}
                         </ng-option>
                     </ng-select>
@@ -52,8 +51,9 @@
 
             </div>
             <div class="card-footer">
-                <button class="btn btn-primary" type="submit" [disabled]="!expenseForm.valid">{{"SUBMIT" |
+                <button class="btn btn-primary" type="submit" [disabled]="!expenseForm.valid || bLoading">{{"SUBMIT" |
                     translate}}</button>
+                    <div *ngIf="bLoading" class="spinner-border mx-3"></div>
             </div>
         </form>
     </div>

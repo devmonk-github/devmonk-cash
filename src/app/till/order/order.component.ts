@@ -331,7 +331,7 @@ export class OrderComponent implements OnInit {
     if (this.item.iArticleGroupId) {
       return;
     }
-    this.createArticleGroupService.checkArticleGroups('Ordered products')
+    this.createArticleGroupService.checkArticleGroups('order')
       .subscribe((res: any) => {
         if (1 > res.data.length) {
           this.createArticleGroup();
