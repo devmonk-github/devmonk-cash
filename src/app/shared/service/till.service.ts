@@ -753,7 +753,7 @@ export class TillService {
       if(item.nPriceIncVatAfterDiscount == item.totalPaymentAmount) description = '';
 
       item.description = description + sRelatedDescription;
-      console.log(item);
+      // console.log(item);
       item.nPriceIncVatAfterDiscount = +(item.nPriceIncVatAfterDiscount.toFixed(2));
     })
     if (aToFetchPayments?.length) {
@@ -802,7 +802,7 @@ export class TillService {
     }
     transaction = dataObject;
     transaction.bCompletedProcessing = true;
-    console.log('processTransactionForPdfReceipt after processing', transaction);
+    // console.log('processTransactionForPdfReceipt after processing', transaction);
     return transaction;
   }
 
