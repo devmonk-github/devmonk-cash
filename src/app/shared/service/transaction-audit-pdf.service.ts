@@ -427,7 +427,7 @@ export class TransactionAuditUiPdfService {
                 const aItems = aPaymentItems.filter((el:any) => el.iPaymentMethodId === oPayment.iPaymentMethodId)
                 aItems.forEach((oItem:any) => {
                     aTexts.push([
-                        { text: oItem.sComment, style: ['td', 'margin-5'] },
+                        { text: oItem.sComment, style: ['td'], margin: [20,5] },
                         { text: oItem.nAmount.toFixed(2), style: ['td', 'margin-5', 'center'] },
                         { text: '', style: ['td', 'margin-5'] },
                     ]);
