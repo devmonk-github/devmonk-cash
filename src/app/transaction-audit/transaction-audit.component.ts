@@ -511,7 +511,11 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
       let iPurchaseIndex = this.aOptionMenu.findIndex(i => i.sValue.toLowerCase() === 'sales-order')
       this.aOptionMenu.splice(iPurchaseIndex, 1)
     }
-    this.onDropdownItemSelected(this.aOptionMenu[0], this.aOptionMenu[0].children[1], this.aOptionMenu[0].children[0].children[0])
+    if (this.tillService.settings?.bShowDayStatesBasedOnTurnover) {
+      this.onDropdownItemSelected(this.aOptionMenu[0], this.aOptionMenu[0].children[1], this.aOptionMenu[0].children[1].children[3])
+    } else {
+      this.onDropdownItemSelected(this.aOptionMenu[0], this.aOptionMenu[0].children[0], this.aOptionMenu[0].children[0].children[0])
+    }
   }
 
   goBack() {
