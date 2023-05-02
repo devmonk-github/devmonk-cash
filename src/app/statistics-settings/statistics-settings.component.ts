@@ -98,6 +98,7 @@ export class StatisticsSettingsComponent implements OnInit {
 
   getArticleGroups() {
     this.articleGroupList = [];
+    this.bIsDisable = false;
     this.loading = true;
     this.apiService.postNew('core', '/api/v1/business/article-group/list', this.requestParams).subscribe(
       (result: any) => {
@@ -115,8 +116,11 @@ export class StatisticsSettingsComponent implements OnInit {
             if (!item?.oName?.[this.selectedLanguage]) item.oName[this.selectedLanguage] = 'NO_NAME';
             return !item.sCategory
           });
+        }else{
+          this.bIsDisable = false;
         }
       }, (error) => {
+        this.bIsDisable = false;
         this.loading = false;
         this.toastService.show({ type: 'warning', text: 'something went wrong' });
       })

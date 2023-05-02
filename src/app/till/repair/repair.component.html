@@ -363,6 +363,7 @@
                       </div>
                      
                       <div class="col-md-8">
+                        
                           <div *ngIf="propertyOptions[property.iPropertyId]?.length > 0">
                               <ng-select class="w-100" [multiple]="true"
                                   [items]="propertyOptions[property.iPropertyId]"
@@ -374,6 +375,8 @@
 
                                   <ng-template ng-option-tmp let-item="item"
                                       let-item$="item$" let-index="index">
+                                     
+                                      {{item$.selected}}
                                       <input id="item-{{index}}" type="checkbox"
                                           name="item-{{index}}"
                                           [ngModel]="item$.selected" [checked]="item$.selected"  />

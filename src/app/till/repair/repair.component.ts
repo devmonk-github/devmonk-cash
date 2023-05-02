@@ -79,11 +79,11 @@ export class RepairComponent implements OnInit {
     this.checkArticleGroups();
     this.getProperties();
 
-    console.log("this.item", this.item.sName)
+    console.log("this.item.sName", this.item.sName)
 
     //console.log("this.item", this.tillService.settings.currentLocation.nLastBagNumber);
     //console.log("this.settings.bAutoIncrementBagNumbers ", this.settings.bAutoIncrementBagNumbers);
-     //console.log("this.item", this.item);
+     console.log("this.item", this.item);
     // console.log(this.item?.nPurchasePrice);
     // this.listSuppliers();
     // this.getBusinessBrands();
@@ -321,8 +321,10 @@ export class RepairComponent implements OnInit {
     this.apiService.postNew('core', '/api/v1/properties/list', data).subscribe(
       (result: any) => {
         if (result.data && result.data.length > 0) {
+          console.log("result.data[0].result", result.data[0].result);
           result.data[0].result.map((property: any) => {
             if (typeof (this.propertyOptions[property._id]) == 'undefined') {
+              console.log("ifs");
               this.propertyOptions[property._id] = [];
               property.aOptions.map((option: any) => {
                 if (option?.sCode?.trim() != '') {
@@ -362,6 +364,7 @@ export class RepairComponent implements OnInit {
             }
           });
           this.item.oArticleGroupMetaData.aProperty = data;
+          console.log("this.item.oArticleGroupMetaData.aProperty", this.item.oArticleGroupMetaData.aProperty);
         }
       }
     );
