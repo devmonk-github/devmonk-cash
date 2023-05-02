@@ -77,7 +77,7 @@ export class StatisticsSettingsComponent implements OnInit {
         { text: "YES", value: 'success', status: 'success', class: 'ml-auto mr-2' },
         { text: "CANCEL", value: 'close' }
       ];
-      this.dialogService.openModal(ConfirmationDialogComponent, { context: { header: '', bodyText: 'Are you sure you want to enable turnover groups on your daystates/statistics?', buttonDetails: confirmBtnDetails } })
+      this.dialogService.openModal(ConfirmationDialogComponent, { context: { header: '', bodyText: 'Are you sure you want to enable turnover groups on your daystates/statistics?', buttonDetails: confirmBtnDetails }, hasBackdrop: true, })
         .instance.close.subscribe((status: any) => {
           if (status == 'success') {
             this.loading = true;
