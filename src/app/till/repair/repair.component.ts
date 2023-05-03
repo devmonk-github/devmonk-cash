@@ -125,6 +125,9 @@ export class RepairComponent implements OnInit {
             this.descriptionRef.nativeElement.focus();
           }
           const { articlegroup, brand, supplier, nMargin } = data;
+    
+          this.item.iArticleGroupId = articlegroup._id;
+          this.item.iArticleGroupOriginalId = articlegroup._id;
           this.item.supplier = supplier.sName;
           this.supplier = supplier.sName;
           this.item.iSupplierId = supplier._id;
@@ -321,10 +324,10 @@ export class RepairComponent implements OnInit {
     this.apiService.postNew('core', '/api/v1/properties/list', data).subscribe(
       (result: any) => {
         if (result.data && result.data.length > 0) {
-          console.log("result.data[0].result", result.data[0].result);
+          // console.log("result.data[0].result", result.data[0].result);
           result.data[0].result.map((property: any) => {
             if (typeof (this.propertyOptions[property._id]) == 'undefined') {
-              console.log("ifs");
+              // console.log("ifs");
               this.propertyOptions[property._id] = [];
               property.aOptions.map((option: any) => {
                 if (option?.sCode?.trim() != '') {
@@ -364,7 +367,7 @@ export class RepairComponent implements OnInit {
             }
           });
           this.item.oArticleGroupMetaData.aProperty = data;
-          console.log("this.item.oArticleGroupMetaData.aProperty", this.item.oArticleGroupMetaData.aProperty);
+          // console.log("this.item.oArticleGroupMetaData.aProperty", this.item.oArticleGroupMetaData.aProperty);
         }
       }
     );
