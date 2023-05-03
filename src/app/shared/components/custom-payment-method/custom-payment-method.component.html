@@ -1,10 +1,14 @@
 <div class="card">
-    <div class="card-header row" style="margin-top: 20px;">
+    <div class="card-header align-items-center" style="margin-top: 20px;">
         <div class="col-md-10">
-            <h4 *ngIf="mode === 'create'">{{ 'CREATE_PAYMENT_METHOD' | translate}}</h4>
-            <h4 *ngIf="mode === 'details'">{{ 'UPDATE_PAYMENT_METHOD' | translate}}</h4>
+            <h4 class="m-0" *ngIf="mode === 'create'">{{ 'CREATE_PAYMENT_METHOD' | translate}}</h4>
+            <h4 class="m-0" *ngIf="mode === 'details'">{{ 'UPDATE_PAYMENT_METHOD' | translate}}</h4>
         </div>
-        <div class="col-md-2"></div>
+        <div>
+            <button type="button" class="btn btn-sm btn-light" (click)="close()">
+                <i class="fa fa-times"></i>
+            </button>
+        </div>
     </div>
     <div class="card-body">
         <diV class="row">
@@ -67,13 +71,11 @@
             </div>
         </diV> -->
     </div>
-    <div class="card-footer row">
-        <div class="col-md-10">
-            <button *ngIf="mode === 'create'" class="btn btn-primary" (click)="create()">{{ 'CREATE' | translate }}</button>
-            <button *ngIf="mode === 'details'" class="btn btn-primary" (click)="update()">{{ 'SUBMIT' | translate }}</button>
-        </div>
-        <div class="col-md-2">
+    <div class="card-footer p-5 justify-content-end align-items-center d-flex">
+        <button *ngIf="mode === 'create'" class="btn btn-primary" (click)="create()">{{ 'CREATE' | translate }}</button>
+        <button *ngIf="mode === 'details'" class="btn btn-primary" (click)="update()">{{ 'SUBMIT' | translate }}</button>
+        <!-- <div class="col-md-2">
             <button class="btn btn-secondary" (click)="close()">{{ 'CLOSE' | translate }}</button>
-        </div>
+        </div> -->
     </div>
 </div>
