@@ -79,11 +79,10 @@ export class RepairComponent implements OnInit {
     this.checkArticleGroups();
     this.getProperties();
 
-    console.log("this.item.sName", this.item.sName)
-
     //console.log("this.item", this.tillService.settings.currentLocation.nLastBagNumber);
     //console.log("this.settings.bAutoIncrementBagNumbers ", this.settings.bAutoIncrementBagNumbers);
-     console.log("this.item", this.item);
+     
+
     // console.log(this.item?.nPurchasePrice);
     // this.listSuppliers();
     // this.getBusinessBrands();
@@ -98,7 +97,82 @@ export class RepairComponent implements OnInit {
       this.selectArticleGroup();
       this.item.new = false;
     }
-    this.processProperty();
+    
+  }
+
+  /* setting a property if item already having the property */
+  processProperty() {
+    if (this.item?.oArticleGroupMetaData?.aProperty?.length) {
+      const aProperty = this.item.oArticleGroupMetaData.aProperty;
+      for (const oProperty of aProperty) {
+        this.selectedProperties[oProperty.iPropertyId] = [oProperty.sPropertyOptionName];
+      }
+    }
+  }
+  getProperties() {
+    this.selectedProperties = [];
+    let data = {
+      skip: 0,
+      limit: 500,
+      sortBy: '',
+      sortOrder: '',
+      searchValue: '',
+      oFilterBy: {},
+      iBusinessId: localStorage.getItem('currentBusiness'),
+    };
+
+    this.apiService.postNew('core', '/api/v1/properties/list', data).subscribe(
+      (result: any) => {
+        if (result.data && result.data.length > 0) {
+          result.data[0].result.map((property: any) => {
+            if (!this.propertyOptions[property._id]) {
+              this.propertyOptions[property._id] = [];
+              property.aOptions.map((option: any) => {
+                if (option?.sCode?.trim() != '') {
+                  let opt: any = {
+                    iPropertyId: property._id,
+                    iPropertyOptionId: option?._id,
+                    sPropertyOptionName: option?.sKey,
+                    sPropertyName: property.sName,
+                    oProperty: {
+                    },
+                    sCode: option.sCode,
+                    sName: option.sKey,
+                    selected:true
+                  };
+                  opt.oProperty[option.sKey] = option.value;
+                  this.propertyOptions[property._id].push(opt);
+                  const proprtyIndex = this.aProperty.findIndex((prop: any) => prop.iPropertyId == property._id);
+                  if (proprtyIndex === -1) {
+                    this.aProperty.push(opt);
+                  }
+                }
+              });
+            }
+          });
+
+          if (this.item.oArticleGroupMetaData.aProperty.length === 0) {
+            this.item.oArticleGroupMetaData.aProperty = this.aProperty
+          };
+          const data = this.item.oArticleGroupMetaData.aProperty.filter(
+            (set => (a: any) => true === set.has(a.iPropertyId))(new Set(this.aProperty.map((b: any) => b.iPropertyId)))
+          );
+
+          data.forEach((element: any) => {
+            const toReplace = this.propertyOptions[element.iPropertyId].find((o: any) => o.sPropertyOptionName === element.sPropertyOptionName);
+            
+            if (!toReplace) {
+              element.selected = false;
+            }else{
+              element = toReplace;
+              this.selectedProperties[toReplace.iPropertyId] = toReplace.sCode;
+            }
+          });
+          this.item.oArticleGroupMetaData.aProperty = data;
+          this.processProperty();
+        }
+      }
+    );
   }
 
   selectArticleGroup() {
@@ -179,6 +253,7 @@ export class RepairComponent implements OnInit {
         if (prop) {
           this.item.oArticleGroupMetaData.aProperty[propertiesIndex] = prop;
           this.selectedProperties[properties.iPropertyId] = properties.sCode;
+          console.log("updateProperties this.selectedProperties", this.selectedProperties);
         }
       };
     });
@@ -309,69 +384,7 @@ export class RepairComponent implements OnInit {
     })
   }
 
-  getProperties() {
-    this.selectedProperties = [];
-    let data = {
-      skip: 0,
-      limit: 500,
-      sortBy: '',
-      sortOrder: '',
-      searchValue: '',
-      oFilterBy: {},
-      iBusinessId: localStorage.getItem('currentBusiness'),
-    };
-
-    this.apiService.postNew('core', '/api/v1/properties/list', data).subscribe(
-      (result: any) => {
-        if (result.data && result.data.length > 0) {
-          // console.log("result.data[0].result", result.data[0].result);
-          result.data[0].result.map((property: any) => {
-            if (typeof (this.propertyOptions[property._id]) == 'undefined') {
-              // console.log("ifs");
-              this.propertyOptions[property._id] = [];
-              property.aOptions.map((option: any) => {
-                if (option?.sCode?.trim() != '') {
-                  let opt: any = {
-                    iPropertyId: property._id,
-                    iPropertyOptionId: option?._id,
-                    sPropertyOptionName: option?.sKey,
-                    sPropertyName: property.sName,
-                    oProperty: {
-                    },
-                    sCode: option.sCode,
-                    sName: option.sKey,
-                  };
-                  opt.oProperty[option.sKey] = option.value;
-                  this.propertyOptions[property._id].push(opt);
-                  const proprtyIndex = this.aProperty.findIndex((prop: any) => prop.iPropertyId == property._id);
-                  if (proprtyIndex === -1) {
-                    this.aProperty.push(opt);
-                  }
-                }
-              });
-            }
-          });
-
-          if (this.item.oArticleGroupMetaData.aProperty.length === 0) {
-            this.item.oArticleGroupMetaData.aProperty = this.aProperty
-          };
-          const data = this.item.oArticleGroupMetaData.aProperty.filter(
-            (set => (a: any) => true === set.has(a.iPropertyId))(new Set(this.aProperty.map((b: any) => b.iPropertyId)))
-          );
-
-          data.forEach((element: any) => {
-            const toReplace = this.propertyOptions[element.iPropertyId].find((o: any) => o.sPropertyOptionName === element.sPropertyOptionName);
-            if (toReplace) {
-              element = toReplace;
-              this.selectedProperties[toReplace.iPropertyId] = toReplace.sCode;
-            }
-          });
-          this.item.oArticleGroupMetaData.aProperty = data;
-          // console.log("this.item.oArticleGroupMetaData.aProperty", this.item.oArticleGroupMetaData.aProperty);
-        }
-      }
-    );
-  }
+  
 
   // Function for search suppliers
   searchSuppliers(searchStr: string) {
@@ -421,23 +434,19 @@ export class RepairComponent implements OnInit {
 
   // Function for set dynamic property option
   setPropertyOption(property: any, index: number) {
+    console.log('setPropertyOption', this.selectedProperties);
     if (this.propertyOptions[property.iPropertyId]?.length > 0) {
       let option = this.propertyOptions[property.iPropertyId].filter((opt: any) => opt.sCode == this.selectedProperties[property.iPropertyId]);
       if (option?.length > 0) {
         this.item.oArticleGroupMetaData.aProperty[index] = option[0];
       }
     }
+    console.log("setPropertyOption this.item.oArticleGroupMetaData.aProperty", this.item.oArticleGroupMetaData.aProperty);
+      
+    
   }
 
-  /* setting a property if item already having the property */
-  processProperty() {
-    if (this.item?.oArticleGroupMetaData?.aProperty?.length) {
-      const aProperty = this.item.oArticleGroupMetaData.aProperty;
-      for (const oProperty of aProperty) {
-        this.selectedProperties[oProperty.iPropertyId] = oProperty.sCode
-      }
-    }
-  }
+  
 
   openImageModal() {
     this.dialogService.openModal(ImageUploadComponent, { cssClass: "modal-m", context: { mode: 'create' } })
