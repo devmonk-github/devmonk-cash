@@ -1015,4 +1015,21 @@ export class ActivityDetailsComponent implements OnInit {
   updatePriceIncVatWithoutDiscount(oActivity:any){
     this.processDiscounts([oActivity]);
   }
+
+  printThermalReceipt(oActivity:any, type:string = 'repair') {
+    oActivity.businessDetails = this.businessDetails;
+    // console.log({oActivity, type});
+    const oEmployee = this.employeesList.find((el: any) => el._id === oActivity.iEmployeeId);
+    
+    oActivity.sAdvisedEmpFirstName = (oEmployee) ? oEmployee.sFirstName : 'a';
+    this.receiptService.printThermalReceipt({
+      currency: this.tillService.currency,
+      oDataSource: JSON.parse(JSON.stringify(oActivity)),
+      printSettings: this.printSettings,
+      apikey: this.businessDetails.oPrintNode.sApiKey,
+      title: oActivity.sNumber,
+      sType: type,
+      sTemplateType: type
+    });
+  }
 }

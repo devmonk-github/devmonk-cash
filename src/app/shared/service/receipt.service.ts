@@ -773,8 +773,8 @@ export class ReceiptService {
         // this.styles = {};
     }
 
-    async printThermalReceipt({currency, oDataSource, printSettings, apikey, title, sType, sTemplateType }: any) {
-       
+    async printThermalReceipt({oDataSource, printSettings, apikey, title, sType, sTemplateType }: any) {
+        oDataSource = JSON.parse(JSON.stringify(oDataSource));
         if(oDataSource?.aPayments?.length) {
             // console.log(oDataSource?.aPayments);
             oDataSource?.aPayments?.forEach((payment:any) => {
@@ -791,15 +791,21 @@ export class ReceiptService {
             return;
         }
         this.apiService.getNew('cashregistry', `/api/v1/print-template/${sTemplateType}/${this.iBusinessId}/${this.iLocationId}`).subscribe((result: any) => {
-            
+            // console.log({result})
             if (result?.data?.aTemplate?.length > 0) {
-               let transactionDetails = { currency:currency,business: this.businessDetails, ...oDataSource };
-                // console.log("transactionDetails", transactionDetails);
-                transactionDetails.oCustomer = {
-                    ...transactionDetails.oCustomer,
-                    ...transactionDetails.oCustomer.oPhone,
-                    ...transactionDetails.oCustomer.oInvoiceAddress
+                // console.log("transactionDetails", oDataSource);
+                oDataSource.businessDetails = {
+                    ...oDataSource.businessDetails,
+                    ...oDataSource.businessDetails?.oPhone,
+                    ...oDataSource.businessDetails?.currentLocation?.oAddress,
+                }
+                oDataSource.oCustomer = {
+                    ...oDataSource.oCustomer,
+                    ...oDataSource.oCustomer.oPhone,
+                    ...oDataSource.oCustomer.oInvoiceAddress
                 };
+                if (oDataSource.sBusinessPartnerName) oDataSource.sRepairByName = oDataSource.sBusinessPartnerName;
+
                 let command;
                 try {
                     const oParameters:any = {
@@ -807,12 +813,12 @@ export class ReceiptService {
                         nLineLength_normal: result.data?.nLineLength_normal
                     }
 
-                    command = this.pn2escposService.generate(JSON.stringify(result.data.aTemplate), JSON.stringify(transactionDetails), oParameters);
+                    command = this.pn2escposService.generate(JSON.stringify(result.data.aTemplate), JSON.stringify(oDataSource), oParameters);
                     // console.log(command);
                     // return;
                 } catch (e) {
                     this.toastService.show({ type: 'danger', text: 'Template not defined properly. Check browser console for more details' });
-                    // console.log(e);
+                    console.log(e);
                     return;
                 }
 

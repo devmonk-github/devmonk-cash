@@ -404,6 +404,20 @@
                                                                     }}</span>
                                                             </div>
                                                         </div>
+                                                        <div class="menu-item px-3 text-center"
+                                                            (click)="printThermalReceipt(activity)">
+                                                            <div class="menu-link px-3">
+                                                                <fa-icon [icon]="faPrint"></fa-icon>
+                                                                <span class="ms-5">{{ 'PRINT_THERMAL' | translate }}</span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="menu-item px-3 text-center"
+                                                            (click)="printThermalReceipt(activity, 'repair_alternative')">
+                                                            <div class="menu-link px-3">
+                                                                <fa-icon [icon]="faPrint"></fa-icon>
+                                                                <span class="ms-5">{{ 'PRINT_THERMAL_ALTERNATIVE' | translate }}</span>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
