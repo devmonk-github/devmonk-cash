@@ -540,34 +540,13 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
 
   matchSystemAndCurrentCustomer(systemCustomer:any , currentCustomer:any){
     this.showSystemCustomer = false;
-    const Customer:any = [{
-      "oInvoiceAddress" : {
-          "sStreet" : "",
-          "sHouseNumber" : "",
-          "sPostalCode" : "",
-          "sCity" : "",
-          "sCountry" : "",
-          "sCountryCode" : ""
-      },
-      "oPhone" : {
-          "bWhatsApp" : true,
-          "sCountryCode" : "",
-          "sMobile" : "",
-          "sLandLine" : "",
-          "sFax" : ""
-      },
-      "bCounter" : false,
-      "_id" : null,
-      "sFirstName" : "",
-      "sLastName" : "",
-      "sPrefix" : "",
-      "sGender" : "",
-      //"sVatNumber" : "",
-      //"sCocNumber" : "",
-      "sEmail" : ""
-  }];
+    let currentCustomerData:any;
+    const aCurrentCustomerKeys: any =['oInvoiceAddress' , 'oPhone' , 'bCounter' , '_id' , 'sFirstName' , 'sLastName' , 'sPrefix' , 'sGender' , 'sEmail' , 'sVatNumber' , 'sCompanyName' , 'sCocNumber' , 'bIsCompany' , 'oContactPerson' , 'nClientId'];
+    aCurrentCustomerKeys.forEach((keys:any)=>{
+        currentCustomerData = { ... currentCustomerData , [keys]:currentCustomer[keys]}
+    })
 
-  for(const [key,value] of Object.entries(currentCustomer)){
+  for(const [key,value] of Object.entries(currentCustomerData)){
       if(!(_.isEqual(systemCustomer[key], currentCustomer[key]))){
        this.showSystemCustomer = true;
       }
