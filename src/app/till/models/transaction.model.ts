@@ -18,9 +18,11 @@ export class Transaction {
     public oCustomer?: {
       _id: string,
       sFirstName: string,
+      sSalutation: string,
       sLastName: string,
       sPrefix: string,
       oInvoiceAddress: string,
+      oShippingAddress:string,
       nClientId: string,
       sGender: string,
       bCounter: string,
@@ -29,7 +31,8 @@ export class Transaction {
       sCocNumber: string,
       sEmail: string,
       sCompanyName:string,
-      bIsCompany:boolean
+      bIsCompany:boolean,
+      oContactPerson: string
     }
   ) {
   }
