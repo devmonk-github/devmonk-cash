@@ -70,75 +70,53 @@ export class SelectArticleDialogComponent implements OnInit {
     })
   }
 
-  async getArticleGroupDetail() {
-    return this.apiService.getNew('core', `/api/v1/business/article-group/${this.iArticleGroupId}?iBusinessId=${this.iBusinessId}`).toPromise();
+  getAllArticleGroupList(data: any) {
+    return this.apiService.postNew('core', '/api/v1/business/article-group/list', data).toPromise();
+  }
+
+  async getDefaultArticleGroupDetail(iArticleGroupId:any) {
+    const eDefaultArticleGroup = this.articleGroupsList.find((el: any) => el._id === this.iArticleGroupId);
+    if(eDefaultArticleGroup){
+      this.articlegroup = eDefaultArticleGroup;
+      this.supplier = this.partnersList.find((el: any) => el._id === this.articlegroup.aBusinessPartner[0]?.iBusinessPartnerId);
+    }
   }
 
 
   async fetchArticleGroups(iBusinessPartnerId: any, bIsSupplierUpdated:boolean = false) {
-    // console.log('fetchArticleGroups', { iBusinessPartnerId, bIsSupplierUpdated})
-    if (!bIsSupplierUpdated) {
-      const oDefaultArticle: any = await this.createArticleGroupService.checkArticleGroups(this.from).toPromise();
-      // console.log('oDefaultArticle', oDefaultArticle)
-      if (oDefaultArticle?.data?._id) {
-        if(this.iArticleGroupId){
-          const articlegroup:any = await this.getArticleGroupDetail();
-          this.articlegroup = articlegroup?.data;
-        }else{
-          this.articlegroup = oDefaultArticle?.data;
-        }
-        if (!this.articlegroup.aBusinessPartner?.length) {
-          // console.log('need to save internal business partner')
-          const result:any = await this.createArticleGroupService.saveInternalBusinessPartnerToArticleGroup(this.articlegroup).toPromise();
-          if(this.iArticleGroupId){
-            const articlegroup:any = await this.getArticleGroupDetail();
-            this.articlegroup = articlegroup?.data;
-          }else{
-            this.articlegroup = result?.data;
-          }
-          
-        }
-        this.supplier = this.partnersList.find((el: any) => el._id === this.articlegroup.aBusinessPartner[0]?.iBusinessPartnerId);
-        // console.log(55, this.articlegroup, this.supplier);
-      } else {
-        const articleBody:any = { name: this.from, eDefaultArticleGroup: this.from };
-        const result: any = await this.createArticleGroupService.createArticleGroup(articleBody);
-        // console.log(59, {result});
-        if(this.iArticleGroupId){
-          const articlegroup:any = await this.getArticleGroupDetail();
-          this.articlegroup = articlegroup?.data;
-        }else{
-          this.articlegroup = result?.data;//[0]?.result[0];
-        }
-        // console.log(61, this.articlegroup)
-        this.supplier = this.partnersList.find((el: any) => el._id === this.articlegroup.aBusinessPartner[0].iBusinessPartnerId);
-
-      }
-    }
-    
     let data = {
       iBusinessPartnerId,
       iBusinessId: this.iBusinessId,
     };
-    
-    this.apiService.postNew('core', '/api/v1/business/article-group/list', data).subscribe((result: any) => {
-        if (result.data?.length && result.data[0]?.result?.length) {
-          this.articleGroupsList = result.data[0].result;
-          // console.log("this.articleGroupsList", this.articleGroupsList);
-          this.articleGroupLoading = false;
-          
-          // setTimeout(() => {
-          //   if (this.articleGroupRef)
-          //     this.articleGroupRef.focus()
-          // }, 150);
-        } 
-        // else {
-        //   this.fetchArticleGroups(null);
-        // }
 
-      }, error => {
-        this.toastrService.show({ type: 'danger', text: error.message });
-      });
+    const result: any = await this.getAllArticleGroupList(data);
+    if(result.data?.length && result.data[0]?.result?.length){
+      this.articleGroupsList = result.data[0].result;
+      this.articleGroupLoading = false;
+    }
+    if (this.iArticleGroupId) {
+      this.getDefaultArticleGroupDetail(this.iArticleGroupId);
+    }
+    else {
+      if (!bIsSupplierUpdated) {
+        const oDefaultArticle: any = await this.createArticleGroupService.checkArticleGroups(this.from).toPromise();
+        if (oDefaultArticle?.data?._id) {
+          this.articlegroup = oDefaultArticle?.data;
+          if (!this.articlegroup.aBusinessPartner?.length) {
+            const result: any = await this.createArticleGroupService.saveInternalBusinessPartnerToArticleGroup(this.articlegroup).toPromise();
+            this.articlegroup = result?.data;
+          }
+          this.supplier = this.partnersList.find((el: any) => el._id === this.articlegroup.aBusinessPartner[0]?.iBusinessPartnerId);
+          
+        } else {
+          const articleBody: any = { name: this.from, eDefaultArticleGroup: this.from };
+          const result: any = await this.createArticleGroupService.createArticleGroup(articleBody);
+          this.articlegroup = result?.data;//[0]?.result[0];
+          this.supplier = this.partnersList.find((el: any) => el._id === this.articlegroup.aBusinessPartner[0].iBusinessPartnerId);
+
+        }
+      }
+    }
   }
 
   // Function for search article group
