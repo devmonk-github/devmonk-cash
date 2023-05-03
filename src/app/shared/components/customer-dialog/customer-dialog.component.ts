@@ -232,6 +232,11 @@ export class CustomerDialogComponent implements OnInit {
     } else {
       this.aPlaceHolder = ["Search"];
     }
+    this.aPlaceHolder = this.removeDuplicates(this.aPlaceHolder);
+  }
+
+  removeDuplicates(arr:any) {
+    return arr.filter((item:any,index:any) => arr.indexOf(item) === index);
   }
   makeCustomerName = async (customer: any) => {
     if (!customer) {

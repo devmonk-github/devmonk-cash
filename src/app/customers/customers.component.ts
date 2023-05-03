@@ -171,6 +171,11 @@ export class CustomersComponent implements OnInit {
     } else {
       this.aPlaceHolder = ["Search"];
     }
+    this.aPlaceHolder = this.removeDuplicates(this.aPlaceHolder);
+  }
+
+  removeDuplicates(arr:any) {
+    return arr.filter((item:any,index:any) => arr.indexOf(item) === index);
   }
 
   // Function for handle event of transaction menu
