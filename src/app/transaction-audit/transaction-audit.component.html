@@ -355,7 +355,7 @@
                                         <span class="col-8"> {{ oStatisticsData.dStartDate | date:'medium' }}
                                         </span>
                                     </p>
-                                    <p class="row" *ngIf="bDisableCountings">
+                                    <p class="row" *ngIf="bDayStateClosed">
                                         <span class="col-4 fw-bolder">{{ "END_DATE" | translate}} : </span>
                                         <span class="col-8"> {{ oStatisticsData.dEndDate | date:'medium' }} </span>
                                     </p>
@@ -1528,7 +1528,7 @@
                                                 <input type="number" class="form-control p-2"
                                                     [(ngModel)]="amount.nQuantity"
                                                     (ngModelChange)="calculateTotalCounting()"
-                                                    [disabled]="bDisableCountings">
+                                                    [disabled]="bDayStateClosed">
                                             </td>
                                             <td class="w-50">
                                                 <label class="currency">{{ (amount.nQuantity * amount.nValue) | currency: transactionAuditPdfService.currency}}</label>
@@ -1542,7 +1542,7 @@
                                 <div class="d-flex flex-wrap">
                                     <label>{{'NOTES' | translate}}</label>
                                     <div class="flex-grow-1 ms-5">
-                                        <textarea class="form-control" rows="5" [disabled]="bDisableCountings"
+                                        <textarea class="form-control" rows="5" [disabled]="bDayStateClosed"
                                             [(ngModel)]="oStatisticsDocument.sComment"></textarea>
                                     </div>
                                 </div>
@@ -1578,15 +1578,15 @@
                                     <input type="number" class="form-control p-2 w-30"
                                         [(ngModel)]="oCountings.nCashCounted"
                                         (ngModelChange)="oCountings.nCashRemain = +((oCountings.nCashCounted - oCountings.nSkim).toFixed(2))"
-                                        [disabled]="bDisableCountings">
+                                        [disabled]="bDayStateClosed">
                                 </div>
                                 <div>
                                     <label>{{ "TREASURY_DIFFERENCE" | translate}}</label>
                                     <label class="bold">
-                                        <ng-container *ngIf="bDisableCountings">
+                                        <ng-container *ngIf="bDayStateClosed">
                                             {{ oCountings.nCashDifference | currency: transactionAuditPdfService.currency }}
                                         </ng-container>
-                                        <ng-container *ngIf="!bDisableCountings">
+                                        <ng-container *ngIf="!bDayStateClosed">
                                             {{ oCountings.nCashCounted - (oCountings.nCashAtStart + oCountings.nCashInTill) | currency: transactionAuditPdfService.currency }}
                                         </ng-container>
                                     </label>
@@ -1595,14 +1595,14 @@
                                     <label>{{ "SKIM" | translate}}</label>
                                     <input type="number" class="form-control p-2 w-30" [(ngModel)]="oCountings.nSkim"
                                         (ngModelChange)="oCountings.nCashRemain = +((oCountings.nCashCounted - oCountings.nSkim).toFixed(2))"
-                                        [disabled]="bDisableCountings">
+                                        [disabled]="bDayStateClosed">
                                 </div>
                                 <div>
                                     <label>{{ "AMOUNT_TO_LEFT_IN_CASH" | translate}}</label>
                                     <input type="number" class="form-control p-2 w-30"
                                         [(ngModel)]="oCountings.nCashRemain"
                                         (ngModelChange)="oCountings.nSkim = +((oCountings.nCashCounted - oCountings.nCashRemain).toFixed(2))"
-                                        [disabled]="bDisableCountings">
+                                        [disabled]="bDayStateClosed">
                                 </div>
                                 <br>
                                 
