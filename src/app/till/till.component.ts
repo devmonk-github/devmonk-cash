@@ -805,13 +805,9 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
   createTransaction() {
     const isGoldForCash = this.checkUseForGold();
-    if (this.transactionItems.length < 1 || !isGoldForCash) {
-      return;
-    }
+    if (this.transactionItems.length < 1 || !isGoldForCash) return;
     const giftCardPayment = this.allPaymentMethod.find((o) => o.sName === 'Giftcards');
     this.saveInProgress = true;
-    // const nTotalToPay = this.nItemsTotalToBePaid;
-    // const nEnteredAmountTotal = this.availableAmount;
 
     if (this.nItemsTotalToBePaid < 0) {
       let nDiff = parseFloat((this.nItemsTotalToBePaid - this.availableAmount).toFixed(2));
@@ -834,7 +830,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
         closeOnBackdropClick: false,
         closeOnEsc: false
       }).instance.close.subscribe(async (payMethods: any) => {
-        // console.log(payMethods)
         if (!payMethods) {
           this.saveInProgress = false;
           this.clearPaymentAmounts();
@@ -845,35 +840,19 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
               pay.amount = 0;
             }
           });
-          // payMethods = payMethods.filter((o: any) => o.amount !== 0);
           this.availableAmount = this.getUsedPayMethods(true);
           this.nGiftcardAmount = _.sumBy(this.appliedGiftCards, 'nAmount') || 0;
           this.paymentDistributeService.distributeAmount(this.transactionItems, this.availableAmount, this.nGiftcardAmount, this.redeemedLoyaltyPoints);
           this.transactionItems = [...this.transactionItems.filter((item: any) => item.type !== 'empty-line')]
           const body = this.tillService.createTransactionBody(this.transactionItems, payMethods, this.discountArticleGroup, this.redeemedLoyaltyPoints, this.customer);
-          // console.log('body: ', body);
           if (body.transactionItems.filter((item: any) => item.oType.eKind === 'repair')[0]?.iActivityItemId) {
             this.bHasIActivityItemId = true
           }
-          // console.log(giftCardPayment, this.appliedGiftCards)
-          if (giftCardPayment && this.appliedGiftCards.length > 0) {
-            // this.appliedGiftCards.forEach(element => {
-              //   const cardPaymethod = _.clone(giftCardPayment);
-              //   cardPaymethod.amount = element.nAmount;
-              //   cardPaymethod.sGiftCardNumber = element.sGiftCardNumber;
-              //   cardPaymethod.iArticleGroupId = element.iArticleGroupId;
-              //   cardPaymethod.iArticleGroupOriginalId = element.iArticleGroupOriginalId;
-              //   cardPaymethod.type = element.type;
-              //   body.payments.push(cardPaymethod);
-              // });
-              body.giftCards = this.appliedGiftCards;
-            }
+          if (giftCardPayment && this.appliedGiftCards.length > 0) body.giftCards = this.appliedGiftCards;
           body.oTransaction.iActivityId = this.iActivityId;
           let result = body.transactionItems.map((a: any) => a.iBusinessPartnerId);
           const uniq = [...new Set(_.compact(result))];
           if (this.appliedGiftCards?.length) this.tillService.createGiftcardTransactionItem(body, this.discountArticleGroup);
-          // console.log(body);
-          // return;
 
           const oDialogComponent: DialogComponent = this.dialogService.openModal(TransactionActionDialogComponent, 
             {
@@ -890,7 +869,6 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
             }
           }
 
-          // console.log('body: ', body);
           this.apiService.postNew('cashregistry', '/api/v1/till/transaction', body).subscribe(async (data: any) => {
 
             this.saveInProgress = false;
@@ -901,10 +879,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
             this.activityItems = activityItems;
             this.activity = activity;
 
-            if (this.tillService.settings?.currentLocation?.bAutoIncrementBagNumbers) {
-              this.tillService.updateSettings();
-            }
-
+            if (this.tillService.settings?.currentLocation?.bAutoIncrementBagNumbers) this.tillService.updateSettings();
 
             this.transaction.aTransactionItems.map((tItem: any) => {
               for (const aItem of this.activityItems) {

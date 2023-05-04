@@ -71,21 +71,11 @@ export class RepairComponent implements OnInit {
     private createArticleGroupService: CreateArticleGroupService) { }
 
     async ngOnInit() {
-    // console.log(this.settings.nLastBagNumber, this.settings.bAutoIncrementBagNumbers);
-    
     this.listSuppliers();
     this.listEmployees();
     this.getBusinessBrands();
     this.checkArticleGroups();
     this.getProperties();
-
-    //console.log("this.item", this.tillService.settings.currentLocation.nLastBagNumber);
-    //console.log("this.settings.bAutoIncrementBagNumbers ", this.settings.bAutoIncrementBagNumbers);
-     
-
-    // console.log(this.item?.nPurchasePrice);
-    // this.listSuppliers();
-    // this.getBusinessBrands();
     if (this.settings.bAutoIncrementBagNumbers) {
       if(this.settings?.sPrefix != undefined){
         this.item.sBagNumber =  this.settings?.sPrefix + (this.settings.nLastBagNumber + 1).toString();
@@ -179,7 +169,6 @@ export class RepairComponent implements OnInit {
     if (this.settings.bAutoIncrementBagNumbers) {
       this.item.sBagNumber =  this.settings.sPrefix + (this.settings.nLastBagNumber + 1).toString();
     }
-    console.log("this.item.sBagNumber", this.item.sBagNumber);
     this.dialogService.openModal(SelectArticleDialogComponent, 
       { 
         cssClass: 'modal-m', 
@@ -199,7 +188,6 @@ export class RepairComponent implements OnInit {
             this.descriptionRef.nativeElement.focus();
           }
           const { articlegroup, brand, supplier, nMargin } = data;
-    
           this.item.iArticleGroupId = articlegroup._id;
           this.item.iArticleGroupOriginalId = articlegroup._id;
           this.item.supplier = supplier.sName;
@@ -223,7 +211,6 @@ export class RepairComponent implements OnInit {
           brandsList: data.brandsList,
           partnersList: data.partnersList
         }
-        // console.log('oStaticData', this.oStaticData)
         this.articleGroupDataChanged.emit(this.oStaticData)
       });
   }
@@ -246,6 +233,8 @@ export class RepairComponent implements OnInit {
 
   updateProperties(articlegroup: any) {
     this.item.oArticleGroupMetaData.aProperty = articlegroup.aProperty;
+    this.item.oArticleGroupMetaData.sCategory = articlegroup.sCategory;
+    this.item.oArticleGroupMetaData.sSubCategory = articlegroup.sSubCategory;
     articlegroup.aProperty.forEach((properties: any) => {
       const propertiesIndex = this.item.oArticleGroupMetaData.aProperty.findIndex((aProperty: any) => aProperty.iPropertyId === properties.iPropertyId);
       if (propertiesIndex > -1) {
@@ -253,7 +242,6 @@ export class RepairComponent implements OnInit {
         if (prop) {
           this.item.oArticleGroupMetaData.aProperty[propertiesIndex] = prop;
           this.selectedProperties[properties.iPropertyId] = properties.sCode;
-          console.log("updateProperties this.selectedProperties", this.selectedProperties);
         }
       };
     });
@@ -346,9 +334,6 @@ export class RepairComponent implements OnInit {
   }
 
   constisEqualsJson(obj1: any, obj2: any) {
-    // const keys1 = Object.keys(obj1);
-    // const keys2 = Object.keys(obj2);
-    // return keys1.length === keys2.length && Object.keys(obj1).every(key => obj1[key] == obj2[key]);
     return obj1===obj2;
   }
 
@@ -383,8 +368,6 @@ export class RepairComponent implements OnInit {
       }
     })
   }
-
-  
 
   // Function for search suppliers
   searchSuppliers(searchStr: string) {
@@ -434,20 +417,14 @@ export class RepairComponent implements OnInit {
 
   // Function for set dynamic property option
   setPropertyOption(property: any, index: number) {
-    console.log('setPropertyOption', this.selectedProperties);
     if (this.propertyOptions[property.iPropertyId]?.length > 0) {
       let option = this.propertyOptions[property.iPropertyId].filter((opt: any) => opt.sCode == this.selectedProperties[property.iPropertyId]);
       if (option?.length > 0) {
         this.item.oArticleGroupMetaData.aProperty[index] = option[0];
       }
     }
-    console.log("setPropertyOption this.item.oArticleGroupMetaData.aProperty", this.item.oArticleGroupMetaData.aProperty);
-      
-    
   }
-
   
-
   openImageModal() {
     this.dialogService.openModal(ImageUploadComponent, { cssClass: "modal-m", context: { mode: 'create' } })
       .instance.close.subscribe(result => {
