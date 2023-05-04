@@ -178,12 +178,6 @@ export class TransactionsComponent implements OnInit, OnDestroy {
       setTimeout(() => {
         MenuComponent.reinitialization();
       }, 200);
-      // this.http.get<any>(this.businessDetails.sLogoLight).subscribe((data:any)=> {
-      //   console.log(data)
-      // }, (error:any)=> {
-      //   console.log(error)
-      //   this.businessDetails.sLogoLight = "local";
-      // })
     })
 
   }
@@ -200,23 +194,6 @@ export class TransactionsComponent implements OnInit, OnDestroy {
     })
   }
 
-  // getMethods(arr: any){
-  //   let str = undefined;
-  //   for(const obj of arr){
-  //     if(!str) str = obj.sMethod;
-  //     else str = str + ', ' + obj.sMethod;
-  //   }
-  //   return str;
-  // }
-
-  // getPaymets(arr:any){
-  //   let total = 0;
-  //   for(const obj of arr){
-  //     total= total + Number(obj?.nAmount)
-  //   }
-  //   return total;
-  // }
-
   toolTipData(item: any) {
     var itemList = []
     var returnArr = [];
@@ -230,7 +207,6 @@ export class TransactionsComponent implements OnInit, OnDestroy {
         returnArr.push('- ' + item.aTransactionItems[i].sProductName + ' | €' + (item.aTransactionItems[i].nPriceIncVat || 0))
       }
     }
-    // return returnArr;
     return returnArr.join("<br>")
   }
 
@@ -239,19 +215,18 @@ export class TransactionsComponent implements OnInit, OnDestroy {
   }
 
   loadTransaction() {
-    if(this.bIsSearch){
-      this.requestParams.skip = 0;
-    }
+    if (this.bIsSearch) this.requestParams.skip = 0;
     this.transactions = [];
     this.requestParams.iBusinessId = this.iBusinessId;
     this.requestParams.type = 'transaction';
     this.requestParams.filterDates = this.filterDates;
     this.requestParams.transactionStatus = this.transactionStatuses;
     this.requestParams.iEmployeeId = this.employee && this.employee._id ? this.employee._id : '';
-    this.requestParams.iWorkstationId = undefined // we need to work on this once devides are available.\
+    this.requestParams.iWorkstationId = undefined // we need to work on this once devides are available.
     this.showLoader = true;
     this.requestParams.eTransactionType = this.eType;
-    this.apiService.postNew('cashregistry', '/api/v1/transaction/cashRegister', this.requestParams).subscribe((result: any) => {
+    this.requestParams.bIsDetailRequire = true;  // to fetch the extra detail;
+    this.apiService.postNew('cashregistry', '/api/v1/transaction/list', this.requestParams).subscribe((result: any) => {
       if (result?.data?.result?.length) {
         this.transactions = result.data.result;
         // console.log(this.transactions);

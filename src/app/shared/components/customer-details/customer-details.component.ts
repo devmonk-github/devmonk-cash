@@ -855,10 +855,11 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
       iBusinessId: this.requestParams.iBusinessId,
       skip:this.purchaseRequestParams.skip,
       limit:this.purchaseRequestParams.limit,
-      oFilterBy:this.requestParams.oFBy
+      oFilterBy:this.requestParams.oFBy,
+      bIsDetailRequire: true // to fetch the extra details
     }
 
-    this.apiService.postNew('cashregistry', '/api/v1/transaction/cashRegister', body).subscribe((result: any) => {
+    this.apiService.postNew('cashregistry', '/api/v1/transaction/list', body).subscribe((result: any) => {
       if (result?.data?.result) {
         this.aTransactions = result.data.result || [];
         this.purchasePaginationConfig.totalItems = this.aTransactions.length;

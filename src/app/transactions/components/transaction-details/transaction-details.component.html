@@ -1,5 +1,3 @@
-<!-- <app-supplier-product-slider [$data]="SupplierStockProductSliderData.asObservable()">
-</app-supplier-product-slider> -->
 <div class="overlay-full d-flex flex-column justify-content-center align-items-center"
     *ngIf="paymentEditMode && !bIsDayStateOpened">
     <div *ngIf="bDayStateChecking">
@@ -31,94 +29,6 @@
     <div class="card-body main m-0">
         <div class="row">
             <div class="col-4">
-
-                <!-- SYSTEM_CUSTOMER Start-->
-                <!-- <div *ngIf="transaction?.oSystemCustomer?._id">
-                    <div class="d-flex align-items-center">
-                        <h3 class="fw-bolder mb-0">
-                            <span>{{ "SYSTEM_CUSTOMER" | translate }}</span>
-                        </h3>
-                        <ng-container *ngIf="from === 'transactions' || from === 'transactions-action' ">
-                            <button *ngIf="!transaction?.oSystemCustomer?.bCounter" class="btn btn-primary cstm-btn"
-                                (click)="openCustomer(transaction.oSystemCustomer)">
-                                {{ 'VIEW' | translate }}
-                            </button>
-                        </ng-container>
-                    </div>
-                    <div class="row fw-bold gy-1" *ngIf="showSystemCustomer">
-                        <div class="col-md-12">
-                            <div class="text-gray-900 mt-2">
-                                <span *ngIf="!transaction?.oSystemCustomer?.bIsCompany"> {{ transaction?.oSystemCustomer?.sFirstName }}</span>
-                                <span *ngIf="!transaction?.oSystemCustomer?.bIsCompany"> {{ transaction?.oSystemCustomer?.sPrefix}} </span>
-                                <span *ngIf="!transaction?.oSystemCustomer?.bIsCompany">   {{transaction?.oSystemCustomer?.sLastName }} </span>
-                                <span *ngIf="transaction?.oSystemCustomer?.bIsCompany">   {{transaction?.oSystemCustomer?.sCompanyName}}</span>
-                            </div>
-                        </div>
-
-                        <ng-container *ngIf="!transaction?.oSystemCustomer?.bCounter">
-                            <div class="col-md-6">
-                                <div class="mt-2 text-muted">{{ "INVOVICE_ADDRESS" | translate}}</div>
-                                <div class="text-gray-800 mt-2">
-                                    <span>
-                                        {{ transaction?.oSystemCustomer?.oInvoiceAddress?.sStreet }}
-                                        {{ transaction?.oSystemCustomer?.oInvoiceAddress?.sHouseNumber }}
-                                    </span>
-                                    <span>
-                                        {{ transaction?.oSystemCustomer?.oInvoiceAddress?.sPostalCode }}
-                                        {{ transaction?.oSystemCustomer?.oInvoiceAddress?.sCity }} </span>
-                                    <span>
-                                        {{ transaction?.oSystemCustomer?.oInvoiceAddress?.sCountry }}
-                                    </span>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="mt-2 text-muted">{{ "SHIPPING_ADDRESS" | translate}}</div>
-                                <div class="text-gray-800 mt-2">
-                                    <span>
-                                        {{ transaction?.oSystemCustomer?.oShippingAddress?.sStreet }}
-                                        {{ transaction?.oSystemCustomer?.oShippingAddress?.sHouseNumber }}
-                                    </span>
-                                    <span>
-                                        {{ transaction?.oSystemCustomer?.oShippingAddress?.sPostalCode }}
-                                        {{ transaction?.oSystemCustomer?.oShippingAddress?.sCity }}
-                                    </span>
-                                    <span>
-                                        {{ transaction?.oSystemCustomer?.oShippingAddress?.sCountry }}
-                                    </span>
-                                </div>
-                            </div>
-                            <div class="col-md-12">
-                                <div class="text-gray-800 mt-2"
-                                    *ngIf="!transaction?.oSystemCustomer?.bCounter &&  transaction?.oSystemCustomer?.sEmail">
-                                    {{ transaction?.oSystemCustomer?.sEmail}}
-                                </div>
-                                <div class="text-gray-800 mt-2" *ngIf="transaction?.oSystemCustomer?.oPhone?.sMobile">
-                                    {{ transaction?.oSystemCustomer?.oPhone?.sMobile}}
-                                </div>
-                                <div class="text-gray-800 mt-2" *ngIf="transaction?.oSystemCustomer?.oPhone?.sLandLine">
-                                    {{transaction?.oSystemCustomer?.oPhone?.sLandLine}}
-                                </div>
-                            </div>
-                            <div class="col-md-12"> -->
-                                <!-- <div class=" mt-2" *ngIf="transaction?.oSystemCustomer?.sCompanyName">
-                                    <span class="text-muted me-5">{{ 'COMPANY_NAME' | translate}}: </span>
-                                    <span class="text-gray-800">{{ transaction?.oSystemCustomer?.sCompanyName }}</span>
-                                </div> -->
-                                <!-- <div class=" mt-2" *ngIf="transaction?.oSystemCustomer?.sVatNumber">
-                                    <span class="text-muted me-5">{{ 'VAT_NUMBER' | translate}}: </span>
-                                    <span class="text-gray-800">{{ transaction?.oSystemCustomer?.sVatNumber }}</span>
-                                </div>
-                                <div>
-                                    <ng-container *ngIf="transaction?.oSystemCustomer?.eStatus=='d'">
-                                        <span class="badge badge-danger"> {{"DELETED" | translate}}</span>
-                                    </ng-container>
-                                </div>
-                            </div>
-                        </ng-container>
-                    </div>
-                </div> -->
-                <!-- SYSTEM_CUSTOMER End -->
-
 
                 <!-- CURRENT_CUSTOMER Start -->
                 <div class="alert alert-warning" role="alert" *ngIf="showSystemCustomer">
@@ -363,10 +273,6 @@
                             <fa-icon [icon]="faClipboard"></fa-icon>
                             <label class="mx-auto cursor-pointer">{{"VIEW_LOG" | translate}}</label>
                         </button>
-                        <!-- <button class="btn btn-sm btn-light btn-active-light-primary text-black  w-100 d-flex mb-2">
-                            <fa-icon [icon]="faTrashAlt"></fa-icon>
-                            <label class="mx-auto cursor-pointer">{{ "DELETE" | translate}}</label>
-                        </button> -->
                     </div>
                 </div>
             </div>

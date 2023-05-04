@@ -109,7 +109,6 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   }
 
   async ngOnInit() {
-     //console.log(this.transaction, this.from, this.printSettings);
     let sIndex = this.transaction.aPayments.findIndex((value: any) => value.sRemarks == "CHANGE_MONEY");
     if (sIndex > -1) {
       this.changeAmount = this.transaction.aPayments[sIndex].nAmount;
