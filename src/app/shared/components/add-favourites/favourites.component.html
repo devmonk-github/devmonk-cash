@@ -1,10 +1,14 @@
 <div class="card">
-    <div class="card-header row" style="margin-top: 20px;">
+    <div class="card-header align-items-center mt-20px">
         <div class="col-md-10">
-            <h4 *ngIf="mode === 'create'">{{ 'CREATE_FAVOURITE' | translate}}</h4>
-            <h4 *ngIf="mode === 'assign'">{{'ASSIGN_PRODUCT' | translate}}</h4>
+            <h4 class="m-0" *ngIf="mode === 'create'">{{ 'CREATE_FAVOURITE' | translate}}</h4>
+            <h4 class="m-0" *ngIf="mode === 'assign'">{{'ASSIGN_PRODUCT' | translate}}</h4>
         </div>
-        <div class="col-md-2"></div>
+        <div>
+            <button type="button" class="btn btn-sm btn-light" (click)="close(false)">
+                <i class="fa fa-times"></i>
+            </button>
+        </div>
     </div>
     <div class="card-body">
         <div class="row">
@@ -19,28 +23,26 @@
             </div>
         </div>
         <div>
-            <div class="row" *ngIf="shopProducts && shopProducts.length > 0">
+            <div class="row my-3" *ngIf="shopProducts && shopProducts.length > 0">
                 <!-- <h5>{{'BUSINESS_PRODUCTS'}}</h5> -->
                 <div class="col-md-6 cursor-pointer" *ngFor="let product of shopProducts"
                     (mouseenter)="product['showOption'] = true" (mouseleave)="product['showOption'] = false">
-                    <div class="card m-1 shadow-sm">
-                        <div class="card-body">
-                            <div class="d-flex">
-                                <div class="w-50 p-2">
-                                    <img src="{{product.aImage[0]? product.aImage[0]: '../assets/images/no-photo-available.jpg' }}"
-                                        class="w-auto h-xxl-100px">
-                                </div>
-                                <div class="w-50 px-2">
-                                    <label class="business-bg-color rounded-full px-2 py-1 text-white text-sm"> {{
-                                        "BUSINESS_PRODUCT" | translate}}</label>
-                                    <p class="block mt-2">{{ product.oName? product.oName['en'] : 'No name' }}</p>
-                                    <p class="mt-2">{{ product.sEan }}</p>
-                                    <p class="mt-2">{{ product.sProductNumber }}</p>
-                                </div>
+                    <div class="card m-1 shadow-sm custom-card">
+                        <div class="card-body  custom-flex">
+                            <div class="r-content">
+                                <img src="{{product.aImage[0]? product.aImage[0]: '../assets/images/no-photo-available.jpg' }}"
+                                    class="w-auto h-xxl-100px">
                             </div>
-                            <div class="absolute hover-product-option mt-n6" *ngIf="product['showOption']">
+                            <div class="l-content">
+                                <!-- <label class="business-bg-color rounded-full px-2 py-1 text-white text-sm"> {{
+                                    "BUSINESS_PRODUCT" | translate}}</label> -->
+                                <p class="block mt-2">{{ product.oName? product.oName['en'] : 'No name' }}</p>
+                                <p class="mt-2">{{ product.sEan || "-" }}</p>
+                                <p class="mt-2">{{ product.sProductNumber || "-"}}</p>
+                            </div>
+                            <div class="hover-product-option mt-n5 b-content" *ngIf="product['showOption']">
                                 <div class="d-flex">
-                                    <button class="btn btn-secondary w-50 mr-2 p-0"
+                                    <button class="btn btn-secondary w-100 mr-2 p-0"
                                         (click)="onSelectProduct(product, 'business', 'same-article')">
                                         {{ "SELECT" | translate}}
                                     </button>
@@ -91,9 +93,9 @@
         <div class="row my-5" *ngIf="newSelectedProduct">
             <div class="col-md-6">
                 <div class="d-flex flex-column">
-                    <h4> {{ "IMAGE" | translate}}</h4>
+                    <h4 class="m-0"> {{ "IMAGE" | translate}}</h4>
                     <img src="{{ newSelectedProduct.aImage && newSelectedProduct?.aImage[0] ? newSelectedProduct?.aImage[0] : '../../../../../../assets/images/no-photo-available.jpg' }}"
-                        class="w-50">
+                        class="w-100" style="max-width: 270px; object-fit: contain;">
                 </div>
             </div>
             <div class="col-md-6">
@@ -120,10 +122,10 @@
             <span *ngIf="mode === 'edit'">{{'SAVE' | translate}}</span>
         </button>
 
-        <button *ngIf="mode == 'assign'" class="btn btn-primary me-2" (click)="assignProduct()" [disabled]="!bValid">
+        <button *ngIf="mode == 'assign'" class="btn btn-primary" (click)="assignProduct()" [disabled]="!bValid">
             {{'ASSIGN' | translate}}
         </button>
 
-        <button class="btn btn-secondary" (click)="close(false)">{{ 'CLOSE' | translate}}</button>
+        <!-- <button class="btn btn-secondary" (click)="close(false)">{{ 'CLOSE' | translate}}</button> -->
     </div>
 </div>

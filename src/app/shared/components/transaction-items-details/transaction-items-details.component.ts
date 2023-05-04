@@ -23,7 +23,7 @@ export class TransactionItemsDetailsComponent implements OnInit {
   showLoader = false;
   translation :any =[];
   transactionColumns :any= []
-  activityColumns : any= []
+  activityColumns: any = ['ACTIVITY_ITEM_NUMBER', 'PRODUCT_NAME', 'BAG_NUMBER', 'TOTAL_AMOUNT', 'PAID_AMOUNT', 'IS_PREPAYMENT', 'CREATED_ON', 'ACTIONS']
   transactionItems: Array<any> = [];
   faTimes = faTimes;
   itemType = 'transaction';
@@ -69,7 +69,6 @@ export class TransactionItemsDetailsComponent implements OnInit {
     private apiService: ApiService,
     private route: ActivatedRoute,
     private toastrService: ToastService,
-    private transaltionService:TranslateService,
     private tillService: TillService
     ) {
       const _injector = this.viewContainerRef.parentInjector;
@@ -79,12 +78,12 @@ export class TransactionItemsDetailsComponent implements OnInit {
     
     ngOnInit(): void {
       // console.log('this.transactionItems 1', this.transactionItems);
-      const translation =['ACTIVITY_ITEM_NUMBER', 'BAG_NUMBER', 'TOTAL_AMOUNT' , 'PAID_AMOUNT' , 'IS_PREPAYMENT' , 'CREATED_ON' , 'ACTIONS' , 'PRODUCT_NAME' , 'PRICE' , 'QUANTITY' , 'PAYMENT_AMOUNT'];
-      this.transaltionService.get(translation).subscribe((res:any)=>{
-        this.translation = res
-      })
-      this.transactionColumns =  [this.translation['PRODUCT_NAME'] , this.translation['PRICE'], this.translation['QUANTITY'], this.translation['PAYMENT_AMOUNT'], this.translation['IS_PREPAYMENT'], this.translation['CREATED_ON'], this.translation['ACTIONS']];
-      this.activityColumns = [this.translation['ACTIVITY_ITEM_NUMBER'], this.translation['PRODUCT_NAME'], this.translation['BAG_NUMBER'], this.translation['TOTAL_AMOUNT'], this.translation['PAID_AMOUNT'], this.translation['IS_PREPAYMENT'], this.translation['CREATED_ON'], this.translation['ACTIONS']];
+      // const translation =['ACTIVITY_ITEM_NUMBER', 'BAG_NUMBER', 'TOTAL_AMOUNT' , 'PAID_AMOUNT' , 'IS_PREPAYMENT' , 'CREATED_ON' , 'ACTIONS' , 'PRODUCT_NAME' , 'PRICE' , 'QUANTITY' , 'PAYMENT_AMOUNT'];
+      // this.transaltionService.get(translation).subscribe((res:any)=>{
+      //   console.log(res)
+      //   this.translation = res
+      // })
+      // this.transactionColumns =  [this.translation['PRODUCT_NAME'] , this.translation['PRICE'], this.translation['QUANTITY'], this.translation['PAYMENT_AMOUNT'], this.translation['IS_PREPAYMENT'], this.translation['CREATED_ON'], this.translation['ACTIONS']];
       this.apiService.setToastService(this.toastrService);
       // this.itemType = this.dialogRef.context.itemType;
       // this.transaction = this.dialogRef.context.transaction;
@@ -182,7 +181,7 @@ export class TransactionItemsDetailsComponent implements OnInit {
         //                         + (item?.nRedeemedLoyaltyPoints || 0) 
         //                         + (item?.nRedeemedGiftcardAmount || 0);
         // console.log({ nTotalDiscount }, item?.nRedeemedLoyaltyPoints, item?.nRedeemedGiftcardAmount, (item.nTotalAmount * item.nDiscount / 100))
-        if (item.nPaidAmount < item.nPriceIncVat) {
+        if (item.nPaidAmount < item.nTotalAmount) {
           item.tType = 'pay';
         } else {
           item.tType = 'refund';

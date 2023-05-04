@@ -244,7 +244,7 @@ export class ActivityDetailsComponent implements OnInit {
     this.apiService.getNew('customer', `/api/v1/customer/${this.iBusinessId}/${iCustomerId}`).subscribe((result: any) => {
       if (result?.data) {
         this.customer = result?.data;
-        this.matchSystemAndCurrentCustomer(this.customer , this.oCurrentCustomer);
+        // this.matchSystemAndCurrentCustomer(this.customer , this.oCurrentCustomer);
       }      
     })
   }
@@ -609,39 +609,21 @@ export class ActivityDetailsComponent implements OnInit {
     );  
   }
 
-  matchSystemAndCurrentCustomer(systemCustomer:any , currentCustomer:any){
+  matchSystemAndCurrentCustomer(systemCustomer: any, currentCustomer: any) {
     this.showSystemCustomer = false;
-    const Customer:any = [{
-      "oInvoiceAddress" : {
-          "sStreet" : "",
-          "sHouseNumber" : "",
-          "sPostalCode" : "",
-          "sCity" : "",
-          "sCountry" : "",
-          "sCountryCode" : ""
-      },
-      "oPhone" : {
-          "bWhatsApp" : true,
-          "sCountryCode" : "",
-          "sMobile" : "",
-          "sLandLine" : "",
-          "sFax" : ""
-      },
-      "bCounter" : false,
-      "_id" : null,
-      "sFirstName" : "",
-      "sLastName" : "",
-      "sPrefix" : "",
-      "sGender" : "",
-      "sEmail" : ""
-  }];
-  if(this.from == 'activity-items'){
-  for(const [key,value] of Object.entries(currentCustomer)){
-      if(!(_.isEqual(systemCustomer[key], currentCustomer[key]))){
-       this.showSystemCustomer = true;
+    let currentCustomerData: any;
+    const aCurrentCustomerKeys: any = ['oInvoiceAddress', 'oPhone', 'bCounter', '_id', 'sFirstName', 'sLastName', 'sPrefix', 'sGender', 'sEmail', 'sVatNumber', 'sCompanyName', 'sCocNumber', 'bIsCompany', 'oContactPerson', 'nClientId' , 'sSalutation'];
+    aCurrentCustomerKeys.forEach((keys: any) => {
+      currentCustomerData = { ...currentCustomerData, [keys]: currentCustomer[keys] }
+    })
+
+    if (this.from == 'activity-items') {
+      for (const [key, value] of Object.entries(currentCustomerData)) {
+        if (!(_.isEqual(systemCustomer[key], currentCustomer[key]))) {
+          this.showSystemCustomer = true;
+        }
       }
-   }
-  }
+    }
   }
 
   async processTransactionItems() {
@@ -1015,5 +997,22 @@ export class ActivityDetailsComponent implements OnInit {
 
   updatePriceIncVatWithoutDiscount(oActivity:any){
     this.processDiscounts([oActivity]);
+  }
+
+  printThermalReceipt(oActivity:any, type:string = 'repair') {
+    oActivity.businessDetails = this.businessDetails;
+    // console.log({oActivity, type});
+    const oEmployee = this.employeesList.find((el: any) => el._id === oActivity.iEmployeeId);
+    
+    oActivity.sAdvisedEmpFirstName = (oEmployee) ? oEmployee.sFirstName : 'a';
+    this.receiptService.printThermalReceipt({
+      currency: this.tillService.currency,
+      oDataSource: JSON.parse(JSON.stringify(oActivity)),
+      printSettings: this.printSettings,
+      apikey: this.businessDetails.oPrintNode.sApiKey,
+      title: oActivity.sNumber,
+      sType: type,
+      sTemplateType: type
+    });
   }
 }

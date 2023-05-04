@@ -176,10 +176,12 @@ export class TillService {
       body.oTransaction.iCustomerId = customer._id;
       body.oTransaction.oCustomer = {
         _id: customer._id,
+        sSalutation: customer?.sSalutation,
         sFirstName: customer.sFirstName,
         sLastName: customer.sLastName,
         sPrefix: customer.sPrefix,
         oInvoiceAddress: customer.oInvoiceAddress,
+        oShippingAddress: customer?.oShippingAddress,
         nClientId: customer.nClientId,
         sGender: customer.sGender,
         bCounter: customer.bCounter,
@@ -188,7 +190,8 @@ export class TillService {
         sCompanyName: customer.sCompanyName,
         sCocNumber: customer.sCocNumber,
         bIsCompany:customer?.bIsCompany,
-        sEmail: customer.sEmail
+        sEmail: customer.sEmail,
+        oContactPerson: customer?.oContactPerson
       }
     };
     // console.log('length 115: ', transactionItems?.length);
@@ -511,6 +514,7 @@ export class TillService {
             name: item.sProductName || item.sProductNumber,
             iActivityItemId: item.iActivityItemId,
             nRefundAmount: item.nPaidAmount,
+            nRevenueAmount: item.nRevenueAmount,
             iLastTransactionItemId: item.iTransactionItemId,
             prePaidAmount: tType === 'refund' ? item.nPaidAmount : item.nPaymentAmount,
             type: item.sGiftCardNumber ? 'giftcard' : item.oType.eKind,

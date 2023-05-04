@@ -25,6 +25,7 @@ export class Pn2escposService {
   data: any;
   parameters: any = Object;
   dateFormat: string = "DD-MM-yyyy hh:mm";
+  dateOnlyFormat: string = "DD-MM-yyyy";
   constructor( 
       private translateService: TranslateService,
       private commonService: CommonPrintSettingsService
@@ -92,7 +93,7 @@ export class Pn2escposService {
           //this.clog('EXECUTING {"'+action.do+'":"'+action.data+'"}')
           let a;
           if (action.if) {
-            
+            // console.log('if', action?.object)
             if (this.checkConditions(action.if, (action?.object) ? this.data[action.object] : this.data)) {
               a = this.doAction(action, key)
               commandString += a;
@@ -413,10 +414,27 @@ export class Pn2escposService {
       case "measureprinter":
         return this.printMeasuringReceipt();
 
+      case "multiple":
+        return this.handleMultiple(command.data);
+
       default:
         this.cerror(command.do + '" is not a valid action', command);
         return "";
     }
+  }
+
+  handleMultiple(elements:any){
+    // console.log('multiple',{elements})
+    let data = '';
+    elements.forEach((el:any) => {
+      const action = Object.keys(el)[0];
+      if(action === 'text')
+        data += this.addText({data: el.text});
+      else if(action === 'barcode_right') 
+        data += this.addBarcodeRight(el.barcode_right)
+    })
+    // console.log(data)
+    return data;
   }
 
   replaceVariables(commandText: any, itemData = null, colpos = 0, colwidth = 0, colcount = 0, pullright = false, itemIndex?:number) {
@@ -590,13 +608,15 @@ export class Pn2escposService {
   }
 
   private formatContent(val: any, type: string): any {
-    // console.log('formatContent', val, type, typeof val)
     switch (type) {
       case 'money':
         return this.convertStringToMoney(val);
       case 'date':
         // console.log({val, dateFormat: this.dateFormat, 'moment(val)': moment(val), 'moment(val).format': moment(val).format(this.dateFormat)})
         return (val === '' || val === 'NO_DATE_SELECTED' || moment(val).format(this.dateFormat) == 'Invalid date') ? val : moment(val).format(this.dateFormat);
+      case 'dateonly':
+        // console.log({val, dateFormat: this.dateFormat, 'moment(val)': moment(val), 'moment(val).format': moment(val).format(this.dateFormat)})
+        return (val === '' || val === 'NO_DATE_SELECTED' || moment(val).format(this.dateFormat) == 'Invalid date') ? val : moment(val).format(this.dateOnlyFormat);
     }
   }
 
@@ -886,9 +906,8 @@ export class Pn2escposService {
     // var item = dataSourceObject; //Used for the eval() function
     const bTestResult = conditions.every((rule: any) => {
       const target = (rule?.type === 'var') ? dataSourceObject[rule.target] : rule.target;
-      
       // console.log({ rule, target }, dataSourceObject[rule.field]);
-      return (target != null) ? this.commonService.comparators[rule.compare](dataSourceObject[rule.field], target) : false;
+      return (target != null && dataSourceObject[rule.field]) ? this.commonService.comparators[rule.compare](dataSourceObject[rule.field], target) : false;
       
     })
     // console.log({bTestResult})

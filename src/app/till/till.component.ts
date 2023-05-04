@@ -872,6 +872,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
           let result = body.transactionItems.map((a: any) => a.iBusinessPartnerId);
           const uniq = [...new Set(_.compact(result))];
           if (this.appliedGiftCards?.length) this.tillService.createGiftcardTransactionItem(body, this.discountArticleGroup);
+          // console.log(body);
           // return;
 
           const oDialogComponent: DialogComponent = this.dialogService.openModal(TransactionActionDialogComponent, 

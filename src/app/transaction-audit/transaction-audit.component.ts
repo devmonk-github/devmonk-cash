@@ -13,7 +13,7 @@ import { ConfirmationDialogComponent } from '../shared/components/confirmation-d
 import { DialogService } from '../shared/service/dialog';
 import { TillService } from '../shared/service/till.service';
 import { ClosingDaystateDialogComponent } from '../shared/components/closing-daystate-dialog/closing-daystate-dialog.component';
-
+import * as moment from 'moment';
 @Component({
   selector: 'app-transaction-audit',
   templateUrl: './transaction-audit.component.html',
@@ -39,7 +39,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
   selectedProperties: any;
   aProperty: Array<any> = [];
   aFilterProperty: Array<any> = [];
-  IsDynamicState: boolean = false;
+  IsDynamicState = false;
   aWorkStation: any = [];
   aEmployee: any = [];
   aPaymentMethods: any = [];
@@ -48,7 +48,6 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
   isShowStockLocation: boolean = false;
 
   closingDayState: boolean = false;
-  closeButtonClicked: boolean = false;
   bShowDownload: boolean = false;
 
   statisticsData$: any;
@@ -62,8 +61,8 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
     dToState: '',
   };
   filterDates = {
-    startDate: new Date(new Date().setHours(0, 0, 0)),
-    endDate: new Date(new Date().setHours(23, 59, 59)),
+    startDate: "",//new Date(new Date().setHours(0, 0, 0)),
+    endDate: "",//new Date(new Date().setHours(23, 59, 59)),
   };
   bIsArticleGroupLevel: boolean = true; // Could be Article-group level or product-level (if false then article-group mode)
   bIsSupplierMode: boolean = true; // could be Business-owner-mode or supplier-mode (if true then supplier-mode)
@@ -95,7 +94,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
   sCurrentWorkstation: any;
   pdfGenerationInProgress: boolean = false;
   bShowProperty: boolean = false;
-  bDisableCountings: boolean = false;
+  bDayStateClosed: boolean = false;
 
   aRefundItems: any;
   aDiscountItems: any;
@@ -136,10 +135,10 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
       this.oStatisticsData.iLocationId = oState?.iLocationId;
       this.oStatisticsData.iWorkstationId = oState?.iWorkstationId;
 
-      if (this.oStatisticsData.bIsDayStateOpened) this.bOpeningDayClosure = true;
-      else {
+      if (this.oStatisticsData.bIsDayStateOpened){
+        this.bOpeningDayClosure = true;
+      } else {
         this.bOpeningHistoricalDayState = true;
-        this.bShowDownload = true;
       } 
 
       if (this.oStatisticsData.dStartDate) {
@@ -588,7 +587,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
     this.oCountings.nSkim = this.oStatisticsDocument?.oCountings?.nSkim || 0;
     this.oCountings.nCashRemain = this.oStatisticsDocument?.oCountings?.nCashRemain || 0;
     this.oCountings.nCashDifference = this.oStatisticsDocument?.oCountings?.nCashDifference || 0;
-    this.bDisableCountings = !this.oStatisticsDocument?.bIsDayState;
+    this.bDayStateClosed = !this.oStatisticsDocument?.bIsDayState;
     
 
     let aKeys: any = [];
@@ -610,8 +609,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
     } else if (this.bOpeningHistoricalDayState) {
       /* Already closed then we can get all the data from one API only */
       this.getStaticData(sDisplayMethod);
-    }
-    else this.fetchAuditStatistic(sDisplayMethod);
+    } else this.fetchAuditStatistic(sDisplayMethod);
   }
 
   /* Fetch Audit (Be it Static or Dynamic), where user can change filter as well */
@@ -743,6 +741,9 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
     if (this.IsDynamicState) {
       oBody.oFilter.bIsArticleGroupLevel = this.bIsArticleGroupLevel;
       oBody.oFilter.bIsSupplierMode = this.bIsSupplierMode;
+
+      this.filterDates.startDate = moment(new Date().setHours(0, 0, 0)).format("YYYY-MM-DDThh:mm")
+      this.filterDates.endDate = moment(new Date().setHours(23, 59, 59)).format("YYYY-MM-DDThh:mm")
     }
 
     return oBody;
@@ -753,9 +754,8 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
     /* Below for Dynamic-data */
     const oBody = this.processingDynamicDataRequest(sDisplayMethod);
     this.bStatisticLoading = true;
-    this.statisticAuditSubscription = this.apiService
-      .postNew('cashregistry', `/api/v1/statistics/transaction/audit`, oBody).subscribe((result: any) => {
-        
+    this.aStatistic = [];
+    this.statisticAuditSubscription = this.apiService.postNew('cashregistry', `/api/v1/statistics/transaction/audit`, oBody).subscribe((result: any) => {
         if (result?.data) {
 
           if (result.data?.oTransactionAudit?.length)
@@ -767,7 +767,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
           }
           // this.mappingThePaymentMethod(result?.data);
           this.aPaymentMethods = result?.data?.aPaymentMethods;
-          if (this.oStatisticsData.bIsDayStateOpened || this.IsDynamicState) {
+          if (this.bOpeningDayClosure || this.IsDynamicState) {
             this.aPaymentMethods.forEach((item: any) => {
               item.nNewAmount = item.nAmount;
               this.nPaymentMethodTotal += parseFloat(item.nAmount);
@@ -1163,11 +1163,12 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
   }
 
   async onCloseDayState() {
-    this.closingDayState = true;
-    this.closeButtonClicked = true;
+    
     /* fetching Audit detail for checking if day-state is changed or not */
+    this.closingDayState = true;
     const oStatisticDetail: any = await this.getDynamicAuditDetail();
     this.closingDayState = false; /* while fetching the data, loader should show off */
+    
     /* isAnyTransactionDone: If any transaction is not happened then we should not throw any error */
     if (!oStatisticDetail?.data?.isAnyTransactionDone) {
       const confirmBtnDetails = [
@@ -1221,7 +1222,6 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
     }
     this.transactionAuditPdfService.aAmount.filter((item: any) => item.nQuantity > 0).forEach((item: any) => (this.oCountings.oCountingsCashDetails[item.key] = item.nQuantity));
     this.oCountings.nCashDifference = this.oCountings?.nCashCounted - (this.oCountings?.nCashAtStart + this.oCountings?.nCashInTill);
-
     const oCashPaymentMethod = this.allPaymentMethod.filter((el: any) => el.sName.toLowerCase() === 'cash')[0];
     const oCashInSafePaymentMethod = this.allPaymentMethod.filter((el: any) => el.sName.toLowerCase() === 'cash_in_safe')[0];
     const nVatRate = await this.taxService.fetchDefaultVatRate({ iLocationId: this.iLocationId });
@@ -1243,13 +1243,13 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
     this.closeSubscription = this.apiService.postNew('cashregistry', `/api/v1/statistics/close/day-state`, oBody).subscribe((result: any) => {
       this.toastService.show({ type: 'success', text: `Day-state is close now` });
       this.closingDayState = false;
-      this.bDisableCountings = true;
+      this.bDayStateClosed = true;
       if(result?.data?._id) {
         this.statisticFilter.dFromState = result?.data.dOpenDate;
         this.statisticFilter.dToState = result?.data.dCloseDate;
       }
       this.getStaticData();
-      this.checkShowDownload();
+      // this.checkShowDownload();
     }, (error) => {
       console.log('Error: ', error);
       this.toastService.show({ type: 'warning', text: 'Something went wrong or open the day-state first' });
@@ -1336,7 +1336,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
     }
 
     const endDate = new Date();
-    this.filterDates.endDate = endDate;
+    this.filterDates.endDate = moment(endDate).format("YYYY-MM-DDThh:mm");
     this.oStatisticsData.dEndDate = endDate;
 
     this.paymentEditMode = false;
@@ -1401,19 +1401,30 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
   }
 
   checkShowDownload() {
-    
-    const bCondition1 = this.IsDynamicState;
-    const bCondition2 = (!this.selectedEmployee?._id &&
-      !this.selectedWorkStation?._id &&
-      !(this.aSelectedLocation?.length > 1));
-    const bCondition3 = (this.iStatisticId && this.iStatisticId != '' && this.oStatisticsDocument && this.oStatisticsDocument?.bIsDayState === false) || false;
-    const bCondition4 = this.closeButtonClicked;
-    this.bShowDownload = (bCondition1 || bCondition2 || bCondition3 || bCondition4) && 
-    (
-      this.statisticFilter.dFromState != '' &&
-      this.statisticFilter.dToState != '' && 
-      this.aStatistic?.length && this.aStatistic[0]?.individual?.length
-    );
+    if (this.bOpeningHistoricalDayState) {
+      // console.log({bOpeningHistoricalDayState: this.bOpeningHistoricalDayState})
+      this.bShowDownload = true;  
+    } else if (this.bOpeningDayClosure) {
+      // console.log({bOpeningDayClosure: this.bOpeningDayClosure})
+      this.bShowDownload = this.bDayStateClosed;
+    } else if (this.IsDynamicState) {
+      // console.log({ IsDynamicState: this.IsDynamicState, aStatistic: this.aStatistic }, this.filterDates.startDate, this.filterDates.endDate)
+      this.bShowDownload = this.filterDates.startDate && this.filterDates.endDate &&
+        this.aStatistic?.length && 
+        this.aStatistic[0]?.individual?.length
+    } else {
+      // console.log('in else')
+      const bCondition1 = !this.selectedEmployee?._id && !this.selectedWorkStation?._id && !(this.aSelectedLocation?.length > 1);
+      
+      this.bShowDownload = (bCondition1 &&
+        this.statisticFilter.dFromState != '' && 
+        this.statisticFilter.dToState != '' && 
+        this.aStatistic?.length && 
+        this.aStatistic[0]?.individual?.length
+      );
+      // console.log({ bCondition1, from: this.statisticFilter.dFromState, to: this.statisticFilter.dToState, aStatistic:this.aStatistic });
+    }
+    // console.log({oStatisticsDocument: this.oStatisticsDocument})
   }
 
   fetchStockValuePerLocation() {

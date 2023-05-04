@@ -282,7 +282,7 @@
                                                                 [(ngModel)]="activity.nPriceIncVatAfterDiscount">
                                                         </div>
                                                         <div class="col-2 p-0">
-                                                            <button class="btn btn-light-primary w-100" (click)="contactCustomer(activity.eEstimatedDateAction)">
+                                                            <button [class]="customer?.bCounter?'btn btn-light-primary w-100 disabled': 'btn btn-light-primary w-100'" (click)="contactCustomer(activity.eEstimatedDateAction)">
                                                                 <fa-icon [icon]="faShare"></fa-icon>
                                                             </button>
                                                         </div>
@@ -402,6 +402,20 @@
                                                                 <fa-icon [icon]="faPrint"></fa-icon>
                                                                 <span class="ms-5">{{ 'PRINT_ALTERNATIVE' | translate
                                                                     }}</span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="menu-item px-3 text-center"
+                                                            (click)="printThermalReceipt(activity)">
+                                                            <div class="menu-link px-3">
+                                                                <fa-icon [icon]="faPrint"></fa-icon>
+                                                                <span class="ms-5">{{ 'PRINT_THERMAL' | translate }}</span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="menu-item px-3 text-center"
+                                                            (click)="printThermalReceipt(activity, 'repair_alternative')">
+                                                            <div class="menu-link px-3">
+                                                                <fa-icon [icon]="faPrint"></fa-icon>
+                                                                <span class="ms-5">{{ 'PRINT_THERMAL_ALTERNATIVE' | translate }}</span>
                                                             </div>
                                                         </div>
                                                     </div>
