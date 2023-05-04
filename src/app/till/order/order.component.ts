@@ -80,11 +80,9 @@ export class OrderComponent implements OnInit {
     this.getProperties();
     this.listSuppliers();
     this.getBusinessBrands();
-    //console.log("order this.settings", this.settings);
     if (this.settings.bAutoIncrementBagNumbers) {
       this.item.sBagNumber =  this.settings.sPrefix + (this.settings.nLastBagNumber + 1).toString();
     }
-    //console.log("order this.item.sBagNumber", this.item);
     if (this.item.new && this.item.isFor !== 'shopProducts') {
       this.selectArticleGroup();
       this.item.new = false;

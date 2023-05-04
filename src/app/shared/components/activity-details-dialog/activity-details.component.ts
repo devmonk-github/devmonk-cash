@@ -754,11 +754,12 @@ export class ActivityDetailsComponent implements OnInit {
       iBusinessId: this.iBusinessId,
       oFilterBy: {
         _id: transactionItem.iTransactionId
-      }
+      },
+      bIsDetailRequire: true // to fetch the extra details
     }
     transactionItem.bFetchingTransaction = true;
     event.target.disabled = true;
-    const _oTransaction: any = await this.apiService.postNew('cashregistry', `/api/v1/transaction/cashRegister`, oBody).toPromise();
+    const _oTransaction: any = await this.apiService.postNew('cashregistry', `/api/v1/transaction/list`, oBody).toPromise();
     const transaction = _oTransaction?.data?.result[0];
     transactionItem.bFetchingTransaction = false;
     event.target.disabled = false;

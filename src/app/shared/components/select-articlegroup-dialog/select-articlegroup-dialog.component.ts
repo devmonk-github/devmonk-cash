@@ -1,18 +1,17 @@
 import { Component, Input, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
 import { NgSelectComponent } from '@ng-select/ng-select';
-// import * as _ from 'lodash';
-
 import { ApiService } from '../../service/api.service';
 import { CreateArticleGroupService } from '../../service/create-article-groups.service';
 import { DialogComponent } from "../../service/dialog";
 import { ToastService } from '../toast';
-import { Subscription, Observable } from 'rxjs';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-select-articlegroup-dialog',
   templateUrl: './select-articlegroup-dialog.component.html',
   styleUrls: ['./select-articlegroup-dialog.component.scss']
 })
+
 export class SelectArticleDialogComponent implements OnInit {
   @Input() customer: any;
   dialogRef: DialogComponent;
@@ -43,13 +42,10 @@ export class SelectArticleDialogComponent implements OnInit {
     private createArticleGroupService: CreateArticleGroupService) {
     const _injector = this.viewContainer.injector;
     this.dialogRef = _injector.get<DialogComponent>(DialogComponent);
-
   }
 
   ngOnInit() {
-    // this.fetchArticleGroups(null);
     this.selectedLanguage = localStorage.getItem('language') || 'nl';
-    //console.log("this.selectedLanguage", this.selectedLanguage);
     this.getSettings();
     this.fetchBusinessPartners([]);
     this.getBusinessBrands();
@@ -81,7 +77,6 @@ export class SelectArticleDialogComponent implements OnInit {
     }
   }
 
-
   async fetchArticleGroups(iBusinessPartnerId: any, bIsSupplierUpdated:boolean = false) {
     let data = {
       iBusinessPartnerId,
@@ -95,8 +90,7 @@ export class SelectArticleDialogComponent implements OnInit {
     }
     if (this.iArticleGroupId) {
       this.getDefaultArticleGroupDetail(this.iArticleGroupId);
-    }
-    else {
+    } else {
       if (!bIsSupplierUpdated) {
         const oDefaultArticle: any = await this.createArticleGroupService.checkArticleGroups(this.from).toPromise();
         if (oDefaultArticle?.data?._id) {
@@ -164,11 +158,9 @@ export class SelectArticleDialogComponent implements OnInit {
       (result: any) => {
         if (result?.data?.length && result.data[0]?.result?.length) {
           this.partnersList = result.data[0].result;
-          // console.log(this.partnersList)
           this.fetchArticleGroups(null);
           if (aBusinessPartnerId.length > 0) {
             this.supplier = this.partnersList[0];
-            console.log("this.supplier", this.supplier);
           }
         }
       },
@@ -226,9 +218,7 @@ export class SelectArticleDialogComponent implements OnInit {
         return
       };
       const businessPartner = this.articlegroup.aBusinessPartner.find((o: any) => o.iBusinessPartnerId === this.supplier._id);
-      console.log(businessPartner, businessPartner);
       let nMargin = businessPartner ? businessPartner.nMargin : 1;
-      
       this.dialogRef.close.emit({ 
         action: true, 
         brand: this.brand || {}, 
