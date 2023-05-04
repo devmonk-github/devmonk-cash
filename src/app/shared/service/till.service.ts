@@ -514,6 +514,7 @@ export class TillService {
             name: item.sProductName || item.sProductNumber,
             iActivityItemId: item.iActivityItemId,
             nRefundAmount: item.nPaidAmount,
+            nRevenueAmount: item.nRevenueAmount,
             iLastTransactionItemId: item.iTransactionItemId,
             prePaidAmount: tType === 'refund' ? item.nPaidAmount : item.nPaymentAmount,
             type: item.sGiftCardNumber ? 'giftcard' : item.oType.eKind,

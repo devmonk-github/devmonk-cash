@@ -29,29 +29,36 @@ export class PaymentDistributionService {
     transactionItems = transactionItems.filter((i: any) => !['empty-line', 'loyalty-points'].includes(i.type))
     transactionItems.forEach((i: any) => {
       // if (bTesting) console.log(31, i, i.nTotal);
-      i.nGiftcardDiscount = 0;
-      i.nRedeemedLoyaltyPoints = 0;
+      
+      
 
       const nPrice = parseFloat((typeof i.price === 'string') ? i.price.replace(',', '.') : i.price);
       i.nTotal = nPrice * i.quantity;
       let nDiscount = (i.bDiscountOnPercentage ? this.tillService.getPercentOf(nPrice, i.nDiscount || 0) : i.nDiscount) * i.quantity;
       nDiscount = +(nDiscount.toFixed(2));
-      i.amountToBePaid = i.nTotal - nDiscount - (i.prePaidAmount || 0);// - (i?.nGiftcardDiscount || 0) - (i?.nRedeemedLoyaltyPoints || 0);
+      i.amountToBePaid = i.nTotal - nDiscount - (i.prePaidAmount || 0);
       i.amountToBePaid = +(i.amountToBePaid.toFixed(2))
       if (bTesting) console.log(38, { nPrice, nDiscount, amountToBePaid: i.amountToBePaid, qty: i.quantity})
       
       if (i.type === 'gold-purchase') i.amountToBePaid = -(i.amountToBePaid) ;
 
       if (i?.tType && i.tType === 'refund'){
-        i.amountToBePaid = (i?.new) ? -(nPrice - nDiscount - (i?.nGiftcardDiscount || 0) - (i?.nRedeemedLoyaltyPoints || 0)) : -(i.nRefundAmount);
-        availableAmount += nPrice;
         
-        i.nGiftcardDiscount = 0;
-      }
+        if(i?.new) {
+          i.amountToBePaid = -(nPrice - nDiscount - (i?.nGiftcardDiscount || 0) - (i?.nRedeemedLoyaltyPoints || 0))
+        } else {
+          i.amountToBePaid = -(i.nRevenueAmount * i.quantity).toFixed(2);//-(i.nTotal);
+        }
+        if (bTesting) console.log('refund amountToBePaid', i.amountToBePaid)
+        availableAmount += i.amountToBePaid;
+      } 
+      i.nGiftcardDiscount = 0;
+      i.nRedeemedLoyaltyPoints = 0;
+      
       if (bTesting) console.log({ nTotal: i.nTotal, i: JSON.parse(JSON.stringify(i)) }) 
       
       // if (bTesting)  console.log('46 paymentAmount before', i.paymentAmount, 'amountToBePaid', i.amountToBePaid);
-      if (i.paymentAmount > i.amountToBePaid && !['loyalty-points'].includes(i.type)) i.paymentAmount = i.amountToBePaid;
+      if (i.paymentAmount > i.amountToBePaid) i.paymentAmount = i.amountToBePaid;
       // if (bTesting) console.log('48 paymentAmount after', i.paymentAmount)
     });
     

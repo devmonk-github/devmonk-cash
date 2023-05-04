@@ -12,8 +12,7 @@
             <div class="table-responsive">
                 <table class="table align-middle table-row-dashed fs-6 gy-5 dataTable no-footer">
                     <thead>
-                        <tr class="text-start text-gray-400 fw-bolder fs-7 text-uppercase gs-0"
-                            *ngIf="itemType === 'transaction'">
+                        <tr class="text-start text-gray-400 fw-bolder fs-7 gs-0" *ngIf="itemType === 'transaction'">
                             <th>
                                 <label class="form-check form-check-custom form-check-solid me-9">
                                     <input class="form-check-input" type="checkbox" value="" id="kt_roles_select_all"
@@ -24,16 +23,15 @@
                                 {{column}}
                             </th>
                         </tr>
-                        <tr class="text-start text-gray-400 fw-bolder fs-7 text-uppercase gs-0"
-                            *ngIf="itemType === 'activity'">
+                        <tr class="text-start text-gray-400 fw-bolder gs-0" *ngIf="itemType === 'activity'">
                             <th>
-                                <label class="form-check form-check-custom form-check-solid me-9">
+                                <label class="form-check form-check-custom form-check-solid me-2">
                                     <input class="form-check-input" type="checkbox" [checked]="bAllSelected" id="kt_roles_select_all1"
                                         (change)="selectAll($event.target)" />
                                 </label>
                             </th>
-                            <th *ngFor="let column of activityColumns" class="min-w-100px sorting" tabindex="0">
-                                {{column}}
+                            <th *ngFor="let column of activityColumns" class="sorting" tabindex="0"> <!-- min-w-100px -->
+                                {{column | translate}}
                             </th>
                         </tr>
                     </thead>
@@ -41,7 +39,7 @@
                         <tr *ngFor='let transactionItem of transactionItems'>
                             <td>
                                 
-                                <label class="form-check form-check-custom form-check-solid me-9">
+                                <label class="form-check form-check-custom form-check-solid me-2">
                                     <input class="form-check-input" type="checkbox" id="kt_roles_select_all"
                                         [(ngModel)]="transactionItem.isSelected" [checked]="transactionItem.isSelected" 
                                         [disabled]="transactionItem.bIsRefunded" />
@@ -101,7 +99,7 @@
                             </ng-container>
                             <ng-container *ngIf="!transactionItem?.bUpdating">
                                 <td>
-                                    <label class="form-check form-check-custom form-check-solid me-9">
+                                    <label class="form-check form-check-custom form-check-solid me-2">
                                         <input class="form-check-input" type="checkbox" id="kt_roles_select_all"
                                             [(ngModel)]="transactionItem.isSelected" [checked]="transactionItem.isSelected"  [disabled]="transactionItem.bIsRefunded" />
                                         <!-- <span class="form-check-label" for="kt_roles_select_all">Select all</span> -->
