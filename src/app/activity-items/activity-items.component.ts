@@ -253,10 +253,22 @@ export class ActivityItemsComponent implements OnInit, OnDestroy {
         }
       }).instance.close.subscribe((result) => {
         if (result?.oData?.oCurrentCustomer) {
+          activity.oCustomer.bIsCompany = result && result.oData && result.oData.oCurrentCustomer && result.oData.oCurrentCustomer.bIsCompany ? result.oData.oCurrentCustomer.bIsCompany:false;
           if (result?.oData?.oCurrentCustomer?.sFirstName) activity.oCustomer.sFirstName = result?.oData?.oCurrentCustomer?.sFirstName;
           if (result?.oData?.oCurrentCustomer?.sLastName) activity.oCustomer.sLastName = result?.oData?.oCurrentCustomer?.sLastName;
-          if(result?.oData?.oCurrentCustomer?.sCompanyName) activity.oCustomer.sCompanyName = result?.oData.oCurrentCustomer?.sCompanyName
-          if(result?.oData?.oCurrentCustomer?.bIsCompany) activity.oCustomer.bIsCompany = result?.oData.oCurrentCustomer?.bIsCompany
+          if (result?.oData?.oCurrentCustomer?.sCompanyName) activity.oCustomer.sCompanyName = result?.oData.oCurrentCustomer?.sCompanyName
+          if (result?.oData?.oCurrentCustomer?.sSalutation) activity.oCustomer.sSalutation = result?.oData?.oCurrentCustomer?.sSalutation;
+          if (result?.oData?.oCurrentCustomer?.sPrefix) activity.oCustomer.sPrefix = result?.oData?.oCurrentCustomer?.sPrefix;
+          if (result?.oData?.oCurrentCustomer?.sEmail) activity.oCustomer.sEmail = result?.oData?.oCurrentCustomer?.sEmail;
+          if (result?.oData?.oCurrentCustomer?.sGender) activity.oCustomer.sGender = result?.oData?.oCurrentCustomer?.sGender;
+          if (result?.oData?.oCurrentCustomer?.sVatNumber) activity.oCustomer.sVatNumber = result?.oData?.oCurrentCustomer?.sVatNumber;
+          if (result?.oData?.oCurrentCustomer?.sCocNumber) activity.oCustomer.sCocNumber = result?.oData?.oCurrentCustomer?.sCocNumber;
+          if (result?.oData?.oCurrentCustomer?.nClientId) activity.oCustomer.nClientId = result?.oData?.oCurrentCustomer?.nClientId;
+          if (result?.oData?.oCurrentCustomer?.oContactPerson) activity.oCustomer.oContactPerson = result?.oData?.oCurrentCustomer?.oContactPerson;
+          if (result?.oData?.oCurrentCustomer?.oShippingAddress) activity.oCustomer.oShippingAddress = result?.oData?.oCurrentCustomer?.oShippingAddress;
+          if (result?.oData?.oCurrentCustomer?.oInvoiceAddress) activity.oCustomer.oInvoiceAddress = result?.oData?.oCurrentCustomer?.oInvoiceAddress;
+          if (result?.oData?.oCurrentCustomer?.oPhone) activity.oCustomer.oPhone = result?.oData?.oCurrentCustomer?.oPhone;
+          if (result?.oData?.oCurrentCustomer?.bCounter) activity.oCustomer.bCounter = result?.oData?.oCurrentCustomer?.bCounter;
         }
       }, (error) => {
         console.log('Error here');
