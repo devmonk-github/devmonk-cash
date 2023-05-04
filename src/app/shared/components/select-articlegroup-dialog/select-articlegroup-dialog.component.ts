@@ -48,7 +48,6 @@ export class SelectArticleDialogComponent implements OnInit {
 
   ngOnInit() {
     // this.fetchArticleGroups(null);
-    console.log("this.from" , this.from);
     this.selectedLanguage = localStorage.getItem('language') || 'nl';
     //console.log("this.selectedLanguage", this.selectedLanguage);
     this.getSettings();

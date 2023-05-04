@@ -181,7 +181,10 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     this.paymentDistributeService.setToastService(this.toastrService)
     this.tillService.updateVariables();
     this.bDayStateChecking = true;
-    await this.tillService.fetchSettings();
+    if(this.iLocationId != this.tillService?.settings?.currentLocation?.iLocationId) {
+      this.tillService.settings = null;
+      await this.tillService.fetchSettings();
+    }
     this.checkDayState();
     this.requestParams.iBusinessId = this.iBusinessId;
     this.getPaymentMethods();

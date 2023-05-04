@@ -71,8 +71,6 @@ export class RepairComponent implements OnInit {
     private createArticleGroupService: CreateArticleGroupService) { }
 
     async ngOnInit() {
-    // console.log(this.settings.nLastBagNumber, this.settings.bAutoIncrementBagNumbers);
-    
     this.listSuppliers();
     this.listEmployees();
     this.getBusinessBrands();
@@ -87,7 +85,7 @@ export class RepairComponent implements OnInit {
     // this.listSuppliers();
     // this.getBusinessBrands();
     if (this.settings.bAutoIncrementBagNumbers) {
-      if(this.settings?.sPrefix != undefined){
+      if(this.settings?.sPrefix){
         this.item.sBagNumber =  this.settings?.sPrefix + (this.settings.nLastBagNumber + 1).toString();
       }else{
         this.item.sBagNumber = (this.settings.nLastBagNumber + 1).toString();
@@ -177,9 +175,8 @@ export class RepairComponent implements OnInit {
 
   selectArticleGroup() {
     if (this.settings.bAutoIncrementBagNumbers) {
-      this.item.sBagNumber =  this.settings.sPrefix + (this.settings.nLastBagNumber + 1).toString();
+      this.item.sBagNumber =  (this.settings?.sPrefix || '') + (this.settings.nLastBagNumber + 1).toString();
     }
-    console.log("this.item.sBagNumber", this.item.sBagNumber);
     this.dialogService.openModal(SelectArticleDialogComponent, 
       { 
         cssClass: 'modal-m', 
