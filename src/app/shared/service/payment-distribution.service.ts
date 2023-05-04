@@ -45,7 +45,8 @@ export class PaymentDistributionService {
       if (i?.tType && i.tType === 'refund'){
         
         if(i?.new) {
-          i.amountToBePaid = -(nPrice - nDiscount - (i?.nGiftcardDiscount || 0) - (i?.nRedeemedLoyaltyPoints || 0))
+          if (bTesting) console.log('refund item is new')
+          i.amountToBePaid = -(nPrice * i.quantity - nDiscount - (i?.nGiftcardDiscount || 0) - (i?.nRedeemedLoyaltyPoints || 0));
         } else {
           i.amountToBePaid = -(i.nRevenueAmount * i.quantity).toFixed(2);//-(i.nTotal);
         }
