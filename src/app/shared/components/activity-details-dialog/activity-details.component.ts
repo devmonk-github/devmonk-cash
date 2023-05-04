@@ -612,7 +612,7 @@ export class ActivityDetailsComponent implements OnInit {
   matchSystemAndCurrentCustomer(systemCustomer: any, currentCustomer: any) {
     this.showSystemCustomer = false;
     let currentCustomerData: any;
-    const aCurrentCustomerKeys: any = ['oInvoiceAddress', 'oPhone', 'bCounter', '_id', 'sFirstName', 'sLastName', 'sPrefix', 'sGender', 'sEmail', 'sVatNumber', 'sCompanyName', 'sCocNumber', 'bIsCompany', 'oContactPerson', 'nClientId' , 'sSalutation'];
+    const aCurrentCustomerKeys: any = ['oInvoiceAddress', 'oPhone', 'bCounter', '_id', 'sFirstName', 'sLastName', 'sPrefix', 'sGender', 'sEmail', 'sVatNumber', 'sCompanyName', 'sCocNumber', 'bIsCompany', 'oContactPerson', 'nClientId' , 'sSalutation' , 'oShippingAddress'];
     aCurrentCustomerKeys.forEach((keys: any) => {
       currentCustomerData = { ...currentCustomerData, [keys]: currentCustomer[keys] }
     })
@@ -620,6 +620,7 @@ export class ActivityDetailsComponent implements OnInit {
     if (this.from == 'activity-items') {
       for (const [key, value] of Object.entries(currentCustomerData)) {
         if (!(_.isEqual(systemCustomer[key], currentCustomer[key]))) {
+          console.log("not matched" , key , systemCustomer[key] , currentCustomer[key]);
           this.showSystemCustomer = true;
         }
       }

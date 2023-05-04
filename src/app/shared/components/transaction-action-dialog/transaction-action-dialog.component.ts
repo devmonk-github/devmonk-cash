@@ -127,7 +127,7 @@ export class TransactionActionDialogComponent implements OnInit {
       template = this.aTemplates.filter((template: any) => template.eType === type)[0];
       oDataSource = this.tillService.prepareDataForRepairReceipt(this.aRepairItems, this.transaction, null, index);
       pdfTitle = oDataSource.sNumber;
-      sThermalTemplateType = 'repair-receipt';
+      sThermalTemplateType = type;
     
     } else if (type === 'regular') {
       this.bRegularDisabled = true;

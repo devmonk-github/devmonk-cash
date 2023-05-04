@@ -540,13 +540,14 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   matchSystemAndCurrentCustomer(systemCustomer:any , currentCustomer:any){
     this.showSystemCustomer = false;
     let currentCustomerData:any;
-    const aCurrentCustomerKeys: any =['oInvoiceAddress' , 'oPhone' , 'bCounter' , '_id' , 'sFirstName' , 'sLastName' , 'sPrefix' , 'sGender' , 'sEmail' , 'sVatNumber' , 'sCompanyName' , 'sCocNumber' , 'bIsCompany' , 'oContactPerson' , 'nClientId'];
+    const aCurrentCustomerKeys: any = ['oInvoiceAddress', 'oPhone', 'bCounter', '_id', 'sFirstName', 'sLastName', 'sPrefix', 'sGender', 'sEmail', 'sVatNumber', 'sCompanyName', 'sCocNumber', 'bIsCompany', 'oContactPerson', 'nClientId' , 'sSalutation' , 'oShippingAddress'];
     aCurrentCustomerKeys.forEach((keys:any)=>{
         currentCustomerData = { ... currentCustomerData , [keys]:currentCustomer[keys]}
     })
 
   for(const [key,value] of Object.entries(currentCustomerData)){
       if(!(_.isEqual(systemCustomer[key], currentCustomer[key]))){
+        console.log("not matched" , key , systemCustomer[key] , currentCustomer[key]);
        this.showSystemCustomer = true;
       }
    }
