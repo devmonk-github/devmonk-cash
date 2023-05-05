@@ -495,7 +495,7 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
         this.pointsAdded = false;
         this.customerLoyalityPoints = 0;
         this.customer.nLoyaltyPoints = this.customer.nLoyaltyPoints + res.data.nSavingsPoints;
-        this.customer.nLoyaltyPointsValue = this.customer.nLoyaltyPoints * this.oPointsSettingsResult.nPerEuro2;
+        this.customer.nLoyaltyPointsValue = this.customer.nLoyaltyPoints / this.oPointsSettingsResult.nPerEuro2;
         this.toastService.show({type:'success' , text:this.translations['LOYALITY_POINTS_ADDED']});
       }else{
         this.pointsAdded = false;
