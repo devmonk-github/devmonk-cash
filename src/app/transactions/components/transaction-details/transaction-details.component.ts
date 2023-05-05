@@ -43,21 +43,21 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   aRepairItems: any = [];
 
   filterdata: any = [];
-  
+
   iBusinessId: any = localStorage.getItem("currentBusiness");
   iLocationId: any = localStorage.getItem("currentLocation");
   iWorkstationId: any = localStorage.getItem("currentWorkstation");
 
   /* Check if saving points are enabled */
-  savingPointsSetting:boolean = JSON.parse(localStorage.getItem('savingPoints') || '');
-  
+  savingPointsSetting: boolean = JSON.parse(localStorage.getItem('savingPoints') || '');
+
   loading: boolean = true;
   customerLoading: boolean = true;
   customer: any = {};
   imagePlaceHolder: string = '../../../../assets/images/no-photo.svg';
   eType: string = '';
   transactionId: string;
-  invoiceNumber:any;
+  invoiceNumber: any;
   pdfGenerating: Boolean = false;
   downloadWithVATLoading: Boolean = false;
   businessDetails: any = {};
@@ -65,15 +65,15 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   ableToDownload: Boolean = false;
   from !: string;
   // thermalPrintSettings !: any;
-  employeesList:any =[];
+  employeesList: any = [];
 
   // private pn2escposService = new Pn2escposService(Object, this.translateService);
   printSettings: any;
-  printActionSettings:any;
+  printActionSettings: any;
   printWithVATLoading: boolean = false;
 
   downloadInvoiceLoading: boolean = false;
-  printInvoiceLoading:  boolean = false;
+  printInvoiceLoading: boolean = false;
 
   paymentEditMode = false;
   aNewSelectedPaymentMethods: any = [];
@@ -81,15 +81,15 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   bDayStateChecking = false;
   bIsDayStateOpened = false;
   bIsOpeningDayState = false;
-  aActivityItems:any=[];
-  nTotalItemPayment:any =0;
-  nTotalItemPaidPayment:any =0;
+  aActivityItems: any = [];
+  nTotalItemPayment: any = 0;
+  nTotalItemPaidPayment: any = 0;
   translation: any = [];
-  oCurrentCustomer:any;
-  showSystemCustomer:boolean = false;
-  changeAmount:number= 0;
-  refundedAmount:number=0;
-  bGenerateInvoice:boolean= false;
+  oCurrentCustomer: any;
+  showSystemCustomer: boolean = false;
+  changeAmount: number = 0;
+  refundedAmount: number = 0;
+  bGenerateInvoice: boolean = false;
   @ViewChild('slider', { read: ViewContainerRef }) container!: ViewContainerRef;
 
   constructor(
@@ -114,7 +114,7 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
       this.changeAmount = this.transaction.aPayments[sIndex].nAmount;
     }
     this.filterdata = this.transaction.aTransactionItems.filter((data: any) => data?.oType?.bRefund === true);
-    this.filterdata.forEach((items:any)=>{
+    this.filterdata.forEach((items: any) => {
       this.refundedAmount += Number((items.nRefundAmount));
     })
     let translationKey = ['SUCCESSFULLY_UPDATED', 'NO_DATE_SELECTED'];
@@ -153,10 +153,10 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
         }
       }).instance.close.subscribe(result => {
         if (result) {
-          if(result?.currentCustomer){
+          if (result?.currentCustomer) {
             this.transaction.oCustomer = result.currentCustomer;
           }
-          if(result?.systemCustomer){
+          if (result?.systemCustomer) {
             this.transaction.oSystemCustomer = result.systemCustomer;
           }
           this.matchSystemAndCurrentCustomer(this.transaction.oSystemCustomer, this.transaction.oCustomer);
@@ -171,21 +171,21 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
     this.dialogRef.close.emit(data);
   }
 
-  fetchActivityItem(){
-    this.apiService.postNew('cashregistry', `/api/v1/activities/items/${this.transaction?.iActivityId}`, {iBusinessId:this.iBusinessId}).subscribe((result: any) => {
+  fetchActivityItem() {
+    this.apiService.postNew('cashregistry', `/api/v1/activities/items/${this.transaction?.iActivityId}`, { iBusinessId: this.iBusinessId }).subscribe((result: any) => {
       this.aActivityItems = result.data[0].result;
-      if(this.aActivityItems?.length){
-        this.aActivityItems.forEach((items:any)=>{
-          const oTransactionItem = this.transaction.aTransactionItems.find((TI:any)=> TI._id == items.iTransactionItemId);
-          if(oTransactionItem && !items?.bIsRefunded){
+      if (this.aActivityItems?.length) {
+        this.aActivityItems.forEach((items: any) => {
+          const oTransactionItem = this.transaction.aTransactionItems.find((TI: any) => TI._id == items.iTransactionItemId);
+          if (oTransactionItem && !items?.bIsRefunded) {
             this.nTotalItemPayment += Number((items.nPriceIncVat * items.nQuantity).toFixed(2));
             this.nTotalItemPaidPayment += Number((items.nPaidAmount).toFixed(2));
-          }  
+          }
         })
       }
     });
   }
-  
+
 
   generateBarcodeURI(displayValue: boolean = true, data: any) {
     var canvas = document.createElement("canvas");
@@ -194,15 +194,15 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   }
 
   downloadWithVAT(print: boolean = false) {
-    this.generatePDF(print,0);
+    this.generatePDF(print, 0);
   }
 
   openProductInfo(product: any) {
-    this.dialogRef.triggerEvent.emit({type:'open-slider',data: product});
+    this.dialogRef.triggerEvent.emit({ type: 'open-slider', data: product });
   }
 
   downloadWebOrder() {
-    this.generatePDF(false,0);
+    this.generatePDF(false, 0);
   }
 
   getPrintSetting() {
@@ -212,7 +212,7 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
         iWorkstationId: this.iWorkstationId
       }
     }
-    this.apiService.postNew('cashregistry', `/api/v1/print-settings/list/${this.iBusinessId}`, oBody).subscribe((result:any) => {
+    this.apiService.postNew('cashregistry', `/api/v1/print-settings/list/${this.iBusinessId}`, oBody).subscribe((result: any) => {
       if (result?.data?.length && result?.data[0]?.result?.length) {
         this.printSettings = [];
         result?.data[0]?.result.forEach((settings: any) => {
@@ -228,7 +228,7 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
 
   mapEmployee() {
     const emp = this.employeesList.find((employee: any) => employee._id === this.transaction?.iEmployeeId)
-    if(emp) {
+    if (emp) {
       this.transaction.createrDetail = emp;
       this.transaction.sAdvisedEmpFirstName = this.transaction.createrDetail?.sFirstName || 'a';
     }
@@ -238,15 +238,15 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
     //if(type == 1) this.bGenerateInvoice = true;
     const template = await this.getTemplate('regular').toPromise();
     const oDataSource = JSON.parse(JSON.stringify(this.transaction));
-    if(type == 1 && !this.transaction.sInvoiceNumber) {
-      const result:any =  await this.updateInvoiceNumber();
+    if (type == 1 && !this.transaction.sInvoiceNumber) {
+      const result: any = await this.updateInvoiceNumber();
       /*THIS SHOULD BE sInvoiceNumber */
       oDataSource.sReceiptNumber = result?.data?.sInvoiceNumber;
       this.transaction.sInvoiceNumber = result?.data?.sInvoiceNumber;
-    }else if(type == 1) {
+    } else if (type == 1) {
       /*THIS SHOULD BE sInvoiceNumber */
       oDataSource.sReceiptNumber = this.transaction.sInvoiceNumber;
-      if(print)
+      if (print)
         this.printInvoiceLoading = true;
       else
         this.downloadInvoiceLoading = true;
@@ -257,7 +257,7 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
       else
         this.downloadWithVATLoading = true;
     }
-   
+
     oDataSource.sBusinessLogoUrl = '';
     try {
       const _result: any = await this.getBase64FromUrl(oDataSource?.businessDetails?.sLogoLight).toPromise();
@@ -276,7 +276,7 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
       payment.dCreatedDate = moment(payment.dCreatedDate).format('DD-MM-yyyy hh:mm');
     })
     const oSettings = this.printSettings.find((s: any) => s.sType === 'regular' && s.sMethod === 'pdf' && s.iWorkstationId === this.iWorkstationId)
-   
+
 
     // if(type == 1){
     //   this.transactionsPdfService.exportToPdf({
@@ -289,25 +289,25 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
     //     sApiKey: this.businessDetails.oPrintNode.sApiKey,
     //   });
     // } else{
-      this.receiptService.exportToPdf({
-        oDataSource: oDataSource,
-        pdfTitle: oDataSource.sNumber,
-        templateData: template.data,
-        printSettings: oSettings,
-        eSituation: 'is_created',
-        sAction: (print) ? 'print' : 'download',
-        sApiKey: this.businessDetails.oPrintNode.sApiKey,
-      });
+    this.receiptService.exportToPdf({
+      oDataSource: oDataSource,
+      pdfTitle: oDataSource.sNumber,
+      templateData: template.data,
+      printSettings: oSettings,
+      eSituation: 'is_created',
+      sAction: (print) ? 'print' : 'download',
+      sApiKey: this.businessDetails.oPrintNode.sApiKey,
+    });
     //}   
-   
-    if (print){
+
+    if (print) {
       this.printWithVATLoading = false
       this.printInvoiceLoading = false
-    }else{
+    } else {
       this.downloadWithVATLoading = false;
       this.downloadInvoiceLoading = false;
     }
-    
+
   }
 
 
@@ -353,7 +353,7 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
     }
     activityItem.bFetchingActivityItem = true;
     event.target.disabled = true;
-    const aActivityItem:any=[];
+    const aActivityItem: any = [];
     if (this.aActivityItems?.length) {
       const items = this.aActivityItems.filter((AI: any) => AI._id == activityItem.iActivityItemId);
       aActivityItem.push(items[0]);
@@ -363,15 +363,15 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
     }
     activityItem.bFetchingActivityItem = false;
     event.target.disabled = false;
-    this.dialogService.openModal(ActivityDetailsComponent, { cssClass: 'w-fullscreen', context: { activityItems:aActivityItem, items: true, from: 'transaction-details' } })
-      .instance.close.subscribe((result: any) => {});
+    this.dialogService.openModal(ActivityDetailsComponent, { cssClass: 'w-fullscreen', context: { activityItems: aActivityItem, items: true, from: 'transaction-details' } })
+      .instance.close.subscribe((result: any) => { });
   }
 
-  async getThermalReceipt(type:string) {
-    this.transaction.nTotalSavedPoints = await this.apiService.getNew('cashregistry', `/api/v1/points-settings/points?iBusinessId=${this.iBusinessId}&iCustomerId=${this.transaction.iCustomerId}`).toPromise();    
+  async getThermalReceipt(type: string) {
+    this.transaction.nTotalSavedPoints = await this.apiService.getNew('cashregistry', `/api/v1/points-settings/points?iBusinessId=${this.iBusinessId}&iCustomerId=${this.transaction.iCustomerId}`).toPromise();
     this.transaction.currentLocation.currency = this.tillService.currency;
     this.receiptService.printThermalReceipt({
-      currency:this.tillService.currency,
+      currency: this.tillService.currency,
       oDataSource: this.transaction,
       printSettings: this.printSettings,
       apikey: this.businessDetails.oPrintNode.sApiKey,
@@ -439,7 +439,7 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   }
 
   filterDuplicatePaymentMethods() {
-    const aPresent:any = [...this.transaction.aPayments.map((item: any) => item.iPaymentMethodId), ...this.aNewSelectedPaymentMethods.map((item: any) => item._id)];
+    const aPresent: any = [...this.transaction.aPayments.map((item: any) => item.iPaymentMethodId), ...this.aNewSelectedPaymentMethods.map((item: any) => item._id)];
     this.payMethods = this.payMethods.filter((item: any) => !aPresent.includes(item._id));
   }
 
@@ -475,28 +475,28 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
       }
     }
 
-      for (const item of this.aNewSelectedPaymentMethods) {
-        if (item.nAmount) {
-          this.addExpenses({
-            amount: item.nAmount,
-            type: 'payment-method-change',
-            comment: 'Payment method change',
-            iActivityId: this.transaction.iActivityId,
-            oPayment: {
-              iPaymentMethodId: item._id,
-              nAmount: item.nAmount,
-              sMethod: item.sName.toLowerCase(),
-              sRemarks: 'PAYMENT_METHOD_CHANGE'
-            },
-            nVatRate: nVatRate
-          });
-        }
+    for (const item of this.aNewSelectedPaymentMethods) {
+      if (item.nAmount) {
+        this.addExpenses({
+          amount: item.nAmount,
+          type: 'payment-method-change',
+          comment: 'Payment method change',
+          iActivityId: this.transaction.iActivityId,
+          oPayment: {
+            iPaymentMethodId: item._id,
+            nAmount: item.nAmount,
+            sMethod: item.sName.toLowerCase(),
+            sRemarks: 'PAYMENT_METHOD_CHANGE'
+          },
+          nVatRate: nVatRate
+        });
       }
-    
+    }
+
     this.paymentEditMode = false;
     event.target.disabled = false;
 
-    this.toastService.show({ type: "success", text: this.translation['SUCCESSFULLY_UPDATED']  });
+    this.toastService.show({ type: "success", text: this.translation['SUCCESSFULLY_UPDATED'] });
     this.close({ action: false });
   }
 
@@ -532,29 +532,29 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
     this.apiService.getNew('customer', `/api/v1/customer/${this.iBusinessId}/${iCustomerId}`).subscribe((result: any) => {
       if (result?.data) {
         this.transaction.oSystemCustomer = result?.data;
-        this.matchSystemAndCurrentCustomer(this.transaction.oSystemCustomer , this.oCurrentCustomer);
-      }      
+        this.matchSystemAndCurrentCustomer(this.transaction.oSystemCustomer, this.oCurrentCustomer);
+      }
     })
   }
 
-  matchSystemAndCurrentCustomer(systemCustomer:any , currentCustomer:any){
+  matchSystemAndCurrentCustomer(systemCustomer: any, currentCustomer: any) {
     this.showSystemCustomer = false;
-    let currentCustomerData:any;
-    const aCurrentCustomerKeys: any = ['oInvoiceAddress', 'oPhone', 'bCounter', '_id', 'sFirstName', 'sLastName', 'sPrefix', 'sGender', 'sEmail', 'sVatNumber', 'sCompanyName', 'sCocNumber', 'bIsCompany', 'oContactPerson', 'nClientId' , 'sSalutation' , 'oShippingAddress'];
-    aCurrentCustomerKeys.forEach((keys:any)=>{
-        currentCustomerData = { ... currentCustomerData , [keys]:currentCustomer[keys]}
+    let currentCustomerData: any;
+    const aCurrentCustomerKeys: any = ['oInvoiceAddress', 'oPhone', 'bCounter', '_id', 'sFirstName', 'sLastName', 'sPrefix', 'sGender', 'sEmail', 'sVatNumber', 'sCompanyName', 'sCocNumber', 'bIsCompany', 'oContactPerson', 'nClientId', 'sSalutation', 'oShippingAddress'];
+    aCurrentCustomerKeys.forEach((keys: any) => {
+      currentCustomerData = { ...currentCustomerData, [keys]: currentCustomer[keys] }
     })
 
-  for(const [key,value] of Object.entries(currentCustomerData)){
-      if(!(_.isEqual(systemCustomer[key], currentCustomer[key]))){
-        console.log("not matched" , key , systemCustomer[key] , currentCustomer[key]);
-       this.showSystemCustomer = true;
+    for (const [key, value] of Object.entries(currentCustomerData)) {
+      if (!(_.isEqual(systemCustomer[key], currentCustomer[key]))) {
+        console.log("not matched", key, systemCustomer[key], currentCustomer[key]);
+        this.showSystemCustomer = true;
       }
-   }
+    }
   }
 
   async updateInvoiceNumber() {
-    return await this.apiService.putNew('cashregistry', `/api/v1/transaction/${this.transaction._id}`, { iBusinessId:this.iBusinessId,bGenerateInvoice: true }).toPromise();
+    return await this.apiService.putNew('cashregistry', `/api/v1/transaction/${this.transaction._id}`, { iBusinessId: this.iBusinessId, bGenerateInvoice: true }).toPromise();
   }
 
   /* Update customer in [T, A, AI] */
@@ -567,7 +567,7 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
     }
     this.apiService.postNew('cashregistry', '/api/v1/transaction/update-customer', oBody).subscribe((result: any) => {
       this.transaction.oCustomer = oBody?.oCustomer;
-      this.matchSystemAndCurrentCustomer(this.transaction.oSystemCustomer , this.transaction.oCustomer);
+      this.matchSystemAndCurrentCustomer(this.transaction.oSystemCustomer, this.transaction.oCustomer);
       this.toastService.show({ type: "success", text: this.translation['SUCCESSFULLY_UPDATED'] });
     }, (error) => {
       console.log('update customer error: ', error);
@@ -612,7 +612,7 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
       });
   }
 
-  fetchLocationName(){
+  fetchLocationName() {
     this.apiService.postNew('core', `/api/v1/business/${this.iBusinessId}/list-location`, { iBusinessId: this.iBusinessId }).subscribe((result: any) => {
       if (result?.data?.aLocation?.length) {
         let aLocation = result.data.aLocation;
@@ -625,4 +625,3 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
     });
   }
 }
-
