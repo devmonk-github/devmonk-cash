@@ -1,12 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { faPencilAlt, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { ApiService } from '../shared/service/api.service';
-import { MenuComponent } from '../shared/_layout/components/common';
 import { Subscription } from 'rxjs';
 import { DialogComponent, DialogService } from '../shared/service/dialog';
 import { ConfirmationDialogComponent } from 'src/app/shared/components/confirmation-dialog/confirmation-dialog.component';
 import { ToastService } from '../shared/components/toast';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
+import { TillService } from '../shared/service/till.service';
 @Component({
   selector: 'app-statistics-settings',
   templateUrl: './statistics-settings.component.html',
@@ -52,7 +52,8 @@ export class StatisticsSettingsComponent implements OnInit {
     private apiService: ApiService,
     private dialogService: DialogService,
     private toastService: ToastService,
-    private router: Router
+    private router: Router,
+    private tillService: TillService
   ) { }
 
   ngOnInit(): void {
@@ -144,7 +145,10 @@ export class StatisticsSettingsComponent implements OnInit {
     };
     this.updateSettingsSubscription = this.apiService.putNew('cashregistry', '/api/v1/settings/update/' + this.requestParams.iBusinessId, body)
       .subscribe((result: any) => {
-        this.toastService.show({ type: 'success', text: 'Saved Successfully' });
+        if(result?._id) {
+          this.tillService.settings = result;
+          this.toastService.show({ type: 'success', text: 'Saved Successfully' });
+        }
       }, (error) => {
         this.toastService.show({ type: 'warning', text: 'something went wrong' });
         console.log(error);

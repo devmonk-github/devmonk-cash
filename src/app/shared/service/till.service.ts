@@ -836,7 +836,7 @@ export class TillService {
   }
 
   async fetchSettings() {
-    if(this.settings) return this.settings;
+    // if(this.settings) return this.settings;
     this.settings = await this.apiService.getNew('cashregistry', `/api/v1/settings/${this.iBusinessId}`).toPromise();
     const oBagNumberSettings = {
       iLocationId: this.iLocationId,
