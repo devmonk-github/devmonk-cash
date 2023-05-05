@@ -130,6 +130,7 @@ export class AddExpensesComponent implements OnInit {
       iPaymentMethodId: this.paymentMethod._id,
       sMethod: this.paymentMethod.sName.toLowerCase(),
       nAmount: (expenseType?.type === 'negative') ? -(amount) : amount,
+      sComment: description
     };
     const transactionItem = {
       sProductName: expenseType.title,
