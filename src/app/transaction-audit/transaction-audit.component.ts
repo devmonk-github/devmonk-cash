@@ -945,18 +945,18 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
     });
   }
 
-  async exportToPDF() {
+  async exportToPDF(mode:string = 'compact') {
     this.pdfGenerationInProgress = true;
     await this.transactionAuditPdfService.exportToPDF({
       // aDisplayMethod: this.aDisplayMethod,
       aSelectedLocation: this.aSelectedLocation,
-      sOptionMenu: this.sOptionMenu,
+      sType: this.sOptionMenu.parent.sValue,
       bIsDynamicState: this.IsDynamicState,
       aLocation: this.aLocation,
       aSelectedWorkStation: (this.iStatisticId) ? this.sCurrentWorkstation : (this.selectedWorkStation?.length ? this.selectedWorkStation : []),
       aWorkStation: this.aWorkStation,
       oFilterDates: this.filterDates,
-      oBusinessDetails: this.businessDetails,
+      sBusinessName: this.businessDetails.sName,
       sDisplayMethod: this.sDisplayMethod,
       sDisplayMethodString: this.sSelectedOptionMenu,
       aStatistic: this.aStatistic,
@@ -965,7 +965,8 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
       aPaymentMethods: this.aPaymentMethods,
       bIsArticleGroupLevel: this.bIsArticleGroupLevel,
       bIsSupplierMode: this.bIsSupplierMode,
-      aEmployee: this.aEmployee
+      aEmployee: this.aEmployee,
+      mode
     });
     this.pdfGenerationInProgress = false;
   }
@@ -1425,6 +1426,11 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
       // console.log({ bCondition1, from: this.statisticFilter.dFromState, to: this.statisticFilter.dToState, aStatistic:this.aStatistic });
     }
     // console.log({oStatisticsDocument: this.oStatisticsDocument})
+    if (this.bShowDownload) {
+      setTimeout(() => {
+        MenuComponent.reinitialization();
+      });
+    }
   }
 
   fetchStockValuePerLocation() {
