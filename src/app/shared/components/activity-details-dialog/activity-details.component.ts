@@ -631,7 +631,7 @@ export class ActivityDetailsComponent implements OnInit {
     // console.log('aDiscou+ntRecords',JSON.parse(JSON.stringify(this.aDiscountRecords)))
     this.activityItems = this.activityItems.filter((el: any) => ![...this.tillService.aDiscountTypes, 'loyalty-points'].includes(el.oType.eKind));
     this.processDiscounts(this.activityItems);
-    // console.log(749, this.activityItems);
+    // console.log({activityItems: this.activityItems});
     this.oCurrentCustomer = this.activityItems[0].oCustomer;
     this.matchSystemAndCurrentCustomer(this.customer , this.oCurrentCustomer);
     this.oLocationName = this.activityItems[0].oLocationName;
@@ -666,33 +666,31 @@ export class ActivityDetailsComponent implements OnInit {
       // console.log({ item })
       const oBrand = this.brandsList.find((brand: any) => brand._id === item.iBusinessBrandId);
       if (oBrand) item.brandName = oBrand.sName;
-      const aDiscounts = this.aDiscountRecords.filter((el: any) => item.sUniqueIdentifier === el.sUniqueIdentifier);
-
+      
+      // const aDiscounts = this.aDiscountRecords.filter((el: any) => item.sUniqueIdentifier === el.sUniqueIdentifier);
+      
       item.nPriceIncVatAfterDiscount = item.nPriceIncVat * item.nQuantity;
       item.nDiscountToShow = 0;
-
-      aDiscounts.forEach((el: any) => {
-        let nDiscountAmount = 0;
-        if (el.oType.eKind === 'discount') {
-          nDiscountAmount = +((el.bDiscountOnPercentage ? this.tillService.getPercentOf(item.nPriceIncVat, el?.nDiscount || 0) : el.nDiscount).toFixed(2));
-          item.nDiscountToShow = nDiscountAmount;
-        } else if (el.oType.eKind === 'loyalty-points-discount') {
-          nDiscountAmount = el.nRedeemedLoyaltyPoints
-        }
-
+      
+      if(item?.nDiscount > 0) {
+        let nDiscountAmount = +((item.bDiscountOnPercentage ? this.tillService.getPercentOf(item.nPriceIncVat, item?.nDiscount || 0) : item.nDiscount).toFixed(2));
+        nDiscountAmount *= item.nQuantity;
+        item.nDiscountToShow = nDiscountAmount;
         item.nPriceIncVatAfterDiscount -= nDiscountAmount;
         item.nTotalAmount -= nDiscountAmount;
         item.nPaidAmount -= nDiscountAmount;
-        // console.log({
-        //   nDiscountAmount,
-        //   nPriceIncVatAfterDiscount: item.nPriceIncVatAfterDiscount,
-        //   nTotalAmount: item.nTotalAmount,
-        //   nPaidAmount: item.nPaidAmount,
-        // })
+      }
+      
+      // console.log({
+      //   nDiscountAmount,
+      //   nPriceIncVatAfterDiscount: item.nPriceIncVatAfterDiscount,
+      //   nTotalAmount: item.nTotalAmount,
+      //   nPaidAmount: item.nPaidAmount,
+      // })
 
-      });
       item.nPriceIncVatAfterDiscount = +(item.nPriceIncVatAfterDiscount.toFixed(2));
       item.nTotalAmount = +(item.nTotalAmount.toFixed(2));
+      // item.nTotalAmountPerQty = +((item.nTotalAmount / item.nQuantity).toFixed(2))
       return item;
     });
   }
@@ -705,8 +703,9 @@ export class ActivityDetailsComponent implements OnInit {
       if(result?.data?.length && result?.data[0]?.result?.length){
         this.activityItems = result?.data[0]?.result;
         this.aDiscountRecords = this.activityItems.filter((el: any) => this.tillService.aDiscountTypes.includes(el.oType.eKind));
-      }
+        // console.log(this.aDiscountRecords);
         this.processTransactionItems()
+      }
     });
   }
 
@@ -715,13 +714,16 @@ export class ActivityDetailsComponent implements OnInit {
   }
 
   submit(oActivityItem:any) {
+    // console.log(oActivityItem)
     this.submitted = true;
     const oItem = JSON.parse(JSON.stringify(oActivityItem));
-    oItem.nPriceIncVat = +(((oItem.nPriceIncVatAfterDiscount + oItem.nDiscountToShow)/oItem.nQuantity).toFixed(2));
-    oItem.nTotalAmount = oItem.nPriceIncVat * oItem.nQuantity;
-    oItem.nPaidAmount = +((oItem.nPaidAmount + oItem.nDiscountToShow).toFixed(2));
+    // oItem.nPriceIncVatAfterDiscount = oItem.nPriceIncVat * oItem.nQuantity;
+    // oItem.nPriceIncVat = +(((oItem.nPriceIncVatAfterDiscount + oItem.nDiscountToShow)/oItem.nQuantity).toFixed(2));
+    // console.log({ nPriceIncVat: oItem.nPriceIncVat, nPriceIncVatAfterDiscount: oItem.nPriceIncVatAfterDiscount})
+    // oItem.nTotalAmount = oItem.nPriceIncVat * oItem.nQuantity;
+    // oItem.nPaidAmount = +((oItem.nPaidAmount + oItem.nDiscountToShow).toFixed(2));
     oItem.iBusinessId = this.iBusinessId;
-    console.log({oItem});
+    // console.log({oItem});
     // return;
     this.apiService.putNew('cashregistry', '/api/v1/activities/items/' + oItem._id, oItem)
       .subscribe((result: any) => {

@@ -598,10 +598,7 @@
 
                                             <div class="row mb-6" *ngIf="!activity?.nDiscountToShow">
                                                 <label class="col-4">{{ 'PRICE_PER_QTY' | translate }}</label>
-                                                <div class="col-8">
-                                                    <input type="number" class="form-control form-control-lg form-control-solid mb-3 mb-lg-0"
-                                                    [(ngModel)]="activity.nPriceIncVat" (ngModelChange)="updatePriceIncVatWithoutDiscount(activity)">
-                                                </div>
+                                                <div class="col-8">{{ activity.nPriceIncVat | currency:tillService.currency}}</div>
                                             </div>
                                             <div class="row mb-6">
                                                 <label class="col-4">{{ 'QUANTITY' | translate }}</label>
@@ -610,7 +607,10 @@
                                             <ng-container *ngIf="activity?.nDiscountToShow">
                                                 <div class="row mb-6">
                                                     <label class="col-4">{{ 'PRICE_PER_QTY_INC_DISCOUNT' | translate }}</label>
-                                                    <div class="col-8"><s> {{ activity.nPriceIncVat | currency:tillService.currency}}</s></div>
+                                                    <div class="col-8">
+                                                        <s> {{ activity.nPriceIncVat | currency:tillService.currency}}</s> 
+                                                        {{ (activity.nPriceIncVat - (activity.nDiscountToShow / activity.nQuantity)) | currency:tillService.currency }}
+                                                    </div>
                                                 </div>
                                                 <div class="row mb-6">
                                                     <label class="col-4">{{ 'DISCOUNT_PER_QTY' | translate }}</label>
@@ -626,14 +626,14 @@
                                                 </div>
                                             </ng-container>
                                             <div class="row mb-6">
-                                                <label class="col-lg-4 col-form-label fw-bold fs-6"> {{
-                                                    "ESTIMATED_PRICE_UPON_INGESTION" | translate}}</label>
+                                                <label class="col-lg-4 col-form-label fw-bold fs-6"> 
+                                                    {{ "ESTIMATED_PRICE_UPON_INGESTION" | translate}}</label>
                                                 <div class="col-lg-8">
                                                     <div class="row">
                                                         <div class="col-lg-8 fv-row">
                                                             <input type="number"
                                                                 class="form-control form-control-lg form-control-solid mb-3 mb-lg-0 w-100"
-                                                                [(ngModel)]="activity.nTotalAmount" placeholder=""
+                                                                [(ngModel)]="activity.nEstimatedPrice" placeholder=""
                                                                 (ngModelChange)="activity.nPriceIncVatAfterDiscount = $event">
                                                         </div>
                                                     </div>

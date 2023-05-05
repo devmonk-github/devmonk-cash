@@ -250,6 +250,7 @@ export class TillService {
       } else {
         oItem.nPaymentAmount = nTotal;
       }
+      oItem.nEstimatedPrice = oItem.nPaymentAmount;
       if (bTesting) console.log(240, {nPaymentAmount: oItem.nPaymentAmount})
       oItem.nPaidLaterAmount = 0;
       oItem.bDiscount = i.nDiscount.value > 0;
@@ -400,6 +401,9 @@ export class TillService {
     body.transactionItems = [...body.transactionItems, ...aToBeAddedItems];
     body.transactionItems.forEach((i: any) => {
       i.nPaymentAmount = +(i.nPaymentAmount.toFixed(2));
+      const nDiscount = +((i.bDiscountOnPercentage ? this.getPercentOf(i.nPriceIncVat, i?.nDiscount || 0) : i.nDiscount).toFixed(2));
+      i.nEstimatedPrice = (i.nPriceIncVat * i.nQuantity) - nDiscount;
+      i.nEstimatedPrice = +(i.nEstimatedPrice.toFixed(2));
       i.nRevenueAmount = +(i.nRevenueAmount.toFixed(2));
     });
     if (bTesting) console.log('finaly body: ', body);

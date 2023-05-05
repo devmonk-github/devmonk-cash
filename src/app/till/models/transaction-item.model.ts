@@ -91,6 +91,7 @@ export class TransactionItem {
   nGiftcardRemainingAmount:number;  
   nActualCost:number;
   sSerialNumber: any;
+  nEstimatedPrice:any;
   constructor() {}
 
 }
