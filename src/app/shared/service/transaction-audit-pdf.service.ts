@@ -264,6 +264,10 @@ export class TransactionAuditUiPdfService {
             }
     
             this.aGoldPurchases = _aGoldPurchases?.data[0]?.result.filter((item: any) => item.oType.eKind == 'gold-purchase');
+        
+        } else if (sDisplayMethod === 'aRevenuePerTurnoverGroup') {
+            const _aTransactionItems:any = await this.fetchTransactionItems(oFilterDates, bIsArticleGroupLevel, bIsSupplierMode);
+            this.aTransactionItems = (_aTransactionItems?.data?.length && _aTransactionItems?.data[0]?.result?.length) ? _aTransactionItems?.data[0]?.result : [];
         }
         
 
@@ -315,7 +319,11 @@ export class TransactionAuditUiPdfService {
                 this.processPdfByRevenuePerProperty(columnWidths, aStatistic);
                 break;
             case 'revenuePerArticleGroup':
-                this.processPdfByRevenuePerArticleGroup(columnWidths, aStatistic);
+                if (this.tillService.settings?.bShowDayStatesBasedOnTurnover) {
+                    this.processRevenuePerTurnoverGroupCompact(aStatistic);
+                } else {
+                    this.processPdfByRevenuePerArticleGroup(columnWidths, aStatistic);
+                }
                 break;
             case 'aVatRates':
                 aStatistic.forEach((oStatistic: any) => {
@@ -323,7 +331,11 @@ export class TransactionAuditUiPdfService {
                 });
                 break;
             case 'aRevenuePerTurnoverGroup':
-                this.processRevenuePerTurnoverGroup(aStatistic);
+                if (this.bDetailedMode) {
+                    this.processRevenuePerTurnoverGroup(aStatistic);
+                } else {
+                    this.processRevenuePerTurnoverGroupCompact(aStatistic);
+                }
                 break;
         }
     }
@@ -534,6 +546,7 @@ export class TransactionAuditUiPdfService {
 
     
     processRevenuePerTurnoverGroup(aStatistic: any) {
+        
         this.addTableHeading('REVENUE_PER_TURNOVER_GROUP');
         
         const aHeaders = [
@@ -573,7 +586,9 @@ export class TransactionAuditUiPdfService {
             // console.log({oStatistic})
             oStatistic.individual.forEach((oSupplier: any) => {
                 // console.log({ oSupplier })
+                let nSubTotalDiscount = 0, nSubTotalRevenue = 0, nSubTotalVat = 0, nSubTotalQuantity = 0;
                 oSupplier.aArticleGroups.forEach((oArticleGroup: any) => {
+                    // console.log({oArticleGroup})
                     aTexts.push([
                         { text: '', style: ['td', 'bold'], headlineLevel: 1 },
                         { text: this.translateService.instant('TURNOVER_GROUP') + ': ' + oSupplier.sCategory , style: ['td', 'bold'], colSpan: 2, border: this.styles.border_bottom }, //+ ': group number'
@@ -589,20 +604,20 @@ export class TransactionAuditUiPdfService {
                         { text: '', style: ['td', 'bold'] }
                     ]);
                     const aItems = this.aTransactionItems.filter((item:any) => item.iArticleGroupId === oArticleGroup._id)
-                    
-                    let nSubTotalDiscount = 0, nSubTotalRevenue = 0, nSubTotalVat = 0;
+                    // console.log({ aItems })
                     aItems.forEach((oItem: any) => {
                         const nVat = +((oItem.nRevenueAmount - (oItem.nRevenueAmount / (1 + oItem.nVatRate / 100))).toFixed(2));
                         let nDiscount = 0;
                         if(oItem.nDiscount) nDiscount = ((oItem.bDiscountOnPercentage) ? (oItem.nPriceIncVat * oItem.nQuantity * oItem.nDiscount / 100) : oItem.nDiscount).toFixed(2)
                         
-                        nSubTotalDiscount += nDiscount;
-                        nSubTotalRevenue += oItem.nRevenueAmount;
-                        nSubTotalVat += nVat;
+                        nSubTotalDiscount += +(nDiscount.toFixed(2));
+                        nSubTotalRevenue += +(oItem.nRevenueAmount.toFixed(2));
+                        nSubTotalVat += +(nVat.toFixed(2));
+                        nSubTotalQuantity += oArticleGroup.nQuantity;
 
-                        nTotalDiscount += +(nSubTotalDiscount);
-                        nTotalRevenue += +(nSubTotalRevenue);
-                        nTotalVat += +(nSubTotalVat);
+                        nTotalDiscount += nDiscount;
+                        nTotalRevenue += oItem.nRevenueAmount;
+                        nTotalVat += nVat;
                         
                         aTexts.push([
                             { text: oItem?.sReceiptNumber, style: ['td', 'property'] },
@@ -619,22 +634,22 @@ export class TransactionAuditUiPdfService {
                             { text: moment(oItem.dCreatedDate).format('HH:mm'), style: ['td', 'property'] },
                         ]);
                     });
-                    aTexts.push([
-                        { text: '', style: ['td', 'bold'] },
-                        { text: this.translateService.instant('SUBTOTAL'), style: ['td'], colSpan: 2, border: this.styles.border_top },
-                        { text: '', style: ['td'], border: this.styles.border_top },
-                        { text: '', style: ['td'], border: this.styles.border_top },
-                        { text: oArticleGroup.nQuantity, style: ['td', 'bold'], border: this.styles.border_top },
-                        { text: '', style: ['td', 'bold'] },
-                        { text: '', style: ['td', 'bold'] },
-                        { text: nSubTotalDiscount, style: ['td', 'bold'], border: this.styles.border_top },
-                        { text: nSubTotalRevenue, style: ['td', 'bold'], border: this.styles.border_top },
-                        { text: nSubTotalVat, style: ['td', 'bold'], border: this.styles.border_top },
-                        { text: '', style: ['td', 'bold'] },
-                        { text: '', style: ['td', 'bold'] }
-                    ])
-                    aTexts.push([...aDummy.fill(' ')]);
                 });
+                aTexts.push([
+                    { text: '', style: ['td', 'bold'] },
+                    { text: this.translateService.instant('SUBTOTAL'), style: ['td'], colSpan: 2, border: this.styles.border_top },
+                    { text: '', style: ['td'], border: this.styles.border_top },
+                    { text: '', style: ['td'], border: this.styles.border_top },
+                    { text: nSubTotalQuantity, style: ['td', 'bold'], border: this.styles.border_top },
+                    { text: '', style: ['td', 'bold'] },
+                    { text: '', style: ['td', 'bold'] },
+                    { text: nSubTotalDiscount, style: ['td', 'bold'], border: this.styles.border_top },
+                    { text: nSubTotalRevenue, style: ['td', 'bold'], border: this.styles.border_top },
+                    { text: nSubTotalVat, style: ['td', 'bold'], border: this.styles.border_top },
+                    { text: '', style: ['td', 'bold'] },
+                    { text: '', style: ['td', 'bold'] }
+                ])
+                aTexts.push([...aDummy.fill(' ')]);
             });
         });
 
@@ -667,6 +682,93 @@ export class TransactionAuditUiPdfService {
             
         };
         // console.log(data, aTexts)
+        this.content.push(data);
+    }
+
+    processRevenuePerTurnoverGroupCompact(aStatistic: any) {
+
+        this.addTableHeading('REVENUE_PER_TURNOVER_GROUP_COMPACT');
+
+        const aHeaders = [
+            { key: 'TURNOVER_GROUP', weight: 4 },
+            { key: 'QUANTITY', weight: 2 },
+            { key: 'DISCOUNT', weight: 2 },
+            { key: 'AMOUNT', weight: 2 },
+            { key: 'VAT', weight: 2 },
+        ];
+
+
+        const aWidths = [...aHeaders.map((el: any) => this.commonPrintSettingsService.calcColumnWidth(el.weight))];
+
+        const aHeaderList: any = [];
+        aHeaders.forEach((el: any) => {
+            const obj: any = {
+                text: (el?.key) ? this.translateService.instant(el.key) : '',
+                style: ['td'],
+                border: this.styles.border_top_bottom
+            };
+            if (el?.colSpan) obj.colSpan = el?.colSpan;
+            aHeaderList.push(obj)
+        })
+        const aTexts = [aHeaderList];
+
+        const aDummy = [...aHeaderList];
+        aTexts.push([...aDummy.fill(' ')]);
+        let nTotalDiscount = 0, nTotalRevenue = 0, nTotalVat = 0, nTotalQuantity = 0;
+        aStatistic.forEach((oStatistic: any) => {
+            // console.log({oStatistic})
+            oStatistic.individual.forEach((oSupplier: any) => {
+                // console.log({ oSupplier })
+                let nTurnOverGroupDiscount = 0, nTurnOverGroupRevenue = 0, nTurnOverGroupVat = 0, nTurnOverGroupQuantity = 0;
+                oSupplier.aArticleGroups.forEach((oArticleGroup: any) => {
+                    console.log({ oArticleGroup })
+                    nTurnOverGroupQuantity += oArticleGroup.nQuantity;
+                    nTurnOverGroupRevenue += oArticleGroup.nTotalRevenue;
+                    const aItems = this.aTransactionItems.filter((item: any) => item.iArticleGroupId === oArticleGroup._id)
+                    aItems.forEach((oItem: any) => {
+                        const nVat = +((oItem.nRevenueAmount - (oItem.nRevenueAmount / (1 + oItem.nVatRate / 100))).toFixed(2));
+                        if (oItem.nDiscount) nTurnOverGroupDiscount += +(((oItem.bDiscountOnPercentage) ? (oItem.nPriceIncVat * oItem.nQuantity * oItem.nDiscount / 100) : oItem.nDiscount).toFixed(2))
+
+                        nTurnOverGroupVat += nVat;
+
+                        nTotalDiscount += nTurnOverGroupDiscount;
+                        nTotalRevenue += oItem.nRevenueAmount;
+                        nTotalVat += nVat;
+                        nTotalQuantity += oArticleGroup.nQuantity;
+                    });
+                });
+                aTexts.push([
+                    { text: oSupplier.sCategory, style: ['td'] },
+                    { text: nTurnOverGroupQuantity, style: ['td'] },
+                    { text: nTurnOverGroupDiscount, style: ['td'] },
+                    { text: nTurnOverGroupRevenue, style: ['td'] },
+                    { text: nTurnOverGroupVat, style: ['td'] },
+                ]);
+            });
+        });
+
+        aTexts.push([
+            { text: '', style: ['td'], border: this.styles.border_top_bottom }, //colSpan: 2,
+            { text: nTotalQuantity, style: ['td', 'bold'], border: this.styles.border_top_bottom },
+            { text: nTotalDiscount.toFixed(2), style: ['td', 'bold'], border: this.styles.border_top_bottom },
+            { text: nTotalRevenue.toFixed(2), style: ['td', 'bold'], border: this.styles.border_top_bottom },
+            { text: nTotalVat.toFixed(2), style: ['td', 'bold'], border: this.styles.border_top_bottom },
+        ]);
+
+        const data = {
+            table: {
+                headerRows: 1,
+                widths: aWidths,
+                body: aTexts,
+                dontBreakRows: true,
+                keepWithHeaderRows: true
+            },
+            layout: {
+                defaultBorder: false
+            },
+
+        };
+        console.log(data)
         this.content.push(data);
     }
 
