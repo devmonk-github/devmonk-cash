@@ -545,6 +545,43 @@
                                     </div>
 
                                     <!-- changed here -->
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <div class="row mb-6">
+                                                <label class="col-lg-12 col-form-label fw-bold fs-6">{{
+                                                    "REMARK_FOR_SERVICE_PARTNERS" | translate}}</label>
+                                                <div class="col-lg-12">
+                                                    <div class="row">
+                                                        <div class="col-lg-12 fv-row">
+                                                            <textarea
+                                                                class="form-control form-control-lg form-control-solid mb-3 mb-lg-0 w-100"
+                                                                placeholder="{{ 'REMARK_FOR_SERVICE_PARTNERS' | translate}}"
+                                                                lines="10"
+                                                                [(ngModel)]="activity.sCommentVisibleServicePartner"></textarea>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="row mb-6">
+                                                <label
+                                                    class="col-lg-12 col-form-label fw-bold fs-6">{{"REMARK_FOR_COLLEAGUES"
+                                                    | translate}}</label>
+                                                <div class="col-lg-12">
+                                                    <div class="row">
+                                                        <div class="col-lg-12 fv-row">
+                                                            <textarea
+                                                                class="form-control form-control-lg form-control-solid mb-3 mb-lg-0 w-100"
+                                                                placeholder="{{ 'REMARK_FOR_COLLEAGUES' | translate}}"
+                                                                lines="10"
+                                                                [(ngModel)]="activity.sCommentVisibleCollegues"></textarea>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
 
                                     <div class="row">
                                         <div class="col-4">
@@ -746,7 +783,6 @@
                                                         {{ "I_REPAIR_THIS_MYSELF" | translate}}
                                                     </div>
                                                     <div class="col">
-
                                                         <div class="row mb-6">
                                                             <label class="col-lg-4 col-form-label fw-bold fs-6">{{
                                                                 "REPAIRER" |
@@ -815,7 +851,6 @@
                                                                 </div>
                                                             </div>
                                                         </div>
-
                                                         <div class="row mb-6">
                                                             <label class="col-lg-4 col-form-label fw-bold fs-6"><label
                                                                     for="brand">{{ "BRAND" | translate}}</label></label>
@@ -887,48 +922,9 @@
                                                     </tr>
                                                 </tbody>
                                             </table>
-
                                         </div>
-
                                     </div>
-                                    <div class="row">
-                                        <div class="col-6">
-                                            <div class="row mb-6">
-                                                <label class="col-lg-12 col-form-label fw-bold fs-6">{{
-                                                    "REMARK_FOR_SERVICE_PARTNERS" | translate}}</label>
-                                                <div class="col-lg-12">
-                                                    <div class="row">
-                                                        <div class="col-lg-12 fv-row">
-                                                            <textarea
-                                                                class="form-control form-control-lg form-control-solid mb-3 mb-lg-0 w-100"
-                                                                placeholder="{{ 'REMARK_FOR_SERVICE_PARTNERS' | translate}}"
-                                                                lines="10"
-                                                                [(ngModel)]="activity.sCommentVisibleServicePartner"></textarea>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-6">
-                                            <div class="row mb-6">
-                                                <label
-                                                    class="col-lg-12 col-form-label fw-bold fs-6">{{"REMARK_FOR_COLLEAGUES"
-                                                    | translate}}</label>
-                                                <div class="col-lg-12">
-                                                    <div class="row">
-                                                        <div class="col-lg-12 fv-row">
-                                                            <textarea
-                                                                class="form-control form-control-lg form-control-solid mb-3 mb-lg-0 w-100"
-                                                                placeholder="{{ 'REMARK_FOR_COLLEAGUES' | translate}}"
-                                                                lines="10"
-                                                                [(ngModel)]="activity.sCommentVisibleCollegues"></textarea>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                    </div>
+                    
                                     <div class="row">
                                         <div class="col-3">
                                             <button [disabled]="submitted" [class.btn-pulse]="submitted"
@@ -938,9 +934,7 @@
                                                     <i class="fa fa-spinner fa-spin" [hidden]="!submitted"
                                                         style="font-size:15px;"></i>
                                                 </span>
-
                                                 <span class="indicator-label">{{"SUBMIT" | translate}}</span>
-
                                             </button>
 
                                         </div>
@@ -1507,6 +1501,44 @@
                                     </div>
 
                                     <div class="row">
+                                        <div class="col-6">
+                                            <div class="row mb-6">
+                                                <label class="col-lg-12 col-form-label fw-bold fs-6">{{
+                                                    "REMARK_FOR_SERVICE_PARTNERS" | translate}}</label>
+                                                <div class="col-lg-12">
+                                                    <div class="row">
+                                                        <div class="col-lg-12 fv-row">
+                                                            <textarea
+                                                                class="form-control form-control-lg form-control-solid mb-3 mb-lg-0 w-100"
+                                                                placeholder="{{ 'REMARK_FOR_SERVICE_PARTNERS' | translate}}"
+                                                                lines="10"
+                                                                [(ngModel)]="activity.sCommentVisibleServicePartner"></textarea>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="row mb-6">
+                                                <label class="col-lg-12 col-form-label fw-bold fs-6">{{
+                                                    "REMARK_FOR_COLLEAGUES" |
+                                                    translate}}</label>
+                                                <div class="col-lg-12">
+                                                    <div class="row">
+                                                        <div class="col-lg-12 fv-row">
+                                                            <textarea
+                                                                class="form-control form-control-lg form-control-solid mb-3 mb-lg-0 w-100"
+                                                                placeholder="{{ 'REMARK_FOR_SERVICE_PARTNERS' | translate}}"
+                                                                lines="10"
+                                                                [(ngModel)]="activity.sCommentVisibleCollegues"></textarea>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="row">
                                         <div class="col-4">
                                             <div class="row mb-6">
                                                 <label class="col-lg-4 col-form-label fw-bold fs-6">{{ "INTAKE_DATE" |
@@ -1701,12 +1733,7 @@
                                                     </div>
                                                 </div>
                                             </div>
-
                                         </div>
-                                        <div class="col-4">
-
-                                        </div>
-
                                     </div>
                                     <div class="row table-responsive">
                                         <div class="col-6">
@@ -1745,45 +1772,6 @@
                                                 </tbody>
                                             </table>
                                         </div>
-
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-6">
-                                            <div class="row mb-6">
-                                                <label class="col-lg-12 col-form-label fw-bold fs-6">{{
-                                                    "REMARK_FOR_SERVICE_PARTNERS" | translate}}</label>
-                                                <div class="col-lg-12">
-                                                    <div class="row">
-                                                        <div class="col-lg-12 fv-row">
-                                                            <textarea
-                                                                class="form-control form-control-lg form-control-solid mb-3 mb-lg-0 w-100"
-                                                                placeholder="{{ 'REMARK_FOR_SERVICE_PARTNERS' | translate}}"
-                                                                lines="10"
-                                                                [(ngModel)]="activity.sCommentVisibleServicePartner"></textarea>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-6">
-                                            <div class="row mb-6">
-                                                <label class="col-lg-12 col-form-label fw-bold fs-6">{{
-                                                    "REMARK_FOR_COLLEAGUES" |
-                                                    translate}}</label>
-                                                <div class="col-lg-12">
-                                                    <div class="row">
-                                                        <div class="col-lg-12 fv-row">
-                                                            <textarea
-                                                                class="form-control form-control-lg form-control-solid mb-3 mb-lg-0 w-100"
-                                                                placeholder="{{ 'REMARK_FOR_SERVICE_PARTNERS' | translate}}"
-                                                                lines="10"
-                                                                [(ngModel)]="activity.sCommentVisibleCollegues"></textarea>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
                                     </div>
                                     <div class="row">
                                         <div class="col-3">

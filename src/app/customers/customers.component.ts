@@ -297,4 +297,29 @@ export class CustomersComponent implements OnInit {
     this.requestParams.limit = this.paginationConfig.itemsPerPage;
     this.getCustomers()
   }
+
+
+  /*
+   * Function to detect typed string and automatically prefill fields, if fields are not prefilled. 
+   * If string contains number add ADDRESS in selected fields.
+   * If string contains letters add LASTNAME in selected fields.
+  */
+  stringDetection(){
+    /*When length of searchvalue is equal to 4, we will be able to detect if user is searching for someting in the address or lastname*/
+    if(this.requestParams.searchValue.length == 4 && this.requestParams.oFilterBy.aSearchField.length==0){
+      /*If string contains number -> then add Address in selected field */
+      if(/\d/.test(this.requestParams.searchValue)){
+        console.log(this.requestParams.searchValue);
+        console.log(this.requestParams.oFilterBy.aSearchField, '-',this.settings?.aCustomerSearch, '-', this.aFilterFields[2].value);
+        /*TODO: fill the selection with address, the following code is is not showing the selected element on frontend*/
+        this.requestParams.oFilterBy.aSearchField.unshift('sAddress');
+        console.log(this.requestParams.oFilterBy.aSearchField);
+      }else{
+        /*If string contains only letters -> then add Lastname in selected field */
+        /*TODO: fill the selection with lastname, the following code is is not showing the selected element on frontend*/
+        this.requestParams.oFilterBy.aSearchField.unshift('sLastName');
+        console.log(this.requestParams.oFilterBy.aSearchField);
+      }
+    }
+  }
 }

@@ -41,19 +41,12 @@ export class SelectPrintPaperDialogComponent implements OnInit {
   }
 
   ngOnInit() {
-    // console.log({ type:this.type, workstation:this.oWorkstation, template:this.template, paper: this.sSelectedPaper });
-    if (this.oWorkstation[this.template] && this.oWorkstation[this.template][this.type] && this.oWorkstation[this.template][this.type]?.nPrinterId) {
-      this.oSelectedPrinter = this.printersList.find((printer: any) => printer.id === this.oWorkstation[this.template][this.type]?.nPrinterId)
-      // console.log(this.printersList);
+      this.oSelectedPrinter = this.dialogRef.context.oSelectedPrinter;
       if (this.oSelectedPrinter){
         if (!this.sPrinterPageFormat) this.selectedPrinterChange();
         else this.aPapers = Object.keys(this.oSelectedPrinter?.capabilities?.papers) || [];
-
         this.aPaperTray = this.oSelectedPrinter?.capabilities?.bins || [];
       }
-      // console.log(this.sPaperTray, this.nRotation)
-      // console.log(this.oSelectedPrinter, this.sSelectedPaper);
-    }
   }
 
   selectedPrinterChange(){
