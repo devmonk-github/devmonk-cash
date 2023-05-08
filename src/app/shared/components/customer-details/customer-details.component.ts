@@ -1,8 +1,8 @@
-import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild , SimpleChanges} from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { DialogComponent, DialogService } from '../../service/dialog';
 import { ViewContainerRef } from '@angular/core';
 import { ApiService } from 'src/app/shared/service/api.service';
-import { faL, faTimes } from "@fortawesome/free-solid-svg-icons";
+import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import { TranslateService } from '@ngx-translate/core';
 import {
   ApexAxisChartSeries,
@@ -20,13 +20,12 @@ import { ToastService } from '../toast';
 import { WebOrderDetailsComponent } from '../../../shared/components/web-order-details/web-order-details.component';
 import { ActivityDetailsComponent } from '../../../shared/components/activity-details-dialog/activity-details.component';
 import { TransactionDetailsComponent } from '../../../transactions/components/transaction-details/transaction-details.component';
-import { fromEvent, Subject } from 'rxjs';
-import { debounceTime, distinctUntilChanged, filter, tap } from 'rxjs/operators';
-import { Subscription } from 'rxjs';
+import { Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged, filter } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { ConfirmationDialogComponent } from 'src/app/shared/components/confirmation-dialog/confirmation-dialog.component';
 import { CustomerDialogComponent } from 'src/app/shared/components/customer-dialog/customer-dialog.component';
-import countryPhoneCodeList from 'src/assets/json/country_phone_code_list.json';
+import * as countryPhoneCodeList from 'src/assets/json/country_phone_code_list.json';
 export interface BarChartOptions {
   series: ApexAxisChartSeries;
   chart: ApexChart;
