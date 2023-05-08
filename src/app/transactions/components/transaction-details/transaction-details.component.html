@@ -61,7 +61,7 @@
                            <span *ngIf="transaction?.oCustomer?.bIsCompany">   {{transaction?.oCustomer?.sCompanyName}}</span>
                         </div>
                     </div>
-                    <div class="col-md-12" *ngIf="!transaction?.oCustomer?.bIsCompany && transaction?.oCustomer?.bCounter">
+                    <div class="col-md-12" *ngIf="!transaction?.oCustomer?.bIsCompany && !transaction?.oCustomer?.bCounter">
                         <div class=" mt-2">
                             <span class="text-muted me-5">{{ 'COMPANY_NAME' | translate}}: </span>
                             <span class="text-gray-800">{{ transaction?.oCustomer?.sCompanyName }}</span>

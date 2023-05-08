@@ -617,9 +617,9 @@ export class ActivityDetailsComponent implements OnInit {
       currentCustomerData = { ...currentCustomerData, [keys]: currentCustomer[keys] }
     })
 
-    if (this.from == 'activity-items') {
+    if (this.from == 'activity-items' && !systemCustomer?.bCounter) {
       for (const [key, value] of Object.entries(currentCustomerData)) {
-        if (!(_.isEqual(systemCustomer[key], currentCustomer[key]))) {
+        if (currentCustomer[key] && !(_.isEqual(systemCustomer[key], currentCustomer[key]))) {
           console.log("not matched" , key , systemCustomer[key] , currentCustomer[key]);
           this.showSystemCustomer = true;
         }

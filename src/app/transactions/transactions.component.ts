@@ -399,22 +399,24 @@ export class TransactionsComponent implements OnInit, OnDestroy {
       
     oDialogComponent.close.subscribe(result => {
       if (result?.oData?.oCurrentCustomer) {
+        transaction.oCustomer._id = result && result.oData && result.oData.oCurrentCustomer && result.oData.oCurrentCustomer._id ? result.oData.oCurrentCustomer._id : transaction.oCustomer._id;
+        transaction.iCustomerId = result && result.oData && result.oData.oCurrentCustomer && result.oData.oCurrentCustomer._id ? result.oData.oCurrentCustomer._id : transaction.iCustomerId;
         transaction.oCustomer.bIsCompany = result && result.oData && result.oData.oCurrentCustomer && result.oData.oCurrentCustomer.bIsCompany ? result.oData.oCurrentCustomer.bIsCompany:false;
-        if (result?.oData?.oCurrentCustomer?.sFirstName) transaction.oCustomer.sFirstName = result?.oData?.oCurrentCustomer?.sFirstName;
-        if (result?.oData?.oCurrentCustomer?.sLastName) transaction.oCustomer.sLastName = result?.oData?.oCurrentCustomer?.sLastName;
-        if (result?.oData?.oCurrentCustomer?.sSalutation) transaction.oCustomer.sSalutation = result?.oData?.oCurrentCustomer?.sSalutation;
-        if (result?.oData?.oCurrentCustomer?.sPrefix) transaction.oCustomer.sPrefix = result?.oData?.oCurrentCustomer?.sPrefix;
-        if (result?.oData?.oCurrentCustomer?.sEmail) transaction.oCustomer.sEmail = result?.oData?.oCurrentCustomer?.sEmail;
-        if (result?.oData?.oCurrentCustomer?.sGender) transaction.oCustomer.sGender = result?.oData?.oCurrentCustomer?.sGender;
-        if (result?.oData?.oCurrentCustomer?.sVatNumber) transaction.oCustomer.sVatNumber = result?.oData?.oCurrentCustomer?.sVatNumber;
-        if (result?.oData?.oCurrentCustomer?.sCocNumber) transaction.oCustomer.sCocNumber = result?.oData?.oCurrentCustomer?.sCocNumber;
-        if (result?.oData?.oCurrentCustomer?.nClientId) transaction.oCustomer.nClientId = result?.oData?.oCurrentCustomer?.nClientId;
-        if (result?.oData?.oCurrentCustomer?.oContactPerson) transaction.oCustomer.oContactPerson = result?.oData?.oCurrentCustomer?.oContactPerson;
-        if (result?.oData?.oCurrentCustomer?.sCompanyName) transaction.oCustomer.sCompanyName = result?.oData?.oCurrentCustomer?.sCompanyName;
-        if (result?.oData?.oCurrentCustomer?.oShippingAddress) transaction.oCustomer.oShippingAddress = result?.oData?.oCurrentCustomer?.oShippingAddress;
-        if (result?.oData?.oCurrentCustomer?.oInvoiceAddress) transaction.oCustomer.oInvoiceAddress = result?.oData?.oCurrentCustomer?.oInvoiceAddress;
-        if (result?.oData?.oCurrentCustomer?.oPhone) transaction.oCustomer.oPhone = result?.oData?.oCurrentCustomer?.oPhone;
-        if (result?.oData?.oCurrentCustomer?.bCounter) transaction.oCustomer.bCounter = result?.oData?.oCurrentCustomer?.bCounter;
+        transaction.oCustomer.sFirstName = result && result.oData && result.oData.oCurrentCustomer && result.oData.oCurrentCustomer.sFirstName ? result.oData.oCurrentCustomer.sFirstName:"";
+        transaction.oCustomer.sLastName = result && result.oData && result.oData.oCurrentCustomer && result.oData.oCurrentCustomer.sLastName ? result.oData.oCurrentCustomer.sLastName:"";
+        transaction.oCustomer.sSalutation = result && result.oData && result.oData.oCurrentCustomer && result.oData.oCurrentCustomer.sSalutation ? result.oData.oCurrentCustomer.sSalutation:"";
+        transaction.oCustomer.sPrefix = result && result.oData && result.oData.oCurrentCustomer && result.oData.oCurrentCustomer.sPrefix ? result.oData.oCurrentCustomer.sPrefix:"";
+        transaction.oCustomer.sEmail = result && result.oData && result.oData.oCurrentCustomer && result.oData.oCurrentCustomer.sEmail ? result.oData.oCurrentCustomer.sEmail:"";
+        transaction.oCustomer.sGender = result && result.oData && result.oData.oCurrentCustomer && result.oData.oCurrentCustomer.sGender ? result.oData.oCurrentCustomer.sGender:"";
+        transaction.oCustomer.sVatNumber = result && result.oData && result.oData.oCurrentCustomer && result.oData.oCurrentCustomer.sVatNumber ? result.oData.oCurrentCustomer.sVatNumber:"";
+        transaction.oCustomer.sCocNumber = result && result.oData && result.oData.oCurrentCustomer && result.oData.oCurrentCustomer.sCocNumber ? result.oData.oCurrentCustomer.sCocNumber:"";
+        transaction.oCustomer.nClientId = result && result.oData && result.oData.oCurrentCustomer && result.oData.oCurrentCustomer.nClientId ? result.oData.oCurrentCustomer.nClientId:"";
+        transaction.oCustomer.oContactPerson = result && result.oData && result.oData.oCurrentCustomer && result.oData.oCurrentCustomer.oContactPerson ? result.oData.oCurrentCustomer.oContactPerson:"";
+        transaction.oCustomer.sCompanyName = result && result.oData && result.oData.oCurrentCustomer && result.oData.oCurrentCustomer.sCompanyName ? result.oData.oCurrentCustomer.sCompanyName:"";
+        transaction.oCustomer.oShippingAddress = result && result.oData && result.oData.oCurrentCustomer && result.oData.oCurrentCustomer.oShippingAddress ? result.oData.oCurrentCustomer.oShippingAddress:"";
+        transaction.oCustomer.oInvoiceAddress = result && result.oData && result.oData.oCurrentCustomer && result.oData.oCurrentCustomer.oInvoiceAddress ? result.oData.oCurrentCustomer.oInvoiceAddress:"";
+        transaction.oCustomer.oPhone = result && result.oData && result.oData.oCurrentCustomer && result.oData.oCurrentCustomer.oPhone ? result.oData.oCurrentCustomer.oPhone:"";
+        transaction.oCustomer.bCounter = result && result.oData && result.oData.oCurrentCustomer && result.oData.oCurrentCustomer.bCounter ? result.oData.oCurrentCustomer.bCounter:false;
       }
       if (result?.action) this.routes.navigate(['business/till']);
     }, (error) => {
