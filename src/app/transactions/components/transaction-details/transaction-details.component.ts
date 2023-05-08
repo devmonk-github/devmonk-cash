@@ -545,10 +545,12 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
       currentCustomerData = { ...currentCustomerData, [keys]: currentCustomer[keys] }
     })
 
-    for (const [key, value] of Object.entries(currentCustomerData)) {
-      if (!(_.isEqual(systemCustomer[key], currentCustomer[key]))) {
-        console.log("not matched", key, systemCustomer[key], currentCustomer[key]);
-        this.showSystemCustomer = true;
+    if(!systemCustomer?.bCounter){
+      for (const [key, value] of Object.entries(currentCustomerData)) {
+        if (currentCustomer[key] && !(_.isEqual(systemCustomer[key], currentCustomer[key]))) {
+          console.log("not matched", key, systemCustomer[key], currentCustomer[key]);
+          this.showSystemCustomer = true;
+        }
       }
     }
   }

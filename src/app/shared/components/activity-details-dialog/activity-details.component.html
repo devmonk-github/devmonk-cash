@@ -97,21 +97,20 @@
                         <div class="d-flex flex-wrap pb-5">
                             <div class="flex-equal me-5">
                                 <p><strong>{{ "CURRENT_CUSTOMER" | translate}}</strong></p>
-                                <p *ngIf="customer?.bCounter==true"> {{ "NO_CUSTOMER_ADDED" | translate}} </p>
-                                <ng-container *ngIf="customer?.bCounter==false">
+                                <ng-container>
                                     <div class="fs-6 ms-1">
                                         <div class="align-items-center">
                                             <div class="text-gray-600">
                                                 <span *ngIf="!oCurrentCustomer?.bIsCompany">
-                                                    {{oCurrentCustomer?.sFirstName || ''}}
-                                                    {{oCurrentCustomer?.sLastName|| ''}}</span>
+                                                    {{oCurrentCustomer?.sFirstName || '-'}}
+                                                    {{oCurrentCustomer?.sLastName|| '-'}}</span>
                                                 <span *ngIf="oCurrentCustomer?.bIsCompany">
                                                     {{oCurrentCustomer?.sCompanyName || "-"}}</span>
 
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="fs-6 ms-1">
+                                    <div class="fs-6 ms-1" *ngIf="!customer?.bCounter">
                                         <div class="align-items-center" *ngIf="oCurrentCustomer?.sEmail">
                                             <p class="text-gray-600 m-0">
                                                 {{oCurrentCustomer?.sEmail}}
@@ -121,7 +120,7 @@
                                             </p>
                                         </div>
                                     </div>
-                                    <div class="fs-6 ms-1">
+                                    <div class="fs-6 ms-1" *ngIf="!customer?.bCounter">
                                         <div class="align-items-center">
                                             <p style="margin: 0; margin-bottom: 5px;"
                                                 *ngIf="oCurrentCustomer?.oPhone?.sMobile">{{'PHONE_MOBILE' | translate}}
@@ -139,7 +138,7 @@
                                             </p>
                                         </div>
                                     </div>
-                                    <div class="fs-6 ms-1">
+                                    <div class="fs-6 ms-1" *ngIf="!customer?.bCounter">
                                         <div class="align-items-center">
                                             <p style="margin: 0; margin-bottom: 5px;"
                                                 *ngIf="oCurrentCustomer?.oPhone?.sLandLine">{{'PHONE_LANDLINE' |
