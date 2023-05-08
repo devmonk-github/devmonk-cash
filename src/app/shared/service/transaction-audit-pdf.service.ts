@@ -214,13 +214,13 @@ export class TransactionAuditUiPdfService {
 
         // console.log('PDF service: exportToPDF: ', {
         //     aSelectedLocation,
-        //     sOptionMenu,
+        //     sType,
         //     bIsDynamicState,
         //     aLocation,
         //     aSelectedWorkStation,
         //     aWorkStation,
         //     oFilterDates,
-        //     oBusinessDetails,
+        //     sBusinessName,
         //     sDisplayMethod,
         //     sDisplayMethodString,
         //     aStatistic,
@@ -229,7 +229,8 @@ export class TransactionAuditUiPdfService {
         //     aPaymentMethods,
         //     bIsArticleGroupLevel,
         //     bIsSupplierMode,
-        //     aEmployee });
+        //     aEmployee,
+        //     mode });
 
         const columnWidths = ['*', 60, 80, 80, 100];
         
@@ -999,7 +1000,7 @@ export class TransactionAuditUiPdfService {
             });
         } else {
             aTexts.push([
-                { text: this.translateService.instant('NO_RECORD_FOUND'), colSpan: 5, style: ['td', 'center'] },
+                { text: this.translateService.instant('NO_RECORDS_FOUND'), colSpan: 5, style: ['td', 'center'] },
                 {},
                 {},
                 {},
