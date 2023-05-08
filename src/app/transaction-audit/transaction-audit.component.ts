@@ -955,7 +955,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
       aLocation: this.aLocation,
       aSelectedWorkStation: (this.iStatisticId) ? this.sCurrentWorkstation : (this.selectedWorkStation?.length ? this.selectedWorkStation : []),
       aWorkStation: this.aWorkStation,
-      oFilterDates: this.filterDates,
+      oFilterDates: (this.IsDynamicState) ? this.filterDates : {startDate: this.statisticFilter.dFromState, endDate: this.statisticFilter.dToState},
       sBusinessName: this.businessDetails.sName,
       sDisplayMethod: this.sDisplayMethod,
       sDisplayMethodString: this.sSelectedOptionMenu,
