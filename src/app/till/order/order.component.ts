@@ -80,9 +80,6 @@ export class OrderComponent implements OnInit {
     this.getProperties();
     this.listSuppliers();
     this.getBusinessBrands();
-    if (this.settings.bAutoIncrementBagNumbers) {
-      this.item.sBagNumber =  this.settings.sPrefix + (this.settings.nLastBagNumber + 1).toString();
-    }
     if (this.item.new && this.item.isFor !== 'shopProducts') {
       this.selectArticleGroup();
       this.item.new = false;
@@ -90,6 +87,9 @@ export class OrderComponent implements OnInit {
   }
 
   selectArticleGroup() {
+    if (this.settings?.bAutoIncrementBagNumbers) {
+      this.item.sBagNumber =  (this.settings?.sPrefix || '') + (this.settings?.nLastBagNumber + 1).toString();
+    }
     this.dialogService.openModal(SelectArticleDialogComponent, 
       { 
         cssClass: 'modal-m', 
@@ -131,7 +131,7 @@ export class OrderComponent implements OnInit {
   
   settingsChanged(event?:any){
     if (this.settings.bAutoIncrementBagNumbers) {
-      this.item.sBagNumber = (event) ? event : this.settings.sPrefix + (this.settings.nLastBagNumber + 1).toString();
+      this.item.sBagNumber = (event) ? event : this.settings?.sPrefix + (this.settings?.nLastBagNumber + 1).toString();
       this.itemChanged.emit({type:'settingsChanged', data: this.item.sBagNumber});
     }
   }

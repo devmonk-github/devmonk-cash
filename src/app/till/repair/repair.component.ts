@@ -76,13 +76,6 @@ export class RepairComponent implements OnInit {
     this.getBusinessBrands();
     this.checkArticleGroups();
     this.getProperties();
-    if (this.settings.bAutoIncrementBagNumbers) {
-      if(this.settings?.sPrefix){
-        this.item.sBagNumber =  this.settings?.sPrefix + (this.settings.nLastBagNumber + 1).toString();
-      }else{
-        this.item.sBagNumber = (this.settings.nLastBagNumber + 1).toString();
-      }
-    }
     if (this.item.new) {
       this.selectArticleGroup();
       this.item.new = false;
@@ -166,8 +159,8 @@ export class RepairComponent implements OnInit {
   }
 
   selectArticleGroup() {
-    if (this.settings.bAutoIncrementBagNumbers) {
-      this.item.sBagNumber =  (this.settings?.sPrefix || '') + (this.settings.nLastBagNumber + 1).toString();
+    if (this.settings?.bAutoIncrementBagNumbers) {
+      this.item.sBagNumber =  (this.settings?.sPrefix || '') + (this.settings?.nLastBagNumber + 1).toString();
     }
     this.dialogService.openModal(SelectArticleDialogComponent, 
       { 
@@ -216,8 +209,8 @@ export class RepairComponent implements OnInit {
   }
 
   settingsChanged(event?:any){
-    if (this.settings.bAutoIncrementBagNumbers) {
-      this.item.sBagNumber = (event) ? event : this.settings.sPrefix + (this.settings.nLastBagNumber + 1).toString();
+    if (this.settings?.bAutoIncrementBagNumbers) {
+      this.item.sBagNumber = (event) ? event : this.settings?.sPrefix + (this.settings?.nLastBagNumber + 1).toString();
       this.itemChanged.emit({type:'settingsChanged', data: this.item.sBagNumber});
     }
   }
