@@ -285,15 +285,16 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   getPaymentMethods() {
     this.payMethodsLoading = true;
     this.payMethods = [];
-    const methodsToDisplay = ['card', 'cash', 'bankpayment', 'maestro', 'mastercard', 'visa', 'pin', 'creditcard'];
+    // const methodsToDisplay = ['card', 'cash', 'bankpayment', 'maestro', 'mastercard', 'visa', 'pin', 'creditcard'];
     this.apiService.getNew('cashregistry', '/api/v1/payment-methods/' + this.requestParams.iBusinessId).subscribe((result: any) => {
-      if (result && result.data && result.data.length) {
+      if (result?.data?.length) {
         this.allPaymentMethod = result.data.map((v: any) => ({ ...v, isDisabled: false }));
-        this.allPaymentMethod.forEach((element: any) => {
-          if (methodsToDisplay.includes(element.sName.toLowerCase())) {
-            this.payMethods.push(_.clone(element));
-          }
-        });
+        this.payMethods = this.allPaymentMethod.filter((el: any) => el.bShowInCashRegister);
+        // this.allPaymentMethod.forEach((element: any) => {
+        //   if (methodsToDisplay.includes(element.sName.toLowerCase())) {
+        //     this.payMethods.push(_.clone(element));
+        //   }
+        // });
       }
       this.payMethodsLoading = false;
     }, (error) => {

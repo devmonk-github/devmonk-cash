@@ -98,13 +98,8 @@
                 <div class="row">
                     <div class="col-12">
                         <div class="form-group mb-4">
-                            <label class="form-control-label mb-3">{{ "GOLD_FOR" | translate}}</label>:
-                            <select #goldForSelectElem name="goldFor" id="goldFor" class="form-select"
-                                (change)="assignArticleGroup(goldForSelectElem.value);">
-                                <option *ngFor="let use of goldFor" [value]="use.name"
-                                    [selected]="use.name === item.oGoldFor.name">
-                                    {{use.name | titlecase}}</option>
-                            </select>
+                            <label class="form-control-label mb-3">{{ "GOLD_FOR" | translate}}</label>: {{ item.oGoldFor | json }}
+                            <ng-select [(ngModel)]="item.oGoldFor" (ngModelChange)="checkArticleGroups()" [items]="aGoldFor" bindLabel="name"></ng-select>
                         </div>
                     </div>
                 </div>

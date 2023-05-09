@@ -123,12 +123,13 @@ export class CreateArticleGroupService {
     return await this.apiService.postNew('core', '/api/v1/business/article-group/general', data).toPromise();
   }
 
-  checkArticleGroups(eDefaultArticleGroup: string): Observable<any> {
-    let data = {
+  checkArticleGroups(eDefaultArticleGroup: string, sGoldForName?:string): Observable<any> {
+    const data:any = {
       eDefaultArticleGroup,
       aLanguage: this.aLanguage,
       iBusinessId: localStorage.getItem('currentBusiness'),
     };
+    if(eDefaultArticleGroup === 'gold-purchase') data.sSubCategory = sGoldForName;
     return this.apiService.postNew('core', '/api/v1/business/article-group/get/default-article', data);
   }
 
