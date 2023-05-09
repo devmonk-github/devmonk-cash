@@ -79,12 +79,13 @@ export class GiftComponent implements OnInit {
   checkArticleGroups() {
     this.createArticleGroupService.checkArticleGroups('giftcard')
       .subscribe((res: any) => {
-        if (1 > res.data.length) {
+        if (!res.data?._id) {
           this.createArticleGroup();
         } else {
-          this.item.iArticleGroupId = res.data[0].result[0]._id;
-          this.item.oArticleGroupMetaData.sCategory = res.data[0].result[0].sCategory;
-          this.item.oArticleGroupMetaData.sSubCategory = res.data[0].result[0].sSubCategory;
+          this.item.iArticleGroupId = res.data._id;
+          this.item.iArticleGroupOriginalId = res.data._id;
+          this.item.oArticleGroupMetaData.sCategory = res.data?.sCategory;
+          this.item.oArticleGroupMetaData.sSubCategory = res.data?.sSubCategory;
         }
       }, err => {
         this.toastrService.show({ type: 'danger', text: err.message });
