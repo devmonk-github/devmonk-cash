@@ -1,68 +1,75 @@
 <div class="card mb-5 mb-xl-10 d-flex">
-    <div class="card-header row">
+    <div class="card-header">
         <div class="card-title">
             <span>{{'STATISTICS_SETTINGS' | translate}}</span>
         </div>
     </div>
-</div>
-
-<div class="row">
-    <div class="col-12 card mb-5 mb-xl-10 d-flex">
-        <div class="card-body">
-            <div class="row">
-                <div class="col-9 mb-5">
-                    <ul>
-                        <li><label class="form-check form-switch form-check-custom form-check-solid">{{"SUMUP_MY_ARTICLE_GROUP_BASED_ON_TURNOVER_GROUP" | translate}}
-                            </label>
-                        </li>
-                    </ul>
-                </div>
-                <div class="col-3 mb-5">
-                    <label class="form-check form-switch form-check-custom form-check-solid">
-                        <input type="checkbox" name="loyaltyProgram" class="form-check-input"
-                            [(ngModel)]="settings.bSumUpArticleGroupStatistics">
-                    </label>
-                </div>
+        
+    <div class="card-body">
+        <div class="row" *ngIf="settings?.bSumUpArticleGroupStatistics">
+            <div class="col-9 mb-5">
+                <ul>
+                    <li><label class="form-check form-switch form-check-custom form-check-solid">{{"SUMUP_MY_ARTICLE_GROUP_BASED_ON_TURNOVER_GROUP" | translate}}
+                        </label>
+                    </li>
+                </ul>
             </div>
-            <div class="row" *ngIf="settings?.bSumUpArticleGroupStatistics">
-                <div class="col-9 mb-5">
-                    <label class="link">A. <a routerLink="/business/article-groups">{{"CHECK_TURNOVER_GROUP" | translate}}</a>
-                    </label>
-                </div>
-            </div>
-            <div class="row" *ngIf="settings?.bSumUpArticleGroupStatistics">
-                <div class="col-9 mb-5">
-                    <label class="link">B. {{"ARTICLE_GROUP_WITHOUT_CATEGORY_OR_TURNOVER_GROUP" | translate}}</label>
-                </div>
-            </div>
-
-
-            <div class="row col-12 mb-5" *ngIf="settings?.bSumUpArticleGroupStatistics">
-                <div class="row col-5 link" *ngFor="let article of articleGroupList">
-                    <a  (click)="goToArticleGroup(article._id)" class="btag">{{article?.oName[selectedLanguage]}}</a>
-                </div>
-            </div>
-
-            <div class="row" *ngIf="settings?.bSumUpArticleGroupStatistics">
-                <div class="col-9 mb-5">
-                    <ul>
-                        <li> <label class="form-check form-switch form-check-custom form-check-solid">{{"SHOW_DATSTATES_BASED_ON_TURNOVER_GROUP" | translate }}
-                            </label>
-                        </li>
-                    </ul>
-                </div>
-                <div class="col-3 mb-5">
-                    <label class="form-check form-switch form-check-custom form-check-solid">
-                        <input type="checkbox" name="loyaltyProgram" class="form-check-input"
-                            [ngStyle]="{ 'background-color' : (articleGroupList.length > 0 || bIsDisable) ? '#aebaf2' : '' }"
-                            [(ngModel)]="settings.bShowDayStatesBasedOnTurnover"  (ngModelChange)="onChangeShowDayStatesBasedOnTurnover($event)" 
-                            [disabled]="articleGroupList.length > 0 || bIsDisable">
-                    </label>
-                </div>
+            <div class="col-3 mb-5">
+                <label class="form-check form-switch form-check-custom form-check-solid">
+                    <input type="checkbox" name="loyaltyProgram" class="form-check-input"
+                        [(ngModel)]="settings.bSumUpArticleGroupStatistics">
+                </label>
             </div>
         </div>
-    </div>
+        <div class="row" *ngIf="settings?.bSumUpArticleGroupStatistics">
+            <div class="col-9 mb-5">
+                <label class="link">A. <a routerLink="/business/article-groups">{{"CHECK_TURNOVER_GROUP" | translate}}</a>
+                </label>
+            </div>
+        </div>
+        <div class="row" *ngIf="settings?.bSumUpArticleGroupStatistics">
+            <div class="col-9 mb-5">
+                <label class="link">B. {{"ARTICLE_GROUP_WITHOUT_CATEGORY_OR_TURNOVER_GROUP" | translate}}</label>
+            </div>
+        </div>
+
+
+        <div class="row col-12 mb-5" *ngIf="settings?.bSumUpArticleGroupStatistics">
+            <div class="row col-5 link" *ngFor="let article of articleGroupList">
+                <a  (click)="goToArticleGroup(article._id)" class="btag">{{article?.oName[selectedLanguage]}}</a>
+            </div>
+        </div>
+
+        <div class="row" *ngIf="settings?.bSumUpArticleGroupStatistics">
+            <div class="col-9 mb-5">
+                <label class="form-check form-switch form-check-custom form-check-solid">{{"SHOW_DATSTATES_BASED_ON_TURNOVER_GROUP" | translate }}</label>
+            </div>
+            <div class="col-3 mb-5">
+                <label class="form-check form-switch form-check-custom form-check-solid">
+                    <input type="checkbox" class="form-check-input"
+                        [ngStyle]="{ 'background-color' : (articleGroupList.length > 0 || bIsDisable) ? '#aebaf2' : '' }"
+                        [(ngModel)]="settings.bShowDayStatesBasedOnTurnover"  (ngModelChange)="onChangeShowDayStatesBasedOnTurnover($event)" 
+                        [disabled]="articleGroupList.length > 0 || bIsDisable">
+                </label>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-2">
+                <button class="btn btn-primary" (click)="updateSettings()"> {{ "SAVE" | translate}}</button>
+            </div>
+        </div>
+    </div>  
 </div>
-<div>
-    <button class="btn btn-primary" (click)="updateSettings()"> {{ "SAVE" | translate}}</button>
+<div class="card mb-5 mb-xl-10 d-flex">
+    <div class="card-header">
+        <div class="card-title">
+            <span>{{'AUDIT_REPORT_SETTINGS' | translate}}</span>
+        </div>
+    </div>
+
+    <div class="card-body">
+        <div class="row">
+
+        </div>
+    </div>
 </div>
