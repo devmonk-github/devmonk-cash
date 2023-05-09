@@ -160,6 +160,7 @@ export class TransactionAuditUiPdfService {
     sWorkstation: string = '';
     bDetailedMode: boolean = false;
     aPaymentItems: any = [];
+    aSelectedLocation: any;
 
     constructor(
         private pdf: PdfService,
@@ -206,12 +207,13 @@ export class TransactionAuditUiPdfService {
         bIsArticleGroupLevel,
         bIsSupplierMode,
         aEmployee,
-        mode
+        mode,
+        sTransactionType
     }: any) {
         this.commonPrintSettingsService.oCommonParameters['pageMargins'] = this.pageMargins;
         this.commonPrintSettingsService.oCommonParameters['pageSize'] = this.pageSize;
         this.commonPrintSettingsService.pageWidth = this.commonPrintSettingsService.pageSizes[this.pageSize].pageWidth
-
+        this.aSelectedLocation = aSelectedLocation;
         // console.log('PDF service: exportToPDF: ', {
         //     aSelectedLocation,
         //     sType,
@@ -230,7 +232,8 @@ export class TransactionAuditUiPdfService {
         //     bIsArticleGroupLevel,
         //     bIsSupplierMode,
         //     aEmployee,
-        //     mode });
+        //     mode,
+        //     sTransactionType });
 
         const columnWidths = ['*', 60, 80, 80, 100];
         
@@ -244,7 +247,7 @@ export class TransactionAuditUiPdfService {
         
         if (this.bDetailedMode) {
             const [_aTransactionItems, _aActivityItems, _aGoldPurchases, _oPaymentItems]: any = await Promise.all([ //, 
-                this.fetchTransactionItems(oFilterDates,bIsArticleGroupLevel,bIsSupplierMode),
+                this.fetchTransactionItems(oFilterDates, bIsArticleGroupLevel, bIsSupplierMode, sTransactionType),
                 this.fetchActivityItems(oFilterDates),
                 this.fetchGoldPurchaseItems(oFilterDates),
                 this.fetchPaymentItems(aStatisticsDocuments)
@@ -267,7 +270,7 @@ export class TransactionAuditUiPdfService {
             this.aGoldPurchases = _aGoldPurchases?.data[0]?.result.filter((item: any) => item.oType.eKind == 'gold-purchase');
         
         } else if (sDisplayMethod === 'aRevenuePerTurnoverGroup') {
-            const _aTransactionItems:any = await this.fetchTransactionItems(oFilterDates, bIsArticleGroupLevel, bIsSupplierMode);
+            const _aTransactionItems: any = await this.fetchTransactionItems(oFilterDates, bIsArticleGroupLevel, bIsSupplierMode, sTransactionType);
             this.aTransactionItems = (_aTransactionItems?.data?.length && _aTransactionItems?.data[0]?.result?.length) ? _aTransactionItems?.data[0]?.result : [];
         }
         
@@ -604,14 +607,13 @@ export class TransactionAuditUiPdfService {
                         { text: '', style: ['td', 'bold'] },
                         { text: '', style: ['td', 'bold'] }
                     ]);
-                    const aItems = this.aTransactionItems.filter((item:any) => item.iArticleGroupId === oArticleGroup._id)
+                    const aItems = this.aTransactionItems.filter((item:any) => item.iArticleGroupOriginalId === oArticleGroup._id)
                     // console.log({ aItems })
                     aItems.forEach((oItem: any) => {
                         const nVat = +((oItem.nRevenueAmount - (oItem.nRevenueAmount / (1 + oItem.nVatRate / 100))).toFixed(2));
                         let nDiscount = 0;
-                        if(oItem.nDiscount) nDiscount = ((oItem.bDiscountOnPercentage) ? (oItem.nPriceIncVat * oItem.nQuantity * oItem.nDiscount / 100) : oItem.nDiscount).toFixed(2)
-                        
-                        nSubTotalDiscount += +(nDiscount.toFixed(2));
+                        if(oItem.nDiscount) nDiscount = +(((oItem.bDiscountOnPercentage) ? (oItem.nPriceIncVat * oItem.nQuantity * oItem.nDiscount / 100) : oItem.nDiscount).toFixed(2))
+                        nSubTotalDiscount += nDiscount;
                         nSubTotalRevenue += +(oItem.nRevenueAmount.toFixed(2));
                         nSubTotalVat += +(nVat.toFixed(2));
                         nSubTotalQuantity += oArticleGroup.nQuantity;
@@ -629,10 +631,10 @@ export class TransactionAuditUiPdfService {
                             { text: oItem?.sProductNumber || '', style: ['td', 'property'] }, //'product number'
                             { text: oItem?.nPriceIncVat, style: ['td', 'property'] },
                             { text: nDiscount, style: ['td', 'property'] },
-                            { text: oItem?.nRevenueAmount * oItem.nQuantity, style: ['td', 'property'] },
+                            { text: (oItem?.nRevenueAmount * oItem.nQuantity).toFixed(2), style: ['td', 'property'] },
                             { text: nVat, style: ['td', 'property'] },
                             { text: this.oEmployee[oItem.iEmployeeId], style: ['td', 'property'] },
-                            { text: moment(oItem.dCreatedDate).format('HH:mm'), style: ['td', 'property'] },
+                            { text: moment(oItem.dCreatedDate).format('DD-MM-yyyy HH:mm'), style: ['td', 'property'] },
                         ]);
                     });
                 });
@@ -644,9 +646,9 @@ export class TransactionAuditUiPdfService {
                     { text: nSubTotalQuantity, style: ['td', 'bold'], border: this.styles.border_top },
                     { text: '', style: ['td', 'bold'] },
                     { text: '', style: ['td', 'bold'] },
-                    { text: nSubTotalDiscount, style: ['td', 'bold'], border: this.styles.border_top },
-                    { text: nSubTotalRevenue, style: ['td', 'bold'], border: this.styles.border_top },
-                    { text: nSubTotalVat, style: ['td', 'bold'], border: this.styles.border_top },
+                    { text: nSubTotalDiscount.toFixed(2), style: ['td', 'bold'], border: this.styles.border_top },
+                    { text: nSubTotalRevenue.toFixed(2), style: ['td', 'bold'], border: this.styles.border_top },
+                    { text: nSubTotalVat.toFixed(2), style: ['td', 'bold'], border: this.styles.border_top },
                     { text: '', style: ['td', 'bold'] },
                     { text: '', style: ['td', 'bold'] }
                 ])
@@ -722,10 +724,11 @@ export class TransactionAuditUiPdfService {
                 // console.log({ oSupplier })
                 let nTurnOverGroupDiscount = 0, nTurnOverGroupRevenue = 0, nTurnOverGroupVat = 0, nTurnOverGroupQuantity = 0;
                 oSupplier.aArticleGroups.forEach((oArticleGroup: any) => {
-                    console.log({ oArticleGroup })
+                    // console.log({ oArticleGroup })
                     nTurnOverGroupQuantity += oArticleGroup.nQuantity;
                     nTurnOverGroupRevenue += oArticleGroup.nTotalRevenue;
                     const aItems = this.aTransactionItems.filter((item: any) => item.iArticleGroupId === oArticleGroup._id)
+                    // console.log({aItems})
                     aItems.forEach((oItem: any) => {
                         const nVat = +((oItem.nRevenueAmount - (oItem.nRevenueAmount / (1 + oItem.nVatRate / 100))).toFixed(2));
                         if (oItem.nDiscount) nTurnOverGroupDiscount += +(((oItem.bDiscountOnPercentage) ? (oItem.nPriceIncVat * oItem.nQuantity * oItem.nDiscount / 100) : oItem.nDiscount).toFixed(2))
@@ -741,9 +744,9 @@ export class TransactionAuditUiPdfService {
                 aTexts.push([
                     { text: oSupplier.sCategory, style: ['td'] },
                     { text: nTurnOverGroupQuantity, style: ['td'] },
-                    { text: nTurnOverGroupDiscount, style: ['td'] },
-                    { text: nTurnOverGroupRevenue, style: ['td'] },
-                    { text: nTurnOverGroupVat, style: ['td'] },
+                    { text: nTurnOverGroupDiscount.toFixed(2), style: ['td'] },
+                    { text: nTurnOverGroupRevenue.toFixed(2), style: ['td'] },
+                    { text: nTurnOverGroupVat.toFixed(2), style: ['td'] },
                 ]);
             });
         });
@@ -1467,20 +1470,21 @@ export class TransactionAuditUiPdfService {
         this.addTableToContent(aTexts, this.styles.horizontalLinesSlim, columnWidths);
     }
 
-    fetchTransactionItems(oFilterDates: any, bIsArticleGroupLevel: boolean, bIsSupplierMode:boolean){
-        let data = {
+    fetchTransactionItems(oFilterDates: any, bIsArticleGroupLevel: boolean, bIsSupplierMode: boolean, sTransactionType:string){
+        let data:any = {
             iTransactionId: 'all',
             sFrom:'turnover-group',
             oFilterBy: {
                 dStartDate: oFilterDates.startDate,
                 dEndDate: oFilterDates.endDate,
                 bIsArticleGroupLevel: bIsArticleGroupLevel,
-                bIsSupplierMode: bIsSupplierMode
+                bIsSupplierMode: bIsSupplierMode,
+                iLocationId: this.aSelectedLocation
             },
             iBusinessId: this.iBusinessId,
-            iLocationId: this.iLocationId,
             iWorkstationId: this.iWorkstationId,
         };
+        if (sTransactionType === 'SALES') data.sTransactionType = 'cash-registry';
 
         return this.apiService.postNew('cashregistry','/api/v1/transaction/item/list',data).toPromise();
     }
@@ -1596,7 +1600,7 @@ export class TransactionAuditUiPdfService {
 
     prepareEmployeeList(aEmployee:any){
         // console.log('prepareEmployeeList', aEmployee);
-        aEmployee.forEach((e:any) => this.oEmployee[e._id] = (String(e.sFirstName[0] + e.sLastName[0])).toUpperCase())
+        aEmployee.forEach((e:any) => this.oEmployee[e._id] = (String((e.sFirstName[0] || '') + (e.sLastName[0] || ''))).toUpperCase())
         // console.log(this.oEmployee);
 
     }

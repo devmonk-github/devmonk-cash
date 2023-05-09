@@ -139,6 +139,8 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
         this.bOpeningDayClosure = true;
       } else {
         this.bOpeningHistoricalDayState = true;
+        this.statisticFilter.dFromState = this.oStatisticsData.dStartDate;
+        this.statisticFilter.dToState = this.oStatisticsData.dEndDate;
       } 
 
       if (this.oStatisticsData.dStartDate) {
@@ -966,7 +968,8 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
       bIsArticleGroupLevel: this.bIsArticleGroupLevel,
       bIsSupplierMode: this.bIsSupplierMode,
       aEmployee: this.aEmployee,
-      mode
+      mode,
+      sTransactionType: this.sOptionMenu.parent.sKey
     });
     this.pdfGenerationInProgress = false;
   }
