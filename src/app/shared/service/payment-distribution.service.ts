@@ -43,7 +43,7 @@ export class PaymentDistributionService {
       if (i.type === 'gold-purchase') i.amountToBePaid = -(i.amountToBePaid);
 
       if (i?.tType && i.tType === 'refund') {
-        i.amountToBePaid = (i?.new) ? -(nPrice - nDiscount - (i?.nGiftcardDiscount || 0) - (i?.nRedeemedLoyaltyPoints || 0)) : -(i.nRevenueAmount * i.quantity).toFixed(2);
+        i.amountToBePaid = (i?.new) ? -(nPrice - nDiscount - (i?.nGiftcardDiscount || 0) - (i?.nRedeemedLoyaltyPoints || 0)) : -(i.nRefundAmount);
         availableAmount += nPrice;
 
         i.nGiftcardDiscount = 0;
