@@ -77,6 +77,8 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
     { key: 'NCLIENTID', value: 'nClientId'}
   ];
   
+  bUpdateNclientID: boolean = false;
+  oldNlastnClientID: number = 0;
 
   constructor(
     private apiService: ApiService,
@@ -150,6 +152,7 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
       this.settings = result;
       this.getCustomerSettingsSubscription = this.apiService.getNew('customer', `/api/v1/customer/settings/get/${this.requestParams.iBusinessId}`).subscribe((result: any) => {
         this.settings.nLastnClientID = result?.nLastnClientID;
+        this.oldNlastnClientID = result?.nLastnClientID;
         this.settings.aCustomerSearch = result?.aCustomerSearch;
       }, (error) => {
         console.log(error);
@@ -313,14 +316,23 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
 
   
   updateCustomerSettings() {
-    const CustomerSettingsbody = {
-      aCustomerSearch:this.settings?.aCustomerSearch
+    let CustomerSettingsbody = {}
+    if(this.bUpdateNclientID && (this.oldNlastnClientID != this.settings.nLastnClientID)){
+      CustomerSettingsbody = {
+        aCustomerSearch: this.settings?.aCustomerSearch,
+        nLastnClientID: this.settings.nLastnClientID
+      }
+    }else{
+      CustomerSettingsbody = {
+        aCustomerSearch:this.settings?.aCustomerSearch
+      }
     }
     this.updatingCustomerSettings = true;
     this.updateSettingsSubscription = this.apiService.putNew('customer', '/api/v1/customer/settings/update/' + this.requestParams.iBusinessId, CustomerSettingsbody)
       .subscribe((result: any) => {
         if (result){
           this.updatingCustomerSettings = false;
+          this.bUpdateNclientID = false;
           this.toastService.show({ type: 'success', text: 'Saved Successfully' });
         } 
       }, (error) => {
