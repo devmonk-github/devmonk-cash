@@ -60,10 +60,10 @@ export class PrintSettingsComponent implements OnInit, AfterViewInit {
   bShowActionSettingsLoader: boolean = false;
   labelPrintSettings: any;
   iWorkstationId: any;
-  aWorkstations:any =[];
+  aWorkstations: any = [];
 
-  aTsplTemplates:any;
-  aZplTemplates:any;
+  aTsplTemplates: any;
+  aZplTemplates: any;
   oSettings: any;
   aDefaultZplTemplates: any;
   aDefaultTsplTemplates: any;
@@ -197,7 +197,7 @@ export class PrintSettingsComponent implements OnInit, AfterViewInit {
   openToolsModal() {
     const dialogRef = this.dialogService.openModal(PrinterToolComponent, {
       cssClass: "modal-lg w-100",
-      context: { businessDetails: this.businessDetails}
+      context: { businessDetails: this.businessDetails }
     })
 
     dialogRef.instance.close.subscribe(async (result) => {
@@ -205,7 +205,7 @@ export class PrintSettingsComponent implements OnInit, AfterViewInit {
     })
   }
 
-  openLabelTemplateModal(jsonData: any, mode: 'create' | 'edit', eType:string = 'zpl') {
+  openLabelTemplateModal(jsonData: any, mode: 'create' | 'edit', eType: string = 'zpl') {
     // console.log(jsonData);
     if (mode === 'create') {
       jsonData.readOnly = false
@@ -216,9 +216,9 @@ export class PrintSettingsComponent implements OnInit, AfterViewInit {
       delete jsonData._id
       delete jsonData.__v
     }
-    let oData:any = {};
+    let oData: any = {};
     const _id = (mode === 'edit') ? jsonData._id : '';
-    if(eType === 'tspl') {
+    if (eType === 'tspl') {
       Object.keys(jsonData).forEach(key => {
         if (key.startsWith('tspl') || key === 'aTemplate' || key === 'name') {
           oData[key] = jsonData[key];
@@ -232,13 +232,13 @@ export class PrintSettingsComponent implements OnInit, AfterViewInit {
       })
     }
     oData = JSON.parse(JSON.stringify(oData));
-    this.dialogService.openModal(LabelTemplateModelComponent, { 
-      cssClass: "modal-xl w-100", 
-      context: { 
-        mode, 
-        jsonData: oData, 
-        eType, 
-        iTemplateId: _id 
+    this.dialogService.openModal(LabelTemplateModelComponent, {
+      cssClass: "modal-xl w-100",
+      context: {
+        mode,
+        jsonData: oData,
+        eType,
+        iTemplateId: _id
       },
       hasBackdrop: true,
       closeOnBackdropClick: false,
@@ -258,7 +258,7 @@ export class PrintSettingsComponent implements OnInit, AfterViewInit {
 
   async getLabelTemplate() {
     this.apiService.getNew('cashregistry', `/api/v1/label/templates/${this.iBusinessId}?iLocationId=${this.iLocationId}`).subscribe((result: any) => {
-      
+
       this.aDefaultZplTemplates = result.data.filter((label: any) => label.readOnly && label.eType === 'zpl')
       this.aZplTemplates = result.data.filter((label: any) => !label.readOnly && label.eType === 'zpl').map((template: any) => {
         template.elements.map((element: any, i: number) => {
@@ -266,10 +266,10 @@ export class PrintSettingsComponent implements OnInit, AfterViewInit {
         })
         return template;
       });
-      
+
       this.aDefaultTsplTemplates = result.data.filter((label: any) => label.readOnly && label.eType === 'tspl');
       this.aTsplTemplates = result.data.filter((label: any) => !label.readOnly && label.eType === 'tspl');
-      
+
       this.isLoadingTemplatesLabel = false
       this.isLoadingDefaultLabel = false
 
@@ -280,8 +280,8 @@ export class PrintSettingsComponent implements OnInit, AfterViewInit {
     })
   }
 
-  shiftLabelButton(type: string, index: number, eType:string = 'zpl') {
-    if(eType == 'zpl') {
+  shiftLabelButton(type: string, index: number, eType: string = 'zpl') {
+    if (eType == 'zpl') {
       if (type == 'up') {
         if (this.aZplTemplates[index - 1])
           [this.aZplTemplates[index - 1], this.aZplTemplates[index]] = [this.aZplTemplates[index], this.aZplTemplates[index - 1]]
@@ -298,11 +298,11 @@ export class PrintSettingsComponent implements OnInit, AfterViewInit {
         if (this.aTsplTemplates[index + 1])
           [this.aTsplTemplates[index + 1], this.aTsplTemplates[index]] = [this.aTsplTemplates[index], this.aTsplTemplates[index + 1]]
       }
-      
+
     }
   }
 
-  markDefault(label: any, eType:string = 'zpl') {
+  markDefault(label: any, eType: string = 'zpl') {
     try {
       const oBody = {
         _id: label._id,
@@ -353,7 +353,7 @@ export class PrintSettingsComponent implements OnInit, AfterViewInit {
     }
     this.isLoadingTemplatesLabel = true;
     this.apiService.postNew('cashregistry', `/api/v1/label/templates`, oBody).subscribe((result: any) => {
-      if(result?.data) {
+      if (result?.data) {
         this.toastService.show({ type: 'success', text: 'Label created successfully' });
         this.getLabelTemplate();
       }
@@ -363,7 +363,7 @@ export class PrintSettingsComponent implements OnInit, AfterViewInit {
     })
   }
 
-  updateLabelTemplate(id: string, jsonData: any, eType:string) {
+  updateLabelTemplate(id: string, jsonData: any, eType: string) {
     const oBody = {
       iBusinessId: this.iBusinessId,
       iLocationId: this.iLocationId,
@@ -371,7 +371,7 @@ export class PrintSettingsComponent implements OnInit, AfterViewInit {
       eType
     }
     this.apiService.putNew('cashregistry', `/api/v1/label/templates/${id}`, oBody).subscribe((result: any) => {
-      if(result?.data) {
+      if (result?.data) {
         this.toastService.show({ type: 'success', text: 'Label updated successfully' });
         this.getLabelTemplate();
       }
@@ -393,23 +393,23 @@ export class PrintSettingsComponent implements OnInit, AfterViewInit {
         buttonDetails: buttons
       }
     }).instance.close.subscribe((result) => {
-        if (result) {
-          this.isLoadingTemplatesLabel = true
+      if (result) {
+        this.isLoadingTemplatesLabel = true
 
-          this.apiService.deleteNew('cashregistry', `/api/v1/label/templates/${id.toString()}?iBusinessId=${this.iBusinessId}`).subscribe((result: any) => {
-            this.getLabelTemplate()
-            this.toastService.show({ type: 'success', text: 'label deleted successfully' });
+        this.apiService.deleteNew('cashregistry', `/api/v1/label/templates/${id.toString()}?iBusinessId=${this.iBusinessId}`).subscribe((result: any) => {
+          this.getLabelTemplate()
+          this.toastService.show({ type: 'success', text: 'label deleted successfully' });
 
-          }, (error) => {
-            console.log('error: ', error);
-            this.toastService.show({ type: 'warning', text: 'Something went wrong' });
-            this.isLoadingTemplatesLabel = false
+        }, (error) => {
+          console.log('error: ', error);
+          this.toastService.show({ type: 'warning', text: 'Something went wrong' });
+          this.isLoadingTemplatesLabel = false
 
-          })
-        }
+        })
+      }
 
-        }
-      )
+    }
+    )
   }
 
   openSettingsEditor(format: any) {
@@ -440,7 +440,7 @@ export class PrintSettingsComponent implements OnInit, AfterViewInit {
     }
   }
 
-  openActionSetting(mode: string = 'create',actionSettingsIndex:number=0 , index: number = 0) {
+  openActionSetting(mode: string = 'create', actionSettingsIndex: number = 0, index: number = 0) {
     let obj: any = {
       mode: mode
     }
@@ -462,7 +462,7 @@ export class PrintSettingsComponent implements OnInit, AfterViewInit {
       });
   }
 
-  async removeActionSetting(actionSettingsIndex:number , index: number) {
+  async removeActionSetting(actionSettingsIndex: number, index: number) {
     const iPrintSettingsId = this.aActionSettings[actionSettingsIndex]._id;
     const iActionId = this.aActionSettings[actionSettingsIndex].aActions[index]._id;
     await this.apiService.deleteNew('cashregistry', `/api/v1/print-settings/${this.iBusinessId}/${iPrintSettingsId}/${iActionId}`).toPromise();
@@ -482,7 +482,7 @@ export class PrintSettingsComponent implements OnInit, AfterViewInit {
         if (result?.data?.length && result?.data[0]?.result?.length) {
           this.labelPrintSettings = result.data[0].result.filter((el: any) => el.sMethod === 'labelDefinition');
           const aSettings = result.data[0].result.filter((el: any) => el.sMethod === 'settings');
-          if(aSettings?.length) {
+          if (aSettings?.length) {
             this.oSettings = aSettings[0].oSettings;
           } else {
             this.oSettings = {
@@ -501,7 +501,7 @@ export class PrintSettingsComponent implements OnInit, AfterViewInit {
     );
   }
 
-  updateSettings(){
+  updateSettings() {
     // this.createLabelTemplate(this.oDefaultTsplTemplate, 'tspl')
     const oBody = {
       iBusinessId: this.iBusinessId,
@@ -510,23 +510,23 @@ export class PrintSettingsComponent implements OnInit, AfterViewInit {
       iWorkstationId: this.iWorkstationId,
       sMethod: 'settings'
     }
-    this.apiService.putNew('cashregistry', `/api/v1/print-settings/update`, oBody).subscribe((result:any) => {
-      if(result?.data){
+    this.apiService.putNew('cashregistry', `/api/v1/print-settings/update`, oBody).subscribe((result: any) => {
+      if (result?.data) {
         this.toastService.show({ type: 'success', text: 'Settings updated successfully!' });
-     }
+      }
     });
 
   }
 
-  async sentToLayout(template: any, eType:string = 'zpl') {
+  async sentToLayout(template: any, eType: string = 'zpl') {
     const oTemplate = JSON.parse(JSON.stringify(template));
-    const oPrintSettings = this.labelPrintSettings.find((s: any) => s.sType === eType && s.iWorkstationId === this.iWorkstationId) 
-    if(!oPrintSettings) {
+    const oPrintSettings = this.labelPrintSettings.find((s: any) => s.sType === eType && s.iWorkstationId === this.iWorkstationId)
+    if (!oPrintSettings) {
       this.toastService.show({ type: 'danger', text: 'Check your business -> printer settings' });
       return;
     }
     let layoutCommand: any;
-    if(eType === 'zpl') {
+    if (eType === 'zpl') {
       const js2zplService = new Js2zplService(oTemplate);
       layoutCommand = js2zplService.generateCommand(oTemplate, {}, false)
     } else {
@@ -536,7 +536,7 @@ export class PrintSettingsComponent implements OnInit, AfterViewInit {
     this.handlePrintNode(oPrintSettings, layoutCommand);
   }
 
-  async printSample(template: any, eType:string = 'zpl') {
+  async printSample(template: any, eType: string = 'zpl') {
     const oTemplate = JSON.parse(JSON.stringify(template));
     const oPrintSettings = this.labelPrintSettings.find((s: any) => s.sType === eType && s.iWorkstationId === this.iWorkstationId)
     if (!oPrintSettings) {
@@ -544,7 +544,7 @@ export class PrintSettingsComponent implements OnInit, AfterViewInit {
       return;
     }
     let layoutCommand: any;
-    if(eType === 'zpl') {
+    if (eType === 'zpl') {
       const js2zplService = new Js2zplService(oTemplate);
       const sampleObject = {
         '%%PRODUCT_NAME%%': 'Ring Diamant',
@@ -607,7 +607,7 @@ export class PrintSettingsComponent implements OnInit, AfterViewInit {
     this.handlePrintNode(oPrintSettings, layoutCommand);
   }
 
-  async handlePrintNode(oPrintSettings:any, layoutCommand:any) {
+  async handlePrintNode(oPrintSettings: any, layoutCommand: any) {
     const response: any = await this.printService.printRawContent(
       this.iBusinessId,
       layoutCommand,
@@ -632,7 +632,7 @@ export class PrintSettingsComponent implements OnInit, AfterViewInit {
     }
   }
 
-  addDefaultZplTemplate(){
+  addDefaultZplTemplate() {
     const oDefaultJson: any = {
       "readOnly": true,
       "inverted": false,
@@ -663,7 +663,7 @@ export class PrintSettingsComponent implements OnInit, AfterViewInit {
       "bDefault": false,
       "nSeqOrder": 1,
     }
-    this.dialogService.openModal(LabelTemplateModelComponent, { cssClass: "modal-xl w-100", context: { mode: 'create', jsonData: oDefaultJson, eType:'zpl' } }).instance.close
+    this.dialogService.openModal(LabelTemplateModelComponent, { cssClass: "modal-xl w-100", context: { mode: 'create', jsonData: oDefaultJson, eType: 'zpl' } }).instance.close
       .subscribe(async (result) => {
         if (result) {
           this.createLabelTemplate(result)
