@@ -114,6 +114,8 @@ export class CustomersComponent implements OnInit {
   LNameString :any = "LASTNAME";
   CNameString :any = "COMPANY_NAME";
   nCNameString :any = "NCLIENTID";
+  sExampleString:any = "0000AB00A";
+  
  
   
   constructor(
@@ -167,24 +169,27 @@ export class CustomersComponent implements OnInit {
       let lIndex = this.requestParams.oFilterBy.aSearchField.indexOf("sLastName");
       let cIndex = this.requestParams.oFilterBy.aSearchField.indexOf("sCompanyName");
       let nIndex = this.requestParams.oFilterBy.aSearchField.indexOf("nClientId");
-      if(aIndex != -1)this.setHint("0000AB 00A");
-      if(fIndex != -1)this.setHint(this.translateService.instant(this.fNameString));
-      if(lIndex != -1)this.setHint(this.translateService.instant(this.LNameString));
-      if(cIndex != -1)this.setHint(this.translateService.instant(this.CNameString));
-      if(nIndex != -1)this.setHint(this.translateService.instant(this.nCNameString));
       if (aIndex != -1 || fIndex != -1 || lIndex != -1 || cIndex != -1 || nIndex != -1) {
         this.aPlaceHolder[aIndex] = this.translateService.instant(this.addressString);
         this.aPlaceHolder[fIndex] = this.translateService.instant(this.fNameString);
         this.aPlaceHolder[lIndex] = this.translateService.instant(this.LNameString);
         this.aPlaceHolder[cIndex] = this.translateService.instant(this.CNameString);
         this.aPlaceHolder[nIndex] = this.translateService.instant(this.nCNameString);
+
+        this.aInputHint[aIndex] = this.translateService.instant(this.sExampleString);
+        this.aInputHint[fIndex] = this.translateService.instant(this.fNameString);
+        this.aInputHint[lIndex] = this.translateService.instant(this.LNameString);
+        this.aInputHint[cIndex] = this.translateService.instant(this.CNameString);
+        this.aInputHint[nIndex] = this.translateService.instant(this.nCNameString);
       } else {
         this.aPlaceHolder = this.requestParams.oFilterBy.aSearchField;
+        this.aInputHint = this.requestParams.oFilterBy.aSearchField;
       }
     } else {
       this.aPlaceHolder = ["Search"];
     }
     this.aPlaceHolder = this.removeDuplicates(this.aPlaceHolder);
+    this.aInputHint = this.removeDuplicates(this.aInputHint);
   }
 
   removeDuplicates(arr:any) {
@@ -205,21 +210,12 @@ export class CustomersComponent implements OnInit {
         /*TODO: fill the selection with address, the following code is is not showing the selected element on frontend*/
         this.requestParams.oFilterBy.aSearchField.unshift('sAddress');
         this.requestParams.oFilterBy.aSearchField = this.removeDuplicates(this.requestParams.oFilterBy.aSearchField);
-        this.setHint("0000AB 00A");
-      }else{
-        /*If string contains only letters -> then add Lastname in selected field */
-        /*TODO: fill the selection with lastname, the following code is is not showing the selected element on frontend*/
-        this.requestParams.oFilterBy.aSearchField.unshift("sLastName");
-        this.requestParams.oFilterBy.aSearchField = this.removeDuplicates(this.requestParams.oFilterBy.aSearchField);
-        this.setHint(this.translateService.instant(this.LNameString));
+       // this.setHint(this.translateService.instant(this.sExampleString));
+        let aIndex = this.requestParams.oFilterBy.aSearchField.indexOf("sAddress");
+        this.aInputHint[aIndex] = this.translateService.instant(this.sExampleString);
       }
+      
     }
-    this.getCustomers(true);
-  }
-
-  setHint(hint:any){
-    this.aInputHint.push(hint);
-    this.aInputHint = this.removeDuplicates(this.aInputHint);
   }
 
   // Function for handle event of transaction menu
