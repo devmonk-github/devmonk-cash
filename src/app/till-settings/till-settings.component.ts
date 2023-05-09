@@ -7,7 +7,6 @@ import { CustomPaymentMethodComponent } from '../shared/components/custom-paymen
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { ConfirmationDialogComponent } from '../shared/components/confirmation-dialog/confirmation-dialog.component';
 import { ToastService } from '../shared/components/toast';
-import { TranslateService } from '@ngx-translate/core';
 @Component({
   selector: 'app-till-settings',
   templateUrl: './till-settings.component.html',
@@ -82,7 +81,6 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
     private apiService: ApiService,
     private dialogService: DialogService,
     private toastService: ToastService,
-    private translateService: TranslateService
   ) { }
 
   ngOnInit(): void {
@@ -282,7 +280,7 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
 
 
   createPaymentMethod() {
-    this.createPaymentModalSub = this.dialogService.openModal(CustomPaymentMethodComponent, { cssClass: "", context: { mode: 'create' }, hasBackdrop: true }).instance.close.subscribe(result => {
+    this.createPaymentModalSub = this.dialogService.openModal(CustomPaymentMethodComponent, { cssClass: "", context: { mode: 'create' } }).instance.close.subscribe(result => {
       if (result.action) this.getPaymentMethods();
     });
   }
@@ -294,8 +292,8 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
   getPaymentMethods() {
     this.payMethodsLoading = true;
     this.payMethods = []
-    this.getPaymentMethodsSubscription = this.apiService.getNew('cashregistry', '/api/v1/payment-methods/' + this.requestParams.iBusinessId).subscribe((result: any) => { //'?type=custom'
-      if (result?.data?.length) {
+    this.getPaymentMethodsSubscription = this.apiService.getNew('cashregistry', '/api/v1/payment-methods/' + this.requestParams.iBusinessId + '?type=custom').subscribe((result: any) => {
+      if (result && result.data && result.data.length) {
         this.payMethods = result.data;
         for (let i = 0; i < this.payMethods.length; i++) { this.getLedgerNumber(this.payMethods[i]._id, i) }
       }
@@ -307,7 +305,7 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
 
   viewDetails(method: any) {
     this.viewDetailsModalSub = this.dialogService.openModal(CustomPaymentMethodComponent, { cssClass: "", context: { mode: 'details', customMethod: method }, hasBackdrop: true }).instance.close.subscribe(result => {
-      if (result.action) this.toastService.show({ type: 'success', text: this.translateService.instant('SAVED_SUCCESSFULLY') });
+      if (result.action) this.getPaymentMethods();
     });
   }
 

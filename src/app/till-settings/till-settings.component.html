@@ -340,28 +340,38 @@
       <div *ngIf="payMethods.length" class="dataTables_wrapper dt-bootstrap4 no-footer">
         <div class="table-responsive">
           <table class="table align-middle table-row-dashed fs-6 gy-5 dataTable no-footer">
-            <thead class="fw-bolder">
+            <thead class="fw-bold">
               <tr>
-                  <th>{{ 'NAME' | translate}}</th>
-                  <th *ngIf="bookKeepingMode">{{ 'LEDGER_NUMBER' | translate}}</th>
-                  <th>{{ 'SHOW_IN_CASH_REGISTER' | translate}}</th>
-                  <th>{{ 'EARN_LOYALTY_POINTS' | translate}}</th>
-                  <th>{{ 'ACTION' | translate}}</th>
+                <div class="row">
+                  <div class="col-md-8 fw-bold">
+                    <span>{{ 'NAME' | translate}}</span>
+                  </div>
+                  <div class="col-md-3">
+                    <span *ngIf="bookKeepingMode">{{ 'LEDGER_NUMBER' | translate}}</span>
+                  </div>
+                  <div class="col-md-1">
+                    <span>{{ 'DELETE' | translate}}</span>
+                  </div>
+                </div>
               </tr>
             </thead>
-            <tbody>
-              <tr *ngFor="let method of payMethods">
-                <td (click)="viewDetails(method)">{{method.sName}}</td>
-                <td *ngIf="bookKeepingMode">
-                  <input type="number" class="form-control form-control-solid"
-                    [(ngModel)]="method.sLedgerNumber" (focusout)="updateLedgerNumber(method)" />
-                </td>
-                <td>{{ (method.bShowInCashRegister ? 'YES' : 'NO') | translate }}</td>
-                <td>{{ (method.bAssignSavingPoints ? 'YES' : 'NO') | translate }}</td>
-                <td class="d-flex">
-                    <button class="btn btn-sm btn-info me-2" (click)="viewDetails(method)"><fa-icon icon="pencil"></fa-icon></button>
-                    <button class="btn btn-sm btn-danger" (click)="deleteMethod(method)"><fa-icon icon="trash"></fa-icon></button>
-                </td>
+            <tbody class="fw-bold">
+              <tr *ngFor="let method of payMethods" class="bg-hover-secondary">
+                <div class="row d-flex align-items-center">
+                  <div class="col-md-8" (click)="viewDetails(method)">
+                    <label>{{method.sName}}</label>
+                  </div>
+                  <div class="col-md-3">
+                    <input type="number" *ngIf="bookKeepingMode" class="form-control form-control-solid"
+                      [(ngModel)]="method.sLedgerNumber" (focusout)="updateLedgerNumber(method)" />
+                  </div>
+                  <div class="col-md-1 d-flex justify-content-center">
+                    <button class="btn btn-danger" (click)="deleteMethod(method)">
+                      <fa-icon icon="trash" aria-label="location"></fa-icon>
+                    </button>
+                    <!-- <i class="fa fa-trash" style="color:#a63b55"></i> -->
+                  </div>
+                </div>
               </tr>
             </tbody>
           </table>
