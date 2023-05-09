@@ -447,18 +447,18 @@ export class TransactionsComponent implements OnInit, OnDestroy {
   }
 
   fetchLocationName(){
-    this.transactions.forEach((transaction: any)=>{
       this.apiService.postNew('core', `/api/v1/business/${this.iBusinessId}/list-location`, { iBusinessId: this.iBusinessId }).subscribe((result: any) => {
         if (result?.data?.aLocation?.length) {
           let aLocation = result.data.aLocation;
-          aLocation.forEach((oLocation: any) => {
-            if (oLocation._id == transaction.aTransactionItems[0].iLocationId) {
-              transaction.sLocationName = oLocation?.sName;
-            }
+          this.transactions.forEach((transaction: any)=>{
+            aLocation.forEach((oLocation: any) => {
+              if (oLocation._id == transaction.aTransactionItems[0].iLocationId) {
+                transaction.sLocationName = oLocation?.sName;
+              }
+            });
           });
         }
       });
-    });
   }
 
   ngOnDestroy(): void {
