@@ -304,7 +304,7 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
   }
 
   viewDetails(method: any) {
-    this.viewDetailsModalSub = this.dialogService.openModal(CustomPaymentMethodComponent, { cssClass: "", context: { mode: 'details', customMethod: method }, hasBackdrop: true }).instance.close.subscribe(result => {
+    this.viewDetailsModalSub = this.dialogService.openModal(CustomPaymentMethodComponent, { cssClass: "", context: { mode: 'details', customMethod: method } }).instance.close.subscribe(result => {
       if (result.action) this.getPaymentMethods();
     });
   }

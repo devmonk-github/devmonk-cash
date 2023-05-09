@@ -266,15 +266,6 @@
         <div class="row">
           <!-- REPAIRER -->
 
-          <div class="col-12 mb-5">
-            <ng-container *ngIf="tillService.oSavingPointSettings.aExcludedArticleGroups.includes(item.iArticleGroupId)">
-              <strong>{{ 'THIS_ARTICLE_GROUP_HAS_BEEN_EXCLUDED_FROM_EARNING_LOYALTY_POINTS'| translate }} </strong>
-            </ng-container>
-            <ng-container *ngIf="!tillService.oSavingPointSettings.aExcludedArticleGroups.includes(item.iArticleGroupId)">
-              <strong>{{ 'WILL_EARN'| translate }} {{ ((item.paymentAmount * tillService.oSavingPointSettings.nPerEuro1 / tillService.oSavingPointSettings.nPerEuro) || 0) | number }} {{ 'LOYALTY_POINTS' | translate }}</strong>
-            </ng-container>
-          </div>
-
           <div class="col-12">
             <div class="mb-4">
               <label class="form-control-label mb-3">{{ "REPAIRER" | translate }}</label>
