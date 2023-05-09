@@ -285,35 +285,44 @@
       <div class="row mt-5 py-3 border border-secondary" *ngIf="settings?.currentLocation">
         <h3 class="fw-bolder mb-3">{{'CUSTOMERS_SETTINGS' | translate}}</h3>
         
-        <div class="col-5 mb-6 d-flex align-items-center">
-          <label class="col-5 form-check form-switch form-check-custom form-check-solid me-3">{{ 'LAST_NCLIENT_ID' | translate}}</label>
+        <div class="col-5 d-flex align-items-center justify-content-between mb-3">
+          <label class="form-check form-switch form-check-custom form-check-solid">{{"UPDATE_NCLIENT_ID" | translate}}</label>
           <label class="form-check form-switch form-check-custom form-check-solid">
-            <input type="number" class="form-control" min="0" [(ngModel)]="settings.nLastnClientID" disabled>
+            <input type="checkbox" class="form-check-input" [(ngModel)]="bUpdateNclientID">
           </label>
         </div>
-        <!-- <div class="col-6 mb-6">
-          <label class="form-check form-switch form-check-custom form-check-solid">
-            <input type="number" class="form-control" min="0" [(ngModel)]="settings.nLastnClientID">
-          </label>
-        </div> -->
-
-        <div class="col-7 mb-6 d-flex align-items-center justify-content-between">
-          <label class="col-5 form-check form-switch form-check-custom form-check-solid">{{ 'CUSTOMER_SEARCH_PREFILLED' | translate}}</label>
-          <label class="form-check form-switch form-check-custom form-check-solid">
-            <ng-select class="form-control form-control-solid p-0" [multiple]="true" [(ngModel)]="settings.aCustomerSearch"
-              [clearable]="false" placeholder="">
-              <ng-option *ngFor="let item of aFilterFields" [value]="item.value">{{item.key | translate}}</ng-option>
-            </ng-select>
-          </label>
+        
+        <div class="col-12  d-flex align-items-center">
+          <div class="col-5 me-3 mb-6 d-flex align-items-center">
+            <label class="col-5 form-check form-switch form-check-custom form-check-solid me-3">{{ 'LAST_NCLIENT_ID' | translate}}</label>
+            <label class="form-check form-switch form-check-custom form-check-solid">
+              <input type="number" class="form-control" min="0" [(ngModel)]="settings.nLastnClientID" [disabled]="!bUpdateNclientID">
+            </label>
+          </div>
+          <!-- <div class="col-6 mb-6">
+            <label class="form-check form-switch form-check-custom form-check-solid">
+              <input type="number" class="form-control" min="0" [(ngModel)]="settings.nLastnClientID">
+            </label>
+          </div> -->
+        
+          <div class="col-7 mb-6 d-flex align-items-center justify-content-between">
+            <label class="col-5 form-check form-switch form-check-custom form-check-solid">{{ 'CUSTOMER_SEARCH_PREFILLED' | translate}}</label>
+            <label class="form-check form-switch form-check-custom form-check-solid">
+              <ng-select class="form-control form-control-solid p-0" [multiple]="true" [(ngModel)]="settings.aCustomerSearch"
+                [clearable]="false" placeholder="">
+                <ng-option *ngFor="let item of aFilterFields" [value]="item.value">{{item.key | translate}}</ng-option>
+              </ng-select>
+            </label>
+          </div>
+          <!-- <div class="col-6 mb-6">
+            <label class="form-check form-switch form-check-custom form-check-solid">
+              <ng-select class="form-control form-control-solid p-0" [multiple]="true" [(ngModel)]="settings.aCustomerSearch"
+                [clearable]="false" placeholder="">
+                <ng-option *ngFor="let item of aFilterFields" [value]="item.value">{{item.key | translate}}</ng-option>
+              </ng-select>
+            </label>
+          </div> -->
         </div>
-        <!-- <div class="col-6 mb-6">
-          <label class="form-check form-switch form-check-custom form-check-solid">
-            <ng-select class="form-control form-control-solid p-0" [multiple]="true" [(ngModel)]="settings.aCustomerSearch"
-              [clearable]="false" placeholder="">
-              <ng-option *ngFor="let item of aFilterFields" [value]="item.value">{{item.key | translate}}</ng-option>
-            </ng-select>
-          </label>
-        </div> -->
       
         <div class="d-flex justify-content-end align-items-center">
           <div *ngIf="updatingCustomerSettings" class="spinner-border mx-2"></div>

@@ -81,6 +81,7 @@ export class CustomersComponent implements OnInit {
     customerType: 'all'
   };
   iChosenCustomerId : any;
+  aInputHint:Array<any> = [""];
   
   @ViewChildren('inputElement') inputElement!: QueryList<ElementRef>;
   showFilters = false;
@@ -113,7 +114,7 @@ export class CustomersComponent implements OnInit {
   LNameString :any = "LASTNAME";
   CNameString :any = "COMPANY_NAME";
   nCNameString :any = "NCLIENTID";
-  //aKeywords = ['FIRSTNAME', 'LASTNAME']
+ 
   
   constructor(
     private apiService: ApiService,
@@ -136,6 +137,11 @@ export class CustomersComponent implements OnInit {
         this.aPlaceHolder[index] = result[el];
       })
      });
+     this.translateService.get(this.aInputHint).subscribe((detail:any) => {
+      this.aInputHint.forEach((el:any, index:any) => {
+        this.aInputHint[index] = detail[el];
+      })
+     });
    })
   this.getCustomers();
   }
@@ -145,8 +151,10 @@ export class CustomersComponent implements OnInit {
       this.settings = result;
       if (this.settings?.aCustomerSearch) {
         this.requestParams.oFilterBy.aSearchField = this.settings?.aCustomerSearch;
-        this.setPlaceHolder();
+      }else{
+        this.stringDetection();
       }
+      this.setPlaceHolder();
     }, (error) => {
       console.log(error);
     })
@@ -159,6 +167,11 @@ export class CustomersComponent implements OnInit {
       let lIndex = this.requestParams.oFilterBy.aSearchField.indexOf("sLastName");
       let cIndex = this.requestParams.oFilterBy.aSearchField.indexOf("sCompanyName");
       let nIndex = this.requestParams.oFilterBy.aSearchField.indexOf("nClientId");
+      if(aIndex != -1)this.setHint("0000AB 00A");
+      if(fIndex != -1)this.setHint(this.translateService.instant(this.fNameString));
+      if(lIndex != -1)this.setHint(this.translateService.instant(this.LNameString));
+      if(cIndex != -1)this.setHint(this.translateService.instant(this.CNameString));
+      if(nIndex != -1)this.setHint(this.translateService.instant(this.nCNameString));
       if (aIndex != -1 || fIndex != -1 || lIndex != -1 || cIndex != -1 || nIndex != -1) {
         this.aPlaceHolder[aIndex] = this.translateService.instant(this.addressString);
         this.aPlaceHolder[fIndex] = this.translateService.instant(this.fNameString);
@@ -176,6 +189,37 @@ export class CustomersComponent implements OnInit {
 
   removeDuplicates(arr:any) {
     return arr.filter((item:any,index:any) => arr.indexOf(item) === index);
+  }
+
+  /*
+   * Function to detect typed string and automatically prefill fields, if fields are not prefilled. 
+   * If string contains number add ADDRESS in selected fields.
+   * If string contains letters add LASTNAME in selected fields.
+  */
+  stringDetection(){
+    this.aPlaceHolder = ["search"];
+    /*When length of searchvalue is equal to 4, we will be able to detect if user is searching for someting in the address or lastname*/
+    if(this.requestParams.searchValue.length == 4 && this.requestParams.oFilterBy.aSearchField == 0){
+      /*If string contains number -> then add Address in selected field */
+      if(/\d/.test(this.requestParams.searchValue)){
+        /*TODO: fill the selection with address, the following code is is not showing the selected element on frontend*/
+        this.requestParams.oFilterBy.aSearchField.unshift('sAddress');
+        this.requestParams.oFilterBy.aSearchField = this.removeDuplicates(this.requestParams.oFilterBy.aSearchField);
+        this.setHint("0000AB 00A");
+      }else{
+        /*If string contains only letters -> then add Lastname in selected field */
+        /*TODO: fill the selection with lastname, the following code is is not showing the selected element on frontend*/
+        this.requestParams.oFilterBy.aSearchField.unshift("sLastName");
+        this.requestParams.oFilterBy.aSearchField = this.removeDuplicates(this.requestParams.oFilterBy.aSearchField);
+        this.setHint(this.translateService.instant(this.LNameString));
+      }
+    }
+    this.getCustomers(true);
+  }
+
+  setHint(hint:any){
+    this.aInputHint.push(hint);
+    this.aInputHint = this.removeDuplicates(this.aInputHint);
   }
 
   // Function for handle event of transaction menu
@@ -227,6 +271,7 @@ export class CustomersComponent implements OnInit {
 
 
   getCustomers(bIsSearch?: boolean) {
+
     this.showLoader = true;
     if (bIsSearch) this.requestParams.skip = 0;
     if (this.bIsShowDeletedCustomer) {
@@ -234,6 +279,7 @@ export class CustomersComponent implements OnInit {
     } else {
       this.requestParams.bShowRemovedCustomers = false;
     }
+    console.log("getCustomers this.requestParams.oFilterBy.aSearchField", this.requestParams.oFilterBy.aSearchField);
     this.customers = [];
     this.apiService.postNew('customer', '/api/v1/customer/list', this.requestParams)
       .subscribe(async (result: any) => {
@@ -299,27 +345,5 @@ export class CustomersComponent implements OnInit {
   }
 
 
-  /*
-   * Function to detect typed string and automatically prefill fields, if fields are not prefilled. 
-   * If string contains number add ADDRESS in selected fields.
-   * If string contains letters add LASTNAME in selected fields.
-  */
-  stringDetection(){
-    /*When length of searchvalue is equal to 4, we will be able to detect if user is searching for someting in the address or lastname*/
-    if(this.requestParams.searchValue.length == 4 && this.requestParams.oFilterBy.aSearchField.length==0){
-      /*If string contains number -> then add Address in selected field */
-      if(/\d/.test(this.requestParams.searchValue)){
-        console.log(this.requestParams.searchValue);
-        console.log(this.requestParams.oFilterBy.aSearchField, '-',this.settings?.aCustomerSearch, '-', this.aFilterFields[2].value);
-        /*TODO: fill the selection with address, the following code is is not showing the selected element on frontend*/
-        this.requestParams.oFilterBy.aSearchField.unshift('sAddress');
-        console.log(this.requestParams.oFilterBy.aSearchField);
-      }else{
-        /*If string contains only letters -> then add Lastname in selected field */
-        /*TODO: fill the selection with lastname, the following code is is not showing the selected element on frontend*/
-        this.requestParams.oFilterBy.aSearchField.unshift('sLastName');
-        console.log(this.requestParams.oFilterBy.aSearchField);
-      }
-    }
-  }
+  
 }
