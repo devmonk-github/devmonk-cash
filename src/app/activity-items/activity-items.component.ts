@@ -512,8 +512,8 @@ export class ActivityItemsComponent implements OnInit, OnDestroy {
     this.apiService.postNew('core', `/api/v1/business/${this.iBusinessId}/list-location`, { iBusinessId: this.iBusinessId }).subscribe((result: any) => {
       if (result?.data?.aLocation?.length) {
         let aLocation = result.data.aLocation;
-        this.activityItems.forEach((activity: any)=>{
-          aLocation.forEach((oLocation: any) => {
+        aLocation.forEach((oLocation: any) => {
+          this.activityItems.forEach((activity: any)=>{
             if (oLocation._id == activity.iLocationId) {
               activity.sLocationName = oLocation?.sName;
             }
