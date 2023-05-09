@@ -114,7 +114,7 @@ export class CustomersComponent implements OnInit {
   LNameString :any = "LASTNAME";
   CNameString :any = "COMPANY_NAME";
   nCNameString :any = "NCLIENTID";
-  sExampleString:any = "0000AB00A";
+  sExampleString:any = "0000AB 00A";
   
  
   
