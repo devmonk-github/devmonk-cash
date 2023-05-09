@@ -5,8 +5,8 @@
         </div>
     </div>
         
-    <div class="card-body">
-        <div class="row" *ngIf="settings?.bSumUpArticleGroupStatistics">
+    <div class="card-body" *ngIf="settings">
+        <div class="row">
             <div class="col-9 mb-5">
                 <ul>
                     <li><label class="form-check form-switch form-check-custom form-check-solid">{{"SUMUP_MY_ARTICLE_GROUP_BASED_ON_TURNOVER_GROUP" | translate}}
@@ -40,7 +40,7 @@
             </div>
         </div>
 
-        <div class="row" *ngIf="settings?.bSumUpArticleGroupStatistics">
+        <div class="row">
             <div class="col-9 mb-5">
                 <label class="form-check form-switch form-check-custom form-check-solid">{{"SHOW_DATSTATES_BASED_ON_TURNOVER_GROUP" | translate }}</label>
             </div>

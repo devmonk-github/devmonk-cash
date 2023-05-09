@@ -145,20 +145,14 @@ export class TillService {
     this.updateVariables();
 
     const iLocationId = transactionItems?.length && transactionItems[0].iLocationId ? transactionItems[0].iLocationId : this.iLocationId; /* If we changed the location from the drop-down then it would change */
-    const transaction = new Transaction(
-      null,
-      null,
-      null,
-      this.iBusinessId,
-      null,
-      'cash-register-revenue',
-      'y',
-      this.iWorkstationId,
-      this.getValueFromLocalStorage('currentUser').userId,
-      iLocationId,
-      null,
-      null,
-    )
+    const transaction = new Transaction()
+    transaction.iBusinessId =  this.iBusinessId;
+    transaction.iLocationId = iLocationId,
+    transaction.iWorkstationId = this.iWorkstationId
+    transaction.eType = 'cash-register-revenue'
+    transaction.eStatus = 'y'
+    transaction.iEmployeeId = this.getValueFromLocalStorage('currentUser').userId,
+    transaction.sDayClosureMethod = this.settings?.sDayClosureMethod || 'workstation'
 
     const body = {
       iBusinessId: this.iBusinessId,
