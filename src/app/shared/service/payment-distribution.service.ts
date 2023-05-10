@@ -29,8 +29,6 @@ export class PaymentDistributionService {
     transactionItems = transactionItems.filter((i: any) => !['empty-line', 'loyalty-points'].includes(i.type))
     transactionItems.forEach((i: any) => {
       // if (bTesting) console.log(31, i, i.nTotal);
-      
-      
 
       const nPrice = parseFloat((typeof i.price === 'string') ? i.price.replace(',', '.') : i.price);
       i.nTotal = nPrice * i.quantity;
@@ -45,13 +43,13 @@ export class PaymentDistributionService {
       if (i?.tType && i.tType === 'refund'){
         
         if(i?.new) {
-          if (bTesting) console.log('refund item is new')
           i.amountToBePaid = -(nPrice * i.quantity - nDiscount - (i?.nGiftcardDiscount || 0) - (i?.nRedeemedLoyaltyPoints || 0));
+          if (bTesting) console.log('refund item is new amountToBePaid', i.amountToBePaid)
         } else {
           i.amountToBePaid = -(i.nRevenueAmount * i.quantity).toFixed(2);//-(i.nTotal);
         }
         if (bTesting) console.log('refund amountToBePaid', i.amountToBePaid)
-        availableAmount += i.amountToBePaid;
+        availableAmount += -i.amountToBePaid;
       } 
       i.nGiftcardDiscount = 0;
       i.nRedeemedLoyaltyPoints = 0;
@@ -102,6 +100,7 @@ export class PaymentDistributionService {
         totalAmountToBePaid = aItems.reduce((n, { amountToBePaid }) => n + amountToBePaid, 0);
       }
 
+      if (bTesting) console.log('still yet to pay',{ totalAmountToBePaid, availableAmount })
       if (totalAmountToBePaid !== 0) {
 
         aItems.forEach(i => {
