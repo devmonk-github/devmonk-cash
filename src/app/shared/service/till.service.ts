@@ -36,6 +36,7 @@ export class TillService {
   }
 
   fetchPointsSettings() {
+    if(this.oSavingPointSettings?._id) return;
     this.apiService.getNew('cashregistry', `/api/v1/points-settings?iBusinessId=${this.iBusinessId}`).subscribe((result:any) => {
       this.oSavingPointSettings = result;
     });
@@ -209,6 +210,7 @@ export class TillService {
       i.price = +(Number(String(i.price).replace(',','.')).toFixed(2));
       i.nPurchasePrice = +(i.nPurchasePrice?.toFixed(2) || 0);
       if(bTesting) console.log('before creating item', JSON.parse(JSON.stringify(i)));
+      
       const oItem = new TransactionItem();
       oItem.sProductName = i.name;
       oItem.sComment = i.comment;
@@ -296,6 +298,7 @@ export class TillService {
       oItem.bGiftcardTaxHandling = i.bGiftcardTaxHandling;
       oItem.bDiscountOnPercentage = i.bDiscountOnPercentage || false
       if (i?.sSerialNumber) oItem.sSerialNumber = i.sSerialNumber;
+      oItem.nSavingsPoints = i.nSavingsPoints;
       return oItem;
     });
     // const originalTItemsLength = length = body.transactionItems.filter((i: any) => i.oType.eKind !== 'loyalty-points').length;

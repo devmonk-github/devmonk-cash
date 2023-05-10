@@ -185,6 +185,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       this.tillService.settings = null;
       await this.tillService.fetchSettings();
     }
+    this.tillService.fetchPointsSettings();
     this.checkDayState();
     this.requestParams.iBusinessId = this.iBusinessId;
     this.getPaymentMethods();
@@ -505,14 +506,12 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
         this.clearPaymentAmounts();
         break;
       case 'update':
-        // console.log('itemChanged update')
         this.clearPaymentAmounts();
-        // this.paymentDistributeService.distributeAmount(this.transactionItems, this.getUsedPayMethods(true));
         break;
       case 'prepaymentChange':
         this.availableAmount = this.getUsedPayMethods(true);
         this.nGiftcardAmount = _.sumBy(this.appliedGiftCards, 'nAmount') || 0;
-        this.paymentDistributeService.distributeAmount(this.transactionItems, this.availableAmount, this.nGiftcardAmount, this.redeemedLoyaltyPoints);
+        this.paymentDistributeService.distributeAmount(this.transactionItems, this.availableAmount, this.nGiftcardAmount, this.redeemedLoyaltyPoints, this.payMethods);
         this.updateAmountVariables();
         break;
       case 'duplicate':
@@ -693,7 +692,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   changeInPayment() {
     this.availableAmount = this.getUsedPayMethods(true);
     this.nGiftcardAmount = _.sumBy(this.appliedGiftCards, 'nAmount') || 0;
-    this.paymentDistributeService.distributeAmount(this.transactionItems, this.availableAmount, this.nGiftcardAmount, this.redeemedLoyaltyPoints);
+    this.paymentDistributeService.distributeAmount(this.transactionItems, this.availableAmount, this.nGiftcardAmount, this.redeemedLoyaltyPoints, this.payMethods);
     this.allPaymentMethod = this.allPaymentMethod.map((v: any) => ({ ...v, isDisabled: true }));
     this.payMethods.map(o => o.isDisabled = true);
     const paidAmount = _.sumBy(this.payMethods, 'amount') || 0;
@@ -747,7 +746,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     this.payMethods.map(o => { o.amount = null, o.isDisabled = false });
     this.availableAmount = this.getUsedPayMethods(true);
     this.nGiftcardAmount = _.sumBy(this.appliedGiftCards, 'nAmount') || 0;
-    this.paymentDistributeService.distributeAmount(this.transactionItems, this.availableAmount, this.nGiftcardAmount, this.redeemedLoyaltyPoints);
+    this.paymentDistributeService.distributeAmount(this.transactionItems, this.availableAmount, this.nGiftcardAmount, this.redeemedLoyaltyPoints, this.payMethods);
     this.updateAmountVariables();
   }
 
@@ -846,7 +845,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
           });
           this.availableAmount = this.getUsedPayMethods(true);
           this.nGiftcardAmount = _.sumBy(this.appliedGiftCards, 'nAmount') || 0;
-          this.paymentDistributeService.distributeAmount(this.transactionItems, this.availableAmount, this.nGiftcardAmount, this.redeemedLoyaltyPoints);
+          this.paymentDistributeService.distributeAmount(this.transactionItems, this.availableAmount, this.nGiftcardAmount, this.redeemedLoyaltyPoints, this.payMethods);
           this.transactionItems = [...this.transactionItems.filter((item: any) => item.type !== 'empty-line')]
           const body = this.tillService.createTransactionBody(this.transactionItems, payMethods, this.discountArticleGroup, this.redeemedLoyaltyPoints, this.customer);
           if (body.transactionItems.filter((item: any) => item.oType.eKind === 'repair')[0]?.iActivityItemId) {
@@ -1910,7 +1909,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.dayClosureCheckSubscription) this.dayClosureCheckSubscription.unsubscribe();
     // console.log('cashregister destroy')
     MenuComponent.clearEverything();
-
+    this.tillService.settings = null;
+    this.tillService.oSavingPointSettings = null;
   }
 
   openDrawer() {

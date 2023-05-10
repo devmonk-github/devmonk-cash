@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ToastService } from '../components/toast';
 import { TillService } from './till.service';
-
+import * as _ from 'lodash';
 @Injectable({
   providedIn: 'root'
 })
@@ -23,7 +23,7 @@ export class PaymentDistributionService {
     this.toastService = toastService;
   }
   
-  distributeAmount(transactionItems: any[], availableAmount: any, nGiftcardAmount:any = 0, nRedeemedLoyaltyPoints:any = 0): any[] {
+  distributeAmount(transactionItems: any[], availableAmount: any, nGiftcardAmount:any = 0, nRedeemedLoyaltyPoints:any = 0, payMethods:any = []): any[] {
     const bTesting = false;
     if (bTesting) console.log('distributeAmount before', { availableAmount, nGiftcardAmount, nRedeemedLoyaltyPoints, original: JSON.parse(JSON.stringify(transactionItems)) })
     transactionItems = transactionItems.filter((i: any) => !['empty-line', 'loyalty-points'].includes(i.type))
@@ -64,6 +64,14 @@ export class PaymentDistributionService {
     const arrToUpdate = transactionItems.filter(item => !item?.manualUpdate && !item?.isExclude);
     const arrNotToUpdate = transactionItems.filter(item => item?.manualUpdate || item?.isExclude);
     
+    const nSavingsPointRatio = this.tillService.oSavingPointSettings.nPerEuro1 / this.tillService.oSavingPointSettings.nPerEuro
+
+    const aEligibleForSavingPoints = payMethods.filter((p: any) => p.amount > 0 && p.bAssignSavingPoints);
+    if (bTesting) console.log({ aEligibleForSavingPoints }, this.tillService.oSavingPointSettings)
+
+    const nEligibleAmount = _.sumBy(aEligibleForSavingPoints, 'amount');
+    if (bTesting) console.log({ nEligibleAmount });
+
     if (bTesting)  console.log({update: arrToUpdate, notToUpdate: arrNotToUpdate})
     
     const assignedAmountToManual = arrNotToUpdate.reduce((n, { paymentAmount }) => n + paymentAmount, 0);
@@ -79,7 +87,13 @@ export class PaymentDistributionService {
       const aItems = arrToUpdate.filter((el: any) => el.type !== 'giftcard');
 
       if (bTesting) console.log({ aGiftcards })
-      if (totalAmountToBePaid > 0 && aGiftcards?.length) {
+      if (aGiftcards?.length) {
+        aGiftcards.forEach((i: any) => {
+          if(i?.tType=== 'refund') {
+            const nPrice = parseFloat((typeof i.price === 'string') ? i.price.replace(',', '.') : i.price);
+            i.nSavingsPoints = -Math.floor(nPrice * nSavingsPointRatio)
+          }
+        });
         const { nAvailable, nPoints }:any = this.assignPaymentToGiftcardFirst(aGiftcards, availableAmount, totalAmountToBePaid, bTesting, nRedeemedLoyaltyPoints);
         if (bTesting) console.log({ nAvailable, nPoints })
         availableAmount = nAvailable;
@@ -109,6 +123,16 @@ export class PaymentDistributionService {
             const a = +((i.amountToBePaid * availableAmount / totalAmountToBePaid).toFixed(2));
             if (bTesting) console.log('set to payment',a)
             i.paymentAmount = a;
+
+            if (!this.tillService.oSavingPointSettings.aExcludedArticleGroups.includes(i.iArticleGroupId)) {
+              if (bTesting) console.log('updating the saving points')
+              const nAmountConsideredForSavingPoint = +((i.amountToBePaid * nEligibleAmount / totalAmountToBePaid).toFixed(2))
+              i.nSavingsPoints = Math.floor(nAmountConsideredForSavingPoint * nSavingsPointRatio)
+              if (bTesting) console.log({ nSavingsPoints: i.nSavingsPoints, nAmountConsideredForSavingPoint })
+            } else {
+              if (bTesting) console.log('this article group is excluded from saving points so setting it to 0')
+              i.nSavingsPoints = 0;
+            }
           }
         });
       }
@@ -156,7 +180,7 @@ export class PaymentDistributionService {
     if(bTesting) console.log('final',transactionItems)
     return transactionItems;
   }
-  
+
   assignPaymentToGiftcardFirst(aGiftcards: any, availableAmount: any, totalAmountToBePaid: any, bTesting: boolean, nRedeemedLoyaltyPoints:number) {
     if (bTesting) console.log('assignPaymentToGiftcardFirst', { availableAmount, nRedeemedLoyaltyPoints, aGiftcards })
     
