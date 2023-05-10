@@ -25,7 +25,7 @@ import { debounceTime, distinctUntilChanged, filter } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { ConfirmationDialogComponent } from 'src/app/shared/components/confirmation-dialog/confirmation-dialog.component';
 import { CustomerDialogComponent } from 'src/app/shared/components/customer-dialog/customer-dialog.component';
-import * as countryPhoneCodeList from 'src/assets/json/country_phone_code_list.json';
+import countryPhoneCodeList from 'src/assets/json/country_phone_code_list.json';
 export interface BarChartOptions {
   series: ApexAxisChartSeries;
   chart: ApexChart;
