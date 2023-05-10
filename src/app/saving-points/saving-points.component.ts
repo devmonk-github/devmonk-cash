@@ -78,7 +78,7 @@ export class SavingPointsComponent implements OnInit {
 
   fetchPaymentMethods() {
     this.apiService.getNew('cashregistry', '/api/v1/payment-methods/' + this.iBusinessId).subscribe((result: any) => {
-      console.log(result)
+      // console.log(result)
       if (result?.data?.length) {
         this.aPaymentMethods = result.data;
       }
@@ -89,8 +89,11 @@ export class SavingPointsComponent implements OnInit {
   fetchSetting() {
     this.apiService.getNew('cashregistry', `/api/v1/points-settings?iBusinessId=${this.iBusinessId}`).subscribe((result: any) => {
       this.savingPointsSettings = result;
-      if (!this.savingPointsSettings?.aExcludedArticleGroups) {
+      if (!this.savingPointsSettings?.aExcludedArticleGroups?.length) {
         this.savingPointsSettings.aExcludedArticleGroups = []
+      }
+      if (!this.savingPointsSettings?.aExcludedPaymentMethods?.length) {
+        this.savingPointsSettings.aExcludedPaymentMethods = []
       }
       
       if(this.savingPointsSettings.bEnabled === 'undefined' || result.bEnabled === undefined){
@@ -108,7 +111,7 @@ export class SavingPointsComponent implements OnInit {
     });
   }
 
-  updateSettings() {
+  async updateSettings() {
     this.apiService.putNew('cashregistry', `/api/v1/points-settings/${this.savingPointsSettings._id}?iBusinessId=${this.iBusinessId}`, this.savingPointsSettings).subscribe((result: any) => {
       if(result?._id) {
         this.toastService.show({ type: 'success', text: this.translateService.instant('UPDATED') + '!' });

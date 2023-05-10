@@ -406,8 +406,8 @@
                                         </span>
                                         <span *ngIf="!item.bDiscountOnPercentage">{{ item.nDiscountToShow | currency: tillService.currency}}</span>
                                     </td>
-                                    <td *ngIf="item.bShowGiftcardDiscountField">{{ item.nGiftcardDiscount | currency: tillService.currency}}</td>
-                                    <td *ngIf="item?.bShowLoyaltyPointsDiscountField">{{ item.nRedeemedPointsPerQty }} </td>
+                                    <td *ngIf="item.bShowGiftcardDiscountField || transaction.totalGiftcardDiscount > 0">{{ (item?.nGiftcardDiscount || 0) | currency: tillService.currency}}</td>
+                                    <td *ngIf="item?.bShowLoyaltyPointsDiscountField || transaction.totalRedeemedLoyaltyPoints > 0">{{ item?.nRedeemedPointsPerQty || 0  }} </td>
                                     <td *ngIf="savingPointsSetting && !transaction?.oCustomer?.bCounter">{{item?.nSavingsPoints || 0}} </td>
                                     <td>{{item.nVatRate}} % ({{item.vat || 0 | currency: tillService.currency }})</td>
                                     <td>
@@ -444,7 +444,7 @@
                                     <td *ngIf="savingPointsSetting && !transaction?.oCustomer?.bCounter">{{
                                         transaction.totalSavingPoints }}</td>
                                     <td>{{ transaction.totalVat | currency: tillService.currency }}</td>
-                                    <td>{{ transaction.total | currency: tillService.currency}}</td>
+                                    <td>{{ transaction.nTotal | currency: tillService.currency}}</td>
                                 </tr>
                             </tbody>
                         </table>
