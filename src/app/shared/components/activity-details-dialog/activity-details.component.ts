@@ -988,7 +988,7 @@ export class ActivityDetailsComponent implements OnInit {
         }
 
         if(this.oCurrentCustomer.oPhone.sMobile && this.oCurrentCustomer.oPhone.bWhatsApp  && this.oCurrentCustomer.oPhone.sPrefixMobile){
-          window.location.href = "https://wa.me/"+  this.oCurrentCustomer.oPhone.sPrefixMobile + this.oCurrentCustomer.oPhone.sMobile;
+          window.open("https://wa.me/"+  this.oCurrentCustomer.oPhone.sPrefixMobile + this.oCurrentCustomer.oPhone.sMobile);
         }else{
           this.toastService.show({ type: "warning", text: this.translation['NO_PHONE_OR_WHATSAPP'] });
         }
