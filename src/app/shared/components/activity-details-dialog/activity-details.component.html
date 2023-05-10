@@ -128,10 +128,10 @@
                                             <p style="margin: 0; margin-bottom: 5px;"
                                                 *ngIf="oCurrentCustomer?.oPhone?.sMobile">
                                                 <span>
-                                                    {{oCurrentCustomer?.oPhone?.sMobile}}
+                                                    {{oCurrentCustomer?.oPhone.sPrefixMobile}} {{oCurrentCustomer?.oPhone?.sMobile}}
                                                     <a href="https://wa.me/{{customer.oPhone.sPrefixMobile}}{{customer.oPhone.sMobile}}">
                                                         <i class="fab fa-whatsapp ms-1 ml-2"
-                                                        *ngIf="oCurrentCustomer?.oPhone?.bWhatsApp"
+                                                        *ngIf="oCurrentCustomer?.oPhone?.bWhatsApp && oCurrentCustomer?.oPhone.sPrefixMobile"
                                                         style="color: #1CB39B;"></i>
                                                     </a>
                                                 </span>
@@ -145,7 +145,7 @@
                                                 translate}}</p>
                                             <p style="margin: 0; margin-bottom: 5px;"
                                                 *ngIf="oCurrentCustomer?.oPhone?.sLandLine">
-                                                <span>{{oCurrentCustomer?.oPhone?.sLandLine}}</span>
+                                                <span>{{oCurrentCustomer?.oPhone.sPrefixLandline}} {{oCurrentCustomer?.oPhone?.sLandLine}}</span>
                                             </p>
                                         </div>
                                     </div>

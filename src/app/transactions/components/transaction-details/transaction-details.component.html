@@ -62,7 +62,7 @@
                         </div>
                     </div>
                     <div class="col-md-12" *ngIf="!transaction?.oCustomer?.bIsCompany && !transaction?.oCustomer?.bCounter">
-                        <div class=" mt-2">
+                        <div class=" mt-2" *ngIf="transaction?.oCustomer?.sCompanyName">
                             <span class="text-muted me-5">{{ 'COMPANY_NAME' | translate}}: </span>
                             <span class="text-gray-800">{{ transaction?.oCustomer?.sCompanyName }}</span>
                         </div>
@@ -109,10 +109,10 @@
                                 {{transaction?.oCustomer?.sEmail}}
                             </div>
                             <div class="text-gray-800 mt-2" *ngIf="transaction?.oCustomer?.oPhone?.sMobile">
-                                {{transaction?.oCustomer?.oPhone?.sMobile}}
+                                {{transaction?.oCustomer?.oPhone?.sPrefixMobile}} {{transaction?.oCustomer?.oPhone?.sMobile}}
                             </div>
                             <div class="text-gray-800 mt-2" *ngIf="transaction?.oCustomer?.oPhone?.sLandLine">
-                                {{transaction?.oCustomer?.oPhone?.sLandLine}}
+                                {{transaction?.oCustomer?.oPhone?.sPrefixLandline}} {{transaction?.oCustomer?.oPhone?.sLandLine}}
                             </div>
                         </div>
                     </ng-container>

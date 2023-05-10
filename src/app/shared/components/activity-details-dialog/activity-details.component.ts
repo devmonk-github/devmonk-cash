@@ -961,34 +961,34 @@ export class ActivityDetailsComponent implements OnInit {
   contactCustomer(action: any){
     switch (action){
       case 'call_on_ready':
-        if( !this.customer.bIsCounterCustomer && !this.customer.oPhone.sPrefixLandline && !this.customer.oPhone.sPrefixMobile){
+        if( !this.oCurrentCustomer.bIsCounterCustomer && !this.oCurrentCustomer.oPhone.sPrefixLandline && !this.oCurrentCustomer.oPhone.sPrefixMobile){
           this.toastService.show({ type: "warning", title:  this.translation['NO_PREFIX'], text: this.translation['PLEASE_ADD_COUNTRY_CODE_IN_CUSTOMER_DATA']});
           return;
         }
 
-        if(this.customer.oPhone.sLandLine && this.customer.oPhone.sPrefixLandline){
-          window.location.href = "tel:"+ this.customer.oPhone.sPrefixLandline + this.customer.oPhone.sLandLine;
+        if(this.oCurrentCustomer.oPhone.sLandLine && this.oCurrentCustomer.oPhone.sPrefixLandline){
+          window.location.href = "tel:"+ this.oCurrentCustomer.oPhone.sPrefixLandline + this.oCurrentCustomer.oPhone.sLandLine;
         }else{
           this.toastService.show({ type: "warning", text:  this.translation['NO_PHONE']});
         }
         break;
 
       case 'email_on_ready':
-        if(this.customer.sEmail){
-          window.location.href = "mailto:" + this.customer.sEmail
+        if(this.oCurrentCustomer.sEmail){
+          window.location.href = "mailto:" + this.oCurrentCustomer.sEmail
         }else{
           this.toastService.show({ type: "warning", text: this.translation['NO_EMAIL'] });
         }
         break;
 
       case 'whatsapp_on_ready':
-        if( !this.customer.bIsCounterCustomer && !this.customer.oPhone.sPrefixLandline && !this.customer.oPhone.sPrefixMobile){
+        if( !this.oCurrentCustomer.bIsCounterCustomer && !this.oCurrentCustomer.oPhone.sPrefixLandline && !this.oCurrentCustomer.oPhone.sPrefixMobile){
           this.toastService.show({ type: "warning", title:  this.translation['NO_PREFIX'], text: this.translation['PLEASE_ADD_COUNTRY_CODE_IN_CUSTOMER_DATA']});
           return;
         }
 
-        if(this.customer.oPhone.sMobile && this.customer.oPhone.bWhatsApp  && this.customer.oPhone.sPrefixMobile){
-          window.location.href = "https://wa.me/"+  this.customer.oPhone.sPrefixMobile + this.customer.oPhone.sMobile;
+        if(this.oCurrentCustomer.oPhone.sMobile && this.oCurrentCustomer.oPhone.bWhatsApp  && this.oCurrentCustomer.oPhone.sPrefixMobile){
+          window.location.href = "https://wa.me/"+  this.oCurrentCustomer.oPhone.sPrefixMobile + this.oCurrentCustomer.oPhone.sMobile;
         }else{
           this.toastService.show({ type: "warning", text: this.translation['NO_PHONE_OR_WHATSAPP'] });
         }
