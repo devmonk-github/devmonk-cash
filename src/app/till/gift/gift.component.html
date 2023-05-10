@@ -5,7 +5,14 @@
       <section class="row  product-row mb-3 align-items-center w-100">
         <div class="col-12">
           <div class="row">
-            <div class="col-1">{{item.quantity}}</div>
+            <div class="col-1">
+              <svg width="15" height="15" class="m-1">
+                <rect width="15" height="15"
+                  [ngStyle]="{fill: (item.oType.bRefund) ? '#f7422e' : '#4ab69c' }"
+                  style="stroke-width:1;stroke:rgb(0,0,0)" />
+                {{ "YOUR_BROWSER_DOES_NOT_SUPPORT_INLINE_SVG" | translate }}
+              </svg>
+              {{item.quantity}}</div>
             <div class="col-4 text-truncate">{{item.name}} - {{item.sGiftCardNumber}}</div>
             <div class="col">{{item.price | currencyFormat: tillService.currency:tillService.separator}}</div>
             <div class="col">
