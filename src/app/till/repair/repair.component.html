@@ -75,7 +75,6 @@
     </div>
     
     <div class="row">
-      
       <div class="col-6">
         <div class="form-group mb-4">
           <label class="form-control-label mb-3">{{ "DESCRIPTION" | translate}}</label>:
@@ -123,7 +122,6 @@
       </div>
 
       <div class="col-3">
-
         <div class="row">
           <div class="col-12">
             <div class="form-group mb-4">
@@ -154,12 +152,19 @@
                 <i class="bi bi-whatsapp"></i>
               </button>
             </div>
-            
+          </div>
+
+          <div class="col-12" *ngIf="contactType">
+            <div class="row my-3">
+              <div class="alert alert-warning d-flex align-items-center p-5">
+                <div class="d-flex flex-column">
+                  <span> {{ "NO_CUSTOMER_SELECTED" | translate}}</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-
       </div>
-    
     </div>
 
     <div class="row">
@@ -172,32 +177,20 @@
         <textarea *ngIf="bShowServicePartnerRemark" class="form-contro my-3"
           placeholder="{{ 'REMARK_FOR_SERVICE_PARTNERS' | translate }}" rows="3"
           [(ngModel)]="item.sCommentVisibleServicePartner"></textarea>
-        
       </div>
 
       <div class="col-3">
-        <div class="row">
+        <div class="row align-items-center">
           <div class="col-6">
-            <div class="form-group mb-4">
-              <label class="form-control-label mb-3">{{ "EXCLUDE_ITEM" | translate}}</label>:
-              <label class="form-check form-switch form-check-custom form-check-solid mb-3 mb-lg-0">
-                <input type="checkbox" class="form-check-input" [(ngModel)]="item.isExclude" (ngModelChange)="updatePayments()">
-              </label>
-            </div>
+            <label class="form-control-label">{{ "EXCLUDE_ITEM" | translate}}</label>:
           </div>
-          
-          <div class="col-6 mb-4">
-            <button class="btn btn-bg-light btn-active-color-primary mt-2" type="button" data-bs-toggle="collapse"
-              (click)="collapsedBtn = !collapsedBtn" [ngClass]="{'collapsed': collapsedBtn }" data-bs-target="#kt_accordion_123"
-              aria-expanded="true" aria-controls="kt_accordion_123">
-              {{ "MORE" | translate}}
-              <fa-icon *ngIf="!collapsedBtn" [icon]="faArrowDown"></fa-icon>
-              <fa-icon *ngIf="collapsedBtn" [icon]="faArrowUp"></fa-icon>
-            </button>
+          <div class="col-6">
+            <label class="form-check form-switch form-check-custom form-check-solid">
+              <input type="checkbox" class="form-check-input" [(ngModel)]="item.isExclude" (ngModelChange)="updatePayments()">
+            </label>
           </div>
         </div>
-
-        
+      
         <div id="kt_accordion_123" [ngClass]="{'show': collapsedBtn }" class="accordion-collapse collapse">
           <div class="row">
             <div class="col-6">
@@ -207,7 +200,7 @@
                   [(ngModel)]="item.nMargin" [disabled]="item.oType.bRefund">
               </div>
             </div>
-            
+      
             <div class="col-6">
               <div class="form-group mb-1">
                 <label class="form-control-label mb-1">{{ "PURCHASE_PRICE" | translate}}</label>
@@ -216,7 +209,7 @@
               </div>
             </div>
       
-            
+      
             <div class="col-12">
               <div class="form-group mb-1">
                 <label class="form-control-label mb-1">
@@ -231,13 +224,27 @@
             </div>
           </div>
         </div>
-        
+      
       </div>
 
       <div class="col-3">
-        <button class="btn btn-bg-light btn-active-color-primary mt-2" (click)="openImageModal()"> {{ "PHOTO" | translate}}
-          <fa-icon [icon]="faUpload"></fa-icon>
-        </button>
+        <div class="row">
+          <div class="col-6">
+            <button class="btn btn-secondary btn-sm w-100" type="button" data-bs-toggle="collapse"
+              (click)="collapsedBtn = !collapsedBtn" [ngClass]="{'collapsed': collapsedBtn }"
+              data-bs-target="#kt_accordion_123" aria-expanded="true" aria-controls="kt_accordion_123">
+              {{ "MORE" | translate}}
+              <fa-icon *ngIf="!collapsedBtn" [icon]="faArrowDown"></fa-icon>
+              <fa-icon *ngIf="collapsedBtn" [icon]="faArrowUp"></fa-icon>
+            </button>
+          </div>
+      
+          <div class="col-6">
+            <button class="btn btn-secondary btn-sm w-100" (click)="openImageModal()"> {{ "PHOTO" | translate}}
+              <fa-icon [icon]="faUpload"></fa-icon>
+            </button>
+          </div>
+        </div>
       </div>
 
     </div>
@@ -361,26 +368,5 @@
         </div>
       </div>
     </div>
-          
   </div>
-
-  <!-- NOT SURE ABOUT PURPOSE OF THE BELOW CODE SO COMMENTED IT -->
-  <!-- <div class="col-3">
-    <div class="row">
-      
-      <div class="col-12" *ngIf="contactType">
-        <div class="row my-3">
-          
-          <div class="alert alert-warning d-flex align-items-center p-5">
-           
-            <div class="d-flex flex-column">
-           
-              <span>No Customer Selected</span>
-            </div>
-          </div>
-        </div>
-      </div>
-      
-    </div>
-  </div> -->
-  </div>
+</div>
