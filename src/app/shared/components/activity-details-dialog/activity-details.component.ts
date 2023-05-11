@@ -721,13 +721,13 @@ export class ActivityDetailsComponent implements OnInit {
     oItem.nTotalAmount = oItem.nPriceIncVat * oItem.nQuantity;
     oItem.nPaidAmount = +((oItem.nPaidAmount + oItem.nDiscountToShow).toFixed(2));
     oItem.iBusinessId = this.iBusinessId;
-    console.log({oItem});
     // return;
     this.apiService.putNew('cashregistry', '/api/v1/activities/items/' + oItem._id, oItem)
       .subscribe((result: any) => {
         if (result.message == 'success') {
           this.submitted = false;
           this.apiService.activityItemDetails.next(oItem);
+          this.close(true);
           this.toastService.show({ type: "success", text: this.translation['SUCCESSFULLY_UPDATED'] });
         } else {
           this.submitted = false;
