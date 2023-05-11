@@ -589,8 +589,8 @@ export class TransactionAuditUiPdfService {
         aStatistic.forEach((oStatistic: any) => {
             // console.log({oStatistic})
             oStatistic.individual.forEach((oSupplier: any) => {
-                let sCategory = oSupplier?.sCategory;
-                if(sCategory != ""){
+                let sCategory = oSupplier.sCategory;
+                if(sCategory && sCategory != ""){
                     sCategory = this.translateService.instant(sCategory);
                 }
                 // console.log({ oSupplier })
