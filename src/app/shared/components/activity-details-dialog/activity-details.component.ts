@@ -226,7 +226,7 @@ export class ActivityDetailsComponent implements OnInit {
       }
       this.fetchActivity(this.activityItems[0].iActivityId);
       this.fetchTransactionItems(this.activityItems[0]._id);
-      this.getSystemCustomer(this.activityItems[0]?.iCustomerId);
+      if(this.activityItems[0]?.iCustomerId)this.getSystemCustomer(this.activityItems[0]?.iCustomerId);
     }
 
     this.getBusinessLocations();
@@ -611,17 +611,19 @@ export class ActivityDetailsComponent implements OnInit {
 
   matchSystemAndCurrentCustomer(systemCustomer: any, currentCustomer: any) {
     this.showSystemCustomer = false;
-    let currentCustomerData: any;
-    const aCurrentCustomerKeys: any = ['oInvoiceAddress', 'oPhone', 'bCounter', '_id', 'sFirstName', 'sLastName', 'sPrefix', 'sGender', 'sEmail', 'sVatNumber', 'sCompanyName', 'sCocNumber', 'bIsCompany', 'oContactPerson', 'nClientId' , 'sSalutation' , 'oShippingAddress'];
-    aCurrentCustomerKeys.forEach((keys: any) => {
-      currentCustomerData = { ...currentCustomerData, [keys]: currentCustomer[keys] }
-    })
+    if (systemCustomer && currentCustomer) {
+      let currentCustomerData: any;
+      const aCurrentCustomerKeys: any = ['oInvoiceAddress', 'oPhone', 'bCounter', '_id', 'sFirstName', 'sLastName', 'sPrefix', 'sGender', 'sEmail', 'sVatNumber', 'sCompanyName', 'sCocNumber', 'bIsCompany', 'oContactPerson', 'nClientId', 'sSalutation', 'oShippingAddress'];
+      aCurrentCustomerKeys.forEach((keys: any) => {
+        currentCustomerData = { ...currentCustomerData, [keys]: currentCustomer[keys] }
+      })
 
-    if (this.from == 'activity-items' && !systemCustomer?.bCounter) {
-      for (const [key, value] of Object.entries(currentCustomerData)) {
-        if (currentCustomer[key] && !(_.isEqual(systemCustomer[key], currentCustomer[key]))) {
-          console.log("not matched" , key , systemCustomer[key] , currentCustomer[key]);
-          this.showSystemCustomer = true;
+      if (this.from == 'activity-items' && !systemCustomer?.bCounter) {
+        for (const [key, value] of Object.entries(currentCustomerData)) {
+          if (currentCustomer[key] && !(_.isEqual(systemCustomer[key], currentCustomer[key]))) {
+            console.log("not matched", key, systemCustomer[key], currentCustomer[key]);
+            this.showSystemCustomer = true;
+          }
         }
       }
     }
@@ -727,8 +729,8 @@ export class ActivityDetailsComponent implements OnInit {
         if (result.message == 'success') {
           this.submitted = false;
           this.apiService.activityItemDetails.next(oItem);
-          this.close(true);
           this.toastService.show({ type: "success", text: this.translation['SUCCESSFULLY_UPDATED'] });
+          this.close(true);
         } else {
           this.submitted = false;
           let errorMessage = "";
