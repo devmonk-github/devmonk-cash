@@ -328,7 +328,7 @@ export class CustomerDialogComponent implements OnInit {
               customer['SHIPPING_ADDRESS'] = this.makeCustomerAddress(customer.oShippingAddress, false);
               customer['INVOICE_ADDRESS'] = this.makeCustomerAddress(customer.oInvoiceAddress, false);
               customer['EMAIL'] = customer.sEmail;
-              customer['PHONE'] = (customer.oPhone && customer.oPhone.sLandLine ? customer.oPhone.sLandLine : '') + (customer.oPhone && customer.oPhone.sLandLine && customer.oPhone.sMobile ? ' / ' : '') + (customer.oPhone && customer.oPhone.sMobile ? customer.oPhone.sMobile : '')
+              customer['PHONE'] = (customer.oPhone.sLandLine && customer.oPhone.sPrefixLandline ? customer.oPhone.sPrefixLandline : '') + (customer.oPhone && customer.oPhone.sLandLine ? customer.oPhone.sLandLine : '') + (customer.oPhone && customer.oPhone.sLandLine && customer.oPhone.sMobile ? ' / ' : '') + (customer.oPhone.sMobile && customer.oPhone.sPrefixMobile ? customer.oPhone.sPrefixMobile : '') + (customer.oPhone && customer.oPhone.sMobile ? customer.oPhone.sMobile : '');
             }
 
           }
@@ -360,7 +360,7 @@ export class CustomerDialogComponent implements OnInit {
               customer['INVOICE_ADDRESS'] = this.makeCustomerAddress(customer.oInvoiceAddress, false);
               customer['EMAIL'] = customer.sEmail;
               //customer['STATUS'] = customer.bIsConnected;
-              customer['PHONE'] = (customer.oPhone && customer.oPhone.sLandLine ? customer.oPhone.sLandLine : '') + (customer.oPhone && customer.oPhone.sLandLine && customer.oPhone.sMobile ? ' / ' : '') + (customer.oPhone && customer.oPhone.sMobile ? customer.oPhone.sMobile : '')
+              customer['PHONE'] = (customer.oPhone.sLandLine && customer.oPhone.sPrefixLandline ? customer.oPhone.sPrefixLandline : '') + (customer.oPhone && customer.oPhone.sLandLine ? customer.oPhone.sLandLine : '') + (customer.oPhone && customer.oPhone.sLandLine && customer.oPhone.sMobile ? ' / ' : '') + (customer.oPhone.sMobile && customer.oPhone.sPrefixMobile ? customer.oPhone.sPrefixMobile : '') + (customer.oPhone && customer.oPhone.sMobile ? customer.oPhone.sMobile : '');
             }
           }
       },
@@ -377,7 +377,7 @@ export class CustomerDialogComponent implements OnInit {
       customer['SHIPPING_ADDRESS'] = this.makeCustomerAddress(customer.oShippingAddress, false);
       customer['INVOICE_ADDRESS'] = this.makeCustomerAddress(customer.oInvoiceAddress, false);
       customer['EMAIL'] = customer.sEmail;
-      customer['PHONE'] = (customer.oPhone && customer.oPhone.sLandLine ? customer.oPhone.sLandLine : '') + (customer.oPhone && customer.oPhone.sLandLine && customer.oPhone.sMobile ? ' / ' : '') + (customer.oPhone && customer.oPhone.sMobile ? customer.oPhone.sMobile : '')
+      customer['PHONE'] = (customer.oPhone.sLandLine && customer.oPhone.sPrefixLandline ? customer.oPhone.sPrefixLandline : '') + (customer.oPhone && customer.oPhone.sLandLine ? customer.oPhone.sLandLine : '') + (customer.oPhone && customer.oPhone.sLandLine && customer.oPhone.sMobile ? ' / ' : '') + (customer.oPhone.sMobile && customer.oPhone.sPrefixMobile ? customer.oPhone.sPrefixMobile : '') + (customer.oPhone && customer.oPhone.sMobile ? customer.oPhone.sMobile : '');
       this.close({action: true, customer: customer });
     });
   }
@@ -440,7 +440,7 @@ export class CustomerDialogComponent implements OnInit {
           this.allcustomer[isIndex]['SHIPPING_ADDRESS'] = this.makeCustomerAddress(data?.customer?.data?.oShippingAddress, false);
           this.allcustomer[isIndex]['INVOICE_ADDRESS'] = this.makeCustomerAddress(data?.customer?.data?.oInvoiceAddress, false);
           this.allcustomer[isIndex]['EMAIL'] = data?.customer?.data?.sEmail;
-          this.allcustomer[isIndex]['PHONE'] = (data?.customer?.data?.oPhone && data?.customer?.data?.oPhone.sLandLine ? data?.customer?.data?.oPhone.sLandLine : '') + (data?.customer?.data?.oPhone && data?.customer?.data?.oPhone.sLandLine && data?.customer?.data?.oPhone.sMobile ? ' / ' : '') + (data?.customer?.data?.oPhone && data?.customer?.data?.oPhone.sMobile ? data?.customer?.data?.oPhone.sMobile : '')
+          this.allcustomer[isIndex]['PHONE'] =(data?.customer?.data?.oPhone.sLandLine && data?.customer?.data?.oPhone.sPrefixLandline ? data?.customer?.data?.oPhone.sPrefixLandline : '') + (data?.customer?.data?.oPhone && data?.customer?.data?.oPhone.sLandLine ? data?.customer?.data?.oPhone.sLandLine : '') + (data?.customer?.data?.oPhone && data?.customer?.data?.oPhone.sLandLine && data?.customer?.data?.oPhone.sMobile ? ' / ' : '') + (data?.customer?.data?.oPhone.sMobile && data?.customer?.data?.oPhone.sPrefixMobile ? data?.customer?.data?.oPhone.sPrefixMobile : '') +  (data?.customer?.data?.oPhone && data?.customer?.data?.oPhone.sMobile ? data?.customer?.data?.oPhone.sMobile : '')
         }
      });
 

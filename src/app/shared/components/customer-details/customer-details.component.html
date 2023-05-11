@@ -128,7 +128,7 @@
                                             <span class="text-muted me-5">{{'PHONE_MOBILE' | translate}} :</span>
                                             <span> {{customer.oPhone.sPrefixMobile}} {{ customer.oPhone.sMobile }}</span>
                                         </p>
-                                        <p>
+                                        <p *ngIf="customer.oPhone.sLandLine">
                                             <span class="text-muted me-5">{{'PHONE_LANDLINE' | translate}} :</span>
                                             <span>{{ customer.oPhone.sPrefixLandline }} {{ customer.oPhone.sLandLine }}</span>
                                         </p>
@@ -696,7 +696,7 @@
                                     </ng-select>
                                 </div>
                                 <div class="col-8 custom-number">
-                                    <input class="form-control" type="number" id="sMobile" placeholder="{{'PHONE_MOBILE' | translate}}"
+                                    <input class="form-control" type="text" id="sMobile" placeholder="{{'PHONE_MOBILE' | translate}}"
                                         [(ngModel)]="customer.oPhone.sMobile" />
                                 </div>
                             </div>
@@ -711,7 +711,7 @@
                                     </ng-select>
                                 </div>
                                 <div class="col-8 custom-number">
-                                    <input class="form-control" type="number" id="sLandLine" placeholder="{{'PHONE_LANDLINE' | translate}}"
+                                    <input class="form-control" type="text" id="sLandLine" placeholder="{{'PHONE_LANDLINE' | translate}}"
                                         [(ngModel)]="customer.oPhone.sLandLine" />
                                 </div>
                             </div>
