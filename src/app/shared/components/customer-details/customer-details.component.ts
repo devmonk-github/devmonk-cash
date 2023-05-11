@@ -1185,4 +1185,8 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
       this.toastService.show({ type: 'warning', text: this.translations['ONLY_LETTERS_ARE_ALLOWED'] });
     }    
   }
+
+  removeSpaces(string: string){
+    return string.replace(/\s/g, '');
+  }
 }

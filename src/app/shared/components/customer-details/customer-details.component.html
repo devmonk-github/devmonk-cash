@@ -117,7 +117,7 @@
                                                 {{customer.sEmail}}</a>
                                         </p>
                                         <p>
-                                            <a href="https://wa.me/{{customer.oPhone.sPrefixMobile}}{{customer.oPhone.sMobile}}"
+                                            <a href="https://wa.me/{{customer.oPhone.sPrefixMobile}}{{removeSpaces(customer.oPhone.sMobile)}}"
                                                 *ngIf="customer.oPhone.bWhatsApp && customer.oPhone.sPrefixMobile" target="_blank"
                                                 class="text-gray-800 text-hover-primary btn btn-light">
                                                 <i class="fab fa-whatsapp ms-1" style="color: #1CB39B;"></i>

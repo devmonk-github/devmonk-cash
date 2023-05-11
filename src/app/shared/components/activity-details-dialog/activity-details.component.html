@@ -130,11 +130,9 @@
                                                 <span>
                                                     {{oCurrentCustomer?.oPhone.sPrefixMobile}}
                                                     {{oCurrentCustomer?.oPhone?.sMobile}}
-                                                    <a href="https://wa.me/{{customer.oPhone.sPrefixMobile}}{{customer.oPhone.sMobile}}"
-                                                        target="_blank">
-                                                        <i class="fab fa-whatsapp ms-1 ml-2"
-                                                            *ngIf="oCurrentCustomer?.oPhone?.bWhatsApp && oCurrentCustomer?.oPhone.sPrefixMobile"
-                                                            style="color: #1CB39B;"></i>
+                                                    <a href="https://wa.me/{{customer.oPhone.sPrefixMobile}}{{removeSpaces(customer.oPhone.sMobile)}}"
+                                                        target="_blank" *ngIf="oCurrentCustomer?.oPhone?.bWhatsApp && oCurrentCustomer?.oPhone.sPrefixMobile">
+                                                        <i class="fab fa-whatsapp ms-1 ml-2" style="color: #1CB39B;"></i>
                                                     </a>
                                                 </span>
                                             </p>
