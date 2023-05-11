@@ -589,13 +589,17 @@ export class TransactionAuditUiPdfService {
         aStatistic.forEach((oStatistic: any) => {
             // console.log({oStatistic})
             oStatistic.individual.forEach((oSupplier: any) => {
+                let sCategory = oSupplier?.sCategory;
+                if(sCategory != ""){
+                    sCategory = this.translateService.instant(sCategory);
+                }
                 // console.log({ oSupplier })
                 let nSubTotalDiscount = 0, nSubTotalRevenue = 0, nSubTotalVat = 0, nSubTotalQuantity = 0;
                 oSupplier.aArticleGroups.forEach((oArticleGroup: any) => {
                     // console.log({oArticleGroup})
                     aTexts.push([
                         { text: '', style: ['td', 'bold'], headlineLevel: 1 },
-                        { text: this.translateService.instant('TURNOVER_GROUP') + ': ' + oSupplier.sCategory , style: ['td', 'bold'], colSpan: 2, border: this.styles.border_bottom }, //+ ': group number'
+                        { text: this.translateService.instant('TURNOVER_GROUP') + ': ' + sCategory , style: ['td', 'bold'], colSpan: 2, border: this.styles.border_bottom }, //+ ': group number'
                         { text: '', style: ['td', 'bold'], border: this.styles.border_bottom },
                         { text: oArticleGroup.sName, style: ['td'], border: this.styles.border_bottom },
                         { text: this.translateService.instant('TRANSACTIONS'), style: ['td', 'bold'], border: this.styles.border_bottom }, //colSpan: 2,
