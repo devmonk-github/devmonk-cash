@@ -109,6 +109,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
 
   nTotalRevenue = 0;
   nTotalQuantity = 0;
+  aStatisticsIds:any = [];
 
   constructor(
     private apiService: ApiService,
@@ -969,7 +970,8 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
       bIsSupplierMode: this.bIsSupplierMode,
       aEmployee: this.aEmployee,
       mode,
-      sTransactionType: this.sOptionMenu.parent.sKey
+      sTransactionType: this.sOptionMenu.parent.sKey,
+      aStatisticsIds: (this.iStatisticId) ? [this.iStatisticId] : this.aStatisticsIds
     });
     this.pdfGenerationInProgress = false;
   }
@@ -1003,7 +1005,8 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
           bIsSupplierMode: this.bIsSupplierMode,
           iArticleGroupOriginalId: item?._id,
           iLocationId: this?.aSelectedLocation?.length ? this.aSelectedLocation : [],
-          iWorkstationId: this.selectedWorkStation?.length ? this.selectedWorkStation : []
+          iWorkstationId: this.selectedWorkStation?.length ? this.selectedWorkStation : [],
+          aStatisticsIds: (this.iStatisticId) ? [this.iStatisticId] : this.aStatisticsIds
         },
         sTransactionType: this.optionMenu,
         iBusinessId: this.iBusinessId,
@@ -1390,16 +1393,24 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
     }
   }
 
-  onStateChange(dDate: any, isOpenDate: boolean, aDayClosure: any) {
+  onStateChange(dDate: any, isOpenDate: boolean) {
+    // console.log('onStateChange', { dDate, isOpenDate, aDayClosure: this.aDayClosure})
     this.aStatistic = [];
+    this.aStatisticsIds = [];
+
     const dFromStateTime = new Date(this.statisticFilter.dFromState).getTime();
     const dToStateTime = new Date(this.statisticFilter.dToState).getTime();
-    /* Disabling the date which is smaller than the dFromState in dToState */
-    for (let i = 0; i < aDayClosure?.length; i++) {
-      aDayClosure[i].isDisable = false;
-      const dDayClosureDateTime = new Date(aDayClosure[i].dCloseDate).getTime();
-      if (dFromStateTime > dDayClosureDateTime) aDayClosure[i].isDisable = true;
-    }
+      /* Disabling the date which is smaller than the dFromState in dToState */
+      this.aDayClosure.forEach((oDayClosure:any) => {
+        oDayClosure.isDisable = false;
+        const dDayClosureDateTime = new Date(oDayClosure.dCloseDate).getTime();
+        if (dFromStateTime > dDayClosureDateTime) oDayClosure.isDisable = true;
+        
+        const dFromTime = new Date(oDayClosure.dOpenDate).getTime();
+        const dToTime = new Date(oDayClosure.dCloseDate).getTime();
+        
+        if (dFromTime >= dFromStateTime && dToTime <= dToStateTime) this.aStatisticsIds.push(oDayClosure._id);
+      });
 
     this.checkShowDownload();
   }

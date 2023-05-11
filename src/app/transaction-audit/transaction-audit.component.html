@@ -48,7 +48,7 @@
                                                 translate}}</label>
                                             <ng-select class="form-control form-control-solid p-0"
                                                 [(ngModel)]="statisticFilter.dFromState" [clearable]="false"
-                                                (change)="onStateChange($event, true, aDayClosure)">
+                                                (change)="onStateChange($event, true)">
                                                 <ng-option *ngFor="let oDayClosure of aDayClosure"
                                                     [value]="oDayClosure.dOpenDate">
                                                     {{oDayClosure?.dOpenDate | date: 'yyyy-MM-dd HH:mm'}}
@@ -63,7 +63,7 @@
                                                 translate}}</label>
                                             <ng-select class="form-control form-control-solid p-0"
                                                 [(ngModel)]="statisticFilter.dToState" [clearable]="false"
-                                                (change)="onStateChange($event, false, aDayClosure)">
+                                                (change)="onStateChange($event, false)">
                                                 <ng-option *ngFor="let oDayClosure of aDayClosure"
                                                     [value]="oDayClosure.dCloseDate"
                                                     [disabled]="oDayClosure?.isDisable ? true : false">
