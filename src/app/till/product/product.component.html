@@ -124,7 +124,7 @@
           <strong>{{ 'THIS_ARTICLE_GROUP_HAS_BEEN_EXCLUDED_FROM_EARNING_LOYALTY_POINTS'| translate }}</strong>
         </span>
         <span *ngIf="!tillService.oSavingPointSettings.aExcludedArticleGroups.includes(item.iArticleGroupId)">
-          {{ 'WILL_EARN'| translate }}
+          {{ 'GET'| translate }}
           <strong>{{ item.nSavingsPoints || 0 }} </strong>
           {{ 'LOYALTY_POINTS' | translate }}
         </span>

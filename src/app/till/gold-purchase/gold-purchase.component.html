@@ -98,7 +98,7 @@
                 <div class="row">
                     <div class="col-12">
                         <div class="form-group mb-4">
-                            <label class="form-control-label mb-3">{{ "GOLD_FOR" | translate}}</label>: {{ item.oGoldFor | json }}
+                            <label class="form-control-label mb-3">{{ "GOLD_FOR" | translate}}</label>
                             <ng-select [(ngModel)]="item.oGoldFor" (ngModelChange)="checkArticleGroups()" [items]="aGoldFor" bindLabel="name"></ng-select>
                         </div>
                     </div>
