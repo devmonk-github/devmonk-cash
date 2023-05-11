@@ -396,6 +396,7 @@ export class TillService {
     }
     body.transactionItems = [...body.transactionItems, ...aToBeAddedItems];
     body.transactionItems.forEach((i: any) => {
+      if(this.aDiscountTypes.includes(i.oType.eKind)) i.nSavingsPoints = 0;
       i.nPaymentAmount = +(i.nPaymentAmount.toFixed(2));
       i.nRevenueAmount = +(i.nRevenueAmount.toFixed(2));
     });

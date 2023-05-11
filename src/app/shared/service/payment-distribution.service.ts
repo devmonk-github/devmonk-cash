@@ -69,7 +69,7 @@ export class PaymentDistributionService {
     const aEligibleForSavingPoints = payMethods.filter((p: any) => p.amount > 0 && p.bAssignSavingPoints);
     if (bTesting) console.log({ aEligibleForSavingPoints }, this.tillService.oSavingPointSettings)
 
-    const nEligibleAmount = _.sumBy(aEligibleForSavingPoints, 'amount');
+    let nEligibleAmount = _.sumBy(aEligibleForSavingPoints, 'amount');
     if (bTesting) console.log({ nEligibleAmount });
 
     if (bTesting)  console.log({update: arrToUpdate, notToUpdate: arrNotToUpdate})
@@ -81,6 +81,7 @@ export class PaymentDistributionService {
     
     if (arrToUpdate?.length) {
       let totalAmountToBePaid = +(arrToUpdate.filter(el => el.amountToBePaid > 0).reduce((n, { amountToBePaid }) => n + amountToBePaid, 0).toFixed(2)); // + assignedAmountToManual
+      if(nEligibleAmount > totalAmountToBePaid) nEligibleAmount = totalAmountToBePaid;
       if (bTesting) console.log({totalAmountToBePaid})
 
       const aGiftcards = arrToUpdate.filter((el: any) => el.type === 'giftcard');
@@ -92,6 +93,8 @@ export class PaymentDistributionService {
           if(i?.tType=== 'refund') {
             const nPrice = parseFloat((typeof i.price === 'string') ? i.price.replace(',', '.') : i.price);
             i.nSavingsPoints = -Math.floor(nPrice * nSavingsPointRatio)
+          } else {
+            nEligibleAmount = this.calculateSavingsPoints(i, nSavingsPointRatio, nEligibleAmount, totalAmountToBePaid);
           }
         });
         const { nAvailable, nPoints }:any = this.assignPaymentToGiftcardFirst(aGiftcards, availableAmount, totalAmountToBePaid, bTesting, nRedeemedLoyaltyPoints);
@@ -99,7 +102,7 @@ export class PaymentDistributionService {
         availableAmount = nAvailable;
         nRedeemedLoyaltyPoints = nPoints;
 
-        totalAmountToBePaid = arrToUpdate.filter((el: any) => el.type !== 'giftcard').reduce((n, { amountToBePaid }) => n + amountToBePaid, 0);
+        totalAmountToBePaid = _.sumBy(aItems, 'amountToBePaid');
         if (bTesting) console.log('now we have available', { availableAmount, totalAmountToBePaid, nRedeemedLoyaltyPoints })
       }
       
@@ -124,15 +127,7 @@ export class PaymentDistributionService {
             if (bTesting) console.log('set to payment',a)
             i.paymentAmount = a;
 
-            if (!this.tillService.oSavingPointSettings.aExcludedArticleGroups.includes(i.iArticleGroupId)) {
-              if (bTesting) console.log('updating the saving points')
-              const nAmountConsideredForSavingPoint = +((i.amountToBePaid * nEligibleAmount / totalAmountToBePaid).toFixed(2))
-              i.nSavingsPoints = Math.floor(nAmountConsideredForSavingPoint * nSavingsPointRatio)
-              if (bTesting) console.log({ nSavingsPoints: i.nSavingsPoints, nAmountConsideredForSavingPoint })
-            } else {
-              if (bTesting) console.log('this article group is excluded from saving points so setting it to 0')
-              i.nSavingsPoints = 0;
-            }
+            nEligibleAmount = this.calculateSavingsPoints(i, nSavingsPointRatio, nEligibleAmount, totalAmountToBePaid);
           }
         });
       }
@@ -179,6 +174,24 @@ export class PaymentDistributionService {
     });
     if(bTesting) console.log('final',transactionItems)
     return transactionItems;
+  }
+
+  calculateSavingsPoints(oItem: any, nSavingsPointRatio:number, nEligibleAmount:number, totalAmountToBePaid:number) {
+    const bTesting = false;
+    if(bTesting) console.log('calculateSavingsPoints', {nSavingsPointRatio, nEligibleAmount, totalAmountToBePaid, oItem})
+    if (!this.tillService.oSavingPointSettings.aExcludedArticleGroups.includes(oItem.iArticleGroupId)) {
+      if (bTesting) console.log('updating the saving points')
+      const nAmountConsideredForSavingPoint = +((oItem.amountToBePaid * nEligibleAmount / totalAmountToBePaid).toFixed(2))
+      oItem.nSavingsPoints = Math.floor(nAmountConsideredForSavingPoint * nSavingsPointRatio)
+      if (bTesting) console.log({ nSavingsPoints: oItem.nSavingsPoints, nAmountConsideredForSavingPoint })
+    } else {
+      if (bTesting) console.log('this article group is excluded from saving points so setting it to 0')
+      oItem.nSavingsPoints = 0;
+    }
+
+    if (oItem.type === 'giftcard') nEligibleAmount -= (oItem.nSavingsPoints / nSavingsPointRatio);
+    
+    return nEligibleAmount;
   }
 
   assignPaymentToGiftcardFirst(aGiftcards: any, availableAmount: any, totalAmountToBePaid: any, bTesting: boolean, nRedeemedLoyaltyPoints:number) {
