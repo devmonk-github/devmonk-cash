@@ -201,20 +201,18 @@ export class CustomersComponent implements OnInit {
    * If string contains number add ADDRESS in selected fields.
    * If string contains letters add LASTNAME in selected fields.
   */
-  stringDetection(){
+  stringDetection() {
     this.aPlaceHolder = ["search"];
     /*When length of searchvalue is equal to 4, we will be able to detect if user is searching for someting in the address or lastname*/
-    if(this.requestParams.searchValue.length == 4 && this.requestParams.oFilterBy.aSearchField == 0){
+    if (this.requestParams.searchValue.length == 4 && this.requestParams.oFilterBy.aSearchField == 0) {
       /*If string contains number -> then add Address in selected field */
-      if(/\d/.test(this.requestParams.searchValue)){
+      if (/\d/.test(this.requestParams.searchValue)) {
         /*TODO: fill the selection with address, the following code is is not showing the selected element on frontend*/
         this.requestParams.oFilterBy.aSearchField.unshift('sAddress');
         this.requestParams.oFilterBy.aSearchField = this.removeDuplicates(this.requestParams.oFilterBy.aSearchField);
-       // this.setHint(this.translateService.instant(this.sExampleString));
         let aIndex = this.requestParams.oFilterBy.aSearchField.indexOf("sAddress");
         this.aInputHint[aIndex] = this.translateService.instant(this.sExampleString);
       }
-      
     }
   }
 
