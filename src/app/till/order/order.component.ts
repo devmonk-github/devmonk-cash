@@ -105,6 +105,7 @@ export class OrderComponent implements OnInit {
           this.item.iArticleGroupId = articlegroup._id;
           this.item.iArticleGroupOriginalId = articlegroup._id;
           this.item.oArticleGroupMetaData.oNameOriginal = articlegroup.oName;
+          this.item.oArticleGroupMetaData.sCategory = articlegroup?.sCategory;
           this.item.nMargin = nMargin;
           this.supplier = supplier.sName;
           this.item.iSupplierId = supplier._id;
