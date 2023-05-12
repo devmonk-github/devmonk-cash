@@ -62,7 +62,7 @@
         <div class="col-2">
           <label class="form-contrl-label mb-3" for="number">{{ "VALUE" | translate}}</label>
           <input type="number" class="form-control" name="number" id="value" [(ngModel)]="item.price"
-            [disabled]="item.nonEditable" (change)="changeInPrice(); updatePayments();">
+            [disabled]="item.nonEditable" (ngModelChange)="updatePayments()">
         </div>
         
         <div class="col-3">

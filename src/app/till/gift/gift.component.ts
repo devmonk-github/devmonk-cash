@@ -45,7 +45,7 @@ export class GiftComponent implements OnInit {
   ngOnInit(): void {
     this.checkNumber();
     this.checkArticleGroups();
-    this.changeInPrice();
+    this.updatePayments();
   }
 
   deleteItem(): void {
@@ -99,12 +99,9 @@ export class GiftComponent implements OnInit {
     this.item.oArticleGroupMetaData.sCategory = result.data.sCategory;
     this.item.oArticleGroupMetaData.sSubCategory = result.data.sSubCategory;
   }
-
-  changeInPrice() {
+  
+  updatePayments() {
     this.item.nPurchasePrice = this.item.price / 1.21;
-  }
-
-  updatePayments(): void {
     this.itemChanged.emit({type: 'item', data: this.item});
   }
 
