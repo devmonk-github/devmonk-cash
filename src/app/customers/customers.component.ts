@@ -273,7 +273,6 @@ export class CustomersComponent implements OnInit {
     } else {
       this.requestParams.bShowRemovedCustomers = false;
     }
-    console.log("getCustomers this.requestParams.oFilterBy.aSearchField", this.requestParams.oFilterBy.aSearchField);
     this.customers = [];
     this.apiService.postNew('customer', '/api/v1/customer/list', this.requestParams)
       .subscribe(async (result: any) => {

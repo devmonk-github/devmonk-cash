@@ -134,9 +134,9 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     oPhone: {
       sCountryCode: '',
       sMobile: '',
-      sPrefixMobile: '+31',
+      sPrefixMobile: '',
       sLandLine: '',
-      sPrefixLandline: '+31',
+      sPrefixLandline: '',
       sFax: '',
       bWhatsApp: true
     },
@@ -463,22 +463,26 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
   }
 
   getBusinessDetails() {
-    this.apiService.getNew('core', '/api/v1/business/' + localStorage.getItem('currentBusiness')).subscribe((response:any)=>{
+    this.apiService.getNew('core', '/api/v1/business/' + localStorage.getItem('currentBusiness')).subscribe((response: any) => {
       const currentLocation = localStorage.getItem('currentLocation');
-      if(response?.data) this.businessDetails = response.data;
-      if(this.businessDetails?.aLocation?.length && !this.customer?._id ){
-        const locationIndex = this.businessDetails.aLocation.findIndex((location:any)=> location._id == currentLocation);
-        if(locationIndex != -1){
-         const currentLocationDetail = this.businessDetails?.aLocation[locationIndex];
-         if(currentLocationDetail?.oAddress?.country && currentLocationDetail?.oAddress?.countryCode){
-         this.customer.oInvoiceAddress.sCountry = currentLocationDetail?.oAddress?.country;
-         this.customer.oInvoiceAddress.sCountryCode = currentLocationDetail?.oAddress?.countryCode;
-         this.customer.oShippingAddress.sCountry = currentLocationDetail?.oAddress?.country;
-         this.customer.oShippingAddress.sCountryCode = currentLocationDetail?.oAddress?.countryCode;
-         }
+      if (response?.data) this.businessDetails = response.data;
+      if (this.businessDetails?.aLocation?.length && !this.customer?._id) {
+        const locationIndex = this.businessDetails.aLocation.findIndex((location: any) => location._id == currentLocation);
+        if (locationIndex != -1) {
+          const currentLocationDetail = this.businessDetails?.aLocation[locationIndex];
+          if (currentLocationDetail?.oAddress?.countryCode) {
+            const oCountryPhoneCode = this.aCountryPhoneCodes.find(code => code.key === currentLocationDetail?.oAddress?.countryCode);
+            this.customer.oPhone.sPrefixMobile = oCountryPhoneCode.value;
+            this.customer.oPhone.sPrefixLandline = oCountryPhoneCode.value;
+          }
+          if (currentLocationDetail?.oAddress?.country && currentLocationDetail?.oAddress?.countryCode) {
+            this.customer.oInvoiceAddress.sCountry = currentLocationDetail?.oAddress?.country;
+            this.customer.oInvoiceAddress.sCountryCode = currentLocationDetail?.oAddress?.countryCode;
+            this.customer.oShippingAddress.sCountry = currentLocationDetail?.oAddress?.country;
+            this.customer.oShippingAddress.sCountryCode = currentLocationDetail?.oAddress?.countryCode;
+          }
         }
       }
-     
     });
   }
   addLoyalityPoints(){
