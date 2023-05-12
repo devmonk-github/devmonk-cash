@@ -60,7 +60,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
     dFromState: '',
     dToState: '',
   };
-  filterDates = {
+  filterDates:any = {
     startDate: "",//new Date(new Date().setHours(0, 0, 0)),
     endDate: "",//new Date(new Date().setHours(23, 59, 59)),
   };
@@ -110,6 +110,8 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
   nTotalRevenue = 0;
   nTotalQuantity = 0;
   aStatisticsIds:any = [];
+  sFrom: any;
+  iBusinessPartnerId: any;
 
   constructor(
     private apiService: ApiService,
@@ -126,33 +128,59 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
     const _oUser = localStorage.getItem('currentUser');
     if (_oUser) this.oUser = JSON.parse(_oUser);
     this.previousPage = this.route?.snapshot?.queryParams?.page || 0
+    this.selectViewModeAndData();
+  }
+
+  selectViewModeAndData(){
+    const oState = this.router.getCurrentNavigation()?.extras?.state;
+    if(oState?.from) this.sFrom = oState.from
     
-    this.iStatisticId = this.route.snapshot?.params?.iStatisticId;
-    if (this.iStatisticId) {
-      const oState = this.router.getCurrentNavigation()?.extras?.state;
-      this.oStatisticsData.dStartDate = oState?.dStartDate;
-      this.oStatisticsData.dEndDate = oState?.dEndDate;
-      this.oStatisticsData.bIsDayStateOpened = oState?.bIsDayStateOpened ? true : false;
-      this.oStatisticsData.iLocationId = oState?.iLocationId;
-      this.oStatisticsData.iWorkstationId = oState?.iWorkstationId;
+    if(this.sFrom == 'sales-list') {
+      this.iBusinessPartnerId = oState?.iBusinessPartnerId;
+      this.IsDynamicState = true;
+      this.sDisplayMethod = eDisplayMethodKeysEnum.revenuePerBusinessPartner;
 
-      if (this.oStatisticsData.bIsDayStateOpened){
-        this.bOpeningDayClosure = true;
+      if (oState?.filterDates?.startDate) {
+        this.filterDates = {
+          startDate: moment(new Date(oState.filterDates.startDate).setHours(0, 0, 0)).format("YYYY-MM-DDThh:mm"),
+          endDate: moment(new Date(oState.filterDates.endDate).setHours(23, 59, 59)).format("YYYY-MM-DDThh:mm")
+        }
       } else {
-        this.bOpeningHistoricalDayState = true;
-        this.statisticFilter.dFromState = this.oStatisticsData.dStartDate;
-        this.statisticFilter.dToState = this.oStatisticsData.dEndDate;
-      } 
-
-      if (this.oStatisticsData.dStartDate) {
-        this.filterDates.startDate = this.oStatisticsData.dStartDate;
-        const endDate = (this.oStatisticsData.dEndDate) ? this.oStatisticsData.dEndDate : new Date();
-        this.filterDates.endDate = endDate;
-        this.oStatisticsData.dEndDate = endDate;
-      } else {
-        this.router.navigate(['/business/day-closure'])
+        this.filterDates = {
+          startDate: moment(new Date().setHours(0, 0, 0)).subtract({days: 1}).format("YYYY-MM-DDThh:mm"),
+          endDate: moment(new Date().setHours(23, 59, 59)).format("YYYY-MM-DDThh:mm")
+        };
+      }
+    } else {
+      this.iStatisticId = this.route.snapshot?.params?.iStatisticId;
+      if (this.iStatisticId) {
+        this.oStatisticsData.dStartDate = oState?.dStartDate;
+        this.oStatisticsData.dEndDate = oState?.dEndDate;
+        this.oStatisticsData.bIsDayStateOpened = oState?.bIsDayStateOpened ? true : false;
+        this.oStatisticsData.iLocationId = oState?.iLocationId;
+        this.oStatisticsData.iWorkstationId = oState?.iWorkstationId;
+  
+        if (this.oStatisticsData.bIsDayStateOpened){
+          this.bOpeningDayClosure = true;
+        } else {
+          this.bOpeningHistoricalDayState = true;
+          this.statisticFilter.dFromState = this.oStatisticsData.dStartDate;
+          this.statisticFilter.dToState = this.oStatisticsData.dEndDate;
+        } 
+  
+        if (this.oStatisticsData.dStartDate) {
+          this.filterDates.startDate = this.oStatisticsData.dStartDate;
+          const endDate = (this.oStatisticsData.dEndDate) ? this.oStatisticsData.dEndDate : new Date();
+          this.filterDates.endDate = endDate;
+          this.oStatisticsData.dEndDate = endDate;
+        } else {
+          this.router.navigate(['/business/day-closure'])
+        }
       }
     }
+    
+
+
   }
 
   async ngOnInit() {
@@ -515,10 +543,15 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
       let iPurchaseIndex = this.aOptionMenu.findIndex(i => i.sValue.toLowerCase() === 'sales-order')
       this.aOptionMenu.splice(iPurchaseIndex, 1)
     }
-    if (this.tillService.settings?.bShowDayStatesBasedOnTurnover) {
-      this.onDropdownItemSelected(this.aOptionMenu[0], this.aOptionMenu[0].children[1], this.aOptionMenu[0].children[1].children[3])
+
+    if(this.sFrom == 'sales-list') {
+      this.onDropdownItemSelected(this.aOptionMenu[0], this.aOptionMenu[0].children[2], this.aOptionMenu[0].children[2].children[1])
     } else {
-      this.onDropdownItemSelected(this.aOptionMenu[0], this.aOptionMenu[0].children[0], this.aOptionMenu[0].children[0].children[0])
+      if (this.tillService.settings?.bShowDayStatesBasedOnTurnover) {
+        this.onDropdownItemSelected(this.aOptionMenu[0], this.aOptionMenu[0].children[1], this.aOptionMenu[0].children[1].children[3])
+      } else {
+        this.onDropdownItemSelected(this.aOptionMenu[0], this.aOptionMenu[0].children[0], this.aOptionMenu[0].children[0].children[0])
+      }
     }
   }
 
@@ -737,7 +770,8 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
         dEndDate: this.filterDates.endDate,
         aFilterProperty: this.aFilterProperty,
         bIsArticleGroupLevel: true,
-        bIsSupplierMode: true
+        bIsSupplierMode: true,
+        iBusinessPartnerId: this.iBusinessPartnerId
       },
     };
 
@@ -745,8 +779,10 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
       oBody.oFilter.bIsArticleGroupLevel = this.bIsArticleGroupLevel;
       oBody.oFilter.bIsSupplierMode = this.bIsSupplierMode;
 
-      this.filterDates.startDate = moment(new Date().setHours(0, 0, 0)).format("YYYY-MM-DDThh:mm")
-      this.filterDates.endDate = moment(new Date().setHours(23, 59, 59)).format("YYYY-MM-DDThh:mm")
+      if(this.sFrom != 'sales-list' && this.filterDates.startDate == '') {
+        this.filterDates.startDate = moment(new Date().setHours(0, 0, 0)).format("YYYY-MM-DDThh:mm")
+        this.filterDates.endDate = moment(new Date().setHours(23, 59, 59)).format("YYYY-MM-DDThh:mm")
+      }
     }
 
     return oBody;
@@ -953,12 +989,10 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
     await this.transactionAuditPdfService.exportToPDF({
       // aDisplayMethod: this.aDisplayMethod,
       aSelectedLocation: this.aSelectedLocation,
-      sType: this.sOptionMenu.parent.sValue,
       bIsDynamicState: this.IsDynamicState,
       aLocation: this.aLocation,
       aSelectedWorkStation: (this.iStatisticId) ? this.sCurrentWorkstation : (this.selectedWorkStation?.length ? this.selectedWorkStation : []),
       aWorkStation: this.aWorkStation,
-      oFilterDates: (this.IsDynamicState) ? this.filterDates : {startDate: this.statisticFilter.dFromState, endDate: this.statisticFilter.dToState},
       sBusinessName: this.businessDetails.sName,
       sDisplayMethod: this.sDisplayMethod,
       sDisplayMethodString: this.sSelectedOptionMenu,
@@ -969,9 +1003,15 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
       bIsArticleGroupLevel: this.bIsArticleGroupLevel,
       bIsSupplierMode: this.bIsSupplierMode,
       aEmployee: this.aEmployee,
-      mode,
-      sTransactionType: this.sOptionMenu.parent.sKey,
-      aStatisticsIds: (this.iStatisticId) ? [this.iStatisticId] : this.aStatisticsIds
+      aStatisticsIds: (this.iStatisticId) ? [this.iStatisticId] : this.aStatisticsIds,
+      oFilterData: {
+        oFilterDates: (this.IsDynamicState) ? this.filterDates : {startDate: this.statisticFilter.dFromState, endDate: this.statisticFilter.dToState},
+        mode,
+        sType: this.sOptionMenu.parent.sValue,
+        sTransactionType: this.sOptionMenu.parent.sKey,
+        iBusinessPartnerId: this.iBusinessPartnerId,
+        sFrom: this.sFrom
+      }
     });
     this.pdfGenerationInProgress = false;
   }

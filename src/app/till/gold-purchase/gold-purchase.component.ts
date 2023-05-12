@@ -142,6 +142,7 @@ export class GoldPurchaseComponent implements OnInit {
   changeTotalAmount() {
     this.item.paymentAmount = -1 * this.item.quantity * this.item.price;
     this.item.nPurchasePrice = this.item.price / 1.21;
+    this.itemChanged.emit({ type: 'item', data: this.item });
   }
   changeTypeArray() {
     if (!this.item.oType.refund) {

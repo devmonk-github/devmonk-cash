@@ -162,6 +162,7 @@ export class TransactionAuditUiPdfService {
     aPaymentItems: any = [];
     aSelectedLocation: any;
     aStatisticsIds: any;
+    oFilterData: any;
 
     constructor(
         private pdf: PdfService,
@@ -192,12 +193,10 @@ export class TransactionAuditUiPdfService {
 
     async exportToPDF({
         aSelectedLocation,
-        sType,
         bIsDynamicState,
         aLocation,
         aSelectedWorkStation,
         aWorkStation,
-        oFilterDates,
         sBusinessName,
         sDisplayMethod,
         sDisplayMethodString,
@@ -208,23 +207,23 @@ export class TransactionAuditUiPdfService {
         bIsArticleGroupLevel,
         bIsSupplierMode,
         aEmployee,
-        mode,
-        sTransactionType,
-        aStatisticsIds
+        aStatisticsIds,
+        oFilterData
     }: any) {
         this.commonPrintSettingsService.oCommonParameters['pageMargins'] = this.pageMargins;
         this.commonPrintSettingsService.oCommonParameters['pageSize'] = this.pageSize;
         this.commonPrintSettingsService.pageWidth = this.commonPrintSettingsService.pageSizes[this.pageSize].pageWidth
         this.aSelectedLocation = aSelectedLocation;
         this.aStatisticsIds = aStatisticsIds;
+        this.oFilterData = oFilterData;
+        
         // console.log('PDF service: exportToPDF: ', {
         //     aSelectedLocation,
-        //     sType,
+        //     oFilterData,
         //     bIsDynamicState,
         //     aLocation,
         //     aSelectedWorkStation,
         //     aWorkStation,
-        //     oFilterDates,
         //     sBusinessName,
         //     sDisplayMethod,
         //     sDisplayMethodString,
@@ -235,8 +234,6 @@ export class TransactionAuditUiPdfService {
         //     bIsArticleGroupLevel,
         //     bIsSupplierMode,
         //     aEmployee,
-        //     mode,
-        //     sTransactionType,
         //     aStatisticsIds });
 
         const columnWidths = ['*', 60, 80, 80, 100];
@@ -245,15 +242,15 @@ export class TransactionAuditUiPdfService {
 
         this.prepareEmployeeList(aEmployee);
 
-        this.addTopInfoSection({ bIsDynamicState, oFilterDates, sBusinessName, sDisplayMethodString, oStatisticsDocument, sType });
+        this.addTopInfoSection({ bIsDynamicState, sBusinessName, sDisplayMethodString, sComment: oStatisticsDocument?.sComment});
         
-        if (mode === 'detailed') this.bDetailedMode = true;
+        if (oFilterData.mode === 'detailed') this.bDetailedMode = true;
         
         if (this.bDetailedMode) {
             const [_aTransactionItems, _aActivityItems, _aGoldPurchases, _oPaymentItems]: any = await Promise.all([ //, 
-                this.fetchTransactionItems(oFilterDates, bIsArticleGroupLevel, bIsSupplierMode, sTransactionType),
-                this.fetchActivityItems(oFilterDates),
-                this.fetchGoldPurchaseItems(oFilterDates),
+                this.fetchTransactionItems(bIsArticleGroupLevel, bIsSupplierMode),
+                this.fetchActivityItems(),
+                this.fetchGoldPurchaseItems(),
                 this.fetchPaymentItems(aStatisticsDocuments)
             ]);
             if (_oPaymentItems?.data?.length && _oPaymentItems?.data[0]?.result?.length) 
@@ -274,13 +271,13 @@ export class TransactionAuditUiPdfService {
             this.aGoldPurchases = _aGoldPurchases?.data[0]?.result.filter((item: any) => item.oType.eKind == 'gold-purchase');
         
         } else if (sDisplayMethod === 'aRevenuePerTurnoverGroup') {
-            const _aTransactionItems: any = await this.fetchTransactionItems(oFilterDates, bIsArticleGroupLevel, bIsSupplierMode, sTransactionType);
+            const _aTransactionItems: any = await this.fetchTransactionItems(bIsArticleGroupLevel, bIsSupplierMode);
             this.aTransactionItems = (_aTransactionItems?.data?.length && _aTransactionItems?.data[0]?.result?.length) ? _aTransactionItems?.data[0]?.result : [];
         }
         
 
         if (sDisplayMethod != "aVatRates" && this.bDetailedMode) {
-            this.processCashCountings(oStatisticsDocument);
+            if(!bIsDynamicState) this.processCashCountings(oStatisticsDocument);
             this.processVatRates(oStatisticsDocument?.aVatRates);
         }
         this.sDisplayMethod = sDisplayMethod;
@@ -384,12 +381,12 @@ export class TransactionAuditUiPdfService {
         }
     }
 
-    addTopInfoSection({ bIsDynamicState, oFilterDates, sBusinessName, sDisplayMethodString, oStatisticsDocument, sType }:any){
+    addTopInfoSection({ bIsDynamicState, sBusinessName, sDisplayMethodString, sComment }:any){
         
         const dataType = bIsDynamicState ? this.translateService.instant('DYANAMIC_DATA') : this.translateService.instant('STATIC_DATA');
         const dataFromTo =
-            '( ' + this.translateService.instant('FROM') + ': ' + moment(oFilterDates.startDate).format('DD-MM-yyyy hh:mm A') + " " + this.translateService.instant('TO') + " " +
-            moment(oFilterDates.endDate).format('DD-MM-yyyy hh:mm A') + ')';
+            '( ' + this.translateService.instant('FROM') + ': ' + moment(this.oFilterData.oFilterDates.startDate).format('DD-MM-yyyy hh:mm A') + " " + this.translateService.instant('TO') + " " +
+            moment(this.oFilterData.oFilterDates.endDate).format('DD-MM-yyyy hh:mm A') + ')';
 
         this.content = [
             { text: moment(Date.now()).format('DD-MM-yyyy'), style: ['right', 'normal'] },
@@ -417,10 +414,10 @@ export class TransactionAuditUiPdfService {
             {
                 columns: [
                     { text: this.translateService.instant('COMMENT') + ': ', style: ['left', 'normal'], width: '15%' },
-                    { text: oStatisticsDocument?.sComment, style: ['left', 'normal'], width: '35%' },
+                    { text: sComment, style: ['left', 'normal'], width: '35%' },
                     { width: '*', text: '' },
                     { text: this.translateService.instant('TYPE') + ': ', style: ['right', 'normal'], width: '15%' },
-                    { text: sType, style: ['right', 'normal'], width: '35%' },
+                    { text: this.oFilterData.sType, style: ['right', 'normal'], width: '35%' },
                 ],
             },
 
@@ -599,8 +596,21 @@ export class TransactionAuditUiPdfService {
                 }
                 // console.log({ oSupplier })
                 let nSubTotalDiscount = 0, nSubTotalRevenue = 0, nSubTotalVat = 0, nSubTotalQuantity = 0;
+                const aArticleGroupsToSkip:any = [];
+                this.aTransactionItems = this.aTransactionItems.filter((oItem: any) => {
+                    if(oItem.oType.eKind === 'expenses' && (oItem.sComment == 'TRANSFERRED_FROM_CASH' || oItem.sComment == 'TRANSFER_TO_CASH_SAFE')) {
+                        aArticleGroupsToSkip.push(oItem.iArticleGroupOriginalId);
+                    } else return oItem;
+                })
+                let nAddedCount = 0;
+                // console.log(aArticleGroupsToSkip);
                 oSupplier.aArticleGroups.forEach((oArticleGroup: any) => {
-                    // console.log({oArticleGroup})
+                    if (aArticleGroupsToSkip.includes(oArticleGroup._id)){
+                        // console.log('skip', oArticleGroup)
+                        return;
+                    } 
+                    // console.log('adding',{oArticleGroup})
+                    nAddedCount++;
                     aTexts.push([
                         { text: '', style: ['td', 'bold'], headlineLevel: 1 },
                         { text: this.translateService.instant('TURNOVER_GROUP') + ': ' + sCategory , style: ['td', 'bold'], colSpan: 2, border: this.styles.border_bottom }, //+ ': group number'
@@ -646,21 +656,23 @@ export class TransactionAuditUiPdfService {
                         ]);
                     });
                 });
-                aTexts.push([
-                    { text: '', style: ['td', 'bold'] },
-                    { text: this.translateService.instant('SUBTOTAL'), style: ['td'], colSpan: 2, border: this.styles.border_top },
-                    { text: '', style: ['td'], border: this.styles.border_top },
-                    { text: '', style: ['td'], border: this.styles.border_top },
-                    { text: nSubTotalQuantity, style: ['td', 'bold'], border: this.styles.border_top },
-                    { text: '', style: ['td', 'bold'] },
-                    { text: '', style: ['td', 'bold'] },
-                    { text: nSubTotalDiscount.toFixed(2), style: ['td', 'bold'], border: this.styles.border_top },
-                    { text: nSubTotalRevenue.toFixed(2), style: ['td', 'bold'], border: this.styles.border_top },
-                    { text: nSubTotalVat.toFixed(2), style: ['td', 'bold'], border: this.styles.border_top },
-                    { text: '', style: ['td', 'bold'] },
-                    { text: '', style: ['td', 'bold'] }
-                ])
-                aTexts.push([...aDummy.fill(' ')]);
+                if (nAddedCount) {
+                    aTexts.push([
+                        { text: '', style: ['td', 'bold'] },
+                        { text: this.translateService.instant('SUBTOTAL'), style: ['td'], colSpan: 2, border: this.styles.border_top },
+                        { text: '', style: ['td'], border: this.styles.border_top },
+                        { text: '', style: ['td'], border: this.styles.border_top },
+                        { text: nSubTotalQuantity, style: ['td', 'bold'], border: this.styles.border_top },
+                        { text: '', style: ['td', 'bold'] },
+                        { text: '', style: ['td', 'bold'] },
+                        { text: nSubTotalDiscount.toFixed(2), style: ['td', 'bold'], border: this.styles.border_top },
+                        { text: nSubTotalRevenue.toFixed(2), style: ['td', 'bold'], border: this.styles.border_top },
+                        { text: nSubTotalVat.toFixed(2), style: ['td', 'bold'], border: this.styles.border_top },
+                        { text: '', style: ['td', 'bold'] },
+                        { text: '', style: ['td', 'bold'] }
+                    ])
+                    aTexts.push([...aDummy.fill(' ')]);
+                }
             });
         });
 
@@ -1121,7 +1133,7 @@ export class TransactionAuditUiPdfService {
     processPdfByRevenuePerBusinessPartner(columnWidths: any,aStatistic:any) {
         this.addTableHeading('REVENUE_PER_BUSINESS_PARTNER');
 
-        const aHeader = ['SUPPLIER','QUANTITY','PRICE_INCL_VAT','PURCHASE_PRICE','GROSS_PROFIT'];
+        const aHeader = ['SUPPLIER', 'QUANTITY','PRICE_WITH_VAT','PURCHASE_PRICE','GROSS_PROFIT'];
         const aHeaderList: any = [];
         aHeader.forEach((el: any) => aHeaderList.push({ text: this.translateService.instant(el), style: ['th'] }));
 
@@ -1379,13 +1391,13 @@ export class TransactionAuditUiPdfService {
         this.addTableToContent(aTexts, this.styles.horizontalLinesSlim, columnWidths);
     }
 
-    fetchTransactionItems(oFilterDates: any, bIsArticleGroupLevel: boolean, bIsSupplierMode: boolean, sTransactionType:string){
+    fetchTransactionItems(bIsArticleGroupLevel: boolean, bIsSupplierMode: boolean){
         let data:any = {
             iTransactionId: 'all',
             sFrom:'turnover-group',
             oFilterBy: {
-                dStartDate: oFilterDates.startDate,
-                dEndDate: oFilterDates.endDate,
+                dStartDate: this.oFilterData.oFilterDates.startDate,
+                dEndDate: this.oFilterData.oFilterDates.endDate,
                 bIsArticleGroupLevel: bIsArticleGroupLevel,
                 bIsSupplierMode: bIsSupplierMode,
                 iLocationId: this.aSelectedLocation
@@ -1393,17 +1405,17 @@ export class TransactionAuditUiPdfService {
             iBusinessId: this.iBusinessId,
             iWorkstationId: this.iWorkstationId,
         };
-        if (sTransactionType === 'SALES') data.sTransactionType = 'cash-registry';
+        if (this.oFilterData.sTransactionType === 'SALES') data.sTransactionType = 'cash-registry';
         if (this.aStatisticsIds?.length) data.oFilterBy.aStatisticsIds = this.aStatisticsIds;
         
 
         return this.apiService.postNew('cashregistry','/api/v1/transaction/item/list',data).toPromise();
     }
 
-    fetchActivityItems(oFilterDates: any) {
+    fetchActivityItems() {
         let data = {
-            startDate: oFilterDates.startDate,
-            endDate: oFilterDates.endDate,
+            startDate: this.oFilterData.oFilterDates.startDate,
+            endDate: this.oFilterData.oFilterDates.endDate,
             iBusinessId: this.iBusinessId,
             selectedWorkstations: [this.iWorkstationId],
         };
@@ -1411,11 +1423,11 @@ export class TransactionAuditUiPdfService {
         return this.apiService.postNew('cashregistry','/api/v1/activities/items',data).toPromise();
     }
 
-    fetchGoldPurchaseItems(oFilterDates: any) {
+    fetchGoldPurchaseItems() {
         let data = {
             oFilterBy: {
-                startDate: oFilterDates.startDate,
-                endDate: oFilterDates.endDate,
+                startDate: this.oFilterData.oFilterDates.startDate,
+                endDate: this.oFilterData.oFilterDates.endDate,
             },
             iBusinessId: this.iBusinessId,
         };
@@ -1517,8 +1529,16 @@ export class TransactionAuditUiPdfService {
     }
 
     async fetchPaymentItems(aStatisticsDocuments:any) {
-        const aOpenDates = [...aStatisticsDocuments.map((el: any) => new Date(el.dOpenDate))];
-        const aCloseDates = [...aStatisticsDocuments.map((el: any) => new Date(el.dCloseDate))];
+        let aOpenDates:any = [], aCloseDates:any = [];
+
+        if(this.oFilterData.sFrom == 'sales-list') {
+            aOpenDates = [new Date(this.oFilterData.oFilterDates.startDate)]
+            aCloseDates = [new Date(this.oFilterData.oFilterDates.endDate)]
+        } else {
+            aOpenDates = [...aStatisticsDocuments?.map((el: any) => new Date(el.dOpenDate))];
+            aCloseDates = [...aStatisticsDocuments?.map((el: any) => new Date(el.dCloseDate))];
+        }
+        // console.log({ aOpenDates, aCloseDates })
         const dStartDate = new Date(Math.min(...aOpenDates));
         const dEndDate = new Date(Math.max(...aCloseDates));
         const oBody: any = {

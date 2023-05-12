@@ -27,16 +27,15 @@
                                                 translate}}</label>
                                             <input type="datetime-local"
                                                 class="form-control form-control form-control-solid" name="startDate"
-                                                [ngModel]="filterDates.startDate"
-                                                (ngModelChange)="filterDates.startDate = $event;" />
+                                                [(ngModel)]="filterDates.startDate"/>
                                         </div>
                                         <!-- END_DATE -->
                                         <div class="col-md-6">
                                             <label class="fs-6 form-label fw-bolder text-dark">{{'END_DATE' |
                                                 translate}}</label>
                                             <input type="datetime-local" class="form-control form-control-solid"
-                                                name="endDate" [ngModel]="filterDates.endDate"
-                                                (ngModelChange)="filterDates.endDate = $event;" />
+                                                name="endDate" [(ngModel)]="filterDates.endDate"
+                                                />
                                         </div>
                                     </div>
 
@@ -435,8 +434,7 @@
                                         </ng-container>
                                         <div class="btn-group">
                                             <button class="btn btn-primary fs-bold">
-                                                <span class="indicator-label" (click)="exportToPDF()">{{ "Download
-                                                    compact" | translate }}</span>
+                                                <span class="indicator-label" (click)="exportToPDF()">{{ "DOWNLOAD_COMPACT" | translate }}</span>
                                             </button>
 
                                             <span class="btn btn-primary btn-icon fs-bold" role="button">
@@ -455,13 +453,11 @@
                                                 <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold fs-7 w-200px py-4"
                                                     data-kt-menu="true">
                                                     <div class="menu-item px-3 text-center">
-                                                        <div class="menu-link px-3" (click)="exportToPDF('detailed')">{{
-                                                            'Download detailed' | translate }}</div>
+                                                        <div class="menu-link px-3" (click)="exportToPDF('detailed')">{{ 'DOWNLOAD_DETAILED' | translate }}</div>
                                                     </div>
                                                 </div>
                                             </span>
                                         </div>
-                                        <!-- <button class="btn btn-primary">{{ 'DOWNLOAD' | translate}}</button> -->
                                     </div>
                                 </div>
                             </div>
@@ -1238,7 +1234,7 @@
                                                             (click)="oPayment.bIsCollapseItem = !oPayment.bIsCollapseItem"></i>
                                                     </div>
                                                 </td>
-                                                <td>{{oPayment.nAmount}}</td>
+                                                <td>{{oPayment.nAmount.toFixed(2) }}</td>
                                                 <td *ngIf="paymentEditMode">
                                                     <input class="form-control" type="number"
                                                         [(ngModel)]="oPayment.nNewAmount"
@@ -1256,7 +1252,7 @@
                                                 <tr class="bg-gray-100" *ngFor="let item of oPayment.aItems">
                                                     <td class="ps-9"> {{ item.sComment}} {{ (!item?.sComment ||
                                                         item.sComment === '') ? item.sMethod : '' }}</td>
-                                                    <td> {{ item.nAmount }}</td>
+                                                    <td> {{ item.nAmount.toFixed(2) }}</td>
                                                     <td> {{ item.nQuantity }}</td>
                                                 </tr>
                                             </ng-container>
