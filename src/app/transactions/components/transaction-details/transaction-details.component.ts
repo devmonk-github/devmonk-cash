@@ -17,6 +17,7 @@ import { ReceiptService } from 'src/app/shared/service/receipt.service';
 import { TransactionsPdfService } from 'src/app/shared/service/transactions-pdf.service';
 import { TaxService } from 'src/app/shared/service/tax.service';
 import { TillService } from 'src/app/shared/service/till.service';
+import { CreateArticleGroupService } from 'src/app/shared/service/create-article-groups.service';
 const moment = (_moment as any).default ? (_moment as any).default : _moment;
 
 @Component({
@@ -97,12 +98,12 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
     private apiService: ApiService,
     private dialogService: DialogService,
     private receiptService: ReceiptService,
-    private transactionsPdfService: TransactionsPdfService,
     private toastService: ToastService,
     public tillService: TillService,
     private translateService: TranslateService,
     private cdr: ChangeDetectorRef,
-    private taxService: TaxService
+    private taxService: TaxService,
+    private createArticleGroupService: CreateArticleGroupService,
   ) {
     const _injector = this.viewContainerRef.parentInjector;
     this.dialogRef = _injector.get<DialogComponent>(DialogComponent);
@@ -456,9 +457,12 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   async saveUpdatedPayments(event: any) {
     event.target.disabled = true;
     const nVatRate = await this.taxService.fetchDefaultVatRate({ iLocationId: this.iLocationId });
+    const _result = await this.createArticleGroupService.checkArticleGroups('payment-method-change').toPromise()
+    const oArticleGroup = _result.data;
     const aPayments = this.transaction.aPayments.filter((payments: any) => !payments?.bIgnore);
     const aPromises:any = [];
-
+    // console.log({ taPayments: this.transaction.aPayments, aPayments, aNewSelectedPaymentMethods: this.aNewSelectedPaymentMethods })
+    // return;
     aPayments.forEach((item: any) => {
       if (item.nAmount != item.nNewAmount) {
         aPromises.push(this.addExpenses({
@@ -466,6 +470,7 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
           type: 'payment-method-change',
           comment: 'PAYMENT_METHOD_CHANGE',
           iActivityId: this.transaction.iActivityId,
+          oArticleGroup,
           oPayment: {
             iPaymentMethodId: item.iPaymentMethodId,
             nAmount: item.nNewAmount - item.nAmount,
@@ -485,6 +490,7 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
           type: 'payment-method-change',
           comment: 'PAYMENT_METHOD_CHANGE',
           iActivityId: this.transaction.iActivityId,
+          oArticleGroup,
           oPayment: {
             iPaymentMethodId: item._id,
             nAmount: item.nAmount,
@@ -502,7 +508,7 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
     event.target.disabled = false;
 
     this.toastService.show({ type: "success", text: this.translation['SUCCESSFULLY_UPDATED'] });
-    // this.close({ action: false });
+    this.close({ action: false });
   }
 
   addExpenses(data: any) {
@@ -522,6 +528,14 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
       iLocationId: this.iLocationId,
       iActivityId: this.transaction.iActivityId,
       oPayment: data?.oPayment,
+      iArticleGroupId: data?.oArticleGroup?._id,
+      iArticleGroupOriginalId: data?.iArticleGroupOriginalId || data?.oArticleGroup?._id,
+      oArticleGroupMetaData: {
+        oNameOriginal: data.oArticleGroup.oName,
+        oName: data.oArticleGroup.oName,
+        sCategory: data.oArticleGroup.sCategory,
+        sSubCategory: data.oArticleGroup.sSubCategory
+      },
       oType: {
         eTransactionType: data?.type,
         bRefund: false,

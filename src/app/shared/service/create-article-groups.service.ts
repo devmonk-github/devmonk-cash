@@ -27,7 +27,8 @@ export class CreateArticleGroupService {
     { sArticleGroup: 'expense-shipping-cost', sCategory: 'Costs'},
     { sArticleGroup: 'expense-car-cost', sCategory: 'Costs'}, 
     { sArticleGroup: 'expense-add-to-cash', sCategory: 'Costs'},
-    { sArticleGroup: 'expense-lost-money', sCategory: 'Costs'} 
+    { sArticleGroup: 'expense-lost-money', sCategory: 'Costs'}, 
+    { sArticleGroup: 'payment-method-change', sCategory: 'Payment method change'} 
   ]
 
   constructor(private apiService: ApiService, private translateService: TranslateService) {

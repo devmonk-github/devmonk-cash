@@ -586,6 +586,7 @@ export class TillService {
       obj.bIgnore = false;
       dataObject.nPaymentMethodTotal += obj.nAmount;
       if(!obj?.sRemarks) obj.sRemarks = "";
+      else if (obj?.sRemarks === 'CHANGE_MONEY') obj.bIgnore = true;
       
       // obj.dCreatedDate = moment(obj.dCreatedDate);//.format('DD-MM-yyyy hh:mm');
     });
