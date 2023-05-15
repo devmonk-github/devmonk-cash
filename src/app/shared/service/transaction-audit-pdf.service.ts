@@ -284,7 +284,7 @@ export class TransactionAuditUiPdfService {
         
         this.handleDisplayMethod({ sDisplayMethod, aStatistic, columnWidths });
 
-        this.processPaymentMethods(aPaymentMethods, this.aPaymentItems);
+        this.processPaymentMethods(aPaymentMethods);
 
         if(this.bDetailedMode) {
             this.addRefundToPdf();
@@ -428,7 +428,7 @@ export class TransactionAuditUiPdfService {
         this.content.push({ text: this.translateService.instant(text), style: ['normal'], margin: [0, 30, 0, 10], });
     }
     
-    processPaymentMethods(aPaymentMethods: any, aPaymentItems:any) {
+    processPaymentMethods(aPaymentMethods: any) {
         // console.log({ aPaymentItems })
         this.addTableHeading('PAYMENT_METHODS');
 
@@ -447,19 +447,19 @@ export class TransactionAuditUiPdfService {
             // console.log({ aPaymentMethods })
             let nTotalAmount = 0, nTotalQuantity = 0;
             aPaymentMethods.forEach((oPayment: any) => {
-                nTotalAmount += parseFloat(oPayment.nAmount);
-                nTotalQuantity += parseFloat(oPayment.nQuantity);
+                nTotalAmount += +oPayment.nAmount;
+                nTotalQuantity += +oPayment.nQuantity;
                 let sMethod = oPayment.sMethod;
                 if(oPayment?.nOriginalAmount) sMethod += ' ('+this.translateService.instant('ORIGINAL_AMOUNT') + ': ' + oPayment.nOriginalAmount.toFixed(2) + ')';
                 aTexts.push([
-                    { text: sMethod, style: ['td', 'margin-5', 'bgGray'] },
+                    { text: this.translateService.instant(sMethod), style: ['td', 'margin-5', 'bgGray'] },
                     { text: oPayment.nAmount.toFixed(2), style: ['td', 'margin-5', 'center', 'bgGray'] },
                     { text: oPayment.nQuantity, style: ['td', 'margin-5', 'center', 'bgGray'] },
                 ]);
-                const aItems = aPaymentItems.filter((el:any) => el.iPaymentMethodId === oPayment.iPaymentMethodId)
+                const aItems = this.aPaymentItems.filter((el:any) => el.iPaymentMethodId === oPayment.iPaymentMethodId)
                 aItems.forEach((oItem:any) => {
                     aTexts.push([
-                        { text: oItem.sComment, style: ['td'], margin: [20,5] },
+                        { text: this.translateService.instant(oItem.sComment), style: ['td'], margin: [20,5] },
                         { text: oItem.nAmount.toFixed(2), style: ['td', 'margin-5', 'center'] },
                         { text: '', style: ['td', 'margin-5'] },
                     ]);
@@ -597,18 +597,14 @@ export class TransactionAuditUiPdfService {
                 // console.log({ oSupplier })
                 let nSubTotalDiscount = 0, nSubTotalRevenue = 0, nSubTotalVat = 0, nSubTotalQuantity = 0;
                 const aArticleGroupsToSkip:any = [];
-                this.aTransactionItems = this.aTransactionItems.filter((oItem: any) => {
+                const aTransactionItems = this.aTransactionItems.filter((oItem: any) => {
                     if(oItem.oType.eKind === 'expenses' && (oItem.sComment == 'TRANSFERRED_FROM_CASH' || oItem.sComment == 'TRANSFER_TO_CASH_SAFE')) {
                         aArticleGroupsToSkip.push(oItem.iArticleGroupOriginalId);
                     } else return oItem;
                 })
                 let nAddedCount = 0;
-                // console.log(aArticleGroupsToSkip);
-                oSupplier.aArticleGroups.forEach((oArticleGroup: any) => {
-                    if (aArticleGroupsToSkip.includes(oArticleGroup._id)){
-                        // console.log('skip', oArticleGroup)
-                        return;
-                    } 
+                // console.log({aArticleGroupsToSkip});
+                oSupplier.aArticleGroups.filter((el: any) => !aArticleGroupsToSkip.includes(el._id)).forEach((oArticleGroup: any) => {
                     // console.log('adding',{oArticleGroup})
                     nAddedCount++;
                     aTexts.push([
@@ -625,7 +621,7 @@ export class TransactionAuditUiPdfService {
                         { text: '', style: ['td', 'bold'] },
                         { text: '', style: ['td', 'bold'] }
                     ]);
-                    const aItems = this.aTransactionItems.filter((item:any) => item.iArticleGroupOriginalId === oArticleGroup._id)
+                    const aItems = aTransactionItems.filter((item:any) => item.iArticleGroupOriginalId === oArticleGroup._id)
                     // console.log({ aItems })
                     aItems.forEach((oItem: any) => {
                         const nVat = +((oItem.nRevenueAmount - (oItem.nRevenueAmount / (1 + oItem.nVatRate / 100))).toFixed(2));
@@ -657,6 +653,7 @@ export class TransactionAuditUiPdfService {
                     });
                 });
                 if (nAddedCount) {
+                    // console.log('adding subtotal row')
                     aTexts.push([
                         { text: '', style: ['td', 'bold'] },
                         { text: this.translateService.instant('SUBTOTAL'), style: ['td'], colSpan: 2, border: this.styles.border_top },
@@ -677,13 +674,13 @@ export class TransactionAuditUiPdfService {
         });
 
         aTexts.push([
-            { text: '', style: ['td'], headlineLevel: 1, border: this.styles.border_top_bottom },
-            { text: '', style: ['td'], colSpan: 2, border: this.styles.border_top_bottom }, //+ ': group number'
+            { text: '', style: ['td'], border: this.styles.border_top_bottom },
+            { text: '', style: ['td'], colSpan: 2, border: this.styles.border_top_bottom },
             { text: '', style: ['td'], border: this.styles.border_top_bottom },
             { text: '', style: ['td'], border: this.styles.border_top_bottom },
-            { text: '', style: ['td'], border: this.styles.border_top_bottom }, //colSpan: 2,
-            { text: '', style: ['td', 'bold'], border: this.styles.border_top_bottom },
-            { text: '', style: ['td', 'bold'], border: this.styles.border_top_bottom },
+            { text: '', style: ['td'], border: this.styles.border_top_bottom },
+            { text: '', style: ['td'], border: this.styles.border_top_bottom },
+            { text: '', style: ['td'], border: this.styles.border_top_bottom },
             { text: nTotalDiscount.toFixed(2), style: ['td', 'bold'], border: this.styles.border_top_bottom },
             { text: nTotalRevenue.toFixed(2), style: ['td', 'bold'], border: this.styles.border_top_bottom },
             { text: nTotalVat.toFixed(2), style: ['td', 'bold'], border: this.styles.border_top_bottom },
@@ -1529,6 +1526,7 @@ export class TransactionAuditUiPdfService {
     }
 
     async fetchPaymentItems(aStatisticsDocuments:any) {
+        // console.log({aStatisticsDocuments}, this.aStatisticsIds);
         let aOpenDates:any = [], aCloseDates:any = [];
 
         if(this.oFilterData.sFrom == 'sales-list') {
@@ -1550,6 +1548,13 @@ export class TransactionAuditUiPdfService {
                 dEndDate
             }
         }
+
+        if (this.aStatisticsIds?.length){
+            oBody.oFilterBy.aStatisticsIds = this.aStatisticsIds;
+            delete oBody.oFilterBy.dStartDate;
+            delete oBody.oFilterBy.dEndDate;
+        } 
+
         return this.apiService.postNew('cashregistry', '/api/v1/payments/list', oBody).toPromise()
         
     }

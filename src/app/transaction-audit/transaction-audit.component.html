@@ -196,83 +196,83 @@
 
                             <div class="row mb-5">
                                 <!-- EMPLOYEE -->
-                                <div class="col-md-6">
-                                    <div class="row mb-5">
-                                        <div class="col-md-6">
-                                            <label class="fs-6 form-label fw-bolder text-dark">{{'EMPLOYEE' |
-                                                translate}}</label>
-                                            <ng-select class="form-control form-control-solid p-0"
-                                                [(ngModel)]="selectedEmployee" (ngModelChange)="checkShowDownload()"
-                                                [clearable]="false">
-                                                <ng-option *ngFor="let oEmployee of aEmployee" [value]="oEmployee">
-                                                    {{oEmployee.sFirstName + ' ' +oEmployee.sLastName}}
-                                                </ng-option>
-                                            </ng-select>
-                                        </div>
-                                        <!-- WORK_STATION -->
-                                        <div class="col-md-6"
-                                            *ngIf="sDayClosureMethod === 'workstation' || IsDynamicState">
-                                            <label class="fs-6 form-label fw-bolder text-dark">{{'WORK_STATION' |
-                                                translate}}</label>
+                                <div class="col-3">
+                                    <label class="fs-6 form-label fw-bolder text-dark">{{'EMPLOYEE' | translate}}</label>
+                                    <ng-select class="form-control form-control-solid p-0"
+                                        [(ngModel)]="selectedEmployee" (ngModelChange)="checkShowDownload()"
+                                        [clearable]="false">
+                                        <ng-option *ngFor="let oEmployee of aEmployee" [value]="oEmployee">
+                                            {{oEmployee.sFirstName + ' ' +oEmployee.sLastName}}
+                                        </ng-option>
+                                    </ng-select>
+                                </div>
 
-                                            <ng-select [multiple]="true" [items]="aWorkStation"
-                                                [(ngModel)]="selectedWorkStation" name="selectedWorkStation"
-                                                bindValue="_id" bindLabel="sName" placeholder="Select" required
-                                                [closeOnSelect]="false" (change)="fetchAuditStatistic()">
+                                <div class="col-3" *ngIf="IsDynamicState">
+                                    <label class="fs-6 form-label fw-bolder text-dark">{{'BUSINESS_PARTNER' | translate}}</label>
+                                    <ng-select class="form-control p-0" [(ngModel)]="iBusinessPartnerId" [clearable]="true" bindValue="_id" bindLabel="sName"
+                                        [items]="aBusinessPartner">
+                                    </ng-select>
+                                </div>
 
-                                                <ng-template ng-option-tmp let-item="item" let-item$="item$"
-                                                    let-index="index">
-                                                    <input id="item-{{index}}" type="checkbox" name="item-{{index}}"
-                                                        [ngModel]="item$.selected" />
-                                                    {{item.sName}}
-                                                </ng-template>
+                                <!-- WORK_STATION -->
+                                <div class="col-3"
+                                    *ngIf="sDayClosureMethod === 'workstation' || IsDynamicState">
+                                    <label class="fs-6 form-label fw-bolder text-dark">{{'WORK_STATION' |
+                                        translate}}</label>
 
-                                            </ng-select>
+                                    <ng-select [multiple]="true" [items]="aWorkStation"
+                                        [(ngModel)]="selectedWorkStation" name="selectedWorkStation"
+                                        bindValue="_id" bindLabel="sName" placeholder="Select" required
+                                        [closeOnSelect]="false" (change)="fetchAuditStatistic()">
 
+                                        <ng-template ng-option-tmp let-item="item" let-item$="item$"
+                                            let-index="index">
+                                            <input id="item-{{index}}" type="checkbox" name="item-{{index}}"
+                                                [ngModel]="item$.selected" />
+                                            {{item.sName}}
+                                        </ng-template>
+
+                                    </ng-select>
+
+                                </div>
+                                    
+                                
+                            </div>
+
+                            <div class="row mb-5">
+                                <!-- PROPERTIES -->
+                                <div class="col-6" *ngIf="bShowProperty">
+                                    <label class="fs-6 form-label fw-bolder text-dark">{{ "PROPERTIES" |
+                                        translate}}</label>
+                                    <div class="overflow-scroll py-1 h-200px">
+                                
+                                        <div *ngFor="let property of aProperty; let pIndex = index">
+                                            <div class="row align-items-center">
+                                                <div class="col-md-4">
+                                                    <div>{{property?.sPropertyName | translate}}</div>
+                                                </div>
+                                                <div class="col-md-8">
+                                                    <div *ngIf="propertyOptions[property.iPropertyId]?.length">
+                                                        <ng-select class="w-100" [multiple]="true" [items]="propertyOptions[property.iPropertyId]"
+                                                            [(ngModel)]="selectedProperties[property.iPropertyId]" name="propertyId" bindValue="sName"
+                                                            bindLabel="sName" placeholder="Select" (click)="onProperties(property.iPropertyId)" required
+                                                            [closeOnSelect]="false">
+                                
+                                                            <ng-template ng-option-tmp let-item="item" let-item$="item$" let-index="index">
+                                                                <input id="item-{{index}}" type="checkbox" name="item-{{index}}"
+                                                                    [ngModel]="item$.selected" />
+                                                                {{item.sName}}
+                                                            </ng-template>
+                                
+                                                        </ng-select>
+                                
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <br>
                                         </div>
                                     </div>
                                 </div>
-
-                                <ng-container>
-                                    <!-- PROPERTIES -->
-                                    <div class="col-md-6" *ngIf="bShowProperty">
-                                        <label class="fs-6 form-label fw-bolder text-dark">{{ "PROPERTIES" |
-                                            translate}}</label>
-                                        <div class="overflow-scroll py-1 h-200px">
-
-                                            <div *ngFor="let property of aProperty; let pIndex = index">
-                                                <div class="row align-items-center">
-                                                    <div class="col-md-4">
-                                                        <div>{{property?.sPropertyName | translate}}</div>
-                                                    </div>
-                                                    <div class="col-md-8">
-                                                        <div *ngIf="propertyOptions[property.iPropertyId]?.length">
-                                                            <ng-select class="w-100" [multiple]="true"
-                                                                [items]="propertyOptions[property.iPropertyId]"
-                                                                [(ngModel)]="selectedProperties[property.iPropertyId]"
-                                                                name="propertyId" bindValue="sName" bindLabel="sName"
-                                                                placeholder="Select"
-                                                                (click)="onProperties(property.iPropertyId)" required
-                                                                [closeOnSelect]="false">
-
-                                                                <ng-template ng-option-tmp let-item="item"
-                                                                    let-item$="item$" let-index="index">
-                                                                    <input id="item-{{index}}" type="checkbox"
-                                                                        name="item-{{index}}"
-                                                                        [ngModel]="item$.selected" />
-                                                                    {{item.sName}}
-                                                                </ng-template>
-
-                                                            </ng-select>
-
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <br>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </ng-container>
                             </div>
 
                             <div class="row mb-5">

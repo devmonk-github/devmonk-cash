@@ -112,6 +112,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
   aStatisticsIds:any = [];
   sFrom: any;
   iBusinessPartnerId: any;
+  aBusinessPartner: any;
 
   constructor(
     private apiService: ApiService,
@@ -197,7 +198,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
     this.fetchBusinessDetails();
     this.getEmployees();
     this.getWorkstations();
-    
+    this.fetchBusinessPartners();
     this.fetchStatistics(this.sDisplayMethod.toString()); /* Only for view or dynamic or static document */
 
     // this.fetchBusinessLocation();
@@ -207,6 +208,19 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       MenuComponent.bootstrap();
     }, 200);
+  }
+
+  fetchBusinessPartners() {
+    const oBody =  {
+      iBusinessId: this.iBusinessId,
+    };
+    this.aBusinessPartner = [],
+      this.apiService.postNew('core', '/api/v1/business/partners/supplierList', oBody).subscribe((result: any) => {
+        if (result?.data?.length && result?.data[0]?.result?.length) {
+          this.aBusinessPartner = result.data[0].result;
+        }
+      }
+    )
   }
 
   setOptionMenu() {
@@ -1051,13 +1065,13 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
         sTransactionType: this.optionMenu,
         iBusinessId: this.iBusinessId,
       };
-      if (this.iStatisticId) {
-        data.oFilterBy.dStartDate = this.oStatisticsDocument?.dOpenDate;
-        data.oFilterBy.dEndDate = (this.oStatisticsDocument?.dCloseDate) ? this.oStatisticsDocument?.dCloseDate : this.oStatisticsData.dEndDate;
-      } else {
-        data.oFilterBy.dStartDate = this.statisticFilter.dFromState || this.filterDates.startDate
-        data.oFilterBy.dEndDate = this.statisticFilter.dToState || this.filterDates.endDate
-      }
+      // if (this.iStatisticId) {
+      //   // data.oFilterBy.dStartDate = this.oStatisticsDocument?.dOpenDate;
+      //   // data.oFilterBy.dEndDate = (this.oStatisticsDocument?.dCloseDate) ? this.oStatisticsDocument?.dCloseDate : this.oStatisticsData.dEndDate;
+      // } else {
+      //   data.oFilterBy.dStartDate = this.statisticFilter.dFromState || this.filterDates.startDate
+      //   data.oFilterBy.dEndDate = this.statisticFilter.dToState || this.filterDates.endDate
+      // }
 
       if (
         this.sDisplayMethod.toString() === 'revenuePerBusinessPartner' ||
@@ -1097,16 +1111,17 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
         iWorkstationId: this.iWorkstationId,
         iLocationId: this.iLocationId,
         oFilterBy: {
-          iPaymentMethodId: item.iPaymentMethodId
+          iPaymentMethodId: item.iPaymentMethodId,
+          aStatisticsIds: (this.iStatisticId) ? [this.iStatisticId] : this.aStatisticsIds
         }
       }
-      if (this.iStatisticId) {
-        data.oFilterBy.dStartDate = this.oStatisticsDocument?.dOpenDate;
-        data.oFilterBy.dEndDate = (this.oStatisticsDocument?.dCloseDate) ? this.oStatisticsDocument?.dCloseDate : this.oStatisticsData.dEndDate;
-      } else {
-        data.oFilterBy.dStartDate = this.statisticFilter.dFromState || this.filterDates.startDate
-        data.oFilterBy.dEndDate = this.statisticFilter.dToState || this.filterDates.endDate
-      }
+      // if (this.iStatisticId) {
+      //   data.oFilterBy.dStartDate = this.oStatisticsDocument?.dOpenDate;
+      //   data.oFilterBy.dEndDate = (this.oStatisticsDocument?.dCloseDate) ? this.oStatisticsDocument?.dCloseDate : this.oStatisticsData.dEndDate;
+      // } else {
+      //   data.oFilterBy.dStartDate = this.statisticFilter.dFromState || this.filterDates.startDate
+      //   data.oFilterBy.dEndDate = this.statisticFilter.dToState || this.filterDates.endDate
+      // }
       const _result: any = await this.apiService.postNew('cashregistry', '/api/v1/payments/list', data).toPromise()
       if (_result.data?.length && _result.data[0]?.result?.length) {
         item.aItems = _result.data[0]?.result;
