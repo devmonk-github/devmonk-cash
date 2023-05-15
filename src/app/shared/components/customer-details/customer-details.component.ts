@@ -657,7 +657,8 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
       this.close({ bShouldUpdateCustomer: true, oCustomer: this.customer });
       return;
     }
-
+    if (this.customer?.oPhone?.sMobile == "") this.customer.oPhone.sPrefixMobile = "";
+    if (this.customer?.oPhone?.sLandLine == "") this.customer.oPhone.sPrefixLandline = "";
     if (this.mode == 'create') {
       this.apiService.postNew('customer', '/api/v1/customer/create', this.customer).subscribe(
         (result: any) => {

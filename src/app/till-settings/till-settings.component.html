@@ -323,7 +323,15 @@
             </label>
           </div> -->
         </div>
-      
+        <div class="row">
+          <div class="form-group col-12">
+            <label class="form-control-label col-3">{{ "MESSAGE_TO_SEND" |translate}}</label>
+          </div>
+          <div class="form-group col-12">
+            <textarea cols="30" rows="3" class="form-control form-control-solid" name="sMessage"
+              placeholder="{{ 'MESSAGE_TO_SEND' | translate}}" lines="10" [(ngModel)]="settings.sMessage"></textarea>
+          </div>
+        </div>
         <div class="d-flex justify-content-end align-items-center">
           <div *ngIf="updatingCustomerSettings" class="spinner-border mx-2"></div>
           <button type="submit" class="btn btn-primary" (click)="updateCustomerSettings()"

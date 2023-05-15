@@ -154,6 +154,7 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
         this.settings.nLastnClientID = result?.nLastnClientID;
         this.oldNlastnClientID = result?.nLastnClientID;
         this.settings.aCustomerSearch = result?.aCustomerSearch;
+        this.settings.sMessage = result?.sMessage;
       }, (error) => {
         console.log(error);
       });
@@ -320,11 +321,13 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
     if(this.bUpdateNclientID && (this.oldNlastnClientID != this.settings.nLastnClientID)){
       CustomerSettingsbody = {
         aCustomerSearch: this.settings?.aCustomerSearch,
-        nLastnClientID: this.settings.nLastnClientID
+        nLastnClientID: this.settings.nLastnClientID,
+        sMessage: this.settings.sMessage
       }
     }else{
       CustomerSettingsbody = {
-        aCustomerSearch:this.settings?.aCustomerSearch
+        aCustomerSearch:this.settings?.aCustomerSearch,
+        sMessage: this.settings.sMessage
       }
     }
     this.updatingCustomerSettings = true;
