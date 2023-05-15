@@ -606,51 +606,54 @@ export class TransactionAuditUiPdfService {
                 // console.log({aArticleGroupsToSkip});
                 oSupplier.aArticleGroups.filter((el: any) => !aArticleGroupsToSkip.includes(el._id)).forEach((oArticleGroup: any) => {
                     // console.log('adding',{oArticleGroup})
-                    nAddedCount++;
-                    aTexts.push([
-                        { text: '', style: ['td', 'bold'], headlineLevel: 1 },
-                        { text: this.translateService.instant('TURNOVER_GROUP') + ': ' + sCategory , style: ['td', 'bold'], colSpan: 2, border: this.styles.border_bottom }, //+ ': group number'
-                        { text: '', style: ['td', 'bold'], border: this.styles.border_bottom },
-                        { text: oArticleGroup.sName, style: ['td'], border: this.styles.border_bottom },
-                        { text: this.translateService.instant('TRANSACTIONS'), style: ['td', 'bold'], border: this.styles.border_bottom }, //colSpan: 2,
-                        { text: '', style: ['td', 'bold'] },
-                        { text: '', style: ['td', 'bold'] },
-                        { text: '', style: ['td', 'bold'] },
-                        { text: '', style: ['td', 'bold'] },
-                        { text: '', style: ['td', 'bold'] },
-                        { text: '', style: ['td', 'bold'] },
-                        { text: '', style: ['td', 'bold'] }
-                    ]);
+                    
                     const aItems = aTransactionItems.filter((item:any) => item.iArticleGroupOriginalId === oArticleGroup._id)
-                    // console.log({ aItems })
-                    aItems.forEach((oItem: any) => {
-                        const nVat = +((oItem.nRevenueAmount - (oItem.nRevenueAmount / (1 + oItem.nVatRate / 100))).toFixed(2));
-                        let nDiscount = 0;
-                        if(oItem.nDiscount) nDiscount = +(((oItem.bDiscountOnPercentage) ? (oItem.nPriceIncVat * oItem.nQuantity * oItem.nDiscount / 100) : oItem.nDiscount).toFixed(2))
-                        nSubTotalDiscount += nDiscount;
-                        nSubTotalRevenue += +(oItem.nRevenueAmount.toFixed(2));
-                        nSubTotalVat += +(nVat.toFixed(2));
-                        nSubTotalQuantity += oArticleGroup.nQuantity;
-
-                        nTotalDiscount += nDiscount;
-                        nTotalRevenue += oItem.nRevenueAmount;
-                        nTotalVat += nVat;
-                        
+                    if(aItems?.length) {
+                        nAddedCount++;
                         aTexts.push([
-                            { text: oItem?.sReceiptNumber, style: ['td', 'property'] },
-                            { text: oItem?.sArticleNumber || '', style: ['td', 'property'] },
-                            { text: oItem.nQuantity, style: ['td', 'property'] },
-                            { text: oItem?.sDescription, style: ['td', 'property'] }, //'description'
-                            { text: oItem.sProductName, style: ['td', 'property'] },
-                            { text: oItem?.sProductNumber || '', style: ['td', 'property'] }, //'product number'
-                            { text: oItem?.nPriceIncVat, style: ['td', 'property'] },
-                            { text: nDiscount, style: ['td', 'property'] },
-                            { text: (oItem?.nRevenueAmount * oItem.nQuantity).toFixed(2), style: ['td', 'property'] },
-                            { text: nVat, style: ['td', 'property'] },
-                            { text: this.oEmployee[oItem.iEmployeeId], style: ['td', 'property'] },
-                            { text: moment(oItem.dCreatedDate).format('hh:mm'), style: ['td', 'property'] },
+                            { text: '', style: ['td', 'bold'], headlineLevel: 1 },
+                            { text: this.translateService.instant('TURNOVER_GROUP') + ': ' + sCategory, style: ['td', 'bold'], colSpan: 2, border: this.styles.border_bottom }, //+ ': group number'
+                            { text: '', style: ['td', 'bold'], border: this.styles.border_bottom },
+                            { text: oArticleGroup.sName, style: ['td'], border: this.styles.border_bottom },
+                            { text: this.translateService.instant('TRANSACTIONS'), style: ['td', 'bold'], border: this.styles.border_bottom }, //colSpan: 2,
+                            { text: '', style: ['td', 'bold'] },
+                            { text: '', style: ['td', 'bold'] },
+                            { text: '', style: ['td', 'bold'] },
+                            { text: '', style: ['td', 'bold'] },
+                            { text: '', style: ['td', 'bold'] },
+                            { text: '', style: ['td', 'bold'] },
+                            { text: '', style: ['td', 'bold'] }
                         ]);
-                    });
+                        aItems.forEach((oItem: any) => {
+                            const nVat = +((oItem.nRevenueAmount - (oItem.nRevenueAmount / (1 + oItem.nVatRate / 100))).toFixed(2));
+                            let nDiscount = 0;
+                            if(oItem.nDiscount) nDiscount = +(((oItem.bDiscountOnPercentage) ? (oItem.nPriceIncVat * oItem.nQuantity * oItem.nDiscount / 100) : oItem.nDiscount).toFixed(2))
+                            nSubTotalDiscount += nDiscount;
+                            nSubTotalRevenue += +(oItem.nRevenueAmount.toFixed(2));
+                            nSubTotalVat += +(nVat.toFixed(2));
+                            nSubTotalQuantity += oArticleGroup.nQuantity;
+    
+                            nTotalDiscount += nDiscount;
+                            nTotalRevenue += oItem.nRevenueAmount;
+                            nTotalVat += nVat;
+                            
+                            aTexts.push([
+                                { text: oItem?.sReceiptNumber, style: ['td', 'property'] },
+                                { text: oItem?.sArticleNumber || '', style: ['td', 'property'] },
+                                { text: oItem.nQuantity, style: ['td', 'property'] },
+                                { text: oItem?.sDescription, style: ['td', 'property'] }, //'description'
+                                { text: oItem.sProductName, style: ['td', 'property'] },
+                                { text: oItem?.sProductNumber || '', style: ['td', 'property'] }, //'product number'
+                                { text: oItem?.nPriceIncVat, style: ['td', 'property'] },
+                                { text: nDiscount, style: ['td', 'property'] },
+                                { text: (oItem?.nRevenueAmount * oItem.nQuantity).toFixed(2), style: ['td', 'property'] },
+                                { text: nVat, style: ['td', 'property'] },
+                                { text: this.oEmployee[oItem.iEmployeeId], style: ['td', 'property'] },
+                                { text: moment(oItem.dCreatedDate).format('hh:mm'), style: ['td', 'property'] },
+                            ]);
+                        });
+                    }
+                    console.log({ aItems })
                 });
                 if (nAddedCount) {
                     // console.log('adding subtotal row')
