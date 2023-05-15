@@ -543,9 +543,7 @@
                         </table>
                         <button *ngIf="paymentEditMode" class="btn btn-sm btn-primary"
                             (click)="saveUpdatedPayments($event)"
-                            [disabled]="transaction.nNewPaymentMethodTotal !== transaction.nPaymentMethodTotal"> {{
-                            "SAVE" |
-                            translate}}</button>
+                            [disabled]="transaction.nNewPaymentMethodTotal !== transaction.nPaymentMethodTotal"> {{ "SAVE" | translate}}</button>
                     </div>
                 </div>
             </div>

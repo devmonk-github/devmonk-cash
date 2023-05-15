@@ -382,7 +382,7 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
   }
 
   addRow() {
-    this.aNewSelectedPaymentMethods.push({})
+    this.aNewSelectedPaymentMethods.push({nAmount: 0})
     this.filterDuplicatePaymentMethods()
   }
 
@@ -427,15 +427,15 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
 
   reCalculateTotal() {
     this.transaction.nNewPaymentMethodTotal = 0;
-    this.transaction.aPayments.forEach((item: any) => {
-      if (item.nNewAmount)
-        this.transaction.nNewPaymentMethodTotal += parseFloat(item.nNewAmount);
-    });
-    if (this.aNewSelectedPaymentMethods?.length)
-      this.aNewSelectedPaymentMethods.forEach((item: any) => {
-        if (item.nAmount)
-          this.transaction.nNewPaymentMethodTotal += parseFloat(item.nAmount);
-      });
+    this.transaction.nNewPaymentMethodTotal = _.sumBy(this.transaction.aPayments, 'nNewAmount') + _.sumBy(this.aNewSelectedPaymentMethods, 'nAmount');
+    this.transaction.nNewPaymentMethodTotal = +(this.transaction.nNewPaymentMethodTotal.toFixed(2));
+    // this.transaction.aPayments.forEach((item: any) => {
+    //   if (item.nNewAmount) this.transaction.nNewPaymentMethodTotal += +(item.nNewAmount.toFixed(2));
+    // });
+    
+    // this.aNewSelectedPaymentMethods.forEach((item: any) => {
+    //   if (item.nAmount) this.transaction.nNewPaymentMethodTotal += +(item.nAmount.toFixed(2));
+    // });
   }
 
   filterDuplicatePaymentMethods() {
@@ -457,12 +457,14 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
     event.target.disabled = true;
     const nVatRate = await this.taxService.fetchDefaultVatRate({ iLocationId: this.iLocationId });
     const aPayments = this.transaction.aPayments.filter((payments: any) => !payments?.bIgnore);
-    for (const item of aPayments) {
+    const aPromises:any = [];
+
+    aPayments.forEach((item: any) => {
       if (item.nAmount != item.nNewAmount) {
-        this.addExpenses({
+        aPromises.push(this.addExpenses({
           amount: item.nNewAmount - item.nAmount,
           type: 'payment-method-change',
-          comment: 'Payment method change',
+          comment: 'PAYMENT_METHOD_CHANGE',
           iActivityId: this.transaction.iActivityId,
           oPayment: {
             iPaymentMethodId: item.iPaymentMethodId,
@@ -471,16 +473,17 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
             sRemarks: 'PAYMENT_METHOD_CHANGE'
           },
           nVatRate: nVatRate
-        });
+        }));
       }
-    }
+    });
+  
 
-    for (const item of this.aNewSelectedPaymentMethods) {
+    this.aNewSelectedPaymentMethods.forEach((item:any) => {
       if (item.nAmount) {
-        this.addExpenses({
+        aPromises.push(this.addExpenses({
           amount: item.nAmount,
           type: 'payment-method-change',
-          comment: 'Payment method change',
+          comment: 'PAYMENT_METHOD_CHANGE',
           iActivityId: this.transaction.iActivityId,
           oPayment: {
             iPaymentMethodId: item._id,
@@ -489,15 +492,17 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
             sRemarks: 'PAYMENT_METHOD_CHANGE'
           },
           nVatRate: nVatRate
-        });
+        }));
       }
-    }
+    });
+    
+    await Promise.all(aPromises);
 
     this.paymentEditMode = false;
     event.target.disabled = false;
 
     this.toastService.show({ type: "success", text: this.translation['SUCCESSFULLY_UPDATED'] });
-    this.close({ action: false });
+    // this.close({ action: false });
   }
 
   addExpenses(data: any) {
