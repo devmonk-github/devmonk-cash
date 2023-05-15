@@ -19,6 +19,15 @@ export class CreateArticleGroupService {
     { sArticleGroup: 'giftcard', sCategory: 'Giftcards'},
     { sArticleGroup: 'expense', sCategory: 'Costs'},
     { sArticleGroup: 'gold-purchase', sCategory: 'Gold purchase'},
+    { sArticleGroup: 'expense-drinks', sCategory: 'Costs'},
+    { sArticleGroup: 'expense-food', sCategory: 'Costs'},
+    { sArticleGroup: 'expense-cleaning-cost', sCategory: 'Costs'},
+    { sArticleGroup: 'expense-office-supplies', sCategory: 'Costs'},
+    { sArticleGroup: 'expense-promotional-material', sCategory: 'Costs'},
+    { sArticleGroup: 'expense-shipping-cost', sCategory: 'Costs'},
+    { sArticleGroup: 'expense-car-cost', sCategory: 'Costs'}, 
+    { sArticleGroup: 'expense-add-to-cash', sCategory: 'Costs'},
+    { sArticleGroup: 'expense-lost-money', sCategory: 'Costs'} 
   ]
 
   constructor(private apiService: ApiService, private translateService: TranslateService) {
