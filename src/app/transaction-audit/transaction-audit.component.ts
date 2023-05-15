@@ -47,6 +47,8 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
   oStockPerLocation: any = [];
   isShowStockLocation: boolean = false;
 
+  object = Object
+  
   closingDayState: boolean = false;
   bShowDownload: boolean = false;
 
@@ -719,6 +721,15 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
             this.aStatistic = oData.aStatistic;
             
             if (this.aStatistic?.length && this.aStatistic[0]?.overall?.length) {
+
+              if (this.bOpeningHistoricalDayState) {
+                let aUniqueArticleGroupId: any = [];
+                this.aStatistic[0].individual.forEach((el: any) => {
+                  aUniqueArticleGroupId.push(...el.aArticleGroups.map((oGroup: any) => oGroup._id));
+                })
+                aUniqueArticleGroupId = [...new Set(aUniqueArticleGroupId.map((el: any) => el))];
+                this.getArticleGroups(aUniqueArticleGroupId);
+              }
               this.nTotalRevenue = +(this.aStatistic[0].overall[0].nTotalRevenue.toFixed(2))
               this.nTotalQuantity = this.aStatistic[0].overall[0].nQuantity;
             }

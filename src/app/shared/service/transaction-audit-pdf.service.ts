@@ -741,19 +741,18 @@ export class TransactionAuditUiPdfService {
                 // console.log({ oSupplier })
                 let nTurnOverGroupDiscount = 0, nTurnOverGroupRevenue = 0, nTurnOverGroupVat = 0, nTurnOverGroupQuantity = 0;
                 oSupplier.aArticleGroups.forEach((oArticleGroup: any) => {
-                    // console.log({ oArticleGroup })
+                    // console.log({ oArticleGroup }, nTurnOverGroupRevenue)
                     nTurnOverGroupQuantity += oArticleGroup.nQuantity;
                     nTurnOverGroupRevenue += oArticleGroup.nTotalRevenue;
+                    nTotalRevenue += oArticleGroup.nTotalRevenue;
                     const aItems = this.aTransactionItems.filter((item: any) => item.iArticleGroupId === oArticleGroup._id)
-                    // console.log({aItems})
+                    // console.log({ aItems }, nTurnOverGroupRevenue)
                     aItems.forEach((oItem: any) => {
                         const nVat = +((oItem.nRevenueAmount - (oItem.nRevenueAmount / (1 + oItem.nVatRate / 100))).toFixed(2));
                         if (oItem.nDiscount) nTurnOverGroupDiscount += +(((oItem.bDiscountOnPercentage) ? (oItem.nPriceIncVat * oItem.nQuantity * oItem.nDiscount / 100) : oItem.nDiscount).toFixed(2))
 
                         nTurnOverGroupVat += nVat;
-
                         nTotalDiscount += nTurnOverGroupDiscount;
-                        nTotalRevenue += oItem.nRevenueAmount;
                         nTotalVat += nVat;
                         nTotalQuantity += oArticleGroup.nQuantity;
                     });
