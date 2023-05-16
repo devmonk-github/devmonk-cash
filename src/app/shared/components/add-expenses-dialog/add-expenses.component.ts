@@ -140,9 +140,10 @@ export class AddExpensesComponent implements OnInit {
       nPriceIncVat: amount,
       nPurchasePrice: amount,
       iBusinessId: this.iBusinessId,
-      iArticleGroupId: this.selectedArticleGroup?._id,
+      iArticleGroupId: oArticleGroup?._id,
+      iArticleGroupOriginalId: oArticleGroup?._id,
       oArticleGroupMetaData,
-
+      iStatisticsId: this.tillService.iStatisticsId,
       nTotal: (expenseType?.type === 'negative') ? -(amount) : amount,
       nPaymentAmount: (expenseType?.type === 'negative') ? -(amount) : amount,
       nRevenueAmount: (expenseType?.type === 'negative') ? -(amount) : amount,
