@@ -100,7 +100,8 @@ export class GiftComponent implements OnInit {
     this.item.oArticleGroupMetaData.sSubCategory = result.data.sSubCategory;
   }
   
-  updatePayments() {
+  updatePayments(price?:any) {
+    if(price) this.item.price = price;
     this.item.nPurchasePrice = this.item.price / 1.21;
     this.itemChanged.emit({type: 'item', data: this.item});
   }

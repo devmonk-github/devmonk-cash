@@ -391,7 +391,8 @@ export class OrderComponent implements OnInit {
     this.item.aImage.splice(index, 1);
   }
 
-  updatePayments(): void {
+  updatePayments(price?:any) {
+    if(price) this.item.price = price;
     this.itemChanged.emit({type: 'item', data: this.item});
   }
 

@@ -239,7 +239,8 @@ export class RepairComponent implements OnInit {
     });
   }
 
-  updatePayments() {
+  updatePayments(price?:any) {
+    if(price) this.item.price = price;
     this.itemChanged.emit({type: 'item', data: this.item});
   }
 
