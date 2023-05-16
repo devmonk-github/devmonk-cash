@@ -97,6 +97,17 @@
           <p *ngIf="oLocation._id === iSelectedLocationId && oLocation?.nStock == 0 && !item.bQuickButton"
             class="text-break text-danger m-0 mt-3">{{"WARNING_STOCK_QUANTITY_IS_0"| translate}}</p>
         </div>
+
+        <div class="my-5">
+          <span *ngIf="tillService.oSavingPointSettings.aExcludedArticleGroups.includes(item.iArticleGroupId)">
+            <strong>{{ 'THIS_ARTICLE_GROUP_HAS_BEEN_EXCLUDED_FROM_EARNING_LOYALTY_POINTS'| translate }}</strong>
+          </span>
+          <span *ngIf="!tillService.oSavingPointSettings.aExcludedArticleGroups.includes(item.iArticleGroupId)">
+            {{ 'GET'| translate }}
+            <strong>{{ item.nSavingsPoints || 0 }} </strong>
+            {{ 'LOYALTY_POINTS' | translate }}
+          </span>
+        </div>
         
       </div>
 
@@ -119,38 +130,24 @@
     </div>
 
     <div class="row">
-      <div class="col-4 my-5">
-        <span *ngIf="tillService.oSavingPointSettings.aExcludedArticleGroups.includes(item.iArticleGroupId)">
-          <strong>{{ 'THIS_ARTICLE_GROUP_HAS_BEEN_EXCLUDED_FROM_EARNING_LOYALTY_POINTS'| translate }}</strong>
-        </span>
-        <span *ngIf="!tillService.oSavingPointSettings.aExcludedArticleGroups.includes(item.iArticleGroupId)">
-          {{ 'GET'| translate }}
-          <strong>{{ item.nSavingsPoints || 0 }} </strong>
-          {{ 'LOYALTY_POINTS' | translate }}
-        </span>
-      </div>
 
       <div class="col-8">
         <div class="form-group mb-4">
           <label class="form-control-label mb-3">{{ "DESCRIPTION" | translate}}</label>:
-          <textarea class="form-control  mb-3 mb-lg-0" type="text" name="description" lines="10"
+          <textarea class="form-control  mb-3 mb-lg-0" type="text" name="description" rows="3"
             [(ngModel)]="item.description"></textarea>
         </div>
       </div>
-    </div>
-        
-    <div class="row">
-      <!-- MORE -->
+
       <div class="col-4 mb-7">
-        <button class="btn btn-bg-light btn-active-color-primary mt-2" type="button" data-bs-toggle="collapse"
-          (click)="collapsedBtn = !collapsedBtn" [ngClass]="{'collapsed': collapsedBtn }"
-          data-bs-target="#kt_accordion_123" aria-expanded="true" aria-controls="kt_accordion_123">
+        <button class="btn btn-secondary my-2" type="button" data-bs-toggle="collapse"
+          (click)="collapsedBtn = !collapsedBtn" [ngClass]="{'collapsed': collapsedBtn }" data-bs-target="#kt_accordion_123"
+          aria-expanded="true" aria-controls="kt_accordion_123">
           {{ "MORE" | translate}}
           <fa-icon *ngIf="!collapsedBtn" [icon]="faArrowDown"></fa-icon>
           <fa-icon *ngIf="collapsedBtn" [icon]="faArrowUp"></fa-icon>
         </button>
-      </div>
-      <div class="col-4">
+
         <div id="kt_accordion_123" [ngClass]="{'show': collapsedBtn }" class="accordion-collapse collapse">
           <!-- PREPAYMENT -->
           <div class="row">
@@ -158,7 +155,7 @@
               <label class="form-control-label mb-3">
                 <span *ngIf="item.oType.bPrepayment">{{ "PREPAYMENT" | translate}}</span>
                 <span *ngIf="!item.oType.bPrepayment">{{ "FULL_PAYMENT" | translate}}</span>
-              </label>: 
+              </label>:
               <!-- <span style="color:red;font-weight:bolder">Don't touch this field untill you filled in the payments on the right side</span> -->
               <span style="color:red;font-weight:bolder">{{ "FIRST_FILL_AMOUNT_AT_RIGHT_SIDE" | translate}}</span>
               <input class="form-control  mb-3 mb-lg-0" type="number" [disabled]="item.isExclude || disablePrepayment"
@@ -167,10 +164,9 @@
           </div>
           <div class="row" *ngIf="item.nDiscount > 0">
             <div class="form-group mb-4">
-              <label class="form-control-label mb-3">{{ "DISCOUNT" | translate}} <span
-                  *ngIf="item.bDiscountOnPercentage"> {{"IN" | translate}} % </span></label>:
-              <input class="form-control  mb-3 mb-lg-0" type="number" name="discount"
-                placeholder="{{ 'DISCOUNT' | translate}}"
+              <label class="form-control-label mb-3">{{ "DISCOUNT" | translate}} <span *ngIf="item.bDiscountOnPercentage">
+                  {{"IN" | translate}} % </span></label>:
+              <input class="form-control  mb-3 mb-lg-0" type="number" name="discount" placeholder="{{ 'DISCOUNT' | translate}}"
                 [value]="item.nDiscount - (item.nRedeemedLoyaltyPoints || 0)" disabled>
             </div>
           </div>
@@ -183,6 +179,5 @@
         </div>
       </div>
     </div>
-    
   </div>
 </div>
