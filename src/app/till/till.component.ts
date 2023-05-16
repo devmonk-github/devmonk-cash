@@ -72,7 +72,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   commonProducts: any;
   supplierId!: string;
   iActivityId!: string;
-  sNumber : string = '';
+  sNumber: string = '';
   isStockSelected = true;
   payMethods: Array<any> = [];
   allPaymentMethod: Array<any> = [];
@@ -163,7 +163,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
   constructor(
     private translateService: TranslateService,
-    private dialogService: DialogService,    
+    private dialogService: DialogService,
     private paymentDistributeService: PaymentDistributionService,
     private apiService: ApiService,
     private toastrService: ToastService,
@@ -174,14 +174,14 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     private customerStructureService: CustomerStructureService,
     private fiskalyService: FiskalyService,
     private receiptService: ReceiptService,
-  ) {}
+  ) { }
 
   async ngOnInit() {
     this.apiService.setToastService(this.toastrService)
     this.paymentDistributeService.setToastService(this.toastrService)
     this.tillService.updateVariables();
     this.bDayStateChecking = true;
-    if(this.iLocationId != this.tillService?.settings?.currentLocation?.iLocationId) {
+    if (this.iLocationId != this.tillService?.settings?.currentLocation?.iLocationId) {
       this.tillService.settings = null;
       await this.tillService.fetchSettings();
     }
@@ -288,7 +288,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     this.payMethods = [];
     // const methodsToDisplay = ['card', 'cash', 'bankpayment', 'maestro', 'mastercard', 'visa', 'pin', 'creditcard'];
     this.apiService.getNew('cashregistry', '/api/v1/payment-methods/' + this.requestParams.iBusinessId).subscribe((result: any) => {
-      if (result?.data?.length) {
+      if (result?.data?.length) { //test
         this.allPaymentMethod = result.data.map((v: any) => ({ ...v, isDisabled: false }));
         this.payMethods = this.allPaymentMethod.filter((el: any) => el.bShowInCashRegister);
         // this.allPaymentMethod.forEach((element: any) => {
@@ -339,7 +339,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
   updateAmountVariables() {
     // console.log('updateAmountVariables');
-    this.nItemsTotalToBePaid = +(_.sumBy(this.transactionItems, (item:any) => (!item.isExclude) ? item.amountToBePaid : 0).toFixed(2));//this.getTotals('price');
+    this.nItemsTotalToBePaid = +(_.sumBy(this.transactionItems, (item: any) => (!item.isExclude) ? item.amountToBePaid : 0).toFixed(2));//this.getTotals('price');
     this.nItemsTotalDiscount = this.getTotals('discount');
     this.nItemsTotalQuantity = this.getTotals('quantity');
     this.nTotalPayment = this.totalPrepayment();
@@ -362,10 +362,10 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     let result = 0
     switch (type) {
       case 'price':
-        this.transactionItems.filter((el:any) => !['loyalty-points'].includes(el.type)).forEach((i) => {
+        this.transactionItems.filter((el: any) => !['loyalty-points'].includes(el.type)).forEach((i) => {
           if (!i.isExclude) {
             const nPrice = (typeof i.price === 'string') ? i.price.replace(',', '.') : i.price;
-            let discountPrice = i.bDiscountOnPercentage ? (nPrice - this.tillService.getPercentOf(nPrice,i?.nDiscount || 0)) : i.nDiscount;
+            let discountPrice = i.bDiscountOnPercentage ? (nPrice - this.tillService.getPercentOf(nPrice, i?.nDiscount || 0)) : i.nDiscount;
             discountPrice = +(discountPrice.toFixed(2));
             // console.log({nPrice, discountPrice})
             if (i.tType === 'refund') {
@@ -506,12 +506,14 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
         this.clearPaymentAmounts();
         break;
       case 'update':
+        // console.log('itemChanged update')
         this.clearPaymentAmounts();
+        // this.paymentDistributeService.distributeAmount(this.transactionItems, this.getUsedPayMethods(true));
         break;
       case 'prepaymentChange':
         this.availableAmount = this.getUsedPayMethods(true);
         this.nGiftcardAmount = _.sumBy(this.appliedGiftCards, 'nAmount') || 0;
-        this.paymentDistributeService.distributeAmount(this.transactionItems, this.availableAmount, this.nGiftcardAmount, this.redeemedLoyaltyPoints, this.payMethods);
+        this.paymentDistributeService.distributeAmount(this.transactionItems, this.availableAmount, this.nGiftcardAmount, this.redeemedLoyaltyPoints);
         this.updateAmountVariables();
         break;
       case 'duplicate':
@@ -522,7 +524,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
         break;
       case 'settingsChanged':
         //console.log('Here', event.data);
-        let number =  event.data.match(/\d+/g);
+        let number = event.data.match(/\d+/g);
         this.tillService.settings.currentLocation.nLastBagNumber = Number(number);
         break;
       default:
@@ -563,9 +565,9 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
   openTransactionSearchDialog() {
     // console.log('open transaction search dialog')
-    this.dialogService.openModal(TransactionsSearchComponent, 
-      { 
-        cssClass: 'modal-xl', 
+    this.dialogService.openModal(TransactionsSearchComponent,
+      {
+        cssClass: 'modal-xl',
         context: { customer: this.customer },
         hasBackdrop: true,
         closeOnBackdropClick: false,
@@ -602,58 +604,58 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   async openCustomerDialog() {
-    this.dialogService.openModal(CustomerDialogComponent, 
-      { 
-        cssClass: 'modal-xl', 
+    this.dialogService.openModal(CustomerDialogComponent,
+      {
+        cssClass: 'modal-xl',
         context: { customer: this.customer, from: 'cash-register' },
         hasBackdrop: true,
         closeOnBackdropClick: false,
         closeOnEsc: false
       }).instance.close.subscribe((data) => {
-      if (data.customer) {
-        this.customer = data.customer;
-        //console.log(this.customer);
-        if (this.customer?.activityData?.length) {
-          this.findOpenActivitiesForCustomer();
+        if (data.customer) {
+          this.customer = data.customer;
+          //console.log(this.customer);
+          if (this.customer?.activityData?.length) {
+            this.findOpenActivitiesForCustomer();
+          }
         }
-      }
-    })
+      })
   }
 
   findOpenActivitiesForCustomer() {
-    this.dialogService.openModal(CustomerActivitiesDialogComponent, 
-      { 
-        cssClass: 'modal-xl', 
+    this.dialogService.openModal(CustomerActivitiesDialogComponent,
+      {
+        cssClass: 'modal-xl',
         context: { customer: this.customer },
         hasBackdrop: true,
         closeOnBackdropClick: false,
         closeOnEsc: false
       }).instance.close.subscribe(async (data) => {
-      if (data?.transaction) {
-        this.bIsTransactionLoading = true;
-        // / Finding BusinessProduct and their location and stock. Need to show in the dropdown of location choosing /
-        if (data?.transactionItems?.length) {
-          let aBusinessProduct: any = [];
-          const _aBusinessProduct: any = await this.getBusinessProductList(data?.transactionItems.map((el: any) => el.iBusinessProductId)).toPromise();
-          if (_aBusinessProduct?.data?.length && _aBusinessProduct.data[0]?.result?.length) aBusinessProduct = _aBusinessProduct.data[0]?.result;
-          data.transactionItems = data.transactionItems?.map((oTI: any) => {
-            // / assigning the BusinessProduct location to transction-item /
-            const oFoundProdLoc = aBusinessProduct?.find((oBusinessProd: any) => oBusinessProd?._id?.toString() === oTI?.iBusinessProductId?.toString());
-            if (oFoundProdLoc?.aLocation?.length) {
-              oTI.aLocation = oFoundProdLoc.aLocation?.map((oProdLoc: any) => {
-                const oFound: any = this.aBusinessLocation?.find((oBusLoc: any) => oBusLoc?._id?.toString() === oProdLoc?._id?.toString());
-                oProdLoc.sName = oFound?.sName;
-                return oProdLoc;
-              });
-            }
-            oTI.oCurrentLocation = oTI.aLocation?.find((o: any) => o._id === oTI.iLocationId);
-            return oTI;
-          })
-        }
+        if (data?.transaction) {
+          this.bIsTransactionLoading = true;
+          // / Finding BusinessProduct and their location and stock. Need to show in the dropdown of location choosing /
+          if (data?.transactionItems?.length) {
+            let aBusinessProduct: any = [];
+            const _aBusinessProduct: any = await this.getBusinessProductList(data?.transactionItems.map((el: any) => el.iBusinessProductId)).toPromise();
+            if (_aBusinessProduct?.data?.length && _aBusinessProduct.data[0]?.result?.length) aBusinessProduct = _aBusinessProduct.data[0]?.result;
+            data.transactionItems = data.transactionItems?.map((oTI: any) => {
+              // / assigning the BusinessProduct location to transction-item /
+              const oFoundProdLoc = aBusinessProduct?.find((oBusinessProd: any) => oBusinessProd?._id?.toString() === oTI?.iBusinessProductId?.toString());
+              if (oFoundProdLoc?.aLocation?.length) {
+                oTI.aLocation = oFoundProdLoc.aLocation?.map((oProdLoc: any) => {
+                  const oFound: any = this.aBusinessLocation?.find((oBusLoc: any) => oBusLoc?._id?.toString() === oProdLoc?._id?.toString());
+                  oProdLoc.sName = oFound?.sName;
+                  return oProdLoc;
+                });
+              }
+              oTI.oCurrentLocation = oTI.aLocation?.find((o: any) => o._id === oTI.iLocationId);
+              return oTI;
+            })
+          }
 
-        this.handleTransactionResponse(data);
-      }
-    })
+          this.handleTransactionResponse(data);
+        }
+      })
   }
 
   fetchCustomer(customerId: any) {
@@ -682,7 +684,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     if (total) {
       return (_.sumBy(this.payMethods, 'amount') || 0);
-      
+
       // not to consider giftcard and loyalty points as a payment
       // + this.redeemedLoyaltyPoints; //(_.sumBy(this.appliedGiftCards, 'nAmount') || 0) + 
     }
@@ -692,13 +694,13 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   changeInPayment() {
     this.availableAmount = this.getUsedPayMethods(true);
     this.nGiftcardAmount = _.sumBy(this.appliedGiftCards, 'nAmount') || 0;
-    this.paymentDistributeService.distributeAmount(this.transactionItems, this.availableAmount, this.nGiftcardAmount, this.redeemedLoyaltyPoints, this.payMethods);
+    this.paymentDistributeService.distributeAmount(this.transactionItems, this.availableAmount, this.nGiftcardAmount, this.redeemedLoyaltyPoints);
     this.allPaymentMethod = this.allPaymentMethod.map((v: any) => ({ ...v, isDisabled: true }));
     this.payMethods.map(o => o.isDisabled = true);
     const paidAmount = _.sumBy(this.payMethods, 'amount') || 0;
 
     const aGiftcard = this.transactionItems.filter((v: any) => v.type == 'giftcard');
-    this.bAllGiftcardPaid = aGiftcard.filter((el:any) => !el.isExclude).every((el: any) => el.paymentAmount == el.amountToBePaid)
+    this.bAllGiftcardPaid = aGiftcard.filter((el: any) => !el.isExclude).every((el: any) => el.paymentAmount == el.amountToBePaid)
 
     if (paidAmount === 0) {
       this.payMethods.map(o => o.isDisabled = false);
@@ -737,7 +739,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
           item.prepaymentTouched = false;
         }
       } else {
-        if(item.type === 'giftcard') return;
+        if (item.type === 'giftcard') return;
         item.isExclude = false;
         item.manualUpdate = (item.type === 'gold-purchase') ? true : false;
       }
@@ -746,15 +748,15 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     this.payMethods.map(o => { o.amount = null, o.isDisabled = false });
     this.availableAmount = this.getUsedPayMethods(true);
     this.nGiftcardAmount = _.sumBy(this.appliedGiftCards, 'nAmount') || 0;
-    this.paymentDistributeService.distributeAmount(this.transactionItems, this.availableAmount, this.nGiftcardAmount, this.redeemedLoyaltyPoints, this.payMethods);
+    this.paymentDistributeService.distributeAmount(this.transactionItems, this.availableAmount, this.nGiftcardAmount, this.redeemedLoyaltyPoints);
     this.updateAmountVariables();
   }
 
 
   startTerminalPayment() {
-    this.dialogService.openModal(TerminalDialogComponent, 
-      { 
-        cssClass: 'modal-lg', 
+    this.dialogService.openModal(TerminalDialogComponent,
+      {
+        cssClass: 'modal-lg',
         context: { payments: this.payMethods },
         hasBackdrop: true,
         closeOnBackdropClick: false,
@@ -821,13 +823,13 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     }
     const changeAmount = this.availableAmount - this.nItemsTotalToBePaid
-    this.dialogService.openModal(TerminalDialogComponent, 
-      { 
-        cssClass: 'modal-lg', 
-        context: { 
-          payments: this.payMethods, 
-          changeAmount, 
-          nTotalTransactionAmount: this.nItemsTotalToBePaid 
+    this.dialogService.openModal(TerminalDialogComponent,
+      {
+        cssClass: 'modal-lg',
+        context: {
+          payments: this.payMethods,
+          changeAmount,
+          nTotalTransactionAmount: this.nItemsTotalToBePaid
         },
         hasBackdrop: true,
         closeOnBackdropClick: false,
@@ -845,7 +847,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
           });
           this.availableAmount = this.getUsedPayMethods(true);
           this.nGiftcardAmount = _.sumBy(this.appliedGiftCards, 'nAmount') || 0;
-          this.paymentDistributeService.distributeAmount(this.transactionItems, this.availableAmount, this.nGiftcardAmount, this.redeemedLoyaltyPoints, this.payMethods);
+          this.paymentDistributeService.distributeAmount(this.transactionItems, this.availableAmount, this.nGiftcardAmount, this.redeemedLoyaltyPoints);
           this.transactionItems = [...this.transactionItems.filter((item: any) => item.type !== 'empty-line')]
           const body = this.tillService.createTransactionBody(this.transactionItems, payMethods, this.discountArticleGroup, this.redeemedLoyaltyPoints, this.customer);
           if (body.transactionItems.filter((item: any) => item.oType.eKind === 'repair')[0]?.iActivityItemId) {
@@ -857,12 +859,13 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
           const uniq = [...new Set(_.compact(result))];
           if (this.appliedGiftCards?.length) this.tillService.createGiftcardTransactionItem(body, this.discountArticleGroup);
 
-          const oDialogComponent: DialogComponent = this.dialogService.openModal(TransactionActionDialogComponent, 
+          const oDialogComponent: DialogComponent = this.dialogService.openModal(TransactionActionDialogComponent,
             {
-              cssClass: 'modal-lg', 
-              hasBackdrop: true, 
-              closeOnBackdropClick: true, 
-              closeOnEsc: true}).instance;
+              cssClass: 'modal-lg',
+              hasBackdrop: true,
+              closeOnBackdropClick: true,
+              closeOnEsc: true
+            }).instance;
 
           if (this.bIsFiscallyEnabled) {
             const result: any = await this.fiskalyService.updateFiskalyTransaction(this.transactionItems, _.clone(body.payments), 'FINISHED');
@@ -930,7 +933,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     this.transaction = await this.tillService.processTransactionForPdfReceipt(this.transaction);
 
     let oDataSource = JSON.parse(JSON.stringify(this.transaction));
-    
+
     oDataSource.sActivityNumber = oDataSource.activity.sNumber;
 
     const aUniqueItemTypes = [];
@@ -938,10 +941,10 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     const nRepairCount = oDataSource.aTransactionItemType.filter((e: any) => e === 'repair')?.length;
     const nOrderCount = oDataSource.aTransactionItemType.filter((e: any) => e === 'order')?.length;
 
-    const bRegularCondition = oDataSource.total >= 0.02 || oDataSource.total <= -0.02 || 
-    oDataSource.totalGiftcardDiscount || 
-    oDataSource.totalRedeemedLoyaltyPoints || 
-    oDataSource.aTransactionItems.some((item:any) => item.oType.bRefund);
+    const bRegularCondition = oDataSource.total >= 0.02 || oDataSource.total <= -0.02 ||
+      oDataSource.totalGiftcardDiscount ||
+      oDataSource.totalRedeemedLoyaltyPoints ||
+      oDataSource.aTransactionItems.some((item: any) => item.oType.bRefund);
 
     const bOrderCondition = nOrderCount === 1 && nRepairCount >= 1 || nOrderCount >= 1;
     const bRepairCondition = nRepairCount === 1 && nOrderCount === 0;
@@ -963,8 +966,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     oDataSource.sBusinessLogoUrl = _oLogoData.data;
     if (oDataSource.oCustomer && oDataSource.oCustomer.bCounter === true) {
       oDataSource.oCustomer = {};
-    } 
-    
+    }
+
     const aTemplates = _template.data;
 
     oDialogComponent.contextChanged.next({
@@ -978,8 +981,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       activity: this.activity,
       aTemplates: aTemplates,
       businessDetails: this.businessDetails,
-      bRegularCondition:bRegularCondition,
-      bOrderCondition:bOrderCondition
+      bRegularCondition: bRegularCondition,
+      bOrderCondition: bOrderCondition
     });
 
     oDialogComponent.close.subscribe(() => { this.clearAll(); });
@@ -988,8 +991,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     if (bOrderCondition) {
       // print order receipt
       const orderTemplate = aTemplates.filter((template: any) => template.eType === 'order')[0];
-      const oOrderData:any = this.tillService.prepareDataForOrderReceipt(this.activity, this.activityItems, oDataSource);
-      this.sendForReceipt(oOrderData, orderTemplate, oOrderData.sNumber,'order');
+      const oOrderData: any = this.tillService.prepareDataForOrderReceipt(this.activity, this.activityItems, oDataSource);
+      this.sendForReceipt(oOrderData, orderTemplate, oOrderData.sNumber, 'order');
     }
     if (bRegularCondition) {
       //print proof of payments receipt
@@ -1004,7 +1007,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       }
       //use two column layout
       const template = aTemplates.filter((template: any) => template.eType === 'repair')[0];
-      const oRepairDataSource:any = this.tillService.prepareDataForRepairReceipt(this.activityItems,oDataSource, this.employee)
+      const oRepairDataSource: any = this.tillService.prepareDataForRepairReceipt(this.activityItems, oDataSource, this.employee)
       this.sendForReceipt(oRepairDataSource, template, oRepairDataSource.sNumber, 'repair');
     }
 
@@ -1061,14 +1064,14 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       //     sAction: 'sentToCustomer',
       //     // sApiKey: this.businessDetails.oPrintNode.sApiKey
       //   });
-  
+
       //   const body = {
       //     pdfContent: response,
       //     iTransactionId: this.transaction._id,
       //     receiptType: 'purchase-receipt',
       //     sCustomerEmail: oDataSource.oCustomer.sEmail
       //   }
-  
+
       //   this.apiService.postNew('cashregistry', '/api/v1/till/send-to-customer', body).subscribe(
       //     (result: any) => {
       //       console.log("------------------successfully mail sent-----------------");
@@ -1077,7 +1080,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       //         // this.toastService.show({ type: 'success', text: 'Mail send to customer.' });
       //       }
       //     }, (error: any) => {
-  
+
       //     }
       //   )
       // }
@@ -1089,7 +1092,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       iLocationId: this.iLocationId,
       iWorkstationId: this.iWorkstationId
     }
-    
+
     this.apiService.postNew('cashregistry', `/api/v1/print-settings/list/${this.iBusinessId}`, oBody).subscribe((result: any) => {
       if (result?.data?.length && result?.data[0]?.result?.length) {
         this.printSettings = [];
@@ -1271,13 +1274,13 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     let name = '';
     if (this.tillService.settings.currentLocation.bArticleGroup)
       name += (product?.oArticleGroup?.oName) ? ((product.oArticleGroup?.oName[this.selectedLanguage]) ? product.oArticleGroup?.oName[this.selectedLanguage] : product.oArticleGroup.oName['en']) : '';
-    
+
     name += ' ' + (product?.sLabelDescription || '');
 
     let bPrefillConditionViaBusinessBrand = true;
     if (product?.iBusinessBrandId && product?.oBusinessBrand?.sAlias) bPrefillConditionViaBusinessBrand = false;
     if (this.tillService.settings.currentLocation.bProductNumber && bPrefillConditionViaBusinessBrand) name += ' ' + (product?.sProductNumber || '');
-    
+
     this.transactionItems.push({
       name: name,
       eTransactionItemType: 'regular',
@@ -1314,7 +1317,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       aLocation: product?.aLocation,
       bProductLoaded: true,
       sSerialNumber: this.bSerialSearchMode ? product?.sSerialNumber : undefined,
-      bQuickButton: isFrom === 'quick-button'? true : false
+      bQuickButton: isFrom === 'quick-button' ? true : false
     });
     // console.log('this.transactionItems', this.transactionItems);
     if (isFrom === 'quick-button') { source.loading = false }
@@ -1464,23 +1467,23 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
   openExpenses() {
     const paymentMethod = this.payMethods.find((o: any) => o.sName.toLowerCase() === 'cash');
-    this.dialogService.openModal(AddExpensesComponent, 
-      { 
-        cssClass: 'modal-m', 
-        context: { 
-          paymentMethod, 
-          taxes: this.tillService.taxes 
+    this.dialogService.openModal(AddExpensesComponent,
+      {
+        cssClass: 'modal-m',
+        context: {
+          paymentMethod,
+          taxes: this.tillService.taxes
         },
         hasBackdrop: true,
         closeOnBackdropClick: false,
-        closeOnEsc: false 
-      }).instance.close.subscribe(result => {});
+        closeOnEsc: false
+      }).instance.close.subscribe(result => { });
   }
 
   openCardsModal(oGiftcard?: any) {
-    this.dialogService.openModal(CardsComponent, 
-      { 
-        cssClass: 'modal-lg', 
+    this.dialogService.openModal(CardsComponent,
+      {
+        cssClass: 'modal-lg',
         context: { customer: this.customer, oGiftcard },
         hasBackdrop: true,
         closeOnBackdropClick: false,
@@ -1501,9 +1504,9 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
 
   openMorePaymentMethodModal() {
-    this.dialogService.openModal(MorePaymentsDialogComponent, 
-      { 
-        cssClass: 'modal-l', 
+    this.dialogService.openModal(MorePaymentsDialogComponent,
+      {
+        cssClass: 'modal-l',
         context: this.allPaymentMethod,
         hasBackdrop: true,
         closeOnBackdropClick: false,
@@ -1539,15 +1542,15 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   async addReedemedPoints(redeemedLoyaltyPoints: number) {
-    let result:any;
+    let result: any;
     result = await this.createArticleGroupService.checkArticleGroups('loyalty-points').toPromise();
     let iArticleGroupId = '';
-    if(result?.data?.length && result?.data[0]?.result?.length) {
+    if (result?.data?.length && result?.data[0]?.result?.length) {
       iArticleGroupId = result?.data[0]?.result[0]?._id;
     } else {
       const articleBody = { name: 'Loyalty Points', sCategory: 'Loyalty Points', sSubCategory: 'Loyalty Points' };
       result = await this.createArticleGroupService.createArticleGroup(articleBody);
-      if(result?.data) {
+      if (result?.data) {
         iArticleGroupId = result?.data?._id;
       }
     }
@@ -1638,7 +1641,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       iWorkstationId: this.iWorkstationId,
       sDayClosureMethod: this.tillService.settings?.sDayClosureMethod || 'workstation'
     }
-    
+
     this.dayClosureCheckSubscription = this.apiService.postNew('cashregistry', `/api/v1/statistics/day-closure/check`, oBody).subscribe(async (result: any) => {
       if (result?.data) {
         this.bDayStateChecking = false;
@@ -1649,7 +1652,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
         }
         if (result?.data?.oStatisticDetail?.dOpenDate) {
           this.dOpenDate = result?.data?.oStatisticDetail?.dOpenDate;
-          
+
           let nDayClosurePeriodAllowed = 0;
           if (this.tillService.settings?.sDayClosurePeriod && this.tillService.settings.sDayClosurePeriod === 'week') {
             nDayClosurePeriodAllowed = 3600 * 24 * 7;
@@ -1929,8 +1932,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     this.oStaticData = oStaticData;
   }
 
-  removeLoyaltyPoints(){
-    this.redeemedLoyaltyPoints = 0; 
+  removeLoyaltyPoints() {
+    this.redeemedLoyaltyPoints = 0;
     this.transactionItems.splice(this.transactionItems.findIndex(el => el.type === 'loyalty-points'), 1);
     this.changeInPayment();
   }
