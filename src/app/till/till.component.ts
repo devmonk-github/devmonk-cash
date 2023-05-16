@@ -1589,6 +1589,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       this.bIsOpeningDayState = false;
       if (result?.message === 'success') {
         this.bIsDayStateOpened = true;
+        this.tillService.iStatisticsId = result.data._id
         if (this.bIsDayStateOpened) this.fetchQuickButtons();
         this.toastrService.show({ type: 'success', text: `Day-state is open now` });
       }
@@ -1647,6 +1648,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
         this.bDayStateChecking = false;
         this.bIsDayStateOpened = result?.data?.bIsDayStateOpened;
         if (this.bIsDayStateOpened) {
+          this.tillService.iStatisticsId = result.data.oStatisticDetail._id;
           this.bIsTransactionLoading = true;
           this.fetchQuickButtons();
         }

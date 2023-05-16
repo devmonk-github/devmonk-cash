@@ -1092,6 +1092,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
         sortOrder: '',
         searchValue: '',
         iTransactionId: 'all',
+        sFrom: 'turnover-group',
         oFilterBy: {
           dStartDate: this.filterDates.startDate,
           dEndDate: this.filterDates.endDate,
@@ -1255,7 +1256,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
         cssClass: 'modal-m', context: { nCashInTill: nTotalCash }, hasBackdrop: true, closeOnBackdropClick: false
       }).instance.close.subscribe((result: any) => {
         if (result?.type) {
-          this.oCountings.nCashCounted = nTotalCash;
+          this.oCountings.nCashCounted = +(nTotalCash.toFixed(2));
           if (result?.data === 'leave_in_till') {
             this.oCountings.nCashRemain = +(nTotalCash.toFixed(2));
             this.oCountings.nSkim = 0;
@@ -1333,7 +1334,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
     const oCashInSafePaymentMethod = this.allPaymentMethod.filter((el: any) => el.sName.toLowerCase() === 'cash_in_safe')[0];
     const nVatRate = await this.taxService.fetchDefaultVatRate({ iLocationId: this.iLocationId });
 
-    const oBody = {
+    const oBody:any = {
       iBusinessId: this.iBusinessId,
       iLocationId: this.iLocationId,
       iWorkstationId: this.iWorkstationId,
@@ -1345,8 +1346,11 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
         oCashPaymentMethod,
         oCashInSafePaymentMethod,
         nVatRate,
-      }
+      },
     }
+    const org = localStorage.getItem('org');
+    if(org) oBody.aLanguage = JSON.parse(org)['aLanguage'];
+
     this.closeSubscription = this.apiService.postNew('cashregistry', `/api/v1/statistics/close/day-state`, oBody).subscribe((result: any) => {
       this.toastService.show({ type: 'success', text: `Day-state is close now` });
       this.closingDayState = false;

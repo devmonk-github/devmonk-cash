@@ -493,7 +493,7 @@
                                                     </th>
                                                     <th class="w-150px"><span class="">{{"GROSS_PROFIT" |
                                                             translate}}</span>
-                                                        <h4 class="text-black">{{oSupplier.nProfit | number :'1.2-2'}}
+                                                        <h4 class="text-black">{{oSupplier.nProfit.toFixed(2)}}
                                                         </h4>
                                                     </th>
                                                 </tr>
@@ -529,7 +529,7 @@
                                                                         :'1.2-2'}}
                                                                     </th>
                                                                     <th scope="col" class="w-150px">
-                                                                        {{oArticleGroup.nProfit| number :'1.2-2'}}</th>
+                                                                        {{oArticleGroup.nProfit.toFixed(2)}}</th>
 
                                                                 </tr>
                                                             </thead>
@@ -592,7 +592,7 @@
                                                     </th>
                                                     <th class="w-150px"><span class="">{{"GROSS_PROFIT" |
                                                             translate}}</span>
-                                                        <h4 class="text-black">{{oSupplier.nProfit | number :'1.2-2'}}
+                                                        <h4 class="text-black">{{oSupplier.nProfit.toFixed(2)}}
                                                         </h4>
                                                     </th>
                                                 </tr>
@@ -624,36 +624,26 @@
                                                                             </i>
                                                                         </div>
                                                                     </th>
-                                                                    <th scope="col" class="w-150px">
-                                                                        {{oArticleGroup.nQuantity}}</th>
-                                                                    <th scope="col" class="w-150px">
-                                                                        {{oArticleGroup.nTotalRevenue | number
-                                                                        :'1.2-2'}}
-                                                                    </th>
-                                                                    <th scope="col" class="w-150px">
-                                                                        {{oArticleGroup.nTotalPurchaseAmount | number
-                                                                        :'1.2-2'}}
-                                                                    </th>
-                                                                    <th scope="col" class="w-150px">
-                                                                        {{oArticleGroup.nProfit| number :'1.2-2'}}</th>
+                                                                    <th scope="col" class="w-150px">{{oArticleGroup.nQuantity}}</th>
+                                                                    <th scope="col" class="w-150px">{{oArticleGroup.nTotalRevenue.toFixed(2) }}</th>
+                                                                    <th scope="col" class="w-150px">{{oArticleGroup.nTotalPurchaseAmount.toFixed(2) }}</th>
+                                                                    <th scope="col" class="w-150px">{{oArticleGroup.nProfit.toFixed(2) }}</th>
                                                                 </tr>
-                                                                `
                                                             </thead>
                                                             <tbody>
                                                                 <ng-container
                                                                     *ngIf="oArticleGroup.bIsCollapseItem && sOptionMenu?.child1?.sKey === 'Bookkeeping'">
                                                                     <tr class="bg-white"
                                                                         *ngFor="let item of oArticleGroup.aTransactionItems">
-                                                                        <td> {{ item.sProductName ||
-                                                                            item?.sProductNumber }} </td>
+                                                                        <td> 
+                                                                            {{ item?.sTransactionNumber || ''}}<br/>
+                                                                            {{ item.sProductName || item?.sProductNumber }}<br /> 
+                                                                            {{ item?.sComment || '' }} 
+                                                                        </td>
                                                                         <td> {{ item.nQuantity }} </td>
-                                                                        <td> {{ item.nRevenueAmount | number :'1.2-2' }}
-                                                                        </td>
-                                                                        <td> {{ item.nCostOfRevenue | number :'1.2-2' }}
-                                                                        </td>
-                                                                        <td> {{ item.nProfitOfRevenue | number :'1.2-2'
-                                                                            }} </td>
-                                                                        <td></td>
+                                                                        <td> {{ item.nRevenueAmount.toFixed(2) }}</td>
+                                                                        <td> {{ item.nCostOfRevenue.toFixed(2) }}</td>
+                                                                        <td> {{ item.nProfitOfRevenue.toFixed(2) }} </td>
                                                                     </tr>
                                                                 </ng-container>
 
@@ -661,16 +651,11 @@
                                                                     *ngIf="oArticleGroup.bIsCollapseItem && sOptionMenu?.child1?.sKey === 'ArticleGroup'">
                                                                     <tr class="bg-white"
                                                                         *ngFor="let oRevenueByProperty of oArticleGroup.aRevenueByProperty; let revenuePropertyIndex = index">
-                                                                        <td class="ps-9">
-                                                                            {{oRevenueByProperty.aCategory.join(' |')}}
-                                                                        </td>
+                                                                        <td class="ps-9"> {{oRevenueByProperty.aCategory.join(' |')}}</td>
                                                                         <td> {{oRevenueByProperty.nQuantity}} </td>
-                                                                        <td> {{oRevenueByProperty.nTotalRevenue | number
-                                                                            :'1.2-2'}} </td>
-                                                                        <td> {{oRevenueByProperty.nTotalPurchaseAmount |
-                                                                            number :'1.2-2'}} </td>
-                                                                        <td> {{oRevenueByProperty.nProfit| number
-                                                                            :'1.2-2'}} </td>
+                                                                        <td> {{oRevenueByProperty.nTotalRevenue.toFixed(2) }} </td>
+                                                                        <td> {{oRevenueByProperty.nTotalPurchaseAmount.toFixed(2) }} </td>
+                                                                        <td> {{oRevenueByProperty.nProfit.toFixed(2) }} </td>
                                                                     </tr>
                                                                 </ng-container>
                                                             </tbody>
@@ -698,19 +683,14 @@
                                                     <th class="w-150px"><span class="">{{"QUANTITY" | translate}}</span>
                                                         <h4 class="text-black">{{oSupplier.nQuantity}}</h4>
                                                     </th>
-                                                    <th class="w-150px"><span class="">{{"PRICE_WITH_VAT" |
-                                                            translate}}</span>
-                                                        <h4 class="text-black">{{oSupplier.nTotalRevenue | number
-                                                            :'1.2-2'}}</h4>
+                                                    <th class="w-150px"><span class="">{{"PRICE_WITH_VAT" | translate}}</span>
+                                                        <h4 class="text-black">{{oSupplier.nTotalRevenue.toFixed(2)}}</h4>
                                                     </th>
-                                                    <th class="w-150px"><span class="">{{"PURCHASE_PRICE" |
-                                                            translate}}</span>
-                                                        <h4 class="text-black">{{oSupplier.nTotalPurchaseAmount | number
-                                                            :'1.2-2'}}</h4>
+                                                    <th class="w-150px"><span class="">{{"PURCHASE_PRICE" | translate}}</span>
+                                                        <h4 class="text-black">{{oSupplier.nTotalPurchaseAmount.toFixed(2)}}</h4>
                                                     </th>
-                                                    <th class="w-150px"><span class="">{{"GROSS_PROFIT" |
-                                                            translate}}</span>
-                                                        <h4 class="text-black">{{oSupplier.nProfit | number :'1.2-2' }}
+                                                    <th class="w-150px"><span class="">{{"GROSS_PROFIT" | translate}}</span>
+                                                        <h4 class="text-black">{{oSupplier.nProfit.toFixed(2) }}
                                                         </h4>
                                                     </th>
 
@@ -741,19 +721,10 @@
                                                                         </div>
 
                                                                     </th>
-                                                                    <th scope="col" class="w-150px">
-                                                                        {{oArticleGroup.nQuantity}}</th>
-                                                                    <th scope="col" class="w-150px">
-                                                                        {{oArticleGroup.nTotalRevenue | number
-                                                                        :'1.2-2'}}
-                                                                    </th>
-                                                                    <th scope="col" class="w-150px">
-                                                                        {{oArticleGroup.nTotalPurchaseAmount | number
-                                                                        :'1.2-2'}}
-                                                                    </th>
-                                                                    <th scope="col" class="w-150px">
-                                                                        {{oArticleGroup.nProfit | number :'1.2-2'}}</th>
-
+                                                                    <th scope="col" class="w-150px">{{oArticleGroup.nQuantity}}</th>
+                                                                    <th scope="col" class="w-150px">{{oArticleGroup.nTotalRevenue.toFixed(2)}}</th>
+                                                                    <th scope="col" class="w-150px">{{oArticleGroup.nTotalPurchaseAmount.toFixed(2)}}</th>
+                                                                    <th scope="col" class="w-150px">{{oArticleGroup.nProfit.toFixed(2)}}</th>
                                                                 </tr>
                                                                 <tr *ngIf="oArticleGroup.isLoading">
                                                                     <td colspan="6" class="text-center">
@@ -766,13 +737,10 @@
                                                                         *ngFor="let item of oArticleGroup.aTransactionItems">
                                                                         <td> {{item.sProductName ||
                                                                             item?.sProductNumber}} </td>
-                                                                        <td> {{ item.nQuantity }}</td>
-                                                                        <td> {{ item.nRevenueAmount | number :'1.2-2' }}
-                                                                        </td>
-                                                                        <td> {{ item.nCostOfRevenue | number :'1.2-2' }}
-                                                                        </td>
-                                                                        <td> {{item.nProfitOfRevenue | number :'1.2-2'}}
-                                                                        </td>
+                                                                        <td>{{ item.nQuantity }}</td>
+                                                                        <td>{{ item.nRevenueAmount.toFixed(2) }}</td>
+                                                                        <td>{{ item.nCostOfRevenue.toFixed(2) }}</td>
+                                                                        <td>{{ item.nProfitOfRevenue.toFixed(2) }}</td>
                                                                         <td></td>
                                                                     </tr>
                                                                 </ng-container>
@@ -801,25 +769,21 @@
                                                     </th>
                                                     <th class="w-150px">
                                                         <span class="">{{"QUANTITY" | translate}}</span>
-                                                        <h4 class="text-black">{{aStatistic[0]?.overall[0]?.nQuantity}}
-                                                        </h4>
+                                                        <h4 class="text-black">{{aStatistic[0]?.overall[0]?.nQuantity}}</h4>
                                                     </th>
                                                     <th class="w-150px">
                                                         <span class="">{{"PRICE_WITH_VAT" | translate}}</span>
                                                         <h4 class="text-black">
-                                                            {{aStatistic[0]?.overall[0]?.nTotalRevenue | number
-                                                            :'1.2-2'}}</h4>
+                                                            {{aStatistic[0]?.overall[0]?.nTotalRevenue.toFixed(2)}}</h4>
                                                     </th>
                                                     <th class="w-150px">
                                                         <span class="">{{"PURCHASE_PRICE_EX_VAT" | translate}}</span>
                                                         <h4 class="text-black">
-                                                            {{aStatistic[0]?.overall[0]?.nTotalPurchaseAmount | number
-                                                            :'1.2-2'}}</h4>
+                                                            {{aStatistic[0]?.overall[0]?.nTotalPurchaseAmount.toFixed(2)}}</h4>
                                                     </th>
                                                     <th class="w-150px">
                                                         <span class="">{{"GROSS_PROFIT" | translate}}</span>
-                                                        <h4 class="text-black">{{aStatistic[0]?.overall[0]?.nProfit |
-                                                            number :'1.2-2'}}</h4>
+                                                        <h4 class="text-black">{{aStatistic[0]?.overall[0]?.nProfit.toFixed(2)}}</h4>
                                                     </th>
 
                                                 </tr>
@@ -836,18 +800,10 @@
                                                                 <thead class="bg-gray-100">
                                                                     <tr class="fw-bold fs-6 text-gray-800">
                                                                         <th scope="col">{{oArticleGroup.sName}}</th>
-                                                                        <th scope="col" class="w-150px">
-                                                                            {{oArticleGroup.nQuantity}}</th>
-                                                                        <th scope="col" class="w-150px">
-                                                                            {{oArticleGroup.nTotalRevenue | number
-                                                                            :'1.2-2'}}</th>
-                                                                        <th scope="col" class="w-150px">
-                                                                            {{oArticleGroup.nTotalPurchaseAmount |
-                                                                            number :'1.2-2'}}
-                                                                        </th>
-                                                                        <th scope="col" class="w-150px">
-                                                                            {{oArticleGroup.nProfit| number
-                                                                            :'1.2-2'}}</th>
+                                                                        <th scope="col" class="w-150px">{{oArticleGroup.nQuantity}}</th>
+                                                                        <th scope="col" class="w-150px">{{oArticleGroup.nTotalRevenue.toFixed(2) }}</th>
+                                                                        <th scope="col" class="w-150px">{{oArticleGroup.nTotalPurchaseAmount.toFixed(2) }}</th>
+                                                                        <th scope="col" class="w-150px">{{oArticleGroup.nProfit.toFixed(2) }}</th>
 
                                                                     </tr>
                                                                 </thead>
@@ -856,19 +812,11 @@
                                                                     <tbody class="p-2"
                                                                         *ngFor="let oRevenueByProperty of oArticleGroup.aRevenueByProperty; let revenuePropertyIndex = index">
                                                                         <tr>
-                                                                            <td class="ps-9">
-                                                                                {{oRevenueByProperty.aCategory.join('
-                                                                                |')}}
-                                                                            </td>
+                                                                            <td class="ps-9">{{oRevenueByProperty.aCategory.join('|') }}</td>
                                                                             <td>{{oRevenueByProperty.nQuantity}}</td>
-                                                                            <td>{{oRevenueByProperty.nTotalRevenue |
-                                                                                number :'1.2-2'}}
-                                                                            </td>
-                                                                            <td>{{oRevenueByProperty.nTotalPurchaseAmount
-                                                                                | number :'1.2-2'}}
-                                                                            </td>
-                                                                            <td>{{oRevenueByProperty.nProfit| number
-                                                                                :'1.2-2'}}</td>
+                                                                            <td>{{oRevenueByProperty.nTotalRevenue.toFixed(2) }}</td>
+                                                                            <td>{{oRevenueByProperty.nTotalPurchaseAmount.toFixed(2)}}</td>
+                                                                            <td>{{oRevenueByProperty.nProfit.toFixed(2)}}</td>
                                                                         </tr>
                                                                     </tbody>
                                                                 </ng-container>
@@ -897,26 +845,19 @@
                                                     </th>
                                                     <th class="w-150px">
                                                         <span class="">{{"QUANTITY" | translate}}</span>
-                                                        <h4 class="text-black">{{aStatistic[0]?.overall[0]?.nQuantity}}
-                                                        </h4>
+                                                        <h4 class="text-black">{{aStatistic[0]?.overall[0]?.nQuantity}}</h4>
                                                     </th>
                                                     <th class="w-150px">
                                                         <span class="">{{"PRICE_WITH_VAT" | translate}}</span>
-                                                        <h4 class="text-black">
-                                                            {{aStatistic[0]?.overall[0]?.nTotalRevenue | number
-                                                            :'1.2-2'}}</h4>
+                                                        <h4 class="text-black">{{aStatistic[0]?.overall[0]?.nTotalRevenue.toFixed(2)}}</h4>
                                                     </th>
                                                     <th class="w-150px">
                                                         <span class="">{{"PURCHASE_PRICE_EX_VAT" | translate}}</span>
-                                                        <h4 class="text-black">
-                                                            {{aStatistic[0]?.overall[0]?.nTotalPurchaseAmount | number
-                                                            :'1.2-2'}}</h4>
+                                                        <h4 class="text-black">{{aStatistic[0]?.overall[0]?.nTotalPurchaseAmount.toFixed(2)}}</h4>
                                                     </th>
                                                     <th class="w-150px">
                                                         <span class="">{{"GROSS_PROFIT" | translate}}</span>
-                                                        <h4 class="text-black">{{aStatistic[0]?.overall[0]?.nProfit |
-                                                            number :'1.2-2'}}
-                                                        </h4>
+                                                        <h4 class="text-black">{{aStatistic[0]?.overall[0]?.nProfit.toFixed(2)}}</h4>
                                                     </th>
 
                                                 </tr>
@@ -930,11 +871,8 @@
                                                         <thead class="bg-gray-100">
                                                             <tr class="fw-bold fs-6 text-gray-800">
                                                                 <td>
-                                                                    <div
-                                                                        class="d-flex justify-content-between align-items-center">
-                                                                        {{oRevenueByProperty?.aCategory?.length
-                                                                        ?
-                                                                        oRevenueByProperty.aCategory.join(' | ') : '-'}}
+                                                                    <div class="d-flex justify-content-between align-items-center">
+                                                                        {{ oRevenueByProperty?.aCategory?.length ? oRevenueByProperty.aCategory.join(' | ') : '-' }}
                                                                         <div class="mx-5">
                                                                             <i *ngIf="!oRevenueByProperty.bIsCollapseItem"
                                                                                 class="px-sm-2 cursor-pointer bi bi-chevron-down"
@@ -948,35 +886,23 @@
 
 
                                                                 </td>
-                                                                <th class="w-150px">
-                                                                    {{oRevenueByProperty.sPropertyName}}
-                                                                </th>
-                                                                <th class="w-150px">
-                                                                    {{oRevenueByProperty.nTotalRevenue | number
-                                                                    :'1.2-2'}}
-                                                                </th>
-                                                                <th class="w-150px">
-                                                                    {{oRevenueByProperty.nTotalPurchaseAmount | number
-                                                                    :'1.2-2'}}</th>
-                                                                <th class="w-150px">
-                                                                    {{oRevenueByProperty.nProfit| number :'1.2-2'}}</th>
-
+                                                                <th class="w-150px">{{oRevenueByProperty.sPropertyName}}</th>
+                                                                <th class="w-150px">{{oRevenueByProperty.nTotalRevenue.toFixed(2)}}</th>
+                                                                <th class="w-150px">{{oRevenueByProperty.nTotalPurchaseAmount.toFixed(2)}}</th>
+                                                                <th class="w-150px">{{oRevenueByProperty.nProfit.toFixed(2)}}</th>
                                                             </tr>
                                                             <tr *ngIf="oRevenueByProperty.isLoading">
                                                                 <td colspan="6" class="text-center">
-                                                                    <div class="spinner-border mx-auto">
-                                                                    </div>
+                                                                    <div class="spinner-border mx-auto"></div>
                                                                 </td>
                                                             </tr>
                                                             <ng-container *ngIf="oRevenueByProperty.bIsCollapseItem">
-                                                                <tr class="bg-white"
-                                                                    *ngFor="let item of oRevenueByProperty.aTransactionItems">
-                                                                    <td> {{item.sProductName || item?.sProductNumber}}
-                                                                    </td>
+                                                                <tr class="bg-white" *ngFor="let item of oRevenueByProperty.aTransactionItems">
+                                                                    <td> {{item.sProductName || item?.sProductNumber}}</td>
                                                                     <td> {{ item.nQuantity }}</td>
-                                                                    <td> {{ item.nRevenueAmount | number :'1.2-2'}}</td>
-                                                                    <td> {{ item.nCostOfRevenue | number :'1.2-2'}}</td>
-                                                                    <td>{{item.nProfitOfRevenue | number :'1.2-2'}}</td>
+                                                                    <td> {{ item.nRevenueAmount.toFixed(2)}}</td>
+                                                                    <td> {{ item.nCostOfRevenue.toFixed(2)}}</td>
+                                                                    <td>{{item.nProfitOfRevenue.toFixed(2)}}</td>
                                                                     <td></td>
                                                                 </tr>
                                                                 <tr
@@ -1185,15 +1111,12 @@
                         <td><span class="">{{ data?.sVatMethod }}</span></td>
                         <td class="w-150px">
                             <span class="">
-                                {{ data?.oVatRate[data?.sVatMethod].nTotalRevenue | number :'1.2-2' }}
+                                {{ data?.oVatRate[data?.sVatMethod].nTotalRevenue.toFixed(2) }}
                             </span>
                         </td>
-                        <td class="w-150px"><span class="">{{ data?.oVatRate[data?.sVatMethod].nPurchaseValue | number
-                                :'1.2-2' }}</span>
-                        </td>
-                        <td class="w-150px"><span class="">{{ data?.oVatRate[data?.sVatMethod].nProfit| number :'1.2-2'
-                                }}</span></td>
-                        <td class="w-150px"><span class="">{{ data?.oVatRate[data?.sVatMethod].nVatAmount }}</span></td>
+                        <td class="w-150px">{{ data?.oVatRate[data?.sVatMethod].nPurchaseValue.toFixed(2) }}</td>
+                        <td class="w-150px">{{ data?.oVatRate[data?.sVatMethod].nProfit.toFixed(2)}}</td>
+                        <td class="w-150px">{{ data?.oVatRate[data?.sVatMethod].nVatAmount.toFixed(2) }}</td>
                     </ng-template>
 
                 </div>
@@ -1220,8 +1143,7 @@
                                         <tr class="fw-bold fs-6 text-gray-800">
                                             <th>{{ 'METHOD' | translate}}</th>
                                             <th class="w-150px">{{ 'AMOUNT' | translate}}</th>
-                                            <th *ngIf="paymentEditMode" class="w-150px">{{ 'NEW_AMOUNT' | translate}}
-                                            </th>
+                                            <th *ngIf="paymentEditMode" class="w-150px">{{ 'NEW_AMOUNT' | translate}}</th>
                                             <th class="w-150px">{{ 'QUANTITY' | translate}}</th>
                                         </tr>
                                     </thead>
@@ -1250,8 +1172,7 @@
                                             </tr>
                                             <tr *ngIf="oPayment.isLoading">
                                                 <td colspan="6" class="text-center">
-                                                    <div class="spinner-border mx-auto">
-                                                    </div>
+                                                    <div class="spinner-border mx-auto"></div>
                                                 </td>
                                             </tr>
                                             <ng-container *ngIf="oPayment.bIsCollapseItem">
@@ -1367,7 +1288,7 @@
                                                                     </span>
                                                                 </th>
                                                                 <th scope="col" class="w-150px">
-                                                                    {{oHistory.nPurchasePrice | number:'1.2-2'}}
+                                                                    {{oHistory.nPurchasePrice.toFixed(2)}}
                                                                 </th>
                                                             </tr>
                                                         </thead>
