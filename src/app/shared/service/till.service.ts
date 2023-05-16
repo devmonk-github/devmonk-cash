@@ -26,6 +26,7 @@ export class TillService {
   taxes:any;
   aDiscountTypes = ['loyalty-points-discount', 'discount', 'giftcard-discount'];
   oSavingPointSettings:any;
+  iStatisticsId: any;
 
   constructor(
     private apiService: ApiService,
