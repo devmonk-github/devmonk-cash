@@ -514,14 +514,12 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
         this.clearPaymentAmounts();
         break;
       case 'update':
-        // console.log('itemChanged update')
         this.clearPaymentAmounts();
-        // this.paymentDistributeService.distributeAmount(this.transactionItems, this.getUsedPayMethods(true));
         break;
       case 'prepaymentChange':
         this.availableAmount = this.getUsedPayMethods(true);
         this.nGiftcardAmount = _.sumBy(this.appliedGiftCards, 'nAmount') || 0;
-        this.paymentDistributeService.distributeAmount(this.transactionItems, this.availableAmount, this.nGiftcardAmount, this.redeemedLoyaltyPoints);
+        this.paymentDistributeService.distributeAmount(this.transactionItems, this.availableAmount, this.nGiftcardAmount, this.redeemedLoyaltyPoints, this.payMethods);
         this.updateAmountVariables();
         break;
       case 'duplicate':
@@ -702,13 +700,13 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   changeInPayment() {
     this.availableAmount = this.getUsedPayMethods(true);
     this.nGiftcardAmount = _.sumBy(this.appliedGiftCards, 'nAmount') || 0;
-    this.paymentDistributeService.distributeAmount(this.transactionItems, this.availableAmount, this.nGiftcardAmount, this.redeemedLoyaltyPoints);
+    this.paymentDistributeService.distributeAmount(this.transactionItems, this.availableAmount, this.nGiftcardAmount, this.redeemedLoyaltyPoints, this.payMethods);
     this.allPaymentMethod = this.allPaymentMethod.map((v: any) => ({ ...v, isDisabled: true }));
     this.payMethods.map(o => o.isDisabled = true);
     const paidAmount = _.sumBy(this.payMethods, 'amount') || 0;
 
     const aGiftcard = this.transactionItems.filter((v: any) => v.type == 'giftcard');
-    this.bAllGiftcardPaid = aGiftcard.filter((el: any) => !el.isExclude).every((el: any) => el.paymentAmount == el.amountToBePaid)
+    this.bAllGiftcardPaid = aGiftcard.filter((el:any) => !el.isExclude).every((el: any) => el.paymentAmount == el.amountToBePaid)
 
     if (paidAmount === 0) {
       this.payMethods.map(o => o.isDisabled = false);
@@ -756,15 +754,15 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     this.payMethods.map(o => { o.amount = null, o.isDisabled = false });
     this.availableAmount = this.getUsedPayMethods(true);
     this.nGiftcardAmount = _.sumBy(this.appliedGiftCards, 'nAmount') || 0;
-    this.paymentDistributeService.distributeAmount(this.transactionItems, this.availableAmount, this.nGiftcardAmount, this.redeemedLoyaltyPoints);
+    this.paymentDistributeService.distributeAmount(this.transactionItems, this.availableAmount, this.nGiftcardAmount, this.redeemedLoyaltyPoints, this.payMethods);
     this.updateAmountVariables();
   }
 
 
   startTerminalPayment() {
-    this.dialogService.openModal(TerminalDialogComponent,
-      {
-        cssClass: 'modal-lg',
+    this.dialogService.openModal(TerminalDialogComponent, 
+      { 
+        cssClass: 'modal-lg', 
         context: { payments: this.payMethods },
         hasBackdrop: true,
         closeOnBackdropClick: false,
@@ -855,7 +853,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
           });
           this.availableAmount = this.getUsedPayMethods(true);
           this.nGiftcardAmount = _.sumBy(this.appliedGiftCards, 'nAmount') || 0;
-          this.paymentDistributeService.distributeAmount(this.transactionItems, this.availableAmount, this.nGiftcardAmount, this.redeemedLoyaltyPoints);
+          this.paymentDistributeService.distributeAmount(this.transactionItems, this.availableAmount, this.nGiftcardAmount, this.redeemedLoyaltyPoints, this.payMethods);
           this.transactionItems = [...this.transactionItems.filter((item: any) => item.type !== 'empty-line')]
           const body = this.tillService.createTransactionBody(this.transactionItems, payMethods, this.discountArticleGroup, this.redeemedLoyaltyPoints, this.customer);
           if (body.transactionItems.filter((item: any) => item.oType.eKind === 'repair')[0]?.iActivityItemId) {
