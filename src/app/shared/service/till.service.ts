@@ -848,6 +848,7 @@ export class TillService {
       iLocationId: this.iLocationId,
       bArticleGroup: true,
       bProductNumber: true,
+      bProductName: true,
       bLabelDescription: true
     }
     let oMergedSettings: any = {};
