@@ -1291,6 +1291,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     let bPrefillConditionViaBusinessBrand = true;
     if (product?.iBusinessBrandId && product?.oBusinessBrand?.sAlias) bPrefillConditionViaBusinessBrand = false;
     if (this.tillService.settings.currentLocation.bProductNumber && bPrefillConditionViaBusinessBrand) name += ' ' + (product?.sProductNumber || '');
+    if (this.tillService.settings.currentLocation?.bProductName) name += ' ' + (product?.oName[this.selectedLanguage] || '');
 
     this.transactionItems.push({
       name: name,

@@ -193,8 +193,7 @@
             <label class="form-check form-switch form-check-custom form-check-solid">{{ 'LABEL_DESCRIPTION' |
               translate}}</label>
             <label class="form-check form-switch form-check-custom form-check-solid">
-              <input type="checkbox" class="form-check-input" [(ngModel)]="settings.currentLocation.bLabelDescription"
-                disabled>
+              <input type="checkbox" class="form-check-input" [(ngModel)]="settings.currentLocation.bLabelDescription">
             </label>
           </div>
           <!-- <div class="col-3">
@@ -208,6 +207,14 @@
               translate}}</label>
             <label class="form-check form-switch form-check-custom form-check-solid">
               <input type="checkbox" class="form-check-input" [(ngModel)]="settings.currentLocation.bProductNumber">
+            </label>
+          </div>
+
+          <div class="col-12 d-flex align-items-center justify-content-between mb-5 ">
+            <label class="form-check form-switch form-check-custom form-check-solid">{{ 'PRODUCT_NAME' |
+              translate}}</label>
+            <label class="form-check form-switch form-check-custom form-check-solid">
+              <input type="checkbox" class="form-check-input" [(ngModel)]="settings.currentLocation.bProductName">
             </label>
           </div>
           <!-- <div class="col-3">
