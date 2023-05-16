@@ -139,7 +139,8 @@ export class ProductComponent implements OnInit{
       })
   }
 
-  updatePayments(): void {
+  updatePayments(price?:any) {
+    if(price) this.item.price = price;
     this.item.iLocationId = this.iSelectedLocationId; /* in case, we changed the location from the drop-down */
     this.itemChanged.emit({type: 'item', data: this.item});
   }

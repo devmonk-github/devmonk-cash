@@ -48,7 +48,7 @@
                     <label class="form-control-label mb-3">{{ "PRICE" | translate}}</label>:
                     <input type="number" name="price" class="form-control  mb-3 mb-lg-0" type="text"
                         (keyup)="item.price < 1 ? item.price = 1: item.price" [(ngModel)]="item.price"
-                        (ngModelChange)="changeTotalAmount()">
+                        (ngModelChange)="changeTotalAmount($event)">
                 </div>
             </div>
             <div class="col-3">
