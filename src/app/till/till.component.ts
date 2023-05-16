@@ -138,7 +138,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   bAllGiftcardPaid: boolean = true;
 
   // paymentChanged: Subject<any> = new Subject<any>();
-  availableAmount: any;
+  availableAmount: any = 0;
   nFinalAmount = 0;
   nItemsTotalToBePaid = 0;
   nItemsTotalDiscount = 0;
@@ -156,6 +156,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
   bIsTransactionLoading = false;
   nGiftcardAmount = 0;
+  bDisableCheckout: boolean;
 
   randNumber(min: number, max: number): number {
     return Math.floor(Math.random() * (max - min + 1) + min);
@@ -211,6 +212,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     this.getEmployee(currentEmployeeId)
 
     this.mapFiscallyData()
+
+    this.checkout();
 
     setTimeout(() => {
       MenuComponent.bootstrap();
@@ -343,7 +346,11 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     this.nItemsTotalDiscount = this.getTotals('discount');
     this.nItemsTotalQuantity = this.getTotals('quantity');
     this.nTotalPayment = this.totalPrepayment();
-    this.nFinalAmount = +(Math.abs(this.availableAmount - this.nItemsTotalToBePaid).toFixed(2));
+    if (this.availableAmount > this.nItemsTotalToBePaid) {
+      this.nFinalAmount = +(Math.abs(this.availableAmount - this.nTotalPayment).toFixed(2));
+    } else {
+      this.nFinalAmount = +(Math.abs(this.nItemsTotalToBePaid - this.nTotalPayment).toFixed(2));
+    }
 
     // console.log({ 
     //   nItemsTotalToBePaid: this.nItemsTotalToBePaid, 
@@ -352,6 +359,8 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     //   availableAmount: this.availableAmount,
     //   nItemsTotalDiscount: this.nItemsTotalDiscount
     // })
+
+    this.checkout();
   }
 
   getTotals(type: string): number {
@@ -415,16 +424,15 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     return +(result.toFixed(2));
   }
 
-  checkout(): any {
+  checkout() {
+    this.bDisableCheckout = true;
     if (this.transactionItems?.length) {
-      const items = this.transactionItems.filter((item: any) => {
-        if (item?.isExclude) return item;
-      })
-      if (items?.length == this.transactionItems?.length) return false
-      else if (this.amountDefined && this.bAllGiftcardPaid) return false;
-      else return true
+      const items = this.transactionItems.filter((item: any) => item?.isExclude)
+      if (items?.length == this.transactionItems?.length) this.bDisableCheckout = false
+      else if (this.amountDefined && this.bAllGiftcardPaid) this.bDisableCheckout = false;
+      else this.bDisableCheckout = true
     } else {
-      return true;
+      this.bDisableCheckout = true;
     }
   }
   async addItem(type: string) {

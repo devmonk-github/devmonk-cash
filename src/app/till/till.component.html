@@ -592,8 +592,8 @@
               </div>
 
               <h1>
-                <span *ngIf="nTotalPayment < nItemsTotalToBePaid">{{ "YET_TO_PAY" | translate}}</span>
-                <span *ngIf="nTotalPayment >= nItemsTotalToBePaid">{{ "CHANGE" | translate}}</span>:
+                <span *ngIf="nTotalPayment < nItemsTotalToBePaid && availableAmount < nItemsTotalToBePaid">{{ "YET_TO_PAY" | translate}}</span>
+                <span *ngIf="availableAmount >= nItemsTotalToBePaid">{{ "CHANGE" | translate}}</span>:
 
                 {{ nFinalAmount | currency: tillService.currency}}
               </h1>
@@ -612,7 +612,7 @@
 
               <div class="d-flex flex-wrap">
                 <button class="btn btn-primary till-save-button flex-grow-1 me-2" (click)="createTransaction()"
-                  [disabled]="checkout()">
+                  [disabled]="bDisableCheckout">
                   <!-- [disabled]="saveInProgress || 1 > transactionItems.length || !amountDefined || !bAllGiftcardPaid"> -->
                   <span class="mr-3" *ngIf="saveInProgress">
                     <fa-icon [icon]="faSpinner" class="fa fa-spinner fa-spin"></fa-icon>
