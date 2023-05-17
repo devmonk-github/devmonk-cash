@@ -32,7 +32,7 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
   settings: any = {
     nLastReceiptNumber: 0,
     nLastInvoiceNumber: 0,
-    nLastnClientID:0,
+    nLastClientID:0,
     id: null
   };
   overviewColumns = [
@@ -151,8 +151,8 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
       this.getSettingsSubscription = this.apiService.getNew('cashregistry', `/api/v1/settings/${this.requestParams.iBusinessId}`).subscribe((result: any) => {
       this.settings = result;
       this.getCustomerSettingsSubscription = this.apiService.getNew('customer', `/api/v1/customer/settings/get/${this.requestParams.iBusinessId}`).subscribe((result: any) => {
-        this.settings.nLastnClientID = result?.nLastnClientID;
-        this.oldNlastnClientID = result?.nLastnClientID;
+        this.settings.nLastClientID = result?.nLastClientID;
+        this.oldNlastnClientID = result?.nLastClientID;
         this.settings.aCustomerSearch = result?.aCustomerSearch;
         this.settings.sMessage = result?.sMessage;
       }, (error) => {
@@ -319,10 +319,10 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
   
   updateCustomerSettings() {
     let CustomerSettingsbody = {}
-    if(this.bUpdateNclientID && (this.oldNlastnClientID != this.settings.nLastnClientID)){
+    if(this.bUpdateNclientID && (this.oldNlastnClientID != this.settings.nLastClientID)){
       CustomerSettingsbody = {
         aCustomerSearch: this.settings?.aCustomerSearch,
-        nLastnClientID: this.settings.nLastnClientID,
+        nLastClientID: this.settings.nLastClientID,
         sMessage: this.settings.sMessage
       }
     }else{
