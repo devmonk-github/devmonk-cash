@@ -114,7 +114,7 @@
                     </div>
                     <div class="col-12">
                         <p><strong>{{'EXAMPLE' | translate }}</strong></p>
-                        <p class="mt-2">{{ 'IF_CUSTOMER_REDEEMS' | translate }}: <strong>10 points</strong>, {{ 'AN_ACTUAL_VALUE_REDUCED_WOULD_BE' }} <strong>{{ (10/savingPointsSettings.nPerEuro2 || 1) | currency: tillService.currency}}</strong></p>
+                        <p class="mt-2">{{ 'IF_CUSTOMER_REDEEMS' | translate }}: <strong>10 {{"POINTS" | translate}}</strong>, {{ 'AN_ACTUAL_VALUE_REDUCED_WOULD_BE' | translate }} <strong>{{ (10/savingPointsSettings.nPerEuro2 || 1) | currency: tillService.currency}}</strong></p>
                     </div>
                 </div>
 
