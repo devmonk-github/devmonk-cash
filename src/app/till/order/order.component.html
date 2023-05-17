@@ -206,37 +206,7 @@
           [(ngModel)]="item.sCommentVisibleServicePartner"></textarea>
       </div>
 
-      <div class="col-3">
-        <div id="kt_accordion_123" [ngClass]="{'show': collapsedBtn }" class="accordion-collapse collapse">
-          <div class="row">
-            <div class="col-6">
-              <div class="form-group mb-1">
-                <label class="form-control-label mb-1">{{ "MARGIN" | translate}}</label>:
-                <input class="form-control mb-3 mb-lg-0" type="number" step="any" [(ngModel)]="item.nMargin"
-                  (keyup)="changeInMargin()" [disabled]="item.oType.bRefund || item.oType.bPrepayment">
-              </div>
-            </div>
-            <div class="col-6">
-              <div class="form-group mb-1">
-                <label class="form-control-label mb-1">{{ "PURCHASE_PRICE" | translate}}</label>:
-                <input class="form-control mb-3 mb-lg-0" type="number" step="any" (keyup)="changeInPurchasePrice()"
-                  [(ngModel)]="item.nPurchasePrice" [disabled]="item.oType.bRefund || item.oType.bPrepayment">
-              </div>
-            </div>
-            <div class="col-12">
-              <div class="form-group mb-1">
-                <label class="form-control-label mb-1">
-                  <span *ngIf="item.oType.bPrepayment===true">{{ "PREPAYMENT" | translate}}</span>
-                  <span *ngIf="item.oType.bPrepayment===false">{{ "FULL_PAYMENT" | translate}}</span>
-                </label>:
-                <span style="color:red;font-weight:bolder">{{ "FIRST_FILL_AMOUNT_AT_RIGHT_SIDE" | translate}}</span>
-                <input class="form-control  mb-3 mb-lg-0" type="number" [(ngModel)]="item.paymentAmount"
-                  (ngModelChange)="changePrePayment(item)" [disabled]="item.isExclude || disablePrepayment">
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <div class="col-3"></div>
 
       <div class="col-3">
         <div class="row">
@@ -331,6 +301,37 @@
       </div>
 
       <div class="col-4">
+        
+        <div id="kt_accordion_123" [ngClass]="{'show': collapsedBtn }" class="accordion-collapse collapse">
+          <div class="row">
+            <div class="col-6">
+              <div class="form-group mb-1">
+                <label class="form-control-label mb-1">{{ "MARGIN" | translate}}</label>:
+                <input class="form-control mb-3 mb-lg-0" type="number" step="any" [(ngModel)]="item.nMargin"
+                  (keyup)="changeInMargin()" [disabled]="item.oType.bRefund || item.oType.bPrepayment">
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="form-group mb-1">
+                <label class="form-control-label mb-1">{{ "PURCHASE_PRICE" | translate}}</label>:
+                <input class="form-control mb-3 mb-lg-0" type="number" step="any" (keyup)="changeInPurchasePrice()"
+                  [(ngModel)]="item.nPurchasePrice" [disabled]="item.oType.bRefund || item.oType.bPrepayment">
+              </div>
+            </div>
+            <div class="col-12">
+              <div class="form-group mb-1">
+                <label class="form-control-label mb-1">
+                  <span *ngIf="item.oType.bPrepayment===true">{{ "PREPAYMENT" | translate}}</span>
+                  <span *ngIf="item.oType.bPrepayment===false">{{ "FULL_PAYMENT" | translate}}</span>
+                </label>:
+                <span style="color:red;font-weight:bolder">{{ "FIRST_FILL_AMOUNT_AT_RIGHT_SIDE" | translate}}</span>
+                <input class="form-control  mb-3 mb-lg-0" type="number" [(ngModel)]="item.paymentAmount"
+                  (ngModelChange)="changePrePayment(item)" [disabled]="item.isExclude || disablePrepayment">
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div class="p-2" *ngFor="let image of item.aImage; let i = index" (mouseover)="showDeleteBtn = true"
           (mouseout)="showDeleteBtn = false">
           <div class="image-input" data-kt-image-input="true"

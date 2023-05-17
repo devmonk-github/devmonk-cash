@@ -36,7 +36,7 @@ export class PaymentDistributionService {
       nDiscount = +(nDiscount.toFixed(2));
       i.amountToBePaid = i.nTotal - nDiscount - (i.prePaidAmount || 0);
       i.amountToBePaid = +(i.amountToBePaid.toFixed(2))
-      if (bTesting) console.log(38, { nPrice, nDiscount, amountToBePaid: i.amountToBePaid, qty: i.quantity})
+      if (bTesting) console.log(38, { nPrice, nDiscount, amountToBePaid: i.amountToBePaid, qty: i.quantity, paymentAmount: i.paymentAmount})
       
       if (i.type === 'gold-purchase') i.amountToBePaid = -(i.amountToBePaid) ;
 
@@ -119,9 +119,9 @@ export class PaymentDistributionService {
 
       if (bTesting) console.log('still yet to pay',{ totalAmountToBePaid, availableAmount })
       if (totalAmountToBePaid !== 0) {
-
+        if(availableAmount > totalAmountToBePaid) availableAmount = totalAmountToBePaid;
         aItems.forEach(i => {
-          if (bTesting) console.log(107, 'i.tType',i.tType);
+          if (bTesting) console.log(107, { tType: i.tType, availableAmount });
           if (i.amountToBePaid && (!i?.tType || i.tType !== 'refund')) {
             const a = +((i.amountToBePaid * availableAmount / totalAmountToBePaid).toFixed(2));
             if (bTesting) console.log('set to payment',a)

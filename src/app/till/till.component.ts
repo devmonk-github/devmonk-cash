@@ -345,11 +345,16 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     // console.log('updateAmountVariables');
     this.nItemsTotalToBePaid = +(_.sumBy(this.transactionItems, (item: any) => (!item.isExclude) ? item.amountToBePaid : 0).toFixed(2));//this.getTotals('price');
     this.nItemsTotalDiscount = this.getTotals('discount');
-    this.nItemsTotalQuantity = this.getTotals('quantity');
-    this.nTotalPayment = this.totalPrepayment();
-    if (this.availableAmount > this.nItemsTotalToBePaid) {
+    this.nItemsTotalQuantity = _.sumBy(this.transactionItems, 'quantity');
+    this.nTotalPayment = _.sumBy(this.transactionItems.filter((i: any) => !i.isExclude), 'paymentAmount')// this.totalPrepayment();
+    if (this.availableAmount > this.nItemsTotalToBePaid && this.nTotalPayment == this.nItemsTotalToBePaid) {
+      // console.log('if 1')
+      this.nFinalAmount = +(Math.abs(this.availableAmount - this.nItemsTotalToBePaid).toFixed(2));
+    } else if (this.availableAmount > this.nTotalPayment) {
+      // console.log('else if 1')
       this.nFinalAmount = +(Math.abs(this.availableAmount - this.nTotalPayment).toFixed(2));
     } else {
+      // console.log('else')
       this.nFinalAmount = +(Math.abs(this.nItemsTotalToBePaid - this.nTotalPayment).toFixed(2));
     }
 
@@ -833,14 +838,22 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
         return;
       }
     }
-    const changeAmount = this.availableAmount - this.nItemsTotalToBePaid
+
+    let changeAmount = 0;
+    if(this.availableAmount > this.nItemsTotalToBePaid && this.nTotalPayment == this.nItemsTotalToBePaid) {
+      changeAmount = this.availableAmount - this.nItemsTotalToBePaid;
+    } else if(this.availableAmount > this.nTotalPayment) {
+      changeAmount = this.availableAmount - this.nTotalPayment;
+    }
+    // console.log({ changeAmount, nItemsTotalToBePaid: this.nItemsTotalToBePaid })
     this.dialogService.openModal(TerminalDialogComponent,
       {
         cssClass: 'modal-lg',
         context: {
           payments: this.payMethods,
           changeAmount,
-          nTotalTransactionAmount: this.nItemsTotalToBePaid
+          nTotalTransactionAmount: this.nItemsTotalToBePaid,
+          totalAmount: this.nTotalPayment
         },
         hasBackdrop: true,
         closeOnBackdropClick: false,

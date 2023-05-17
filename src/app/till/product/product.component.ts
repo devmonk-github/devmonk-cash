@@ -165,7 +165,7 @@ export class ProductComponent implements OnInit{
 
     if (item.paymentAmount > this.availableAmount) {
       this.toastrService.show({ type: 'warning', text: `Can't assign more than available money!` });
-      return;
+      // return;
     }
 
     item.manualUpdate = true;
