@@ -953,7 +953,7 @@ export class TransactionAuditUiPdfService {
         const aHeaderList: any = [];
         aHeaders.forEach((el: any) => aHeaderList.push({ text: this.translateService.instant(el), style: ['th', 'bgGray'] }))
         const aTexts: any = [aHeaderList];
-        const aItems = this.aActivityItems.filter((el: any) => el.oType.eKind == 'repair');
+        const aItems = this.aActivityItems?.filter((el: any) => el.oType.eKind == 'repair');
         if (aItems?.length) {
             aItems.forEach((item: any) => {
                 aTexts.push([
@@ -985,7 +985,7 @@ export class TransactionAuditUiPdfService {
         const aHeaderList: any = [];
         aHeaders.forEach((el: any) => aHeaderList.push({ text: this.translateService.instant(el), style: ['th', 'bgGray'] }))
         const aTexts: any = [aHeaderList];
-        const aItems = this.aActivityItems.filter((el: any) => el.oType.eKind == 'giftcard');
+        const aItems = this.aActivityItems?.filter((el: any) => el.oType.eKind == 'giftcard');
         if (aItems?.length) {
             aItems.forEach((item: any) => {
                 aTexts.push([
