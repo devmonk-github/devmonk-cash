@@ -629,8 +629,8 @@ export class TransactionAuditUiPdfService {
                                 { text: oItem?.sReceiptNumber, style: ['td', 'property'] },
                                 { text: oItem?.sArticleNumber || '', style: ['td', 'property'] },
                                 { text: oItem.nQuantity, style: ['td', 'property'] },
-                                { text: oItem?.sDescription, style: ['td', 'property'] }, //'description'
-                                { text: oItem.sProductName, style: ['td', 'property'] },
+                                { text: oItem.sProductName + '\n' + oItem?.sDescription, style: ['td', 'property'], colSpan: 2 },
+                                { },
                                 { text: oItem?.sProductNumber || '', style: ['td', 'property'] }, //'product number'
                                 { text: oItem?.nPriceIncVat, style: ['td', 'property'] },
                                 { text: nDiscount, style: ['td', 'property'] },
@@ -641,7 +641,7 @@ export class TransactionAuditUiPdfService {
                             ]);
                         });
                     }
-                    console.log({ aItems })
+                    // console.log({ aItems })
                 });
                 if (nAddedCount) {
                     // console.log('adding subtotal row')
