@@ -1083,7 +1083,6 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
     item.bIsCollapseItem = !item.bIsCollapseItem;
 
     if (from === 'articlegroup') {
-
       if (item.aTransactionItems) return;
       let data: any = {
         skip: 0,
@@ -1094,8 +1093,8 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
         iTransactionId: 'all',
         sFrom: 'turnover-group',
         oFilterBy: {
-          dStartDate: this.filterDates.startDate,
-          dEndDate: this.filterDates.endDate,
+          dStartDate: (this.IsDynamicState) ? new Date(this.filterDates.startDate) : this.statisticFilter.dFromState,
+          dEndDate: (this.IsDynamicState) ? new Date(this.filterDates.endDate) : this.statisticFilter.dToState,
           // IsDynamicState
           bIsArticleGroupLevel: this.bIsArticleGroupLevel,
           bIsSupplierMode: this.bIsSupplierMode,
@@ -1107,6 +1106,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
         sTransactionType: this.optionMenu,
         iBusinessId: this.iBusinessId,
       };
+
       // if (this.iStatisticId) {
       //   // data.oFilterBy.dStartDate = this.oStatisticsDocument?.dOpenDate;
       //   // data.oFilterBy.dEndDate = (this.oStatisticsDocument?.dCloseDate) ? this.oStatisticsDocument?.dCloseDate : this.oStatisticsData.dEndDate;
