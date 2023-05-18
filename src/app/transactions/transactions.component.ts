@@ -229,7 +229,6 @@ export class TransactionsComponent implements OnInit, OnDestroy {
     this.apiService.postNew('cashregistry', '/api/v1/transaction/list', this.requestParams).subscribe((result: any) => {
       if (result?.data?.result?.length) {
         this.transactions = result.data.result;
-        // console.log(this.transactions);
         this.transactions.forEach((transaction:any) => {
           const aTemp = transaction.aPayments.filter((payment: any) => payment.sRemarks !== 'CHANGE_MONEY')
           const bankPaymentIndex = transaction.aPayments.findIndex((payment:any)=> payment.sMethod == 'bankpayment');

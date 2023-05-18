@@ -289,7 +289,6 @@ export class TransactionAuditUiPdfService {
             this.addGoldPurchasesToPdf();
         }
         
-        // console.log(this.content);
         this.pdf.getPdfData({
             styles: this.styles,
             content: this.content,

@@ -680,7 +680,6 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
               this.oStatisticsDocument = this.transactionAuditPdfService.processingMultipleStatisticsBySummingUp({ aStatisticsDocuments: this.aStatisticsDocuments, aStatistic: this.aStatistic });
             }
             if (this.aStatisticsDocuments?.length) this.mappingThePaymentMethod(this.aStatisticsDocuments);
-            // this.exportToPDF();
             this.checkShowDownload();
           }
         }
@@ -948,7 +947,6 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
   async exportToPDF(mode:string = 'compact') {
     this.pdfGenerationInProgress = true;
     await this.transactionAuditPdfService.exportToPDF({
-      // aDisplayMethod: this.aDisplayMethod,
       aSelectedLocation: this.aSelectedLocation,
       sType: this.sOptionMenu.parent.sValue,
       bIsDynamicState: this.IsDynamicState,

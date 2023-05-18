@@ -185,6 +185,7 @@
         <tr *ngFor="let transaction of transactions | paginate: paginationConfig, let i = index"
           data-bs-toggle="tooltip" data-bs-placement="top" title={{toolTipData(transaction)}}>
           <td scope="row">{{transaction.dCreatedDate | date: 'medium'}}</td>
+          
           <td class="text-truncate" style="max-width: 120px;">{{transaction.sLocationName}}</td>
           <td>{{transaction.sNumber}}</td>
           <td>{{transaction.sReceiptNumber}}</td>
