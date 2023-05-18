@@ -1308,6 +1308,18 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
     name += ' ' + (product?.sLabelDescription || '');
 
+    let sDescription = '';
+    if(this.tillService.settings.currentLocation.bDiamondDetails) {
+      const aGemDetails = product.aProperty.filter((details: any) => details?.sPropertyName?.startsWith('GEM_1'));
+      const aFields = ['KIND', 'PURITY', 'COLOR', 'CUT', 'WEIGHT', 'QUANTITY'];
+      aFields.forEach((sField:string) => {
+        const oDetail = aGemDetails.find((el: any) => el.sPropertyName === 'GEM_1_'+sField);
+        if(oDetail) {
+          sDescription += (sField == 'QUANTITY') ? '(' + oDetail.sPropertyOptionName + ') ' : oDetail.sPropertyOptionName + ' ';
+        }
+      })
+    }
+
     let bPrefillConditionViaBusinessBrand = true;
     if (product?.iBusinessBrandId && product?.oBusinessBrand?.sAlias) bPrefillConditionViaBusinessBrand = false;
     if (this.tillService.settings.currentLocation.bProductNumber && bPrefillConditionViaBusinessBrand) name += ' ' + (product?.sProductNumber || '');
@@ -1328,7 +1340,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       tax: nVatRate,
       sProductNumber: product.sProductNumber,
       sArticleNumber: product.sArticleNumber,
-      description: '',//product.sLabelDescription,
+      description: sDescription,//product.sLabelDescription,
       iArticleGroupId: product.iArticleGroupId,
       oArticleGroupMetaData: { aProperty: product.aProperty || [], sCategory: '', sSubCategory: '', oName: {}, oNameOriginal: {} },
       iBusinessBrandId: product.iBusinessBrandId || product.iBrandId,
