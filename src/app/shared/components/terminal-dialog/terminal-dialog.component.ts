@@ -36,10 +36,10 @@ export class TerminalDialogComponent implements OnInit {
   interval: any;
   selectedIndex = 0;
   restartPaymentTimer = 46;
-  nTotalTransactionAmount=0;
-  totalAmount = 0;
+  nItemsTotalToBePaid:number = 0;
+  totalAmount:any = 0;
   changeAmount:any = 0;
-  isProceed:Boolean = false;
+  isProceed = false;
   constructor(
     private viewContainer: ViewContainerRef,
     private terminalService: TerminalService,
@@ -50,7 +50,7 @@ export class TerminalDialogComponent implements OnInit {
     this.dialogRef = _injector.get<DialogComponent>(DialogComponent);
   }
 
-  ngOnInit(): void {
+  ngOnInit() {
     this.cardPayments = this.dialogRef.context.payments.filter((o: any) => o.sName.toLowerCase() === 'card' && o.amount);
     this.otherPayments = this.dialogRef.context.payments.filter((o: any) => o.sName.toLowerCase() !== 'card' && o.amount);
     if (this.dialogRef.context.changeAmount > 0) {
@@ -58,7 +58,7 @@ export class TerminalDialogComponent implements OnInit {
     } else if (this.dialogRef.context.changeAmount < 0) {
       this.changeAmount = 0;
     }
-    this.totalAmount = _.sumBy(this.dialogRef.context.payments, 'amount');
+    // this.totalAmount = _.sumBy(this.dialogRef.context.payments, 'amount');
     this.cardPayments.map((o: any) => {
       o.status = 'PROCEED';
       o.remark = 'NOT_PAID';
@@ -167,9 +167,9 @@ export class TerminalDialogComponent implements OnInit {
     cashPaymentMethod.remark = 'CHANGE_MONEY';
     paymentsToreturn.push(cashPaymentMethod);
 
-    const nDiff = +(this.nTotalTransactionAmount - this.totalAmount).toFixed(2); /* due to javascript exception */
+    const nDiff = +(this.nItemsTotalToBePaid - this.totalAmount).toFixed(2); /* due to javascript exception */
     if ((nDiff < 0 && nDiff >= - 0.05) || (nDiff > 0 && nDiff <= 0.05)) { /* no need of zero differences */
-      oCashPaymentMethod.amount = Number(oCashPaymentMethod.amount) + (this.nTotalTransactionAmount - this.totalAmount);
+      oCashPaymentMethod.amount = Number(oCashPaymentMethod.amount) + (this.nItemsTotalToBePaid - this.totalAmount);
       oCashPaymentMethod.remark = 'TOTAL_AMOUNT_UPDATED';
     }
 

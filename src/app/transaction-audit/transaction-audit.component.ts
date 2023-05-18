@@ -47,6 +47,8 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
   oStockPerLocation: any = [];
   isShowStockLocation: boolean = false;
 
+  object = Object
+  
   closingDayState: boolean = false;
   bShowDownload: boolean = false;
 
@@ -60,7 +62,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
     dFromState: '',
     dToState: '',
   };
-  filterDates = {
+  filterDates:any = {
     startDate: "",//new Date(new Date().setHours(0, 0, 0)),
     endDate: "",//new Date(new Date().setHours(23, 59, 59)),
   };
@@ -109,10 +111,15 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
 
   nTotalRevenue = 0;
   nTotalQuantity = 0;
+  aStatisticsIds:any = [];
+  sFrom: any;
+  iBusinessPartnerId: any;
+  aBusinessPartner: any;
+  aArticleGroupDetails: any;
 
   constructor(
     private apiService: ApiService,
-    private translate: TranslateService,
+    public translateService: TranslateService,
     private route: ActivatedRoute,
     private router: Router,
     private toastService: ToastService,
@@ -125,31 +132,59 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
     const _oUser = localStorage.getItem('currentUser');
     if (_oUser) this.oUser = JSON.parse(_oUser);
     this.previousPage = this.route?.snapshot?.queryParams?.page || 0
+    this.selectViewModeAndData();
+  }
+
+  selectViewModeAndData(){
+    const oState = this.router.getCurrentNavigation()?.extras?.state;
+    if(oState?.from) this.sFrom = oState.from
     
-    this.iStatisticId = this.route.snapshot?.params?.iStatisticId;
-    if (this.iStatisticId) {
-      const oState = this.router.getCurrentNavigation()?.extras?.state;
-      this.oStatisticsData.dStartDate = oState?.dStartDate;
-      this.oStatisticsData.dEndDate = oState?.dEndDate;
-      this.oStatisticsData.bIsDayStateOpened = oState?.bIsDayStateOpened ? true : false;
-      this.oStatisticsData.iLocationId = oState?.iLocationId;
-      this.oStatisticsData.iWorkstationId = oState?.iWorkstationId;
+    if(this.sFrom == 'sales-list') {
+      this.iBusinessPartnerId = oState?.iBusinessPartnerId;
+      this.IsDynamicState = true;
+      this.sDisplayMethod = eDisplayMethodKeysEnum.revenuePerBusinessPartner;
 
-      if (this.oStatisticsData.bIsDayStateOpened){
-        this.bOpeningDayClosure = true;
+      if (oState?.filterDates?.startDate) {
+        this.filterDates = {
+          startDate: moment(new Date(oState.filterDates.startDate).setHours(0, 0, 0)).format("YYYY-MM-DDThh:mm"),
+          endDate: moment(new Date(oState.filterDates.endDate).setHours(23, 59, 59)).format("YYYY-MM-DDThh:mm")
+        }
       } else {
-        this.bOpeningHistoricalDayState = true;
-      } 
-
-      if (this.oStatisticsData.dStartDate) {
-        this.filterDates.startDate = this.oStatisticsData.dStartDate;
-        const endDate = (this.oStatisticsData.dEndDate) ? this.oStatisticsData.dEndDate : new Date();
-        this.filterDates.endDate = endDate;
-        this.oStatisticsData.dEndDate = endDate;
-      } else {
-        this.router.navigate(['/business/day-closure'])
+        this.filterDates = {
+          startDate: moment(new Date().setHours(0, 0, 0)).subtract({days: 1}).format("YYYY-MM-DDThh:mm"),
+          endDate: moment(new Date().setHours(23, 59, 59)).format("YYYY-MM-DDThh:mm")
+        };
+      }
+    } else {
+      this.iStatisticId = this.route.snapshot?.params?.iStatisticId;
+      if (this.iStatisticId) {
+        this.oStatisticsData.dStartDate = oState?.dStartDate;
+        this.oStatisticsData.dEndDate = oState?.dEndDate;
+        this.oStatisticsData.bIsDayStateOpened = oState?.bIsDayStateOpened ? true : false;
+        this.oStatisticsData.iLocationId = oState?.iLocationId;
+        this.oStatisticsData.iWorkstationId = oState?.iWorkstationId;
+  
+        if (this.oStatisticsData.bIsDayStateOpened){
+          this.bOpeningDayClosure = true;
+        } else {
+          this.bOpeningHistoricalDayState = true;
+          this.statisticFilter.dFromState = this.oStatisticsData.dStartDate;
+          this.statisticFilter.dToState = this.oStatisticsData.dEndDate;
+        } 
+  
+        if (this.oStatisticsData.dStartDate) {
+          this.filterDates.startDate = this.oStatisticsData.dStartDate;
+          const endDate = (this.oStatisticsData.dEndDate) ? this.oStatisticsData.dEndDate : new Date();
+          this.filterDates.endDate = endDate;
+          this.oStatisticsData.dEndDate = endDate;
+        } else {
+          this.router.navigate(['/business/day-closure'])
+        }
       }
     }
+    
+
+
   }
 
   async ngOnInit() {
@@ -166,7 +201,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
     this.fetchBusinessDetails();
     this.getEmployees();
     this.getWorkstations();
-    
+    this.fetchBusinessPartners();
     this.fetchStatistics(this.sDisplayMethod.toString()); /* Only for view or dynamic or static document */
 
     // this.fetchBusinessLocation();
@@ -178,6 +213,19 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
     }, 200);
   }
 
+  fetchBusinessPartners() {
+    const oBody =  {
+      iBusinessId: this.iBusinessId,
+    };
+    this.aBusinessPartner = [],
+      this.apiService.postNew('core', '/api/v1/business/partners/supplierList', oBody).subscribe((result: any) => {
+        if (result?.data?.length && result?.data[0]?.result?.length) {
+          this.aBusinessPartner = result.data[0].result;
+        }
+      }
+    )
+  }
+
   setOptionMenu() {
     this.aOptionMenu = [
       {
@@ -186,11 +234,11 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
         children: [
           {
             sKey: 'ArticleGroup',
-            sValue: this.translate.instant('ARTICLE_GROUP'),
+            sValue: this.translateService.instant('ARTICLE_GROUP'),
             children: [
               {
                 sKey: 'Compact',
-                sValue: this.translate.instant('COMPACT'),
+                sValue: this.translateService.instant('COMPACT'),
                 data: {
                   displayMethod: eDisplayMethodKeysEnum.revenuePerArticleGroup,
                   modeFilter: 'supplier',
@@ -198,7 +246,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
               },
               {
                 sKey: 'Specific',
-                sValue: this.translate.instant('SPECIFIC'),
+                sValue: this.translateService.instant('SPECIFIC'),
                 data: {
                   displayMethod: eDisplayMethodKeysEnum.revenuePerArticleGroupAndProperty,
                   modeFilter: 'supplier',
@@ -209,25 +257,25 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
           },
           {
             sKey: 'Bookkeeping',
-            sValue: this.translate.instant('BOOKKEEPING'),
+            sValue: this.translateService.instant('BOOKKEEPING'),
             children: [
               {
                 sKey: 'Vat rates',
-                sValue: this.translate.instant('VAT_RATES'),
+                sValue: this.translateService.instant('VAT_RATES'),
                 data: {
                   displayMethod: eDisplayMethodKeysEnum.aVatRates,
                 }
               },
               {
                 sKey: 'Revenue per',
-                sValue: this.translate.instant('REVENUE_PER'),
+                sValue: this.translateService.instant('REVENUE_PER'),
                 data: {
                   displayMethod: eDisplayMethodKeysEnum.revenuePerProperty
                 }
               },
               {
                 sKey: 'Article group',
-                sValue: this.translate.instant('ARTICLE_GROUP'),
+                sValue: this.translateService.instant('ARTICLE_GROUP'),
                 data: {
                   displayMethod: eDisplayMethodKeysEnum.aVatRates
                 }
@@ -236,11 +284,11 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
           },
           {
             sKey: 'Supplier',
-            sValue: this.translate.instant('SUPPLIER'),
+            sValue: this.translateService.instant('SUPPLIER'),
             children: [
               {
                 sKey: 'Compact',
-                sValue: this.translate.instant('COMPACT'),
+                sValue: this.translateService.instant('COMPACT'),
                 data: {
                   displayMethod: eDisplayMethodKeysEnum.revenuePerSupplierAndArticleGroup,
                   modeFilter: 'supplier',
@@ -248,7 +296,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
               },
               {
                 sKey: 'Specific',
-                sValue: this.translate.instant('SPECIFIC'),
+                sValue: this.translateService.instant('SPECIFIC'),
                 data: {
                   displayMethod: eDisplayMethodKeysEnum.revenuePerBusinessPartner,
                   modeFilter: 'supplier',
@@ -259,11 +307,11 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
           },
           {
             sKey: 'Manager',
-            sValue: this.translate.instant('MANAGER'),
+            sValue: this.translateService.instant('MANAGER'),
             children: [
               {
                 sKey: 'Compact',
-                sValue: this.translate.instant('COMPACT'),
+                sValue: this.translateService.instant('COMPACT'),
                 data: {
                   displayMethod: eDisplayMethodKeysEnum.revenuePerArticleGroup,
                   modeFilter: 'businessOwner',
@@ -271,7 +319,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
               },
               {
                 sKey: 'Specific',
-                sValue: this.translate.instant('SPECIFIC'),
+                sValue: this.translateService.instant('SPECIFIC'),
                 data: {
                   displayMethod: eDisplayMethodKeysEnum.revenuePerArticleGroupAndProperty,
                   modeFilter: 'businessOwner',
@@ -288,11 +336,11 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
         children: [
           {
             sKey: 'ArticleGroup',
-            sValue: this.translate.instant('ARTICLE GROUP'),
+            sValue: this.translateService.instant('ARTICLE GROUP'),
             children: [
               {
                 sKey: 'Compact',
-                sValue: this.translate.instant('COMPACT'),
+                sValue: this.translateService.instant('COMPACT'),
                 data: {
                   displayMethod: eDisplayMethodKeysEnum.revenuePerArticleGroup,
                   modeFilter: 'supplier',
@@ -300,7 +348,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
               },
               {
                 sKey: 'Specific',
-                sValue: this.translate.instant('SPECIFIC'),
+                sValue: this.translateService.instant('SPECIFIC'),
                 data: {
                   displayMethod: eDisplayMethodKeysEnum.revenuePerArticleGroupAndProperty,
                   modeFilter: 'supplier',
@@ -311,25 +359,25 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
           },
           {
             sKey: 'Bookkeeping',
-            sValue: this.translate.instant('BOOKKEEPING'),
+            sValue: this.translateService.instant('BOOKKEEPING'),
             children: [
               {
                 sKey: 'Vat rates',
-                sValue: this.translate.instant('VAT_RATES'),
+                sValue: this.translateService.instant('VAT_RATES'),
                 data: {
                   displayMethod: eDisplayMethodKeysEnum.aVatRates,
                 }
               },
               {
                 sKey: 'Revenue per',
-                sValue: this.translate.instant('REVENUE_PER'),
+                sValue: this.translateService.instant('REVENUE_PER'),
                 data: {
                   displayMethod: eDisplayMethodKeysEnum.revenuePerProperty
                 }
               },
               {
                 sKey: 'Article group',
-                sValue: this.translate.instant('ARTICLE_GROUP'),
+                sValue: this.translateService.instant('ARTICLE_GROUP'),
                 data: {
                   displayMethod: eDisplayMethodKeysEnum.aVatRates
                 }
@@ -338,11 +386,11 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
           },
           {
             sKey: 'Supplier',
-            sValue: this.translate.instant('SUPPLIER'),
+            sValue: this.translateService.instant('SUPPLIER'),
             children: [
               {
                 sKey: 'Compact',
-                sValue: this.translate.instant('COMPACT'),
+                sValue: this.translateService.instant('COMPACT'),
                 data: {
                   displayMethod: eDisplayMethodKeysEnum.revenuePerSupplierAndArticleGroup,
                   modeFilter: 'supplier',
@@ -350,7 +398,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
               },
               {
                 sKey: 'Specific',
-                sValue: this.translate.instant('SPECIFIC'),
+                sValue: this.translateService.instant('SPECIFIC'),
                 data: {
                   displayMethod: eDisplayMethodKeysEnum.revenuePerBusinessPartner,
                   modeFilter: 'supplier',
@@ -361,11 +409,11 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
           },
           {
             sKey: 'Manager',
-            sValue: this.translate.instant('MANAGER'),
+            sValue: this.translateService.instant('MANAGER'),
             children: [
               {
                 sKey: 'Compact',
-                sValue: this.translate.instant('COMPACT'),
+                sValue: this.translateService.instant('COMPACT'),
                 data: {
                   displayMethod: eDisplayMethodKeysEnum.revenuePerArticleGroup,
                   modeFilter: 'businessOwner',
@@ -373,7 +421,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
               },
               {
                 sKey: 'Specific',
-                sValue: this.translate.instant('SPECIFIC'),
+                sValue: this.translateService.instant('SPECIFIC'),
                 data: {
                   displayMethod: eDisplayMethodKeysEnum.revenuePerArticleGroupAndProperty,
                   modeFilter: 'businessOwner',
@@ -390,11 +438,11 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
         children: [
           {
             sKey: 'ArticleGroup',
-            sValue: this.translate.instant('ARTICLE GROUP'),
+            sValue: this.translateService.instant('ARTICLE GROUP'),
             children: [
               {
                 sKey: 'Compact',
-                sValue: this.translate.instant('COMPACT'),
+                sValue: this.translateService.instant('COMPACT'),
                 data: {
                   displayMethod: eDisplayMethodKeysEnum.revenuePerArticleGroup,
                   modeFilter: 'supplier',
@@ -402,7 +450,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
               },
               {
                 sKey: 'Specific',
-                sValue: this.translate.instant('SPECIFIC'),
+                sValue: this.translateService.instant('SPECIFIC'),
                 data: {
                   displayMethod: eDisplayMethodKeysEnum.revenuePerArticleGroupAndProperty,
                   modeFilter: 'supplier',
@@ -413,25 +461,25 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
           },
           {
             sKey: 'Bookkeeping',
-            sValue: this.translate.instant('BOOKKEEPING'),
+            sValue: this.translateService.instant('BOOKKEEPING'),
             children: [
               {
                 sKey: 'Vat rates',
-                sValue: this.translate.instant('VAT_RATES'),
+                sValue: this.translateService.instant('VAT_RATES'),
                 data: {
                   displayMethod: eDisplayMethodKeysEnum.aVatRates,
                 }
               },
               {
                 sKey: 'Revenue per',
-                sValue: this.translate.instant('REVENUE_PER'),
+                sValue: this.translateService.instant('REVENUE_PER'),
                 data: {
                   displayMethod: eDisplayMethodKeysEnum.revenuePerProperty
                 }
               },
               {
                 sKey: 'Article group',
-                sValue: this.translate.instant('ARTICLE_GROUP'),
+                sValue: this.translateService.instant('ARTICLE_GROUP'),
                 data: {
                   displayMethod: eDisplayMethodKeysEnum.aVatRates
                 }
@@ -440,11 +488,11 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
           },
           {
             sKey: 'Supplier',
-            sValue: this.translate.instant('SUPPLIER'),
+            sValue: this.translateService.instant('SUPPLIER'),
             children: [
               {
                 sKey: 'Compact',
-                sValue: this.translate.instant('COMPACT'),
+                sValue: this.translateService.instant('COMPACT'),
                 data: {
                   displayMethod: eDisplayMethodKeysEnum.revenuePerSupplierAndArticleGroup,
                   modeFilter: 'supplier',
@@ -452,7 +500,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
               },
               {
                 sKey: 'Specific',
-                sValue: this.translate.instant('SPECIFIC'),
+                sValue: this.translateService.instant('SPECIFIC'),
                 data: {
                   displayMethod: eDisplayMethodKeysEnum.revenuePerBusinessPartner,
                   modeFilter: 'supplier',
@@ -463,11 +511,11 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
           },
           {
             sKey: 'Manager',
-            sValue: this.translate.instant('MANAGER'),
+            sValue: this.translateService.instant('MANAGER'),
             children: [
               {
                 sKey: 'Compact',
-                sValue: this.translate.instant('COMPACT'),
+                sValue: this.translateService.instant('COMPACT'),
                 data: {
                   displayMethod: eDisplayMethodKeysEnum.revenuePerArticleGroup,
                   modeFilter: 'businessOwner',
@@ -475,7 +523,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
               },
               {
                 sKey: 'Specific',
-                sValue: this.translate.instant('SPECIFIC'),
+                sValue: this.translateService.instant('SPECIFIC'),
                 data: {
                   displayMethod: eDisplayMethodKeysEnum.revenuePerArticleGroupAndProperty,
                   modeFilter: 'businessOwner',
@@ -494,7 +542,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
     if (this.tillService.settings?.bShowDayStatesBasedOnTurnover) {
       const oTurnoverGroup = {
         sKey: 'Turnover Group',
-        sValue: this.translate.instant('TURN_OVER_GROUP'),
+        sValue: this.translateService.instant('TURN_OVER_GROUP'),
         data: {
           displayMethod: eDisplayMethodKeysEnum.aRevenuePerTurnoverGroup
         }
@@ -512,10 +560,15 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
       let iPurchaseIndex = this.aOptionMenu.findIndex(i => i.sValue.toLowerCase() === 'sales-order')
       this.aOptionMenu.splice(iPurchaseIndex, 1)
     }
-    if (this.tillService.settings?.bShowDayStatesBasedOnTurnover) {
-      this.onDropdownItemSelected(this.aOptionMenu[0], this.aOptionMenu[0].children[1], this.aOptionMenu[0].children[1].children[3])
+
+    if(this.sFrom == 'sales-list') {
+      this.onDropdownItemSelected(this.aOptionMenu[0], this.aOptionMenu[0].children[2], this.aOptionMenu[0].children[2].children[1])
     } else {
-      this.onDropdownItemSelected(this.aOptionMenu[0], this.aOptionMenu[0].children[0], this.aOptionMenu[0].children[0].children[0])
+      if (this.tillService.settings?.bShowDayStatesBasedOnTurnover) {
+        this.onDropdownItemSelected(this.aOptionMenu[0], this.aOptionMenu[0].children[1], this.aOptionMenu[0].children[1].children[3])
+      } else {
+        this.onDropdownItemSelected(this.aOptionMenu[0], this.aOptionMenu[0].children[0], this.aOptionMenu[0].children[0].children[0])
+      }
     }
   }
 
@@ -668,11 +721,21 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
             this.aStatistic = oData.aStatistic;
             
             if (this.aStatistic?.length && this.aStatistic[0]?.overall?.length) {
+
+              if (this.bOpeningHistoricalDayState) {
+                let aUniqueArticleGroupId: any = [];
+                this.aStatistic[0].individual.forEach((el: any) => {
+                  aUniqueArticleGroupId.push(...el.aArticleGroups.map((oGroup: any) => oGroup._id));
+                })
+                aUniqueArticleGroupId = [...new Set(aUniqueArticleGroupId.map((el: any) => el))];
+                this.getArticleGroups(aUniqueArticleGroupId);
+              }
               this.nTotalRevenue = +(this.aStatistic[0].overall[0].nTotalRevenue.toFixed(2))
               this.nTotalQuantity = this.aStatistic[0].overall[0].nQuantity;
             }
 
             this.aStatisticsDocuments = oData.aStaticDocument;
+            // console.log(this.aStatisticsDocuments)
             if (this.iStatisticId) {
               this.oStatisticsDocument = this.aStatisticsDocuments[0];
               this.processCounting();
@@ -733,7 +796,8 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
         dEndDate: this.filterDates.endDate,
         aFilterProperty: this.aFilterProperty,
         bIsArticleGroupLevel: true,
-        bIsSupplierMode: true
+        bIsSupplierMode: true,
+        iBusinessPartnerId: this.iBusinessPartnerId
       },
     };
 
@@ -741,8 +805,10 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
       oBody.oFilter.bIsArticleGroupLevel = this.bIsArticleGroupLevel;
       oBody.oFilter.bIsSupplierMode = this.bIsSupplierMode;
 
-      this.filterDates.startDate = moment(new Date().setHours(0, 0, 0)).format("YYYY-MM-DDThh:mm")
-      this.filterDates.endDate = moment(new Date().setHours(23, 59, 59)).format("YYYY-MM-DDThh:mm")
+      if(this.sFrom != 'sales-list' && this.filterDates.startDate == '') {
+        this.filterDates.startDate = moment(new Date().setHours(0, 0, 0)).format("YYYY-MM-DDThh:mm")
+        this.filterDates.endDate = moment(new Date().setHours(23, 59, 59)).format("YYYY-MM-DDThh:mm")
+      }
     }
 
     return oBody;
@@ -761,6 +827,14 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
             this.aStatistic = result.data.oTransactionAudit;
 
           if (this.aStatistic?.length && this.aStatistic[0]?.overall?.length) {
+
+            let aUniqueArticleGroupId:any = [];
+            this.aStatistic[0].individual.forEach((el:any) => {
+              aUniqueArticleGroupId.push(...el.aArticleGroups.map((oGroup:any) => oGroup._id));
+            })
+            aUniqueArticleGroupId = [...new Set(aUniqueArticleGroupId.map((el:any) => el))];
+            this.getArticleGroups(aUniqueArticleGroupId);
+
             this.nTotalRevenue = +(this.aStatistic[0].overall[0].nTotalRevenue.toFixed(2));
             this.nTotalQuantity = this.aStatistic[0].overall[0].nQuantity;
           }
@@ -788,6 +862,26 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
         }
       );
     this.getGreenRecords();
+  }
+
+  getArticleGroups(aUniqueArticleGroupId:any) {
+    const oBody = {
+      iBusinessId: this.iBusinessId,
+      aArticleGroupId: aUniqueArticleGroupId
+    }
+    this.apiService.postNew('core', '/api/v1/business/article-group/list', oBody).subscribe((result: any) => {
+      if (result?.data?.length && result?.data[0]?.result?.length) {
+        this.aArticleGroupDetails = result?.data[0]?.result;
+        this.aStatistic[0].individual.forEach((el: any) => {
+          el.aArticleGroups.forEach((oGroup: any) => {
+            const oData = this.aArticleGroupDetails.find((oItem: any) => oItem._id === oGroup._id)
+            if (oData) {
+              oGroup.oName = oData.oName;
+            }
+          });
+        })
+      }
+    });
   }
 
   resetValues() {
@@ -948,12 +1042,10 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
     this.pdfGenerationInProgress = true;
     await this.transactionAuditPdfService.exportToPDF({
       aSelectedLocation: this.aSelectedLocation,
-      sType: this.sOptionMenu.parent.sValue,
       bIsDynamicState: this.IsDynamicState,
       aLocation: this.aLocation,
       aSelectedWorkStation: (this.iStatisticId) ? this.sCurrentWorkstation : (this.selectedWorkStation?.length ? this.selectedWorkStation : []),
       aWorkStation: this.aWorkStation,
-      oFilterDates: this.filterDates,
       sBusinessName: this.businessDetails.sName,
       sDisplayMethod: this.sDisplayMethod,
       sDisplayMethodString: this.sSelectedOptionMenu,
@@ -964,7 +1056,15 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
       bIsArticleGroupLevel: this.bIsArticleGroupLevel,
       bIsSupplierMode: this.bIsSupplierMode,
       aEmployee: this.aEmployee,
-      mode
+      aStatisticsIds: (this.iStatisticId) ? [this.iStatisticId] : this.aStatisticsIds,
+      oFilterData: {
+        oFilterDates: (this.IsDynamicState) ? this.filterDates : {startDate: this.statisticFilter.dFromState, endDate: this.statisticFilter.dToState},
+        mode,
+        sType: this.sOptionMenu.parent.sValue,
+        sTransactionType: this.sOptionMenu.parent.sKey,
+        iBusinessPartnerId: this.iBusinessPartnerId,
+        sFrom: this.sFrom
+      }
     });
     this.pdfGenerationInProgress = false;
   }
@@ -981,7 +1081,6 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
     item.bIsCollapseItem = !item.bIsCollapseItem;
 
     if (from === 'articlegroup') {
-
       if (item.aTransactionItems) return;
       let data: any = {
         skip: 0,
@@ -990,26 +1089,29 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
         sortOrder: '',
         searchValue: '',
         iTransactionId: 'all',
+        sFrom: 'turnover-group',
         oFilterBy: {
-          dStartDate: this.filterDates.startDate,
-          dEndDate: this.filterDates.endDate,
+          dStartDate: (this.IsDynamicState) ? new Date(this.filterDates.startDate) : this.statisticFilter.dFromState,
+          dEndDate: (this.IsDynamicState) ? new Date(this.filterDates.endDate) : this.statisticFilter.dToState,
           // IsDynamicState
           bIsArticleGroupLevel: this.bIsArticleGroupLevel,
           bIsSupplierMode: this.bIsSupplierMode,
           iArticleGroupOriginalId: item?._id,
           iLocationId: this?.aSelectedLocation?.length ? this.aSelectedLocation : [],
-          iWorkstationId: this.selectedWorkStation?.length ? this.selectedWorkStation : []
+          iWorkstationId: this.selectedWorkStation?.length ? this.selectedWorkStation : [],
+          aStatisticsIds: (this.iStatisticId) ? [this.iStatisticId] : this.aStatisticsIds
         },
         sTransactionType: this.optionMenu,
         iBusinessId: this.iBusinessId,
       };
-      if (this.iStatisticId) {
-        data.oFilterBy.dStartDate = this.oStatisticsDocument?.dOpenDate;
-        data.oFilterBy.dEndDate = (this.oStatisticsDocument?.dCloseDate) ? this.oStatisticsDocument?.dCloseDate : this.oStatisticsData.dEndDate;
-      } else {
-        data.oFilterBy.dStartDate = this.statisticFilter.dFromState || this.filterDates.startDate
-        data.oFilterBy.dEndDate = this.statisticFilter.dToState || this.filterDates.endDate
-      }
+
+      // if (this.iStatisticId) {
+      //   // data.oFilterBy.dStartDate = this.oStatisticsDocument?.dOpenDate;
+      //   // data.oFilterBy.dEndDate = (this.oStatisticsDocument?.dCloseDate) ? this.oStatisticsDocument?.dCloseDate : this.oStatisticsData.dEndDate;
+      // } else {
+      //   data.oFilterBy.dStartDate = this.statisticFilter.dFromState || this.filterDates.startDate
+      //   data.oFilterBy.dEndDate = this.statisticFilter.dToState || this.filterDates.endDate
+      // }
 
       if (
         this.sDisplayMethod.toString() === 'revenuePerBusinessPartner' ||
@@ -1049,16 +1151,21 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
         iWorkstationId: this.iWorkstationId,
         iLocationId: this.iLocationId,
         oFilterBy: {
-          iPaymentMethodId: item.iPaymentMethodId
+          iPaymentMethodId: item.iPaymentMethodId,
+          aStatisticsIds: (this.iStatisticId) ? [this.iStatisticId] : this.aStatisticsIds
         }
       }
-      if (this.iStatisticId) {
-        data.oFilterBy.dStartDate = this.oStatisticsDocument?.dOpenDate;
-        data.oFilterBy.dEndDate = (this.oStatisticsDocument?.dCloseDate) ? this.oStatisticsDocument?.dCloseDate : this.oStatisticsData.dEndDate;
-      } else {
-        data.oFilterBy.dStartDate = this.statisticFilter.dFromState || this.filterDates.startDate
-        data.oFilterBy.dEndDate = this.statisticFilter.dToState || this.filterDates.endDate
+      if(!data.oFilterBy.aStatisticsIds?.length) {
+        data.oFilterBy.dStartDate = (this.IsDynamicState) ? new Date(this.filterDates.startDate) : this.statisticFilter.dFromState
+        data.oFilterBy.dEndDate = (this.IsDynamicState) ? new Date(this.filterDates.endDate) : this.statisticFilter.dToState
       }
+      // if (this.iStatisticId) {
+      //   data.oFilterBy.dStartDate = this.oStatisticsDocument?.dOpenDate;
+      //   data.oFilterBy.dEndDate = (this.oStatisticsDocument?.dCloseDate) ? this.oStatisticsDocument?.dCloseDate : this.oStatisticsData.dEndDate;
+      // } else {
+      //   data.oFilterBy.dStartDate = this.statisticFilter.dFromState || this.filterDates.startDate
+      //   data.oFilterBy.dEndDate = this.statisticFilter.dToState || this.filterDates.endDate
+      // }
       const _result: any = await this.apiService.postNew('cashregistry', '/api/v1/payments/list', data).toPromise()
       if (_result.data?.length && _result.data[0]?.result?.length) {
         item.aItems = _result.data[0]?.result;
@@ -1147,7 +1254,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
         cssClass: 'modal-m', context: { nCashInTill: nTotalCash }, hasBackdrop: true, closeOnBackdropClick: false
       }).instance.close.subscribe((result: any) => {
         if (result?.type) {
-          this.oCountings.nCashCounted = nTotalCash;
+          this.oCountings.nCashCounted = +(nTotalCash.toFixed(2));
           if (result?.data === 'leave_in_till') {
             this.oCountings.nCashRemain = +(nTotalCash.toFixed(2));
             this.oCountings.nSkim = 0;
@@ -1225,7 +1332,7 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
     const oCashInSafePaymentMethod = this.allPaymentMethod.filter((el: any) => el.sName.toLowerCase() === 'cash_in_safe')[0];
     const nVatRate = await this.taxService.fetchDefaultVatRate({ iLocationId: this.iLocationId });
 
-    const oBody = {
+    const oBody:any = {
       iBusinessId: this.iBusinessId,
       iLocationId: this.iLocationId,
       iWorkstationId: this.iWorkstationId,
@@ -1237,8 +1344,11 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
         oCashPaymentMethod,
         oCashInSafePaymentMethod,
         nVatRate,
-      }
+      },
     }
+    const org = localStorage.getItem('org');
+    if(org) oBody.aLanguage = JSON.parse(org)['aLanguage'];
+
     this.closeSubscription = this.apiService.postNew('cashregistry', `/api/v1/statistics/close/day-state`, oBody).subscribe((result: any) => {
       this.toastService.show({ type: 'success', text: `Day-state is close now` });
       this.closingDayState = false;
@@ -1385,16 +1495,24 @@ export class TransactionAuditComponent implements OnInit, OnDestroy {
     }
   }
 
-  onStateChange(dDate: any, isOpenDate: boolean, aDayClosure: any) {
+  onStateChange(dDate: any, isOpenDate: boolean) {
+    // console.log('onStateChange', { dDate, isOpenDate, aDayClosure: this.aDayClosure})
     this.aStatistic = [];
+    this.aStatisticsIds = [];
+
     const dFromStateTime = new Date(this.statisticFilter.dFromState).getTime();
     const dToStateTime = new Date(this.statisticFilter.dToState).getTime();
-    /* Disabling the date which is smaller than the dFromState in dToState */
-    for (let i = 0; i < aDayClosure?.length; i++) {
-      aDayClosure[i].isDisable = false;
-      const dDayClosureDateTime = new Date(aDayClosure[i].dCloseDate).getTime();
-      if (dFromStateTime > dDayClosureDateTime) aDayClosure[i].isDisable = true;
-    }
+      /* Disabling the date which is smaller than the dFromState in dToState */
+      this.aDayClosure.forEach((oDayClosure:any) => {
+        oDayClosure.isDisable = false;
+        const dDayClosureDateTime = new Date(oDayClosure.dCloseDate).getTime();
+        if (dFromStateTime > dDayClosureDateTime) oDayClosure.isDisable = true;
+        
+        const dFromTime = new Date(oDayClosure.dOpenDate).getTime();
+        const dToTime = new Date(oDayClosure.dCloseDate).getTime();
+        
+        if (dFromTime >= dFromStateTime && dToTime <= dToStateTime) this.aStatisticsIds.push(oDayClosure._id);
+      });
 
     this.checkShowDownload();
   }

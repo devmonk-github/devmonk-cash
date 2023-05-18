@@ -74,15 +74,8 @@ export class RepairComponent implements OnInit {
     this.listSuppliers();
     this.listEmployees();
     this.getBusinessBrands();
-    this.checkArticleGroups();
+    // this.checkArticleGroups();
     this.getProperties();
-    if (this.settings.bAutoIncrementBagNumbers) {
-      if(this.settings?.sPrefix){
-        this.item.sBagNumber =  this.settings?.sPrefix + (this.settings.nLastBagNumber + 1).toString();
-      }else{
-        this.item.sBagNumber = (this.settings.nLastBagNumber + 1).toString();
-      }
-    }
     if (this.item.new) {
       this.selectArticleGroup();
       this.item.new = false;
@@ -166,8 +159,8 @@ export class RepairComponent implements OnInit {
   }
 
   selectArticleGroup() {
-    if (this.settings.bAutoIncrementBagNumbers) {
-      this.item.sBagNumber =  (this.settings?.sPrefix || '') + (this.settings.nLastBagNumber + 1).toString();
+    if (this.settings?.bAutoIncrementBagNumbers) {
+      this.item.sBagNumber =  (this.settings?.sPrefix || '') + (this.settings?.nLastBagNumber + 1).toString();
     }
     this.dialogService.openModal(SelectArticleDialogComponent, 
       { 
@@ -188,8 +181,7 @@ export class RepairComponent implements OnInit {
             this.descriptionRef.nativeElement.focus();
           }
           const { articlegroup, brand, supplier, nMargin } = data;
-          this.item.iArticleGroupId = articlegroup._id;
-          this.item.iArticleGroupOriginalId = articlegroup._id;
+          this.assignArticleGroupMetadata(articlegroup);
           this.item.supplier = supplier.sName;
           this.supplier = supplier.sName;
           this.item.iSupplierId = supplier._id;
@@ -216,8 +208,8 @@ export class RepairComponent implements OnInit {
   }
 
   settingsChanged(event?:any){
-    if (this.settings.bAutoIncrementBagNumbers) {
-      this.item.sBagNumber = (event) ? event : this.settings.sPrefix + (this.settings.nLastBagNumber + 1).toString();
+    if (this.settings?.bAutoIncrementBagNumbers) {
+      this.item.sBagNumber = (event) ? event : this.settings?.sPrefix + (this.settings?.nLastBagNumber + 1).toString();
       this.itemChanged.emit({type:'settingsChanged', data: this.item.sBagNumber});
     }
   }
@@ -247,7 +239,8 @@ export class RepairComponent implements OnInit {
     });
   }
 
-  updatePayments() {
+  updatePayments(price?:any) {
+    if(price) this.item.price = price;
     this.itemChanged.emit({type: 'item', data: this.item});
   }
 
@@ -261,7 +254,7 @@ export class RepairComponent implements OnInit {
     if (item.paymentAmount > this.availableAmount) {
       this.toastrService.show({ type: 'warning', text: `Can't assign more than available money!` });
       item.paymentAmount = 0;
-      return;
+      // return;
     }
 
     item.manualUpdate = true;
@@ -314,24 +307,24 @@ export class RepairComponent implements OnInit {
     this.item.oArticleGroupMetaData.sSubCategory = articlegroup.sSubCategory;
   }
 
-  checkArticleGroups() {
-    this.createArticleGroupService.checkArticleGroups('repair')
-      .subscribe((res: any) => {
-        if (1 > res.data.length) {
-          this.createArticleGroup();
-        } else {
-          this.assignArticleGroupMetadata(res.data[0].result[0]);
-        }
-      }, err => {
-        this.toastrService.show({ type: 'danger', text: err.message });
-      });
-  }
+  // checkArticleGroups() {
+  //   this.createArticleGroupService.checkArticleGroups('repair')
+  //     .subscribe((res: any) => {
+  //       if (1 > res.data.length) {
+  //         this.createArticleGroup();
+  //       } else {
+  //         this.assignArticleGroupMetadata(res.data[0].result[0]);
+  //       }
+  //     }, err => {
+  //       this.toastrService.show({ type: 'danger', text: err.message });
+  //     });
+  // }
 
-  async createArticleGroup() {
-    const articleBody = { name: 'Repair', sCategory: 'Repair', sSubCategory: 'Repair' };
-    const result: any = await this.createArticleGroupService.createArticleGroup(articleBody);
-    this.assignArticleGroupMetadata(result.data);
-  }
+  // async createArticleGroup() {
+  //   const articleBody = { name: 'Repair', sCategory: 'Repair', sSubCategory: 'Repair' };
+  //   const result: any = await this.createArticleGroupService.createArticleGroup(articleBody);
+  //   this.assignArticleGroupMetadata(result.data);
+  // }
 
   constisEqualsJson(obj1: any, obj2: any) {
     return obj1===obj2;

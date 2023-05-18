@@ -27,88 +27,64 @@
 <div id="kt_accordion_1_body_1" class="accordion-collapse collapse show" aria-labelledby="kt_accordion_1_header_1"
     data-bs-parent="#kt_accordion_1">
     <div class="accordion-body px-3 py-4">
-        <section class="row product-row mb-3 row">
+        
+        <div class="row">
             <div class="col-3">
-                <div class="row">
-                    <h3>1</h3>
-                    <div class="col-12">
-                        <div class="form-group mb-4">
-                            <select class="form-control" [(ngModel)]="item.oType.bRefund"
-                                (ngModelChange)="changeTypeArray()">
-                                <option *ngFor="let type of typeArray" [ngValue]="type.value">{{type.title | translate}}</option>
-                            </select>
-                        </div>
-                    </div>
+                <div class="form-group mb-4">
+                    <select class="form-control" [(ngModel)]="item.oType.bRefund"
+                        (ngModelChange)="changeTypeArray()">
+                        <option *ngFor="let type of typeArray" [ngValue]="type.value">{{type.title | translate}}</option>
+                    </select>
                 </div>
             </div>
             <div class="col-3">
-                <div class="row">
-                    <!-- NAME  -->
-                    <div class="col-12">
-                        <div class="form-group mb-4">
-                            <label class="form-control-label mb-3">{{ "NAME" | translate}}</label>:
-                            <input class="form-control  mb-3 mb-lg-0" type="text" name="name" [(ngModel)]="item.name">
-                        </div>
-                    </div>
-                    <!-- DESCRIPTION -->
-                    <div class="col-12">
-                        <div class="form-group mb-4">
-                            <label class="form-control-label mb-3">{{ "DESCRIPTION" | translate}}</label>:
-                            <textarea class="form-control  mb-3 mb-lg-0" type="text" name="description" lines="10"
-                                [(ngModel)]="item.description"></textarea>
-                        </div>
-                    </div>
+                <div class="form-group mb-4">
+                    <label class="form-control-label mb-3">{{ "NAME" | translate}}</label>
+                    <input class="form-control  mb-3 mb-lg-0" type="text" name="name" [(ngModel)]="item.name">
                 </div>
             </div>
             <div class="col-3">
-                <div class="row">
-                    <!-- PRICE -->
-                    <div class="col-12">
-                        <div class="form-group mb-4">
-                            <label class="form-control-label mb-3">{{ "PRICE" | translate}}</label>:
-                            <input type="number" name="price" class="form-control  mb-3 mb-lg-0" type="text"
-                                (keyup)="item.price < 1 ? item.price = 1: item.price" [(ngModel)]="item.price"
-                                (change)="changeTotalAmount()">
-                        </div>
-                    </div>
-                    <!-- <div class="col-12">
-                        <div class="form-group mb-4">
-                            <label class="form-control-label mb-3">{{ "DISCOUNT" | translate}}</label>:
-                            <input type="number" name="discount" class="form-control  mb-3 mb-lg-0"
-                                (keyup)="item.nDiscount < 0 ? item.nDiscount = 0: item.nDiscount"
-                                [(ngModel)]="item.nDiscount">
-                        </div>
-                    </div> -->
+                <div class="form-group mb-4">
+                    <label class="form-control-label mb-3">{{ "PRICE" | translate}}</label>:
+                    <input type="number" name="price" class="form-control  mb-3 mb-lg-0" type="text"
+                        (keyup)="item.price < 1 ? item.price = 1: item.price" [(ngModel)]="item.price"
+                        (ngModelChange)="changeTotalAmount($event)">
+                </div>
+            </div>
+            <div class="col-3">
+                <div class="form-group mb-4">
+                    <label class="form-control-label mb-3">{{ "QUANTITY/GRAM" | translate}}</label>:
+                    <input type="number" name="price" class="form-control" [(ngModel)]="item.quantity"
+                        (keyup)="item.quantity < 1 ? item.quantity = 1: item.quantity" (ngModelChange)="changeTotalAmount()">
+                </div>
+            </div>
+        </div>
 
-
-                </div>
-            </div>
-
+        <div class="row">
             <div class="col-3">
-                <div class="row">
-                    <div class="col-12">
-                        <div class="form-group mb-4">
-                            <label class="form-control-label mb-3">{{ "QUANTITY/GRAM" | translate}}</label>:
-                            <input type="number" name="price" class="form-control" [(ngModel)]="item.quantity"
-                                (keyup)="item.quantity < 1 ? item.quantity = 1: item.quantity"
-                                (change)="changeTotalAmount()">
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-12">
-                        <div class="form-group mb-4">
-                            <label class="form-control-label mb-3">{{ "GOLD_FOR" | translate}}</label>:
-                            <select #goldForSelectElem name="goldFor" id="goldFor" class="form-select"
-                                (change)="assignArticleGroup(goldForSelectElem.value);">
-                                <option *ngFor="let use of goldFor" [value]="use.name"
-                                    [selected]="use.name === item.oGoldFor.name">
-                                    {{use.name | titlecase}}</option>
-                            </select>
-                        </div>
-                    </div>
+                <span *ngIf="tillService.oSavingPointSettings.aExcludedArticleGroups.includes(item.iArticleGroupId)">
+                    <strong>{{ 'THIS_ARTICLE_GROUP_HAS_BEEN_EXCLUDED_FROM_EARNING_LOYALTY_POINTS'| translate }}</strong>
+                </span>
+                <span *ngIf="!tillService.oSavingPointSettings.aExcludedArticleGroups.includes(item.iArticleGroupId)">
+                    {{ 'GET'| translate }}
+                    <strong>{{ item.nSavingsPoints || 0 }} </strong>
+                    {{ 'LOYALTY_POINTS' | translate }}
+                </span>
+            </div>
+            <div class="col-6">
+                <div class="form-group mb-4">
+                    <label class="form-control-label mb-3">{{ "DESCRIPTION" | translate}}</label>:
+                    <textarea class="form-control  mb-3 mb-lg-0" type="text" name="description" rows="4"
+                        [(ngModel)]="item.description"></textarea>
                 </div>
             </div>
-        </section>
+            <div class="col-3">
+                <div class="form-group mb-4">
+                    <label class="form-control-label mb-3">{{ "GOLD_FOR" | translate}}</label>
+                    <ng-select [(ngModel)]="item.oGoldFor" (ngModelChange)="checkArticleGroups()" [items]="aGoldFor"
+                        bindLabel="name"></ng-select>
+                </div>
+            </div>
+        </div>
     </div>
 </div>

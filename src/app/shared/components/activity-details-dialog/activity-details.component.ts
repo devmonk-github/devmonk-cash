@@ -21,7 +21,6 @@ import { PdfService } from '../../service/pdf.service';
 import { ImageUploadComponent } from '../image-upload/image-upload.component';
 import { CustomerDialogComponent } from '../customer-dialog/customer-dialog.component';
 import * as _ from 'lodash';
-
 @Component({
   selector: 'app-activity-details',
   templateUrl: './activity-details.component.html',
@@ -178,6 +177,7 @@ export class ActivityDetailsComponent implements OnInit {
   { key: 'WHATSAPP_ON_READY', value: 'whatsapp_on_ready' }]
   sNumber:any;
   aDiscountRecords: any;
+  sMessage:any;
 
   constructor(
     private viewContainerRef: ViewContainerRef,
@@ -201,6 +201,7 @@ export class ActivityDetailsComponent implements OnInit {
 
   async ngOnInit() {
     this.sNumber = (this.from === 'services') ? this.activity.sNumber : '';
+    this.getSettings();
     this.apiService.setToastService(this.toastService);
     this.routerSub = this.routes.events.subscribe((event) => {
       if (event instanceof NavigationEnd && !(event.url.startsWith('/business/activity-items') || event.url.startsWith('/business/services'))) {
@@ -226,7 +227,7 @@ export class ActivityDetailsComponent implements OnInit {
       }
       this.fetchActivity(this.activityItems[0].iActivityId);
       this.fetchTransactionItems(this.activityItems[0]._id);
-      this.getSystemCustomer(this.activityItems[0]?.iCustomerId);
+      if(this.activityItems[0]?.iCustomerId)this.getSystemCustomer(this.activityItems[0]?.iCustomerId);
     }
 
     this.getBusinessLocations();
@@ -239,6 +240,15 @@ export class ActivityDetailsComponent implements OnInit {
     ]);
     this.printActionSettings = _printActionSettings?.data[0]?.result[0].aActions;
     this.printSettings = _printSettings?.data[0]?.result;
+  }
+  getSettings() {
+    this.apiService.getNew('customer', `/api/v1/customer/settings/get/${this.iBusinessId}`).subscribe((result: any) => {
+      if (result?.sMessage) {
+        this.sMessage = result?.sMessage;
+      }
+    }, (error) => {
+      console.log(error);
+    })
   }
   getSystemCustomer(iCustomerId: string) {
     this.apiService.getNew('customer', `/api/v1/customer/${this.iBusinessId}/${iCustomerId}`).subscribe((result: any) => {
@@ -611,17 +621,18 @@ export class ActivityDetailsComponent implements OnInit {
 
   matchSystemAndCurrentCustomer(systemCustomer: any, currentCustomer: any) {
     this.showSystemCustomer = false;
-    let currentCustomerData: any;
-    const aCurrentCustomerKeys: any = ['oInvoiceAddress', 'oPhone', 'bCounter', '_id', 'sFirstName', 'sLastName', 'sPrefix', 'sGender', 'sEmail', 'sVatNumber', 'sCompanyName', 'sCocNumber', 'bIsCompany', 'oContactPerson', 'nClientId' , 'sSalutation' , 'oShippingAddress'];
-    aCurrentCustomerKeys.forEach((keys: any) => {
-      currentCustomerData = { ...currentCustomerData, [keys]: currentCustomer[keys] }
-    })
+    if (systemCustomer && currentCustomer) {
+      let currentCustomerData: any;
+      const aCurrentCustomerKeys: any = ['oInvoiceAddress', 'oPhone', 'bCounter', '_id', 'sFirstName', 'sLastName', 'sPrefix', 'sGender', 'sEmail', 'sVatNumber', 'sCompanyName', 'sCocNumber', 'bIsCompany', 'oContactPerson', 'nClientId', 'sSalutation', 'oShippingAddress'];
+      aCurrentCustomerKeys.forEach((keys: any) => {
+        currentCustomerData = { ...currentCustomerData, [keys]: currentCustomer[keys] }
+      })
 
-    if (this.from == 'activity-items') {
-      for (const [key, value] of Object.entries(currentCustomerData)) {
-        if (!(_.isEqual(systemCustomer[key], currentCustomer[key]))) {
-          console.log("not matched" , key , systemCustomer[key] , currentCustomer[key]);
-          this.showSystemCustomer = true;
+      if (this.from == 'activity-items' && !systemCustomer?.bCounter) {
+        for (const [key, value] of Object.entries(currentCustomerData)) {
+          if (currentCustomer[key] && !(_.isEqual(systemCustomer[key], currentCustomer[key]))) {
+            this.showSystemCustomer = true;
+          }
         }
       }
     }
@@ -721,7 +732,6 @@ export class ActivityDetailsComponent implements OnInit {
     oItem.nTotalAmount = oItem.nPriceIncVat * oItem.nQuantity;
     oItem.nPaidAmount = +((oItem.nPaidAmount + oItem.nDiscountToShow).toFixed(2));
     oItem.iBusinessId = this.iBusinessId;
-    console.log({oItem});
     // return;
     this.apiService.putNew('cashregistry', '/api/v1/activities/items/' + oItem._id, oItem)
       .subscribe((result: any) => {
@@ -729,6 +739,7 @@ export class ActivityDetailsComponent implements OnInit {
           this.submitted = false;
           this.apiService.activityItemDetails.next(oItem);
           this.toastService.show({ type: "success", text: this.translation['SUCCESSFULLY_UPDATED'] });
+          this.close(true);
         } else {
           this.submitted = false;
           let errorMessage = "";
@@ -958,42 +969,49 @@ export class ActivityDetailsComponent implements OnInit {
       });
   }
 
-  contactCustomer(action: any){
-    switch (action){
-      case 'call_on_ready':
-        if( !this.customer.bIsCounterCustomer && !this.customer.oPhone.sPrefixLandline && !this.customer.oPhone.sPrefixMobile){
-          this.toastService.show({ type: "warning", title:  this.translation['NO_PREFIX'], text: this.translation['PLEASE_ADD_COUNTRY_CODE_IN_CUSTOMER_DATA']});
-          return;
-        }
+  contactCustomer(action: any) {
+    if (this.oCurrentCustomer) {
+      switch (action) {
+        case 'call_on_ready':
+          if (!this.oCurrentCustomer?.bIsCounterCustomer && !this.oCurrentCustomer?.oPhone?.sPrefixLandline && !this.oCurrentCustomer?.oPhone?.sPrefixMobile) {
+            this.toastService.show({ type: "warning", title: this.translation['NO_PREFIX'], text: this.translation['PLEASE_ADD_COUNTRY_CODE_IN_CUSTOMER_DATA'] });
+            return;
+          }
 
-        if(this.customer.oPhone.sLandLine && this.customer.oPhone.sPrefixLandline){
-          window.location.href = "tel:"+ this.customer.oPhone.sPrefixLandline + this.customer.oPhone.sLandLine;
-        }else{
-          this.toastService.show({ type: "warning", text:  this.translation['NO_PHONE']});
-        }
-        break;
+          if (this.oCurrentCustomer?.oPhone?.sLandLine && this.oCurrentCustomer?.oPhone?.sPrefixLandline) {
+            window.location.href = "tel:" + this.oCurrentCustomer?.oPhone?.sPrefixLandline + this.oCurrentCustomer?.oPhone?.sLandLine;
+          } else {
+            this.toastService.show({ type: "warning", text: this.translation['NO_PHONE'] });
+          }
+          break;
 
-      case 'email_on_ready':
-        if(this.customer.sEmail){
-          window.location.href = "mailto:" + this.customer.sEmail
-        }else{
-          this.toastService.show({ type: "warning", text: this.translation['NO_EMAIL'] });
-        }
-        break;
+        case 'email_on_ready':
+          if (this.oCurrentCustomer?.sEmail) {
+            window.location.href = "mailto:" + this.oCurrentCustomer?.sEmail
+          } else {
+            this.toastService.show({ type: "warning", text: this.translation['NO_EMAIL'] });
+          }
+          break;
 
-      case 'whatsapp_on_ready':
-        if( !this.customer.bIsCounterCustomer && !this.customer.oPhone.sPrefixLandline && !this.customer.oPhone.sPrefixMobile){
-          this.toastService.show({ type: "warning", title:  this.translation['NO_PREFIX'], text: this.translation['PLEASE_ADD_COUNTRY_CODE_IN_CUSTOMER_DATA']});
-          return;
-        }
+        case 'whatsapp_on_ready':
+          if (!this.oCurrentCustomer?.bIsCounterCustomer && !this.oCurrentCustomer?.oPhone?.sPrefixLandline && !this.oCurrentCustomer?.oPhone?.sPrefixMobile) {
+            this.toastService.show({ type: "warning", title: this.translation['NO_PREFIX'], text: this.translation['PLEASE_ADD_COUNTRY_CODE_IN_CUSTOMER_DATA'] });
+            return;
+          }
 
-        if(this.customer.oPhone.sMobile && this.customer.oPhone.bWhatsApp  && this.customer.oPhone.sPrefixMobile){
-          window.location.href = "https://wa.me/"+  this.customer.oPhone.sPrefixMobile + this.customer.oPhone.sMobile;
-        }else{
-          this.toastService.show({ type: "warning", text: this.translation['NO_PHONE_OR_WHATSAPP'] });
-        }
-        break;
+          if (this.oCurrentCustomer?.oPhone?.sMobile && this.oCurrentCustomer?.oPhone?.bWhatsApp && this.oCurrentCustomer?.oPhone?.sPrefixMobile) {
+            if (this.sMessage) window.open("https://wa.me/" + this.oCurrentCustomer?.oPhone?.sPrefixMobile + this.removeSpaces(this.oCurrentCustomer?.oPhone?.sMobile) + '?text=' + this.sMessage);
+            else window.open("https://wa.me/" + this.oCurrentCustomer?.oPhone?.sPrefixMobile + this.removeSpaces(this.oCurrentCustomer?.oPhone?.sMobile));
+          } else {
+            this.toastService.show({ type: "warning", text: this.translation['NO_PHONE_OR_WHATSAPP'] });
+          }
+          break;
+      }
     }
+  }
+
+  removeSpaces(string: string){
+    return string.replace(/\s/g, '');
   }
 
   updatePriceIncVatWithoutDiscount(oActivity:any){

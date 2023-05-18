@@ -26,6 +26,7 @@ export class TillService {
   taxes:any;
   aDiscountTypes = ['loyalty-points-discount', 'discount', 'giftcard-discount'];
   oSavingPointSettings:any;
+  iStatisticsId: any;
 
   constructor(
     private apiService: ApiService,
@@ -36,6 +37,7 @@ export class TillService {
   }
 
   fetchPointsSettings() {
+    if(this.oSavingPointSettings?._id) return;
     this.apiService.getNew('cashregistry', `/api/v1/points-settings?iBusinessId=${this.iBusinessId}`).subscribe((result:any) => {
       this.oSavingPointSettings = result;
     });
@@ -145,20 +147,14 @@ export class TillService {
     this.updateVariables();
 
     const iLocationId = transactionItems?.length && transactionItems[0].iLocationId ? transactionItems[0].iLocationId : this.iLocationId; /* If we changed the location from the drop-down then it would change */
-    const transaction = new Transaction(
-      null,
-      null,
-      null,
-      this.iBusinessId,
-      null,
-      'cash-register-revenue',
-      'y',
-      this.iWorkstationId,
-      this.getValueFromLocalStorage('currentUser').userId,
-      iLocationId,
-      null,
-      null,
-    )
+    const transaction = new Transaction()
+    transaction.iBusinessId =  this.iBusinessId;
+    transaction.iLocationId = iLocationId,
+    transaction.iWorkstationId = this.iWorkstationId
+    transaction.eType = 'cash-register-revenue'
+    transaction.eStatus = 'y'
+    transaction.iEmployeeId = this.getValueFromLocalStorage('currentUser').userId,
+    transaction.sDayClosureMethod = this.settings?.sDayClosureMethod || 'workstation'
 
     const body = {
       iBusinessId: this.iBusinessId,
@@ -215,6 +211,7 @@ export class TillService {
       i.price = +(Number(String(i.price).replace(',','.')).toFixed(2));
       i.nPurchasePrice = +(i.nPurchasePrice?.toFixed(2) || 0);
       if(bTesting) console.log('before creating item', JSON.parse(JSON.stringify(i)));
+      
       const oItem = new TransactionItem();
       oItem.sProductName = i.name;
       oItem.sComment = i.comment;
@@ -302,6 +299,7 @@ export class TillService {
       oItem.bGiftcardTaxHandling = i.bGiftcardTaxHandling;
       oItem.bDiscountOnPercentage = i.bDiscountOnPercentage || false
       if (i?.sSerialNumber) oItem.sSerialNumber = i.sSerialNumber;
+      oItem.nSavingsPoints = i.nSavingsPoints;
       return oItem;
     });
     // const originalTItemsLength = length = body.transactionItems.filter((i: any) => i.oType.eKind !== 'loyalty-points').length;
@@ -399,6 +397,7 @@ export class TillService {
     }
     body.transactionItems = [...body.transactionItems, ...aToBeAddedItems];
     body.transactionItems.forEach((i: any) => {
+      if(this.aDiscountTypes.includes(i.oType.eKind)) i.nSavingsPoints = 0;
       i.nPaymentAmount = +(i.nPaymentAmount.toFixed(2));
       i.nRevenueAmount = +(i.nRevenueAmount.toFixed(2));
     });
@@ -588,6 +587,7 @@ export class TillService {
       obj.bIgnore = false;
       dataObject.nPaymentMethodTotal += obj.nAmount;
       if(!obj?.sRemarks) obj.sRemarks = "";
+      else if (obj?.sRemarks === 'CHANGE_MONEY') obj.bIgnore = true;
       
       // obj.dCreatedDate = moment(obj.dCreatedDate);//.format('DD-MM-yyyy hh:mm');
     });
@@ -848,6 +848,7 @@ export class TillService {
       iLocationId: this.iLocationId,
       bArticleGroup: true,
       bProductNumber: true,
+      bProductName: true,
       bLabelDescription: true
     }
     let oMergedSettings: any = {};

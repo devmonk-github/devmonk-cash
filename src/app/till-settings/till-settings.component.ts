@@ -7,6 +7,7 @@ import { CustomPaymentMethodComponent } from '../shared/components/custom-paymen
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { ConfirmationDialogComponent } from '../shared/components/confirmation-dialog/confirmation-dialog.component';
 import { ToastService } from '../shared/components/toast';
+import { TranslateService } from '@ngx-translate/core';
 @Component({
   selector: 'app-till-settings',
   templateUrl: './till-settings.component.html',
@@ -31,7 +32,7 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
   settings: any = {
     nLastReceiptNumber: 0,
     nLastInvoiceNumber: 0,
-    nLastnClientID:0,
+    nLastClientID:0,
     id: null
   };
   overviewColumns = [
@@ -76,11 +77,14 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
     { key: 'NCLIENTID', value: 'nClientId'}
   ];
   
+  bUpdateNclientID: boolean = false;
+  oldNlastnClientID: number = 0;
 
   constructor(
     private apiService: ApiService,
     private dialogService: DialogService,
     private toastService: ToastService,
+    private translateService: TranslateService
   ) { }
 
   ngOnInit(): void {
@@ -147,8 +151,10 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
       this.getSettingsSubscription = this.apiService.getNew('cashregistry', `/api/v1/settings/${this.requestParams.iBusinessId}`).subscribe((result: any) => {
       this.settings = result;
       this.getCustomerSettingsSubscription = this.apiService.getNew('customer', `/api/v1/customer/settings/get/${this.requestParams.iBusinessId}`).subscribe((result: any) => {
-        this.settings.nLastnClientID = result?.nLastnClientID;
+        this.settings.nLastClientID = result?.nLastClientID;
+        this.oldNlastnClientID = result?.nLastClientID;
         this.settings.aCustomerSearch = result?.aCustomerSearch;
+        this.settings.sMessage = result?.sMessage;
       }, (error) => {
         console.log(error);
       });
@@ -163,6 +169,7 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
         iLocationId: this.iLocationId,
         bArticleGroup: true,
         bProductNumber: true,
+        bProductName: true,
         bLabelDescription:true
       }
       let oMergedSettings:any = {};
@@ -280,7 +287,7 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
 
 
   createPaymentMethod() {
-    this.createPaymentModalSub = this.dialogService.openModal(CustomPaymentMethodComponent, { cssClass: "", context: { mode: 'create' } }).instance.close.subscribe(result => {
+    this.createPaymentModalSub = this.dialogService.openModal(CustomPaymentMethodComponent, { cssClass: "", context: { mode: 'create' }, hasBackdrop: true }).instance.close.subscribe(result => {
       if (result.action) this.getPaymentMethods();
     });
   }
@@ -292,8 +299,8 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
   getPaymentMethods() {
     this.payMethodsLoading = true;
     this.payMethods = []
-    this.getPaymentMethodsSubscription = this.apiService.getNew('cashregistry', '/api/v1/payment-methods/' + this.requestParams.iBusinessId + '?type=custom').subscribe((result: any) => {
-      if (result && result.data && result.data.length) {
+    this.getPaymentMethodsSubscription = this.apiService.getNew('cashregistry', '/api/v1/payment-methods/' + this.requestParams.iBusinessId).subscribe((result: any) => { //'?type=custom'
+      if (result?.data?.length) {
         this.payMethods = result.data;
         for (let i = 0; i < this.payMethods.length; i++) { this.getLedgerNumber(this.payMethods[i]._id, i) }
       }
@@ -304,21 +311,32 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
   }
 
   viewDetails(method: any) {
-    this.viewDetailsModalSub = this.dialogService.openModal(CustomPaymentMethodComponent, { cssClass: "", context: { mode: 'details', customMethod: method } }).instance.close.subscribe(result => {
-      if (result.action) this.getPaymentMethods();
+    this.viewDetailsModalSub = this.dialogService.openModal(CustomPaymentMethodComponent, { cssClass: "", context: { mode: 'details', customMethod: method }, hasBackdrop: true }).instance.close.subscribe(result => {
+      if (result.action) this.toastService.show({ type: 'success', text: this.translateService.instant('SAVED_SUCCESSFULLY') });
     });
   }
 
   
   updateCustomerSettings() {
-    const CustomerSettingsbody = {
-      aCustomerSearch:this.settings?.aCustomerSearch
+    let CustomerSettingsbody = {}
+    if(this.bUpdateNclientID && (this.oldNlastnClientID != this.settings.nLastClientID)){
+      CustomerSettingsbody = {
+        aCustomerSearch: this.settings?.aCustomerSearch,
+        nLastClientID: this.settings.nLastClientID,
+        sMessage: this.settings.sMessage
+      }
+    }else{
+      CustomerSettingsbody = {
+        aCustomerSearch:this.settings?.aCustomerSearch,
+        sMessage: this.settings.sMessage
+      }
     }
     this.updatingCustomerSettings = true;
     this.updateSettingsSubscription = this.apiService.putNew('customer', '/api/v1/customer/settings/update/' + this.requestParams.iBusinessId, CustomerSettingsbody)
       .subscribe((result: any) => {
         if (result){
           this.updatingCustomerSettings = false;
+          this.bUpdateNclientID = false;
           this.toastService.show({ type: 'success', text: 'Saved Successfully' });
         } 
       }, (error) => {
@@ -336,6 +354,7 @@ export class TillSettingsComponent implements OnInit, OnDestroy {
         iLocationId: this.settings.currentLocation.iLocationId,
         bArticleGroup: this.settings.currentLocation.bArticleGroup,
         bProductNumber: this.settings.currentLocation.bProductNumber,
+        bProductName: this.settings.currentLocation.bProductName,
         bLabelDescription: this.settings.currentLocation.bLabelDescription,
       } 
       this.settings.aCashRegisterPrefill = [...this.settings?.aCashRegisterPrefill?.filter((el: any) => el.iLocationId !== this.iLocationId), {...oCurrentSettrings}];

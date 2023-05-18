@@ -7,6 +7,7 @@ import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { ToastService } from '../toast';
 import { CreateArticleGroupService } from '../../service/create-article-groups.service';
 import { TaxService } from '../../service/tax.service';
+import { TillService } from '../../service/till.service';
 
 @Component({
   selector: 'app-add-expenses',
@@ -53,6 +54,7 @@ export class AddExpensesComponent implements OnInit {
     private toastrService: ToastService,
     private createArticleGroupService: CreateArticleGroupService,
     private fb: FormBuilder,
+    private tillService: TillService
     // private taxService: TaxService
   ) {
     const _injector = this.viewContainerRef.injector;;
@@ -138,9 +140,10 @@ export class AddExpensesComponent implements OnInit {
       nPriceIncVat: amount,
       nPurchasePrice: amount,
       iBusinessId: this.iBusinessId,
-      iArticleGroupId: this.selectedArticleGroup?._id,
+      iArticleGroupId: oArticleGroup?._id,
+      iArticleGroupOriginalId: oArticleGroup?._id,
       oArticleGroupMetaData,
-
+      iStatisticsId: this.tillService.iStatisticsId,
       nTotal: (expenseType?.type === 'negative') ? -(amount) : amount,
       nPaymentAmount: (expenseType?.type === 'negative') ? -(amount) : amount,
       nRevenueAmount: (expenseType?.type === 'negative') ? -(amount) : amount,
@@ -154,7 +157,8 @@ export class AddExpensesComponent implements OnInit {
         eKind: 'expenses',
         bDiscount: false,
       },
-      oPayment
+      oPayment,
+      sDayClosureMethod: this.tillService.settings?.sDayClosureMethod || 'workstation',
     }
     this.apiService.postNew('cashregistry', '/api/v1/till/add-expenses', transactionItem)
       .subscribe((res: any) => {

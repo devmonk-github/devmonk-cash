@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { faPencilAlt, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { ApiService } from '../shared/service/api.service';
-import { MenuComponent } from '../shared/_layout/components/common';
+import { TillService } from '../shared/service/till.service';
+import { ToastService } from '../shared/components/toast';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-saving-points',
@@ -35,20 +37,64 @@ export class SavingPointsComponent implements OnInit {
     'Year', 'Month', 'Day'
   ];
   savingPointsSettings: any = {};
+  aArticleGroups:any;
+
+  aPaymentMethods:any;
+
 
   constructor(
     private apiService: ApiService,
-
+    public tillService: TillService,
+    private toastService: ToastService,
+    private translateService: TranslateService,
   ) { }
 
   ngOnInit(): void {
+    this.apiService.setToastService(this.toastService)
     // this.business._id = localStorage.getItem('currentBusiness');
     this.fetchSetting();
+    this.fetchArticleGroup();
+    this.fetchPaymentMethods();
   }
+
+  fetchArticleGroup() {
+    const data = {
+      iBusinessId: this.iBusinessId,
+    }
+    this.apiService.postNew('core', '/api/v1/business/article-group/list', data).subscribe((result:any) => {
+      if(result?.data?.length && result?.data[0].result?.length) {
+        const lang = this.translateService.currentLang;
+        this.aArticleGroups = result?.data[0].result.map((el:any) => {
+          if (el.oName[lang]) {
+            el.sName = el.oName[lang]
+          } else if (Object.keys(el.oName)?.length) {
+            el.sName = el.oName[Object.keys(el.oName)[0]];
+          }
+          return el;
+        });
+      };
+    });
+  }
+
+  fetchPaymentMethods() {
+    this.apiService.getNew('cashregistry', '/api/v1/payment-methods/' + this.iBusinessId).subscribe((result: any) => {
+      // console.log(result)
+      if (result?.data?.length) {
+        this.aPaymentMethods = result.data;
+      }
+    })
+  }
+
   // /api/v1/points-settings
   fetchSetting() {
     this.apiService.getNew('cashregistry', `/api/v1/points-settings?iBusinessId=${this.iBusinessId}`).subscribe((result: any) => {
       this.savingPointsSettings = result;
+      if (!this.savingPointsSettings?.aExcludedArticleGroups?.length) {
+        this.savingPointsSettings.aExcludedArticleGroups = []
+      }
+      if (!this.savingPointsSettings?.aExcludedPaymentMethods?.length) {
+        this.savingPointsSettings.aExcludedPaymentMethods = []
+      }
       
       if(this.savingPointsSettings.bEnabled === 'undefined' || result.bEnabled === undefined){
         localStorage.setItem('savingPoints', 'false');
@@ -65,9 +111,12 @@ export class SavingPointsComponent implements OnInit {
     });
   }
 
-  updateSettings() {
+  async updateSettings() {
     this.apiService.putNew('cashregistry', `/api/v1/points-settings/${this.savingPointsSettings._id}?iBusinessId=${this.iBusinessId}`, this.savingPointsSettings).subscribe((result: any) => {
-      localStorage.setItem('savingPoints', this.savingPointsSettings.bEnabled);
+      if(result?._id) {
+        this.toastService.show({ type: 'success', text: this.translateService.instant('UPDATED') + '!' });
+        localStorage.setItem('savingPoints', this.savingPointsSettings.bEnabled);
+      }
     });
   }
 

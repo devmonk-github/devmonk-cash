@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ToastService } from '../components/toast';
 import { TillService } from './till.service';
-
+import * as _ from 'lodash';
 @Injectable({
   providedIn: 'root'
 })
@@ -23,14 +23,12 @@ export class PaymentDistributionService {
     this.toastService = toastService;
   }
   
-  distributeAmount(transactionItems: any[], availableAmount: any, nGiftcardAmount:any = 0, nRedeemedLoyaltyPoints:any = 0): any[] {
+  distributeAmount(transactionItems: any[], availableAmount: any, nGiftcardAmount:any = 0, nRedeemedLoyaltyPoints:any = 0, payMethods:any = []): any[] {
     const bTesting = false;
     if (bTesting) console.log('distributeAmount before', { availableAmount, nGiftcardAmount, nRedeemedLoyaltyPoints, original: JSON.parse(JSON.stringify(transactionItems)) })
     transactionItems = transactionItems.filter((i: any) => !['empty-line', 'loyalty-points'].includes(i.type))
     transactionItems.forEach((i: any) => {
       // if (bTesting) console.log(31, i, i.nTotal);
-      
-      
 
       const nPrice = parseFloat((typeof i.price === 'string') ? i.price.replace(',', '.') : i.price);
       i.nTotal = nPrice * i.quantity;
@@ -38,20 +36,20 @@ export class PaymentDistributionService {
       nDiscount = +(nDiscount.toFixed(2));
       i.amountToBePaid = i.nTotal - nDiscount - (i.prePaidAmount || 0);
       i.amountToBePaid = +(i.amountToBePaid.toFixed(2))
-      if (bTesting) console.log(38, { nPrice, nDiscount, amountToBePaid: i.amountToBePaid, qty: i.quantity})
+      if (bTesting) console.log(38, { nPrice, nDiscount, amountToBePaid: i.amountToBePaid, qty: i.quantity, paymentAmount: i.paymentAmount})
       
       if (i.type === 'gold-purchase') i.amountToBePaid = -(i.amountToBePaid) ;
 
       if (i?.tType && i.tType === 'refund'){
         
         if(i?.new) {
-          if (bTesting) console.log('refund item is new')
           i.amountToBePaid = -(nPrice * i.quantity - nDiscount - (i?.nGiftcardDiscount || 0) - (i?.nRedeemedLoyaltyPoints || 0));
+          if (bTesting) console.log('refund item is new amountToBePaid', i.amountToBePaid)
         } else {
           i.amountToBePaid = -(i.nRevenueAmount * i.quantity).toFixed(2);//-(i.nTotal);
         }
         if (bTesting) console.log('refund amountToBePaid', i.amountToBePaid)
-        availableAmount += i.amountToBePaid;
+        availableAmount += -i.amountToBePaid;
       } 
       i.nGiftcardDiscount = 0;
       i.nRedeemedLoyaltyPoints = 0;
@@ -66,28 +64,45 @@ export class PaymentDistributionService {
     const arrToUpdate = transactionItems.filter(item => !item?.manualUpdate && !item?.isExclude);
     const arrNotToUpdate = transactionItems.filter(item => item?.manualUpdate || item?.isExclude);
     
+    const nSavingsPointRatio = this.tillService.oSavingPointSettings.nPerEuro1 / this.tillService.oSavingPointSettings.nPerEuro
+
+    const aEligibleForSavingPoints = payMethods.filter((p: any) => p.amount > 0 && p.bAssignSavingPoints);
+    if (bTesting) console.log({ aEligibleForSavingPoints }, this.tillService.oSavingPointSettings)
+
+    let nEligibleAmount = _.sumBy(aEligibleForSavingPoints, 'amount');
+    if (bTesting) console.log({ nEligibleAmount });
+
     if (bTesting)  console.log({update: arrToUpdate, notToUpdate: arrNotToUpdate})
     
-    const assignedAmountToManual = arrNotToUpdate.reduce((n, { paymentAmount }) => n + paymentAmount, 0);
+    const assignedAmountToManual = _.sumBy(arrNotToUpdate, 'paymentAmount')
     availableAmount -= assignedAmountToManual;
     
     if (bTesting) console.log('assignedAmountToManual', assignedAmountToManual, 'availableAmount', availableAmount)
     
     if (arrToUpdate?.length) {
       let totalAmountToBePaid = +(arrToUpdate.filter(el => el.amountToBePaid > 0).reduce((n, { amountToBePaid }) => n + amountToBePaid, 0).toFixed(2)); // + assignedAmountToManual
+      if(nEligibleAmount > totalAmountToBePaid) nEligibleAmount = totalAmountToBePaid;
       if (bTesting) console.log({totalAmountToBePaid})
 
       const aGiftcards = arrToUpdate.filter((el: any) => el.type === 'giftcard');
       const aItems = arrToUpdate.filter((el: any) => el.type !== 'giftcard');
 
       if (bTesting) console.log({ aGiftcards })
-      if (totalAmountToBePaid > 0 && aGiftcards?.length) {
+      if (aGiftcards?.length) {
+        aGiftcards.forEach((i: any) => {
+          if(i?.tType=== 'refund') {
+            const nPrice = parseFloat((typeof i.price === 'string') ? i.price.replace(',', '.') : i.price);
+            i.nSavingsPoints = -Math.floor(nPrice * nSavingsPointRatio)
+          } else {
+            nEligibleAmount = this.calculateSavingsPoints(i, nSavingsPointRatio, nEligibleAmount, totalAmountToBePaid);
+          }
+        });
         const { nAvailable, nPoints }:any = this.assignPaymentToGiftcardFirst(aGiftcards, availableAmount, totalAmountToBePaid, bTesting, nRedeemedLoyaltyPoints);
         if (bTesting) console.log({ nAvailable, nPoints })
         availableAmount = nAvailable;
         nRedeemedLoyaltyPoints = nPoints;
 
-        totalAmountToBePaid = arrToUpdate.filter((el: any) => el.type !== 'giftcard').reduce((n, { amountToBePaid }) => n + amountToBePaid, 0);
+        totalAmountToBePaid = _.sumBy(aItems, 'amountToBePaid');
         if (bTesting) console.log('now we have available', { availableAmount, totalAmountToBePaid, nRedeemedLoyaltyPoints })
       }
       
@@ -102,14 +117,17 @@ export class PaymentDistributionService {
         totalAmountToBePaid = aItems.reduce((n, { amountToBePaid }) => n + amountToBePaid, 0);
       }
 
+      if (bTesting) console.log('still yet to pay',{ totalAmountToBePaid, availableAmount })
       if (totalAmountToBePaid !== 0) {
-
+        if(availableAmount > totalAmountToBePaid) availableAmount = totalAmountToBePaid;
         aItems.forEach(i => {
-          if (bTesting) console.log(107, 'i.tType',i.tType);
+          if (bTesting) console.log(107, { tType: i.tType, availableAmount });
           if (i.amountToBePaid && (!i?.tType || i.tType !== 'refund')) {
             const a = +((i.amountToBePaid * availableAmount / totalAmountToBePaid).toFixed(2));
             if (bTesting) console.log('set to payment',a)
             i.paymentAmount = a;
+
+            nEligibleAmount = this.calculateSavingsPoints(i, nSavingsPointRatio, nEligibleAmount, totalAmountToBePaid);
           }
         });
       }
@@ -157,7 +175,25 @@ export class PaymentDistributionService {
     if(bTesting) console.log('final',transactionItems)
     return transactionItems;
   }
-  
+
+  calculateSavingsPoints(oItem: any, nSavingsPointRatio:number, nEligibleAmount:number, totalAmountToBePaid:number) {
+    const bTesting = false;
+    if(bTesting) console.log('calculateSavingsPoints', {nSavingsPointRatio, nEligibleAmount, totalAmountToBePaid, oItem})
+    if (!this.tillService.oSavingPointSettings.aExcludedArticleGroups.includes(oItem.iArticleGroupId)) {
+      if (bTesting) console.log('updating the saving points')
+      const nAmountConsideredForSavingPoint = +((oItem.amountToBePaid * nEligibleAmount / totalAmountToBePaid).toFixed(2))
+      oItem.nSavingsPoints = Math.floor(nAmountConsideredForSavingPoint * nSavingsPointRatio)
+      if (bTesting) console.log({ nSavingsPoints: oItem.nSavingsPoints, nAmountConsideredForSavingPoint })
+    } else {
+      if (bTesting) console.log('this article group is excluded from saving points so setting it to 0')
+      oItem.nSavingsPoints = 0;
+    }
+
+    if (oItem.type === 'giftcard') nEligibleAmount -= (oItem.nSavingsPoints / nSavingsPointRatio);
+    
+    return nEligibleAmount;
+  }
+
   assignPaymentToGiftcardFirst(aGiftcards: any, availableAmount: any, totalAmountToBePaid: any, bTesting: boolean, nRedeemedLoyaltyPoints:number) {
     if (bTesting) console.log('assignPaymentToGiftcardFirst', { availableAmount, nRedeemedLoyaltyPoints, aGiftcards })
     

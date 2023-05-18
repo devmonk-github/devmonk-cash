@@ -117,20 +117,20 @@
                                                 {{customer.sEmail}}</a>
                                         </p>
                                         <p>
-                                            <a href="https://wa.me/{{customer.oPhone.sMobile}}"
-                                                *ngIf="customer.oPhone.bWhatsApp" target="_blank"
+                                            <a href="https://wa.me/{{customer.oPhone.sPrefixMobile}}{{removeSpaces(customer.oPhone.sMobile)}}"
+                                                *ngIf="customer.oPhone.bWhatsApp && customer.oPhone.sPrefixMobile" target="_blank"
                                                 class="text-gray-800 text-hover-primary btn btn-light">
                                                 <i class="fab fa-whatsapp ms-1" style="color: #1CB39B;"></i>
-                                                {{customer.oPhone.sMobile}}
+                                                {{customer.oPhone.sPrefixMobile}} {{customer.oPhone.sMobile}}
                                             </a>
                                         </p>
-                                        <p *ngIf="!customer.oPhone.bWhatsApp && customer.oPhone.sMobile">
+                                        <p *ngIf="!(customer.oPhone.bWhatsApp && customer.oPhone.sPrefixMobile) && customer.oPhone.sMobile">
                                             <span class="text-muted me-5">{{'PHONE_MOBILE' | translate}} :</span>
-                                            <span> {{ customer.oPhone.sMobile }}</span>
+                                            <span> {{customer.oPhone.sPrefixMobile}} {{ customer.oPhone.sMobile }}</span>
                                         </p>
-                                        <p>
+                                        <p *ngIf="customer.oPhone.sLandLine">
                                             <span class="text-muted me-5">{{'PHONE_LANDLINE' | translate}} :</span>
-                                            <span> {{ customer.oPhone.sLandLine }}</span>
+                                            <span>{{ customer.oPhone.sPrefixLandline }} {{ customer.oPhone.sLandLine }}</span>
                                         </p>
                                         <p *ngIf="customer.bIsCompany">
                                             <span class="text-muted me-5">{{'CONTACT_PERSON' | translate}} :</span>
@@ -257,7 +257,7 @@
                                         <label class="col-12">{{"ADD_OR_REDUCE_SAVING_POINTS" | translate}}</label>
                                         <div class="col-12">
                                             <div class="d-flex">
-                                                <input type="number" class="form-control" name="loyalityPoints"
+                                                <input type="number" [attr.min]="customer.nLoyaltyPoints > 0 ? -customer.nLoyaltyPoints : 0" class="form-control" name="loyalityPoints"
                                                     [(ngModel)]="customerLoyalityPoints">
                                                 <button class="btn btn-primary" [disabled]="pointsAdded"
                                                     (click)="addLoyalityPoints()">{{"SAVE" | translate}}</button>
@@ -696,7 +696,7 @@
                                     </ng-select>
                                 </div>
                                 <div class="col-8 custom-number">
-                                    <input class="form-control" type="number" id="sMobile" placeholder="{{'PHONE_MOBILE' | translate}}"
+                                    <input class="form-control" type="text" id="sMobile" placeholder="{{'PHONE_MOBILE' | translate}}"
                                         [(ngModel)]="customer.oPhone.sMobile" />
                                 </div>
                             </div>
@@ -711,7 +711,7 @@
                                     </ng-select>
                                 </div>
                                 <div class="col-8 custom-number">
-                                    <input class="form-control" type="number" id="sLandLine" placeholder="{{'PHONE_LANDLINE' | translate}}"
+                                    <input class="form-control" type="text" id="sLandLine" placeholder="{{'PHONE_LANDLINE' | translate}}"
                                         [(ngModel)]="customer.oPhone.sLandLine" />
                                 </div>
                             </div>

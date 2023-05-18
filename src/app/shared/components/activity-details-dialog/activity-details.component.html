@@ -97,21 +97,20 @@
                         <div class="d-flex flex-wrap pb-5">
                             <div class="flex-equal me-5">
                                 <p><strong>{{ "CURRENT_CUSTOMER" | translate}}</strong></p>
-                                <p *ngIf="customer?.bCounter==true"> {{ "NO_CUSTOMER_ADDED" | translate}} </p>
-                                <ng-container *ngIf="customer?.bCounter==false">
+                                <ng-container>
                                     <div class="fs-6 ms-1">
                                         <div class="align-items-center">
                                             <div class="text-gray-600">
                                                 <span *ngIf="!oCurrentCustomer?.bIsCompany">
-                                                    {{oCurrentCustomer?.sFirstName || ''}}
-                                                    {{oCurrentCustomer?.sLastName|| ''}}</span>
+                                                    {{oCurrentCustomer?.sFirstName || '-'}}
+                                                    {{oCurrentCustomer?.sLastName|| '-'}}</span>
                                                 <span *ngIf="oCurrentCustomer?.bIsCompany">
                                                     {{oCurrentCustomer?.sCompanyName || "-"}}</span>
 
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="fs-6 ms-1">
+                                    <div class="fs-6 ms-1" *ngIf="!customer?.bCounter">
                                         <div class="align-items-center" *ngIf="oCurrentCustomer?.sEmail">
                                             <p class="text-gray-600 m-0">
                                                 {{oCurrentCustomer?.sEmail}}
@@ -121,7 +120,7 @@
                                             </p>
                                         </div>
                                     </div>
-                                    <div class="fs-6 ms-1">
+                                    <div class="fs-6 ms-1" *ngIf="!customer?.bCounter">
                                         <div class="align-items-center">
                                             <p style="margin: 0; margin-bottom: 5px;"
                                                 *ngIf="oCurrentCustomer?.oPhone?.sMobile">{{'PHONE_MOBILE' | translate}}
@@ -129,24 +128,25 @@
                                             <p style="margin: 0; margin-bottom: 5px;"
                                                 *ngIf="oCurrentCustomer?.oPhone?.sMobile">
                                                 <span>
+                                                    {{oCurrentCustomer?.oPhone.sPrefixMobile}}
                                                     {{oCurrentCustomer?.oPhone?.sMobile}}
-                                                    <a href="https://wa.me/{{customer.oPhone.sPrefixMobile}}{{customer.oPhone.sMobile}}">
-                                                        <i class="fab fa-whatsapp ms-1 ml-2"
-                                                        *ngIf="oCurrentCustomer?.oPhone?.bWhatsApp"
-                                                        style="color: #1CB39B;"></i>
+                                                    <a href="https://wa.me/{{customer.oPhone.sPrefixMobile}}{{removeSpaces(customer.oPhone.sMobile)}}"
+                                                        target="_blank" *ngIf="oCurrentCustomer?.oPhone?.bWhatsApp && oCurrentCustomer?.oPhone.sPrefixMobile">
+                                                        <i class="fab fa-whatsapp ms-1 ml-2" style="color: #1CB39B;"></i>
                                                     </a>
                                                 </span>
                                             </p>
                                         </div>
                                     </div>
-                                    <div class="fs-6 ms-1">
+                                    <div class="fs-6 ms-1" *ngIf="!customer?.bCounter">
                                         <div class="align-items-center">
                                             <p style="margin: 0; margin-bottom: 5px;"
                                                 *ngIf="oCurrentCustomer?.oPhone?.sLandLine">{{'PHONE_LANDLINE' |
                                                 translate}}</p>
                                             <p style="margin: 0; margin-bottom: 5px;"
                                                 *ngIf="oCurrentCustomer?.oPhone?.sLandLine">
-                                                <span>{{oCurrentCustomer?.oPhone?.sLandLine}}</span>
+                                                <span>{{oCurrentCustomer?.oPhone.sPrefixLandline}}
+                                                    {{oCurrentCustomer?.oPhone?.sLandLine}}</span>
                                             </p>
                                         </div>
                                     </div>
@@ -155,14 +155,18 @@
                                     (click)="openCurrentCustomer(oCurrentCustomer)">{{'UPDATE_CURRENT_CUSTOMER'|translate}}
                                 </button>
                                 <!--IF CUSTOMER IS DIFFERENT FROM SYSTEM CUSTOMER-->
-                                <div class="alert alert-warning" role="alert" *ngIf="showSystemCustomer && !customer?.bCounter">
+                                <div class="alert alert-warning" role="alert"
+                                    *ngIf="showSystemCustomer && !customer?.bCounter">
                                     {{"DIFFERENT_CUSTOMER_INFORMATION" | translate}}
                                     <div class="d-flex">
-                                        <button class="btn btn-info my-3 btn-sm" *ngIf="customer?.bCounter==false" (click)="openCustomer(customer)">
-                                            {{'VIEW'|translate}} 
+                                        <button class="btn btn-info my-3 btn-sm" *ngIf="customer?.bCounter==false"
+                                            (click)="openCustomer(customer)">
+                                            {{'VIEW'|translate}}
                                         </button>
-                                        <button class="btn btn-light-warning ms-2 my-3 btn-sm" *ngIf="customer?.bCounter==false" (click)="syncCustomerData(oCurrentCustomer,customer)">
-                                            {{'SYNC_DATA'|translate}} 
+                                        <button class="btn btn-light-warning ms-2 my-3 btn-sm"
+                                            *ngIf="customer?.bCounter==false"
+                                            (click)="syncCustomerData(oCurrentCustomer,customer)">
+                                            {{'SYNC_DATA'|translate}}
                                         </button>
                                     </div>
                                 </div>
@@ -282,7 +286,9 @@
                                                                 [(ngModel)]="activity.nPriceIncVatAfterDiscount">
                                                         </div>
                                                         <div class="col-2 p-0">
-                                                            <button [class]="customer?.bCounter?'btn btn-light-primary w-100 disabled': 'btn btn-light-primary w-100'" (click)="contactCustomer(activity.eEstimatedDateAction)">
+                                                            <button
+                                                                [class]="customer?.bCounter?'btn btn-light-primary w-100 disabled': 'btn btn-light-primary w-100'"
+                                                                (click)="contactCustomer(activity.eEstimatedDateAction)">
                                                                 <fa-icon [icon]="faShare"></fa-icon>
                                                             </button>
                                                         </div>
@@ -290,14 +296,17 @@
                                                             <div class="col-6">
                                                                 <p class="fw-bold m-0" style="font-weight: 600;">
                                                                     {{"ALREADY_PAID" | translate}}:
-                                                                    {{activity.nPaidAmount | currency:tillService.currency}}
+                                                                    {{activity.nPaidAmount |
+                                                                    currency:tillService.currency}}
                                                                 </p>
 
                                                             </div>
                                                             <div class="col-6">
                                                                 <p class="fw-bold m-0" style="font-weight: 600;">
                                                                     {{"STILL_TO_PAY" | translate}}:
-                                                                    {{(activity.nPriceIncVatAfterDiscount - activity.nPaidAmount) | currency:tillService.currency}}
+                                                                    {{(activity.nPriceIncVatAfterDiscount -
+                                                                    activity.nPaidAmount) |
+                                                                    currency:tillService.currency}}
                                                                 </p>
                                                             </div>
                                                         </div>
@@ -350,6 +359,18 @@
                                         </div>
                                         <div class="col-3">
                                             <div class="btn-group me-4 w-100 mb-4">
+                                                <button [disabled]="submitted" [class.btn-pulse]="submitted"
+                                                    class="btn btn-lg btn-primary" (click)="submit(activity)"
+                                                    type="submit">
+                                                    <span *ngIf="submitted" class="mx-3">
+                                                        <i class="fa fa-spinner fa-spin" [hidden]="!submitted"
+                                                            style="font-size:15px;"></i>
+                                                    </span>
+                                                    <span class="indicator-label">{{"SAVE_CHANGES" | translate}}</span>
+                                                </button>
+                                            </div>
+                                            <div class="btn-group me-4 w-100 mb-4">
+
                                                 <button class="btn btn-secondary fs-bold"
                                                     (click)="downloadCustomerReceipt(activityindex , 'customerReceipt', 'download')"
                                                     [disabled]="bCustomerReceipt">
@@ -408,14 +429,16 @@
                                                             (click)="printThermalReceipt(activity)">
                                                             <div class="menu-link px-3">
                                                                 <fa-icon [icon]="faPrint"></fa-icon>
-                                                                <span class="ms-5">{{ 'PRINT_THERMAL' | translate }}</span>
+                                                                <span class="ms-5">{{ 'PRINT_THERMAL' | translate
+                                                                    }}</span>
                                                             </div>
                                                         </div>
                                                         <div class="menu-item px-3 text-center"
                                                             (click)="printThermalReceipt(activity, 'repair_alternative')">
                                                             <div class="menu-link px-3">
                                                                 <fa-icon [icon]="faPrint"></fa-icon>
-                                                                <span class="ms-5">{{ 'PRINT_THERMAL_ALTERNATIVE' | translate }}</span>
+                                                                <span class="ms-5">{{ 'PRINT_THERMAL_ALTERNATIVE' |
+                                                                    translate }}</span>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -545,6 +568,43 @@
                                     </div>
 
                                     <!-- changed here -->
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <div class="row mb-6">
+                                                <label class="col-lg-12 col-form-label fw-bold fs-6">{{
+                                                    "REMARK_FOR_SERVICE_PARTNERS" | translate}}</label>
+                                                <div class="col-lg-12">
+                                                    <div class="row">
+                                                        <div class="col-lg-12 fv-row">
+                                                            <textarea
+                                                                class="form-control form-control-lg form-control-solid mb-3 mb-lg-0 w-100"
+                                                                placeholder="{{ 'REMARK_FOR_SERVICE_PARTNERS' | translate}}"
+                                                                lines="10"
+                                                                [(ngModel)]="activity.sCommentVisibleServicePartner"></textarea>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="row mb-6">
+                                                <label
+                                                    class="col-lg-12 col-form-label fw-bold fs-6">{{"REMARK_FOR_COLLEAGUES"
+                                                    | translate}}</label>
+                                                <div class="col-lg-12">
+                                                    <div class="row">
+                                                        <div class="col-lg-12 fv-row">
+                                                            <textarea
+                                                                class="form-control form-control-lg form-control-solid mb-3 mb-lg-0 w-100"
+                                                                placeholder="{{ 'REMARK_FOR_COLLEAGUES' | translate}}"
+                                                                lines="10"
+                                                                [(ngModel)]="activity.sCommentVisibleCollegues"></textarea>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
 
                                     <div class="row">
                                         <div class="col-4">
@@ -590,7 +650,7 @@
                                                                 name="dEstimatedDate"
                                                                 [ngModel]="activity.dEstimatedDate | date:'yyyy-MM-dd'"
                                                                 (ngModelChange)="activity.dEstimatedDate = $event" />
-                                                            
+
                                                         </div>
                                                     </div>
                                                 </div>
@@ -599,8 +659,10 @@
                                             <div class="row mb-6" *ngIf="!activity?.nDiscountToShow">
                                                 <label class="col-4">{{ 'PRICE_PER_QTY' | translate }}</label>
                                                 <div class="col-8">
-                                                    <input type="number" class="form-control form-control-lg form-control-solid mb-3 mb-lg-0"
-                                                    [(ngModel)]="activity.nPriceIncVat" (ngModelChange)="updatePriceIncVatWithoutDiscount(activity)">
+                                                    <input type="number"
+                                                        class="form-control form-control-lg form-control-solid mb-3 mb-lg-0"
+                                                        [(ngModel)]="activity.nPriceIncVat"
+                                                        (ngModelChange)="updatePriceIncVatWithoutDiscount(activity)">
                                                 </div>
                                             </div>
                                             <div class="row mb-6">
@@ -609,18 +671,22 @@
                                             </div>
                                             <ng-container *ngIf="activity?.nDiscountToShow">
                                                 <div class="row mb-6">
-                                                    <label class="col-4">{{ 'PRICE_PER_QTY_INC_DISCOUNT' | translate }}</label>
-                                                    <div class="col-8"><s> {{ activity.nPriceIncVat | currency:tillService.currency}}</s></div>
+                                                    <label class="col-4">{{ 'PRICE_PER_QTY_INC_DISCOUNT' | translate
+                                                        }}</label>
+                                                    <div class="col-8"><s> {{ activity.nPriceIncVat |
+                                                            currency:tillService.currency}}</s></div>
                                                 </div>
                                                 <div class="row mb-6">
                                                     <label class="col-4">{{ 'DISCOUNT_PER_QTY' | translate }}</label>
                                                     <div class="col-8">
                                                         <span *ngIf="activity.bDiscountOnPercentage">
                                                             {{ activity.nDiscount }}%
-                                                            ({{ activity.nDiscountToShow | currency:tillService.currency }})
+                                                            ({{ activity.nDiscountToShow | currency:tillService.currency
+                                                            }})
                                                         </span>
                                                         <span *ngIf="!activity.bDiscountOnPercentage">
-                                                            {{ activity.nDiscountToShow | currency:tillService.currency }}
+                                                            {{ activity.nDiscountToShow | currency:tillService.currency
+                                                            }}
                                                         </span>
                                                     </div>
                                                 </div>
@@ -658,18 +724,20 @@
                                             <div class="row mb-6">
                                                 <div class="col-12">
                                                     <div class="d-flex align-items-center mb-3">
-                                                        <p *ngIf="!activity?.aImage?.length"class="m-0">{{"NO_IMAGES" | translate}}</p>
-                                                        <p *ngIf="activity?.aImage?.length" class="m-0">{{'IMAGES' | translate}}</p>
+                                                        <p *ngIf="!activity?.aImage?.length" class="m-0">{{"NO_IMAGES" |
+                                                            translate}}</p>
+                                                        <p *ngIf="activity?.aImage?.length" class="m-0">{{'IMAGES' |
+                                                            translate}}</p>
 
                                                         <button
                                                             *ngIf="activity.oType.eKind == 'repair' || activity.oType.eKind == 'order'"
                                                             class="btn btn-bg-light btn-active-color-primary ms-2"
                                                             (click)="openImageModal(activityindex)"> {{ "PHOTO" |
                                                             translate}}
-                                                                <fa-icon [icon]="faUpload"></fa-icon>
+                                                            <fa-icon [icon]="faUpload"></fa-icon>
                                                         </button>
                                                     </div>
-                                                  
+
                                                     <div class="d-flex flex-wrap my-3">
                                                         <div class="image-input p-1"
                                                             *ngFor="let image of activity.aImage ; let imageIndex = index"
@@ -699,17 +767,20 @@
                                                 <div class="col-6">
                                                     <p *ngIf="activity?.iBusinessProductId">
                                                         <label>{{'PRODUCT_NUMBER' | translate}} : </label> <br>
-                                                        <span >{{activity?.sProductNumber}}</span>
+                                                        <span>{{activity?.sProductNumber}}</span>
                                                     </p>
-                                                    <p *ngIf="!activity?.iBusinessProductId">{{'NO_PRODUCT_SELECTED' | translate}}</p>
+                                                    <p *ngIf="!activity?.iBusinessProductId">{{'NO_PRODUCT_SELECTED' |
+                                                        translate}}</p>
                                                 </div>
                                                 <div class="col-6">
                                                     <label>{{'ARTICLE_DETAIL' | translate}} : </label> <br>
-                                                    <p>{{activity?.sArticleNumber}} - {{activity?.sArticleName || '-'}}</p>
+                                                    <p>{{activity?.sArticleNumber}} - {{activity?.sArticleName || '-'}}
+                                                    </p>
                                                 </div>
                                                 <div class="col-12">
                                                     <button class="btn btn-sm btn-warning"
-                                                        (click)="AssignOrderProduct(activity , activityindex)"> {{'ADD / CHANGE' | translate}}</button>
+                                                        (click)="AssignOrderProduct(activity , activityindex)"> {{'ADD /
+                                                        CHANGE' | translate}}</button>
                                                 </div>
                                             </div>
                                         </div>
@@ -746,7 +817,6 @@
                                                         {{ "I_REPAIR_THIS_MYSELF" | translate}}
                                                     </div>
                                                     <div class="col">
-
                                                         <div class="row mb-6">
                                                             <label class="col-lg-4 col-form-label fw-bold fs-6">{{
                                                                 "REPAIRER" |
@@ -815,7 +885,6 @@
                                                                 </div>
                                                             </div>
                                                         </div>
-
                                                         <div class="row mb-6">
                                                             <label class="col-lg-4 col-form-label fw-bold fs-6"><label
                                                                     for="brand">{{ "BRAND" | translate}}</label></label>
@@ -839,7 +908,9 @@
                                                                         <div class="chip d-flex"
                                                                             *ngIf="activity.iBusinessBrandId">
                                                                             {{activity.brandName}}
-                                                                            <div (click)="removeBrands(activityindex)">&nbsp;<i class="close fas fa-times cursor-pointer"></i>
+                                                                            <div (click)="removeBrands(activityindex)">
+                                                                                &nbsp;<i
+                                                                                    class="close fas fa-times cursor-pointer"></i>
                                                                             </div>
                                                                         </div>
                                                                     </div>
@@ -887,49 +958,10 @@
                                                     </tr>
                                                 </tbody>
                                             </table>
-
                                         </div>
-
                                     </div>
-                                    <div class="row">
-                                        <div class="col-6">
-                                            <div class="row mb-6">
-                                                <label class="col-lg-12 col-form-label fw-bold fs-6">{{
-                                                    "REMARK_FOR_SERVICE_PARTNERS" | translate}}</label>
-                                                <div class="col-lg-12">
-                                                    <div class="row">
-                                                        <div class="col-lg-12 fv-row">
-                                                            <textarea
-                                                                class="form-control form-control-lg form-control-solid mb-3 mb-lg-0 w-100"
-                                                                placeholder="{{ 'REMARK_FOR_SERVICE_PARTNERS' | translate}}"
-                                                                lines="10"
-                                                                [(ngModel)]="activity.sCommentVisibleServicePartner"></textarea>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-6">
-                                            <div class="row mb-6">
-                                                <label
-                                                    class="col-lg-12 col-form-label fw-bold fs-6">{{"REMARK_FOR_COLLEAGUES"
-                                                    | translate}}</label>
-                                                <div class="col-lg-12">
-                                                    <div class="row">
-                                                        <div class="col-lg-12 fv-row">
-                                                            <textarea
-                                                                class="form-control form-control-lg form-control-solid mb-3 mb-lg-0 w-100"
-                                                                placeholder="{{ 'REMARK_FOR_COLLEAGUES' | translate}}"
-                                                                lines="10"
-                                                                [(ngModel)]="activity.sCommentVisibleCollegues"></textarea>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
 
-                                    </div>
-                                    <div class="row">
+                                    <!-- <div class="row">
                                         <div class="col-3">
                                             <button [disabled]="submitted" [class.btn-pulse]="submitted"
                                                 class="btn btn-lg btn-primary"
@@ -938,13 +970,11 @@
                                                     <i class="fa fa-spinner fa-spin" [hidden]="!submitted"
                                                         style="font-size:15px;"></i>
                                                 </span>
-
                                                 <span class="indicator-label">{{"SUBMIT" | translate}}</span>
-
                                             </button>
 
                                         </div>
-                                    </div>
+                                    </div> -->
 
                                 </div>
                             </div>
@@ -1022,6 +1052,17 @@
                                             </div>
                                         </div>
                                         <div class="col-3">
+                                            <div class="btn-group me-4 w-100 mb-4">
+                                                <button [disabled]="submitted" [class.btn-pulse]="submitted"
+                                                    class="btn btn-lg btn-primary" (click)="submit(activity)"
+                                                    type="submit">
+                                                    <span *ngIf="submitted" class="mx-3">
+                                                        <i class="fa fa-spinner fa-spin" [hidden]="!submitted"
+                                                            style="font-size:15px;"></i>
+                                                    </span>
+                                                    <span class="indicator-label">{{"SAVE_CHANGES" | translate}}</span>
+                                                </button>
+                                            </div>
                                             <div class="btn-group me-4 w-100 mb-4">
                                                 <button class="btn btn-secondary fs-bold"
                                                     (click)="downloadCustomerReceipt(activityindex , 'customerReceipt', 'download')"
@@ -1241,7 +1282,7 @@
                                             </table>
                                         </div>
                                     </div>
-                                    <div class="row">
+                                    <!-- <div class="row">
                                         <div class="col-3">
                                             <button [disabled]="submitted" [class.btn-pulse]="submitted"
                                                 class="btn btn-lg btn-primary"
@@ -1256,7 +1297,7 @@
                                             </button>
 
                                         </div>
-                                    </div>
+                                    </div> -->
                                 </div>
                             </div>
                             <div class="accordion-collapse collapse gold-purchase"
@@ -1320,6 +1361,17 @@
                                             </div>
                                         </div>
                                         <div class="col-3">
+                                            <div class="btn-group me-4 w-100 mb-4">
+                                                <button [disabled]="submitted" [class.btn-pulse]="submitted"
+                                                    class="btn btn-lg btn-primary" (click)="submit(activity)"
+                                                    type="submit">
+                                                    <span *ngIf="submitted" class="mx-3">
+                                                        <i class="fa fa-spinner fa-spin" [hidden]="!submitted"
+                                                            style="font-size:15px;"></i>
+                                                    </span>
+                                                    <span class="indicator-label">{{"SAVE_CHANGES" | translate}}</span>
+                                                </button>
+                                            </div>
                                             <div class="btn-group me-4 w-100 mb-4">
                                                 <button class="btn btn-secondary fs-bold"
                                                     (click)="downloadCustomerReceipt(activityindex , 'customerReceipt', 'download')"
@@ -1503,6 +1555,44 @@
                                                 (click)="openTransaction(activity, 'activity')">
                                                 <label class="mx-auto"> {{ "OPEN_ACTIVITY" | translate}}</label>
                                             </button>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <div class="row mb-6">
+                                                <label class="col-lg-12 col-form-label fw-bold fs-6">{{
+                                                    "REMARK_FOR_SERVICE_PARTNERS" | translate}}</label>
+                                                <div class="col-lg-12">
+                                                    <div class="row">
+                                                        <div class="col-lg-12 fv-row">
+                                                            <textarea
+                                                                class="form-control form-control-lg form-control-solid mb-3 mb-lg-0 w-100"
+                                                                placeholder="{{ 'REMARK_FOR_SERVICE_PARTNERS' | translate}}"
+                                                                lines="10"
+                                                                [(ngModel)]="activity.sCommentVisibleServicePartner"></textarea>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="row mb-6">
+                                                <label class="col-lg-12 col-form-label fw-bold fs-6">{{
+                                                    "REMARK_FOR_COLLEAGUES" |
+                                                    translate}}</label>
+                                                <div class="col-lg-12">
+                                                    <div class="row">
+                                                        <div class="col-lg-12 fv-row">
+                                                            <textarea
+                                                                class="form-control form-control-lg form-control-solid mb-3 mb-lg-0 w-100"
+                                                                placeholder="{{ 'REMARK_FOR_SERVICE_PARTNERS' | translate}}"
+                                                                lines="10"
+                                                                [(ngModel)]="activity.sCommentVisibleCollegues"></textarea>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
 
@@ -1701,12 +1791,7 @@
                                                     </div>
                                                 </div>
                                             </div>
-
                                         </div>
-                                        <div class="col-4">
-
-                                        </div>
-
                                     </div>
                                     <div class="row table-responsive">
                                         <div class="col-6">
@@ -1745,47 +1830,8 @@
                                                 </tbody>
                                             </table>
                                         </div>
-
                                     </div>
-                                    <div class="row">
-                                        <div class="col-6">
-                                            <div class="row mb-6">
-                                                <label class="col-lg-12 col-form-label fw-bold fs-6">{{
-                                                    "REMARK_FOR_SERVICE_PARTNERS" | translate}}</label>
-                                                <div class="col-lg-12">
-                                                    <div class="row">
-                                                        <div class="col-lg-12 fv-row">
-                                                            <textarea
-                                                                class="form-control form-control-lg form-control-solid mb-3 mb-lg-0 w-100"
-                                                                placeholder="{{ 'REMARK_FOR_SERVICE_PARTNERS' | translate}}"
-                                                                lines="10"
-                                                                [(ngModel)]="activity.sCommentVisibleServicePartner"></textarea>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-6">
-                                            <div class="row mb-6">
-                                                <label class="col-lg-12 col-form-label fw-bold fs-6">{{
-                                                    "REMARK_FOR_COLLEAGUES" |
-                                                    translate}}</label>
-                                                <div class="col-lg-12">
-                                                    <div class="row">
-                                                        <div class="col-lg-12 fv-row">
-                                                            <textarea
-                                                                class="form-control form-control-lg form-control-solid mb-3 mb-lg-0 w-100"
-                                                                placeholder="{{ 'REMARK_FOR_SERVICE_PARTNERS' | translate}}"
-                                                                lines="10"
-                                                                [(ngModel)]="activity.sCommentVisibleCollegues"></textarea>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                    </div>
-                                    <div class="row">
+                                    <!-- <div class="row">
                                         <div class="col-3">
                                             <button [disabled]="submitted" [class.btn-pulse]="submitted"
                                                 class="btn btn-lg btn-primary"
@@ -1800,7 +1846,7 @@
                                             </button>
 
                                         </div>
-                                    </div>
+                                    </div> -->
 
                                 </div>
                             </div>

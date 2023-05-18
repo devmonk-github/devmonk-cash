@@ -139,7 +139,8 @@ export class ProductComponent implements OnInit{
       })
   }
 
-  updatePayments(): void {
+  updatePayments(price?:any) {
+    if(price) this.item.price = price;
     this.item.iLocationId = this.iSelectedLocationId; /* in case, we changed the location from the drop-down */
     this.itemChanged.emit({type: 'item', data: this.item});
   }
@@ -164,7 +165,7 @@ export class ProductComponent implements OnInit{
 
     if (item.paymentAmount > this.availableAmount) {
       this.toastrService.show({ type: 'warning', text: `Can't assign more than available money!` });
-      return;
+      // return;
     }
 
     item.manualUpdate = true;

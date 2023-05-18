@@ -63,6 +63,7 @@ export class PrintWorkstationComponent implements OnInit {
   workstations !: Array<any>;
   computersList !: Array<any>;
   printersList !: Array<any>;
+  oSelectedPrinter :any;
   businessPrintSettings !: Array<any>;
   workStationsCount: number = 0;
   iWorkstationId = localStorage.getItem('currentWorkstation');
@@ -284,8 +285,8 @@ export class PrintWorkstationComponent implements OnInit {
     type.workstation[type.name][type.type].sPaperTray = sPaperTray;
     type.workstation[type.name][type.type].nRotation = nRotation;
     this.apiService.postNew('cashregistry', '/api/v1/print-settings/create', reqData).subscribe(async (result: any) => {
+     console.log("save result", result);
       if (result.message == 'success') {
-        this.toastService.show({ type: 'success', text: 'Print settings updated!' });
         if (result?.data?._id) {
           type.workstation[type.name][type.type].printSetting = result.data;
           // if (result.data?.sPrinterPageFormat) type.workstation[type.name][type.type].sPrinterPageFormat = result.data.sPrinterPageFormat;
@@ -297,6 +298,9 @@ export class PrintWorkstationComponent implements OnInit {
           }
           --this.workStationsCount;
         }
+        this.toastService.show({ type: 'success', text: 'Print settings updated!' });
+      }else{
+        this.toastService.show({ type: 'warning', text: 'Failed!' });
       }
     }
     )
@@ -395,20 +399,23 @@ export class PrintWorkstationComponent implements OnInit {
     });
   }
 
-  openSelectPrintPaperDialog(type:any, workstation:any, template:any){
-    console.log({type, workstation, template});
+  openSelectPrintPaperDialog(type: any, workstation: any, template: any) {
     if (!workstation[template]) workstation[template] = {};
-    
     if (!workstation[template][type]) workstation[template][type] = {};
-    
     if (!workstation[template][type]['sPrinterPageFormat']) workstation[template][type]['sPrinterPageFormat'] = '';
     if (!workstation[template][type]['sPaperTray']) workstation[template][type]['sPaperTray'] = '';
     if (!workstation[template][type]['nRotation']) workstation[template][type]['nRotation'] = 0;
-    
-    this.dialogService.openModal(SelectPrintPaperDialogComponent, 
-      { 
-        cssClass: "modal-lg", 
-        context: { 
+    const nPrinterId = workstation[template][type]?.nPrinterId;
+    const index = this.printersList.findIndex((printer: any) => printer.id == nPrinterId);
+    if (index >= 0) {
+      this.oSelectedPrinter = { ...this.printersList[index] };
+      this.oSelectedPrinter.name = workstation[template][type]?.printerName;
+    }
+    this.dialogService.openModal(SelectPrintPaperDialogComponent,
+      {
+        cssClass: "modal-lg",
+        context: {
+          oSelectedPrinter: this.oSelectedPrinter,
           printersList: this.printersList,
           oWorkstation: workstation,
           sPrinterPageFormat: workstation[template][type]['sPrinterPageFormat'],
@@ -416,21 +423,20 @@ export class PrintWorkstationComponent implements OnInit {
           nRotation: workstation[template][type]['nRotation'],
           type,
           template
-         } 
+        }
       }).instance.close.subscribe(result => {
-        console.log({result});
-        if(result.action) {
+        if (result.action) {
           this.savePrintSetting(
             {
-              name: template, 
-              type: type, 
+              name: template,
+              type: type,
               workstation: workstation
-            }, 
-            result?.oSelectedPrinter, 
+            },
+            result?.oSelectedPrinter,
             result?.sPrinterPageFormat,
             result?.sPaperTray,
             result?.nRotation);
         }
-      });    
+      });
   }
 }

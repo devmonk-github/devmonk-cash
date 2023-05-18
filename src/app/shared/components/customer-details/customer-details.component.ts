@@ -1,8 +1,8 @@
-import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild , SimpleChanges} from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { DialogComponent, DialogService } from '../../service/dialog';
 import { ViewContainerRef } from '@angular/core';
 import { ApiService } from 'src/app/shared/service/api.service';
-import { faL, faTimes } from "@fortawesome/free-solid-svg-icons";
+import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import { TranslateService } from '@ngx-translate/core';
 import {
   ApexAxisChartSeries,
@@ -20,9 +20,8 @@ import { ToastService } from '../toast';
 import { WebOrderDetailsComponent } from '../../../shared/components/web-order-details/web-order-details.component';
 import { ActivityDetailsComponent } from '../../../shared/components/activity-details-dialog/activity-details.component';
 import { TransactionDetailsComponent } from '../../../transactions/components/transaction-details/transaction-details.component';
-import { fromEvent, Subject } from 'rxjs';
-import { debounceTime, distinctUntilChanged, filter, tap } from 'rxjs/operators';
-import { Subscription } from 'rxjs';
+import { Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged, filter } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { ConfirmationDialogComponent } from 'src/app/shared/components/confirmation-dialog/confirmation-dialog.component';
 import { CustomerDialogComponent } from 'src/app/shared/components/customer-dialog/customer-dialog.component';
@@ -135,9 +134,9 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
     oPhone: {
       sCountryCode: '',
       sMobile: '',
-      sPrefixMobile: '+31',
+      sPrefixMobile: '',
       sLandLine: '',
-      sPrefixLandline: '+31',
+      sPrefixLandline: '',
       sFax: '',
       bWhatsApp: true
     },
@@ -464,22 +463,26 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
   }
 
   getBusinessDetails() {
-    this.apiService.getNew('core', '/api/v1/business/' + localStorage.getItem('currentBusiness')).subscribe((response:any)=>{
+    this.apiService.getNew('core', '/api/v1/business/' + localStorage.getItem('currentBusiness')).subscribe((response: any) => {
       const currentLocation = localStorage.getItem('currentLocation');
-      if(response?.data) this.businessDetails = response.data;
-      if(this.businessDetails?.aLocation?.length && !this.customer?._id ){
-        const locationIndex = this.businessDetails.aLocation.findIndex((location:any)=> location._id == currentLocation);
-        if(locationIndex != -1){
-         const currentLocationDetail = this.businessDetails?.aLocation[locationIndex];
-         if(currentLocationDetail?.oAddress?.country && currentLocationDetail?.oAddress?.countryCode){
-         this.customer.oInvoiceAddress.sCountry = currentLocationDetail?.oAddress?.country;
-         this.customer.oInvoiceAddress.sCountryCode = currentLocationDetail?.oAddress?.countryCode;
-         this.customer.oShippingAddress.sCountry = currentLocationDetail?.oAddress?.country;
-         this.customer.oShippingAddress.sCountryCode = currentLocationDetail?.oAddress?.countryCode;
-         }
+      if (response?.data) this.businessDetails = response.data;
+      if (this.businessDetails?.aLocation?.length && !this.customer?._id) {
+        const locationIndex = this.businessDetails.aLocation.findIndex((location: any) => location._id == currentLocation);
+        if (locationIndex != -1) {
+          const currentLocationDetail = this.businessDetails?.aLocation[locationIndex];
+          if (currentLocationDetail?.oAddress?.countryCode) {
+            const oCountryPhoneCode = this.aCountryPhoneCodes.find(code => code.key === currentLocationDetail?.oAddress?.countryCode);
+            this.customer.oPhone.sPrefixMobile = oCountryPhoneCode.value;
+            this.customer.oPhone.sPrefixLandline = oCountryPhoneCode.value;
+          }
+          if (currentLocationDetail?.oAddress?.country && currentLocationDetail?.oAddress?.countryCode) {
+            this.customer.oInvoiceAddress.sCountry = currentLocationDetail?.oAddress?.country;
+            this.customer.oInvoiceAddress.sCountryCode = currentLocationDetail?.oAddress?.countryCode;
+            this.customer.oShippingAddress.sCountry = currentLocationDetail?.oAddress?.country;
+            this.customer.oShippingAddress.sCountryCode = currentLocationDetail?.oAddress?.countryCode;
+          }
         }
       }
-     
     });
   }
   addLoyalityPoints(){
@@ -654,7 +657,8 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
       this.close({ bShouldUpdateCustomer: true, oCustomer: this.customer });
       return;
     }
-
+    if (this.customer?.oPhone?.sMobile == "") this.customer.oPhone.sPrefixMobile = "";
+    if (this.customer?.oPhone?.sLandLine == "") this.customer.oPhone.sPrefixLandline = "";
     if (this.mode == 'create') {
       this.apiService.postNew('customer', '/api/v1/customer/create', this.customer).subscribe(
         (result: any) => {
@@ -1185,5 +1189,9 @@ export class CustomerDetailsComponent implements OnInit, AfterViewInit{
       event.preventDefault();
       this.toastService.show({ type: 'warning', text: this.translations['ONLY_LETTERS_ARE_ALLOWED'] });
     }    
+  }
+
+  removeSpaces(string: string){
+    return string.replace(/\s/g, '');
   }
 }

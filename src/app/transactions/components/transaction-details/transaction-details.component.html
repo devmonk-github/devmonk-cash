@@ -61,8 +61,8 @@
                            <span *ngIf="transaction?.oCustomer?.bIsCompany">   {{transaction?.oCustomer?.sCompanyName}}</span>
                         </div>
                     </div>
-                    <div class="col-md-12" *ngIf="!transaction?.oCustomer?.bIsCompany && transaction?.oCustomer?.bCounter">
-                        <div class=" mt-2">
+                    <div class="col-md-12" *ngIf="!transaction?.oCustomer?.bIsCompany && !transaction?.oCustomer?.bCounter">
+                        <div class=" mt-2" *ngIf="transaction?.oCustomer?.sCompanyName">
                             <span class="text-muted me-5">{{ 'COMPANY_NAME' | translate}}: </span>
                             <span class="text-gray-800">{{ transaction?.oCustomer?.sCompanyName }}</span>
                         </div>
@@ -109,10 +109,10 @@
                                 {{transaction?.oCustomer?.sEmail}}
                             </div>
                             <div class="text-gray-800 mt-2" *ngIf="transaction?.oCustomer?.oPhone?.sMobile">
-                                {{transaction?.oCustomer?.oPhone?.sMobile}}
+                                {{transaction?.oCustomer?.oPhone?.sPrefixMobile}} {{transaction?.oCustomer?.oPhone?.sMobile}}
                             </div>
                             <div class="text-gray-800 mt-2" *ngIf="transaction?.oCustomer?.oPhone?.sLandLine">
-                                {{transaction?.oCustomer?.oPhone?.sLandLine}}
+                                {{transaction?.oCustomer?.oPhone?.sPrefixLandline}} {{transaction?.oCustomer?.oPhone?.sLandLine}}
                             </div>
                         </div>
                     </ng-container>
@@ -406,8 +406,8 @@
                                         </span>
                                         <span *ngIf="!item.bDiscountOnPercentage">{{ item.nDiscountToShow | currency: tillService.currency}}</span>
                                     </td>
-                                    <td *ngIf="item.bShowGiftcardDiscountField">{{ item.nGiftcardDiscount | currency: tillService.currency}}</td>
-                                    <td *ngIf="item?.bShowLoyaltyPointsDiscountField">{{ item.nRedeemedPointsPerQty }} </td>
+                                    <td *ngIf="item.bShowGiftcardDiscountField || transaction.totalGiftcardDiscount > 0">{{ (item?.nGiftcardDiscount || 0) | currency: tillService.currency}}</td>
+                                    <td *ngIf="item?.bShowLoyaltyPointsDiscountField || transaction.totalRedeemedLoyaltyPoints > 0">{{ item?.nRedeemedPointsPerQty || 0  }} </td>
                                     <td *ngIf="savingPointsSetting && !transaction?.oCustomer?.bCounter">{{item?.nSavingsPoints || 0}} </td>
                                     <td>{{item.nVatRate}} % ({{item.vat || 0 | currency: tillService.currency }})</td>
                                     <td>
@@ -444,7 +444,7 @@
                                     <td *ngIf="savingPointsSetting && !transaction?.oCustomer?.bCounter">{{
                                         transaction.totalSavingPoints }}</td>
                                     <td>{{ transaction.totalVat | currency: tillService.currency }}</td>
-                                    <td>{{ transaction.total | currency: tillService.currency}}</td>
+                                    <td>{{ transaction.nTotal | currency: tillService.currency}}</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -543,9 +543,7 @@
                         </table>
                         <button *ngIf="paymentEditMode" class="btn btn-sm btn-primary"
                             (click)="saveUpdatedPayments($event)"
-                            [disabled]="transaction.nNewPaymentMethodTotal !== transaction.nPaymentMethodTotal"> {{
-                            "SAVE" |
-                            translate}}</button>
+                            [disabled]="transaction.nNewPaymentMethodTotal !== transaction.nPaymentMethodTotal"> {{ "SAVE" | translate}}</button>
                     </div>
                 </div>
             </div>

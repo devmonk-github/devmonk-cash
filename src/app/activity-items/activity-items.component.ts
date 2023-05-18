@@ -253,22 +253,24 @@ export class ActivityItemsComponent implements OnInit, OnDestroy {
         }
       }).instance.close.subscribe((result) => {
         if (result?.oData?.oCurrentCustomer) {
+          activity.oCustomer._id = result && result.oData && result.oData.oCurrentCustomer && result.oData.oCurrentCustomer._id ? result.oData.oCurrentCustomer._id : activity.oCustomer._id;
+          activity.iCustomerId = result && result.oData && result.oData.oCurrentCustomer && result.oData.oCurrentCustomer._id ? result.oData.oCurrentCustomer._id : activity.iCustomerId;
           activity.oCustomer.bIsCompany = result && result.oData && result.oData.oCurrentCustomer && result.oData.oCurrentCustomer.bIsCompany ? result.oData.oCurrentCustomer.bIsCompany:false;
-          if (result?.oData?.oCurrentCustomer?.sFirstName) activity.oCustomer.sFirstName = result?.oData?.oCurrentCustomer?.sFirstName;
-          if (result?.oData?.oCurrentCustomer?.sLastName) activity.oCustomer.sLastName = result?.oData?.oCurrentCustomer?.sLastName;
-          if (result?.oData?.oCurrentCustomer?.sCompanyName) activity.oCustomer.sCompanyName = result?.oData.oCurrentCustomer?.sCompanyName
-          if (result?.oData?.oCurrentCustomer?.sSalutation) activity.oCustomer.sSalutation = result?.oData?.oCurrentCustomer?.sSalutation;
-          if (result?.oData?.oCurrentCustomer?.sPrefix) activity.oCustomer.sPrefix = result?.oData?.oCurrentCustomer?.sPrefix;
-          if (result?.oData?.oCurrentCustomer?.sEmail) activity.oCustomer.sEmail = result?.oData?.oCurrentCustomer?.sEmail;
-          if (result?.oData?.oCurrentCustomer?.sGender) activity.oCustomer.sGender = result?.oData?.oCurrentCustomer?.sGender;
-          if (result?.oData?.oCurrentCustomer?.sVatNumber) activity.oCustomer.sVatNumber = result?.oData?.oCurrentCustomer?.sVatNumber;
-          if (result?.oData?.oCurrentCustomer?.sCocNumber) activity.oCustomer.sCocNumber = result?.oData?.oCurrentCustomer?.sCocNumber;
-          if (result?.oData?.oCurrentCustomer?.nClientId) activity.oCustomer.nClientId = result?.oData?.oCurrentCustomer?.nClientId;
-          if (result?.oData?.oCurrentCustomer?.oContactPerson) activity.oCustomer.oContactPerson = result?.oData?.oCurrentCustomer?.oContactPerson;
-          if (result?.oData?.oCurrentCustomer?.oShippingAddress) activity.oCustomer.oShippingAddress = result?.oData?.oCurrentCustomer?.oShippingAddress;
-          if (result?.oData?.oCurrentCustomer?.oInvoiceAddress) activity.oCustomer.oInvoiceAddress = result?.oData?.oCurrentCustomer?.oInvoiceAddress;
-          if (result?.oData?.oCurrentCustomer?.oPhone) activity.oCustomer.oPhone = result?.oData?.oCurrentCustomer?.oPhone;
-          if (result?.oData?.oCurrentCustomer?.bCounter) activity.oCustomer.bCounter = result?.oData?.oCurrentCustomer?.bCounter;
+          activity.oCustomer.sFirstName = result && result.oData && result.oData.oCurrentCustomer && result.oData.oCurrentCustomer.sFirstName ? result.oData.oCurrentCustomer.sFirstName:"";
+          activity.oCustomer.sLastName = result && result.oData && result.oData.oCurrentCustomer && result.oData.oCurrentCustomer.sLastName ? result.oData.oCurrentCustomer.sLastName:"";
+          activity.oCustomer.sSalutation = result && result.oData && result.oData.oCurrentCustomer && result.oData.oCurrentCustomer.sSalutation ? result.oData.oCurrentCustomer.sSalutation:"";
+          activity.oCustomer.sPrefix = result && result.oData && result.oData.oCurrentCustomer && result.oData.oCurrentCustomer.sPrefix ? result.oData.oCurrentCustomer.sPrefix:"";
+          activity.oCustomer.sEmail = result && result.oData && result.oData.oCurrentCustomer && result.oData.oCurrentCustomer.sEmail ? result.oData.oCurrentCustomer.sEmail:"";
+          activity.oCustomer.sGender = result && result.oData && result.oData.oCurrentCustomer && result.oData.oCurrentCustomer.sGender ? result.oData.oCurrentCustomer.sGender:"";
+          activity.oCustomer.sVatNumber = result && result.oData && result.oData.oCurrentCustomer && result.oData.oCurrentCustomer.sVatNumber ? result.oData.oCurrentCustomer.sVatNumber:"";
+          activity.oCustomer.sCocNumber = result && result.oData && result.oData.oCurrentCustomer && result.oData.oCurrentCustomer.sCocNumber ? result.oData.oCurrentCustomer.sCocNumber:"";
+          activity.oCustomer.nClientId = result && result.oData && result.oData.oCurrentCustomer && result.oData.oCurrentCustomer.nClientId ? result.oData.oCurrentCustomer.nClientId:"";
+          activity.oCustomer.oContactPerson = result && result.oData && result.oData.oCurrentCustomer && result.oData.oCurrentCustomer.oContactPerson ? result.oData.oCurrentCustomer.oContactPerson:"";
+          activity.oCustomer.sCompanyName = result && result.oData && result.oData.oCurrentCustomer && result.oData.oCurrentCustomer.sCompanyName ? result.oData.oCurrentCustomer.sCompanyName:"";
+          activity.oCustomer.oShippingAddress = result && result.oData && result.oData.oCurrentCustomer && result.oData.oCurrentCustomer.oShippingAddress ? result.oData.oCurrentCustomer.oShippingAddress:"";
+          activity.oCustomer.oInvoiceAddress = result && result.oData && result.oData.oCurrentCustomer && result.oData.oCurrentCustomer.oInvoiceAddress ? result.oData.oCurrentCustomer.oInvoiceAddress:"";
+          activity.oCustomer.oPhone = result && result.oData && result.oData.oCurrentCustomer && result.oData.oCurrentCustomer.oPhone ? result.oData.oCurrentCustomer.oPhone:"";
+          activity.oCustomer.bCounter = result && result.oData && result.oData.oCurrentCustomer && result.oData.oCurrentCustomer.bCounter ? result.oData.oCurrentCustomer.bCounter:false;
         }
       }, (error) => {
         console.log('Error here');
@@ -507,17 +509,17 @@ export class ActivityItemsComponent implements OnInit, OnDestroy {
   }
 
   fetchLocationName(){
-    this.activityItems.forEach((activity: any)=>{
-      this.apiService.postNew('core', `/api/v1/business/${this.iBusinessId}/list-location`, { iBusinessId: this.iBusinessId }).subscribe((result: any) => {
-        if (result?.data?.aLocation?.length) {
-          let aLocation = result.data.aLocation;
-          aLocation.forEach((oLocation: any) => {
+    this.apiService.postNew('core', `/api/v1/business/${this.iBusinessId}/list-location`, { iBusinessId: this.iBusinessId }).subscribe((result: any) => {
+      if (result?.data?.aLocation?.length) {
+        let aLocation = result.data.aLocation;
+        aLocation.forEach((oLocation: any) => {
+          this.activityItems.forEach((activity: any)=>{
             if (oLocation._id == activity.iLocationId) {
               activity.sLocationName = oLocation?.sName;
             }
           });
-        }
-      });
+        });
+      }
     });
   }
 

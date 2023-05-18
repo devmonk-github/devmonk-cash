@@ -80,9 +80,6 @@ export class OrderComponent implements OnInit {
     this.getProperties();
     this.listSuppliers();
     this.getBusinessBrands();
-    if (this.settings.bAutoIncrementBagNumbers) {
-      this.item.sBagNumber =  this.settings.sPrefix + (this.settings.nLastBagNumber + 1).toString();
-    }
     if (this.item.new && this.item.isFor !== 'shopProducts') {
       this.selectArticleGroup();
       this.item.new = false;
@@ -90,6 +87,9 @@ export class OrderComponent implements OnInit {
   }
 
   selectArticleGroup() {
+    if (this.settings?.bAutoIncrementBagNumbers) {
+      this.item.sBagNumber =  (this.settings?.sPrefix || '') + (this.settings?.nLastBagNumber + 1).toString();
+    }
     this.dialogService.openModal(SelectArticleDialogComponent, 
       { 
         cssClass: 'modal-m', 
@@ -105,6 +105,7 @@ export class OrderComponent implements OnInit {
           this.item.iArticleGroupId = articlegroup._id;
           this.item.iArticleGroupOriginalId = articlegroup._id;
           this.item.oArticleGroupMetaData.oNameOriginal = articlegroup.oName;
+          this.item.oArticleGroupMetaData.sCategory = articlegroup?.sCategory;
           this.item.nMargin = nMargin;
           this.supplier = supplier.sName;
           this.item.iSupplierId = supplier._id;
@@ -131,7 +132,7 @@ export class OrderComponent implements OnInit {
   
   settingsChanged(event?:any){
     if (this.settings.bAutoIncrementBagNumbers) {
-      this.item.sBagNumber = (event) ? event : this.settings.sPrefix + (this.settings.nLastBagNumber + 1).toString();
+      this.item.sBagNumber = (event) ? event : this.settings?.sPrefix + (this.settings?.nLastBagNumber + 1).toString();
       this.itemChanged.emit({type:'settingsChanged', data: this.item.sBagNumber});
     }
   }
@@ -390,7 +391,8 @@ export class OrderComponent implements OnInit {
     this.item.aImage.splice(index, 1);
   }
 
-  updatePayments(): void {
+  updatePayments(price?:any) {
+    if(price) this.item.price = price;
     this.itemChanged.emit({type: 'item', data: this.item});
   }
 
@@ -404,7 +406,7 @@ export class OrderComponent implements OnInit {
     if (item.paymentAmount > this.availableAmount) {
       this.toastrService.show({ type: 'warning', text: `Can't assign more than available money!` });
       item.paymentAmount = 0;
-      return;
+      // return;
     }
 
     item.manualUpdate = true;

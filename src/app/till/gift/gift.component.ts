@@ -45,7 +45,7 @@ export class GiftComponent implements OnInit {
   ngOnInit(): void {
     this.checkNumber();
     this.checkArticleGroups();
-    this.changeInPrice();
+    this.updatePayments();
   }
 
   deleteItem(): void {
@@ -79,12 +79,13 @@ export class GiftComponent implements OnInit {
   checkArticleGroups() {
     this.createArticleGroupService.checkArticleGroups('giftcard')
       .subscribe((res: any) => {
-        if (1 > res.data.length) {
+        if (!res.data?._id) {
           this.createArticleGroup();
         } else {
-          this.item.iArticleGroupId = res.data[0].result[0]._id;
-          this.item.oArticleGroupMetaData.sCategory = res.data[0].result[0].sCategory;
-          this.item.oArticleGroupMetaData.sSubCategory = res.data[0].result[0].sSubCategory;
+          this.item.iArticleGroupId = res.data._id;
+          this.item.iArticleGroupOriginalId = res.data._id;
+          this.item.oArticleGroupMetaData.sCategory = res.data?.sCategory;
+          this.item.oArticleGroupMetaData.sSubCategory = res.data?.sSubCategory;
         }
       }, err => {
         this.toastrService.show({ type: 'danger', text: err.message });
@@ -98,12 +99,10 @@ export class GiftComponent implements OnInit {
     this.item.oArticleGroupMetaData.sCategory = result.data.sCategory;
     this.item.oArticleGroupMetaData.sSubCategory = result.data.sSubCategory;
   }
-
-  changeInPrice() {
+  
+  updatePayments(price?:any) {
+    if(price) this.item.price = price;
     this.item.nPurchasePrice = this.item.price / 1.21;
-  }
-
-  updatePayments(): void {
     this.itemChanged.emit({type: 'item', data: this.item});
   }
 

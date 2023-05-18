@@ -65,7 +65,7 @@
                 </tr>
                 <tr>
                     <td> {{"TOTAL" | translate}}</td>
-                    <td> {{ (totalAmount + changeAmount) | currencyFormat: tillService.currency:tillService.separator }}</td>
+                    <td> {{ totalAmount | currencyFormat: tillService.currency:tillService.separator }}</td>
                 </tr>
             </tfoot>
         </table>

@@ -13,6 +13,24 @@ export class CreateArticleGroupService {
   aSuppliersList:any;
   org = localStorage.getItem('org');
   aLanguage:any;
+  aArticleGroupWiseCategory:any = [
+    { sArticleGroup: 'order', sCategory: 'Ordered products'},
+    { sArticleGroup: 'repair', sCategory: 'Repairs'},
+    { sArticleGroup: 'giftcard', sCategory: 'Giftcards'},
+    { sArticleGroup: 'expense', sCategory: 'Costs'},
+    { sArticleGroup: 'gold-purchase', sCategory: 'Gold purchase'},
+    { sArticleGroup: 'expense-drinks', sCategory: 'Costs'},
+    { sArticleGroup: 'expense-food', sCategory: 'Costs'},
+    { sArticleGroup: 'expense-cleaning-cost', sCategory: 'Costs'},
+    { sArticleGroup: 'expense-office-supplies', sCategory: 'Costs'},
+    { sArticleGroup: 'expense-promotional-material', sCategory: 'Costs'},
+    { sArticleGroup: 'expense-shipping-cost', sCategory: 'Costs'},
+    { sArticleGroup: 'expense-car-cost', sCategory: 'Costs'}, 
+    { sArticleGroup: 'expense-add-to-cash', sCategory: 'Costs'},
+    { sArticleGroup: 'expense-lost-money', sCategory: 'Costs'}, 
+    { sArticleGroup: 'payment-method-change', sCategory: 'Payment method change'} 
+  ]
+
   constructor(private apiService: ApiService, private translateService: TranslateService) {
     this.fetchInternalBusinessPartner(this.iBusinessId);
     if(this.org)
@@ -123,12 +141,18 @@ export class CreateArticleGroupService {
     return await this.apiService.postNew('core', '/api/v1/business/article-group/general', data).toPromise();
   }
 
-  checkArticleGroups(eDefaultArticleGroup: string): Observable<any> {
-    let data = {
+  checkArticleGroups(eDefaultArticleGroup: string, sGoldForName?:string): Observable<any> {
+    const data:any = {
       eDefaultArticleGroup,
       aLanguage: this.aLanguage,
-      iBusinessId: localStorage.getItem('currentBusiness'),
+      iBusinessId: localStorage.getItem('currentBusiness')
     };
+    const obj = this.aArticleGroupWiseCategory.find((el: any) => el.sArticleGroup === eDefaultArticleGroup);
+    if(obj){
+      data.sCategory = obj.sCategory;
+      data.sSubCategory = obj.sCategory;
+    } 
+    if(eDefaultArticleGroup === 'gold-purchase') data.sSubCategory = sGoldForName;
     return this.apiService.postNew('core', '/api/v1/business/article-group/get/default-article', data);
   }
 
