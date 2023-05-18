@@ -851,6 +851,14 @@ export class TillService {
       bProductName: true,
       bLabelDescription: true
     }
+    const oStatisticsSettings = {
+      bIncludeRefunds:true,
+      bIncludeDiscounts:true,
+      bIncludeRepairs:true,
+      bIncludeGiftcards:true,
+      bIncludeGoldpurchase:true,
+    }
+
     let oMergedSettings: any = {};
     if (!this.settings?.aBagNumbers?.length) {
       oMergedSettings = { ...oBagNumberSettings };
@@ -864,6 +872,9 @@ export class TillService {
     } else {
       oMergedSettings = { ...oMergedSettings, ...(this.settings.aCashRegisterPrefill.find((el: any) => el.iLocationId === this.iLocationId) || oPrefillSettings) };
     }
+
+    if(!this.settings?.oStatisticsSettings) this.settings.oStatisticsSettings = oStatisticsSettings;
+    
     // console.log(this.settings);
 
     this.settings.currentLocation = oMergedSettings;

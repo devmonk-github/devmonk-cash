@@ -205,6 +205,7 @@ export class TransactionAuditUiPdfService {
         aStatisticsIds,
         oFilterData
     }: any) {
+        this.pageSize = this.tillService.settings.oStatisticsSettings.sPageSize;
         this.commonPrintSettingsService.oCommonParameters['pageMargins'] = this.pageMargins;
         this.commonPrintSettingsService.oCommonParameters['pageSize'] = this.pageSize;
         this.commonPrintSettingsService.pageWidth = this.commonPrintSettingsService.pageSizes[this.pageSize].pageWidth
@@ -256,9 +257,6 @@ export class TransactionAuditUiPdfService {
             if (_aActivityItems?.data?.length) {
                 this.aActivityItems = _aActivityItems?.data;
             }
-    
-            // this.aGoldPurchases = _aGoldPurchases?.data[0]?.result.filter((item: any) => item.oType.eKind == 'gold-purchase');
-        
         } else if (sDisplayMethod === 'aRevenuePerTurnoverGroup') {
             const _aTransactionItems: any = await this.fetchTransactionItems(bIsArticleGroupLevel, bIsSupplierMode);
             this.aTransactionItems = (_aTransactionItems?.data?.length && _aTransactionItems?.data[0]?.result?.length) ? _aTransactionItems?.data[0]?.result : [];
@@ -273,13 +271,12 @@ export class TransactionAuditUiPdfService {
         this.handleDisplayMethod({ sDisplayMethod, aStatistic, columnWidths });
 
         this.processPaymentMethods(aPaymentMethods);
-
         if(this.bDetailedMode) {
-            this.addRefundToPdf();
-            this.addDiscountToPdf();
-            this.addRepairsToPdf();
-            this.addGiftcardsToPdf();
-            this.addGoldPurchasesToPdf();
+            if (this.tillService.settings.oStatisticsSettings.bIncludeRefunds) this.addRefundToPdf();
+            if (this.tillService.settings.oStatisticsSettings.bIncludeDiscounts) this.addDiscountToPdf();
+            if (this.tillService.settings.oStatisticsSettings.bIncludeRepairs) this.addRepairsToPdf();
+            if (this.tillService.settings.oStatisticsSettings.bIncludeGiftcards) this.addGiftcardsToPdf();
+            if (this.tillService.settings.oStatisticsSettings.bIncludeGoldpurchase) this.addGoldPurchasesToPdf();
         }
         
         // console.log(this.content);
@@ -420,16 +417,30 @@ export class TransactionAuditUiPdfService {
         // console.log({ aPaymentItems })
         this.addTableHeading('PAYMENT_METHODS');
 
-        const aHeaderList = [
-            { text: this.translateService.instant('METHOD'), style: ['th', 'bgGray', 'left'] },
-            { text: this.translateService.instant('TOTAL_AMOUNT'), style: ['th', 'bgGray'] },
-            { text: this.translateService.instant('QUANTITY'), style: ['th', 'bgGray'] },
+        const aHeaders = [
+            { key: 'METHOD', weight:6  },
+            { key: 'TOTAL_AMOUNT', weight:3 },
+            { key: 'QUANTITY', weight:3 },
         ];
+        const aWidths = [...aHeaders.map((el: any) => this.commonPrintSettingsService.calcColumnWidth(el.weight))];
         const oSafe = aPaymentMethods.find((el:any) => el.sMethod === 'cash_in_safe');
         if(oSafe) {
             const oCash = aPaymentMethods.find((el:any) => el.sMethod === 'cash');
             oCash.nOriginalAmount = oCash.nAmount + oSafe.nAmount;
         }
+
+        const aHeaderList: any = [];
+        aHeaders.forEach((el: any, index:number) => {
+            const obj: any = {
+                text: (el?.key) ? this.translateService.instant(el.key) : '',
+                style: ['th', 'bgGray'],
+                border: this.styles.border_top_bottom
+            };
+            if(index == 0) obj.style.push('left')
+            aHeaderList.push(obj)
+        })
+
+
         const aTexts:any = [aHeaderList];
         if (aPaymentMethods?.length) {
             // console.log({ aPaymentMethods })
@@ -467,17 +478,7 @@ export class TransactionAuditUiPdfService {
                 {}
             ]);
         }
-        const data = {
-            table: {
-                headerRows: 1,
-                widths: '*',
-                body: aTexts,
-                dontBreakRows: true,
-                keepWithHeaderRows: true
-            },
-            layout: this.styles.horizontalLinesSlimWithTotal
-        };
-        this.content.push(data);
+        this.addTableToContent(aTexts, this.styles.horizontalLinesSlim, aWidths);
     }
 
     
