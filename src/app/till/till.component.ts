@@ -980,19 +980,26 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
     aUniqueItemTypes.push(...['repair', 'repair_alternative', 'giftcard']);
 
+    const aPromises:any = [];
+    aPromises.push(this.getTemplate(aUniqueItemTypes))
+    aPromises.push(this.getBase64FromUrl(oDataSource?.businessDetails?.sLogoLight))
+    if(this.employee._id != oDataSource.iEmployeeId) {
+      aPromises.push(this.apiService.getNew('auth', `/api/v1/employee/${oDataSource.iEmployeeId}?iBusinessId=${this.iBusinessId}`).toPromise())
+    }
 
-    const [_template, _oLogoData]: any = await Promise.all([
-      this.getTemplate(aUniqueItemTypes),
-      this.getBase64FromUrl(oDataSource?.businessDetails?.sLogoLight),
-    ]);
 
+    const aResult:any = await Promise.all(aPromises);
+    // console.log({aResult});
+    if (this.employee._id != oDataSource.iEmployeeId) {
+      this.employee = aResult[2].data;
+    }
     oDataSource.sAdvisedEmpFirstName = this.employee?.sFirstName || 'a';
-    oDataSource.sBusinessLogoUrl = _oLogoData.data;
+    oDataSource.sBusinessLogoUrl = aResult[1].data;
     if (oDataSource.oCustomer && oDataSource.oCustomer.bCounter === true) {
       oDataSource.oCustomer = {};
     }
 
-    const aTemplates = _template.data;
+    const aTemplates = aResult[0].data;
 
     oDialogComponent.contextChanged.next({
       transaction: oDataSource,
@@ -1041,7 +1048,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
       const oAlternativeDataSource = this.activityItems.filter((item: any) => item.oType.eKind === 'repair');
       oAlternativeDataSource.sAdvisedEmpFirstName = this.employee?.sFirstName || 'a';
       oAlternativeDataSource.forEach((data: any) => {
-        data.sBusinessLogoUrl = _oLogoData.data;
+        data.sBusinessLogoUrl = aResult[1].data;
         data.businessDetails = this.businessDetails;
         this.sendForReceipt(data, template, data.sNumber, 'repair_alternative');
       })
