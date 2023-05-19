@@ -1071,7 +1071,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
           sTemplateType: 'business-receipt'
         });
       }
-      const settings = this.printSettings.filter((s: any) => s.sMethod === 'pdf' && s.sType === type && s.iWorkstationId === this.iWorkstationId);
+      const settings = this.printSettings.find((s: any) => s.sMethod === 'pdf' && s.sType === type && s.iWorkstationId === this.iWorkstationId);
       if (aActionToPerform.includes('DOWNLOAD') || aActionToPerform.includes('PRINT_PDF')) {
         this.receiptService.exportToPdf({
           oDataSource: oDataSource,
