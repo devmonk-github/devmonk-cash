@@ -40,7 +40,7 @@
         <app-dialer [(quantity)]="item.quantity" [item]="item" [bSerialSearchMode]="bSerialSearchMode"
           (quantityChange)="updatePayments()"></app-dialer>
 
-        <div class="my-5">
+        <div class="my-5" *ngIf="tillService.oSavingPointSettings.bEnabled">
           <span *ngIf="tillService.oSavingPointSettings.aExcludedArticleGroups.includes(item.iArticleGroupId)">
             <strong>{{ 'THIS_ARTICLE_GROUP_HAS_BEEN_EXCLUDED_FROM_EARNING_LOYALTY_POINTS'| translate }}</strong>
           </span>
