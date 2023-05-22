@@ -224,7 +224,7 @@ export class PdfService {
       {
         rotate: printSettings?.nRotation || 0,
         paper: printSettings?.sPrinterPageFormat,
-        bin: printSettings?.sPaperTray,
+        tray: printSettings?.sPaperTray,
         title: pdfTitle
       }
     ).then((response: any) => this.handlePrintRespoinse(response, sApiKey))
