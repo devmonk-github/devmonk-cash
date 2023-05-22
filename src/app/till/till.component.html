@@ -625,8 +625,9 @@
                   <fa-icon [icon]="faRotateLeft" class="fa-spin"></fa-icon>
                 </button>
                 <div @fade *ngIf="!bAllGiftcardPaid" class="badge badge-danger mt-3">
-                  {{'PLEASE_PAY_ALL_GIFTCARD_TO_CHECKOUT' |
-                  translate}}</div>
+                  {{'PLEASE_PAY_ALL_GIFTCARD_TO_CHECKOUT' | translate}}</div>
+                <div @fade *ngIf="bShowOverassignedWarning" class="badge badge-danger mt-3">
+                  {{ 'YOU_HAVE_ASSIGNED_TOO_MUCH_AMOUNT' | translate}}</div>
               </div>
             </div>
           </div>

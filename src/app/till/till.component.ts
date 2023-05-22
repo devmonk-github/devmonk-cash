@@ -157,6 +157,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   bIsTransactionLoading = false;
   nGiftcardAmount = 0;
   bDisableCheckout: boolean;
+  bShowOverassignedWarning: boolean;
 
   randNumber(min: number, max: number): number {
     return Math.floor(Math.random() * (max - min + 1) + min);
@@ -431,14 +432,18 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
 
   checkout() {
     this.bDisableCheckout = true;
+    this.bShowOverassignedWarning = false;
     if (this.transactionItems?.length) {
-      const items = this.transactionItems.filter((item: any) => item?.isExclude)
-      if (items?.length == this.transactionItems?.length) this.bDisableCheckout = false
-      else if (this.amountDefined && this.bAllGiftcardPaid) this.bDisableCheckout = false;
-      else this.bDisableCheckout = true
-    } else {
-      this.bDisableCheckout = true;
+      if (this.transactionItems.filter((item: any) => item?.isExclude)?.length == this.transactionItems?.length) this.bDisableCheckout = false
+      if (this.amountDefined && this.bAllGiftcardPaid) this.bDisableCheckout = false;
+      if (this.nTotalPayment > this.availableAmount) {
+        this.bShowOverassignedWarning = true;
+        this.bDisableCheckout = true;
+      }
     }
+    // console.log(this.transactionItems.filter((item: any) => item?.isExclude)?.length, this.transactionItems?.length,
+    //   { amountDefined: this.amountDefined, bAllGiftcardPaid: this.bAllGiftcardPaid, nTotalPayment: this.nTotalPayment, availableAmount: this.availableAmount})
+
   }
   async addItem(type: string) {
     // console.log('add item,', type, type==='repair')
