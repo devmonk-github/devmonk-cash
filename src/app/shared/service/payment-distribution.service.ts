@@ -74,7 +74,7 @@ export class PaymentDistributionService {
 
     if (bTesting)  console.log({update: arrToUpdate, notToUpdate: arrNotToUpdate})
     
-    const assignedAmountToManual = _.sumBy(arrNotToUpdate, 'paymentAmount')
+    const assignedAmountToManual = arrNotToUpdate.reduce((n, { paymentAmount }) => n + paymentAmount, 0);
     availableAmount -= assignedAmountToManual;
     
     if (bTesting) console.log('assignedAmountToManual', assignedAmountToManual, 'availableAmount', availableAmount)
