@@ -331,16 +331,9 @@ export class OrderComponent implements OnInit {
     if (this.item.iArticleGroupId) {
       return;
     }
-    this.createArticleGroupService.checkArticleGroups('order')
-      .subscribe((res: any) => {
-        if (1 > res.data.length) {
-          this.createArticleGroup();
-        } else {
-          this.assignArticleGroupMetadata(res.data[0].result[0]);
-        }
-      }, err => {
-        this.toastrService.show({ type: 'danger', text: err.message });
-      });
+    this.createArticleGroupService.checkArticleGroups('order').subscribe((res: any) => {
+      if (res?.data?._id) this.assignArticleGroupMetadata(res.data);
+    });
   }
 
   // Function for set dynamic property option

@@ -191,48 +191,14 @@
           </div>
         </div>
       
-        <div id="kt_accordion_123" [ngClass]="{'show': collapsedBtn }" class="accordion-collapse collapse">
-          <div class="row">
-            <div class="col-6">
-              <div class="form-group mb-1">
-                <label class="form-control-label mb-1">{{ "MARGIN" | translate}}</label>:
-                <input class="form-control mb-3 mb-lg-0" type="number" step="any" (keyup)="changeInMargin()"
-                  [(ngModel)]="item.nMargin" [disabled]="item.oType.bRefund">
-              </div>
-            </div>
-      
-            <div class="col-6">
-              <div class="form-group mb-1">
-                <label class="form-control-label mb-1">{{ "PURCHASE_PRICE" | translate}}</label>
-                <input class="form-control mb-3 mb-lg-0" type="number" step="any" (keyup)="changeInPurchasePrice()"
-                  [(ngModel)]="item.nPurchasePrice" [disabled]="item.oType.bRefund || item.oType.bPrepayment">
-              </div>
-            </div>
-      
-      
-            <div class="col-12">
-              <div class="form-group mb-1">
-                <label class="form-control-label mb-1">
-                  <span *ngIf="item.oType.bPrepayment===true">{{ "PREPAYMENT" | translate}}</span>
-                  <span *ngIf="item.oType.bPrepayment===false">{{ "FULL_PAYMENT" | translate}}</span>
-                </label> <!--  {{ disablePrepayment }} {{ item.isExclude }} -->
-                <!-- <span style="color:red;font-weight:bolder">Don't touch this field untill you filled in the payments on the right side</span> -->
-                <p style="color:red;font-weight:bolder">{{ "FIRST_FILL_AMOUNT_AT_RIGHT_SIDE" | translate}}</p>
-                <input class="form-control mb-3 mb-lg-0" type="number" step="any" (keyup)="changePrePayment(item)"
-                  [(ngModel)]="item.paymentAmount" [disabled]="item.isExclude || disablePrepayment" />
-              </div>
-            </div>
-          </div>
-        </div>
+        
       
       </div>
 
       <div class="col-3">
         <div class="row">
           <div class="col-6">
-            <button class="btn btn-secondary btn-sm w-100" type="button" data-bs-toggle="collapse"
-              (click)="collapsedBtn = !collapsedBtn" [ngClass]="{'collapsed': collapsedBtn }"
-              data-bs-target="#kt_accordion_123" aria-expanded="true" aria-controls="kt_accordion_123">
+            <button class="btn btn-secondary btn-sm w-100" type="button" (click)="collapsedBtn = !collapsedBtn">
               {{ "MORE" | translate}}
               <fa-icon *ngIf="!collapsedBtn" [icon]="faArrowDown"></fa-icon>
               <fa-icon *ngIf="collapsedBtn" [icon]="faArrowUp"></fa-icon>
@@ -349,6 +315,39 @@
       </div>
       
       <div class="col-3">
+
+        <div class="row" *ngIf="collapsedBtn">
+          <div class="col-6">
+            <div class="form-group mb-1">
+              <label class="form-control-label mb-1">{{ "MARGIN" | translate}}</label>:
+              <input class="form-control mb-3 mb-lg-0" type="number" step="any" (keyup)="changeInMargin()"
+                [(ngModel)]="item.nMargin" [disabled]="item.oType.bRefund">
+            </div>
+          </div>
+        
+          <div class="col-6">
+            <div class="form-group mb-1">
+              <label class="form-control-label mb-1">{{ "PURCHASE_PRICE" | translate}}</label>
+              <input class="form-control mb-3 mb-lg-0" type="number" step="any" (keyup)="changeInPurchasePrice()"
+                [(ngModel)]="item.nPurchasePrice" [disabled]="item.oType.bRefund || item.oType.bPrepayment">
+            </div>
+          </div>
+        
+        
+          <div class="col-12">
+            <div class="form-group mb-1">
+              <label class="form-control-label mb-1">
+                <span *ngIf="item.oType.bPrepayment===true">{{ "PREPAYMENT" | translate}}</span>
+                <span *ngIf="item.oType.bPrepayment===false">{{ "FULL_PAYMENT" | translate}}</span>
+              </label> <!--  {{ disablePrepayment }} {{ item.isExclude }} -->
+              <!-- <span style="color:red;font-weight:bolder">Don't touch this field untill you filled in the payments on the right side</span> -->
+              <p style="color:red;font-weight:bolder">{{ "FIRST_FILL_AMOUNT_AT_RIGHT_SIDE" | translate}}</p>
+              <input class="form-control mb-3 mb-lg-0" type="number" step="any" (keyup)="changePrePayment(item)"
+                [(ngModel)]="item.paymentAmount" [disabled]="item.isExclude || disablePrepayment" />
+            </div>
+          </div>
+        </div>
+
         <div class="p-2" *ngFor="let image of item.aImage; let i = index" (mouseover)="showDeleteBtn = true"
           (mouseout)="showDeleteBtn = false">
           <div class="image-input" data-kt-image-input="true"
