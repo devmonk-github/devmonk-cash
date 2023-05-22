@@ -200,6 +200,7 @@ export class ActivityDetailsComponent implements OnInit {
   }
 
   async ngOnInit() {
+    // console.log(this.activity, this.activityItems)
     this.sNumber = (this.from === 'services') ? this.activity.sNumber : '';
     this.getSettings();
     this.apiService.setToastService(this.toastService);
@@ -709,6 +710,7 @@ export class ActivityDetailsComponent implements OnInit {
   }
 
   fetchTransactionItems(_id: any) {
+    // console.log('fetchTransactionItems', _id, this.from)
     this.loading = true;
     const url = (this.from === 'services') ? `/api/v1/activities/items/${_id}` : `/api/v1/activities/activity-item/${_id}`;
     this.apiService.postNew('cashregistry', url, this.requestParams).subscribe((result: any) => {
