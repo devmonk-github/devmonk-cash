@@ -534,7 +534,7 @@ export class TillService {
             iArticleGroupId: item.iArticleGroupId,
             iEmployeeId: item.iEmployeeId,
             iBusinessBrandId: item.iBusinessBrandId,
-            nDiscount: 0, //item.nDiscount ||
+            nDiscount: item.nDiscount || 0,
             tax: item.nVatRate,
             oGoldFor: item.oGoldFor,
             iSupplierId: item.iSupplierId,
@@ -554,6 +554,7 @@ export class TillService {
             sBagNumber: item?.sBagNumber,
             bShowGiftcardDiscountField: item?.bShowGiftcardDiscountField,
             bShowLoyaltyPointsDiscountField:  item?.bShowLoyaltyPointsDiscountField,
+            bDiscountOnPercentage: item?.bDiscountOnPercentage || false
           });
         }
       });
