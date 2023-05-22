@@ -37,7 +37,7 @@ export class TillService {
   }
 
   fetchPointsSettings() {
-    if(this.oSavingPointSettings?._id) return;
+    // if(this.oSavingPointSettings?._id) return;
     this.apiService.getNew('cashregistry', `/api/v1/points-settings?iBusinessId=${this.iBusinessId}`).subscribe((result:any) => {
       this.oSavingPointSettings = result;
     });
@@ -299,7 +299,7 @@ export class TillService {
       oItem.bGiftcardTaxHandling = i.bGiftcardTaxHandling;
       oItem.bDiscountOnPercentage = i.bDiscountOnPercentage || false
       if (i?.sSerialNumber) oItem.sSerialNumber = i.sSerialNumber;
-      oItem.nSavingsPoints = i.nSavingsPoints;
+      oItem.nSavingsPoints = (this.oSavingPointSettings.bEnabled) ? i.nSavingsPoints : 0;
       return oItem;
     });
     // const originalTItemsLength = length = body.transactionItems.filter((i: any) => i.oType.eKind !== 'loyalty-points').length;
@@ -534,7 +534,7 @@ export class TillService {
             iArticleGroupId: item.iArticleGroupId,
             iEmployeeId: item.iEmployeeId,
             iBusinessBrandId: item.iBusinessBrandId,
-            nDiscount: 0, //item.nDiscount ||
+            nDiscount: item.nDiscount || 0,
             tax: item.nVatRate,
             oGoldFor: item.oGoldFor,
             iSupplierId: item.iSupplierId,
@@ -554,6 +554,7 @@ export class TillService {
             sBagNumber: item?.sBagNumber,
             bShowGiftcardDiscountField: item?.bShowGiftcardDiscountField,
             bShowLoyaltyPointsDiscountField:  item?.bShowLoyaltyPointsDiscountField,
+            bDiscountOnPercentage: item?.bDiscountOnPercentage || false
           });
         }
       });
@@ -851,6 +852,14 @@ export class TillService {
       bProductName: true,
       bLabelDescription: true
     }
+    const oStatisticsSettings = {
+      bIncludeRefunds:true,
+      bIncludeDiscounts:true,
+      bIncludeRepairs:true,
+      bIncludeGiftcards:true,
+      bIncludeGoldpurchase:true,
+    }
+
     let oMergedSettings: any = {};
     if (!this.settings?.aBagNumbers?.length) {
       oMergedSettings = { ...oBagNumberSettings };
@@ -864,10 +873,10 @@ export class TillService {
     } else {
       oMergedSettings = { ...oMergedSettings, ...(this.settings.aCashRegisterPrefill.find((el: any) => el.iLocationId === this.iLocationId) || oPrefillSettings) };
     }
-    // console.log(this.settings);
 
+    if(!this.settings?.oStatisticsSettings) this.settings.oStatisticsSettings = oStatisticsSettings;
+    
     this.settings.currentLocation = oMergedSettings;
-    // console.log(this.settings);
     return this.settings;
   }
 

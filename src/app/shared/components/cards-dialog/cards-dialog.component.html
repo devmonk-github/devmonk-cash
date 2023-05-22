@@ -39,7 +39,7 @@
                         </div>
                         <div class="col-6">
                             <input name="" class="form-control" type="number" min="0"
-                                [disabled]="!giftCardDetails || 1 > giftCardDetails?.nGiftcardRemainingAmount" [(ngModel)]="giftCardInfo.nAmount">
+                                [disabled]="!giftCardDetails || giftCardDetails?.nGiftcardRemainingAmount <= 0" [(ngModel)]="giftCardInfo.nAmount">
                             <span *ngIf="nAmount > giftCardDetails?.nGiftcardRemainingAmount"
                                 class="text-danger">{{"AMOUNT_ENTERED_IS_HIGHER_THAN_AVAILABLE_BALANCE" |
                                 translate}}.</span>

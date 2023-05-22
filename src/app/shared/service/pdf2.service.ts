@@ -4,6 +4,8 @@ import pdfFonts from 'pdfmake/build/vfs_fonts';
 import { ToastService } from '../components/toast/toast.service';
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 import { PrintService } from './print.service';
+import pdfActions from "pdf-actions";
+import { saveAs } from 'file-saver';
 
 @Injectable({
   providedIn: 'root'
@@ -121,7 +123,7 @@ export class PdfService {
 
   getPdfData({ styles, content, orientation, pageSize, pdfTitle, footer, pageMargins, defaultStyle,
     printSettings, printActionSettings, eType, eSituation, sAction, sApiKey, addPageBreakBefore }: any) {
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
       // console.log('getPdfData', {
       //   styles, content, orientation, pageSize, pdfTitle, footer, pageMargins, defaultStyle,
       //   printSettings, printActionSettings, eType, eSituation, sAction, sApiKey })
@@ -129,43 +131,49 @@ export class PdfService {
       const pdfObject = this.generatePdf(docDefinition);
       if (sAction == 'sentToCustomer') {
         pdfObject.getBase64(async (response: any) => resolve(response));
-      } else if ((printSettings?.length && printActionSettings?.length) || sAction != 'download') {
+      } else if ((printSettings && printActionSettings?.length) || sAction == 'print') {
         this.processPrintAction(pdfObject, pdfTitle, printSettings, printActionSettings, eType, eSituation, sAction, sApiKey);
         resolve(true);
       } else {
-        pdfObject.download(pdfTitle);
-        resolve(true);
+        this.download(pdfObject, pdfTitle, printSettings?.nRotation);
+        resolve(true)
       }
     });
   }
-
-
+  
+  download(pdfObject:any, pdfTitle:string, nRotation:number = 0) {
+    // console.log({pdfObject,nRotation})
+    if(nRotation == 0) {
+      pdfObject.download(pdfTitle);
+    } else {
+      pdfObject.getBuffer(async (buffer: any) => {
+        const PDFDocument = await pdfActions.createPDF.PDFDocumentFromPDFArray(buffer);
+        const RotatedPDFDocument = await pdfActions.rotatePDF(PDFDocument, nRotation);
+        const pdfBytes = await RotatedPDFDocument.save()
+        const blob = await pdfActions.pdfArrayToBlob(pdfBytes)
+        saveAs(blob, pdfTitle)
+      });
+    }
+  }
 
   processPrintAction(pdfObject: any, pdfTitle: any, printSettings: any, printActionSettings: any, eType: any, eSituation: any, sAction: any, sApiKey:any) {
-    // pdfObject.download(pdfTitle);
+    // console.log('processPrintAction', { printSettings, printActionSettings, eType, eSituation, sAction })
     if (!printActionSettings?.length && !sAction) {
-      pdfObject.download(pdfTitle);
+      this.download(pdfObject, pdfTitle, printSettings?.nRotation);
       return;
     } else if (printActionSettings?.length) {
-      printActionSettings = printActionSettings.filter((s: any) => s.eType === eType && s.eSituation === eSituation);
+      printActionSettings = printActionSettings.find((s: any) => s.eType === eType && s.eSituation === eSituation);
     }
-    // printSettings = printSettings.filter((s: any) => s.sType === eType && s.iWorkstationId === this.iWorkstationId);
+    // console.log({ printActionSettings })
     if (sAction && sAction === 'print') {
       // console.log('if sAction= print')
-      // printSettings = printSettings.filter((s: any) => s.sMethod === 'pdf')[0];
-      // console.log('if filter', printSettings)
       this.handlePrint(pdfObject, printSettings, pdfTitle, sApiKey);
-    } else if (sAction && sAction === 'download') {
-      // console.log('else if saction=download')
-      pdfObject.download(pdfTitle);
-      return;
     } else {
       if (printActionSettings?.length) {
         const aActionToPerform = printActionSettings[0].aActionToPerform;
         aActionToPerform.forEach((action: any) => {
           switch (action) {
             case 'PRINT_PDF':
-              printSettings = printSettings.filter((s: any) => s.sMethod === 'pdf')[0];
               if (!printSettings?.nPrinterId) {
                 this.toastrService.show({ type: 'danger', text: `Printer is not selected for PDF - ${eType}` });
                 return;
@@ -173,12 +181,12 @@ export class PdfService {
               this.handlePrint(pdfObject, printSettings, pdfTitle, sApiKey);
               break;
             case 'DOWNLOAD':
-              pdfObject.download(pdfTitle);
+              this.download(pdfObject, pdfTitle, printSettings?.nRotation);
               break;
           }
         });
       } else {
-        pdfObject.download(pdfTitle);
+        this.download(pdfObject, pdfTitle, printSettings?.nRotation);
         return;
       }
     }
@@ -190,35 +198,59 @@ export class PdfService {
       return;
     }
 
-    pdfObject.getBase64((data: any) => {
-      this.printService.printPDF(
-        this.iBusinessId,
-        data,
-        printSettings.nPrinterId,
-        printSettings.nComputerId,
-        1,
-        '',
-        pdfTitle,
-        { 
-          rotate:printSettings?.nRotation || 0,
-          paper: printSettings?.sPrinterPageFormat,
-          bin: printSettings?.sPaperTray,
-          title: pdfTitle
-        }
-      ).then((response: any) => {
-        if (response.status == "PRINTJOB_NOT_CREATED") {
-          let message = '';
-          if (response.computerStatus != 'online') {
-            message = 'Your computer status is : ' + response.computerStatus + '.';
-          } else if (response.printerStatus != 'online') {
-            message = 'Your printer status is : ' + response.printerStatus + '.';
-          }
-          this.toastrService.show({ type: 'warning', title: 'PRINTJOB_NOT_CREATED', text: message });
-        } else {
-          this.toastrService.show({ type: 'success', text: 'PRINTJOB_CREATED', apiUrl: '/api/v1/printnode/print-job', templateContext: { apiKey: sApiKey, id: response.id } });
-        }
-
-      })
-    });
+    if (printSettings?.nRotation == 0) {
+      pdfObject.getBase64((data: any) => this.sendToPrint(data, printSettings, pdfTitle, sApiKey));
+    } else {
+      pdfObject.getBuffer(async (buffer: any) => {
+        const PDFDocument = await pdfActions.createPDF.PDFDocumentFromPDFArray(buffer);
+        const RotatedPDFDocument = await pdfActions.rotatePDF(PDFDocument, printSettings?.nRotation);
+        const pdfBytes = await RotatedPDFDocument.save()
+        const blob = await pdfActions.pdfArrayToBlob(pdfBytes)
+        const data:any = await this.blobToBase64(blob);
+        this.sendToPrint(data, printSettings, pdfTitle, sApiKey)
+      });
+    }
   }
+
+  sendToPrint(data:any, printSettings:any, pdfTitle:string, sApiKey:any){
+    this.printService.printPDF(
+      this.iBusinessId,
+      data,
+      printSettings.nPrinterId,
+      printSettings.nComputerId,
+      1,
+      '',
+      pdfTitle,
+      {
+        rotate: printSettings?.nRotation || 0,
+        paper: printSettings?.sPrinterPageFormat,
+        tray: printSettings?.sPaperTray,
+        title: pdfTitle
+      }
+    ).then((response: any) => this.handlePrintRespoinse(response, sApiKey))
+  }
+
+  handlePrintRespoinse(response:any, sApiKey:any) {
+    if (response.status == "PRINTJOB_NOT_CREATED") {
+      let message = '';
+      if (response.computerStatus != 'online') {
+        message = 'Your computer status is : ' + response.computerStatus + '.';
+      } else if (response.printerStatus != 'online') {
+        message = 'Your printer status is : ' + response.printerStatus + '.';
+      }
+      this.toastrService.show({ type: 'warning', title: 'PRINTJOB_NOT_CREATED', text: message });
+    } else {
+      this.toastrService.show({ type: 'success', text: 'PRINTJOB_CREATED', apiUrl: '/api/v1/printnode/print-job', templateContext: { apiKey: sApiKey, id: response.id } });
+    }
+  }
+
+  blobToBase64 = (blob:any) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(blob);
+    return new Promise(resolve => {
+      reader.onloadend = () => {
+        resolve(reader.result);
+      };
+    });
+  };
 }

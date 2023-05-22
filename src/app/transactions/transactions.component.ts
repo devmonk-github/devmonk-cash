@@ -285,7 +285,7 @@ export class TransactionsComponent implements OnInit, OnDestroy {
 
   // Function for handle event of transaction menu
   clickMenuOpt(key: string, transaction: any) {
-    console.log("transactionid", transaction._id);
+    // console.log("transactionid", transaction._id);
     switch (key) {
       case 'MARK_CONFIRMED':
         this.bankConfirmation(transaction._id);
@@ -315,7 +315,7 @@ export class TransactionsComponent implements OnInit, OnDestroy {
 
   bankConfirmation(transactionId: any) {
     const transactionIndex = this.transactions.findIndex((transaction: any) => transaction._id == transactionId);
-    console.log("transaction index" , this.transactions[transactionIndex]._id)
+    // console.log("transaction index" , this.transactions[transactionIndex]._id)
     this.dialogService.openModal(BankConfirmationDialogComponent, {
       cssClass: "modal-lg",
       context: {

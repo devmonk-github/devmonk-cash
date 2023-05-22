@@ -62,7 +62,7 @@ export class SupplierProductSliderComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.subscription = this.$data?.subscribe({
       next: async (data: any) => {
-        console.log('data',data);
+        // console.log('data',data);
         this.reset();
         if (Object.values(data).length) {
           DrawerComponent.reinitialization();

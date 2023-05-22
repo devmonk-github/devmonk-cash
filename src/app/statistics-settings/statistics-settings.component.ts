@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { faPencilAlt, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faPencilAlt, faTrash, faArrowDown, faArrowUp, } from '@fortawesome/free-solid-svg-icons';
 import { ApiService } from '../shared/service/api.service';
 import { Subscription } from 'rxjs';
 import { DialogComponent, DialogService } from '../shared/service/dialog';
@@ -17,6 +17,8 @@ export class StatisticsSettingsComponent implements OnInit {
   addNew: boolean = false;
   faPencilAlt = faPencilAlt;
   faTrash = faTrash;
+  faArrowDown = faArrowDown;
+  faArrowUp = faArrowUp;
   routerLink:any;
   workstation: any = {
     sName: '',
@@ -27,6 +29,7 @@ export class StatisticsSettingsComponent implements OnInit {
   workstations: Array<any> = [];
   settings: any;
   iBusinessId = localStorage.getItem('currentBusiness')
+  aPageSizes:any = ['A3', 'A4', 'A5']
   downloadOptions = [
     {
       title: 'CSV_DOWNLOAD',
@@ -48,6 +51,7 @@ export class StatisticsSettingsComponent implements OnInit {
   requestParams: any = {
     iBusinessId: localStorage.getItem('currentBusiness')
   }
+  collapsedBtn = false;
   constructor(
     private apiService: ApiService,
     private dialogService: DialogService,
@@ -66,6 +70,7 @@ export class StatisticsSettingsComponent implements OnInit {
   getSettings() {
     this.getSettingsSubscription = this.apiService.getNew('cashregistry', `/api/v1/settings/${this.requestParams.iBusinessId}`).subscribe((result: any) => {
       this.settings = result;
+      if (!this.settings?.oStatisticsSettings) this.settings.oStatisticsSettings = {}
     }, (error) => {
       this.toastService.show({ type: 'warning', text: 'something went wrong' });
       console.log(error);
@@ -141,7 +146,8 @@ export class StatisticsSettingsComponent implements OnInit {
   updateSettings() {
     const body = {
       bSumUpArticleGroupStatistics: this.settings?.bSumUpArticleGroupStatistics,
-      bShowDayStatesBasedOnTurnover: !this.settings?.bSumUpArticleGroupStatistics ? false : this.settings?.bShowDayStatesBasedOnTurnover
+      bShowDayStatesBasedOnTurnover: !this.settings?.bSumUpArticleGroupStatistics ? false : this.settings?.bShowDayStatesBasedOnTurnover,
+      oStatisticsSettings: this.settings.oStatisticsSettings
     };
     this.updateSettingsSubscription = this.apiService.putNew('cashregistry', '/api/v1/settings/update/' + this.requestParams.iBusinessId, body)
       .subscribe((result: any) => {

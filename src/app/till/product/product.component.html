@@ -30,10 +30,9 @@
   </button>
 </h2>
 
-<div id="kt_accordion_1_body_1" class="accordion-collapse collapse show rounded-0"
-  aria-labelledby="kt_accordion_1_header_1" data-bs-parent="#kt_accordion_1">
+<div id="kt_accordion_1_body_1" class="accordion-collapse collapse show rounded-0" data-bs-parent="#till-items-accordion">
   <div class="accordion-body px-3 py-4">
-
+    
     <div class="row">
       <div class="col-4">
         <app-dialer [(quantity)]="item.quantity"  [item]="item"  [bSerialSearchMode]="bSerialSearchMode" (quantityChange)="quantityChangeHandler($event)"></app-dialer>
@@ -98,7 +97,7 @@
             class="text-break text-danger m-0 mt-3">{{"WARNING_STOCK_QUANTITY_IS_0"| translate}}</p>
         </div>
 
-        <div class="my-5">
+        <div class="my-5" *ngIf="tillService.oSavingPointSettings.bEnabled">
           <span *ngIf="tillService.oSavingPointSettings.aExcludedArticleGroups.includes(item.iArticleGroupId)">
             <strong>{{ 'THIS_ARTICLE_GROUP_HAS_BEEN_EXCLUDED_FROM_EARNING_LOYALTY_POINTS'| translate }}</strong>
           </span>
@@ -140,16 +139,13 @@
       </div>
 
       <div class="col-4 mb-7">
-        <button class="btn btn-secondary my-2" type="button" data-bs-toggle="collapse"
-          (click)="collapsedBtn = !collapsedBtn" [ngClass]="{'collapsed': collapsedBtn }" data-bs-target="#kt_accordion_123"
-          aria-expanded="true" aria-controls="kt_accordion_123">
+        <button class="btn btn-secondary my-2" type="button" (click)="collapsedBtn = !collapsedBtn">
           {{ "MORE" | translate}}
           <fa-icon *ngIf="!collapsedBtn" [icon]="faArrowDown"></fa-icon>
           <fa-icon *ngIf="collapsedBtn" [icon]="faArrowUp"></fa-icon>
         </button>
 
-        <div id="kt_accordion_123" [ngClass]="{'show': collapsedBtn }" class="accordion-collapse collapse">
-          <!-- PREPAYMENT -->
+        <div *ngIf="collapsedBtn">
           <div class="row">
             <div class="form-group mb-4">
               <label class="form-control-label mb-3">
@@ -179,5 +175,6 @@
         </div>
       </div>
     </div>
+
   </div>
 </div>

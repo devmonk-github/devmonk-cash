@@ -61,7 +61,7 @@
         </div>
 
         <div class="row">
-            <div class="col-3">
+            <div class="col-3" *ngIf="tillService.oSavingPointSettings.bEnabled">
                 <span *ngIf="tillService.oSavingPointSettings.aExcludedArticleGroups.includes(item.iArticleGroupId)">
                     <strong>{{ 'THIS_ARTICLE_GROUP_HAS_BEEN_EXCLUDED_FROM_EARNING_LOYALTY_POINTS'| translate }}</strong>
                 </span>
@@ -71,6 +71,7 @@
                     {{ 'LOYALTY_POINTS' | translate }}
                 </span>
             </div>
+            <div class="col-3" *ngIf="!tillService.oSavingPointSettings.bEnabled"></div>
             <div class="col-6">
                 <div class="form-group mb-4">
                     <label class="form-control-label mb-3">{{ "DESCRIPTION" | translate}}</label>:

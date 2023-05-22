@@ -92,7 +92,7 @@
           </button>
         </div>
 
-        <div class="col-3 my-5">
+        <div class="col-3 my-5" *ngIf="tillService.oSavingPointSettings.bEnabled">
           
           <span *ngIf="tillService.oSavingPointSettings.aExcludedArticleGroups.includes(item.iArticleGroupId)">
             <strong>{{ 'THIS_ARTICLE_GROUP_HAS_BEEN_EXCLUDED_FROM_EARNING_LOYALTY_POINTS'| translate }}</strong>
