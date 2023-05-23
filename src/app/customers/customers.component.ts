@@ -82,6 +82,7 @@ export class CustomersComponent implements OnInit {
   };
   iChosenCustomerId : any;
   aInputHint:Array<any> = [""];
+  _customerSearchValue: string;
   
   @ViewChildren('inputElement') inputElement!: QueryList<ElementRef>;
   showFilters = false;
@@ -93,10 +94,10 @@ export class CustomersComponent implements OnInit {
   aFilterFields: Array<any> = [
     { key: 'FIRSTNAME', value: 'sFirstName' },
     { key: 'LASTNAME', value: 'sLastName' },
-    { key: 'ADDRESS', value: 'sAddress' },
-    // { key: 'PSOTAL_CODE', value: 'sPostalCode' },
-    // { key: 'HOUSE_NUMBER', value: 'sHouseNumber' },
-    // { key: 'STREET', value: 'sStreet' },
+    // { key: 'ADDRESS', value: 'sAddress' },
+    { key: 'PSOTAL_CODE', value: 'sPostalCode' },
+    { key: 'HOUSE_NUMBER', value: 'sHouseNumber' },
+    { key: 'STREET', value: 'sStreet' },
     { key: 'COMPANY_NAME', value: 'sCompanyName' },
     { key: 'NCLIENTID', value: 'nClientId'}
     //{ key: 'CONTACT_PERSON', value: 'oContactPerson' }
@@ -115,8 +116,6 @@ export class CustomersComponent implements OnInit {
   CNameString :any = "COMPANY_NAME";
   nCNameString :any = "NCLIENTID";
   sExampleString:any = "0000AB 00A";
-  
- 
   
   constructor(
     private apiService: ApiService,
@@ -196,6 +195,19 @@ export class CustomersComponent implements OnInit {
     return arr.filter((item:any,index:any) => arr.indexOf(item) === index);
   }
 
+  /* converting space into comman and if user remove the comma then it will add space */
+  customerEventHandler(event: any) {
+    if (event.keyCode === 32) {
+      this._customerSearchValue = this.requestParams.searchValue;
+      this.requestParams.searchValue = this.requestParams.searchValue.replace(/.$/, ",");
+    } else if (event.keyCode === 8 && this._customerSearchValue.slice(-1) == ' ') {
+      this.requestParams.searchValue = `${this.requestParams.searchValue} `;
+      this._customerSearchValue = this._customerSearchValue.replace(/.$/, "");
+    } else {
+      this._customerSearchValue = this.requestParams.searchValue;
+    }
+  }
+
   /*
    * Function to detect typed string and automatically prefill fields, if fields are not prefilled. 
    * If string contains number add ADDRESS in selected fields.
@@ -203,7 +215,7 @@ export class CustomersComponent implements OnInit {
   */
   stringDetection() {
     this.aPlaceHolder = ["search"];
-    /*When length of searchvalue is equal to 4, we will be able to detect if user is searching for someting in the address or lastname*/
+    /* When length of searchvalue is equal to 4, we will be able to detect if user is searching for someting in the address or lastname*/
     if (this.requestParams.searchValue.length == 4 && this.requestParams.oFilterBy.aSearchField == 0) {
       /*If string contains number -> then add Address in selected field */
       if (/\d/.test(this.requestParams.searchValue)) {
@@ -247,7 +259,6 @@ export class CustomersComponent implements OnInit {
   openCustomerDialog(customer:any,Id:any,iSearchedCustomerId:any,key:any): void {
     this.dialogService.openModal(CustomerDialogComponent, { cssClass: 'modal-xl', context: {allcustomer:this.customers, customer:customer ,iChosenCustomerId:Id,iSearchedCustomerId:null,key:"MERGE"} }).instance.close.subscribe((data:any) => {
     })
-
   }
 
   createCustomer() {
@@ -265,7 +276,6 @@ export class CustomersComponent implements OnInit {
 
 
   getCustomers(bIsSearch?: boolean) {
-
     this.showLoader = true;
     if (bIsSearch) this.requestParams.skip = 0;
     if (this.bIsShowDeletedCustomer) {
@@ -312,7 +322,6 @@ export class CustomersComponent implements OnInit {
   // Function for return data to render on tree grid view
   loadPageTableData() {
     let result = this.paginationPipe.transform(this.customers, this.paginationConfig);
-    // return this.dataSourceBuilder.create(result, this.getters);
   }
 
   export() {
@@ -336,7 +345,5 @@ export class CustomersComponent implements OnInit {
     this.requestParams.limit = this.paginationConfig.itemsPerPage;
     this.getCustomers()
   }
-
-
   
 }

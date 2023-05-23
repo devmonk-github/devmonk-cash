@@ -708,7 +708,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   changeInPayment() {
-    this.availableAmount = this.getUsedPayMethods(true);
+    this.availableAmount = +((_.sumBy(this.payMethods, 'amount') || 0).toFixed(2)); //this.getUsedPayMethods(true);
     this.nGiftcardAmount = _.sumBy(this.appliedGiftCards, 'nAmount') || 0;
     this.paymentDistributeService.distributeAmount(this.transactionItems, this.availableAmount, this.nGiftcardAmount, this.redeemedLoyaltyPoints, this.payMethods);
     this.allPaymentMethod = this.allPaymentMethod.map((v: any) => ({ ...v, isDisabled: true }));
@@ -719,7 +719,7 @@ export class TillComponent implements OnInit, AfterViewInit, OnDestroy {
     this.bAllGiftcardPaid = aGiftcard.filter((el:any) => !el.isExclude).every((el: any) => el.paymentAmount == el.amountToBePaid)
 
     if (paidAmount === 0) {
-      this.payMethods.map(o => o.isDisabled = false);
+      this.payMethods.forEach(o => o.isDisabled = false);
     }
     // console.log('change in payment in cash ', this.transactionItems)
     this.transactionItems = [...this.transactionItems]
