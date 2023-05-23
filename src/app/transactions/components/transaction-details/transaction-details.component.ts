@@ -144,6 +144,49 @@ export class TransactionDetailsComponent implements OnInit, AfterContentInit {
     this.cdr.detectChanges();
   }
 
+  async sendEmail() {
+    // let template = undefined;
+    // let pdfTitle = '';
+    // if (type === 'repair' || type === 'repair_alternative') {
+    //   // console.log('repair items index=', index, this.aRepairItems[index], this.activityItems);
+    //   template = this.aTemplates.filter((template: any) => template.eType === type)[0];
+    //   pdfTitle = this.transaction.sNumber;
+    // } else if (type === 'regular') {
+    //   pdfTitle = this.transaction.sNumber;
+    //   template = this.aTemplates.filter((template: any) => template.eType === 'regular')[0];
+    // } else if (type === 'giftcard') {
+    //   pdfTitle = this.transaction.sGiftCardNumber;
+    //   template = this.aTemplates.filter((template: any) => template.eType === 'giftcard')[0];
+    // } else if (type === 'order') {
+    //   template = this.aTemplates.filter((template: any) => template.eType === 'order')[0];
+    //   pdfTitle = this.transaction.sActivityNumber;
+    // }
+    // const response = await this.receiptService.exportToPdf({
+    //   oDataSource: this.transaction,
+    //   pdfTitle: pdfTitle,
+    //   templateData: template,
+    //   printSettings: this.printSettings.filter((s: any) => s.sType === type),
+    //   sAction: 'sentToCustomer',
+    // });
+    // if (this.transaction?.oCustomer?.sEmail) {
+    //   const body = {
+    //     pdfContent: response,
+    //     iTransactionId: this.transaction._id,
+    //     receiptType: 'purchase-receipt',
+    //     sCustomerEmail: this.transaction?.oCustomer?.sEmail
+    //   }
+    //   this.apiService.postNew('cashregistry', '/api/v1/till/send-to-customer', body).subscribe(
+    //     (result: any) => {
+    //       if (result) {
+    //         this.toastService.show({ type: 'success', text: 'Mail send to customer.' });
+    //       }
+    //     }, (error: any) => {
+
+    //     }
+    //   )
+    // }
+  }
+
   syncCustomerData(currenCustomer: any, systemCustomer: any) {
     this.dialogService.openModal(CustomerSyncDialogComponent,
       {
