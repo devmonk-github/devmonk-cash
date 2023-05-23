@@ -95,7 +95,7 @@ export class CustomersComponent implements OnInit {
     { key: 'FIRSTNAME', value: 'sFirstName' },
     { key: 'LASTNAME', value: 'sLastName' },
     // { key: 'ADDRESS', value: 'sAddress' },
-    { key: 'PSOTAL_CODE', value: 'sPostalCode' },
+    { key: 'POSTAL_CODE', value: 'sPostalCode' },
     { key: 'HOUSE_NUMBER', value: 'sHouseNumber' },
     { key: 'STREET', value: 'sStreet' },
     { key: 'COMPANY_NAME', value: 'sCompanyName' },
@@ -108,14 +108,14 @@ export class CustomersComponent implements OnInit {
     {key:'COMPANY' , value:'company'}
   ]
   translations:any;
-  aCustomerSearch:Array<any> = [String];
   aPlaceHolder: Array<any> = ["Search"];
-  addressString :any = "STREETHOUSE_NUMBERPOSTAL_CODE";
   fNameString :any = "FIRSTNAME";
   LNameString :any = "LASTNAME";
   CNameString :any = "COMPANY_NAME";
   nCNameString :any = "NCLIENTID";
-  sExampleString:any = "0000AB 00A";
+  StreetString :any = "STREET";
+  PCodeString :any = "POSTAL_CODE";
+  HNumberString :any = "HOUSE_NUMBER";
   
   constructor(
     private apiService: ApiService,
@@ -138,11 +138,6 @@ export class CustomersComponent implements OnInit {
         this.aPlaceHolder[index] = result[el];
       })
      });
-     this.translateService.get(this.aInputHint).subscribe((detail:any) => {
-      this.aInputHint.forEach((el:any, index:any) => {
-        this.aInputHint[index] = detail[el];
-      })
-     });
    })
   this.getCustomers();
   }
@@ -163,23 +158,29 @@ export class CustomersComponent implements OnInit {
 
   setPlaceHolder() {
     if (this.requestParams.oFilterBy.aSearchField.length != 0) {
-      let aIndex = this.requestParams.oFilterBy.aSearchField.indexOf("sAddress");
+      let pIndex = this.requestParams.oFilterBy.aSearchField.indexOf("sPostalCode");
+      let sIndex = this.requestParams.oFilterBy.aSearchField.indexOf("sStreet");
+      let hIndex = this.requestParams.oFilterBy.aSearchField.indexOf("sHouseNumber");
       let fIndex = this.requestParams.oFilterBy.aSearchField.indexOf("sFirstName");
       let lIndex = this.requestParams.oFilterBy.aSearchField.indexOf("sLastName");
       let cIndex = this.requestParams.oFilterBy.aSearchField.indexOf("sCompanyName");
       let nIndex = this.requestParams.oFilterBy.aSearchField.indexOf("nClientId");
-      if (aIndex != -1 || fIndex != -1 || lIndex != -1 || cIndex != -1 || nIndex != -1) {
-        this.aPlaceHolder[aIndex] = this.translateService.instant(this.addressString);
+      if (pIndex != -1 || sIndex != -1 || hIndex != -1 || fIndex != -1 || lIndex != -1 || cIndex != -1 || nIndex != -1) {
+        this.aPlaceHolder[pIndex] = this.translateService.instant(this.PCodeString);
+        this.aPlaceHolder[sIndex] = this.translateService.instant(this.StreetString);
+        this.aPlaceHolder[hIndex] = this.translateService.instant(this.HNumberString);
         this.aPlaceHolder[fIndex] = this.translateService.instant(this.fNameString);
         this.aPlaceHolder[lIndex] = this.translateService.instant(this.LNameString);
         this.aPlaceHolder[cIndex] = this.translateService.instant(this.CNameString);
         this.aPlaceHolder[nIndex] = this.translateService.instant(this.nCNameString);
 
-        this.aInputHint[aIndex] = this.translateService.instant(this.sExampleString);
-        this.aInputHint[fIndex] = this.translateService.instant(this.fNameString);
-        this.aInputHint[lIndex] = this.translateService.instant(this.LNameString);
-        this.aInputHint[cIndex] = this.translateService.instant(this.CNameString);
-        this.aInputHint[nIndex] = this.translateService.instant(this.nCNameString);
+        this.aInputHint[pIndex] = "0000AB";
+        this.aInputHint[sIndex] = "Mainstreet";
+        this.aInputHint[hIndex] = "123A";
+        this.aInputHint[fIndex] = "John";
+        this.aInputHint[lIndex] = "Doe";
+        this.aInputHint[cIndex] = "Modern Company";
+        this.aInputHint[nIndex] = "000000";
       } else {
         this.aPlaceHolder = this.requestParams.oFilterBy.aSearchField;
         this.aInputHint = this.requestParams.oFilterBy.aSearchField;
@@ -208,22 +209,32 @@ export class CustomersComponent implements OnInit {
     }
   }
 
-  /*
-   * Function to detect typed string and automatically prefill fields, if fields are not prefilled. 
-   * If string contains number add ADDRESS in selected fields.
-   * If string contains letters add LASTNAME in selected fields.
-  */
+  /* Function to detect typed string and automatically prefill fields, if fields are not prefilled. */
   stringDetection() {
     this.aPlaceHolder = ["search"];
-    /* When length of searchvalue is equal to 4, we will be able to detect if user is searching for someting in the address or lastname*/
-    if (this.requestParams.searchValue.length == 4 && this.requestParams.oFilterBy.aSearchField == 0) {
-      /*If string contains number -> then add Address in selected field */
-      if (/\d/.test(this.requestParams.searchValue)) {
-        /*TODO: fill the selection with address, the following code is is not showing the selected element on frontend*/
-        this.requestParams.oFilterBy.aSearchField.unshift('sAddress');
-        this.requestParams.oFilterBy.aSearchField = this.removeDuplicates(this.requestParams.oFilterBy.aSearchField);
-        let aIndex = this.requestParams.oFilterBy.aSearchField.indexOf("sAddress");
-        this.aInputHint[aIndex] = this.translateService.instant(this.sExampleString);
+    this.requestParams.searchValue = this.requestParams.searchValue;
+    if (this.requestParams.oFilterBy.aSearchField.length == 0) {
+      if (this.requestParams.searchValue.length >= 4) {
+        /*If string contains number & >= 4 -> then add sPostalCode in selected field */
+        if (/\d/.test(this.requestParams.searchValue)) {
+          /*TODO: fill the selection with sPostalCode, the following code is is not showing the selected element on frontend*/
+          this.requestParams.oFilterBy.aSearchField.unshift('sPostalCode');
+          this.requestParams.oFilterBy.aSearchField = this.removeDuplicates(this.requestParams.oFilterBy.aSearchField);
+          let pIndex = this.requestParams.oFilterBy.aSearchField.indexOf("sPostalCode");
+          this.aInputHint[pIndex] = "0000AB";
+          this.aInputHint = this.removeDuplicates(this.aInputHint);
+
+        }
+      } else if (this.requestParams.searchValue.length < 4 && this.requestParams.searchValue.length >= 1) {
+        /* If string contains number & < 4 & >= 1, we will be able to detect if user is searching for someting in the sHouseNumber */
+        if (/\d/.test(this.requestParams.searchValue)) {
+          /*TODO: fill the selection with sHouseNumber, the following code is is not showing the selected element on frontend*/
+          this.requestParams.oFilterBy.aSearchField.unshift('sHouseNumber');
+          this.requestParams.oFilterBy.aSearchField = this.removeDuplicates(this.requestParams.oFilterBy.aSearchField);
+          let hIndex = this.requestParams.oFilterBy.aSearchField.indexOf("sHouseNumber");
+          this.aInputHint[hIndex] = "123A";
+          this.aInputHint = this.removeDuplicates(this.aInputHint);
+        }
       }
     }
   }

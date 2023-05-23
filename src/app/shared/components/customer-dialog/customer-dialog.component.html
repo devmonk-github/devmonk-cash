@@ -13,8 +13,8 @@
                 <fa-icon [icon]="faSearch" class="text-gray-500 position-absolute top-50 translate-middle ms-6">
                 </fa-icon>
                 <input type="text" class="form-control form-control-solid ps-10" 
-                                   [(ngModel)]="requestParams.searchValue" (keyup.enter)="getCustomers()" (ngModelChange)="stringDetection()" name="search"
-                                    placeholder="{{(aPlaceHolder).join(' ')}}">
+                [(ngModel)]="requestParams.searchValue" (keyup.enter)="getCustomers()" (keyup)="customerEventHandler($event)" (ngModelChange)="stringDetection()" name="search"
+                placeholder="{{(aPlaceHolder).join(',')}}">
 
                 <!-- <input type="text" class="form-control form-control-solid ps-10" (ngModelChange)="stringDetection()" name="search"
                     [(ngModel)]="requestParams.searchValue"  value="" placeholder="{{(aPlaceHolder).join(' ')}}" (keydown.enter)="getCustomers()"/> -->
@@ -44,7 +44,7 @@
             </div>
         </div>
         <div class="row px-2">
-            <label class="text-muted" *ngIf="requestParams.oFilterBy.aSearchField.length"> {{"EXAMPLE" | translate}} : {{(aInputHint).join(' ')}} </label>
+            <label class="text-muted" *ngIf="requestParams.oFilterBy.aSearchField.length"> {{"EXAMPLE" | translate}} : {{(aInputHint).join(',')}} </label>
         </div>
         
         <!-- <div class="row align-items-center mb-5" [@openClose]="showFilters ? 'open' : 'closed'">

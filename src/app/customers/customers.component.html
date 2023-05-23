@@ -11,7 +11,7 @@
                                 </span>
                                 <input type="text" class="form-control form-control-solid w-450px ps-14 me-4" 
                                    [(ngModel)]="requestParams.searchValue" (keyup.enter)="getCustomers(true)" (keyup)="customerEventHandler($event)" (ngModelChange)="stringDetection()" name="search"
-                                    placeholder="{{(aPlaceHolder).join(' ')}}">
+                                    placeholder="{{(aPlaceHolder).join(',')}}">
                                 <div class="col-lg-4 me-4 customers-fields">
                                     <ng-select class="form-control form-control-solid p-0" [multiple]="true"
                                         [(ngModel)]="requestParams.oFilterBy.aSearchField" [clearable]="false" placeholder="" (ngModelChange)="setPlaceHolder()">
@@ -51,7 +51,7 @@
                             </div>
                         </div>
                         <div class="row px-2">
-                            <label class="text-muted" *ngIf="requestParams.oFilterBy.aSearchField.length"> {{"EXAMPLE" | translate}} : {{(aInputHint).join(' ')}} </label>
+                            <label class="text-muted" *ngIf="requestParams.oFilterBy.aSearchField.length"> {{"EXAMPLE" | translate}} : {{(aInputHint).join(',')}} </label>
                         </div>
                     </div>
                 
