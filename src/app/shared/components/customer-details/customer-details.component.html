@@ -801,16 +801,22 @@
                             </div>
                             <div class="row mb-3">
                                 <div class="col-7">
-                                    <input class="form-control" placeholder="{{'STREET' | translate}}"
+                                    <input *ngIf="(mode === 'details' && editProfile)" class="form-control" placeholder="{{'STREET' | translate}}"
+                                        [(ngModel)]="customer.oInvoiceAddress.sStreet" (ngModelChange)="convertFirstLetterUpper($event , 'oInvoiceAddress.sStreet')"/>
+                                    <input *ngIf="mode === 'create'" class="form-control" placeholder="{{'STREET' | translate}}"
                                         [(ngModel)]="customer.oInvoiceAddress.sStreet" (ngModelChange)="convertFirstLetterUpper($event , 'oInvoiceAddress.sStreet')" (keydown)="onlyLetters($event)"/>
                                 </div>
 
                                 <div class="col-3 custom-number">
-                                    <input class="form-control" type="number" placeholder="{{'HOUSE_NUMBER' | translate}}"
+                                    <input *ngIf="(mode === 'details' && editProfile)" class="form-control" placeholder="{{'HOUSE_NUMBER' | translate}}"
+                                    [(ngModel)]="customer.oInvoiceAddress.sHouseNumber" />
+                                    <input *ngIf="mode === 'create'" class="form-control" type="number" placeholder="{{'HOUSE_NUMBER' | translate}}"
                                         [(ngModel)]="customer.oInvoiceAddress.sHouseNumber" />
                                 </div>
                                 <div class="col-2">
-                                    <input class="form-control" placeholder="{{'HOUSE_NUMBER_SUFFIX' | translate}}"
+                                    <input *ngIf="(mode === 'details' && editProfile)" class="form-control" placeholder="{{'HOUSE_NUMBER_SUFFIX' | translate}}"
+                                        [(ngModel)]="customer.oInvoiceAddress.sHouseNumberSuffix"/>
+                                    <input *ngIf="mode === 'create'" class="form-control" placeholder="{{'HOUSE_NUMBER_SUFFIX' | translate}}"
                                         [(ngModel)]="customer.oInvoiceAddress.sHouseNumberSuffix" (keydown)="onlyLetters($event)"/>
                                 </div>
                             </div>
@@ -841,16 +847,22 @@
 
                             <div class="row mb-3">
                                 <div class="col-7">
-                                    <input class="form-control" placeholder="{{'STREET' | translate}}"
+                                    <input *ngIf="(mode === 'details' && editProfile)" class="form-control" placeholder="{{'STREET' | translate}}"
+                                        [(ngModel)]="customer.oShippingAddress.sStreet" (ngModelChange)="convertFirstLetterUpper($event , 'oShippingAddress.sStreet')"/>
+                                    <input *ngIf="mode === 'create'" class="form-control" placeholder="{{'STREET' | translate}}"
                                         [(ngModel)]="customer.oShippingAddress.sStreet" (ngModelChange)="convertFirstLetterUpper($event , 'oShippingAddress.sStreet')" (keydown)="onlyLetters($event)"/>
                                 </div>
 
                                 <div class="col-3 custom-number">
-                                    <input class="form-control" type="number" placeholder="{{'HOUSE_NUMBER' | translate}}"
+                                    <input *ngIf="(mode === 'details' && editProfile)" class="form-control" placeholder="{{'HOUSE_NUMBER' | translate}}"
+                                    [(ngModel)]="customer.oShippingAddress.sHouseNumber" />
+                                    <input *ngIf="mode === 'create'" class="form-control" type="number" placeholder="{{'HOUSE_NUMBER' | translate}}"
                                         [(ngModel)]="customer.oShippingAddress.sHouseNumber" />
                                 </div>
                                 <div class="col-2">
-                                    <input class="form-control" placeholder="{{'HOUSE_NUMBER_SUFFIX' | translate}}"
+                                    <input *ngIf="(mode === 'details' && editProfile)"  class="form-control" placeholder="{{'HOUSE_NUMBER_SUFFIX' | translate}}"
+                                    [(ngModel)]="customer.oShippingAddress.sHouseNumberSuffix"/>
+                                    <input *ngIf="mode === 'create'" class="form-control" placeholder="{{'HOUSE_NUMBER_SUFFIX' | translate}}"
                                         [(ngModel)]="customer.oShippingAddress.sHouseNumberSuffix" (keydown)="onlyLetters($event)"/>
                                 </div>
                             </div>
