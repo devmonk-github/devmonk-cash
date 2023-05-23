@@ -196,62 +196,68 @@
 
     </div>
 
-    <!-- <div class="separator separator-dashed mt-9 mb-6"></div> -->
-    <table class="table table-hover table-rounded table-striped gy-7 gs-7">
-      <thead>
-        <tr class="fw-bold fs-6 text-gray-400 border-gray-200 text-uppercase">
-          <th>{{"ACTIVITY_NO" | translate}}</th>
-          <th *ngIf="type !== 'repair'">{{"TYPE" | translate}}</th>
-          <th *ngIf="type == 'order' || type == 'repair'" >{{"REPAIR_NUMBER" | translate}}</th>
-          <th *ngIf="type == 'repair' || type == 'gold-purchase'">{{"AINAME" | translate}}</th>
-          <th>{{"INTAKE_DATE" | translate}}</th>
-          <th *ngIf="type !== 'giftcard'">{{"ESTIMATED_DATE" | translate}}</th>
-          <th>{{"STATUS" | translate}}</th>
-          <th *ngIf="type == 'giftcard'">{{"AIAMOUNT" | translate}}</th>
-          <th *ngIf="type == 'giftcard'">{{ "REM_AMOUNT" | translate}}</th>
-          <th *ngIf="type !== 'giftcard'">{{"SUPPLIER_REPAIRER" | translate}}</th>
-          <th>{{"CUSTOMER" | translate}}</th>
-          <th>{{"ACTION" | translate}}</th>
-
-          <!-- <th scope="col" *ngFor="let th of tableHeaders"
-            [ngClass]="{'fw-bolder': th.selected, 'cursor-pointer': !th.disabled, 'pe-none': th.disabled}"
-            (click)="setSortOption(th)">
-            {{ th.key | translate}}
-            <fa-icon *ngIf="th.selected" [icon]=" th.sort ==='asc' ? faArrowDown : faArrowUp"></fa-icon>
-          </th> -->
-        </tr>
-      </thead>
-      <tbody class="fw-bold text-gray-600">
-        <ng-container *ngFor="let activity of activityItems | paginate: paginationConfig, let i = index;">
-          <tr *ngIf="activity.eActivityItemStatus !== 'cancelled'">
-            <td style="min-width: 170px;">{{activity?.sNumber}}</td>
-            <td *ngIf="type !== 'repair'" style="text-transform: capitalize;">{{activity?.oType.eKind}}</td>
-            <td *ngIf="type == 'order' || type == 'repair'" style="width: 120px;">{{activity?.sBagNumber || '-'}}</td>
-            <td *ngIf="type == 'repair' || type == 'gold-purchase'" class="custom-overflow">{{activity?.sProductName || '-'}}</td>
-            <td style="width: 130px;"scope="row">{{activity?.dCreatedDate | date: 'yyyy-MM-dd HH:mm'}}</td>
-            <td *ngIf="type !== 'giftcard'" style="width: 130px;" scope="row">{{activity?.dEstimatedDate | date: 'yyyy-MM-dd HH:mm'}}</td>
-            <td>{{activity?.eActivityItemStatus}}</td>
-            <td *ngIf="type == 'giftcard'">{{activity?.nPriceIncVat || '0'}}</td>
-            <td *ngIf="type == 'giftcard'"><div *ngIf="activity?.nGiftcardRemainingAmount">{{activity?.nGiftcardRemainingAmount.toFixed(2)}}</div>
-              <div *ngIf="activity.nGiftcardRemainingAmount == undefined">0</div>
-            
-            </td>
-            <td *ngIf="type !== 'giftcard'" class="custom-overflow">{{activity?.sBusinessPartnerName || '-'}}</td>
-            <td class="custom-overflow">{{activity?.oCustomer?.sFirstName}} {{activity?.oCustomer?.sLastName || '-'}}</td>
-            <td>
-              <div class="btn-group me-4">
-                <div class="btn btn-secondary fs-bold px-6" (click)="openActivities(activity)"
-                  [class.disabled]="!businessDetails?._id">
-                  <span class="indicator-label">
-                    {{ "VIEW" | translate }}
-                  </span>
-                </div>
-              </div>
-            </td>
+    
+    <div class="table-responsive">
+      <table class="table table-hover table-rounded table-striped gy-7 gs-7">
+        <thead>
+          <tr class="fw-bold fs-6 text-gray-400 border-gray-200 text-uppercase">
+            <th>{{"ACTIVITY_NO" | translate}}</th>
+            <th *ngIf="type !== 'repair'">{{"TYPE" | translate}}</th>
+            <th *ngIf="type == 'order' || type == 'repair'">{{"REPAIR_NUMBER" | translate}}</th>
+            <th *ngIf="type == 'repair' || type == 'gold-purchase'">{{"AINAME" | translate}}</th>
+            <th>{{"INTAKE_DATE" | translate}}</th>
+            <th *ngIf="type !== 'giftcard'">{{"ESTIMATED_DATE" | translate}}</th>
+            <th>{{"STATUS" | translate}}</th>
+            <th *ngIf="type == 'giftcard'">{{"AIAMOUNT" | translate}}</th>
+            <th *ngIf="type == 'giftcard'">{{ "REM_AMOUNT" | translate}}</th>
+            <th *ngIf="type !== 'giftcard'">{{"SUPPLIER_REPAIRER" | translate}}</th>
+            <th>{{"CUSTOMER" | translate}}</th>
+            <th>{{"ACTION" | translate}}</th>
+    
+            <!-- <th scope="col" *ngFor="let th of tableHeaders"
+                [ngClass]="{'fw-bolder': th.selected, 'cursor-pointer': !th.disabled, 'pe-none': th.disabled}"
+                (click)="setSortOption(th)">
+                {{ th.key | translate}}
+                <fa-icon *ngIf="th.selected" [icon]=" th.sort ==='asc' ? faArrowDown : faArrowUp"></fa-icon>
+              </th> -->
           </tr>
-        </ng-container>
-      </tbody>
-    </table>
+        </thead>
+        <tbody class="fw-bold text-gray-600">
+          <ng-container *ngFor="let activity of activityItems | paginate: paginationConfig, let i = index;">
+            <tr *ngIf="activity.eActivityItemStatus !== 'cancelled'">
+              <td style="min-width: 170px;">{{activity?.sNumber}}</td>
+              <td *ngIf="type !== 'repair'" style="text-transform: capitalize;">{{activity?.oType.eKind}}</td>
+              <td *ngIf="type == 'order' || type == 'repair'" style="width: 120px;">{{activity?.sBagNumber || '-'}}</td>
+              <td *ngIf="type == 'repair' || type == 'gold-purchase'" class="custom-overflow">{{activity?.sProductName ||
+                '-'}}</td>
+              <td style="width: 130px;" scope="row">{{activity?.dCreatedDate | date: 'yyyy-MM-dd HH:mm'}}</td>
+              <td *ngIf="type !== 'giftcard'" style="width: 130px;" scope="row">{{activity?.dEstimatedDate | date:
+                'yyyy-MM-dd HH:mm'}}</td>
+              <td>{{activity?.eActivityItemStatus}}</td>
+              <td *ngIf="type == 'giftcard'">{{activity?.nPriceIncVat || '0'}}</td>
+              <td *ngIf="type == 'giftcard'">
+                <div *ngIf="activity?.nGiftcardRemainingAmount">{{activity?.nGiftcardRemainingAmount.toFixed(2)}}</div>
+                <div *ngIf="activity.nGiftcardRemainingAmount == undefined">0</div>
+    
+              </td>
+              <td *ngIf="type !== 'giftcard'" class="custom-overflow">{{activity?.sBusinessPartnerName || '-'}}</td>
+              <td class="custom-overflow">{{activity?.oCustomer?.sFirstName}} {{activity?.oCustomer?.sLastName || '-'}}</td>
+              <td>
+                <div class="btn-group me-4">
+                  <div class="btn btn-secondary fs-bold px-6" (click)="openActivities(activity)"
+                    [class.disabled]="!businessDetails?._id">
+                    <span class="indicator-label">
+                      {{ "VIEW" | translate }}
+                    </span>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </ng-container>
+        </tbody>
+      </table>
+    </div>
+
     <div class="d-flex">
       <h5 *ngIf='!activityItems.length && !showLoader' style="text-align: center;"> {{ 'NO_DATA_FOUND' | translate }}
       </h5>
