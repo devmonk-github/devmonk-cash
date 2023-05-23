@@ -83,24 +83,19 @@ export class CustomersComponent implements OnInit {
   iChosenCustomerId : any;
   aInputHint:Array<any> = [""];
   _customerSearchValue: string;
+  bIsProperSearching: boolean = true;
   
   @ViewChildren('inputElement') inputElement!: QueryList<ElementRef>;
   showFilters = false;
-  // aFilterFields: any = [
-  //   { title: 'PSOTAL_CODE', key: 'sPostalCode' },
-  //   { title: 'HOUSE_NUMBER', key: 'sHouseNumber' },
-  // ]
 
   aFilterFields: Array<any> = [
     { key: 'FIRSTNAME', value: 'sFirstName' },
     { key: 'LASTNAME', value: 'sLastName' },
-    // { key: 'ADDRESS', value: 'sAddress' },
     { key: 'POSTAL_CODE', value: 'sPostalCode' },
     { key: 'HOUSE_NUMBER', value: 'sHouseNumber' },
     { key: 'STREET', value: 'sStreet' },
     { key: 'COMPANY_NAME', value: 'sCompanyName' },
     { key: 'NCLIENTID', value: 'nClientId'}
-    //{ key: 'CONTACT_PERSON', value: 'oContactPerson' }
   ];
   customerTypes:any=[
    { key:'ALL', value:'all'},
@@ -190,10 +185,20 @@ export class CustomersComponent implements OnInit {
     }
     this.aPlaceHolder = this.removeDuplicates(this.aPlaceHolder);
     this.aInputHint = this.removeDuplicates(this.aInputHint);
+    this.showSearchWarningText();
   }
 
   removeDuplicates(arr:any) {
     return arr.filter((item:any,index:any) => arr.indexOf(item) === index);
+  }
+
+  /* show warnign if user is not searching as shown */
+  showSearchWarningText() {
+    this.bIsProperSearching = true;
+    const aSearchValueArray = this.requestParams.searchValue.split(',').filter((elem: any) => elem != '');
+    if (aSearchValueArray?.length !== this.requestParams.oFilterBy?.aSearchField?.length) {
+      this.bIsProperSearching = false;
+    }
   }
 
   /* converting space into comman and if user remove the comma then it will add space */
@@ -207,6 +212,7 @@ export class CustomersComponent implements OnInit {
     } else {
       this._customerSearchValue = this.requestParams.searchValue;
     }
+    this.showSearchWarningText();
   }
 
   /* Function to detect typed string and automatically prefill fields, if fields are not prefilled. */
@@ -295,6 +301,7 @@ export class CustomersComponent implements OnInit {
       this.requestParams.bShowRemovedCustomers = false;
     }
     this.customers = [];
+    this.requestParams.searchValue = this.requestParams.searchValue?.trim();
     this.apiService.postNew('customer', '/api/v1/customer/list', this.requestParams)
       .subscribe(async (result: any) => {
         this.showLoader = false;
